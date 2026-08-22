@@ -515,29 +515,33 @@ test("ingest never sets featured=true or keeps clockAt/annotations", () => {
   assert.equal(queued.annotations, undefined);
 });
 
-test("fixture catalog has news clocks, no Crozer, no featured lead", () => {
-  assert.equal(leadItem(catalog), undefined);
+test("fixture catalog has news clocks, no Crozer, ChristianaCare Epic featured lead", () => {
+  assert.equal(leadItem(catalog)?.id, "news-christianacare-epic");
   const jefferson = catalog.find((i) => i.id === "news-jefferson-einstein-mychart");
   const christiana = catalog.find((i) => i.id === "news-christianacare-epic");
   assert.equal(jefferson?.kind, "news");
   assert.equal(christiana?.kind, "news");
+  assert.equal(christiana?.featured, true);
   assert.equal(jefferson && jefferson.kind === "news" ? jefferson.clockAt : undefined, "2026-09-26T04:00:00.000Z");
   assert.equal(christiana && christiana.kind === "news" ? christiana.clockAt : undefined, "2026-10-03T04:00:00.000Z");
   assert.ok(!JSON.stringify(catalog).includes("Crozer"));
   assert.ok(!JSON.stringify(entities).includes("Crozer"));
 });
 
-test("Sloan four: published, featured false, source publishedAt, Penn and Temple stay separate", () => {
+test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn and Temple stay separate", () => {
   const christiana = catalog.find((i) => i.id === "news-christianacare-epic");
   const loss = catalog.find((i) => i.id === "news-jefferson-fy2026-loss");
   const penn = catalog.find((i) => i.id === "news-penn-ai-scribe");
   const temple = catalog.find((i) => i.id === "news-temple-dragon-copilot");
   assert.ok(christiana && loss && penn && temple);
-  for (const item of [christiana, loss, penn, temple]) {
+  assert.equal(christiana.featured, true);
+  for (const item of [loss, penn, temple]) {
     assert.equal(item.status, "published");
     assert.equal(item.featured, false);
     assert.equal(item.kind, "news");
   }
+  assert.equal(christiana.status, "published");
+  assert.equal(christiana.kind, "news");
   assert.equal(christiana.title, "ChristianaCare sets Oct. 3, 2026 Epic go-live");
   assert.equal(christiana.kind === "news" ? christiana.clockAt : undefined, "2026-10-03T04:00:00.000Z");
   assert.equal(christiana.publishedAt, "2026-07-01T16:00:00.000Z");
@@ -570,7 +574,8 @@ test("Sloan four: published, featured false, source publishedAt, Penn and Temple
   assert.ok(!blob.includes("org-aetna"));
   assert.ok(!blob.includes("org-microsoft"));
   assert.ok(!catalog.some((i) => i.id.startsWith("news-") && /chop/i.test(`${i.id} ${i.title}`)));
-  assert.equal(catalog.filter((i) => i.id.startsWith("news-") && i.featured).length, 0);
+  assert.equal(catalog.filter((i) => i.id.startsWith("news-") && i.featured).length, 1);
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.id).join(), "news-christianacare-epic");
 });
 
 test("leadItem source does not call briefingSinceYesterday5pmET", () => {

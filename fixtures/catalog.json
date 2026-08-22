@@ -7,6 +7,7 @@
     "dek": "A local operations story, not a vendor release.",
     "body": "Fixture. Replace with Cole or ingest copy.",
     "status": "published",
+    "featured": false,
     "publishedAt": "2026-08-20T14:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
@@ -51,6 +52,7 @@
     "dek": "State guidance with regional operational bite.",
     "body": "Fixture.",
     "status": "published",
+    "featured": false,
     "publishedAt": "2026-08-18T11:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
@@ -90,6 +92,7 @@
     "dek": "Einstein patients leave MyEinsteinHealth for Jefferson's Epic MyChart. A go-live clock, not an event.",
     "body": "Fixture. Replace with Cole copy.",
     "status": "published",
+    "featured": false,
     "publishedAt": "2026-08-01T14:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
@@ -132,7 +135,7 @@
     "dek": "The Wilmington system is in the final stage. Patients keep appointments unless contacted.",
     "body": "ChristianaCare is cutting its clinical record, caregiver workflows, and patient tools over to Epic on Oct. 3, 2026. A July 2026 update put the Wilmington system in the final stage, less than three months out. COO Ric Cuming said caregivers must finish on-demand and live role-based training, and pass readiness checks, before they use the new system. Patients keep appointments unless contacted. After go-live they move to ChristianaCare MyChart for results, visit summaries, scheduling, messaging, eCheck-in, refills, and bill pay. Care Everywhere will share records with participating Epic organizations when a patient is treated off-campus. ChristianaCare said that once it is live, all Delaware health systems, and many more in Pennsylvania, New Jersey, and Maryland, will also be on Epic.",
     "status": "published",
-    "featured": false,
+    "featured": true,
     "publishedAt": "2026-07-01T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
