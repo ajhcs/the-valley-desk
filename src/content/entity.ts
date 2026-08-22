@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-/** Reed lock. Tag ingest and search only. Never a publish trigger. */
+/** Reed lock. Tag ingest and search only. Never a publish trigger.
+ *  v1 does not mint /org/{id} or generate entity pages from the 92-entity seed.
+ *  Entity pages later only if they read published items. */
 export const EntityKind = z.enum([
   "system",
   "hospital",

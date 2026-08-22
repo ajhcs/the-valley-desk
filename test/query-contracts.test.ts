@@ -667,12 +667,36 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   const rss = readFileSync(join(root, "public/feed.xml"), "utf8");
   const sitemap = readFileSync(join(root, "public/sitemap.xml"), "utf8");
   const build = readFileSync(join(root, "scripts/build-feed.mjs"), "utf8");
+  const feed = JSON.parse(readFileSync(join(root, "public/feed.json"), "utf8")) as {
+    items: { id: string; source?: { url?: string } }[];
+  };
+  const router = readFileSync(join(root, "src/router.tsx"), "utf8");
+  const entitySrc = readFileSync(join(root, "src/content/entity.ts"), "utf8");
+  assert.equal(entityRows.length, 92);
+  assert.ok(!router.includes("/org/"));
+  assert.ok(!router.includes("/orgs"));
+  assert.ok(!router.includes("EntityPage"));
+  assert.ok(entitySrc.includes("does not mint /org/{id}"));
   assert.ok(rss.includes("<link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>"));
   assert.ok(rss.includes("<guid isPermaLink=\"true\">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>"));
   assert.ok(rss.includes("<link>https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</link>"));
-  assert.ok(!rss.includes("https://www.inquirer.com/health/penn-jefferson-artificial-intelligence-health-20251110.html"));
   assert.ok(build.includes("canonicalUrl(item)"));
   assert.ok(!build.includes("citations?.[0]"));
+  for (const item of catalog.filter((row) => row.status === "published")) {
+    const canon = canonicalUrl(item);
+    assert.ok(rss.includes(`<link>${canon}</link>`), item.id);
+    assert.ok(rss.includes(`<guid isPermaLink="true">${canon}</guid>`), item.id);
+    const jsonItem = feed.items.find((row) => row.id === item.id);
+    if (item.source.url) {
+      assert.equal(jsonItem?.source?.url, item.source.url);
+      assert.ok(!rss.includes(`<link>${item.source.url}</link>`));
+      assert.ok(!rss.includes(`<guid isPermaLink="true">${item.source.url}</guid>`));
+    }
+    for (const citation of item.citations ?? []) {
+      assert.ok(!rss.includes(`<link>${citation.url}</link>`));
+      assert.ok(!rss.includes(`<guid isPermaLink="true">${citation.url}</guid>`));
+    }
+  }
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/</loc>"));
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/news</loc>"));
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/events</loc>"));

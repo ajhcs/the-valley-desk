@@ -38,6 +38,8 @@ function esc(s = "") {
     .replaceAll('"', "&quot;");
 }
 
+// Reed lock: RSS <link> and <guid> are our canonical permalink only.
+// source.url stays on the JSON item as citation. Never the RSS link.
 const rssItems = published
   .map((item) => {
     const link = canonicalUrl(item);
