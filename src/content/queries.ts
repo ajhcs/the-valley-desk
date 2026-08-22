@@ -40,6 +40,30 @@ export function upcomingEvents(items: ContentItem[], now = new Date(), n = 6) {
     .slice(0, n);
 }
 
+const CHAPTER_PARTNERS = new Set(["dvhimss", "njhimss"]);
+
+/** Soonest published chapter event. Does not invent URLs. Never reads clockAt. */
+export function nextChapterEvent(items: ContentItem[], now = new Date()): EventItem | undefined {
+  const iso = now.toISOString();
+  return items
+    .filter(
+      (i): i is EventItem =>
+        i.kind === "event" &&
+        i.status === "published" &&
+        i.startsAt >= iso &&
+        CHAPTER_PARTNERS.has(i.partner),
+    )
+    .sort((a, b) => a.startsAt.localeCompare(b.startsAt))[0];
+}
+
+/** nextChapterEvent first, then the rest of upcomingEvents, no duplicate. */
+export function pinnedUpcomingEvents(items: ContentItem[], now = new Date(), n = 6) {
+  const chapter = nextChapterEvent(items, now);
+  const rest = upcomingEvents(items, now, Number.MAX_SAFE_INTEGER).filter((item) => item.id !== chapter?.id);
+  const rows = chapter ? [chapter, ...rest] : rest;
+  return rows.slice(0, n);
+}
+
 export function byKind<K extends ContentItem["kind"]>(
   items: ContentItem[],
   kind: K,

@@ -3,7 +3,7 @@ import {
   briefingSinceYesterday5pmET,
   latestNews,
   leadItem,
-  upcomingEvents,
+  pinnedUpcomingEvents,
 } from "../content/queries";
 import { Desk } from "./home/Desk";
 import { Lead } from "./home/Lead";
@@ -15,7 +15,7 @@ export function HomePage() {
   const lead = leadItem(catalog);
   const desk = briefingSinceYesterday5pmET(catalog);
   const news = latestNews(catalog);
-  const events = upcomingEvents(catalog);
+  const events = pinnedUpcomingEvents(catalog);
   const sessionFirst = useSessionFirstHome();
 
   return (

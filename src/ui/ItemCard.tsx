@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import type { ContentItem, EventItem } from "../content/schema";
 import { formatDate, formatWhen, sourceLine } from "../lib/format";
 import { itemHref } from "../lib/kind";
+import { eventRegisterUrl } from "../lib/register";
+import { RegisterLink } from "./RegisterLink";
 
 export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "events" }) {
   const meta = item.kind === "event" ? formatWhen((item as EventItem).startsAt) : formatDate(item.publishedAt);
@@ -23,6 +25,12 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
         {meta}
         {" · "}
         {sourceLine(item)}
+        {rail === "events" && eventRegisterUrl(item) ? (
+          <>
+            {" · "}
+            <RegisterLink item={item} />
+          </>
+        ) : null}
       </p>
     </article>
   );

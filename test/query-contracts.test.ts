@@ -10,6 +10,8 @@ import {
   featuredLead,
   latestNews,
   leadItem,
+  nextChapterEvent,
+  pinnedUpcomingEvents,
   upcomingEvents,
 } from "../src/content/queries.ts";
 import {
@@ -22,6 +24,7 @@ import {
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { rssItemToContent } from "../src/ingest/rss.ts";
 import { CLOSED_LIVE_SEED_IDS, hasLiveSeedOrg, liveSeedOrgIds } from "../src/content/seed.ts";
+import { eventRegisterUrl } from "../src/lib/register.ts";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -449,13 +452,16 @@ test("homepage binds store queries and kit class names", () => {
   const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
   const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
   const briefing = readFileSync(join(root, "src/ui/BriefingPage.tsx"), "utf8");
+  const eventsPage = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
   assert.ok(home.includes("leadItem"));
   assert.ok(home.includes("briefingSinceYesterday5pmET"));
   assert.ok(home.includes("latestNews"));
-  assert.ok(home.includes("upcomingEvents"));
+  assert.ok(home.includes("pinnedUpcomingEvents"));
+  assert.ok(eventsPage.includes("pinnedUpcomingEvents"));
   assert.ok(!home.includes("briefing[0]"));
   assert.ok(!home.includes("subscribe"));
   assert.ok(!home.includes("deskClocks"));
+  assert.ok(!home.toLowerCase().includes("himss seal"));
   assert.ok(home.includes("NEWS · LATEST"));
   assert.ok(home.includes("EVENTS · NEXT"));
   assert.ok(layout.includes("MarkFold"));
@@ -466,4 +472,33 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(!layout.includes('to="/voices"'));
   assert.ok(briefing.includes("Ranked by org and topic overlap, not recency."));
   assert.ok(briefing.includes("Nothing published in this window yet."));
+});
+
+test("Register uses registrationUrl only; locked DVHIMSS URLs unchanged", () => {
+  const fall = catalog.find((i) => i.id === "evt-dvhimss-22958");
+  const golf = catalog.find((i) => i.id === "evt-dvhimss-23007");
+  const networking = catalog.find((i) => i.id === "evt-01");
+  const jefferson = catalog.find((i) => i.id === "evt-02");
+  assert.equal(eventRegisterUrl(fall!), "https://njdvhimssevent.com/");
+  assert.equal(
+    eventRegisterUrl(golf!),
+    "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
+  );
+  assert.equal(eventRegisterUrl(networking!), "https://dvhimss.org/events/");
+  assert.equal(eventRegisterUrl(jefferson!), undefined);
+  assert.ok(jefferson && jefferson.kind === "event" && jefferson.source.url);
+  const src = readFileSync(join(root, "src/lib/register.ts"), "utf8");
+  assert.ok(!src.includes("source."));
+});
+
+test("nextChapterEvent is soonest published dvhimss/njhimss and pins the events rail", () => {
+  const now = new Date("2026-08-22T20:00:00.000Z");
+  const chapter = nextChapterEvent(catalog, now);
+  assert.equal(chapter?.id, "evt-01");
+  assert.equal(chapter?.partner, "dvhimss");
+  const pinned = pinnedUpcomingEvents(catalog, now, 6);
+  assert.equal(pinned[0]?.id, chapter?.id);
+  assert.equal(pinned.filter((i) => i.id === chapter?.id).length, 1);
+  assert.ok(pinned.every((i) => i.kind === "event" && i.status === "published"));
+  assert.ok(pinned.every((i) => i.startsAt >= now.toISOString()));
 });

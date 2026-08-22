@@ -82,6 +82,7 @@ export const EventItem = Base.extend({
   registrationUrl: z.string().url().optional(),
   partner: z.enum([
     "dvhimss",
+    "njhimss",
     "chapter",
     "health-system",
     "vendor",

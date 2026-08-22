@@ -226,6 +226,29 @@ ul.desk {
   color: var(--ink);
 }
 
+.Register {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  border: none;
+  background: none;
+  padding: 0;
+  animation: none;
+  box-shadow: none;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.Register:hover {
+  color: var(--ink);
+}
+
+.RailRow .Register {
+  display: block;
+}
+
 .SiteFooter {
   margin-top: 1rem;
   padding: 1.25rem 0 0;

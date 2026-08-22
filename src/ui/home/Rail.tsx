@@ -3,6 +3,7 @@ import type { ContentItem } from "../../content/schema";
 import { KIND_LABEL, itemHref } from "../../lib/kind";
 import { DateChip } from "./DateChip";
 import { StatusChip } from "./StatusChip";
+import { RegisterLink } from "../RegisterLink";
 
 export function Rail({
   label,
@@ -24,6 +25,7 @@ export function Rail({
               <DateChip item={item} />
             </div>
             <Link to={itemHref(item)}>{item.title}</Link>
+            {rail === "events" ? <RegisterLink item={item} /> : null}
           </li>
         ))}
       </ul>
