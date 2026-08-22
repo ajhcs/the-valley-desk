@@ -7,6 +7,7 @@ import { Layout } from "./ui/Layout";
 import { HomePage } from "./ui/HomePage";
 import { KindListPage } from "./ui/KindListPage";
 import { ItemPage } from "./ui/ItemPage";
+import { BriefingPage } from "./ui/BriefingPage";
 import type { ContentItem } from "./content/schema";
 
 const rootRoute = createRootRoute({
@@ -27,7 +28,7 @@ function section(path: string, kind: ContentItem["kind"]) {
   });
   const detail = createRoute({
     getParentRoute: () => rootRoute,
-    path: path + "/\$slug",
+    path: path + "/$slug",
     component: function Detail() {
       const { slug } = detail.useParams();
       return <ItemPage slug={slug} />;
@@ -36,6 +37,21 @@ function section(path: string, kind: ContentItem["kind"]) {
   return [list, detail];
 }
 
+const briefingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/briefing",
+  component: BriefingPage,
+});
+
+const briefingSlugRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/briefing/$slug",
+  component: function BriefingSlug() {
+    const { slug } = briefingSlugRoute.useParams();
+    return <ItemPage slug={slug} />;
+  },
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   ...section("/news", "news"),
@@ -43,7 +59,8 @@ const routeTree = rootRoute.addChildren([
   ...section("/voices", "voice"),
   ...section("/policy", "policy"),
   ...section("/ai", "ai"),
-  ...section("/briefing", "briefing"),
+  briefingRoute,
+  briefingSlugRoute,
 ]);
 
 export const router = createRouter({ routeTree });
