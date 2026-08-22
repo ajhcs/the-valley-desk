@@ -58,7 +58,7 @@
       "policy"
     ],
     "orgs": [
-      "NJ DOH"
+      "org-nj-doh"
     ],
     "region": "NJ",
     "authors": [
@@ -217,7 +217,7 @@
       "documentation"
     ],
     "orgs": [
-      "PA DOH"
+      "org-pa-doh"
     ],
     "region": "PA",
     "authors": [
