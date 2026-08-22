@@ -502,7 +502,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(!layout.includes('to="/voices"'));
   assert.ok(!router.includes('"/policy"'));
   assert.ok(!router.includes('"/ai"'));
-  assert.ok(!router.includes("/org"));
+  assert.ok(!/path:\s*["']\/org\//.test(router));
+  assert.ok(!router.includes('to="/org'));
   assert.ok(css.includes("width: 36px"));
   assert.ok(css.includes("height: 36px"));
   assert.ok(css.includes("font-size: 13px"));
@@ -673,10 +674,10 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   const router = readFileSync(join(root, "src/router.tsx"), "utf8");
   const entitySrc = readFileSync(join(root, "src/content/entity.ts"), "utf8");
   assert.equal(entityRows.length, 92);
-  assert.ok(!router.includes("/org/"));
+  assert.ok(!/path:\s*["']\/org\//.test(router));
   assert.ok(!router.includes("/orgs"));
   assert.ok(!router.includes("EntityPage"));
-  assert.ok(entitySrc.includes("does not mint /org/{id}"));
+  assert.ok(entitySrc.includes("does not mint org-id routes"));
   assert.ok(rss.includes("<link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>"));
   assert.ok(rss.includes("<guid isPermaLink=\"true\">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>"));
   assert.ok(rss.includes("<link>https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</link>"));

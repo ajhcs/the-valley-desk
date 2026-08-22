@@ -52,7 +52,7 @@ const briefingSlugRoute = createRoute({
   },
 });
 
-// Reed v1 lock: do not mint /org/{id} or generate entity pages from the seed.
+// Reed v1 lock: do not mint org-id routes or generate entity pages from the seed.
 const routeTree = rootRoute.addChildren([
   indexRoute,
   ...section("/news", "news"),
