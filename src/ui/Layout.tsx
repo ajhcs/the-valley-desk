@@ -15,20 +15,16 @@ export function Layout() {
     <div className="min-h-screen">
       <header className="border-b" style={{ borderColor: "var(--ink)" }}>
         <div className="mx-auto max-w-5xl px-4 py-4 flex items-center gap-3">
-          <div
-            aria-hidden="true"
-            className="h-10 w-10 shrink-0 border"
-            style={{ borderColor: "var(--ink)" }}
-            title="Logo slot"
-          />
-          <div>
-            <p className="text-xl font-semibold" style={{ color: "var(--ink)" }}>
-              The Valley Desk
-            </p>
-            <p className="text-xs" style={{ color: "var(--text)" }}>
-              Local health-tech news for people and agents
-            </p>
-          </div>
+          <Link to="/" className="shrink-0" aria-label="The Valley Desk home">
+            <img
+              src="/header-lockup.svg"
+              alt="The Valley Desk"
+              className="h-10 w-auto"
+            />
+          </Link>
+          <p className="text-xs hidden sm:block" style={{ color: "var(--text)" }}>
+            Local health-tech news for people and agents
+          </p>
           <a
             href="/feed.json"
             className="ml-auto text-xs underline"
