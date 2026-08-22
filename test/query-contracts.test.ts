@@ -92,6 +92,9 @@ test("leadItem is undefined when no featured news — does not fall back", () =>
 test("leadItem ignores featured events, policy, and news without impactSentence", () => {
   const event = EventItem.parse({
     ...base,
+    id: "evt-featured",
+    slug: "evt-featured",
+    title: "Featured event",
     kind: "event",
     status: "published",
     publishedAt: "2026-08-22T12:00:00.000Z",
@@ -104,6 +107,9 @@ test("leadItem ignores featured events, policy, and news without impactSentence"
   });
   const policy = ContentItem.parse({
     ...base,
+    id: "pol-featured",
+    slug: "pol-featured",
+    title: "Featured policy",
     kind: "policy",
     status: "published",
     publishedAt: "2026-08-22T12:00:00.000Z",
@@ -159,6 +165,9 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
 test("latestNews bounces empty orgs, review, interview, and Crozer-only orgs", () => {
   const nationalAi = ContentItem.parse({
     ...base,
+    id: "ai-national",
+    slug: "ai-national",
+    title: "National AI",
     kind: "ai",
     status: "published",
     publishedAt: "2026-08-22T15:00:00.000Z",
@@ -182,6 +191,9 @@ test("latestNews bounces empty orgs, review, interview, and Crozer-only orgs", (
   });
   const interview = ContentItem.parse({
     ...base,
+    id: "int-published",
+    slug: "int-published",
+    title: "Interview",
     kind: "interview",
     status: "published",
     publishedAt: "2026-08-22T16:00:00.000Z",
@@ -202,6 +214,9 @@ test("upcomingEvents is published events with startsAt >= now and never reads cl
   const now = new Date("2026-08-22T20:00:00.000Z");
   const past = EventItem.parse({
     ...base,
+    id: "evt-past",
+    slug: "evt-past",
+    title: "Past",
     kind: "event",
     status: "published",
     startsAt: "2026-08-01T12:00:00.000Z",
@@ -212,6 +227,9 @@ test("upcomingEvents is published events with startsAt >= now and never reads cl
   });
   const queued = EventItem.parse({
     ...base,
+    id: "evt-queued",
+    slug: "evt-queued",
+    title: "Queued",
     kind: "event",
     status: "review",
     startsAt: "2026-09-01T12:00:00.000Z",
@@ -228,6 +246,9 @@ test("upcomingEvents is published events with startsAt >= now and never reads cl
   });
   const future = EventItem.parse({
     ...base,
+    id: "evt-future",
+    slug: "evt-future",
+    title: "Future",
     kind: "event",
     status: "published",
     startsAt: "2026-09-17T21:00:00.000Z",
@@ -290,6 +311,9 @@ test("briefingSinceYesterday5pmET includes review, sorts clockAt else publishedA
 test("clockAt is NewsItem-only; EventItem parse strips it", () => {
   const parsed = EventItem.parse({
     ...base,
+    id: "evt-clock",
+    slug: "evt-clock",
+    title: "Not a clock",
     kind: "event",
     status: "published",
     startsAt: "2026-09-01T12:00:00.000Z",
