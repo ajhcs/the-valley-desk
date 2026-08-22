@@ -1,11 +1,13 @@
 import type { ContentItem } from "../content/schema";
 
+import { canonicalPath } from "./canonical";
+
 export const KIND_PATH: Record<ContentItem["kind"], string> = {
   news: "/news",
   event: "/events",
   voice: "/voices",
-  policy: "/policy",
-  ai: "/ai",
+  policy: "/news",
+  ai: "/news",
   briefing: "/briefing",
   interview: "/news",
 }
@@ -21,5 +23,5 @@ export const KIND_LABEL: Record<ContentItem["kind"], string> = {
 }
 
 export function itemHref(item: ContentItem) {
-  return KIND_PATH[item.kind] + "/" + item.slug;
+  return canonicalPath(item);
 }

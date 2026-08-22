@@ -4,7 +4,7 @@ import type { EventItem } from "../content/schema";
 import { catalog } from "../lib/catalog";
 import { formatDate, formatWhen, sourceLine } from "../lib/format";
 import { KIND_LABEL, KIND_PATH } from "../lib/kind";
-import { EventJsonLd } from "./EventJsonLd";
+import { ItemJsonLd } from "./ItemJsonLd";
 
 export function ItemPage({ slug }: { slug: string }) {
   const item = bySlug(catalog, slug);
@@ -15,7 +15,7 @@ export function ItemPage({ slug }: { slug: string }) {
   const when = item.kind === "event" ? formatWhen((item as EventItem).startsAt) : formatDate(item.publishedAt);
   return (
     <article>
-      <EventJsonLd item={item} />
+      <ItemJsonLd item={item} />
       <p className="text-xs tracking-wide uppercase" style={{ color: accent }}>
         <Link to={KIND_PATH[item.kind]} className="hover:underline">{KIND_LABEL[item.kind]}</Link>
         {" · "}

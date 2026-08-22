@@ -4,7 +4,7 @@ import { formatDate, formatWhen, sourceLine } from "../lib/format";
 import { itemHref } from "../lib/kind";
 import { eventRegisterUrl } from "../lib/register";
 import { RegisterLink } from "./RegisterLink";
-import { EventJsonLd } from "./EventJsonLd";
+import { ItemJsonLd } from "./ItemJsonLd";
 
 export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "events" }) {
   const meta = item.kind === "event" ? formatWhen((item as EventItem).startsAt) : formatDate(item.publishedAt);
@@ -12,7 +12,7 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
   const accent = rail === "events" ? "var(--events)" : "var(--ink)";
   return (
     <article className="border-t py-3" style={{ borderColor: accent }}>
-      {rail === "events" ? <EventJsonLd item={item} /> : null}
+      <ItemJsonLd item={item} />
       <p className="text-xs tracking-wide uppercase" style={{ color: accent }}>
         {item.region}
         {place ? " · " + place : ""}

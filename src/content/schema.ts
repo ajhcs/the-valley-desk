@@ -154,9 +154,18 @@ export function canPublish(item: {
   kind: string;
   status: string;
   impactSentence?: string;
+  partner?: string;
+  registrationUrl?: string;
 }): boolean {
   if (item.status !== "published") return false;
   if (needsImpactSentence(item.kind) && !item.impactSentence?.trim()) return false;
+  if (
+    item.kind === "event" &&
+    (item.partner === "dvhimss" || item.partner === "njhimss") &&
+    !item.registrationUrl
+  ) {
+    return false;
+  }
   return true;
 }
 
@@ -181,6 +190,18 @@ export const ContentItem = ContentItemUnion.superRefine((item, ctx) => {
       code: z.ZodIssueCode.custom,
       path: ["annotations"],
       message: "annotations are only allowed on published desk rows and the featured lead",
+    });
+  }
+  if (
+    item.status === "published" &&
+    item.kind === "event" &&
+    (item.partner === "dvhimss" || item.partner === "njhimss") &&
+    !item.registrationUrl
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["registrationUrl"],
+      message: "registrationUrl is required to publish dvhimss or njhimss events",
     });
   }
 });

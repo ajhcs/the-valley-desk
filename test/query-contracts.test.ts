@@ -20,13 +20,15 @@ import {
   EventItem,
   NewsItem,
   setFeaturedNews,
+  canPublish,
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { rssItemToContent } from "../src/ingest/rss.ts";
 import { CLOSED_LIVE_SEED_IDS, hasLiveSeedOrg, liveSeedOrgIds } from "../src/content/seed.ts";
 import { eventRegisterUrl } from "../src/lib/register.ts";
-import { eventJsonLd } from "../src/content/event-jsonld.ts";
+import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
+import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -514,7 +516,8 @@ test("event JSON-LD is published EventItem only; offers.url is registrationUrl",
   assert.equal(ld?.name, fall.title);
   assert.equal(ld?.startDate, fall.kind === "event" ? fall.startsAt : undefined);
   assert.deepEqual((ld?.offers as { url?: string } | undefined)?.url, "https://njdvhimssevent.com/");
-  assert.equal((ld?.organizer as { identifier: string }[])[0]?.identifier, "org-dvhimss");
+  assert.equal((ld?.organizer as { name?: string }).name, "DVHIMSS");
+  assert.equal(ld?.url, "https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th");
   const noOffer = eventJsonLd(jefferson);
   assert.equal(noOffer?.["@type"], "Event");
   assert.equal(noOffer?.offers, undefined);
@@ -543,4 +546,65 @@ test("feed.json projection keeps registrationUrl on published events", () => {
   assert.equal(fall && fall.kind === "event" ? fall.registrationUrl : undefined, "https://njdvhimssevent.com/");
   assert.ok(feed.items.every((i) => i.status === "published"));
   assert.ok(!feed.items.some((i) => i.status === "review"));
+});
+
+test("canonical helper: news family under /news, events under /events", () => {
+  assert.equal(canonicalPath({ kind: "news", slug: "penn-in-house-ai-scribe" }), "/news/penn-in-house-ai-scribe");
+  assert.equal(canonicalPath({ kind: "policy", slug: "pa-doh-telehealth-guidance-2026" }), "/news/pa-doh-telehealth-guidance-2026");
+  assert.equal(canonicalPath({ kind: "ai", slug: "epic-ambient-listening-note" }), "/news/epic-ambient-listening-note");
+  assert.equal(canonicalPath({ kind: "interview", slug: "x" }), "/news/x");
+  assert.equal(canonicalUrl({ kind: "event", slug: "dvhimss-september-networking" }), "https://thevalleydesk.org/events/dvhimss-september-networking");
+});
+
+test("NewsArticle JSON-LD uses envelope fields and canonical url", () => {
+  const penn = catalog.find((i) => i.id === "news-penn-ai-scribe")!;
+  const ld = itemJsonLd(penn, []);
+  assert.equal(ld?.["@type"], "NewsArticle");
+  assert.equal(ld?.headline, penn.title);
+  assert.equal(ld?.description, penn.impactSentence);
+  assert.equal(ld?.url, "https://thevalleydesk.org/news/penn-in-house-ai-scribe");
+  assert.equal(ld?.mainEntityOfPage, ld?.url);
+  assert.equal(ld?.isBasedOn, penn.source.url);
+  assert.equal(ld?.isAccessibleForFree, true);
+  assert.equal((ld?.publisher as { name?: string }).name, "The Valley Desk");
+  assert.ok(!JSON.stringify(ld).includes("sourceName"));
+  assert.ok(!JSON.stringify(ld).includes("freshnessClass"));
+  assert.ok(!JSON.stringify(ld).includes("FAQPage"));
+});
+
+test("dvhimss/njhimss cannot publish without registrationUrl", () => {
+  const raw = {
+    ...base,
+    id: "evt-no-reg",
+    slug: "evt-no-reg",
+    title: "No register",
+    kind: "event",
+    status: "published",
+    startsAt: "2026-09-01T12:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    partner: "dvhimss",
+    orgs: ["org-dvhimss"],
+  };
+  assert.equal(canPublish({ kind: "event", status: "published", partner: "dvhimss" }), false);
+  assert.throws(() => ContentItem.parse(raw));
+});
+
+test("RSS link/guid are canonical; sitemap lists home news events feeds and permalinks", () => {
+  const rss = readFileSync(join(root, "public/feed.xml"), "utf8");
+  const sitemap = readFileSync(join(root, "public/sitemap.xml"), "utf8");
+  const build = readFileSync(join(root, "scripts/build-feed.mjs"), "utf8");
+  assert.ok(rss.includes("<link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>"));
+  assert.ok(rss.includes("<guid isPermaLink=\"true\">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>"));
+  assert.ok(rss.includes("<link>https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</link>"));
+  assert.ok(!rss.includes("https://www.inquirer.com/health/penn-jefferson-artificial-intelligence-health-20251110.html"));
+  assert.ok(build.includes("canonicalUrl(item)"));
+  assert.ok(!build.includes("citations?.[0]"));
+  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/</loc>"));
+  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/news</loc>"));
+  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/events</loc>"));
+  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/feed.json</loc>"));
+  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/feed.xml</loc>"));
+  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/news/penn-in-house-ai-scribe</loc>"));
+  assert.ok(!sitemap.includes("/orgs/"));
 });
