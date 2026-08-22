@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
+html, body, #root { min-height: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
+}
