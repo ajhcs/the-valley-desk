@@ -1,1 +1,19 @@
-PLACEHOLDER_QUEUE
+{
+  "fetchedAt": "2026-08-22T20:32:07.949Z",
+  "events": {
+    "notes": [
+      {"url": "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=20", "status": 200},
+      {"url": "https://dvhimss.org/events/", "status": 200},
+      {"url": "https://dvhimss.org/events-calendar", "status": 200},
+      {"url": "https://njdvhimssevent.com/", "status": 200}
+    ],
+    "count": 6
+  },
+  "working": [
+    {"name": "Inquirer Health", "url": "https://www.inquirer.com/arc/outboundfeeds/rss/category/health/?outputType=xml", "status": 200, "count": 6},
+    {"name": "Inquirer Business", "url": "https://www.inquirer.com/arc/outboundfeeds/rss/category/business/?outputType=xml", "status": 200, "count": 14},
+    {"name": "WHYY", "url": "https://whyy.org/feed/", "status": 200, "count": 20}
+  ],
+  "itemCount": 46,
+  "note": "Full items live at local /workspace/the-valley-desk/data/review-queue.json — MCP payload limit blocked inlining 62KB. Re-push required."
+}
