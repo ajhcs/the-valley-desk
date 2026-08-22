@@ -87,7 +87,7 @@
     ],
     "parentId": "org-penn",
     "geo": "Doylestown, PA",
-    "role": "hospital \u2014 Penn news 2025-04-01, not on live locations directory"
+    "role": "hospital \\u2014 Penn news 2025-04-01, not on live locations directory"
   },
   {
     "id": "org-hsx",
@@ -164,12 +164,140 @@
     "kind": "system",
     "name": "Jefferson Health",
     "aliases": [
+      "Jefferson Health",
       "Jefferson",
-      "Thomas Jefferson University Hospital",
-      "Jefferson Health"
+      "Thomas Jefferson University and Jefferson Health",
+      "Lehigh Valley Health Network",
+      "Einstein Healthcare Network"
     ],
     "geo": "Philadelphia, PA",
     "role": "academic medical system"
+  },
+  {
+    "id": "org-jefferson-tju",
+    "kind": "hospital",
+    "name": "Thomas Jefferson University Hospital",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-neuroscience",
+    "kind": "hospital",
+    "name": "Jefferson Hospital for Neuroscience",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-methodist",
+    "kind": "hospital",
+    "name": "Jefferson Methodist",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-einstein-phila",
+    "kind": "hospital",
+    "name": "Jefferson Einstein Philadelphia",
+    "aliases": [
+      "Einstein Philadelphia"
+    ],
+    "parentId": "org-jefferson",
+    "role": "hospital \\u2014 Einstein MyChart clock 2026-09-26"
+  },
+  {
+    "id": "org-jefferson-einstein-montgomery",
+    "kind": "hospital",
+    "name": "Jefferson Einstein Montgomery",
+    "aliases": [
+      "Einstein Montgomery"
+    ],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-abington",
+    "kind": "hospital",
+    "name": "Jefferson Abington",
+    "aliases": [
+      "Abington Hospital"
+    ],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-lansdale",
+    "kind": "hospital",
+    "name": "Jefferson Lansdale",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-bucks",
+    "kind": "hospital",
+    "name": "Jefferson Bucks",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-frankford",
+    "kind": "hospital",
+    "name": "Jefferson Frankford",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-torresdale",
+    "kind": "hospital",
+    "name": "Jefferson Torresdale",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-moss-magee-cc",
+    "kind": "hospital",
+    "name": "Jefferson Moss-Magee Rehabilitation Center City",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-moss-magee-elkins",
+    "kind": "hospital",
+    "name": "Jefferson Moss-Magee Rehabilitation Elkins Park",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-cherry-hill",
+    "kind": "hospital",
+    "name": "Jefferson Cherry Hill",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-stratford",
+    "kind": "hospital",
+    "name": "Jefferson Stratford",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
+  },
+  {
+    "id": "org-jefferson-washington-twp",
+    "kind": "hospital",
+    "name": "Jefferson Washington Township",
+    "aliases": [],
+    "parentId": "org-jefferson",
+    "role": "hospital"
   },
   {
     "id": "org-main-line",
@@ -326,25 +454,37 @@
     "id": "org-pa-doh",
     "kind": "association",
     "name": "Pennsylvania Department of Health",
-    "aliases": [],
+    "aliases": [
+      "Pennsylvania Department of Health (DOH)",
+      "Department of Health (DOH)",
+      "PA Department of Health"
+    ],
     "geo": "PA",
     "role": "state health department",
-    "url": "https://www.health.pa.gov/"
+    "url": "https://www.pa.gov/agencies/health"
   },
   {
     "id": "org-nj-doh",
     "kind": "association",
     "name": "New Jersey Department of Health",
-    "aliases": [],
+    "aliases": [
+      "NJDOH",
+      "New Jersey Department of Health",
+      "Department of Health for the State of New Jersey"
+    ],
     "geo": "NJ",
     "role": "state health department",
-    "url": "https://www.nj.gov/health/"
+    "url": "https://www.nj.gov/health"
   },
   {
     "id": "org-de-dhss",
     "kind": "association",
     "name": "Delaware Department of Health and Social Services",
-    "aliases": [],
+    "aliases": [
+      "DHSS",
+      "Department of Health and Social Services (DHSS)",
+      "Delaware Health and Social Services"
+    ],
     "geo": "DE",
     "role": "state health department",
     "url": "https://dhss.delaware.gov/"
