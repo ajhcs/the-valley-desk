@@ -543,8 +543,23 @@ test("nextChapterEvent prefers a conference in window over mixer/golf and pins t
   assert.equal(chapter?.id, "evt-dvhimss-22958");
   assert.equal(chapter?.partner, "dvhimss");
   assert.equal(eventRegisterUrl(chapter!), "https://njdvhimssevent.com/");
+  assert.ok(chapter?.registrationUrl);
   const mixerOnly = catalog.filter((i) => i.id === "evt-01");
   assert.equal(nextChapterEvent(mixerOnly, now)?.id, "evt-01");
+  const missingRegister = EventItem.parse({
+    ...base,
+    id: "evt-no-pin",
+    slug: "evt-no-pin",
+    title: "Chapter without register",
+    kind: "event",
+    status: "published",
+    startsAt: "2026-09-02T12:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    partner: "dvhimss",
+    orgs: ["org-dvhimss"],
+  });
+  assert.equal(nextChapterEvent([missingRegister], now), undefined);
   const pinned = pinnedUpcomingEvents(catalog, now, 6);
   assert.equal(pinned[0]?.id, chapter?.id);
   assert.equal(pinned.filter((i) => i.id === chapter?.id).length, 1);

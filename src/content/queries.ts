@@ -46,7 +46,8 @@ function isChapterConference(item: EventItem) {
   return /conference/i.test(`${item.title} ${item.slug}`);
 }
 
-/** Soonest published chapter event. Conference in window beats mixer/golf/Phillies. */
+/** Soonest published chapter event. Conference in window beats mixer/golf/Phillies.
+ *  dvhimss|njhimss cannot publish without registrationUrl, so the pin always has Register. */
 export function nextChapterEvent(items: ContentItem[], now = new Date()): EventItem | undefined {
   const iso = now.toISOString();
   const chapter = items
@@ -55,7 +56,8 @@ export function nextChapterEvent(items: ContentItem[], now = new Date()): EventI
         i.kind === "event" &&
         i.status === "published" &&
         i.startsAt >= iso &&
-        CHAPTER_PARTNERS.has(i.partner),
+        CHAPTER_PARTNERS.has(i.partner) &&
+        Boolean(i.registrationUrl),
     )
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
   const conference = chapter.find(isChapterConference);
