@@ -1,17 +1,1 @@
-[
-  {
-    "id": "org-penn",
-    "kind": "system",
-    "name": "Penn Medicine",
-    "aliases": [
-      "Penn",
-      "UPHS",
-      "University of Pennsylvania Health System",
-      "Penn Medicine",
-      "Penn Chart",
-      "PennChart"
-    ],
-    "geo": "Philadelphia, PA",
-    "role": "academic medical system"
-  }
-]
+[{"id":"org-penn","kind":"system","name":"Penn Medicine","aliases":["Penn","UPHS","University of Pennsylvania Health System","Penn Medicine","Penn Chart","PennChart"],"geo":"Philadelphia, PA","role":"academic medical system"}]
