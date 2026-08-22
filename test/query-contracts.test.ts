@@ -29,10 +29,13 @@ import { eventRegisterUrl } from "../src/lib/register.ts";
 import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
 import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
+import { formatChipLabel, formatLeadDate } from "../src/lib/format.ts";
+import { Entity } from "../src/content/entity.ts";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const entities = require("../fixtures/entities.json") as { id: string }[];
+const entityRows = Entity.array().parse(JSON.parse(readFileSync(join(root, "fixtures/entities.json"), "utf8")));
 const catalog = ContentCatalog.parse(JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8")));
 const seedIds = liveSeedOrgIds(entities);
 
@@ -272,7 +275,7 @@ test("upcomingEvents is published events with startsAt >= now and never reads cl
   assert.ok(!("clockAt" in (rows[0] ?? {})));
 });
 
-test("briefingSinceYesterday5pmET is published only; overlap first, then publishedAt — never clockAt", () => {
+test("briefingSinceYesterday5pmET may include review/QUEUED; overlap first, then publishedAt — never clockAt", () => {
   const now = new Date("2026-08-22T20:00:00.000Z");
   const clock = news({
     id: "clock",
@@ -319,9 +322,9 @@ test("briefingSinceYesterday5pmET is published only; overlap first, then publish
   const desk = briefingSinceYesterday5pmET([clock, sharedOlder, sharedNewer, sharedReview, draft], now);
   assert.deepEqual(
     desk.map((i) => i.id),
-    ["shared-newer", "shared-older", "clock"],
+    ["shared-newer", "shared-review", "shared-older", "clock"],
   );
-  assert.ok(!desk.some((i) => i.status === "review"));
+  assert.ok(desk.some((i) => i.status === "review"));
   assert.ok(!desk.some((i) => i.id === "draft"));
   const src = readFileSync(join(root, "src/content/queries.ts"), "utf8");
   const deskFn = src.slice(
@@ -457,6 +460,13 @@ test("homepage binds store queries and kit class names", () => {
   const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
   const briefing = readFileSync(join(root, "src/ui/BriefingPage.tsx"), "utf8");
   const eventsPage = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
+  const lead = readFileSync(join(root, "src/ui/home/Lead.tsx"), "utf8");
+  const desk = readFileSync(join(root, "src/ui/home/Desk.tsx"), "utf8");
+  const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
+  const footer = readFileSync(join(root, "src/ui/home/SiteFooter.tsx"), "utf8");
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  const tokens = readFileSync(join(root, "src/styles/tokens.css"), "utf8");
+  const router = readFileSync(join(root, "src/router.tsx"), "utf8");
   assert.ok(home.includes("leadItem"));
   assert.ok(home.includes("briefingSinceYesterday5pmET"));
   assert.ok(home.includes("latestNews"));
@@ -465,15 +475,46 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(!home.includes("briefing[0]"));
   assert.ok(!home.includes("subscribe"));
   assert.ok(!home.includes("deskClocks"));
+  assert.ok(!home.includes("homepage-10"));
   assert.ok(!home.toLowerCase().includes("himss seal"));
   assert.ok(home.includes("NEWS · LATEST"));
   assert.ok(home.includes("EVENTS · NEXT"));
+  assert.ok(lead.includes("THE DESK"));
+  assert.ok(lead.includes("Lead-headline"));
+  assert.ok(lead.includes("Impact:"));
+  assert.ok(desk.includes("DeskRow"));
+  assert.ok(desk.includes("QUEUED"));
+  assert.ok(desk.includes('ann="ask"'));
+  assert.ok(!desk.toLowerCase().includes("spill"));
+  assert.ok(rail.includes("RegisterLink"));
+  assert.ok(!rail.includes("queued"));
+  assert.ok(footer.includes("News"));
+  assert.ok(footer.includes("Events"));
+  assert.ok(footer.includes("feed.json"));
+  assert.ok(footer.includes("feed.xml"));
+  assert.ok(footer.includes("© The Valley Desk"));
+  assert.ok(!footer.toLowerCase().includes("subscribe"));
   assert.ok(layout.includes("MarkFold"));
   assert.ok(layout.includes("Wordmark"));
   assert.ok(layout.includes("NavLink"));
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
   assert.ok(!layout.includes('to="/voices"'));
+  assert.ok(!router.includes('"/policy"'));
+  assert.ok(!router.includes('"/ai"'));
+  assert.ok(!router.includes("/org"));
+  assert.ok(css.includes("width: 36px"));
+  assert.ok(css.includes("height: 36px"));
+  assert.ok(css.includes("font-size: 13px"));
+  assert.ok(css.includes("font-weight: 600"));
+  assert.ok(tokens.includes("#FFFFFF"));
+  assert.ok(tokens.includes("#21145F"));
+  assert.ok(tokens.includes("#1E22AA"));
+  assert.ok(tokens.includes("#54C0E8"));
+  assert.ok(tokens.includes("#CA8504"));
+  assert.ok(tokens.includes("#101828"));
+  assert.ok(tokens.includes("#475467"));
+  assert.ok(tokens.includes("#E6E8EE"));
   assert.ok(briefing.includes("Ranked by org and topic overlap, not recency."));
   assert.ok(briefing.includes("Nothing published in this window yet."));
 });
@@ -495,14 +536,19 @@ test("Register uses registrationUrl only; locked DVHIMSS URLs unchanged", () => 
   assert.ok(!src.includes("source."));
 });
 
-test("nextChapterEvent is soonest published dvhimss/njhimss and pins the events rail", () => {
+test("nextChapterEvent prefers a conference in window over mixer/golf and pins the events rail", () => {
   const now = new Date("2026-08-22T20:00:00.000Z");
   const chapter = nextChapterEvent(catalog, now);
-  assert.equal(chapter?.id, "evt-01");
+  assert.equal(chapter?.id, "evt-dvhimss-22958");
   assert.equal(chapter?.partner, "dvhimss");
+  assert.equal(eventRegisterUrl(chapter!), "https://njdvhimssevent.com/");
+  const mixerOnly = catalog.filter((i) => i.id === "evt-01");
+  assert.equal(nextChapterEvent(mixerOnly, now)?.id, "evt-01");
   const pinned = pinnedUpcomingEvents(catalog, now, 6);
   assert.equal(pinned[0]?.id, chapter?.id);
   assert.equal(pinned.filter((i) => i.id === chapter?.id).length, 1);
+  assert.ok(pinned.some((i) => i.id === "evt-01"));
+  assert.ok(pinned.some((i) => i.id === "evt-02"));
   assert.ok(pinned.every((i) => i.kind === "event" && i.status === "published"));
   assert.ok(pinned.every((i) => i.startsAt >= now.toISOString()));
 });
@@ -511,16 +557,25 @@ test("event JSON-LD is published EventItem only; offers.url is registrationUrl",
   const fall = catalog.find((i) => i.id === "evt-dvhimss-22958")!;
   const jefferson = catalog.find((i) => i.id === "evt-02")!;
   const news = catalog.find((i) => i.id === "news-penn-ai-scribe")!;
-  const ld = eventJsonLd(fall);
+  const ld = eventJsonLd(fall, entityRows);
   assert.equal(ld?.["@type"], "Event");
   assert.equal(ld?.name, fall.title);
   assert.equal(ld?.startDate, fall.kind === "event" ? fall.startsAt : undefined);
-  assert.deepEqual((ld?.offers as { url?: string } | undefined)?.url, "https://njdvhimssevent.com/");
-  assert.equal((ld?.organizer as { name?: string }).name, "DVHIMSS");
+  assert.equal(ld?.endDate, fall.kind === "event" ? fall.endsAt : undefined);
+  assert.equal(ld?.eventTimezone, "America/New_York");
+  assert.deepEqual((ld?.offers as { url?: string; price?: string } | undefined)?.url, "https://njdvhimssevent.com/");
+  assert.equal((ld?.offers as { price?: string } | undefined)?.price, undefined);
+  assert.equal((ld?.organizer as { name?: string; identifier?: string }).name, "DVHIMSS");
+  assert.equal((ld?.organizer as { identifier?: string }).identifier, "org-dvhimss");
   assert.equal(ld?.url, "https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th");
-  const noOffer = eventJsonLd(jefferson);
+  assert.equal(ld?.mainEntityOfPage, ld?.url);
+  assert.equal((ld?.about as { identifier?: string }[])[0]?.identifier, "org-dvhimss");
+  assert.ok(!Object.prototype.hasOwnProperty.call(ld, "image"));
+  assert.ok(!JSON.stringify(ld).includes("Offer.price"));
+  const noOffer = eventJsonLd(jefferson, entityRows);
   assert.equal(noOffer?.["@type"], "Event");
   assert.equal(noOffer?.offers, undefined);
+  assert.equal(noOffer?.endDate, undefined);
   assert.equal(eventJsonLd(news), undefined);
   const review = EventItem.parse({
     ...base,
@@ -558,7 +613,7 @@ test("canonical helper: news family under /news, events under /events", () => {
 
 test("NewsArticle JSON-LD uses envelope fields and canonical url", () => {
   const penn = catalog.find((i) => i.id === "news-penn-ai-scribe")!;
-  const ld = itemJsonLd(penn, []);
+  const ld = itemJsonLd(penn, entityRows);
   assert.equal(ld?.["@type"], "NewsArticle");
   assert.equal(ld?.headline, penn.title);
   assert.equal(ld?.description, penn.impactSentence);
@@ -567,9 +622,13 @@ test("NewsArticle JSON-LD uses envelope fields and canonical url", () => {
   assert.equal(ld?.isBasedOn, penn.source.url);
   assert.equal(ld?.isAccessibleForFree, true);
   assert.equal((ld?.publisher as { name?: string }).name, "The Valley Desk");
+  assert.equal((ld?.about as { identifier?: string; name?: string }[])[0]?.identifier, "org-penn");
+  assert.equal((ld?.about as { name?: string }[])[0]?.name, "Penn Medicine");
   assert.ok(!JSON.stringify(ld).includes("sourceName"));
   assert.ok(!JSON.stringify(ld).includes("freshnessClass"));
   assert.ok(!JSON.stringify(ld).includes("FAQPage"));
+  assert.ok(!JSON.stringify(ld).includes("HowTo"));
+  assert.ok(!JSON.stringify(ld).includes("BreadcrumbList"));
 });
 
 test("dvhimss/njhimss cannot publish without registrationUrl", () => {
@@ -587,7 +646,21 @@ test("dvhimss/njhimss cannot publish without registrationUrl", () => {
     orgs: ["org-dvhimss"],
   };
   assert.equal(canPublish({ kind: "event", status: "published", partner: "dvhimss" }), false);
+  assert.equal(canPublish({ kind: "event", status: "published", partner: "njhimss" }), false);
+  assert.equal(
+    canPublish({ kind: "event", status: "published", partner: "health-system" }),
+    true,
+  );
   assert.throws(() => ContentItem.parse(raw));
+  assert.throws(() => ContentItem.parse({ ...raw, partner: "njhimss" }));
+});
+
+test("date chips use SEP 26 / OCT 13–15; lead date is 26 SEPTEMBER 2026", () => {
+  const einstein = catalog.find((i) => i.id === "news-jefferson-einstein-mychart")!;
+  const fall = catalog.find((i) => i.id === "evt-dvhimss-22958")!;
+  assert.equal(formatChipLabel(einstein), "SEP 26");
+  assert.equal(formatChipLabel(fall), "OCT 13–15");
+  assert.equal(formatLeadDate("2026-09-26T04:00:00.000Z"), "26 SEPTEMBER 2026");
 });
 
 test("RSS link/guid are canonical; sitemap lists home news events feeds and permalinks", () => {
@@ -607,4 +680,7 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/feed.xml</loc>"));
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/news/penn-in-house-ai-scribe</loc>"));
   assert.ok(!sitemap.includes("/orgs/"));
+  assert.ok(!sitemap.includes("/org/"));
+  assert.ok(!sitemap.includes("https://thevalleydesk.org/policy"));
+  assert.ok(!sitemap.includes("https://thevalleydesk.org/ai"));
 });

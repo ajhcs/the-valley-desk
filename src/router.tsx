@@ -57,8 +57,6 @@ const routeTree = rootRoute.addChildren([
   ...section("/news", "news"),
   ...section("/events", "event"),
   ...section("/voices", "voice"),
-  ...section("/policy", "policy"),
-  ...section("/ai", "ai"),
   briefingRoute,
   briefingSlugRoute,
 ]);

@@ -21,13 +21,24 @@ function aboutOrgs(orgs: string[], entities: Entity[]) {
   });
 }
 
+function organizationFromHost(hostOrg: string, entities: Entity[]) {
+  const hit = entityIndex(entities).match(hostOrg);
+  const doc: Record<string, unknown> = {
+    "@type": "Organization",
+    name: hit?.name ?? hostOrg,
+  };
+  if (hit?.id) doc.identifier = hit.id;
+  if (hit?.url) doc.url = hit.url;
+  return doc;
+}
+
 /** JSON-LD from the ContentItem envelope. No new fields. Never review. */
 export function itemJsonLd(
   item: ContentItem,
   entities: Entity[] = [],
 ): Record<string, unknown> | undefined {
   if (item.status !== "published") return undefined;
-  if (item.kind === "event") return eventJsonLd(item);
+  if (item.kind === "event") return eventJsonLd(item, entities);
   if (!NEWS_ARTICLE_KINDS.has(item.kind)) return undefined;
 
   const url = canonicalUrl(item);
@@ -52,8 +63,11 @@ export function itemJsonLd(
   return doc;
 }
 
-/** Published Event JSON-LD. organizer is hostOrg. url is canonical. */
-export function eventJsonLd(item: ContentItem): Record<string, unknown> | undefined {
+/** Published Event JSON-LD. organizer is hostOrg resolved to entity. orgs[] stay about[]. */
+export function eventJsonLd(
+  item: ContentItem,
+  entities: Entity[] = [],
+): Record<string, unknown> | undefined {
   if (item.kind !== "event" || item.status !== "published") return undefined;
   const event = item as EventItem;
   const place = [event.venue, event.city].filter(Boolean).join(", ");
@@ -64,8 +78,11 @@ export function eventJsonLd(item: ContentItem): Record<string, unknown> | undefi
     name: event.title,
     startDate: event.startsAt,
     description: event.impactSentence || event.dek,
-    organizer: { "@type": "Organization", name: event.hostOrg },
+    organizer: organizationFromHost(event.hostOrg, entities),
     url,
+    mainEntityOfPage: url,
+    eventTimezone: event.timezone,
+    about: aboutOrgs(event.orgs, entities),
   };
   if (event.endsAt) doc.endDate = event.endsAt;
   if (place) {

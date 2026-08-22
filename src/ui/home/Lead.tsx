@@ -1,25 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import type { NewsItem } from "../../content/schema";
 import { itemHref } from "../../lib/kind";
-import { DateChip } from "./DateChip";
-import { StatusChip } from "./StatusChip";
+import { chipInstant, formatLeadDate } from "../../lib/format";
 
 export function Lead({ item }: { item: NewsItem }) {
+  const when = formatLeadDate(chipInstant(item) ?? item.publishedAt);
+  const impact = item.impactSentence;
   return (
     <article className="lead Lead">
-      <p className="lead-kicker">Lead</p>
-      <h2>
+      <p className="lead-kicker Lead-kicker">{when ? `THE DESK · ${when}` : "THE DESK"}</p>
+      <h1 className="Lead-headline">
         <Link to={itemHref(item)}>{item.title}</Link>
-      </h2>
-      <p className="lead-dek">{item.impactSentence || item.dek}</p>
-      <div className="lead-meta">
-        <DateChip item={item} />
-        {item.annotations?.map((ann) => (
-          <StatusChip key={ann.type + ann.text} ann={ann.type}>
-            {ann.type}
-          </StatusChip>
-        ))}
-      </div>
+      </h1>
+      {impact ? <p className="Lead-impact">Impact: {impact}</p> : null}
     </article>
   );
 }

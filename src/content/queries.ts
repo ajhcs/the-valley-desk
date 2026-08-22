@@ -42,10 +42,14 @@ export function upcomingEvents(items: ContentItem[], now = new Date(), n = 6) {
 
 const CHAPTER_PARTNERS = new Set(["dvhimss", "njhimss"]);
 
-/** Soonest published chapter event. Does not invent URLs. Never reads clockAt. */
+function isChapterConference(item: EventItem) {
+  return /conference/i.test(`${item.title} ${item.slug}`);
+}
+
+/** Soonest published chapter event. Conference in window beats mixer/golf/Phillies. */
 export function nextChapterEvent(items: ContentItem[], now = new Date()): EventItem | undefined {
   const iso = now.toISOString();
-  return items
+  const chapter = items
     .filter(
       (i): i is EventItem =>
         i.kind === "event" &&
@@ -53,7 +57,9 @@ export function nextChapterEvent(items: ContentItem[], now = new Date()): EventI
         i.startsAt >= iso &&
         CHAPTER_PARTNERS.has(i.partner),
     )
-    .sort((a, b) => a.startsAt.localeCompare(b.startsAt))[0];
+    .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+  const conference = chapter.find(isChapterConference);
+  return conference ?? chapter[0];
 }
 
 /** nextChapterEvent first, then the rest of upcomingEvents, no duplicate. */
@@ -135,15 +141,15 @@ function recencyKey(item: ContentItem): string {
 }
 
 /**
- * Desk strip. Published items since yesterday 17:00 America/New_York.
+ * Desk strip. Published or review/QUEUED since yesterday 17:00 America/New_York.
  * Rank: org+topic overlap first, then recency (publishedAt/updatedAt).
- * clockAt is a date chip only — never the rank key. Review/QUEUED off.
+ * clockAt is a date chip only — never the rank key. Draft off.
  */
 export function briefingSinceYesterday5pmET(items: ContentItem[], now = new Date()) {
   const start = windowStartYesterday5pmET(now).getTime();
   const end = now.getTime();
   const windowItems = items.filter((item) => {
-    if (item.status !== "published") return false;
+    if (item.status !== "published" && item.status !== "review") return false;
     const t = Date.parse(recencyKey(item));
     return Number.isFinite(t) && t >= start && t <= end;
   });
