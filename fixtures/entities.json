@@ -3,7 +3,7 @@
     "id": "org-penn",
     "kind": "system",
     "name": "Penn Medicine",
-    "aliases": ["Penn", "UPHS", "University of Pennsylvania Health System", "Penn Medicine"],
+    "aliases": ["Penn", "UPHS", "University of Pennsylvania Health System", "Penn Medicine", "Penn Chart"],
     "geo": "Philadelphia, PA",
     "role": "academic medical system"
   },
@@ -88,11 +88,44 @@
     "role": "chapter"
   },
   {
-    "id": "org-njdvhimss",
+    "id": "org-njhimss",
     "kind": "association",
-    "name": "NJDVHIMSS",
-    "aliases": ["NJ/DVHIMSS", "NJ DVHIMSS", "NJDVHIMSS"],
+    "name": "NJHIMSS",
+    "aliases": ["NJ HIMSS", "New Jersey HIMSS", "NJDVHIMSS", "NJ/DVHIMSS", "NJ DVHIMSS"],
     "geo": "NJ",
     "role": "chapter"
+  },
+  {
+    "id": "org-hap",
+    "kind": "association",
+    "name": "HAP",
+    "aliases": ["Hospital and Healthsystem Association of Pennsylvania", "The Hospital and Healthsystem Association of Pennsylvania", "HAP"],
+    "geo": "PA",
+    "role": "state hospital association"
+  },
+  {
+    "id": "org-njha",
+    "kind": "association",
+    "name": "NJHA",
+    "aliases": ["New Jersey Hospital Association", "NJHA"],
+    "geo": "NJ",
+    "role": "state hospital association"
+  },
+  {
+    "id": "org-dha",
+    "kind": "association",
+    "name": "DHA",
+    "aliases": ["Delaware Healthcare Association", "DHA"],
+    "geo": "DE",
+    "role": "state hospital association"
+  },
+  {
+    "id": "person-cole-lyons",
+    "kind": "person",
+    "name": "Cole Lyons",
+    "aliases": ["Cole Lyons"],
+    "parentId": "org-dvhimss",
+    "geo": "regional",
+    "role": "chapter officer"
   }
 ]

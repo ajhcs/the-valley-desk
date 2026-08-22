@@ -1,13 +1,22 @@
 import { z } from "zod";
 
-/** Used to tag ingest and search. Never a publish trigger. */
+/** Reed lock. Tag ingest and search only. Never a publish trigger. */
 export const EntityKind = z.enum([
   "system",
   "hospital",
-  "clinic",
+  "medical-group",
   "person",
   "association",
 ]);
+
+/** Phila/Bucks/Montgomery/Chester/Delaware + NJ Camden/Burlington/Gloucester/Salem/Atlantic + DE New Castle.
+ *  WellSpan / St. Luke's / Geisinger / Hershey are edge only. */
+export const ENTITY_BOUNDARY = {
+  pa: ["Philadelphia", "Bucks", "Montgomery", "Chester", "Delaware"],
+  nj: ["Camden", "Burlington", "Gloucester", "Salem", "Atlantic"],
+  de: ["New Castle"],
+  edgeOnly: ["WellSpan", "St. Luke's", "Geisinger", "Hershey"],
+} as const;
 
 export const Entity = z.object({
   id: z.string(),
@@ -35,7 +44,6 @@ export function entityIndex(entities: Entity[]) {
     match(value: string) {
       return byAlias.get(value.toLowerCase());
     },
-    /** Map ContentItem.orgs[] (id or alias) to entity ids. Unmatched names stay as-is. */
     resolveOrgs(orgs: string[]) {
       return orgs.map((org) => byAlias.get(org.toLowerCase())?.id ?? org);
     },
