@@ -8,7 +8,6 @@ import { HomePage } from "./ui/HomePage";
 import { KindListPage } from "./ui/KindListPage";
 import { ItemPage } from "./ui/ItemPage";
 import { BriefingPage } from "./ui/BriefingPage";
-import type { ContentItem } from "./content/schema";
 
 const rootRoute = createRootRoute({
   component: Layout,
@@ -20,22 +19,75 @@ const indexRoute = createRoute({
   component: HomePage,
 });
 
-function section(path: string, kind: ContentItem["kind"]) {
-  const list = createRoute({
-    getParentRoute: () => rootRoute,
-    path,
-    component: () => <KindListPage kind={kind} />,
-  });
-  const detail = createRoute({
-    getParentRoute: () => rootRoute,
-    path: path + "/$slug",
-    component: function Detail() {
-      const { slug } = detail.useParams();
-      return <ItemPage slug={slug} />;
-    },
-  });
-  return [list, detail];
-}
+const newsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/news",
+  component: () => <KindListPage kind="news" />,
+});
+const newsSlugRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/news/$slug",
+  component: function NewsSlug() {
+    const { slug } = newsSlugRoute.useParams();
+    return <ItemPage slug={slug} />;
+  },
+});
+
+const eventsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/events",
+  component: () => <KindListPage kind="event" />,
+});
+const eventsSlugRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/events/$slug",
+  component: function EventsSlug() {
+    const { slug } = eventsSlugRoute.useParams();
+    return <ItemPage slug={slug} />;
+  },
+});
+
+const voicesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/voices",
+  component: () => <KindListPage kind="voice" />,
+});
+const voicesSlugRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/voices/$slug",
+  component: function VoicesSlug() {
+    const { slug } = voicesSlugRoute.useParams();
+    return <ItemPage slug={slug} />;
+  },
+});
+
+const policyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/policy",
+  component: () => <KindListPage kind="policy" />,
+});
+const policySlugRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/policy/$slug",
+  component: function PolicySlug() {
+    const { slug } = policySlugRoute.useParams();
+    return <ItemPage slug={slug} />;
+  },
+});
+
+const aiRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/ai",
+  component: () => <KindListPage kind="ai" />,
+});
+const aiSlugRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/ai/$slug",
+  component: function AiSlug() {
+    const { slug } = aiSlugRoute.useParams();
+    return <ItemPage slug={slug} />;
+  },
+});
 
 const briefingRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -54,11 +106,16 @@ const briefingSlugRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  ...section("/news", "news"),
-  ...section("/events", "event"),
-  ...section("/voices", "voice"),
-  ...section("/policy", "policy"),
-  ...section("/ai", "ai"),
+  newsRoute,
+  newsSlugRoute,
+  eventsRoute,
+  eventsSlugRoute,
+  voicesRoute,
+  voicesSlugRoute,
+  policyRoute,
+  policySlugRoute,
+  aiRoute,
+  aiSlugRoute,
   briefingRoute,
   briefingSlugRoute,
 ]);
