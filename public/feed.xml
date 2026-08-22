@@ -6,6 +6,20 @@
     <description>Local health-tech news for people and agents</description>
     <lastBuildDate>Sat, 22 Aug 2026 20:14:00 GMT</lastBuildDate>
     <item>
+      <title>Penn Medicine expands ambient scribe pilots across ambulatory</title>
+      <link>https://www.pennmedicine.org/news</link>
+      <guid isPermaLink="true">https://www.pennmedicine.org/news</guid>
+      <description>Penn ambient-scribe expansion is an ambulatory labor story, not a vendor launch.</description>
+      <pubDate>Thu, 20 Aug 2026 14:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>New Jersey flags hospital cyber readiness ahead of fall season</title>
+      <link>https://www.nj.gov/health/</link>
+      <guid isPermaLink="true">https://www.nj.gov/health/</guid>
+      <description>NJ's hospital cyber advisory lands on fall staffing and downtime drills across the river.</description>
+      <pubDate>Tue, 18 Aug 2026 11:00:00 GMT</pubDate>
+    </item>
+    <item>
       <title>DVHIMSS September networking reception</title>
       <link>https://dvhimss.org/events/</link>
       <guid isPermaLink="true">https://dvhimss.org/events/</guid>
@@ -13,11 +27,46 @@
       <pubDate>Sat, 01 Aug 2026 12:00:00 GMT</pubDate>
     </item>
     <item>
+      <title>Jefferson digital health forum</title>
+      <link>https://www.jeffersonhealth.org/</link>
+      <guid isPermaLink="true">https://www.jeffersonhealth.org/</guid>
+      <description>Partner event, review-queued in the stub path; published here so the rail has two dates.</description>
+      <pubDate>Mon, 10 Aug 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
       <title>A Delaware Valley CIO on why ambient AI is a workforce story</title>
       <link>https://www.linkedin.com/</link>
       <guid isPermaLink="true">https://www.linkedin.com/</guid>
       <description>Local executive post, ingested later via LinkedIn/X.</description>
       <pubDate>Wed, 19 Aug 2026 16:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>PA DOH updates telehealth documentation guidance</title>
+      <link>https://www.health.pa.gov/</link>
+      <guid isPermaLink="true">https://www.health.pa.gov/</guid>
+      <description>PA telehealth documentation guidance changes what clerks and CMIO shops have to capture on Sept 1.</description>
+      <pubDate>Wed, 12 Aug 2026 09:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Epic ships another ambient listening increment</title>
+      <link>https://www.epic.com/</link>
+      <guid isPermaLink="true">https://www.epic.com/</guid>
+      <description>Epic's ambient increment only matters here if a Valley system actually turns it on.</description>
+      <pubDate>Sat, 15 Aug 2026 13:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>NJDVHIMSS Annual Golf Outing</title>
+      <link>https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/</link>
+      <guid isPermaLink="true">https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/</guid>
+      <description>Official DVHIMSS chapter calendar.</description>
+      <pubDate>Tue, 13 Oct 2026 13:30:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>NJDVHIMSS Fall Conference – October 13th – 15th</title>
+      <link>https://dvhimss.org/events-calendar/njdvhimss-fall-converence/</link>
+      <guid isPermaLink="true">https://dvhimss.org/events-calendar/njdvhimss-fall-converence/</guid>
+      <description>Official DVHIMSS chapter calendar.</description>
+      <pubDate>Tue, 13 Oct 2026 20:30:00 GMT</pubDate>
     </item>
   </channel>
 </rss>
