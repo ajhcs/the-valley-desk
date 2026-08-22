@@ -6,3 +6,7 @@
   --text: #101828;
   --events: #CA8504;
 }
+
+/* News rails and chrome use --ink. Admiral is sparing, not a HIMSS wash. */
+/* Events rail uses --events gold so the two homepage rails scan. */
+/* Do not add brick, spa-teal, or any other brand tokens. */

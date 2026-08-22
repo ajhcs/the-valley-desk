@@ -3,7 +3,15 @@ import { z } from "zod";
 export const Region = z.enum(["PA", "NJ", "DE", "regional", "federal"]);
 export const Status = z.enum(["draft", "review", "published"]);
 export const SourceKind = z.enum(["editorial", "ingest"]);
-export const Kind = z.enum(["news", "event", "voice", "policy", "ai", "briefing", "interview"]);
+export const Kind = z.enum([
+  "news",
+  "event",
+  "voice",
+  "policy",
+  "ai",
+  "briefing",
+  "interview",
+]);
 
 export const Source = z.object({
   kind: SourceKind,
@@ -50,7 +58,13 @@ export const EventItem = Base.extend({
   city: z.string().optional(),
   hostOrg: z.string(),
   registrationUrl: z.string().url().optional(),
-  partner: z.enum(["dvhimss", "chapter", "health-system", "vendor", "other"]),
+  partner: z.enum([
+    "dvhimss",
+    "chapter",
+    "health-system",
+    "vendor",
+    "other",
+  ]),
   autoPublish: z.boolean().default(false),
 });
 
@@ -66,7 +80,14 @@ export const VoiceItem = Base.extend({
 export const PolicyItem = Base.extend({
   kind: z.literal("policy"),
   jurisdiction: Region,
-  issuer: z.enum(["CMS", "PA-DOH", "NJ-DOH", "DE-DHSS", "legislature", "other"]),
+  issuer: z.enum([
+    "CMS",
+    "PA-DOH",
+    "NJ-DOH",
+    "DE-DHSS",
+    "legislature",
+    "other",
+  ]),
   effectiveDate: z.string().optional(),
   changeType: z.enum(["rule", "guidance", "legislation", "enforcement"]),
 });
@@ -93,8 +114,20 @@ export const InterviewItem = Base.extend({
 });
 
 export const ContentItem = z.discriminatedUnion("kind", [
-  NewsItem, EventItem, VoiceItem, PolicyItem, AiItem, BriefingItem, InterviewItem,
+  NewsItem,
+  EventItem,
+  VoiceItem,
+  PolicyItem,
+  AiItem,
+  BriefingItem,
+  InterviewItem,
 ]);
 
 export type ContentItem = z.infer<typeof ContentItem>;
 export type EventItem = z.infer<typeof EventItem>;
+export type NewsItem = z.infer<typeof NewsItem>;
+export type VoiceItem = z.infer<typeof VoiceItem>;
+export type PolicyItem = z.infer<typeof PolicyItem>;
+export type AiItem = z.infer<typeof AiItem>;
+export type BriefingItem = z.infer<typeof BriefingItem>;
+export type InterviewItem = z.infer<typeof InterviewItem>;

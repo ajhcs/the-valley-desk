@@ -14,7 +14,9 @@ export function toReviewQueue(batch: IngestBatch): ContentItem[] {
     if (item.kind === "event" && item.autoPublish) {
       return { ...item, status: "published" as const };
     }
-    if (item.source.kind === "editorial") return item;
+    if (item.source.kind === "editorial") {
+      return item;
+    }
     return { ...item, status: "review" as const };
   });
 }
