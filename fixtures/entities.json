@@ -87,7 +87,7 @@
     ],
     "parentId": "org-penn",
     "geo": "Doylestown, PA",
-    "role": "hospital — Penn news 2025-04-01, not on live locations directory"
+    "role": "hospital \u2014 Penn news 2025-04-01, not on live locations directory"
   },
   {
     "id": "org-hsx",
@@ -205,7 +205,7 @@
       "Einstein Philadelphia"
     ],
     "parentId": "org-jefferson",
-    "role": "hospital — Einstein MyChart clock 2026-09-26"
+    "role": "hospital \u2014 Einstein MyChart clock 2026-09-26"
   },
   {
     "id": "org-jefferson-einstein-montgomery",
@@ -317,10 +317,10 @@
     "name": "Children's Hospital of Philadelphia",
     "aliases": [
       "Children's Hospital of Philadelphia",
-      "Children’s Hospital of Philadelphia",
+      "Children\u2019s Hospital of Philadelphia",
       "CHOP",
       "The Children's Hospital of Philadelphia",
-      "The Children’s Hospital of Philadelphia"
+      "The Children\u2019s Hospital of Philadelphia"
     ],
     "geo": "Philadelphia, PA",
     "role": "pediatric academic system"
@@ -360,7 +360,7 @@
       "CHOP at ChristianaCare"
     ],
     "geo": "Newark, DE",
-    "role": "affiliate — attach org-chop and org-christianacare; not a hospital; not a merge",
+    "role": "affiliate \u2014 attach org-chop and org-christianacare; not a hospital; not a merge",
     "orgs": [
       "org-chop",
       "org-christianacare"
@@ -413,7 +413,7 @@
       "Cape Regional Medical Center"
     ],
     "geo": "Camden, NJ",
-    "role": "academic medical system — Cape Regional legacy rename 2024-07-01"
+    "role": "academic medical system \u2014 Cape Regional legacy rename 2024-07-01"
   },
   {
     "id": "org-cooper-cuh",
@@ -425,7 +425,7 @@
     ],
     "parentId": "org-cooper",
     "geo": "One Cooper Plaza, Camden, NJ",
-    "role": "hospital — in graph"
+    "role": "hospital \u2014 in graph"
   },
   {
     "id": "org-cooper-childrens",
@@ -433,11 +433,11 @@
     "name": "Children's Regional Hospital at Cooper",
     "aliases": [
       "Children's Regional Hospital at Cooper",
-      "Children’s Regional Hospital at Cooper"
+      "Children\u2019s Regional Hospital at Cooper"
     ],
     "parentId": "org-cooper",
     "geo": "One Cooper Plaza, Camden, NJ",
-    "role": "hospital — same campus as org-cooper-cuh",
+    "role": "hospital \u2014 same campus as org-cooper-cuh",
     "sameSiteAs": "org-cooper-cuh"
   },
   {
@@ -451,7 +451,7 @@
     ],
     "parentId": "org-cooper",
     "geo": "Cape May Court House, NJ",
-    "role": "hospital — out-of-box (Cape May County; outside locked NJ counties)",
+    "role": "hospital \u2014 out-of-box (Cape May County; outside locked NJ counties)",
     "outOfBox": true
   },
   {
@@ -463,7 +463,7 @@
       "ChristianaCare"
     ],
     "geo": "Newark, DE",
-    "role": "regional health system — Epic clock 2026-10-03; Virtua LOI only, not a merge",
+    "role": "regional health system \u2014 Epic clock 2026-10-03; Virtua LOI only, not a merge",
     "url": "https://christianacare.org/"
   },
   {
@@ -475,7 +475,7 @@
     ],
     "parentId": "org-christianacare",
     "geo": "4755 Ogletown-Stanton Rd, Newark, DE",
-    "role": "hospital — in box (New Castle)",
+    "role": "hospital \u2014 in box (New Castle)",
     "url": "https://christianacare.org/us/en/facilities/christiana-hospital"
   },
   {
@@ -487,7 +487,7 @@
     ],
     "parentId": "org-christianacare",
     "geo": "501 West 14th St, Wilmington, DE",
-    "role": "hospital — in box (New Castle)",
+    "role": "hospital \u2014 in box (New Castle)",
     "url": "https://christianacare.org/us/en/facilities/wilmington-hospital"
   },
   {
@@ -500,7 +500,7 @@
     ],
     "parentId": "org-christianacare",
     "geo": "106 Bow St, Elkton, MD",
-    "role": "hospital — out-of-box (Cecil County MD; store like Cape Regional)",
+    "role": "hospital \u2014 out-of-box (Cecil County MD; store like Cape Regional)",
     "outOfBox": true,
     "url": "https://christianacare.org/us/en/facilities/union-hospital"
   },
@@ -526,7 +526,7 @@
     ],
     "parentId": "org-christianacare",
     "geo": "Newark, DE",
-    "role": "VP, Electronic Health Record Transformation — reports to COO Ric Cuming, not Gaboriault",
+    "role": "VP, Electronic Health Record Transformation \u2014 reports to COO Ric Cuming, not Gaboriault",
     "url": "https://news.christianacare.org/2025/01/robert-hartmann-epic-systems-expert-to-lead-ehr-transformation/"
   },
   {
@@ -557,21 +557,21 @@
   {
     "id": "org-temple-tuh-main",
     "kind": "hospital",
-    "name": "Temple University Hospital – Main Campus",
+    "name": "Temple University Hospital \u2013 Main Campus",
     "aliases": [
       "Temple University Hospital",
       "TUH Main",
-      "TUH – Main Campus"
+      "TUH \u2013 Main Campus"
     ],
     "parentId": "org-temple",
     "geo": "3401 N. Broad St, Philadelphia, PA 19140",
-    "role": "hospital — in box (Philadelphia)",
+    "role": "hospital \u2014 in box (Philadelphia)",
     "url": "https://www.templehealth.org/about"
   },
   {
     "id": "org-temple-jeanes",
     "kind": "hospital",
-    "name": "Temple University Hospital – Jeanes Campus",
+    "name": "Temple University Hospital \u2013 Jeanes Campus",
     "aliases": [
       "Jeanes Campus",
       "TUH Jeanes",
@@ -579,20 +579,20 @@
     ],
     "parentId": "org-temple",
     "geo": "7600 Central Ave, Philadelphia, PA 19111",
-    "role": "hospital — in box; campus of TUH",
+    "role": "hospital \u2014 in box; campus of TUH",
     "url": "https://www.templehealth.org/locations/jeanes-campus-tuh/about"
   },
   {
     "id": "org-temple-episcopal",
     "kind": "hospital",
-    "name": "Temple University Hospital – Episcopal Campus",
+    "name": "Temple University Hospital \u2013 Episcopal Campus",
     "aliases": [
       "Episcopal Campus",
       "TUH Episcopal"
     ],
     "parentId": "org-temple",
     "geo": "100 E. Lehigh Ave, Philadelphia, PA 19125",
-    "role": "hospital — in box (Philadelphia)",
+    "role": "hospital \u2014 in box (Philadelphia)",
     "url": "https://www.templehealth.org/about"
   },
   {
@@ -605,19 +605,19 @@
     ],
     "parentId": "org-temple",
     "geo": "333 Cottman Ave, Philadelphia, PA 19111",
-    "role": "hospital — in box; NCI comprehensive"
+    "role": "hospital \u2014 in box; NCI comprehensive"
   },
   {
     "id": "org-temple-chestnut-hill",
     "kind": "hospital",
-    "name": "Temple Health – Chestnut Hill Hospital",
+    "name": "Temple Health \u2013 Chestnut Hill Hospital",
     "aliases": [
       "Chestnut Hill Hospital",
       "Temple Health Chestnut Hill"
     ],
     "parentId": "org-temple",
     "geo": "Philadelphia, PA",
-    "role": "hospital — in box; 148-bed alliance of Temple Health and PCOM; freestanding licensed acute care; not a dissolve; do not merge PCOM",
+    "role": "hospital \u2014 in box; 148-bed alliance of Temple Health and PCOM; freestanding licensed acute care; not a dissolve; do not merge PCOM",
     "url": "https://www.templehealth.org/locations/chestnut-hill-hospital/about"
   },
   {
@@ -630,7 +630,7 @@
     ],
     "parentId": "org-temple",
     "geo": "1331 E. Wyoming Ave, Philadelphia, PA 19124",
-    "role": "hospital — in box; L&D left TUH-Main 2025-09-03; About list is stale",
+    "role": "hospital \u2014 in box; L&D left TUH-Main 2025-09-03; About list is stale",
     "url": "https://www.templehealth.org/locations/temple-women-and-families"
   },
   {
@@ -642,7 +642,7 @@
       "Virtua"
     ],
     "geo": "Marlton, NJ",
-    "role": "regional health system — do not merge ChristianaCare",
+    "role": "regional health system \u2014 do not merge ChristianaCare",
     "url": "https://www.virtua.org/Locations"
   },
   {
@@ -655,7 +655,7 @@
     ],
     "parentId": "org-virtua",
     "geo": "100 Bowman Drive, Voorhees, NJ 08043",
-    "role": "hospital — in box (NJ)",
+    "role": "hospital \u2014 in box (NJ)",
     "url": "https://www.virtua.org/locations/voorhees-hospital"
   },
   {
@@ -668,7 +668,7 @@
     ],
     "parentId": "org-virtua",
     "geo": "90 Brick Road, Marlton, NJ 08053",
-    "role": "hospital — in box (NJ)",
+    "role": "hospital \u2014 in box (NJ)",
     "url": "https://www.virtua.org/locations/marlton-hospital"
   },
   {
@@ -682,7 +682,7 @@
     ],
     "parentId": "org-virtua",
     "geo": "1600 Haddon Avenue, Camden, NJ 08103",
-    "role": "hospital — in box (Camden NJ)",
+    "role": "hospital \u2014 in box (Camden NJ)",
     "url": "https://www.virtua.org/locations/our-lady-of-lourdes-hospital"
   },
   {
@@ -695,7 +695,7 @@
     ],
     "parentId": "org-virtua",
     "geo": "175 Madison Avenue, Mount Holly, NJ 08060",
-    "role": "hospital — in box (NJ)",
+    "role": "hospital \u2014 in box (NJ)",
     "url": "https://www.virtua.org/locations/mount-holly-hospital"
   },
   {
@@ -708,7 +708,7 @@
     ],
     "parentId": "org-virtua",
     "geo": "218A Sunset Road, Willingboro, NJ 08046",
-    "role": "hospital — in box (NJ)",
+    "role": "hospital \u2014 in box (NJ)",
     "url": "https://www.virtua.org/locations/willingboro-hospital"
   },
   {
