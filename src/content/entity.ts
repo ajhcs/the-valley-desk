@@ -26,6 +26,7 @@ export const Entity = z.object({
   parentId: z.string().optional(),
   geo: z.string().optional(),
   role: z.string().optional(),
+  url: z.string().url().optional(),
 });
 
 export type Entity = z.infer<typeof Entity>;

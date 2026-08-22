@@ -120,6 +120,33 @@
     "role": "state hospital association"
   },
   {
+    "id": "org-pa-doh",
+    "kind": "association",
+    "name": "Pennsylvania Department of Health",
+    "aliases": [],
+    "geo": "PA",
+    "role": "state health department",
+    "url": "https://www.health.pa.gov/"
+  },
+  {
+    "id": "org-nj-doh",
+    "kind": "association",
+    "name": "New Jersey Department of Health",
+    "aliases": [],
+    "geo": "NJ",
+    "role": "state health department",
+    "url": "https://www.nj.gov/health/"
+  },
+  {
+    "id": "org-de-dhss",
+    "kind": "association",
+    "name": "Delaware Department of Health and Social Services",
+    "aliases": [],
+    "geo": "DE",
+    "role": "state health department",
+    "url": "https://dhss.delaware.gov/"
+  },
+  {
     "id": "person-cole-lyons",
     "kind": "person",
     "name": "Cole Lyons",
