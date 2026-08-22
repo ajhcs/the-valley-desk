@@ -166,6 +166,7 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
   assert.ok(ids.includes("news-christianacare-epic"));
   assert.ok(ids.includes("news-jefferson-fy2026-loss"));
   assert.ok(ids.includes("news-penn-ai-scribe"));
+  assert.ok(ids.includes("news-temple-dragon-copilot"));
   assert.ok(!ids.includes("ai-01"));
   assert.ok(!ids.includes("int-01"));
   assert.ok(!ids.includes("evt-01"));
@@ -425,26 +426,50 @@ test("fixture catalog has news clocks, no Crozer, no featured lead", () => {
   assert.ok(!JSON.stringify(entities).includes("Crozer"));
 });
 
-test("Sloan three: published, featured false, source publishedAt, no Temple Slovis/Dragon", () => {
+test("Sloan four: published, featured false, source publishedAt, Penn and Temple stay separate", () => {
   const christiana = catalog.find((i) => i.id === "news-christianacare-epic");
   const loss = catalog.find((i) => i.id === "news-jefferson-fy2026-loss");
   const penn = catalog.find((i) => i.id === "news-penn-ai-scribe");
-  assert.ok(christiana && loss && penn);
-  for (const item of [christiana, loss, penn]) {
+  const temple = catalog.find((i) => i.id === "news-temple-dragon-copilot");
+  assert.ok(christiana && loss && penn && temple);
+  for (const item of [christiana, loss, penn, temple]) {
     assert.equal(item.status, "published");
     assert.equal(item.featured, false);
     assert.equal(item.kind, "news");
   }
+  assert.equal(christiana.title, "ChristianaCare sets Oct. 3, 2026 Epic go-live");
   assert.equal(christiana.kind === "news" ? christiana.clockAt : undefined, "2026-10-03T04:00:00.000Z");
   assert.equal(christiana.publishedAt, "2026-07-01T16:00:00.000Z");
+  assert.deepEqual(christiana.orgs, ["org-christianacare"]);
+  assert.ok(christiana.citations?.some((c) => c.url.includes("app.fac.gov")));
+  assert.ok(!christiana.body.includes("49.364"));
+  assert.equal(loss.title, "Jefferson posts $181.5 million operating loss for FY2026");
   assert.equal(loss.kind === "news" ? loss.clockAt : "none", undefined);
   assert.equal(loss.publishedAt, "2026-08-14T16:00:00.000Z");
+  assert.deepEqual(loss.orgs, ["org-jefferson"]);
+  assert.ok(loss.body.includes("Independence Blue Cross"));
+  assert.ok(loss.body.includes("Aetna"));
+  assert.equal(penn.title, "Penn's in-house AI scribe is on about 1,200 ambulatory providers");
   assert.equal(penn.kind === "news" ? penn.clockAt : "none", undefined);
   assert.equal(penn.publishedAt, "2025-11-10T16:00:00.000Z");
+  assert.deepEqual(penn.orgs, ["org-penn"]);
   const pennLead = `${penn.title}\n${penn.dek}\n${penn.impactSentence}`;
   assert.ok(pennLead.includes("1,200"));
   assert.ok(!pennLead.includes("46"));
-  assert.ok(!catalog.some((i) => /slovis|dragon/i.test(`${i.id} ${i.title} ${i.body}`)));
+  assert.ok(!/temple|slovis|dragon/i.test(`${penn.title} ${penn.dek} ${penn.body}`));
+  assert.equal(temple.title, "Temple rolls Dragon Copilot to 400 users");
+  assert.equal(temple.slug, "temple-dragon-copilot-400");
+  assert.equal(temple.kind === "news" ? temple.clockAt : "none", undefined);
+  assert.equal(temple.publishedAt, "2026-08-01T16:00:00.000Z");
+  assert.deepEqual(temple.orgs, ["org-temple", "org-temple-tuh-main"]);
+  assert.ok(temple.body.includes("Microsoft"));
+  assert.ok(!/1,200|penn medicine|capalongo/i.test(`${temple.title} ${temple.dek} ${temple.body}`));
+  const blob = JSON.stringify(catalog);
+  assert.ok(!blob.includes("org-ibc"));
+  assert.ok(!blob.includes("org-aetna"));
+  assert.ok(!blob.includes("org-microsoft"));
+  assert.ok(!catalog.some((i) => i.id.startsWith("news-") && /chop/i.test(`${i.id} ${i.title}`)));
+  assert.equal(catalog.filter((i) => i.id.startsWith("news-") && i.featured).length, 0);
 });
 
 test("leadItem source does not call briefingSinceYesterday5pmET", () => {

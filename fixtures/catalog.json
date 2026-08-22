@@ -161,6 +161,10 @@
       {
         "name": "ChristianaCare News",
         "url": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/"
+      },
+      {
+        "name": "FAC Note 18",
+        "url": "https://app.fac.gov/dissemination/report/pdf/2025-06-GSAFAC-0000407992"
       }
     ],
     "geo": "Wilmington, DE"
@@ -198,8 +202,12 @@
     "impactSentence": "The $181.5 million loss does not move until a court or a new contract does.",
     "citations": [
       {
-        "name": "The Philadelphia Inquirer",
+        "name": "Inquirer",
         "url": "https://www.inquirer.com/health/jefferson-health-financial-loss-fiscal-2026-20260814.html"
+      },
+      {
+        "name": "Fitch",
+        "url": "https://www.fitchratings.com/research/us-public-finance/fitch-rates-thomas-jefferson-univ-pa-cp-notes-f1-affirms-idr-revs-at-a-outlook-negative-18-06-2026"
       }
     ],
     "geo": "Philadelphia, PA"
@@ -237,16 +245,68 @@
     "impactSentence": "About 1,200 ambulatory providers were using it, the Inquirer said.",
     "citations": [
       {
-        "name": "The Philadelphia Inquirer",
+        "name": "Inquirer",
         "url": "https://www.inquirer.com/health/penn-jefferson-artificial-intelligence-health-20251110.html"
       },
       {
-        "name": "JAMA Network Open",
-        "url": "https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2830383"
+        "name": "DOI",
+        "url": "https://doi.org/10.1001/jamanetworkopen.2024.60637"
       },
       {
-        "name": "Penn Medicine",
+        "name": "Penn",
         "url": "https://www.pennmedicine.org/news/ai-scribe-increases-face-to-face-time-with-patients"
+      }
+    ],
+    "geo": "Philadelphia, PA"
+  },
+  {
+    "id": "news-temple-dragon-copilot",
+    "slug": "temple-dragon-copilot-400",
+    "kind": "news",
+    "title": "Temple rolls Dragon Copilot to 400 users",
+    "dek": "CMIO Benjamin Slovis told HealthTech the tool is not yet a silver bullet.",
+    "body": "Benjamin Slovis, Temple University Hospital’s CMIO, has a Microsoft Dragon Copilot rollout to 400 end users, HealthTech Magazine reported in August 2026. Dragon Copilot records the visit and drafts a note the doctor still has to sign. Temple’s June 8, 2026 note says Slovis described that workflow, as DAX Copilot, to the Bucks County Herald. The Philadelphia Business Journal, April 1, 2026, said pilot data showed more than a 10 percent cut in after-hours documentation before the expansion to nearly 400 physicians. Slovis told HealthTech the tool is “not yet a silver bullet.” TUHS’s unaudited June 30, 2025 year-end report showed 116 days cash on hand, down from 124 a year earlier. That liquidity line is not a Copilot metric.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-01T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "AI"
+    ],
+    "orgs": [
+      "org-temple",
+      "org-temple-tuh-main"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "That liquidity line is not a Copilot metric.",
+    "citations": [
+      {
+        "name": "HealthTech",
+        "url": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine"
+      },
+      {
+        "name": "Temple",
+        "url": "https://www.templehealth.org/about/news/in-the-media/dr-benjamin-slovis-discusses-temple-healths-utilization-of-artificial-intelligence-with-bucks-county-herald"
+      },
+      {
+        "name": "PBJ",
+        "url": "https://www.bizjournals.com/philadelphia/news/2026/04/01/temple-health-ai-patient-safety.html"
+      },
+      {
+        "name": "TUHS PDF",
+        "url": "https://tuhsfinance.templehealth.org/CURRENT%20STATEMENTS/TUHS%20Investor%20Quarterly%20Report%20-%20June%2030,%202025.pdf"
       }
     ],
     "geo": "Philadelphia, PA"
