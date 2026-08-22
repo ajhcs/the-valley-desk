@@ -1,0 +1,33 @@
+{
+  "name": "the-valley-desk",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx scripts/generate-feed.ts && vite",
+    "ingest": "tsx scripts/ingest.ts",
+    "generate:feed": "tsx scripts/generate-feed.ts",
+    "generate:routes": "tsr generate",
+    "check:content": "tsx scripts/check-content.ts",
+    "build": "tsx scripts/ingest.ts && tsx scripts/check-content.ts && tsx scripts/generate-feed.ts && tsr generate && tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.170.31",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/router-cli": "^1.167.32",
+    "@tanstack/router-plugin": "^1.168.34",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
+  }
+}

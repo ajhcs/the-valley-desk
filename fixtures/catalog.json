@@ -1,0 +1,636 @@
+[
+  {
+    "id": "news-penn-ambient-scribe",
+    "slug": "penn-medicine-ambient-documentation-ambulatory",
+    "kind": "news",
+    "title": "Penn Medicine expands ambient documentation across ambulatory clinics",
+    "dek": "A system-wide scribe rollout is now the default for primary care and several specialties.",
+    "body": "Penn Medicine is extending ambient documentation from a limited ambulatory pilot to the default workflow in primary care and selected specialty clinics. Clinical leaders say the change is about note time and inbox load, not a new model of care. The Valley Desk will watch whether nursing and resident workflows are brought onto the same stack.",
+    "status": "published",
+    "publishedAt": "2026-08-22T13:30:00.000Z",
+    "updatedAt": "2026-08-22T13:30:00.000Z",
+    "topics": [
+      "ambient-documentation",
+      "ambulatory",
+      "ehr"
+    ],
+    "orgs": [
+      "Penn Medicine"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Reed Okoye",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.pennmedicine.org"
+    },
+    "relatedEventIds": [
+      "event-penn-innovation-forum"
+    ],
+    "relatedVoiceIds": [
+      "voice-cmio-ai-governance"
+    ],
+    "impactSentence": "Penn is making ambient documentation the default ambulatory note, so clinic time and inbox load change now.",
+    "geo": "Philadelphia",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.pennmedicine.org"
+      }
+    ]
+  },
+  {
+    "id": "news-jefferson-imaging",
+    "slug": "jefferson-health-imaging-triage-partnership",
+    "kind": "news",
+    "title": "Jefferson Health signs imaging triage partnership for emergency radiology",
+    "dek": "The deal is scoped to stroke and PE worklists first, with a 90-day quality review.",
+    "body": "Jefferson Health is putting an imaging triage tool on emergency radiology worklists for stroke and pulmonary embolism. Radiology and emergency medicine will review missed-worklist and over-call rates at 90 days before any expansion. Vendor contracting remains separate from medical-staff privileging.",
+    "status": "published",
+    "publishedAt": "2026-08-21T15:00:00.000Z",
+    "updatedAt": "2026-08-21T15:00:00.000Z",
+    "topics": [
+      "imaging",
+      "emergency",
+      "quality"
+    ],
+    "orgs": [
+      "Jefferson Health"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Reed Okoye",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.jeffersonhealth.org"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Jefferson is putting imaging triage on emergency stroke and PE worklists, with a 90-day quality gate before expansion.",
+    "geo": "Philadelphia",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.jeffersonhealth.org"
+      }
+    ]
+  },
+  {
+    "id": "news-chop-pediatric-eval",
+    "slug": "chop-publishes-pediatric-model-evaluation-notes",
+    "kind": "news",
+    "title": "CHOP publishes pediatric evaluation notes for a sepsis early-warning model",
+    "dek": "The write-up is aimed at local safety officers, not a general model card dump.",
+    "body": "Children’s Hospital of Philadelphia posted an evaluation note covering how a sepsis early-warning model behaves on its own pediatric population. The document is written for safety and informatics officers: cohort, false-alert rate, and where the score is allowed to page. It is not a consumer announcement.",
+    "status": "published",
+    "publishedAt": "2026-08-20T16:45:00.000Z",
+    "updatedAt": "2026-08-20T16:45:00.000Z",
+    "topics": [
+      "pediatrics",
+      "sepsis",
+      "evaluation"
+    ],
+    "orgs": [
+      "Children's Hospital of Philadelphia"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Knox Ellison",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.chop.edu"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "CHOP published how its sepsis early-warning model behaves on its own pediatric population, for safety officers.",
+    "geo": "Philadelphia",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.chop.edu"
+      }
+    ]
+  },
+  {
+    "id": "news-nj-hin-query",
+    "slug": "new-jersey-hin-tightens-query-audit-for-out-of-state-access",
+    "kind": "news",
+    "title": "New Jersey HIN tightens query audit for out-of-state access",
+    "dek": "Delaware Valley hospitals that treat New Jersey residents will see more break-the-glass logging.",
+    "body": "The statewide health information network is requiring finer audit trails when a New Jersey record is queried from out of state. Philadelphia and South Jersey hospitals that already exchange on the network are the first to feel it. Privacy officers should expect more break-the-glass documentation, not a cut in exchange.",
+    "status": "published",
+    "publishedAt": "2026-08-19T14:10:00.000Z",
+    "updatedAt": "2026-08-19T14:10:00.000Z",
+    "topics": [
+      "interoperability",
+      "privacy",
+      "exchange"
+    ],
+    "orgs": [
+      "New Jersey Health Information Network"
+    ],
+    "region": "NJ",
+    "authors": [
+      {
+        "name": "Reed Okoye",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.njhin.org"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Out-of-state queries of New Jersey records now need finer break-the-glass logs at Delaware Valley hospitals.",
+    "geo": "New Jersey / Delaware Valley",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.njhin.org"
+      }
+    ]
+  },
+  {
+    "id": "news-ibx-prior-auth",
+    "slug": "independence-blue-cross-electronic-prior-auth-specialties",
+    "kind": "news",
+    "title": "Independence Blue Cross adds electronic prior auth for two specialty lines",
+    "dek": "Cardiology and imaging are first. Hospital-owned groups say the mapping work is the real cost.",
+    "body": "Independence Blue Cross is opening electronic prior authorization for cardiology and advanced imaging. Employed and independent groups in the region will need to map orderables to the payer’s codes. Several hospital-owned practices told The Valley Desk the interface work, not the click path, is the delay.",
+    "status": "published",
+    "publishedAt": "2026-08-18T18:20:00.000Z",
+    "updatedAt": "2026-08-18T18:20:00.000Z",
+    "topics": [
+      "prior-auth",
+      "payers",
+      "imaging"
+    ],
+    "orgs": [
+      "Independence Blue Cross"
+    ],
+    "region": "regional",
+    "authors": [
+      {
+        "name": "Reed Okoye",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.ibx.com"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Independence Blue Cross is opening electronic prior auth for cardiology and imaging; mapping orderables is the cost.",
+    "geo": "Southeastern Pennsylvania",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.ibx.com"
+      }
+    ]
+  },
+  {
+    "id": "news-cms-dqm-pa",
+    "slug": "cms-digital-quality-measures-hit-pennsylvania-hospitals",
+    "kind": "news",
+    "title": "CMS digital quality measures start to land in Pennsylvania hospital reporting",
+    "dek": "Quality shops are treating this as an EHR extraction problem, not a new clinical program.",
+    "body": "The first CMS digital quality measure cohort is showing up in Pennsylvania hospital reporting calendars. Quality and IT leaders describe it as an extraction and mapping problem against existing EHR data. Rural and independent hospitals in the state are asking vendors for measure packages rather than building locally.",
+    "status": "published",
+    "publishedAt": "2026-08-17T17:05:00.000Z",
+    "updatedAt": "2026-08-17T17:05:00.000Z",
+    "topics": [
+      "quality",
+      "cms",
+      "reporting"
+    ],
+    "orgs": [
+      "CMS"
+    ],
+    "region": "federal",
+    "authors": [
+      {
+        "name": "Knox Ellison",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.cms.gov"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "CMS digital quality measures are now an EHR extraction problem on Pennsylvania hospital calendars.",
+    "geo": "Pennsylvania",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.cms.gov"
+      }
+    ]
+  },
+  {
+    "id": "event-dvhimss-sept-program",
+    "slug": "september-chapter-program-philadelphia",
+    "kind": "event",
+    "title": "September chapter program: ambient tools after the pilot",
+    "dek": "A working session on what actually stayed in clinic after 90 days.",
+    "body": "A Delaware Valley chapter program on ambient documentation after the pilot window. Short cases from ambulatory and nursing, then questions. Registration is through the chapter site.",
+    "status": "published",
+    "publishedAt": "2026-08-10T12:00:00.000Z",
+    "updatedAt": "2026-08-10T12:00:00.000Z",
+    "topics": [
+      "ambient-documentation",
+      "chapter"
+    ],
+    "orgs": [
+      "Delaware Valley HIMSS"
+    ],
+    "region": "regional",
+    "authors": [
+      {
+        "name": "Delaware Valley HIMSS"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://dvhimss.org/events-calendar/"
+    },
+    "startsAt": "2026-09-10T22:30:00.000Z",
+    "endsAt": "2026-09-11T00:30:00.000Z",
+    "timezone": "America/New_York",
+    "venue": "College of Physicians of Philadelphia",
+    "city": "Philadelphia",
+    "hostOrg": "Delaware Valley HIMSS",
+    "registrationUrl": "https://www.dvhimss.org/events/september-program",
+    "partner": "dvhimss",
+    "autoPublish": false,
+    "geo": "Philadelphia",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://dvhimss.org/events-calendar/"
+      }
+    ]
+  },
+  {
+    "id": "event-penn-innovation-forum",
+    "slug": "penn-health-care-innovation-forum-september",
+    "kind": "event",
+    "title": "Penn health care innovation forum",
+    "dek": "Operations and informatics on the ambient documentation expansion.",
+    "body": "An internal-facing forum opened to regional operators. Penn Medicine teams will walk through the ambulatory ambient documentation expansion and what they are measuring.",
+    "status": "published",
+    "publishedAt": "2026-08-12T12:00:00.000Z",
+    "updatedAt": "2026-08-12T12:00:00.000Z",
+    "topics": [
+      "innovation",
+      "ambient-documentation"
+    ],
+    "orgs": [
+      "Penn Medicine"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Penn Medicine"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.pennmedicine.org"
+    },
+    "startsAt": "2026-09-24T16:00:00.000Z",
+    "endsAt": "2026-09-24T18:00:00.000Z",
+    "timezone": "America/New_York",
+    "venue": "Perelman Center for Advanced Medicine",
+    "city": "Philadelphia",
+    "hostOrg": "Penn Medicine",
+    "partner": "health-system",
+    "autoPublish": false,
+    "geo": "Philadelphia",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.pennmedicine.org"
+      }
+    ]
+  },
+  {
+    "id": "event-virtua-digital-nursing",
+    "slug": "virtua-digital-nursing-roundtable",
+    "kind": "event",
+    "title": "Virtua digital nursing roundtable",
+    "dek": "South Jersey nursing informatics on virtual sitting and inbox design.",
+    "body": "Virtua is hosting a roundtable on digital nursing: virtual sitting, inbox design, and what counts as a closed loop. Open to regional nursing informatics leads.",
+    "status": "published",
+    "publishedAt": "2026-08-14T12:00:00.000Z",
+    "updatedAt": "2026-08-14T12:00:00.000Z",
+    "topics": [
+      "nursing",
+      "virtual-care"
+    ],
+    "orgs": [
+      "Virtua Health"
+    ],
+    "region": "NJ",
+    "authors": [
+      {
+        "name": "Virtua Health"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.virtua.org"
+    },
+    "startsAt": "2026-10-08T21:00:00.000Z",
+    "timezone": "America/New_York",
+    "venue": "Virtua Voorhees",
+    "city": "Voorhees",
+    "hostOrg": "Virtua Health",
+    "partner": "health-system",
+    "autoPublish": false,
+    "geo": "Voorhees, NJ",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.virtua.org"
+      }
+    ]
+  },
+  {
+    "id": "event-main-line-cyber",
+    "slug": "main-line-health-cyber-tabletop",
+    "kind": "event",
+    "title": "Main Line Health cyber tabletop for clinic downtime",
+    "dek": "A half-day on downtime comms when the ambulatory record is offline.",
+    "body": "Main Line Health is running a tabletop on ambulatory downtime communications. Regional peers are invited to observe. This is an operations exercise, not a product demo.",
+    "status": "published",
+    "publishedAt": "2026-08-15T12:00:00.000Z",
+    "updatedAt": "2026-08-15T12:00:00.000Z",
+    "topics": [
+      "cyber",
+      "downtime",
+      "ambulatory"
+    ],
+    "orgs": [
+      "Main Line Health"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Main Line Health"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.mainlinehealth.org"
+    },
+    "startsAt": "2026-10-22T14:00:00.000Z",
+    "endsAt": "2026-10-22T18:00:00.000Z",
+    "timezone": "America/New_York",
+    "venue": "Bryn Mawr Hospital",
+    "city": "Bryn Mawr",
+    "hostOrg": "Main Line Health",
+    "partner": "health-system",
+    "autoPublish": false,
+    "geo": "Bryn Mawr, PA",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.mainlinehealth.org"
+      }
+    ]
+  },
+  {
+    "id": "voice-cmio-ai-governance",
+    "slug": "cmio-note-on-ai-governance-committees",
+    "kind": "voice",
+    "title": "A CMIO note on who sits on the AI governance committee",
+    "dek": "The argument: nursing and revenue cycle have to be in the room before a tool pages a clinician.",
+    "body": "A regional CMIO wrote that AI governance committees still skew toward IT and a single physician chair. The post argues nursing and revenue cycle should be seated before any tool is allowed to page a clinician.",
+    "status": "published",
+    "publishedAt": "2026-08-16T19:00:00.000Z",
+    "updatedAt": "2026-08-16T19:00:00.000Z",
+    "topics": [
+      "governance",
+      "workforce"
+    ],
+    "orgs": [
+      "Main Line Health"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.linkedin.com/pulse/who-sits-ai-governance-committee"
+    },
+    "person": "Elena Ruiz, MD",
+    "role": "CMIO",
+    "org": "Main Line Health",
+    "platform": "linkedin",
+    "originalUrl": "https://www.linkedin.com/pulse/who-sits-ai-governance-committee",
+    "geo": "Philadelphia suburbs",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.linkedin.com/pulse/who-sits-ai-governance-committee"
+      }
+    ]
+  },
+  {
+    "id": "policy-pa-doh-cds-guidance",
+    "slug": "pa-doh-clinical-decision-support-guidance",
+    "kind": "policy",
+    "title": "Pennsylvania DOH issues guidance on clinical decision support disclosure",
+    "dek": "Hospitals must be able to say when a scored alert, not a person, initiated a workflow.",
+    "body": "The Pennsylvania Department of Health released guidance asking hospitals to disclose when a scored alert, rather than a clinician, initiates a workflow. It is guidance, not a rule. Quality and informatics teams are the intended readers.",
+    "status": "published",
+    "publishedAt": "2026-08-13T15:30:00.000Z",
+    "updatedAt": "2026-08-13T15:30:00.000Z",
+    "topics": [
+      "clinical-decision-support",
+      "disclosure",
+      "hospitals"
+    ],
+    "orgs": [
+      "Pennsylvania Department of Health"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Knox Ellison",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.health.pa.gov/topics/Documents/cds-guidance-2026.pdf"
+    },
+    "jurisdiction": "Pennsylvania",
+    "issuer": "PA-DOH",
+    "effectiveDate": "2026-10-01",
+    "changeType": "guidance",
+    "impactSentence": "Pennsylvania hospitals must be able to say when a scored alert, not a person, started a workflow.",
+    "geo": "Pennsylvania",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.health.pa.gov/topics/Documents/cds-guidance-2026.pdf"
+      }
+    ]
+  },
+  {
+    "id": "ai-scribe-inpatient-notes",
+    "slug": "scribe-vendor-opens-inpatient-notes-module",
+    "kind": "ai",
+    "title": "Ambient vendor opens an inpatient notes module",
+    "dek": "The module is in limited release with two Delaware Valley health systems named as design partners.",
+    "body": "An ambient documentation vendor opened a limited inpatient notes module and named two Delaware Valley health systems as design partners. The company is not claiming a general inpatient replacement for the EHR note. Announced features are limited to admission and progress notes.",
+    "status": "published",
+    "publishedAt": "2026-08-11T14:00:00.000Z",
+    "updatedAt": "2026-08-11T14:00:00.000Z",
+    "topics": [
+      "ambient-documentation",
+      "inpatient"
+    ],
+    "orgs": [
+      "Atria Note",
+      "Penn Medicine",
+      "Jefferson Health"
+    ],
+    "region": "regional",
+    "authors": [
+      {
+        "name": "Reed Okoye",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://www.pennmedicine.org"
+    },
+    "vendor": "Atria Note",
+    "product": "Atria Inpatient Notes",
+    "announcedAt": "2026-08-11T13:00:00.000Z",
+    "impactSentence": "An ambient vendor opened inpatient notes in limited release with two Delaware Valley systems as design partners.",
+    "geo": "Delaware Valley",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://www.pennmedicine.org"
+      }
+    ]
+  },
+  {
+    "id": "briefing-week-2026-08-17",
+    "slug": "week-of-august-17-2026",
+    "kind": "briefing",
+    "title": "Week of August 17: ambient scale, imaging triage, quality extraction",
+    "dek": "What moved in the Delaware Valley stack this week, with the underlying items attached.",
+    "body": "Ambient documentation moved from pilot talk to a system default at Penn. Jefferson scoped imaging triage to two emergency worklists. CMS digital quality measures showed up on Pennsylvania hospital calendars. The linked items are the source of record.",
+    "status": "published",
+    "publishedAt": "2026-08-22T11:00:00.000Z",
+    "updatedAt": "2026-08-22T11:00:00.000Z",
+    "topics": [
+      "weekly",
+      "ambient-documentation",
+      "quality"
+    ],
+    "orgs": [
+      "The Valley Desk"
+    ],
+    "region": "regional",
+    "authors": [
+      {
+        "name": "Reed Okoye",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk",
+      "url": "https://github.com/ajhcs/the-valley-desk"
+    },
+    "windowStart": "2026-08-17T00:00:00.000Z",
+    "windowEnd": "2026-08-23T00:00:00.000Z",
+    "itemIds": [
+      "news-penn-ambient-scribe",
+      "news-jefferson-imaging",
+      "news-cms-dqm-pa"
+    ],
+    "geo": "Delaware Valley",
+    "citations": [
+      {
+        "name": "The Valley Desk",
+        "url": "https://github.com/ajhcs/the-valley-desk"
+      }
+    ]
+  },
+  {
+    "id": "interview-cole-jefferson-cmio",
+    "slug": "cole-lyons-jefferson-cmio-exclusive",
+    "kind": "interview",
+    "title": "Cole Lyons talks with Jefferson’s CMIO about who owns the model after go-live",
+    "dek": "An exclusive on clinical ownership, vendor scorecards, and what does not belong in the EHR inbox.",
+    "body": "Draft. Cole Lyons sits down with Jefferson Health’s CMIO on who owns a model after go-live, how vendor scorecards are read, and which alerts are not allowed to land in the EHR inbox. This interview stays off public pages and the agent feed until it is edited and published.",
+    "status": "draft",
+    "updatedAt": "2026-08-22T12:00:00.000Z",
+    "topics": [
+      "governance",
+      "vendors",
+      "ehr"
+    ],
+    "orgs": [
+      "Jefferson Health",
+      "The Valley Desk"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Cole Lyons",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "The Valley Desk"
+    },
+    "exclusive": true,
+    "guest": "Amina Rahman, MD",
+    "guestOrg": "Jefferson Health",
+    "impactSentence": "Jefferson’s CMIO tells Cole who owns a model after go-live, and which alerts may not hit the inbox.",
+    "geo": "Philadelphia"
+  }
+]

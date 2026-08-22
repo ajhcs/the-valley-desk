@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>The Valley Desk</title>
+    <link>https://github.com/ajhcs/the-valley-desk</link>
+    <description>Published, cited items from The Valley Desk. Same ContentItem envelope as /feed.json.</description>
+    <lastBuildDate>Sat, 22 Aug 2026 20:28:08 GMT</lastBuildDate>
+    <generator>the-valley-desk</generator>
+    <item>
+      <title>NJDVHIMSS Annual Golf Outing</title>
+      <link>https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/</link>
+      <guid isPermaLink="true">https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/</guid>
+      <description>NJDVHIMSS Annual Golf Outing is on the Delaware Valley HIMSS calendar.</description>
+      <pubDate>Sat, 22 Aug 2026 20:28:05 GMT</pubDate>
+      <category>event</category>
+    </item>
+    <item>
+      <title>NJDVHIMSS Fall Conference - October 13th - 15th</title>
+      <link>https://dvhimss.org/events-calendar/njdvhimss-fall-converence/</link>
+      <guid isPermaLink="true">https://dvhimss.org/events-calendar/njdvhimss-fall-converence/</guid>
+      <description>NJDVHIMSS Fall Conference - October 13th - 15th is on the Delaware Valley HIMSS calendar.</description>
+      <pubDate>Sat, 22 Aug 2026 20:28:05 GMT</pubDate>
+      <category>event</category>
+    </item>
+    <item>
+      <title>NJDVHIMSS Fall Conference 2026</title>
+      <link>https://njdvhimssevent.com/</link>
+      <guid isPermaLink="true">https://njdvhimssevent.com/</guid>
+      <description>The regional chapter conference is the next large in-person gathering for Delaware Valley health IT.</description>
+      <pubDate>Sat, 22 Aug 2026 20:28:05 GMT</pubDate>
+      <category>event</category>
+    </item>
+    <item>
+      <title>NJDVHIMSS Annual Golf Outing</title>
+      <link>https://njdvhimssevent.com/</link>
+      <guid isPermaLink="true">https://njdvhimssevent.com/</guid>
+      <description>Conference kickoff at Ballamor Golf Club on October 13.</description>
+      <pubDate>Sat, 22 Aug 2026 20:28:05 GMT</pubDate>
+      <category>event</category>
+    </item>
+    <item>
+      <title>Penn Medicine expands ambient documentation across ambulatory clinics</title>
+      <link>https://www.pennmedicine.org</link>
+      <guid isPermaLink="true">https://www.pennmedicine.org</guid>
+      <description>Penn is making ambient documentation the default ambulatory note, so clinic time and inbox load change now.</description>
+      <pubDate>Sat, 22 Aug 2026 13:30:00 GMT</pubDate>
+      <category>news</category>
+    </item>
+    <item>
+      <title>Delaware exchange operator briefing</title>
+      <link>https://dhin.org/events/operator-briefing-2026-11-12</link>
+      <guid isPermaLink="true">https://dhin.org/events/operator-briefing-2026-11-12</guid>
+      <description>A short briefing on query volume and audit expectations for out-of-state users.</description>
+      <pubDate>Sat, 22 Aug 2026 12:00:00 GMT</pubDate>
+      <category>event</category>
+    </item>
+    <item>
+      <title>Week of August 17: ambient scale, imaging triage, quality extraction</title>
+      <link>https://github.com/ajhcs/the-valley-desk</link>
+      <guid isPermaLink="true">https://github.com/ajhcs/the-valley-desk</guid>
+      <description>What moved in the Delaware Valley stack this week, with the underlying items attached.</description>
+      <pubDate>Sat, 22 Aug 2026 11:00:00 GMT</pubDate>
+      <category>briefing</category>
+    </item>
+    <item>
+      <title>Jefferson Health signs imaging triage partnership for emergency radiology</title>
+      <link>https://www.jeffersonhealth.org</link>
+      <guid isPermaLink="true">https://www.jeffersonhealth.org</guid>
+      <description>Jefferson is putting imaging triage on emergency stroke and PE worklists, with a 90-day quality gate before expansion.</description>
+      <pubDate>Fri, 21 Aug 2026 15:00:00 GMT</pubDate>
+      <category>news</category>
+    </item>
+    <item>
+      <title>CHOP publishes pediatric evaluation notes for a sepsis early-warning model</title>
+      <link>https://www.chop.edu</link>
+      <guid isPermaLink="true">https://www.chop.edu</guid>
+      <description>CHOP published how its sepsis early-warning model behaves on its own pediatric population, for safety officers.</description>
+      <pubDate>Thu, 20 Aug 2026 16:45:00 GMT</pubDate>
+      <category>news</category>
+    </item>
+    <item>
+      <title>New Jersey HIN tightens query audit for out-of-state access</title>
+      <link>https://www.njhin.org</link>
+      <guid isPermaLink="true">https://www.njhin.org</guid>
+      <description>Out-of-state queries of New Jersey records now need finer break-the-glass logs at Delaware Valley hospitals.</description>
+      <pubDate>Wed, 19 Aug 2026 14:10:00 GMT</pubDate>
+      <category>news</category>
+    </item>
+    <item>
+      <title>Independence Blue Cross adds electronic prior auth for two specialty lines</title>
+      <link>https://www.ibx.com</link>
+      <guid isPermaLink="true">https://www.ibx.com</guid>
+      <description>Independence Blue Cross is opening electronic prior auth for cardiology and imaging; mapping orderables is the cost.</description>
+      <pubDate>Tue, 18 Aug 2026 18:20:00 GMT</pubDate>
+      <category>news</category>
+    </item>
+    <item>
+      <title>CMS digital quality measures start to land in Pennsylvania hospital reporting</title>
+      <link>https://www.cms.gov</link>
+      <guid isPermaLink="true">https://www.cms.gov</guid>
+      <description>CMS digital quality measures are now an EHR extraction problem on Pennsylvania hospital calendars.</description>
+      <pubDate>Mon, 17 Aug 2026 17:05:00 GMT</pubDate>
+      <category>news</category>
+    </item>
+    <item>
+      <title>A CMIO note on who sits on the AI governance committee</title>
+      <link>https://www.linkedin.com/pulse/who-sits-ai-governance-committee</link>
+      <guid isPermaLink="true">https://www.linkedin.com/pulse/who-sits-ai-governance-committee</guid>
+      <description>The argument: nursing and revenue cycle have to be in the room before a tool pages a clinician.</description>
+      <pubDate>Sun, 16 Aug 2026 19:00:00 GMT</pubDate>
+      <category>voice</category>
+    </item>
+    <item>
+      <title>Main Line Health cyber tabletop for clinic downtime</title>
+      <link>https://www.mainlinehealth.org</link>
+      <guid isPermaLink="true">https://www.mainlinehealth.org</guid>
+      <description>A half-day on downtime comms when the ambulatory record is offline.</description>
+      <pubDate>Sat, 15 Aug 2026 12:00:00 GMT</pubDate>
+      <category>event</category>
+    </item>
+    <item>
+      <title>Virtua digital nursing roundtable</title>
+      <link>https://www.virtua.org</link>
+      <guid isPermaLink="true">https://www.virtua.org</guid>
+      <description>South Jersey nursing informatics on virtual sitting and inbox design.</description>
+      <pubDate>Fri, 14 Aug 2026 12:00:00 GMT</pubDate>
+      <category>event</category>
+    </item>
+    <item>
+      <title>Pennsylvania DOH issues guidance on clinical decision support disclosure</title>
+      <link>https://www.health.pa.gov/topics/Documents/cds-guidance-2026.pdf</link>
+      <guid isPermaLink="true">https://www.health.pa.gov/topics/Documents/cds-guidance-2026.pdf</guid>
+      <description>Pennsylvania hospitals must be able to say when a scored alert, not a person, started a workflow.</description>
+      <pubDate>Thu, 13 Aug 2026 15:30:00 GMT</pubDate>
+      <category>policy</category>
+    </item>
+    <item>
+      <title>Penn health care innovation forum</title>
+      <link>https://www.pennmedicine.org</link>
+      <guid isPermaLink="true">https://www.pennmedicine.org</guid>
+      <description>Operations and informatics on the ambient documentation expansion.</description>
+      <pubDate>Wed, 12 Aug 2026 12:00:00 GMT</pubDate>
+      <category>event</category>
+    </item>
+    <item>
+      <title>Ambient vendor opens an inpatient notes module</title>
+      <link>https://www.pennmedicine.org</link>
+      <guid isPermaLink="true">https://www.pennmedicine.org</guid>
+      <description>An ambient vendor opened inpatient notes in limited release with two Delaware Valley systems as design partners.</description>
+      <pubDate>Tue, 11 Aug 2026 14:00:00 GMT</pubDate>
+      <category>ai</category>
+    </item>
+    <item>
+      <title>September chapter program: ambient tools after the pilot</title>
+      <link>https://dvhimss.org/events-calendar/</link>
+      <guid isPermaLink="true">https://dvhimss.org/events-calendar/</guid>
+      <description>A working session on what actually stayed in clinic after 90 days.</description>
+      <pubDate>Mon, 10 Aug 2026 12:00:00 GMT</pubDate>
+      <category>event</category>
+    </item>
+  </channel>
+</rss>
