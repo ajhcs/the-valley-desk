@@ -77,7 +77,7 @@ export function formatChipLabel(item: ContentItem) {
   return formatChipDay(chipInstant(item));
 }
 
-/** Desk/rail date chip. clockAt on news; startsAt on events. Never a rank key. */
+/** Desk/rail date chip. clockAt on news; startsAt on events. */
 export function chipInstant(item: ContentItem): string | undefined {
   if (item.kind === "news" && (item as NewsItem).clockAt) return (item as NewsItem).clockAt;
   if (item.kind === "event") return (item as EventItem).startsAt;

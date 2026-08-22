@@ -8,11 +8,6 @@ function deskAsk(item: ContentItem) {
   return item.annotations?.find((ann) => ann.type === "ask");
 }
 
-function deskNote(item: ContentItem) {
-  const ask = deskAsk(item);
-  return ask?.text || item.impactSentence || item.dek;
-}
-
 export function Desk({ items }: { items: ContentItem[] }) {
   if (items.length === 0) return null;
   return (
@@ -27,12 +22,16 @@ export function Desk({ items }: { items: ContentItem[] }) {
         );
         return (
           <li key={item.id} className="DeskRow" style={{ ["--i" as string]: i }}>
-            <div className="DeskRow-main">
-              {ask ? <StatusChip ann="ask">ASK</StatusChip> : <DateChip item={item} />}
-              <div className="DeskRow-title">{title}</div>
-              {queued ? <StatusChip queued>QUEUED</StatusChip> : null}
+            {ask ? <StatusChip ann="ask">ASK</StatusChip> : <DateChip item={item} />}
+            <div className="DeskRow-copy">
+              <div className="DeskRow-title">
+                {title}
+                {queued ? <StatusChip queued>QUEUED</StatusChip> : null}
+              </div>
+              {item.impactSentence ? (
+                <p className="DeskRow-impact">{item.impactSentence}</p>
+              ) : null}
             </div>
-            <p className="DeskRow-note">{deskNote(item)}</p>
           </li>
         );
       })}

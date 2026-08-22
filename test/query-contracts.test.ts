@@ -276,7 +276,7 @@ test("upcomingEvents is published events with startsAt >= now and never reads cl
   assert.ok(!("clockAt" in (rows[0] ?? {})));
 });
 
-test("briefingSinceYesterday5pmET may include review/QUEUED; overlap first, then publishedAt — never clockAt", () => {
+test("briefingSinceYesterday5pmET sorts by clockAt else publishedAt; overlap is tiebreak only; includes review", () => {
   const now = new Date("2026-08-22T20:00:00.000Z");
   const clock = news({
     id: "clock",
@@ -323,17 +323,44 @@ test("briefingSinceYesterday5pmET may include review/QUEUED; overlap first, then
   const desk = briefingSinceYesterday5pmET([clock, sharedOlder, sharedNewer, sharedReview, draft], now);
   assert.deepEqual(
     desk.map((i) => i.id),
-    ["shared-newer", "shared-review", "shared-older", "clock"],
+    ["clock", "shared-newer", "shared-review", "shared-older"],
   );
   assert.ok(desk.some((i) => i.status === "review"));
   assert.ok(!desk.some((i) => i.id === "draft"));
+  const tiedA = news({
+    id: "tied-a",
+    slug: "tied-a",
+    title: "Tied A",
+    publishedAt: "2026-08-22T11:00:00.000Z",
+    orgs: ["org-penn"],
+    topics: ["AI"],
+  });
+  const tiedB = news({
+    id: "tied-b",
+    slug: "tied-b",
+    title: "Tied B",
+    publishedAt: "2026-08-22T11:00:00.000Z",
+    orgs: ["org-solo"],
+    topics: ["alone"],
+  });
+  const tiedC = news({
+    id: "tied-c",
+    slug: "tied-c",
+    title: "Tied C",
+    publishedAt: "2026-08-22T11:00:00.000Z",
+    orgs: ["org-penn"],
+    topics: ["AI"],
+  });
+  const tied = briefingSinceYesterday5pmET([tiedB, tiedA, tiedC], now);
+  assert.equal(tied[tied.length - 1]?.id, "tied-b");
   const src = readFileSync(join(root, "src/content/queries.ts"), "utf8");
   const deskFn = src.slice(
     src.indexOf("export function briefingSinceYesterday5pmET"),
     src.indexOf("function isLeadNews"),
   );
-  assert.ok(!deskFn.includes("item.clockAt"));
-  assert.ok(!deskFn.includes("deskSortKey"));
+  assert.ok(deskFn.includes("deskSortKey"));
+  assert.ok(src.includes("clockAt if present"));
+  assert.ok(src.includes('item.status !== "review"'));
 });
 
 test("clockAt is NewsItem-only; EventItem parse strips it", () => {
@@ -508,6 +535,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(lead.includes("Lead-headline"));
   assert.ok(lead.includes("Impact:"));
   assert.ok(desk.includes("DeskRow"));
+  assert.ok(desk.includes("impactSentence"));
+  assert.ok(desk.includes("DeskRow-impact"));
   assert.ok(desk.includes("QUEUED"));
   assert.ok(desk.includes('ann="ask"'));
   assert.ok(!desk.toLowerCase().includes("spill"));

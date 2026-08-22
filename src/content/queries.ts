@@ -185,21 +185,27 @@ function overlapScore(item: ContentItem, orgFreq: Map<string, number>, topicFreq
   return score;
 }
 
-function recencyKey(item: ContentItem): string {
+function windowKey(item: ContentItem): string {
+  return item.publishedAt ?? item.updatedAt;
+}
+
+/** Go-live clock when present, else publishedAt, else updatedAt. */
+function deskSortKey(item: ContentItem): string {
+  if (item.kind === "news" && (item as NewsItem).clockAt) return (item as NewsItem).clockAt as string;
   return item.publishedAt ?? item.updatedAt;
 }
 
 /**
  * Desk strip. Published or review/QUEUED since yesterday 17:00 America/New_York.
- * Rank: org+topic overlap first, then recency (publishedAt/updatedAt).
- * clockAt is a date chip only — never the rank key. Draft off.
+ * Rank: clockAt if present else publishedAt else updatedAt.
+ * Org+topic overlap is a tiebreak only. Draft off. Rails stay published-only.
  */
 export function briefingSinceYesterday5pmET(items: ContentItem[], now = new Date()) {
   const start = windowStartYesterday5pmET(now).getTime();
   const end = now.getTime();
   const windowItems = items.filter((item) => {
     if (item.status !== "published" && item.status !== "review") return false;
-    const t = Date.parse(recencyKey(item));
+    const t = Date.parse(windowKey(item));
     return Number.isFinite(t) && t >= start && t <= end;
   });
 
@@ -211,9 +217,9 @@ export function briefingSinceYesterday5pmET(items: ContentItem[], now = new Date
   }
 
   return [...windowItems].sort((a, b) => {
-    const overlapDelta = overlapScore(b, orgFreq, topicFreq) - overlapScore(a, orgFreq, topicFreq);
-    if (overlapDelta !== 0) return overlapDelta;
-    return recencyKey(b).localeCompare(recencyKey(a));
+    const clockDelta = deskSortKey(b).localeCompare(deskSortKey(a));
+    if (clockDelta !== 0) return clockDelta;
+    return overlapScore(b, orgFreq, topicFreq) - overlapScore(a, orgFreq, topicFreq);
   });
 }
 
