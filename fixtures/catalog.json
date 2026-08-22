@@ -1,0 +1,293 @@
+[
+  {
+    "id": "news-01",
+    "slug": "penn-medicine-ai-scribe-rollout",
+    "kind": "news",
+    "title": "Penn Medicine expands ambient scribe pilots across ambulatory",
+    "dek": "A local operations story, not a vendor release.",
+    "body": "Fixture. Replace with Cole or ingest copy.",
+    "status": "published",
+    "publishedAt": "2026-08-20T14:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "AI",
+      "ambulatory",
+      "operations"
+    ],
+    "orgs": [
+      "Penn Medicine"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom"
+    },
+    "relatedEventIds": [
+      "evt-01"
+    ],
+    "relatedVoiceIds": [
+      "voice-01"
+    ]
+  },
+  {
+    "id": "news-02",
+    "slug": "nj-doh-cyber-advisory-hospitals",
+    "kind": "news",
+    "title": "New Jersey flags hospital cyber readiness ahead of fall season",
+    "dek": "State guidance with regional operational bite.",
+    "body": "Fixture.",
+    "status": "published",
+    "publishedAt": "2026-08-18T11:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "cyber",
+      "policy"
+    ],
+    "orgs": [
+      "NJ DOH"
+    ],
+    "region": "NJ",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": []
+  },
+  {
+    "id": "evt-01",
+    "slug": "dvhimss-september-networking",
+    "kind": "event",
+    "title": "DVHIMSS September networking reception",
+    "dek": "Chapter event. Gold rail on the homepage.",
+    "body": "Fixture published event for the upcoming-events query.",
+    "status": "published",
+    "publishedAt": "2026-08-01T12:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "chapter",
+      "networking"
+    ],
+    "orgs": [
+      "DVHIMSS"
+    ],
+    "region": "regional",
+    "authors": [],
+    "source": {
+      "kind": "ingest",
+      "origin": "dvhimss-events-stub",
+      "url": "https://dvhimss.org/events/",
+      "fetchedAt": "2026-08-22T20:14:00.000Z",
+      "externalId": "dvhimss-2026-09-reception"
+    },
+    "startsAt": "2026-09-17T21:00:00.000Z",
+    "endsAt": "2026-09-17T23:30:00.000Z",
+    "timezone": "America/New_York",
+    "venue": "Center City",
+    "city": "Philadelphia",
+    "hostOrg": "DVHIMSS",
+    "registrationUrl": "https://dvhimss.org/events/",
+    "partner": "dvhimss",
+    "autoPublish": true
+  },
+  {
+    "id": "evt-02",
+    "slug": "jefferson-digital-health-forum",
+    "kind": "event",
+    "title": "Jefferson digital health forum",
+    "dek": "Partner event, review-queued in the stub path; published here so the rail has two dates.",
+    "body": "Fixture.",
+    "status": "published",
+    "publishedAt": "2026-08-10T12:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "digital-health"
+    ],
+    "orgs": [
+      "Jefferson Health"
+    ],
+    "region": "PA",
+    "authors": [],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom"
+    },
+    "startsAt": "2026-10-08T16:00:00.000Z",
+    "timezone": "America/New_York",
+    "city": "Philadelphia",
+    "hostOrg": "Jefferson Health",
+    "partner": "health-system",
+    "autoPublish": false
+  },
+  {
+    "id": "voice-01",
+    "slug": "cio-note-workforce-ai",
+    "kind": "voice",
+    "title": "A Delaware Valley CIO on why ambient AI is a workforce story",
+    "dek": "Local executive post, ingested later via LinkedIn/X.",
+    "body": "Fixture excerpt.",
+    "status": "published",
+    "publishedAt": "2026-08-19T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "workforce",
+      "AI"
+    ],
+    "orgs": [
+      "Main Line Health"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "ingest",
+      "origin": "linkedin-stub",
+      "url": "https://www.linkedin.com/"
+    },
+    "person": "Jane Doe",
+    "role": "CIO",
+    "org": "Main Line Health",
+    "platform": "linkedin",
+    "originalUrl": "https://www.linkedin.com/"
+  },
+  {
+    "id": "policy-01",
+    "slug": "pa-doh-telehealth-guidance-2026",
+    "kind": "policy",
+    "title": "PA DOH updates telehealth documentation guidance",
+    "dek": "State policy change, review-queued when the live adapter lands.",
+    "body": "Fixture.",
+    "status": "published",
+    "publishedAt": "2026-08-12T09:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "telehealth",
+      "documentation"
+    ],
+    "orgs": [
+      "PA DOH"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "ingest",
+      "origin": "pa-doh-stub"
+    },
+    "jurisdiction": "PA",
+    "issuer": "PA-DOH",
+    "effectiveDate": "2026-09-01",
+    "changeType": "guidance"
+  },
+  {
+    "id": "ai-01",
+    "slug": "epic-ambient-listening-note",
+    "kind": "ai",
+    "title": "Epic ships another ambient listening increment",
+    "dek": "National AI release, local only if a Valley system is named.",
+    "body": "Fixture.",
+    "status": "published",
+    "publishedAt": "2026-08-15T13:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "EHR",
+      "ambient"
+    ],
+    "orgs": [
+      "Epic"
+    ],
+    "region": "federal",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "ingest",
+      "origin": "ai-releases-stub"
+    },
+    "vendor": "Epic",
+    "product": "Ambient Listening",
+    "announcedAt": "2026-08-14T15:00:00.000Z"
+  },
+  {
+    "id": "brief-01",
+    "slug": "week-of-2026-08-18",
+    "kind": "briefing",
+    "title": "Week of August 18: scribes, cyber, chapter calendar",
+    "dek": "Composed digest from published items.",
+    "body": "Fixture briefing.",
+    "status": "published",
+    "publishedAt": "2026-08-18T12:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "briefing"
+    ],
+    "orgs": [],
+    "region": "regional",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom"
+    },
+    "windowStart": "2026-08-18T00:00:00.000Z",
+    "windowEnd": "2026-08-22T23:59:59.000Z",
+    "itemIds": [
+      "news-01",
+      "news-02",
+      "evt-01",
+      "policy-01"
+    ]
+  },
+  {
+    "id": "int-01",
+    "slug": "cole-lyons-interview-chapter-year",
+    "kind": "interview",
+    "title": "Cole Lyons: what the chapter year actually has to ship",
+    "dek": "Proprietary interview. Repo-first. Never auto-published from ingest.",
+    "body": "Fixture placeholder for Cole's interview copy.",
+    "status": "draft",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "chapter",
+      "leadership"
+    ],
+    "orgs": [
+      "DVHIMSS"
+    ],
+    "region": "regional",
+    "authors": [
+      {
+        "name": "Cole Lyons",
+        "org": "The Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "cole"
+    },
+    "exclusive": true,
+    "guest": "TBD",
+    "guestOrg": "TBD"
+  }
+]
