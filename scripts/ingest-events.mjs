@@ -298,6 +298,7 @@ function asNjReview(row) {
     registrationUrl: row.registrationUrl,
     partner: "chapter",
     autoPublish: false,
+    featured: false,
   };
 }
 
@@ -348,6 +349,7 @@ try {
         registrationUrl: typeof e.website === "string" && e.website.startsWith("http") ? e.website : page,
         partner: "dvhimss",
         autoPublish: true,
+        featured: false,
       });
     }
   }

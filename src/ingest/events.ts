@@ -28,7 +28,7 @@ function toIso(value: string) {
   return Number.isFinite(local) ? new Date(local).toISOString() : undefined;
 }
 
-function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "autoPublish"> & {
+function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "autoPublish" | "featured"> & {
   status?: EventItem["status"];
   autoPublish?: boolean;
 }): EventItem {
@@ -38,6 +38,7 @@ function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "auto
     status: partial.status ?? "review",
     authors: [],
     autoPublish: partial.autoPublish ?? false,
+    featured: false,
   };
 }
 

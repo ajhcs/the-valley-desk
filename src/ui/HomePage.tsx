@@ -1,32 +1,32 @@
 import { catalog } from "../lib/catalog";
-import { latestNews, upcomingEvents } from "../content/queries";
-import { ItemCard } from "../ui/ItemCard";
+import {
+  briefingSinceYesterday5pmET,
+  latestNews,
+  leadItem,
+  pinnedUpcomingEvents,
+} from "../content/queries";
+import { Desk } from "./home/Desk";
+import { Lead } from "./home/Lead";
+import { Rail } from "./home/Rail";
+import { SiteFooter } from "./home/SiteFooter";
+import { useSessionFirstHome } from "./sessionMotion";
 
 export function HomePage() {
+  const lead = leadItem(catalog);
+  const desk = briefingSinceYesterday5pmET(catalog);
   const news = latestNews(catalog);
-  const events = upcomingEvents(catalog);
+  const events = pinnedUpcomingEvents(catalog);
+  const sessionFirst = useSessionFirstHome();
+
   return (
-    <section className="grid gap-8 md:grid-cols-2">
-      <div>
-        <h1 className="text-sm font-semibold tracking-widest uppercase" style={{ color: "var(--ink)" }}>
-          News
-        </h1>
-        <div>
-          {news.map((item) => (
-            <ItemCard key={item.id} item={item} rail="news" />
-          ))}
-        </div>
+    <div className={sessionFirst ? "HomePage is-session-first" : "HomePage"}>
+      {lead ? <Lead item={lead} /> : null}
+      <Desk items={desk} />
+      <div className="rails">
+        <Rail label="NEWS · LATEST" rail="news" items={news} />
+        <Rail label="EVENTS · NEXT" rail="events" items={events} />
       </div>
-      <div>
-        <h1 className="text-sm font-semibold tracking-widest uppercase" style={{ color: "var(--events)" }}>
-          Events
-        </h1>
-        <div>
-          {events.map((item) => (
-            <ItemCard key={item.id} item={item} rail="events" />
-          ))}
-        </div>
-      </div>
-    </section>
+      <SiteFooter />
+    </div>
   );
 }

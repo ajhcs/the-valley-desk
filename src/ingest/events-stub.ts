@@ -39,6 +39,7 @@ export async function fetchPartnerEvents(
         hostOrg: "DVHIMSS",
         partner: "dvhimss",
         autoPublish: false,
+        featured: false,
       },
     ],
   };

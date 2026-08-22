@@ -5,20 +5,22 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const items = JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8"));
 
-function itemLink(item) {
-  return (
-    item.source?.url ||
-    item.citations?.[0]?.url ||
-    `https://thevalleydesk.org/${item.kind}/${item.slug}`
-  );
+const SITE = "https://thevalleydesk.org";
+const NEWS_PERMALINK_KINDS = new Set(["news", "policy", "ai", "interview"]);
+
+function canonicalPath(item) {
+  if (item.kind === "event") return "/events/" + item.slug;
+  if (NEWS_PERMALINK_KINDS.has(item.kind)) return "/news/" + item.slug;
+  if (item.kind === "voice") return "/voices/" + item.slug;
+  if (item.kind === "briefing") return "/briefing/" + item.slug;
+  return "/" + item.kind + "/" + item.slug;
 }
 
-function cited(item) {
-  return item.status === "published" && Boolean(itemLink(item));
+function canonicalUrl(item) {
+  return SITE + canonicalPath(item);
 }
 
 const published = items.filter((item) => item.status === "published");
-const feedItems = published; // published only; link falls back if uncited
 const updated = published.reduce((max, item) => (item.updatedAt > max ? item.updatedAt : max), "2026-08-22T20:14:00.000Z");
 
 const doc = {
@@ -36,9 +38,11 @@ function esc(s = "") {
     .replaceAll('"', "&quot;");
 }
 
-const rssItems = feedItems
+// Reed lock: RSS <link> and <guid> are our canonical permalink only.
+// source.url stays on the JSON item as citation. Never the RSS link.
+const rssItems = published
   .map((item) => {
-    const link = itemLink(item);
+    const link = canonicalUrl(item);
     const desc = item.impactSentence || item.dek || "";
     const pub = item.publishedAt || item.updatedAt;
     return `    <item>
@@ -55,7 +59,7 @@ const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
     <title>The Valley Desk</title>
-    <link>https://thevalleydesk.org/</link>
+    <link>${SITE}/</link>
     <description>Local health-tech news for people and agents</description>
     <lastBuildDate>${new Date(updated).toUTCString()}</lastBuildDate>
 ${rssItems}
@@ -63,7 +67,24 @@ ${rssItems}
 </rss>
 `;
 
+const sitemapPaths = [
+  "/",
+  "/news",
+  "/events",
+  ...published.map(canonicalPath),
+  "/feed.json",
+  "/feed.xml",
+];
+const seen = new Set();
+const loc = [...sitemapPaths].filter((p) => (seen.has(p) ? false : seen.add(p)));
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${loc.map((path) => `  <url><loc>${SITE}${path === "/" ? "/" : path}</loc></url>`).join("\n")}
+</urlset>
+`;
+
 mkdirSync(join(root, "public"), { recursive: true });
 writeFileSync(join(root, "public/feed.json"), JSON.stringify(doc, null, 2) + "\n");
 writeFileSync(join(root, "public/feed.xml"), rss);
-console.log("wrote public/feed.json (" + published.length + ") and public/feed.xml (" + feedItems.length + " published)");
+writeFileSync(join(root, "public/sitemap.xml"), sitemap);
+console.log("wrote public/feed.json (" + published.length + "), public/feed.xml, public/sitemap.xml");

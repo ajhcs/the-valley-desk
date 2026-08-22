@@ -1,49 +1,39 @@
-import { Link, Outlet } from "@tanstack/react-router";
-
-const nav = [
-  ["/", "Home"],
-  ["/news", "News"],
-  ["/events", "Events"],
-  ["/voices", "Voices"],
-  ["/policy", "Policy"],
-  ["/ai", "AI"],
-  ["/briefing", "Briefing"],
-] as const;
+import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { SiteFooter } from "./home/SiteFooter";
 
 export function Layout() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHome = pathname === "/";
+
   return (
-    <div className="min-h-screen">
-      <header className="border-b" style={{ borderColor: "var(--ink)" }}>
-        <div className="mx-auto max-w-5xl px-4 py-4 flex items-center gap-3">
-          <Link to="/" className="shrink-0" aria-label="The Valley Desk home">
-            <img
-              src="/header-lockup.svg"
-              alt="The Valley Desk"
-              className="h-10 w-auto"
-            />
+    <div className="Shell">
+      <header className="SiteHeader">
+        <div className="SiteHeader-inner">
+          <Link to="/" className="SiteHeader-brand" aria-label="The Valley Desk home">
+            <img className="MarkFold" src="/mark-a-fold.svg" alt="" />
+            <span className="Wordmark">
+              <span className="Wordmark-kicker">The</span>
+              <span className="Wordmark-name">Valley Desk</span>
+            </span>
           </Link>
-          <p className="text-xs hidden sm:block" style={{ color: "var(--text)" }}>
-            Local health-tech news for people and agents
-          </p>
-          <a
-            href="/feed.json"
-            className="ml-auto text-xs underline"
-            style={{ color: "var(--admiral)" }}
-          >
-            feed.json
-          </a>
-        </div>
-        <nav className="mx-auto max-w-5xl px-4 pb-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-          {nav.map(([to, label]) => (
-            <Link key={to} to={to} className="hover:underline" style={{ color: "var(--ink)" }}>
-              {label}
+          <nav className="SiteNav">
+            <Link to="/news" className="NavLink is-news">
+              News
             </Link>
-          ))}
-        </nav>
+            <Link to="/events" className="NavLink is-events">
+              Events
+            </Link>
+          </nav>
+        </div>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="SiteMain">
         <Outlet />
       </main>
+      {isHome ? null : (
+        <div className="SiteChromeFooter">
+          <SiteFooter />
+        </div>
+      )}
     </div>
   );
 }

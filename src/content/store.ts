@@ -1,10 +1,10 @@
-import { ContentItem } from "./schema";
+import { ContentCatalog, type ContentItem } from "./schema";
 import { Entity } from "./entity";
 import fixtures from "../../fixtures/catalog.json";
 import entityFixtures from "../../fixtures/entities.json";
 
 export function loadCatalog(): ContentItem[] {
-  return ContentItem.array().parse(fixtures);
+  return ContentCatalog.parse(fixtures);
 }
 
 export function loadEntities(): Entity[] {

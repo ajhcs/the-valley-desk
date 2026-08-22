@@ -1,11 +1,16 @@
 import type { ContentItem } from "../content/schema";
-import { byKind } from "../content/queries";
+import { byKind, latestNews, pinnedUpcomingEvents } from "../content/queries";
 import { catalog } from "../lib/catalog";
 import { KIND_LABEL } from "../lib/kind";
 import { ItemCard } from "./ItemCard";
 
 export function KindListPage({ kind }: { kind: ContentItem["kind"] }) {
-  const items = byKind(catalog, kind);
+  const items =
+    kind === "event"
+      ? pinnedUpcomingEvents(catalog, new Date(), 50)
+      : kind === "news"
+        ? latestNews(catalog, Number.MAX_SAFE_INTEGER)
+        : byKind(catalog, kind);
   const rail = kind === "event" ? "events" : "news";
   return (
     <section>

@@ -103,6 +103,7 @@ export function rssItemToContent(
     citations: [{ name: feedName, url: raw.link }],
     relatedEventIds: [],
     relatedVoiceIds: [],
+    featured: false,
   };
 }
 

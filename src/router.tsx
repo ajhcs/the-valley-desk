@@ -52,13 +52,12 @@ const briefingSlugRoute = createRoute({
   },
 });
 
+// Reed v1 lock: do not mint org-id routes or generate entity pages from the seed.
 const routeTree = rootRoute.addChildren([
   indexRoute,
   ...section("/news", "news"),
   ...section("/events", "event"),
   ...section("/voices", "voice"),
-  ...section("/policy", "policy"),
-  ...section("/ai", "ai"),
   briefingRoute,
   briefingSlugRoute,
 ]);

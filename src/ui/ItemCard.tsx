@@ -1,7 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import type { ContentItem, EventItem } from "../content/schema";
 import { formatDate, formatWhen, sourceLine } from "../lib/format";
-import { itemHref } from "../lib/kind";
+import { kindChip, itemHref } from "../lib/kind";
+import { eventRegisterUrl } from "../lib/register";
+import { RegisterLink } from "./RegisterLink";
+import { ItemJsonLd } from "./ItemJsonLd";
+import { StatusChip } from "./home/StatusChip";
 
 export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "events" }) {
   const meta = item.kind === "event" ? formatWhen((item as EventItem).startsAt) : formatDate(item.publishedAt);
@@ -9,6 +13,8 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
   const accent = rail === "events" ? "var(--events)" : "var(--ink)";
   return (
     <article className="border-t py-3" style={{ borderColor: accent }}>
+      <ItemJsonLd item={item} />
+      {rail === "events" ? null : <StatusChip kind={item.kind}>{kindChip(item)}</StatusChip>}
       <p className="text-xs tracking-wide uppercase" style={{ color: accent }}>
         {item.region}
         {place ? " · " + place : ""}
@@ -23,6 +29,12 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
         {meta}
         {" · "}
         {sourceLine(item)}
+        {rail === "events" && eventRegisterUrl(item) ? (
+          <>
+            {" · "}
+            <RegisterLink item={item} />
+          </>
+        ) : null}
       </p>
     </article>
   );

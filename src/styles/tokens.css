@@ -7,13 +7,20 @@
   --admiral: #1E22AA;
   --sky: #54C0E8;
   --navy: #050766;
-  --paper: #F7F4EC;
-  --paper-bright: #FFFCF7;
+  --paper: #FFFFFF;
+  --paper-bright: #FFFFFF;
   --text: #101828;
   --mute: #475467;
-  --rule: #D6D6E7;
+  --rule: #E6E8EE;
   --event: #CA8504;
   --events: #CA8504;
+
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-slow: 240ms;
+  --motion-max: 280ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --stagger: 28ms;
 
   /* Live cousins — documented, not default UI */
   --himss-bright: #3136CC;

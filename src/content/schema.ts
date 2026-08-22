@@ -34,6 +34,12 @@ export const Citation = z.object({
   url: z.string().url(),
 });
 
+/** Editorial marks. Not a kind. Allowed on published desk rows and the featured lead. */
+export const Annotation = z.object({
+  type: z.enum(["ask", "spill"]),
+  text: z.string(),
+});
+
 const Base = z.object({
   id: z.string(),
   slug: z.string(),
@@ -52,12 +58,17 @@ const Base = z.object({
   geo: z.string().optional(),
   impactSentence: z.string().optional(),
   citations: z.array(Citation).optional(),
+  /** Editorial only. Ingest must never set true. Default false. */
+  featured: z.boolean().default(false),
+  annotations: z.array(Annotation).optional(),
 });
 
 export const NewsItem = Base.extend({
   kind: z.literal("news"),
   relatedEventIds: z.array(z.string()),
   relatedVoiceIds: z.array(z.string()),
+  /** Go-live clock. ISO UTC. Newsroom wall is America/New_York. Not publishedAt. */
+  clockAt: z.string().datetime().optional(),
 });
 
 export const EventItem = Base.extend({
@@ -71,6 +82,7 @@ export const EventItem = Base.extend({
   registrationUrl: z.string().url().optional(),
   partner: z.enum([
     "dvhimss",
+    "njhimss",
     "chapter",
     "health-system",
     "vendor",
@@ -142,10 +154,27 @@ export function canPublish(item: {
   kind: string;
   status: string;
   impactSentence?: string;
+  partner?: string;
+  registrationUrl?: string;
 }): boolean {
   if (item.status !== "published") return false;
   if (needsImpactSentence(item.kind) && !item.impactSentence?.trim()) return false;
+  if (
+    item.kind === "event" &&
+    (item.partner === "dvhimss" || item.partner === "njhimss") &&
+    !item.registrationUrl
+  ) {
+    return false;
+  }
   return true;
+}
+
+export function isFeaturedPublishedNews(item: {
+  kind: string;
+  status: string;
+  featured?: boolean;
+}): boolean {
+  return item.kind === "news" && item.status === "published" && item.featured === true;
 }
 
 export const ContentItem = ContentItemUnion.superRefine((item, ctx) => {
@@ -156,9 +185,54 @@ export const ContentItem = ContentItemUnion.superRefine((item, ctx) => {
       message: "impactSentence is required to publish news, policy, ai, or interview",
     });
   }
+  if (item.annotations?.length && item.status !== "published") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["annotations"],
+      message: "annotations are only allowed on published desk rows and the featured lead",
+    });
+  }
+  if (
+    item.status === "published" &&
+    item.kind === "event" &&
+    (item.partner === "dvhimss" || item.partner === "njhimss") &&
+    !item.registrationUrl
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["registrationUrl"],
+      message: "registrationUrl is required to publish dvhimss or njhimss events",
+    });
+  }
 });
 
+export const ContentCatalog = z.array(ContentItem).superRefine((items, ctx) => {
+  const featuredNews = items.filter(isFeaturedPublishedNews);
+  if (featuredNews.length > 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "at most one featured published news item at a time",
+    });
+  }
+});
+
+/** Editorial: feature this news row and clear featured on every other news row. */
+export function setFeaturedNews<T extends { id: string; kind: string; featured?: boolean; annotations?: unknown }>(
+  items: T[],
+  id: string,
+): T[] {
+  const target = items.find((item) => item.id === id);
+  if (!target || target.kind !== "news") return items;
+  return items.map((item) => {
+    if (item.kind !== "news") return item;
+    const featured = item.id === id;
+    if (item.featured === featured) return item;
+    return { ...item, featured };
+  });
+}
+
 export type ContentItem = z.infer<typeof ContentItemUnion>;
+export type Annotation = z.infer<typeof Annotation>;
 export type EventItem = z.infer<typeof EventItem>;
 export type NewsItem = z.infer<typeof NewsItem>;
 export type VoiceItem = z.infer<typeof VoiceItem>;

@@ -19,7 +19,7 @@
         "operations"
       ],
       "orgs": [
-        "Penn Medicine"
+        "org-penn"
       ],
       "region": "PA",
       "authors": [
@@ -62,7 +62,7 @@
         "policy"
       ],
       "orgs": [
-        "NJ DOH"
+        "org-nj-doh"
       ],
       "region": "NJ",
       "authors": [
@@ -87,6 +87,235 @@
       "geo": "Trenton, NJ"
     },
     {
+      "id": "news-jefferson-einstein-mychart",
+      "slug": "jefferson-einstein-mychart-go-live",
+      "kind": "news",
+      "title": "Jefferson Einstein records move to MyJeffersonHealth on Sept. 26",
+      "dek": "Einstein patients leave MyEinsteinHealth for Jefferson's Epic MyChart. A go-live clock, not an event.",
+      "body": "Fixture. Replace with Cole copy.",
+      "status": "published",
+      "publishedAt": "2026-08-01T14:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [
+        "EHR",
+        "MyChart"
+      ],
+      "orgs": [
+        "org-jefferson",
+        "org-jefferson-einstein-phila",
+        "org-jefferson-einstein-montgomery"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Valley Desk"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "newsroom",
+        "url": "https://www.jeffersonhealth.org/your-health/my-jefferson-health/einstein-patient-portal"
+      },
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "clockAt": "2026-09-26T04:00:00.000Z",
+      "impactSentence": "Einstein's Sept. 26 MyChart cutover is a Jefferson operations clock, not a chapter event.",
+      "citations": [
+        {
+          "name": "Jefferson Health",
+          "url": "https://www.jeffersonhealth.org/your-health/my-jefferson-health/einstein-patient-portal"
+        }
+      ],
+      "geo": "Philadelphia, PA"
+    },
+    {
+      "id": "news-christianacare-epic",
+      "slug": "christianacare-epic-go-live",
+      "kind": "news",
+      "title": "ChristianaCare sets Oct. 3, 2026 Epic go-live",
+      "dek": "The Wilmington system is in the final stage. Patients keep appointments unless contacted.",
+      "body": "ChristianaCare is cutting its clinical record, caregiver workflows, and patient tools over to Epic on Oct. 3, 2026. A July 2026 update put the Wilmington system in the final stage, less than three months out. COO Ric Cuming said caregivers must finish on-demand and live role-based training, and pass readiness checks, before they use the new system. Patients keep appointments unless contacted. After go-live they move to ChristianaCare MyChart for results, visit summaries, scheduling, messaging, eCheck-in, refills, and bill pay. Care Everywhere will share records with participating Epic organizations when a patient is treated off-campus. ChristianaCare said that once it is live, all Delaware health systems, and many more in Pennsylvania, New Jersey, and Maryland, will also be on Epic.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-07-01T16:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [
+        "EHR",
+        "Epic"
+      ],
+      "orgs": [
+        "org-christianacare"
+      ],
+      "region": "DE",
+      "authors": [
+        {
+          "name": "Valley Desk"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "newsroom",
+        "url": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/"
+      },
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "clockAt": "2026-10-03T04:00:00.000Z",
+      "impactSentence": "ChristianaCare said that once it is live, all Delaware health systems, and many more in Pennsylvania, New Jersey, and Maryland, will also be on Epic.",
+      "citations": [
+        {
+          "name": "ChristianaCare News",
+          "url": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/"
+        },
+        {
+          "name": "FAC Note 18",
+          "url": "https://app.fac.gov/dissemination/report/pdf/2025-06-GSAFAC-0000407992"
+        }
+      ],
+      "geo": "Wilmington, DE"
+    },
+    {
+      "id": "news-jefferson-fy2026-loss",
+      "slug": "jefferson-fy2026-operating-loss",
+      "kind": "news",
+      "title": "Jefferson posts $181.5 million operating loss for FY2026",
+      "dek": "Bondholder results published by The Inquirer on Aug. 14, 2026 included $112 million in layoff and related costs.",
+      "body": "Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, in results reported to bondholders and published by The Philadelphia Inquirer on Aug. 14, 2026. The results included $112 million in layoff and related costs. Jefferson closed on Lehigh Valley Health Network on Aug. 1, 2024. Chief financial officer Michael Harrington told The Inquirer that commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross last month over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law. The $181.5 million loss does not move until a court or a new contract does.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-08-14T16:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [
+        "finance"
+      ],
+      "orgs": [
+        "org-jefferson"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Valley Desk"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "newsroom",
+        "url": "https://www.inquirer.com/health/jefferson-health-financial-loss-fiscal-2026-20260814.html"
+      },
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "impactSentence": "The $181.5 million loss does not move until a court or a new contract does.",
+      "citations": [
+        {
+          "name": "Inquirer",
+          "url": "https://www.inquirer.com/health/jefferson-health-financial-loss-fiscal-2026-20260814.html"
+        },
+        {
+          "name": "Fitch",
+          "url": "https://www.fitchratings.com/research/us-public-finance/fitch-rates-thomas-jefferson-univ-pa-cp-notes-f1-affirms-idr-revs-at-a-outlook-negative-18-06-2026"
+        }
+      ],
+      "geo": "Philadelphia, PA"
+    },
+    {
+      "id": "news-penn-ai-scribe",
+      "slug": "penn-in-house-ai-scribe",
+      "kind": "news",
+      "title": "Penn's in-house AI scribe is on about 1,200 ambulatory providers",
+      "dek": "The Philadelphia Inquirer, Nov. 10, 2025: internist Dina Capalongo hits a green button; the doctor still approves the note.",
+      "body": "Dina Capalongo, a Penn Medicine internist, hits a green button on her phone. The draft note is usually on the screen before she leaves the room, the Philadelphia Inquirer reported Nov. 10, 2025. The product is Penn’s in-house AI scribe. Ambient listening records the visit and writes a sectioned note the doctor must approve. About 1,200 ambulatory providers were using it, the Inquirer said. A separate 46-clinician Penn pilot in JAMA Network Open (Feb. 19, 2025) associated a scribe with 10.3 minutes in notes per visit falling to 8.2. Kevin B. Johnson, who leads Penn’s AI4AI Lab, called those “early but promising results.” The journal article does not name a commercial vendor. Epic Systems’ Signal tool timed the EHR use.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2025-11-10T16:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [
+        "AI"
+      ],
+      "orgs": [
+        "org-penn"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Valley Desk"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "newsroom",
+        "url": "https://www.inquirer.com/health/penn-jefferson-artificial-intelligence-health-20251110.html"
+      },
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "impactSentence": "About 1,200 ambulatory providers were using it, the Inquirer said.",
+      "citations": [
+        {
+          "name": "Inquirer",
+          "url": "https://www.inquirer.com/health/penn-jefferson-artificial-intelligence-health-20251110.html"
+        },
+        {
+          "name": "DOI",
+          "url": "https://doi.org/10.1001/jamanetworkopen.2024.60637"
+        },
+        {
+          "name": "Penn",
+          "url": "https://www.pennmedicine.org/news/ai-scribe-increases-face-to-face-time-with-patients"
+        }
+      ],
+      "geo": "Philadelphia, PA"
+    },
+    {
+      "id": "news-temple-dragon-copilot",
+      "slug": "temple-dragon-copilot-400",
+      "kind": "news",
+      "title": "Temple rolls Dragon Copilot to 400 users",
+      "dek": "CMIO Benjamin Slovis told HealthTech the tool is not yet a silver bullet.",
+      "body": "Benjamin Slovis, Temple University Hospital’s CMIO, has a Microsoft Dragon Copilot rollout to 400 end users, HealthTech Magazine reported in August 2026. Dragon Copilot records the visit and drafts a note the doctor still has to sign. Temple’s June 8, 2026 note says Slovis described that workflow, as DAX Copilot, to the Bucks County Herald. The Philadelphia Business Journal, April 1, 2026, said pilot data showed more than a 10 percent cut in after-hours documentation before the expansion to nearly 400 physicians. Slovis told HealthTech the tool is “not yet a silver bullet.” TUHS’s unaudited June 30, 2025 year-end report showed 116 days cash on hand, down from 124 a year earlier. That liquidity line is not a Copilot metric.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-08-01T16:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [
+        "AI"
+      ],
+      "orgs": [
+        "org-temple",
+        "org-temple-tuh-main"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Valley Desk"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "newsroom",
+        "url": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine"
+      },
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "impactSentence": "That liquidity line is not a Copilot metric.",
+      "citations": [
+        {
+          "name": "HealthTech",
+          "url": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine"
+        },
+        {
+          "name": "Temple",
+          "url": "https://www.templehealth.org/about/news/in-the-media/dr-benjamin-slovis-discusses-temple-healths-utilization-of-artificial-intelligence-with-bucks-county-herald"
+        },
+        {
+          "name": "PBJ",
+          "url": "https://www.bizjournals.com/philadelphia/news/2026/04/01/temple-health-ai-patient-safety.html"
+        },
+        {
+          "name": "TUHS PDF",
+          "url": "https://tuhsfinance.templehealth.org/CURRENT%20STATEMENTS/TUHS%20Investor%20Quarterly%20Report%20-%20June%2030,%202025.pdf"
+        }
+      ],
+      "geo": "Philadelphia, PA"
+    },
+    {
       "id": "evt-01",
       "slug": "dvhimss-september-networking",
       "kind": "event",
@@ -101,7 +330,7 @@
         "networking"
       ],
       "orgs": [
-        "DVHIMSS"
+        "org-dvhimss"
       ],
       "region": "regional",
       "authors": [],
@@ -143,7 +372,7 @@
         "digital-health"
       ],
       "orgs": [
-        "Jefferson Health"
+        "org-jefferson"
       ],
       "region": "PA",
       "authors": [],
@@ -181,7 +410,7 @@
         "AI"
       ],
       "orgs": [
-        "Main Line Health"
+        "org-main-line"
       ],
       "region": "PA",
       "authors": [
@@ -221,7 +450,7 @@
         "documentation"
       ],
       "orgs": [
-        "PA DOH"
+        "org-pa-doh"
       ],
       "region": "PA",
       "authors": [
@@ -261,9 +490,7 @@
         "EHR",
         "ambient"
       ],
-      "orgs": [
-        "Epic"
-      ],
+      "orgs": [],
       "region": "federal",
       "authors": [
         {
@@ -334,7 +561,7 @@
         "events"
       ],
       "orgs": [
-        "DVHIMSS"
+        "org-dvhimss"
       ],
       "region": "regional",
       "authors": [],
@@ -375,7 +602,7 @@
         "events"
       ],
       "orgs": [
-        "DVHIMSS"
+        "org-dvhimss"
       ],
       "region": "NJ",
       "authors": [],
