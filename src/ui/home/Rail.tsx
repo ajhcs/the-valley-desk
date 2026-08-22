@@ -1,15 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import type { ContentItem } from "../../content/schema";
-import { KIND_LABEL, itemHref } from "../../lib/kind";
+import { kindChip, itemHref } from "../../lib/kind";
 import { DateChip } from "./DateChip";
 import { StatusChip } from "./StatusChip";
 import { RegisterLink } from "../RegisterLink";
 import { ItemJsonLd } from "../ItemJsonLd";
-
-function newsChip(item: ContentItem) {
-  const topic = item.topics[0];
-  return topic ? topic.replace(/-/g, " ") : KIND_LABEL[item.kind];
-}
 
 export function Rail({
   label,
@@ -36,7 +31,7 @@ export function Rail({
             ) : (
               <>
                 <div className="RailRow-top">
-                  <StatusChip kind={item.kind}>{newsChip(item)}</StatusChip>
+                  <StatusChip kind={item.kind}>{kindChip(item)}</StatusChip>
                 </div>
                 <Link to={itemHref(item)}>{item.title}</Link>
                 {item.impactSentence ? (

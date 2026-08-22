@@ -225,10 +225,26 @@ ul.desk {
   transform: none;
 }
 
-.Rail[data-rail="news"] .StatusChip {
+.StatusChip[data-kind="news"],
+.StatusChip[data-kind="event"] {
   padding: 2px 6px;
-  background: var(--rule);
   color: var(--mute);
+  border: 1px solid var(--rule);
+  background: transparent;
+}
+
+.StatusChip[data-kind="policy"] {
+  padding: 2px 6px;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  background: transparent;
+}
+
+.StatusChip[data-kind="ai"] {
+  padding: 2px 6px;
+  color: var(--admiral);
+  border: 1px solid var(--admiral);
+  background: transparent;
 }
 
 .StatusChip[data-status="review"],

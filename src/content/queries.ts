@@ -8,7 +8,11 @@ export function bindSeedOrgIds(ids: ReadonlySet<string>) {
   boundSeedOrgIds = new Set(ids);
 }
 
-function isLatestNewsRow(item: ContentItem, seedOrgIds: ReadonlySet<string>): boolean {
+/** Public news-family gate. Empty orgs[] does not ship. Interview off. */
+export function isPublicNewsFamily(
+  item: ContentItem,
+  seedOrgIds: ReadonlySet<string> = boundSeedOrgIds,
+): boolean {
   if (item.status !== "published") return false;
   if (item.kind !== "news" && item.kind !== "policy" && item.kind !== "ai") return false;
   if (!item.impactSentence?.trim()) return false;
@@ -23,7 +27,7 @@ export function latestNews(
   seedOrgIds: ReadonlySet<string> = boundSeedOrgIds,
 ) {
   return items
-    .filter((item) => isLatestNewsRow(item, seedOrgIds))
+    .filter((item) => isPublicNewsFamily(item, seedOrgIds))
     .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
     .slice(0, n);
 }

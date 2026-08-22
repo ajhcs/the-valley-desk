@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import {
   briefingSinceYesterday5pmET,
   featuredLead,
+  isPublicNewsFamily,
   latestNews,
   leadItem,
   nextChapterEvent,
@@ -30,6 +31,7 @@ import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
 import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
 import { formatChipLabel, formatLeadDate } from "../src/lib/format.ts";
+import { KIND_CHIP, kindChip } from "../src/lib/kind.ts";
 import { Entity } from "../src/content/entity.ts";
 
 const require = createRequire(import.meta.url);
@@ -221,6 +223,78 @@ test("latestNews bounces empty orgs, review, interview, and Crozer-only orgs", (
   assert.ok(!seeds.has("org-crozer"));
   const rows = latestNews([nationalAi, crozerOnly, reviewNews, interview], 10, seeds);
   assert.deepEqual(rows.map((i) => i.id), []);
+});
+
+test("kind chip is item.kind, never topics[0]; Jefferson loss is HIT", () => {
+  const loss = catalog.find((i) => i.id === "news-jefferson-fy2026-loss");
+  assert.ok(loss);
+  assert.equal(loss.kind, "news");
+  assert.equal(loss.topics[0], "finance");
+  assert.equal(kindChip(loss), "HIT");
+  assert.notEqual(kindChip(loss), loss.topics[0]);
+  const penn = catalog.find((i) => i.id === "news-penn-ai-scribe");
+  assert.ok(penn);
+  assert.equal(penn.kind, "news");
+  assert.equal(penn.topics[0], "AI");
+  assert.equal(kindChip(penn), "HIT");
+  const policy = catalog.find((i) => i.kind === "policy");
+  assert.ok(policy);
+  assert.equal(kindChip(policy), "POLICY");
+  const ai = catalog.find((i) => i.id === "ai-01");
+  assert.ok(ai);
+  assert.equal(kindChip(ai), "AI");
+  const chapter = catalog.find((i) => i.kind === "event");
+  assert.ok(chapter);
+  assert.equal(kindChip(chapter), "CHAPTER");
+  assert.equal(KIND_CHIP.news, "HIT");
+  assert.equal(KIND_CHIP.event, "CHAPTER");
+  const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
+  const card = readFileSync(join(root, "src/ui/ItemCard.tsx"), "utf8");
+  assert.ok(!rail.includes("topics[0]"));
+  assert.ok(!card.includes("topics[0]"));
+  assert.ok(rail.includes("kindChip"));
+  assert.ok(card.includes("kindChip"));
+});
+
+test("kind chip paint is mute/rule, ink, or admiral — never sky, never gold except QUEUED", () => {
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  const kindNews = css.slice(css.indexOf('.StatusChip[data-kind="news"]'), css.indexOf('.StatusChip[data-kind="policy"]'));
+  const kindPolicy = css.slice(css.indexOf('.StatusChip[data-kind="policy"]'), css.indexOf('.StatusChip[data-kind="ai"]'));
+  const kindAi = css.slice(css.indexOf('.StatusChip[data-kind="ai"]'), css.indexOf('.StatusChip[data-status="review"]'));
+  const queued = css.slice(css.indexOf('.StatusChip[data-status="review"]'), css.indexOf('.StatusChip[data-ann="ask"]'));
+  assert.ok(kindNews.includes("var(--mute)"));
+  assert.ok(kindNews.includes("var(--rule)"));
+  assert.ok(kindNews.includes('[data-kind="event"]'));
+  assert.ok(!kindNews.includes("var(--sky)"));
+  assert.ok(!kindNews.includes("var(--event)"));
+  assert.ok(!kindNews.includes("var(--events)"));
+  assert.ok(kindPolicy.includes("var(--ink)"));
+  assert.ok(!kindPolicy.includes("var(--sky)"));
+  assert.ok(!kindPolicy.includes("var(--event)"));
+  assert.ok(kindAi.includes("var(--admiral)"));
+  assert.ok(!kindAi.includes("var(--sky)"));
+  assert.ok(!kindAi.includes("var(--event)"));
+  assert.ok(queued.includes("var(--event)"));
+  assert.ok(queued.includes("data-queued"));
+});
+
+test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => {
+  const page = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
+  const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
+  assert.ok(page.includes("latestNews(catalog, Number.MAX_SAFE_INTEGER)"));
+  assert.ok(!page.includes("newsFamily"));
+  assert.ok(home.includes("latestNews(catalog)"));
+  const ai = catalog.find((i) => i.id === "ai-01");
+  assert.ok(ai);
+  assert.deepEqual(ai.orgs, []);
+  assert.ok(ai.impactSentence?.trim());
+  assert.equal(ai.status, "published");
+  assert.ok(!isPublicNewsFamily(ai, seedIds));
+  const newsPage = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
+  assert.ok(!newsPage.some((i) => i.id === "ai-01"));
+  assert.ok(newsPage.every((i) => isPublicNewsFamily(i, seedIds)));
+  assert.ok(newsPage.some((i) => i.id === "news-jefferson-fy2026-loss"));
+  assert.ok(newsPage.some((i) => i.kind === "policy"));
 });
 
 test("upcomingEvents is published events with startsAt >= now and never reads clockAt", () => {
@@ -524,6 +598,9 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(home.includes("latestNews"));
   assert.ok(home.includes("pinnedUpcomingEvents"));
   assert.ok(eventsPage.includes("pinnedUpcomingEvents"));
+  assert.ok(eventsPage.includes("latestNews"));
+  assert.ok(!eventsPage.includes("newsFamily"));
+  assert.ok(!rail.includes("topics[0]"));
   assert.ok(!home.includes("briefing[0]"));
   assert.ok(!home.includes("subscribe"));
   assert.ok(!home.includes("deskClocks"));
