@@ -15,7 +15,7 @@
       "operations"
     ],
     "orgs": [
-      "Penn Medicine"
+      "org-penn"
     ],
     "region": "PA",
     "authors": [
@@ -97,7 +97,7 @@
       "networking"
     ],
     "orgs": [
-      "DVHIMSS"
+      "org-dvhimss"
     ],
     "region": "regional",
     "authors": [],
@@ -139,7 +139,7 @@
       "digital-health"
     ],
     "orgs": [
-      "Jefferson Health"
+      "org-jefferson"
     ],
     "region": "PA",
     "authors": [],
@@ -177,7 +177,7 @@
       "AI"
     ],
     "orgs": [
-      "Main Line Health"
+      "org-main-line"
     ],
     "region": "PA",
     "authors": [
@@ -257,9 +257,7 @@
       "EHR",
       "ambient"
     ],
-    "orgs": [
-      "Epic"
-    ],
+    "orgs": [],
     "region": "federal",
     "authors": [
       {
@@ -329,7 +327,7 @@
       "leadership"
     ],
     "orgs": [
-      "DVHIMSS"
+      "org-dvhimss"
     ],
     "region": "regional",
     "authors": [
@@ -361,7 +359,7 @@
       "events"
     ],
     "orgs": [
-      "DVHIMSS"
+      "org-dvhimss"
     ],
     "region": "regional",
     "authors": [],
@@ -402,7 +400,7 @@
       "events"
     ],
     "orgs": [
-      "DVHIMSS"
+      "org-dvhimss"
     ],
     "region": "NJ",
     "authors": [],
