@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>The Valley Desk</title>
+    <link>https://thevalleydesk.org/</link>
+    <description>Local health-tech news for people and agents</description>
+    <lastBuildDate>Sat, 22 Aug 2026 20:14:00 GMT</lastBuildDate>
+    <item>
+      <title>DVHIMSS September networking reception</title>
+      <link>https://dvhimss.org/events/</link>
+      <guid isPermaLink="true">https://dvhimss.org/events/</guid>
+      <description>Chapter event. Gold rail on the homepage.</description>
+      <pubDate>Sat, 01 Aug 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>A Delaware Valley CIO on why ambient AI is a workforce story</title>
+      <link>https://www.linkedin.com/</link>
+      <guid isPermaLink="true">https://www.linkedin.com/</guid>
+      <description>Local executive post, ingested later via LinkedIn/X.</description>
+      <pubDate>Wed, 19 Aug 2026 16:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>
