@@ -263,7 +263,7 @@ test("upcomingEvents is published events with startsAt >= now and never reads cl
   assert.ok(!("clockAt" in (rows[0] ?? {})));
 });
 
-test("briefingSinceYesterday5pmET includes review, sorts clockAt else publishedAt, overlap ties", () => {
+test("briefingSinceYesterday5pmET is published only; overlap first, then publishedAt — never clockAt", () => {
   const now = new Date("2026-08-22T20:00:00.000Z");
   const clock = news({
     id: "clock",
@@ -274,11 +274,19 @@ test("briefingSinceYesterday5pmET includes review, sorts clockAt else publishedA
     orgs: ["org-jefferson"],
     topics: ["EHR"],
   });
-  const sharedA = news({
-    id: "shared-a",
-    slug: "shared-a",
-    title: "Shared A",
+  const sharedOlder = news({
+    id: "shared-older",
+    slug: "shared-older",
+    title: "Shared older",
     publishedAt: "2026-08-22T10:00:00.000Z",
+    orgs: ["org-penn"],
+    topics: ["AI"],
+  });
+  const sharedNewer = news({
+    id: "shared-newer",
+    slug: "shared-newer",
+    title: "Shared newer",
+    publishedAt: "2026-08-22T14:00:00.000Z",
     orgs: ["org-penn"],
     topics: ["AI"],
   });
@@ -299,13 +307,20 @@ test("briefingSinceYesterday5pmET includes review, sorts clockAt else publishedA
     status: "draft",
     publishedAt: "2026-08-22T19:00:00.000Z",
   });
-  const desk = briefingSinceYesterday5pmET([clock, sharedA, sharedReview, draft], now);
+  const desk = briefingSinceYesterday5pmET([clock, sharedOlder, sharedNewer, sharedReview, draft], now);
   assert.deepEqual(
     desk.map((i) => i.id),
-    ["clock", "shared-review", "shared-a"],
+    ["shared-newer", "shared-older", "clock"],
   );
+  assert.ok(!desk.some((i) => i.status === "review"));
   assert.ok(!desk.some((i) => i.id === "draft"));
-  assert.ok(desk.some((i) => i.status === "review"));
+  const src = readFileSync(join(root, "src/content/queries.ts"), "utf8");
+  const deskFn = src.slice(
+    src.indexOf("export function briefingSinceYesterday5pmET"),
+    src.indexOf("function isLeadNews"),
+  );
+  assert.ok(!deskFn.includes("item.clockAt"));
+  assert.ok(!deskFn.includes("deskSortKey"));
 });
 
 test("clockAt is NewsItem-only; EventItem parse strips it", () => {
@@ -325,7 +340,7 @@ test("clockAt is NewsItem-only; EventItem parse strips it", () => {
   assert.equal("clockAt" in parsed, false);
 });
 
-test("annotations are only valid on briefing rows and the featured lead", () => {
+test("annotations are allowed on published desk rows and the featured lead", () => {
   const lead = news({
     id: "lead",
     slug: "lead",
@@ -334,14 +349,23 @@ test("annotations are only valid on briefing rows and the featured lead", () => 
     annotations: [{ type: "ask", text: "Who owns the cutover?" }],
   });
   ContentItem.parse(lead);
-  const ordinary = news({
-    id: "ord",
-    slug: "ord",
-    title: "Ordinary",
+  const clockSpill = news({
+    id: "clock-spill",
+    slug: "clock-spill",
+    title: "Clock spill",
     featured: false,
+    clockAt: "2026-09-26T04:00:00.000Z",
+    annotations: [{ type: "spill", text: "Einstein MyChart, not an event." }],
+  });
+  ContentItem.parse(clockSpill);
+  const queued = news({
+    id: "queued-ann",
+    slug: "queued-ann",
+    title: "Queued",
+    status: "review",
     annotations: [{ type: "spill", text: "No" }],
   });
-  assert.throws(() => ContentItem.parse(ordinary));
+  assert.throws(() => ContentItem.parse(queued));
 });
 
 test("ingest never sets featured=true or keeps clockAt/annotations", () => {
@@ -395,4 +419,27 @@ test("leadItem source does not call briefingSinceYesterday5pmET", () => {
   assert.ok(!leadFn.includes("briefingSinceYesterday5pmET"));
   assert.ok(!leadFn.includes("briefing[0]"));
   assert.ok(!src.includes("deskClocks"));
+});
+
+test("homepage binds store queries and kit class names", () => {
+  const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
+  const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
+  const briefing = readFileSync(join(root, "src/ui/BriefingPage.tsx"), "utf8");
+  assert.ok(home.includes("leadItem"));
+  assert.ok(home.includes("briefingSinceYesterday5pmET"));
+  assert.ok(home.includes("latestNews"));
+  assert.ok(home.includes("upcomingEvents"));
+  assert.ok(!home.includes("briefing[0]"));
+  assert.ok(!home.includes("subscribe"));
+  assert.ok(!home.includes("deskClocks"));
+  assert.ok(home.includes("NEWS · LATEST"));
+  assert.ok(home.includes("EVENTS · NEXT"));
+  assert.ok(layout.includes("MarkFold"));
+  assert.ok(layout.includes("Wordmark"));
+  assert.ok(layout.includes("NavLink"));
+  assert.ok(layout.includes('to="/news"'));
+  assert.ok(layout.includes('to="/events"'));
+  assert.ok(!layout.includes('to="/voices"'));
+  assert.ok(briefing.includes("Ranked by org and topic overlap, not recency."));
+  assert.ok(briefing.includes("Nothing published in this window yet."));
 });

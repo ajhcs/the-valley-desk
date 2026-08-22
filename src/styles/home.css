@@ -1,0 +1,319 @@
+/* Information homepage — Mira atoms + Voss motion. Not homepage-10 HTML. */
+
+.MarkFold {
+  display: block;
+  height: 2.5rem;
+  width: auto;
+}
+
+.Wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.Wordmark-kicker {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.Wordmark-name {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.NavLink {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 0.1rem;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.NavLink:hover {
+  color: var(--ink);
+}
+
+.NavLink.is-news.is-active {
+  border-bottom-color: var(--sky);
+}
+
+.NavLink.is-events.is-active {
+  border-bottom-color: var(--event);
+}
+
+.HomePage {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+
+.lead,
+.Lead {
+  max-width: 42rem;
+}
+
+.lead .lead-kicker,
+.Lead .lead-kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.lead h2,
+.Lead h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.lead h2 a,
+.Lead h2 a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.lead h2 a:hover,
+.Lead h2 a:hover {
+  color: var(--ink);
+}
+
+.lead .lead-dek,
+.Lead .lead-dek {
+  margin: 0.75rem 0 0;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--mute);
+}
+
+.lead .lead-meta,
+.Lead .lead-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.85rem;
+}
+
+ul.desk {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.DeskRow {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 0.75rem 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.DeskRow a {
+  color: var(--text);
+  text-decoration: none;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.DeskRow a:hover {
+  color: var(--ink);
+}
+
+.DeskRow-title {
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+.DeskRow-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.DateChip,
+.StatusChip {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  animation: none;
+}
+
+.StatusChip[data-kind="event"] {
+  color: var(--event);
+}
+
+.StatusChip[data-status="review"],
+.StatusChip[data-queued="true"] {
+  color: var(--mute);
+}
+
+.StatusChip[data-ann] {
+  color: var(--ink);
+}
+
+.rails {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .rails {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.Rail h2 {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.Rail[data-rail="news"] h2 {
+  color: var(--ink);
+}
+
+.Rail[data-rail="events"] h2 {
+  color: var(--event);
+}
+
+.Rail ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.RailRow {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.RailRow-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.RailRow a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.RailRow a:hover {
+  color: var(--ink);
+}
+
+.SiteFooter {
+  margin-top: 1rem;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8rem;
+  color: var(--mute);
+}
+
+.SiteFooter a {
+  color: var(--ink);
+  text-decoration: none;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.SiteFooter a:hover {
+  color: var(--ink);
+}
+
+.SiteFooter-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.HomePage.is-session-first .lead,
+.HomePage.is-session-first .Lead {
+  animation: lead-in var(--motion-slow) var(--ease-out);
+}
+
+.HomePage.is-session-first ul.desk > .DeskRow {
+  animation: desk-in var(--motion-base) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+
+.HomePage.is-session-first .rails,
+.HomePage.is-session-first .SiteFooter {
+  animation: fade-in var(--motion-base) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * 2);
+}
+
+@keyframes lead-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes desk-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .HomePage.is-session-first .lead,
+  .HomePage.is-session-first .Lead,
+  .HomePage.is-session-first ul.desk > .DeskRow,
+  .HomePage.is-session-first .rails,
+  .HomePage.is-session-first .SiteFooter {
+    animation-duration: 150ms;
+    animation-delay: 0s;
+    transform: none;
+  }
+
+  @keyframes lead-in {
+    from { opacity: 0; transform: none; }
+    to { opacity: 1; transform: none; }
+  }
+
+  @keyframes desk-in {
+    from { opacity: 0; transform: none; }
+    to { opacity: 1; transform: none; }
+  }
+}

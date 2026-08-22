@@ -34,7 +34,7 @@ export const Citation = z.object({
   url: z.string().url(),
 });
 
-/** Editorial marks on briefing rows and the featured lead only. Not a kind. */
+/** Editorial marks. Not a kind. Allowed on published desk rows and the featured lead. */
 export const Annotation = z.object({
   type: z.enum(["ask", "spill"]),
   text: z.string(),
@@ -167,13 +167,6 @@ export function isFeaturedPublishedNews(item: {
   return item.kind === "news" && item.status === "published" && item.featured === true;
 }
 
-function annotationsAllowed(item: {
-  kind: string;
-  featured?: boolean;
-}): boolean {
-  return item.kind === "briefing" || (item.kind === "news" && item.featured === true);
-}
-
 export const ContentItem = ContentItemUnion.superRefine((item, ctx) => {
   if (item.status === "published" && needsImpactSentence(item.kind) && !item.impactSentence?.trim()) {
     ctx.addIssue({
@@ -182,11 +175,11 @@ export const ContentItem = ContentItemUnion.superRefine((item, ctx) => {
       message: "impactSentence is required to publish news, policy, ai, or interview",
     });
   }
-  if (item.annotations?.length && !annotationsAllowed(item)) {
+  if (item.annotations?.length && item.status !== "published") {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["annotations"],
-      message: "annotations are only allowed on briefing rows and the featured lead",
+      message: "annotations are only allowed on published desk rows and the featured lead",
     });
   }
 });
@@ -212,9 +205,6 @@ export function setFeaturedNews<T extends { id: string; kind: string; featured?:
     if (item.kind !== "news") return item;
     const featured = item.id === id;
     if (item.featured === featured) return item;
-    if (!featured && item.annotations) {
-      return { ...item, featured: false, annotations: undefined };
-    }
     return { ...item, featured };
   });
 }

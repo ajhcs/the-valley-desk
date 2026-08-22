@@ -106,26 +106,21 @@ function overlapScore(item: ContentItem, orgFreq: Map<string, number>, topicFreq
   return score;
 }
 
-function windowTime(item: ContentItem): string {
-  return item.publishedAt ?? item.updatedAt;
-}
-
-/** News go-live clock if present; else publishedAt/updatedAt. Upcoming events never use this. */
-function deskSortKey(item: ContentItem): string {
-  if (item.kind === "news" && item.clockAt) return item.clockAt;
+function recencyKey(item: ContentItem): string {
   return item.publishedAt ?? item.updatedAt;
 }
 
 /**
- * Desk strip. Published or review (QUEUED) since yesterday 17:00 America/New_York.
- * Visible order: clockAt if present, else publishedAt/updatedAt (desc). Overlap is the tiebreak.
+ * Desk strip. Published items since yesterday 17:00 America/New_York.
+ * Rank: org+topic overlap first, then recency (publishedAt/updatedAt).
+ * clockAt is a date chip only — never the rank key. Review/QUEUED off.
  */
 export function briefingSinceYesterday5pmET(items: ContentItem[], now = new Date()) {
   const start = windowStartYesterday5pmET(now).getTime();
   const end = now.getTime();
   const windowItems = items.filter((item) => {
-    if (item.status !== "published" && item.status !== "review") return false;
-    const t = Date.parse(windowTime(item));
+    if (item.status !== "published") return false;
+    const t = Date.parse(recencyKey(item));
     return Number.isFinite(t) && t >= start && t <= end;
   });
 
@@ -137,9 +132,9 @@ export function briefingSinceYesterday5pmET(items: ContentItem[], now = new Date
   }
 
   return [...windowItems].sort((a, b) => {
-    const timeDelta = deskSortKey(b).localeCompare(deskSortKey(a));
-    if (timeDelta !== 0) return timeDelta;
-    return overlapScore(b, orgFreq, topicFreq) - overlapScore(a, orgFreq, topicFreq);
+    const overlapDelta = overlapScore(b, orgFreq, topicFreq) - overlapScore(a, orgFreq, topicFreq);
+    if (overlapDelta !== 0) return overlapDelta;
+    return recencyKey(b).localeCompare(recencyKey(a));
   });
 }
 
