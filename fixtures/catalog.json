@@ -13,9 +13,12 @@
     "orgs": ["Penn Medicine"],
     "region": "PA",
     "authors": [{"name": "Valley Desk"}],
-    "source": {"kind": "editorial", "origin": "newsroom"},
+    "source": {"kind": "editorial", "origin": "newsroom", "url": "https://www.pennmedicine.org/news"},
     "relatedEventIds": ["evt-01"],
-    "relatedVoiceIds": ["voice-01"]
+    "relatedVoiceIds": ["voice-01"],
+    "impactSentence": "Penn ambient-scribe expansion is an ambulatory labor story, not a vendor launch.",
+    "citations": [{"name": "Penn Medicine", "url": "https://www.pennmedicine.org/news"}],
+    "geo": "Philadelphia, PA"
   },
   {
     "id": "news-02",
@@ -31,9 +34,12 @@
     "orgs": ["NJ DOH"],
     "region": "NJ",
     "authors": [{"name": "Valley Desk"}],
-    "source": {"kind": "editorial", "origin": "newsroom"},
+    "source": {"kind": "editorial", "origin": "newsroom", "url": "https://www.nj.gov/health/"},
     "relatedEventIds": [],
-    "relatedVoiceIds": []
+    "relatedVoiceIds": [],
+    "impactSentence": "NJ's hospital cyber advisory lands on fall staffing and downtime drills across the river.",
+    "citations": [{"name": "NJ DOH", "url": "https://www.nj.gov/health/"}],
+    "geo": "Trenton, NJ"
   },
   {
     "id": "evt-01",
@@ -49,7 +55,13 @@
     "orgs": ["DVHIMSS"],
     "region": "regional",
     "authors": [],
-    "source": {"kind": "ingest", "origin": "dvhimss-events-stub", "url": "https://dvhimss.org/events/", "fetchedAt": "2026-08-22T20:14:00.000Z", "externalId": "dvhimss-2026-09-reception"},
+    "source": {
+      "kind": "ingest",
+      "origin": "dvhimss-events-stub",
+      "url": "https://dvhimss.org/events/",
+      "fetchedAt": "2026-08-22T20:14:00.000Z",
+      "externalId": "dvhimss-2026-09-reception"
+    },
     "startsAt": "2026-09-17T21:00:00.000Z",
     "endsAt": "2026-09-17T23:30:00.000Z",
     "timezone": "America/New_York",
@@ -58,14 +70,16 @@
     "hostOrg": "DVHIMSS",
     "registrationUrl": "https://dvhimss.org/events/",
     "partner": "dvhimss",
-    "autoPublish": true
+    "autoPublish": true,
+    "citations": [{"name": "DVHIMSS", "url": "https://dvhimss.org/events/"}],
+    "geo": "Philadelphia, PA"
   },
   {
     "id": "evt-02",
     "slug": "jefferson-digital-health-forum",
     "kind": "event",
     "title": "Jefferson digital health forum",
-    "dek": "Partner event, published so the rail has two dates.",
+    "dek": "Partner event, review-queued in the stub path; published here so the rail has two dates.",
     "body": "Fixture.",
     "status": "published",
     "publishedAt": "2026-08-10T12:00:00.000Z",
@@ -74,13 +88,15 @@
     "orgs": ["Jefferson Health"],
     "region": "PA",
     "authors": [],
-    "source": {"kind": "editorial", "origin": "newsroom"},
+    "source": {"kind": "editorial", "origin": "newsroom", "url": "https://www.jeffersonhealth.org/"},
     "startsAt": "2026-10-08T16:00:00.000Z",
     "timezone": "America/New_York",
     "city": "Philadelphia",
     "hostOrg": "Jefferson Health",
     "partner": "health-system",
-    "autoPublish": false
+    "autoPublish": false,
+    "citations": [{"name": "Jefferson Health", "url": "https://www.jeffersonhealth.org/"}],
+    "geo": "Philadelphia, PA"
   },
   {
     "id": "voice-01",
@@ -101,7 +117,8 @@
     "role": "CIO",
     "org": "Main Line Health",
     "platform": "linkedin",
-    "originalUrl": "https://www.linkedin.com/"
+    "originalUrl": "https://www.linkedin.com/",
+    "citations": [{"name": "Main Line Health", "url": "https://www.linkedin.com/"}]
   },
   {
     "id": "policy-01",
@@ -117,11 +134,14 @@
     "orgs": ["PA DOH"],
     "region": "PA",
     "authors": [{"name": "Valley Desk"}],
-    "source": {"kind": "ingest", "origin": "pa-doh-stub"},
+    "source": {"kind": "ingest", "origin": "pa-doh-stub", "url": "https://www.health.pa.gov/"},
     "jurisdiction": "PA",
     "issuer": "PA-DOH",
     "effectiveDate": "2026-09-01",
-    "changeType": "guidance"
+    "changeType": "guidance",
+    "impactSentence": "PA telehealth documentation guidance changes what clerks and CMIO shops have to capture on Sept 1.",
+    "citations": [{"name": "PA DOH", "url": "https://www.health.pa.gov/"}],
+    "geo": "Pennsylvania"
   },
   {
     "id": "ai-01",
@@ -137,10 +157,12 @@
     "orgs": ["Epic"],
     "region": "federal",
     "authors": [{"name": "Valley Desk"}],
-    "source": {"kind": "ingest", "origin": "ai-releases-stub"},
+    "source": {"kind": "ingest", "origin": "ai-releases-stub", "url": "https://www.epic.com/"},
     "vendor": "Epic",
     "product": "Ambient Listening",
-    "announcedAt": "2026-08-14T15:00:00.000Z"
+    "announcedAt": "2026-08-14T15:00:00.000Z",
+    "impactSentence": "Epic's ambient increment only matters here if a Valley system actually turns it on.",
+    "citations": [{"name": "Epic", "url": "https://www.epic.com/"}]
   },
   {
     "id": "brief-01",
@@ -178,5 +200,69 @@
     "exclusive": true,
     "guest": "TBD",
     "guestOrg": "TBD"
+  },
+  {
+    "id": "evt-dvhimss-23007",
+    "slug": "njdvhimss-annual-golf-outing",
+    "kind": "event",
+    "title": "NJDVHIMSS Annual Golf Outing",
+    "dek": "Official DVHIMSS chapter calendar.",
+    "body": "Ingested from the DVHIMSS Events Calendar. Kickoff to the fall conference.",
+    "status": "published",
+    "publishedAt": "2026-10-13T13:30:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": ["chapter", "events"],
+    "orgs": ["DVHIMSS"],
+    "region": "regional",
+    "authors": [],
+    "source": {
+      "kind": "ingest",
+      "origin": "dvhimss-events",
+      "url": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
+      "fetchedAt": "2026-08-22T20:14:00.000Z",
+      "externalId": "23007"
+    },
+    "citations": [{"name": "DVHIMSS", "url": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/"}],
+    "geo": "New Jersey",
+    "startsAt": "2026-10-13T13:30:00.000Z",
+    "endsAt": "2026-10-13T19:30:00.000Z",
+    "timezone": "America/New_York",
+    "hostOrg": "DVHIMSS",
+    "registrationUrl": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
+    "partner": "dvhimss",
+    "autoPublish": true
+  },
+  {
+    "id": "evt-dvhimss-22958",
+    "slug": "njdvhimss-fall-conference-october-13th-15th",
+    "kind": "event",
+    "title": "NJDVHIMSS Fall Conference – October 13th – 15th",
+    "dek": "Official DVHIMSS chapter calendar.",
+    "body": "The 19th annual NJ/DVHIMSS Fall Conference at Hard Rock Hotel & Casino, Atlantic City.",
+    "status": "published",
+    "publishedAt": "2026-10-13T20:30:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": ["chapter", "events"],
+    "orgs": ["DVHIMSS"],
+    "region": "NJ",
+    "authors": [],
+    "source": {
+      "kind": "ingest",
+      "origin": "dvhimss-events",
+      "url": "https://dvhimss.org/events-calendar/njdvhimss-fall-converence/",
+      "fetchedAt": "2026-08-22T20:14:00.000Z",
+      "externalId": "22958"
+    },
+    "citations": [{"name": "DVHIMSS", "url": "https://dvhimss.org/events-calendar/njdvhimss-fall-converence/"}],
+    "geo": "Atlantic City, NJ",
+    "startsAt": "2026-10-13T20:30:00.000Z",
+    "endsAt": "2026-10-15T15:30:00.000Z",
+    "timezone": "America/New_York",
+    "venue": "Hard Rock Hotel & Casino, Atlantic City, NJ",
+    "city": "Atlantic City",
+    "hostOrg": "DVHIMSS",
+    "registrationUrl": "https://njdvhimssevent.com/",
+    "partner": "dvhimss",
+    "autoPublish": true
   }
 ]
