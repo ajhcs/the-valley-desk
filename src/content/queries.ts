@@ -28,38 +28,85 @@ export function latestNews(
     .slice(0, n);
 }
 
-/** Published events with startsAt >= now. Never reads clockAt. Review/QUEUED off. */
+/** Published events with startsAt >= now. Never reads clockAt. Review/QUEUED off.
+ *  HAP/system sit in date order. Joint NJDVHIMSS is one row. */
 export function upcomingEvents(items: ContentItem[], now = new Date(), n = 6) {
   const iso = now.toISOString();
-  return items
-    .filter(
+  return dedupeJointChapter(
+    items.filter(
       (i): i is EventItem =>
         i.kind === "event" && i.status === "published" && i.startsAt >= iso,
-    )
+    ),
+  )
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
     .slice(0, n);
 }
 
 const CHAPTER_PARTNERS = new Set(["dvhimss", "njhimss"]);
 
+function eventHay(item: EventItem) {
+  return `${item.title} ${item.slug}`.toLowerCase();
+}
+
 function isChapterConference(item: EventItem) {
-  return /conference/i.test(`${item.title} ${item.slug}`);
+  return /conference/i.test(eventHay(item));
+}
+
+/** Joint NJDVHIMSS conference or golf is one row, not a scrape plus the official calendar. */
+function jointChapterKey(item: EventItem) {
+  const hay = eventHay(item);
+  if (!/njdv|nj\/dv|nj-dv/.test(hay)) return undefined;
+  if (/golf|outing/.test(hay)) return "joint-njdv-golf";
+  if (/conference/.test(hay)) return "joint-njdv-conference";
+  return undefined;
+}
+
+function preferJointRow(a: EventItem, b: EventItem) {
+  const aOfficial = a.source.origin === "dvhimss-events" ? 1 : 0;
+  const bOfficial = b.source.origin === "dvhimss-events" ? 1 : 0;
+  if (aOfficial !== bOfficial) return aOfficial > bOfficial ? a : b;
+  if (Boolean(a.registrationUrl) !== Boolean(b.registrationUrl)) return a.registrationUrl ? a : b;
+  return a.startsAt <= b.startsAt ? a : b;
+}
+
+function dedupeJointChapter(items: EventItem[]) {
+  const winners = new Map<string, EventItem>();
+  for (const item of items) {
+    const key = jointChapterKey(item);
+    if (!key) continue;
+    const prev = winners.get(key);
+    winners.set(key, prev ? preferJointRow(prev, item) : item);
+  }
+  const used = new Set<string>();
+  const out: EventItem[] = [];
+  for (const item of items) {
+    const key = jointChapterKey(item);
+    if (!key) {
+      out.push(item);
+      continue;
+    }
+    if (used.has(key)) continue;
+    used.add(key);
+    out.push(winners.get(key)!);
+  }
+  return out;
 }
 
 /** Soonest published chapter event. Conference in window beats mixer/golf/Phillies.
- *  dvhimss|njhimss cannot publish without registrationUrl, so the pin always has Register. */
+ *  dvhimss|njhimss cannot publish without registrationUrl, so the pin always has Register.
+ *  Joint NJDVHIMSS is one row. */
 export function nextChapterEvent(items: ContentItem[], now = new Date()): EventItem | undefined {
   const iso = now.toISOString();
-  const chapter = items
-    .filter(
+  const chapter = dedupeJointChapter(
+    items.filter(
       (i): i is EventItem =>
         i.kind === "event" &&
         i.status === "published" &&
         i.startsAt >= iso &&
         CHAPTER_PARTNERS.has(i.partner) &&
         Boolean(i.registrationUrl),
-    )
-    .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+    ),
+  ).sort((a, b) => a.startsAt.localeCompare(b.startsAt));
   const conference = chapter.find(isChapterConference);
   return conference ?? chapter[0];
 }

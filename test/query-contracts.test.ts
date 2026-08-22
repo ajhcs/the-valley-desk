@@ -565,8 +565,62 @@ test("nextChapterEvent prefers a conference in window over mixer/golf and pins t
   assert.equal(pinned.filter((i) => i.id === chapter?.id).length, 1);
   assert.ok(pinned.some((i) => i.id === "evt-01"));
   assert.ok(pinned.some((i) => i.id === "evt-02"));
+  assert.equal(eventRegisterUrl(catalog.find((i) => i.id === "evt-02")!), undefined);
+  assert.equal(
+    canPublish({ kind: "event", status: "published", partner: "health-system" }),
+    true,
+  );
+  assert.equal(pinned.filter((i) => /conference/i.test(i.title)).length, 1);
+  const phillies = EventItem.parse({
+    ...base,
+    id: "evt-phillies",
+    slug: "njhimss-phillies-night",
+    title: "NJHIMSS Phillies night",
+    kind: "event",
+    status: "published",
+    startsAt: "2026-09-01T23:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "NJHIMSS",
+    partner: "njhimss",
+    orgs: ["org-njhimss"],
+    registrationUrl: "https://dvhimss.org/events/",
+  });
+  assert.equal(nextChapterEvent([phillies, chapter!], now)?.id, chapter?.id);
+  assert.equal(nextChapterEvent([phillies], now)?.id, "evt-phillies");
+  const scrapeDup = EventItem.parse({
+    ...base,
+    id: "evt-njdvhimss-fall-2026",
+    slug: "njdvhimss-fall-conference-2026",
+    title: "NJ/DVHIMSS Fall Conference 2026",
+    kind: "event",
+    status: "published",
+    startsAt: chapter!.kind === "event" ? chapter!.startsAt : "2026-10-13T20:30:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "NJDVHIMSS",
+    partner: "njhimss",
+    orgs: ["org-njhimss"],
+    registrationUrl: "https://njdvhimssevent.com/",
+    source: { kind: "ingest" as const, origin: "njdvhimssevent", url: "https://njdvhimssevent.com/" },
+  });
+  assert.equal(nextChapterEvent([scrapeDup, chapter!], now)?.id, chapter?.id);
+  assert.equal(
+    upcomingEvents([scrapeDup, chapter!], now, 10).filter((i) => /conference/i.test(i.title)).length,
+    1,
+  );
   assert.ok(pinned.every((i) => i.kind === "event" && i.status === "published"));
   assert.ok(pinned.every((i) => i.startsAt >= now.toISOString()));
+  const ingest = readFileSync(join(root, "src/ingest/events.ts"), "utf8");
+  const scrapeFn = ingest.slice(ingest.indexOf("export async function scrapeNjdvhimss"));
+  assert.ok(scrapeFn.includes("autoPublish: false"));
+  assert.ok(!scrapeFn.includes("autoPublish: true"));
+  const register = readFileSync(join(root, "src/lib/register.ts"), "utf8");
+  assert.ok(!register.includes("source.url"));
+  const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
+  const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
+  assert.ok(!home.toLowerCase().includes("badge"));
+  assert.ok(!home.toLowerCase().includes("brochure"));
+  assert.ok(!home.toLowerCase().includes("directory"));
+  assert.ok(!rail.toLowerCase().includes("badge"));
 });
 
 test("event JSON-LD is published EventItem only; offers.url is registrationUrl", () => {
