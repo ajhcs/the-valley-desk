@@ -3,15 +3,171 @@
     "id": "org-penn",
     "kind": "system",
     "name": "Penn Medicine",
-    "aliases": ["Penn", "UPHS", "University of Pennsylvania Health System", "Penn Medicine", "Penn Chart"],
+    "aliases": [
+      "Penn",
+      "UPHS",
+      "University of Pennsylvania Health System",
+      "Penn Medicine",
+      "Penn Chart",
+      "PennChart"
+    ],
     "geo": "Philadelphia, PA",
     "role": "academic medical system"
+  },
+  {
+    "id": "org-penn-hup",
+    "kind": "hospital",
+    "name": "Hospital of the University of Pennsylvania",
+    "aliases": [
+      "HUP"
+    ],
+    "parentId": "org-penn",
+    "geo": "Philadelphia, PA",
+    "role": "hospital"
+  },
+  {
+    "id": "org-penn-ppmc",
+    "kind": "hospital",
+    "name": "Penn Presbyterian Medical Center",
+    "aliases": [
+      "PPMC"
+    ],
+    "parentId": "org-penn",
+    "geo": "Philadelphia, PA",
+    "role": "hospital"
+  },
+  {
+    "id": "org-penn-pah",
+    "kind": "hospital",
+    "name": "Pennsylvania Hospital",
+    "aliases": [
+      "PAH"
+    ],
+    "parentId": "org-penn",
+    "geo": "Philadelphia, PA",
+    "role": "hospital"
+  },
+  {
+    "id": "org-penn-cch",
+    "kind": "hospital",
+    "name": "Chester County Hospital",
+    "aliases": [
+      "CCH"
+    ],
+    "parentId": "org-penn",
+    "geo": "Chester County, PA",
+    "role": "hospital"
+  },
+  {
+    "id": "org-penn-lgh",
+    "kind": "hospital",
+    "name": "Lancaster General Hospital",
+    "aliases": [
+      "LGH"
+    ],
+    "parentId": "org-penn",
+    "geo": "Lancaster, PA",
+    "role": "hospital"
+  },
+  {
+    "id": "org-penn-princeton",
+    "kind": "hospital",
+    "name": "Princeton Medical Center",
+    "aliases": [],
+    "parentId": "org-penn",
+    "geo": "NJ",
+    "role": "hospital"
+  },
+  {
+    "id": "org-penn-doylestown",
+    "kind": "hospital",
+    "name": "Doylestown Hospital",
+    "aliases": [
+      "PMDH"
+    ],
+    "parentId": "org-penn",
+    "geo": "Doylestown, PA",
+    "role": "hospital \u2014 Penn news 2025-04-01, not on live locations directory"
+  },
+  {
+    "id": "org-hsx",
+    "kind": "association",
+    "name": "HealthShare Exchange",
+    "aliases": [
+      "HSX"
+    ],
+    "geo": "regional",
+    "role": "health information exchange"
+  },
+  {
+    "id": "org-carequality",
+    "kind": "association",
+    "name": "Carequality",
+    "aliases": [
+      "Carequality"
+    ],
+    "geo": "federal",
+    "role": "interoperability network"
+  },
+  {
+    "id": "person-mitchell-schnall",
+    "kind": "person",
+    "name": "Mitchell Schnall, MD, PhD",
+    "aliases": [
+      "Mitchell Schnall"
+    ],
+    "parentId": "org-penn",
+    "geo": "Philadelphia, PA",
+    "role": "SVP Data and Technology Solutions, UPHS",
+    "url": "https://www.pennmedicine.org/news/mitchell-schnall-md-phd-appointed-as-senior-vp-for-data-and-technology-solutions"
+  },
+  {
+    "id": "person-julian-mihai",
+    "kind": "person",
+    "name": "Julian Mihai",
+    "aliases": [
+      "Julian Mihai"
+    ],
+    "parentId": "org-penn",
+    "geo": "Philadelphia, PA",
+    "role": "CISO",
+    "url": "https://www.pennmedicine.org/information-services/leadership"
+  },
+  {
+    "id": "person-anna-schoenbaum",
+    "kind": "person",
+    "name": "Anna E. Schoenbaum, DNP",
+    "aliases": [
+      "Anna E. Schoenbaum",
+      "Anna Schoenbaum"
+    ],
+    "parentId": "org-penn",
+    "geo": "Philadelphia, PA",
+    "role": "VP Applications and Digital Health",
+    "url": "https://www.pennmedicine.org/information-services/leadership"
+  },
+  {
+    "id": "person-john-donohue",
+    "kind": "person",
+    "name": "John P. Donohue",
+    "aliases": [
+      "John P. Donohue",
+      "John Donohue"
+    ],
+    "parentId": "org-penn",
+    "geo": "Philadelphia, PA",
+    "role": "VP Information Services, Entity Services",
+    "url": "https://www.pennmedicine.org/information-services/leadership"
   },
   {
     "id": "org-jefferson",
     "kind": "system",
     "name": "Jefferson Health",
-    "aliases": ["Jefferson", "Thomas Jefferson University Hospital", "Jefferson Health"],
+    "aliases": [
+      "Jefferson",
+      "Thomas Jefferson University Hospital",
+      "Jefferson Health"
+    ],
     "geo": "Philadelphia, PA",
     "role": "academic medical system"
   },
@@ -19,7 +175,11 @@
     "id": "org-main-line",
     "kind": "system",
     "name": "Main Line Health",
-    "aliases": ["Main Line", "MLH", "Main Line Health"],
+    "aliases": [
+      "Main Line",
+      "MLH",
+      "Main Line Health"
+    ],
     "geo": "Bryn Mawr, PA",
     "role": "regional health system"
   },
@@ -27,7 +187,10 @@
     "id": "org-chop",
     "kind": "system",
     "name": "Children's Hospital of Philadelphia",
-    "aliases": ["CHOP", "Children's Hospital of Philadelphia"],
+    "aliases": [
+      "CHOP",
+      "Children's Hospital of Philadelphia"
+    ],
     "geo": "Philadelphia, PA",
     "role": "pediatric academic system"
   },
@@ -35,7 +198,11 @@
     "id": "org-cooper",
     "kind": "system",
     "name": "Cooper University Health Care",
-    "aliases": ["Cooper", "Cooper University Hospital", "Cooper University Health Care"],
+    "aliases": [
+      "Cooper",
+      "Cooper University Hospital",
+      "Cooper University Health Care"
+    ],
     "geo": "Camden, NJ",
     "role": "academic medical system"
   },
@@ -43,7 +210,10 @@
     "id": "org-christianacare",
     "kind": "system",
     "name": "ChristianaCare",
-    "aliases": ["Christiana Care", "ChristianaCare"],
+    "aliases": [
+      "Christiana Care",
+      "ChristianaCare"
+    ],
     "geo": "Newark, DE",
     "role": "regional health system"
   },
@@ -51,7 +221,11 @@
     "id": "org-temple",
     "kind": "system",
     "name": "Temple Health",
-    "aliases": ["Temple", "Temple University Health System", "Temple Health"],
+    "aliases": [
+      "Temple",
+      "Temple University Health System",
+      "Temple Health"
+    ],
     "geo": "Philadelphia, PA",
     "role": "academic medical system"
   },
@@ -59,7 +233,10 @@
     "id": "org-virtua",
     "kind": "system",
     "name": "Virtua Health",
-    "aliases": ["Virtua", "Virtua Health"],
+    "aliases": [
+      "Virtua",
+      "Virtua Health"
+    ],
     "geo": "Marlton, NJ",
     "role": "regional health system"
   },
@@ -67,7 +244,10 @@
     "id": "org-tower",
     "kind": "system",
     "name": "Tower Health",
-    "aliases": ["Tower", "Tower Health"],
+    "aliases": [
+      "Tower",
+      "Tower Health"
+    ],
     "geo": "West Reading, PA",
     "role": "regional health system"
   },
@@ -75,7 +255,10 @@
     "id": "org-inspira",
     "kind": "system",
     "name": "Inspira Health",
-    "aliases": ["Inspira", "Inspira Health"],
+    "aliases": [
+      "Inspira",
+      "Inspira Health"
+    ],
     "geo": "Vineland, NJ",
     "role": "regional health system"
   },
@@ -83,7 +266,11 @@
     "id": "org-dvhimss",
     "kind": "association",
     "name": "DVHIMSS",
-    "aliases": ["Delaware Valley HIMSS", "DV HIMSS", "DVHIMSS"],
+    "aliases": [
+      "Delaware Valley HIMSS",
+      "DV HIMSS",
+      "DVHIMSS"
+    ],
     "geo": "regional",
     "role": "chapter"
   },
@@ -91,7 +278,13 @@
     "id": "org-njhimss",
     "kind": "association",
     "name": "NJHIMSS",
-    "aliases": ["NJ HIMSS", "New Jersey HIMSS", "NJDVHIMSS", "NJ/DVHIMSS", "NJ DVHIMSS"],
+    "aliases": [
+      "NJ HIMSS",
+      "New Jersey HIMSS",
+      "NJDVHIMSS",
+      "NJ/DVHIMSS",
+      "NJ DVHIMSS"
+    ],
     "geo": "NJ",
     "role": "chapter"
   },
@@ -99,7 +292,11 @@
     "id": "org-hap",
     "kind": "association",
     "name": "HAP",
-    "aliases": ["Hospital and Healthsystem Association of Pennsylvania", "The Hospital and Healthsystem Association of Pennsylvania", "HAP"],
+    "aliases": [
+      "Hospital and Healthsystem Association of Pennsylvania",
+      "The Hospital and Healthsystem Association of Pennsylvania",
+      "HAP"
+    ],
     "geo": "PA",
     "role": "state hospital association"
   },
@@ -107,7 +304,10 @@
     "id": "org-njha",
     "kind": "association",
     "name": "NJHA",
-    "aliases": ["New Jersey Hospital Association", "NJHA"],
+    "aliases": [
+      "New Jersey Hospital Association",
+      "NJHA"
+    ],
     "geo": "NJ",
     "role": "state hospital association"
   },
@@ -115,7 +315,10 @@
     "id": "org-dha",
     "kind": "association",
     "name": "DHA",
-    "aliases": ["Delaware Healthcare Association", "DHA"],
+    "aliases": [
+      "Delaware Healthcare Association",
+      "DHA"
+    ],
     "geo": "DE",
     "role": "state hospital association"
   },
@@ -150,7 +353,9 @@
     "id": "person-cole-lyons",
     "kind": "person",
     "name": "Cole Lyons",
-    "aliases": ["Cole Lyons"],
+    "aliases": [
+      "Cole Lyons"
+    ],
     "parentId": "org-dvhimss",
     "geo": "regional",
     "role": "sitting DVHIMSS board member"
