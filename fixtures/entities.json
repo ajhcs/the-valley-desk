@@ -371,12 +371,52 @@
     "kind": "system",
     "name": "Cooper University Health Care",
     "aliases": [
+      "Cooper University Health Care",
       "Cooper",
-      "Cooper University Hospital",
-      "Cooper University Health Care"
+      "Cape Regional Health System",
+      "Cape Regional Medical Center"
     ],
     "geo": "Camden, NJ",
-    "role": "academic medical system"
+    "role": "academic medical system — Cape Regional legacy rename 2024-07-01"
+  },
+  {
+    "id": "org-cooper-cuh",
+    "kind": "hospital",
+    "name": "Cooper University Hospital",
+    "aliases": [
+      "Cooper University Hospital",
+      "One Cooper Plaza"
+    ],
+    "parentId": "org-cooper",
+    "geo": "One Cooper Plaza, Camden, NJ",
+    "role": "hospital — in graph"
+  },
+  {
+    "id": "org-cooper-childrens",
+    "kind": "hospital",
+    "name": "Children's Regional Hospital at Cooper",
+    "aliases": [
+      "Children's Regional Hospital at Cooper",
+      "Children’s Regional Hospital at Cooper"
+    ],
+    "parentId": "org-cooper",
+    "geo": "One Cooper Plaza, Camden, NJ",
+    "role": "hospital — same campus as org-cooper-cuh",
+    "sameSiteAs": "org-cooper-cuh"
+  },
+  {
+    "id": "org-cooper-cape",
+    "kind": "hospital",
+    "name": "Cooper University Hospital Cape Regional",
+    "aliases": [
+      "Cooper University Hospital Cape Regional",
+      "Cape Regional Medical Center",
+      "Cape Regional Health System"
+    ],
+    "parentId": "org-cooper",
+    "geo": "Cape May Court House, NJ",
+    "role": "hospital — out-of-box (Cape May County; outside locked NJ counties)",
+    "outOfBox": true
   },
   {
     "id": "org-christianacare",

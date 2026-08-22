@@ -27,6 +27,12 @@ export const Entity = z.object({
   geo: z.string().optional(),
   role: z.string().optional(),
   url: z.string().url().optional(),
+  /** Attached org ids. For affiliates that are not a child of one parent and not a merge. */
+  orgs: z.array(z.string()).optional(),
+  /** Other hospital id that shares this campus. */
+  sameSiteAs: z.string().optional(),
+  /** True when the campus is outside ENTITY_BOUNDARY (still stored). */
+  outOfBox: z.boolean().optional(),
 });
 
 export type Entity = z.infer<typeof Entity>;
