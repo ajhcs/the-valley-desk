@@ -13,6 +13,9 @@ export const Kind = z.enum([
   "interview",
 ]);
 
+export const IMPACT_PUBLISH_KINDS = ["news", "policy", "ai", "interview"] as const;
+export type ImpactPublishKind = (typeof IMPACT_PUBLISH_KINDS)[number];
+
 export const Source = z.object({
   kind: SourceKind,
   origin: z.string(),
@@ -24,6 +27,11 @@ export const Source = z.object({
 export const Author = z.object({
   name: z.string(),
   org: z.string().optional(),
+});
+
+export const Citation = z.object({
+  name: z.string(),
+  url: z.string().url(),
 });
 
 const Base = z.object({
@@ -41,6 +49,9 @@ const Base = z.object({
   authors: z.array(Author),
   hero: z.string().optional(),
   source: Source,
+  geo: z.string().optional(),
+  impactSentence: z.string().optional(),
+  citations: z.array(Citation).optional(),
 });
 
 export const NewsItem = Base.extend({
@@ -113,7 +124,7 @@ export const InterviewItem = Base.extend({
   guestOrg: z.string(),
 });
 
-export const ContentItem = z.discriminatedUnion("kind", [
+const ContentItemUnion = z.discriminatedUnion("kind", [
   NewsItem,
   EventItem,
   VoiceItem,
@@ -123,7 +134,31 @@ export const ContentItem = z.discriminatedUnion("kind", [
   InterviewItem,
 ]);
 
-export type ContentItem = z.infer<typeof ContentItem>;
+export function needsImpactSentence(kind: string): kind is ImpactPublishKind {
+  return (IMPACT_PUBLISH_KINDS as readonly string[]).includes(kind);
+}
+
+export function canPublish(item: {
+  kind: string;
+  status: string;
+  impactSentence?: string;
+}): boolean {
+  if (item.status !== "published") return false;
+  if (needsImpactSentence(item.kind) && !item.impactSentence?.trim()) return false;
+  return true;
+}
+
+export const ContentItem = ContentItemUnion.superRefine((item, ctx) => {
+  if (item.status === "published" && needsImpactSentence(item.kind) && !item.impactSentence?.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["impactSentence"],
+      message: "impactSentence is required to publish news, policy, ai, or interview",
+    });
+  }
+});
+
+export type ContentItem = z.infer<typeof ContentItemUnion>;
 export type EventItem = z.infer<typeof EventItem>;
 export type NewsItem = z.infer<typeof NewsItem>;
 export type VoiceItem = z.infer<typeof VoiceItem>;
@@ -131,3 +166,11 @@ export type PolicyItem = z.infer<typeof PolicyItem>;
 export type AiItem = z.infer<typeof AiItem>;
 export type BriefingItem = z.infer<typeof BriefingItem>;
 export type InterviewItem = z.infer<typeof InterviewItem>;
+export type Citation = z.infer<typeof Citation>;
+
+export function citationUrl(item: {
+  source: { url?: string };
+  citations?: { name: string; url: string }[];
+}): string | undefined {
+  return item.source.url || item.citations?.[0]?.url;
+}

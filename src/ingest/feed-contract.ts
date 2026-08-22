@@ -2,19 +2,18 @@
  * Machine-readable feed. Same ContentItem envelope as the site store.
  * Humans get the two-rail homepage. Agents GET this document.
  *
- * Suggested route once the repo exists:
  *   GET /feed.json
- *   GET /feed.json?kind=news|event|voice|policy|ai|briefing|interview
+ *   GET /feed.xml
  *
  * Rules:
  * - Published items only (status === "published").
- * - Ingest-sourced items keep source.url + source.origin so every card is cited.
+ * - Must have a citation: source.url or citations[0].url.
  * - Interviews never appear unless Cole published them (editorial path).
  * - Do not invent a second schema for agents.
  */
 
 import { z } from "zod";
-import { ContentItem } from "../content/schema";
+import { citationUrl, ContentItem } from "../content/schema";
 
 export const FeedDocument = z.object({
   product: z.literal("the-valley-desk"),
@@ -33,6 +32,6 @@ export function toFeed(
     product: "the-valley-desk",
     version: "1",
     generatedAt,
-    items: items.filter((i) => i.status === "published"),
+    items: items.filter((i) => i.status === "published" && Boolean(citationUrl(i))),
   };
 }
