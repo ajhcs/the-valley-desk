@@ -25,6 +25,8 @@ import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { rssItemToContent } from "../src/ingest/rss.ts";
 import { CLOSED_LIVE_SEED_IDS, hasLiveSeedOrg, liveSeedOrgIds } from "../src/content/seed.ts";
 import { eventRegisterUrl } from "../src/lib/register.ts";
+import { eventJsonLd } from "../src/content/event-jsonld.ts";
+import { toFeed } from "../src/ingest/feed-contract.ts";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -501,4 +503,44 @@ test("nextChapterEvent is soonest published dvhimss/njhimss and pins the events 
   assert.equal(pinned.filter((i) => i.id === chapter?.id).length, 1);
   assert.ok(pinned.every((i) => i.kind === "event" && i.status === "published"));
   assert.ok(pinned.every((i) => i.startsAt >= now.toISOString()));
+});
+
+test("event JSON-LD is published EventItem only; offers.url is registrationUrl", () => {
+  const fall = catalog.find((i) => i.id === "evt-dvhimss-22958")!;
+  const jefferson = catalog.find((i) => i.id === "evt-02")!;
+  const news = catalog.find((i) => i.id === "news-penn-ai-scribe")!;
+  const ld = eventJsonLd(fall);
+  assert.equal(ld?.["@type"], "Event");
+  assert.equal(ld?.name, fall.title);
+  assert.equal(ld?.startDate, fall.kind === "event" ? fall.startsAt : undefined);
+  assert.deepEqual((ld?.offers as { url?: string } | undefined)?.url, "https://njdvhimssevent.com/");
+  assert.equal((ld?.organizer as { identifier: string }[])[0]?.identifier, "org-dvhimss");
+  const noOffer = eventJsonLd(jefferson);
+  assert.equal(noOffer?.["@type"], "Event");
+  assert.equal(noOffer?.offers, undefined);
+  assert.equal(eventJsonLd(news), undefined);
+  const review = EventItem.parse({
+    ...base,
+    id: "evt-review-ld",
+    slug: "evt-review-ld",
+    title: "Review event",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-09-01T12:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    partner: "dvhimss",
+    orgs: ["org-dvhimss"],
+    registrationUrl: "https://dvhimss.org/events/",
+  });
+  assert.equal(eventJsonLd(review), undefined);
+});
+
+test("feed.json projection keeps registrationUrl on published events", () => {
+  const feed = toFeed(catalog, "2026-08-22T20:14:00.000Z");
+  const fall = feed.items.find((i) => i.id === "evt-dvhimss-22958");
+  assert.equal(fall?.kind, "event");
+  assert.equal(fall && fall.kind === "event" ? fall.registrationUrl : undefined, "https://njdvhimssevent.com/");
+  assert.ok(feed.items.every((i) => i.status === "published"));
+  assert.ok(!feed.items.some((i) => i.status === "review"));
 });

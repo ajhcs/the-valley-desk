@@ -4,6 +4,7 @@ import { KIND_LABEL, itemHref } from "../../lib/kind";
 import { DateChip } from "./DateChip";
 import { StatusChip } from "./StatusChip";
 import { RegisterLink } from "../RegisterLink";
+import { EventJsonLd } from "../EventJsonLd";
 
 export function Rail({
   label,
@@ -20,6 +21,7 @@ export function Rail({
       <ul>
         {items.map((item) => (
           <li key={item.id} className="RailRow">
+            {rail === "events" ? <EventJsonLd item={item} /> : null}
             <div className="RailRow-top">
               <StatusChip kind={item.kind}>{KIND_LABEL[item.kind]}</StatusChip>
               <DateChip item={item} />

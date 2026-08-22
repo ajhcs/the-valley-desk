@@ -10,6 +10,7 @@
  * - Must have a citation: source.url or citations[0].url.
  * - Interviews never appear unless Cole published them (editorial path).
  * - Do not invent a second schema for agents.
+ * - Event items keep registrationUrl on the same envelope (no second model).
  */
 
 import { z } from "zod";
@@ -32,6 +33,12 @@ export function toFeed(
     product: "the-valley-desk",
     version: "1",
     generatedAt,
-    items: items.filter((i) => i.status === "published" && Boolean(citationUrl(i))),
+    items: items
+      .filter((i) => i.status === "published" && Boolean(citationUrl(i)))
+      .map((item) =>
+        item.kind === "event"
+          ? { ...item, registrationUrl: item.registrationUrl }
+          : item,
+      ),
   };
 }
