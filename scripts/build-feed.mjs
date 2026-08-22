@@ -5,24 +5,27 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const items = JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8"));
 
-function citationUrl(item) {
-  return item.source?.url || item.citations?.[0]?.url || "";
+function itemLink(item) {
+  return (
+    item.source?.url ||
+    item.citations?.[0]?.url ||
+    `https://thevalleydesk.org/${item.kind}/${item.slug}`
+  );
 }
 
-const publishedCited = items.filter(
-  (item) => item.status === "published" && citationUrl(item),
-);
+function cited(item) {
+  return item.status === "published" && Boolean(itemLink(item));
+}
 
-const updated = publishedCited.reduce(
-  (max, item) => (item.updatedAt > max ? item.updatedAt : max),
-  "2026-08-22T20:14:00.000Z",
-);
+const published = items.filter((item) => item.status === "published");
+const feedItems = published; // published only; link falls back if uncited
+const updated = published.reduce((max, item) => (item.updatedAt > max ? item.updatedAt : max), "2026-08-22T20:14:00.000Z");
 
 const doc = {
   product: "the-valley-desk",
   version: "1",
   generatedAt: updated,
-  items: publishedCited,
+  items: published,
 };
 
 function esc(s = "") {
@@ -33,16 +36,16 @@ function esc(s = "") {
     .replaceAll('"', "&quot;");
 }
 
-const rssItems = publishedCited
+const rssItems = feedItems
   .map((item) => {
-    const link = citationUrl(item);
-    const description = item.impactSentence || item.dek || "";
+    const link = itemLink(item);
+    const desc = item.impactSentence || item.dek || "";
     const pub = item.publishedAt || item.updatedAt;
     return `    <item>
       <title>${esc(item.title)}</title>
       <link>${esc(link)}</link>
       <guid isPermaLink="true">${esc(link)}</guid>
-      <description>${esc(description)}</description>
+      <description>${esc(desc)}</description>
       <pubDate>${new Date(pub).toUTCString()}</pubDate>
     </item>`;
   })
@@ -63,4 +66,4 @@ ${rssItems}
 mkdirSync(join(root, "public"), { recursive: true });
 writeFileSync(join(root, "public/feed.json"), JSON.stringify(doc, null, 2) + "\n");
 writeFileSync(join(root, "public/feed.xml"), rss);
-console.log("wrote public/feed.json and public/feed.xml (" + publishedCited.length + " cited published items)");
+console.log("wrote public/feed.json (" + published.length + ") and public/feed.xml (" + feedItems.length + " published)");
