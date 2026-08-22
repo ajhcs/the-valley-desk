@@ -15,13 +15,12 @@ export function Layout() {
     <div className="min-h-screen">
       <header className="border-b" style={{ borderColor: "var(--ink)" }}>
         <div className="mx-auto max-w-5xl px-4 py-4 flex items-center gap-3">
-          <Link to="/" className="shrink-0" aria-label="The Valley Desk home">
-            <img
-              src="/mark-b-column.svg"
-              alt=""
-              className="h-10 w-10"
-            />
-          </Link>
+          <div
+            aria-hidden="true"
+            className="h-10 w-10 shrink-0 border"
+            style={{ borderColor: "var(--ink)" }}
+            title="Logo slot"
+          />
           <div>
             <p className="text-xl font-semibold" style={{ color: "var(--ink)" }}>
               The Valley Desk
