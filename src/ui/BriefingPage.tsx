@@ -19,10 +19,10 @@ export function BriefingPage() {
         Briefing
       </h1>
       <p className="mt-2 text-sm" style={{ color: "var(--text)" }}>
-        Published since {startLabel} ET. Ranked by org and topic overlap, not recency.
+        Since {startLabel} ET. Desk order is clockAt if present, else publishedAt; overlap breaks ties. Review can appear here.
       </p>
       {items.length === 0 ? (
-        <p className="mt-4 text-sm">Nothing published in this window yet.</p>
+        <p className="mt-4 text-sm">Nothing in this window yet.</p>
       ) : (
         items.map((item) => (
           <ItemCard

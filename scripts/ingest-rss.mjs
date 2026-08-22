@@ -82,6 +82,7 @@ for (const source of sources) {
             citations: [{ name: source.name, url: raw.link }],
             relatedEventIds: [],
             relatedVoiceIds: [],
+            featured: false,
           });
         });
         break;
