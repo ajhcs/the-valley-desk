@@ -367,6 +367,42 @@
     ]
   },
   {
+    "id": "person-hojjat-salmasian",
+    "kind": "person",
+    "name": "Hojjat Salmasian, MD, MPH, PhD",
+    "aliases": [
+      "Hojjat Salmasian"
+    ],
+    "parentId": "org-chop",
+    "geo": "Philadelphia, PA",
+    "role": "Vice President and Chief Data and Analytics Officer",
+    "url": "https://www.chop.edu/administrative-staff/salmasian-hojjat"
+  },
+  {
+    "id": "person-bimal-desai",
+    "kind": "person",
+    "name": "Bimal Desai, MD, MBI",
+    "aliases": [
+      "Bimal Desai"
+    ],
+    "parentId": "org-chop",
+    "geo": "Philadelphia, PA",
+    "role": "Vice President and Chief Health Informatics Officer",
+    "url": "https://www.chop.edu/doctors/desai-bimal"
+  },
+  {
+    "id": "person-jeffrey-pennington",
+    "kind": "person",
+    "name": "Jeffrey Pennington",
+    "aliases": [
+      "Jeffrey Pennington"
+    ],
+    "parentId": "org-chop",
+    "geo": "Philadelphia, PA",
+    "role": "Associate Vice President and Chief Research Informatics Officer",
+    "url": "https://www.chop.edu/administrative-staff/pennington-jeffrey"
+  },
+  {
     "id": "org-cooper",
     "kind": "system",
     "name": "Cooper University Health Care",
@@ -427,7 +463,46 @@
       "ChristianaCare"
     ],
     "geo": "Newark, DE",
-    "role": "regional health system"
+    "role": "regional health system — Epic clock 2026-10-03; Virtua LOI only, not a merge",
+    "url": "https://christianacare.org/"
+  },
+  {
+    "id": "org-christianacare-christiana",
+    "kind": "hospital",
+    "name": "Christiana Hospital",
+    "aliases": [
+      "Christiana Hospital"
+    ],
+    "parentId": "org-christianacare",
+    "geo": "4755 Ogletown-Stanton Rd, Newark, DE",
+    "role": "hospital — in box (New Castle)",
+    "url": "https://christianacare.org/us/en/facilities/christiana-hospital"
+  },
+  {
+    "id": "org-christianacare-wilmington",
+    "kind": "hospital",
+    "name": "Wilmington Hospital",
+    "aliases": [
+      "Wilmington Hospital"
+    ],
+    "parentId": "org-christianacare",
+    "geo": "501 West 14th St, Wilmington, DE",
+    "role": "hospital — in box (New Castle)",
+    "url": "https://christianacare.org/us/en/facilities/wilmington-hospital"
+  },
+  {
+    "id": "org-christianacare-union",
+    "kind": "hospital",
+    "name": "Union Hospital",
+    "aliases": [
+      "Union Hospital",
+      "ChristianaCare Union Hospital"
+    ],
+    "parentId": "org-christianacare",
+    "geo": "106 Bow St, Elkton, MD",
+    "role": "hospital — out-of-box (Cecil County MD; store like Cape Regional)",
+    "outOfBox": true,
+    "url": "https://christianacare.org/us/en/facilities/union-hospital"
   },
   {
     "id": "org-temple",
