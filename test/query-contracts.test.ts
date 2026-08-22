@@ -587,7 +587,25 @@ test("event JSON-LD is published EventItem only; offers.url is registrationUrl",
   assert.equal(ld?.mainEntityOfPage, ld?.url);
   assert.equal((ld?.about as { identifier?: string }[])[0]?.identifier, "org-dvhimss");
   assert.ok(!Object.prototype.hasOwnProperty.call(ld, "image"));
-  assert.ok(!JSON.stringify(ld).includes("Offer.price"));
+  assert.deepEqual(Object.keys((ld?.offers as object) ?? {}).sort(), ["@type", "url"]);
+  const splitHost = EventItem.parse({
+    ...base,
+    id: "evt-split-host",
+    slug: "evt-split-host",
+    title: "Host is not orgs",
+    kind: "event",
+    status: "published",
+    startsAt: "2026-09-01T12:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    partner: "dvhimss",
+    orgs: ["org-jefferson"],
+    registrationUrl: "https://dvhimss.org/events/",
+  });
+  const splitLd = eventJsonLd(splitHost, entityRows);
+  assert.equal((splitLd?.organizer as { name?: string }).name, "DVHIMSS");
+  assert.equal((splitLd?.organizer as { identifier?: string }).identifier, "org-dvhimss");
+  assert.equal((splitLd?.about as { identifier?: string }[])[0]?.identifier, "org-jefferson");
   const noOffer = eventJsonLd(jefferson, entityRows);
   assert.equal(noOffer?.["@type"], "Event");
   assert.equal(noOffer?.offers, undefined);
@@ -633,6 +651,7 @@ test("NewsArticle JSON-LD uses envelope fields and canonical url", () => {
   assert.equal(ld?.["@type"], "NewsArticle");
   assert.equal(ld?.headline, penn.title);
   assert.equal(ld?.description, penn.impactSentence);
+  assert.notEqual(ld?.description, penn.dek);
   assert.equal(ld?.url, "https://thevalleydesk.org/news/penn-in-house-ai-scribe");
   assert.equal(ld?.mainEntityOfPage, ld?.url);
   assert.equal(ld?.isBasedOn, penn.source.url);
@@ -696,6 +715,9 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(rss.includes("<link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>"));
   assert.ok(rss.includes("<guid isPermaLink=\"true\">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>"));
   assert.ok(rss.includes("<link>https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</link>"));
+  assert.ok(rss.includes("<description>About 1,200 ambulatory providers were using it, the Inquirer said.</description>"));
+  assert.ok(!rss.includes("<description>The Philadelphia Inquirer, Nov. 10, 2025: internist Dina Capalongo hits a green button; the doctor still approves the note.</description>"));
+  assert.ok(rss.includes("<description>Partner event, review-queued in the stub path; published here so the rail has two dates.</description>"));
   assert.ok(build.includes("canonicalUrl(item)"));
   assert.ok(!build.includes("citations?.[0]"));
   for (const item of catalog.filter((row) => row.status === "published")) {
