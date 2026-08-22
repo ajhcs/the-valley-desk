@@ -154,6 +154,8 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
   assert.ok(ids.includes("policy-01"));
   assert.ok(ids.includes("news-jefferson-einstein-mychart"));
   assert.ok(ids.includes("news-christianacare-epic"));
+  assert.ok(ids.includes("news-jefferson-fy2026-loss"));
+  assert.ok(ids.includes("news-penn-ai-scribe"));
   assert.ok(!ids.includes("ai-01"));
   assert.ok(!ids.includes("int-01"));
   assert.ok(!ids.includes("evt-01"));
@@ -411,6 +413,28 @@ test("fixture catalog has news clocks, no Crozer, no featured lead", () => {
   assert.equal(christiana && christiana.kind === "news" ? christiana.clockAt : undefined, "2026-10-03T04:00:00.000Z");
   assert.ok(!JSON.stringify(catalog).includes("Crozer"));
   assert.ok(!JSON.stringify(entities).includes("Crozer"));
+});
+
+test("Sloan three: published, featured false, source publishedAt, no Temple Slovis/Dragon", () => {
+  const christiana = catalog.find((i) => i.id === "news-christianacare-epic");
+  const loss = catalog.find((i) => i.id === "news-jefferson-fy2026-loss");
+  const penn = catalog.find((i) => i.id === "news-penn-ai-scribe");
+  assert.ok(christiana && loss && penn);
+  for (const item of [christiana, loss, penn]) {
+    assert.equal(item.status, "published");
+    assert.equal(item.featured, false);
+    assert.equal(item.kind, "news");
+  }
+  assert.equal(christiana.kind === "news" ? christiana.clockAt : undefined, "2026-10-03T04:00:00.000Z");
+  assert.equal(christiana.publishedAt, "2026-07-01T16:00:00.000Z");
+  assert.equal(loss.kind === "news" ? loss.clockAt : "none", undefined);
+  assert.equal(loss.publishedAt, "2026-08-14T16:00:00.000Z");
+  assert.equal(penn.kind === "news" ? penn.clockAt : "none", undefined);
+  assert.equal(penn.publishedAt, "2025-11-10T16:00:00.000Z");
+  const pennLead = `${penn.title}\n${penn.dek}\n${penn.impactSentence}`;
+  assert.ok(pennLead.includes("1,200"));
+  assert.ok(!pennLead.includes("46"));
+  assert.ok(!catalog.some((i) => /slovis|dragon/i.test(`${i.id} ${i.title} ${i.body}`)));
 });
 
 test("leadItem source does not call briefingSinceYesterday5pmET", () => {

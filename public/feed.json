@@ -132,11 +132,12 @@
       "id": "news-christianacare-epic",
       "slug": "christianacare-epic-go-live",
       "kind": "news",
-      "title": "ChristianaCare Epic go-live is Oct. 3",
-      "dek": "Delaware's remaining non-Epic system cuts over. A go-live clock, not an event.",
-      "body": "Fixture. Replace with Cole copy.",
+      "title": "ChristianaCare sets Oct. 3, 2026 Epic go-live",
+      "dek": "The Wilmington system is in the final stage. Patients keep appointments unless contacted.",
+      "body": "ChristianaCare is cutting its clinical record, caregiver workflows, and patient tools over to Epic on Oct. 3, 2026. A July 2026 update put the Wilmington system in the final stage, less than three months out. COO Ric Cuming said caregivers must finish on-demand and live role-based training, and pass readiness checks, before they use the new system. Patients keep appointments unless contacted. After go-live they move to ChristianaCare MyChart for results, visit summaries, scheduling, messaging, eCheck-in, refills, and bill pay. Care Everywhere will share records with participating Epic organizations when a patient is treated off-campus. ChristianaCare said that once it is live, all Delaware health systems, and many more in Pennsylvania, New Jersey, and Maryland, will also be on Epic.",
       "status": "published",
-      "publishedAt": "2026-07-22T14:00:00.000Z",
+      "featured": false,
+      "publishedAt": "2026-07-01T16:00:00.000Z",
       "updatedAt": "2026-08-22T20:14:00.000Z",
       "topics": [
         "EHR",
@@ -159,7 +160,7 @@
       "relatedEventIds": [],
       "relatedVoiceIds": [],
       "clockAt": "2026-10-03T04:00:00.000Z",
-      "impactSentence": "ChristianaCare's Oct. 3 Epic cutover is a regional interoperability clock, not a calendar event.",
+      "impactSentence": "ChristianaCare said that once it is live, all Delaware health systems, and many more in Pennsylvania, New Jersey, and Maryland, will also be on Epic.",
       "citations": [
         {
           "name": "ChristianaCare News",
@@ -167,6 +168,92 @@
         }
       ],
       "geo": "Wilmington, DE"
+    },
+    {
+      "id": "news-jefferson-fy2026-loss",
+      "slug": "jefferson-fy2026-operating-loss",
+      "kind": "news",
+      "title": "Jefferson posts $181.5 million operating loss for FY2026",
+      "dek": "Bondholder results published by The Inquirer on Aug. 14, 2026 included $112 million in layoff and related costs.",
+      "body": "Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, in results reported to bondholders and published by The Philadelphia Inquirer on Aug. 14, 2026. The results included $112 million in layoff and related costs. Jefferson closed on Lehigh Valley Health Network on Aug. 1, 2024. Chief financial officer Michael Harrington told The Inquirer that commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross last month over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law. The $181.5 million loss does not move until a court or a new contract does.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-08-14T16:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [
+        "finance"
+      ],
+      "orgs": [
+        "org-jefferson"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Valley Desk"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "newsroom",
+        "url": "https://www.inquirer.com/health/jefferson-health-financial-loss-fiscal-2026-20260814.html"
+      },
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "impactSentence": "The $181.5 million loss does not move until a court or a new contract does.",
+      "citations": [
+        {
+          "name": "The Philadelphia Inquirer",
+          "url": "https://www.inquirer.com/health/jefferson-health-financial-loss-fiscal-2026-20260814.html"
+        }
+      ],
+      "geo": "Philadelphia, PA"
+    },
+    {
+      "id": "news-penn-ai-scribe",
+      "slug": "penn-in-house-ai-scribe",
+      "kind": "news",
+      "title": "Penn's in-house AI scribe is on about 1,200 ambulatory providers",
+      "dek": "The Philadelphia Inquirer, Nov. 10, 2025: internist Dina Capalongo hits a green button; the doctor still approves the note.",
+      "body": "Dina Capalongo, a Penn Medicine internist, hits a green button on her phone. The draft note is usually on the screen before she leaves the room, the Philadelphia Inquirer reported Nov. 10, 2025. The product is Penn’s in-house AI scribe. Ambient listening records the visit and writes a sectioned note the doctor must approve. About 1,200 ambulatory providers were using it, the Inquirer said. A separate 46-clinician Penn pilot in JAMA Network Open (Feb. 19, 2025) associated a scribe with 10.3 minutes in notes per visit falling to 8.2. Kevin B. Johnson, who leads Penn’s AI4AI Lab, called those “early but promising results.” The journal article does not name a commercial vendor. Epic Systems’ Signal tool timed the EHR use.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2025-11-10T16:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [
+        "AI"
+      ],
+      "orgs": [
+        "org-penn"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Valley Desk"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "newsroom",
+        "url": "https://www.inquirer.com/health/penn-jefferson-artificial-intelligence-health-20251110.html"
+      },
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "impactSentence": "About 1,200 ambulatory providers were using it, the Inquirer said.",
+      "citations": [
+        {
+          "name": "The Philadelphia Inquirer",
+          "url": "https://www.inquirer.com/health/penn-jefferson-artificial-intelligence-health-20251110.html"
+        },
+        {
+          "name": "JAMA Network Open",
+          "url": "https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2830383"
+        },
+        {
+          "name": "Penn Medicine",
+          "url": "https://www.pennmedicine.org/news/ai-scribe-increases-face-to-face-time-with-patients"
+        }
+      ],
+      "geo": "Philadelphia, PA"
     },
     {
       "id": "evt-01",
