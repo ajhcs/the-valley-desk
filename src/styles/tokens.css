@@ -1,12 +1,28 @@
+/* The Valley Desk — cousin tokens
+   Hexes locked from himss.org + dvhimss.org CSS pulls, 22 Aug 2026.
+   Never introduce spa/hospital teal. Admiral is cousin — use sparingly. */
+
 :root {
   --ink: #21145F;
   --admiral: #1E22AA;
   --sky: #54C0E8;
+  --navy: #050766;
   --paper: #F7F4EC;
+  --paper-bright: #FFFCF7;
   --text: #101828;
+  --mute: #475467;
+  --rule: #D6D6E7;
+  --event: #CA8504;
   --events: #CA8504;
-}
 
-/* News rails and chrome use --ink. Admiral is sparing, not a HIMSS wash. */
-/* Events rail uses --events gold so the two homepage rails scan. */
-/* Do not add brick, spa-teal, or any other brand tokens. */
+  /* Live cousins — documented, not default UI */
+  --himss-bright: #3136CC;
+  --himss-navy-mid: #0F1288;
+  --himss-navy-deep: #000244;
+  --himss-event-bright: #FAC515;
+  --dv-sky: #55C1E9;
+  --dv-body: #333333;
+
+  --font-sans: "IBM Plex Sans", "IBMPlexSans", Helvetica, Arial, sans-serif;
+  --font-serif: "IBM Plex Serif", "IBMPlexSerif", Georgia, "Times New Roman", serif;
+}
