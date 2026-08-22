@@ -1,1 +1,25 @@
-SEE_FILE
+{
+  "fetchedAt": "2026-08-22T20:32:07.949Z",
+  "events": {
+    "notes": [
+      {"url": "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=20", "status": 200},
+      {"url": "https://dvhimss.org/events/", "status": 200},
+      {"url": "https://dvhimss.org/events-calendar", "status": 200},
+      {"url": "https://njdvhimssevent.com/", "status": 200},
+      {"url": "https://njdvhimssevent.com/agenda/", "status": 200},
+      {"url": "https://njdvhimssevent.com/2024-agenda/", "status": 200},
+      {"url": "https://njdvhimssevent.com/register", "status": 404},
+      {"url": "https://njdvhimssevent.com/schedule", "status": 404},
+      {"url": "https://njdvhimssevent.com/hotel/", "status": 200},
+      {"url": "https://njdvhimssevent.com/golf-event/", "status": 200},
+      {"url": "https://njdvhimssevent.com/conference-registration-fees/", "status": 200}
+    ],
+    "count": 6
+  },
+  "working": [
+    {"name": "Inquirer Health", "url": "https://www.inquirer.com/arc/outboundfeeds/rss/category/health/?outputType=xml", "status": 200, "count": 6},
+    {"name": "Inquirer Business", "url": "https://www.inquirer.com/arc/outboundfeeds/rss/category/business/?outputType=xml", "status": 200, "count": 14},
+    {"name": "WHYY", "url": "https://whyy.org/feed/", "status": 200, "count": 20}
+  ],
+  "items": []
+}
