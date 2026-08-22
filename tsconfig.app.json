@@ -18,5 +18,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "data/review.json"]
+  "include": ["src", "data/review.json", "fixtures/catalog.json"]
 }

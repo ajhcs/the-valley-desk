@@ -1,18 +1,8 @@
-/* Locked Mira tokens. Do not add extras. */
 :root {
-  --ink: #21145f;
-  --admiral: #1e22aa;
-  --sky: #54c0e8;
-  --paper: #f7f4ec;
+  --ink: #21145F;
+  --admiral: #1E22AA;
+  --sky: #54C0E8;
+  --paper: #F7F4EC;
   --text: #101828;
-  --events: #ca8504;
-}
-
-@theme inline {
-  --color-ink: var(--ink);
-  --color-admiral: var(--admiral);
-  --color-sky: var(--sky);
-  --color-paper: var(--paper);
-  --color-text: var(--text);
-  --color-events: var(--events);
+  --events: #CA8504;
 }

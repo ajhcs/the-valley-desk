@@ -1,5 +1,5 @@
 import { eventItemSchema, type EventItem, type EventPartner, type Region } from '../content/schema'
-import { isDvhimssAutopublish, resolveIngestStatus } from './status'
+import { resolveIngestStatus } from './status'
 
 const DEFAULT_CLOCK = '2026-08-22T12:00:00.000Z'
 const DEFAULT_TIMEZONE = 'America/New_York'
@@ -31,12 +31,10 @@ export type EventIngestPayload = {
   impactSentence?: string
 }
 
-/** Writes the same ContentItem envelope. Review unless autoPublish / DVHIMSS whitelist. */
+/** DVHIMSS / events stub. Writes the same ContentItem envelope. Review unless autoPublish. */
 export function ingestEvent(payload: EventIngestPayload): EventItem {
   const clock = payload.fetchedAt ?? DEFAULT_CLOCK
-  const autoPublish =
-    payload.autoPublish === true ||
-    isDvhimssAutopublish({ partner: payload.partner, origin: payload.origin })
+  const autoPublish = payload.autoPublish === true
   const status = resolveIngestStatus({ kind: 'event', autoPublish })
 
   return eventItemSchema.parse({

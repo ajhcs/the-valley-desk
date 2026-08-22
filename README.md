@@ -4,6 +4,17 @@ Product source. Human news + agent feed. Delaware Valley / Greater Philadelphia 
 
 Owner: Cole Lyons (co-founder). Engineering: Knox. Product: Reed. Brand: Mira. CEO: Vale.
 
+## First-class paths
+
+- `src/content/schema.ts` — Zod `ContentItem` discriminated union
+- `src/content/queries.ts` — `latestNews` + `upcomingEvents`
+- `src/content/store.ts` — fixture-backed `loadCatalog`
+- `src/ingest/envelope.ts` — `IngestBatch` + `toReviewQueue`
+- `src/ingest/events-stub.ts` — DVHIMSS stub, review unless `autoPublish`
+- `src/ingest/feed-contract.ts` — `GET /feed.json` same envelope
+- `src/styles/tokens.css` — the six locked Mira variables
+- `fixtures/catalog.json` — one of each kind; interview stays draft and off the public feed
+
 ## Schema
 
 One `ContentItem` envelope. Start at `src/content/schema.ts`. Do not add a second agent model.

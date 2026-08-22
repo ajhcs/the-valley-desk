@@ -1,4 +1,4 @@
-import { ingestEvent, type EventIngestPayload } from './ingest/events'
+import type { EventIngestPayload } from './ingest/events'
 import { contentItemSchema, type ContentItem } from './schema'
 
 const DESK = 'The Valley Desk'
@@ -464,11 +464,5 @@ export const fixtureCatalog = {
 }
 
 export function loadEditorialCatalog(): ContentItem[] {
-  const editorialItems = editorialFixtures.map((item) => contentItemSchema.parse(item))
-  const ingested = eventIngestPayloads.map((payload) => ingestEvent(payload))
-  return [...editorialItems, ...ingested]
-}
-
-export function loadCatalog(): ContentItem[] {
-  return loadEditorialCatalog()
+  return editorialFixtures.map((item) => contentItemSchema.parse(item))
 }

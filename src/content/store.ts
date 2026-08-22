@@ -1,17 +1,24 @@
+import catalog from '../../fixtures/catalog.json'
 import reviewSeed from '../../data/review.json'
 import { persistDailyBriefing } from './queries'
 import { latestNews, upcomingEvents } from './queries'
 import { listPublishedByKind, publishedItems } from './published'
-import { loadEditorialCatalog } from './fixtures'
+import { ingestEvent } from '../ingest/events-stub'
 import { mergeCatalog } from '../ingest/envelope'
 import { contentItemSchema, type ContentItem, type ContentKind } from './schema'
+import { eventIngestPayloads } from './fixtures'
 
+function parseList(raw: unknown): ContentItem[] {
+  if (!Array.isArray(raw)) return []
+  return raw.map((item) => contentItemSchema.parse(item))
+}
+
+/** Fixture-backed catalog. `fixtures/catalog.json` is first-class. */
 export function loadCatalog(): ContentItem[] {
-  const editorial = loadEditorialCatalog()
-  const review = Array.isArray(reviewSeed)
-    ? reviewSeed.map((item) => contentItemSchema.parse(item))
-    : []
-  const merged = mergeCatalog(editorial, review)
+  const fixtures = parseList(catalog)
+  const stubEvents = eventIngestPayloads.map((payload) => ingestEvent(payload))
+  const review = parseList(reviewSeed)
+  const merged = mergeCatalog(mergeCatalog(fixtures, stubEvents), review)
   const briefing = persistDailyBriefing(merged)
   return mergeCatalog(merged, [briefing])
 }

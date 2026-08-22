@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fixtureCatalog, loadEditorialCatalog } from '../src/content/fixtures'
+import catalog from '../fixtures/catalog.json'
 import { buildFeed, buildFeedXml } from '../src/content/feed'
 import { isCited } from '../src/content/citation'
 import { overlapScore, rankByOverlap, yesterdayFivePmEastern } from '../src/content/queries'
@@ -20,11 +21,34 @@ for (const name of forbidden) {
   assert.equal(schemaText.includes(name), false, `schema must not add ${name}`)
 }
 
+const tokenText = readFileSync(
+  resolve(fileURLToPath(import.meta.url), '../../src/styles/tokens.css'),
+  'utf8',
+)
+assert.match(tokenText, /--ink:\s*#21145F/i)
+assert.match(tokenText, /--admiral:\s*#1E22AA/i)
+assert.match(tokenText, /--sky:\s*#54C0E8/i)
+assert.match(tokenText, /--paper:\s*#F7F4EC/i)
+assert.match(tokenText, /--text:\s*#101828/i)
+assert.match(tokenText, /--events:\s*#CA8504/i)
+assert.equal(tokenText.includes('@theme'), false, 'tokens.css must be the six variables only')
+
 const items = loadCatalog()
 const kinds = new Set(items.map((item) => item.kind))
 for (const kind of ['news', 'event', 'voice', 'policy', 'ai', 'briefing', 'interview'] as const) {
   assert.ok(kinds.has(kind), `catalog is missing kind ${kind}`)
 }
+
+const catalogKinds = new Set(
+  (catalog as Array<{ kind: string; status?: string; id?: string }>).map((item) => item.kind),
+)
+for (const kind of ['news', 'event', 'voice', 'policy', 'ai', 'briefing', 'interview'] as const) {
+  assert.ok(catalogKinds.has(kind), `fixtures/catalog.json is missing kind ${kind}`)
+}
+const catalogInterview = (catalog as Array<{ kind: string; status?: string }>).find(
+  (item) => item.kind === 'interview',
+)
+assert.equal(catalogInterview?.status, 'draft')
 
 assert.ok(store.latestNews().length >= 4, 'store latestNews must fill the news rail')
 assert.ok(store.upcomingEvents().length >= 2, 'store upcomingEvents must fill the events rail')
