@@ -551,16 +551,16 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.equal(christiana.kind === "news" ? christiana.clockAt : undefined, "2026-10-03T04:00:00.000Z");
   assert.equal(christiana.publishedAt, "2026-07-01T16:00:00.000Z");
   assert.deepEqual(christiana.orgs, ["org-christianacare"]);
-  assert.equal(christiana.citations?.length, 1);
+  assert.equal(christiana.citations?.length, 2);
   assert.equal(christiana.source.url, christiana.citations?.[0]?.url);
   assert.equal(
     christiana.citations?.[0]?.url,
     "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/",
   );
+  assert.ok(christiana.citations?.some((c) => c.url.includes("beckershospitalreview.com")));
   assert.ok(!christiana.citations?.some((c) => c.url.includes("app.fac.gov")));
-  assert.ok(!christiana.citations?.some((c) => c.url.includes("beckershospitalreview.com")));
   assert.ok(!christiana.body.includes("49.364"));
-  assert.equal(loss.title, "Jefferson FY2026 operating loss, plus Fitch liquidity");
+  assert.equal(loss.title, "Jefferson FY2026 operating loss and Fitch liquidity");
   assert.equal(loss.kind === "news" ? loss.clockAt : "none", undefined);
   assert.equal(loss.publishedAt, "2026-08-14T16:00:00.000Z");
   assert.deepEqual(loss.orgs, ["org-jefferson"]);

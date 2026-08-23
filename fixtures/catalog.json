@@ -132,8 +132,8 @@
     "slug": "christianacare-epic-go-live",
     "kind": "news",
     "title": "ChristianaCare Epic go-live, official July 2026 update",
-    "dek": "Oct. 3, 2026 date and training gate from the newsroom.",
-    "body": "ChristianaCare’s July 2026 newsroom update scheduled an Oct. 3, 2026 Epic go-live and said the system was in the final stage, with less than three months remaining. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction, and that readiness checks are meant to make sure caregivers finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Patients are told to keep appointments unless ChristianaCare contacts them.",
+    "dek": "Oct. 3, 2026 and the training gate from the newsroom. Becker’s second-cites the date. No FAC dollars.",
+    "body": "ChristianaCare’s July 2026 newsroom update scheduled an Oct. 3, 2026 Epic go-live and said the system was in the final stage, with less than three months remaining. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction, and that readiness checks are meant to make sure caregivers finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Patients are told to keep appointments unless ChristianaCare contacts them. Becker’s Hospital Review, Naomi Diaz, Wednesday, July 22, 2026, second-cites the Oct. 3 date. That clip says the EHR switch has been underway since a 2024 decision and names Robert Hartmann, vice president of EHR transformation, who spent nine years at Epic. That clip is not an Epic dollar. FAC Note 18 license dollars stay off this brief.",
     "status": "published",
     "featured": true,
     "publishedAt": "2026-07-01T16:00:00.000Z",
@@ -159,11 +159,15 @@
     "relatedEventIds": [],
     "relatedVoiceIds": [],
     "clockAt": "2026-10-03T04:00:00.000Z",
-    "impactSentence": "Oct. 3 is a training-gated cutover on ChristianaCare’s own update.",
+    "impactSentence": "Oct. 3 is a training-gated cutover on ChristianaCare’s own update; Becker’s second-cites that date and does not price Epic.",
     "citations": [
       {
         "name": "ChristianaCare News",
         "url": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/"
+      },
+      {
+        "name": "Becker’s",
+        "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/christianacares-epic-go-live-set-for-october/"
       }
     ],
     "geo": "Newark, DE"
@@ -172,9 +176,9 @@
     "id": "news-jefferson-fy2026-loss",
     "slug": "jefferson-fy2026-operating-loss",
     "kind": "news",
-    "title": "Jefferson FY2026 operating loss, plus Fitch liquidity",
-    "dek": "Inquirer year-end $181.5 million to bondholders; Fitch $5.5 billion / 119 DCOH through March 31. Not a swap.",
-    "body": "The Inquirer, Aug. 14, 2026, reported that Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, after a $208 million loss the prior year, in results reported to bondholders. As the Inquirer read that packet: $112 million in layoff and related costs after the Aug. 1, 2024 Lehigh Valley Health Network close; $17.7 billion revenue (from $15.8 billion); a $130.3 million Jefferson Health Plans loss on 415,172 members; and a climb from a $103.8 million first-quarter operating loss to a $71.1 million fourth-quarter operating profit. CFO Michael Harrington said commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law. This desk has not opened the EMMA year-end PDF. Separately, Fitch on June 18, 2026 assigned F1+ to TJU taxable CP notes, affirmed the A IDR with a Negative Outlook, and cited $5.5 billion unrestricted liquidity and about 119 days cash on hand for fiscal 2026 year-to-date through March 31, 2026, including the health plan and excluding line-of-credit draws and about $1.1 billion donor-restricted funds. Fitch cited about $15.5 billion operating revenue for the year ended June 30, 2025, and about $112 million Jefferson Health Plan losses through the first nine months of both FY2025 and FY2026. Those nine-month figures are not a substitute for the June 30 year-end loss.",
+    "title": "Jefferson FY2026 operating loss and Fitch liquidity",
+    "dek": "Inquirer year-end $181.5 million to bondholders; Fitch $5.5 billion / 119 DCOH through March 31. $112 million is not the LVHN close.",
+    "body": "The Inquirer, Aug. 14, 2026, reported that Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, after a $208 million loss the prior year, in results reported to bondholders. The same clip said those FY2026 results included $112 million in costs for layoffs and other moves. Separately, Jefferson completed the Lehigh Valley Health Network close on Aug. 1, 2024; the Inquirer said FY2025 revenue included 11 months of LVHN and rose to $17.7 billion in FY2026 from $15.8 billion. Do not read the $112 million as a close cost. Jefferson Health Plans lost $130.3 million on 415,172 members. Results climbed from a $103.8 million first-quarter operating loss to a $71.1 million fourth-quarter operating profit. CFO Michael Harrington said commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law. This desk has not opened the EMMA year-end PDF. Separately, Fitch on June 18, 2026 assigned F1+ to TJU taxable CP notes, affirmed the A IDR with a Negative Outlook, and cited $5.5 billion unrestricted liquidity and about 119 days cash on hand for fiscal 2026 year-to-date through March 31, 2026, including the health plan and excluding line-of-credit draws and about $1.1 billion donor-restricted funds. Fitch cited about $15.5 billion operating revenue for the year ended June 30, 2025, and about $112 million Jefferson Health Plan losses through the first nine months of both FY2025 and FY2026. Those nine-month figures are not a substitute for the June 30 year-end loss.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-14T16:00:00.000Z",
