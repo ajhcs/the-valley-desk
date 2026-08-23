@@ -179,10 +179,12 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
     "hap-cms-0057-f-enforce-rfi",
     "jefferson-einstein-mychart-2026-09-26",
     "jefferson-fy2026-operating-loss",
+    "mlh-olenoski-cio",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",
     "temple-dragon-copilot-400",
     "tower-ai-tax",
+    "virtua-gordon-cio",
   ]);
   assert.ok(!slugs.includes("christianacare-epic-go-live"));
   assert.ok(!slugs.includes("de-340b-hs1-hb383-2024"));
@@ -1412,10 +1414,12 @@ test("Reed hold: published news slugs; stub origins and mixer are unpublished", 
     "hap-cms-0057-f-enforce-rfi",
     "jefferson-einstein-mychart-2026-09-26",
     "jefferson-fy2026-operating-loss",
+    "mlh-olenoski-cio",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",
     "temple-dragon-copilot-400",
     "tower-ai-tax",
+    "virtua-gordon-cio",
   ]);
   assert.equal(publishedNews.filter((i) => i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
   for (const id of [
@@ -1897,4 +1901,46 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   const bionj = catalog.find((i) => i.slug === "bionj-manufacturing-summit-2026-09-29");
   assert.ok(bionj?.body.includes("$150/$275"));
   assert.ok(!catalog.some((i) => i.kind === "event" && i.status === "published" && "price" in ((i as { offers?: unknown }).offers ?? {})));
+});
+
+test("Sloan CIO paint news: Olenoski and Gordon published, not featured, exact names", () => {
+  const olenoski = catalog.find((i) => i.slug === "mlh-olenoski-cio");
+  const gordon = catalog.find((i) => i.slug === "virtua-gordon-cio");
+  assert.ok(olenoski && gordon);
+  for (const item of [olenoski, gordon]) {
+    assert.equal(item.kind, "news");
+    assert.equal(item.status, "published");
+    assert.equal(item.featured, false);
+    assert.ok(item.publishedAt?.startsWith("2026-08-23"));
+    assert.ok(!/ORBIE|Vanguard|350 locations|banking/i.test(`${item.title} ${item.body} ${item.dek}`));
+    assert.ok(!newsByline(item).includes("Valley Desk"));
+  }
+  assert.equal(olenoski.title, "Luke Olenoski, Main Line Health CIO");
+  assert.equal(
+    olenoski.body,
+    "Luke Olenoski serves as the Senior Vice President and Chief Information Officer for Main Line Health.",
+  );
+  assert.equal(olenoski.impactSentence, olenoski.body);
+  assert.deepEqual(olenoski.orgs, ["org-main-line"]);
+  assert.deepEqual(olenoski.authors, [{ name: "Main Line Health" }]);
+  assert.equal(olenoski.source.url, "https://www.mainlinehealth.org/about/senior-leadership/luke-olenoski");
+  assert.ok(olenoski.body.includes("Luke Olenoski"));
+  assert.equal(gordon.title, "Thomas Gordon, Virtua CIO");
+  assert.equal(gordon.body, "Thomas Gordon is senior vice president and chief information officer for Virtua.");
+  assert.equal(gordon.impactSentence, gordon.body);
+  assert.deepEqual(gordon.orgs, ["org-virtua"]);
+  assert.deepEqual(gordon.authors, [{ name: "Virtua" }]);
+  assert.equal(gordon.source.url, "https://www.virtua.org/About/Senior-Leadership/Thomas-Gordon");
+  assert.ok(gordon.body.includes("Thomas Gordon"));
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+  const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
+  assert.equal(byId["person-luke-olenoski"]?.facts?.[0]?.citation.name, "Main Line Services 990");
+  assert.equal(byId["person-thomas-f-gordon"]?.facts?.[0]?.citation.name, "Virtua Health Inc. 990");
+  assert.equal(byId["person-tom-bartiromo"]?.facts?.[0]?.citation.name, "Reading Hospital 990");
+  assert.ok(!/tower/i.test(JSON.stringify(byId["person-tom-bartiromo"]?.facts)));
+  const paintedO = findFirstMentions(olenoski.title + " " + olenoski.body, factBearingEntities(entityRows));
+  assert.ok(paintedO.some((h) => h.orgId === "person-luke-olenoski" && h.text === "Luke Olenoski"));
+  const paintedG = findFirstMentions(gordon.title + " " + gordon.body, factBearingEntities(entityRows));
+  assert.ok(paintedG.some((h) => h.orgId === "person-thomas-f-gordon" && h.text === "Thomas Gordon"));
 });
