@@ -10,8 +10,10 @@
     "preview": "vite preview",
     "deploy": "npm run build && wrangler deploy",
     "feed": "node scripts/build-feed.mjs",
-    "ingest:rss": "node scripts/ingest-rss.mjs",
-    "ingest:events": "node scripts/ingest-events.mjs",
+    "ingest:rss": "tsx scripts/ingest-rss.mjs",
+    "ingest:events": "tsx scripts/ingest-events.mjs",
+    "ingest:social": "tsx scripts/ingest-social.mjs",
+    "ingest:all": "tsx scripts/ingest-all.mjs",
     "test": "tsx --test test/query-contracts.test.ts"
   },
   "dependencies": {

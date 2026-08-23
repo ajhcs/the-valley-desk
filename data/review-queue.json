@@ -1,1 +1,1378 @@
-{"fetchedAt":"2026-08-22T20:32:26.255Z","events":{"notes":[{"url":"https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=20","status":200},{"url":"https://dvhimss.org/events/","status":200},{"url":"https://dvhimss.org/events-calendar","status":200},{"url":"https://njdvhimssevent.com/","status":200},{"url":"https://njdvhimssevent.com/agenda/","status":200},{"url":"https://njdvhimssevent.com/2024-agenda/","status":200},{"url":"https://njdvhimssevent.com/register","status":404},{"url":"https://njdvhimssevent.com/schedule","status":404},{"url":"https://njdvhimssevent.com/hotel/","status":200},{"url":"https://njdvhimssevent.com/golf-event/","status":200},{"url":"https://njdvhimssevent.com/conference-registration-fees/","status":200}],"count":6},"working":[{"name":"Inquirer Health","url":"https://www.inquirer.com/arc/outboundfeeds/rss/category/health/?outputType=xml","status":200,"count":6},{"name":"Inquirer Business","url":"https://www.inquirer.com/arc/outboundfeeds/rss/category/business/?outputType=xml","status":200,"count":14},{"name":"WHYY","url":"https://whyy.org/feed/","status":200,"count":20}],"items":[{"id":"evt-njdvhimss-fall-2026","slug":"njdvhimss-fall-conference-2026","kind":"event","title":"NJ/DVHIMSS Fall Conference 2026","dek":"Parsed from njdvhimssevent.com agenda \u2014 review before publish.","body":"Dated 2026-10-13, 2026-10-14, 2026-10-15 from the NJ/DVHIMSS conference site.","status":"review","updatedAt":"2026-08-22T20:32:26.255Z","topics":["chapter","conference"],"orgs":["NJDVHIMSS","DVHIMSS"],"region":"NJ","authors":[],"source":{"kind":"ingest","origin":"njdvhimssevent","url":"https://njdvhimssevent.com/","fetchedAt":"2026-08-22T20:32:26.255Z","externalId":"njdvhimss-fall-2026"},"citations":[{"name":"NJDVHIMSS","url":"https://njdvhimssevent.com/"}],"geo":"Hard Rock Hotel & Casino, Atlantic City","startsAt":"2026-10-13T13:00:00.000Z","endsAt":"2026-10-15T15:15:00.000Z","timezone":"America/New_York","venue":"Hard Rock Hotel & Casino","city":"Atlantic City","hostOrg":"NJDVHIMSS","registrationUrl":"https://njdvhimssevent.com/conference-registration-fees/","partner":"chapter","autoPublish":false},{"id":"evt-njdvhimss-2026-10-13-fall-conference-day-1-tuesday","slug":"nj-dvhimss-fall-conference-day-1-tuesday","kind":"event","title":"NJ/DVHIMSS Fall Conference \u2014 Day 1 \u2013 Tuesday","dek":"Parsed from njdvhimssevent.com \u2014 review before publish.","body":"Session window scraped from https://njdvhimssevent.com/.","status":"review","updatedAt":"2026-08-22T20:32:26.255Z","topics":["chapter","conference"],"orgs":["NJDVHIMSS","DVHIMSS"],"region":"NJ","authors":[],"source":{"kind":"ingest","origin":"njdvhimssevent","url":"https://njdvhimssevent.com/","fetchedAt":"2026-08-22T20:32:26.255Z","externalId":"2026-10-13-nj-dvhimss-fall-conference-day-1"},"citations":[{"name":"NJDVHIMSS","url":"https://njdvhimssevent.com/"}],"geo":"Hard Rock Hotel & Casino, Atlantic City","startsAt":"2026-10-13T13:00:00.000Z","endsAt":"2026-10-14T01:30:00.000Z","timezone":"America/New_York","venue":"Hard Rock Hotel & Casino","city":"Atlantic City","hostOrg":"NJDVHIMSS","registrationUrl":"https://njdvhimssevent.com/conference-registration-fees/","partner":"chapter","autoPublish":false},{"id":"evt-njdvhimss-2026-10-14-fall-conference-day-2-wednesday","slug":"nj-dvhimss-fall-conference-day-2-wednesday","kind":"event","title":"NJ/DVHIMSS Fall Conference \u2014 Day 2 \u2013 Wednesday","dek":"Parsed from njdvhimssevent.com \u2014 review before publish.","body":"Session window scraped from https://njdvhimssevent.com/.","status":"review","updatedAt":"2026-08-22T20:32:26.255Z","topics":["chapter","conference"],"orgs":["NJDVHIMSS","DVHIMSS"],"region":"NJ","authors":[],"source":{"kind":"ingest","origin":"njdvhimssevent","url":"https://njdvhimssevent.com/","fetchedAt":"2026-08-22T20:32:26.255Z","externalId":"2026-10-14-nj-dvhimss-fall-conference-day-2"},"citations":[{"name":"NJDVHIMSS","url":"https://njdvhimssevent.com/"}],"geo":"Hard Rock Hotel & Casino, Atlantic City","startsAt":"2026-10-14T11:00:00.000Z","endsAt":"2026-10-14T23:15:00.000Z","timezone":"America/New_York","venue":"Hard Rock Hotel & Casino","city":"Atlantic City","hostOrg":"NJDVHIMSS","registrationUrl":"https://njdvhimssevent.com/conference-registration-fees/","partner":"chapter","autoPublish":false},{"id":"evt-njdvhimss-2026-10-15-fall-conference-day-3-thursday","slug":"nj-dvhimss-fall-conference-day-3-thursday","kind":"event","title":"NJ/DVHIMSS Fall Conference \u2014 Day 3 \u2013 Thursday","dek":"Parsed from njdvhimssevent.com \u2014 review before publish.","body":"Session window scraped from https://njdvhimssevent.com/.","status":"review","updatedAt":"2026-08-22T20:32:26.255Z","topics":["chapter","conference"],"orgs":["NJDVHIMSS","DVHIMSS"],"region":"NJ","authors":[],"source":{"kind":"ingest","origin":"njdvhimssevent","url":"https://njdvhimssevent.com/","fetchedAt":"2026-08-22T20:32:26.255Z","externalId":"2026-10-15-nj-dvhimss-fall-conference-day-3"},"citations":[{"name":"NJDVHIMSS","url":"https://njdvhimssevent.com/"}],"geo":"Hard Rock Hotel & Casino, Atlantic City","startsAt":"2026-10-15T11:30:00.000Z","endsAt":"2026-10-15T15:15:00.000Z","timezone":"America/New_York","venue":"Hard Rock Hotel & Casino","city":"Atlantic City","hostOrg":"NJDVHIMSS","registrationUrl":"https://njdvhimssevent.com/conference-registration-fees/","partner":"chapter","autoPublish":false},{"id":"evt-dvhimss-23007","slug":"njdvhimss-annual-golf-outing","kind":"event","title":"NJDVHIMSS Annual Golf Outing","dek":"Official DVHIMSS chapter calendar.","body":"Ingested from the DVHIMSS Events Calendar.","status":"published","publishedAt":"2026-10-13T13:30:00.000Z","updatedAt":"2026-08-22T20:32:26.255Z","topics":["chapter","events"],"orgs":["DVHIMSS"],"region":"regional","authors":[],"source":{"kind":"ingest","origin":"dvhimss-events","url":"https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/","fetchedAt":"2026-08-22T20:32:26.255Z","externalId":"23007"},"citations":[{"name":"DVHIMSS","url":"https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/"}],"geo":"","startsAt":"2026-10-13T13:30:00.000Z","endsAt":"2026-10-13T19:30:00.000Z","timezone":"America/New_York","venue":"","hostOrg":"DVHIMSS","registrationUrl":"https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/","partner":"dvhimss","autoPublish":true},{"id":"evt-dvhimss-22958","slug":"njdvhimss-fall-conference-october-13th-15th","kind":"event","title":"NJDVHIMSS Fall Conference \u2013 October 13th \u2013 15th","dek":"Official DVHIMSS chapter calendar.","body":"Ingested from the DVHIMSS Events Calendar.","status":"published","publishedAt":"2026-10-13T20:30:00.000Z","updatedAt":"2026-08-22T20:32:26.255Z","topics":["chapter","events"],"orgs":["DVHIMSS"],"region":"regional","authors":[],"source":{"kind":"ingest","origin":"dvhimss-events","url":"https://dvhimss.org/events-calendar/njdvhimss-fall-converence/","fetchedAt":"2026-08-22T20:32:26.255Z","externalId":"22958"},"citations":[{"name":"DVHIMSS","url":"https://dvhimss.org/events-calendar/njdvhimss-fall-converence/"}],"geo":"Hard Rock Hotel & Casino, Atlantic City, NJ","startsAt":"2026-10-13T20:30:00.000Z","endsAt":"2026-10-15T15:30:00.000Z","timezone":"America/New_York","venue":"Hard Rock Hotel & Casino, Atlantic City, NJ","hostOrg":"DVHIMSS","registrationUrl":"https://njdvhimssevent.com/","partner":"dvhimss","autoPublish":true}]}
+{
+  "fetchedAt": "2026-08-23T20:52:16.905Z",
+  "events": {
+    "adapter": "events",
+    "count": 4
+  },
+  "working": {
+    "adapter": "rss",
+    "count": 34
+  },
+  "items": [
+    {
+      "id": "evt-njdvhimss-fall-2026",
+      "slug": "njdvhimss-fall-conference-2026",
+      "title": "NJ/DVHIMSS Fall Conference 2026",
+      "dek": "Scraped from njdvhimssevent.com — review before publish.",
+      "body": "Best-effort scrape of the NJ/DVHIMSS conference page.",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [
+        "chapter",
+        "conference"
+      ],
+      "orgs": [
+        "org-njhimss",
+        "org-dvhimss"
+      ],
+      "region": "NJ",
+      "source": {
+        "kind": "ingest",
+        "origin": "njdvhimssevent",
+        "url": "https://njdvhimssevent.com/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "njdvhimss-fall-2026"
+      },
+      "citations": [
+        {
+          "name": "NJDVHIMSS",
+          "url": "https://njdvhimssevent.com/"
+        }
+      ],
+      "geo": "Atlantic City, NJ",
+      "startsAt": "2026-10-13T20:30:00.000Z",
+      "endsAt": "2026-10-15T15:30:00.000Z",
+      "timezone": "America/New_York",
+      "venue": "Hard Rock Hotel & Casino",
+      "city": "Atlantic City",
+      "hostOrg": "NJDVHIMSS",
+      "registrationUrl": "https://njdvhimssevent.com/",
+      "partner": "chapter",
+      "autoPublish": false,
+      "status": "review",
+      "kind": "event",
+      "authors": [],
+      "featured": false
+    },
+    {
+      "id": "evt-njdvhimss-2026-10-13-fall-conference-day-1-tuesday",
+      "slug": "nj-dvhimss-fall-conference-day-1-tuesday",
+      "kind": "event",
+      "title": "NJ/DVHIMSS Fall Conference — Day 1 – Tuesday",
+      "dek": "Parsed from njdvhimssevent.com — review before publish.",
+      "body": "Session window scraped from https://njdvhimssevent.com/.",
+      "status": "review",
+      "updatedAt": "2026-08-22T20:32:26.255Z",
+      "topics": [
+        "chapter",
+        "conference"
+      ],
+      "orgs": [
+        "NJDVHIMSS",
+        "DVHIMSS"
+      ],
+      "region": "NJ",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "njdvhimssevent",
+        "url": "https://njdvhimssevent.com/",
+        "fetchedAt": "2026-08-22T20:32:26.255Z",
+        "externalId": "2026-10-13-nj-dvhimss-fall-conference-day-1"
+      },
+      "citations": [
+        {
+          "name": "NJDVHIMSS",
+          "url": "https://njdvhimssevent.com/"
+        }
+      ],
+      "geo": "Hard Rock Hotel & Casino, Atlantic City",
+      "startsAt": "2026-10-13T13:00:00.000Z",
+      "endsAt": "2026-10-14T01:30:00.000Z",
+      "timezone": "America/New_York",
+      "venue": "Hard Rock Hotel & Casino",
+      "city": "Atlantic City",
+      "hostOrg": "NJDVHIMSS",
+      "registrationUrl": "https://njdvhimssevent.com/conference-registration-fees/",
+      "partner": "chapter",
+      "autoPublish": false
+    },
+    {
+      "id": "evt-njdvhimss-2026-10-14-fall-conference-day-2-wednesday",
+      "slug": "nj-dvhimss-fall-conference-day-2-wednesday",
+      "kind": "event",
+      "title": "NJ/DVHIMSS Fall Conference — Day 2 – Wednesday",
+      "dek": "Parsed from njdvhimssevent.com — review before publish.",
+      "body": "Session window scraped from https://njdvhimssevent.com/.",
+      "status": "review",
+      "updatedAt": "2026-08-22T20:32:26.255Z",
+      "topics": [
+        "chapter",
+        "conference"
+      ],
+      "orgs": [
+        "NJDVHIMSS",
+        "DVHIMSS"
+      ],
+      "region": "NJ",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "njdvhimssevent",
+        "url": "https://njdvhimssevent.com/",
+        "fetchedAt": "2026-08-22T20:32:26.255Z",
+        "externalId": "2026-10-14-nj-dvhimss-fall-conference-day-2"
+      },
+      "citations": [
+        {
+          "name": "NJDVHIMSS",
+          "url": "https://njdvhimssevent.com/"
+        }
+      ],
+      "geo": "Hard Rock Hotel & Casino, Atlantic City",
+      "startsAt": "2026-10-14T11:00:00.000Z",
+      "endsAt": "2026-10-14T23:15:00.000Z",
+      "timezone": "America/New_York",
+      "venue": "Hard Rock Hotel & Casino",
+      "city": "Atlantic City",
+      "hostOrg": "NJDVHIMSS",
+      "registrationUrl": "https://njdvhimssevent.com/conference-registration-fees/",
+      "partner": "chapter",
+      "autoPublish": false
+    },
+    {
+      "id": "evt-njdvhimss-2026-10-15-fall-conference-day-3-thursday",
+      "slug": "nj-dvhimss-fall-conference-day-3-thursday",
+      "kind": "event",
+      "title": "NJ/DVHIMSS Fall Conference — Day 3 – Thursday",
+      "dek": "Parsed from njdvhimssevent.com — review before publish.",
+      "body": "Session window scraped from https://njdvhimssevent.com/.",
+      "status": "review",
+      "updatedAt": "2026-08-22T20:32:26.255Z",
+      "topics": [
+        "chapter",
+        "conference"
+      ],
+      "orgs": [
+        "NJDVHIMSS",
+        "DVHIMSS"
+      ],
+      "region": "NJ",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "njdvhimssevent",
+        "url": "https://njdvhimssevent.com/",
+        "fetchedAt": "2026-08-22T20:32:26.255Z",
+        "externalId": "2026-10-15-nj-dvhimss-fall-conference-day-3"
+      },
+      "citations": [
+        {
+          "name": "NJDVHIMSS",
+          "url": "https://njdvhimssevent.com/"
+        }
+      ],
+      "geo": "Hard Rock Hotel & Casino, Atlantic City",
+      "startsAt": "2026-10-15T11:30:00.000Z",
+      "endsAt": "2026-10-15T15:15:00.000Z",
+      "timezone": "America/New_York",
+      "venue": "Hard Rock Hotel & Casino",
+      "city": "Atlantic City",
+      "hostOrg": "NJDVHIMSS",
+      "registrationUrl": "https://njdvhimssevent.com/conference-registration-fees/",
+      "partner": "chapter",
+      "autoPublish": false
+    },
+    {
+      "id": "evt-dvhimss-23007",
+      "slug": "njdvhimss-annual-golf-outing",
+      "kind": "event",
+      "title": "NJDVHIMSS Annual Golf Outing",
+      "dek": "Official DVHIMSS chapter calendar.",
+      "body": "Ingested from the DVHIMSS Events Calendar.",
+      "status": "published",
+      "publishedAt": "2026-10-13T13:30:00.000Z",
+      "updatedAt": "2026-08-22T20:32:26.255Z",
+      "topics": [
+        "chapter",
+        "events"
+      ],
+      "orgs": [
+        "DVHIMSS"
+      ],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "dvhimss-events",
+        "url": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
+        "fetchedAt": "2026-08-22T20:32:26.255Z",
+        "externalId": "23007"
+      },
+      "citations": [
+        {
+          "name": "DVHIMSS",
+          "url": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/"
+        }
+      ],
+      "geo": "",
+      "startsAt": "2026-10-13T13:30:00.000Z",
+      "endsAt": "2026-10-13T19:30:00.000Z",
+      "timezone": "America/New_York",
+      "venue": "",
+      "hostOrg": "DVHIMSS",
+      "registrationUrl": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
+      "partner": "dvhimss",
+      "autoPublish": true
+    },
+    {
+      "id": "evt-dvhimss-22958",
+      "slug": "njdvhimss-fall-conference-october-13th-15th",
+      "kind": "event",
+      "title": "NJDVHIMSS Fall Conference – October 13th – 15th",
+      "dek": "Official DVHIMSS chapter calendar.",
+      "body": "Ingested from the DVHIMSS Events Calendar.",
+      "status": "published",
+      "publishedAt": "2026-10-13T20:30:00.000Z",
+      "updatedAt": "2026-08-22T20:32:26.255Z",
+      "topics": [
+        "chapter",
+        "events"
+      ],
+      "orgs": [
+        "DVHIMSS"
+      ],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "dvhimss-events",
+        "url": "https://dvhimss.org/events-calendar/njdvhimss-fall-converence/",
+        "fetchedAt": "2026-08-22T20:32:26.255Z",
+        "externalId": "22958"
+      },
+      "citations": [
+        {
+          "name": "DVHIMSS",
+          "url": "https://dvhimss.org/events-calendar/njdvhimss-fall-converence/"
+        }
+      ],
+      "geo": "Hard Rock Hotel & Casino, Atlantic City, NJ",
+      "startsAt": "2026-10-13T20:30:00.000Z",
+      "endsAt": "2026-10-15T15:30:00.000Z",
+      "timezone": "America/New_York",
+      "venue": "Hard Rock Hotel & Casino, Atlantic City, NJ",
+      "hostOrg": "DVHIMSS",
+      "registrationUrl": "https://njdvhimssevent.com/",
+      "partner": "dvhimss",
+      "autoPublish": true
+    },
+    {
+      "id": "rss-inquirer-health-https-www-inquirer-com-health-family-caregivers-",
+      "slug": "inquirer-health-a-mother-has-spent-years-caring-for-her-special-needs-ch",
+      "kind": "news",
+      "title": "A mother has spent years caring for her special-needs child. The toll quietly grew.",
+      "dek": "The life Annie Morgan envisioned for herself is nothing like her 24/7 devotion to her role as caregiver to her teen daughter, a role more than 60 million Americans fill.",
+      "body": "The life Annie Morgan envisioned for herself is nothing like her 24/7 devotion to her role as caregiver to her teen daughter, a role more than 60 million Americans fill.",
+      "status": "review",
+      "publishedAt": "2026-08-23T12:00:00.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Health",
+        "url": "https://www.inquirer.com/health/family-caregivers-united-states-growing-trend-20260823.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/health/family-caregivers-united-states-growing-trend-20260823.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Health",
+          "url": "https://www.inquirer.com/health/family-caregivers-united-states-growing-trend-20260823.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-health-https-www-inquirer-com-health-measles-outbreak-p",
+      "slug": "inquirer-health-with-89-new-cases-in-a-week-pa-reports-the-nation-s-thir",
+      "kind": "news",
+      "title": "With 89 new cases in a week, Pa. reports the nation’s third-largest measles outbreak",
+      "dek": "Pennsylvania has reported 379 patients diagnosed with measles in two separate outbreaks so far this year.",
+      "body": "Pennsylvania has reported 379 patients diagnosed with measles in two separate outbreaks so far this year.",
+      "status": "review",
+      "publishedAt": "2026-08-21T20:51:22.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Health",
+        "url": "https://www.inquirer.com/health/measles-outbreak-pennsylvania-cases-rising-20260821.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/health/measles-outbreak-pennsylvania-cases-rising-20260821.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Health",
+          "url": "https://www.inquirer.com/health/measles-outbreak-pennsylvania-cases-rising-20260821.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-health-https-www-inquirer-com-health-aging-process-brai",
+      "slug": "inquirer-health-3-things-about-the-brain-that-actually-get-better-with-a",
+      "kind": "news",
+      "title": "3 things about the brain that actually get better with age",
+      "dek": "While the aging process, like life as a whole, varies from person to person, research shows that there are aspects of brain health that can actually continue improving well past your midlife.",
+      "body": "While the aging process, like life as a whole, varies from person to person, research shows that there are aspects of brain health that can actually continue improving well past your midlife.",
+      "status": "review",
+      "publishedAt": "2026-08-22T10:00:00.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Health",
+        "url": "https://www.inquirer.com/health/aging-process-brain-health-three-improvements-20260822.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/health/aging-process-brain-health-three-improvements-20260822.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Health",
+          "url": "https://www.inquirer.com/health/aging-process-brain-health-three-improvements-20260822.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-health-https-www-inquirer-com-health-amerihealth-carita",
+      "slug": "inquirer-health-amerihealth-caritas-to-invest-15m-in-a-company-that-serv",
+      "kind": "news",
+      "title": "AmeriHealth Caritas to invest $15M in a company that serves people with intellectual and developmental disabilities",
+      "dek": "AmeriHealth Caritas is a subsidiary of Independence Health Group, the parent company of Independence Blue Cross, the Philadelphia region's largest employer.",
+      "body": "AmeriHealth Caritas is a subsidiary of Independence Health Group, the parent company of Independence Blue Cross, the Philadelphia region's largest employer.",
+      "status": "review",
+      "publishedAt": "2026-08-21T20:56:55.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Health",
+        "url": "https://www.inquirer.com/health/amerihealth-caritas-investment-deon-health-idd-20260821.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/health/amerihealth-caritas-investment-deon-health-idd-20260821.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Health",
+          "url": "https://www.inquirer.com/health/amerihealth-caritas-investment-deon-health-idd-20260821.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-news-pennsylvania-exton-m",
+      "slug": "inquirer-business-these-nonprofits-called-the-shuttered-exton-mall-home-",
+      "kind": "news",
+      "title": "These nonprofits called the shuttered Exton mall home. Now, some are struggling to relocate.",
+      "dek": "The mall, which abruptly closed in June, housed several nonprofits and community groups. Some are scrambling for new spaces.",
+      "body": "The mall, which abruptly closed in June, housed several nonprofits and community groups. Some are scrambling for new spaces.",
+      "status": "review",
+      "publishedAt": "2026-08-15T19:23:17.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/news/pennsylvania/exton-mall-closure-nonprofits-community-groups-20260815.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/news/pennsylvania/exton-mall-closure-nonprofits-community-groups-20260815.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/news/pennsylvania/exton-mall-closure-nonprofits-community-groups-20260815.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-business-target-groceries",
+      "slug": "inquirer-business-target-bets-shoppers-want-to-buy-trendy-snacks-and-dri",
+      "kind": "news",
+      "title": "Target bets shoppers want to buy trendy snacks and drinks in grocery revamp",
+      "dek": "It is part of the retailer’s strategy to reverse three years of weak sales, as it remodels stores and refreshes its offerings for consumers.",
+      "body": "It is part of the retailer’s strategy to reverse three years of weak sales, as it remodels stores and refreshes its offerings for consumers.",
+      "status": "review",
+      "publishedAt": "2026-08-22T09:01:00.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/business/target-groceries-remodel-trendy-sales-fresh-20260822.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/business/target-groceries-remodel-trendy-sales-fresh-20260822.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/business/target-groceries-remodel-trendy-sales-fresh-20260822.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-business-work-degree-empl",
+      "slug": "inquirer-business-these-philadelphians-used-job-benefits-to-go-back-to-s",
+      "kind": "news",
+      "title": "These Philadelphians used job benefits to go back to school while working full time",
+      "dek": "Some Philly employers offer financial support to pursue higher education. Here’s what that can look like.",
+      "body": "Some Philly employers offer financial support to pursue higher education. Here’s what that can look like.",
+      "status": "review",
+      "publishedAt": "2026-08-23T09:45:00.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/business/work-degree-employee-benefit-education-undergraduate-20260823.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/business/work-degree-employee-benefit-education-undergraduate-20260823.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/business/work-degree-employee-benefit-education-undergraduate-20260823.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-business-bond-market-vola",
+      "slug": "inquirer-business-what-s-behind-the-bond-market-roller-coaster",
+      "kind": "news",
+      "title": "What’s behind the bond market roller coaster?",
+      "dek": "The bond market was already on edge. President Donald Trump’s economic policies have not helped.",
+      "body": "The bond market was already on edge. President Donald Trump’s economic policies have not helped.",
+      "status": "review",
+      "publishedAt": "2026-08-23T09:01:00.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/business/bond-market-volatility-trump-policies-national-debt-interest-rates-treasury-yields-20260822.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/business/bond-market-volatility-trump-policies-national-debt-interest-rates-treasury-yields-20260822.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/business/bond-market-volatility-trump-policies-national-debt-interest-rates-treasury-yields-20260822.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-business-retirement-infla",
+      "slug": "inquirer-business-how-much-should-retirees-worry-about-inflation",
+      "kind": "news",
+      "title": "How much should retirees worry about inflation?",
+      "dek": "There are three areas retirees need to assess to gauge their inflation risk and how strenuously they need to defend against it.",
+      "body": "There are three areas retirees need to assess to gauge their inflation risk and how strenuously they need to defend against it.",
+      "status": "review",
+      "publishedAt": "2026-08-23T09:01:00.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/business/retirement-inflation-risk-portfolio-income-spending-20260823.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/business/retirement-inflation-risk-portfolio-income-spending-20260823.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/business/retirement-inflation-risk-portfolio-income-spending-20260823.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-consumer-technology-socia",
+      "slug": "inquirer-business-i-deleted-instagram-for-two-weeks-now-i-see-why-people",
+      "kind": "news",
+      "title": "I deleted Instagram for two weeks. Now I see why people pay for Brick and other app-blockers",
+      "dek": "Experts say external motivators can be more effective than relying on self control.",
+      "body": "Experts say external motivators can be more effective than relying on self control.",
+      "status": "review",
+      "publishedAt": "2026-08-23T09:01:00.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/consumer/technology/social-media-screen-time-blockers-brick-20260823.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/consumer/technology/social-media-screen-time-blockers-brick-20260823.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/consumer/technology/social-media-screen-time-blockers-brick-20260823.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-business-canada-us-trade-",
+      "slug": "inquirer-business-canada-will-impose-retaliatory-tariffs-on-u-s-goods-be",
+      "kind": "news",
+      "title": "Canada will impose retaliatory tariffs on U.S. goods beginning Sept. 8 as trade negotiations collapse",
+      "dek": "Prime Minister Mark Carney said Canada would match the U.S. tariffs \"dollar for dollar.\"",
+      "body": "Prime Minister Mark Carney said Canada would match the U.S. tariffs \"dollar for dollar.\"",
+      "status": "review",
+      "publishedAt": "2026-08-22T12:11:29.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/business/canada-us-trade-tariffs-trump-20260822.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/business/canada-us-trade-tariffs-trump-20260822.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/business/canada-us-trade-tariffs-trump-20260822.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-business-universities-deg",
+      "slug": "inquirer-business-an-influencer-degree-colleges-bet-on-content-creator-m",
+      "kind": "news",
+      "title": "An 'influencer' degree? Colleges bet on content creator major as critics question its value",
+      "dek": "Arizona State University has a new bachelor’s degree in content creation. Universities, eager to attract students, are offering new majors intended to prepare students for today’s careers.",
+      "body": "Arizona State University has a new bachelor’s degree in content creation. Universities, eager to attract students, are offering new majors intended to prepare students for today’s careers.",
+      "status": "review",
+      "publishedAt": "2026-08-22T09:01:00.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/business/universities-degrees-influencer-content-creation-social-media-arizona-20260822.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/business/universities-degrees-influencer-content-creation-social-media-arizona-20260822.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/business/universities-degrees-influencer-content-creation-social-media-arizona-20260822.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-health-amerihealth-carita",
+      "slug": "inquirer-business-amerihealth-caritas-to-invest-15m-in-a-company-that-se",
+      "kind": "news",
+      "title": "AmeriHealth Caritas to invest $15M in a company that serves people with intellectual and developmental disabilities",
+      "dek": "AmeriHealth Caritas is a subsidiary of Independence Health Group, the parent company of Independence Blue Cross, the Philadelphia region's largest employer.",
+      "body": "AmeriHealth Caritas is a subsidiary of Independence Health Group, the parent company of Independence Blue Cross, the Philadelphia region's largest employer.",
+      "status": "review",
+      "publishedAt": "2026-08-21T20:56:55.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/health/amerihealth-caritas-investment-deon-health-idd-20260821.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/health/amerihealth-caritas-investment-deon-health-idd-20260821.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/health/amerihealth-caritas-investment-deon-health-idd-20260821.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-inquirer-business-https-www-inquirer-com-real-estate-commercial-go",
+      "slug": "inquirer-business-goodness-bowls-is-opening-a-headquarters-and-restauran",
+      "kind": "news",
+      "title": "Goodness Bowls is opening a headquarters and restaurant in a closed Conshohocken bridal shop",
+      "dek": "The 3,500-square-foot space in the former La Bella Moda boutique will be the 10th location of the \"healthy-eats cafe,\" which was founded in Avalon.",
+      "body": "The 3,500-square-foot space in the former La Bella Moda boutique will be the 10th location of the \"healthy-eats cafe,\" which was founded in Avalon.",
+      "status": "review",
+      "publishedAt": "2026-08-21T16:56:21.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "Inquirer Business",
+        "url": "https://www.inquirer.com/real-estate/commercial/goodness-bowls-conshohocken-opening-20260821.html",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://www.inquirer.com/real-estate/commercial/goodness-bowls-conshohocken-opening-20260821.html"
+      },
+      "citations": [
+        {
+          "name": "Inquirer Business",
+          "url": "https://www.inquirer.com/real-estate/commercial/goodness-bowls-conshohocken-opening-20260821.html"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-article-p-750825",
+      "slug": "whyy-hundreds-of-students-set-up-with-fresh-haircuts-for-the-first-day-o",
+      "kind": "news",
+      "title": "Hundreds of students set up with fresh haircuts for the first day of school, thanks to Barbers Who Care and West Philly YMCA",
+      "dek": "Nearly 80 barbers and stylists from five states volunteered their time at the annual event. ",
+      "body": "Nearly 80 barbers and stylists from five states volunteered their time at the annual event. ",
+      "status": "review",
+      "publishedAt": "2026-08-23T20:35:04.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/articles/free-haircuts-philadelphia-students-first-day-of-school/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=article&p=750825"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/articles/free-haircuts-philadelphia-students-first-day-of-school/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-675354",
+      "slug": "whyy-whyy-newscast-for-sunday-10-00-a-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Sunday 10:00 a.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-23T14:10:22.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-sunday-1000-a-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=675354"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-sunday-1000-a-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-675351",
+      "slug": "whyy-whyy-newscast-for-sunday-8-00-a-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Sunday 8:00 a.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-23T12:10:28.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-sunday-800-a-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=675351"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-sunday-800-a-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-article-p-750806",
+      "slug": "whyy-gen-z-is-increasingly-using-social-media-for-news-what-does-this-sa",
+      "kind": "news",
+      "title": "Gen Z is increasingly using social media for news. What does this say about the current news environment?",
+      "dek": "Polls reveal that Gen Z adults are consuming news on social media in higher numbers than their older counterparts. ",
+      "body": "Polls reveal that Gen Z adults are consuming news on social media in higher numbers than their older counterparts. ",
+      "status": "review",
+      "publishedAt": "2026-08-23T10:00:41.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/articles/generation-z-news-social-media-tik-tok-influencers/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=article&p=750806"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/articles/generation-z-news-social-media-tik-tok-influencers/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-article-p-750814",
+      "slug": "whyy-rehoboth-art-league-showcases-111-works-from-across-the-region-in-1",
+      "kind": "news",
+      "title": "Rehoboth Art League showcases 111 works from across the region in 12th Regional Juried Biennial Exhibition",
+      "dek": "Hundreds of artists submitted work for the juried exhibition, which runs through Sept. 20.",
+      "body": "Hundreds of artists submitted work for the juried exhibition, which runs through Sept. 20.",
+      "status": "review",
+      "publishedAt": "2026-08-23T09:30:11.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/articles/rehoboth-art-league-regional-juried-biennial-exhibition/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=article&p=750814"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/articles/rehoboth-art-league-regional-juried-biennial-exhibition/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-675348",
+      "slug": "whyy-whyy-newscast-for-saturday-10-00-a-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Saturday 10:00 a.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-22T14:10:28.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-saturday-1000-a-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=675348"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-saturday-1000-a-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-676130",
+      "slug": "whyy-whyy-newscast-for-saturday-8-00-a-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Saturday 8:00 a.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-22T12:10:10.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-saturday-800-a-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=676130"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-saturday-800-a-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-article-p-750723",
+      "slug": "whyy-hotter-summer-and-fall-days-are-extending-ragweed-allergy-season-in",
+      "kind": "news",
+      "title": "Hotter summer and fall days are extending ragweed allergy season in Greater Philadelphia, experts say",
+      "dek": "More people are being affected and are experiencing more severe symptoms, says a Philadelphia allergist. ",
+      "body": "More people are being affected and are experiencing more severe symptoms, says a Philadelphia allergist. ",
+      "status": "review",
+      "publishedAt": "2026-08-22T10:15:31.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/articles/ragweed-allergy-season-greater-philadelphia/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=article&p=750723"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/articles/ragweed-allergy-season-greater-philadelphia/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-article-p-750765",
+      "slug": "whyy-delaware-election-2026-meet-the-3-democrats-fighting-to-unseat-chri",
+      "kind": "news",
+      "title": "Delaware election 2026: Meet the 3 Democrats fighting to unseat Chris Coons in the U.S. Senate",
+      "dek": "Jeff Appelhans, Mary Louve and Eric No-Trump Hansen are vying to unseat U.S. Sen. Chris Coons in September’s primary as he runs for his fourth term in office.",
+      "body": "Jeff Appelhans, Mary Louve and Eric No-Trump Hansen are vying to unseat U.S. Sen. Chris Coons in September’s primary as he runs for his fourth term in office.",
+      "status": "review",
+      "publishedAt": "2026-08-22T10:00:53.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/articles/election-2026-delaware-primary-senate-voter-guide/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=article&p=750765"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/articles/election-2026-delaware-primary-senate-voter-guide/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-article-p-750799",
+      "slug": "whyy-delaware-election-2026-meet-the-3-republicans-hoping-to-unseat-sara",
+      "kind": "news",
+      "title": "Delaware election 2026: Meet the 3 Republicans hoping to unseat Sarah McBride in Congress",
+      "dek": "Earl Cooper, Joseph Arminio and John Whalen III are Republicans vying for Delaware's congressional seat. Here’s what to know about the race, and where the candidates stand.",
+      "body": "Earl Cooper, Joseph Arminio and John Whalen III are Republicans vying for Delaware's congressional seat. Here’s what to know about the race, and where the candidates stand.",
+      "status": "review",
+      "publishedAt": "2026-08-22T09:45:54.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [
+        "org-cooper"
+      ],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/articles/election-2026-delaware-primary-congress-republican-candidates/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=article&p=750799"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/articles/election-2026-delaware-primary-congress-republican-candidates/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-article-p-750727",
+      "slug": "whyy-researchers-find-microplastics-in-insects-from-schuylkill-river-wat",
+      "kind": "news",
+      "title": "Researchers find microplastics in insects from Schuylkill River watershed",
+      "dek": "The researchers found that microplastics were as prevalent in forested parts of the watershed as they were in urban areas.",
+      "body": "The researchers found that microplastics were as prevalent in forested parts of the watershed as they were in urban areas.",
+      "status": "review",
+      "publishedAt": "2026-08-22T09:30:13.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/articles/schuylkill-river-insects-microplastics-pennsylvania/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=article&p=750727"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/articles/schuylkill-river-insects-microplastics-pennsylvania/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-674941",
+      "slug": "whyy-whyy-newscast-for-friday-7-00-p-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Friday 7:00 p.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-21T23:10:50.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-friday-700-p-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=674941"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-friday-700-p-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-article-p-750794",
+      "slug": "whyy-montgomery-county-approves-new-policy-for-fixing-mail-ballot-errors",
+      "kind": "news",
+      "title": "Montgomery County approves new policy for fixing mail ballot errors",
+      "dek": "For this year’s general elections, the county will automatically send a replacement ballot to voters who make a mistake in their mail ballot submission. ",
+      "body": "For this year’s general elections, the county will automatically send a replacement ballot to voters who make a mistake in their mail ballot submission. ",
+      "status": "review",
+      "publishedAt": "2026-08-21T21:28:29.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/articles/montgomery-county-pennsylvania-mail-ballot-errors-policy-chance/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=article&p=750794"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/articles/montgomery-county-pennsylvania-mail-ballot-errors-policy-chance/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-674938",
+      "slug": "whyy-whyy-newscast-for-friday-5-00-p-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Friday 5:00 p.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-21T21:10:06.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-friday-500-p-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=674938"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-friday-500-p-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-675299",
+      "slug": "whyy-whyy-newscast-for-friday-4-00-p-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Friday 4:00 p.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-21T20:00:35.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-friday-400-p-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=675299"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-friday-400-p-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-675288",
+      "slug": "whyy-whyy-newscast-for-friday-2-00-p-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Friday 2:00 p.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-21T18:00:53.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-friday-200-p-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=675288"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-friday-200-p-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-750759",
+      "slug": "whyy-an-existential-psychologist-on-making-a-meaningful-life",
+      "kind": "news",
+      "title": "An existential psychologist on making a meaningful life",
+      "dek": "Psychologist Clay Routledge explains one downside to our focus on mental health is what he calls the \"pathologizing of ordinary life.\"",
+      "body": "Psychologist Clay Routledge explains one downside to our focus on mental health is what he calls the \"pathologizing of ordinary life.\"",
+      "status": "review",
+      "publishedAt": "2026-08-21T17:42:04.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/an-existential-psychologist-on-making-a-meaningful-life/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=750759"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/an-existential-psychologist-on-making-a-meaningful-life/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-697296",
+      "slug": "whyy-whyy-newscast-for-friday-11-00-a-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Friday 11:00 a.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-21T15:00:17.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-friday-1100-a-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=697296"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-friday-1100-a-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-675231",
+      "slug": "whyy-whyy-newscast-for-friday-9-00-a-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Friday 9:00 a.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-21T13:00:05.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-friday-900-a-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=675231"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-friday-900-a-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "rss-whyy-https-whyy-org-post-type-episode-p-674934",
+      "slug": "whyy-whyy-newscast-for-friday-6-00-a-m",
+      "kind": "news",
+      "title": "WHYY Newscast for Friday 6:00 a.m.",
+      "dek": "The latest local headlines from WHYY",
+      "body": "The latest local headlines from WHYY",
+      "status": "review",
+      "publishedAt": "2026-08-21T10:10:17.000Z",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [],
+      "orgs": [],
+      "region": "regional",
+      "authors": [],
+      "source": {
+        "kind": "ingest",
+        "origin": "WHYY",
+        "url": "https://whyy.org/episodes/whyy-newscast-for-friday-600-a-m/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "https://whyy.org/?post_type=episode&p=674934"
+      },
+      "citations": [
+        {
+          "name": "WHYY",
+          "url": "https://whyy.org/episodes/whyy-newscast-for-friday-600-a-m/"
+        }
+      ],
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "featured": false
+    },
+    {
+      "id": "evt-njdvhimss-golf-2026",
+      "slug": "njdvhimss-annual-golf-outing-2026",
+      "title": "NJDVHIMSS Annual Golf Outing",
+      "dek": "Scraped from njdvhimssevent.com — review before publish.",
+      "body": "Best-effort scrape of the golf outing listed on the conference site.",
+      "updatedAt": "2026-08-23T20:52:16.905Z",
+      "topics": [
+        "chapter",
+        "networking"
+      ],
+      "orgs": [
+        "org-njhimss"
+      ],
+      "region": "NJ",
+      "source": {
+        "kind": "ingest",
+        "origin": "njdvhimssevent",
+        "url": "https://njdvhimssevent.com/",
+        "fetchedAt": "2026-08-23T20:52:16.905Z",
+        "externalId": "njdvhimss-golf-2026"
+      },
+      "citations": [
+        {
+          "name": "NJDVHIMSS",
+          "url": "https://njdvhimssevent.com/"
+        }
+      ],
+      "geo": "Atlantic City, NJ",
+      "startsAt": "2026-10-13T13:30:00.000Z",
+      "endsAt": "2026-10-13T19:30:00.000Z",
+      "timezone": "America/New_York",
+      "city": "Atlantic City",
+      "hostOrg": "NJDVHIMSS",
+      "registrationUrl": "https://njdvhimssevent.com/",
+      "partner": "chapter",
+      "autoPublish": false,
+      "status": "review",
+      "kind": "event",
+      "authors": [],
+      "featured": false
+    }
+  ],
+  "social": {
+    "linkedin": {
+      "count": 0,
+      "skipped": "no-token"
+    },
+    "x": {
+      "count": 0,
+      "skipped": "no-token"
+    }
+  }
+}

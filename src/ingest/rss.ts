@@ -1,6 +1,11 @@
 import type { ContentItem } from "../content/schema";
+import { Entity, type Entity as EntityRow } from "../content/entity";
+import entityFixtures from "../../fixtures/entities.json";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
+import { mapSeedOrgIds } from "./org-map";
+
+const seedEntities = Entity.array().parse(entityFixtures);
 
 export const RSS_SOURCES = [
   {
@@ -73,14 +78,17 @@ export function rssItemToContent(
   raw: ReturnType<typeof parseRssItems>[number],
   feedName: string,
   fetchedAt: string,
-  index: number,
+  _index = 0,
+  entities: readonly EntityRow[] = seedEntities,
 ): ContentItem {
   let publishedAt: string | undefined;
   const parsed = Date.parse(raw.pubDate);
   if (Number.isFinite(parsed)) publishedAt = new Date(parsed).toISOString();
   const slug = slugify(`${feedName}-${raw.title}`);
+  const externalId = raw.guid || raw.link;
+  const text = `${raw.title} ${raw.description}`;
   return {
-    id: `rss-${feedName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${index}-${slugify(raw.guid || raw.link).slice(0, 24)}`,
+    id: `rss-${slugify(feedName)}-${slugify(externalId).slice(0, 48)}`,
     slug,
     kind: "news",
     title: raw.title,
@@ -90,7 +98,7 @@ export function rssItemToContent(
     publishedAt,
     updatedAt: fetchedAt,
     topics: [],
-    orgs: [],
+    orgs: mapSeedOrgIds(text, entities),
     region: "regional",
     authors: [],
     source: {
@@ -98,7 +106,7 @@ export function rssItemToContent(
       origin: feedName,
       url: raw.link,
       fetchedAt,
-      externalId: raw.guid || raw.link,
+      externalId,
     },
     citations: [{ name: feedName, url: raw.link }],
     relatedEventIds: [],

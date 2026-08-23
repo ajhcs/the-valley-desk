@@ -66,7 +66,7 @@ export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetc
         publishedAt: start,
         updatedAt: fetchedAt,
         topics: ["chapter", "events"],
-        orgs: ["DVHIMSS"],
+        orgs: ["org-dvhimss"],
         region: "regional",
         source: {
           kind: "ingest",
@@ -122,7 +122,7 @@ export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt
         body: "Best-effort scrape of the NJ/DVHIMSS conference page.",
         updatedAt: fetchedAt,
         topics: ["chapter", "conference"],
-        orgs: ["NJDVHIMSS", "DVHIMSS"],
+        orgs: ["org-njhimss", "org-dvhimss"],
         region: "NJ",
         source: {
           kind: "ingest",
@@ -156,7 +156,7 @@ export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt
         body: "Best-effort scrape of the golf outing listed on the conference site.",
         updatedAt: fetchedAt,
         topics: ["chapter", "networking"],
-        orgs: ["NJDVHIMSS"],
+        orgs: ["org-njhimss"],
         region: "NJ",
         source: {
           kind: "ingest",

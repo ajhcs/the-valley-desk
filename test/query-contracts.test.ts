@@ -27,6 +27,10 @@ import {
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { rssItemToContent } from "../src/ingest/rss.ts";
+import { ingestLinkedIn } from "../src/ingest/linkedin.ts";
+import { ingestX } from "../src/ingest/x.ts";
+import { mergeReviewQueue } from "../src/ingest/queue.ts";
+import { firstWaveOrigins, isHeldHandle, isLiveSocialKey, liveLinkedInOrigins, liveXOrigins } from "../src/ingest/origins.ts";
 import { CLOSED_LIVE_SEED_IDS, hasLiveSeedOrg, liveSeedOrgIds } from "../src/content/seed.ts";
 import { eventRegisterUrl } from "../src/lib/register.ts";
 import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
@@ -1410,4 +1414,116 @@ test("Voices v1: published kind=voice only, Honor Roll is not news, Jane Doe sta
   assert.ok(itemPage.includes('section: "news" | "event" | "voice"'));
   assert.ok(worker.includes("publishedVoiceSlugs"));
   assert.ok(worker.includes('path.startsWith("/briefing/")'));
+});
+
+test("firehose: stable RSS ids, seed org map, HOLD denylist, social no-op, queue not in catalog", async () => {
+  const raw = rssItemToContent(
+    {
+      title: "Jefferson Health posts a year-end operating loss",
+      link: "https://www.inquirer.com/health/jefferson-loss",
+      description: "Bondholders saw the Inquirer clip.",
+      pubDate: "Fri, 14 Aug 2026 12:00:00 GMT",
+      guid: "https://www.inquirer.com/health/jefferson-loss",
+    },
+    "Inquirer Health",
+    "2026-08-23T20:00:00.000Z",
+    0,
+  );
+  const again = rssItemToContent(
+    {
+      title: "Jefferson Health posts a year-end operating loss",
+      link: "https://www.inquirer.com/health/jefferson-loss",
+      description: "Bondholders saw the Inquirer clip.",
+      pubDate: "Fri, 14 Aug 2026 12:00:00 GMT",
+      guid: "https://www.inquirer.com/health/jefferson-loss",
+    },
+    "Inquirer Health",
+    "2026-08-23T20:00:00.000Z",
+    99,
+  );
+  assert.equal(raw.id, again.id);
+  assert.ok(!/rss-inquirer-health-\d+-/.test(raw.id));
+  assert.ok(raw.orgs.includes("org-jefferson"));
+  assert.equal(raw.kind, "news");
+  assert.equal(raw.source.kind, "ingest");
+  assert.equal(raw.status, "review");
+  assert.equal(raw.featured, false);
+  const national = rssItemToContent(
+    {
+      title: "A national CMS note",
+      link: "https://example.com/cms",
+      description: "No Valley system is named.",
+      pubDate: "Fri, 14 Aug 2026 12:00:00 GMT",
+      guid: "https://example.com/cms",
+    },
+    "Inquirer Health",
+    "2026-08-23T20:00:00.000Z",
+    1,
+  );
+  assert.deepEqual(national.orgs, []);
+  assert.ok(
+    !isPublicNewsFamily({
+      ...national,
+      status: "published",
+      impactSentence: "National CMS note with no Valley system.",
+    }),
+  );
+  const [queued] = toReviewQueue({
+    adapter: "linkedin",
+    fetchedAt: "2026-08-23T20:00:00.000Z",
+    items: [
+      {
+        ...raw,
+        id: "voice-li-1",
+        slug: "li-1",
+        kind: "voice",
+        person: "Main Line Health (official account)",
+        platform: "linkedin",
+        originalUrl: "https://www.linkedin.com/company/main-line-health",
+      },
+    ],
+  });
+  assert.equal(queued.status, "review");
+  assert.equal(queued.featured, false);
+  assert.ok(isHeldHandle("x", "CooperHealth"));
+  assert.ok(isHeldHandle("x", "TowerHealth"));
+  assert.ok(isHeldHandle("x", "wearejefferson"));
+  assert.ok(isHeldHandle("x", "DVHIMSS"));
+  assert.ok(isHeldHandle("linkedin", "salmasian"));
+  assert.ok(isHeldHandle("linkedin", "schnall"));
+  assert.ok(isHeldHandle("linkedin", "pennington"));
+  assert.ok(!isLiveSocialKey("voice-01"));
+  assert.ok(!isLiveSocialKey("cio-note-workforce-ai"));
+  assert.equal(liveXOrigins().length, 0);
+  assert.ok(liveLinkedInOrigins().every((o) => !/jane|voice-01|schnall|salmasian|pennington/i.test(o.slug)));
+  assert.ok(firstWaveOrigins.hold.notes.join(" ").includes("personal X"));
+  const li = await ingestLinkedIn({});
+  assert.equal(li.skipped, "no-token");
+  assert.deepEqual(li.items, []);
+  const x = await ingestX({});
+  assert.equal(x.skipped, "no-token");
+  assert.deepEqual(x.items, []);
+  const kept = mergeReviewQueue(
+    [{ id: "evt-dvhimss-23007", status: "published", title: "Golf" } as (typeof catalog)[number]],
+    [{ id: "evt-dvhimss-23007", status: "review", title: "Clobber" } as (typeof catalog)[number]],
+    new Set(["evt-dvhimss-23007"]),
+  );
+  assert.equal(kept[0]?.status, "published");
+  assert.equal(kept[0]?.title, "Golf");
+  const store = readFileSync(join(root, "src/content/store.ts"), "utf8");
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
+  const rssSrc = readFileSync(join(root, "src/ingest/rss.ts"), "utf8");
+  const eventsStub = readFileSync(join(root, "src/ingest/events-stub.ts"), "utf8");
+  assert.ok(!store.includes("review-queue"));
+  assert.ok(store.includes("published-catalog.json"));
+  assert.ok(worker.includes("async scheduled"));
+  assert.ok(worker.includes("runScheduledIngest"));
+  assert.ok(wrangler.includes("0 * * * *"));
+  assert.ok(!wrangler.includes("routes"));
+  assert.ok(!rssSrc.includes("linkedin.com"));
+  assert.ok(!rssSrc.includes("api.twitter.com"));
+  assert.ok(eventsStub.includes("events-stub"));
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => /honor.?roll/i.test(i.title)));
 });

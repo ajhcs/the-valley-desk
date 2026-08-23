@@ -4,6 +4,7 @@ import {
   publishedNewsSlugs,
   publishedVoiceSlugs,
 } from "./worker-published.js";
+import { runScheduledIngest } from "./src/ingest/run-all.ts";
 
 const SITE = "The Valley Desk";
 const ORIGIN = "https://thevalleydesk.org";
@@ -89,6 +90,16 @@ function withHead(html, path) {
 }
 
 export default {
+  async scheduled(_event, env, ctx) {
+    ctx.waitUntil(
+      runScheduledIngest({
+        X_BEARER_TOKEN: env.X_BEARER_TOKEN,
+        LINKEDIN_TOKEN: env.LINKEDIN_TOKEN,
+      }).then((run) => {
+        console.log("ingest-scheduled", JSON.stringify(run.notes));
+      }),
+    );
+  },
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;

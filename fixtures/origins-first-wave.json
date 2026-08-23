@@ -1,0 +1,96 @@
+{
+  "asOf": "2026-08-23",
+  "source": "Wren pairing 2026-08-23",
+  "notes": [
+    "Jane Doe / voice-01 is not a live key and does not ship.",
+    "Official system/association LI+X and people LI are kind=voice.",
+    "Newsroom RSS stays kind=news.",
+    "Do not scrape cookies, likes, comments, or unofficial profiles."
+  ],
+  "rss": [
+    {
+      "id": "inquirer-health",
+      "name": "Inquirer Health",
+      "url": "https://www.inquirer.com/arc/outboundfeeds/rss/category/health/?outputType=xml",
+      "kind": "news"
+    },
+    {
+      "id": "inquirer-business",
+      "name": "Inquirer Business",
+      "url": "https://www.inquirer.com/arc/outboundfeeds/rss/category/business/?outputType=xml",
+      "kind": "news"
+    },
+    {
+      "id": "whyy",
+      "name": "WHYY",
+      "url": "https://whyy.org/feed/",
+      "fallbacks": ["https://whyy.org/topics/health/feed/"],
+      "kind": "news"
+    }
+  ],
+  "events": [
+    {
+      "id": "dvhimss-rest",
+      "url": "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=20",
+      "orgs": ["org-dvhimss"]
+    }
+  ],
+  "linkedin": [
+    {
+      "slug": "main-line-health",
+      "kind": "organization",
+      "person": "Main Line Health (official account)",
+      "orgs": ["org-main-line"],
+      "url": "https://www.linkedin.com/company/main-line-health",
+      "region": "PA"
+    },
+    {
+      "slug": "temple-university-health-system",
+      "kind": "organization",
+      "person": "Temple Health",
+      "orgs": ["org-temple"],
+      "url": "https://www.linkedin.com/company/temple-university-health-system",
+      "region": "PA"
+    },
+    {
+      "slug": "benjaminslovis",
+      "kind": "person",
+      "person": "Benjamin Slovis",
+      "orgs": ["org-temple"],
+      "url": "https://www.linkedin.com/in/benjaminslovis",
+      "region": "PA"
+    }
+  ],
+  "x": [],
+  "hold": {
+    "x": [
+      "CooperHealth",
+      "TowerHealth",
+      "wearejefferson",
+      "DVHIMSS",
+      "dvhimss"
+    ],
+    "linkedin": [
+      "schnall",
+      "mitchellschnall",
+      "mitchell-schnall",
+      "salmasian",
+      "hojjatsalmasian",
+      "hojjat-salmasian",
+      "pennington",
+      "jeffreypennington",
+      "jeffrey-pennington",
+      "jefferson-cio",
+      "jeffersoncio",
+      "cooper-it",
+      "cooperit",
+      "cooper-cio"
+    ],
+    "notes": [
+      "personal X",
+      "Schnall/Salmasian/Pennington guessed slugs",
+      "Jefferson CIO / Cooper IT",
+      "DVHIMSS X"
+    ]
+  }
+}
