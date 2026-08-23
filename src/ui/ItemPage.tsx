@@ -5,7 +5,7 @@ import { formatWhen } from "../lib/format";
 import { kindChip } from "../lib/kind";
 import { ItemJsonLd } from "./ItemJsonLd";
 import { RegisterLink } from "./RegisterLink";
-import { StatusChip } from "./home/StatusChip";
+import { GroupChip } from "./home/GroupChip";
 
 /** Cole lock: aggregator card. Not a magazine template. */
 export function ItemPage({ slug }: { slug: string }) {
@@ -19,7 +19,7 @@ export function ItemPage({ slug }: { slug: string }) {
   return (
     <article>
       <ItemJsonLd item={item} />
-      <StatusChip kind={item.kind}>{kindChip(item)}</StatusChip>
+      <GroupChip kind={item.kind}>{kindChip(item)}</GroupChip>
       <h1 className="text-3xl mt-2" style={{ color: "var(--text)" }}>{item.title}</h1>
       {impact ? (
         <p className="mt-2" style={{ color: "var(--mute)" }}>{impact}</p>

@@ -20,7 +20,7 @@ const indexRoute = createRoute({
   component: HomePage,
 });
 
-function section(path: string, kind: ContentItem["kind"]) {
+function section<TPath extends string>(path: TPath, kind: ContentItem["kind"]) {
   const list = createRoute({
     getParentRoute: () => rootRoute,
     path,
@@ -28,9 +28,9 @@ function section(path: string, kind: ContentItem["kind"]) {
   });
   const detail = createRoute({
     getParentRoute: () => rootRoute,
-    path: path + "/$slug",
+    path: `${path}/$slug` as `${TPath}/$slug`,
     component: function Detail() {
-      const { slug } = detail.useParams();
+      const { slug } = detail.useParams() as { slug: string };
       return <ItemPage slug={slug} />;
     },
   });

@@ -31,7 +31,7 @@ import { eventRegisterUrl } from "../src/lib/register.ts";
 import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
 import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
-import { formatChipLabel, formatLeadDate } from "../src/lib/format.ts";
+import { formatChipLabel, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
 import { KIND_CHIP, kindChip } from "../src/lib/kind.ts";
 import { Entity } from "../src/content/entity.ts";
 
@@ -260,15 +260,16 @@ test("kind chip is item.kind, never topics[0]; Jefferson loss is HIT", () => {
   assert.ok(rail.includes("kindChip"));
   assert.ok(card.includes("kindChip"));
   assert.ok(itemPage.includes("kindChip"));
-  assert.ok(itemPage.includes("StatusChip"));
+  assert.ok(itemPage.includes("GroupChip"));
+  assert.ok(!itemPage.includes("StatusChip"));
 });
 
 test("kind chip paint is mute/rule, ink, or admiral — never sky, never gold except QUEUED", () => {
   const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
-  const kindNews = css.slice(css.indexOf('.StatusChip[data-kind="news"]'), css.indexOf('.StatusChip[data-kind="policy"]'));
-  const kindPolicy = css.slice(css.indexOf('.StatusChip[data-kind="policy"]'), css.indexOf('.StatusChip[data-kind="ai"]'));
-  const kindAi = css.slice(css.indexOf('.StatusChip[data-kind="ai"]'), css.indexOf('.StatusChip[data-status="review"]'));
-  const queued = css.slice(css.indexOf('.StatusChip[data-status="review"]'), css.indexOf('.StatusChip[data-ann="ask"]'));
+  const kindNews = css.slice(css.indexOf('.GroupChip[data-kind="news"]'), css.indexOf('.GroupChip[data-kind="policy"]'));
+  const kindPolicy = css.slice(css.indexOf('.GroupChip[data-kind="policy"]'), css.indexOf('.GroupChip[data-kind="ai"]'));
+  const kindAi = css.slice(css.indexOf('.GroupChip[data-kind="ai"]'), css.indexOf('.StatusChip[data-status="review"]'));
+  const queued = css.slice(css.indexOf('.StatusChip[data-status="review"]'));
   assert.ok(kindNews.includes("var(--mute)"));
   assert.ok(kindNews.includes("var(--rule)"));
   assert.ok(kindNews.includes('[data-kind="event"]'));
@@ -295,7 +296,7 @@ test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => 
   assert.ok(ai);
   assert.deepEqual(ai.orgs, []);
   assert.ok(ai.impactSentence?.trim());
-  assert.equal(ai.status, "published");
+  assert.equal(ai.status, "draft");
   assert.ok(!isPublicNewsFamily(ai, seedIds));
   const newsPage = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
   assert.ok(!newsPage.some((i) => i.id === "ai-01"));
@@ -684,6 +685,10 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(footer.includes("feed.xml"));
   assert.ok(footer.includes("© The Valley Desk"));
   assert.ok(!footer.toLowerCase().includes("subscribe"));
+  assert.ok(!home.includes("SiteFooter"));
+  assert.ok(layout.includes("SiteFooter"));
+  assert.ok(!layout.includes("SiteChromeFooter"));
+  assert.ok(!layout.includes("isHome"));
   assert.ok(layout.includes("MarkFold"));
   assert.ok(layout.includes("Wordmark"));
   assert.ok(layout.includes("NavLink"));
@@ -883,7 +888,8 @@ test("feed.json projection keeps registrationUrl on published events", () => {
 
 test("ItemPage is an aggregator card: chip, title, impact, body, citations — not a magazine template", () => {
   const page = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
-  assert.ok(page.includes("StatusChip"));
+  assert.ok(page.includes("GroupChip"));
+  assert.ok(!page.includes("StatusChip"));
   assert.ok(page.includes("kindChip"));
   assert.ok(page.includes("item.impactSentence"));
   assert.ok(page.includes("itemCitations"));
@@ -996,9 +1002,10 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(rss.includes("<link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>"));
   assert.ok(rss.includes("<guid isPermaLink=\"true\">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>"));
   assert.ok(rss.includes("<link>https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</link>"));
-  assert.ok(rss.includes("<description>About 1,200 ambulatory users is an Inquirer headcount; 20.4% less time in notes is a 46-clinician journal table, not that headcount.</description>"));
+  assert.ok(rss.includes("<description>Some 1,200 is an Inquirer headcount for Penn’s later in-house tool; 20.4% less time in notes is a 46-clinician journal table from a 2024 DAX Copilot pilot, not that headcount.</description>"));
   assert.ok(!rss.includes("<description>The Philadelphia Inquirer, Nov. 10, 2025: internist Dina Capalongo hits a green button; the doctor still approves the note.</description>"));
-  assert.ok(rss.includes("<description>Partner event, review-queued in the stub path; published here so the rail has two dates.</description>"));
+  assert.ok(!rss.includes("Partner event, review-queued in the stub path; published here so the rail has two dates."));
+  assert.ok(!rss.includes("Chapter event. Gold rail on the homepage."));
   assert.ok(build.includes("canonicalUrl(item)"));
   assert.ok(!build.includes("citations?.[0]"));
   const feedIds = new Set(feed.items.map((row) => row.id));
@@ -1028,4 +1035,91 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(!sitemap.includes("/org/"));
   assert.ok(!sitemap.includes("https://thevalleydesk.org/policy"));
   assert.ok(!sitemap.includes("https://thevalleydesk.org/ai"));
+  assert.ok(!feed.items.some((row) => row.id === "brief-01"));
+  assert.ok(!feed.items.some((row) => row.id === "ai-01"));
+  assert.ok(!rss.includes("week-of-2026-08-18"));
+  assert.ok(build.includes("new Date().toISOString()"));
+  assert.ok(build.includes("hasCite"));
+});
+
+test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org routes", () => {
+  const robots = readFileSync(join(root, "public/robots.txt"), "utf8");
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
+  const router = readFileSync(join(root, "src/router.tsx"), "utf8");
+  assert.ok(robots.includes("User-agent: *"));
+  assert.ok(robots.includes("Allow: /"));
+  assert.ok(!robots.includes("<"));
+  assert.ok(worker.includes("status: 404"));
+  assert.ok(worker.includes("text/plain"));
+  assert.ok(!worker.includes("/org/"));
+  assert.ok(wrangler.includes('"not_found_handling": "none"'));
+  assert.ok(!wrangler.includes("single-page-application"));
+  assert.ok(!wrangler.includes("routes"));
+  assert.ok(!/path:\s*["']\/org\//.test(router));
+});
+
+test("signed stills kit numbers and Mira addendum locks", () => {
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  const favicon = readFileSync(join(root, "public/favicon.svg"), "utf8");
+  const status = readFileSync(join(root, "src/ui/home/StatusChip.tsx"), "utf8");
+  const eventsPage = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
+  const card = readFileSync(join(root, "src/ui/ItemCard.tsx"), "utf8");
+  const networking = catalog.find((i) => i.id === "evt-01");
+  const jefferson = catalog.find((i) => i.id === "evt-02");
+  const briefing = catalog.find((i) => i.id === "brief-01");
+  const ai = catalog.find((i) => i.id === "ai-01");
+  assert.ok(favicon.includes("#FFFFFF"));
+  assert.ok(!favicon.includes("#F7F4EC"));
+  assert.ok(css.includes("font-size: 9px"));
+  assert.ok(css.includes("letter-spacing: 0.3em"));
+  assert.ok(css.includes("font-size: 18px"));
+  assert.ok(css.includes("gap: 28px"));
+  assert.ok(css.includes("border-bottom: 3px solid transparent"));
+  assert.ok(css.includes("grid-template-columns: 1fr 300px"));
+  assert.ok(css.includes("letter-spacing: 0.16em"));
+  assert.ok(css.includes("padding-top: 20px"));
+  assert.ok(css.includes("padding: 28px 56px 40px"));
+  assert.ok(css.includes("max-width: 1440px"));
+  assert.ok(!css.includes("max-width: 1000px"));
+  assert.ok(status.includes("data-queued"));
+  assert.ok(!status.includes("kind"));
+  assert.ok(!status.includes("ann"));
+  assert.equal(networking?.dek, "");
+  assert.equal(jefferson?.dek, "");
+  assert.equal(briefing?.status, "draft");
+  assert.equal(ai?.status, "draft");
+  assert.deepEqual(ai?.orgs, []);
+  assert.ok(card.includes("listDek"));
+  assert.ok(card.includes("listSourceLine"));
+  assert.ok(!card.includes("item.dek"));
+  assert.ok(eventsPage.includes("pinnedUpcomingEvents"));
+});
+
+test("list pages omit costume deks and costume source crumbs", () => {
+  const policy = catalog.find((i) => i.id === "policy-01")!;
+  const networking = catalog.find((i) => i.id === "evt-01")!;
+  const jefferson = catalog.find((i) => i.id === "evt-02")!;
+  const penn = catalog.find((i) => i.id === "news-penn-ai-scribe")!;
+  const christiana = catalog.find((i) => i.id === "news-christianacare-epic")!;
+  const fall = catalog.find((i) => i.id === "evt-dvhimss-22958")!;
+  assert.equal(listDek(policy), "");
+  assert.equal(listDek(networking), "");
+  assert.equal(listDek(jefferson), "");
+  assert.equal(listDek(penn), penn.dek);
+  assert.equal(listDek(christiana), christiana.dek);
+  assert.equal(listDek(fall), fall.dek);
+  assert.equal(listSourceLine(penn), "");
+  assert.equal(listSourceLine(policy), "");
+  assert.equal(listSourceLine(networking), "");
+  const newsRows = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
+  const eventRows = pinnedUpcomingEvents(catalog, new Date("2026-08-22T20:00:00.000Z"), 50);
+  const rendered = [...newsRows, ...eventRows]
+    .flatMap((item) => [listDek(item), listSourceLine(item)])
+    .join("\n");
+  assert.ok(!/review-queued/i.test(rendered));
+  assert.ok(!/stub path/i.test(rendered));
+  assert.ok(!/dvhimss-events-stub/i.test(rendered));
+  assert.ok(!/Gold rail on the homepage/i.test(rendered));
+  assert.ok(!/so the rail has two dates/i.test(rendered));
 });

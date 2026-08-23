@@ -1,22 +1,6 @@
-export function StatusChip({
-  children,
-  kind,
-  queued,
-  ann,
-}: {
-  children: string;
-  kind?: string;
-  queued?: boolean;
-  ann?: "ask" | "spill";
-}) {
+export function StatusChip({ children }: { children: string }) {
   return (
-    <span
-      className="StatusChip"
-      data-kind={kind}
-      data-status={queued ? "review" : undefined}
-      data-queued={queued ? "true" : undefined}
-      data-ann={ann}
-    >
+    <span className="StatusChip" data-status="review" data-queued="true">
       {children}
     </span>
   );

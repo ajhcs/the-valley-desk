@@ -9,7 +9,6 @@ function deskAsk(item: ContentItem) {
 }
 
 export function Desk({ items }: { items: ContentItem[] }) {
-  if (items.length === 0) return null;
   return (
     <ul className="desk">
       {items.map((item, i) => {
@@ -22,16 +21,16 @@ export function Desk({ items }: { items: ContentItem[] }) {
         );
         return (
           <li key={item.id} className="DeskRow" style={{ ["--i" as string]: i }}>
-            {ask ? <StatusChip ann="ask">ASK</StatusChip> : <DateChip item={item} />}
             <div className="DeskRow-copy">
               <div className="DeskRow-title">
+                {ask ? <span className="DateChip" data-ann="ask">ASK</span> : <DateChip item={item} />}
                 {title}
-                {queued ? <StatusChip queued>QUEUED</StatusChip> : null}
+                {queued ? <StatusChip>QUEUED</StatusChip> : null}
               </div>
-              {item.impactSentence ? (
-                <p className="DeskRow-impact">{item.impactSentence}</p>
-              ) : null}
             </div>
+            {item.impactSentence ? (
+              <p className="DeskRow-impact">{item.impactSentence}</p>
+            ) : null}
           </li>
         );
       })}

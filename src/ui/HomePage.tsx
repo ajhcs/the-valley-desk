@@ -8,7 +8,6 @@ import {
 import { Desk } from "./home/Desk";
 import { Lead } from "./home/Lead";
 import { Rail } from "./home/Rail";
-import { SiteFooter } from "./home/SiteFooter";
 import { useSessionFirstHome } from "./sessionMotion";
 
 export function HomePage() {
@@ -26,7 +25,6 @@ export function HomePage() {
         <Rail label="NEWS · LATEST" rail="news" items={news} />
         <Rail label="EVENTS · NEXT" rail="events" items={events} />
       </div>
-      <SiteFooter />
     </div>
   );
 }

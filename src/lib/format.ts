@@ -88,3 +88,23 @@ export function sourceLine(item: ContentItem) {
   const origin = item.source.origin;
   return item.source.url ? origin + " · cited" : origin;
 }
+
+const COSTUME_LIST_COPY =
+  /review-queued|stub path|dvhimss-events-stub|gold rail on the homepage|so the rail has two dates/i;
+
+/** List pages: real dek or nothing. Never rewrite costume/stub language. */
+export function listDek(item: Pick<ContentItem, "dek">) {
+  const dek = item.dek?.trim() ?? "";
+  if (!dek || COSTUME_LIST_COPY.test(dek)) return "";
+  return dek;
+}
+
+export function isCostumeOrigin(origin: string) {
+  return origin === "newsroom" || /stub/i.test(origin);
+}
+
+/** List-page source crumb. Costume origins (newsroom, *stub*) stay off the card. */
+export function listSourceLine(item: ContentItem) {
+  if (isCostumeOrigin(item.source.origin)) return "";
+  return sourceLine(item);
+}

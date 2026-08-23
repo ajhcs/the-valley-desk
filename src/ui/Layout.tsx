@@ -1,10 +1,7 @@
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { Link, Outlet } from "@tanstack/react-router";
 import { SiteFooter } from "./home/SiteFooter";
 
 export function Layout() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isHome = pathname === "/";
-
   return (
     <div className="Shell">
       <header className="SiteHeader">
@@ -29,11 +26,7 @@ export function Layout() {
       <main className="SiteMain">
         <Outlet />
       </main>
-      {isHome ? null : (
-        <div className="SiteChromeFooter">
-          <SiteFooter />
-        </div>
-      )}
+      <SiteFooter />
     </div>
   );
 }

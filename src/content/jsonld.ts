@@ -1,6 +1,7 @@
 import type { ContentItem, EventItem } from "./schema";
 import type { Entity } from "./entity";
 import { canonicalUrl } from "../lib/canonical";
+import { listDek } from "../lib/format";
 import { entityIndex } from "./entity";
 
 const NEWS_ARTICLE_KINDS = new Set(["news", "policy", "ai", "interview"]);
@@ -77,7 +78,7 @@ export function eventJsonLd(
     "@type": "Event",
     name: event.title,
     startDate: event.startsAt,
-    description: event.impactSentence || event.dek,
+    description: event.impactSentence || listDek(event) || undefined,
     organizer: organizationFromHost(event.hostOrg, entities),
     url,
     mainEntityOfPage: url,

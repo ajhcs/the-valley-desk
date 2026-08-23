@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Valley Desk favicon">
-  <rect width="32" height="32" fill="#F7F4EC"/>
+  <rect width="32" height="32" fill="#FFFFFF"/>
   <g transform="translate(2,2) scale(0.4375)"><polygon fill="#21145F" points="6,10 34,10 26,54 4,54"/>
   <polygon fill="#1E22AA" points="30,10 58,10 60,54 32,54"/>
   <polygon fill="#54C0E8" points="30,10 36,10 32,54 26,54"/></g>
