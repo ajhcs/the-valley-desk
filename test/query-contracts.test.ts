@@ -1317,8 +1317,15 @@ test("Sloan Einstein MyChart 2026-09-26 is published, not featured; old go-live 
   assert.equal(item.kind, "news");
   assert.equal(item.status, "published");
   assert.equal(item.featured, false);
-  assert.equal(item.publishedAt, undefined);
+  assert.equal(item.publishedAt, "2026-08-23T16:00:00.000Z");
+  assert.ok(item.publishedAt?.startsWith("2026-08-23"));
+  assert.ok(!item.publishedAt?.startsWith("2026-09-26"));
   assert.equal(item.kind === "news" ? item.clockAt : undefined, "2026-09-26T04:00:00.000Z");
+  assert.ok((item.kind === "news" ? item.clockAt : "").startsWith("2026-09-26"));
+  assert.equal(
+    item.dek,
+    "Official Jefferson page: MyEinsteinHealth migrates to MyJeffersonHealth, the Epic MyChart portal, for Jefferson Einstein Philadelphia and Jefferson Einstein Montgomery.",
+  );
   assert.deepEqual(item.orgs, [
     "org-jefferson",
     "org-jefferson-einstein-phila",
