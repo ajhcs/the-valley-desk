@@ -166,7 +166,7 @@
         "url": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/"
       },
       {
-        "name": "Becker’s",
+        "name": "Becker’s July 22",
         "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/christianacares-epic-go-live-set-for-october/"
       }
     ],
@@ -267,8 +267,8 @@
     "slug": "temple-dragon-copilot-400",
     "kind": "news",
     "title": "Temple Dragon Copilot user count and TUHS cash days",
-    "dek": "HealthTech 400 end users. Unaudited TUHS 116 DCOH at June 30, 2025.",
-    "body": "HealthTech Magazine, August 2026, said Benjamin Slovis has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” HealthTech identified him as chief medical information officer at Philadelphia-based Temple Health. Temple’s June 8, 2026 newsroom note, which names him Chief Medical Information Officer for Temple University Hospital, said he described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews. Separately, Temple University Health System’s unaudited year-end investor report for June 30, 2025 showed 116 days cash on hand (124 at June 30, 2024). That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count.",
+    "dek": "HealthTech 400 end users. Unaudited TUHS 116 DCOH at June 30, 2025. PBJ April 1 is Temple-sponsored advertorial; pilot and nearly-400 are split.",
+    "body": "HealthTech Magazine, August 2026, said Benjamin Slovis has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” HealthTech identified him as chief medical information officer at Philadelphia-based Temple Health. Temple’s June 8, 2026 newsroom note, which names him Chief Medical Information Officer for Temple University Hospital, said he described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews. The Philadelphia Business Journal, April 1, 2026, is labeled “Sponsored Content by Temple Health” (Jon Feld, TBJ Content Studio). Advertorial, not independent reporting, not a filing, not the 116 DCOH line. That page names Dr. Benjamin Slovis as CMIO at Temple University Hospital and names Dragon Copilot as the tool. Pilot data on that page: more than a 10 percent cut in after-hours documentation time. Later expansion on that page: nearly 400 physicians. Do not fuse those two sentences. Separately, Temple University Health System’s unaudited year-end investor report for June 30, 2025 showed 116 days cash on hand (124 at June 30, 2024). That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-01T16:00:00.000Z",
@@ -302,6 +302,10 @@
       {
         "name": "Temple June 8",
         "url": "https://www.templehealth.org/about/news/in-the-media/dr-benjamin-slovis-discusses-temple-healths-utilization-of-artificial-intelligence-with-bucks-county-herald"
+      },
+      {
+        "name": "PBJ April 1 (sponsored)",
+        "url": "https://www.bizjournals.com/philadelphia/news/2026/04/01/temple-health-ai-patient-safety.html"
       },
       {
         "name": "TUHS June 30 2025 DCOH PDF",

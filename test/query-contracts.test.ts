@@ -584,14 +584,14 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.equal(temple.kind === "news" ? temple.clockAt : "none", undefined);
   assert.equal(temple.publishedAt, "2026-08-01T16:00:00.000Z");
   assert.deepEqual(temple.orgs, ["org-temple", "org-temple-tuh-main"]);
-  assert.equal(temple.citations?.length, 3);
+  assert.equal(temple.citations?.length, 4);
   assert.equal(temple.source.url, temple.citations?.[0]?.url);
   assert.ok(temple.body.includes("chief medical information officer at Philadelphia-based Temple Health"));
   assert.ok(temple.body.includes("Chief Medical Information Officer for Temple University Hospital"));
   assert.ok(temple.body.endsWith("That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count."));
   assert.ok(!/honor.?roll|epic-names-temple|july 16/i.test(JSON.stringify(temple)));
   assert.ok(!/capalongo/i.test(`${temple.title} ${temple.dek} ${temple.body}`));
-  assert.ok(!temple.citations?.some((c) => c.url.includes("bizjournals.com")));
+  assert.ok(temple.citations?.some((c) => c.name === "PBJ April 1 (sponsored)" && c.url.includes("bizjournals.com")));
   const blob = JSON.stringify(catalog);
   assert.ok(!blob.includes("org-ibc"));
   assert.ok(!blob.includes("org-aetna"));
