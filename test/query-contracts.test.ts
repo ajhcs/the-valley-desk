@@ -1683,6 +1683,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
   const footer = readFileSync(join(root, "src/ui/home/SiteFooter.tsx"), "utf8");
   const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  const indexCss = readFileSync(join(root, "src/index.css"), "utf8");
   const head = readFileSync(join(root, "src/ui/DocumentHead.tsx"), "utf8");
   const worker = readFileSync(join(root, "worker.js"), "utf8");
 
@@ -1714,6 +1715,9 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(css.includes("outline-style: solid"));
   assert.ok(css.includes("outline-color: var(--ink)"));
   assert.ok(css.includes("var(--motion-fast)"));
+  assert.ok(indexCss.includes(".SiteNav a.NavLink:focus-visible"));
+  assert.ok(indexCss.includes(".SiteHeader-brand:focus-visible"));
+  assert.ok(indexCss.includes(".SiteFooter a:focus-visible"));
   assert.ok(css.includes("grid-template-columns: 1fr 1fr 1fr"));
   assert.ok(!css.includes("grid-template-columns: 1fr 1fr;"));
   assert.ok(css.includes(".GroupChip[data-kind=\"voice\"]"));
