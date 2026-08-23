@@ -89,6 +89,10 @@
   border-bottom-color: var(--event);
 }
 
+.NavLink.is-voices {
+  border-bottom-color: var(--ink);
+}
+
 .HomePage {
   display: flex;
   flex-direction: column;

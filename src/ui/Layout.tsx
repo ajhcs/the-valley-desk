@@ -22,7 +22,7 @@ export function Layout() {
             <Link to="/events" className="NavLink is-events">
               Events
             </Link>
-            <Link to="/voices" className="NavLink">
+            <Link to="/voices" className="NavLink is-voices">
               Voices
             </Link>
           </nav>

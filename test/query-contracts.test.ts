@@ -789,6 +789,11 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
   assert.ok(layout.includes('to="/voices"'));
+  assert.ok(layout.includes("is-news"));
+  assert.ok(layout.includes("is-events"));
+  assert.ok(layout.includes("is-voices"));
+  assert.ok(css.includes(".NavLink.is-voices"));
+  assert.ok(css.includes("border-bottom-color: var(--ink)"));
   assert.ok(router.includes('"/voices"'));
   assert.ok(!router.includes('"/briefing"'));
   assert.ok(!router.includes("BriefingPage"));
@@ -810,6 +815,7 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(tokens.includes("#E6E8EE"));
   assert.ok(briefing.includes("Ranked by org and topic overlap, not recency."));
   assert.ok(briefing.includes("Nothing published in this window yet."));
+  assert.ok(briefing.includes("ItemCard"));
 });
 
 test("Register uses registrationUrl only; locked DVHIMSS URLs unchanged", () => {
@@ -825,6 +831,15 @@ test("Register uses registrationUrl only; locked DVHIMSS URLs unchanged", () => 
   assert.equal(golf?.slug, "njdvhimss-annual-golf-outing");
   assert.equal(golf?.body, "Kickoff to the fall conference.");
   assert.ok(!golf?.body.includes("Ingested from the DVHIMSS Events Calendar."));
+  assert.equal(fall?.status, "published");
+  assert.equal(golf && golf.kind === "event" ? golf.autoPublish : false, true);
+  assert.equal(fall && fall.kind === "event" ? fall.autoPublish : false, true);
+  const eventsAdapter = readFileSync(join(root, "src/ingest/events.ts"), "utf8");
+  const social = readFileSync(join(root, "src/ingest/social.ts"), "utf8");
+  const linkedin = readFileSync(join(root, "src/ingest/linkedin.ts"), "utf8");
+  assert.ok(eventsAdapter.includes("autoPublish: true"));
+  assert.ok(!social.includes("autoPublish"));
+  assert.ok(!linkedin.includes("autoPublish"));
   assert.equal(eventRegisterUrl(networking!), "https://dvhimss.org/events/");
   assert.equal(eventRegisterUrl(jefferson!), undefined);
   assert.ok(jefferson && jefferson.kind === "event" && jefferson.source.url);
