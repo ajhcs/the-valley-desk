@@ -36,7 +36,7 @@ export function DocumentHead() {
     const path = pathname.replace(/\/+$/, "") || "/";
     const parts = path.split("/").filter(Boolean);
     const item =
-      parts.length === 2 && (parts[0] === "news" || parts[0] === "events" || parts[0] === "voices" || parts[0] === "briefing")
+      parts.length === 2 && (parts[0] === "news" || parts[0] === "events")
         ? bySlug(catalog, parts[1])
         : undefined;
     let title = SITE;
@@ -46,7 +46,6 @@ export function DocumentHead() {
       desc = item.impactSentence?.trim() || item.title;
     } else if (path === "/news") title = `News · ${SITE}`;
     else if (path === "/events") title = `Events · ${SITE}`;
-    else if (path === "/briefing") title = `Briefing · ${SITE}`;
     const url = path === "/" ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${path}`;
     document.title = title;
     upsertMeta("name", "description", desc);

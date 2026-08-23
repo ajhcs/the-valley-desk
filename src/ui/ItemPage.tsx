@@ -22,7 +22,7 @@ export function ItemPage({ slug }: { slug: string }) {
     <article>
       <ItemJsonLd item={item} />
       <GroupChip kind={item.kind}>{kindChip(item)}</GroupChip>
-      <h1 className="text-3xl mt-2" style={{ color: "var(--text)" }}>{item.title}</h1>
+      <h1 className="Lead-headline">{item.title}</h1>
       {when || byline ? (
         <p className="mt-2 text-xs" style={{ color: "var(--mute)" }}>
           {when}

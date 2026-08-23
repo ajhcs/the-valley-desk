@@ -293,6 +293,10 @@ test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => 
   const page = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
   const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
   assert.ok(page.includes("latestNews(catalog, Number.MAX_SAFE_INTEGER)"));
+  assert.ok(page.includes("Rail"));
+  assert.ok(page.includes("NEWS · LATEST"));
+  assert.ok(page.includes("EVENTS · NEXT"));
+  assert.ok(!page.includes("ItemCard"));
   assert.ok(!page.includes("newsFamily"));
   assert.ok(home.includes("latestNews(catalog)"));
   const ai = catalog.find((i) => i.id === "ai-01");
@@ -702,6 +706,9 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
   assert.ok(!layout.includes('to="/voices"'));
+  assert.ok(!router.includes('"/voices"'));
+  assert.ok(!router.includes('"/briefing"'));
+  assert.ok(!router.includes("BriefingPage"));
   assert.ok(!router.includes('"/policy"'));
   assert.ok(!router.includes('"/ai"'));
   assert.ok(!/path:\s*["']\/org\//.test(router));
@@ -915,6 +922,8 @@ test("ItemPage is an aggregator card: chip, title, impact, body, citations — n
   assert.ok(page.includes("publishedAt"));
   assert.ok(page.includes("authors"));
   assert.ok(page.includes("Sources"));
+  assert.ok(page.includes("Lead-headline"));
+  assert.ok(!page.includes("text-3xl"));
   assert.ok(!page.includes("item.dek"));
   assert.ok(!page.includes("QUEUED"));
   assert.ok(!page.includes("KIND_LABEL"));
@@ -1093,8 +1102,10 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(!publishedRoutes.includes("week-of-2026-08-18"));
   assert.ok(!publishedRoutes.includes("dvhimss-september-networking"));
   assert.ok(!publishedRoutes.includes("cio-note-workforce-ai"));
-  assert.ok(worker.includes("voiceSlugs"));
-  assert.ok(worker.includes("briefingSlugs"));
+  assert.ok(worker.includes('path.startsWith("/voices/")'));
+  assert.ok(worker.includes('path.startsWith("/briefing/")'));
+  assert.ok(worker.includes("news|events"));
+  assert.ok(!worker.includes("voices|briefing"));
   assert.ok(wrangler.includes('"not_found_handling": "none"'));
   assert.ok(!wrangler.includes("single-page-application"));
   assert.ok(!wrangler.includes("routes"));
@@ -1138,6 +1149,8 @@ test("signed stills kit numbers and Mira addendum locks", () => {
   assert.ok(!card.includes("item.orgs"));
   assert.ok(!card.includes("listSourceLine"));
   assert.ok(eventsPage.includes("pinnedUpcomingEvents"));
+  assert.ok(eventsPage.includes("Rail"));
+  assert.ok(!eventsPage.includes("ItemCard"));
 });
 
 test("list pages omit costume deks and costume source crumbs", () => {

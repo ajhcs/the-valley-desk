@@ -1,27 +1,14 @@
 import type { ContentItem } from "../content/schema";
-import { byKind, latestNews, pinnedUpcomingEvents } from "../content/queries";
+import { latestNews, pinnedUpcomingEvents } from "../content/queries";
 import { catalog } from "../lib/catalog";
-import { KIND_LABEL } from "../lib/kind";
-import { ItemCard } from "./ItemCard";
+import { Rail } from "./home/Rail";
 
 export function KindListPage({ kind }: { kind: ContentItem["kind"] }) {
   const items =
     kind === "event"
       ? pinnedUpcomingEvents(catalog, new Date(), 50)
-      : kind === "news"
-        ? latestNews(catalog, Number.MAX_SAFE_INTEGER)
-        : byKind(catalog, kind);
+      : latestNews(catalog, Number.MAX_SAFE_INTEGER);
   const rail = kind === "event" ? "events" : "news";
-  return (
-    <section>
-      <h1 className="text-sm font-semibold tracking-widest uppercase" style={{ color: kind === "event" ? "var(--events)" : "var(--ink)" }}>
-        {KIND_LABEL[kind]}
-      </h1>
-      {items.length === 0 ? (
-        <p className="mt-4 text-sm">Nothing published in this section yet.</p>
-      ) : (
-        items.map((item) => <ItemCard key={item.id} item={item} rail={rail} />)
-      )}
-    </section>
-  );
+  const label = kind === "event" ? "EVENTS · NEXT" : "NEWS · LATEST";
+  return <Rail label={label} rail={rail} items={items} />;
 }
