@@ -131,9 +131,9 @@
     "id": "news-christianacare-epic",
     "slug": "christianacare-epic-go-live",
     "kind": "news",
-    "title": "ChristianaCare Epic go-live Oct. 3, 2026",
-    "dek": "Official July update plus FAC Note 18 EMR-license dollars. Becker’s second-cites the date.",
-    "body": "ChristianaCare’s July 2026 newsroom update set an Oct. 3, 2026 Epic go-live and said the Wilmington system was in the final stage, with less than three months left. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction and that caregivers must finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Becker’s Hospital Review (July 22, 2026) second-cites the Oct. 3 date and says the switch from the prior EHR has been underway since a 2024 decision; it names Robert Hartmann as vice president of EHR transformation. Christiana Care Health System and Affiliates, Uniform Guidance / PwC AFS June 30, 2025 and 2024 (auditor report Sept. 25, 2025), Note 18: $24.683 million in contracted five-year software-license payments entered in FY2025 “as part of a broader electronic medical records (EMR) software implementation.” Remaining at June 30, 2025: $18.826 million, of which $4.895 million is due in 2026. Phase 1 software design and development: $5.1 million, due in 2026. The note does not name Epic. That license line is not go-live labor, training, or hardware.",
+    "title": "ChristianaCare Epic go-live, official July 2026 update",
+    "dek": "Oct. 3, 2026 date and training gate from the newsroom.",
+    "body": "ChristianaCare’s July 2026 newsroom update scheduled an Oct. 3, 2026 Epic go-live and said the system was in the final stage, with less than three months remaining. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction, and that readiness checks are meant to make sure caregivers finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Patients are told to keep appointments unless ChristianaCare contacts them.",
     "status": "published",
     "featured": true,
     "publishedAt": "2026-07-01T16:00:00.000Z",
@@ -159,22 +159,14 @@
     "relatedEventIds": [],
     "relatedVoiceIds": [],
     "clockAt": "2026-10-03T04:00:00.000Z",
-    "impactSentence": "Oct. 3 is a training-gated cutover; the FAC note prices an unnamed EMR license, not the Epic press headline.",
+    "impactSentence": "Oct. 3 is a training-gated cutover on ChristianaCare’s own update.",
     "citations": [
       {
         "name": "ChristianaCare News",
         "url": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/"
-      },
-      {
-        "name": "Becker’s",
-        "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/christianacares-epic-go-live-set-for-october/"
-      },
-      {
-        "name": "FAC Note 18",
-        "url": "https://app.fac.gov/dissemination/report/pdf/2025-06-GSAFAC-0000407992"
       }
     ],
-    "geo": "Wilmington, DE"
+    "geo": "Newark, DE"
   },
   {
     "id": "news-jefferson-fy2026-loss",
@@ -223,9 +215,9 @@
     "id": "news-penn-ai-scribe",
     "slug": "penn-in-house-ai-scribe",
     "kind": "news",
-    "title": "Penn in-house scribe: Inquirer headcount, JAMA table",
-    "dek": "About 1,200 ambulatory users in one clip; 20.4% less time in notes is a 46-clinician table. Not fused.",
-    "body": "The Philadelphia Inquirer, Nov. 10, 2025, said Dina Capalongo, a Penn Medicine internist, uses an in-house AI scribe: ambient listening drafts a sectioned note she still has to approve, often before she leaves the room, and that about 1,200 ambulatory providers were using it. A separate JAMA Network Open study (Duggan et al., published Feb. 19, 2025; outpatient QI April–June 2024 at one Philadelphia academic system) associated ambient scribing with 20.4% less time in notes per appointment (10.3 to 8.2 minutes; P<.001) among 46 clinicians in 17 specialties. The same table associated 9.3% greater same-day appointment closure (66.2% to 72.4%) and 30.0% less after-hours work time (50.6 to 35.4 minutes per workday). The article does not name a commercial vendor. Penn Medicine’s Feb. 21, 2025 news release quoted Kevin B. Johnson, who leads the AI4AI Lab, calling those “early but promising results,” and said volunteer clinicians were using the tool with patient permission. The 1,200 count is not the study n. Temple Dragon counts are not this count.",
+    "title": "Penn in-house scribe headcount and 2024 JAMA pilot table",
+    "dek": "Some 1,200 ambulatory users in the Inquirer clip. A separate 46-clinician 2024 QI study used DAX Copilot (Nuance). Not the same product sentence.",
+    "body": "The Philadelphia Inquirer, Nov. 10, 2025, said Dina Capalongo, a Penn Medicine internist, uses an AI scribe Penn designed in-house: she hits a green button on a phone app, ambient listening drafts a sectioned note she still has to approve, usually before she leaves the room. The same clip said some 1,200 Penn Medicine providers were using an AI scribe in ambulatory and outpatient offices. Mitchell Schnall said the system built its own scribe. A separate JAMA Network Open study (Duggan et al., published Feb. 19, 2025; outpatient QI April–June 2024 at one Philadelphia academic system) gave clinicians a commercially available ambient scribe, DAX Copilot (Nuance). Among 46 clinicians in 17 specialties, the abstract associated that tool with 20.4% less time in notes per appointment (10.3 to 8.2 minutes; P<.001), 9.3% greater same-day appointment closure (66.2% to 72.4%), and 30.0% less after-hours work time (50.6 to 35.4 minutes per workday). Those percents are the abstract cells, not the Table 2 model change-%. Penn Medicine’s Feb. 21, 2025 news release quoted Kevin B. Johnson, who leads the AI4AI Lab, calling those “early but promising results,” and said volunteer clinicians were using the tool with patient permission. That release does not name DAX. The 1,200 in-house count is not the study n and is not DAX. Temple Dragon counts are not this count.",
     "status": "published",
     "featured": false,
     "publishedAt": "2025-11-10T16:00:00.000Z",
@@ -249,7 +241,7 @@
     },
     "relatedEventIds": [],
     "relatedVoiceIds": [],
-    "impactSentence": "About 1,200 ambulatory users is an Inquirer headcount; 20.4% less time in notes is a 46-clinician journal table, not that headcount.",
+    "impactSentence": "Some 1,200 is an Inquirer headcount for Penn’s later in-house tool; 20.4% less time in notes is a 46-clinician journal table from a 2024 DAX Copilot pilot, not that headcount.",
     "citations": [
       {
         "name": "Inquirer",
@@ -270,9 +262,9 @@
     "id": "news-temple-dragon-copilot",
     "slug": "temple-dragon-copilot-400",
     "kind": "news",
-    "title": "Temple Dragon Copilot at 400 users; TUHS 116 DCOH",
-    "dek": "HealthTech 400 plus Temple Health CMIO clips. Liquidity is not a Copilot metric. Not fused with Penn.",
-    "body": "HealthTech Magazine, August 2026, said Benjamin Slovis, Temple Health CMIO, has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” Temple’s June 8, 2026 newsroom note said Slovis described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews. The Philadelphia Business Journal, April 1, 2026, said pilot data showed more than a 10 percent cut in after-hours documentation before an expansion to nearly 400 physicians. Separately, Temple University Health System’s unaudited year-end investor report for June 30, 2025 showed 116 days cash on hand (124 at June 30, 2024). That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count.",
+    "title": "Temple Dragon Copilot user count and TUHS cash days",
+    "dek": "HealthTech 400 end users. Unaudited TUHS 116 DCOH at June 30, 2025.",
+    "body": "HealthTech Magazine, August 2026, said Benjamin Slovis has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” HealthTech identified him as chief medical information officer at Philadelphia-based Temple Health. Temple’s June 8, 2026 newsroom note, which names him Chief Medical Information Officer for Temple University Hospital, said he described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews. Separately, Temple University Health System’s unaudited year-end investor report for June 30, 2025 showed 116 days cash on hand (124 at June 30, 2024). That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-01T16:00:00.000Z",
@@ -281,7 +273,8 @@
       "AI"
     ],
     "orgs": [
-      "org-temple"
+      "org-temple",
+      "org-temple-tuh-main"
     ],
     "region": "PA",
     "authors": [
@@ -296,7 +289,7 @@
     },
     "relatedEventIds": [],
     "relatedVoiceIds": [],
-    "impactSentence": "Dragon Copilot is at 400 end users; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI.",
+    "impactSentence": "Dragon Copilot is at 400 end users in the HealthTech clip; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI.",
     "citations": [
       {
         "name": "HealthTech",
@@ -305,10 +298,6 @@
       {
         "name": "Temple June 8",
         "url": "https://www.templehealth.org/about/news/in-the-media/dr-benjamin-slovis-discusses-temple-healths-utilization-of-artificial-intelligence-with-bucks-county-herald"
-      },
-      {
-        "name": "PBJ April 1",
-        "url": "https://www.bizjournals.com/philadelphia/news/2026/04/01/temple-health-ai-patient-safety.html"
       },
       {
         "name": "TUHS June 30 2025 DCOH PDF",

@@ -547,14 +547,18 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   }
   assert.equal(christiana.status, "published");
   assert.equal(christiana.kind, "news");
-  assert.equal(christiana.title, "ChristianaCare Epic go-live Oct. 3, 2026");
+  assert.equal(christiana.title, "ChristianaCare Epic go-live, official July 2026 update");
   assert.equal(christiana.kind === "news" ? christiana.clockAt : undefined, "2026-10-03T04:00:00.000Z");
   assert.equal(christiana.publishedAt, "2026-07-01T16:00:00.000Z");
   assert.deepEqual(christiana.orgs, ["org-christianacare"]);
-  assert.equal(christiana.citations?.length, 3);
+  assert.equal(christiana.citations?.length, 1);
   assert.equal(christiana.source.url, christiana.citations?.[0]?.url);
-  assert.ok(christiana.citations?.some((c) => c.url.includes("app.fac.gov")));
-  assert.ok(christiana.citations?.some((c) => c.url.includes("beckershospitalreview.com")));
+  assert.equal(
+    christiana.citations?.[0]?.url,
+    "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/",
+  );
+  assert.ok(!christiana.citations?.some((c) => c.url.includes("app.fac.gov")));
+  assert.ok(!christiana.citations?.some((c) => c.url.includes("beckershospitalreview.com")));
   assert.ok(!christiana.body.includes("49.364"));
   assert.equal(loss.title, "Jefferson FY2026 operating loss, plus Fitch liquidity");
   assert.equal(loss.kind === "news" ? loss.clockAt : "none", undefined);
@@ -564,7 +568,7 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.equal(loss.source.url, loss.citations?.[0]?.url);
   assert.ok(loss.body.includes("Independence Blue Cross"));
   assert.ok(loss.body.includes("Aetna"));
-  assert.equal(penn.title, "Penn in-house scribe: Inquirer headcount, JAMA table");
+  assert.equal(penn.title, "Penn in-house scribe headcount and 2024 JAMA pilot table");
   assert.equal(penn.kind === "news" ? penn.clockAt : "none", undefined);
   assert.equal(penn.publishedAt, "2025-11-10T16:00:00.000Z");
   assert.deepEqual(penn.orgs, ["org-penn"]);
@@ -574,18 +578,20 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.ok(pennLead.includes("1,200"));
   assert.ok(penn.body.endsWith("Temple Dragon counts are not this count."));
   assert.ok(!/slovis/i.test(`${penn.title} ${penn.dek} ${penn.body}`));
-  assert.equal(temple.title, "Temple Dragon Copilot at 400 users; TUHS 116 DCOH");
+  assert.ok(!/does not name a commercial vendor|no vendor/i.test(`${penn.title} ${penn.dek} ${penn.body}`));
+  assert.equal(temple.title, "Temple Dragon Copilot user count and TUHS cash days");
   assert.equal(temple.slug, "temple-dragon-copilot-400");
   assert.equal(temple.kind === "news" ? temple.clockAt : "none", undefined);
   assert.equal(temple.publishedAt, "2026-08-01T16:00:00.000Z");
-  assert.deepEqual(temple.orgs, ["org-temple"]);
-  assert.equal(temple.citations?.length, 4);
+  assert.deepEqual(temple.orgs, ["org-temple", "org-temple-tuh-main"]);
+  assert.equal(temple.citations?.length, 3);
   assert.equal(temple.source.url, temple.citations?.[0]?.url);
-  assert.ok(temple.body.includes("Temple Health CMIO"));
-  assert.ok(!/Temple University Hospital/i.test(`${temple.title} ${temple.dek} ${temple.body}`));
+  assert.ok(temple.body.includes("chief medical information officer at Philadelphia-based Temple Health"));
+  assert.ok(temple.body.includes("Chief Medical Information Officer for Temple University Hospital"));
   assert.ok(temple.body.endsWith("That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count."));
   assert.ok(!/honor.?roll|epic-names-temple|july 16/i.test(JSON.stringify(temple)));
   assert.ok(!/capalongo/i.test(`${temple.title} ${temple.dek} ${temple.body}`));
+  assert.ok(!temple.citations?.some((c) => c.url.includes("bizjournals.com")));
   const blob = JSON.stringify(catalog);
   assert.ok(!blob.includes("org-ibc"));
   assert.ok(!blob.includes("org-aetna"));
