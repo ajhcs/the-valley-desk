@@ -665,8 +665,12 @@ test("Chestnut Hill JHP contract is published, not featured, Chestnut Hill org o
   assert.ok(!item.orgs.includes("org-jefferson"));
   assert.ok(!entities.some((e) => /jefferson health plans/i.test(`${e.id} ${e.name}`)));
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
-  assert.ok(item.body.includes("not temple-dragon-copilot-400"));
-  assert.ok(item.body.includes("not Honor Roll"));
+  assert.ok(item.body.includes("have not yet reached a new agreement."));
+  assert.ok(item.body.includes("up to 60 days after Sept. 30, 2026."));
+  assert.ok(item.body.includes("runs through Dec. 7, 2026."));
+  assert.ok(!item.body.includes("not temple-dragon-copilot-400"));
+  assert.ok(!item.body.includes("not Honor Roll"));
+  assert.equal(item.body.trim().split(/\n\n/).length, 3);
   assert.equal(item.citations?.length, 1);
   assert.equal(
     item.source.url,
