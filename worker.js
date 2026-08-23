@@ -1,4 +1,10 @@
-import { publishedEventSlugs, publishedHead, publishedNewsSlugs } from "./worker-published.js";
+import {
+  publishedBriefingSlugs,
+  publishedEventSlugs,
+  publishedHead,
+  publishedNewsSlugs,
+  publishedVoiceSlugs,
+} from "./worker-published.js";
 
 const SITE = "The Valley Desk";
 const ORIGIN = "https://thevalleydesk.org";
@@ -17,6 +23,8 @@ function notFound() {
 
 const newsSlugs = new Set(publishedNewsSlugs);
 const eventSlugs = new Set(publishedEventSlugs);
+const voiceSlugs = new Set(publishedVoiceSlugs);
+const briefingSlugs = new Set(publishedBriefingSlugs);
 const SPA_PATH = /^\/(?:(?:news|events|voices|briefing)(?:\/[^/]+)?)?\/?$/;
 
 function stripSlash(path) {
@@ -30,6 +38,10 @@ function publishedItemPath(path) {
   if (news) return newsSlugs.has(news[1]);
   const events = /^\/events\/([^/]+)$/.exec(p);
   if (events) return eventSlugs.has(events[1]);
+  const voices = /^\/voices\/([^/]+)$/.exec(p);
+  if (voices) return voiceSlugs.has(voices[1]);
+  const briefing = /^\/briefing\/([^/]+)$/.exec(p);
+  if (briefing) return briefingSlugs.has(briefing[1]);
   return null;
 }
 
@@ -45,7 +57,10 @@ function routeHead(path) {
   const p = stripSlash(path) || "/";
   const news = /^\/news\/([^/]+)$/.exec(p);
   const events = /^\/events\/([^/]+)$/.exec(p);
-  const item = (news && publishedHead[news[1]]) || (events && publishedHead[events[1]]);
+  const voices = /^\/voices\/([^/]+)$/.exec(p);
+  const briefing = /^\/briefing\/([^/]+)$/.exec(p);
+  const slug = (news && news[1]) || (events && events[1]) || (voices && voices[1]) || (briefing && briefing[1]);
+  const item = slug ? publishedHead[slug] : undefined;
   let title = SITE;
   let desc = DEFAULT_DESC;
   if (item) {

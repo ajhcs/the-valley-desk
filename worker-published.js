@@ -11,6 +11,8 @@ export const publishedEventSlugs = [
   "njdvhimss-annual-golf-outing",
   "njdvhimss-fall-conference-october-13th-15th"
 ];
+export const publishedVoiceSlugs = [];
+export const publishedBriefingSlugs = [];
 export const publishedHead = {
   "christianacare-epic-go-live": {
     "kind": "news",

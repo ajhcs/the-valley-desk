@@ -1086,10 +1086,15 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(publishedRoutes.includes("christianacare-epic-go-live"));
   assert.ok(publishedRoutes.includes("njdvhimss-fall-conference-october-13th-15th"));
   assert.ok(publishedRoutes.includes("publishedHead"));
+  assert.ok(publishedRoutes.includes("publishedVoiceSlugs"));
+  assert.ok(publishedRoutes.includes("publishedBriefingSlugs"));
   assert.ok(!publishedRoutes.includes("penn-medicine-ai-scribe-rollout"));
   assert.ok(!publishedRoutes.includes("epic-ambient-listening-note"));
   assert.ok(!publishedRoutes.includes("week-of-2026-08-18"));
   assert.ok(!publishedRoutes.includes("dvhimss-september-networking"));
+  assert.ok(!publishedRoutes.includes("cio-note-workforce-ai"));
+  assert.ok(worker.includes("voiceSlugs"));
+  assert.ok(worker.includes("briefingSlugs"));
   assert.ok(wrangler.includes('"not_found_handling": "none"'));
   assert.ok(!wrangler.includes("single-page-application"));
   assert.ok(!wrangler.includes("routes"));
