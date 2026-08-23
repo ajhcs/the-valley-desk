@@ -1,8 +1,49 @@
 {
   "product": "the-valley-desk",
   "version": "1",
-  "generatedAt": "2026-08-23T21:39:40.188Z",
+  "generatedAt": "2026-08-23T21:55:28.945Z",
   "items": [
+    {
+      "id": "news-jefferson-einstein-mychart-2026-09-26",
+      "slug": "jefferson-einstein-mychart-2026-09-26",
+      "kind": "news",
+      "title": "Jefferson Einstein Philadelphia and Montgomery: MyEinsteinHealth ends Sept. 26, 2026",
+      "dek": "Beginning Sept. 26, 2026, Jefferson Health says Einstein Healthcare Network electronic health records will migrate from MyEinsteinHealth to MyJeffersonHealth, Jefferson Health’s patient portal powered by Epic’s MyChart.",
+      "body": "Beginning Sept. 26, 2026, Jefferson Health says Einstein Healthcare Network electronic health records will migrate from MyEinsteinHealth to MyJeffersonHealth, Jefferson Health’s patient portal powered by Epic’s MyChart. The same page says Einstein Healthcare Network is now part of Jefferson Health and includes Jefferson Einstein Philadelphia Hospital and Jefferson Einstein Montgomery Hospital.\n\nThe page says clinicians at those two hospitals are moving to the Epic electronic health record system. After Sept. 26, 2026, patients will no longer access MyEinsteinHealth. Records will be available in MyJeffersonHealth after the next visit to a clinician at either Einstein hospital. Jefferson says it will move up to three years of MyEinsteinHealth records.",
+      "status": "published",
+      "featured": false,
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [
+        "EHR",
+        "MyChart"
+      ],
+      "orgs": [
+        "org-jefferson",
+        "org-jefferson-einstein-phila",
+        "org-jefferson-einstein-montgomery"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Jefferson Health"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "newsroom",
+        "url": "https://www.jeffersonhealth.org/your-health/my-jefferson-health/einstein-patient-portal"
+      },
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "clockAt": "2026-09-26T04:00:00.000Z",
+      "impactSentence": "After Sept. 26, 2026, patients will no longer access MyEinsteinHealth; records are in MyJeffersonHealth (Epic MyChart) after the next visit to either Einstein hospital, with up to three years of records moved.",
+      "citations": [
+        {
+          "name": "Jefferson Health Einstein patient portal",
+          "url": "https://www.jeffersonhealth.org/your-health/my-jefferson-health/einstein-patient-portal"
+        }
+      ]
+    },
     {
       "id": "news-christianacare-epic",
       "slug": "christianacare-epic-go-live",

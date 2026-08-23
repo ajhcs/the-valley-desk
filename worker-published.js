@@ -3,6 +3,7 @@ export const publishedNewsSlugs = [
   "chop-orca-cds",
   "christianacare-epic-go-live",
   "hap-cms-0057-f-enforce-rfi",
+  "jefferson-einstein-mychart-2026-09-26",
   "jefferson-fy2026-operating-loss",
   "penn-in-house-ai-scribe",
   "temple-chestnut-hill-jhp-2026-09-30",
@@ -19,6 +20,11 @@ export const publishedVoiceSlugs = [
 ];
 export const publishedBriefingSlugs = [];
 export const publishedHead = {
+  "jefferson-einstein-mychart-2026-09-26": {
+    "kind": "news",
+    "title": "Jefferson Einstein Philadelphia and Montgomery: MyEinsteinHealth ends Sept. 26, 2026",
+    "description": "After Sept. 26, 2026, patients will no longer access MyEinsteinHealth; records are in MyJeffersonHealth (Epic MyChart) after the next visit to either Einstein hospital, with up to three years of records moved."
+  },
   "christianacare-epic-go-live": {
     "kind": "news",
     "title": "ChristianaCare Epic go-live, official July 2026 update",

@@ -174,6 +174,7 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
   assert.deepEqual(slugs, [
     "chop-orca-cds",
     "hap-cms-0057-f-enforce-rfi",
+    "jefferson-einstein-mychart-2026-09-26",
     "jefferson-fy2026-operating-loss",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",
@@ -332,7 +333,7 @@ test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => 
   assert.ok(newsPage.some((i) => i.id === "news-jefferson-fy2026-loss"));
   assert.ok(!newsPage.some((i) => i.kind === "policy"));
   assert.ok(!newsPage.some((i) => i.slug === "christianacare-epic-go-live"));
-  assert.equal(newsPage.length, 7);
+  assert.equal(newsPage.length, 8);
 });
 
 test("upcomingEvents is published events with startsAt >= now and never reads clockAt", () => {
@@ -1308,12 +1309,45 @@ test("list pages omit costume deks and costume source crumbs", () => {
   assert.ok(!/org-penn/.test(rendered));
 });
 
+test("Sloan Einstein MyChart 2026-09-26 is published, not featured; old go-live slug stays draft", () => {
+  const item = catalog.find((i) => i.slug === "jefferson-einstein-mychart-2026-09-26");
+  const draft = catalog.find((i) => i.slug === "jefferson-einstein-mychart-go-live");
+  assert.ok(item && draft);
+  assert.equal(item.id, "news-jefferson-einstein-mychart-2026-09-26");
+  assert.equal(item.kind, "news");
+  assert.equal(item.status, "published");
+  assert.equal(item.featured, false);
+  assert.equal(item.publishedAt, undefined);
+  assert.equal(item.kind === "news" ? item.clockAt : undefined, "2026-09-26T04:00:00.000Z");
+  assert.deepEqual(item.orgs, [
+    "org-jefferson",
+    "org-jefferson-einstein-phila",
+    "org-jefferson-einstein-montgomery",
+  ]);
+  assert.deepEqual(item.authors, [{ name: "Jefferson Health" }]);
+  assert.equal(newsByline(item), "Jefferson Health");
+  assert.ok(!newsByline(item).includes("Valley Desk"));
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+  assert.equal(draft.status, "draft");
+  assert.equal(draft.id, "news-jefferson-einstein-mychart");
+  assert.ok(item.body.includes("MyEinsteinHealth"));
+  assert.ok(item.body.includes("MyJeffersonHealth"));
+  assert.ok(!item.body.includes("LVHN"));
+  assert.ok(!/32|33/.test(item.body));
+  assert.ok(!/CIO/i.test(`${item.title} ${item.body} ${item.impactSentence}`));
+  assert.equal(item.source.url, "https://www.jeffersonhealth.org/your-health/my-jefferson-health/einstein-patient-portal");
+  assert.equal(item.citations?.[0]?.name, "Jefferson Health Einstein patient portal");
+  assert.equal(item.citations?.[0]?.url, item.source.url);
+});
+
 test("Reed hold: published news slugs; stub origins and mixer are unpublished", () => {
   const publishedNews = catalog.filter((i) => i.kind === "news" && i.status === "published");
   assert.deepEqual(publishedNews.map((i) => i.slug).sort(), [
     "chop-orca-cds",
     "christianacare-epic-go-live",
     "hap-cms-0057-f-enforce-rfi",
+    "jefferson-einstein-mychart-2026-09-26",
     "jefferson-fy2026-operating-loss",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",
