@@ -1751,7 +1751,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(!worker.includes('item && item.kind !== "event"'));
 });
 
-test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, no killed pay", () => {
+test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pay facts", () => {
   assert.equal(entityRows.length, 92);
   const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
   const labels = (id: string) => (byId[id]?.facts ?? []).map((f) => f.label);
@@ -1791,11 +1791,28 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, no kill
   assert.equal(byId["person-dave-johnson"]?.facts?.[0]?.kind, "salary");
   assert.equal(byId["person-dave-johnson"]?.facts?.[0]?.filerOrg, "Inspira Medical Centers, Inc.");
 
-  for (const id of ["person-tom-bartiromo", "person-luke-olenoski", "person-thomas-f-gordon"]) {
-    assert.equal(byId[id]?.facts, undefined, id);
-  }
-  const salaryIds = entityRows.filter((e) => e.facts?.some((f) => f.kind === "salary")).map((e) => e.id);
-  assert.deepEqual(salaryIds, ["person-dave-johnson"]);
+  assert.equal(labels("person-tom-bartiromo")[0], "SVP CIO · reportable $562,874 · Sch J $664,344");
+  assert.equal(byId["person-tom-bartiromo"]?.facts?.[0]?.filerOrg, "Reading Hospital");
+  assert.equal(byId["person-tom-bartiromo"]?.facts?.[0]?.citation.name, "Reading Hospital 990");
+  assert.ok(!/tower/i.test(JSON.stringify(byId["person-tom-bartiromo"]?.facts)));
+  assert.equal(labels("person-luke-olenoski")[0], "SVP CIO · reportable $663,099 · Sch J $868,996");
+  assert.equal(byId["person-luke-olenoski"]?.facts?.[0]?.filerOrg, "Main Line Services");
+  assert.equal(byId["person-luke-olenoski"]?.facts?.[0]?.citation.name, "Main Line Services 990");
+  assert.ok(!/health system parent/i.test(JSON.stringify(byId["person-luke-olenoski"]?.facts)));
+  assert.equal(labels("person-thomas-f-gordon")[0], "SVP/CIO · reportable $725,521 · Sch J $795,556");
+  assert.equal(byId["person-thomas-f-gordon"]?.facts?.[0]?.filerOrg, "Virtua Health Inc.");
+  assert.equal(byId["person-thomas-f-gordon"]?.facts?.[0]?.citation.name, "Virtua Health Inc. 990");
+  assert.notEqual(
+    byId["person-thomas-f-gordon"]?.facts?.[0]?.citation.url,
+    byId["org-virtua"]?.facts?.[0]?.citation.url,
+  );
+  const salaryIds = entityRows.filter((e) => e.facts?.some((f) => f.kind === "salary")).map((e) => e.id).sort();
+  assert.deepEqual(salaryIds, [
+    "person-dave-johnson",
+    "person-luke-olenoski",
+    "person-thomas-f-gordon",
+    "person-tom-bartiromo",
+  ]);
   assert.ok(entityRows.every((e) => citableFacts(e.facts).every((f) => f.citation.url)));
 
   const emptyUrl = factBearingEntities([
@@ -1811,6 +1828,13 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, no kill
   assert.equal(first.filter((h) => h.orgId === "org-jefferson").length, 1);
   const second = findFirstMentions("Jefferson again", bearing, new Set(["org-jefferson"]));
   assert.equal(second.filter((h) => h.orgId === "org-jefferson").length, 0);
+  const painted = findFirstMentions(
+    "quoted Tom Bartiromo, senior vice president and CIO of Tower Health",
+    bearing,
+  );
+  assert.equal(painted.filter((h) => h.orgId === "person-tom-bartiromo").length, 1);
+  assert.equal(painted.find((h) => h.orgId === "person-tom-bartiromo")?.facts[0]?.citation.name, "Reading Hospital 990");
+  assert.ok(!painted.some((h) => h.orgId === "org-tower"));
 
   const router = readFileSync(join(root, "src/router.tsx"), "utf8");
   const mention = readFileSync(join(root, "src/ui/MentionText.tsx"), "utf8");
