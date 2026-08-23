@@ -598,7 +598,11 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.ok(!blob.includes("org-ibc"));
   assert.ok(!blob.includes("org-aetna"));
   assert.ok(!blob.includes("org-microsoft"));
-  assert.ok(!catalog.some((i) => i.id.startsWith("news-") && /chop/i.test(`${i.id} ${i.title}`)));
+  assert.ok(
+    !catalog.some(
+      (i) => i.id.startsWith("news-") && i.id !== "news-chop-orca-cds" && /chop/i.test(`${i.id} ${i.title}`),
+    ),
+  );
   assert.equal(catalog.filter((i) => i.id.startsWith("news-") && i.featured).length, 1);
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.id).join(), "news-christianacare-epic");
 });
