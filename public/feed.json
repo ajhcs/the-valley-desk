@@ -1,7 +1,7 @@
 {
   "product": "the-valley-desk",
   "version": "1",
-  "generatedAt": "2026-08-23T19:17:05.018Z",
+  "generatedAt": "2026-08-23T20:16:53.719Z",
   "items": [
     {
       "id": "news-christianacare-epic",
@@ -319,6 +319,49 @@
         }
       ],
       "geo": "Philadelphia, PA"
+    },
+    {
+      "id": "news-hap-cms-0057-f",
+      "slug": "hap-cms-0057-f-enforce-rfi",
+      "kind": "news",
+      "title": "HAP June 10, 2025 letter: enforce CMS-0057-F; 1.6 million Pennsylvanians in Medicare Advantage",
+      "dek": "HAP, for 235 institutions, asked CMS to enforce the Interoperability and Prior Authorization Final Rule. The letter cites 54 percent of Pennsylvania Medicare beneficiaries, or 1.6 million people, in MA, and a 60 percent rise over ten years.",
+      "body": "On June 10, 2025, HAP told CMS Administrator Mehmet Oz it joins the AHA in asking CMS to enforce CMS-0057-F. Kate McCale, HAP vice president of compliance and regulatory affairs, signed for 235 institutions.\n\nHAP wrote that 54 percent of Medicare beneficiaries in Pennsylvania, or 1.6 million people, are in Medicare Advantage, and that MA enrollment in the state rose 60 percent over the last ten years. It said members face delays and extra documentation with MA organizations on authorization and payment.\n\nThe letter is not a local hospital PA-API go-live. No Delaware Valley system is named as having built or turned on the prior-authorization API.\n\nCMS's Jan. 17, 2024 fact sheet says impacted payers generally have until Jan. 1, 2027 for the FHIR APIs, including the Prior Authorization API. Decision clocks in that fact sheet generally begin Jan. 1, 2026: 72 hours expedited, seven calendar days standard. Drugs excluded. FFE QHP issuers excluded from the decision-timeframe piece.\n\nSame HAP letter, separate ask: TEAM would apply to 26 Pennsylvania hospitals.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2025-06-10T16:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [
+        "policy"
+      ],
+      "orgs": [
+        "org-hap"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Valley Desk"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "newsroom",
+        "url": "https://www.haponline.org/Resource-Center?resourceid=1357"
+      },
+      "relatedEventIds": [],
+      "relatedVoiceIds": [],
+      "impactSentence": "On June 10, 2025, HAP asked CMS to enforce the Interoperability and Prior Authorization Final Rule (CMS-0057-F), citing 1.6 million Pennsylvanians in Medicare Advantage (54 percent of the state's Medicare beneficiaries).",
+      "citations": [
+        {
+          "name": "HAP June 10, 2025 letter",
+          "url": "https://www.haponline.org/Resource-Center?resourceid=1357"
+        },
+        {
+          "name": "CMS Jan. 17, 2024 fact sheet",
+          "url": "https://www.cms.gov/newsroom/fact-sheets/cms-interoperability-prior-authorization-final-rule-cms-0057-f"
+        }
+      ],
+      "geo": "Pennsylvania"
     },
     {
       "id": "evt-dvhimss-23007",

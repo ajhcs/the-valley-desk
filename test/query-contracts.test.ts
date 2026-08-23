@@ -167,6 +167,7 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
   assert.deepEqual(slugs, [
     "chop-orca-cds",
     "christianacare-epic-go-live",
+    "hap-cms-0057-f-enforce-rfi",
     "jefferson-fy2026-operating-loss",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",
@@ -311,7 +312,7 @@ test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => 
   assert.ok(newsPage.every((i) => isPublicNewsFamily(i, seedIds)));
   assert.ok(newsPage.some((i) => i.id === "news-jefferson-fy2026-loss"));
   assert.ok(!newsPage.some((i) => i.kind === "policy"));
-  assert.equal(newsPage.length, 7);
+  assert.equal(newsPage.length, 8);
 });
 
 test("upcomingEvents is published events with startsAt >= now and never reads clockAt", () => {
@@ -671,6 +672,23 @@ test("Chestnut Hill JHP contract is published, not featured, Chestnut Hill org o
     item.source.url,
     "https://www.templehealth.org/about/newsroom/temple-health-chestnut-hill-hospital-and-jefferson-health-plans",
   );
+  assert.equal(item.citations?.[0]?.url, item.source.url);
+});
+
+test("HAP CMS-0057-F letter is published, not featured, org-hap only", () => {
+  const item = catalog.find((i) => i.slug === "hap-cms-0057-f-enforce-rfi");
+  assert.ok(item);
+  assert.equal(item.kind, "news");
+  assert.equal(item.status, "published");
+  assert.equal(item.featured, false);
+  assert.equal(item.publishedAt, "2025-06-10T16:00:00.000Z");
+  assert.deepEqual(item.orgs, ["org-hap"]);
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.ok(item.body.includes("not a local hospital PA-API go-live"));
+  assert.ok(item.body.includes("26 Pennsylvania hospitals"));
+  assert.ok(!item.body.includes("Delaware Valley PA-API"));
+  assert.equal(item.citations?.length, 2);
+  assert.equal(item.source.url, "https://www.haponline.org/Resource-Center?resourceid=1357");
   assert.equal(item.citations?.[0]?.url, item.source.url);
 });
 
@@ -1233,6 +1251,7 @@ test("Reed hold: published news slugs; stub origins and mixer are unpublished", 
   assert.deepEqual(publishedNews.map((i) => i.slug).sort(), [
     "chop-orca-cds",
     "christianacare-epic-go-live",
+    "hap-cms-0057-f-enforce-rfi",
     "jefferson-fy2026-operating-loss",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",

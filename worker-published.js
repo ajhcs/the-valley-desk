@@ -2,6 +2,7 @@
 export const publishedNewsSlugs = [
   "chop-orca-cds",
   "christianacare-epic-go-live",
+  "hap-cms-0057-f-enforce-rfi",
   "jefferson-fy2026-operating-loss",
   "penn-in-house-ai-scribe",
   "temple-chestnut-hill-jhp-2026-09-30",
@@ -49,6 +50,11 @@ export const publishedHead = {
     "kind": "news",
     "title": "Temple Health–Chestnut Hill Hospital and Jefferson Health Plans: contract scheduled to end Sept. 30, 2026",
     "description": "Temple Health–Chestnut Hill Hospital's contract with Jefferson Health Plans is scheduled to end Sept. 30, 2026, and starting Oct. 1 Jefferson Health Plans would not pay for care there if no new agreement is reached."
+  },
+  "hap-cms-0057-f-enforce-rfi": {
+    "kind": "news",
+    "title": "HAP June 10, 2025 letter: enforce CMS-0057-F; 1.6 million Pennsylvanians in Medicare Advantage",
+    "description": "On June 10, 2025, HAP asked CMS to enforce the Interoperability and Prior Authorization Final Rule (CMS-0057-F), citing 1.6 million Pennsylvanians in Medicare Advantage (54 percent of the state's Medicare beneficiaries)."
   },
   "njdvhimss-annual-golf-outing": {
     "kind": "event",
