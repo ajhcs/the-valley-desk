@@ -1,7 +1,7 @@
 {
   "product": "the-valley-desk",
   "version": "1",
-  "generatedAt": "2026-08-23T20:24:04.768Z",
+  "generatedAt": "2026-08-23T20:31:48.589Z",
   "items": [
     {
       "id": "news-christianacare-epic",
@@ -9,7 +9,7 @@
       "kind": "news",
       "title": "ChristianaCare Epic go-live, official July 2026 update",
       "dek": "Oct. 3, 2026 and the training gate from the newsroom. Becker’s second-cites the date. No FAC dollars.",
-      "body": "ChristianaCare’s July 2026 newsroom update scheduled an Oct. 3, 2026 Epic go-live and said the system was in the final stage, with less than three months remaining. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction, and that readiness checks are meant to make sure caregivers finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Patients are told to keep appointments unless ChristianaCare contacts them. Becker’s Hospital Review, Naomi Diaz, Wednesday, July 22, 2026, second-cites the Oct. 3 date. That clip says the EHR switch has been underway since a 2024 decision and names Robert Hartmann, vice president of EHR transformation, who spent nine years at Epic. That clip is not an Epic dollar. FAC Note 18 license dollars stay off this brief.",
+      "body": "ChristianaCare’s July 2026 newsroom update scheduled an Oct. 3, 2026 Epic go-live and said the system was in the final stage, with less than three months remaining. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction, and that readiness checks are meant to make sure caregivers finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Patients are told to keep appointments unless ChristianaCare contacts them. Becker’s Hospital Review, Naomi Diaz, Wednesday, July 22, 2026, second-cites the Oct. 3 date. That clip says the EHR switch has been underway since a 2024 decision and names Robert Hartmann, vice president of EHR transformation, who spent nine years at Epic. That clip is not an Epic dollar.",
       "status": "published",
       "featured": true,
       "publishedAt": "2026-07-01T16:00:00.000Z",
@@ -54,7 +54,7 @@
       "kind": "news",
       "title": "Jefferson FY2026 operating loss and Fitch liquidity",
       "dek": "Inquirer year-end $181.5 million to bondholders; Fitch $5.5 billion / 119 DCOH through March 31. $112 million is not the LVHN close.",
-      "body": "The Inquirer, Aug. 14, 2026, reported that Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, after a $208 million loss the prior year, in results reported to bondholders. The same clip said those FY2026 results included $112 million in costs for layoffs and other moves. Separately, Jefferson completed the Lehigh Valley Health Network close on Aug. 1, 2024; the Inquirer said FY2025 revenue included 11 months of LVHN and rose to $17.7 billion in FY2026 from $15.8 billion. Do not read the $112 million as a close cost. Jefferson Health Plans lost $130.3 million on 415,172 members. Results climbed from a $103.8 million first-quarter operating loss to a $71.1 million fourth-quarter operating profit. CFO Michael Harrington said commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law. This desk has not opened the EMMA year-end PDF. Separately, Fitch on June 18, 2026 assigned F1+ to TJU taxable CP notes, affirmed the A IDR with a Negative Outlook, and cited $5.5 billion unrestricted liquidity and about 119 days cash on hand for fiscal 2026 year-to-date through March 31, 2026, including the health plan and excluding line-of-credit draws and about $1.1 billion donor-restricted funds. Fitch cited about $15.5 billion operating revenue for the year ended June 30, 2025, and about $112 million Jefferson Health Plan losses through the first nine months of both FY2025 and FY2026. Those nine-month figures are not a substitute for the June 30 year-end loss.",
+      "body": "The Inquirer, Aug. 14, 2026, reported that Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, after a $208 million loss the prior year, in results reported to bondholders.\n\nThe same clip said those FY2026 results included $112 million in costs for layoffs and other moves.\n\nSeparately, Jefferson completed the Lehigh Valley Health Network close on Aug. 1, 2024; the Inquirer said FY2025 revenue included 11 months of LVHN and rose to $17.7 billion in FY2026 from $15.8 billion. Do not read the $112 million as a close cost.\n\nJefferson Health Plans lost $130.3 million on 415,172 members. Results climbed from a $103.8 million first-quarter operating loss to a $71.1 million fourth-quarter operating profit. CFO Michael Harrington said commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law.\n\nSeparately, Fitch on June 18, 2026 assigned F1+ to TJU taxable CP notes, affirmed the A IDR with a Negative Outlook, and cited $5.5 billion unrestricted liquidity and about 119 days cash on hand for fiscal 2026 year-to-date through March 31, 2026, including the health plan and excluding line-of-credit draws and about $1.1 billion donor-restricted funds. Fitch cited about $15.5 billion operating revenue for the year ended June 30, 2025, and about $112 million Jefferson Health Plan losses through the first nine months of both FY2025 and FY2026. Those nine-month figures are not a substitute for the June 30 year-end loss.",
       "status": "published",
       "featured": false,
       "publishedAt": "2026-08-14T16:00:00.000Z",
@@ -144,7 +144,7 @@
       "kind": "news",
       "title": "Temple Dragon Copilot user count and TUHS cash days",
       "dek": "HealthTech 400 end users. Unaudited TUHS 116 DCOH at June 30, 2025. PBJ April 1 is Temple-sponsored advertorial; pilot and nearly-400 are split.",
-      "body": "HealthTech Magazine, August 2026, said Benjamin Slovis has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” HealthTech identified him as chief medical information officer at Philadelphia-based Temple Health. Temple’s June 8, 2026 newsroom note, which names him Chief Medical Information Officer for Temple University Hospital, said he described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews. The Philadelphia Business Journal, April 1, 2026, is labeled “Sponsored Content by Temple Health” (Jon Feld, TBJ Content Studio). Advertorial, not independent reporting, not a filing, not the 116 DCOH line. That page names Dr. Benjamin Slovis as CMIO at Temple University Hospital and names Dragon Copilot as the tool. Pilot data on that page: more than a 10 percent cut in after-hours documentation time. Later expansion on that page: nearly 400 physicians. Do not fuse those two sentences. Separately, Temple University Health System’s unaudited year-end investor report for June 30, 2025 showed 116 days cash on hand (124 at June 30, 2024). That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count.",
+      "body": "HealthTech Magazine, August 2026, said Benjamin Slovis has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” HealthTech identified him as chief medical information officer at Philadelphia-based Temple Health. Temple’s June 8, 2026 newsroom note, which names him Chief Medical Information Officer for Temple University Hospital, said he described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews.\n\nThe Philadelphia Business Journal, April 1, 2026, is labeled Sponsored Content by Temple Health (Jon Feld, TBJ Content Studio). Advertorial, not independent reporting, not a filing, not the 116 DCOH line. That page names Dr. Benjamin Slovis as CMIO at Temple University Hospital and names Dragon Copilot as the tool.\n\nPilot data on that page: more than a 10 percent cut in after-hours documentation time. Later expansion on that page: nearly 400 physicians. Separately, Temple University Health System’s unaudited year-end investor report for June 30, 2025 showed 116 days cash on hand (124 at June 30, 2024). That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count.",
       "status": "published",
       "featured": false,
       "publishedAt": "2026-08-01T16:00:00.000Z",
@@ -362,6 +362,90 @@
         }
       ],
       "geo": "Pennsylvania"
+    },
+    {
+      "id": "voice-mlh-cloud-analytics",
+      "slug": "mlh-cloud-analytics-2026-08-17",
+      "kind": "voice",
+      "title": "Main Line Health cloud analytics, official Aug. 17 LinkedIn post",
+      "dek": "Main Line Health’s official LinkedIn account posted Aug. 17, 2026 that leaders had waited 30 days for data and now get it near real time. The same post cites 2,017 subscriptions and 6.2 percent monthly access growth since August 2025. Those figures are the system’s post, not an audited filing.",
+      "body": "Main Line Health’s official LinkedIn account posted Aug. 17, 2026 that leaders had waited 30 days for data and now get it near real time. The same post cites 2,017 subscriptions and 6.2 percent monthly access growth since August 2025. Those figures are the system’s post, not an audited filing.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-08-17T16:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-main-line"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Main Line Health"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "linkedin",
+        "url": "https://www.linkedin.com/posts/main-line-health_advancing-data-driven-decision-making-through-activity-7495166755649216513-0uVh"
+      },
+      "person": "Main Line Health (official account)",
+      "org": "Main Line Health",
+      "platform": "linkedin",
+      "originalUrl": "https://www.linkedin.com/posts/main-line-health_advancing-data-driven-decision-making-through-activity-7495166755649216513-0uVh",
+      "impactSentence": "Main Line Health said Aug. 17 that cloud analytics cut a 30-day wait to near real-time reporting, with 2,017 subscriptions and 6.2 percent monthly access growth since August 2025.",
+      "citations": [
+        {
+          "name": "Main Line Health official LinkedIn",
+          "url": "https://www.linkedin.com/posts/main-line-health_advancing-data-driven-decision-making-through-activity-7495166755649216513-0uVh"
+        }
+      ]
+    },
+    {
+      "id": "voice-temple-honor-roll-2026",
+      "slug": "temple-honor-roll-2026",
+      "kind": "voice",
+      "title": "Benjamin Slovis, Aug. 8, 2026: Temple Health on Epic’s 2026 Honor Roll",
+      "dek": "Benjamin Slovis, Temple Health CMIO, posted Aug. 8, 2026 that Temple Health is on Epic’s 2026 Honor Roll. Temple Health’s official account posted the same recognition Aug. 7. The July 16 Temple newsroom item names Cum Laude and a $418,000 Epic Good Maintenance grant. Epic’s label, not a Temple filing. The $418,000 is Epic’s program dollar, not a Temple operating metric.",
+      "body": "Benjamin Slovis, Temple Health CMIO, posted Aug. 8, 2026 that Temple Health is on Epic’s 2026 Honor Roll. Temple Health’s official account posted the same recognition Aug. 7. The July 16 Temple newsroom item names Cum Laude and a $418,000 Epic Good Maintenance grant. Epic’s label, not a Temple filing. The $418,000 is Epic’s program dollar, not a Temple operating metric.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-08-08T16:00:00.000Z",
+      "updatedAt": "2026-08-22T20:14:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-temple"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Benjamin Slovis"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "linkedin",
+        "url": "https://www.linkedin.com/posts/benjaminslovis_templehealth-epichonorroll-clinicalinformatics-activity-7491951990122631168-XCu_"
+      },
+      "person": "Benjamin Slovis",
+      "org": "Temple Health",
+      "platform": "linkedin",
+      "originalUrl": "https://www.linkedin.com/posts/benjaminslovis_templehealth-epichonorroll-clinicalinformatics-activity-7491951990122631168-XCu_",
+      "impactSentence": "Temple Health is on Epic’s 2026 Honor Roll; Slovis posted it Aug. 8, and Temple’s July 16 newsroom called the designation Cum Laude and named a $418,000 Epic Good Maintenance grant.",
+      "citations": [
+        {
+          "name": "Slovis Aug. 8 LI",
+          "url": "https://www.linkedin.com/posts/benjaminslovis_templehealth-epichonorroll-clinicalinformatics-activity-7491951990122631168-XCu_"
+        },
+        {
+          "name": "Temple Health official Aug. 7 LI",
+          "url": "https://www.linkedin.com/posts/temple-university-health-system_temple-health-is-honored-to-be-recognized-activity-7491588011705651200-DxGR"
+        },
+        {
+          "name": "Temple newsroom July 16",
+          "url": "https://www.templehealth.org/about/newsroom/epic-names-temple-health-2026-honor-roll-emr-system-optimization"
+        }
+      ]
     },
     {
       "id": "evt-dvhimss-23007",

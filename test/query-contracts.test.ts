@@ -10,6 +10,7 @@ import {
   featuredLead,
   isPublicNewsFamily,
   latestNews,
+  latestVoices,
   leadItem,
   nextChapterEvent,
   pinnedUpcomingEvents,
@@ -180,6 +181,9 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
   assert.ok(!ids.includes("ai-01"));
   assert.ok(!ids.includes("int-01"));
   assert.ok(!ids.includes("evt-01"));
+  assert.ok(!ids.includes("voice-mlh-cloud-analytics"));
+  assert.ok(!ids.includes("voice-temple-honor-roll-2026"));
+  assert.ok(rows.every((i) => i.kind !== "voice"));
   for (let i = 1; i < rows.length; i++) {
     assert.ok((rows[i - 1].publishedAt ?? "") >= (rows[i].publishedAt ?? ""));
   }
@@ -298,6 +302,8 @@ test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => 
   assert.ok(page.includes("Rail"));
   assert.ok(page.includes("NEWS · LATEST"));
   assert.ok(page.includes("EVENTS · NEXT"));
+  assert.ok(page.includes("VOICES · LATEST"));
+  assert.ok(page.includes("latestVoices(catalog, Number.MAX_SAFE_INTEGER)"));
   assert.ok(!page.includes("ItemCard"));
   assert.ok(!page.includes("newsFamily"));
   assert.ok(home.includes("latestNews(catalog)"));
@@ -573,6 +579,8 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.ok(christiana.citations?.some((c) => c.url.includes("beckershospitalreview.com")));
   assert.ok(!christiana.citations?.some((c) => c.url.includes("app.fac.gov")));
   assert.ok(!christiana.body.includes("49.364"));
+  assert.ok(!christiana.body.includes("FAC Note 18"));
+  assert.ok(christiana.body.endsWith("That clip is not an Epic dollar."));
   assert.equal(loss.title, "Jefferson FY2026 operating loss and Fitch liquidity");
   assert.equal(loss.kind === "news" ? loss.clockAt : "none", undefined);
   assert.equal(loss.publishedAt, "2026-08-14T16:00:00.000Z");
@@ -581,6 +589,8 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.equal(loss.source.url, loss.citations?.[0]?.url);
   assert.ok(loss.body.includes("Independence Blue Cross"));
   assert.ok(loss.body.includes("Aetna"));
+  assert.ok(!loss.body.includes("This desk has not opened the EMMA year-end PDF."));
+  assert.ok(loss.body.includes("Those nine-month figures are not a substitute for the June 30 year-end loss."));
   assert.equal(penn.title, "Penn in-house scribe headcount and 2024 JAMA pilot table");
   assert.equal(penn.kind === "news" ? penn.clockAt : "none", undefined);
   assert.equal(penn.publishedAt, "2025-11-10T16:00:00.000Z");
@@ -602,6 +612,7 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.ok(temple.body.includes("chief medical information officer at Philadelphia-based Temple Health"));
   assert.ok(temple.body.includes("Chief Medical Information Officer for Temple University Hospital"));
   assert.ok(temple.body.endsWith("That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count."));
+  assert.ok(!temple.body.includes("Do not fuse those two sentences."));
   assert.ok(!/honor.?roll|epic-names-temple|july 16/i.test(JSON.stringify(temple)));
   assert.ok(!/capalongo/i.test(`${temple.title} ${temple.dek} ${temple.body}`));
   assert.ok(temple.citations?.some((c) => c.name === "PBJ April 1 (sponsored)" && c.url.includes("bizjournals.com")));
@@ -719,9 +730,11 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(home.includes("leadItem"));
   assert.ok(home.includes("briefingSinceYesterday5pmET"));
   assert.ok(home.includes("latestNews"));
+  assert.ok(home.includes("latestVoices"));
   assert.ok(home.includes("pinnedUpcomingEvents"));
   assert.ok(eventsPage.includes("pinnedUpcomingEvents"));
   assert.ok(eventsPage.includes("latestNews"));
+  assert.ok(eventsPage.includes("latestVoices"));
   assert.ok(!eventsPage.includes("newsFamily"));
   assert.ok(!rail.includes("topics[0]"));
   assert.ok(!home.includes("briefing[0]"));
@@ -731,6 +744,7 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(!home.toLowerCase().includes("himss seal"));
   assert.ok(home.includes("NEWS · LATEST"));
   assert.ok(home.includes("EVENTS · NEXT"));
+  assert.ok(home.includes("VOICES · LATEST"));
   assert.ok(lead.includes("THE DESK"));
   assert.ok(lead.includes("item.publishedAt"));
   assert.ok(!lead.includes("chipInstant"));
@@ -756,6 +770,7 @@ test("homepage binds store queries and kit class names", () => {
   }
   assert.ok(footer.includes("News"));
   assert.ok(footer.includes("Events"));
+  assert.ok(footer.includes("Voices"));
   assert.ok(footer.includes("feed.json"));
   assert.ok(footer.includes("feed.xml"));
   assert.ok(footer.includes("© The Valley Desk"));
@@ -769,8 +784,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(layout.includes("NavLink"));
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
-  assert.ok(!layout.includes('to="/voices"'));
-  assert.ok(!router.includes('"/voices"'));
+  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(router.includes('"/voices"'));
   assert.ok(!router.includes('"/briefing"'));
   assert.ok(!router.includes("BriefingPage"));
   assert.ok(!router.includes('"/policy"'));
@@ -1017,11 +1032,13 @@ test("ItemPage is an aggregator card: chip, title, impact, body, citations — n
   assert.ok(itemCitations(jefferson).some((c) => c.url === jefferson.source.url));
 });
 
-test("canonical helper: news family under /news, events under /events", () => {
+test("canonical helper: news family under /news, events under /events, voices under /voices", () => {
   assert.equal(canonicalPath({ kind: "news", slug: "penn-in-house-ai-scribe" }), "/news/penn-in-house-ai-scribe");
   assert.equal(canonicalPath({ kind: "policy", slug: "pa-doh-telehealth-guidance-2026" }), "/news/pa-doh-telehealth-guidance-2026");
   assert.equal(canonicalPath({ kind: "ai", slug: "epic-ambient-listening-note" }), "/news/epic-ambient-listening-note");
   assert.equal(canonicalPath({ kind: "interview", slug: "x" }), "/news/x");
+  assert.equal(canonicalPath({ kind: "voice", slug: "mlh-cloud-analytics-2026-08-17" }), "/voices/mlh-cloud-analytics-2026-08-17");
+  assert.equal(canonicalPath({ kind: "voice", slug: "temple-honor-roll-2026" }), "/voices/temple-honor-roll-2026");
   assert.equal(canonicalUrl({ kind: "event", slug: "dvhimss-september-networking" }), "https://thevalleydesk.org/events/dvhimss-september-networking");
 });
 
@@ -1124,6 +1141,10 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/</loc>"));
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/news</loc>"));
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/events</loc>"));
+  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/voices</loc>"));
+  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/voices/mlh-cloud-analytics-2026-08-17</loc>"));
+  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/voices/temple-honor-roll-2026</loc>"));
+  assert.ok(!sitemap.includes("<loc>https://thevalleydesk.org/news/temple-honor-roll-2026</loc>"));
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/feed.json</loc>"));
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/feed.xml</loc>"));
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/news/penn-in-house-ai-scribe</loc>"));
@@ -1164,14 +1185,16 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(publishedRoutes.includes("publishedHead"));
   assert.ok(publishedRoutes.includes("publishedVoiceSlugs"));
   assert.ok(publishedRoutes.includes("publishedBriefingSlugs"));
+  assert.ok(publishedRoutes.includes("mlh-cloud-analytics-2026-08-17"));
+  assert.ok(publishedRoutes.includes("temple-honor-roll-2026"));
   assert.ok(!publishedRoutes.includes("penn-medicine-ai-scribe-rollout"));
   assert.ok(!publishedRoutes.includes("epic-ambient-listening-note"));
   assert.ok(!publishedRoutes.includes("week-of-2026-08-18"));
   assert.ok(!publishedRoutes.includes("dvhimss-september-networking"));
   assert.ok(!publishedRoutes.includes("cio-note-workforce-ai"));
-  assert.ok(worker.includes('path.startsWith("/voices/")'));
+  assert.ok(worker.includes("publishedVoiceSlugs"));
   assert.ok(worker.includes('path.startsWith("/briefing/")'));
-  assert.ok(worker.includes("news|events"));
+  assert.ok(worker.includes("news|events|voices"));
   assert.ok(!worker.includes("voices|briefing"));
   assert.ok(wrangler.includes('"not_found_handling": "none"'));
   assert.ok(!wrangler.includes("single-page-application"));
@@ -1240,7 +1263,10 @@ test("list pages omit costume deks and costume source crumbs", () => {
   assert.equal(listSourceLine(networking), "");
   const newsRows = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
   const eventRows = pinnedUpcomingEvents(catalog, new Date("2026-08-22T20:00:00.000Z"), 50);
-  const rendered = [...newsRows, ...eventRows]
+  const voiceRows = latestVoices(catalog);
+  assert.ok(newsRows.every((i) => i.kind !== "voice"));
+  assert.ok(!newsRows.some((i) => /honor.?roll/i.test(`${i.title} ${i.dek} ${i.body}`)));
+  const rendered = [...newsRows, ...eventRows, ...voiceRows]
     .flatMap((item) => [item.title, item.impactSentence, listDek(item), listSourceLine(item)])
     .join("\n");
   assert.ok(!/review-queued/i.test(rendered));
@@ -1305,6 +1331,9 @@ test("Reed hold: published news slugs; stub origins and mixer are unpublished", 
   assert.ok(!runtime.includes("gold rail"));
   assert.ok(!runtime.includes("guest TBD"));
   assert.ok(!runtime.includes("penn-medicine-ai-scribe-rollout"));
+  assert.ok(runtime.includes("mlh-cloud-analytics-2026-08-17"));
+  assert.ok(runtime.includes("temple-honor-roll-2026"));
+  assert.ok(!runtime.includes("cio-note-workforce-ai"));
   assert.ok(!format.includes("review-queued"));
   assert.ok(!format.includes("gold-rail"));
   assert.ok(!format.includes("dvhimss-events-stub"));
@@ -1319,4 +1348,66 @@ test("Reed hold: published news slugs; stub origins and mixer are unpublished", 
   assert.ok(card.includes("eventPlace"));
   assert.equal(eventPlace(fall as Extract<typeof fall, { kind: "event" }>), "Hard Rock Hotel & Casino, Atlantic City, NJ");
   assert.ok(!eventPlace(fall as Extract<typeof fall, { kind: "event" }>).includes("Atlantic City, Atlantic City"));
+});
+
+test("Voices v1: published kind=voice only, Honor Roll is not news, Jane Doe stays draft", () => {
+  const jane = catalog.find((i) => i.slug === "cio-note-workforce-ai");
+  const mlh = catalog.find((i) => i.slug === "mlh-cloud-analytics-2026-08-17");
+  const honor = catalog.find((i) => i.slug === "temple-honor-roll-2026");
+  assert.ok(jane && mlh && honor);
+  assert.equal(jane.status, "draft");
+  assert.equal(jane.kind, "voice");
+  assert.equal(jane.person, "Jane Doe");
+  assert.equal(mlh.kind, "voice");
+  assert.equal(mlh.status, "published");
+  assert.equal(mlh.featured, false);
+  assert.equal(mlh.person, "Main Line Health (official account)");
+  assert.deepEqual(mlh.orgs, ["org-main-line"]);
+  assert.equal(mlh.publishedAt, "2026-08-17T16:00:00.000Z");
+  assert.equal(
+    mlh.source.url,
+    "https://www.linkedin.com/posts/main-line-health_advancing-data-driven-decision-making-through-activity-7495166755649216513-0uVh",
+  );
+  assert.equal(mlh.citations?.length, 1);
+  assert.equal(mlh.citations?.[0]?.name, "Main Line Health official LinkedIn");
+  assert.equal(mlh.citations?.[0]?.url, mlh.source.url);
+  assert.equal(mlh.body, mlh.dek);
+  assert.equal(honor.kind, "voice");
+  assert.equal(honor.status, "published");
+  assert.equal(honor.featured, false);
+  assert.equal(honor.person, "Benjamin Slovis");
+  assert.deepEqual(honor.orgs, ["org-temple"]);
+  assert.equal(honor.publishedAt, "2026-08-08T16:00:00.000Z");
+  assert.equal(
+    honor.source.url,
+    "https://www.linkedin.com/posts/benjaminslovis_templehealth-epichonorroll-clinicalinformatics-activity-7491951990122631168-XCu_",
+  );
+  assert.deepEqual(
+    honor.citations?.map((c) => c.name),
+    ["Slovis Aug. 8 LI", "Temple Health official Aug. 7 LI", "Temple newsroom July 16"],
+  );
+  assert.equal(honor.citations?.length, 3);
+  assert.ok(!honor.citations?.some((c) => /credly/i.test(`${c.name} ${c.url}`)));
+  assert.equal(honor.body, honor.dek);
+  const voices = latestVoices(catalog);
+  assert.deepEqual(voices.map((i) => i.slug), [
+    "mlh-cloud-analytics-2026-08-17",
+    "temple-honor-roll-2026",
+  ]);
+  assert.ok(voices.every((i) => i.kind === "voice" && i.status === "published"));
+  assert.ok(!voices.some((i) => i.slug === "cio-note-workforce-ai"));
+  const news = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
+  assert.ok(!news.some((i) => i.slug === "temple-honor-roll-2026"));
+  assert.ok(!news.some((i) => i.slug === "mlh-cloud-analytics-2026-08-17"));
+  assert.ok(!news.some((i) => /honor.?roll/i.test(i.title)));
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+  assert.equal(canonicalPath(mlh), "/voices/mlh-cloud-analytics-2026-08-17");
+  assert.equal(canonicalPath(honor), "/voices/temple-honor-roll-2026");
+  assert.notEqual(canonicalPath(honor), "/news/temple-honor-roll-2026");
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  assert.ok(itemPage.includes('section: "news" | "event" | "voice"'));
+  assert.ok(worker.includes("publishedVoiceSlugs"));
+  assert.ok(worker.includes('path.startsWith("/briefing/")'));
 });

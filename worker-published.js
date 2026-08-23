@@ -13,7 +13,10 @@ export const publishedEventSlugs = [
   "njdvhimss-annual-golf-outing",
   "njdvhimss-fall-conference-october-13th-15th"
 ];
-export const publishedVoiceSlugs = [];
+export const publishedVoiceSlugs = [
+  "mlh-cloud-analytics-2026-08-17",
+  "temple-honor-roll-2026"
+];
 export const publishedBriefingSlugs = [];
 export const publishedHead = {
   "christianacare-epic-go-live": {
@@ -55,6 +58,16 @@ export const publishedHead = {
     "kind": "news",
     "title": "HAP June 10, 2025 letter: enforce CMS-0057-F; 1.6 million Pennsylvanians in Medicare Advantage",
     "description": "On June 10, 2025, HAP asked CMS to enforce the Interoperability and Prior Authorization Final Rule (CMS-0057-F), citing 1.6 million Pennsylvanians in Medicare Advantage (54 percent of the state's Medicare beneficiaries)."
+  },
+  "mlh-cloud-analytics-2026-08-17": {
+    "kind": "voice",
+    "title": "Main Line Health cloud analytics, official Aug. 17 LinkedIn post",
+    "description": "Main Line Health said Aug. 17 that cloud analytics cut a 30-day wait to near real-time reporting, with 2,017 subscriptions and 6.2 percent monthly access growth since August 2025."
+  },
+  "temple-honor-roll-2026": {
+    "kind": "voice",
+    "title": "Benjamin Slovis, Aug. 8, 2026: Temple Health on Epic’s 2026 Honor Roll",
+    "description": "Temple Health is on Epic’s 2026 Honor Roll; Slovis posted it Aug. 8, and Temple’s July 16 newsroom called the designation Cum Laude and named a $418,000 Epic Good Maintenance grant."
   },
   "njdvhimss-annual-golf-outing": {
     "kind": "event",

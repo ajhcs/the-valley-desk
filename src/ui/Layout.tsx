@@ -22,6 +22,9 @@ export function Layout() {
             <Link to="/events" className="NavLink is-events">
               Events
             </Link>
+            <Link to="/voices" className="NavLink">
+              Voices
+            </Link>
           </nav>
         </div>
       </header>

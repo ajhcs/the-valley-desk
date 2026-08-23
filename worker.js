@@ -1,4 +1,9 @@
-import { publishedEventSlugs, publishedHead, publishedNewsSlugs } from "./worker-published.js";
+import {
+  publishedEventSlugs,
+  publishedHead,
+  publishedNewsSlugs,
+  publishedVoiceSlugs,
+} from "./worker-published.js";
 
 const SITE = "The Valley Desk";
 const ORIGIN = "https://thevalleydesk.org";
@@ -17,7 +22,8 @@ function notFound() {
 
 const newsSlugs = new Set(publishedNewsSlugs);
 const eventSlugs = new Set(publishedEventSlugs);
-const SPA_PATH = /^\/(?:(?:news|events)(?:\/[^/]+)?)?\/?$/;
+const voiceSlugs = new Set(publishedVoiceSlugs);
+const SPA_PATH = /^\/(?:(?:news|events|voices)(?:\/[^/]+)?)?\/?$/;
 
 function stripSlash(path) {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
@@ -30,6 +36,8 @@ function publishedItemPath(path) {
   if (news) return newsSlugs.has(news[1]);
   const events = /^\/events\/([^/]+)$/.exec(p);
   if (events) return eventSlugs.has(events[1]);
+  const voices = /^\/voices\/([^/]+)$/.exec(p);
+  if (voices) return voiceSlugs.has(voices[1]);
   return null;
 }
 
@@ -45,7 +53,8 @@ function routeHead(path) {
   const p = stripSlash(path) || "/";
   const news = /^\/news\/([^/]+)$/.exec(p);
   const events = /^\/events\/([^/]+)$/.exec(p);
-  const slug = (news && news[1]) || (events && events[1]);
+  const voices = /^\/voices\/([^/]+)$/.exec(p);
+  const slug = (news && news[1]) || (events && events[1]) || (voices && voices[1]);
   const item = slug ? publishedHead[slug] : undefined;
   let title = SITE;
   let desc = DEFAULT_DESC;
@@ -54,6 +63,7 @@ function routeHead(path) {
     desc = item.description || item.title;
   } else if (p === "/news") title = `News · ${SITE}`;
   else if (p === "/events") title = `Events · ${SITE}`;
+  else if (p === "/voices") title = `Voices · ${SITE}`;
   const url = p === "/" ? `${ORIGIN}/` : `${ORIGIN}${p}`;
   const type = item && item.kind !== "event" ? "article" : "website";
   return { title, desc, url, type };
@@ -83,9 +93,6 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     if (path === "/org" || path.startsWith("/org/")) {
-      return notFound();
-    }
-    if (path === "/voices" || path.startsWith("/voices/")) {
       return notFound();
     }
     if (path === "/briefing" || path.startsWith("/briefing/")) {

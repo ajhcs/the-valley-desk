@@ -76,6 +76,7 @@ const sitemapPaths = [
   "/",
   "/news",
   "/events",
+  "/voices",
   ...published.map(canonicalPath),
   "/feed.json",
   "/feed.xml",

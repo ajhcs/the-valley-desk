@@ -35,9 +35,17 @@ export function DocumentHead() {
   useEffect(() => {
     const path = pathname.replace(/\/+$/, "") || "/";
     const parts = path.split("/").filter(Boolean);
-    const item =
-      parts.length === 2 && (parts[0] === "news" || parts[0] === "events")
+    const section = parts[0];
+    const raw =
+      parts.length === 2 && (section === "news" || section === "events" || section === "voices")
         ? bySlug(catalog, parts[1])
+        : undefined;
+    const item =
+      raw &&
+      ((section === "voices" && raw.kind === "voice") ||
+        (section === "events" && raw.kind === "event") ||
+        (section === "news" && (raw.kind === "news" || raw.kind === "policy" || raw.kind === "ai" || raw.kind === "interview")))
+        ? raw
         : undefined;
     let title = SITE;
     let desc = DEFAULT_DESC;
@@ -46,6 +54,7 @@ export function DocumentHead() {
       desc = item.impactSentence?.trim() || item.title;
     } else if (path === "/news") title = `News · ${SITE}`;
     else if (path === "/events") title = `Events · ${SITE}`;
+    else if (path === "/voices") title = `Voices · ${SITE}`;
     const url = path === "/" ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${path}`;
     document.title = title;
     upsertMeta("name", "description", desc);

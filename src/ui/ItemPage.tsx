@@ -1,5 +1,5 @@
 import { bySlug } from "../content/queries";
-import { itemCitations, type EventItem } from "../content/schema";
+import { itemCitations, type ContentItem, type EventItem } from "../content/schema";
 import { catalog } from "../lib/catalog";
 import { formatDate, formatWhen } from "../lib/format";
 import { kindChip } from "../lib/kind";
@@ -7,10 +7,23 @@ import { ItemJsonLd } from "./ItemJsonLd";
 import { RegisterLink } from "./RegisterLink";
 import { GroupChip } from "./home/GroupChip";
 
+const NEWS_SECTION_KINDS = new Set(["news", "policy", "ai", "interview"]);
+
+function sectionOwns(item: ContentItem, section: "news" | "event" | "voice") {
+  if (section === "news") return NEWS_SECTION_KINDS.has(item.kind);
+  return item.kind === section;
+}
+
 /** Cole lock: aggregator card. Not a magazine template. */
-export function ItemPage({ slug }: { slug: string }) {
+export function ItemPage({
+  slug,
+  section,
+}: {
+  slug: string;
+  section: "news" | "event" | "voice";
+}) {
   const item = bySlug(catalog, slug);
-  if (!item) {
+  if (!item || !sectionOwns(item, section)) {
     return <p className="text-sm">Not found, or not published.</p>;
   }
   const impact = item.impactSentence?.trim();

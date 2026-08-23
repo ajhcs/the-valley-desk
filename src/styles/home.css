@@ -233,7 +233,8 @@ ul.desk {
 }
 
 .GroupChip[data-kind="news"],
-.GroupChip[data-kind="event"] {
+.GroupChip[data-kind="event"],
+.GroupChip[data-kind="voice"] {
   color: var(--mute);
   border: 1px solid var(--rule);
 }

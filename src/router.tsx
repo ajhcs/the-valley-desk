@@ -18,7 +18,7 @@ const indexRoute = createRoute({
   component: HomePage,
 });
 
-function section<TPath extends string>(path: TPath, kind: "news" | "event") {
+function section<TPath extends string>(path: TPath, kind: "news" | "event" | "voice") {
   const list = createRoute({
     getParentRoute: () => rootRoute,
     path,
@@ -29,18 +29,19 @@ function section<TPath extends string>(path: TPath, kind: "news" | "event") {
     path: `${path}/$slug` as `${TPath}/$slug`,
     component: function Detail() {
       const { slug } = detail.useParams() as { slug: string };
-      return <ItemPage slug={slug} />;
+      return <ItemPage slug={slug} section={kind} />;
     },
   });
   return [list, detail];
 }
 
 // Reed v1 lock: do not mint org-id routes or generate entity pages from the seed.
-// Voices and briefing are unpublished. Worker 404s those paths as text/plain.
+// Briefing stays unpublished. Worker 404s /briefing as text/plain.
 const routeTree = rootRoute.addChildren([
   indexRoute,
   ...section("/news", "news"),
   ...section("/events", "event"),
+  ...section("/voices", "voice"),
 ]);
 
 export const router = createRouter({ routeTree });

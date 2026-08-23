@@ -32,6 +32,14 @@ export function latestNews(
     .slice(0, n);
 }
 
+/** Published kind=voice only. Never latestNews. Jane Doe stays draft. */
+export function latestVoices(items: ContentItem[], n = 6) {
+  return items
+    .filter((item) => item.kind === "voice" && item.status === "published")
+    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
+    .slice(0, n);
+}
+
 /** Published events with startsAt >= now. Never reads clockAt. Review/QUEUED off.
  *  HAP/system sit in date order. Joint NJDVHIMSS is one row. */
 export function upcomingEvents(items: ContentItem[], now = new Date(), n = 6) {

@@ -12,7 +12,7 @@ export function Rail({
   items,
 }: {
   label: string;
-  rail: "news" | "events";
+  rail: "news" | "events" | "voices";
   items: ContentItem[];
 }) {
   return (

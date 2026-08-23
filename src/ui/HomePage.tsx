@@ -2,6 +2,7 @@ import { catalog } from "../lib/catalog";
 import {
   briefingSinceYesterday5pmET,
   latestNews,
+  latestVoices,
   leadItem,
   pinnedUpcomingEvents,
 } from "../content/queries";
@@ -15,6 +16,7 @@ export function HomePage() {
   const desk = briefingSinceYesterday5pmET(catalog);
   const news = latestNews(catalog);
   const events = pinnedUpcomingEvents(catalog);
+  const voices = latestVoices(catalog);
   const sessionFirst = useSessionFirstHome();
 
   return (
@@ -24,6 +26,7 @@ export function HomePage() {
       <div className="rails">
         <Rail label="NEWS · LATEST" rail="news" items={news} />
         <Rail label="EVENTS · NEXT" rail="events" items={events} />
+        <Rail label="VOICES · LATEST" rail="voices" items={voices} />
       </div>
     </div>
   );
