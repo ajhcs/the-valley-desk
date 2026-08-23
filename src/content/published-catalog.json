@@ -278,6 +278,45 @@
     "geo": "West Reading, PA"
   },
   {
+    "id": "news-temple-chestnut-hill-jhp",
+    "slug": "temple-chestnut-hill-jhp-2026-09-30",
+    "kind": "news",
+    "title": "Temple Health–Chestnut Hill Hospital and Jefferson Health Plans: contract scheduled to end Sept. 30, 2026",
+    "dek": "Temple Health's Aug. 17, 2026 notice says the Medicaid and Medicare agreement ends Sept. 30. Starting Oct. 1, Jefferson Health Plans would not pay for care at that hospital if no new deal is reached. Emergency care stays covered. Pregnancy care continues. Ongoing or prior-authorized care can continue for up to 60 days after Sept. 30.",
+    "body": "On Aug. 17, 2026, Temple Health posted that Temple Health–Chestnut Hill Hospital's agreement with Jefferson Health Plans, a Medicaid and Medicare managed-care company, is scheduled to end Sept. 30, 2026. Temple wrote that the two sides have not yet reached a new agreement.\n\nIf there is no deal, Jefferson Health Plans would not pay for care at that hospital starting Oct. 1, 2026. The same notice lists exceptions: emergency care remains covered; pregnancy care at the hospital continues before and after birth; and patients with ongoing care for a condition treated there in the last 12 months, or with prior authorization, can keep getting that care for up to 60 days after Sept. 30, 2026.\n\nTemple said Pennsylvania Medicaid members can change plans at any time through the PA Enrollment Center, with a new plan effective in 30 to 45 days. It said Medicare members qualify for a CMS Special Enrollment Period and can request a plan change as early as Sept. 1, 2026. Medicare Open Enrollment, the notice says, runs through Dec. 7, 2026.\n\nThis item is Chestnut Hill's payer contract. It is not temple-dragon-copilot-400 and not Honor Roll.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-17T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "contract"
+    ],
+    "orgs": [
+      "org-temple-chestnut-hill"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://www.templehealth.org/about/newsroom/temple-health-chestnut-hill-hospital-and-jefferson-health-plans"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Temple Health–Chestnut Hill Hospital's contract with Jefferson Health Plans is scheduled to end Sept. 30, 2026, and starting Oct. 1 Jefferson Health Plans would not pay for care there if no new agreement is reached.",
+    "citations": [
+      {
+        "name": "Temple Health newsroom, Aug. 17, 2026",
+        "url": "https://www.templehealth.org/about/newsroom/temple-health-chestnut-hill-hospital-and-jefferson-health-plans"
+      }
+    ],
+    "geo": "Philadelphia, PA"
+  },
+  {
     "id": "evt-dvhimss-23007",
     "slug": "njdvhimss-annual-golf-outing",
     "kind": "event",

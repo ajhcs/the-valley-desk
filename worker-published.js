@@ -4,6 +4,7 @@ export const publishedNewsSlugs = [
   "christianacare-epic-go-live",
   "jefferson-fy2026-operating-loss",
   "penn-in-house-ai-scribe",
+  "temple-chestnut-hill-jhp-2026-09-30",
   "temple-dragon-copilot-400",
   "tower-ai-tax"
 ];
@@ -43,6 +44,11 @@ export const publishedHead = {
     "kind": "news",
     "title": "Tower Health CIO on AI label, AI tax, and owned platforms",
     "description": "Tower will not pay an AI premium without a proof-of-value under its own conditions, and it is pressing vendors for value from platforms it already owns."
+  },
+  "temple-chestnut-hill-jhp-2026-09-30": {
+    "kind": "news",
+    "title": "Temple Health–Chestnut Hill Hospital and Jefferson Health Plans: contract scheduled to end Sept. 30, 2026",
+    "description": "Temple Health–Chestnut Hill Hospital's contract with Jefferson Health Plans is scheduled to end Sept. 30, 2026, and starting Oct. 1 Jefferson Health Plans would not pay for care there if no new agreement is reached."
   },
   "njdvhimss-annual-golf-outing": {
     "kind": "event",

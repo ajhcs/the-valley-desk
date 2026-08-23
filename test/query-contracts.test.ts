@@ -169,6 +169,7 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
     "christianacare-epic-go-live",
     "jefferson-fy2026-operating-loss",
     "penn-in-house-ai-scribe",
+    "temple-chestnut-hill-jhp-2026-09-30",
     "temple-dragon-copilot-400",
     "tower-ai-tax",
   ]);
@@ -310,7 +311,7 @@ test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => 
   assert.ok(newsPage.every((i) => isPublicNewsFamily(i, seedIds)));
   assert.ok(newsPage.some((i) => i.id === "news-jefferson-fy2026-loss"));
   assert.ok(!newsPage.some((i) => i.kind === "policy"));
-  assert.equal(newsPage.length, 6);
+  assert.equal(newsPage.length, 7);
 });
 
 test("upcomingEvents is published events with startsAt >= now and never reads clockAt", () => {
@@ -649,6 +650,28 @@ test("CHOP ORCA and Tower AI tax fixtures: published, not featured, seed orgs, c
   assert.ok(!/honor.?roll/i.test(JSON.stringify(chop) + JSON.stringify(tower)));
   assert.ok(latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.id === "news-chop-orca-cds"));
   assert.ok(latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.id === "news-tower-ai-tax"));
+});
+
+test("Chestnut Hill JHP contract is published, not featured, Chestnut Hill org only", () => {
+  const item = catalog.find((i) => i.slug === "temple-chestnut-hill-jhp-2026-09-30");
+  const entities = JSON.parse(readFileSync(join(root, "fixtures/entities.json"), "utf8")) as { id: string; name: string }[];
+  assert.ok(item);
+  assert.equal(item.kind, "news");
+  assert.equal(item.status, "published");
+  assert.equal(item.featured, false);
+  assert.equal(item.publishedAt, "2026-08-17T16:00:00.000Z");
+  assert.deepEqual(item.orgs, ["org-temple-chestnut-hill"]);
+  assert.ok(!item.orgs.includes("org-jefferson"));
+  assert.ok(!entities.some((e) => /jefferson health plans/i.test(`${e.id} ${e.name}`)));
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.ok(item.body.includes("not temple-dragon-copilot-400"));
+  assert.ok(item.body.includes("not Honor Roll"));
+  assert.equal(item.citations?.length, 1);
+  assert.equal(
+    item.source.url,
+    "https://www.templehealth.org/about/newsroom/temple-health-chestnut-hill-hospital-and-jefferson-health-plans",
+  );
+  assert.equal(item.citations?.[0]?.url, item.source.url);
 });
 
 test("leadItem source does not call briefingSinceYesterday5pmET", () => {
@@ -1205,13 +1228,14 @@ test("list pages omit costume deks and costume source crumbs", () => {
   assert.ok(!/org-penn/.test(rendered));
 });
 
-test("Reed hold: only six published news slugs; stub origins and mixer are unpublished", () => {
+test("Reed hold: published news slugs; stub origins and mixer are unpublished", () => {
   const publishedNews = catalog.filter((i) => i.kind === "news" && i.status === "published");
   assert.deepEqual(publishedNews.map((i) => i.slug).sort(), [
     "chop-orca-cds",
     "christianacare-epic-go-live",
     "jefferson-fy2026-operating-loss",
     "penn-in-house-ai-scribe",
+    "temple-chestnut-hill-jhp-2026-09-30",
     "temple-dragon-copilot-400",
     "tower-ai-tax",
   ]);
