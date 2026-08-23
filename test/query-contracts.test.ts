@@ -1054,6 +1054,7 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
 test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org routes", () => {
   const robots = readFileSync(join(root, "public/robots.txt"), "utf8");
   const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const publishedRoutes = readFileSync(join(root, "worker-published.js"), "utf8");
   const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
   const router = readFileSync(join(root, "src/router.tsx"), "utf8");
   assert.ok(robots.includes("User-agent: *"));
@@ -1062,7 +1063,14 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(worker.includes("status: 404"));
   assert.ok(worker.includes("text/plain"));
   assert.ok(worker.includes('path.startsWith("/org/")'));
+  assert.ok(worker.includes("publishedItemPath"));
   assert.ok(!worker.includes("EntityPage"));
+  assert.ok(publishedRoutes.includes("christianacare-epic-go-live"));
+  assert.ok(publishedRoutes.includes("njdvhimss-fall-conference-october-13th-15th"));
+  assert.ok(!publishedRoutes.includes("penn-medicine-ai-scribe-rollout"));
+  assert.ok(!publishedRoutes.includes("epic-ambient-listening-note"));
+  assert.ok(!publishedRoutes.includes("week-of-2026-08-18"));
+  assert.ok(!publishedRoutes.includes("dvhimss-september-networking"));
   assert.ok(wrangler.includes('"not_found_handling": "none"'));
   assert.ok(!wrangler.includes("single-page-application"));
   assert.ok(!wrangler.includes("routes"));
