@@ -4,7 +4,7 @@
     <title>The Valley Desk</title>
     <link>https://thevalleydesk.org/</link>
     <description>Local health-tech news for people and agents</description>
-    <lastBuildDate>Sat, 22 Aug 2026 20:14:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 23 Aug 2026 18:03:30 GMT</lastBuildDate>
     <item>
       <title>Penn Medicine expands ambient scribe pilots across ambulatory</title>
       <link>https://thevalleydesk.org/news/penn-medicine-ai-scribe-rollout</link>
@@ -27,45 +27,59 @@
       <pubDate>Sat, 01 Aug 2026 14:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>ChristianaCare Epic go-live Oct. 3, 2026</title>
+      <title>ChristianaCare Epic go-live, official July 2026 update</title>
       <link>https://thevalleydesk.org/news/christianacare-epic-go-live</link>
       <guid isPermaLink="true">https://thevalleydesk.org/news/christianacare-epic-go-live</guid>
-      <description>Oct. 3 is a training-gated cutover; the FAC note prices an unnamed EMR license, not the Epic press headline.</description>
+      <description>Oct. 3 is a training-gated cutover on ChristianaCare’s own update; Becker’s second-cites that date and does not price Epic.</description>
       <pubDate>Wed, 01 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Jefferson FY2026 operating loss, plus Fitch liquidity</title>
+      <title>Jefferson FY2026 operating loss and Fitch liquidity</title>
       <link>https://thevalleydesk.org/news/jefferson-fy2026-operating-loss</link>
       <guid isPermaLink="true">https://thevalleydesk.org/news/jefferson-fy2026-operating-loss</guid>
       <description>The $181.5 million year-end operating loss sits next to $5.5 billion / 119 DCOH through March 31; Harrington says the climb holds only if commercial contracts do.</description>
       <pubDate>Fri, 14 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Penn in-house scribe: Inquirer headcount, JAMA table</title>
+      <title>Penn in-house scribe headcount and 2024 JAMA pilot table</title>
       <link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>
       <guid isPermaLink="true">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>
-      <description>About 1,200 ambulatory users is an Inquirer headcount; 20.4% less time in notes is a 46-clinician journal table, not that headcount.</description>
+      <description>Some 1,200 is an Inquirer headcount for Penn’s later in-house tool; 20.4% less time in notes is a 46-clinician journal table from a 2024 DAX Copilot pilot, not that headcount.</description>
       <pubDate>Mon, 10 Nov 2025 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Temple Dragon Copilot at 400 users; TUHS 116 DCOH</title>
+      <title>Temple Dragon Copilot user count and TUHS cash days</title>
       <link>https://thevalleydesk.org/news/temple-dragon-copilot-400</link>
       <guid isPermaLink="true">https://thevalleydesk.org/news/temple-dragon-copilot-400</guid>
-      <description>Dragon Copilot is at 400 end users; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI.</description>
+      <description>Dragon Copilot is at 400 end users in the HealthTech clip; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI.</description>
       <pubDate>Sat, 01 Aug 2026 16:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>CHOP ORCA repo for Epic downtime order sets</title>
+      <link>https://thevalleydesk.org/news/chop-orca-cds</link>
+      <guid isPermaLink="true">https://thevalleydesk.org/news/chop-orca-cds</guid>
+      <description>ORCA is an offline read-only Epic order-set viewer for downtime; it does not hold patient data and cannot place orders.</description>
+      <pubDate>Mon, 03 Aug 2026 16:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Tower Health CIO on AI label, AI tax, and owned platforms</title>
+      <link>https://thevalleydesk.org/news/tower-ai-tax</link>
+      <guid isPermaLink="true">https://thevalleydesk.org/news/tower-ai-tax</guid>
+      <description>Tower will not pay an AI premium without a proof-of-value under its own conditions, and it is pressing vendors for value from platforms it already owns.</description>
+      <pubDate>Thu, 23 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>DVHIMSS September networking reception</title>
       <link>https://thevalleydesk.org/events/dvhimss-september-networking</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/dvhimss-september-networking</guid>
-      <description>Chapter event. Gold rail on the homepage.</description>
+      <description></description>
       <pubDate>Sat, 01 Aug 2026 12:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Jefferson digital health forum</title>
       <link>https://thevalleydesk.org/events/jefferson-digital-health-forum</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/jefferson-digital-health-forum</guid>
-      <description>Partner event, review-queued in the stub path; published here so the rail has two dates.</description>
+      <description></description>
       <pubDate>Mon, 10 Aug 2026 12:00:00 GMT</pubDate>
     </item>
     <item>
@@ -81,20 +95,6 @@
       <guid isPermaLink="true">https://thevalleydesk.org/news/pa-doh-telehealth-guidance-2026</guid>
       <description>PA telehealth documentation guidance changes what clerks and CMIO shops have to capture on Sept 1.</description>
       <pubDate>Wed, 12 Aug 2026 09:00:00 GMT</pubDate>
-    </item>
-    <item>
-      <title>Epic ships another ambient listening increment</title>
-      <link>https://thevalleydesk.org/news/epic-ambient-listening-note</link>
-      <guid isPermaLink="true">https://thevalleydesk.org/news/epic-ambient-listening-note</guid>
-      <description>Epic's ambient increment only matters here if a Valley system actually turns it on.</description>
-      <pubDate>Sat, 15 Aug 2026 13:00:00 GMT</pubDate>
-    </item>
-    <item>
-      <title>Week of August 18: scribes, cyber, chapter calendar</title>
-      <link>https://thevalleydesk.org/briefing/week-of-2026-08-18</link>
-      <guid isPermaLink="true">https://thevalleydesk.org/briefing/week-of-2026-08-18</guid>
-      <description>Composed digest from published items.</description>
-      <pubDate>Tue, 18 Aug 2026 12:00:00 GMT</pubDate>
     </item>
     <item>
       <title>NJDVHIMSS Annual Golf Outing</title>

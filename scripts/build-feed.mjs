@@ -20,13 +20,18 @@ function canonicalUrl(item) {
   return SITE + canonicalPath(item);
 }
 
-const published = items.filter((item) => item.status === "published");
-const updated = published.reduce((max, item) => (item.updatedAt > max ? item.updatedAt : max), "2026-08-22T20:14:00.000Z");
+function hasCite(item) {
+  const cited = Array.isArray(item.citations) && item.citations.some((c) => c && c.url);
+  return Boolean((item.source && item.source.url) || cited);
+}
+
+const published = items.filter((item) => item.status === "published" && hasCite(item));
+const generatedAt = new Date().toISOString();
 
 const doc = {
   product: "the-valley-desk",
   version: "1",
-  generatedAt: updated,
+  generatedAt,
   items: published,
 };
 
@@ -61,7 +66,7 @@ const rss = `<?xml version="1.0" encoding="UTF-8"?>
     <title>The Valley Desk</title>
     <link>${SITE}/</link>
     <description>Local health-tech news for people and agents</description>
-    <lastBuildDate>${new Date(updated).toUTCString()}</lastBuildDate>
+    <lastBuildDate>${new Date(generatedAt).toUTCString()}</lastBuildDate>
 ${rssItems}
   </channel>
 </rss>
