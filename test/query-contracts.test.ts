@@ -9,8 +9,10 @@ import {
   briefingSinceYesterday5pmET,
   featuredLead,
   isPublicNewsFamily,
+  bySlug,
   latestNews,
   latestVoices,
+  publishedNewsList,
   leadItem,
   nextChapterEvent,
   pinnedUpcomingEvents,
@@ -310,10 +312,11 @@ test("kind chip paint is mute/rule, ink, or admiral — never sky, never gold ex
   assert.ok(queued.includes("data-queued"));
 });
 
-test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => {
+test("KindListPage /news uses publishedNewsList; ai-01 stays out", () => {
   const page = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
   const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
-  assert.ok(page.includes("latestNews(catalog, Number.MAX_SAFE_INTEGER)"));
+  assert.ok(page.includes("publishedNewsList(catalog)"));
+  assert.ok(!page.includes("latestNews(catalog, Number.MAX_SAFE_INTEGER)"));
   assert.ok(page.includes("Rail"));
   assert.ok(page.includes("NEWS · LATEST"));
   assert.ok(page.includes("EVENTS · NEXT"));
@@ -328,13 +331,13 @@ test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => 
   assert.ok(ai.impactSentence?.trim());
   assert.equal(ai.status, "draft");
   assert.ok(!isPublicNewsFamily(ai, seedIds));
-  const newsPage = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
+  const newsPage = publishedNewsList(catalog);
   assert.ok(!newsPage.some((i) => i.id === "ai-01"));
-  assert.ok(newsPage.every((i) => isPublicNewsFamily(i, seedIds)));
   assert.ok(newsPage.some((i) => i.id === "news-jefferson-fy2026-loss"));
-  assert.ok(!newsPage.some((i) => i.kind === "policy"));
+  assert.ok(newsPage.some((i) => i.slug === "de-340b-hs1-hb383-2024"));
   assert.ok(!newsPage.some((i) => i.slug === "christianacare-epic-go-live"));
-  assert.equal(newsPage.length, 8);
+  assert.ok(newsPage.every((i) => i.status === "published"));
+  assert.ok(newsPage.every((i) => i.kind === "news" || i.kind === "policy" || i.kind === "ai"));
 });
 
 test("upcomingEvents is published events with startsAt >= now and never reads clockAt", () => {
@@ -749,7 +752,7 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(home.includes("latestVoices"));
   assert.ok(home.includes("pinnedUpcomingEvents"));
   assert.ok(eventsPage.includes("pinnedUpcomingEvents"));
-  assert.ok(eventsPage.includes("latestNews"));
+  assert.ok(eventsPage.includes("publishedNewsList"));
   assert.ok(eventsPage.includes("latestVoices"));
   assert.ok(!eventsPage.includes("newsFamily"));
   assert.ok(!rail.includes("topics[0]"));
@@ -1379,6 +1382,8 @@ test("Sloan Delaware 340B HS 1 for HB 383 is published, not featured, empty orgs
   assert.ok(item.body.includes("§ 3374A(b)"));
   assert.ok(!isPublicNewsFamily(item, seedIds));
   assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.slug === "de-340b-hs1-hb383-2024"));
+  assert.ok(publishedNewsList(catalog).some((i) => i.slug === "de-340b-hs1-hb383-2024"));
+  assert.ok(bySlug(catalog, "de-340b-hs1-hb383-2024"));
   assert.equal(einstein.status, "published");
   assert.equal(einstein.featured, false);
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
@@ -1705,7 +1710,9 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(footer.includes("Delaware Valley"));
   assert.ok(footer.includes("© The Valley Desk"));
   assert.ok(css.includes(".NavLink:focus-visible"));
-  assert.ok(css.includes("outline: 2px solid var(--ink)"));
+  assert.ok(css.includes("outline-width: 2px"));
+  assert.ok(css.includes("outline-style: solid"));
+  assert.ok(css.includes("outline-color: var(--ink)"));
   assert.ok(css.includes("var(--motion-fast)"));
   assert.ok(css.includes("grid-template-columns: 1fr 1fr 1fr"));
   assert.ok(!css.includes("grid-template-columns: 1fr 1fr;"));

@@ -32,6 +32,18 @@ export function latestNews(
     .slice(0, n);
 }
 
+/** /news list. All published news|policy|ai. Empty orgs[] stay. Interview off. Featured stays Lead-only. */
+export function publishedNewsList(items: ContentItem[]) {
+  return items
+    .filter((item) => {
+      if (item.status !== "published") return false;
+      if (item.kind !== "news" && item.kind !== "policy" && item.kind !== "ai") return false;
+      if (item.featured === true) return false;
+      return true;
+    })
+    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
+}
+
 /** Published kind=voice only. Never latestNews. Jane Doe stays draft. */
 export function latestVoices(items: ContentItem[], n = 6) {
   return items

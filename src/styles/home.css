@@ -94,7 +94,9 @@
 }
 
 .NavLink:focus-visible {
-  outline: 2px solid var(--ink);
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--ink);
   outline-offset: 2px;
   transition: outline-color var(--motion-fast) var(--ease-out);
 }

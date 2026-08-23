@@ -12,3 +12,12 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
 }
+
+/* After Tailwind utilities so .outline { outline-width: 1px } cannot shrink the ring. */
+.SiteNav a.NavLink:focus-visible {
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--ink);
+  outline-offset: 2px;
+  transition: outline-color var(--motion-fast) var(--ease-out);
+}
