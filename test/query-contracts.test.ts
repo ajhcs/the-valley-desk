@@ -1075,9 +1075,17 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(worker.includes("text/plain"));
   assert.ok(worker.includes('path.startsWith("/org/")'));
   assert.ok(worker.includes("publishedItemPath"));
+  assert.ok(worker.includes("withHead"));
+  assert.ok(worker.includes("og:title"));
+  assert.ok(worker.includes("twitter:card"));
+  assert.ok(worker.includes("canonical"));
+  assert.ok(worker.includes("application/rss+xml"));
+  assert.ok(worker.includes('const ORIGIN = "https://thevalleydesk.org"'));
+  assert.ok(worker.includes("/feed.xml"));
   assert.ok(!worker.includes("EntityPage"));
   assert.ok(publishedRoutes.includes("christianacare-epic-go-live"));
   assert.ok(publishedRoutes.includes("njdvhimss-fall-conference-october-13th-15th"));
+  assert.ok(publishedRoutes.includes("publishedHead"));
   assert.ok(!publishedRoutes.includes("penn-medicine-ai-scribe-rollout"));
   assert.ok(!publishedRoutes.includes("epic-ambient-listening-note"));
   assert.ok(!publishedRoutes.includes("week-of-2026-08-18"));

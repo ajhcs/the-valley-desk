@@ -11,3 +11,45 @@ export const publishedEventSlugs = [
   "njdvhimss-annual-golf-outing",
   "njdvhimss-fall-conference-october-13th-15th"
 ];
+export const publishedHead = {
+  "christianacare-epic-go-live": {
+    "kind": "news",
+    "title": "ChristianaCare Epic go-live, official July 2026 update",
+    "description": "Oct. 3 is a training-gated cutover on ChristianaCare’s own update; Becker’s second-cites that date and does not price Epic."
+  },
+  "jefferson-fy2026-operating-loss": {
+    "kind": "news",
+    "title": "Jefferson FY2026 operating loss and Fitch liquidity",
+    "description": "The $181.5 million year-end operating loss sits next to $5.5 billion / 119 DCOH through March 31; Harrington says the climb holds only if commercial contracts do."
+  },
+  "penn-in-house-ai-scribe": {
+    "kind": "news",
+    "title": "Penn in-house scribe headcount and 2024 JAMA pilot table",
+    "description": "Some 1,200 is an Inquirer headcount for Penn’s later in-house tool; 20.4% less time in notes is a 46-clinician journal table from a 2024 DAX Copilot pilot, not that headcount."
+  },
+  "temple-dragon-copilot-400": {
+    "kind": "news",
+    "title": "Temple Dragon Copilot user count and TUHS cash days",
+    "description": "Dragon Copilot is at 400 end users in the HealthTech clip; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI."
+  },
+  "chop-orca-cds": {
+    "kind": "news",
+    "title": "CHOP ORCA repo for Epic downtime order sets",
+    "description": "ORCA is an offline read-only Epic order-set viewer for downtime; it does not hold patient data and cannot place orders."
+  },
+  "tower-ai-tax": {
+    "kind": "news",
+    "title": "Tower Health CIO on AI label, AI tax, and owned platforms",
+    "description": "Tower will not pay an AI premium without a proof-of-value under its own conditions, and it is pressing vendors for value from platforms it already owns."
+  },
+  "njdvhimss-annual-golf-outing": {
+    "kind": "event",
+    "title": "NJDVHIMSS Annual Golf Outing",
+    "description": "NJDVHIMSS Annual Golf Outing"
+  },
+  "njdvhimss-fall-conference-october-13th-15th": {
+    "kind": "event",
+    "title": "NJDVHIMSS Fall Conference – October 13th – 15th",
+    "description": "NJDVHIMSS Fall Conference – October 13th – 15th"
+  }
+};

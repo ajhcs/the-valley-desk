@@ -1,4 +1,8 @@
-import { publishedEventSlugs, publishedNewsSlugs } from "./worker-published.js";
+import { publishedEventSlugs, publishedHead, publishedNewsSlugs } from "./worker-published.js";
+
+const SITE = "The Valley Desk";
+const ORIGIN = "https://thevalleydesk.org";
+const DEFAULT_DESC = "Local health-tech news for people and agents";
 
 function notFound() {
   return new Response("Not found", {
@@ -29,6 +33,51 @@ function publishedItemPath(path) {
   return null;
 }
 
+function esc(s = "") {
+  return String(s)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function routeHead(path) {
+  const p = stripSlash(path) || "/";
+  const news = /^\/news\/([^/]+)$/.exec(p);
+  const events = /^\/events\/([^/]+)$/.exec(p);
+  const item = (news && publishedHead[news[1]]) || (events && publishedHead[events[1]]);
+  let title = SITE;
+  let desc = DEFAULT_DESC;
+  if (item) {
+    title = `${item.title} · ${SITE}`;
+    desc = item.description || item.title;
+  } else if (p === "/news") title = `News · ${SITE}`;
+  else if (p === "/events") title = `Events · ${SITE}`;
+  else if (p === "/briefing") title = `Briefing · ${SITE}`;
+  const url = p === "/" ? `${ORIGIN}/` : `${ORIGIN}${p}`;
+  const type = item && item.kind !== "event" ? "article" : "website";
+  return { title, desc, url, type };
+}
+
+function withHead(html, path) {
+  const { title, desc, url, type } = routeHead(path);
+  const tags = [
+    `<title>${esc(title)}</title>`,
+    `<meta name="description" content="${esc(desc)}" />`,
+    `<meta property="og:title" content="${esc(title)}" />`,
+    `<meta property="og:description" content="${esc(desc)}" />`,
+    `<meta property="og:url" content="${esc(url)}" />`,
+    `<meta property="og:type" content="${type}" />`,
+    `<meta name="twitter:card" content="summary" />`,
+    `<meta name="twitter:title" content="${esc(title)}" />`,
+    `<meta name="twitter:description" content="${esc(desc)}" />`,
+    `<link rel="canonical" href="${esc(url)}" />`,
+    `<link rel="alternate" type="application/rss+xml" href="${ORIGIN}/feed.xml" />`,
+    `<link rel="alternate" type="application/json" href="${ORIGIN}/feed.json" />`,
+  ].join("\n    ");
+  return html.replace("<title>The Valley Desk</title>", tags);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -40,7 +89,12 @@ export default {
       return notFound();
     }
     if (SPA_PATH.test(path)) {
-      return env.ASSETS.fetch(new URL("/index.html", url.origin));
+      const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
+      const html = await asset.text();
+      return new Response(withHead(html, path), {
+        status: 200,
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
     }
     const asset = await env.ASSETS.fetch(request);
     if (asset.status !== 404) return asset;
