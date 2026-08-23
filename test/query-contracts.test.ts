@@ -22,6 +22,7 @@ import {
   NewsItem,
   setFeaturedNews,
   canPublish,
+  itemCitations,
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { rssItemToContent } from "../src/ingest/rss.ts";
@@ -250,10 +251,14 @@ test("kind chip is item.kind, never topics[0]; Jefferson loss is HIT", () => {
   assert.equal(KIND_CHIP.event, "CHAPTER");
   const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
   const card = readFileSync(join(root, "src/ui/ItemCard.tsx"), "utf8");
+  const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
   assert.ok(!rail.includes("topics[0]"));
   assert.ok(!card.includes("topics[0]"));
+  assert.ok(!itemPage.includes("topics[0]"));
   assert.ok(rail.includes("kindChip"));
   assert.ok(card.includes("kindChip"));
+  assert.ok(itemPage.includes("kindChip"));
+  assert.ok(itemPage.includes("StatusChip"));
 });
 
 test("kind chip paint is mute/rule, ink, or admiral — never sky, never gold except QUEUED", () => {
@@ -542,33 +547,45 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   }
   assert.equal(christiana.status, "published");
   assert.equal(christiana.kind, "news");
-  assert.equal(christiana.title, "ChristianaCare sets Oct. 3, 2026 Epic go-live");
+  assert.equal(christiana.title, "ChristianaCare Epic go-live Oct. 3, 2026");
   assert.equal(christiana.kind === "news" ? christiana.clockAt : undefined, "2026-10-03T04:00:00.000Z");
   assert.equal(christiana.publishedAt, "2026-07-01T16:00:00.000Z");
   assert.deepEqual(christiana.orgs, ["org-christianacare"]);
+  assert.equal(christiana.citations?.length, 3);
+  assert.equal(christiana.source.url, christiana.citations?.[0]?.url);
   assert.ok(christiana.citations?.some((c) => c.url.includes("app.fac.gov")));
+  assert.ok(christiana.citations?.some((c) => c.url.includes("beckershospitalreview.com")));
   assert.ok(!christiana.body.includes("49.364"));
-  assert.equal(loss.title, "Jefferson posts $181.5 million operating loss for FY2026");
+  assert.equal(loss.title, "Jefferson FY2026 operating loss, plus Fitch liquidity");
   assert.equal(loss.kind === "news" ? loss.clockAt : "none", undefined);
   assert.equal(loss.publishedAt, "2026-08-14T16:00:00.000Z");
   assert.deepEqual(loss.orgs, ["org-jefferson"]);
+  assert.equal(loss.citations?.length, 2);
+  assert.equal(loss.source.url, loss.citations?.[0]?.url);
   assert.ok(loss.body.includes("Independence Blue Cross"));
   assert.ok(loss.body.includes("Aetna"));
-  assert.equal(penn.title, "Penn's in-house AI scribe is on about 1,200 ambulatory providers");
+  assert.equal(penn.title, "Penn in-house scribe: Inquirer headcount, JAMA table");
   assert.equal(penn.kind === "news" ? penn.clockAt : "none", undefined);
   assert.equal(penn.publishedAt, "2025-11-10T16:00:00.000Z");
   assert.deepEqual(penn.orgs, ["org-penn"]);
+  assert.equal(penn.citations?.length, 3);
+  assert.equal(penn.source.url, penn.citations?.[0]?.url);
   const pennLead = `${penn.title}\n${penn.dek}\n${penn.impactSentence}`;
   assert.ok(pennLead.includes("1,200"));
-  assert.ok(!pennLead.includes("46"));
-  assert.ok(!/temple|slovis|dragon/i.test(`${penn.title} ${penn.dek} ${penn.body}`));
-  assert.equal(temple.title, "Temple rolls Dragon Copilot to 400 users");
+  assert.ok(penn.body.endsWith("Temple Dragon counts are not this count."));
+  assert.ok(!/slovis/i.test(`${penn.title} ${penn.dek} ${penn.body}`));
+  assert.equal(temple.title, "Temple Dragon Copilot at 400 users; TUHS 116 DCOH");
   assert.equal(temple.slug, "temple-dragon-copilot-400");
   assert.equal(temple.kind === "news" ? temple.clockAt : "none", undefined);
   assert.equal(temple.publishedAt, "2026-08-01T16:00:00.000Z");
-  assert.deepEqual(temple.orgs, ["org-temple", "org-temple-tuh-main"]);
-  assert.ok(temple.body.includes("Microsoft"));
-  assert.ok(!/1,200|penn medicine|capalongo/i.test(`${temple.title} ${temple.dek} ${temple.body}`));
+  assert.deepEqual(temple.orgs, ["org-temple"]);
+  assert.equal(temple.citations?.length, 4);
+  assert.equal(temple.source.url, temple.citations?.[0]?.url);
+  assert.ok(temple.body.includes("Temple Health CMIO"));
+  assert.ok(!/Temple University Hospital/i.test(`${temple.title} ${temple.dek} ${temple.body}`));
+  assert.ok(temple.body.endsWith("That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count."));
+  assert.ok(!/honor.?roll|epic-names-temple|july 16/i.test(JSON.stringify(temple)));
+  assert.ok(!/capalongo/i.test(`${temple.title} ${temple.dek} ${temple.body}`));
   const blob = JSON.stringify(catalog);
   assert.ok(!blob.includes("org-ibc"));
   assert.ok(!blob.includes("org-aetna"));
@@ -827,6 +844,43 @@ test("feed.json projection keeps registrationUrl on published events", () => {
   assert.ok(!feed.items.some((i) => i.status === "review"));
 });
 
+test("ItemPage is an aggregator card: chip, title, impact, body, citations — not a magazine template", () => {
+  const page = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  assert.ok(page.includes("StatusChip"));
+  assert.ok(page.includes("kindChip"));
+  assert.ok(page.includes("item.impactSentence"));
+  assert.ok(page.includes("itemCitations"));
+  assert.ok(page.includes("item.body"));
+  assert.ok(page.includes("ItemJsonLd"));
+  assert.ok(page.includes("RegisterLink"));
+  assert.ok(page.includes("registrationUrl"));
+  assert.ok(page.includes("startsAt"));
+  assert.ok(!page.includes("item.dek"));
+  assert.ok(!page.includes("QUEUED"));
+  assert.ok(!page.includes("KIND_LABEL"));
+  assert.ok(!page.includes("/voices"));
+  assert.ok(!page.includes("/org"));
+  assert.ok(!page.includes("sourceLine"));
+  assert.ok(!page.includes("item.source.url"));
+  const penn = catalog.find((i) => i.id === "news-penn-ai-scribe")!;
+  const cites = itemCitations(penn);
+  assert.ok(cites.some((c) => c.url === penn.source.url));
+  assert.equal(cites.filter((c) => c.url === penn.source.url).length, 1);
+  const extra = itemCitations({
+    source: { origin: "newsroom", url: "https://example.com/source" },
+    citations: [{ name: "Other", url: "https://example.com/other" }],
+  });
+  assert.deepEqual(extra, [
+    { name: "Other", url: "https://example.com/other" },
+    { name: "newsroom", url: "https://example.com/source" },
+  ]);
+  const jefferson = catalog.find((i) => i.id === "evt-02")!;
+  assert.equal(jefferson.kind, "event");
+  assert.equal(eventRegisterUrl(jefferson), undefined);
+  assert.ok(jefferson.source.url);
+  assert.ok(itemCitations(jefferson).some((c) => c.url === jefferson.source.url));
+});
+
 test("canonical helper: news family under /news, events under /events", () => {
   assert.equal(canonicalPath({ kind: "news", slug: "penn-in-house-ai-scribe" }), "/news/penn-in-house-ai-scribe");
   assert.equal(canonicalPath({ kind: "policy", slug: "pa-doh-telehealth-guidance-2026" }), "/news/pa-doh-telehealth-guidance-2026");
@@ -905,7 +959,7 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(rss.includes("<link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>"));
   assert.ok(rss.includes("<guid isPermaLink=\"true\">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>"));
   assert.ok(rss.includes("<link>https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</link>"));
-  assert.ok(rss.includes("<description>About 1,200 ambulatory providers were using it, the Inquirer said.</description>"));
+  assert.ok(rss.includes("<description>About 1,200 ambulatory users is an Inquirer headcount; 20.4% less time in notes is a 46-clinician journal table, not that headcount.</description>"));
   assert.ok(!rss.includes("<description>The Philadelphia Inquirer, Nov. 10, 2025: internist Dina Capalongo hits a green button; the doctor still approves the note.</description>"));
   assert.ok(rss.includes("<description>Partner event, review-queued in the stub path; published here so the rail has two dates.</description>"));
   assert.ok(build.includes("canonicalUrl(item)"));
