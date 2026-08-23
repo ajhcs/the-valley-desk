@@ -477,6 +477,42 @@ ul.desk {
   }
 }
 
+.OrgMention {
+  cursor: help;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--mute);
+}
+
+.OrgChip {
+  position: fixed;
+  z-index: 50;
+  max-width: 320px;
+  padding: 10px 12px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.OrgChip-label {
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+
+.OrgChip-detail {
+  color: var(--mute);
+}
+
+.OrgChip a {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink);
+  text-decoration: underline;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

@@ -12,8 +12,22 @@ export const publishedNewsSlugs = [
   "tower-ai-tax"
 ];
 export const publishedEventSlugs = [
+  "ache-eastern-pa-fall-symposium-2026-09-30",
+  "ache-greater-philly-connect-2026-09-02",
+  "ache-nj-golf-outing-2026-09-09",
+  "ache-nj-virtual-behavioral-health-2026-08-27",
+  "bionj-entrepreneurs-exchange-2026-09-23",
+  "bionj-manufacturing-summit-2026-09-29",
+  "bionj-members-cafe-2026-09-15",
+  "builds-bio-philly-2026-09-15",
+  "dha-healthcare-forum-2026-10-29",
+  "hap-patient-safety-symposium-2026-09-02",
+  "life-sciences-future-2026-09-30",
+  "lspa-open-house-2026-09-02",
   "njdvhimss-annual-golf-outing",
-  "njdvhimss-fall-conference-october-13th-15th"
+  "njdvhimss-fall-conference-october-13th-15th",
+  "science-center-nucleus-awards-2026-09-29",
+  "wistar-drug-discovery-forum-2026-09-09"
 ];
 export const publishedVoiceSlugs = [
   "mlh-cloud-analytics-2026-08-17",
@@ -90,5 +104,75 @@ export const publishedHead = {
     "kind": "event",
     "title": "NJDVHIMSS Fall Conference – October 13th – 15th",
     "description": "NJDVHIMSS Fall Conference – October 13th – 15th"
+  },
+  "ache-eastern-pa-fall-symposium-2026-09-30": {
+    "kind": "event",
+    "title": "ACHE of Eastern Pennsylvania Fall Healthcare Symposium",
+    "description": "ACHE of Eastern Pennsylvania Fall Healthcare Symposium"
+  },
+  "bionj-manufacturing-summit-2026-09-29": {
+    "kind": "event",
+    "title": "BioNJ Manufacturing Summit",
+    "description": "BioNJ Manufacturing Summit"
+  },
+  "science-center-nucleus-awards-2026-09-29": {
+    "kind": "event",
+    "title": "University City Science Center Nucleus Awards",
+    "description": "University City Science Center Nucleus Awards"
+  },
+  "hap-patient-safety-symposium-2026-09-02": {
+    "kind": "event",
+    "title": "HAP Patient Safety, Quality, and Equity Symposium",
+    "description": "HAP Patient Safety, Quality, and Equity Symposium"
+  },
+  "life-sciences-future-2026-09-30": {
+    "kind": "event",
+    "title": "Life Sciences Future",
+    "description": "Life Sciences Future"
+  },
+  "builds-bio-philly-2026-09-15": {
+    "kind": "event",
+    "title": "Builds Bio+ Philadelphia Life Science Symposium",
+    "description": "Builds Bio+ Philadelphia Life Science Symposium"
+  },
+  "ache-greater-philly-connect-2026-09-02": {
+    "kind": "event",
+    "title": "ACHE of Greater Philadelphia Connect. Network. Play.",
+    "description": "ACHE of Greater Philadelphia Connect. Network. Play."
+  },
+  "ache-nj-virtual-behavioral-health-2026-08-27": {
+    "kind": "event",
+    "title": "ACHE-NJ Virtual Behavioral Health",
+    "description": "ACHE-NJ Virtual Behavioral Health"
+  },
+  "ache-nj-golf-outing-2026-09-09": {
+    "kind": "event",
+    "title": "ACHE-NJ 4th Annual Golf Outing",
+    "description": "ACHE-NJ 4th Annual Golf Outing"
+  },
+  "dha-healthcare-forum-2026-10-29": {
+    "kind": "event",
+    "title": "30th Delaware Healthcare Forum",
+    "description": "30th Delaware Healthcare Forum"
+  },
+  "bionj-members-cafe-2026-09-15": {
+    "kind": "event",
+    "title": "BioNJ Members-Only Café",
+    "description": "BioNJ Members-Only Café"
+  },
+  "bionj-entrepreneurs-exchange-2026-09-23": {
+    "kind": "event",
+    "title": "BioNJ Entrepreneurs Exchange",
+    "description": "BioNJ Entrepreneurs Exchange"
+  },
+  "lspa-open-house-2026-09-02": {
+    "kind": "event",
+    "title": "Life Sciences PA Open House",
+    "description": "Life Sciences PA Open House"
+  },
+  "wistar-drug-discovery-forum-2026-09-09": {
+    "kind": "event",
+    "title": "Wistar Philadelphia Drug Discovery Forum",
+    "description": "Wistar Philadelphia Drug Discovery Forum"
   }
 };

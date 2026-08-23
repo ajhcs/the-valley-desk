@@ -20,6 +20,20 @@ export const ENTITY_BOUNDARY = {
   edgeOnly: ["WellSpan", "St. Luke's", "Geisinger", "Hershey"],
 } as const;
 
+/** Signed hover-chip metrics. Chip must not render when citation.url is missing. */
+export const EntityFactKind = z.enum(["revenue", "margin", "cfo", "ceo", "salary", "other"]);
+
+export const EntityFact = z.object({
+  kind: EntityFactKind,
+  label: z.string().min(1),
+  detail: z.string().optional(),
+  filerOrg: z.string().optional(),
+  citation: z.object({
+    name: z.string(),
+    url: z.string().optional(),
+  }),
+});
+
 export const Entity = z.object({
   id: z.string(),
   kind: EntityKind,
@@ -35,10 +49,14 @@ export const Entity = z.object({
   sameSiteAs: z.string().optional(),
   /** True when the campus is outside ENTITY_BOUNDARY (still stored). */
   outOfBox: z.boolean().optional(),
+  /** Signed metrics for first-mention hover chips. Never mint /org routes. */
+  facts: z.array(EntityFact).optional(),
 });
 
 export type Entity = z.infer<typeof Entity>;
 export type EntityKind = z.infer<typeof EntityKind>;
+export type EntityFact = z.infer<typeof EntityFact>;
+export type EntityFactKind = z.infer<typeof EntityFactKind>;
 
 export function entityIndex(entities: Entity[]) {
   const byId = new Map(entities.map((e) => [e.id, e]));

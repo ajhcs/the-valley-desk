@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { ContentItem } from "../../content/schema";
 import { formatLeadDate } from "../../lib/format";
 import { itemHref } from "../../lib/kind";
+import { MentionText } from "../MentionText";
 import { DateChip } from "./DateChip";
 import { StatusChip } from "./StatusChip";
 
@@ -20,9 +21,13 @@ export function Desk({ items }: { items: ContentItem[] }) {
           const ask = deskAsk(item);
           const queued = item.status === "review";
           const title = queued ? (
-            <span>{item.title}</span>
+            <span>
+              <MentionText text={item.title} />
+            </span>
           ) : (
-            <Link to={itemHref(item)}>{item.title}</Link>
+            <Link to={itemHref(item)}>
+              <MentionText text={item.title} />
+            </Link>
           );
           return (
             <li key={item.id} className="DeskRow" style={{ ["--i" as string]: i }}>
@@ -34,7 +39,9 @@ export function Desk({ items }: { items: ContentItem[] }) {
                 </div>
               </div>
               {item.impactSentence ? (
-                <p className="DeskRow-impact">{item.impactSentence}</p>
+                <p className="DeskRow-impact">
+                  <MentionText text={item.impactSentence} />
+                </p>
               ) : null}
             </li>
           );

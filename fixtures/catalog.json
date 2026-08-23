@@ -953,7 +953,7 @@
     "endsAt": "2026-10-13T19:30:00.000Z",
     "timezone": "America/New_York",
     "hostOrg": "DVHIMSS",
-    "registrationUrl": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
+    "registrationUrl": "https://web.cvent.com/event/30573954-490f-49b3-8395-3757f872c442/summary",
     "partner": "dvhimss",
     "autoPublish": true
   },
@@ -996,8 +996,530 @@
     "venue": "Hard Rock Hotel & Casino, Atlantic City, NJ",
     "city": "Atlantic City",
     "hostOrg": "DVHIMSS",
-    "registrationUrl": "https://njdvhimssevent.com/",
+    "registrationUrl": "https://web.cvent.com/event/01ce5c42-9d59-4fea-a0f5-ae4fa59f9e4e/summary",
     "partner": "dvhimss",
     "autoPublish": true
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-ache-eastern-pa-fall-symposium-2026-09-30",
+    "slug": "ache-eastern-pa-fall-symposium-2026-09-30",
+    "kind": "event",
+    "title": "ACHE of Eastern Pennsylvania Fall Healthcare Symposium",
+    "body": "ACHE of Eastern Pennsylvania fall symposium at DeSales University.",
+    "topics": [
+      "ache"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "ache-eastern-pa",
+      "url": "https://easternpa.ache.org/events/"
+    },
+    "citations": [
+      {
+        "name": "ACHE of Eastern Pennsylvania",
+        "url": "https://easternpa.ache.org/events/"
+      }
+    ],
+    "startsAt": "2026-09-30T04:00:00.000Z",
+    "venue": "DeSales University, Center Valley",
+    "geo": "Center Valley, PA",
+    "hostOrg": "ACHE of Eastern Pennsylvania"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-bionj-manufacturing-summit-2026-09-29",
+    "slug": "bionj-manufacturing-summit-2026-09-29",
+    "kind": "event",
+    "title": "BioNJ Manufacturing Summit",
+    "body": "BioNJ Manufacturing Summit at Catalent. Fees $150/$275.",
+    "topics": [
+      "biotech"
+    ],
+    "region": "NJ",
+    "source": {
+      "kind": "editorial",
+      "origin": "bionj",
+      "url": "https://bionj.org/events/list/"
+    },
+    "citations": [
+      {
+        "name": "BioNJ events",
+        "url": "https://bionj.org/events/list/"
+      }
+    ],
+    "startsAt": "2026-09-29T13:00:00.000Z",
+    "endsAt": "2026-09-29T20:30:00.000Z",
+    "venue": "Catalent, 104 Campus Dr, Princeton",
+    "geo": "Princeton, NJ",
+    "hostOrg": "BioNJ",
+    "registrationUrl": "https://members.bionj.org/NC__Event?id=a0lPe00000nFUBFIA4"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-science-center-nucleus-awards-2026-09-29",
+    "slug": "science-center-nucleus-awards-2026-09-29",
+    "kind": "event",
+    "title": "University City Science Center Nucleus Awards",
+    "body": "University City Science Center Nucleus Awards.",
+    "topics": [
+      "biotech"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "science-center",
+      "url": "https://sciencecenter.org/events/nucleus-awards-event-2026"
+    },
+    "citations": [
+      {
+        "name": "Science Center Nucleus Awards",
+        "url": "https://sciencecenter.org/events/nucleus-awards-event-2026"
+      }
+    ],
+    "startsAt": "2026-09-29T21:30:00.000Z",
+    "endsAt": "2026-09-30T00:30:00.000Z",
+    "geo": "Philadelphia, PA",
+    "hostOrg": "University City Science Center",
+    "registrationUrl": "https://luma.com/nucleus-awards"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [
+      "org-hap"
+    ],
+    "id": "evt-hap-patient-safety-symposium-2026-09-02",
+    "slug": "hap-patient-safety-symposium-2026-09-02",
+    "kind": "event",
+    "title": "HAP Patient Safety, Quality, and Equity Symposium",
+    "body": "HAP Patient Safety, Quality, and Equity Symposium at Hershey Lodge.",
+    "topics": [
+      "health-admin"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "hap",
+      "url": "https://www.haponline.org/Education/Signature-Events/Patient-Safety-Quality-and-Equity-Symposium"
+    },
+    "citations": [
+      {
+        "name": "HAP Patient Safety, Quality, and Equity Symposium",
+        "url": "https://www.haponline.org/Education/Signature-Events/Patient-Safety-Quality-and-Equity-Symposium"
+      }
+    ],
+    "startsAt": "2026-09-02T04:00:00.000Z",
+    "endsAt": "2026-09-03T04:00:00.000Z",
+    "venue": "Hershey Lodge",
+    "geo": "Hershey, PA",
+    "hostOrg": "HAP",
+    "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid={0C23A820-246B-F111-A825-7C1E524A88B5}"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-life-sciences-future-2026-09-30",
+    "slug": "life-sciences-future-2026-09-30",
+    "kind": "event",
+    "title": "Life Sciences Future",
+    "body": "Life Sciences Future at Sheraton Valley Forge.",
+    "topics": [
+      "biotech"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "lifesciencespa",
+      "url": "https://lifesciencespa.org/life-sciences-future-2026/"
+    },
+    "citations": [
+      {
+        "name": "Life Sciences Future 2026",
+        "url": "https://lifesciencespa.org/life-sciences-future-2026/"
+      }
+    ],
+    "startsAt": "2026-09-30T04:00:00.000Z",
+    "endsAt": "2026-10-01T04:00:00.000Z",
+    "venue": "Sheraton Valley Forge, 480 N Gulph Rd",
+    "geo": "King of Prussia, PA",
+    "hostOrg": "Life Sciences Pennsylvania",
+    "registrationUrl": "https://events.ticketleap.com/tickets/life-sciences-pennsylvania/life-sciences-future-2026"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-builds-bio-philly-2026-09-15",
+    "slug": "builds-bio-philly-2026-09-15",
+    "kind": "event",
+    "title": "Builds Bio+ Philadelphia Life Science Symposium",
+    "body": "Builds Bio+ Philadelphia Life Science Symposium at Quorum at the Science Center.",
+    "topics": [
+      "biotech"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "buildsbio",
+      "url": "https://buildsbio.org/builds-bio-philly-5th-annual-symposium-for-life-science-innovation-and-development/"
+    },
+    "citations": [
+      {
+        "name": "Builds Bio+ Philadelphia",
+        "url": "https://buildsbio.org/builds-bio-philly-5th-annual-symposium-for-life-science-innovation-and-development/"
+      }
+    ],
+    "startsAt": "2026-09-15T12:00:00.000Z",
+    "endsAt": "2026-09-15T19:30:00.000Z",
+    "venue": "Quorum @ Science Center, 3675 Market St #200",
+    "geo": "Philadelphia, PA",
+    "hostOrg": "Builds Bio+"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-ache-greater-philly-connect-2026-09-02",
+    "slug": "ache-greater-philly-connect-2026-09-02",
+    "kind": "event",
+    "title": "ACHE of Greater Philadelphia Connect. Network. Play.",
+    "body": "ACHE of Greater Philadelphia Connect. Network. Play.",
+    "topics": [
+      "ache"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "ache-greater-philly",
+      "url": "https://greaterphilly.ache.org/2026/08/05/connect-network-play/"
+    },
+    "citations": [
+      {
+        "name": "ACHE of Greater Philadelphia",
+        "url": "https://greaterphilly.ache.org/2026/08/05/connect-network-play/"
+      }
+    ],
+    "startsAt": "2026-09-02T21:00:00.000Z",
+    "endsAt": "2026-09-02T23:00:00.000Z",
+    "geo": "Philadelphia, PA",
+    "hostOrg": "ACHE of Greater Philadelphia",
+    "registrationUrl": "https://www.eventbrite.com/e/connect-network-play-tickets-1993874297698?aff=oddtdtcreator"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-ache-nj-virtual-behavioral-health-2026-08-27",
+    "slug": "ache-nj-virtual-behavioral-health-2026-08-27",
+    "kind": "event",
+    "title": "ACHE-NJ Virtual Behavioral Health",
+    "body": "ACHE-NJ virtual behavioral health program.",
+    "topics": [
+      "ache"
+    ],
+    "region": "NJ",
+    "source": {
+      "kind": "editorial",
+      "origin": "ache-nj",
+      "url": "https://achenj.com/events/"
+    },
+    "citations": [
+      {
+        "name": "ACHE-NJ events",
+        "url": "https://achenj.com/events/"
+      }
+    ],
+    "startsAt": "2026-08-27T22:00:00.000Z",
+    "endsAt": "2026-08-27T23:30:00.000Z",
+    "geo": "New Jersey",
+    "hostOrg": "ACHE-NJ",
+    "registrationUrl": "https://www.eventbrite.com/e/virtual-behavioral-health-tickets-1997988424161"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-ache-nj-golf-outing-2026-09-09",
+    "slug": "ache-nj-golf-outing-2026-09-09",
+    "kind": "event",
+    "title": "ACHE-NJ 4th Annual Golf Outing",
+    "body": "ACHE-NJ 4th Annual Golf Outing at Crystal Springs, Hamburg NJ.",
+    "topics": [
+      "ache"
+    ],
+    "region": "NJ",
+    "source": {
+      "kind": "editorial",
+      "origin": "ache-nj",
+      "url": "https://achenj.com/events/"
+    },
+    "citations": [
+      {
+        "name": "ACHE-NJ events",
+        "url": "https://achenj.com/events/"
+      }
+    ],
+    "startsAt": "2026-09-09T11:00:00.000Z",
+    "venue": "Crystal Springs, Hamburg NJ",
+    "geo": "Hamburg, NJ",
+    "hostOrg": "ACHE-NJ",
+    "registrationUrl": "https://www.eventbrite.com/e/achenj-4th-annual-golf-outing-wishes-come-true-tickets-1992704291177"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-dha-healthcare-forum-2026-10-29",
+    "slug": "dha-healthcare-forum-2026-10-29",
+    "kind": "event",
+    "title": "30th Delaware Healthcare Forum",
+    "body": "30th Delaware Healthcare Forum at Bally's Dover.",
+    "topics": [
+      "health-admin"
+    ],
+    "region": "DE",
+    "source": {
+      "kind": "editorial",
+      "origin": "deha",
+      "url": "https://deha.org/forum/"
+    },
+    "citations": [
+      {
+        "name": "Delaware Healthcare Forum",
+        "url": "https://deha.org/forum/"
+      }
+    ],
+    "startsAt": "2026-10-29T04:00:00.000Z",
+    "venue": "Bally's Dover",
+    "geo": "Dover, DE",
+    "hostOrg": "Delaware Healthcare Association",
+    "registrationUrl": "https://web.cvent.com/event/e3dfa25a-e337-4713-8398-eb28b645dce5/register?RefId=Default+Registration+Link&rp=cb1e7694-3afc-4319-9171-719904fd89ec"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-bionj-members-cafe-2026-09-15",
+    "slug": "bionj-members-cafe-2026-09-15",
+    "kind": "event",
+    "title": "BioNJ Members-Only Café",
+    "body": "BioNJ members-only café, virtual.",
+    "topics": [
+      "biotech"
+    ],
+    "region": "NJ",
+    "source": {
+      "kind": "editorial",
+      "origin": "bionj",
+      "url": "https://bionj.org/event/bionj-member-cafe/"
+    },
+    "citations": [
+      {
+        "name": "BioNJ Members-Only Café",
+        "url": "https://bionj.org/event/bionj-member-cafe/"
+      }
+    ],
+    "startsAt": "2026-09-15T13:00:00.000Z",
+    "endsAt": "2026-09-15T14:00:00.000Z",
+    "venue": "Virtual",
+    "geo": "New Jersey",
+    "hostOrg": "BioNJ",
+    "registrationUrl": "https://members.bionj.org/NC__Event?id=a0lPe00000jw1LBIAY"
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-bionj-entrepreneurs-exchange-2026-09-23",
+    "slug": "bionj-entrepreneurs-exchange-2026-09-23",
+    "kind": "event",
+    "title": "BioNJ Entrepreneurs Exchange",
+    "body": "BioNJ Entrepreneurs Exchange, virtual.",
+    "topics": [
+      "biotech"
+    ],
+    "region": "NJ",
+    "source": {
+      "kind": "editorial",
+      "origin": "bionj",
+      "url": "https://form.jotform.com/232195495610054"
+    },
+    "startsAt": "2026-09-23T04:00:00.000Z",
+    "venue": "Virtual",
+    "geo": "New Jersey",
+    "hostOrg": "BioNJ",
+    "registrationUrl": "https://form.jotform.com/232195495610054",
+    "citations": [
+      {
+        "name": "BioNJ Entrepreneurs Exchange",
+        "url": "https://form.jotform.com/232195495610054"
+      }
+    ]
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-lspa-open-house-2026-09-02",
+    "slug": "lspa-open-house-2026-09-02",
+    "kind": "event",
+    "title": "Life Sciences PA Open House",
+    "body": "Life Sciences PA Open House in King of Prussia.",
+    "topics": [
+      "biotech"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "lifesciencespa",
+      "url": "https://events.ticketleap.com/tickets/life-sciences-pennsylvania/open-house-lspa-q3-2026"
+    },
+    "startsAt": "2026-09-02T04:00:00.000Z",
+    "venue": "King of Prussia",
+    "geo": "King of Prussia, PA",
+    "hostOrg": "Life Sciences Pennsylvania",
+    "registrationUrl": "https://events.ticketleap.com/tickets/life-sciences-pennsylvania/open-house-lspa-q3-2026",
+    "citations": [
+      {
+        "name": "Life Sciences PA Open House",
+        "url": "https://events.ticketleap.com/tickets/life-sciences-pennsylvania/open-house-lspa-q3-2026"
+      }
+    ]
+  },
+  {
+    "dek": "",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-23T16:00:00.000Z",
+    "updatedAt": "2026-08-23T23:10:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [],
+    "id": "evt-wistar-drug-discovery-forum-2026-09-09",
+    "slug": "wistar-drug-discovery-forum-2026-09-09",
+    "kind": "event",
+    "title": "Wistar Philadelphia Drug Discovery Forum",
+    "body": "Wistar Philadelphia Drug Discovery Forum.",
+    "topics": [
+      "biotech"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "wistar",
+      "url": "https://www.eventbrite.com/e/1997481870044?aff=oddtdtcreator"
+    },
+    "startsAt": "2026-09-09T04:00:00.000Z",
+    "geo": "Philadelphia, PA",
+    "hostOrg": "Wistar",
+    "registrationUrl": "https://www.eventbrite.com/e/1997481870044?aff=oddtdtcreator",
+    "citations": [
+      {
+        "name": "Wistar Philadelphia Drug Discovery Forum",
+        "url": "https://www.eventbrite.com/e/1997481870044?aff=oddtdtcreator"
+      }
+    ]
   }
 ]

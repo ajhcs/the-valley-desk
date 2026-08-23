@@ -1,6 +1,7 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { navSection } from "../lib/nav";
 import { DocumentHead } from "./DocumentHead";
+import { MentionScope } from "./MentionScope";
 import { SiteFooter } from "./home/SiteFooter";
 
 export function Layout() {
@@ -68,7 +69,9 @@ export function Layout() {
         </div>
       </header>
       <main className="SiteMain">
-        <Outlet />
+        <MentionScope key={pathname}>
+          <Outlet />
+        </MentionScope>
       </main>
       <SiteFooter />
     </div>

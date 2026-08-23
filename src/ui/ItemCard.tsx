@@ -3,6 +3,7 @@ import type { ContentItem, EventItem } from "../content/schema";
 import { eventPlace, formatDate, formatWhen, listDek } from "../lib/format";
 import { chipKind, kindChip, itemHref } from "../lib/kind";
 import { eventRegisterUrl } from "../lib/register";
+import { MentionText } from "./MentionText";
 import { RegisterLink } from "./RegisterLink";
 import { ItemJsonLd } from "./ItemJsonLd";
 import { GroupChip } from "./home/GroupChip";
@@ -21,10 +22,14 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
       </p>
       <h3 className="text-lg leading-snug mt-1">
         <Link to={itemHref(item)} className="hover:underline" style={{ color: "var(--text)" }}>
-          {item.title}
+          <MentionText text={item.title} />
         </Link>
       </h3>
-      {blurb ? <p className="text-sm mt-1 opacity-90">{blurb}</p> : null}
+      {blurb ? (
+        <p className="text-sm mt-1 opacity-90">
+          <MentionText text={blurb} />
+        </p>
+      ) : null}
       <p className="text-xs mt-2" style={{ color: accent }}>
         {meta}
         {rail === "events" && eventRegisterUrl(item) ? (

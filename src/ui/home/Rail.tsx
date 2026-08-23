@@ -4,6 +4,7 @@ import { formatDate } from "../../lib/format";
 import { chipKind, kindChip, itemHref } from "../../lib/kind";
 import { DateChip } from "./DateChip";
 import { GroupChip } from "./GroupChip";
+import { MentionText } from "../MentionText";
 import { RegisterLink } from "../RegisterLink";
 import { ItemJsonLd } from "../ItemJsonLd";
 
@@ -26,7 +27,9 @@ export function Rail({
             {rail === "events" ? (
               <>
                 <DateChip item={item} />
-                <Link to={itemHref(item)}>{item.title}</Link>
+                <Link to={itemHref(item)}>
+                  <MentionText text={item.title} />
+                </Link>
                 <RegisterLink item={item} />
               </>
             ) : (
@@ -39,9 +42,13 @@ export function Rail({
                     </time>
                   ) : null}
                 </div>
-                <Link to={itemHref(item)}>{item.title}</Link>
+                <Link to={itemHref(item)}>
+                  <MentionText text={item.title} />
+                </Link>
                 {item.impactSentence ? (
-                  <p className="RailRow-impact">Impact: {item.impactSentence}</p>
+                  <p className="RailRow-impact">
+                    Impact: <MentionText text={item.impactSentence} />
+                  </p>
                 ) : null}
               </>
             )}

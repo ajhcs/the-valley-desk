@@ -5,6 +5,7 @@ import { itemByline } from "../lib/byline";
 import { formatDate, formatWhen } from "../lib/format";
 import { chipKind, kindChip } from "../lib/kind";
 import { ItemJsonLd } from "./ItemJsonLd";
+import { MentionText } from "./MentionText";
 import { RegisterLink } from "./RegisterLink";
 import { GroupChip } from "./home/GroupChip";
 
@@ -36,7 +37,9 @@ export function ItemPage({
     <article className="ItemPage">
       <ItemJsonLd item={item} />
       <GroupChip kind={chipKind(item)}>{kindChip(item)}</GroupChip>
-      <h1 className="Lead-headline">{item.title}</h1>
+      <h1 className="Lead-headline">
+        <MentionText text={item.title} />
+      </h1>
       {when || byline ? (
         <p className="mt-2 text-xs" style={{ color: "var(--mute)" }}>
           {when}
@@ -45,7 +48,9 @@ export function ItemPage({
         </p>
       ) : null}
       {impact ? (
-        <p className="mt-2" style={{ color: "var(--mute)" }}>{impact}</p>
+        <p className="mt-2" style={{ color: "var(--mute)" }}>
+          <MentionText text={impact} />
+        </p>
       ) : null}
       {event ? (
         <p className="mt-2 text-xs" style={{ color: "var(--mute)" }}>
@@ -58,7 +63,9 @@ export function ItemPage({
           ) : null}
         </p>
       ) : null}
-      <p className="mt-6 whitespace-pre-wrap">{item.body}</p>
+      <p className="mt-6 whitespace-pre-wrap">
+        <MentionText text={item.body} />
+      </p>
       {cites.length > 0 ? (
         <section className="mt-6">
           <h2 className="text-sm">Sources</h2>

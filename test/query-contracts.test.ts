@@ -41,6 +41,7 @@ import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
 import { eventPlace, formatChipLabel, formatDate, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
 import { KIND_CHIP, chipKind, kindChip } from "../src/lib/kind.ts";
 import { Entity } from "../src/content/entity.ts";
+import { citableFacts, factBearingEntities, findFirstMentions } from "../src/lib/entityFacts.ts";
 import { itemByline, newsByline } from "../src/lib/byline.ts";
 import { navSection } from "../src/lib/nav.ts";
 
@@ -838,10 +839,13 @@ test("Register uses registrationUrl only; locked DVHIMSS URLs unchanged", () => 
   const golf = catalog.find((i) => i.id === "evt-dvhimss-23007");
   const networking = catalog.find((i) => i.id === "evt-01");
   const jefferson = catalog.find((i) => i.id === "evt-02");
-  assert.equal(eventRegisterUrl(fall!), "https://njdvhimssevent.com/");
+  assert.equal(
+    eventRegisterUrl(fall!),
+    "https://web.cvent.com/event/01ce5c42-9d59-4fea-a0f5-ae4fa59f9e4e/summary",
+  );
   assert.equal(
     eventRegisterUrl(golf!),
-    "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
+    "https://web.cvent.com/event/30573954-490f-49b3-8395-3757f872c442/summary",
   );
   assert.equal(golf?.slug, "njdvhimss-annual-golf-outing");
   assert.equal(golf?.body, "Kickoff to the fall conference.");
@@ -867,7 +871,10 @@ test("nextChapterEvent prefers a conference in window over mixer/golf and pins t
   const chapter = nextChapterEvent(catalog, now);
   assert.equal(chapter?.id, "evt-dvhimss-22958");
   assert.equal(chapter?.partner, "dvhimss");
-  assert.equal(eventRegisterUrl(chapter!), "https://njdvhimssevent.com/");
+  assert.equal(
+    eventRegisterUrl(chapter!),
+    "https://web.cvent.com/event/01ce5c42-9d59-4fea-a0f5-ae4fa59f9e4e/summary",
+  );
   assert.ok(chapter?.registrationUrl);
   const mixerOnly = catalog.filter((i) => i.id === "evt-01");
   assert.equal(catalog.find((i) => i.id === "evt-01")?.status, "draft");
@@ -960,7 +967,10 @@ test("event JSON-LD is published EventItem only; offers.url is registrationUrl",
   assert.equal(ld?.startDate, fall.kind === "event" ? fall.startsAt : undefined);
   assert.equal(ld?.endDate, fall.kind === "event" ? fall.endsAt : undefined);
   assert.equal(ld?.eventTimezone, "America/New_York");
-  assert.deepEqual((ld?.offers as { url?: string; price?: string } | undefined)?.url, "https://njdvhimssevent.com/");
+  assert.deepEqual(
+    (ld?.offers as { url?: string; price?: string } | undefined)?.url,
+    "https://web.cvent.com/event/01ce5c42-9d59-4fea-a0f5-ae4fa59f9e4e/summary",
+  );
   assert.equal((ld?.offers as { price?: string } | undefined)?.price, undefined);
   assert.equal((ld?.organizer as { name?: string; identifier?: string }).name, "DVHIMSS");
   assert.equal((ld?.organizer as { identifier?: string }).identifier, "org-dvhimss");
@@ -1018,7 +1028,10 @@ test("feed.json projection keeps registrationUrl on published events", () => {
   const feed = toFeed(catalog, "2026-08-22T20:14:00.000Z");
   const fall = feed.items.find((i) => i.id === "evt-dvhimss-22958");
   assert.equal(fall?.kind, "event");
-  assert.equal(fall && fall.kind === "event" ? fall.registrationUrl : undefined, "https://njdvhimssevent.com/");
+  assert.equal(
+    fall && fall.kind === "event" ? fall.registrationUrl : undefined,
+    "https://web.cvent.com/event/01ce5c42-9d59-4fea-a0f5-ae4fa59f9e4e/summary",
+  );
   assert.ok(feed.items.every((i) => i.status === "published"));
   assert.ok(!feed.items.some((i) => i.status === "review"));
 });
@@ -1424,7 +1437,10 @@ test("Reed hold: published news slugs; stub origins and mixer are unpublished", 
   assert.equal(eventRegisterUrl(mixer), "https://dvhimss.org/events/");
   const pin = nextChapterEvent(catalog, new Date("2026-08-22T20:00:00.000Z"));
   assert.equal(pin?.slug, "njdvhimss-fall-conference-october-13th-15th");
-  assert.equal(eventRegisterUrl(pin!), "https://njdvhimssevent.com/");
+  assert.equal(
+    eventRegisterUrl(pin!),
+    "https://web.cvent.com/event/01ce5c42-9d59-4fea-a0f5-ae4fa59f9e4e/summary",
+  );
   const worker = readFileSync(join(root, "worker.js"), "utf8");
   assert.ok(worker.includes('path.startsWith("/org/")'));
   const store = readFileSync(join(root, "src/content/store.ts"), "utf8");
@@ -1690,7 +1706,8 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(home.includes("desk.length"));
   assert.ok(desk.includes("items.length === 0"));
   assert.ok(desk.includes("return null"));
-  assert.ok(leadSrc.includes("<Link to={itemHref(item)}>{item.title}</Link>"));
+  assert.ok(leadSrc.includes("<Link to={itemHref(item)}>"));
+  assert.ok(leadSrc.includes("MentionText"));
   assert.ok(leadSrc.includes("Lead-headline"));
   assert.ok(rail.includes("publishedAt"));
   assert.ok(rail.includes("formatDate"));
@@ -1732,4 +1749,128 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(worker.includes('desc = "Voices"'));
   assert.ok(worker.includes("articleKinds"));
   assert.ok(!worker.includes('item && item.kind !== "event"'));
+});
+
+test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, no killed pay", () => {
+  assert.equal(entityRows.length, 92);
+  const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
+  const labels = (id: string) => (byId[id]?.facts ?? []).map((f) => f.label);
+
+  assert.deepEqual(labels("org-christianacare"), [
+    "Net patient service revenue $3,140,501,000 · YE June 30, 2025",
+    "Total operating revenues $3,289,202,000 · YE June 30, 2025",
+  ]);
+  assert.deepEqual(labels("org-jefferson"), [
+    "Total operating revenues $15,755,857,000 · YE June 30, 2025",
+    "Net patient service revenue $11,054,287,000 · YE June 30, 2025",
+  ]);
+  assert.equal(labels("org-temple")[0], "TUH Inc. program service revenue $2,574,187,207 · FY25 990");
+  assert.equal(byId["org-temple"]?.facts?.[0]?.detail, "total revenue $2,728,530,922");
+  assert.deepEqual(labels("org-cooper"), [
+    "Program service revenue $2,391,541,266 · total $2,550,029,191 · FYE Dec. 31, 2024",
+    "Part VIII 2a NET PATIENT SVC REV. $2,275,446,711 · YE Dec. 31, 2024 · EIN 21-0634462",
+  ]);
+  assert.deepEqual(labels("org-chop"), [
+    "Program service revenue $3,529,304,347 · total $4,165,576,231 · FYE June 30, 2025 (TY2024)",
+    "Part VIII 2a NET PATIENT REVENUE $3,307,657,737 · YE June 30, 2025 · EIN 23-1352166",
+  ]);
+  assert.ok(!/operating/i.test(labels("org-chop")[1] ?? ""));
+  assert.ok(!/program service|program\/total/i.test(labels("org-chop")[1] ?? ""));
+  assert.equal(
+    labels("org-virtua")[0],
+    "Patient service revenue $3,402,619,000 · total $3,629,539,000 · YE Dec. 31, 2025",
+  );
+  assert.equal(
+    labels("org-inspira")[0],
+    "Net patient service revenue $1,300,688,000 · total $1,457,534,000 · YE Dec. 31, 2025",
+  );
+  assert.equal(
+    labels("person-dave-johnson")[0],
+    "Reportable compensation $563,295 · Sch J $682,305 · FYE 12/31/2024",
+  );
+  assert.equal(byId["person-dave-johnson"]?.facts?.[0]?.kind, "salary");
+  assert.equal(byId["person-dave-johnson"]?.facts?.[0]?.filerOrg, "Inspira Medical Centers, Inc.");
+
+  for (const id of ["person-tom-bartiromo", "person-luke-olenoski", "person-thomas-f-gordon"]) {
+    assert.equal(byId[id]?.facts, undefined, id);
+  }
+  const salaryIds = entityRows.filter((e) => e.facts?.some((f) => f.kind === "salary")).map((e) => e.id);
+  assert.deepEqual(salaryIds, ["person-dave-johnson"]);
+  assert.ok(entityRows.every((e) => citableFacts(e.facts).every((f) => f.citation.url)));
+
+  const emptyUrl = factBearingEntities([
+    {
+      ...byId["org-chop"]!,
+      facts: [{ kind: "revenue", label: "No cite", citation: { name: "x" } }],
+    },
+  ]);
+  assert.deepEqual(emptyUrl, []);
+
+  const bearing = factBearingEntities(entityRows);
+  const first = findFirstMentions("Jefferson Einstein and Jefferson again", bearing);
+  assert.equal(first.filter((h) => h.orgId === "org-jefferson").length, 1);
+  const second = findFirstMentions("Jefferson again", bearing, new Set(["org-jefferson"]));
+  assert.equal(second.filter((h) => h.orgId === "org-jefferson").length, 0);
+
+  const router = readFileSync(join(root, "src/router.tsx"), "utf8");
+  const mention = readFileSync(join(root, "src/ui/MentionText.tsx"), "utf8");
+  const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
+  assert.ok(!/path:\s*["']\/org\//.test(router));
+  assert.ok(!mention.includes("/org/"));
+  assert.ok(mention.includes("createPortal"));
+  assert.ok(layout.includes("MentionScope"));
+  assert.ok(!catalog.some((i) => /bartiromo|olenoski/i.test(JSON.stringify(i.facts ?? []))));
+
+  const pin = nextChapterEvent(catalog, new Date("2026-08-23T20:00:00.000Z"));
+  assert.equal(pin?.slug, "njdvhimss-fall-conference-october-13th-15th");
+  assert.equal(pin?.registrationUrl, "https://web.cvent.com/event/01ce5c42-9d59-4fea-a0f5-ae4fa59f9e4e/summary");
+  assert.equal(catalog.find((i) => i.id === "evt-01")?.status, "draft");
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+
+  const hap = catalog.find((i) => i.slug === "hap-patient-safety-symposium-2026-09-02");
+  const lsf = catalog.find((i) => i.slug === "life-sciences-future-2026-09-30");
+  const acheGolf = catalog.find((i) => i.slug === "ache-nj-golf-outing-2026-09-09");
+  assert.equal(
+    hap && hap.kind === "event" ? hap.registrationUrl : "",
+    "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid={0C23A820-246B-F111-A825-7C1E524A88B5}",
+  );
+  assert.equal(
+    lsf && lsf.kind === "event" ? lsf.registrationUrl : "",
+    "https://events.ticketleap.com/tickets/life-sciences-pennsylvania/life-sciences-future-2026",
+  );
+  assert.equal(acheGolf && acheGolf.kind === "event" ? acheGolf.startsAt : "", "2026-09-09T11:00:00.000Z");
+  assert.equal(acheGolf && acheGolf.kind === "event" ? acheGolf.venue : "", "Crystal Springs, Hamburg NJ");
+
+  const noRegister = [
+    "ache-eastern-pa-fall-symposium-2026-09-30",
+    "builds-bio-philly-2026-09-15",
+  ];
+  for (const slug of noRegister) {
+    const row = catalog.find((i) => i.slug === slug);
+    assert.equal(row?.status, "published", slug);
+    assert.equal(row && row.kind === "event" ? row.registrationUrl : "missing", undefined, slug);
+  }
+
+  const withRegister = [
+    "bionj-manufacturing-summit-2026-09-29",
+    "science-center-nucleus-awards-2026-09-29",
+    "ache-greater-philly-connect-2026-09-02",
+    "ache-nj-virtual-behavioral-health-2026-08-27",
+    "ache-nj-golf-outing-2026-09-09",
+    "dha-healthcare-forum-2026-10-29",
+    "bionj-members-cafe-2026-09-15",
+    "bionj-entrepreneurs-exchange-2026-09-23",
+    "lspa-open-house-2026-09-02",
+    "wistar-drug-discovery-forum-2026-09-09",
+  ];
+  for (const slug of withRegister) {
+    const row = catalog.find((i) => i.slug === slug);
+    assert.equal(row?.kind, "event", slug);
+    assert.equal(row?.status, "published", slug);
+    assert.equal(row?.featured, false, slug);
+    assert.ok(row && row.kind === "event" && row.registrationUrl, slug);
+  }
+  const bionj = catalog.find((i) => i.slug === "bionj-manufacturing-summit-2026-09-29");
+  assert.ok(bionj?.body.includes("$150/$275"));
+  assert.ok(!catalog.some((i) => i.kind === "event" && i.status === "published" && "price" in ((i as { offers?: unknown }).offers ?? {})));
 });
