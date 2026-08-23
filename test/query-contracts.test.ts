@@ -31,7 +31,7 @@ import { eventRegisterUrl } from "../src/lib/register.ts";
 import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
 import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
-import { formatChipLabel, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
+import { eventPlace, formatChipLabel, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
 import { KIND_CHIP, kindChip } from "../src/lib/kind.ts";
 import { Entity } from "../src/content/entity.ts";
 
@@ -673,8 +673,11 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(home.includes("NEWS · LATEST"));
   assert.ok(home.includes("EVENTS · NEXT"));
   assert.ok(lead.includes("THE DESK"));
+  assert.ok(lead.includes("item.publishedAt"));
+  assert.ok(!lead.includes("chipInstant"));
   assert.ok(lead.includes("Lead-headline"));
   assert.ok(lead.includes("Impact:"));
+  assert.ok(desk.includes("THE DESK"));
   assert.ok(desk.includes("DeskRow"));
   assert.ok(desk.includes("impactSentence"));
   assert.ok(desk.includes("DeskRow-impact"));
@@ -840,6 +843,8 @@ test("event JSON-LD is published EventItem only; offers.url is registrationUrl",
   assert.equal((ld?.organizer as { identifier?: string }).identifier, "org-dvhimss");
   assert.equal(ld?.url, "https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th");
   assert.equal(ld?.mainEntityOfPage, ld?.url);
+  assert.equal((ld?.location as { name?: string }).name, "Hard Rock Hotel & Casino, Atlantic City, NJ");
+  assert.ok(!String((ld?.location as { name?: string }).name).includes("Atlantic City, Atlantic City"));
   assert.equal((ld?.about as { identifier?: string }[])[0]?.identifier, "org-dvhimss");
   assert.ok(!Object.prototype.hasOwnProperty.call(ld, "image"));
   assert.deepEqual(Object.keys((ld?.offers as object) ?? {}).sort(), ["@type", "url"]);
@@ -907,6 +912,9 @@ test("ItemPage is an aggregator card: chip, title, impact, body, citations — n
   assert.ok(page.includes("RegisterLink"));
   assert.ok(page.includes("registrationUrl"));
   assert.ok(page.includes("startsAt"));
+  assert.ok(page.includes("publishedAt"));
+  assert.ok(page.includes("authors"));
+  assert.ok(page.includes("Sources"));
   assert.ok(!page.includes("item.dek"));
   assert.ok(!page.includes("QUEUED"));
   assert.ok(!page.includes("KIND_LABEL"));
@@ -989,9 +997,12 @@ test("dvhimss/njhimss cannot publish without registrationUrl", () => {
 test("date chips use SEP 26 / OCT 13–15; lead date is 26 SEPTEMBER 2026", () => {
   const einstein = catalog.find((i) => i.id === "news-jefferson-einstein-mychart")!;
   const fall = catalog.find((i) => i.id === "evt-dvhimss-22958")!;
+  const christiana = catalog.find((i) => i.id === "news-christianacare-epic")!;
   assert.equal(formatChipLabel(einstein), "SEP 26");
   assert.equal(formatChipLabel(fall), "OCT 13–15");
   assert.equal(formatLeadDate("2026-09-26T04:00:00.000Z"), "26 SEPTEMBER 2026");
+  assert.equal(formatLeadDate(christiana.publishedAt), "1 JULY 2026");
+  assert.notEqual(formatLeadDate(christiana.publishedAt), "3 OCTOBER 2026");
 });
 
 test("RSS link/guid are canonical; sitemap lists home news events feeds and permalinks", () => {
@@ -1123,9 +1134,11 @@ test("list pages omit costume deks and costume source crumbs", () => {
   const penn = catalog.find((i) => i.id === "news-penn-ai-scribe")!;
   const christiana = catalog.find((i) => i.id === "news-christianacare-epic")!;
   const fall = catalog.find((i) => i.id === "evt-dvhimss-22958")!;
-  assert.equal(listDek(policy), "");
+  assert.equal(networking.dek, "");
+  assert.equal(jefferson.dek, "");
   assert.equal(listDek(networking), "");
   assert.equal(listDek(jefferson), "");
+  assert.notEqual(policy.status, "published");
   assert.equal(listDek(penn), penn.dek);
   assert.equal(listDek(christiana), christiana.dek);
   assert.equal(listDek(fall), fall.dek);
@@ -1180,4 +1193,35 @@ test("Reed hold: only six published news slugs; stub origins and mixer are unpub
   assert.equal(eventRegisterUrl(pin!), "https://njdvhimssevent.com/");
   const worker = readFileSync(join(root, "worker.js"), "utf8");
   assert.ok(worker.includes('path.startsWith("/org/")'));
+  const store = readFileSync(join(root, "src/content/store.ts"), "utf8");
+  const runtime = readFileSync(join(root, "src/content/published-catalog.json"), "utf8");
+  const format = readFileSync(join(root, "src/lib/format.ts"), "utf8");
+  const register = readFileSync(join(root, "src/ui/RegisterLink.tsx"), "utf8");
+  const head = readFileSync(join(root, "src/ui/DocumentHead.tsx"), "utf8");
+  const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
+  const card = readFileSync(join(root, "src/ui/ItemCard.tsx"), "utf8");
+  const fall = catalog.find((i) => i.id === "evt-dvhimss-22958")!;
+  assert.ok(store.includes("published-catalog.json"));
+  assert.ok(!store.includes("fixtures/catalog.json"));
+  assert.ok(!runtime.includes("Fixture."));
+  assert.ok(!runtime.includes("Jane Doe"));
+  assert.ok(!runtime.includes("review-queued"));
+  assert.ok(!runtime.includes("gold-rail"));
+  assert.ok(!runtime.includes("gold rail"));
+  assert.ok(!runtime.includes("guest TBD"));
+  assert.ok(!runtime.includes("penn-medicine-ai-scribe-rollout"));
+  assert.ok(!format.includes("review-queued"));
+  assert.ok(!format.includes("gold-rail"));
+  assert.ok(!format.includes("dvhimss-events-stub"));
+  assert.ok(register.includes('target="_blank"'));
+  assert.ok(register.includes("noopener noreferrer"));
+  assert.ok(layout.includes("DocumentHead"));
+  assert.ok(head.includes("og:title"));
+  assert.ok(head.includes("twitter:card"));
+  assert.ok(head.includes("canonical"));
+  assert.ok(head.includes("alternate"));
+  assert.ok(head.includes("application/rss+xml"));
+  assert.ok(card.includes("eventPlace"));
+  assert.equal(eventPlace(fall as Extract<typeof fall, { kind: "event" }>), "Hard Rock Hotel & Casino, Atlantic City, NJ");
+  assert.ok(!eventPlace(fall as Extract<typeof fall, { kind: "event" }>).includes("Atlantic City, Atlantic City"));
 });

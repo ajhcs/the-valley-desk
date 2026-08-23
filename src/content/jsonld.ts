@@ -1,7 +1,7 @@
 import type { ContentItem, EventItem } from "./schema";
 import type { Entity } from "./entity";
 import { canonicalUrl } from "../lib/canonical";
-import { listDek } from "../lib/format";
+import { eventPlace, listDek } from "../lib/format";
 import { entityIndex } from "./entity";
 
 const NEWS_ARTICLE_KINDS = new Set(["news", "policy", "ai", "interview"]);
@@ -71,7 +71,7 @@ export function eventJsonLd(
 ): Record<string, unknown> | undefined {
   if (item.kind !== "event" || item.status !== "published") return undefined;
   const event = item as EventItem;
-  const place = [event.venue, event.city].filter(Boolean).join(", ");
+  const place = eventPlace(event);
   const url = canonicalUrl(event);
   const doc: Record<string, unknown> = {
     "@context": "https://schema.org",

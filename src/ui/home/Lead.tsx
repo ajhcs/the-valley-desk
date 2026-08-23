@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import type { NewsItem } from "../../content/schema";
 import { itemHref } from "../../lib/kind";
-import { chipInstant, formatLeadDate } from "../../lib/format";
+import { formatLeadDate } from "../../lib/format";
 
 export function Lead({ item }: { item: NewsItem }) {
-  const when = formatLeadDate(chipInstant(item) ?? item.publishedAt);
+  const when = formatLeadDate(item.publishedAt);
   const impact = item.impactSentence;
   return (
     <article className="lead Lead">

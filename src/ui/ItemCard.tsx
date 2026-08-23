@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ContentItem, EventItem } from "../content/schema";
-import { formatDate, formatWhen, listDek } from "../lib/format";
+import { eventPlace, formatDate, formatWhen, listDek } from "../lib/format";
 import { kindChip, itemHref } from "../lib/kind";
 import { eventRegisterUrl } from "../lib/register";
 import { RegisterLink } from "./RegisterLink";
@@ -9,7 +9,7 @@ import { GroupChip } from "./home/GroupChip";
 
 export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "events" }) {
   const meta = item.kind === "event" ? formatWhen((item as EventItem).startsAt) : formatDate(item.publishedAt);
-  const place = item.kind === "event" ? [(item as EventItem).venue, (item as EventItem).city].filter(Boolean).join(", ") : "";
+  const place = item.kind === "event" ? eventPlace(item as EventItem) : item.region;
   const accent = rail === "events" ? "var(--events)" : "var(--ink)";
   const blurb = rail === "events" ? listDek(item) : (item.impactSentence?.trim() ?? "");
   return (
@@ -17,8 +17,7 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
       <ItemJsonLd item={item} />
       {rail === "events" ? null : <GroupChip kind={item.kind}>{kindChip(item)}</GroupChip>}
       <p className="text-xs tracking-wide uppercase" style={{ color: accent }}>
-        {item.region}
-        {place ? " · " + place : ""}
+        {place}
       </p>
       <h3 className="text-lg leading-snug mt-1">
         <Link to={itemHref(item)} className="hover:underline" style={{ color: "var(--text)" }}>

@@ -1,9 +1,11 @@
 import { Link, Outlet } from "@tanstack/react-router";
+import { DocumentHead } from "./DocumentHead";
 import { SiteFooter } from "./home/SiteFooter";
 
 export function Layout() {
   return (
     <div className="Shell">
+      <DocumentHead />
       <header className="SiteHeader">
         <div className="SiteHeader-inner">
           <Link to="/" className="SiteHeader-brand" aria-label="The Valley Desk home">

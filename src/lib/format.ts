@@ -39,7 +39,7 @@ export function formatWhen(iso?: string) {
   return etTime.format(new Date(iso));
 }
 
-/** Lead kicker: 26 SEPTEMBER 2026. clockAt on news, else publishedAt. */
+/** Lead kicker: 26 SEPTEMBER 2026. Lead/hero uses publishedAt only. */
 export function formatLeadDate(iso?: string) {
   if (!iso) return "";
   return etLead.format(new Date(iso)).toUpperCase();
@@ -89,14 +89,18 @@ export function sourceLine(item: ContentItem) {
   return item.source.url ? origin + " · cited" : origin;
 }
 
-const COSTUME_LIST_COPY =
-  /review-queued|stub path|dvhimss-events-stub|gold rail on the homepage|so the rail has two dates/i;
+/** Venue already holding the city is one place, once. */
+export function eventPlace(item: EventItem) {
+  const venue = item.venue?.trim() ?? "";
+  const city = item.city?.trim() ?? "";
+  if (venue && city && venue.toLowerCase().includes(city.toLowerCase())) return venue;
+  if (venue && city) return `${venue}, ${city}`;
+  return venue || city;
+}
 
-/** List pages: real dek or nothing. Never rewrite costume/stub language. */
+/** List pages: real dek or nothing. */
 export function listDek(item: Pick<ContentItem, "dek">) {
-  const dek = item.dek?.trim() ?? "";
-  if (!dek || COSTUME_LIST_COPY.test(dek)) return "";
-  return dek;
+  return item.dek?.trim() ?? "";
 }
 
 export function isCostumeOrigin(origin: string) {

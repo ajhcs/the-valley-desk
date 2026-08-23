@@ -102,10 +102,14 @@ export const publishedEventSlugs = ${JSON.stringify(publishedEventSlugs, null, 2
 `;
 
 mkdirSync(join(root, "public"), { recursive: true });
+mkdirSync(join(root, "src/content"), { recursive: true });
 writeFileSync(join(root, "public/feed.json"), JSON.stringify(doc, null, 2) + "\n");
 writeFileSync(join(root, "public/feed.xml"), rss);
 writeFileSync(join(root, "public/sitemap.xml"), sitemap);
 writeFileSync(join(root, "worker-published.js"), publishedRoutes);
+writeFileSync(join(root, "src/content/published-catalog.json"), JSON.stringify(published, null, 2) + "\n");
 console.log(
-  "wrote public/feed.json (" + published.length + "), public/feed.xml, public/sitemap.xml, worker-published.js",
+  "wrote public/feed.json (" +
+    published.length +
+    "), public/feed.xml, public/sitemap.xml, worker-published.js, src/content/published-catalog.json",
 );

@@ -1,6 +1,6 @@
 import { ContentCatalog, type ContentItem } from "./schema";
 import { Entity } from "./entity";
-import fixtures from "../../fixtures/catalog.json";
+import fixtures from "./published-catalog.json";
 import entityFixtures from "../../fixtures/entities.json";
 
 export function loadCatalog(): ContentItem[] {

@@ -1,0 +1,364 @@
+[
+  {
+    "id": "news-christianacare-epic",
+    "slug": "christianacare-epic-go-live",
+    "kind": "news",
+    "title": "ChristianaCare Epic go-live, official July 2026 update",
+    "dek": "Oct. 3, 2026 and the training gate from the newsroom. Becker’s second-cites the date. No FAC dollars.",
+    "body": "ChristianaCare’s July 2026 newsroom update scheduled an Oct. 3, 2026 Epic go-live and said the system was in the final stage, with less than three months remaining. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction, and that readiness checks are meant to make sure caregivers finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Patients are told to keep appointments unless ChristianaCare contacts them. Becker’s Hospital Review, Naomi Diaz, Wednesday, July 22, 2026, second-cites the Oct. 3 date. That clip says the EHR switch has been underway since a 2024 decision and names Robert Hartmann, vice president of EHR transformation, who spent nine years at Epic. That clip is not an Epic dollar. FAC Note 18 license dollars stay off this brief.",
+    "status": "published",
+    "featured": true,
+    "publishedAt": "2026-07-01T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "EHR",
+      "Epic"
+    ],
+    "orgs": [
+      "org-christianacare"
+    ],
+    "region": "DE",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "clockAt": "2026-10-03T04:00:00.000Z",
+    "impactSentence": "Oct. 3 is a training-gated cutover on ChristianaCare’s own update; Becker’s second-cites that date and does not price Epic.",
+    "citations": [
+      {
+        "name": "ChristianaCare News",
+        "url": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/"
+      },
+      {
+        "name": "Becker’s July 22",
+        "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/christianacares-epic-go-live-set-for-october/"
+      }
+    ],
+    "geo": "Newark, DE"
+  },
+  {
+    "id": "news-jefferson-fy2026-loss",
+    "slug": "jefferson-fy2026-operating-loss",
+    "kind": "news",
+    "title": "Jefferson FY2026 operating loss and Fitch liquidity",
+    "dek": "Inquirer year-end $181.5 million to bondholders; Fitch $5.5 billion / 119 DCOH through March 31. $112 million is not the LVHN close.",
+    "body": "The Inquirer, Aug. 14, 2026, reported that Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, after a $208 million loss the prior year, in results reported to bondholders. The same clip said those FY2026 results included $112 million in costs for layoffs and other moves. Separately, Jefferson completed the Lehigh Valley Health Network close on Aug. 1, 2024; the Inquirer said FY2025 revenue included 11 months of LVHN and rose to $17.7 billion in FY2026 from $15.8 billion. Do not read the $112 million as a close cost. Jefferson Health Plans lost $130.3 million on 415,172 members. Results climbed from a $103.8 million first-quarter operating loss to a $71.1 million fourth-quarter operating profit. CFO Michael Harrington said commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law. This desk has not opened the EMMA year-end PDF. Separately, Fitch on June 18, 2026 assigned F1+ to TJU taxable CP notes, affirmed the A IDR with a Negative Outlook, and cited $5.5 billion unrestricted liquidity and about 119 days cash on hand for fiscal 2026 year-to-date through March 31, 2026, including the health plan and excluding line-of-credit draws and about $1.1 billion donor-restricted funds. Fitch cited about $15.5 billion operating revenue for the year ended June 30, 2025, and about $112 million Jefferson Health Plan losses through the first nine months of both FY2025 and FY2026. Those nine-month figures are not a substitute for the June 30 year-end loss.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-14T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "finance"
+    ],
+    "orgs": [
+      "org-jefferson"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://www.inquirer.com/health/jefferson-health-financial-loss-fiscal-2026-20260814.html"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "The $181.5 million year-end operating loss sits next to $5.5 billion / 119 DCOH through March 31; Harrington says the climb holds only if commercial contracts do.",
+    "citations": [
+      {
+        "name": "Inquirer",
+        "url": "https://www.inquirer.com/health/jefferson-health-financial-loss-fiscal-2026-20260814.html"
+      },
+      {
+        "name": "Fitch",
+        "url": "https://www.fitchratings.com/research/us-public-finance/fitch-rates-thomas-jefferson-univ-pa-cp-notes-f1-affirms-idr-revs-at-a-outlook-negative-18-06-2026"
+      }
+    ],
+    "geo": "Philadelphia, PA"
+  },
+  {
+    "id": "news-penn-ai-scribe",
+    "slug": "penn-in-house-ai-scribe",
+    "kind": "news",
+    "title": "Penn in-house scribe headcount and 2024 JAMA pilot table",
+    "dek": "Some 1,200 ambulatory users in the Inquirer clip. A separate 46-clinician 2024 QI study used DAX Copilot (Nuance). Not the same product sentence.",
+    "body": "The Philadelphia Inquirer, Nov. 10, 2025, said Dina Capalongo, a Penn Medicine internist, uses an AI scribe Penn designed in-house: she hits a green button on a phone app, ambient listening drafts a sectioned note she still has to approve, usually before she leaves the room. The same clip said some 1,200 Penn Medicine providers were using an AI scribe in ambulatory and outpatient offices. Mitchell Schnall said the system built its own scribe. A separate JAMA Network Open study (Duggan et al., published Feb. 19, 2025; outpatient QI April–June 2024 at one Philadelphia academic system) gave clinicians a commercially available ambient scribe, DAX Copilot (Nuance). Among 46 clinicians in 17 specialties, the abstract associated that tool with 20.4% less time in notes per appointment (10.3 to 8.2 minutes; P<.001), 9.3% greater same-day appointment closure (66.2% to 72.4%), and 30.0% less after-hours work time (50.6 to 35.4 minutes per workday). Those percents are the abstract cells, not the Table 2 model change-%. Penn Medicine’s Feb. 21, 2025 news release quoted Kevin B. Johnson, who leads the AI4AI Lab, calling those “early but promising results,” and said volunteer clinicians were using the tool with patient permission. That release does not name DAX. The 1,200 in-house count is not the study n and is not DAX. Temple Dragon counts are not this count.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2025-11-10T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "AI"
+    ],
+    "orgs": [
+      "org-penn"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://www.inquirer.com/health/penn-jefferson-artificial-intelligence-health-20251110.html"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Some 1,200 is an Inquirer headcount for Penn’s later in-house tool; 20.4% less time in notes is a 46-clinician journal table from a 2024 DAX Copilot pilot, not that headcount.",
+    "citations": [
+      {
+        "name": "Inquirer",
+        "url": "https://www.inquirer.com/health/penn-jefferson-artificial-intelligence-health-20251110.html"
+      },
+      {
+        "name": "DOI",
+        "url": "https://doi.org/10.1001/jamanetworkopen.2024.60637"
+      },
+      {
+        "name": "Penn",
+        "url": "https://www.pennmedicine.org/news/ai-scribe-increases-face-to-face-time-with-patients"
+      }
+    ],
+    "geo": "Philadelphia, PA"
+  },
+  {
+    "id": "news-temple-dragon-copilot",
+    "slug": "temple-dragon-copilot-400",
+    "kind": "news",
+    "title": "Temple Dragon Copilot user count and TUHS cash days",
+    "dek": "HealthTech 400 end users. Unaudited TUHS 116 DCOH at June 30, 2025. PBJ April 1 is Temple-sponsored advertorial; pilot and nearly-400 are split.",
+    "body": "HealthTech Magazine, August 2026, said Benjamin Slovis has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” HealthTech identified him as chief medical information officer at Philadelphia-based Temple Health. Temple’s June 8, 2026 newsroom note, which names him Chief Medical Information Officer for Temple University Hospital, said he described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews. The Philadelphia Business Journal, April 1, 2026, is labeled “Sponsored Content by Temple Health” (Jon Feld, TBJ Content Studio). Advertorial, not independent reporting, not a filing, not the 116 DCOH line. That page names Dr. Benjamin Slovis as CMIO at Temple University Hospital and names Dragon Copilot as the tool. Pilot data on that page: more than a 10 percent cut in after-hours documentation time. Later expansion on that page: nearly 400 physicians. Do not fuse those two sentences. Separately, Temple University Health System’s unaudited year-end investor report for June 30, 2025 showed 116 days cash on hand (124 at June 30, 2024). That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-01T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "AI"
+    ],
+    "orgs": [
+      "org-temple",
+      "org-temple-tuh-main"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Dragon Copilot is at 400 end users in the HealthTech clip; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI.",
+    "citations": [
+      {
+        "name": "HealthTech",
+        "url": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine"
+      },
+      {
+        "name": "Temple June 8",
+        "url": "https://www.templehealth.org/about/news/in-the-media/dr-benjamin-slovis-discusses-temple-healths-utilization-of-artificial-intelligence-with-bucks-county-herald"
+      },
+      {
+        "name": "PBJ April 1 (sponsored)",
+        "url": "https://www.bizjournals.com/philadelphia/news/2026/04/01/temple-health-ai-patient-safety.html"
+      },
+      {
+        "name": "TUHS June 30 2025 DCOH PDF",
+        "url": "https://tuhsfinance.templehealth.org/CURRENT%20STATEMENTS/TUHS%20Investor%20Quarterly%20Report%20-%20June%2030,%202025.pdf"
+      }
+    ],
+    "geo": "Philadelphia, PA"
+  },
+  {
+    "id": "news-chop-orca-cds",
+    "slug": "chop-orca-cds",
+    "kind": "news",
+    "title": "CHOP ORCA repo for Epic downtime order sets",
+    "dek": "GitHub plus two Aug. 3 LinkedIn posts. Desai and Salmasian are posters, not authors. No paper n. No $ or clinical n.",
+    "body": "The GitHub repo Stephonomon/orca-cds names the project Offsite Repository of Clinical Assets. It is an offline, read-only viewer of Epic order sets and SmartSets for downtime. The repo says it holds no patient data and cannot place orders. Copyright 2026 Children’s Hospital of Philadelphia. Conceived by Bimal Desai; built by Stephon Proctor. License is academic/non-profit non-commercial, not MIT. Repo created 2026-07-22; last push 2026-08-03. Bimal Desai posted the repo on LinkedIn Aug. 3, 2026. Hojjat Salmasian posted the same repo on LinkedIn Aug. 3, 2026. Those two are posters, not authors on this brief. The repo lists a paper: Proctor and Desai, Applied Clinical Informatics 2025;16(5):1401-1412, doi:10.1055/a-2620-6221. That paper is not opened here. Do not write a paper n. HOLD off this brief: Salmasian as author; a chop.edu newsroom open-source date; any dollar or clinical n.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-03T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "EHR",
+      "downtime"
+    ],
+    "orgs": [
+      "org-chop"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://github.com/Stephonomon/orca-cds"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "ORCA is an offline read-only Epic order-set viewer for downtime; it does not hold patient data and cannot place orders.",
+    "citations": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com/Stephonomon/orca-cds"
+      },
+      {
+        "name": "Desai Aug. 3 LI",
+        "url": "https://www.linkedin.com/posts/bimaldesai_github-stephonomonorca-cds-orca-cds-activity-7490172435145592832-UOaN"
+      },
+      {
+        "name": "Salmasian Aug. 3 LI",
+        "url": "https://www.linkedin.com/posts/salmasian_github-stephonomonorca-cds-orca-cds-activity-7490178627477770240-YnyG"
+      }
+    ],
+    "geo": "Philadelphia, PA"
+  },
+  {
+    "id": "news-tower-ai-tax",
+    "slug": "tower-ai-tax",
+    "kind": "news",
+    "title": "Tower Health CIO on AI label, AI tax, and owned platforms",
+    "dek": "Two Becker’s clips. Tom Bartiromo, SVP and CIO. No invented dollars. Rama not used.",
+    "body": "Becker’s Hospital Review, July 23, 2026, quoted Tom Bartiromo, senior vice president and CIO of Tower Health in West Reading, Pa., on vendors putting an AI label on existing automation and charging an “AI tax.” He said the test is whether the product delivers a genuinely different outcome or is existing automation with an AI premium. He requires a proof-of-value engagement under real operating conditions, not vendor benchmarks. “A demonstration is not evidence,” he said. If the AI version does not produce a material, measurable improvement, he would keep the proven non-AI product at the original price. A second Becker’s clip, about July 30, 2026, quoted Bartiromo saying Tower is scrutinizing “AI-adjacent add-ons” more aggressively and that the emphasis is less about point solutions and more toward realizing more value from the core platforms it already owns. Vendors are to show measurable, system-level outcomes rather than feature-level promise. No dollar figure is in this brief. Rama is a reprint and is not a third cite.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-07-23T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "AI"
+    ],
+    "orgs": [
+      "org-tower"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ai/healthcares-ai-price-hike-problem/"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Tower will not pay an AI premium without a proof-of-value under its own conditions, and it is pressing vendors for value from platforms it already owns.",
+    "citations": [
+      {
+        "name": "Becker’s July 23",
+        "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ai/healthcares-ai-price-hike-problem/"
+      },
+      {
+        "name": "Becker’s July 30",
+        "url": "https://www.beckershospitalreview.com/digital-health/tech-investments-health-systems-are-scrutinizing-in-2026/"
+      }
+    ],
+    "geo": "West Reading, PA"
+  },
+  {
+    "id": "evt-dvhimss-23007",
+    "slug": "njdvhimss-annual-golf-outing",
+    "kind": "event",
+    "title": "NJDVHIMSS Annual Golf Outing",
+    "dek": "Official DVHIMSS chapter calendar.",
+    "body": "Ingested from the DVHIMSS Events Calendar. Kickoff to the fall conference.",
+    "status": "published",
+    "publishedAt": "2026-10-13T13:30:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "chapter",
+      "events"
+    ],
+    "orgs": [
+      "org-dvhimss"
+    ],
+    "region": "regional",
+    "authors": [],
+    "source": {
+      "kind": "ingest",
+      "origin": "dvhimss-events",
+      "url": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
+      "fetchedAt": "2026-08-22T20:14:00.000Z",
+      "externalId": "23007"
+    },
+    "citations": [
+      {
+        "name": "DVHIMSS",
+        "url": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/"
+      }
+    ],
+    "geo": "New Jersey",
+    "startsAt": "2026-10-13T13:30:00.000Z",
+    "endsAt": "2026-10-13T19:30:00.000Z",
+    "timezone": "America/New_York",
+    "hostOrg": "DVHIMSS",
+    "registrationUrl": "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
+    "partner": "dvhimss",
+    "autoPublish": true
+  },
+  {
+    "id": "evt-dvhimss-22958",
+    "slug": "njdvhimss-fall-conference-october-13th-15th",
+    "kind": "event",
+    "title": "NJDVHIMSS Fall Conference – October 13th – 15th",
+    "dek": "Official DVHIMSS chapter calendar.",
+    "body": "The 19th annual NJ/DVHIMSS Fall Conference at Hard Rock Hotel & Casino, Atlantic City.",
+    "status": "published",
+    "publishedAt": "2026-10-13T20:30:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "chapter",
+      "events"
+    ],
+    "orgs": [
+      "org-dvhimss"
+    ],
+    "region": "NJ",
+    "authors": [],
+    "source": {
+      "kind": "ingest",
+      "origin": "dvhimss-events",
+      "url": "https://dvhimss.org/events-calendar/njdvhimss-fall-converence/",
+      "fetchedAt": "2026-08-22T20:14:00.000Z",
+      "externalId": "22958"
+    },
+    "citations": [
+      {
+        "name": "DVHIMSS",
+        "url": "https://dvhimss.org/events-calendar/njdvhimss-fall-converence/"
+      }
+    ],
+    "geo": "Atlantic City, NJ",
+    "startsAt": "2026-10-13T20:30:00.000Z",
+    "endsAt": "2026-10-15T15:30:00.000Z",
+    "timezone": "America/New_York",
+    "venue": "Hard Rock Hotel & Casino, Atlantic City, NJ",
+    "city": "Atlantic City",
+    "hostOrg": "DVHIMSS",
+    "registrationUrl": "https://njdvhimssevent.com/",
+    "partner": "dvhimss",
+    "autoPublish": true
+  }
+]
