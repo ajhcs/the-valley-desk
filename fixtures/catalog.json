@@ -170,6 +170,46 @@
     ]
   },
   {
+    "id": "news-de-340b-hs1-hb383-2024",
+    "slug": "de-340b-hs1-hb383-2024",
+    "kind": "news",
+    "title": "84 Del. Laws ch. 408, effective Sept. 19, 2024: PBM 340B nondiscrimination",
+    "dek": "HS 1 for HB 383 bars pharmacy benefits managers and purchasers from discriminating against 340B covered entities. A below-NADAC 340B rate is one listed practice. Violations are unfair insurance practices. Later contracts with those terms are void.",
+    "body": "84 Del. Laws ch. 408, House Substitute 1 for House Bill 383, took effect Sept. 19, 2024. The Delaware General Assembly bill was signed that day. It amends Titles 18 and 24 of the Delaware Code on 340B drugs and covered entities.\n\nSection 2 adds 18 Del. C. § 3374A. A pharmacy benefits manager or purchaser may not discriminate against a covered entity or its contracted pharmacy because it participates in the federal 340B program under 42 U.S.C. § 256b. Covered entity means as defined in 42 U.S.C. § 256b(a)(4).\n\nOne listed practice is a reimbursement rate for a 340B drug that is less than the national average drug acquisition cost rate determined by CMS, measured when the drug is administered or dispensed, or less than wholesale acquisition cost if that NADAC rate is unavailable.\n\nA violation of § 3374A(b) is an unfair practice in the insurance business. A contract entered into, amended, extended, or renewed after Sept. 19, 2024 that includes a provision that violates that subsection is void and unenforceable.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2024-09-19T16:00:00.000Z",
+    "updatedAt": "2026-08-23T22:00:12.000Z",
+    "topics": [
+      "policy"
+    ],
+    "orgs": [],
+    "region": "DE",
+    "authors": [
+      {
+        "name": "Delaware"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://legis.delaware.gov/BillDetail/141525"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "84 Del. Laws ch. 408 (HS 1 for HB 383) took effect Sept. 19, 2024 and bars a PBM or purchaser from paying a 340B covered entity less than the CMS NADAC rate, or WAC if NADAC is unavailable.",
+    "citations": [
+      {
+        "name": "Delaware General Assembly Bill Detail, HS 1 for HB 383",
+        "url": "https://legis.delaware.gov/BillDetail/141525"
+      },
+      {
+        "name": "HS 1 for HB 383 engrossment, 18 Del. C. 3374A",
+        "url": "https://legis.delaware.gov/json/BillDetail/GenerateHtmlDocumentEngrossment?docTypeId=6&engrossmentId=36721"
+      }
+    ]
+  },
+  {
     "id": "news-christianacare-epic",
     "slug": "christianacare-epic-go-live",
     "kind": "news",

@@ -182,6 +182,7 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
     "tower-ai-tax",
   ]);
   assert.ok(!slugs.includes("christianacare-epic-go-live"));
+  assert.ok(!slugs.includes("de-340b-hs1-hb383-2024"));
   assert.ok(rows.every((i) => i.featured !== true));
   assert.ok(!ids.includes("news-01"));
   assert.ok(!ids.includes("policy-01"));
@@ -1348,11 +1349,48 @@ test("Sloan Einstein MyChart 2026-09-26 is published, not featured; old go-live 
   assert.equal(item.citations?.[0]?.url, item.source.url);
 });
 
+test("Sloan Delaware 340B HS 1 for HB 383 is published, not featured, empty orgs", () => {
+  const item = catalog.find((i) => i.slug === "de-340b-hs1-hb383-2024");
+  const einstein = catalog.find((i) => i.slug === "jefferson-einstein-mychart-2026-09-26");
+  assert.ok(item && einstein);
+  assert.equal(item.kind, "news");
+  assert.equal(item.status, "published");
+  assert.equal(item.featured, false);
+  assert.ok(item.publishedAt?.startsWith("2024-09-19"));
+  assert.equal(item.kind === "news" ? item.clockAt : undefined, undefined);
+  assert.deepEqual(item.orgs, []);
+  assert.equal(item.region, "DE");
+  assert.ok(item.topics.includes("policy"));
+  assert.ok(!item.topics.includes("340B"));
+  assert.deepEqual(item.authors, [{ name: "Delaware" }]);
+  assert.equal(newsByline(item), "Delaware");
+  assert.ok(!newsByline(item).includes("Valley Desk"));
+  assert.equal(kindChip(item), "POLICY");
+  assert.equal(item.citations?.length, 2);
+  assert.equal(item.citations?.[0]?.name, "Delaware General Assembly Bill Detail, HS 1 for HB 383");
+  assert.equal(item.citations?.[0]?.url, "https://legis.delaware.gov/BillDetail/141525");
+  assert.equal(item.citations?.[1]?.name, "HS 1 for HB 383 engrossment, 18 Del. C. 3374A");
+  assert.equal(
+    item.citations?.[1]?.url,
+    "https://legis.delaware.gov/json/BillDetail/GenerateHtmlDocumentEngrossment?docTypeId=6&engrossmentId=36721",
+  );
+  assert.equal(item.source.url, item.citations?.[0]?.url);
+  assert.ok(item.body.includes("18 Del. C. § 3374A"));
+  assert.ok(item.body.includes("§ 3374A(b)"));
+  assert.ok(!isPublicNewsFamily(item, seedIds));
+  assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.slug === "de-340b-hs1-hb383-2024"));
+  assert.equal(einstein.status, "published");
+  assert.equal(einstein.featured, false);
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+});
+
 test("Reed hold: published news slugs; stub origins and mixer are unpublished", () => {
   const publishedNews = catalog.filter((i) => i.kind === "news" && i.status === "published");
   assert.deepEqual(publishedNews.map((i) => i.slug).sort(), [
     "chop-orca-cds",
     "christianacare-epic-go-live",
+    "de-340b-hs1-hb383-2024",
     "hap-cms-0057-f-enforce-rfi",
     "jefferson-einstein-mychart-2026-09-26",
     "jefferson-fy2026-operating-loss",

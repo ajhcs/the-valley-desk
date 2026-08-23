@@ -2,6 +2,7 @@
 export const publishedNewsSlugs = [
   "chop-orca-cds",
   "christianacare-epic-go-live",
+  "de-340b-hs1-hb383-2024",
   "hap-cms-0057-f-enforce-rfi",
   "jefferson-einstein-mychart-2026-09-26",
   "jefferson-fy2026-operating-loss",
@@ -24,6 +25,11 @@ export const publishedHead = {
     "kind": "news",
     "title": "Jefferson Einstein Philadelphia and Montgomery: MyEinsteinHealth ends Sept. 26, 2026",
     "description": "After Sept. 26, 2026, patients will no longer access MyEinsteinHealth; records are in MyJeffersonHealth (Epic MyChart) after the next visit to either Einstein hospital, with up to three years of records moved."
+  },
+  "de-340b-hs1-hb383-2024": {
+    "kind": "news",
+    "title": "84 Del. Laws ch. 408, effective Sept. 19, 2024: PBM 340B nondiscrimination",
+    "description": "84 Del. Laws ch. 408 (HS 1 for HB 383) took effect Sept. 19, 2024 and bars a PBM or purchaser from paying a 340B covered entity less than the CMS NADAC rate, or WAC if NADAC is unavailable."
   },
   "christianacare-epic-go-live": {
     "kind": "news",
