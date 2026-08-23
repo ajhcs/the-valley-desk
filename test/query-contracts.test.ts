@@ -632,6 +632,11 @@ test("CHOP ORCA and Tower AI tax fixtures: published, not featured, seed orgs, c
   assert.deepEqual(chop.orgs, ["org-chop"]);
   assert.equal(chop.featured, false);
   assert.equal(chop.title, "CHOP ORCA repo for Epic downtime order sets");
+  assert.equal(
+    chop.dek,
+    "GitHub plus two Aug. 3 LinkedIn posts. Desai and Salmasian are posters, not authors.",
+  );
+  assert.ok(!chop.dek.includes("No paper n"));
   assert.ok(chop.body.includes("posters, not authors"));
   assert.ok(chop.body.includes("not MIT"));
   assert.ok(!chop.body.includes("HOLD"));
