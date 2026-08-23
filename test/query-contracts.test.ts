@@ -170,6 +170,8 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
   assert.ok(ids.includes("news-jefferson-fy2026-loss"));
   assert.ok(ids.includes("news-penn-ai-scribe"));
   assert.ok(ids.includes("news-temple-dragon-copilot"));
+  assert.ok(ids.includes("news-chop-orca-cds"));
+  assert.ok(ids.includes("news-tower-ai-tax"));
   assert.ok(!ids.includes("ai-01"));
   assert.ok(!ids.includes("int-01"));
   assert.ok(!ids.includes("evt-01"));
@@ -601,6 +603,31 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.id).join(), "news-christianacare-epic");
 });
 
+test("CHOP ORCA and Tower AI tax fixtures: published, not featured, seed orgs, cite counts", () => {
+  const chop = catalog.find((i) => i.id === "news-chop-orca-cds");
+  const tower = catalog.find((i) => i.id === "news-tower-ai-tax");
+  assert.ok(chop && tower);
+  assert.equal(chop.slug, "chop-orca-cds");
+  assert.equal(tower.slug, "tower-ai-tax");
+  for (const item of [chop, tower]) {
+    assert.equal(item.kind, "news");
+    assert.equal(item.status, "published");
+    assert.equal(item.featured, false);
+    assert.ok(item.impactSentence?.trim());
+    assert.ok(hasLiveSeedOrg(item.orgs, seedIds));
+  }
+  assert.deepEqual(chop.orgs, ["org-chop"]);
+  assert.equal(chop.citations?.length, 3);
+  assert.equal(chop.source.url, chop.citations?.[0]?.url);
+  assert.ok(!chop.citations?.some((c) => /doi\.org|10\.1055/i.test(c.url)));
+  assert.deepEqual(tower.orgs, ["org-tower"]);
+  assert.equal(tower.citations?.length, 2);
+  assert.equal(tower.source.url, tower.citations?.[0]?.url);
+  assert.ok(!/honor.?roll/i.test(JSON.stringify(chop) + JSON.stringify(tower)));
+  assert.ok(latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.id === "news-chop-orca-cds"));
+  assert.ok(latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.id === "news-tower-ai-tax"));
+});
+
 test("leadItem source does not call briefingSinceYesterday5pmET", () => {
   const src = readFileSync(join(root, "src/content/queries.ts"), "utf8");
   const leadFn = src.slice(src.indexOf("export function leadItem"), src.indexOf("export const featuredLead"));
@@ -970,7 +997,13 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(rss.includes("<description>Partner event, review-queued in the stub path; published here so the rail has two dates.</description>"));
   assert.ok(build.includes("canonicalUrl(item)"));
   assert.ok(!build.includes("citations?.[0]"));
+  const feedIds = new Set(feed.items.map((row) => row.id));
   for (const item of catalog.filter((row) => row.status === "published")) {
+    for (const citation of item.citations ?? []) {
+      assert.ok(!rss.includes(`<link>${citation.url}</link>`));
+      assert.ok(!rss.includes(`<guid isPermaLink="true">${citation.url}</guid>`));
+    }
+    if (!feedIds.has(item.id)) continue;
     const canon = canonicalUrl(item);
     assert.ok(rss.includes(`<link>${canon}</link>`), item.id);
     assert.ok(rss.includes(`<guid isPermaLink="true">${canon}</guid>`), item.id);
@@ -979,10 +1012,6 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
       assert.equal(jsonItem?.source?.url, item.source.url);
       assert.ok(!rss.includes(`<link>${item.source.url}</link>`));
       assert.ok(!rss.includes(`<guid isPermaLink="true">${item.source.url}</guid>`));
-    }
-    for (const citation of item.citations ?? []) {
-      assert.ok(!rss.includes(`<link>${citation.url}</link>`));
-      assert.ok(!rss.includes(`<guid isPermaLink="true">${citation.url}</guid>`));
     }
   }
   assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/</loc>"));

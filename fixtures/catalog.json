@@ -315,6 +315,97 @@
     "geo": "Philadelphia, PA"
   },
   {
+    "id": "news-chop-orca-cds",
+    "slug": "chop-orca-cds",
+    "kind": "news",
+    "title": "CHOP ORCA repo for Epic downtime order sets",
+    "dek": "GitHub plus two Aug. 3 LinkedIn posts. Desai and Salmasian are posters, not authors. No paper n. No $ or clinical n.",
+    "body": "The GitHub repo Stephonomon/orca-cds names the project Offsite Repository of Clinical Assets. It is an offline, read-only viewer of Epic order sets and SmartSets for downtime. The repo says it holds no patient data and cannot place orders. Copyright 2026 Children’s Hospital of Philadelphia. Conceived by Bimal Desai; built by Stephon Proctor. License is academic/non-profit non-commercial, not MIT. Repo created 2026-07-22; last push 2026-08-03. Bimal Desai posted the repo on LinkedIn Aug. 3, 2026. Hojjat Salmasian posted the same repo on LinkedIn Aug. 3, 2026. Those two are posters, not authors on this brief. The repo lists a paper: Proctor and Desai, Applied Clinical Informatics 2025;16(5):1401-1412, doi:10.1055/a-2620-6221. That paper is not opened here. Do not write a paper n. HOLD off this brief: Salmasian as author; a chop.edu newsroom open-source date; any dollar or clinical n.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-03T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "EHR",
+      "downtime"
+    ],
+    "orgs": [
+      "org-chop"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://github.com/Stephonomon/orca-cds"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "ORCA is an offline read-only Epic order-set viewer for downtime; it does not hold patient data and cannot place orders.",
+    "citations": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com/Stephonomon/orca-cds"
+      },
+      {
+        "name": "Desai Aug. 3 LI",
+        "url": "https://www.linkedin.com/posts/bimaldesai_github-stephonomonorca-cds-orca-cds-activity-7490172435145592832-UOaN"
+      },
+      {
+        "name": "Salmasian Aug. 3 LI",
+        "url": "https://www.linkedin.com/posts/salmasian_github-stephonomonorca-cds-orca-cds-activity-7490178627477770240-YnyG"
+      }
+    ],
+    "geo": "Philadelphia, PA"
+  },
+  {
+    "id": "news-tower-ai-tax",
+    "slug": "tower-ai-tax",
+    "kind": "news",
+    "title": "Tower Health CIO on AI label, AI tax, and owned platforms",
+    "dek": "Two Becker’s clips. Tom Bartiromo, SVP and CIO. No invented dollars. Rama not used.",
+    "body": "Becker’s Hospital Review, July 23, 2026, quoted Tom Bartiromo, senior vice president and CIO of Tower Health in West Reading, Pa., on vendors putting an AI label on existing automation and charging an “AI tax.” He said the test is whether the product delivers a genuinely different outcome or is existing automation with an AI premium. He requires a proof-of-value engagement under real operating conditions, not vendor benchmarks. “A demonstration is not evidence,” he said. If the AI version does not produce a material, measurable improvement, he would keep the proven non-AI product at the original price. A second Becker’s clip, about July 30, 2026, quoted Bartiromo saying Tower is scrutinizing “AI-adjacent add-ons” more aggressively and that the emphasis is less about point solutions and more toward realizing more value from the core platforms it already owns. Vendors are to show measurable, system-level outcomes rather than feature-level promise. No dollar figure is in this brief. Rama is a reprint and is not a third cite.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-07-23T16:00:00.000Z",
+    "updatedAt": "2026-08-22T20:14:00.000Z",
+    "topics": [
+      "AI"
+    ],
+    "orgs": [
+      "org-tower"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ai/healthcares-ai-price-hike-problem/"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Tower will not pay an AI premium without a proof-of-value under its own conditions, and it is pressing vendors for value from platforms it already owns.",
+    "citations": [
+      {
+        "name": "Becker’s July 23",
+        "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ai/healthcares-ai-price-hike-problem/"
+      },
+      {
+        "name": "Becker’s July 30",
+        "url": "https://www.beckershospitalreview.com/digital-health/tech-investments-health-systems-are-scrutinizing-in-2026/"
+      }
+    ],
+    "geo": "West Reading, PA"
+  },
+  {
     "id": "evt-01",
     "slug": "dvhimss-september-networking",
     "kind": "event",
