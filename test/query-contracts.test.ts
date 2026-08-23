@@ -690,6 +690,15 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(!desk.toLowerCase().includes("spill"));
   assert.ok(rail.includes("RegisterLink"));
   assert.ok(!rail.includes("queued"));
+  {
+    const registerAt = css.indexOf(".Register,");
+    const registerCss = css.slice(registerAt, css.indexOf(".SiteFooter {", registerAt));
+    assert.ok(registerCss.includes(".RailRow a.Register"));
+    assert.ok(registerCss.includes("color: var(--event)"));
+    assert.ok(!registerCss.includes("var(--ink)"));
+    const dateChip = css.slice(css.indexOf(".DateChip"), css.indexOf(".StatusChip"));
+    assert.ok(dateChip.includes("background: var(--event)"));
+  }
   assert.ok(footer.includes("News"));
   assert.ok(footer.includes("Events"));
   assert.ok(footer.includes("feed.json"));

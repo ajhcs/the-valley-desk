@@ -331,7 +331,8 @@ ul.desk {
   color: var(--mute);
 }
 
-.Register {
+.Register,
+.RailRow a.Register {
   display: inline-block;
   margin: 0;
   font-size: 13px;
@@ -344,11 +345,15 @@ ul.desk {
   border-radius: 0;
   animation: none;
   box-shadow: none;
+  transform: none;
   transition: color var(--motion-fast) var(--ease-out);
 }
 
-.Register:hover {
-  color: var(--ink);
+.Register:hover,
+.RailRow a.Register:hover {
+  color: var(--event);
+  text-decoration: none;
+  transform: none;
 }
 
 .SiteFooter {
