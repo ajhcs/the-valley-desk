@@ -1,7 +1,7 @@
 {
   "product": "the-valley-desk",
   "version": "1",
-  "generatedAt": "2026-08-23T18:28:50.079Z",
+  "generatedAt": "2026-08-23T18:47:16.317Z",
   "items": [
     {
       "id": "news-christianacare-epic",
@@ -196,7 +196,7 @@
       "kind": "news",
       "title": "CHOP ORCA repo for Epic downtime order sets",
       "dek": "GitHub plus two Aug. 3 LinkedIn posts. Desai and Salmasian are posters, not authors. No paper n. No $ or clinical n.",
-      "body": "The GitHub repo Stephonomon/orca-cds names the project Offsite Repository of Clinical Assets. It is an offline, read-only viewer of Epic order sets and SmartSets for downtime. The repo says it holds no patient data and cannot place orders. Copyright 2026 Children’s Hospital of Philadelphia. Conceived by Bimal Desai; built by Stephon Proctor. License is academic/non-profit non-commercial, not MIT. Repo created 2026-07-22; last push 2026-08-03. Bimal Desai posted the repo on LinkedIn Aug. 3, 2026. Hojjat Salmasian posted the same repo on LinkedIn Aug. 3, 2026. Those two are posters, not authors on this brief. The repo lists a paper: Proctor and Desai, Applied Clinical Informatics 2025;16(5):1401-1412, doi:10.1055/a-2620-6221. That paper is not opened here. Do not write a paper n. HOLD off this brief: Salmasian as author; a chop.edu newsroom open-source date; any dollar or clinical n.",
+      "body": "The GitHub repo Stephonomon/orca-cds names the project Offsite Repository of Clinical Assets. It is an offline, read-only viewer of Epic order sets and SmartSets for downtime. The repo says it holds no patient data and cannot place orders. Copyright 2026 Children’s Hospital of Philadelphia. Conceived by Bimal Desai; built by Stephon Proctor. License is academic/non-profit non-commercial, not MIT. Repo created 2026-07-22; last push 2026-08-03. https://github.com/Stephonomon/orca-cds\nBimal Desai posted the repo on LinkedIn Aug. 3, 2026. https://www.linkedin.com/posts/bimaldesai_github-stephonomonorca-cds-orca-cds-activity-7490172435145592832-UOaN\nHojjat Salmasian posted the same repo on LinkedIn Aug. 3, 2026. Those two are posters, not authors. https://www.linkedin.com/posts/salmasian_github-stephonomonorca-cds-orca-cds-activity-7490178627477770240-YnyG\nThe repo lists a paper: Proctor and Desai, Applied Clinical Informatics 2025;16(5):1401-1412, doi:10.1055/a-2620-6221.",
       "status": "published",
       "featured": false,
       "publishedAt": "2026-08-03T16:00:00.000Z",

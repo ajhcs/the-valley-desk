@@ -630,6 +630,11 @@ test("CHOP ORCA and Tower AI tax fixtures: published, not featured, seed orgs, c
     assert.ok(hasLiveSeedOrg(item.orgs, seedIds));
   }
   assert.deepEqual(chop.orgs, ["org-chop"]);
+  assert.equal(chop.featured, false);
+  assert.equal(chop.title, "CHOP ORCA repo for Epic downtime order sets");
+  assert.ok(chop.body.includes("posters, not authors"));
+  assert.ok(chop.body.includes("not MIT"));
+  assert.ok(!chop.body.includes("HOLD"));
   assert.equal(chop.citations?.length, 3);
   assert.equal(chop.source.url, chop.citations?.[0]?.url);
   assert.ok(!chop.citations?.some((c) => /doi\.org|10\.1055/i.test(c.url)));
