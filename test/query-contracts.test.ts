@@ -36,9 +36,11 @@ import { eventRegisterUrl } from "../src/lib/register.ts";
 import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
 import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
-import { eventPlace, formatChipLabel, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
-import { KIND_CHIP, kindChip } from "../src/lib/kind.ts";
+import { eventPlace, formatChipLabel, formatDate, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
+import { KIND_CHIP, chipKind, kindChip } from "../src/lib/kind.ts";
 import { Entity } from "../src/content/entity.ts";
+import { itemByline, newsByline } from "../src/lib/byline.ts";
+import { navSection } from "../src/lib/nav.ts";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -171,7 +173,6 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
   const slugs = rows.map((i) => i.slug).sort();
   assert.deepEqual(slugs, [
     "chop-orca-cds",
-    "christianacare-epic-go-live",
     "hap-cms-0057-f-enforce-rfi",
     "jefferson-fy2026-operating-loss",
     "penn-in-house-ai-scribe",
@@ -179,6 +180,8 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
     "temple-dragon-copilot-400",
     "tower-ai-tax",
   ]);
+  assert.ok(!slugs.includes("christianacare-epic-go-live"));
+  assert.ok(rows.every((i) => i.featured !== true));
   assert.ok(!ids.includes("news-01"));
   assert.ok(!ids.includes("policy-01"));
   assert.ok(!ids.includes("news-jefferson-einstein-mychart"));
@@ -252,7 +255,13 @@ test("kind chip is item.kind, never topics[0]; Jefferson loss is HIT", () => {
   assert.ok(penn);
   assert.equal(penn.kind, "news");
   assert.equal(penn.topics[0], "AI");
-  assert.equal(kindChip(penn), "HIT");
+  assert.equal(kindChip(penn), "AI");
+  assert.equal(chipKind(penn), "ai");
+  const hap = catalog.find((i) => i.slug === "hap-cms-0057-f-enforce-rfi");
+  assert.ok(hap);
+  assert.equal(hap.kind, "news");
+  assert.equal(kindChip(hap), "POLICY");
+  assert.notEqual(kindChip(hap), "HIT");
   const policy = catalog.find((i) => i.kind === "policy");
   assert.ok(policy);
   assert.equal(kindChip(policy), "POLICY");
@@ -322,7 +331,8 @@ test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => 
   assert.ok(newsPage.every((i) => isPublicNewsFamily(i, seedIds)));
   assert.ok(newsPage.some((i) => i.id === "news-jefferson-fy2026-loss"));
   assert.ok(!newsPage.some((i) => i.kind === "policy"));
-  assert.equal(newsPage.length, 8);
+  assert.ok(!newsPage.some((i) => i.slug === "christianacare-epic-go-live"));
+  assert.equal(newsPage.length, 7);
 });
 
 test("upcomingEvents is published events with startsAt >= now and never reads clockAt", () => {
@@ -1021,7 +1031,7 @@ test("ItemPage is an aggregator card: chip, title, impact, body, citations — n
   assert.ok(page.includes("registrationUrl"));
   assert.ok(page.includes("startsAt"));
   assert.ok(page.includes("publishedAt"));
-  assert.ok(page.includes("authors"));
+  assert.ok(page.includes("itemByline"));
   assert.ok(page.includes("Sources"));
   assert.ok(page.includes("Lead-headline"));
   assert.ok(!page.includes("text-3xl"));
@@ -1541,4 +1551,95 @@ test("firehose: stable RSS ids, seed org map, HOLD denylist, social no-op, queue
   assert.ok(eventsStub.includes("events-stub"));
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => /honor.?roll/i.test(i.title)));
+});
+
+test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SEO", () => {
+  const lead = leadItem(catalog);
+  assert.equal(lead?.slug, "christianacare-epic-go-live");
+  assert.notEqual(lead?.slug, "temple-chestnut-hill-jhp-2026-09-30");
+  const news = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
+  assert.ok(!news.some((i) => i.slug === "christianacare-epic-go-live"));
+  assert.ok(!news.some((i) => i.featured === true));
+  assert.ok(news.some((i) => i.slug === "temple-chestnut-hill-jhp-2026-09-30"));
+
+  const chestnut = catalog.find((i) => i.slug === "temple-chestnut-hill-jhp-2026-09-30")!;
+  const hap = catalog.find((i) => i.slug === "hap-cms-0057-f-enforce-rfi")!;
+  const honor = catalog.find((i) => i.slug === "temple-honor-roll-2026")!;
+  const mlh = catalog.find((i) => i.slug === "mlh-cloud-analytics-2026-08-17")!;
+  assert.equal(newsByline(chestnut), "Temple Health – Chestnut Hill Hospital");
+  assert.ok(!newsByline(chestnut).includes("Valley Desk"));
+  assert.ok(!itemByline(chestnut, "news").includes("Valley Desk"));
+  assert.equal(itemByline(honor, "voice"), "Benjamin Slovis");
+  assert.equal(itemByline(mlh, "voice"), "Main Line Health (official account)");
+  assert.equal(honor.kind === "voice" ? honor.role : "", "Temple Health CMIO");
+  assert.notEqual(hap.publishedAt, chestnut.publishedAt);
+  assert.notEqual(formatDate(hap.publishedAt), formatDate(chestnut.publishedAt));
+  assert.ok(formatDate(hap.publishedAt).includes("2025"));
+  assert.ok(formatDate(chestnut.publishedAt).includes("2026"));
+  assert.equal(kindChip(hap), "POLICY");
+  assert.equal(chipKind(hap), "policy");
+
+  assert.equal(navSection("/news/temple-chestnut-hill-jhp-2026-09-30"), "news");
+  assert.notEqual(navSection("/news/temple-chestnut-hill-jhp-2026-09-30"), "voices");
+  assert.equal(navSection("/voices"), "voices");
+  assert.equal(navSection("/voices/temple-honor-roll-2026"), "voices");
+  assert.equal(navSection("/events/njdvhimss-fall-conference-october-13th-15th"), "events");
+  assert.equal(navSection("/"), null);
+
+  assert.equal(itemJsonLd(honor), undefined);
+  assert.notEqual(itemJsonLd(honor)?.["@type"], "NewsArticle");
+  assert.equal(itemJsonLd(chestnut)?.["@type"], "NewsArticle");
+
+  const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
+  const desk = readFileSync(join(root, "src/ui/home/Desk.tsx"), "utf8");
+  const leadSrc = readFileSync(join(root, "src/ui/home/Lead.tsx"), "utf8");
+  const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
+  const page = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
+  const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
+  const footer = readFileSync(join(root, "src/ui/home/SiteFooter.tsx"), "utf8");
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  const head = readFileSync(join(root, "src/ui/DocumentHead.tsx"), "utf8");
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+
+  assert.ok(home.includes("desk.length"));
+  assert.ok(desk.includes("items.length === 0"));
+  assert.ok(desk.includes("return null"));
+  assert.ok(leadSrc.includes("<Link to={itemHref(item)}>{item.title}</Link>"));
+  assert.ok(leadSrc.includes("Lead-headline"));
+  assert.ok(rail.includes("publishedAt"));
+  assert.ok(rail.includes("formatDate"));
+  assert.ok(rail.includes("chipKind"));
+  assert.ok(!rail.includes("topics[0]"));
+  assert.ok(page.includes("KindList-title"));
+  assert.ok(page.includes("KIND_LABEL.voice"));
+  assert.ok(page.includes("KIND_LABEL.event"));
+  assert.ok(page.includes("KIND_LABEL.news"));
+  assert.ok(itemPage.includes("itemByline"));
+  assert.ok(itemPage.includes("ItemPage"));
+  assert.ok(!itemPage.includes("Valley Desk"));
+  assert.ok(layout.includes("is-news"));
+  assert.ok(layout.includes("is-events"));
+  assert.ok(layout.includes("is-voices"));
+  assert.ok(layout.includes("navSection"));
+  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(footer.includes("Delaware Valley"));
+  assert.ok(footer.includes("© The Valley Desk"));
+  assert.ok(css.includes(".NavLink:focus-visible"));
+  assert.ok(css.includes("outline: 2px solid var(--ink)"));
+  assert.ok(css.includes("var(--motion-fast)"));
+  assert.ok(css.includes("grid-template-columns: 1fr 1fr 1fr"));
+  assert.ok(!css.includes("grid-template-columns: 1fr 1fr;"));
+  assert.ok(css.includes(".GroupChip[data-kind=\"voice\"]"));
+  const voiceChip = css.slice(css.indexOf('.GroupChip[data-kind="voice"]'), css.indexOf(".StatusChip[data-status=\"review\"]"));
+  assert.ok(voiceChip.includes("var(--ink)"));
+  assert.ok(!voiceChip.includes("var(--mute)"));
+  assert.ok(css.includes(".ItemPage"));
+  assert.ok(css.includes(".KindList-title"));
+  assert.ok(head.includes('desc = "Voices"'));
+  assert.ok(head.includes('ogType'));
+  assert.ok(!head.includes('item && item.kind !== "event"'));
+  assert.ok(worker.includes('desc = "Voices"'));
+  assert.ok(worker.includes("articleKinds"));
+  assert.ok(!worker.includes('item && item.kind !== "event"'));
 });

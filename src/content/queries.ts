@@ -27,7 +27,7 @@ export function latestNews(
   seedOrgIds: ReadonlySet<string> = boundSeedOrgIds,
 ) {
   return items
-    .filter((item) => isPublicNewsFamily(item, seedOrgIds))
+    .filter((item) => isPublicNewsFamily(item, seedOrgIds) && item.featured !== true)
     .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
     .slice(0, n);
 }

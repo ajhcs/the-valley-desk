@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ContentItem } from "../../content/schema";
-import { kindChip, itemHref } from "../../lib/kind";
+import { formatDate } from "../../lib/format";
+import { chipKind, kindChip, itemHref } from "../../lib/kind";
 import { DateChip } from "./DateChip";
 import { GroupChip } from "./GroupChip";
 import { RegisterLink } from "../RegisterLink";
@@ -31,7 +32,12 @@ export function Rail({
             ) : (
               <>
                 <div className="RailRow-top">
-                  <GroupChip kind={item.kind}>{kindChip(item)}</GroupChip>
+                  <GroupChip kind={chipKind(item)}>{kindChip(item)}</GroupChip>
+                  {item.publishedAt ? (
+                    <time className="RailRow-date" dateTime={item.publishedAt}>
+                      {formatDate(item.publishedAt)}
+                    </time>
+                  ) : null}
                 </div>
                 <Link to={itemHref(item)}>{item.title}</Link>
                 {item.impactSentence ? (

@@ -22,7 +22,7 @@ export function HomePage() {
   return (
     <div className={sessionFirst ? "HomePage is-session-first" : "HomePage"}>
       {lead ? <Lead item={lead} /> : null}
-      <Desk items={desk} />
+      {desk.length ? <Desk items={desk} /> : null}
       <div className="rails">
         <Rail label="NEWS · LATEST" rail="news" items={news} />
         <Rail label="EVENTS · NEXT" rail="events" items={events} />

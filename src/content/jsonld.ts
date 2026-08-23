@@ -4,7 +4,7 @@ import { canonicalUrl } from "../lib/canonical";
 import { eventPlace, listDek } from "../lib/format";
 import { entityIndex } from "./entity";
 
-const NEWS_ARTICLE_KINDS = new Set(["news", "policy", "ai", "interview"]);
+export const NEWS_ARTICLE_KINDS = new Set(["news", "policy", "ai", "interview"]);
 
 function publisher() {
   return { "@type": "Organization", name: "The Valley Desk" };

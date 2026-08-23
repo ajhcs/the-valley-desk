@@ -10,6 +10,7 @@ function deskAsk(item: ContentItem) {
 }
 
 export function Desk({ items }: { items: ContentItem[] }) {
+  if (items.length === 0) return null;
   const when = formatLeadDate(new Date().toISOString());
   return (
     <section className="Desk">

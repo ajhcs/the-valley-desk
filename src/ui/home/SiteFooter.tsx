@@ -10,7 +10,7 @@ export function SiteFooter() {
         <a href="/feed.json">feed.json</a>
         <a href="/feed.xml">feed.xml</a>
       </nav>
-      <p className="SiteFooter-copy">© The Valley Desk</p>
+      <p className="SiteFooter-copy">© The Valley Desk · Delaware Valley</p>
     </footer>
   );
 }

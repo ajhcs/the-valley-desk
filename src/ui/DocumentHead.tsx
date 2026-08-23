@@ -54,14 +54,19 @@ export function DocumentHead() {
       desc = item.impactSentence?.trim() || item.title;
     } else if (path === "/news") title = `News · ${SITE}`;
     else if (path === "/events") title = `Events · ${SITE}`;
-    else if (path === "/voices") title = `Voices · ${SITE}`;
+    else if (path === "/voices") {
+      title = `Voices · ${SITE}`;
+      desc = "Voices";
+    }
     const url = path === "/" ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${path}`;
+    const articleKinds = new Set(["news", "policy", "ai", "interview"]);
+    const ogType = item && articleKinds.has(item.kind) ? "article" : "website";
     document.title = title;
     upsertMeta("name", "description", desc);
     upsertMeta("property", "og:title", title);
     upsertMeta("property", "og:description", desc);
     upsertMeta("property", "og:url", url);
-    upsertMeta("property", "og:type", item && item.kind !== "event" ? "article" : "website");
+    upsertMeta("property", "og:type", ogType);
     upsertMeta("name", "twitter:card", "summary");
     upsertMeta("name", "twitter:title", title);
     upsertMeta("name", "twitter:description", desc);

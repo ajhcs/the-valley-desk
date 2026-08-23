@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ContentItem, EventItem } from "../content/schema";
 import { eventPlace, formatDate, formatWhen, listDek } from "../lib/format";
-import { kindChip, itemHref } from "../lib/kind";
+import { chipKind, kindChip, itemHref } from "../lib/kind";
 import { eventRegisterUrl } from "../lib/register";
 import { RegisterLink } from "./RegisterLink";
 import { ItemJsonLd } from "./ItemJsonLd";
@@ -15,7 +15,7 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
   return (
     <article className="border-t py-3" style={{ borderColor: accent }}>
       <ItemJsonLd item={item} />
-      {rail === "events" ? null : <GroupChip kind={item.kind}>{kindChip(item)}</GroupChip>}
+      {rail === "events" ? null : <GroupChip kind={chipKind(item)}>{kindChip(item)}</GroupChip>}
       <p className="text-xs tracking-wide uppercase" style={{ color: accent }}>
         {place}
       </p>

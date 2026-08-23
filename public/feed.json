@@ -1,7 +1,7 @@
 {
   "product": "the-valley-desk",
   "version": "1",
-  "generatedAt": "2026-08-23T20:31:48.589Z",
+  "generatedAt": "2026-08-23T21:39:40.188Z",
   "items": [
     {
       "id": "news-christianacare-epic",
@@ -428,6 +428,7 @@
         "url": "https://www.linkedin.com/posts/benjaminslovis_templehealth-epichonorroll-clinicalinformatics-activity-7491951990122631168-XCu_"
       },
       "person": "Benjamin Slovis",
+      "role": "Temple Health CMIO",
       "org": "Temple Health",
       "platform": "linkedin",
       "originalUrl": "https://www.linkedin.com/posts/benjaminslovis_templehealth-epichonorroll-clinicalinformatics-activity-7491951990122631168-XCu_",

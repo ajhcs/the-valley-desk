@@ -64,9 +64,13 @@ function routeHead(path) {
     desc = item.description || item.title;
   } else if (p === "/news") title = `News · ${SITE}`;
   else if (p === "/events") title = `Events · ${SITE}`;
-  else if (p === "/voices") title = `Voices · ${SITE}`;
+  else if (p === "/voices") {
+    title = `Voices · ${SITE}`;
+    desc = "Voices";
+  }
   const url = p === "/" ? `${ORIGIN}/` : `${ORIGIN}${p}`;
-  const type = item && item.kind !== "event" ? "article" : "website";
+  const articleKinds = new Set(["news", "policy", "ai", "interview"]);
+  const type = item && articleKinds.has(item.kind) ? "article" : "website";
   return { title, desc, url, type };
 }
 

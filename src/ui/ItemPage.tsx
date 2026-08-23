@@ -1,8 +1,9 @@
 import { bySlug } from "../content/queries";
 import { itemCitations, type ContentItem, type EventItem } from "../content/schema";
 import { catalog } from "../lib/catalog";
+import { itemByline } from "../lib/byline";
 import { formatDate, formatWhen } from "../lib/format";
-import { kindChip } from "../lib/kind";
+import { chipKind, kindChip } from "../lib/kind";
 import { ItemJsonLd } from "./ItemJsonLd";
 import { RegisterLink } from "./RegisterLink";
 import { GroupChip } from "./home/GroupChip";
@@ -30,11 +31,11 @@ export function ItemPage({
   const cites = itemCitations(item);
   const event = item.kind === "event" ? (item as EventItem) : undefined;
   const when = formatDate(item.publishedAt);
-  const byline = item.authors.map((a) => a.name).filter(Boolean).join(", ");
+  const byline = itemByline(item, section);
   return (
-    <article>
+    <article className="ItemPage">
       <ItemJsonLd item={item} />
-      <GroupChip kind={item.kind}>{kindChip(item)}</GroupChip>
+      <GroupChip kind={chipKind(item)}>{kindChip(item)}</GroupChip>
       <h1 className="Lead-headline">{item.title}</h1>
       {when || byline ? (
         <p className="mt-2 text-xs" style={{ color: "var(--mute)" }}>

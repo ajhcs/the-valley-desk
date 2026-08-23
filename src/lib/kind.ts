@@ -33,8 +33,18 @@ export const KIND_CHIP: Record<ContentItem["kind"], string> = {
   interview: "HIT",
 }
 
-/** Chip = item.kind. Jefferson loss (topics[0]=finance) is HIT. */
-export function kindChip(item: Pick<ContentItem, "kind">): string {
+/** Paint policy/AI from topics even when kind=news. Jefferson finance stays HIT. */
+export function chipKind(item: Pick<ContentItem, "kind" | "topics">): ContentItem["kind"] {
+  const topics = (item.topics ?? []).map((t) => t.toLowerCase());
+  if (topics.includes("policy")) return "policy";
+  if (topics.includes("ai")) return "ai";
+  return item.kind;
+}
+
+export function kindChip(item: Pick<ContentItem, "kind" | "topics">): string {
+  const painted = chipKind(item);
+  if (painted === "policy") return "POLICY";
+  if (painted === "ai") return "AI";
   return KIND_CHIP[item.kind];
 }
 
