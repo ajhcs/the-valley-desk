@@ -163,15 +163,18 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
   assert.ok(rows.every((i) => hasLiveSeedOrg(i.orgs, seedIds)));
   assert.ok(rows.every((i) => i.kind !== "interview"));
   const ids = rows.map((i) => i.id);
-  assert.ok(ids.includes("news-01"));
-  assert.ok(ids.includes("policy-01"));
-  assert.ok(ids.includes("news-jefferson-einstein-mychart"));
-  assert.ok(ids.includes("news-christianacare-epic"));
-  assert.ok(ids.includes("news-jefferson-fy2026-loss"));
-  assert.ok(ids.includes("news-penn-ai-scribe"));
-  assert.ok(ids.includes("news-temple-dragon-copilot"));
-  assert.ok(ids.includes("news-chop-orca-cds"));
-  assert.ok(ids.includes("news-tower-ai-tax"));
+  const slugs = rows.map((i) => i.slug).sort();
+  assert.deepEqual(slugs, [
+    "chop-orca-cds",
+    "christianacare-epic-go-live",
+    "jefferson-fy2026-operating-loss",
+    "penn-in-house-ai-scribe",
+    "temple-dragon-copilot-400",
+    "tower-ai-tax",
+  ]);
+  assert.ok(!ids.includes("news-01"));
+  assert.ok(!ids.includes("policy-01"));
+  assert.ok(!ids.includes("news-jefferson-einstein-mychart"));
   assert.ok(!ids.includes("ai-01"));
   assert.ok(!ids.includes("int-01"));
   assert.ok(!ids.includes("evt-01"));
@@ -302,7 +305,8 @@ test("KindListPage /news uses the same latestNews gate; ai-01 stays out", () => 
   assert.ok(!newsPage.some((i) => i.id === "ai-01"));
   assert.ok(newsPage.every((i) => isPublicNewsFamily(i, seedIds)));
   assert.ok(newsPage.some((i) => i.id === "news-jefferson-fy2026-loss"));
-  assert.ok(newsPage.some((i) => i.kind === "policy"));
+  assert.ok(!newsPage.some((i) => i.kind === "policy"));
+  assert.equal(newsPage.length, 6);
 });
 
 test("upcomingEvents is published events with startsAt >= now and never reads clockAt", () => {
@@ -740,7 +744,8 @@ test("nextChapterEvent prefers a conference in window over mixer/golf and pins t
   assert.equal(eventRegisterUrl(chapter!), "https://njdvhimssevent.com/");
   assert.ok(chapter?.registrationUrl);
   const mixerOnly = catalog.filter((i) => i.id === "evt-01");
-  assert.equal(nextChapterEvent(mixerOnly, now)?.id, "evt-01");
+  assert.equal(catalog.find((i) => i.id === "evt-01")?.status, "draft");
+  assert.equal(nextChapterEvent(mixerOnly, now), undefined);
   const missingRegister = EventItem.parse({
     ...base,
     id: "evt-no-pin",
@@ -758,8 +763,9 @@ test("nextChapterEvent prefers a conference in window over mixer/golf and pins t
   const pinned = pinnedUpcomingEvents(catalog, now, 6);
   assert.equal(pinned[0]?.id, chapter?.id);
   assert.equal(pinned.filter((i) => i.id === chapter?.id).length, 1);
-  assert.ok(pinned.some((i) => i.id === "evt-01"));
-  assert.ok(pinned.some((i) => i.id === "evt-02"));
+  assert.ok(!pinned.some((i) => i.id === "evt-01"));
+  assert.ok(!pinned.some((i) => i.id === "evt-02"));
+  assert.ok(pinned.some((i) => i.id === "evt-dvhimss-22958"));
   assert.equal(eventRegisterUrl(catalog.find((i) => i.id === "evt-02")!), undefined);
   assert.equal(
     canPublish({ kind: "event", status: "published", partner: "health-system" }),
@@ -855,7 +861,10 @@ test("event JSON-LD is published EventItem only; offers.url is registrationUrl",
   assert.equal((splitLd?.organizer as { name?: string }).name, "DVHIMSS");
   assert.equal((splitLd?.organizer as { identifier?: string }).identifier, "org-dvhimss");
   assert.equal((splitLd?.about as { identifier?: string }[])[0]?.identifier, "org-jefferson");
-  const noOffer = eventJsonLd(jefferson, entityRows);
+  assert.equal(jefferson.status, "draft");
+  assert.equal(eventJsonLd(jefferson, entityRows), undefined);
+  const publishedJefferson = EventItem.parse({ ...jefferson, status: "published" });
+  const noOffer = eventJsonLd(publishedJefferson, entityRows);
   assert.equal(noOffer?.["@type"], "Event");
   assert.equal(noOffer?.offers, undefined);
   assert.equal(noOffer?.endDate, undefined);
@@ -1052,7 +1061,8 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(!robots.includes("<"));
   assert.ok(worker.includes("status: 404"));
   assert.ok(worker.includes("text/plain"));
-  assert.ok(!worker.includes("/org/"));
+  assert.ok(worker.includes('path.startsWith("/org/")'));
+  assert.ok(!worker.includes("EntityPage"));
   assert.ok(wrangler.includes('"not_found_handling": "none"'));
   assert.ok(!wrangler.includes("single-page-application"));
   assert.ok(!wrangler.includes("routes"));
@@ -1091,8 +1101,10 @@ test("signed stills kit numbers and Mira addendum locks", () => {
   assert.equal(ai?.status, "draft");
   assert.deepEqual(ai?.orgs, []);
   assert.ok(card.includes("listDek"));
-  assert.ok(card.includes("listSourceLine"));
+  assert.ok(card.includes("impactSentence"));
   assert.ok(!card.includes("item.dek"));
+  assert.ok(!card.includes("item.orgs"));
+  assert.ok(!card.includes("listSourceLine"));
   assert.ok(eventsPage.includes("pinnedUpcomingEvents"));
 });
 
@@ -1115,11 +1127,49 @@ test("list pages omit costume deks and costume source crumbs", () => {
   const newsRows = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
   const eventRows = pinnedUpcomingEvents(catalog, new Date("2026-08-22T20:00:00.000Z"), 50);
   const rendered = [...newsRows, ...eventRows]
-    .flatMap((item) => [listDek(item), listSourceLine(item)])
+    .flatMap((item) => [item.title, item.impactSentence, listDek(item), listSourceLine(item)])
     .join("\n");
   assert.ok(!/review-queued/i.test(rendered));
   assert.ok(!/stub path/i.test(rendered));
   assert.ok(!/dvhimss-events-stub/i.test(rendered));
   assert.ok(!/Gold rail on the homepage/i.test(rendered));
   assert.ok(!/so the rail has two dates/i.test(rendered));
+  assert.ok(!/Jane Doe/i.test(rendered));
+  assert.ok(!/Fixture published/i.test(rendered));
+  assert.ok(!/org-penn/.test(rendered));
+});
+
+test("Reed hold: only six published news slugs; stub origins and mixer are unpublished", () => {
+  const publishedNews = catalog.filter((i) => i.kind === "news" && i.status === "published");
+  assert.deepEqual(publishedNews.map((i) => i.slug).sort(), [
+    "chop-orca-cds",
+    "christianacare-epic-go-live",
+    "jefferson-fy2026-operating-loss",
+    "penn-in-house-ai-scribe",
+    "temple-dragon-copilot-400",
+    "tower-ai-tax",
+  ]);
+  assert.equal(publishedNews.filter((i) => i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+  for (const id of [
+    "news-01",
+    "news-02",
+    "news-jefferson-einstein-mychart",
+    "evt-01",
+    "evt-02",
+    "voice-01",
+    "policy-01",
+    "ai-01",
+    "brief-01",
+  ]) {
+    assert.notEqual(catalog.find((i) => i.id === id)?.status, "published", id);
+  }
+  const mixer = catalog.find((i) => i.id === "evt-01")!;
+  assert.equal(mixer.status, "draft");
+  assert.ok(mixer.body.includes("Fixture published event"));
+  assert.equal(eventRegisterUrl(mixer), "https://dvhimss.org/events/");
+  const pin = nextChapterEvent(catalog, new Date("2026-08-22T20:00:00.000Z"));
+  assert.equal(pin?.slug, "njdvhimss-fall-conference-october-13th-15th");
+  assert.equal(eventRegisterUrl(pin!), "https://njdvhimssevent.com/");
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+  assert.ok(worker.includes('path.startsWith("/org/")'));
 });

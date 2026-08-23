@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ContentItem, EventItem } from "../content/schema";
-import { formatDate, formatWhen, listDek, listSourceLine } from "../lib/format";
+import { formatDate, formatWhen, listDek } from "../lib/format";
 import { kindChip, itemHref } from "../lib/kind";
 import { eventRegisterUrl } from "../lib/register";
 import { RegisterLink } from "./RegisterLink";
@@ -9,10 +9,9 @@ import { GroupChip } from "./home/GroupChip";
 
 export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "events" }) {
   const meta = item.kind === "event" ? formatWhen((item as EventItem).startsAt) : formatDate(item.publishedAt);
-  const place = item.kind === "event" ? [(item as EventItem).venue, (item as EventItem).city].filter(Boolean).join(", ") : item.orgs.join(", ");
+  const place = item.kind === "event" ? [(item as EventItem).venue, (item as EventItem).city].filter(Boolean).join(", ") : "";
   const accent = rail === "events" ? "var(--events)" : "var(--ink)";
-  const dek = listDek(item);
-  const crumb = rail === "events" ? "" : listSourceLine(item);
+  const blurb = rail === "events" ? listDek(item) : (item.impactSentence?.trim() ?? "");
   return (
     <article className="border-t py-3" style={{ borderColor: accent }}>
       <ItemJsonLd item={item} />
@@ -26,15 +25,9 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
           {item.title}
         </Link>
       </h3>
-      {dek ? <p className="text-sm mt-1 opacity-90">{dek}</p> : null}
+      {blurb ? <p className="text-sm mt-1 opacity-90">{blurb}</p> : null}
       <p className="text-xs mt-2" style={{ color: accent }}>
         {meta}
-        {crumb ? (
-          <>
-            {" · "}
-            {crumb}
-          </>
-        ) : null}
         {rail === "events" && eventRegisterUrl(item) ? (
           <>
             {" · "}
