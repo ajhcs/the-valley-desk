@@ -11,6 +11,7 @@
       "dek": "A local operations story, not a vendor release.",
       "body": "Fixture. Replace with Cole or ingest copy.",
       "status": "published",
+      "featured": false,
       "publishedAt": "2026-08-20T14:00:00.000Z",
       "updatedAt": "2026-08-22T20:14:00.000Z",
       "topics": [
@@ -55,6 +56,7 @@
       "dek": "State guidance with regional operational bite.",
       "body": "Fixture.",
       "status": "published",
+      "featured": false,
       "publishedAt": "2026-08-18T11:00:00.000Z",
       "updatedAt": "2026-08-22T20:14:00.000Z",
       "topics": [
@@ -94,6 +96,7 @@
       "dek": "Einstein patients leave MyEinsteinHealth for Jefferson's Epic MyChart. A go-live clock, not an event.",
       "body": "Fixture. Replace with Cole copy.",
       "status": "published",
+      "featured": false,
       "publishedAt": "2026-08-01T14:00:00.000Z",
       "updatedAt": "2026-08-22T20:14:00.000Z",
       "topics": [
@@ -132,11 +135,11 @@
       "id": "news-christianacare-epic",
       "slug": "christianacare-epic-go-live",
       "kind": "news",
-      "title": "ChristianaCare sets Oct. 3, 2026 Epic go-live",
-      "dek": "The Wilmington system is in the final stage. Patients keep appointments unless contacted.",
-      "body": "ChristianaCare is cutting its clinical record, caregiver workflows, and patient tools over to Epic on Oct. 3, 2026. A July 2026 update put the Wilmington system in the final stage, less than three months out. COO Ric Cuming said caregivers must finish on-demand and live role-based training, and pass readiness checks, before they use the new system. Patients keep appointments unless contacted. After go-live they move to ChristianaCare MyChart for results, visit summaries, scheduling, messaging, eCheck-in, refills, and bill pay. Care Everywhere will share records with participating Epic organizations when a patient is treated off-campus. ChristianaCare said that once it is live, all Delaware health systems, and many more in Pennsylvania, New Jersey, and Maryland, will also be on Epic.",
+      "title": "ChristianaCare Epic go-live Oct. 3, 2026",
+      "dek": "Official July update plus FAC Note 18 EMR-license dollars. Becker’s second-cites the date.",
+      "body": "ChristianaCare’s July 2026 newsroom update set an Oct. 3, 2026 Epic go-live and said the Wilmington system was in the final stage, with less than three months left. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction and that caregivers must finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Becker’s Hospital Review (July 22, 2026) second-cites the Oct. 3 date and says the switch from the prior EHR has been underway since a 2024 decision; it names Robert Hartmann as vice president of EHR transformation. Christiana Care Health System and Affiliates, Uniform Guidance / PwC AFS June 30, 2025 and 2024 (auditor report Sept. 25, 2025), Note 18: $24.683 million in contracted five-year software-license payments entered in FY2025 “as part of a broader electronic medical records (EMR) software implementation.” Remaining at June 30, 2025: $18.826 million, of which $4.895 million is due in 2026. Phase 1 software design and development: $5.1 million, due in 2026. The note does not name Epic. That license line is not go-live labor, training, or hardware.",
       "status": "published",
-      "featured": false,
+      "featured": true,
       "publishedAt": "2026-07-01T16:00:00.000Z",
       "updatedAt": "2026-08-22T20:14:00.000Z",
       "topics": [
@@ -160,11 +163,15 @@
       "relatedEventIds": [],
       "relatedVoiceIds": [],
       "clockAt": "2026-10-03T04:00:00.000Z",
-      "impactSentence": "ChristianaCare said that once it is live, all Delaware health systems, and many more in Pennsylvania, New Jersey, and Maryland, will also be on Epic.",
+      "impactSentence": "Oct. 3 is a training-gated cutover; the FAC note prices an unnamed EMR license, not the Epic press headline.",
       "citations": [
         {
           "name": "ChristianaCare News",
           "url": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/"
+        },
+        {
+          "name": "Becker’s",
+          "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/christianacares-epic-go-live-set-for-october/"
         },
         {
           "name": "FAC Note 18",
@@ -177,9 +184,9 @@
       "id": "news-jefferson-fy2026-loss",
       "slug": "jefferson-fy2026-operating-loss",
       "kind": "news",
-      "title": "Jefferson posts $181.5 million operating loss for FY2026",
-      "dek": "Bondholder results published by The Inquirer on Aug. 14, 2026 included $112 million in layoff and related costs.",
-      "body": "Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, in results reported to bondholders and published by The Philadelphia Inquirer on Aug. 14, 2026. The results included $112 million in layoff and related costs. Jefferson closed on Lehigh Valley Health Network on Aug. 1, 2024. Chief financial officer Michael Harrington told The Inquirer that commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross last month over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law. The $181.5 million loss does not move until a court or a new contract does.",
+      "title": "Jefferson FY2026 operating loss, plus Fitch liquidity",
+      "dek": "Inquirer year-end $181.5 million to bondholders; Fitch $5.5 billion / 119 DCOH through March 31. Not a swap.",
+      "body": "The Inquirer, Aug. 14, 2026, reported that Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, after a $208 million loss the prior year, in results reported to bondholders. As the Inquirer read that packet: $112 million in layoff and related costs after the Aug. 1, 2024 Lehigh Valley Health Network close; $17.7 billion revenue (from $15.8 billion); a $130.3 million Jefferson Health Plans loss on 415,172 members; and a climb from a $103.8 million first-quarter operating loss to a $71.1 million fourth-quarter operating profit. CFO Michael Harrington said commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law. This desk has not opened the EMMA year-end PDF. Separately, Fitch on June 18, 2026 assigned F1+ to TJU taxable CP notes, affirmed the A IDR with a Negative Outlook, and cited $5.5 billion unrestricted liquidity and about 119 days cash on hand for fiscal 2026 year-to-date through March 31, 2026, including the health plan and excluding line-of-credit draws and about $1.1 billion donor-restricted funds. Fitch cited about $15.5 billion operating revenue for the year ended June 30, 2025, and about $112 million Jefferson Health Plan losses through the first nine months of both FY2025 and FY2026. Those nine-month figures are not a substitute for the June 30 year-end loss.",
       "status": "published",
       "featured": false,
       "publishedAt": "2026-08-14T16:00:00.000Z",
@@ -203,7 +210,7 @@
       },
       "relatedEventIds": [],
       "relatedVoiceIds": [],
-      "impactSentence": "The $181.5 million loss does not move until a court or a new contract does.",
+      "impactSentence": "The $181.5 million year-end operating loss sits next to $5.5 billion / 119 DCOH through March 31; Harrington says the climb holds only if commercial contracts do.",
       "citations": [
         {
           "name": "Inquirer",
@@ -220,9 +227,9 @@
       "id": "news-penn-ai-scribe",
       "slug": "penn-in-house-ai-scribe",
       "kind": "news",
-      "title": "Penn's in-house AI scribe is on about 1,200 ambulatory providers",
-      "dek": "The Philadelphia Inquirer, Nov. 10, 2025: internist Dina Capalongo hits a green button; the doctor still approves the note.",
-      "body": "Dina Capalongo, a Penn Medicine internist, hits a green button on her phone. The draft note is usually on the screen before she leaves the room, the Philadelphia Inquirer reported Nov. 10, 2025. The product is Penn’s in-house AI scribe. Ambient listening records the visit and writes a sectioned note the doctor must approve. About 1,200 ambulatory providers were using it, the Inquirer said. A separate 46-clinician Penn pilot in JAMA Network Open (Feb. 19, 2025) associated a scribe with 10.3 minutes in notes per visit falling to 8.2. Kevin B. Johnson, who leads Penn’s AI4AI Lab, called those “early but promising results.” The journal article does not name a commercial vendor. Epic Systems’ Signal tool timed the EHR use.",
+      "title": "Penn in-house scribe: Inquirer headcount, JAMA table",
+      "dek": "About 1,200 ambulatory users in one clip; 20.4% less time in notes is a 46-clinician table. Not fused.",
+      "body": "The Philadelphia Inquirer, Nov. 10, 2025, said Dina Capalongo, a Penn Medicine internist, uses an in-house AI scribe: ambient listening drafts a sectioned note she still has to approve, often before she leaves the room, and that about 1,200 ambulatory providers were using it. A separate JAMA Network Open study (Duggan et al., published Feb. 19, 2025; outpatient QI April–June 2024 at one Philadelphia academic system) associated ambient scribing with 20.4% less time in notes per appointment (10.3 to 8.2 minutes; P<.001) among 46 clinicians in 17 specialties. The same table associated 9.3% greater same-day appointment closure (66.2% to 72.4%) and 30.0% less after-hours work time (50.6 to 35.4 minutes per workday). The article does not name a commercial vendor. Penn Medicine’s Feb. 21, 2025 news release quoted Kevin B. Johnson, who leads the AI4AI Lab, calling those “early but promising results,” and said volunteer clinicians were using the tool with patient permission. The 1,200 count is not the study n. Temple Dragon counts are not this count.",
       "status": "published",
       "featured": false,
       "publishedAt": "2025-11-10T16:00:00.000Z",
@@ -246,7 +253,7 @@
       },
       "relatedEventIds": [],
       "relatedVoiceIds": [],
-      "impactSentence": "About 1,200 ambulatory providers were using it, the Inquirer said.",
+      "impactSentence": "About 1,200 ambulatory users is an Inquirer headcount; 20.4% less time in notes is a 46-clinician journal table, not that headcount.",
       "citations": [
         {
           "name": "Inquirer",
@@ -267,9 +274,9 @@
       "id": "news-temple-dragon-copilot",
       "slug": "temple-dragon-copilot-400",
       "kind": "news",
-      "title": "Temple rolls Dragon Copilot to 400 users",
-      "dek": "CMIO Benjamin Slovis told HealthTech the tool is not yet a silver bullet.",
-      "body": "Benjamin Slovis, Temple University Hospital’s CMIO, has a Microsoft Dragon Copilot rollout to 400 end users, HealthTech Magazine reported in August 2026. Dragon Copilot records the visit and drafts a note the doctor still has to sign. Temple’s June 8, 2026 note says Slovis described that workflow, as DAX Copilot, to the Bucks County Herald. The Philadelphia Business Journal, April 1, 2026, said pilot data showed more than a 10 percent cut in after-hours documentation before the expansion to nearly 400 physicians. Slovis told HealthTech the tool is “not yet a silver bullet.” TUHS’s unaudited June 30, 2025 year-end report showed 116 days cash on hand, down from 124 a year earlier. That liquidity line is not a Copilot metric.",
+      "title": "Temple Dragon Copilot at 400 users; TUHS 116 DCOH",
+      "dek": "HealthTech 400 plus Temple Health CMIO clips. Liquidity is not a Copilot metric. Not fused with Penn.",
+      "body": "HealthTech Magazine, August 2026, said Benjamin Slovis, Temple Health CMIO, has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” Temple’s June 8, 2026 newsroom note said Slovis described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews. The Philadelphia Business Journal, April 1, 2026, said pilot data showed more than a 10 percent cut in after-hours documentation before an expansion to nearly 400 physicians. Separately, Temple University Health System’s unaudited year-end investor report for June 30, 2025 showed 116 days cash on hand (124 at June 30, 2024). That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count.",
       "status": "published",
       "featured": false,
       "publishedAt": "2026-08-01T16:00:00.000Z",
@@ -278,8 +285,7 @@
         "AI"
       ],
       "orgs": [
-        "org-temple",
-        "org-temple-tuh-main"
+        "org-temple"
       ],
       "region": "PA",
       "authors": [
@@ -294,22 +300,22 @@
       },
       "relatedEventIds": [],
       "relatedVoiceIds": [],
-      "impactSentence": "That liquidity line is not a Copilot metric.",
+      "impactSentence": "Dragon Copilot is at 400 end users; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI.",
       "citations": [
         {
           "name": "HealthTech",
           "url": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine"
         },
         {
-          "name": "Temple",
+          "name": "Temple June 8",
           "url": "https://www.templehealth.org/about/news/in-the-media/dr-benjamin-slovis-discusses-temple-healths-utilization-of-artificial-intelligence-with-bucks-county-herald"
         },
         {
-          "name": "PBJ",
+          "name": "PBJ April 1",
           "url": "https://www.bizjournals.com/philadelphia/news/2026/04/01/temple-health-ai-patient-safety.html"
         },
         {
-          "name": "TUHS PDF",
+          "name": "TUHS June 30 2025 DCOH PDF",
           "url": "https://tuhsfinance.templehealth.org/CURRENT%20STATEMENTS/TUHS%20Investor%20Quarterly%20Report%20-%20June%2030,%202025.pdf"
         }
       ],
