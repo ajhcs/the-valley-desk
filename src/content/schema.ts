@@ -248,3 +248,16 @@ export function citationUrl(item: {
 }): string | undefined {
   return item.source.url || item.citations?.[0]?.url;
 }
+
+/** Card cites. source.url is a cite when present and not already in citations[]. */
+export function itemCitations(item: {
+  source: { origin: string; url?: string };
+  citations?: { name: string; url: string }[];
+}): { name: string; url: string }[] {
+  const cites = [...(item.citations ?? [])];
+  const seen = new Set(cites.map((c) => c.url));
+  if (item.source.url && !seen.has(item.source.url)) {
+    cites.push({ name: item.source.origin, url: item.source.url });
+  }
+  return cites;
+}

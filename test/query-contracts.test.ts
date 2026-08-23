@@ -22,6 +22,7 @@ import {
   NewsItem,
   setFeaturedNews,
   canPublish,
+  itemCitations,
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { rssItemToContent } from "../src/ingest/rss.ts";
@@ -250,10 +251,14 @@ test("kind chip is item.kind, never topics[0]; Jefferson loss is HIT", () => {
   assert.equal(KIND_CHIP.event, "CHAPTER");
   const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
   const card = readFileSync(join(root, "src/ui/ItemCard.tsx"), "utf8");
+  const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
   assert.ok(!rail.includes("topics[0]"));
   assert.ok(!card.includes("topics[0]"));
+  assert.ok(!itemPage.includes("topics[0]"));
   assert.ok(rail.includes("kindChip"));
   assert.ok(card.includes("kindChip"));
+  assert.ok(itemPage.includes("kindChip"));
+  assert.ok(itemPage.includes("StatusChip"));
 });
 
 test("kind chip paint is mute/rule, ink, or admiral — never sky, never gold except QUEUED", () => {
@@ -825,6 +830,43 @@ test("feed.json projection keeps registrationUrl on published events", () => {
   assert.equal(fall && fall.kind === "event" ? fall.registrationUrl : undefined, "https://njdvhimssevent.com/");
   assert.ok(feed.items.every((i) => i.status === "published"));
   assert.ok(!feed.items.some((i) => i.status === "review"));
+});
+
+test("ItemPage is an aggregator card: chip, title, impact, body, citations — not a magazine template", () => {
+  const page = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  assert.ok(page.includes("StatusChip"));
+  assert.ok(page.includes("kindChip"));
+  assert.ok(page.includes("item.impactSentence"));
+  assert.ok(page.includes("itemCitations"));
+  assert.ok(page.includes("item.body"));
+  assert.ok(page.includes("ItemJsonLd"));
+  assert.ok(page.includes("RegisterLink"));
+  assert.ok(page.includes("registrationUrl"));
+  assert.ok(page.includes("startsAt"));
+  assert.ok(!page.includes("item.dek"));
+  assert.ok(!page.includes("QUEUED"));
+  assert.ok(!page.includes("KIND_LABEL"));
+  assert.ok(!page.includes("/voices"));
+  assert.ok(!page.includes("/org"));
+  assert.ok(!page.includes("sourceLine"));
+  assert.ok(!page.includes("item.source.url"));
+  const penn = catalog.find((i) => i.id === "news-penn-ai-scribe")!;
+  const cites = itemCitations(penn);
+  assert.ok(cites.some((c) => c.url === penn.source.url));
+  assert.equal(cites.filter((c) => c.url === penn.source.url).length, 1);
+  const extra = itemCitations({
+    source: { origin: "newsroom", url: "https://example.com/source" },
+    citations: [{ name: "Other", url: "https://example.com/other" }],
+  });
+  assert.deepEqual(extra, [
+    { name: "Other", url: "https://example.com/other" },
+    { name: "newsroom", url: "https://example.com/source" },
+  ]);
+  const jefferson = catalog.find((i) => i.id === "evt-02")!;
+  assert.equal(jefferson.kind, "event");
+  assert.equal(eventRegisterUrl(jefferson), undefined);
+  assert.ok(jefferson.source.url);
+  assert.ok(itemCitations(jefferson).some((c) => c.url === jefferson.source.url));
 });
 
 test("canonical helper: news family under /news, events under /events", () => {
