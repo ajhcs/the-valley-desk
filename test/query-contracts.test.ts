@@ -803,6 +803,9 @@ test("Register uses registrationUrl only; locked DVHIMSS URLs unchanged", () => 
     eventRegisterUrl(golf!),
     "https://dvhimss.org/events-calendar/njdvhimss-annual-golf-outing-october-13-930-am-330-pm-et/",
   );
+  assert.equal(golf?.slug, "njdvhimss-annual-golf-outing");
+  assert.equal(golf?.body, "Kickoff to the fall conference.");
+  assert.ok(!golf?.body.includes("Ingested from the DVHIMSS Events Calendar."));
   assert.equal(eventRegisterUrl(networking!), "https://dvhimss.org/events/");
   assert.equal(eventRegisterUrl(jefferson!), undefined);
   assert.ok(jefferson && jefferson.kind === "event" && jefferson.source.url);
