@@ -1762,8 +1762,10 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
 
   assert.deepEqual(labels("org-christianacare"), [
     "Net patient service revenue $3,140,501,000 · YE June 30, 2025",
-    "Total operating revenues $3,289,202,000 · YE June 30, 2025",
   ]);
+  assert.equal(byId["org-christianacare"]?.facts?.length, 1);
+  assert.ok(!/operating/i.test(JSON.stringify(byId["org-christianacare"]?.facts)));
+  assert.ok(!/3,289,202,000/.test(JSON.stringify(byId["org-christianacare"]?.facts)));
   assert.deepEqual(labels("org-jefferson"), [
     "Total operating revenues $15,755,857,000 · YE June 30, 2025",
     "Net patient service revenue $11,054,287,000 · YE June 30, 2025",
