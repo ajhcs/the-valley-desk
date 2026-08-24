@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { entities } from "../lib/entities";
 import {
@@ -83,10 +83,12 @@ function OrgMention({
   const hideTimer = useRef<number>(0);
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0, width: 320, height: 80 });
+  const [inLink, setInLink] = useState(true);
   const reactId = useId();
   const chipId = `org-chip-${orgId}-${reactId.replace(/:/g, "")}`;
   const printed = usePrintedFactIds()[orgId];
   const citable = facts.filter((fact) => fact.citation.url);
+  const solo = !inLink && citable.length > 0;
 
   const place = () => {
     const mention = readRect(mentionRef.current);
@@ -154,6 +156,10 @@ function OrgMention({
     if (open) place();
   }, [open]);
 
+  useLayoutEffect(() => {
+    setInLink(Boolean(mentionRef.current?.closest("a")));
+  }, []);
+
   useEffect(() => {
     const mention = mentionRef.current;
     const trigger = mention?.closest("a") ?? null;
@@ -202,9 +208,13 @@ function OrgMention({
     <span
       ref={mentionRef}
       className="OrgMention"
+      tabIndex={solo ? 0 : undefined}
+      role={solo ? "button" : undefined}
       aria-describedby={describedBy}
       onMouseEnter={show}
       onMouseLeave={hide}
+      onFocus={solo ? show : undefined}
+      onBlur={solo ? hide : undefined}
     >
       {text}
       {open ? (

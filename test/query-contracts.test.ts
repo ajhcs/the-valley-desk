@@ -1852,8 +1852,10 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
   assert.ok(!/path:\s*["']\/org\//.test(router));
   assert.ok(!mention.includes("/org/"));
-  assert.ok(!mention.includes("tabIndex"));
-  assert.ok(!mention.includes("tabindex"));
+  assert.ok(!mention.includes("tabIndex={0}"));
+  assert.ok(!mention.includes("tabindex={0}"));
+  assert.ok(mention.includes("tabIndex={solo ? 0 : undefined}"));
+  assert.ok(mention.includes('closest("a")'));
   assert.ok(mention.includes("Escape"));
   assert.ok(mention.includes("mousedown"));
   assert.ok(mention.includes("aria-describedby"));
