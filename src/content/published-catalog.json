@@ -766,6 +766,46 @@
     ]
   },
   {
+    "id": "voice-jefferson-cacchione-community-impact-2026-07-14",
+    "slug": "jefferson-cacchione-community-impact-2026-07-14",
+    "kind": "voice",
+    "title": "Joseph G. Cacchione, July 14, 2026: Jefferson Community Impact Report",
+    "dek": "Jefferson’s official July 14, 2026 Community Impact Report press names Joseph G. Cacchione, CEO, and he is quoted. The page prints more than $2.7 billion in community benefit and 10 million patient visits supported. Those figures are Jefferson’s, not audited.",
+    "body": "Jefferson’s official July 14, 2026 Community Impact Report press names Joseph G. Cacchione, CEO, and he is quoted. The page prints more than $2.7 billion in community benefit and 10 million patient visits supported. Those figures are Jefferson’s, not audited.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-07-14T16:00:00.000Z",
+    "updatedAt": "2026-08-24T16:00:00.000Z",
+    "topics": [],
+    "orgs": [
+      "org-jefferson"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Joseph G. Cacchione",
+        "org": "org-jefferson"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "jefferson",
+      "url": "https://www.jeffersonhealth.org/about-us/news/2026/07/driven-to-improve-lives"
+    },
+    "person": "Joseph G. Cacchione",
+    "role": "CEO",
+    "org": "Jefferson Health",
+    "platform": "site",
+    "originalUrl": "https://www.jeffersonhealth.org/about-us/news/2026/07/driven-to-improve-lives",
+    "impactSentence": "Jefferson’s Community Impact Report prints more than $2.7 billion in community benefit and 10 million patient visits; Jefferson’s figures, not audited.",
+    "citations": [
+      {
+        "name": "Jefferson July 14 Community Impact Report",
+        "url": "https://www.jeffersonhealth.org/about-us/news/2026/07/driven-to-improve-lives"
+      }
+    ]
+  },
+  {
     "id": "voice-jefferson-cacchione-de-med-school-2026-07-15",
     "slug": "jefferson-cacchione-de-med-school-2026-07-15",
     "kind": "voice",

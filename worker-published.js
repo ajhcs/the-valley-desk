@@ -35,6 +35,7 @@ export const publishedVoiceSlugs = [
   "inspira-mansue-epic-2026-07-27",
   "inspira-mansue-neuro-icu-2026-08-04",
   "jefferson-cacchione-board-2026-07-30",
+  "jefferson-cacchione-community-impact-2026-07-14",
   "jefferson-cacchione-de-med-school-2026-07-15",
   "jefferson-cacchione-lcs-link-2026-08-05",
   "jefferson-cacchione-skmc-allentown-2026-07-13",
@@ -138,6 +139,11 @@ export const publishedHead = {
     "kind": "voice",
     "title": "Joseph G. Cacchione, July 13, 2026: SKMC four-year Allentown campus",
     "description": "SKMC’s four-year Allentown campus has an inaugural class of 45 in July 2029."
+  },
+  "jefferson-cacchione-community-impact-2026-07-14": {
+    "kind": "voice",
+    "title": "Joseph G. Cacchione, July 14, 2026: Jefferson Community Impact Report",
+    "description": "Jefferson’s Community Impact Report prints more than $2.7 billion in community benefit and 10 million patient visits; Jefferson’s figures, not audited."
   },
   "jefferson-cacchione-de-med-school-2026-07-15": {
     "kind": "voice",

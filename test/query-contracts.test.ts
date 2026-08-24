@@ -2313,6 +2313,15 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
       cite: "https://www.jefferson.edu/news/2026/07/thomas-jefferson-university-to-establish-regional-medical-college-campus-in-lehigh-valley.html",
     },
     {
+      id: "voice-jefferson-cacchione-community-impact-2026-07-14",
+      slug: "jefferson-cacchione-community-impact-2026-07-14",
+      person: "Joseph G. Cacchione",
+      orgId: "org-jefferson",
+      origin: "jefferson",
+      publishedAt: "2026-07-14T16:00:00.000Z",
+      cite: "https://www.jeffersonhealth.org/about-us/news/2026/07/driven-to-improve-lives",
+    },
+    {
       id: "voice-jefferson-cacchione-de-med-school-2026-07-15",
       slug: "jefferson-cacchione-de-med-school-2026-07-15",
       person: "Joseph G. Cacchione",
@@ -2526,6 +2535,17 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
   assert.ok(!JSON.stringify(dragon).includes("7486154836821037056"));
   assert.ok(!/honor.?roll|dragon-copilot-400|418,000/i.test(`${slovisHire.title} ${slovisHire.dek} ${slovisHire.body} ${slovisHire.impactSentence}`));
   assert.equal(slovisHire.kind === "voice" ? slovisHire.role : "", "Temple Health CMIO, Temple University Hospital");
+  const impact = catalog.find((i) => i.id === "voice-jefferson-cacchione-community-impact-2026-07-14");
+  const fyLoss = catalog.find((i) => i.slug === "jefferson-fy2026-operating-loss");
+  assert.ok(impact && fyLoss);
+  assert.equal(fyLoss.kind === "news" ? fyLoss.relatedVoiceIds.join() : "x", "");
+  assert.ok(!JSON.stringify(fyLoss).includes("jefferson-cacchione-community-impact-2026-07-14"));
+  assert.ok(!/181\.5|Inquirer|operating loss/i.test(`${impact.title} ${impact.dek} ${impact.body} ${impact.impactSentence}`));
+  assert.ok(/not audited/.test(`${impact.dek} ${impact.impactSentence}`));
+  assert.ok(/quoted/.test(`${impact.dek} ${impact.body}`));
+  assert.ok(!/["“]/.test(`${impact.dek} ${impact.body}`));
+  assert.ok(!catalog.some((i) => /leaphart/i.test(`${i.id} ${i.slug} ${i.title}`)));
+  assert.ok(!entityRows.some((e) => /leaphart/i.test(`${e.id} ${e.name}`)));
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
   assert.equal(entityRows.length, 92);
