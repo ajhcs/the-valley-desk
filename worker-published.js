@@ -30,9 +30,20 @@ export const publishedEventSlugs = [
   "wistar-drug-discovery-forum-2026-09-09"
 ];
 export const publishedVoiceSlugs = [
+  "chop-bell-breaking-through-2026-08-14",
   "inspira-johnson-epic-day-6-2026-07-30",
+  "inspira-mansue-epic-2026-07-27",
+  "jefferson-cacchione-board-2026-07-30",
+  "jefferson-cacchione-de-med-school-2026-07-15",
+  "jefferson-cacchione-lcs-link-2026-08-05",
+  "jefferson-cacchione-skmc-allentown-2026-07-13",
   "mlh-cloud-analytics-2026-08-17",
-  "temple-honor-roll-2026"
+  "mlh-jimenez-sju-hawks-2026-07-22",
+  "mlh-jimenez-us-amateur-2026-08-05",
+  "penn-mahoney-muller-endowments-2026-08-04",
+  "temple-honor-roll-2026",
+  "virtua-pullin-here-for-good-2026-07-16",
+  "virtua-pullin-lessons-in-leadership-2026-07-27"
 ];
 export const publishedBriefingSlugs = [];
 export const publishedHead = {
@@ -100,6 +111,61 @@ export const publishedHead = {
     "kind": "voice",
     "title": "David Johnson, July 30, 2026: Inspira on day 6 of an Epic live",
     "description": "Inspira was on day 6 of an Epic live when its CIIO said so in that comment."
+  },
+  "inspira-mansue-epic-2026-07-27": {
+    "kind": "voice",
+    "title": "Amy B. Mansue, July 27, 2026: Inspira launches Epic",
+    "description": "Inspira launched Epic on July 27, 2026 with MyChart, Care Everywhere, and more than 50 Epic AI-suite tools on day one; hours saved are Inspira’s estimate."
+  },
+  "mlh-jimenez-sju-hawks-2026-07-22": {
+    "kind": "voice",
+    "title": "Ed Jimenez, July 22, 2026: MLH exclusive medical provider for SJU Hawks",
+    "description": "Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner."
+  },
+  "penn-mahoney-muller-endowments-2026-08-04": {
+    "kind": "voice",
+    "title": "Kevin B. Mahoney, Aug. 4, 2026: $7 million Muller administrative endowments",
+    "description": "Muller administrative endowments total $7 million for the HUP CEO, UPHS CFO, and CHIBE director posts."
+  },
+  "mlh-jimenez-us-amateur-2026-08-05": {
+    "kind": "voice",
+    "title": "Ed Jimenez, Aug. 5, 2026: MLH official healthcare provider for 2026 U.S. Amateur",
+    "description": "Main Line Health is the official healthcare provider for the 2026 U.S. Amateur, Aug. 10–16 at Merion and Philadelphia Country Club."
+  },
+  "jefferson-cacchione-skmc-allentown-2026-07-13": {
+    "kind": "voice",
+    "title": "Joseph G. Cacchione, July 13, 2026: SKMC four-year Allentown campus",
+    "description": "SKMC’s four-year Allentown campus has an inaugural class of 45 in July 2029."
+  },
+  "jefferson-cacchione-de-med-school-2026-07-15": {
+    "kind": "voice",
+    "title": "Joseph G. Cacchione, July 15, 2026: Delaware’s first medical school",
+    "description": "Jefferson plans Delaware’s first medical school, first class 40 in July 2028, pending LCME; the page prints a CMS/HHS award of $157,394,963.86."
+  },
+  "jefferson-cacchione-board-2026-07-30": {
+    "kind": "voice",
+    "title": "Joseph G. Cacchione, July 30, 2026: Wellenbach and Fung leaving TJU board",
+    "description": "Wellenbach and Fung are leaving the TJU board."
+  },
+  "jefferson-cacchione-lcs-link-2026-08-05": {
+    "kind": "voice",
+    "title": "Joseph G. Cacchione, Aug. 5, 2026: $1.75 million BMS Foundation LCS-LINK",
+    "description": "BMS Foundation granted $1.75 million for LCS-LINK, July 2026–June 2029, with Philly FQHCs."
+  },
+  "chop-bell-breaking-through-2026-08-14": {
+    "kind": "voice",
+    "title": "Madeline Bell, Aug. 14, 2026: official CHOP OPEN final Breaking Through",
+    "description": "Bell’s official CHOP OPEN final Breaking Through; she retires in October; Mitchell is successor, not current CEO."
+  },
+  "virtua-pullin-here-for-good-2026-07-16": {
+    "kind": "voice",
+    "title": "Dennis W. Pullin, July 16, 2026: Here for Good podcast episode 07.16.26",
+    "description": "Pullin hosts Virtua’s Here for Good podcast; episode 07.16.26."
+  },
+  "virtua-pullin-lessons-in-leadership-2026-07-27": {
+    "kind": "voice",
+    "title": "Dennis Pullin, July 27, 2026: Lessons in Leadership, Champions of Humanity, Eat Well",
+    "description": "Pullin spoke on Lessons in Leadership, Champions of Humanity, and Eat Well."
   },
   "njdvhimss-annual-golf-outing": {
     "kind": "event",

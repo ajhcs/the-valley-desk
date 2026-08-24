@@ -1,7 +1,7 @@
 {
   "product": "the-valley-desk",
   "version": "1",
-  "generatedAt": "2026-08-24T16:03:06.354Z",
+  "generatedAt": "2026-08-24T16:16:36.885Z",
   "items": [
     {
       "id": "news-jefferson-einstein-mychart-2026-09-26",
@@ -566,6 +566,446 @@
         {
           "name": "Johnson July 30 LI",
           "url": "https://www.linkedin.com/posts/tim-bowers-ms-cic-fapic-cphq-a4492311_more-tdr-today-but-the-highlight-so-far-was-activity-7483929651741081600-YO6Q"
+        }
+      ]
+    },
+    {
+      "id": "voice-inspira-mansue-epic-2026-07-27",
+      "slug": "inspira-mansue-epic-2026-07-27",
+      "kind": "voice",
+      "title": "Amy B. Mansue, July 27, 2026: Inspira launches Epic",
+      "dek": "Inspira Health launched Epic on July 27, 2026. Patients get MyChart and Care Everywhere. From day one Inspira is deploying more than 50 digital tools from Epic’s AI suite and cognitive computing models. Warren E. Moore is quoted on the AI suite. Inspira estimates the system will save tens of thousands of hours annually; that figure is Inspira’s claim, not a filing.",
+      "body": "Inspira Health launched Epic on July 27, 2026. Patients get MyChart and Care Everywhere. From day one Inspira is deploying more than 50 digital tools from Epic’s AI suite and cognitive computing models. Warren E. Moore is quoted on the AI suite. Inspira estimates the system will save tens of thousands of hours annually; that figure is Inspira’s claim, not a filing.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-07-27T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-inspira"
+      ],
+      "region": "NJ",
+      "authors": [
+        {
+          "name": "Amy B. Mansue",
+          "org": "org-inspira"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "inspira",
+        "url": "https://www.inspirahealthnetwork.org/news/press-release/inspira-health-launches-epic-advancing-care-experience-south-jersey-patients"
+      },
+      "person": "Amy B. Mansue",
+      "role": "CEO",
+      "org": "Inspira Health",
+      "platform": "site",
+      "originalUrl": "https://www.inspirahealthnetwork.org/news/press-release/inspira-health-launches-epic-advancing-care-experience-south-jersey-patients",
+      "impactSentence": "Inspira launched Epic on July 27, 2026 with MyChart, Care Everywhere, and more than 50 Epic AI-suite tools on day one; hours saved are Inspira’s estimate.",
+      "citations": [
+        {
+          "name": "Inspira July 27 Epic launch",
+          "url": "https://www.inspirahealthnetwork.org/news/press-release/inspira-health-launches-epic-advancing-care-experience-south-jersey-patients"
+        }
+      ]
+    },
+    {
+      "id": "voice-mlh-jimenez-sju-hawks-2026-07-22",
+      "slug": "mlh-jimenez-sju-hawks-2026-07-22",
+      "kind": "voice",
+      "title": "Ed Jimenez, July 22, 2026: MLH exclusive medical provider for SJU Hawks",
+      "dek": "Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner in St. Joe’s history. Ed Jimenez is President and CEO of Main Line Health.",
+      "body": "Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner in St. Joe’s history. Ed Jimenez is President and CEO of Main Line Health.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-07-22T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-main-line"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Ed Jimenez",
+          "org": "org-main-line"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "main-line-health",
+        "url": "https://www.mainlinehealth.org/news/2026/07/22/saint-josephs-athletics-and-main-line-health-announce-new-affiliation"
+      },
+      "person": "Ed Jimenez",
+      "role": "President and CEO",
+      "org": "Main Line Health",
+      "platform": "site",
+      "originalUrl": "https://www.mainlinehealth.org/news/2026/07/22/saint-josephs-athletics-and-main-line-health-announce-new-affiliation",
+      "impactSentence": "Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner.",
+      "citations": [
+        {
+          "name": "MLH July 22 SJU affiliation",
+          "url": "https://www.mainlinehealth.org/news/2026/07/22/saint-josephs-athletics-and-main-line-health-announce-new-affiliation"
+        }
+      ]
+    },
+    {
+      "id": "voice-penn-mahoney-muller-endowments-2026-08-04",
+      "slug": "penn-mahoney-muller-endowments-2026-08-04",
+      "kind": "voice",
+      "title": "Kevin B. Mahoney, Aug. 4, 2026: $7 million Muller administrative endowments",
+      "dek": "Ralph Muller and Beth Johnston Muller endowed three Penn Medicine administrative posts over the last year, totaling $7 million: HUP CEO, UPHS CFO, and CHIBE director. Kevin B. Mahoney is CEO of the University of Pennsylvania Health System.",
+      "body": "Ralph Muller and Beth Johnston Muller endowed three Penn Medicine administrative posts over the last year, totaling $7 million: HUP CEO, UPHS CFO, and CHIBE director. Kevin B. Mahoney is CEO of the University of Pennsylvania Health System.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-08-04T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-penn"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Kevin B. Mahoney",
+          "org": "org-penn"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "penn-medicine",
+        "url": "https://www.pennmedicine.org/news/preserving-a-legacy-to-endure-long-after-retirement"
+      },
+      "person": "Kevin B. Mahoney",
+      "role": "UPHS CEO",
+      "org": "Penn Medicine",
+      "platform": "site",
+      "originalUrl": "https://www.pennmedicine.org/news/preserving-a-legacy-to-endure-long-after-retirement",
+      "impactSentence": "Muller administrative endowments total $7 million for the HUP CEO, UPHS CFO, and CHIBE director posts.",
+      "citations": [
+        {
+          "name": "Penn Medicine Aug. 4 Muller endowments",
+          "url": "https://www.pennmedicine.org/news/preserving-a-legacy-to-endure-long-after-retirement"
+        }
+      ]
+    },
+    {
+      "id": "voice-mlh-jimenez-us-amateur-2026-08-05",
+      "slug": "mlh-jimenez-us-amateur-2026-08-05",
+      "kind": "voice",
+      "title": "Ed Jimenez, Aug. 5, 2026: MLH official healthcare provider for 2026 U.S. Amateur",
+      "dek": "Main Line Health is the official healthcare provider for the 2026 U.S. Amateur Championship, Aug. 10–16 at Merion Golf Club and Philadelphia Country Club. Ed Jimenez is President and CEO of Main Line Health.",
+      "body": "Main Line Health is the official healthcare provider for the 2026 U.S. Amateur Championship, Aug. 10–16 at Merion Golf Club and Philadelphia Country Club. Ed Jimenez is President and CEO of Main Line Health.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-08-05T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-main-line"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Ed Jimenez",
+          "org": "org-main-line"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "main-line-health",
+        "url": "https://www.mainlinehealth.org/news/2026/08/05/main-line-health-named-official-healthcare-provider-for-the-2026-us-amateur-championship"
+      },
+      "person": "Ed Jimenez",
+      "role": "President and CEO",
+      "org": "Main Line Health",
+      "platform": "site",
+      "originalUrl": "https://www.mainlinehealth.org/news/2026/08/05/main-line-health-named-official-healthcare-provider-for-the-2026-us-amateur-championship",
+      "impactSentence": "Main Line Health is the official healthcare provider for the 2026 U.S. Amateur, Aug. 10–16 at Merion and Philadelphia Country Club.",
+      "citations": [
+        {
+          "name": "MLH Aug. 5 U.S. Amateur",
+          "url": "https://www.mainlinehealth.org/news/2026/08/05/main-line-health-named-official-healthcare-provider-for-the-2026-us-amateur-championship"
+        }
+      ]
+    },
+    {
+      "id": "voice-jefferson-cacchione-skmc-allentown-2026-07-13",
+      "slug": "jefferson-cacchione-skmc-allentown-2026-07-13",
+      "kind": "voice",
+      "title": "Joseph G. Cacchione, July 13, 2026: SKMC four-year Allentown campus",
+      "dek": "Thomas Jefferson University plans a four-year Sidney Kimmel Medical College campus in Allentown. The inaugural class is 45 students in July 2029. Joseph G. Cacchione is CEO of Jefferson.",
+      "body": "Thomas Jefferson University plans a four-year Sidney Kimmel Medical College campus in Allentown. The inaugural class is 45 students in July 2029. Joseph G. Cacchione is CEO of Jefferson.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-07-13T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-jefferson"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Joseph G. Cacchione",
+          "org": "org-jefferson"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "jefferson",
+        "url": "https://www.jefferson.edu/news/2026/07/thomas-jefferson-university-to-establish-regional-medical-college-campus-in-lehigh-valley.html"
+      },
+      "person": "Joseph G. Cacchione",
+      "role": "CEO",
+      "org": "Jefferson Health",
+      "platform": "site",
+      "originalUrl": "https://www.jefferson.edu/news/2026/07/thomas-jefferson-university-to-establish-regional-medical-college-campus-in-lehigh-valley.html",
+      "impactSentence": "SKMC’s four-year Allentown campus has an inaugural class of 45 in July 2029.",
+      "citations": [
+        {
+          "name": "Jefferson July 13 SKMC Allentown",
+          "url": "https://www.jefferson.edu/news/2026/07/thomas-jefferson-university-to-establish-regional-medical-college-campus-in-lehigh-valley.html"
+        }
+      ]
+    },
+    {
+      "id": "voice-jefferson-cacchione-de-med-school-2026-07-15",
+      "slug": "jefferson-cacchione-de-med-school-2026-07-15",
+      "kind": "voice",
+      "title": "Joseph G. Cacchione, July 15, 2026: Delaware’s first medical school",
+      "dek": "Jefferson plans Delaware’s first medical school, a four-year SKMC regional campus. The first class is 40 students in July 2028, pending LCME. The page prints a CMS/HHS award totaling $157,394,963.86. Joseph G. Cacchione is CEO of Jefferson.",
+      "body": "Jefferson plans Delaware’s first medical school, a four-year SKMC regional campus. The first class is 40 students in July 2028, pending LCME. The page prints a CMS/HHS award totaling $157,394,963.86. Joseph G. Cacchione is CEO of Jefferson.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-07-15T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-jefferson"
+      ],
+      "region": "DE",
+      "authors": [
+        {
+          "name": "Joseph G. Cacchione",
+          "org": "org-jefferson"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "jefferson",
+        "url": "https://www.jefferson.edu/news/2026/07/thomas-jefferson-university-and-consortium-partners-share-plans-for-delawares-first-medical-school.html"
+      },
+      "person": "Joseph G. Cacchione",
+      "role": "CEO",
+      "org": "Jefferson Health",
+      "platform": "site",
+      "originalUrl": "https://www.jefferson.edu/news/2026/07/thomas-jefferson-university-and-consortium-partners-share-plans-for-delawares-first-medical-school.html",
+      "impactSentence": "Jefferson plans Delaware’s first medical school, first class 40 in July 2028, pending LCME; the page prints a CMS/HHS award of $157,394,963.86.",
+      "citations": [
+        {
+          "name": "Jefferson July 15 Delaware medical school",
+          "url": "https://www.jefferson.edu/news/2026/07/thomas-jefferson-university-and-consortium-partners-share-plans-for-delawares-first-medical-school.html"
+        }
+      ]
+    },
+    {
+      "id": "voice-jefferson-cacchione-board-2026-07-30",
+      "slug": "jefferson-cacchione-board-2026-07-30",
+      "kind": "voice",
+      "title": "Joseph G. Cacchione, July 30, 2026: Wellenbach and Fung leaving TJU board",
+      "dek": "Patricia D. Wellenbach and John J. Fung are leaving the Thomas Jefferson University Board of Trustees. Joseph G. Cacchione is CEO of Jefferson.",
+      "body": "Patricia D. Wellenbach and John J. Fung are leaving the Thomas Jefferson University Board of Trustees. Joseph G. Cacchione is CEO of Jefferson.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-07-30T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-jefferson"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Joseph G. Cacchione",
+          "org": "org-jefferson"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "jefferson",
+        "url": "https://www.jefferson.edu/news/2026/07/jefferson-announces-new-appointments-to-its-board-of-trustees.html"
+      },
+      "person": "Joseph G. Cacchione",
+      "role": "CEO",
+      "org": "Jefferson Health",
+      "platform": "site",
+      "originalUrl": "https://www.jefferson.edu/news/2026/07/jefferson-announces-new-appointments-to-its-board-of-trustees.html",
+      "impactSentence": "Wellenbach and Fung are leaving the TJU board.",
+      "citations": [
+        {
+          "name": "Jefferson July 30 board",
+          "url": "https://www.jefferson.edu/news/2026/07/jefferson-announces-new-appointments-to-its-board-of-trustees.html"
+        }
+      ]
+    },
+    {
+      "id": "voice-jefferson-cacchione-lcs-link-2026-08-05",
+      "slug": "jefferson-cacchione-lcs-link-2026-08-05",
+      "kind": "voice",
+      "title": "Joseph G. Cacchione, Aug. 5, 2026: $1.75 million BMS Foundation LCS-LINK",
+      "dek": "Jefferson Health received a $1.75 million Bristol Myers Squibb Foundation grant for LCS-LINK, July 2026 through June 2029, with Philadelphia FQHCs. Joseph G. Cacchione is CEO of Jefferson.",
+      "body": "Jefferson Health received a $1.75 million Bristol Myers Squibb Foundation grant for LCS-LINK, July 2026 through June 2029, with Philadelphia FQHCs. Joseph G. Cacchione is CEO of Jefferson.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-08-05T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-jefferson"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Joseph G. Cacchione",
+          "org": "org-jefferson"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "jefferson",
+        "url": "https://giving.jefferson.edu/about/news/bristol-myers-squibb-foundation-lung-cancer-screening-grant.html"
+      },
+      "person": "Joseph G. Cacchione",
+      "role": "CEO",
+      "org": "Jefferson Health",
+      "platform": "site",
+      "originalUrl": "https://giving.jefferson.edu/about/news/bristol-myers-squibb-foundation-lung-cancer-screening-grant.html",
+      "impactSentence": "BMS Foundation granted $1.75 million for LCS-LINK, July 2026–June 2029, with Philly FQHCs.",
+      "citations": [
+        {
+          "name": "Jefferson Aug. 5 LCS-LINK",
+          "url": "https://giving.jefferson.edu/about/news/bristol-myers-squibb-foundation-lung-cancer-screening-grant.html"
+        }
+      ]
+    },
+    {
+      "id": "voice-chop-bell-breaking-through-2026-08-14",
+      "slug": "chop-bell-breaking-through-2026-08-14",
+      "kind": "voice",
+      "title": "Madeline Bell, Aug. 14, 2026: official CHOP OPEN final Breaking Through",
+      "dek": "The official CHOP OPEN final Breaking Through episode was released Aug. 14, 2026. Madeline Bell retires in October. Joe Mitchell is the successor, not the current CEO.",
+      "body": "The official CHOP OPEN final Breaking Through episode was released Aug. 14, 2026. Madeline Bell retires in October. Joe Mitchell is the successor, not the current CEO.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-08-14T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-chop"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Madeline Bell",
+          "org": "org-chop"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "chop",
+        "url": "https://open.chop.edu/courses/chops-next-chapter/"
+      },
+      "person": "Madeline Bell",
+      "role": "CEO",
+      "org": "Children's Hospital of Philadelphia",
+      "platform": "site",
+      "originalUrl": "https://open.chop.edu/courses/chops-next-chapter/",
+      "impactSentence": "Bell’s official CHOP OPEN final Breaking Through; she retires in October; Mitchell is successor, not current CEO.",
+      "citations": [
+        {
+          "name": "CHOP OPEN Aug. 14 Breaking Through",
+          "url": "https://open.chop.edu/courses/chops-next-chapter/"
+        }
+      ]
+    },
+    {
+      "id": "voice-virtua-pullin-here-for-good-2026-07-16",
+      "slug": "virtua-pullin-here-for-good-2026-07-16",
+      "kind": "voice",
+      "title": "Dennis W. Pullin, July 16, 2026: Here for Good podcast episode 07.16.26",
+      "dek": "Dennis W. Pullin hosts Virtua’s Here for Good podcast. The 07.16.26 episode is on the official Virtua page.",
+      "body": "Dennis W. Pullin hosts Virtua’s Here for Good podcast. The 07.16.26 episode is on the official Virtua page.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-07-16T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-virtua"
+      ],
+      "region": "NJ",
+      "authors": [
+        {
+          "name": "Dennis W. Pullin",
+          "org": "org-virtua"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "virtua",
+        "url": "https://www.virtua.org/About/Here-for-Good-Podcast"
+      },
+      "person": "Dennis W. Pullin",
+      "role": "President and CEO",
+      "org": "Virtua Health",
+      "platform": "site",
+      "originalUrl": "https://www.virtua.org/About/Here-for-Good-Podcast",
+      "impactSentence": "Pullin hosts Virtua’s Here for Good podcast; episode 07.16.26.",
+      "citations": [
+        {
+          "name": "Virtua Here for Good podcast",
+          "url": "https://www.virtua.org/About/Here-for-Good-Podcast"
+        }
+      ]
+    },
+    {
+      "id": "voice-li-7487503653004775426",
+      "slug": "virtua-pullin-lessons-in-leadership-2026-07-27",
+      "kind": "voice",
+      "title": "Dennis Pullin, July 27, 2026: Lessons in Leadership, Champions of Humanity, Eat Well",
+      "dek": "Virtua’s official LinkedIn posted July 27, 2026 that President and CEO Dennis Pullin spoke on Lessons in Leadership, Virtua’s Champions of Humanity framework, and Eat Well.",
+      "body": "Virtua’s official LinkedIn posted July 27, 2026 that President and CEO Dennis Pullin spoke on Lessons in Leadership, Virtua’s Champions of Humanity framework, and Eat Well.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-07-27T16:00:00.000Z",
+      "updatedAt": "2026-08-24T16:00:00.000Z",
+      "topics": [],
+      "orgs": [
+        "org-virtua"
+      ],
+      "region": "NJ",
+      "authors": [
+        {
+          "name": "Dennis Pullin",
+          "org": "org-virtua"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "linkedin",
+        "url": "https://www.linkedin.com/posts/virtuahealth_president-and-ceo-dennis-pullin-spoke-with-activity-7487503653004775426-pcxl"
+      },
+      "person": "Dennis Pullin",
+      "role": "President and CEO",
+      "org": "Virtua Health",
+      "platform": "linkedin",
+      "originalUrl": "https://www.linkedin.com/posts/virtuahealth_president-and-ceo-dennis-pullin-spoke-with-activity-7487503653004775426-pcxl",
+      "impactSentence": "Pullin spoke on Lessons in Leadership, Champions of Humanity, and Eat Well.",
+      "citations": [
+        {
+          "name": "Virtua official July 27 LI",
+          "url": "https://www.linkedin.com/posts/virtuahealth_president-and-ceo-dennis-pullin-spoke-with-activity-7487503653004775426-pcxl"
         }
       ]
     },

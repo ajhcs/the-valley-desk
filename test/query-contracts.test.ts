@@ -1525,12 +1525,10 @@ test("Voices v1: published kind=voice only, Honor Roll is not news, Jane Doe sta
   assert.equal(honor.citations?.length, 3);
   assert.ok(!honor.citations?.some((c) => /credly/i.test(`${c.name} ${c.url}`)));
   assert.equal(honor.body, honor.dek);
-  const voices = latestVoices(catalog);
-  assert.deepEqual(voices.map((i) => i.slug), [
-    "mlh-cloud-analytics-2026-08-17",
-    "temple-honor-roll-2026",
-    "inspira-johnson-epic-day-6-2026-07-30",
-  ]);
+  const voices = latestVoices(catalog, Number.MAX_SAFE_INTEGER);
+  assert.ok(voices.some((i) => i.slug === "inspira-johnson-epic-day-6-2026-07-30"));
+  assert.ok(voices.some((i) => i.slug === "mlh-cloud-analytics-2026-08-17"));
+  assert.ok(voices.some((i) => i.slug === "temple-honor-roll-2026"));
   assert.ok(voices.every((i) => i.kind === "voice" && i.status === "published"));
   assert.ok(!voices.some((i) => i.slug === "cio-note-workforce-ai"));
   const news = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
@@ -2091,7 +2089,7 @@ test("Sloan SIGN: Inspira Johnson day-6 voice; Honor Roll stays voice; pay facts
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(itemJsonLd(voice), undefined);
   assert.notEqual(itemJsonLd(voice)?.["@type"], "NewsArticle");
-  assert.ok(latestVoices(catalog).some((i) => i.slug === voice.slug));
+  assert.ok(latestVoices(catalog, Number.MAX_SAFE_INTEGER).some((i) => i.slug === voice.slug));
   assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.slug === voice.slug));
   assert.equal(canonicalPath(voice), "/voices/inspira-johnson-epic-day-6-2026-07-30");
   const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
@@ -2265,5 +2263,218 @@ test("Reed liability: item-page prints signed facts; CC is NPSR-only; CIO slugs 
     assert.ok(!published.includes(`"slug": "${slug}"`));
     assert.ok(!workerPublished.includes(slug));
   }
+});
+
+test("Sloan SIGN 11 Voices: published voice rows, Johnson off Mansue, chrome holds", () => {
+  const signed = [
+    {
+      id: "voice-inspira-mansue-epic-2026-07-27",
+      slug: "inspira-mansue-epic-2026-07-27",
+      person: "Amy B. Mansue",
+      orgId: "org-inspira",
+      origin: "inspira",
+      publishedAt: "2026-07-27T16:00:00.000Z",
+      cite: "https://www.inspirahealthnetwork.org/news/press-release/inspira-health-launches-epic-advancing-care-experience-south-jersey-patients",
+    },
+    {
+      id: "voice-mlh-jimenez-sju-hawks-2026-07-22",
+      slug: "mlh-jimenez-sju-hawks-2026-07-22",
+      person: "Ed Jimenez",
+      orgId: "org-main-line",
+      origin: "main-line-health",
+      publishedAt: "2026-07-22T16:00:00.000Z",
+      cite: "https://www.mainlinehealth.org/news/2026/07/22/saint-josephs-athletics-and-main-line-health-announce-new-affiliation",
+    },
+    {
+      id: "voice-penn-mahoney-muller-endowments-2026-08-04",
+      slug: "penn-mahoney-muller-endowments-2026-08-04",
+      person: "Kevin B. Mahoney",
+      orgId: "org-penn",
+      origin: "penn-medicine",
+      publishedAt: "2026-08-04T16:00:00.000Z",
+      cite: "https://www.pennmedicine.org/news/preserving-a-legacy-to-endure-long-after-retirement",
+    },
+    {
+      id: "voice-mlh-jimenez-us-amateur-2026-08-05",
+      slug: "mlh-jimenez-us-amateur-2026-08-05",
+      person: "Ed Jimenez",
+      orgId: "org-main-line",
+      origin: "main-line-health",
+      publishedAt: "2026-08-05T16:00:00.000Z",
+      cite: "https://www.mainlinehealth.org/news/2026/08/05/main-line-health-named-official-healthcare-provider-for-the-2026-us-amateur-championship",
+    },
+    {
+      id: "voice-jefferson-cacchione-skmc-allentown-2026-07-13",
+      slug: "jefferson-cacchione-skmc-allentown-2026-07-13",
+      person: "Joseph G. Cacchione",
+      orgId: "org-jefferson",
+      origin: "jefferson",
+      publishedAt: "2026-07-13T16:00:00.000Z",
+      cite: "https://www.jefferson.edu/news/2026/07/thomas-jefferson-university-to-establish-regional-medical-college-campus-in-lehigh-valley.html",
+    },
+    {
+      id: "voice-jefferson-cacchione-de-med-school-2026-07-15",
+      slug: "jefferson-cacchione-de-med-school-2026-07-15",
+      person: "Joseph G. Cacchione",
+      orgId: "org-jefferson",
+      origin: "jefferson",
+      publishedAt: "2026-07-15T16:00:00.000Z",
+      cite: "https://www.jefferson.edu/news/2026/07/thomas-jefferson-university-and-consortium-partners-share-plans-for-delawares-first-medical-school.html",
+    },
+    {
+      id: "voice-jefferson-cacchione-board-2026-07-30",
+      slug: "jefferson-cacchione-board-2026-07-30",
+      person: "Joseph G. Cacchione",
+      orgId: "org-jefferson",
+      origin: "jefferson",
+      publishedAt: "2026-07-30T16:00:00.000Z",
+      cite: "https://www.jefferson.edu/news/2026/07/jefferson-announces-new-appointments-to-its-board-of-trustees.html",
+    },
+    {
+      id: "voice-jefferson-cacchione-lcs-link-2026-08-05",
+      slug: "jefferson-cacchione-lcs-link-2026-08-05",
+      person: "Joseph G. Cacchione",
+      orgId: "org-jefferson",
+      origin: "jefferson",
+      publishedAt: "2026-08-05T16:00:00.000Z",
+      cite: "https://giving.jefferson.edu/about/news/bristol-myers-squibb-foundation-lung-cancer-screening-grant.html",
+    },
+    {
+      id: "voice-chop-bell-breaking-through-2026-08-14",
+      slug: "chop-bell-breaking-through-2026-08-14",
+      person: "Madeline Bell",
+      orgId: "org-chop",
+      origin: "chop",
+      publishedAt: "2026-08-14T16:00:00.000Z",
+      cite: "https://open.chop.edu/courses/chops-next-chapter/",
+    },
+    {
+      id: "voice-virtua-pullin-here-for-good-2026-07-16",
+      slug: "virtua-pullin-here-for-good-2026-07-16",
+      person: "Dennis W. Pullin",
+      orgId: "org-virtua",
+      origin: "virtua",
+      publishedAt: "2026-07-16T16:00:00.000Z",
+      cite: "https://www.virtua.org/About/Here-for-Good-Podcast",
+    },
+    {
+      id: "voice-li-7487503653004775426",
+      slug: "virtua-pullin-lessons-in-leadership-2026-07-27",
+      person: "Dennis Pullin",
+      orgId: "org-virtua",
+      origin: "linkedin",
+      publishedAt: "2026-07-27T16:00:00.000Z",
+      cite: "https://www.linkedin.com/posts/virtuahealth_president-and-ceo-dennis-pullin-spoke-with-activity-7487503653004775426-pcxl",
+    },
+  ];
+  const slugs = signed.map((row) => row.slug);
+  const voices = signed.map((row) => {
+    const item = catalog.find((i) => i.id === row.id);
+    assert.ok(item, row.id);
+    return item!;
+  });
+  const johnson = catalog.find((i) => i.id === "voice-li-7483929651741081600");
+  const mansue = catalog.find((i) => i.id === "voice-inspira-mansue-epic-2026-07-27");
+  const honor = catalog.find((i) => i.slug === "temple-honor-roll-2026");
+  const lcs = catalog.find((i) => i.slug === "jefferson-cacchione-lcs-link-2026-08-05");
+  assert.ok(johnson && mansue && honor && lcs);
+
+  assert.equal(johnson.slug, "inspira-johnson-epic-day-6-2026-07-30");
+  assert.equal(johnson.kind, "voice");
+  assert.equal(johnson.status, "published");
+  assert.equal(johnson.featured, false);
+  assert.equal(johnson.publishedAt, "2026-07-30T16:00:00.000Z");
+  assert.deepEqual(johnson.orgs, ["org-inspira"]);
+  assert.equal(johnson.authors[0]?.name, "David Johnson");
+  assert.ok(!johnson.authors.some((a) => /Mansue/i.test(a.name)));
+  assert.equal(johnson.kind === "voice" ? johnson.person : "", "David Johnson");
+  assert.equal(
+    johnson.impactSentence,
+    "Inspira was on day 6 of an Epic live when its CIIO said so in that comment.",
+  );
+  assert.equal(
+    johnson.source.url,
+    "https://www.linkedin.com/posts/tim-bowers-ms-cic-fapic-cphq-a4492311_more-tdr-today-but-the-highlight-so-far-was-activity-7483929651741081600-YO6Q",
+  );
+
+  const mansuePerson = mansue.kind === "voice" ? mansue.person : "";
+  assert.ok(!/Johnson/i.test(`${mansuePerson} ${mansue.authors.map((a) => a.name).join(" ")}`));
+  assert.ok(!mansue.authors.some((a) => /Johnson/i.test(a.name)));
+  assert.notEqual(mansuePerson, "David Johnson");
+  assert.ok(/Inspira’s (estimate|claim)|Inspira estimates/i.test(`${mansue.dek} ${mansue.impactSentence}`));
+  assert.ok(!/Holt|salary|revenue/i.test(`${mansue.dek} ${mansue.body} ${mansue.impactSentence}`));
+  assert.ok(!/\b32\b|\b33\b/.test(`${lcs.title} ${lcs.dek} ${lcs.body} ${lcs.impactSentence}`));
+
+  for (const [row, item] of signed.map((spec, i) => [spec, voices[i]] as const)) {
+    assert.equal(item.kind, "voice");
+    assert.equal(item.status, "published");
+    assert.equal(item.featured, false);
+    assert.ok(!("clockAt" in item));
+    assert.equal(item.slug, row.slug);
+    assert.equal(item.publishedAt, row.publishedAt);
+    assert.deepEqual(item.orgs, [row.orgId]);
+    assert.ok(seedIds.has(row.orgId));
+    assert.ok(item.orgs.every((id) => seedIds.has(id)));
+    assert.ok(!item.authors.some((a) => /Valley Desk/i.test(a.name)));
+    assert.equal(item.authors[0]?.name, row.person);
+    assert.equal(item.authors[0]?.org, row.orgId);
+    assert.equal(item.source.kind, "editorial");
+    assert.equal(item.source.origin, row.origin);
+    assert.equal(item.source.url, row.cite);
+    assert.equal(item.kind === "voice" ? item.person : "", row.person);
+    assert.equal(item.kind === "voice" ? item.originalUrl : "", row.cite);
+    assert.ok(item.impactSentence?.trim());
+    assert.ok(!/\n/.test(item.impactSentence ?? ""));
+    assert.equal(itemJsonLd(item), undefined);
+    assert.notEqual(itemJsonLd(item)?.["@type"], "NewsArticle");
+    assert.equal(canonicalPath(item), `/voices/${row.slug}`);
+    assert.notEqual(canonicalPath(item), `/news/${row.slug}`);
+    assert.equal(bySlug(catalog, row.slug)?.id, row.id);
+  }
+
+  const allVoices = latestVoices(catalog, Number.MAX_SAFE_INTEGER);
+  const news = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
+  const newsPage = publishedNewsList(catalog);
+  const rail = latestVoices(catalog);
+  for (const slug of slugs) {
+    assert.ok(allVoices.some((i) => i.slug === slug));
+    assert.ok(!news.some((i) => i.slug === slug));
+    assert.ok(!newsPage.some((i) => i.slug === slug));
+  }
+  assert.ok(allVoices.every((i) => i.kind === "voice" && i.status === "published"));
+  assert.ok(rail.every((i) => i.kind === "voice"));
+  assert.equal(honor.kind, "voice");
+  assert.equal(honor.status, "published");
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+  assert.equal(entityRows.length, 92);
+  assert.ok(!entityRows.some((e) => /mansue|jimenez|mahoney|cacchione|madeline-bell|pullin/i.test(e.id)));
+  assert.ok(!entityRows.some((e) => e.id.startsWith("person-") && /Mansue|Jimenez|Mahoney|Cacchione|Madeline Bell|Dennis/.test(e.name)));
+
+  const blob = JSON.stringify(voices);
+  assert.ok(!/Cooper \$100|\$100M/i.test(blob));
+  assert.ok(!/ranking/i.test(blob));
+  assert.ok(!/\bCIR\b/.test(blob));
+  assert.ok(!/Venua/.test(blob));
+
+  const sitemap = readFileSync(join(root, "public/sitemap.xml"), "utf8");
+  const workerPublished = readFileSync(join(root, "worker-published.js"), "utf8");
+  const feed = JSON.parse(readFileSync(join(root, "public/feed.json"), "utf8")) as { items: { id: string; slug: string; kind: string }[] };
+  const newsSlugBlock = workerPublished.slice(
+    workerPublished.indexOf("export const publishedNewsSlugs"),
+    workerPublished.indexOf("export const publishedEventSlugs"),
+  );
+  const voiceSlugBlock = workerPublished.slice(
+    workerPublished.indexOf("export const publishedVoiceSlugs"),
+    workerPublished.indexOf("export const publishedBriefingSlugs"),
+  );
+  for (const slug of slugs) {
+    assert.ok(sitemap.includes(`<loc>https://thevalleydesk.org/voices/${slug}</loc>`), slug);
+    assert.ok(!sitemap.includes(`<loc>https://thevalleydesk.org/news/${slug}</loc>`), slug);
+    assert.ok(voiceSlugBlock.includes(`"${slug}"`), slug);
+    assert.ok(!newsSlugBlock.includes(`"${slug}"`), slug);
+    assert.ok(feed.items.some((row) => row.slug === slug && row.kind === "voice"));
+  }
+  assert.ok(voiceSlugBlock.includes('"inspira-johnson-epic-day-6-2026-07-30"'));
 });
 
