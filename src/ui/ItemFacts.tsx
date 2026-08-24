@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo } from "react";
 import type { ReactNode } from "react";
 import { entities } from "../lib/entities";
-import { itemSignedFacts, signedFactText, uniqueCitations, type MentionHit } from "../lib/entityFacts";
+import { displayFacts, itemSignedFacts, signedFactText, uniqueCitations, type MentionHit } from "../lib/entityFacts";
 
 export const PrintedFactIds = createContext<Record<string, string>>({});
 
@@ -35,8 +35,9 @@ export function ItemFacts({ hits }: { hits: MentionHit[] }) {
   return (
     <section className="ItemFacts">
       {hits.flatMap((hit) => {
-        const cites = uniqueCitations(hit.facts);
-        return hit.facts.map((fact, i) => (
+        const facts = displayFacts(hit.facts);
+        const cites = uniqueCitations(facts);
+        return facts.map((fact, i) => (
           <p key={`${hit.orgId}-${fact.label}`} id={i === 0 ? ids[hit.orgId] : undefined}>
             {signedFactText(fact)}
             {cites.map((cite) => (

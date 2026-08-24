@@ -116,6 +116,11 @@ export function signedPrintLine(fact: CitableFact) {
   return `${signedFactText(fact)} · ${fact.citation.name}`;
 }
 
+/** Paint-ready facts. Stored operating lines stay on the entity; they do not print or hover. */
+export function displayFacts(facts: CitableFact[]): CitableFact[] {
+  return facts.filter((fact) => Boolean(fact.citation.url) && !/operating/i.test(`${fact.label} ${fact.detail ?? ""}`));
+}
+
 const ABBREV = new Set([
   "apr",
   "aug",

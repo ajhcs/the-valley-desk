@@ -47,6 +47,7 @@ import {
   factBearingEntities,
   findFirstMentions,
   itemSignedFacts,
+  displayFacts,
   signedHoverLine,
   signedPrintLine,
   splitFirstSentence,
@@ -1869,6 +1870,9 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   assert.ok(!mention.includes("/org/"));
   assert.ok(mention.includes("OrgTick"));
   assert.ok(mention.includes("tabIndex={0}"));
+  assert.ok(mention.includes("is-help"));
+  assert.ok(mention.includes('aria-hidden="true"'));
+  assert.ok(mention.includes("canInsert"));
   assert.ok(mention.includes("aria-describedby"));
   assert.ok(!mention.includes("createPortal"));
   assert.ok(!mention.includes("placeOrgChip"));
@@ -2123,10 +2127,18 @@ test("Reed Bloomberg: hover line names the org; rest print does not; no chip; NE
   assert.ok(!/operating|3,289,202,000|Net patient service revenue/i.test(signedHoverLine("ChristianaCare", cc!)));
   assert.ok(!signedPrintLine(cc!).includes("ChristianaCare"));
 
-  const jeff = citableFacts(byId["org-jefferson"]?.facts).at(0);
-  assert.ok(jeff);
-  assert.ok(signedHoverLine("Jefferson", jeff!).startsWith("Jefferson "));
-  assert.ok(!signedPrintLine(jeff!).startsWith("Jefferson "));
+  const jeffFacts = citableFacts(byId["org-jefferson"]?.facts);
+  assert.ok(jeffFacts.some((f) => /operating/i.test(f.label)));
+  const jeff = displayFacts(jeffFacts);
+  assert.equal(jeff.length, 1);
+  assert.equal(
+    signedHoverLine("Jefferson", jeff[0]!),
+    "Jefferson NPSR $11,054,287,000 · YE June 30, 2025 · TJU audited AFS",
+  );
+  assert.equal(signedPrintLine(jeff[0]!), "NPSR $11,054,287,000 · YE June 30, 2025 · TJU audited AFS");
+  assert.ok(!/operating/i.test(signedHoverLine("Jefferson", jeff[0]!)));
+  assert.ok(!/operating/i.test(signedPrintLine(jeff[0]!)));
+  assert.ok(!signedPrintLine(jeff[0]!).startsWith("Jefferson "));
 
   const temple = citableFacts(byId["org-temple"]?.facts).at(0);
   assert.ok(temple);
@@ -2159,6 +2171,10 @@ test("Reed Bloomberg: hover line names the org; rest print does not; no chip; NE
   assert.ok(!mention.includes("placeOrgChip"));
   assert.ok(!css.includes("OrgChip"));
   assert.ok(mention.includes("OrgTick"));
+  assert.ok(mention.includes("is-help"));
+  assert.ok(mention.includes('aria-hidden="true"'));
+  assert.ok(!rail.includes("role=\"button\""));
+  assert.ok(!rail.includes("tabIndex"));
   assert.ok(lead.includes("LeadDekInsert"));
   assert.ok(lead.includes("LeadSignedLine"));
   assert.ok(lead.includes("splitFirstSentence"));
@@ -2169,10 +2185,12 @@ test("Reed Bloomberg: hover line names the org; rest print does not; no chip; NE
   assert.ok(itemPage.includes("ItemFacts"));
   assert.ok(!itemPage.includes("LeadDekInsert"));
   assert.ok(facts.includes("signedFactText"));
+  assert.ok(facts.includes("displayFacts"));
   assert.ok(!facts.includes("hit.text"));
+  assert.ok(!/operating/i.test(facts));
   assert.ok(tokens.includes("#54C0E8"));
   assert.ok(tokens.includes("--sky: #54C0E8"));
-  const tickCss = css.slice(css.indexOf(".OrgTick,"), css.indexOf(".OrgTick {"));
+  const tickCss = css.slice(css.indexOf(".OrgTick,"), css.indexOf(".OrgTick.is-help"));
   assert.ok(tickCss.includes("width: 7px"));
   assert.ok(tickCss.includes("height: 2px"));
   assert.ok(tickCss.includes("margin-left: 4px"));

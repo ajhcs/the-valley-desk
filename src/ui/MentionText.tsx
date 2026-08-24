@@ -1,6 +1,6 @@
 import { useRef, type ReactNode, type SyntheticEvent } from "react";
 import { entities } from "../lib/entities";
-import { factBearingEntities, findFirstMentions, type CitableFact } from "../lib/entityFacts";
+import { displayFacts, factBearingEntities, findFirstMentions, type CitableFact } from "../lib/entityFacts";
 import { useDekInsert } from "./DekInsert";
 import { useMentionScope } from "./MentionScope";
 import { usePrintedFactIds } from "./ItemFacts";
@@ -19,13 +19,14 @@ function OrgTick({
   const tickRef = useRef<HTMLSpanElement>(null);
   const dek = useDekInsert();
   const printed = usePrintedFactIds()[orgId];
-  const citable = facts.filter((fact) => fact.citation.url);
-  if (!citable.length) return text;
+  const painted = displayFacts(facts);
+  if (!painted.length) return text;
 
+  const help = dek.canInsert || Boolean(printed);
   const describedBy = printed || undefined;
   const open = () => {
     if (printed || !dek.canInsert) return;
-    dek.show({ id: orgId, name: text, facts: citable.slice(0, 1) }, tickRef.current);
+    dek.show({ id: orgId, name: text, facts: painted.slice(0, 1) }, tickRef.current);
   };
   const stop = (event: SyntheticEvent) => {
     event.preventDefault();
@@ -35,25 +36,29 @@ function OrgTick({
   return (
     <span className="OrgMention">
       {text}
-      <span
-        ref={tickRef}
-        className="OrgTick"
-        role="button"
-        tabIndex={0}
-        aria-label={`${text} signed fact`}
-        aria-describedby={describedBy}
-        onMouseEnter={open}
-        onMouseLeave={dek.hide}
-        onFocus={open}
-        onBlur={dek.hide}
-        onClick={stop}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            stop(event);
-            open();
-          }
-        }}
-      />
+      {help ? (
+        <span
+          ref={tickRef}
+          className="OrgTick is-help"
+          role="button"
+          tabIndex={0}
+          aria-label={`${text} signed fact`}
+          aria-describedby={describedBy}
+          onMouseEnter={open}
+          onMouseLeave={dek.hide}
+          onFocus={open}
+          onBlur={dek.hide}
+          onClick={stop}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              stop(event);
+              open();
+            }
+          }}
+        />
+      ) : (
+        <span className="OrgTick" aria-hidden="true" />
+      )}
     </span>
   );
 }

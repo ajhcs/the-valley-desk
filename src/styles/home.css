@@ -520,7 +520,7 @@ ul.desk {
   border-radius: 0;
 }
 
-.OrgTick {
+.OrgTick.is-help {
   cursor: help;
 }
 
