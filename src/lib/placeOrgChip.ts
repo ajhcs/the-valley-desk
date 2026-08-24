@@ -36,10 +36,11 @@ export function placeOrgChip(opts: {
   dek?: Rect | null;
   h1?: Rect | null;
   row?: Rect | null;
+  news?: Rect | null;
   column?: Rect | null;
   mobile?: boolean;
 }): ChipBox {
-  const { mention, chip, viewport, header, lead, dek, h1, row, column, mobile } = opts;
+  const { mention, chip, viewport, header, lead, dek, h1, row, news, column, mobile } = opts;
   const w = Math.min(chip.width, Math.max(80, viewport.width - INSET * 2));
   const h = chip.height;
 
@@ -56,7 +57,8 @@ export function placeOrgChip(opts: {
     overlaps(placed, mention) ||
     Boolean(h1 && overlaps(placed, h1)) ||
     Boolean(dek && overlaps(placed, dek)) ||
-    Boolean(row && overlaps(placed, row));
+    Boolean(row && overlaps(placed, row)) ||
+    Boolean(news && overlaps(placed, news));
 
   const headerHit = (placed: Rect) => Boolean(header && overlaps(placed, header));
 
@@ -85,7 +87,7 @@ export function placeOrgChip(opts: {
 
   /** After viewport clamp, flip or shrink so the box is never on the annotated row. */
   const finish = (top: number, left: number, width = w, height = h): ChipBox => {
-    const obstacle = row ?? mention;
+    const obstacle = row ?? news ?? mention;
     const aboveStart = ceiling();
     const aboveRoom = obstacle.top - GAP - aboveStart;
     const belowStart = obstacle.bottom + GAP;
@@ -93,9 +95,10 @@ export function placeOrgChip(opts: {
     const l = pinLeft(left, width);
 
     const offRow = (placed: ChipBox): ChipBox => {
-      if (!row) return placed;
+      const blockers = [row, news].filter((b): b is Rect => Boolean(b));
+      if (!blockers.length) return placed;
       const r = box(placed.top, placed.left, placed.width, placed.height);
-      if (!overlaps(r, row) && !overlaps(r, mention)) return placed;
+      if (!overlaps(r, mention) && blockers.every((b) => !overlaps(r, b))) return placed;
       if (belowRoom >= MIN_H) {
         return { top: belowStart, left: l, width: placed.width, height: belowRoom };
       }

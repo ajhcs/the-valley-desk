@@ -4,6 +4,7 @@ import {
   latestNews,
   latestVoices,
   leadItem,
+  nextChapterEvent,
   pinnedUpcomingEvents,
 } from "../content/queries";
 import { Desk } from "./home/Desk";
@@ -17,6 +18,7 @@ export function HomePage() {
   const news = latestNews(catalog);
   const events = pinnedUpcomingEvents(catalog);
   const voices = latestVoices(catalog);
+  const pinId = nextChapterEvent(catalog)?.id;
   const sessionFirst = useSessionFirstHome();
 
   return (
@@ -25,7 +27,7 @@ export function HomePage() {
       {desk.length ? <Desk items={desk} /> : null}
       <div className="rails">
         <Rail label="NEWS · LATEST" rail="news" items={news} />
-        <Rail label="EVENTS · NEXT" rail="events" items={events} />
+        <Rail label="EVENTS · NEXT" rail="events" items={events} pinId={pinId} />
         <Rail label="VOICES · LATEST" rail="voices" items={voices} />
       </div>
     </div>

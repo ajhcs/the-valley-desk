@@ -7,6 +7,7 @@ import { Layout } from "./ui/Layout";
 import { HomePage } from "./ui/HomePage";
 import { KindListPage } from "./ui/KindListPage";
 import { ItemPage } from "./ui/ItemPage";
+import { NotFound } from "./ui/NotFound";
 
 const rootRoute = createRootRoute({
   component: Layout,
@@ -36,7 +37,7 @@ function section<TPath extends string>(path: TPath, kind: "news" | "event" | "vo
 }
 
 // Reed v1 lock: do not mint org-id routes or generate entity pages from the seed.
-// Briefing stays unpublished. Worker 404s /briefing as text/plain.
+// Briefing stays unpublished. Worker 404s unpublished, /org, and unknown as HTML shell.
 const routeTree = rootRoute.addChildren([
   indexRoute,
   ...section("/news", "news"),
@@ -44,7 +45,10 @@ const routeTree = rootRoute.addChildren([
   ...section("/voices", "voice"),
 ]);
 
-export const router = createRouter({ routeTree });
+export const router = createRouter({
+  routeTree,
+  defaultNotFoundComponent: NotFound,
+});
 
 declare module "@tanstack/react-router" {
   interface Register {

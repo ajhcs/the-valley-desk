@@ -24,6 +24,12 @@
   }
 }
 
+.NotFound {
+  margin: 0;
+  font-size: 16px;
+  color: var(--ink);
+}
+
 .SiteHeader-inner {
   display: flex;
   align-items: center;
@@ -340,9 +346,19 @@ ul.desk {
 
 .Rail[data-rail="events"] .RailRow {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 10px 12px;
   align-items: center;
+}
+
+.Rail[data-rail="events"] .RailRow.is-register {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.RailRow-when {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .RailRow a {
@@ -479,10 +495,16 @@ ul.desk {
 
 .OrgMention {
   cursor: help;
-  text-decoration: underline;
-  text-decoration-style: dotted;
+  text-decoration: none;
   text-underline-offset: 3px;
   text-decoration-color: var(--mute);
+}
+
+.OrgMention:hover,
+.OrgMention:focus,
+.OrgMention:focus-visible {
+  text-decoration: underline;
+  text-decoration-style: dotted;
 }
 
 .OrgChip {

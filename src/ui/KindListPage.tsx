@@ -1,5 +1,5 @@
 import type { ContentItem } from "../content/schema";
-import { latestVoices, pinnedUpcomingEvents, publishedNewsList } from "../content/queries";
+import { latestVoices, nextChapterEvent, pinnedUpcomingEvents, publishedNewsList } from "../content/queries";
 import { catalog } from "../lib/catalog";
 import { KIND_LABEL } from "../lib/kind";
 import { Rail } from "./home/Rail";
@@ -19,7 +19,12 @@ export function KindListPage({ kind }: { kind: ContentItem["kind"] }) {
   return (
     <article className="KindList">
       <h1 className="KindList-title">{title}</h1>
-      <Rail label={label} rail={rail} items={items} />
+      <Rail
+        label={label}
+        rail={rail}
+        items={items}
+        pinId={kind === "event" ? nextChapterEvent(catalog)?.id : undefined}
+      />
     </article>
   );
 }

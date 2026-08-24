@@ -9,6 +9,7 @@ import { ItemFactScope, ItemFacts, itemFactHits } from "./ItemFacts";
 import { MentionText } from "./MentionText";
 import { RegisterLink } from "./RegisterLink";
 import { GroupChip } from "./home/GroupChip";
+import { NotFound } from "./NotFound";
 
 const NEWS_SECTION_KINDS = new Set(["news", "policy", "ai", "interview"]);
 
@@ -27,7 +28,7 @@ export function ItemPage({
 }) {
   const item = bySlug(catalog, slug);
   if (!item || !sectionOwns(item, section)) {
-    return <p className="text-sm">Not found, or not published.</p>;
+    return <NotFound />;
   }
   const impact = item.impactSentence?.trim();
   const cites = itemCitations(item);

@@ -121,6 +121,7 @@ function OrgMention({
             document.querySelector(".Lead-headline, .ItemPage-lead h1, .Lead h1"),
         ),
         row: readRect(root?.closest(".RailRow") ?? null),
+        news: readRect(document.querySelector('.Rail[data-rail="news"] .RailRow')),
         column: mobile ? readRect(article) : readRect(root?.closest(".Rail") ?? null),
         mobile,
       }),

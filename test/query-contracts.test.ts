@@ -771,7 +771,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(lead.includes("item.publishedAt"));
   assert.ok(!lead.includes("chipInstant"));
   assert.ok(lead.includes("Lead-headline"));
-  assert.ok(lead.includes("Impact:"));
+  assert.ok(lead.includes("Lead-impact"));
+  assert.ok(!lead.includes("Impact:"));
   assert.ok(desk.includes("THE DESK"));
   assert.ok(desk.includes("DeskRow"));
   assert.ok(desk.includes("impactSentence"));
@@ -780,6 +781,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(desk.includes('ann="ask"'));
   assert.ok(!desk.toLowerCase().includes("spill"));
   assert.ok(rail.includes("RegisterLink"));
+  assert.ok(!rail.includes("Impact:"));
+  assert.ok(!rail.includes("impactSentence"));
   assert.ok(!rail.includes("queued"));
   {
     const registerAt = css.indexOf(".Register,");
@@ -1221,7 +1224,12 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(robots.includes("Allow: /"));
   assert.ok(!robots.includes("<"));
   assert.ok(worker.includes("status: 404"));
-  assert.ok(worker.includes("text/plain"));
+  assert.ok(worker.includes("text/html"));
+  assert.ok(!worker.includes("text/plain"));
+  assert.ok(!/new Response\("Not found"/.test(worker));
+  assert.ok(worker.includes("x-robots-tag"));
+  assert.ok(worker.includes("noindex"));
+  assert.ok(worker.includes("/index.html"));
   assert.ok(worker.includes('path.startsWith("/org/")'));
   assert.ok(worker.includes("publishedItemPath"));
   assert.ok(worker.includes("withHead"));
@@ -2231,6 +2239,21 @@ test("Reed OrgChip geometry: above, header flips under dek, rail stays in column
   assert.ok(tall.top >= jeffRow.bottom);
   assert.ok(!overlapsBox(tall.top, tall.left, tall.width, tall.height, jeffRow));
   assert.ok(tall.left + tall.width <= jeffCol.right);
+
+  const newsRow = rect(400, 56, 1088, 80);
+  const fromLead = placeOrgChip({
+    mention: rect(220, 80, 160, 20),
+    chip,
+    viewport,
+    header,
+    lead,
+    dek,
+    h1,
+    news: newsRow,
+  });
+  assert.ok(!overlapsBox(fromLead.top, fromLead.left, fromLead.width, fromLead.height, newsRow));
+  assert.ok(!overlapsBox(fromLead.top, fromLead.left, fromLead.width, fromLead.height, h1));
+  assert.ok(!overlapsBox(fromLead.top, fromLead.left, fromLead.width, fromLead.height, dek));
 });
 
 test("Reed liability: item-page prints signed facts; CC is NPSR-only; CIO slugs off public surfaces", () => {
@@ -2578,5 +2601,75 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
     assert.ok(feed.items.some((row) => row.slug === slug && row.kind === "voice"));
   }
   assert.ok(voiceSlugBlock.includes('"inspira-johnson-epic-day-6-2026-07-30"'));
+});
+
+test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest underline", () => {
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
+  const lead = readFileSync(join(root, "src/ui/home/Lead.tsx"), "utf8");
+  const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  const notFound = readFileSync(join(root, "src/ui/NotFound.tsx"), "utf8");
+  const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
+  const router = readFileSync(join(root, "src/router.tsx"), "utf8");
+  const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
+  const kindList = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  const mention = readFileSync(join(root, "src/ui/MentionText.tsx"), "utf8");
+
+  assert.ok(worker.includes('content-type": "text/html'));
+  assert.ok(!worker.includes("text/plain"));
+  assert.ok(!/new Response\("Not found"/.test(worker));
+  assert.ok(worker.includes("x-robots-tag"));
+  assert.ok(worker.includes("noindex"));
+  assert.ok(worker.includes("no-store"));
+  assert.ok(worker.includes("/index.html"));
+  assert.ok(worker.includes("This page is not published."));
+  assert.equal(notFound.match(/This page is not published\./g)?.length, 1);
+  assert.ok(!/Not found/.test(notFound));
+  assert.ok(itemPage.includes("<NotFound"));
+  assert.ok(router.includes("defaultNotFoundComponent"));
+  assert.ok(layout.includes("SiteHeader"));
+  assert.ok(layout.includes("SiteNav"));
+  assert.ok(layout.includes('to="/news"'));
+  assert.ok(layout.includes('to="/events"'));
+  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(layout.includes("SiteFooter"));
+  assert.ok(!/path:\s*["']\/org\//.test(router));
+
+  assert.ok(!rail.includes("Impact:"));
+  assert.ok(!rail.includes("impactSentence"));
+  assert.ok(!rail.includes("RailRow-impact"));
+  assert.ok(lead.includes("Lead-impact"));
+  assert.ok(!lead.includes("Impact:"));
+  assert.ok(itemPage.includes("item.impactSentence"));
+  assert.ok(!itemPage.includes("Impact:"));
+
+  assert.ok(rail.includes("is-register"));
+  assert.ok(rail.includes("eventRegisterUrl"));
+  assert.ok(css.includes('.Rail[data-rail="events"] .RailRow.is-register'));
+  assert.ok(css.includes("grid-template-columns: auto minmax(0, 1fr)"));
+  assert.ok(css.includes("grid-template-columns: auto minmax(0, 1fr) auto"));
+  const builds = catalog.find((i) => i.slug === "builds-bio-philly-2026-09-15");
+  const acheEpa = catalog.find((i) => i.slug === "ache-eastern-pa-fall-symposium-2026-09-30");
+  assert.equal(builds && builds.kind === "event" ? builds.registrationUrl : "missing", undefined);
+  assert.equal(acheEpa && acheEpa.kind === "event" ? acheEpa.registrationUrl : "missing", undefined);
+
+  assert.ok(rail.includes(">PIN<"));
+  assert.ok(home.includes("pinId"));
+  assert.ok(kindList.includes("pinId"));
+  assert.ok(!/himss/i.test(rail));
+  const pin = nextChapterEvent(catalog, new Date("2026-08-23T20:00:00.000Z"));
+  assert.equal(pin?.slug, "njdvhimss-fall-conference-october-13th-15th");
+  assert.ok(pin?.registrationUrl);
+
+  const mentionRest = css.slice(css.indexOf(".OrgMention {"), css.indexOf(".OrgMention:hover"));
+  assert.ok(mentionRest.includes("text-decoration: none"));
+  assert.ok(!mentionRest.includes("dotted"));
+  assert.ok(mention.includes("Escape"));
+  assert.ok(mention.includes("mousedown"));
+  assert.ok(mention.includes("news:"));
+  assert.ok(css.includes(".OrgChip {"));
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
 });
 

@@ -10,14 +10,44 @@ const SITE = "The Valley Desk";
 const ORIGIN = "https://thevalleydesk.org";
 const DEFAULT_DESC = "Local health-tech news for people and agents";
 
-function notFound() {
-  return new Response("Not found", {
+function notFoundHeaders() {
+  return {
+    "content-type": "text/html; charset=utf-8",
+    "x-robots-tag": "noindex",
+    "cache-control": "no-store",
+  };
+}
+
+function withNotFoundHead(html, path) {
+  const p = stripSlash(path) || "/";
+  const url = p === "/" ? `${ORIGIN}/` : `${ORIGIN}${p}`;
+  const title = `Not found · ${SITE}`;
+  const desc = "This page is not published.";
+  const tags = [
+    `<title>${esc(title)}</title>`,
+    `<meta name="description" content="${esc(desc)}" />`,
+    `<meta name="robots" content="noindex" />`,
+    `<meta property="og:title" content="${esc(title)}" />`,
+    `<meta property="og:description" content="${esc(desc)}" />`,
+    `<meta property="og:url" content="${esc(url)}" />`,
+    `<meta property="og:type" content="website" />`,
+    `<meta name="twitter:card" content="summary" />`,
+    `<meta name="twitter:title" content="${esc(title)}" />`,
+    `<meta name="twitter:description" content="${esc(desc)}" />`,
+    `<link rel="canonical" href="${esc(url)}" />`,
+    `<link rel="alternate" type="application/rss+xml" href="${ORIGIN}/feed.xml" />`,
+    `<link rel="alternate" type="application/json" href="${ORIGIN}/feed.json" />`,
+  ].join("\n    ");
+  return html.replace("<title>The Valley Desk</title>", tags);
+}
+
+async function notFound(env, request, path) {
+  const url = new URL(request.url);
+  const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
+  const html = await asset.text();
+  return new Response(withNotFoundHead(html, path), {
     status: 404,
-    headers: {
-      "content-type": "text/plain; charset=utf-8",
-      "x-robots-tag": "noindex",
-      "cache-control": "no-store",
-    },
+    headers: notFoundHeaders(),
   });
 }
 
@@ -108,13 +138,13 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     if (path === "/org" || path.startsWith("/org/")) {
-      return notFound();
+      return notFound(env, request, path);
     }
     if (path === "/briefing" || path.startsWith("/briefing/")) {
-      return notFound();
+      return notFound(env, request, path);
     }
     if (publishedItemPath(path) === false) {
-      return notFound();
+      return notFound(env, request, path);
     }
     if (SPA_PATH.test(path)) {
       const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
@@ -129,6 +159,6 @@ export default {
     }
     const asset = await env.ASSETS.fetch(request);
     if (asset.status !== 404) return asset;
-    return notFound();
+    return notFound(env, request, path);
   },
 };

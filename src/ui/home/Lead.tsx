@@ -17,7 +17,7 @@ export function Lead({ item }: { item: NewsItem }) {
       </h1>
       {impact ? (
         <p className="Lead-impact">
-          Impact: <MentionText text={impact} />
+          <MentionText text={impact} />
         </p>
       ) : null}
     </article>
