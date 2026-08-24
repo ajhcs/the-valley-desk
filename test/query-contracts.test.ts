@@ -2573,6 +2573,9 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.ok(worker.includes("This page is not published."));
   assert.equal(notFound.match(/This page is not published\./g)?.length, 1);
   assert.ok(!/Not found/.test(notFound));
+  const notFoundCss = css.slice(css.indexOf(".NotFound {"), css.indexOf(".SiteHeader-inner {"));
+  assert.ok(notFoundCss.includes("padding: 32px 0"));
+  assert.ok(!notFoundCss.includes("padding: 0 56"));
   assert.ok(itemPage.includes("<NotFound"));
   assert.ok(router.includes("defaultNotFoundComponent"));
   assert.ok(layout.includes("SiteHeader"));
