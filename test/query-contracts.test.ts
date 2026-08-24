@@ -2698,9 +2698,13 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.equal(pin?.slug, "njdvhimss-fall-conference-october-13th-15th");
   assert.ok(pin?.registrationUrl);
 
-  const mentionRest = css.slice(css.indexOf(".OrgMention {"), css.indexOf(".OrgMention:hover"));
-  assert.ok(mentionRest.includes("text-decoration: none"));
-  assert.ok(!mentionRest.includes("dotted"));
+  const mentionCss = css.slice(css.indexOf(".OrgMention,"), css.indexOf(".OrgChip {"));
+  assert.ok(mentionCss.includes(".OrgMention:hover"));
+  assert.ok(mentionCss.includes(".OrgMention:focus"));
+  assert.ok(mentionCss.includes(".OrgMention:focus-visible"));
+  assert.ok(mentionCss.includes("text-decoration: none"));
+  assert.ok(!mentionCss.includes("dotted"));
+  assert.ok(!mentionCss.includes("underline"));
   assert.ok(mention.includes("Escape"));
   assert.ok(mention.includes("mousedown"));
   assert.ok(mention.includes("news:"));

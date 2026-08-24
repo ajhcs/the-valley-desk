@@ -493,18 +493,12 @@ ul.desk {
   }
 }
 
-.OrgMention {
-  cursor: help;
-  text-decoration: none;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--mute);
-}
-
+.OrgMention,
 .OrgMention:hover,
 .OrgMention:focus,
 .OrgMention:focus-visible {
-  text-decoration: underline;
-  text-decoration-style: dotted;
+  cursor: help;
+  text-decoration: none;
 }
 
 .OrgChip {
