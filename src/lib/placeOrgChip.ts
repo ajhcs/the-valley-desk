@@ -85,32 +85,45 @@ export function placeOrgChip(opts: {
 
   /** After viewport clamp, flip or shrink so the box is never on the annotated row. */
   const finish = (top: number, left: number, width = w, height = h): ChipBox => {
-    const fitted = tryPlace(top, left, width, height);
-    if (fitted) return fitted;
-
     const obstacle = row ?? mention;
-    const above = tryPlace(obstacle.top - height - GAP, left, width, height);
-    if (above) return above;
-    const below = tryPlace(obstacle.bottom + GAP, left, width, height);
-    if (below) return below;
-
     const aboveStart = ceiling();
     const aboveRoom = obstacle.top - GAP - aboveStart;
     const belowStart = obstacle.bottom + GAP;
     const belowRoom = viewport.height - INSET - belowStart;
     const l = pinLeft(left, width);
 
+    const offRow = (placed: ChipBox): ChipBox => {
+      if (!row) return placed;
+      const r = box(placed.top, placed.left, placed.width, placed.height);
+      if (!overlaps(r, row) && !overlaps(r, mention)) return placed;
+      if (belowRoom >= MIN_H) {
+        return { top: belowStart, left: l, width: placed.width, height: belowRoom };
+      }
+      if (aboveRoom >= MIN_H) {
+        return { top: aboveStart, left: l, width: placed.width, height: aboveRoom };
+      }
+      return { top: belowStart, left: l, width: placed.width, height: Math.max(MIN_H, belowRoom) };
+    };
+
+    const fitted = tryPlace(top, left, width, height);
+    if (fitted) return offRow(fitted);
+
+    const above = tryPlace(obstacle.top - height - GAP, left, width, height);
+    if (above) return offRow(above);
+    const below = tryPlace(obstacle.bottom + GAP, left, width, height);
+    if (below) return offRow(below);
+
     if (belowRoom >= MIN_H && belowRoom >= aboveRoom) {
-      return { top: belowStart, left: l, width, height: belowRoom };
+      return offRow({ top: belowStart, left: l, width, height: belowRoom });
     }
     if (aboveRoom >= MIN_H) {
-      return { top: aboveStart, left: l, width, height: aboveRoom };
+      return offRow({ top: aboveStart, left: l, width, height: aboveRoom });
     }
     if (belowRoom >= MIN_H) {
-      return { top: belowStart, left: l, width, height: belowRoom };
+      return offRow({ top: belowStart, left: l, width, height: belowRoom });
     }
 
-    return { top: belowStart, left: l, width, height: Math.max(MIN_H, belowRoom) };
+    return offRow({ top: belowStart, left: l, width, height: Math.max(MIN_H, belowRoom) });
   };
 
   if (mobile) {
