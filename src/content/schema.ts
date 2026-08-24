@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const Region = z.enum(["PA", "NJ", "DE", "regional", "federal"]);
-export const Status = z.enum(["draft", "review", "published"]);
+export const Status = z.enum(["draft", "review", "published", "unpublished"]);
 export const SourceKind = z.enum(["editorial", "ingest"]);
 export const Kind = z.enum([
   "news",

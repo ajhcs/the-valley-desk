@@ -26,6 +26,7 @@ import {
   setFeaturedNews,
   canPublish,
   itemCitations,
+  Status,
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { rssItemToContent } from "../src/ingest/rss.ts";
@@ -1921,17 +1922,22 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   assert.ok(!catalog.some((i) => i.kind === "event" && i.status === "published" && "price" in ((i as { offers?: unknown }).offers ?? {})));
 });
 
-test("Sloan CIO paint news: Olenoski and Gordon stay as review slugs; pay facts remain", () => {
+test("Sloan CIO paint news: Olenoski and Gordon stay as unpublished slugs; pay facts remain", () => {
+  assert.ok(Status.options.includes("unpublished"));
   const olenoski = catalog.find((i) => i.slug === "mlh-olenoski-cio");
   const gordon = catalog.find((i) => i.slug === "virtua-gordon-cio");
   assert.ok(olenoski && gordon);
+  const desk = briefingSinceYesterday5pmET(catalog, new Date("2026-08-23T23:00:00.000Z"));
   for (const item of [olenoski, gordon]) {
     assert.equal(item.kind, "news");
-    assert.equal(item.status, "review");
+    assert.equal(item.status, "unpublished");
+    assert.notEqual(item.status, "published");
+    assert.notEqual(item.status, "review");
     assert.equal(item.featured, false);
     assert.equal(bySlug(catalog, item.slug), undefined);
     assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((row) => row.slug === item.slug));
     assert.ok(!publishedNewsList(catalog).some((row) => row.slug === item.slug));
+    assert.ok(!desk.some((row) => row.slug === item.slug));
     assert.ok(item.publishedAt?.startsWith("2026-08-23"));
     assert.ok(!/ORBIE|Vanguard|350 locations|banking/i.test(`${item.title} ${item.body} ${item.dek}`));
     assert.ok(!newsByline(item).includes("Valley Desk"));
