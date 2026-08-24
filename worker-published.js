@@ -33,6 +33,7 @@ export const publishedVoiceSlugs = [
   "chop-bell-breaking-through-2026-08-14",
   "inspira-johnson-epic-day-6-2026-07-30",
   "inspira-mansue-epic-2026-07-27",
+  "inspira-mansue-neuro-icu-2026-08-04",
   "jefferson-cacchione-board-2026-07-30",
   "jefferson-cacchione-de-med-school-2026-07-15",
   "jefferson-cacchione-lcs-link-2026-08-05",
@@ -156,7 +157,7 @@ export const publishedHead = {
   "chop-bell-breaking-through-2026-08-14": {
     "kind": "voice",
     "title": "Madeline Bell, Aug. 14, 2026: official CHOP OPEN final Breaking Through",
-    "description": "Bell’s official CHOP OPEN final Breaking Through; she retires in October; Mitchell is successor, not current CEO."
+    "description": "Bell’s official CHOP OPEN final Breaking Through; she retires in October; Mitchell is incoming Oct. 1, not current CEO."
   },
   "virtua-pullin-here-for-good-2026-07-16": {
     "kind": "voice",
@@ -172,6 +173,11 @@ export const publishedHead = {
     "kind": "voice",
     "title": "Benjamin Slovis, July 23, 2026: TUH hiring Mgr Integrated Healthcare Apps",
     "description": "TUH is hiring a Manager of Integrated Healthcare Apps — Epic Orders/ASAP (hybrid), Philadelphia."
+  },
+  "inspira-mansue-neuro-icu-2026-08-04": {
+    "kind": "voice",
+    "title": "Amy B. Mansue, Aug. 4, 2026: Mullica Hill Neuro ICU, Cooper-Inspira neuroscience tour",
+    "description": "Inspira’s official account posted the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour (future EMU)."
   },
   "njdvhimss-annual-golf-outing": {
     "kind": "event",

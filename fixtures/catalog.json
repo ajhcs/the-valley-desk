@@ -1138,8 +1138,8 @@
     "slug": "chop-bell-breaking-through-2026-08-14",
     "kind": "voice",
     "title": "Madeline Bell, Aug. 14, 2026: official CHOP OPEN final Breaking Through",
-    "dek": "The official CHOP OPEN final Breaking Through episode was released Aug. 14, 2026. Madeline Bell retires in October. Joe Mitchell is the successor, not the current CEO.",
-    "body": "The official CHOP OPEN final Breaking Through episode was released Aug. 14, 2026. Madeline Bell retires in October. Joe Mitchell is the successor, not the current CEO.",
+    "dek": "The official CHOP OPEN final Breaking Through episode was released Aug. 14, 2026. Madeline Bell retires in October. Joe Mitchell is incoming Oct. 1, not the current CEO.",
+    "body": "The official CHOP OPEN final Breaking Through episode was released Aug. 14, 2026. Madeline Bell retires in October. Joe Mitchell is incoming Oct. 1, not the current CEO.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-14T16:00:00.000Z",
@@ -1165,11 +1165,15 @@
     "org": "Children's Hospital of Philadelphia",
     "platform": "site",
     "originalUrl": "https://open.chop.edu/courses/chops-next-chapter/",
-    "impactSentence": "Bell’s official CHOP OPEN final Breaking Through; she retires in October; Mitchell is successor, not current CEO.",
+    "impactSentence": "Bell’s official CHOP OPEN final Breaking Through; she retires in October; Mitchell is incoming Oct. 1, not current CEO.",
     "citations": [
       {
         "name": "CHOP OPEN Aug. 14 Breaking Through",
         "url": "https://open.chop.edu/courses/chops-next-chapter/"
+      },
+      {
+        "name": "CHOP official Aug. 14 LI",
+        "url": "https://www.linkedin.com/posts/the-childrens-hospital-of-philadelphia_chops-next-chapter-activity-7494090470386696193-XR-j"
       }
     ]
   },
@@ -1290,6 +1294,46 @@
       {
         "name": "Slovis July 23 LI",
         "url": "https://www.linkedin.com/posts/benjaminslovis_come-join-our-epic-team-activity-7486154836821037056-1Qkc"
+      }
+    ]
+  },
+  {
+    "id": "voice-li-7490482263512481792",
+    "slug": "inspira-mansue-neuro-icu-2026-08-04",
+    "kind": "voice",
+    "title": "Amy B. Mansue, Aug. 4, 2026: Mullica Hill Neuro ICU, Cooper-Inspira neuroscience tour",
+    "dek": "Inspira’s official LinkedIn posted Aug. 4, 2026 on the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour, including a future EMU. Amy B. Mansue is CEO of Inspira Health.",
+    "body": "Inspira’s official LinkedIn posted Aug. 4, 2026 on the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour, including a future EMU. Amy B. Mansue is CEO of Inspira Health.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-04T16:00:00.000Z",
+    "updatedAt": "2026-08-24T16:00:00.000Z",
+    "topics": [],
+    "orgs": [
+      "org-inspira"
+    ],
+    "region": "NJ",
+    "authors": [
+      {
+        "name": "Amy B. Mansue",
+        "org": "org-inspira"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "linkedin",
+      "url": "https://www.linkedin.com/posts/inspira-health_what-does-the-future-of-brain-and-stroke-activity-7490482263512481792-fVAN"
+    },
+    "person": "Amy B. Mansue",
+    "role": "CEO",
+    "org": "Inspira Health",
+    "platform": "linkedin",
+    "originalUrl": "https://www.linkedin.com/posts/inspira-health_what-does-the-future-of-brain-and-stroke-activity-7490482263512481792-fVAN",
+    "impactSentence": "Inspira’s official account posted the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour (future EMU).",
+    "citations": [
+      {
+        "name": "Inspira official Aug. 4 LI",
+        "url": "https://www.linkedin.com/posts/inspira-health_what-does-the-future-of-brain-and-stroke-activity-7490482263512481792-fVAN"
       }
     ]
   },

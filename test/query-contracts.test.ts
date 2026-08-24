@@ -2265,7 +2265,7 @@ test("Reed liability: item-page prints signed facts; CC is NPSR-only; CIO slugs 
   }
 });
 
-test("Sloan SIGN 12 Voices: published voice rows, Johnson off Mansue, chrome holds", () => {
+test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds", () => {
   const signed = [
     {
       id: "voice-inspira-mansue-epic-2026-07-27",
@@ -2375,6 +2375,15 @@ test("Sloan SIGN 12 Voices: published voice rows, Johnson off Mansue, chrome hol
       publishedAt: "2026-07-23T16:00:00.000Z",
       cite: "https://www.linkedin.com/posts/benjaminslovis_come-join-our-epic-team-activity-7486154836821037056-1Qkc",
     },
+    {
+      id: "voice-li-7490482263512481792",
+      slug: "inspira-mansue-neuro-icu-2026-08-04",
+      person: "Amy B. Mansue",
+      orgId: "org-inspira",
+      origin: "linkedin",
+      publishedAt: "2026-08-04T16:00:00.000Z",
+      cite: "https://www.linkedin.com/posts/inspira-health_what-does-the-future-of-brain-and-stroke-activity-7490482263512481792-fVAN",
+    },
   ];
   const slugs = signed.map((row) => row.slug);
   const voices = signed.map((row) => {
@@ -2413,6 +2422,56 @@ test("Sloan SIGN 12 Voices: published voice rows, Johnson off Mansue, chrome hol
   assert.ok(/Inspira’s (estimate|claim)|Inspira estimates/i.test(`${mansue.dek} ${mansue.impactSentence}`));
   assert.ok(!/Holt|salary|revenue/i.test(`${mansue.dek} ${mansue.body} ${mansue.impactSentence}`));
   assert.ok(!/\b32\b|\b33\b/.test(`${lcs.title} ${lcs.dek} ${lcs.body} ${lcs.impactSentence}`));
+  assert.ok(!JSON.stringify(mansue).includes("7490482263512481792"));
+  assert.ok(!JSON.stringify(mansue).includes("inspira-mansue-neuro-icu-2026-08-04"));
+  assert.ok(!JSON.stringify(johnson).includes("7490482263512481792"));
+
+  const bell = catalog.find((i) => i.id === "voice-chop-bell-breaking-through-2026-08-14");
+  const neuro = catalog.find((i) => i.id === "voice-li-7490482263512481792");
+  assert.ok(bell && neuro);
+  assert.equal(
+    catalog.filter((i) => i.kind === "voice" && /bell/i.test(`${i.id} ${i.slug}`) && /2026-08-14/.test(i.publishedAt ?? "")).length,
+    1,
+  );
+  assert.ok(!catalog.some((i) => i.id.includes("7494090470386696193")));
+  assert.equal(bell.source.url, "https://open.chop.edu/courses/chops-next-chapter/");
+  assert.deepEqual(
+    bell.citations?.map((c) => c.url),
+    [
+      "https://open.chop.edu/courses/chops-next-chapter/",
+      "https://www.linkedin.com/posts/the-childrens-hospital-of-philadelphia_chops-next-chapter-activity-7494090470386696193-XR-j",
+    ],
+  );
+  assert.ok(/incoming Oct\.? 1/.test(`${bell.dek} ${bell.body} ${bell.impactSentence}`));
+  assert.ok(/retires in October/.test(`${bell.dek} ${bell.body}`));
+  assert.ok(/not (the )?current CEO/.test(`${bell.dek} ${bell.body} ${bell.impactSentence}`));
+  assert.ok(!neuro.authors.some((a) => /Johnson/i.test(a.name)));
+  assert.notEqual(neuro.kind === "voice" ? neuro.person : "", "David Johnson");
+  assert.ok(!JSON.stringify(neuro).includes("7483929651741081600"));
+  assert.ok(!JSON.stringify(neuro).includes("inspira-mansue-epic-2026-07-27"));
+  assert.ok(!JSON.stringify(neuro).includes("inspira-johnson-epic-day-6"));
+  assert.equal(
+    neuro.source.url,
+    "https://www.linkedin.com/posts/inspira-health_what-does-the-future-of-brain-and-stroke-activity-7490482263512481792-fVAN",
+  );
+  assert.ok(!/brain-and-spine/.test(neuro.source.url ?? ""));
+  assert.ok(
+    !catalog.some((i) => {
+      const person = i.kind === "voice" ? i.person : "";
+      return (
+        i.kind === "voice" &&
+        /mansue/i.test(`${person} ${i.slug}`) &&
+        /linkedin\.com\/(in|posts)\/(?!inspira-health)/i.test(i.source.url ?? "")
+      );
+    }),
+  );
+  assert.equal(
+    catalog.filter((i) => {
+      const person = i.kind === "voice" ? i.person : "";
+      return i.kind === "voice" && /mansue/i.test(`${i.id} ${i.slug} ${person}`);
+    }).length,
+    2,
+  );
 
   for (const [row, item] of signed.map((spec, i) => [spec, voices[i]] as const)) {
     assert.equal(item.kind, "voice");
@@ -2475,6 +2534,7 @@ test("Sloan SIGN 12 Voices: published voice rows, Johnson off Mansue, chrome hol
 
   const blob = JSON.stringify(voices);
   assert.ok(!/Cooper \$100|\$100M/i.test(blob));
+  assert.ok(!/Stern|LVB300/i.test(blob));
   assert.ok(!/ranking/i.test(blob));
   assert.ok(!/\bCIR\b/.test(blob));
   assert.ok(!/Venua/.test(blob));
