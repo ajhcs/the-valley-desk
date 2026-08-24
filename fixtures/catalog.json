@@ -775,6 +775,45 @@
     ]
   },
   {
+    "id": "voice-li-7483929651741081600",
+    "slug": "inspira-johnson-epic-day-6-2026-07-30",
+    "kind": "voice",
+    "title": "David Johnson, July 30, 2026: Inspira on day 6 of an Epic live",
+    "dek": "David Johnson, Inspira SVP CIIO, said in a July 30, 2026 LinkedIn comment that Inspira was on day 6 live on Epic. That comment is not a go-live date and not a user count.",
+    "body": "David Johnson, Inspira SVP CIIO, said in a July 30, 2026 LinkedIn comment that Inspira was on day 6 live on Epic. That comment is not a go-live date and not a user count.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-07-30T16:00:00.000Z",
+    "updatedAt": "2026-08-24T16:00:00.000Z",
+    "topics": [],
+    "orgs": [
+      "org-inspira"
+    ],
+    "region": "NJ",
+    "authors": [
+      {
+        "name": "David Johnson"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "linkedin",
+      "url": "https://www.linkedin.com/posts/tim-bowers-ms-cic-fapic-cphq-a4492311_more-tdr-today-but-the-highlight-so-far-was-activity-7483929651741081600-YO6Q"
+    },
+    "person": "David Johnson",
+    "role": "CIIO",
+    "org": "Inspira Health",
+    "platform": "linkedin",
+    "originalUrl": "https://www.linkedin.com/posts/tim-bowers-ms-cic-fapic-cphq-a4492311_more-tdr-today-but-the-highlight-so-far-was-activity-7483929651741081600-YO6Q",
+    "impactSentence": "Inspira was on day 6 of an Epic live when its CIIO said so in that comment.",
+    "citations": [
+      {
+        "name": "Johnson July 30 LI",
+        "url": "https://www.linkedin.com/posts/tim-bowers-ms-cic-fapic-cphq-a4492311_more-tdr-today-but-the-highlight-so-far-was-activity-7483929651741081600-YO6Q"
+      }
+    ]
+  },
+  {
     "id": "policy-01",
     "slug": "pa-doh-telehealth-guidance-2026",
     "kind": "policy",

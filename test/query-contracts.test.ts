@@ -1529,12 +1529,14 @@ test("Voices v1: published kind=voice only, Honor Roll is not news, Jane Doe sta
   assert.deepEqual(voices.map((i) => i.slug), [
     "mlh-cloud-analytics-2026-08-17",
     "temple-honor-roll-2026",
+    "inspira-johnson-epic-day-6-2026-07-30",
   ]);
   assert.ok(voices.every((i) => i.kind === "voice" && i.status === "published"));
   assert.ok(!voices.some((i) => i.slug === "cio-note-workforce-ai"));
   const news = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
   assert.ok(!news.some((i) => i.slug === "temple-honor-roll-2026"));
   assert.ok(!news.some((i) => i.slug === "mlh-cloud-analytics-2026-08-17"));
+  assert.ok(!news.some((i) => i.slug === "inspira-johnson-epic-day-6-2026-07-30"));
   assert.ok(!news.some((i) => /honor.?roll/i.test(i.title)));
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
@@ -2045,6 +2047,57 @@ test("signed school facts on existing people; pay and CC NPSR unchanged", () => 
   assert.ok(!/path:\s*["']\/org\//.test(readFileSync(join(root, "src/router.tsx"), "utf8")));
   const factsBlob = JSON.stringify(entityRows.flatMap((e) => e.facts ?? []));
   assert.ok(!/@[a-z0-9.-]+\./i.test(factsBlob));
+});
+
+test("Sloan SIGN: Inspira Johnson day-6 voice; Honor Roll stays voice; pay facts stay", () => {
+  const voice = catalog.find((i) => i.id === "voice-li-7483929651741081600");
+  const honor = catalog.find((i) => i.slug === "temple-honor-roll-2026");
+  assert.ok(voice && honor);
+  assert.equal(voice.kind, "voice");
+  assert.equal(voice.status, "published");
+  assert.equal(voice.featured, false);
+  assert.equal(voice.slug, "inspira-johnson-epic-day-6-2026-07-30");
+  assert.equal(voice.publishedAt, "2026-07-30T16:00:00.000Z");
+  assert.ok(!("clockAt" in voice));
+  assert.deepEqual(voice.orgs, ["org-inspira"]);
+  assert.equal(voice.region, "NJ");
+  assert.equal(voice.authors[0]?.name, "David Johnson");
+  assert.ok(!voice.authors.some((a) => /Valley Desk/i.test(a.name)));
+  assert.equal(voice.kind === "voice" ? voice.person : "", "David Johnson");
+  assert.equal(voice.kind === "voice" ? voice.role : "", "CIIO");
+  assert.equal(voice.kind === "voice" ? voice.org : "", "Inspira Health");
+  assert.equal(voice.kind === "voice" ? voice.platform : "", "linkedin");
+  assert.equal(voice.source.kind, "editorial");
+  assert.equal(voice.source.origin, "linkedin");
+  assert.equal(
+    voice.source.url,
+    "https://www.linkedin.com/posts/tim-bowers-ms-cic-fapic-cphq-a4492311_more-tdr-today-but-the-highlight-so-far-was-activity-7483929651741081600-YO6Q",
+  );
+  assert.equal(voice.kind === "voice" ? voice.originalUrl : "", voice.source.url);
+  assert.equal(
+    voice.impactSentence,
+    "Inspira was on day 6 of an Epic live when its CIIO said so in that comment.",
+  );
+  assert.equal(voice.body, voice.dek);
+  assert.ok(/CIIO/.test(voice.body));
+  assert.ok(!/\bCIO\b/.test(voice.body));
+  assert.ok(!/Kevin/.test(`${voice.title} ${voice.body} ${voice.dek}`));
+  assert.ok(/not a go-live date/.test(voice.body));
+  assert.ok(/not a user count/.test(voice.body));
+  assert.ok(!/clockAt/.test(voice.body));
+  assert.ok(!/["“]/.test(voice.body));
+  assert.equal(honor.kind, "voice");
+  assert.equal(honor.status, "published");
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(itemJsonLd(voice), undefined);
+  assert.notEqual(itemJsonLd(voice)?.["@type"], "NewsArticle");
+  assert.ok(latestVoices(catalog).some((i) => i.slug === voice.slug));
+  assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.slug === voice.slug));
+  assert.equal(canonicalPath(voice), "/voices/inspira-johnson-epic-day-6-2026-07-30");
+  const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
+  assert.equal(byId["person-dave-johnson"]?.facts?.find((f) => f.kind === "salary")?.filerOrg, "Inspira Medical Centers, Inc.");
+  assert.equal(entityRows.length, 92);
+  assert.ok(!/Kevin/.test(JSON.stringify(byId["person-dave-johnson"])));
 });
 
 test("Reed OrgChip geometry: above, header flips under dek, rail stays in column, mobile under dek", () => {

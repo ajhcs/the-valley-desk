@@ -30,6 +30,7 @@ export const publishedEventSlugs = [
   "wistar-drug-discovery-forum-2026-09-09"
 ];
 export const publishedVoiceSlugs = [
+  "inspira-johnson-epic-day-6-2026-07-30",
   "mlh-cloud-analytics-2026-08-17",
   "temple-honor-roll-2026"
 ];
@@ -94,6 +95,11 @@ export const publishedHead = {
     "kind": "voice",
     "title": "Benjamin Slovis, Aug. 8, 2026: Temple Health on Epic’s 2026 Honor Roll",
     "description": "Temple Health is on Epic’s 2026 Honor Roll; Slovis posted it Aug. 8, and Temple’s July 16 newsroom called the designation Cum Laude and named a $418,000 Epic Good Maintenance grant."
+  },
+  "inspira-johnson-epic-day-6-2026-07-30": {
+    "kind": "voice",
+    "title": "David Johnson, July 30, 2026: Inspira on day 6 of an Epic live",
+    "description": "Inspira was on day 6 of an Epic live when its CIIO said so in that comment."
   },
   "njdvhimss-annual-golf-outing": {
     "kind": "event",
