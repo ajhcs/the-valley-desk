@@ -2265,7 +2265,7 @@ test("Reed liability: item-page prints signed facts; CC is NPSR-only; CIO slugs 
   }
 });
 
-test("Sloan SIGN 11 Voices: published voice rows, Johnson off Mansue, chrome holds", () => {
+test("Sloan SIGN 12 Voices: published voice rows, Johnson off Mansue, chrome holds", () => {
   const signed = [
     {
       id: "voice-inspira-mansue-epic-2026-07-27",
@@ -2366,6 +2366,15 @@ test("Sloan SIGN 11 Voices: published voice rows, Johnson off Mansue, chrome hol
       publishedAt: "2026-07-27T16:00:00.000Z",
       cite: "https://www.linkedin.com/posts/virtuahealth_president-and-ceo-dennis-pullin-spoke-with-activity-7487503653004775426-pcxl",
     },
+    {
+      id: "voice-li-7486154836821037056",
+      slug: "temple-slovis-tuh-epic-apps-2026-07-23",
+      person: "Benjamin Slovis",
+      orgId: "org-temple",
+      origin: "linkedin",
+      publishedAt: "2026-07-23T16:00:00.000Z",
+      cite: "https://www.linkedin.com/posts/benjaminslovis_come-join-our-epic-team-activity-7486154836821037056-1Qkc",
+    },
   ];
   const slugs = signed.map((row) => row.slug);
   const voices = signed.map((row) => {
@@ -2445,6 +2454,19 @@ test("Sloan SIGN 11 Voices: published voice rows, Johnson off Mansue, chrome hol
   assert.ok(rail.every((i) => i.kind === "voice"));
   assert.equal(honor.kind, "voice");
   assert.equal(honor.status, "published");
+  assert.equal(honor.id, "voice-temple-honor-roll-2026");
+  assert.equal(honor.kind === "voice" ? honor.role : "", "Temple Health CMIO");
+  assert.equal(honor.publishedAt, "2026-08-08T16:00:00.000Z");
+  assert.ok(!JSON.stringify(honor).includes("7486154836821037056"));
+  assert.ok(!JSON.stringify(honor).includes("temple-slovis-tuh-epic-apps-2026-07-23"));
+  const dragon = catalog.find((i) => i.slug === "temple-dragon-copilot-400");
+  const slovisHire = catalog.find((i) => i.id === "voice-li-7486154836821037056");
+  assert.ok(dragon && slovisHire);
+  assert.equal(dragon.kind, "news");
+  assert.equal(dragon.kind === "news" ? dragon.relatedVoiceIds.join() : "x", "");
+  assert.ok(!JSON.stringify(dragon).includes("7486154836821037056"));
+  assert.ok(!/honor.?roll|dragon-copilot-400|418,000/i.test(`${slovisHire.title} ${slovisHire.dek} ${slovisHire.body} ${slovisHire.impactSentence}`));
+  assert.equal(slovisHire.kind === "voice" ? slovisHire.role : "", "Temple Health CMIO, Temple University Hospital");
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
   assert.equal(entityRows.length, 92);

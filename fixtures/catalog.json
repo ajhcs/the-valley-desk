@@ -1254,6 +1254,46 @@
     ]
   },
   {
+    "id": "voice-li-7486154836821037056",
+    "slug": "temple-slovis-tuh-epic-apps-2026-07-23",
+    "kind": "voice",
+    "title": "Benjamin Slovis, July 23, 2026: TUH hiring Mgr Integrated Healthcare Apps",
+    "dek": "On July 23, 2026 Benjamin Slovis’s official handle reshared that Temple University Hospital is hiring a Manager of Integrated Healthcare Apps for Epic Orders/ASAP, hybrid, in Philadelphia. Slovis is Temple Health CMIO at Temple University Hospital.",
+    "body": "On July 23, 2026 Benjamin Slovis’s official handle reshared that Temple University Hospital is hiring a Manager of Integrated Healthcare Apps for Epic Orders/ASAP, hybrid, in Philadelphia. Slovis is Temple Health CMIO at Temple University Hospital.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-07-23T16:00:00.000Z",
+    "updatedAt": "2026-08-24T16:00:00.000Z",
+    "topics": [],
+    "orgs": [
+      "org-temple"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Benjamin Slovis",
+        "org": "org-temple"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "linkedin",
+      "url": "https://www.linkedin.com/posts/benjaminslovis_come-join-our-epic-team-activity-7486154836821037056-1Qkc"
+    },
+    "person": "Benjamin Slovis",
+    "role": "Temple Health CMIO, Temple University Hospital",
+    "org": "Temple University Hospital",
+    "platform": "linkedin",
+    "originalUrl": "https://www.linkedin.com/posts/benjaminslovis_come-join-our-epic-team-activity-7486154836821037056-1Qkc",
+    "impactSentence": "TUH is hiring a Manager of Integrated Healthcare Apps — Epic Orders/ASAP (hybrid), Philadelphia.",
+    "citations": [
+      {
+        "name": "Slovis July 23 LI",
+        "url": "https://www.linkedin.com/posts/benjaminslovis_come-join-our-epic-team-activity-7486154836821037056-1Qkc"
+      }
+    ]
+  },
+  {
     "id": "policy-01",
     "slug": "pa-doh-telehealth-guidance-2026",
     "kind": "policy",

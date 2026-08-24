@@ -42,6 +42,7 @@ export const publishedVoiceSlugs = [
   "mlh-jimenez-us-amateur-2026-08-05",
   "penn-mahoney-muller-endowments-2026-08-04",
   "temple-honor-roll-2026",
+  "temple-slovis-tuh-epic-apps-2026-07-23",
   "virtua-pullin-here-for-good-2026-07-16",
   "virtua-pullin-lessons-in-leadership-2026-07-27"
 ];
@@ -166,6 +167,11 @@ export const publishedHead = {
     "kind": "voice",
     "title": "Dennis Pullin, July 27, 2026: Lessons in Leadership, Champions of Humanity, Eat Well",
     "description": "Pullin spoke on Lessons in Leadership, Champions of Humanity, and Eat Well."
+  },
+  "temple-slovis-tuh-epic-apps-2026-07-23": {
+    "kind": "voice",
+    "title": "Benjamin Slovis, July 23, 2026: TUH hiring Mgr Integrated Healthcare Apps",
+    "description": "TUH is hiring a Manager of Integrated Healthcare Apps — Epic Orders/ASAP (hybrid), Philadelphia."
   },
   "njdvhimss-annual-golf-outing": {
     "kind": "event",
