@@ -1149,7 +1149,7 @@
     "venue": "Hershey Lodge",
     "geo": "Hershey, PA",
     "hostOrg": "HAP",
-    "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid={0C23A820-246B-F111-A825-7C1E524A88B5}"
+    "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B0C23A820-246B-F111-A825-7C1E524A88B5%7D"
   },
   {
     "dek": "",
@@ -1529,7 +1529,7 @@
     "title": "Luke Olenoski, Main Line Health CIO",
     "dek": "",
     "body": "Luke Olenoski serves as the Senior Vice President and Chief Information Officer for Main Line Health.",
-    "status": "published",
+    "status": "review",
     "featured": false,
     "publishedAt": "2026-08-23T16:00:00.000Z",
     "updatedAt": "2026-08-23T23:20:00.000Z",
@@ -1566,7 +1566,7 @@
     "title": "Thomas Gordon, Virtua CIO",
     "dek": "",
     "body": "Thomas Gordon is senior vice president and chief information officer for Virtua.",
-    "status": "published",
+    "status": "review",
     "featured": false,
     "publishedAt": "2026-08-23T16:00:00.000Z",
     "updatedAt": "2026-08-23T23:20:00.000Z",

@@ -1,7 +1,7 @@
 {
   "product": "the-valley-desk",
   "version": "1",
-  "generatedAt": "2026-08-23T23:21:06.070Z",
+  "generatedAt": "2026-08-24T15:32:08.705Z",
   "items": [
     {
       "id": "news-jefferson-einstein-mychart-2026-09-26",
@@ -763,7 +763,7 @@
       "venue": "Hershey Lodge",
       "geo": "Hershey, PA",
       "hostOrg": "HAP",
-      "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid={0C23A820-246B-F111-A825-7C1E524A88B5}"
+      "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B0C23A820-246B-F111-A825-7C1E524A88B5%7D"
     },
     {
       "dek": "",
@@ -1135,80 +1135,6 @@
           "url": "https://www.eventbrite.com/e/1997481870044?aff=oddtdtcreator"
         }
       ]
-    },
-    {
-      "id": "news-mlh-olenoski-cio",
-      "slug": "mlh-olenoski-cio",
-      "kind": "news",
-      "title": "Luke Olenoski, Main Line Health CIO",
-      "dek": "",
-      "body": "Luke Olenoski serves as the Senior Vice President and Chief Information Officer for Main Line Health.",
-      "status": "published",
-      "featured": false,
-      "publishedAt": "2026-08-23T16:00:00.000Z",
-      "updatedAt": "2026-08-23T23:20:00.000Z",
-      "topics": [],
-      "orgs": [
-        "org-main-line"
-      ],
-      "region": "PA",
-      "authors": [
-        {
-          "name": "Main Line Health"
-        }
-      ],
-      "source": {
-        "kind": "editorial",
-        "origin": "main-line-health",
-        "url": "https://www.mainlinehealth.org/about/senior-leadership/luke-olenoski"
-      },
-      "relatedEventIds": [],
-      "relatedVoiceIds": [],
-      "impactSentence": "Luke Olenoski serves as the Senior Vice President and Chief Information Officer for Main Line Health.",
-      "citations": [
-        {
-          "name": "Main Line Health senior leadership",
-          "url": "https://www.mainlinehealth.org/about/senior-leadership/luke-olenoski"
-        }
-      ],
-      "geo": "Bryn Mawr, PA"
-    },
-    {
-      "id": "news-virtua-gordon-cio",
-      "slug": "virtua-gordon-cio",
-      "kind": "news",
-      "title": "Thomas Gordon, Virtua CIO",
-      "dek": "",
-      "body": "Thomas Gordon is senior vice president and chief information officer for Virtua.",
-      "status": "published",
-      "featured": false,
-      "publishedAt": "2026-08-23T16:00:00.000Z",
-      "updatedAt": "2026-08-23T23:20:00.000Z",
-      "topics": [],
-      "orgs": [
-        "org-virtua"
-      ],
-      "region": "NJ",
-      "authors": [
-        {
-          "name": "Virtua"
-        }
-      ],
-      "source": {
-        "kind": "editorial",
-        "origin": "virtua",
-        "url": "https://www.virtua.org/About/Senior-Leadership/Thomas-Gordon"
-      },
-      "relatedEventIds": [],
-      "relatedVoiceIds": [],
-      "impactSentence": "Thomas Gordon is senior vice president and chief information officer for Virtua.",
-      "citations": [
-        {
-          "name": "Virtua senior leadership",
-          "url": "https://www.virtua.org/About/Senior-Leadership/Thomas-Gordon"
-        }
-      ],
-      "geo": "Marlton, NJ"
     }
   ]
 }

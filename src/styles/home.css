@@ -513,6 +513,22 @@ ul.desk {
   text-decoration: underline;
 }
 
+.ItemFacts {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--mute);
+}
+
+.ItemFacts p {
+  margin: 0 0 6px;
+}
+
+.ItemFacts a {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

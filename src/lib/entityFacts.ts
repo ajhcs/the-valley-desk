@@ -87,6 +87,15 @@ export function findFirstMentions(
   return kept.sort((a, b) => a.start - b.start);
 }
 
+/** First-mention signed facts in title + dek + body. Chip and item-page print share this list. */
+export function itemSignedFacts(
+  item: { title?: string; impactSentence?: string; body?: string },
+  entities: Entity[],
+) {
+  const text = [item.title, item.impactSentence, item.body].filter(Boolean).join("\n");
+  return findFirstMentions(text, factBearingEntities(entities));
+}
+
 export function uniqueCitations(facts: CitableFact[]) {
   const seen = new Set<string>();
   const cites: { name: string; url: string }[] = [];

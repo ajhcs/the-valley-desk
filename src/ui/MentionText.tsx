@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { entities } from "../lib/entities";
 import {
@@ -7,20 +7,35 @@ import {
   uniqueCitations,
   type CitableFact,
 } from "../lib/entityFacts";
+import { placeOrgChip, type Rect } from "../lib/placeOrgChip";
 import { useMentionScope } from "./MentionScope";
+import { usePrintedFactIds } from "./ItemFacts";
 
 const FACT_BEARING = factBearingEntities(entities);
+const GRACE_MS = 160;
+
+function readRect(el: Element | null): Rect | null {
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  return { top: r.top, left: r.left, right: r.right, bottom: r.bottom, width: r.width, height: r.height };
+}
 
 function OrgChip({
+  id,
   facts,
   top,
   left,
+  width,
+  chipRef,
   onEnter,
   onLeave,
 }: {
+  id: string;
   facts: CitableFact[];
   top: number;
   left: number;
+  width: number;
+  chipRef: React.RefObject<HTMLDivElement | null>;
   onEnter: () => void;
   onLeave: () => void;
 }) {
@@ -28,9 +43,11 @@ function OrgChip({
   if (!facts.length || !cites.length) return null;
   return createPortal(
     <div
+      id={id}
+      ref={chipRef}
       className="OrgChip"
       role="tooltip"
-      style={{ top, left }}
+      style={{ top, left, width, maxWidth: width }}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
@@ -50,38 +67,155 @@ function OrgChip({
   );
 }
 
-function OrgMention({ text, facts }: { text: string; facts: CitableFact[] }) {
-  const ref = useRef<HTMLSpanElement>(null);
+function OrgMention({
+  text,
+  facts,
+  orgId,
+}: {
+  text: string;
+  facts: CitableFact[];
+  orgId: string;
+}) {
+  const mentionRef = useRef<HTMLSpanElement>(null);
+  const chipRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<number>(0);
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 320 });
+  const reactId = useId();
+  const chipId = `org-chip-${orgId}-${reactId.replace(/:/g, "")}`;
+  const printed = usePrintedFactIds()[orgId];
   const citable = facts.filter((fact) => fact.citation.url);
-  if (!citable.length) return text;
+
+  const place = () => {
+    const mention = readRect(mentionRef.current);
+    if (!mention) return;
+    const chipEl = chipRef.current;
+    const chip = chipEl
+      ? { width: chipEl.offsetWidth || 320, height: chipEl.offsetHeight || 80 }
+      : { width: 320, height: 80 };
+    const root = mentionRef.current;
+    const mobile = window.innerWidth < 768;
+    const leadEl =
+      root?.closest(".Lead, .lead, .ItemPage-lead") ??
+      document.querySelector(".Lead, .lead, .ItemPage-lead");
+    const article =
+      root?.closest("article.ItemPage, article.Lead, .Lead, .ItemPage") ??
+      document.querySelector("article.ItemPage, article.Lead, .Lead, .ItemPage, .SiteMain");
+    setPos(
+      placeOrgChip({
+        mention,
+        chip,
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+        header: readRect(document.querySelector(".SiteHeader")),
+        lead: readRect(leadEl),
+        dek: readRect(
+          leadEl?.querySelector(".Lead-impact, .Lead-dek, .ItemPage-dek") ??
+            document.querySelector(".Lead-impact, .Lead-dek, .ItemPage-dek"),
+        ),
+        h1: readRect(
+          leadEl?.querySelector("h1, .Lead-headline") ??
+            document.querySelector(".Lead-headline, .ItemPage-lead h1, .Lead h1"),
+        ),
+        row: readRect(root?.closest(".RailRow") ?? null),
+        column: mobile ? readRect(article) : readRect(root?.closest(".Rail") ?? null),
+        mobile,
+      }),
+    );
+  };
 
   const show = () => {
     window.clearTimeout(hideTimer.current);
-    const box = ref.current?.getBoundingClientRect();
-    if (box) setPos({ top: box.bottom + 8, left: box.left });
     setOpen(true);
   };
   const hide = () => {
     window.clearTimeout(hideTimer.current);
-    hideTimer.current = window.setTimeout(() => setOpen(false), 120);
+    hideTimer.current = window.setTimeout(() => {
+      const active = document.activeElement;
+      const trigger = mentionRef.current?.closest("a");
+      if (
+        active &&
+        (mentionRef.current?.contains(active) ||
+          trigger?.contains(active) ||
+          chipRef.current?.contains(active))
+      ) {
+        return;
+      }
+      setOpen(false);
+    }, GRACE_MS);
   };
+  const close = () => {
+    window.clearTimeout(hideTimer.current);
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    if (open) place();
+  }, [open]);
+
+  useEffect(() => {
+    const mention = mentionRef.current;
+    const trigger = mention?.closest("a") ?? null;
+    if (!trigger) return;
+    const onFocus = () => show();
+    const onBlur = (event: FocusEvent) => {
+      const next = event.relatedTarget as Node | null;
+      if (next && (trigger.contains(next) || chipRef.current?.contains(next))) return;
+      hide();
+    };
+    trigger.addEventListener("focusin", onFocus);
+    trigger.addEventListener("focusout", onBlur);
+    return () => {
+      trigger.removeEventListener("focusin", onFocus);
+      trigger.removeEventListener("focusout", onBlur);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
+    const onPointer = (event: MouseEvent) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      if (mentionRef.current?.contains(target) || chipRef.current?.contains(target)) return;
+      if (mentionRef.current?.closest("a")?.contains(target)) return;
+      close();
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onPointer);
+    window.addEventListener("resize", place);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointer);
+      window.removeEventListener("resize", place);
+    };
+  }, [open]);
+
+  if (!citable.length) return text;
+
+  const describedBy = printed || (open ? chipId : undefined);
 
   return (
     <span
-      ref={ref}
+      ref={mentionRef}
       className="OrgMention"
-      tabIndex={0}
+      aria-describedby={describedBy}
       onMouseEnter={show}
       onMouseLeave={hide}
-      onFocus={show}
-      onBlur={hide}
     >
       {text}
       {open ? (
-        <OrgChip facts={citable} top={pos.top} left={pos.left} onEnter={show} onLeave={hide} />
+        <OrgChip
+          id={chipId}
+          facts={citable}
+          top={pos.top}
+          left={pos.left}
+          width={pos.width}
+          chipRef={chipRef}
+          onEnter={show}
+          onLeave={hide}
+        />
       ) : null}
     </span>
   );
@@ -98,7 +232,9 @@ export function MentionText({ text }: { text: string }) {
   let cursor = 0;
   kept.forEach((hit, i) => {
     if (hit.start > cursor) nodes.push(text.slice(cursor, hit.start));
-    nodes.push(<OrgMention key={`${hit.orgId}-${i}`} text={hit.text} facts={hit.facts} />);
+    nodes.push(
+      <OrgMention key={`${hit.orgId}-${i}`} text={hit.text} facts={hit.facts} orgId={hit.orgId} />,
+    );
     cursor = hit.end;
   });
   if (cursor < text.length) nodes.push(text.slice(cursor));

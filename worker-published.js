@@ -6,12 +6,10 @@ export const publishedNewsSlugs = [
   "hap-cms-0057-f-enforce-rfi",
   "jefferson-einstein-mychart-2026-09-26",
   "jefferson-fy2026-operating-loss",
-  "mlh-olenoski-cio",
   "penn-in-house-ai-scribe",
   "temple-chestnut-hill-jhp-2026-09-30",
   "temple-dragon-copilot-400",
-  "tower-ai-tax",
-  "virtua-gordon-cio"
+  "tower-ai-tax"
 ];
 export const publishedEventSlugs = [
   "ache-eastern-pa-fall-symposium-2026-09-30",
@@ -176,15 +174,5 @@ export const publishedHead = {
     "kind": "event",
     "title": "Wistar Philadelphia Drug Discovery Forum",
     "description": "Wistar Philadelphia Drug Discovery Forum"
-  },
-  "mlh-olenoski-cio": {
-    "kind": "news",
-    "title": "Luke Olenoski, Main Line Health CIO",
-    "description": "Luke Olenoski serves as the Senior Vice President and Chief Information Officer for Main Line Health."
-  },
-  "virtua-gordon-cio": {
-    "kind": "news",
-    "title": "Thomas Gordon, Virtua CIO",
-    "description": "Thomas Gordon is senior vice president and chief information officer for Virtua."
   }
 };

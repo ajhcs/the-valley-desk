@@ -41,7 +41,8 @@ import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
 import { eventPlace, formatChipLabel, formatDate, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
 import { KIND_CHIP, chipKind, kindChip } from "../src/lib/kind.ts";
 import { Entity } from "../src/content/entity.ts";
-import { citableFacts, factBearingEntities, findFirstMentions } from "../src/lib/entityFacts.ts";
+import { citableFacts, factBearingEntities, findFirstMentions, itemSignedFacts } from "../src/lib/entityFacts.ts";
+import { placeOrgChip } from "../src/lib/placeOrgChip.ts";
 import { itemByline, newsByline } from "../src/lib/byline.ts";
 import { navSection } from "../src/lib/nav.ts";
 
@@ -179,12 +180,10 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
     "hap-cms-0057-f-enforce-rfi",
     "jefferson-einstein-mychart-2026-09-26",
     "jefferson-fy2026-operating-loss",
-    "mlh-olenoski-cio",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",
     "temple-dragon-copilot-400",
     "tower-ai-tax",
-    "virtua-gordon-cio",
   ]);
   assert.ok(!slugs.includes("christianacare-epic-go-live"));
   assert.ok(!slugs.includes("de-340b-hs1-hb383-2024"));
@@ -1054,6 +1053,9 @@ test("ItemPage is an aggregator card: chip, title, impact, body, citations — n
   assert.ok(page.includes("itemByline"));
   assert.ok(page.includes("Sources"));
   assert.ok(page.includes("Lead-headline"));
+  assert.ok(page.includes("ItemFacts"));
+  assert.ok(page.includes("ItemPage-dek"));
+  assert.ok(page.includes("ItemFactScope"));
   assert.ok(!page.includes("text-3xl"));
   assert.ok(!page.includes("item.dek"));
   assert.ok(!page.includes("QUEUED"));
@@ -1230,6 +1232,8 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(worker.includes("/feed.xml"));
   assert.ok(!worker.includes("EntityPage"));
   assert.ok(publishedRoutes.includes("christianacare-epic-go-live"));
+  assert.ok(!publishedRoutes.includes("mlh-olenoski-cio"));
+  assert.ok(!publishedRoutes.includes("virtua-gordon-cio"));
   assert.ok(publishedRoutes.includes("njdvhimss-fall-conference-october-13th-15th"));
   assert.ok(publishedRoutes.includes("publishedHead"));
   assert.ok(publishedRoutes.includes("publishedVoiceSlugs"));
@@ -1414,12 +1418,10 @@ test("Reed hold: published news slugs; stub origins and mixer are unpublished", 
     "hap-cms-0057-f-enforce-rfi",
     "jefferson-einstein-mychart-2026-09-26",
     "jefferson-fy2026-operating-loss",
-    "mlh-olenoski-cio",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",
     "temple-dragon-copilot-400",
     "tower-ai-tax",
-    "virtua-gordon-cio",
   ]);
   assert.equal(publishedNews.filter((i) => i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
   for (const id of [
@@ -1849,6 +1851,13 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
   assert.ok(!/path:\s*["']\/org\//.test(router));
   assert.ok(!mention.includes("/org/"));
+  assert.ok(!mention.includes("tabIndex"));
+  assert.ok(!mention.includes("tabindex"));
+  assert.ok(mention.includes("Escape"));
+  assert.ok(mention.includes("mousedown"));
+  assert.ok(mention.includes("aria-describedby"));
+  assert.ok(mention.includes("placeOrgChip"));
+  assert.ok(mention.includes("GRACE_MS"));
   assert.ok(mention.includes("createPortal"));
   assert.ok(layout.includes("MentionScope"));
   assert.ok(!catalog.some((i) => /bartiromo|olenoski/i.test(JSON.stringify(i.facts ?? []))));
@@ -1864,8 +1873,13 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   const acheGolf = catalog.find((i) => i.slug === "ache-nj-golf-outing-2026-09-09");
   assert.equal(
     hap && hap.kind === "event" ? hap.registrationUrl : "",
-    "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid={0C23A820-246B-F111-A825-7C1E524A88B5}",
+    "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B0C23A820-246B-F111-A825-7C1E524A88B5%7D",
   );
+  for (const item of catalog) {
+    if (item.kind === "event" && item.registrationUrl) {
+      assert.ok(!/[{}]/.test(item.registrationUrl), item.slug);
+    }
+  }
   assert.equal(
     lsf && lsf.kind === "event" ? lsf.registrationUrl : "",
     "https://events.ticketleap.com/tickets/life-sciences-pennsylvania/life-sciences-future-2026",
@@ -1907,14 +1921,17 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   assert.ok(!catalog.some((i) => i.kind === "event" && i.status === "published" && "price" in ((i as { offers?: unknown }).offers ?? {})));
 });
 
-test("Sloan CIO paint news: Olenoski and Gordon published, not featured, exact names", () => {
+test("Sloan CIO paint news: Olenoski and Gordon stay as review slugs; pay facts remain", () => {
   const olenoski = catalog.find((i) => i.slug === "mlh-olenoski-cio");
   const gordon = catalog.find((i) => i.slug === "virtua-gordon-cio");
   assert.ok(olenoski && gordon);
   for (const item of [olenoski, gordon]) {
     assert.equal(item.kind, "news");
-    assert.equal(item.status, "published");
+    assert.equal(item.status, "review");
     assert.equal(item.featured, false);
+    assert.equal(bySlug(catalog, item.slug), undefined);
+    assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((row) => row.slug === item.slug));
+    assert.ok(!publishedNewsList(catalog).some((row) => row.slug === item.slug));
     assert.ok(item.publishedAt?.startsWith("2026-08-23"));
     assert.ok(!/ORBIE|Vanguard|350 locations|banking/i.test(`${item.title} ${item.body} ${item.dek}`));
     assert.ok(!newsByline(item).includes("Valley Desk"));
@@ -2021,3 +2038,118 @@ test("signed school facts on existing people; pay and CC NPSR unchanged", () => 
   const factsBlob = JSON.stringify(entityRows.flatMap((e) => e.facts ?? []));
   assert.ok(!/@[a-z0-9.-]+\./i.test(factsBlob));
 });
+
+test("Reed OrgChip geometry: above, header flips under dek, rail stays in column, mobile under dek", () => {
+  const rect = (top: number, left: number, width: number, height: number) => ({
+    top,
+    left,
+    right: left + width,
+    bottom: top + height,
+    width,
+    height,
+  });
+  const chip = { width: 320, height: 80 };
+  const viewport = { width: 1200, height: 800 };
+  const header = rect(0, 0, 1200, 72);
+  const lead = rect(80, 56, 1088, 280);
+  const h1 = rect(100, 56, 1088, 160);
+  const dek = rect(280, 56, 1088, 80);
+
+  const above = placeOrgChip({
+    mention: rect(500, 80, 140, 20),
+    chip,
+    viewport,
+    header,
+    lead,
+    dek,
+    h1,
+  });
+  assert.ok(above.top + 80 <= 500);
+  assert.ok(above.top >= 8);
+  assert.ok(above.left >= 8);
+  assert.ok(above.left + above.width <= 1200 - 8);
+
+  const flipped = placeOrgChip({
+    mention: rect(110, 80, 200, 24),
+    chip,
+    viewport,
+    header,
+    lead,
+    dek,
+    h1,
+  });
+  assert.ok(flipped.top >= dek.bottom);
+  assert.ok(flipped.top >= lead.bottom || flipped.top >= dek.bottom);
+  assert.ok(flipped.top >= h1.bottom);
+  assert.ok(flipped.top + 80 > dek.bottom);
+
+  const column = rect(400, 56, 344, 400);
+  const row = rect(420, 56, 344, 80);
+  const eventsGutter = 420;
+  const rail = placeOrgChip({
+    mention: rect(450, 70, 160, 20),
+    chip,
+    viewport,
+    header,
+    lead,
+    dek,
+    h1,
+    row,
+    column,
+  });
+  assert.ok(rail.left >= column.left);
+  assert.ok(rail.left + rail.width <= column.right);
+  assert.ok(rail.left + rail.width <= eventsGutter);
+  assert.ok(rail.top >= row.bottom);
+  assert.ok(rail.left >= 8);
+
+  const mobileCol = rect(80, 20, 350, 280);
+  const mobile = placeOrgChip({
+    mention: rect(110, 40, 180, 24),
+    chip,
+    viewport: { width: 390, height: 800 },
+    header: rect(0, 0, 390, 72),
+    lead: mobileCol,
+    dek: rect(260, 20, 350, 60),
+    h1: rect(90, 20, 350, 140),
+    column: mobileCol,
+    mobile: true,
+  });
+  assert.ok(mobile.top >= 260 + 60);
+  assert.ok(mobile.top >= 90 + 140);
+  assert.equal(mobile.width, 350);
+  assert.ok(mobile.left >= 8);
+});
+
+test("Reed liability: item-page prints signed facts; CC is NPSR-only; CIO slugs off public surfaces", () => {
+  const ccItem = catalog.find((i) => i.slug === "christianacare-epic-go-live");
+  assert.ok(ccItem);
+  const hits = itemSignedFacts(ccItem!, entityRows);
+  const cc = hits.find((hit) => hit.orgId === "org-christianacare");
+  assert.ok(cc);
+  assert.equal(cc?.facts.length, 1);
+  assert.equal(cc?.facts[0]?.label, "Net patient service revenue $3,140,501,000 · YE June 30, 2025");
+  assert.equal(cc?.facts[0]?.citation.name, "PwC AFS");
+  assert.equal(
+    cc?.facts[0]?.citation.url,
+    "https://app.fac.gov/dissemination/report/pdf/2025-06-GSAFAC-0000407992",
+  );
+  assert.ok(!/operating|3,289,202,000/i.test(JSON.stringify(cc?.facts)));
+  assert.ok(!/operating/i.test(readFileSync(join(root, "src/ui/ItemFacts.tsx"), "utf8")));
+
+  const mention = readFileSync(join(root, "src/ui/MentionText.tsx"), "utf8");
+  assert.ok(mention.includes("item-fact-") || mention.includes("printed"));
+  assert.ok(mention.includes("chipId"));
+
+  const feed = readFileSync(join(root, "public/feed.json"), "utf8");
+  const sitemap = readFileSync(join(root, "public/sitemap.xml"), "utf8");
+  const published = readFileSync(join(root, "src/content/published-catalog.json"), "utf8");
+  const workerPublished = readFileSync(join(root, "worker-published.js"), "utf8");
+  for (const slug of ["mlh-olenoski-cio", "virtua-gordon-cio"]) {
+    assert.ok(!feed.includes(`"slug": "${slug}"`));
+    assert.ok(!sitemap.includes(`/news/${slug}`));
+    assert.ok(!published.includes(`"slug": "${slug}"`));
+    assert.ok(!workerPublished.includes(slug));
+  }
+});
+
