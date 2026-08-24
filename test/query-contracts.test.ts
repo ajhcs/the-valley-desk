@@ -2125,6 +2125,59 @@ test("Reed OrgChip geometry: above, header flips under dek, rail stays in column
   assert.ok(mobile.top >= 90 + 140);
   assert.equal(mobile.width, 350);
   assert.ok(mobile.left >= 8);
+
+  const overlapsBox = (
+    top: number,
+    left: number,
+    width: number,
+    height: number,
+    other: { top: number; left: number; right: number; bottom: number },
+  ) => left < other.right && left + width > other.left && top < other.bottom && top + height > other.top;
+
+  const jeffChip = { width: 320, height: 186 };
+  const jeffRow = rect(450, 56, 400, 80);
+  const jeffMention = rect(460, 70, 180, 20);
+  const jeffCol = rect(56, 56, 400, 620);
+  const jeffLead = rect(80, 56, 1328, 280);
+  const jeffDek = rect(280, 56, 1328, 80);
+  const jeffH1 = rect(100, 56, 1328, 160);
+  const jeffHeader = rect(0, 0, 1440, 72);
+
+  const short = placeOrgChip({
+    mention: jeffMention,
+    chip: jeffChip,
+    viewport: { width: 1440, height: 700 },
+    header: jeffHeader,
+    lead: jeffLead,
+    dek: jeffDek,
+    h1: jeffH1,
+    row: jeffRow,
+    column: jeffCol,
+  });
+  const shortH = short.height;
+  assert.ok(!overlapsBox(short.top, short.left, short.width, shortH, jeffRow), "short viewport must not cover RailRow");
+  assert.ok(!overlapsBox(short.top, short.left, short.width, shortH, jeffMention));
+  assert.ok(!overlapsBox(short.top, short.left, short.width, shortH, jeffH1));
+  assert.ok(!overlapsBox(short.top, short.left, short.width, shortH, jeffDek));
+  assert.ok(short.left + short.width <= jeffCol.right);
+  assert.ok(short.top >= 8);
+  assert.ok(short.top + shortH <= 700 - 8);
+  assert.ok(short.top >= jeffRow.bottom || short.top + shortH <= jeffRow.top);
+
+  const tall = placeOrgChip({
+    mention: jeffMention,
+    chip: jeffChip,
+    viewport: { width: 1440, height: 1100 },
+    header: jeffHeader,
+    lead: jeffLead,
+    dek: jeffDek,
+    h1: jeffH1,
+    row: jeffRow,
+    column: jeffCol,
+  });
+  assert.ok(tall.top >= jeffRow.bottom);
+  assert.ok(!overlapsBox(tall.top, tall.left, tall.width, tall.height, jeffRow));
+  assert.ok(tall.left + tall.width <= jeffCol.right);
 });
 
 test("Reed liability: item-page prints signed facts; CC is NPSR-only; CIO slugs off public surfaces", () => {

@@ -26,6 +26,7 @@ function OrgChip({
   top,
   left,
   width,
+  height,
   chipRef,
   onEnter,
   onLeave,
@@ -35,6 +36,7 @@ function OrgChip({
   top: number;
   left: number;
   width: number;
+  height: number;
   chipRef: React.RefObject<HTMLDivElement | null>;
   onEnter: () => void;
   onLeave: () => void;
@@ -47,7 +49,7 @@ function OrgChip({
       ref={chipRef}
       className="OrgChip"
       role="tooltip"
-      style={{ top, left, width, maxWidth: width }}
+      style={{ top, left, width, maxWidth: width, maxHeight: height, overflow: "auto" }}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
@@ -80,7 +82,7 @@ function OrgMention({
   const chipRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<number>(0);
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ top: 0, left: 0, width: 320 });
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 320, height: 80 });
   const reactId = useId();
   const chipId = `org-chip-${orgId}-${reactId.replace(/:/g, "")}`;
   const printed = usePrintedFactIds()[orgId];
@@ -212,6 +214,7 @@ function OrgMention({
           top={pos.top}
           left={pos.left}
           width={pos.width}
+          height={pos.height}
           chipRef={chipRef}
           onEnter={show}
           onLeave={hide}

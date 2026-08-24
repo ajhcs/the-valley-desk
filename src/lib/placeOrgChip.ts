@@ -7,10 +7,11 @@ export type Rect = {
   height: number;
 };
 
-export type ChipBox = { top: number; left: number; width: number };
+export type ChipBox = { top: number; left: number; width: number; height: number };
 
 const INSET = 8;
 const GAP = 8;
+const MIN_H = 40;
 
 function box(top: number, left: number, width: number, height: number): Rect {
   return { top, left, right: left + width, bottom: top + height, width, height };
@@ -44,15 +45,11 @@ export function placeOrgChip(opts: {
 
   const colLeft = column?.left ?? INSET;
   const colRight = column?.right ?? viewport.width - INSET;
+  const minLeft = Math.max(colLeft, INSET);
 
-  const finish = (top: number, left: number, width = w): ChipBox => {
+  const pinLeft = (left: number, width: number) => {
     const maxLeft = Math.min(colRight, viewport.width - INSET) - width;
-    const minLeft = Math.max(colLeft, INSET);
-    return {
-      top: Math.min(Math.max(top, INSET), Math.max(INSET, viewport.height - h - INSET)),
-      left: clampLeft(left, width, minLeft, maxLeft),
-      width,
-    };
+    return clampLeft(left, width, minLeft, maxLeft);
   };
 
   const hitsCover = (placed: Rect) =>
@@ -61,21 +58,72 @@ export function placeOrgChip(opts: {
     Boolean(dek && overlaps(placed, dek)) ||
     Boolean(row && overlaps(placed, row));
 
+  const headerHit = (placed: Rect) => Boolean(header && overlaps(placed, header));
+
+  const fitsViewport = (placed: Rect) =>
+    placed.top >= INSET && placed.bottom <= viewport.height - INSET;
+
+  const ok = (placed: Rect) => !hitsCover(placed) && !headerHit(placed) && fitsViewport(placed);
+
+  const tryPlace = (top: number, left: number, width: number, height: number): ChipBox | null => {
+    const maxTop = Math.max(INSET, viewport.height - height - INSET);
+    const t = Math.min(Math.max(top, INSET), maxTop);
+    const l = pinLeft(left, width);
+    const placed = box(t, l, width, height);
+    if (ok(placed)) return { top: t, left: l, width, height };
+    return null;
+  };
+
+  const ceiling = () => {
+    let top = INSET;
+    if (header) top = Math.max(top, header.bottom + GAP);
+    if (h1) top = Math.max(top, h1.bottom + GAP);
+    if (dek) top = Math.max(top, dek.bottom + GAP);
+    if (lead) top = Math.max(top, lead.bottom + GAP);
+    return top;
+  };
+
+  /** After viewport clamp, flip or shrink so the box is never on the annotated row. */
+  const finish = (top: number, left: number, width = w, height = h): ChipBox => {
+    const fitted = tryPlace(top, left, width, height);
+    if (fitted) return fitted;
+
+    const obstacle = row ?? mention;
+    const above = tryPlace(obstacle.top - height - GAP, left, width, height);
+    if (above) return above;
+    const below = tryPlace(obstacle.bottom + GAP, left, width, height);
+    if (below) return below;
+
+    const aboveStart = ceiling();
+    const aboveRoom = obstacle.top - GAP - aboveStart;
+    const belowStart = obstacle.bottom + GAP;
+    const belowRoom = viewport.height - INSET - belowStart;
+    const l = pinLeft(left, width);
+
+    if (belowRoom >= MIN_H && belowRoom >= aboveRoom) {
+      return { top: belowStart, left: l, width, height: belowRoom };
+    }
+    if (aboveRoom >= MIN_H) {
+      return { top: aboveStart, left: l, width, height: aboveRoom };
+    }
+    if (belowRoom >= MIN_H) {
+      return { top: belowStart, left: l, width, height: belowRoom };
+    }
+
+    return { top: belowStart, left: l, width, height: Math.max(MIN_H, belowRoom) };
+  };
+
   if (mobile) {
     const col = column ?? lead;
     const width = col ? col.width : viewport.width - INSET * 2;
     const left = col ? col.left : INSET;
     const top = dek ? dek.bottom + GAP : lead ? lead.bottom + GAP : mention.bottom + GAP;
-    const placed = finish(top, left, width);
-    if (h1 && overlaps(box(placed.top, placed.left, placed.width, h), h1)) {
-      return finish((dek ?? lead ?? mention).bottom + GAP, left, width);
-    }
-    return placed;
+    return finish(top, left, width);
   }
 
   const above = box(mention.top - h - GAP, mention.left, w, h);
-  const headerHit = Boolean(header && overlaps(above, header));
-  if (!headerHit && above.top >= INSET && !hitsCover(above)) {
+  const aboveHeader = Boolean(header && overlaps(above, header));
+  if (!aboveHeader && above.top >= INSET && !hitsCover(above)) {
     return finish(above.top, above.left);
   }
 
