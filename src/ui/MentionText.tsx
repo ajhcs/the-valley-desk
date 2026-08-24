@@ -43,13 +43,23 @@ function OrgChip({
 }) {
   const cites = uniqueCitations(facts);
   if (!facts.length || !cites.length) return null;
+  if (typeof document === "undefined" || !document.body) return null;
   return createPortal(
     <div
       id={id}
       ref={chipRef}
       className="OrgChip"
       role="tooltip"
-      style={{ top, left, width, maxWidth: width, maxHeight: height, overflow: "auto" }}
+      style={{
+        position: "fixed",
+        top,
+        left,
+        width,
+        maxWidth: width,
+        maxHeight: height,
+        overflow: "auto",
+        zIndex: 50,
+      }}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
@@ -122,6 +132,9 @@ function OrgMention({
         ),
         row: readRect(root?.closest(".RailRow") ?? null),
         news: readRect(document.querySelector('.Rail[data-rail="news"] .RailRow')),
+        newsRows: [...document.querySelectorAll('.Rail[data-rail="news"] .RailRow')]
+          .map((el) => readRect(el))
+          .filter((r): r is Rect => Boolean(r)),
         column: mobile ? readRect(article) : readRect(root?.closest(".Rail") ?? null),
         mobile,
       }),
@@ -206,18 +219,20 @@ function OrgMention({
   const describedBy = printed || (open ? chipId : undefined);
 
   return (
-    <span
-      ref={mentionRef}
-      className="OrgMention"
-      tabIndex={solo ? 0 : undefined}
-      role={solo ? "button" : undefined}
-      aria-describedby={describedBy}
-      onMouseEnter={show}
-      onMouseLeave={hide}
-      onFocus={solo ? show : undefined}
-      onBlur={solo ? hide : undefined}
-    >
-      {text}
+    <>
+      <span
+        ref={mentionRef}
+        className="OrgMention"
+        tabIndex={solo ? 0 : undefined}
+        role={solo ? "button" : undefined}
+        aria-describedby={describedBy}
+        onMouseEnter={show}
+        onMouseLeave={hide}
+        onFocus={solo ? show : undefined}
+        onBlur={solo ? hide : undefined}
+      >
+        {text}
+      </span>
       {open ? (
         <OrgChip
           id={chipId}
@@ -231,7 +246,7 @@ function OrgMention({
           onLeave={hide}
         />
       ) : null}
-    </span>
+    </>
   );
 }
 

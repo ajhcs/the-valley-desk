@@ -37,10 +37,12 @@ export function placeOrgChip(opts: {
   h1?: Rect | null;
   row?: Rect | null;
   news?: Rect | null;
+  newsRows?: Rect[] | null;
   column?: Rect | null;
   mobile?: boolean;
 }): ChipBox {
-  const { mention, chip, viewport, header, lead, dek, h1, row, news, column, mobile } = opts;
+  const { mention, chip, viewport, header, lead, dek, h1, row, news, newsRows, column, mobile } = opts;
+  const newsList = newsRows?.length ? newsRows : news ? [news] : [];
   const w = Math.min(chip.width, Math.max(80, viewport.width - INSET * 2));
   const h = chip.height;
 
@@ -58,7 +60,7 @@ export function placeOrgChip(opts: {
     Boolean(h1 && overlaps(placed, h1)) ||
     Boolean(dek && overlaps(placed, dek)) ||
     Boolean(row && overlaps(placed, row)) ||
-    Boolean(news && overlaps(placed, news));
+    newsList.some((n) => overlaps(placed, n));
 
   const headerHit = (placed: Rect) => Boolean(header && overlaps(placed, header));
 
@@ -87,15 +89,19 @@ export function placeOrgChip(opts: {
 
   /** After viewport clamp, flip or shrink so the box is never on the annotated row. */
   const finish = (top: number, left: number, width = w, height = h): ChipBox => {
-    const obstacle = row ?? news ?? mention;
+    const stack = [row, ...newsList].filter((b): b is Rect => Boolean(b));
+    const obstacle = row ?? newsList[0] ?? mention;
+    const floor = stack.length
+      ? stack.reduce((a, b) => (a.bottom >= b.bottom ? a : b))
+      : mention;
     const aboveStart = ceiling();
     const aboveRoom = obstacle.top - GAP - aboveStart;
-    const belowStart = obstacle.bottom + GAP;
+    const belowStart = floor.bottom + GAP;
     const belowRoom = viewport.height - INSET - belowStart;
     const l = pinLeft(left, width);
 
     const offRow = (placed: ChipBox): ChipBox => {
-      const blockers = [row, news].filter((b): b is Rect => Boolean(b));
+      const blockers = [row, h1, dek, ...newsList].filter((b): b is Rect => Boolean(b));
       if (!blockers.length) return placed;
       const r = box(placed.top, placed.left, placed.width, placed.height);
       if (!overlaps(r, mention) && blockers.every((b) => !overlaps(r, b))) return placed;
@@ -113,7 +119,7 @@ export function placeOrgChip(opts: {
 
     const above = tryPlace(obstacle.top - height - GAP, left, width, height);
     if (above) return offRow(above);
-    const below = tryPlace(obstacle.bottom + GAP, left, width, height);
+    const below = tryPlace(floor.bottom + GAP, left, width, height);
     if (below) return offRow(below);
 
     if (belowRoom >= MIN_H && belowRoom >= aboveRoom) {

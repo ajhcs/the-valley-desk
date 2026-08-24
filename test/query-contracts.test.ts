@@ -1870,6 +1870,9 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   assert.ok(mention.includes("placeOrgChip"));
   assert.ok(mention.includes("GRACE_MS"));
   assert.ok(mention.includes("createPortal"));
+  assert.ok(mention.includes("document.body"));
+  assert.ok(mention.includes('position: "fixed"'));
+  assert.ok(mention.includes("newsRows"));
   assert.ok(layout.includes("MentionScope"));
   assert.ok(!catalog.some((i) => /bartiromo|olenoski/i.test(JSON.stringify(i.facts ?? []))));
 
@@ -2254,6 +2257,39 @@ test("Reed OrgChip geometry: above, header flips under dek, rail stays in column
   assert.ok(!overlapsBox(fromLead.top, fromLead.left, fromLead.width, fromLead.height, newsRow));
   assert.ok(!overlapsBox(fromLead.top, fromLead.left, fromLead.width, fromLead.height, h1));
   assert.ok(!overlapsBox(fromLead.top, fromLead.left, fromLead.width, fromLead.height, dek));
+
+  const firstNews = rect(400, 56, 1088, 80);
+  const secondNews = rect(480, 56, 1088, 80);
+  const fromLeadTwo = placeOrgChip({
+    mention: rect(220, 80, 160, 20),
+    chip,
+    viewport,
+    header,
+    lead,
+    dek,
+    h1,
+    newsRows: [firstNews, secondNews],
+  });
+  assert.ok(!overlapsBox(fromLeadTwo.top, fromLeadTwo.left, fromLeadTwo.width, fromLeadTwo.height, firstNews), "must not cover first NEWS row");
+  assert.ok(!overlapsBox(fromLeadTwo.top, fromLeadTwo.left, fromLeadTwo.width, fromLeadTwo.height, secondNews), "must not cover second NEWS row");
+  assert.ok(!overlapsBox(fromLeadTwo.top, fromLeadTwo.left, fromLeadTwo.width, fromLeadTwo.height, h1));
+  assert.ok(!overlapsBox(fromLeadTwo.top, fromLeadTwo.left, fromLeadTwo.width, fromLeadTwo.height, dek));
+
+  const onSecond = placeOrgChip({
+    mention: rect(500, 80, 160, 20),
+    chip,
+    viewport,
+    header,
+    lead,
+    dek,
+    h1,
+    row: secondNews,
+    newsRows: [firstNews, secondNews],
+  });
+  assert.ok(!overlapsBox(onSecond.top, onSecond.left, onSecond.width, onSecond.height, firstNews), "second-row hover must not cover first NEWS");
+  assert.ok(!overlapsBox(onSecond.top, onSecond.left, onSecond.width, onSecond.height, secondNews), "second-row hover must not cover second NEWS");
+  assert.ok(!overlapsBox(onSecond.top, onSecond.left, onSecond.width, onSecond.height, h1));
+  assert.ok(!overlapsBox(onSecond.top, onSecond.left, onSecond.width, onSecond.height, dek));
 });
 
 test("Reed liability: item-page prints signed facts; CC is NPSR-only; CIO slugs off public surfaces", () => {
@@ -2668,7 +2704,16 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.ok(mention.includes("Escape"));
   assert.ok(mention.includes("mousedown"));
   assert.ok(mention.includes("news:"));
+  assert.ok(mention.includes("newsRows"));
+  assert.ok(mention.includes("querySelectorAll"));
+  assert.ok(mention.includes("createPortal"));
+  assert.ok(mention.includes("document.body"));
+  assert.ok(mention.includes('position: "fixed"'));
+  const mentionOpen = mention.slice(mention.indexOf('className="OrgMention"'), mention.indexOf("<OrgChip"));
+  assert.ok(mentionOpen.includes("</span>"));
   assert.ok(css.includes(".OrgChip {"));
+  const chipCss = css.slice(css.indexOf(".OrgChip {"), css.indexOf(".OrgChip-label"));
+  assert.ok(chipCss.includes("position: fixed"));
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
 });
