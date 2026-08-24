@@ -1800,7 +1800,9 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   assert.equal(labels("person-tom-bartiromo")[0], "SVP CIO · reportable $562,874 · Sch J $664,344");
   assert.equal(byId["person-tom-bartiromo"]?.facts?.[0]?.filerOrg, "Reading Hospital");
   assert.equal(byId["person-tom-bartiromo"]?.facts?.[0]?.citation.name, "Reading Hospital 990");
-  assert.ok(!/tower/i.test(JSON.stringify(byId["person-tom-bartiromo"]?.facts)));
+  assert.ok(
+    !/tower/i.test(JSON.stringify(byId["person-tom-bartiromo"]?.facts?.filter((f) => f.kind === "salary"))),
+  );
   assert.equal(labels("person-luke-olenoski")[0], "SVP CIO · reportable $663,099 · Sch J $868,996");
   assert.equal(byId["person-luke-olenoski"]?.facts?.[0]?.filerOrg, "Main Line Services");
   assert.equal(byId["person-luke-olenoski"]?.facts?.[0]?.citation.name, "Main Line Services 990");
@@ -1940,9 +1942,82 @@ test("Sloan CIO paint news: Olenoski and Gordon published, not featured, exact n
   assert.equal(byId["person-luke-olenoski"]?.facts?.[0]?.citation.name, "Main Line Services 990");
   assert.equal(byId["person-thomas-f-gordon"]?.facts?.[0]?.citation.name, "Virtua Health Inc. 990");
   assert.equal(byId["person-tom-bartiromo"]?.facts?.[0]?.citation.name, "Reading Hospital 990");
-  assert.ok(!/tower/i.test(JSON.stringify(byId["person-tom-bartiromo"]?.facts)));
+  assert.ok(
+    !/tower/i.test(JSON.stringify(byId["person-tom-bartiromo"]?.facts?.filter((f) => f.kind === "salary"))),
+  );
   const paintedO = findFirstMentions(olenoski.title + " " + olenoski.body, factBearingEntities(entityRows));
   assert.ok(paintedO.some((h) => h.orgId === "person-luke-olenoski" && h.text === "Luke Olenoski"));
   const paintedG = findFirstMentions(gordon.title + " " + gordon.body, factBearingEntities(entityRows));
   assert.ok(paintedG.some((h) => h.orgId === "person-thomas-f-gordon" && h.text === "Thomas Gordon"));
+});
+
+test("signed school facts on existing people; pay and CC NPSR unchanged", () => {
+  const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
+  const edu = (id: string) => (byId[id]?.facts ?? []).filter((f) => f.kind === "education");
+  const salary = (id: string) => (byId[id]?.facts ?? []).filter((f) => f.kind === "salary");
+
+  assert.equal(entityRows.length, 92);
+  assert.deepEqual(
+    (byId["org-christianacare"]?.facts ?? []).map((f) => f.label),
+    ["Net patient service revenue $3,140,501,000 · YE June 30, 2025"],
+  );
+  assert.ok(!/operating|3,289,202,000/i.test(JSON.stringify(byId["org-christianacare"]?.facts)));
+
+  assert.equal(salary("person-luke-olenoski")[0]?.citation.name, "Main Line Services 990");
+  assert.equal(salary("person-thomas-f-gordon")[0]?.citation.name, "Virtua Health Inc. 990");
+  assert.equal(salary("person-dave-johnson")[0]?.filerOrg, "Inspira Medical Centers, Inc.");
+  assert.equal(salary("person-tom-bartiromo")[0]?.citation.name, "Reading Hospital 990");
+  assert.ok(!/tower/i.test(JSON.stringify(salary("person-tom-bartiromo"))));
+
+  assert.equal(edu("person-julian-mihai")[0]?.label, "MBA Chicago Booth · MS+BS CS Polytechnic University of Bucharest");
+  assert.equal(edu("person-anna-schoenbaum")[0]?.label, "DNP+MS Informatics Maryland Nursing · BSN Medical College of Georgia");
+  assert.equal(edu("person-john-donohue")[0]?.label, "BS Business Management University of Phoenix");
+  assert.equal(edu("person-luke-olenoski")[0]?.label, "EMBA (Beta Gamma Sigma)+BS CS Villanova");
+  assert.equal(
+    edu("person-benjamin-slovis")[0]?.label,
+    "CMIO Temple University Hospital · MD RWJ · informatics fellowship + EM residency Icahn/Mount Sinai",
+  );
+  assert.ok(!/Temple Health CMIO/i.test(JSON.stringify(edu("person-benjamin-slovis"))));
+  assert.equal(edu("person-thomas-f-gordon")[0]?.label, "BS MIS LaSalle · MBA St. Joseph's Haub");
+  assert.equal(edu("person-dave-johnson")[0]?.label, "Inspira SVP CIIO · MBA Saint Joseph's · BA Animatics Rutgers");
+  assert.equal(edu("person-dave-johnson")[0]?.citation.url, undefined);
+  assert.ok(!/Kevin/.test(JSON.stringify(byId["person-dave-johnson"])));
+  assert.equal(edu("person-bimal-desai")[0]?.label, "MBI OHSU · MD WashU · internship/residency CHOP");
+  assert.equal(edu("person-bimal-desai")[0]?.citation.url, "https://www.chop.edu/doctors/desai-bimal");
+  assert.equal(
+    edu("person-bimal-desai")[1]?.label,
+    "Professor of Clinical Pediatrics · B.S. Biology Emory 1995 · M.D. WashU 2000 · M.B.I. OHSU 2008",
+  );
+  assert.equal(edu("person-bimal-desai")[1]?.citation.url, "https://www.med.upenn.edu/apps/faculty/index.php/g275/p17256");
+  assert.ok(edu("person-bimal-desai")[1]?.detail?.includes("267-426-6552"));
+  assert.ok(!/@/.test(JSON.stringify(edu("person-bimal-desai"))));
+  assert.ok(!/ORCA author/i.test(JSON.stringify(edu("person-bimal-desai"))));
+  assert.equal(edu("person-robert-hartmann")[0]?.label, "MBA Northwestern · BA economics Vanderbilt");
+  assert.deepEqual(
+    edu("person-anahi-santiago").map((f) => f.label),
+    ["EMBA", "MBA Drexel + BS ECE Drexel"],
+  );
+  assert.equal(edu("person-tom-bartiromo")[0]?.label, "bachelor's Computer Science, Brick Computer Science Institute");
+  assert.equal(edu("person-randall-gaboriault")[0]?.label, "Randy Gaboriault, MS, MBA");
+  assert.equal(
+    edu("person-randall-gaboriault")[1]?.label,
+    "Business Administration, Executive Master, Oxford / Business Administration, Business Administration, Dartmouth College / Bachelor's Degree, Temple University",
+  );
+  assert.equal(
+    edu("person-randall-gaboriault")[1]?.citation.url,
+    "https://news.christianacare.org/our-experts-media/randy-gaboriaultms/",
+  );
+
+  for (const id of [
+    "person-vinay-bharel",
+    "person-mitchell-schnall",
+    "person-hojjat-salmasian",
+    "person-jeffrey-pennington",
+  ]) {
+    assert.equal(edu(id).length, 0, id);
+  }
+  assert.ok(!entityRows.some((e) => /cancilla/i.test(e.id)));
+  assert.ok(!/path:\s*["']\/org\//.test(readFileSync(join(root, "src/router.tsx"), "utf8")));
+  const factsBlob = JSON.stringify(entityRows.flatMap((e) => e.facts ?? []));
+  assert.ok(!/@[a-z0-9.-]+\./i.test(factsBlob));
 });

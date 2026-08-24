@@ -21,7 +21,7 @@ export const ENTITY_BOUNDARY = {
 } as const;
 
 /** Signed hover-chip metrics. Chip must not render when citation.url is missing. */
-export const EntityFactKind = z.enum(["revenue", "margin", "cfo", "ceo", "salary", "other"]);
+export const EntityFactKind = z.enum(["revenue", "margin", "cfo", "ceo", "salary", "education", "other"]);
 
 export const EntityFact = z.object({
   kind: EntityFactKind,
