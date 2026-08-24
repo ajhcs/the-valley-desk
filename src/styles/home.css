@@ -168,6 +168,11 @@
   font-weight: 400;
   line-height: 1.5;
   color: var(--mute);
+  overflow: visible;
+}
+
+.Lead-signed {
+  overflow: visible;
 }
 
 ul.desk {
@@ -497,36 +502,30 @@ ul.desk {
 .OrgMention:hover,
 .OrgMention:focus,
 .OrgMention:focus-visible {
-  cursor: help;
   text-decoration: none;
+  cursor: inherit;
+  white-space: nowrap;
 }
 
-.OrgChip {
-  position: fixed;
-  z-index: 50;
-  max-width: 320px;
-  padding: 10px 12px;
-  background: var(--paper);
-  color: var(--ink);
-  border: 1px solid var(--rule);
-  font-size: 12px;
-  line-height: 1.4;
+.OrgTick,
+.Lead-signedTick {
+  display: inline-block;
+  width: 7px;
+  height: 2px;
+  margin-left: 4px;
+  background: var(--sky);
+  vertical-align: calc(1ex - 2px);
+  border: none;
+  padding: 0;
+  border-radius: 0;
 }
 
-.OrgChip-label {
-  margin: 0 0 6px;
-  color: var(--ink);
+.OrgTick {
+  cursor: help;
 }
 
-.OrgChip-detail {
-  color: var(--mute);
-}
-
-.OrgChip a {
-  display: block;
-  margin-top: 4px;
-  color: var(--ink);
-  text-decoration: underline;
+.Lead-signedTick {
+  margin-right: 4px;
 }
 
 .ItemFacts {

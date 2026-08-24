@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo } from "react";
 import type { ReactNode } from "react";
 import { entities } from "../lib/entities";
-import { itemSignedFacts, uniqueCitations, type MentionHit } from "../lib/entityFacts";
+import { itemSignedFacts, signedFactText, uniqueCitations, type MentionHit } from "../lib/entityFacts";
 
 export const PrintedFactIds = createContext<Record<string, string>>({});
 
@@ -28,7 +28,7 @@ export function ItemFactScope({
   return <PrintedFactIds.Provider value={ids}>{children}</PrintedFactIds.Provider>;
 }
 
-/** Liability print under the dek. Same signedLabel + cite as the hover chip. */
+/** Liability print under the dek. Rest print does not repeat the painted name. */
 export function ItemFacts({ hits }: { hits: MentionHit[] }) {
   if (!hits.length) return null;
   const ids = printedFactIds(hits);
@@ -38,8 +38,7 @@ export function ItemFacts({ hits }: { hits: MentionHit[] }) {
         const cites = uniqueCitations(hit.facts);
         return hit.facts.map((fact, i) => (
           <p key={`${hit.orgId}-${fact.label}`} id={i === 0 ? ids[hit.orgId] : undefined}>
-            {fact.label}
-            {fact.detail ? ` · ${fact.detail}` : ""}
+            {signedFactText(fact)}
             {cites.map((cite) => (
               <span key={cite.url}>
                 {" · "}

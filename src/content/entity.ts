@@ -20,7 +20,7 @@ export const ENTITY_BOUNDARY = {
   edgeOnly: ["WellSpan", "St. Luke's", "Geisinger", "Hershey"],
 } as const;
 
-/** Signed hover-chip metrics. Chip must not render when citation.url is missing. */
+/** Signed first-mention metrics. Do not paint when citation.url is missing. */
 export const EntityFactKind = z.enum(["revenue", "margin", "cfo", "ceo", "salary", "education", "other"]);
 
 export const EntityFact = z.object({
@@ -49,7 +49,7 @@ export const Entity = z.object({
   sameSiteAs: z.string().optional(),
   /** True when the campus is outside ENTITY_BOUNDARY (still stored). */
   outOfBox: z.boolean().optional(),
-  /** Signed metrics for first-mention hover chips. Never mint /org routes. */
+  /** Signed metrics for first-mention ticks. Never mint /org routes. */
   facts: z.array(EntityFact).optional(),
 });
 

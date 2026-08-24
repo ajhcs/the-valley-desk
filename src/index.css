@@ -31,7 +31,7 @@ body {
   transition: outline-color var(--motion-fast) var(--ease-out), outline-width var(--motion-fast) var(--ease-out);
 }
 
-.OrgMention:focus-visible {
+.OrgTick:focus-visible {
   outline-width: 2px;
   outline-style: solid;
   outline-color: var(--ink);

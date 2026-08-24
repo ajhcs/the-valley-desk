@@ -87,13 +87,74 @@ export function findFirstMentions(
   return kept.sort((a, b) => a.start - b.start);
 }
 
-/** First-mention signed facts in title + dek + body. Chip and item-page print share this list. */
+/** First-mention signed facts in title + dek + body. Hover line and item-page print share this list. */
 export function itemSignedFacts(
   item: { title?: string; impactSentence?: string; body?: string },
   entities: Entity[],
 ) {
   const text = [item.title, item.impactSentence, item.body].filter(Boolean).join("\n");
   return findFirstMentions(text, factBearingEntities(entities));
+}
+
+/** CC paints NPSR, never the words "Net patient service revenue". Other labels stay Sloan signs. */
+export function paintSignedLabel(label: string) {
+  return label.replace(/^Net patient service revenue\b/i, "NPSR");
+}
+
+export function signedFactText(fact: Pick<CitableFact, "label" | "detail">) {
+  const label = paintSignedLabel(fact.label);
+  return fact.detail ? `${label} · ${fact.detail}` : label;
+}
+
+/** Hover-inserted dek line includes the painted name. */
+export function signedHoverLine(name: string, fact: CitableFact) {
+  return `${name} ${signedFactText(fact)} · ${fact.citation.name}`;
+}
+
+/** Item-page rest print does not repeat the painted name. */
+export function signedPrintLine(fact: CitableFact) {
+  return `${signedFactText(fact)} · ${fact.citation.name}`;
+}
+
+const ABBREV = new Set([
+  "apr",
+  "aug",
+  "ch",
+  "dec",
+  "del",
+  "dr",
+  "feb",
+  "inc",
+  "jan",
+  "jul",
+  "jun",
+  "mar",
+  "mr",
+  "mrs",
+  "ms",
+  "no",
+  "nov",
+  "oct",
+  "sep",
+  "sept",
+  "sr",
+  "st",
+  "vs",
+]);
+
+/** Insert the signed line after the first dek sentence. Protects Oct. 3 / U.S. */
+export function splitFirstSentence(text: string): { first: string; rest: string } {
+  const re = /[.!?](?:\s+|$)/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text))) {
+    if (match[0][0] === ".") {
+      const word = text.slice(0, match.index).match(/([A-Za-z]+)$/)?.[1] ?? "";
+      if (word.length <= 1 || ABBREV.has(word.toLowerCase())) continue;
+    }
+    const end = match.index + 1;
+    return { first: text.slice(0, end), rest: text.slice(end) };
+  }
+  return { first: text, rest: "" };
 }
 
 export function uniqueCitations(facts: CitableFact[]) {

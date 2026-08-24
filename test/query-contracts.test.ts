@@ -42,8 +42,15 @@ import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
 import { eventPlace, formatChipLabel, formatDate, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
 import { KIND_CHIP, chipKind, kindChip } from "../src/lib/kind.ts";
 import { Entity } from "../src/content/entity.ts";
-import { citableFacts, factBearingEntities, findFirstMentions, itemSignedFacts } from "../src/lib/entityFacts.ts";
-import { placeOrgChip } from "../src/lib/placeOrgChip.ts";
+import {
+  citableFacts,
+  factBearingEntities,
+  findFirstMentions,
+  itemSignedFacts,
+  signedHoverLine,
+  signedPrintLine,
+  splitFirstSentence,
+} from "../src/lib/entityFacts.ts";
 import { itemByline, newsByline } from "../src/lib/byline.ts";
 import { navSection } from "../src/lib/nav.ts";
 
@@ -1860,19 +1867,14 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
   assert.ok(!/path:\s*["']\/org\//.test(router));
   assert.ok(!mention.includes("/org/"));
-  assert.ok(!mention.includes("tabIndex={0}"));
-  assert.ok(!mention.includes("tabindex={0}"));
-  assert.ok(mention.includes("tabIndex={solo ? 0 : undefined}"));
-  assert.ok(mention.includes('closest("a")'));
-  assert.ok(mention.includes("Escape"));
-  assert.ok(mention.includes("mousedown"));
+  assert.ok(mention.includes("OrgTick"));
+  assert.ok(mention.includes("tabIndex={0}"));
   assert.ok(mention.includes("aria-describedby"));
-  assert.ok(mention.includes("placeOrgChip"));
-  assert.ok(mention.includes("GRACE_MS"));
-  assert.ok(mention.includes("createPortal"));
-  assert.ok(mention.includes("document.body"));
-  assert.ok(mention.includes('position: "fixed"'));
-  assert.ok(mention.includes("newsRows"));
+  assert.ok(!mention.includes("createPortal"));
+  assert.ok(!mention.includes("placeOrgChip"));
+  assert.ok(!mention.includes("OrgChip"));
+  assert.ok(!mention.includes("document.body"));
+  assert.ok(!mention.includes('position: "fixed"'));
   assert.ok(layout.includes("MentionScope"));
   assert.ok(!catalog.some((i) => /bartiromo|olenoski/i.test(JSON.stringify(i.facts ?? []))));
 
@@ -2109,187 +2111,74 @@ test("Sloan SIGN: Inspira Johnson day-6 voice; Honor Roll stays voice; pay facts
   assert.ok(!/Kevin/.test(JSON.stringify(byId["person-dave-johnson"])));
 });
 
-test("Reed OrgChip geometry: above, header flips under dek, rail stays in column, mobile under dek", () => {
-  const rect = (top: number, left: number, width: number, height: number) => ({
-    top,
-    left,
-    right: left + width,
-    bottom: top + height,
-    width,
-    height,
-  });
-  const chip = { width: 320, height: 80 };
-  const viewport = { width: 1200, height: 800 };
-  const header = rect(0, 0, 1200, 72);
-  const lead = rect(80, 56, 1088, 280);
-  const h1 = rect(100, 56, 1088, 160);
-  const dek = rect(280, 56, 1088, 80);
+test("Reed Bloomberg: hover line names the org; rest print does not; no chip; NEWS rail cannot insert", () => {
+  const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
+  const cc = citableFacts(byId["org-christianacare"]?.facts).at(0);
+  assert.ok(cc);
+  assert.equal(
+    signedHoverLine("ChristianaCare", cc!),
+    "ChristianaCare NPSR $3,140,501,000 · YE June 30, 2025 · PwC AFS",
+  );
+  assert.equal(signedPrintLine(cc!), "NPSR $3,140,501,000 · YE June 30, 2025 · PwC AFS");
+  assert.ok(!/operating|3,289,202,000|Net patient service revenue/i.test(signedHoverLine("ChristianaCare", cc!)));
+  assert.ok(!signedPrintLine(cc!).includes("ChristianaCare"));
 
-  const above = placeOrgChip({
-    mention: rect(500, 80, 140, 20),
-    chip,
-    viewport,
-    header,
-    lead,
-    dek,
-    h1,
-  });
-  assert.ok(above.top + 80 <= 500);
-  assert.ok(above.top >= 8);
-  assert.ok(above.left >= 8);
-  assert.ok(above.left + above.width <= 1200 - 8);
+  const jeff = citableFacts(byId["org-jefferson"]?.facts).at(0);
+  assert.ok(jeff);
+  assert.ok(signedHoverLine("Jefferson", jeff!).startsWith("Jefferson "));
+  assert.ok(!signedPrintLine(jeff!).startsWith("Jefferson "));
 
-  const flipped = placeOrgChip({
-    mention: rect(110, 80, 200, 24),
-    chip,
-    viewport,
-    header,
-    lead,
-    dek,
-    h1,
-  });
-  assert.ok(flipped.top >= dek.bottom);
-  assert.ok(flipped.top >= lead.bottom || flipped.top >= dek.bottom);
-  assert.ok(flipped.top >= h1.bottom);
-  assert.ok(flipped.top + 80 > dek.bottom);
+  const temple = citableFacts(byId["org-temple"]?.facts).at(0);
+  assert.ok(temple);
+  assert.ok(signedHoverLine("Temple", temple!).startsWith("Temple "));
+  assert.ok(!signedPrintLine(temple!).startsWith("Temple "));
 
-  const column = rect(400, 56, 344, 400);
-  const row = rect(420, 56, 344, 80);
-  const eventsGutter = 420;
-  const rail = placeOrgChip({
-    mention: rect(450, 70, 160, 20),
-    chip,
-    viewport,
-    header,
-    lead,
-    dek,
-    h1,
-    row,
-    column,
-  });
-  assert.ok(rail.left >= column.left);
-  assert.ok(rail.left + rail.width <= column.right);
-  assert.ok(rail.left + rail.width <= eventsGutter);
-  assert.ok(rail.top >= row.bottom);
-  assert.ok(rail.left >= 8);
+  const pay = citableFacts(byId["person-dave-johnson"]?.facts.filter((f) => f.kind === "salary")).at(0);
+  assert.ok(pay);
+  assert.ok(signedHoverLine("Dave Johnson", pay!).startsWith("Dave Johnson "));
+  assert.ok(!signedPrintLine(pay!).includes("Dave Johnson"));
 
-  const mobileCol = rect(80, 20, 350, 280);
-  const mobile = placeOrgChip({
-    mention: rect(110, 40, 180, 24),
-    chip,
-    viewport: { width: 390, height: 800 },
-    header: rect(0, 0, 390, 72),
-    lead: mobileCol,
-    dek: rect(260, 20, 350, 60),
-    h1: rect(90, 20, 350, 140),
-    column: mobileCol,
-    mobile: true,
-  });
-  assert.ok(mobile.top >= 260 + 60);
-  assert.ok(mobile.top >= 90 + 140);
-  assert.equal(mobile.width, 350);
-  assert.ok(mobile.left >= 8);
+  const ccDek = "Oct. 3 is a training-gated cutover on ChristianaCare’s own update; Becker’s second-cites that date and does not price Epic.";
+  const split = splitFirstSentence(ccDek);
+  assert.equal(split.rest, "");
+  assert.ok(split.first.startsWith("Oct. 3"));
+  const two = splitFirstSentence("First sentence. Second sentence.");
+  assert.equal(two.first, "First sentence.");
+  assert.equal(two.rest.trim(), "Second sentence.");
 
-  const overlapsBox = (
-    top: number,
-    left: number,
-    width: number,
-    height: number,
-    other: { top: number; left: number; right: number; bottom: number },
-  ) => left < other.right && left + width > other.left && top < other.bottom && top + height > other.top;
-
-  const jeffChip = { width: 320, height: 186 };
-  const jeffRow = rect(450, 56, 400, 80);
-  const jeffMention = rect(460, 70, 180, 20);
-  const jeffCol = rect(56, 56, 400, 620);
-  const jeffLead = rect(80, 56, 1328, 280);
-  const jeffDek = rect(280, 56, 1328, 80);
-  const jeffH1 = rect(100, 56, 1328, 160);
-  const jeffHeader = rect(0, 0, 1440, 72);
-
-  const short = placeOrgChip({
-    mention: jeffMention,
-    chip: jeffChip,
-    viewport: { width: 1440, height: 700 },
-    header: jeffHeader,
-    lead: jeffLead,
-    dek: jeffDek,
-    h1: jeffH1,
-    row: jeffRow,
-    column: jeffCol,
-  });
-  const shortH = short.height;
-  assert.ok(!overlapsBox(short.top, short.left, short.width, shortH, jeffRow), "short viewport must not cover RailRow");
-  assert.ok(!overlapsBox(short.top, short.left, short.width, shortH, jeffMention));
-  assert.ok(!overlapsBox(short.top, short.left, short.width, shortH, jeffH1));
-  assert.ok(!overlapsBox(short.top, short.left, short.width, shortH, jeffDek));
-  assert.ok(short.left + short.width <= jeffCol.right);
-  assert.ok(short.top >= 8);
-  assert.ok(short.top + shortH <= 700 - 8);
-  assert.ok(short.top >= jeffRow.bottom || short.top + shortH <= jeffRow.top);
-
-  const tall = placeOrgChip({
-    mention: jeffMention,
-    chip: jeffChip,
-    viewport: { width: 1440, height: 1100 },
-    header: jeffHeader,
-    lead: jeffLead,
-    dek: jeffDek,
-    h1: jeffH1,
-    row: jeffRow,
-    column: jeffCol,
-  });
-  assert.ok(tall.top >= jeffRow.bottom);
-  assert.ok(!overlapsBox(tall.top, tall.left, tall.width, tall.height, jeffRow));
-  assert.ok(tall.left + tall.width <= jeffCol.right);
-
-  const newsRow = rect(400, 56, 1088, 80);
-  const fromLead = placeOrgChip({
-    mention: rect(220, 80, 160, 20),
-    chip,
-    viewport,
-    header,
-    lead,
-    dek,
-    h1,
-    news: newsRow,
-  });
-  assert.ok(!overlapsBox(fromLead.top, fromLead.left, fromLead.width, fromLead.height, newsRow));
-  assert.ok(!overlapsBox(fromLead.top, fromLead.left, fromLead.width, fromLead.height, h1));
-  assert.ok(!overlapsBox(fromLead.top, fromLead.left, fromLead.width, fromLead.height, dek));
-
-  const firstNews = rect(400, 56, 1088, 80);
-  const secondNews = rect(480, 56, 1088, 80);
-  const fromLeadTwo = placeOrgChip({
-    mention: rect(220, 80, 160, 20),
-    chip,
-    viewport,
-    header,
-    lead,
-    dek,
-    h1,
-    newsRows: [firstNews, secondNews],
-  });
-  assert.ok(!overlapsBox(fromLeadTwo.top, fromLeadTwo.left, fromLeadTwo.width, fromLeadTwo.height, firstNews), "must not cover first NEWS row");
-  assert.ok(!overlapsBox(fromLeadTwo.top, fromLeadTwo.left, fromLeadTwo.width, fromLeadTwo.height, secondNews), "must not cover second NEWS row");
-  assert.ok(!overlapsBox(fromLeadTwo.top, fromLeadTwo.left, fromLeadTwo.width, fromLeadTwo.height, h1));
-  assert.ok(!overlapsBox(fromLeadTwo.top, fromLeadTwo.left, fromLeadTwo.width, fromLeadTwo.height, dek));
-
-  const onSecond = placeOrgChip({
-    mention: rect(500, 80, 160, 20),
-    chip,
-    viewport,
-    header,
-    lead,
-    dek,
-    h1,
-    row: secondNews,
-    newsRows: [firstNews, secondNews],
-  });
-  assert.ok(!overlapsBox(onSecond.top, onSecond.left, onSecond.width, onSecond.height, firstNews), "second-row hover must not cover first NEWS");
-  assert.ok(!overlapsBox(onSecond.top, onSecond.left, onSecond.width, onSecond.height, secondNews), "second-row hover must not cover second NEWS");
-  assert.ok(!overlapsBox(onSecond.top, onSecond.left, onSecond.width, onSecond.height, h1));
-  assert.ok(!overlapsBox(onSecond.top, onSecond.left, onSecond.width, onSecond.height, dek));
+  const mention = readFileSync(join(root, "src/ui/MentionText.tsx"), "utf8");
+  const lead = readFileSync(join(root, "src/ui/home/Lead.tsx"), "utf8");
+  const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
+  const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  const facts = readFileSync(join(root, "src/ui/ItemFacts.tsx"), "utf8");
+  const dek = readFileSync(join(root, "src/ui/DekInsert.tsx"), "utf8");
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  const tokens = readFileSync(join(root, "src/styles/tokens.css"), "utf8");
+  assert.ok(!mention.includes("createPortal"));
+  assert.ok(!mention.includes("OrgChip"));
+  assert.ok(!mention.includes("placeOrgChip"));
+  assert.ok(!css.includes("OrgChip"));
+  assert.ok(mention.includes("OrgTick"));
+  assert.ok(lead.includes("LeadDekInsert"));
+  assert.ok(lead.includes("LeadSignedLine"));
+  assert.ok(lead.includes("splitFirstSentence"));
+  assert.ok(dek.includes("Escape"));
+  assert.ok(dek.includes("mousedown"));
+  assert.ok(!rail.includes("LeadDekInsert"));
+  assert.ok(!rail.includes("impactSentence"));
+  assert.ok(itemPage.includes("ItemFacts"));
+  assert.ok(!itemPage.includes("LeadDekInsert"));
+  assert.ok(facts.includes("signedFactText"));
+  assert.ok(!facts.includes("hit.text"));
+  assert.ok(tokens.includes("#54C0E8"));
+  assert.ok(tokens.includes("--sky: #54C0E8"));
+  const tickCss = css.slice(css.indexOf(".OrgTick,"), css.indexOf(".OrgTick {"));
+  assert.ok(tickCss.includes("width: 7px"));
+  assert.ok(tickCss.includes("height: 2px"));
+  assert.ok(tickCss.includes("margin-left: 4px"));
+  assert.ok(tickCss.includes("var(--sky)"));
+  assert.ok(!tickCss.includes("overflow: auto"));
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
 });
 
 test("Reed liability: item-page prints signed facts; CC is NPSR-only; CIO slugs off public surfaces", () => {
@@ -2310,7 +2199,11 @@ test("Reed liability: item-page prints signed facts; CC is NPSR-only; CIO slugs 
 
   const mention = readFileSync(join(root, "src/ui/MentionText.tsx"), "utf8");
   assert.ok(mention.includes("item-fact-") || mention.includes("printed"));
-  assert.ok(mention.includes("chipId"));
+  assert.ok(!mention.includes("chipId"));
+  assert.ok(!mention.includes("OrgChip"));
+  const factsUi = readFileSync(join(root, "src/ui/ItemFacts.tsx"), "utf8");
+  assert.ok(factsUi.includes("signedFactText"));
+  assert.ok(!/ChristianaCare/.test(factsUi));
 
   const feed = readFileSync(join(root, "public/feed.json"), "utf8");
   const sitemap = readFileSync(join(root, "public/sitemap.xml"), "utf8");
@@ -2698,26 +2591,22 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.equal(pin?.slug, "njdvhimss-fall-conference-october-13th-15th");
   assert.ok(pin?.registrationUrl);
 
-  const mentionCss = css.slice(css.indexOf(".OrgMention,"), css.indexOf(".OrgChip {"));
+  const mentionCss = css.slice(css.indexOf(".OrgMention,"), css.indexOf(".OrgTick,"));
   assert.ok(mentionCss.includes(".OrgMention:hover"));
   assert.ok(mentionCss.includes(".OrgMention:focus"));
   assert.ok(mentionCss.includes(".OrgMention:focus-visible"));
   assert.ok(mentionCss.includes("text-decoration: none"));
   assert.ok(!mentionCss.includes("dotted"));
   assert.ok(!mentionCss.includes("underline"));
-  assert.ok(mention.includes("Escape"));
-  assert.ok(mention.includes("mousedown"));
-  assert.ok(mention.includes("news:"));
-  assert.ok(mention.includes("newsRows"));
-  assert.ok(mention.includes("querySelectorAll"));
-  assert.ok(mention.includes("createPortal"));
-  assert.ok(mention.includes("document.body"));
-  assert.ok(mention.includes('position: "fixed"'));
-  const mentionOpen = mention.slice(mention.indexOf('className="OrgMention"'), mention.indexOf("<OrgChip"));
-  assert.ok(mentionOpen.includes("</span>"));
-  assert.ok(css.includes(".OrgChip {"));
-  const chipCss = css.slice(css.indexOf(".OrgChip {"), css.indexOf(".OrgChip-label"));
-  assert.ok(chipCss.includes("position: fixed"));
+  assert.ok(!mention.includes("createPortal"));
+  assert.ok(!mention.includes("OrgChip"));
+  assert.ok(!mention.includes("placeOrgChip"));
+  assert.ok(mention.includes("OrgTick"));
+  assert.ok(!css.includes("OrgChip"));
+  assert.ok(css.includes(".OrgTick"));
+  const dekInsert = readFileSync(join(root, "src/ui/DekInsert.tsx"), "utf8");
+  assert.ok(dekInsert.includes("Escape"));
+  assert.ok(dekInsert.includes("mousedown"));
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
 });
