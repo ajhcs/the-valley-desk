@@ -796,10 +796,13 @@ test("homepage binds store queries and kit class names", () => {
     const registerAt = css.indexOf(".Register,");
     const registerCss = css.slice(registerAt, css.indexOf(".SiteFooter {", registerAt));
     assert.ok(registerCss.includes(".RailRow a.Register"));
-    assert.ok(registerCss.includes("color: var(--event)"));
+    assert.ok(registerCss.includes("color: var(--event-text)"));
     assert.ok(!registerCss.includes("var(--ink)"));
     const dateChip = css.slice(css.indexOf(".DateChip"), css.indexOf(".StatusChip"));
     assert.ok(dateChip.includes("background: var(--event)"));
+    assert.ok(dateChip.includes("color: var(--text)"));
+    const tokens = readFileSync(join(root, "src/styles/tokens.css"), "utf8");
+    assert.ok(tokens.includes("--event-text: #9A6500"));
   }
   assert.ok(footer.includes("News"));
   assert.ok(footer.includes("Events"));

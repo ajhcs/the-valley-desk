@@ -67,7 +67,7 @@ The product remains free in v1. There is no subscription or paywall CTA.
 | Inline facts | 7×2 sky tick; inline dek expansion; no OrgChip | Bloomberg-six passes | Preserve |
 | Signed facts | ChristianaCare NPSR `$3,140,501,000`; Jefferson NPSR `$11,054,287,000`; no rejected operating fact | Matches item pages and tests | Preserve exactly |
 | Responsive | No horizontal overflow at 390px; peer nav remains usable | Pass | Continue hostile QA on final build |
-| Accessibility | Keyboard navigation and focus; rail ticks visual only | Pass sampled tab walk; rail ticks `aria-hidden` and not tabbable | Keep in final regression pass |
+| Accessibility | Keyboard navigation and focus; rail ticks visual only; small text meets contrast | Pass sampled tab walk; rail ticks `aria-hidden` and not tabbable; event text uses an AA-safe darker gold while the signed gold remains on accents/backgrounds | Keep in final regression pass |
 | Deployment | Workers preview only; production parked | Preview matches `9a93b243`; main/DNS untouched | Do not cut over without explicit approval |
 
 ## 5. Explicitly not MVP
@@ -102,6 +102,7 @@ None currently reproduced on the recovery branch or live preview.
 - The invalid dependency lock was fixed in `243c856` and verified with clean `npm ci`.
 - Long item-body/source text is now constrained to `76ch` without changing the locked lead/page chrome; desktop body width measures about 730px within the 1328px article canvas, and mobile remains fluid at 350px.
 - Tailwind source detection is scoped to `src/`; the untracked historical archive can no longer inflate or mutate generated production CSS.
+- Small event text now uses `#9A6500` (4.96:1 on white), while the signed `#CA8504` remains the event accent/background; date-chip text uses dark ink on gold.
 - Add a small CI gate after the recovery branch is pushed or proposed for merge.
 - Rename or replace stale PR 5 during handoff so its old CIO-slug title cannot be mistaken for current scope.
 

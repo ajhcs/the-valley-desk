@@ -238,7 +238,7 @@ ul.desk {
   letter-spacing: 0.08em;
   line-height: 18px;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--text);
   background: var(--event);
   animation: none;
   transition: none;
@@ -289,7 +289,7 @@ ul.desk {
 
 .StatusChip[data-status="review"],
 .StatusChip[data-queued="true"] {
-  color: var(--event);
+  color: var(--event-text);
   border: 1px solid var(--event);
   background: transparent;
   padding: 2px 6px;
@@ -327,7 +327,7 @@ ul.desk {
 }
 
 .Rail[data-rail="events"] h2 {
-  color: var(--event);
+  color: var(--event-text);
 }
 
 .Rail ul {
@@ -399,7 +399,7 @@ ul.desk {
   margin: 0;
   font-size: 13px;
   font-weight: 600;
-  color: var(--event);
+  color: var(--event-text);
   text-decoration: none;
   border: none;
   background: none;
@@ -413,7 +413,7 @@ ul.desk {
 
 .Register:hover,
 .RailRow a.Register:hover {
-  color: var(--event);
+  color: var(--event-text);
   text-decoration: none;
   transform: none;
 }
