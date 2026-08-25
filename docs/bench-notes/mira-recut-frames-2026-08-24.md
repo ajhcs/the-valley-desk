@@ -10,7 +10,10 @@ Stand-in type. Cast draws Desk Sans / Desk Serif later. Live SHA `9a93b243` froz
 `/workspace/valley-desk-brand/original/_pass1-dead/` — pass-1 frames + INDEX.md + DEAD.md. Do not use. Do not ship.
 
 ## 08 HOLD lifted
-Recut `08-itempage.png` is the item still. Sky tick is **after** the first painted name (ChristianaCare), 7×2 `#54C0E8`, 4px gap, x-height. Never left of the name. Mira packet `01`–`10` is complete as stills. Do not ship this kit. Type drop stays dead.
+Vale signed the recut.
+Tick is after ChristianaCare, not left of the name.
+Pass 1 stays dead.
+Mira recut 01–10 is the stills packet. Do not ship.
 
 ## Locked mention law (do not restyle)
 - No OrgChip
