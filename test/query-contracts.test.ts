@@ -29,6 +29,7 @@ import {
   Status,
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
+import { fetchDvhimssCalendar } from "../src/ingest/events.ts";
 import { rssItemToContent } from "../src/ingest/rss.ts";
 import { ingestLinkedIn } from "../src/ingest/linkedin.ts";
 import { ingestX } from "../src/ingest/x.ts";
@@ -61,6 +62,32 @@ const entities = require("../fixtures/entities.json") as { id: string }[];
 const entityRows = Entity.array().parse(JSON.parse(readFileSync(join(root, "fixtures/entities.json"), "utf8")));
 const catalog = ContentCatalog.parse(JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8")));
 const seedIds = liveSeedOrgIds(entities);
+
+function dvhimssResponse(website?: unknown) {
+  return new Response(JSON.stringify({
+    events: [{
+      id: 42,
+      title: "Chapter Forum",
+      url: "https://dvhimss.org/event/chapter-forum/",
+      website,
+      utc_start_date: "2026-09-14 13:00:00",
+    }],
+  }), { status: 200, headers: { "content-type": "application/json" } });
+}
+
+test("DVHIMSS auto-publishes only with a verified registration URL", async () => {
+  const registered = await fetchDvhimssCalendar(async () => dvhimssResponse("https://tickets.example/register"));
+  assert.equal(registered[0]?.registrationUrl, "https://tickets.example/register");
+  assert.equal(registered[0]?.autoPublish, true);
+  assert.equal(registered[0]?.status, "published");
+
+  for (const website of [undefined, "javascript:alert(1)", "not a URL"]) {
+    const unverified = await fetchDvhimssCalendar(async () => dvhimssResponse(website));
+    assert.equal(unverified[0]?.registrationUrl, undefined);
+    assert.equal(unverified[0]?.autoPublish, false);
+    assert.equal(unverified[0]?.status, "review");
+  }
+});
 
 const base = {
   dek: "dek",
@@ -877,7 +904,8 @@ test("Register uses registrationUrl only; locked DVHIMSS URLs unchanged", () => 
   const eventsAdapter = readFileSync(join(root, "src/ingest/events.ts"), "utf8");
   const social = readFileSync(join(root, "src/ingest/social.ts"), "utf8");
   const linkedin = readFileSync(join(root, "src/ingest/linkedin.ts"), "utf8");
-  assert.ok(eventsAdapter.includes("autoPublish: true"));
+  assert.ok(eventsAdapter.includes("autoPublish: Boolean(registrationUrl)"));
+  assert.ok(eventsAdapter.includes('status: registrationUrl ? "published" : "review"'));
   assert.ok(!social.includes("autoPublish"));
   assert.ok(!linkedin.includes("autoPublish"));
   assert.equal(eventRegisterUrl(networking!), "https://dvhimss.org/events/");

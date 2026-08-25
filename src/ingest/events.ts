@@ -28,6 +28,16 @@ function toIso(value: string) {
   return Number.isFinite(local) ? new Date(local).toISOString() : undefined;
 }
 
+function verifiedRegistrationUrl(value: unknown) {
+  if (typeof value !== "string") return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "autoPublish" | "featured"> & {
   status?: EventItem["status"];
   autoPublish?: boolean;
@@ -54,6 +64,7 @@ export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetc
     const start = toIso(String(e.utc_start_date ?? e.start_date ?? ""));
     if (!title || !start) continue;
     const end = toIso(String(e.utc_end_date ?? e.end_date ?? ""));
+    const registrationUrl = verifiedRegistrationUrl(e.website);
     const venueObj = e.venue && typeof e.venue === "object" ? (e.venue as { venue?: string; city?: string }) : {};
     const venue = venueObj.venue ? decode(String(venueObj.venue)) : undefined;
     rows.push(
@@ -83,10 +94,10 @@ export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetc
         venue,
         city: venueObj.city,
         hostOrg: "DVHIMSS",
-        registrationUrl: typeof e.website === "string" && e.website.startsWith("http") ? e.website : page,
+        registrationUrl,
         partner: "dvhimss",
-        autoPublish: true,
-        status: "published",
+        autoPublish: Boolean(registrationUrl),
+        status: registrationUrl ? "published" : "review",
       }),
     );
   }

@@ -10,7 +10,7 @@ Recovered on 2026-08-25. The historical `vale-chat-archive-2026-08-24.md` was tr
 - The live preview serves `index-6SBTDc0I.js` / `index-5hbDopyD.css`. An isolated build of `9a93b243` produced those exact asset names. Its commit time (22:43:15Z) also precedes the live feed generation time (22:43:45Z) by 30 seconds.
 - The live preview is [the-valley-desk.clyons.workers.dev](https://the-valley-desk.clyons.workers.dev). It has News, Events, and Voices; 43 published feed rows; 17 published Voices; the ChristianaCare lead; cited item pages; real Workers 404 handling; and generated JSON/XML feeds.
 - `thevalleydesk.org` remains parked. No DNS, custom-domain, or production cutover was performed during recovery.
-- The live tree's 49 original contract tests pass and its production build succeeds. The recovery branch adds one build-determinism contract, bringing the total to 50.
+- The live tree's 49 original contract tests pass and its production build succeeds. The recovery branch adds source-boundary and registration-policy coverage, bringing the total to 51.
 - The live branch's checked-in `package-lock.json` was invalid: `npm ci` rejected missing optional platform packages. Recovery commit `243c856` regenerates it; clean `npm ci` now succeeds with zero audit findings.
 - The former Bloomberg gate passes on the live build: lead hover, item resting facts, no rail reflow, Escape dismissal, click-away dismissal, and hover-out dismissal. No `.OrgChip` exists.
 - User-owned untracked `.serena/` and `vale-chat-archive-2026-08-24.md` were preserved and are not recovery deliverables.
@@ -115,7 +115,7 @@ None currently reproduced on the recovery branch or live preview.
 ## 7. Recovery validation record
 
 - Clean install after lock fix: `npm ci` — pass, zero audit findings.
-- Contract suite: `npm test` — 50/50 pass on recovery branch (49 inherited product contracts plus one Tailwind source-boundary contract).
+- Contract suite: `npm test` — 51/51 pass on recovery branch (49 inherited product contracts plus source-boundary and registration-policy coverage).
 - Exact-tree production build: `npm run build` at `9a93b243` — pass; exact live assets reproduced.
 - HTTP checks: `/`, `/news`, `/events`, `/voices`, sampled News/Voice permalinks, `/feed.json`, `/feed.xml` — 200.
 - Unknown route: HTTP 404, `text/html`, `meta robots=noindex`.
@@ -128,7 +128,7 @@ None currently reproduced on the recovery branch or live preview.
 
 - Recovery base: `9a93b24393073d5dc63708797b1124a0f2a7b906`.
 - Recovery branch: `codex/mvp-recovery`.
-- Preview currently represents base `9a93b243`; lock-only recovery commits do not change runtime assets and have not been deployed.
+- The known-good preview represents base `9a93b243`; any isolated recovery preview and its exact commit are recorded in the final handoff.
 - `main` was not merged or changed.
 - No branch was pushed during forensic recovery.
 - `thevalleydesk.org` DNS and custom-domain binding were not changed.
