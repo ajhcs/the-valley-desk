@@ -70,11 +70,11 @@ export function ItemPage({
             ) : null}
           </p>
         ) : null}
-        <p className="mt-6 whitespace-pre-wrap">
+        <p className="mt-6 whitespace-pre-wrap ItemPage-body">
           <MentionText text={item.body} />
         </p>
         {cites.length > 0 ? (
-          <section className="mt-6">
+          <section className="mt-6 ItemPage-sources">
             <h2 className="text-sm">Sources</h2>
             <ul className="text-sm">
               {cites.map((cite) => (

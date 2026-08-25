@@ -847,6 +847,11 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(briefing.includes("ItemCard"));
 });
 
+test("Tailwind scans application source only, not recovery evidence or archive text", () => {
+  const css = readFileSync(join(root, "src/index.css"), "utf8");
+  assert.ok(css.includes('@import "tailwindcss" source(".")'));
+});
+
 test("Register uses registrationUrl only; locked DVHIMSS URLs unchanged", () => {
   const fall = catalog.find((i) => i.id === "evt-dvhimss-22958");
   const golf = catalog.find((i) => i.id === "evt-dvhimss-23007");
@@ -1051,6 +1056,7 @@ test("feed.json projection keeps registrationUrl on published events", () => {
 
 test("ItemPage is an aggregator card: chip, title, impact, body, citations — not a magazine template", () => {
   const page = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
   assert.ok(page.includes("GroupChip"));
   assert.ok(!page.includes("StatusChip"));
   assert.ok(page.includes("kindChip"));
@@ -1067,6 +1073,8 @@ test("ItemPage is an aggregator card: chip, title, impact, body, citations — n
   assert.ok(page.includes("Lead-headline"));
   assert.ok(page.includes("ItemFacts"));
   assert.ok(page.includes("ItemPage-dek"));
+  assert.ok(page.includes("ItemPage-body"));
+  assert.match(css, /\.ItemPage-body,[\s\S]*?max-width:\s*76ch/);
   assert.ok(page.includes("ItemFactScope"));
   assert.ok(!page.includes("text-3xl"));
   assert.ok(!page.includes("item.dek"));
@@ -2631,4 +2639,3 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
 });
-

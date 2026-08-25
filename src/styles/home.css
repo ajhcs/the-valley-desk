@@ -121,6 +121,11 @@
   max-width: 1440px;
 }
 
+.ItemPage-body,
+.ItemPage-sources {
+  max-width: 76ch;
+}
+
 .lead,
 .Lead {
   padding: 52px 0 24px;
