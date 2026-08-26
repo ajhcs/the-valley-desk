@@ -1,4 +1,5 @@
 import type { ContentItem, EventItem, NewsItem } from "./schema";
+import { eventIsUpcoming } from "../lib/calendar";
 import { hasLiveSeedOrg } from "./seed";
 
 let boundSeedOrgIds = new Set<string>();
@@ -65,14 +66,13 @@ export function latestVoices(items: ContentItem[], n = 6) {
     .slice(0, n);
 }
 
-/** Published events with startsAt >= now. Never reads clockAt. Review/QUEUED off.
- *  HAP/system sit in date order. Joint NJDVHIMSS is one row. */
+/** Published upcoming events. Date-only/time-TBD stay up through the last civil day.
+ *  Cancelled and withdrawn rows are out of the list; completed keep permalinks. */
 export function upcomingEvents(items: ContentItem[], now = new Date(), n = 6) {
-  const iso = now.toISOString();
   return dedupeJointChapter(
     items.filter(
       (i): i is EventItem =>
-        i.kind === "event" && i.status === "published" && i.startsAt >= iso,
+        i.kind === "event" && i.status === "published" && eventIsUpcoming(i, now),
     ),
   )
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
@@ -133,13 +133,12 @@ function dedupeJointChapter(items: EventItem[]) {
  *  dvhimss|njhimss cannot publish without registrationUrl, so the pin always has Register.
  *  Joint NJDVHIMSS is one row. */
 export function nextChapterEvent(items: ContentItem[], now = new Date()): EventItem | undefined {
-  const iso = now.toISOString();
   const chapter = dedupeJointChapter(
     items.filter(
       (i): i is EventItem =>
         i.kind === "event" &&
         i.status === "published" &&
-        i.startsAt >= iso &&
+        eventIsUpcoming(i, now) &&
         CHAPTER_PARTNERS.has(i.partner) &&
         Boolean(i.registrationUrl),
     ),

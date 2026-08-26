@@ -2,7 +2,7 @@ import type { ContentItem, EventItem } from "./schema";
 import type { Entity } from "./entity";
 import { canonicalUrl } from "../lib/canonical";
 import { eventPlace, listDek } from "../lib/format";
-import { eventSchedule } from "../lib/calendar";
+import { eventLifecycle, eventSchedule } from "../lib/calendar";
 import { eventWhyCopy, isBoilerplateEventCopy } from "../lib/eventCopy";
 import { primaryDisplayLabel } from "../lib/taxonomy";
 import { entityIndex } from "./entity";
@@ -79,6 +79,7 @@ export function eventJsonLd(
   const place = eventPlace(event);
   const url = canonicalUrl(event);
   const schedule = eventSchedule(event);
+  const lifecycle = eventLifecycle(event);
   const description = event.impactSentence
     || eventWhyCopy(event)
     || listDek(event)
@@ -95,6 +96,11 @@ export function eventJsonLd(
     mainEntityOfPage: url,
     eventTimezone: event.timezone,
     about: aboutOrgs(event.orgs, entities),
+    eventStatus: lifecycle === "cancelled"
+      ? "https://schema.org/EventCancelled"
+      : lifecycle === "completed"
+        ? "https://schema.org/EventCompleted"
+        : "https://schema.org/EventScheduled",
   };
   if (schedule.kind === "timed" && event.endsAt) doc.endDate = event.endsAt;
   else if (schedule.kind === "date-only") doc.endDate = schedule.endDay;

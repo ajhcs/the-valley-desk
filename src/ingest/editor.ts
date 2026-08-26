@@ -1,4 +1,5 @@
 import { ContentItem, type ContentItem as ContentItemType } from "../content/schema";
+import { eventCopyMarksCancelled } from "../lib/calendar";
 import type { EditorEnrichment } from "./editor-model";
 import { matchingProductUses } from "./product-watch";
 import { hasInternalProcessLanguage, professionalizeHeadline } from "../lib/editorialCopy";
@@ -58,8 +59,8 @@ function trustedRegistrationUrl(value?: string) {
 }
 
 function eventIsCancelled(item: ContentItemType) {
-  const text = `${item.title}\n${item.dek}\n${item.body}`;
-  return /\b(cancelled|canceled|postponed)\b/i.test(text);
+  if (item.kind !== "event") return false;
+  return eventCopyMarksCancelled(item);
 }
 
 function withEditorialFields(item: ContentItemType, enrichment: EditorEnrichment, now: Date) {
@@ -97,10 +98,22 @@ export function evaluateCandidate(
 
   if (item.kind === "event") {
     if (eventIsCancelled(item)) {
-      return { action: "reject", rule: "event-cancelled", confidence: 1, reasons: ["Source marks the event cancelled or postponed"], content: { ...item, status: "review", featured: false } };
+      return {
+        action: "reject",
+        rule: "event-cancelled",
+        confidence: 1,
+        reasons: ["Source marks the event cancelled or postponed"],
+        content: { ...item, status: "review", featured: false, cancelled: true },
+      };
     }
     if (!Number.isFinite(Date.parse(item.startsAt)) || Date.parse(item.startsAt) <= now.getTime()) {
-      return { action: "reject", rule: "event-not-future", confidence: 1, reasons: ["Event is not in the future"], content: { ...item, status: "review", featured: false } };
+      return {
+        action: "review",
+        rule: "event-not-future",
+        reasons: ["Event is not in the future"],
+        confidence: 1,
+        content: { ...item, status: "review", featured: false },
+      };
     }
     if (!httpsUrl(item.registrationUrl)) return review("event-registration-required", ["No verified HTTPS registration URL"]);
     if (

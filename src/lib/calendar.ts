@@ -140,3 +140,51 @@ export function googleCalendarUrl(item: EventItem) {
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
+
+function zonedWallToUtc(ymd: string, hour: number, minute: number, timeZone: string): Date {
+  const [year, month, day] = ymd.split("-").map(Number);
+  const guess = new Date(Date.UTC(year, month - 1, day, hour, minute, 0));
+  const seen = wallParts(guess.toISOString(), timeZone);
+  const asUtc = Date.UTC(
+    Number(seen.year),
+    Number(seen.month) - 1,
+    Number(seen.day),
+    Number(seen.hour),
+    Number(seen.minute),
+    0,
+  );
+  const wanted = Date.UTC(year, month - 1, day, hour, minute, 0);
+  return new Date(guess.getTime() - (asUtc - wanted));
+}
+
+/** First instant after the event is over, in UTC. Date-only and time-TBD use the next civil midnight. */
+export function eventExclusiveEnd(item: EventItem): Date {
+  const schedule = eventSchedule(item);
+  if (schedule.kind === "timed" && schedule.end) return new Date(schedule.end);
+  return zonedWallToUtc(addCivilDays(schedule.endDay, 1), 0, 0, schedule.timeZone);
+}
+
+export function eventHasEnded(item: EventItem, now = new Date()) {
+  return now.getTime() >= eventExclusiveEnd(item).getTime();
+}
+
+export function eventCopyMarksCancelled(
+  item: Pick<EventItem, "title" | "dek" | "body"> & { cancelled?: boolean },
+) {
+  if (item.cancelled) return true;
+  return /\b(cancelled|canceled|postponed)\b/i.test(`${item.title}\n${item.dek}\n${item.body}`);
+}
+
+export type EventLifecycle = "upcoming" | "completed" | "cancelled" | "withdrawn";
+
+/** Listing vs permalink: withdrawn ingest rows leave the catalog; cancelled/completed keep the URL. */
+export function eventLifecycle(item: EventItem, now = new Date()): EventLifecycle {
+  if (item.status === "unpublished") return "withdrawn";
+  if (eventCopyMarksCancelled(item)) return "cancelled";
+  if (eventHasEnded(item, now)) return "completed";
+  return "upcoming";
+}
+
+export function eventIsUpcoming(item: EventItem, now = new Date()) {
+  return eventLifecycle(item, now) === "upcoming";
+}

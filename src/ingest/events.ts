@@ -1,7 +1,9 @@
 import type { ContentItem, EventItem } from "../content/schema";
+import { eventCopyMarksCancelled } from "../lib/calendar";
+import { hasInternalProcessLanguage } from "../lib/editorialCopy";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
-import type { IngestSourceResult, SourceRunNote } from "./source-health";
+import type { IngestSourceResult, SnapshotCompleteness, SourceRunNote } from "./source-health";
 
 const UA = "TheValleyDesk/0.1 (+https://github.com/ajhcs/the-valley-desk)";
 const SOURCE_TIMEOUT_MS = 12_000;
@@ -60,21 +62,62 @@ function isRecognizedNjdvhimssPage(html: string) {
     && /<link[^>]+rel=["']canonical["'][^>]+href=["']https:\/\/njdvhimssevent\.com\/?["']/i.test(html);
 }
 
+function stripHtml(value: string) {
+  return decode(value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " "));
+}
+
+function textField(value: unknown): string {
+  if (typeof value === "string") return stripHtml(value);
+  if (value && typeof value === "object" && "rendered" in value) {
+    const rendered = (value as { rendered?: unknown }).rendered;
+    if (typeof rendered === "string") return stripHtml(rendered);
+  }
+  return "";
+}
+
+function readerSafeText(value: string) {
+  const text = value.trim();
+  if (!text || hasInternalProcessLanguage(text)) return "";
+  return text;
+}
+
+function officialEventBody(title: string, venue?: string, city?: string, description?: string) {
+  const fromSource = description ? readerSafeText(description) : "";
+  if (fromSource) return fromSource;
+  const place = [venue, city].filter(Boolean).join(", ");
+  if (place) return `${title} is an official chapter event at ${place}.`;
+  return `${title} is an official chapter event.`;
+}
+
+type EventSnapshot = {
+  items: EventItem[];
+  completeness: SnapshotCompleteness;
+  url: string;
+};
+
 function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "autoPublish" | "featured"> & {
   status?: EventItem["status"];
   autoPublish?: boolean;
 }): EventItem {
+  const cancelled = eventCopyMarksCancelled({
+    title: partial.title,
+    dek: partial.dek,
+    body: partial.body,
+    cancelled: partial.cancelled,
+  });
+  const autoPublish = cancelled ? false : (partial.autoPublish ?? false);
   return {
     ...partial,
     kind: "event",
-    status: partial.status ?? "review",
+    status: cancelled ? "review" : (partial.status ?? "review"),
     authors: [],
-    autoPublish: partial.autoPublish ?? false,
+    autoPublish,
     featured: false,
+    cancelled: cancelled || undefined,
   };
 }
 
-async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: string) {
+async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: string): Promise<EventSnapshot> {
   const url = "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100";
   const res = await fetchImpl(url, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS) });
   if (!res.ok) throw new Error(`DVHIMSS calendar returned HTTP ${res.status}`);
@@ -90,13 +133,14 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
     const registrationUrl = verifiedRegistrationUrl(e.website);
     const venueObj = e.venue && typeof e.venue === "object" ? (e.venue as { venue?: string; city?: string }) : {};
     const venue = venueObj.venue ? decode(String(venueObj.venue)) : undefined;
+    const city = venueObj.city ? decode(String(venueObj.city)) : undefined;
     rows.push(
       eventRow({
         id: `evt-dvhimss-${e.id}`,
         slug: slugify(title),
         title,
         dek: "Official DVHIMSS chapter calendar.",
-        body: "Ingested from the DVHIMSS Events Calendar REST feed.",
+        body: officialEventBody(title, venue, city, textField(e.description ?? e.excerpt)),
         publishedAt: fetchedAt,
         updatedAt: fetchedAt,
         topics: ["chapter", "events"],
@@ -115,7 +159,7 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
         endsAt: end,
         timezone: String(e.timezone ?? "America/New_York"),
         venue,
-        city: venueObj.city,
+        city,
         hostOrg: "DVHIMSS",
         registrationUrl,
         partner: "dvhimss",
@@ -124,7 +168,12 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
       }),
     );
   }
-  return { items: rows, complete: data.events.length < 100, url };
+  const completeness: SnapshotCompleteness = data.events.length === 0
+    ? "empty-unverified"
+    : rows.length === 0 || data.events.length >= 100
+      ? "partial"
+      : "complete";
+  return { items: rows, completeness, url };
 }
 
 export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetchedAt = new Date().toISOString()) {
@@ -218,7 +267,13 @@ async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) 
       }),
     );
   }
-  return { items: rows, complete: isRecognizedNjdvhimssPage(html), url: used };
+  const recognized = isRecognizedNjdvhimssPage(html);
+  const completeness: SnapshotCompleteness = !recognized
+    ? "partial"
+    : rows.length === 0
+      ? "empty-unverified"
+      : "complete";
+  return { items: rows, completeness, url: used };
 }
 
 export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt = new Date().toISOString()) {
@@ -240,7 +295,7 @@ export async function ingestEventsWithHealth(
     id: string,
     origin: string,
     url: string,
-    result: PromiseSettledResult<{ items: EventItem[]; complete: boolean; url: string }>,
+    result: PromiseSettledResult<EventSnapshot>,
   ): SourceRunNote => result.status === "fulfilled" ? {
     id,
     origin,
@@ -248,7 +303,8 @@ export async function ingestEventsWithHealth(
     state: "success",
     checkedAt: fetchedAt,
     itemCount: result.value.items.length,
-    complete: result.value.complete,
+    completeness: result.value.completeness,
+    complete: result.value.completeness === "complete",
     url: result.value.url,
   } : {
     id,
@@ -257,6 +313,7 @@ export async function ingestEventsWithHealth(
     state: "error",
     checkedAt: fetchedAt,
     itemCount: 0,
+    completeness: "partial",
     complete: false,
     url,
     error: result.reason instanceof Error ? result.reason.message : String(result.reason),

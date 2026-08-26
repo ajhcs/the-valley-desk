@@ -178,6 +178,7 @@ async function fetchRssSources(
       state: success ? "success" : "error",
       checkedAt,
       itemCount: success?.items.length ?? 0,
+      completeness: "partial",
       complete: false,
       url: success?.url ?? source.url,
       ...(success ? {} : { error: lastError }),

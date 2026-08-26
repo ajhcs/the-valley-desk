@@ -67,7 +67,7 @@ import {
 } from "../src/lib/entityFacts.ts";
 import { itemByline, newsByline } from "../src/lib/byline.ts";
 import { navSection } from "../src/lib/nav.ts";
-import { eventSchedule, formatEventWhen, googleCalendarDates, googleCalendarUrl } from "../src/lib/calendar.ts";
+import { eventIsUpcoming, eventLifecycle, eventSchedule, formatEventWhen, googleCalendarDates, googleCalendarUrl } from "../src/lib/calendar.ts";
 import { eventWhyCopy, eventWhyLine, isBoilerplateEventCopy } from "../src/lib/eventCopy.ts";
 import { hasDefensiveEditorialAside, hasInternalProcessLanguage, professionalizeHeadline } from "../src/lib/editorialCopy.ts";
 import { matchingProductUses } from "../src/ingest/product-watch.ts";
@@ -92,6 +92,7 @@ import {
   sourceIdentityKey,
 } from "../src/ingest/identity.ts";
 import { RSS_SOURCES, ingestRssWithHealth, rssItemToContent } from "../src/ingest/rss.ts";
+import { snapshotCompleteness, sourceAuthorizesDisappearance } from "../src/ingest/source-health.ts";
 import { evaluateCandidate, EDITOR_POLICY_VERSION } from "../src/ingest/editor.ts";
 import {
   EditorEnrichment,
@@ -185,6 +186,14 @@ test("DVHIMSS auto-publishes only with a verified registration URL", async () =>
   assert.equal(registered[0]?.registrationUrl, "https://web.cvent.com/event/chapter-forum");
   assert.equal(registered[0]?.autoPublish, true);
   assert.equal(registered[0]?.status, "published");
+  assert.equal(registered[0]?.source.origin, "dvhimss-events");
+  assert.equal(registered[0]?.source.externalId, "42");
+  assert.equal(hasInternalProcessLanguage(registered[0]?.dek), false);
+  assert.equal(hasInternalProcessLanguage(registered[0]?.body), false);
+  assert.equal(hasInternalProcessLanguage(registered[0] && registered[0].kind === "event" ? registered[0].whyAttend : undefined), false);
+  const decision = evaluateCandidate(registered[0]!, null, new Date("2026-08-26T12:00:00.000Z"));
+  assert.equal(decision.action, "publish");
+  assert.equal(decision.rule, "official-chapter-event");
 
   for (const website of [undefined, "javascript:alert(1)", "not a URL", "https://attacker.invalid/register"]) {
     const unverified = await fetchDvhimssCalendar(async () => dvhimssResponse(website));
@@ -246,6 +255,15 @@ test("an unrecognized NJ event page cannot trigger disappearance reconciliation"
   const nj = result.sources.find((source) => source.id === "njhimss-events");
   assert.equal(nj?.state, "success");
   assert.equal(nj?.complete, false);
+  assert.equal(nj?.completeness, "partial");
+  assert.equal(sourceAuthorizesDisappearance(nj!), false);
+  const dvhimss = result.sources.find((source) => source.id === "dvhimss-events");
+  assert.equal(dvhimss?.state, "success");
+  assert.equal(dvhimss?.itemCount, 0);
+  assert.equal(dvhimss?.completeness, "empty-unverified");
+  assert.equal(dvhimss?.complete, false);
+  assert.equal(snapshotCompleteness(dvhimss!), "empty-unverified");
+  assert.equal(sourceAuthorizesDisappearance(dvhimss!), false);
 });
 
 const base = {
@@ -539,7 +557,7 @@ test("KindListPage /news uses publishedNewsList; ai-01 stays out", () => {
   assert.ok(newsPage.every((i) => i.kind === "news" || i.kind === "policy" || i.kind === "ai"));
 });
 
-test("upcomingEvents is published events with startsAt >= now and never reads clockAt", () => {
+test("upcomingEvents is published events still in progress and never reads clockAt", () => {
   const now = new Date("2026-08-22T20:00:00.000Z");
   const past = EventItem.parse({
     ...base,
@@ -586,10 +604,20 @@ test("upcomingEvents is published events with startsAt >= now and never reads cl
     partner: "dvhimss",
     orgs: ["org-dvhimss"],
   });
-  const rows = upcomingEvents([past, queued, clockNews, future], now, 10);
+  const cancelled = EventItem.parse({
+    ...future,
+    id: "evt-cancelled-upcoming",
+    slug: "evt-cancelled-upcoming",
+    title: "Official Chapter Forum — Cancelled",
+    cancelled: true,
+  });
+  const rows = upcomingEvents([past, queued, clockNews, future, cancelled], now, 10);
   assert.deepEqual(rows.map((i) => i.id), [future.id]);
   assert.ok(rows.every((i) => i.kind === "event"));
   assert.ok(!("clockAt" in (rows[0] ?? {})));
+  assert.equal(bySlug([past, future], past.slug)?.id, past.id);
+  assert.equal(eventLifecycle(past, now), "completed");
+  assert.equal(eventLifecycle(cancelled, now), "cancelled");
 });
 
 test("briefingSinceYesterday5pmET sorts by clockAt else publishedAt; overlap is tiebreak only; includes review", () => {
@@ -1074,6 +1102,7 @@ test("Register uses registrationUrl only; locked DVHIMSS URLs unchanged", () => 
   const linkedin = readFileSync(join(root, "src/ingest/linkedin.ts"), "utf8");
   assert.ok(eventsAdapter.includes("autoPublish: Boolean(registrationUrl)"));
   assert.ok(eventsAdapter.includes('status: registrationUrl ? "published" : "review"'));
+  assert.ok(!/ingested from/i.test(eventsAdapter));
   assert.ok(!social.includes("autoPublish"));
   assert.ok(!linkedin.includes("autoPublish"));
   assert.equal(eventRegisterUrl(networking!), "https://dvhimss.org/events/");
@@ -3065,10 +3094,10 @@ test("automatic publication SQL executes atomically and deduplicates its audit",
     DEFAULT_EDITOR_BASE_URL,
     now,
   );
-  assert.deepEqual(counts, { published: 1, review: 0, rejected: 1, quarantined: 0 });
+  assert.deepEqual(counts, { published: 1, review: 1, rejected: 0, quarantined: 0 });
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
   assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(future.id).queue_status, "approved");
-  assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(past.id).queue_status, "rejected");
+  assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(past.id).queue_status, "review");
 
   const later = new Date("2026-08-26T14:00:00.000Z");
   await persistEditorialDecisions(
@@ -3140,26 +3169,40 @@ test("event reconciliation withdraws only after two complete successful omission
     autoPublish: true,
     source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/reconcile" },
   });
-  const source = (checkedAt: string, state: "success" | "error", complete: boolean) => ({
+  const remaining = EventItem.parse({
+    ...event,
+    id: "evt-still-listed",
+    slug: "still-listed",
+    title: "Still listed chapter event",
+    source: { ...event.source, url: "https://dvhimss.org/event/still-listed", externalId: "still" },
+  });
+  const source = (
+    checkedAt: string,
+    state: "success" | "error",
+    completeness: "complete" | "partial" | "empty-unverified",
+    itemCount: number,
+  ) => ({
     id: "dvhimss-events",
     origin: "dvhimss-events",
     type: "events" as const,
     state,
     checkedAt,
-    itemCount: 0,
-    complete,
+    itemCount,
+    completeness,
+    complete: completeness === "complete",
     url: "https://dvhimss.org/events-calendar",
     ...(state === "error" ? { error: "upstream timeout" } : {}),
   });
   const initialAt = "2026-08-26T12:00:00.000Z";
+  const initialNote = source(initialAt, "success", "complete", 1);
   const initialRun = await persistIngestRun(db, {
     fetchedAt: initialAt,
     rss: [],
     events: [event],
     social: [],
-    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 }, sources: [source(initialAt, "success", true)] },
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 }, sources: [initialNote] },
   }, [{ item: event, enrichment: null }]);
-  await persistSourceHealth(db, initialRun.runId, [source(initialAt, "success", true)]);
+  await persistSourceHealth(db, initialRun.runId, [initialNote]);
   await persistEditorialDecisions(
     db,
     [{ item: event, enrichment: null, decision: evaluateCandidate(event, null, new Date(initialAt)) }],
@@ -3169,25 +3212,30 @@ test("event reconciliation withdraws only after two complete successful omission
   );
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
 
-  async function absentRun(at: string, state: "success" | "error", complete: boolean) {
-    const note = source(at, state, complete);
+  async function snapshotRun(
+    at: string,
+    state: "success" | "error",
+    completeness: "complete" | "partial" | "empty-unverified",
+    events: EventItem[],
+  ) {
+    const note = source(at, state, completeness, events.length);
     const run = await persistIngestRun(db, {
       fetchedAt: at,
       rss: [],
-      events: [],
+      events,
       social: [],
-      notes: { rss: 0, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [note] },
-    }, []);
+      notes: { rss: 0, events: events.length, linkedin: { count: 0 }, x: { count: 0 }, sources: [note] },
+    }, events.map((item) => ({ item, enrichment: null })));
     await persistSourceHealth(db, run.runId, [note]);
     return reconcileMissingPublishedEvents(db, run.runId, at, [note]);
   }
 
-  assert.deepEqual(await absentRun("2026-08-26T13:00:00.000Z", "error", false), { missing: 0, withdrawn: 0 });
+  assert.deepEqual(await snapshotRun("2026-08-26T13:00:00.000Z", "error", "partial", []), { missing: 0, withdrawn: 0 });
   assert.equal(database.prepare("SELECT missing_count FROM content_candidates WHERE id = ?").get(event.id).missing_count, 0);
-  assert.deepEqual(await absentRun("2026-08-26T14:00:00.000Z", "success", false), { missing: 0, withdrawn: 0 });
-  assert.deepEqual(await absentRun("2026-08-26T15:00:00.000Z", "success", true), { missing: 1, withdrawn: 0 });
+  assert.deepEqual(await snapshotRun("2026-08-26T14:00:00.000Z", "success", "partial", []), { missing: 0, withdrawn: 0 });
+  assert.deepEqual(await snapshotRun("2026-08-26T15:00:00.000Z", "success", "complete", [remaining]), { missing: 1, withdrawn: 0 });
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
-  assert.deepEqual(await absentRun("2026-08-26T16:00:00.000Z", "success", true), { missing: 1, withdrawn: 1 });
+  assert.deepEqual(await snapshotRun("2026-08-26T16:00:00.000Z", "success", "complete", [remaining]), { missing: 1, withdrawn: 1 });
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 0);
   const withdrawn = database.prepare(
     "SELECT queue_status, item_status, missing_count FROM content_candidates WHERE id = ?",
@@ -3198,6 +3246,269 @@ test("event reconciliation withdraws only after two complete successful omission
     1,
   );
   assert.deepEqual(await readPublicationTombstones(db), [event.id]);
+  database.close();
+});
+
+test("empty snapshots and parser-shape changes do not authorize disappearance", async () => {
+  const empty = await ingestEventsWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    if (url.includes("wp-json/tribe")) {
+      return new Response(JSON.stringify({ events: [] }), { status: 200 });
+    }
+    return new Response(`
+      <html>
+        <head><title>NJDVHIMSS</title>
+        <link rel="canonical" href="https://njdvhimssevent.com/" />
+        </head>
+        <body>Season recap</body>
+      </html>
+    `, { status: 200 });
+  });
+  const dvhimss = empty.sources.find((source) => source.id === "dvhimss-events");
+  const nj = empty.sources.find((source) => source.id === "njhimss-events");
+  assert.equal(dvhimss?.completeness, "empty-unverified");
+  assert.equal(nj?.completeness, "empty-unverified");
+  assert.equal(sourceAuthorizesDisappearance(dvhimss!), false);
+  assert.equal(sourceAuthorizesDisappearance(nj!), false);
+
+  const malformed = await ingestEventsWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    if (String(input).includes("wp-json/tribe")) {
+      return new Response(JSON.stringify({ events: [{ id: 99, website: "https://web.cvent.com/event/x" }] }), { status: 200 });
+    }
+    return new Response("<html><title>Temporary holding page</title></html>", { status: 200 });
+  });
+  const shape = malformed.sources.find((source) => source.id === "dvhimss-events");
+  assert.equal(shape?.itemCount, 0);
+  assert.equal(shape?.completeness, "partial");
+  assert.equal(sourceAuthorizesDisappearance(shape!), false);
+});
+
+test("catastrophic count drops do not withdraw published events", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const events = Array.from({ length: 6 }, (_, index) => EventItem.parse({
+    ...base,
+    id: `evt-drop-${index}`,
+    slug: `drop-${index}`,
+    title: `Official drop ${index}`,
+    kind: "event",
+    status: "review",
+    startsAt: "2026-10-20T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: `https://web.cvent.com/event/drop-${index}`,
+    partner: "dvhimss",
+    autoPublish: true,
+    source: { kind: "ingest", origin: "dvhimss-events", url: `https://dvhimss.org/event/drop-${index}` },
+  }));
+  const note = (checkedAt: string, itemCount: number, completeness: "complete" | "partial" | "empty-unverified" = "complete") => ({
+    id: "dvhimss-events",
+    origin: "dvhimss-events",
+    type: "events" as const,
+    state: "success" as const,
+    checkedAt,
+    itemCount,
+    completeness,
+    complete: completeness === "complete",
+    url: "https://dvhimss.org/events-calendar",
+  });
+  const initialAt = now.toISOString();
+  const initial = await persistIngestRun(db, {
+    fetchedAt: initialAt,
+    rss: [],
+    events,
+    social: [],
+    notes: { rss: 0, events: events.length, linkedin: { count: 0 }, x: { count: 0 }, sources: [note(initialAt, events.length)] },
+  }, events.map((item) => ({ item, enrichment: null })));
+  await persistSourceHealth(db, initial.runId, [note(initialAt, events.length)]);
+  await persistEditorialDecisions(
+    db,
+    events.map((item) => ({ item, enrichment: null, decision: evaluateCandidate(item, null, now) })),
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    now,
+  );
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 6);
+
+  const later = "2026-08-26T16:00:00.000Z";
+  const survivor = events[0];
+  const dropNote = note(later, 1);
+  const dropRun = await persistIngestRun(db, {
+    fetchedAt: later,
+    rss: [],
+    events: [survivor],
+    social: [],
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 }, sources: [dropNote] },
+  }, [{ item: survivor, enrichment: null }]);
+  await persistSourceHealth(db, dropRun.runId, [dropNote]);
+  assert.deepEqual(await reconcileMissingPublishedEvents(db, dropRun.runId, later, [dropNote]), { missing: 0, withdrawn: 0 });
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 6);
+  assert.equal(database.prepare("SELECT missing_count FROM content_candidates WHERE id = ?").get(events[1].id).missing_count, 0);
+
+  const emptyAt = "2026-08-26T17:00:00.000Z";
+  const emptyNote = note(emptyAt, 0, "empty-unverified");
+  const emptyRun = await persistIngestRun(db, {
+    fetchedAt: emptyAt,
+    rss: [],
+    events: [],
+    social: [],
+    notes: { rss: 0, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [emptyNote] },
+  }, []);
+  await persistSourceHealth(db, emptyRun.runId, [emptyNote]);
+  assert.deepEqual(await reconcileMissingPublishedEvents(db, emptyRun.runId, emptyAt, [emptyNote]), { missing: 0, withdrawn: 0 });
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 6);
+  database.close();
+});
+
+test("bundled ingest events are withdrawable via tombstones from a clean D1", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const bundled = catalog.find((item): item is EventItem => item.id === "evt-dvhimss-22958");
+  assert.ok(bundled);
+  assert.equal(bundled.source.kind, "ingest");
+  const remaining = EventItem.parse({
+    ...base,
+    id: "evt-other-chapter",
+    slug: "other-chapter",
+    title: "Other chapter event",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-11-01T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: "https://web.cvent.com/event/other",
+    partner: "dvhimss",
+    autoPublish: true,
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/other" },
+  });
+  const known = [{ id: bundled.id, origin: bundled.source.origin, title: bundled.title, content: bundled }];
+  const note = (checkedAt: string) => ({
+    id: "dvhimss-events",
+    origin: "dvhimss-events",
+    type: "events" as const,
+    state: "success" as const,
+    checkedAt,
+    itemCount: 1,
+    completeness: "complete" as const,
+    complete: true,
+    url: "https://dvhimss.org/events-calendar",
+  });
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 0);
+  assert.equal(mergePublishedContent([bundled], [], []).some((item) => item.id === bundled.id), true);
+
+  const firstAt = "2026-08-26T15:00:00.000Z";
+  const first = await persistIngestRun(db, {
+    fetchedAt: firstAt,
+    rss: [],
+    events: [remaining],
+    social: [],
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 }, sources: [note(firstAt)] },
+  }, [{ item: remaining, enrichment: null }]);
+  await persistSourceHealth(db, first.runId, [note(firstAt)]);
+  assert.deepEqual(
+    await reconcileMissingPublishedEvents(db, first.runId, firstAt, [note(firstAt)], 2, known),
+    { missing: 1, withdrawn: 0 },
+  );
+  assert.deepEqual(await readPublicationTombstones(db), []);
+
+  const secondAt = "2026-08-26T16:00:00.000Z";
+  const second = await persistIngestRun(db, {
+    fetchedAt: secondAt,
+    rss: [],
+    events: [remaining],
+    social: [],
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 }, sources: [note(secondAt)] },
+  }, [{ item: remaining, enrichment: null }]);
+  await persistSourceHealth(db, second.runId, [note(secondAt)]);
+  assert.deepEqual(
+    await reconcileMissingPublishedEvents(db, second.runId, secondAt, [note(secondAt)], 2, known),
+    { missing: 1, withdrawn: 1 },
+  );
+  const tombstones = await readPublicationTombstones(db);
+  assert.deepEqual(tombstones, [bundled.id]);
+  assert.deepEqual(mergePublishedContent([bundled], [], tombstones), []);
+  assert.equal(mergePublishedContent([bundled], [], tombstones).length, 0);
+  const editorial = news({ id: "editorial-keep", slug: "protected-keep", title: "Protected keep" });
+  assert.equal(mergePublishedContent([editorial], [], tombstones)[0]?.id, editorial.id);
+  database.close();
+});
+
+test("cancellation keeps a live permalink and expiry does not unpublish", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const event = EventItem.parse({
+    ...base,
+    id: "evt-live-cancel",
+    slug: "live-cancel",
+    title: "Official live cancel",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-10-20T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: "https://web.cvent.com/event/live-cancel",
+    partner: "dvhimss",
+    autoPublish: true,
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/live-cancel" },
+  });
+  await persistIngestRun(db, {
+    fetchedAt: now.toISOString(),
+    rss: [],
+    events: [event],
+    social: [],
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
+  }, [{ item: event, enrichment: null }]);
+  await persistEditorialDecisions(
+    db,
+    [{ item: event, enrichment: null, decision: evaluateCandidate(event, null, now) }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    now,
+  );
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+
+  const cancelled = EventItem.parse({
+    ...event,
+    title: "Official live cancel — Cancelled",
+    body: "This session has been canceled.",
+  });
+  const cancelledDecision = evaluateCandidate(cancelled, null, now);
+  assert.equal(cancelledDecision.rule, "event-cancelled");
+  await persistEditorialDecisions(
+    db,
+    [{ item: cancelled, enrichment: null, decision: cancelledDecision }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    new Date("2026-08-26T13:00:00.000Z"),
+  );
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+  const live = JSON.parse(String(database.prepare("SELECT content_json FROM published_content WHERE candidate_id = ?").get(event.id).content_json));
+  assert.equal(live.status, "published");
+  assert.equal(live.cancelled, true);
+  assert.equal(live.slug, event.slug);
+  assert.equal(bySlug([EventItem.parse(live)], event.slug)?.id, event.id);
+  assert.equal(eventLifecycle(EventItem.parse(live), now), "cancelled");
+  assert.deepEqual(upcomingEvents([EventItem.parse(live)], now, 10), []);
+  assert.deepEqual(await readPublicationTombstones(db), []);
+
+  const later = new Date("2026-10-21T16:00:00.000Z");
+  const expiredDecision = evaluateCandidate(event, null, later);
+  assert.equal(expiredDecision.rule, "event-not-future");
+  assert.equal(expiredDecision.action, "review");
+  await persistEditorialDecisions(
+    db,
+    [{ item: event, enrichment: null, decision: expiredDecision }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    later,
+  );
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+  assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(event.id).queue_status, "approved");
   database.close();
 });
 
@@ -3621,6 +3932,7 @@ function applyMigrations(database: DatabaseSync) {
     "0005_publication_invariants.sql",
     "0006_editor_model_attempts.sql",
     "0007_publication_identity.sql",
+    "0008_snapshot_completeness.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 
@@ -4202,6 +4514,18 @@ test("event times distinguish date-only, timed, and time-TBD without inventing m
   });
   assert.equal(eventSchedule(spring).kind, "time-tbd");
   assert.equal(googleCalendarDates(spring), "20260308/20260309");
+  assert.equal(eventIsUpcoming(hap, new Date("2026-09-02T10:00:00.000Z")), true);
+  assert.equal(eventLifecycle(hap, new Date("2026-09-02T10:00:00.000Z")), "upcoming");
+  assert.equal(eventIsUpcoming(hap, new Date("2026-09-04T04:00:00.000Z")), false);
+  assert.equal(eventLifecycle(hap, new Date("2026-09-04T04:00:00.000Z")), "completed");
+  assert.equal(eventIsUpcoming(dstDate, new Date("2026-11-01T08:00:00.000Z")), true);
+  assert.equal(eventLifecycle(dstDate, new Date("2026-11-03T05:00:00.000Z")), "completed");
+  assert.equal(eventIsUpcoming(lspa, new Date("2026-09-02T20:00:00.000Z")), true);
+  assert.equal(eventLifecycle(lspa, new Date("2026-09-03T04:00:00.000Z")), "completed");
+  assert.equal(eventSchedule(cafe).timeZone, "America/New_York");
+  const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  assert.ok(itemPage.includes('Status</strong> Cancelled'));
+  assert.ok(itemPage.includes('Status</strong> Completed'));
 });
 
 test("idempotent event refresh keeps canonical id/slug and aliases the old published permalink", () => {

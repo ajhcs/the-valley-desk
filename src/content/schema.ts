@@ -108,6 +108,8 @@ export const EventItem = Base.extend({
     "other",
   ]),
   autoPublish: z.boolean().default(false),
+  /** Source-confirmed cancellation. Published cancelled rows keep their permalink. */
+  cancelled: z.boolean().optional(),
 });
 
 export const VoiceItem = Base.extend({

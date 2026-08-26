@@ -3,7 +3,7 @@ import { byPreviousSlug, bySlug } from "../content/queries";
 import { itemCitations, type ContentItem, type EventItem } from "../content/schema";
 import { catalog } from "../lib/catalog";
 import { itemByline } from "../lib/byline";
-import { formatEventWhen, googleCalendarUrl } from "../lib/calendar";
+import { eventLifecycle, formatEventWhen, googleCalendarUrl } from "../lib/calendar";
 import { canonicalPath } from "../lib/canonical";
 import { eventWhyCopy } from "../lib/eventCopy";
 import { eventPlace, formatDate } from "../lib/format";
@@ -40,6 +40,7 @@ export function ItemPage({
   const impact = item.impactSentence?.trim();
   const cites = itemCitations(item);
   const event = item.kind === "event" ? (item as EventItem) : undefined;
+  const lifecycle = event ? eventLifecycle(event) : undefined;
   const when = event ? "" : formatDate(item.publishedAt);
   const byline = itemByline(item, section);
   const hits = itemFactHits(item);
@@ -82,14 +83,18 @@ export function ItemPage({
         ) : null}
         {event ? (
           <section className="EventDetail">
+            {lifecycle === "cancelled" ? <p><strong>Status</strong> Cancelled</p> : null}
+            {lifecycle === "completed" ? <p><strong>Status</strong> Completed</p> : null}
             <p><strong>When</strong> <time dateTime={event.startsAt}>{formatEventWhen(event)}</time></p>
             {eventPlace(event) ? <p><strong>Where</strong> {eventPlace(event)}</p> : null}
             <p><strong>Host</strong> {event.hostOrg}</p>
             <p><strong>Why it’s worth your time</strong> {why ?? "Details not yet published."}</p>
             {event.whoYoullMeet?.length ? <p><strong>Who you’ll meet</strong> {event.whoYoullMeet.join(", ")}</p> : null}
             <div className="EventDetail-actions">
-              {event.registrationUrl ? <RegisterLink item={item} /> : null}
-              <a href={googleCalendarUrl(event)} target="_blank" rel="noreferrer">Add to calendar</a>
+              {event.registrationUrl && lifecycle === "upcoming" ? <RegisterLink item={item} /> : null}
+              {lifecycle !== "cancelled" ? (
+                <a href={googleCalendarUrl(event)} target="_blank" rel="noreferrer">Add to calendar</a>
+              ) : null}
             </div>
           </section>
         ) : null}

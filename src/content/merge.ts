@@ -85,6 +85,9 @@ function sameScheduledEvent(left: ContentItem, right: ContentItem) {
  * Merge the automatic D1 overlay without allowing it to shadow signed editorial
  * content. A stable ingest ID may carry a corrected slug when the origin still
  * matches, provided the new route is not already owned by another row.
+ *
+ * Tombstones suppress bundled ingest rows by ID even when D1 has no live
+ * publication (clean-database fallback). Editorial rows are never tombstoned.
  */
 export function mergePublishedOverlay(
   staticItems: ContentItem[],
@@ -92,7 +95,10 @@ export function mergePublishedOverlay(
   withdrawnIds: readonly string[] = [],
 ) {
   const withdrawn = new Set(withdrawnIds);
-  const merged = staticItems.filter((item) => !(item.source.kind === "ingest" && withdrawn.has(item.id)));
+  const merged = staticItems.filter((item) => {
+    if (!withdrawn.has(item.id)) return true;
+    return item.source.kind !== "ingest";
+  });
   for (const item of dynamicItems) {
     if (withdrawn.has(item.id) || item.status !== "published" || item.featured === true || !item.source.url) continue;
     const idIndex = merged.findIndex((current) => current.id === item.id);

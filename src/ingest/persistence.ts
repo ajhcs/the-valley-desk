@@ -5,13 +5,13 @@ import type { EditorDecision } from "./editor";
 import { EditorEnrichment, EDITOR_PROMPT_VERSION } from "./editor-model";
 import { EDITOR_POLICY_VERSION } from "./editor";
 import type { EditorModelState } from "./editor-work";
-import type { SourceRunNote } from "./source-health";
 import {
   collapseBySourceIdentity,
   normalizeSourceUrl,
   sourceIdentityKey,
   withCanonicalSource,
 } from "./identity";
+import { snapshotCompleteness, sourceAuthorizesDisappearance, type SourceRunNote } from "./source-health";
 
 export type D1StatementLike = {
   bind(...values: unknown[]): D1StatementLike;
@@ -95,6 +95,7 @@ export async function candidateFingerprint(item: ContentItem) {
       hostOrg: item.hostOrg,
       registrationUrl: item.registrationUrl,
       partner: item.partner,
+      cancelled: item.cancelled ?? false,
     } : {}),
     source: {
       origin: item.source.origin,
@@ -531,15 +532,16 @@ export async function persistSourceHealth(
 ) {
   const statements = sources.map((source) => db.prepare(`
     INSERT INTO source_health (
-      source_id, origin, source_type, source_url, state, complete, item_count,
+      source_id, origin, source_type, source_url, state, complete, completeness, item_count,
       consecutive_failures, last_checked_at, last_success_at, last_error, last_run_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(source_id) DO UPDATE SET
       origin = excluded.origin,
       source_type = excluded.source_type,
       source_url = excluded.source_url,
       state = excluded.state,
       complete = excluded.complete,
+      completeness = excluded.completeness,
       item_count = excluded.item_count,
       consecutive_failures = CASE
         WHEN excluded.state = 'success' THEN 0
@@ -558,7 +560,8 @@ export async function persistSourceHealth(
     source.type,
     source.url ?? null,
     source.state,
-    source.complete ? 1 : 0,
+    snapshotCompleteness(source) === "complete" ? 1 : 0,
+    snapshotCompleteness(source),
     source.itemCount,
     source.state === "error" ? 1 : 0,
     source.checkedAt,
@@ -572,18 +575,127 @@ export async function persistSourceHealth(
   return statements.length;
 }
 
+export const EVENT_CATASTROPHIC_DROP_RATIO = 0.5;
+export const EVENT_CATASTROPHIC_DROP_MIN_BASELINE = 4;
+
+export type KnownIngestEvent = {
+  id: string;
+  origin: string;
+  title?: string;
+  content?: ContentItem;
+};
+
+async function markEventsMissing(
+  db: D1DatabaseLike,
+  source: SourceRunNote,
+  runId: string,
+  fetchedAt: string,
+  ids: string[],
+) {
+  for (let index = 0; index < ids.length; index += 50) {
+    const chunk = ids.slice(index, index + 50);
+    if (!chunk.length) continue;
+    const placeholders = chunk.map(() => "?").join(", ");
+    await db.prepare(`
+      UPDATE content_candidates
+      SET missing_count = missing_count + 1, last_missing_at = ?
+      WHERE id IN (${placeholders})
+    `).bind(fetchedAt, ...chunk).run();
+    await db.prepare(`
+      INSERT INTO publication_reconciliations (
+        candidate_id, source_id, action, missing_count, reason, run_id, reconciled_at
+      )
+      SELECT id, ?, 'missing', missing_count, 'Absent from successful complete source check', ?, ?
+      FROM content_candidates
+      WHERE id IN (${placeholders})
+    `).bind(source.id, runId, fetchedAt, ...chunk).run();
+  }
+}
+
+async function withdrawMissingEvent(
+  db: D1DatabaseLike,
+  source: SourceRunNote,
+  runId: string,
+  fetchedAt: string,
+  id: string,
+  missingCount: number,
+) {
+  await db.batch([
+    db.prepare(`
+      UPDATE content_candidates
+      SET queue_status = 'review', item_status = 'unpublished', reviewed_at = ?
+      WHERE id = ?
+    `).bind(fetchedAt, id),
+    db.prepare("DELETE FROM published_content WHERE candidate_id = ?").bind(id),
+    db.prepare(`
+      INSERT INTO publication_reconciliations (
+        candidate_id, source_id, action, missing_count, reason, run_id, reconciled_at
+      ) VALUES (?, ?, 'withdrawn', ?, 'Absent from two successful complete source checks', ?, ?)
+    `).bind(id, source.id, missingCount, runId, fetchedAt),
+  ]);
+}
+
+async function ensureBundledCandidate(
+  db: D1DatabaseLike,
+  runId: string,
+  fetchedAt: string,
+  event: KnownIngestEvent,
+) {
+  const existing = await db.prepare(
+    "SELECT id, last_seen_at FROM content_candidates WHERE id = ?",
+  ).bind(event.id).first<{ id: string; last_seen_at: string }>();
+  if (existing) return existing;
+  const content = event.content ?? {
+    id: event.id,
+    kind: "event",
+    title: event.title ?? event.id,
+    source: { kind: "ingest", origin: event.origin },
+  };
+  await db.prepare(`
+    INSERT INTO content_candidates (
+      id, fingerprint, kind, title, source_origin, source_url, item_status, queue_status,
+      content_json, first_seen_at, last_seen_at, last_run_id, missing_count
+    ) VALUES (?, ?, 'event', ?, ?, ?, 'unpublished', 'review', ?, ?, ?, ?, 0)
+  `).bind(
+    event.id,
+    `bundled:${event.id}`,
+    event.title ?? event.id,
+    event.origin,
+    event.content && "source" in event.content ? event.content.source.url ?? null : null,
+    JSON.stringify(content),
+    fetchedAt,
+    "1970-01-01T00:00:00.000Z",
+    runId,
+  ).run();
+  return { id: event.id, last_seen_at: "1970-01-01T00:00:00.000Z" };
+}
+
 export async function reconcileMissingPublishedEvents(
   db: D1DatabaseLike,
   runId: string,
   fetchedAt: string,
   sources: SourceRunNote[],
   missingThreshold = 2,
+  knownEvents: readonly KnownIngestEvent[] = [],
 ) {
   const threshold = Math.max(2, Math.trunc(missingThreshold));
   let missing = 0;
   let withdrawn = 0;
   for (const source of sources) {
-    if (source.type !== "events" || source.state !== "success" || !source.complete) continue;
+    if (!sourceAuthorizesDisappearance(source)) continue;
+    const live = await db.prepare(`
+      SELECT COUNT(*) AS count
+      FROM content_candidates c
+      JOIN published_content p ON p.candidate_id = c.id
+      WHERE c.kind = 'event' AND c.source_origin = ? AND c.queue_status = 'approved'
+    `).bind(source.origin).first<{ count: number }>();
+    const liveCount = Number(live?.count ?? 0);
+    if (
+      liveCount >= EVENT_CATASTROPHIC_DROP_MIN_BASELINE
+      && source.itemCount < liveCount * EVENT_CATASTROPHIC_DROP_RATIO
+    ) {
+      continue;
+    }
     const absent = await db.prepare(`
       SELECT c.id
       FROM content_candidates c
@@ -592,25 +704,9 @@ export async function reconcileMissingPublishedEvents(
         AND c.queue_status = 'approved'
     `).bind(source.origin, fetchedAt).all<{ id: string }>();
     const ids = (absent.results ?? []).map((row) => row.id);
+    const handled = new Set(ids);
     missing += ids.length;
-    for (let index = 0; index < ids.length; index += 50) {
-      const chunk = ids.slice(index, index + 50);
-      if (!chunk.length) continue;
-      const placeholders = chunk.map(() => "?").join(", ");
-      await db.prepare(`
-        UPDATE content_candidates
-        SET missing_count = missing_count + 1, last_missing_at = ?
-        WHERE id IN (${placeholders})
-      `).bind(fetchedAt, ...chunk).run();
-      await db.prepare(`
-        INSERT INTO publication_reconciliations (
-          candidate_id, source_id, action, missing_count, reason, run_id, reconciled_at
-        )
-        SELECT id, ?, 'missing', missing_count, 'Absent from successful complete source check', ?, ?
-        FROM content_candidates
-        WHERE id IN (${placeholders})
-      `).bind(source.id, runId, fetchedAt, ...chunk).run();
-    }
+    await markEventsMissing(db, source, runId, fetchedAt, ids);
     const expired = await db.prepare(`
       SELECT c.id, c.missing_count
       FROM content_candidates c
@@ -619,20 +715,22 @@ export async function reconcileMissingPublishedEvents(
         AND c.queue_status = 'approved' AND c.missing_count >= ?
     `).bind(source.origin, fetchedAt, threshold).all<{ id: string; missing_count: number }>();
     for (const row of expired.results ?? []) {
-      await db.batch([
-        db.prepare(`
-          UPDATE content_candidates
-          SET queue_status = 'review', item_status = 'unpublished', reviewed_at = ?
-          WHERE id = ?
-        `).bind(fetchedAt, row.id),
-        db.prepare("DELETE FROM published_content WHERE candidate_id = ?").bind(row.id),
-        db.prepare(`
-          INSERT INTO publication_reconciliations (
-            candidate_id, source_id, action, missing_count, reason, run_id, reconciled_at
-          ) VALUES (?, ?, 'withdrawn', ?, 'Absent from two successful complete source checks', ?, ?)
-        `).bind(row.id, source.id, row.missing_count, runId, fetchedAt),
-      ]);
+      await withdrawMissingEvent(db, source, runId, fetchedAt, row.id, row.missing_count);
       withdrawn += 1;
+    }
+    for (const known of knownEvents) {
+      if (known.origin !== source.origin || handled.has(known.id)) continue;
+      const row = await ensureBundledCandidate(db, runId, fetchedAt, known);
+      if (row.last_seen_at >= fetchedAt) continue;
+      await markEventsMissing(db, source, runId, fetchedAt, [known.id]);
+      missing += 1;
+      const counted = await db.prepare(
+        "SELECT missing_count FROM content_candidates WHERE id = ?",
+      ).bind(known.id).first<{ missing_count: number }>();
+      if (Number(counted?.missing_count ?? 0) >= threshold) {
+        await withdrawMissingEvent(db, source, runId, fetchedAt, known.id, Number(counted?.missing_count ?? 0));
+        withdrawn += 1;
+      }
     }
   }
   return { missing, withdrawn };
@@ -730,6 +828,61 @@ export async function persistEditorialDecisions(
       }
     }
     try {
+      if (decision.rule === "event-cancelled") {
+        const existing = await db.prepare(
+          "SELECT content_json FROM published_content WHERE candidate_id = ? LIMIT 1",
+        ).bind(item.id).first<{ content_json: string }>();
+        if (!existing) {
+          if (countKey !== "review") {
+            counts[countKey] -= 1;
+            counts.review += 1;
+          }
+          continue;
+        }
+        let publication = decision.content;
+        try {
+          const parsed = ContentItemSchema.safeParse(JSON.parse(existing.content_json));
+          if (parsed.success) {
+            publication = ContentItemSchema.parse(retainPublishedIdentity(parsed.data, {
+              ...parsed.data,
+              title: item.title,
+              dek: item.dek,
+              body: item.body,
+              updatedAt: item.updatedAt,
+              status: "published",
+              featured: false,
+              ...(parsed.data.kind === "event" ? { cancelled: true } : {}),
+            }));
+          }
+        } catch {
+          // Keep the live row; mark cancelled on a parsed event when possible.
+        }
+        if (publication.kind === "event") {
+          publication = ContentItemSchema.parse({
+            ...publication,
+            status: "published",
+            cancelled: true,
+            featured: false,
+          });
+        }
+        if (countKey !== "published") {
+          counts[countKey] -= 1;
+          counts.published += 1;
+        }
+        await db.batch([
+          db.prepare(`
+            UPDATE content_candidates
+            SET item_status = 'published', queue_status = 'approved', content_json = ?, reviewed_at = ?
+            WHERE id = ?
+          `).bind(JSON.stringify(publication), decidedAt, item.id),
+          db.prepare(`
+            UPDATE published_content
+            SET content_json = ?, updated_at = ?
+            WHERE candidate_id = ?
+          `).bind(JSON.stringify(publication), decidedAt, item.id),
+        ]);
+        continue;
+      }
       if (decision.action === "publish") {
         let publication = withCanonicalSource(decision.content);
         if (publication.id !== candidateId) publication = { ...publication, id: candidateId };

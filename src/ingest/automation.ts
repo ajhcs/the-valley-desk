@@ -1,4 +1,5 @@
-import type { ContentItem } from "../content/schema";
+import { ContentCatalog, type ContentItem } from "../content/schema";
+import publishedCatalog from "../content/published-catalog.json";
 import {
   DEFAULT_EDITOR_BASE_URL,
   DEFAULT_EDITOR_MODEL,
@@ -54,6 +55,17 @@ export type AutomationIngest = (
   env: { X_BEARER_TOKEN?: string; LINKEDIN_TOKEN?: string },
   fetchImpl: typeof fetch,
 ) => Promise<IngestRun>;
+
+const BUNDLED_INGEST_EVENTS = ContentCatalog.parse(publishedCatalog)
+  .filter((item): item is Extract<ContentItem, { kind: "event" }> => (
+    item.kind === "event" && item.source.kind === "ingest"
+  ))
+  .map((item) => ({
+    id: item.id,
+    origin: item.source.origin,
+    title: item.title,
+    content: item,
+  }));
 
 function allCandidates(run: IngestRun) {
   return [...run.rss, ...run.events, ...run.social];
@@ -170,6 +182,8 @@ export async function runAutomation(
       persisted.runId,
       run.fetchedAt,
       run.notes.sources ?? [],
+      2,
+      BUNDLED_INGEST_EVENTS,
     );
     const budget = parseBoundedInt(
       env.EDITOR_MODEL_BUDGET,
