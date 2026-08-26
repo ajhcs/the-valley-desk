@@ -73,6 +73,10 @@ const Base = z.object({
   /** Editorial only. Ingest must never set true. Default false. */
   featured: z.boolean().default(false),
   annotations: z.array(Annotation).optional(),
+  /** When the facts were last verified against the cited source. ISO UTC. */
+  verifiedAt: z.string().datetime().optional(),
+  /** True when the item is high-stakes and rests on a single cited source. */
+  singleSource: z.boolean().optional(),
 });
 
 export const NewsItem = Base.extend({
@@ -171,6 +175,7 @@ export function needsImpactSentence(kind: string): kind is ImpactPublishKind {
   return (IMPACT_PUBLISH_KINDS as readonly string[]).includes(kind);
 }
 
+/** Structural publish gate. Editorial policy lives in validateForPublication. */
 export function canPublish(item: {
   kind: string;
   status: string;

@@ -1,5 +1,6 @@
 import type { ContentItem } from "../content/schema";
 import { contentPriorityFields, selectPriorityWork, summarizeQueueSla, type QueueSlaMetrics } from "./queue";
+import { isOfficialChapterEvent } from "../content/publication";
 import { matchingProductUses } from "./product-watch";
 
 export const DEFAULT_EDITOR_MODEL_BUDGET = 4;
@@ -9,8 +10,6 @@ export const DEFAULT_FAILURE_COOLDOWN_HOURS = 6;
 export const MAX_FAILURE_COOLDOWN_HOURS = 24 * 7;
 export const MAX_EDITOR_MODEL_BUDGET = 20;
 export const MAX_EDITOR_MODEL_CONCURRENCY = 4;
-
-const OFFICIAL_CHAPTER_ORIGINS = new Set(["dvhimss-events", "njhimss-events"]);
 
 export type EditorModelState = {
   id: string;
@@ -23,10 +22,6 @@ export type EditorModelState = {
   queueStatus: string | null;
   hasSuccessfulEnrichment: boolean;
 };
-
-export function isOfficialChapterEvent(item: ContentItem) {
-  return item.kind === "event" && OFFICIAL_CHAPTER_ORIGINS.has(item.source.origin);
-}
 
 /** Official chapter events publish from deterministic rules and never spend model budget. */
 export function shouldEnrichCandidate(item: ContentItem) {

@@ -15,6 +15,7 @@
 
 import { z } from "zod";
 import { citationUrl, ContentItem } from "../content/schema";
+import { isDeliverySafe } from "../content/publication";
 
 export const FeedDocument = z.object({
   product: z.literal("the-valley-desk"),
@@ -34,7 +35,7 @@ export function toFeed(
     version: "1",
     generatedAt,
     items: items
-      .filter((i) => i.status === "published" && Boolean(citationUrl(i)))
+      .filter((i) => i.status === "published" && Boolean(citationUrl(i)) && isDeliverySafe(i))
       .map((item) =>
         item.kind === "event"
           ? { ...item, registrationUrl: item.registrationUrl }

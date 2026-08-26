@@ -1,6 +1,7 @@
 import { ContentCatalog, ContentItem as ContentItemSchema, type ContentItem } from "./schema";
 import { Entity } from "./entity";
 import { mergePublishedOverlay } from "./merge";
+import { isDeliverySafe } from "./publication";
 import fixtures from "./published-catalog.json";
 import entityFixtures from "../../fixtures/entities.json";
 
@@ -19,7 +20,7 @@ export function loadCatalog(): ContentItem[] {
   const dynamicItems: ContentItem[] = [];
   for (const raw of runtime) {
     const parsed = ContentItemSchema.safeParse(raw);
-    if (!parsed.success) continue;
+    if (!parsed.success || !isDeliverySafe(parsed.data)) continue;
     dynamicItems.push(parsed.data);
   }
   return mergePublishedOverlay(staticItems, dynamicItems, withdrawnIds);

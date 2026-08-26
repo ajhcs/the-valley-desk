@@ -1,10 +1,11 @@
 import { ContentItem, type ContentItem as ContentItemType } from "../content/schema";
 import { eventCopyMarksCancelled } from "../lib/calendar";
+import { isOfficialChapterEvent, validateForPublication } from "../content/publication";
 import type { EditorEnrichment } from "./editor-model";
 import { matchingProductUses } from "./product-watch";
-import { hasInternalProcessLanguage, professionalizeHeadline } from "../lib/editorialCopy";
+import { professionalizeHeadline } from "../lib/editorialCopy";
 
-export const EDITOR_POLICY_VERSION = "tvd-auto-editor-v2";
+export const EDITOR_POLICY_VERSION = "tvd-auto-editor-v3";
 
 export type EditorAction = "publish" | "review" | "reject";
 export type EditorDecision = {
@@ -15,7 +16,6 @@ export type EditorDecision = {
   content: ContentItemType;
 };
 
-const OFFICIAL_CHAPTER_ORIGINS = new Set(["dvhimss-events", "njhimss-events"]);
 const OFFICIAL_CHAPTER_SOURCE_HOSTS: Record<string, string[]> = {
   "dvhimss-events": ["dvhimss.org"],
   "njhimss-events": ["njdvhimssevent.com", "njhimss.org"],
@@ -27,7 +27,7 @@ export const OFFICIAL_HEALTH_SYSTEM_ORIGINS = new Set([
 ]);
 const MATERIAL_CHANGES = new Set([
   "deployment", "workflow", "safety", "security", "outage",
-  "interoperability", "regulatory",
+  "interoperability", "commercial", "regulatory",
 ]);
 const REGISTRATION_HOSTS = ["cvent.me", "web.cvent.com", "dvhimss.org", "njhimss.org", "njdvhimssevent.com"];
 
@@ -72,6 +72,7 @@ function withEditorialFields(item: ContentItemType, enrichment: EditorEnrichment
     publishedAt: item.status === "published" && item.publishedAt ? item.publishedAt : now.toISOString(),
     impactSentence: enrichment.impactSentence?.trim() || item.impactSentence,
     contextSentence: enrichment.contextSentence?.trim() || item.contextSentence,
+    verifiedAt: item.verifiedAt ?? now.toISOString(),
     featured: false,
     ...(item.kind === "event" ? {
       whyAttend: enrichment.whyAttend?.trim() || item.whyAttend,
@@ -89,12 +90,19 @@ export function evaluateCandidate(
   const review = (rule: string, reasons: string[], confidence = enrichment?.confidence ?? 0): EditorDecision => ({
     action: "review", rule, reasons, confidence, content: { ...item, status: "review", featured: false },
   });
-  const publicCopy = [item.title, item.dek, item.body, item.impactSentence, item.contextSentence,
-    item.kind === "event" ? item.whyAttend : undefined];
-  if (publicCopy.some(hasInternalProcessLanguage)) {
-    return review("reader-copy-exposes-ingestion", ["Reader-facing copy contains internal collection-process language"]);
+  const reject = (rule: string, reasons: string[]): EditorDecision => ({
+    action: "reject", rule, reasons, confidence: 1, content: { ...item, status: "review", featured: false },
+  });
+  const policyContext = { mode: "strict" as const, surface: "automatic" as const, now, enrichment };
+  const safety = validateForPublication(item, { ...policyContext, mode: "delivery" });
+  if (!safety.ok) {
+    if (safety.blocking.some((row) => row.code === "event-cancelled")) {
+      return reject("event-cancelled", ["Source marks the event cancelled or postponed"]);
+    }
+    const first = safety.blocking[0];
+    return review(first?.code ?? "publication-policy", safety.blocking.map((row) => row.message));
   }
-  if (!httpsUrl(item.source.url)) return review("source-url-required", ["No authoritative HTTPS source URL"]);
+  if (!httpsUrl(item.source.url)) return review("source-https", ["No authoritative HTTPS source URL"]);
 
   if (item.kind === "event") {
     if (eventIsCancelled(item)) {
@@ -115,19 +123,22 @@ export function evaluateCandidate(
         content: { ...item, status: "review", featured: false },
       };
     }
-    if (!httpsUrl(item.registrationUrl)) return review("event-registration-required", ["No verified HTTPS registration URL"]);
+    if (!httpsUrl(item.registrationUrl)) return review("event-registration-https", ["No verified HTTPS registration URL"]);
     if (
-      OFFICIAL_CHAPTER_ORIGINS.has(item.source.origin) &&
+      isOfficialChapterEvent(item) &&
       officialChapterSource(item) &&
       trustedRegistrationUrl(item.registrationUrl) &&
       (item.partner === "dvhimss" || item.partner === "njhimss")
     ) {
+      const content = ContentItem.parse({ ...item, status: "published", publishedAt: now.toISOString(), featured: false });
+      const verdict = validateForPublication(content, policyContext);
+      if (!verdict.ok) return review(verdict.blocking[0]?.code ?? "publication-policy", verdict.blocking.map((row) => row.message));
       return {
         action: "publish",
         rule: "official-chapter-event",
         confidence: 0.99,
         reasons: ["Official chapter source", "Future date", "Verified registration path"],
-        content: ContentItem.parse({ ...item, status: "published", publishedAt: now.toISOString(), featured: false }),
+        content,
       };
     }
     if (!enrichment || enrichment.relevanceScore < 94 || enrichment.confidence < 0.94) {
@@ -136,9 +147,12 @@ export function evaluateCandidate(
     if (enrichment.decision === "hold" || enrichment.decision === "drop") {
       return review("regional-event-model-hold", enrichment.reasons);
     }
+    const content = withEditorialFields(item, enrichment, now);
+    const verdict = validateForPublication(content, policyContext);
+    if (!verdict.ok) return review(verdict.blocking[0]?.code ?? "publication-policy", verdict.blocking.map((row) => row.message));
     return {
       action: "publish", rule: "confirmed-regional-event", confidence: enrichment.confidence,
-      reasons: enrichment.reasons, content: withEditorialFields(item, enrichment, now),
+      reasons: enrichment.reasons, content,
     };
   }
 
@@ -178,6 +192,10 @@ export function evaluateCandidate(
   const publishedContent = isProductNews
     ? ContentItem.parse({ ...content, topics: [...new Set([...content.topics, "product-watch"])] })
     : content;
+  const verdict = validateForPublication(publishedContent, policyContext);
+  if (!verdict.ok) {
+    return review(verdict.blocking[0]?.code ?? "publication-policy", verdict.blocking.map((row) => row.message));
+  }
   return {
     action: "publish",
     rule: isProductNews ? "verified-product-change" : "official-health-system-change",

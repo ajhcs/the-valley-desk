@@ -7,7 +7,7 @@ import type { ProductUse } from "./product-watch";
 
 export const DEFAULT_EDITOR_MODEL = "meta/muse-spark-1.2-contributor";
 export const DEFAULT_EDITOR_BASE_URL = "https://openrouter.ai/api/v1";
-export const EDITOR_PROMPT_VERSION = "tvd-editor-v4";
+export const EDITOR_PROMPT_VERSION = "tvd-editor-v5";
 export const DEFAULT_EDITOR_TIMEOUT_MS = 25_000;
 export const EDITOR_OUTPUT_MAX_TOKENS = 4096;
 export const EDITOR_REASONING_MAX_TOKENS = 512;
@@ -40,6 +40,8 @@ export const EditorEnrichment = z.object({
   contextEvidenceSpans: z.array(z.string().min(1).max(280)).max(4).default([]),
   whyAttend: z.string().max(320).nullable(),
   whoYoullMeet: z.array(z.string().max(100)).max(6),
+  whyAttendEvidenceSpans: z.array(z.string().min(1).max(280)).max(4).default([]),
+  whoYoullMeetEvidenceSpans: z.array(z.string().min(1).max(280)).max(6).default([]),
   evidenceSpans: z.array(z.string().min(1).max(280)).max(6),
 });
 
@@ -200,8 +202,9 @@ export async function enrichWithEditorModel(
               "Generic vendor marketing, awards, funding, stocks, jobs, and incidental mentions are hold or drop.",
               "Return one JSON object only. Do not wrap it in markdown. Do not include reasoning in the content.",
               "Return confidence from 0 to 1.",
+              "For events, whyAttend and whoYoullMeet may be non-null only when literal evidence spans from the source text support them; otherwise return null and [].",
               "The object must have exactly these fields:",
-              '{"relevanceScore":0,"confidence":0,"decision":"hold","reasons":[],"affectedOrgIds":[],"productIds":[],"changeType":"other","materialityDimensions":[],"impactSentence":null,"contextSentence":null,"body":null,"bodyEvidenceSpans":[],"contextItemIds":[],"contextEvidenceSpans":[],"whyAttend":null,"whoYoullMeet":[],"evidenceSpans":[]}.',
+              '{"relevanceScore":0,"confidence":0,"decision":"hold","reasons":[],"affectedOrgIds":[],"productIds":[],"changeType":"other","materialityDimensions":[],"impactSentence":null,"contextSentence":null,"body":null,"bodyEvidenceSpans":[],"contextItemIds":[],"contextEvidenceSpans":[],"whyAttend":null,"whoYoullMeet":[],"whyAttendEvidenceSpans":[],"whoYoullMeetEvidenceSpans":[],"evidenceSpans":[]}.',
               "decision is priority_review, review, hold, or drop.",
               "changeType is deployment, workflow, safety, security, outage, interoperability, commercial, regulatory, event, or other.",
               "materialityDimensions may contain workflow, safety, access, cost, risk, interoperability, deployment, or networking.",
@@ -257,6 +260,18 @@ export async function enrichWithEditorModel(
   }
   if (parsed.body && parsed.bodyEvidenceSpans.length < 2) {
     throw new EditorModelError("validation", "Editor model returned an under-evidenced body");
+  }
+  if (parsed.whyAttend) {
+    const spans = parsed.whyAttendEvidenceSpans.length ? parsed.whyAttendEvidenceSpans : parsed.evidenceSpans;
+    if (!spans.length || spans.some((span) => !evidenceHaystack.includes(span.toLocaleLowerCase("en-US")))) {
+      throw new EditorModelError("validation", "Editor model returned an under-evidenced whyAttend");
+    }
+  }
+  if (parsed.whoYoullMeet.length) {
+    const spans = parsed.whoYoullMeetEvidenceSpans.length ? parsed.whoYoullMeetEvidenceSpans : parsed.evidenceSpans;
+    if (!spans.length || spans.some((span) => !evidenceHaystack.includes(span.toLocaleLowerCase("en-US")))) {
+      throw new EditorModelError("validation", "Editor model returned an under-evidenced whoYoullMeet");
+    }
   }
   if (parsed.contextItemIds.some((id) => !allowedContextIds.has(id))) {
     throw new EditorModelError("validation", "Editor model introduced unsupported prior coverage");

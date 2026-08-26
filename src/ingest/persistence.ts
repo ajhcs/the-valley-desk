@@ -1,5 +1,6 @@
 import { ContentItem as ContentItemSchema, type ContentItem } from "../content/schema";
 import { retainPublishedIdentity } from "../content/merge";
+import { isDeliverySafe } from "../content/publication";
 import type { IngestRun } from "./run-all";
 import type { EditorDecision } from "./editor";
 import { EditorEnrichment, EDITOR_PROMPT_VERSION } from "./editor-model";
@@ -1087,7 +1088,9 @@ export async function readPublishedContent(db: D1DatabaseLike): Promise<ContentI
   for (const row of rows) {
     try {
       const parsed = ContentItemSchema.safeParse(JSON.parse(row.content_json));
-      if (parsed.success && parsed.data.status === "published" && parsed.data.source.url) out.push(parsed.data);
+      if (parsed.success && parsed.data.status === "published" && parsed.data.source.url && isDeliverySafe(parsed.data)) {
+        out.push(parsed.data);
+      }
     } catch {
       console.error("published-content-invalid-row");
     }
@@ -1128,7 +1131,7 @@ export async function findPublishedContent(
   if (!row) return undefined;
   try {
     const parsed = ContentItemSchema.safeParse(JSON.parse(row.content_json));
-    return parsed.success && parsed.data.status === "published" && parsed.data.source.url
+    return parsed.success && parsed.data.status === "published" && parsed.data.source.url && isDeliverySafe(parsed.data)
       ? parsed.data
       : undefined;
   } catch {

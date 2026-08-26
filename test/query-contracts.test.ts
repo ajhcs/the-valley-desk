@@ -99,6 +99,15 @@ import { RSS_SOURCES, ingestRssWithHealth, rssItemToContent } from "../src/inges
 import { snapshotCompleteness, sourceAuthorizesDisappearance } from "../src/ingest/source-health.ts";
 import { evaluateCandidate, EDITOR_POLICY_VERSION } from "../src/ingest/editor.ts";
 import {
+  PUBLICATION_POLICY_VERSION,
+  OVERRIDABLE_CODES,
+  SAFETY_CODES,
+  filterForDelivery,
+  isDeliverySafe,
+  validateCatalog,
+  validateForPublication,
+} from "../src/content/publication.ts";
+import {
   EditorEnrichment,
   EditorModelError,
   enrichWithEditorModel,
@@ -187,7 +196,8 @@ function dvhimssResponse(website?: unknown) {
 }
 
 test("DVHIMSS auto-publishes only with a verified registration URL", async () => {
-  const registered = await fetchDvhimssCalendar(async () => dvhimssResponse("https://web.cvent.com/event/chapter-forum"));
+  const fetchedAt = "2026-08-26T12:00:00.000Z";
+  const registered = await fetchDvhimssCalendar(async () => dvhimssResponse("https://web.cvent.com/event/chapter-forum"), fetchedAt);
   assert.equal(registered[0]?.registrationUrl, "https://web.cvent.com/event/chapter-forum");
   assert.equal(registered[0]?.autoPublish, true);
   assert.equal(registered[0]?.status, "published");
@@ -201,7 +211,7 @@ test("DVHIMSS auto-publishes only with a verified registration URL", async () =>
   assert.equal(decision.rule, "official-chapter-event");
 
   for (const website of [undefined, "javascript:alert(1)", "not a URL", "https://attacker.invalid/register"]) {
-    const unverified = await fetchDvhimssCalendar(async () => dvhimssResponse(website));
+    const unverified = await fetchDvhimssCalendar(async () => dvhimssResponse(website), fetchedAt);
     assert.equal(unverified[0]?.registrationUrl, undefined);
     assert.equal(unverified[0]?.autoPublish, false);
     assert.equal(unverified[0]?.status, "review");
@@ -3119,6 +3129,7 @@ test("automatic editor publishes only rule-confirmed material", () => {
     id: "news-discovery",
     slug: "discovery",
     title: "A material local change",
+    body: "Penn made a material local change to clinical operations this week.",
     status: "review",
     source: { kind: "ingest", origin: "Inquirer Health", url: "https://example.com/story" },
   });
@@ -3142,8 +3153,9 @@ test("automatic editor publishes only rule-confirmed material", () => {
     source: { ...discovery.source, origin: "penn-medicine-newsroom" },
   };
   assert.equal(evaluateCandidate(firstParty, evidence, now).action, "publish");
+  assert.equal(evaluateCandidate(firstParty, { ...evidence, changeType: "commercial" }, now).action, "publish");
   assert.equal(evaluateCandidate(firstParty, { ...evidence, affectedOrgIds: [] }, now).rule, "affected-org-evidence-required");
-  assert.equal(EDITOR_POLICY_VERSION, "tvd-auto-editor-v2");
+  assert.equal(EDITOR_POLICY_VERSION, "tvd-auto-editor-v3");
 });
 
 test("automatic publication SQL executes atomically and deduplicates its audit", async () => {
@@ -5373,4 +5385,249 @@ test("entity cards cover fact-bearing rows with local images, public roles, and 
   assert.ok(!factsUi.includes("http://"));
   const cardCss = css.slice(css.indexOf(".EntityDisclosure-card"), css.indexOf(".EntityDisclosure.is-align-right"));
   assert.ok(cardCss.includes("white-space: normal"));
+});
+
+test("published catalog stays delivery-safe under the centralized publication policy", () => {
+  const published = catalog.filter((item) => item.status === "published");
+  const catalogVerdict = validateCatalog(published, { mode: "compat", surface: "catalog" });
+  assert.equal(catalogVerdict.ok, true, JSON.stringify([...catalogVerdict.issuesById.entries()]));
+  assert.equal(filterForDelivery(published).length, published.length);
+  assert.ok(published.every((item) => isDeliverySafe(item, new Date("2026-08-26T12:00:00.000Z"))));
+  const feed = toFeed(published, "2026-08-26T12:00:00.000Z");
+  assert.ok(feed.items.length >= 16);
+  assert.ok(feed.items.every((item) => isDeliverySafe(item)));
+  assert.equal(PUBLICATION_POLICY_VERSION, "tvd-publication-v1");
+  assert.ok(SAFETY_CODES.has("reader-copy-exposes-ingestion"));
+  assert.ok(OVERRIDABLE_CODES.has("news-verified-at"));
+  assert.ok(!SAFETY_CODES.has("voice-institutional-announcement"));
+});
+
+test("validateForPublication is the single strict gate for news, voice, and events", () => {
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const penn = catalog.find((item) => item.id === "news-penn-ai-scribe");
+  assert.ok(penn);
+  assert.equal(validateForPublication(penn, { mode: "compat", surface: "catalog", now }).ok, true);
+  const strictNews = validateForPublication(penn, { mode: "strict", surface: "automatic", now });
+  assert.equal(strictNews.ok, false);
+  assert.ok(strictNews.blocking.some((row) => row.code === "news-verified-at"));
+
+  const verified = validateForPublication(
+    { ...penn, verifiedAt: now.toISOString() },
+    { mode: "strict", surface: "automatic", now },
+  );
+  assert.equal(verified.ok, true, JSON.stringify(verified.blocking));
+
+  const processCopy = {
+    ...penn,
+    verifiedAt: now.toISOString(),
+    dek: "Ingested from the official REST feed.",
+  };
+  const processVerdict = validateForPublication(processCopy, { mode: "delivery", surface: "feed", now });
+  assert.equal(processVerdict.ok, false);
+  assert.ok(processVerdict.blocking.some((row) => row.code === "reader-copy-exposes-ingestion"));
+
+  const highStakes = NewsItem.parse({
+    ...penn,
+    id: "news-outage",
+    slug: "news-outage",
+    title: "Penn EHR downtime and ransomware notice",
+    dek: "A ransomware-driven downtime hit ambulatory clinics.",
+    body: "Penn Medicine said a ransomware-driven EHR downtime took ambulatory clinics offline across the city.",
+    impactSentence: "A ransomware-driven downtime took Penn ambulatory clinics offline.",
+    verifiedAt: now.toISOString(),
+    citations: [{ name: "Penn", url: "https://example.com/penn-outage" }],
+    source: { kind: "editorial", origin: "newsroom", url: "https://example.com/penn-outage" },
+  });
+  const unlabeled = validateForPublication(highStakes, { mode: "strict", surface: "human-approval", now });
+  assert.ok(unlabeled.blocking.some((row) => row.code === "news-single-source"));
+  const labeled = validateForPublication(
+    { ...highStakes, singleSource: true, contextSentence: "This follows Penn’s earlier ambulatory EHR expansion." },
+    { mode: "strict", surface: "human-approval", now },
+  );
+  assert.equal(labeled.ok, true, JSON.stringify(labeled.blocking));
+
+  const mlh = catalog.find((item) => item.slug === "mlh-cloud-analytics-2026-08-17");
+  assert.ok(mlh && mlh.kind === "voice");
+  assert.equal(validateForPublication(mlh, { mode: "compat", surface: "catalog", now }).ok, true);
+  const institutional = validateForPublication(mlh, { mode: "strict", surface: "automatic", now });
+  assert.ok(institutional.blocking.some((row) => row.code === "voice-institutional-announcement"));
+  const overrideInstitution = validateForPublication(mlh, {
+    mode: "strict",
+    surface: "human-approval",
+    now,
+    overrides: { codes: ["voice-institutional-announcement"], note: "Keep as voice" },
+  });
+  assert.ok(overrideInstitution.blocking.some((row) => row.code === "voice-institutional-announcement"));
+
+  const event = catalog.find((item): item is EventItem => item.id === "evt-dvhimss-22958");
+  assert.ok(event);
+  assert.equal(validateForPublication(event, { mode: "compat", surface: "catalog", now }).ok, true);
+  const unevidenced = validateForPublication(event, {
+    mode: "strict",
+    surface: "automatic",
+    now,
+    enrichment: { whyAttend: event.whyAttend, whoYoullMeet: event.whoYoullMeet, evidenceSpans: [] },
+  });
+  assert.ok(unevidenced.blocking.some((row) => row.code === "event-why-attend-evidence"));
+  const evidenced = validateForPublication(event, {
+    mode: "strict",
+    surface: "automatic",
+    now,
+    enrichment: {
+      whyAttend: event.whyAttend,
+      whoYoullMeet: event.whoYoullMeet,
+      evidenceSpans: ["Hard Rock Hotel"],
+      whyAttendEvidenceSpans: ["Hard Rock Hotel"],
+      whoYoullMeetEvidenceSpans: ["NJ/DVHIMSS"],
+    },
+  });
+  assert.equal(evidenced.ok, true, JSON.stringify(evidenced.blocking));
+});
+
+test("event enrichment rejects whyAttend without evidence spans", async () => {
+  const event = EventItem.parse({
+    ...base,
+    id: "evt-model-why",
+    slug: "evt-model-why",
+    title: "Regional safety forum",
+    dek: "A regional patient-safety forum for Delaware Valley operators.",
+    body: "The official page says patient-safety officers from Penn Medicine will attend the regional forum.",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-10-01T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "HAP",
+    city: "Philadelphia",
+    format: "in-person",
+    partner: "other",
+    orgs: ["org-penn"],
+    registrationUrl: "https://example.com/register",
+    source: { kind: "ingest", origin: "hap-events", url: "https://example.com/hap-forum" },
+  });
+  const payload = {
+    relevanceScore: 96,
+    confidence: 0.96,
+    decision: "priority_review",
+    reasons: ["Regional forum"],
+    affectedOrgIds: ["org-penn"],
+    productIds: [],
+    changeType: "event",
+    materialityDimensions: [],
+    impactSentence: null,
+    whyAttend: "Patient-safety officers compare downtime playbooks.",
+    whoYoullMeet: ["Penn Medicine"],
+    evidenceSpans: [],
+  };
+  await assert.rejects(
+    enrichWithEditorModel(event, [], { apiKey: "test" }, async () => new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify(payload) } }],
+    }))),
+    (error: unknown) => error instanceof EditorModelError && error.code === "validation",
+  );
+  const grounded = {
+    ...payload,
+    evidenceSpans: ["patient-safety officers from Penn Medicine"],
+    whyAttendEvidenceSpans: ["patient-safety officers from Penn Medicine"],
+    whoYoullMeetEvidenceSpans: ["Penn Medicine"],
+  };
+  const result = await enrichWithEditorModel(event, [], { apiKey: "test" }, async () => new Response(JSON.stringify({
+    choices: [{ message: { content: JSON.stringify(grounded) } }],
+  })));
+  assert.equal(result?.whyAttend, payload.whyAttend);
+});
+
+test("human approval uses the same publication safety checks and audited overrides", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const item = news({
+    id: "news-human-approve",
+    slug: "news-human-approve",
+    title: "Penn ambulatory downtime",
+    dek: "Penn reported an EHR downtime across ambulatory clinics.",
+    body: "Penn Medicine reported an EHR downtime across ambulatory clinics after a weekend cutover.",
+    status: "review",
+    source: { kind: "ingest", origin: "penn-medicine-newsroom", url: "https://example.com/penn-downtime" },
+  });
+  const scrape = EventItem.parse({
+    ...base,
+    id: "evt-human-scrape",
+    slug: "evt-human-scrape",
+    title: "Chapter forum",
+    dek: "Ingested from the official REST feed.",
+    body: "Best-effort scrape of the chapter page.",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-10-01T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: "https://events.dvhimss.org/register",
+    partner: "dvhimss",
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/forum" },
+  });
+  await persistIngestRun(db, {
+    fetchedAt: now.toISOString(),
+    rss: [item],
+    events: [scrape],
+    social: [],
+    notes: { rss: 1, events: 1, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
+  }, [{ item, enrichment: null }, { item: scrape, enrichment: null }]);
+
+  const blocked = await handleReviewApi(new Request(
+    `https://thevalleydesk.org/api/review-queue/${scrape.id}/decision`,
+    {
+      method: "POST",
+      headers: { authorization: "Bearer test-review-token", "content-type": "application/json" },
+      body: JSON.stringify({
+        decision: "approved",
+        note: "Ship it",
+        overrides: { codes: ["reader-copy-exposes-ingestion"], note: "I accept the scrape copy" },
+      }),
+    },
+  ), { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "test-review-token" });
+  assert.equal(blocked.status, 400);
+
+  const safety = await handleReviewApi(new Request(
+    `https://thevalleydesk.org/api/review-queue/${scrape.id}/decision`,
+    {
+      method: "POST",
+      headers: { authorization: "Bearer test-review-token", "content-type": "application/json" },
+      body: JSON.stringify({ decision: "approved", note: "Ship it" }),
+    },
+  ), { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "test-review-token" });
+  assert.equal(safety.status, 409);
+
+  const needsOverride = await handleReviewApi(new Request(
+    `https://thevalleydesk.org/api/review-queue/${item.id}/decision`,
+    {
+      method: "POST",
+      headers: { authorization: "Bearer test-review-token", "content-type": "application/json" },
+      body: JSON.stringify({ decision: "approved", note: "Looks local" }),
+    },
+  ), { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "test-review-token" });
+  assert.equal(needsOverride.status, 409);
+  const needsBody = await needsOverride.json() as { issues?: { code: string }[] };
+  assert.ok(needsBody.issues?.some((row) => row.code === "news-single-source" || row.code === "news-context"));
+
+  const approved = await handleReviewApi(new Request(
+    `https://thevalleydesk.org/api/review-queue/${item.id}/decision`,
+    {
+      method: "POST",
+      headers: { authorization: "Bearer test-review-token", "content-type": "application/json" },
+      body: JSON.stringify({
+        decision: "approved",
+        note: "Single-source downtime confirmed from the newsroom page.",
+        overrides: { codes: ["news-single-source", "news-context"] },
+      }),
+    },
+  ), { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "test-review-token" });
+  assert.equal(approved.status, 200, await approved.text());
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+  const stored = JSON.parse(String(database.prepare("SELECT content_json FROM published_content WHERE candidate_id = ?").get(item.id).content_json));
+  assert.equal(stored.status, "published");
+  assert.ok(stored.verifiedAt);
+  const decision = JSON.parse(String(database.prepare("SELECT decision_json FROM published_content WHERE candidate_id = ?").get(item.id).decision_json));
+  assert.deepEqual(decision.overrides.codes, ["news-single-source", "news-context"]);
+  database.close();
 });

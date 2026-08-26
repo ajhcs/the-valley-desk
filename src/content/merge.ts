@@ -1,4 +1,5 @@
 import type { ContentItem } from "./schema";
+import { isDeliverySafe } from "./publication";
 import { hasInternalProcessLanguage, professionalizeHeadline } from "../lib/editorialCopy";
 import { sourceIdentityKey } from "../ingest/identity";
 
@@ -111,7 +112,8 @@ export function mergePublishedOverlay(
         current.source.kind === "ingest" &&
         current.source.origin === item.source.origin
       ) {
-        merged[idIndex] = retainPublishedIdentity(current, readerSafeOverlay(current, { ...item, featured: false }));
+        const next = retainPublishedIdentity(current, readerSafeOverlay(current, { ...item, featured: false }));
+        if (isDeliverySafe(next)) merged[idIndex] = next;
       }
       continue;
     }
@@ -121,11 +123,12 @@ export function mergePublishedOverlay(
     if (stableIndex >= 0) {
       if (merged[stableIndex].source.kind === "ingest") {
         const current = merged[stableIndex];
-        merged[stableIndex] = retainPublishedIdentity(current, readerSafeOverlay(current, { ...item, featured: false }));
+        const next = retainPublishedIdentity(current, readerSafeOverlay(current, { ...item, featured: false }));
+        if (isDeliverySafe(next)) merged[stableIndex] = next;
       }
       continue;
     }
-    if (pathIndex < 0 && !exposesInternalProcess(item)) {
+    if (pathIndex < 0 && isDeliverySafe(item) && !exposesInternalProcess(item)) {
       merged.push({ ...item, title: professionalizeHeadline(item.title), featured: false });
     }
   }

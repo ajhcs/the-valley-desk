@@ -1,6 +1,13 @@
 import type { D1DatabaseLike } from "./persistence";
 import { ContentItem, canPublish } from "../content/schema";
 import { retainPublishedIdentity } from "../content/merge";
+import {
+  OVERRIDABLE_CODES,
+  PUBLICATION_POLICY_VERSION,
+  SAFETY_CODES,
+  parsePublicationOverride,
+  validateForPublication,
+} from "../content/publication";
 import { EDITOR_POLICY_VERSION } from "./editor";
 
 type ReviewEnv = {
@@ -96,9 +103,9 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
 
   const decisionMatch = /^\/api\/review-queue\/([^/]+)\/decision$/.exec(url.pathname);
   if (request.method === "POST" && decisionMatch) {
-    let body: { decision?: unknown; note?: unknown };
+    let body: { decision?: unknown; note?: unknown; overrides?: unknown };
     try {
-      body = await request.json() as { decision?: unknown; note?: unknown };
+      body = await request.json() as { decision?: unknown; note?: unknown; overrides?: unknown };
     } catch {
       return json({ error: "invalid_json" }, 400);
     }
@@ -107,6 +114,16 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
     }
     if (body.note !== undefined && (typeof body.note !== "string" || body.note.length > 1000)) {
       return json({ error: "invalid_note" }, 400);
+    }
+    const note = typeof body.note === "string" ? body.note : undefined;
+    let overrides = null;
+    if (body.overrides !== undefined) {
+      if (body.decision !== "approved") return json({ error: "invalid_overrides" }, 400);
+      overrides = parsePublicationOverride(body.overrides, note);
+      if (!overrides) return json({ error: "invalid_overrides" }, 400);
+      if (overrides.codes.some((code) => SAFETY_CODES.has(code) || !OVERRIDABLE_CODES.has(code))) {
+        return json({ error: "invalid_overrides" }, 400);
+      }
     }
     const id = decodeURIComponent(decisionMatch[1]);
     const decidedAt = new Date().toISOString();
@@ -118,14 +135,25 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         "SELECT content_json FROM content_candidates WHERE id = ? AND queue_status = 'review'",
       ).bind(id).first<{ content_json: string }>();
       if (!row) return json({ error: "candidate_not_reviewable" }, 409);
+      const raw = JSON.parse(row.content_json) as Record<string, unknown>;
       const parsed = ContentItem.safeParse({
-        ...JSON.parse(row.content_json),
+        ...raw,
         status: "published",
-        publishedAt: JSON.parse(row.content_json).publishedAt || decidedAt,
+        publishedAt: raw.publishedAt || decidedAt,
+        verifiedAt: raw.verifiedAt || decidedAt,
         featured: false,
       });
-      if (!parsed.success || !canPublish(parsed.success ? parsed.data : { kind: "", status: "" })) {
+      if (!parsed.success || !canPublish(parsed.data)) {
         return json({ error: "candidate_not_publishable", issues: parsed.success ? [] : parsed.error.issues }, 409);
+      }
+      const verdict = validateForPublication(parsed.data, {
+        mode: "strict",
+        surface: "human-approval",
+        now: new Date(decidedAt),
+        overrides: overrides ? { ...overrides, reviewer } : null,
+      });
+      if (!verdict.ok) {
+        return json({ error: "candidate_not_publishable", issues: verdict.blocking }, 409);
       }
       approvedContent = parsed.data;
       const live = await env.VALLEY_DESK_DB.prepare(
@@ -169,7 +197,7 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         WHERE id = ? AND queue_status = ? AND reviewed_at = ?
       `).bind(
         body.decision,
-        body.note?.trim() || null,
+        note?.trim() || overrides?.note || null,
         reviewer,
         decidedAt,
         id,
@@ -197,7 +225,12 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         approvedContent.slug,
         JSON.stringify(approvedContent),
         EDITOR_POLICY_VERSION,
-        JSON.stringify({ action: "publish", rule: "human-approval" }),
+        JSON.stringify({
+          action: "publish",
+          rule: "human-approval",
+          policyVersion: PUBLICATION_POLICY_VERSION,
+          overrides: overrides ?? undefined,
+        }),
         approvedContent.publishedAt || decidedAt,
         decidedAt,
       ));
