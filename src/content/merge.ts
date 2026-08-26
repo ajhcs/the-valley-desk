@@ -1,5 +1,6 @@
 import type { ContentItem } from "./schema";
 import { hasInternalProcessLanguage, professionalizeHeadline } from "../lib/editorialCopy";
+import { sourceIdentityKey } from "../ingest/identity";
 
 function contentKey(item: ContentItem) {
   return `${item.kind}:${item.slug}`;
@@ -64,6 +65,11 @@ export function retainPublishedIdentity<T extends ContentItem>(current: T, incom
   };
 }
 
+function sameSourceIdentity(left: ContentItem, right: ContentItem) {
+  if (!left.source.url || !right.source.url) return false;
+  return sourceIdentityKey(left) === sourceIdentityKey(right);
+}
+
 function sameScheduledEvent(left: ContentItem, right: ContentItem) {
   if (left.kind !== "event" || right.kind !== "event" || left.startsAt !== right.startsAt) return false;
   const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -103,11 +109,13 @@ export function mergePublishedOverlay(
       }
       continue;
     }
+    const identityIndex = merged.findIndex((current) => sameSourceIdentity(current, item));
     const scheduledIndex = merged.findIndex((current) => sameScheduledEvent(current, item));
-    if (scheduledIndex >= 0) {
-      if (merged[scheduledIndex].source.kind === "ingest") {
-        const current = merged[scheduledIndex];
-        merged[scheduledIndex] = retainPublishedIdentity(current, readerSafeOverlay(current, { ...item, featured: false }));
+    const stableIndex = identityIndex >= 0 ? identityIndex : scheduledIndex;
+    if (stableIndex >= 0) {
+      if (merged[stableIndex].source.kind === "ingest") {
+        const current = merged[stableIndex];
+        merged[stableIndex] = retainPublishedIdentity(current, readerSafeOverlay(current, { ...item, featured: false }));
       }
       continue;
     }

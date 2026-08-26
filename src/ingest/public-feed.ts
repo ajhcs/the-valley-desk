@@ -25,6 +25,7 @@ export async function mergedFeed(
     readPublishedContent(db),
     readPublicationTombstones(db),
   ]);
+  // Overlay is the complete published set (paged in persistence), not a 100/200 window.
   return toFeed(mergePublishedContent(staticFeed.items, dynamicItems, withdrawnIds), now.toISOString());
 }
 

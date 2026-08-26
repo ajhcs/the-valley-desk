@@ -38,7 +38,6 @@ import {
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { fetchDvhimssCalendar, ingestEventsWithHealth, scrapeNjdvhimss } from "../src/ingest/events.ts";
-import { RSS_SOURCES, rssItemToContent } from "../src/ingest/rss.ts";
 import { ingestLinkedIn } from "../src/ingest/linkedin.ts";
 import { ingestX } from "../src/ingest/x.ts";
 import { mergeReviewQueue } from "../src/ingest/queue.ts";
@@ -74,16 +73,25 @@ import { hasDefensiveEditorialAside, hasInternalProcessLanguage, professionalize
 import { matchingProductUses } from "../src/ingest/product-watch.ts";
 import {
   candidateFingerprint,
+  findPublishedContent,
+  findPublishedSlugAlias,
   persistEditorialDecisions,
   persistEnrichments,
   persistIngestRun,
   persistSourceHealth,
   readPublicationTombstones,
+  readPublishedContent,
   readReusableEnrichments,
   reconcileMissingPublishedEvents,
   type D1DatabaseLike,
   type D1StatementLike,
 } from "../src/ingest/persistence.ts";
+import {
+  collapseBySourceIdentity,
+  normalizeSourceUrl,
+  sourceIdentityKey,
+} from "../src/ingest/identity.ts";
+import { RSS_SOURCES, ingestRssWithHealth, rssItemToContent } from "../src/ingest/rss.ts";
 import { evaluateCandidate, EDITOR_POLICY_VERSION } from "../src/ingest/editor.ts";
 import {
   EditorEnrichment,
@@ -2997,10 +3005,7 @@ test("automatic editor publishes only rule-confirmed material", () => {
 
 test("automatic publication SQL executes atomically and deduplicates its audit", async () => {
   const database = new DatabaseSync(":memory:");
-  database.exec(readFileSync(join(root, "migrations/0001_automation.sql"), "utf8"));
-  database.exec(readFileSync(join(root, "migrations/0002_review_audit.sql"), "utf8"));
-  database.exec(readFileSync(join(root, "migrations/0003_editor_publication.sql"), "utf8"));
-  database.exec(readFileSync(join(root, "migrations/0004_source_reconciliation.sql"), "utf8"));
+  applyMigrations(database);
   const db = sqliteD1(database);
   const now = new Date("2026-08-26T12:00:00.000Z");
   const future = EventItem.parse({
@@ -3060,7 +3065,7 @@ test("automatic publication SQL executes atomically and deduplicates its audit",
     DEFAULT_EDITOR_BASE_URL,
     now,
   );
-  assert.deepEqual(counts, { published: 1, review: 0, rejected: 1 });
+  assert.deepEqual(counts, { published: 1, review: 0, rejected: 1, quarantined: 0 });
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
   assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(future.id).queue_status, "approved");
   assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(past.id).queue_status, "rejected");
@@ -3118,12 +3123,7 @@ test("automatic publication SQL executes atomically and deduplicates its audit",
 
 test("event reconciliation withdraws only after two complete successful omissions", async () => {
   const database = new DatabaseSync(":memory:");
-  for (const migration of [
-    "0001_automation.sql",
-    "0002_review_audit.sql",
-    "0003_editor_publication.sql",
-    "0004_source_reconciliation.sql",
-  ]) database.exec(readFileSync(join(root, "migrations", migration), "utf8"));
+  applyMigrations(database);
   const db = sqliteD1(database);
   const event = EventItem.parse({
     ...base,
@@ -3203,13 +3203,7 @@ test("event reconciliation withdraws only after two complete successful omission
 
 test("authenticated rejection unpublishes a live candidate and creates a tombstone", async () => {
   const database = new DatabaseSync(":memory:");
-  for (const migration of [
-    "0001_automation.sql",
-    "0002_review_audit.sql",
-    "0003_editor_publication.sql",
-    "0004_source_reconciliation.sql",
-    "0005_publication_invariants.sql",
-  ]) database.exec(readFileSync(join(root, "migrations", migration), "utf8"));
+  applyMigrations(database);
   const db = sqliteD1(database);
   const now = new Date("2026-08-26T12:00:00.000Z");
   const event = EventItem.parse({
@@ -3394,6 +3388,20 @@ test("dynamic publication overlay updates matching ingest rows but cannot shadow
   const collision = mergePublishedContent([staticEvent, occupiedRoute], [correctedSlug]);
   assert.equal(collision.find((item) => item.id === staticEvent.id)?.slug, staticEvent.slug);
   assert.equal(collision.find((item) => item.id === occupiedRoute.id)?.title, occupiedRoute.title);
+
+  const sameUrlDifferentId = EventItem.parse({
+    ...staticEvent,
+    id: "evt-url-duplicate",
+    slug: "url-duplicate",
+    title: "Same source URL from a later ingest id",
+    startsAt: "2026-12-01T12:00:00.000Z",
+    partner: "other",
+  });
+  const collapsedUrl = mergePublishedContent([staticEvent], [sameUrlDifferentId]);
+  assert.equal(collapsedUrl.length, 1);
+  assert.equal(collapsedUrl[0]?.id, staticEvent.id);
+  assert.equal(collapsedUrl[0]?.slug, staticEvent.slug);
+  assert.deepEqual(collapsedUrl[0] && "previousSlugs" in collapsedUrl[0] ? collapsedUrl[0].previousSlugs : [], ["url-duplicate"]);
 
   const sameScheduleDifferentId = EventItem.parse({
     ...staticEvent,
@@ -3612,6 +3620,7 @@ function applyMigrations(database: DatabaseSync) {
     "0004_source_reconciliation.sql",
     "0005_publication_invariants.sql",
     "0006_editor_model_attempts.sql",
+    "0007_publication_identity.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 
@@ -4228,12 +4237,324 @@ test("idempotent event refresh keeps canonical id/slug and aliases the old publi
   assert.equal(kept.slug, canonical.slug);
   const worker = readFileSync(join(root, "worker.js"), "utf8");
   assert.ok(worker.includes("publishedSlugRedirects"));
+  assert.ok(worker.includes("findPublishedSlugAlias"));
+  assert.ok(worker.includes("lookupPublishedSlugAlias"));
+  assert.ok(!worker.includes("limit = 100"));
   assert.ok(worker.includes("Response.redirect"));
   assert.ok(worker.includes("Response.redirect(`${url.origin}${redirected}`, 301)"));
   assert.ok(worker.includes(", 301)"));
   const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
   assert.ok(itemPage.includes("byPreviousSlug"));
   assert.ok(itemPage.includes("Navigate"));
+});
+
+test("canonical source URLs collapse across feeds and keep discovery provenance", async () => {
+  assert.equal(
+    normalizeSourceUrl("http://www.Inquirer.com/health/jefferson-loss/?utm_source=rss&utm_medium=feed#comments"),
+    "https://inquirer.com/health/jefferson-loss",
+  );
+  assert.equal(
+    normalizeSourceUrl("https://inquirer.com/health/jefferson-loss/"),
+    "https://inquirer.com/health/jefferson-loss",
+  );
+  const health = rssItemToContent(
+    {
+      title: "Jefferson Health posts a year-end operating loss",
+      link: "https://www.inquirer.com/health/jefferson-loss?utm_source=health",
+      description: "Health desk.",
+      pubDate: "Fri, 14 Aug 2026 12:00:00 GMT",
+      guid: "health-guid",
+    },
+    "Inquirer Health",
+    "2026-08-26T12:00:00.000Z",
+  );
+  const business = rssItemToContent(
+    {
+      title: "Jefferson Health posts a year-end operating loss",
+      link: "http://inquirer.com/health/jefferson-loss/#print",
+      description: "Business desk.",
+      pubDate: "Fri, 14 Aug 2026 12:00:00 GMT",
+      guid: "business-guid",
+    },
+    "Inquirer Business",
+    "2026-08-26T12:00:00.000Z",
+  );
+  assert.equal(health.source.url, "https://inquirer.com/health/jefferson-loss");
+  assert.equal(sourceIdentityKey(health), sourceIdentityKey(business));
+  const collapsed = collapseBySourceIdentity([health, business]);
+  assert.equal(collapsed.length, 1);
+  assert.equal(collapsed[0]?.item.id, health.id);
+  assert.ok(collapsed[0]?.discoveries.some((row) => row.origin === health.source.origin));
+  assert.ok(collapsed[0]?.discoveries.some((row) => row.origin === business.source.origin));
+  assert.ok(collapsed[0]?.item.citations?.some((citation) => citation.name === "Inquirer Business"));
+
+  const rss = (link: string) => `<?xml version="1.0"?><rss><channel><item><title>Shared article</title><link>${link}</link><guid>${link}</guid><description>Penn named a local deployment.</description><pubDate>Wed, 26 Aug 2026 12:00:00 GMT</pubDate></item></channel></rss>`;
+  const ingested = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    if (url.includes("inquirer.com") && url.includes("health")) {
+      return new Response(rss("https://www.inquirer.com/health/shared?utm_source=health"), { status: 200 });
+    }
+    if (url.includes("inquirer.com") && url.includes("business")) {
+      return new Response(rss("https://inquirer.com/health/shared/"), { status: 200 });
+    }
+    return new Response("", { status: 503 });
+  });
+  const shared = ingested.items.filter((item) => item.source.url?.includes("/health/shared"));
+  assert.equal(shared.length, 1);
+  assert.ok(shared[0]?.citations?.some((citation) => citation.name.includes("Inquirer")));
+});
+
+test("publication identity stays stable, aliases 301, and collisions quarantine one item", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const first = officialChapterEvent("evt-identity-keep");
+  const renamed = EventItem.parse({
+    ...first,
+    title: "Official Chapter Forum renamed",
+    slug: "official-chapter-forum-renamed",
+    publishedAt: "2026-08-26T18:00:00.000Z",
+    updatedAt: "2026-08-26T18:00:00.000Z",
+  });
+  await persistIngestRun(db, {
+    fetchedAt: now.toISOString(),
+    rss: [],
+    events: [first],
+    social: [],
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item: first, enrichment: null }]);
+  await persistEditorialDecisions(
+    db,
+    [{ item: first, enrichment: null, decision: evaluateCandidate(first, null, now) }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    now,
+  );
+  const firstPublished = database.prepare(
+    "SELECT id, slug, first_published_at FROM published_content WHERE candidate_id = ?",
+  ).get(first.id) as { id: string; slug: string; first_published_at: string };
+  assert.equal(firstPublished.id, first.id);
+  assert.equal(firstPublished.slug, first.slug);
+
+  const later = new Date("2026-08-26T18:00:00.000Z");
+  await persistIngestRun(db, {
+    fetchedAt: later.toISOString(),
+    rss: [],
+    events: [renamed],
+    social: [],
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item: renamed, enrichment: null }]);
+  await persistEditorialDecisions(
+    db,
+    [{ item: renamed, enrichment: null, decision: evaluateCandidate(renamed, null, later) }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    later,
+  );
+  const kept = database.prepare(
+    "SELECT id, slug, first_published_at, content_json FROM published_content WHERE candidate_id = ?",
+  ).get(first.id) as { id: string; slug: string; first_published_at: string; content_json: string };
+  assert.equal(kept.id, first.id);
+  assert.equal(kept.slug, first.slug);
+  assert.equal(kept.first_published_at, firstPublished.first_published_at);
+  assert.equal(JSON.parse(kept.content_json).publishedAt, first.publishedAt ?? now.toISOString());
+  assert.deepEqual(
+    database.prepare("SELECT alias_slug FROM content_slug_aliases WHERE content_id = ?").all(first.id).map((row) => row.alias_slug),
+    ["official-chapter-forum-renamed"],
+  );
+  const alias = await findPublishedSlugAlias(db, "event", "official-chapter-forum-renamed");
+  assert.equal(alias?.kind, "event");
+  assert.equal(alias?.slug, first.slug);
+  assert.equal((await findPublishedContent(db, "event", first.slug))?.id, first.id);
+
+  const duplicate = EventItem.parse({
+    ...officialChapterEvent("evt-identity-collision"),
+    slug: first.slug,
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/collision" },
+  });
+  await persistIngestRun(db, {
+    fetchedAt: later.toISOString(),
+    rss: [],
+    events: [duplicate],
+    social: [],
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item: duplicate, enrichment: null }]);
+  const counts = await persistEditorialDecisions(
+    db,
+    [{ item: duplicate, enrichment: null, decision: evaluateCandidate(duplicate, null, later) }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    later,
+  );
+  assert.equal(counts.quarantined, 1);
+  assert.equal(counts.published, 0);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM identity_quarantine").get().count, 1);
+  assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(first.id).queue_status, "approved");
+  database.close();
+});
+
+test("rejected candidates re-enter on fingerprint change and keep audit history", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const item = reviewNews("news-reenter", "Penn deployment evidence");
+  await persistIngestRun(db, {
+    fetchedAt: now.toISOString(),
+    rss: [item],
+    events: [],
+    social: [],
+    notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item, enrichment: null }]);
+  await persistEditorialDecisions(
+    db,
+    [{
+      item,
+      enrichment: null,
+      decision: {
+        action: "reject",
+        rule: "fixture-reject",
+        confidence: 1,
+        reasons: ["fixture"],
+        content: { ...item, status: "review", featured: false },
+      },
+    }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    now,
+  );
+  assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(item.id).queue_status, "rejected");
+  const auditBefore = database.prepare(
+    "SELECT COUNT(*) AS count FROM candidate_decisions WHERE candidate_id = ?",
+  ).get(item.id).count;
+
+  await persistIngestRun(db, {
+    fetchedAt: "2026-08-26T13:00:00.000Z",
+    rss: [item],
+    events: [],
+    social: [],
+    notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item, enrichment: null }]);
+  assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(item.id).queue_status, "rejected");
+
+  const changed = reviewNews("news-reenter", "Penn deployment evidence changed materially");
+  await persistIngestRun(db, {
+    fetchedAt: "2026-08-26T14:00:00.000Z",
+    rss: [changed],
+    events: [],
+    social: [],
+    notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item: changed, enrichment: null }]);
+  assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(item.id).queue_status, "review");
+  assert.equal(
+    database.prepare("SELECT COUNT(*) AS count FROM candidate_decisions WHERE candidate_id = ?").get(item.id).count,
+    auditBefore,
+  );
+  database.close();
+});
+
+test("same URL from two ingest ids collapses to one candidate with both discoveries", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const health = reviewNews("rss-health-shared", "Penn shared article");
+  const business = reviewNews("rss-business-shared", "Penn shared article");
+  const url = "https://www.inquirer.com/health/shared?utm_campaign=desk";
+  const healthItem = { ...health, source: { ...health.source, origin: "Inquirer Health", url } };
+  const businessItem = {
+    ...business,
+    source: { ...business.source, origin: "Inquirer Business", url: "https://inquirer.com/health/shared/" },
+    citations: [{ name: "Inquirer Business", url: "https://inquirer.com/health/shared/" }],
+  };
+  await persistIngestRun(db, {
+    fetchedAt: "2026-08-26T12:00:00.000Z",
+    rss: [healthItem, businessItem],
+    events: [],
+    social: [],
+    notes: { rss: 2, events: 0, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item: healthItem, enrichment: null }, { item: businessItem, enrichment: null }]);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM content_candidates").get().count, 1);
+  const row = database.prepare("SELECT id, source_identity FROM content_candidates").get() as { id: string; source_identity: string };
+  assert.equal(row.id, healthItem.id);
+  assert.equal(row.source_identity, sourceIdentityKey({ ...healthItem, source: { ...healthItem.source, url: "https://inquirer.com/health/shared" } }));
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM candidate_discoveries").get().count, 2);
+  database.close();
+});
+
+test("published overlay pagination returns the complete D1 set past the old 200 cap", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const now = "2026-08-26T12:00:00.000Z";
+  database.prepare("INSERT INTO ingest_runs (id, started_at, state, item_count) VALUES ('run-page', ?, 'succeeded', 201)").run(now);
+  const insertCandidate = database.prepare(`
+    INSERT INTO content_candidates (
+      id, fingerprint, kind, title, source_origin, source_url, item_status, queue_status,
+      content_json, first_seen_at, last_seen_at, last_run_id, source_identity
+    ) VALUES (?, ?, 'event', ?, 'dvhimss-events', ?, 'published', 'approved', ?, ?, ?, 'run-page', ?)
+  `);
+  const insertPublished = database.prepare(`
+    INSERT INTO published_content (
+      candidate_id, id, kind, slug, content_json, policy_version, decision_json,
+      first_published_at, updated_at
+    ) VALUES (?, ?, 'event', ?, ?, 'tvd-auto-editor-v2', '{}', ?, ?)
+  `);
+  for (let index = 0; index < 201; index += 1) {
+    const item = EventItem.parse({
+      ...officialChapterEvent(`evt-page-${index}`),
+      slug: `page-event-${index}`,
+      status: "published",
+      publishedAt: now,
+      source: { kind: "ingest", origin: "dvhimss-events", url: `https://dvhimss.org/event/page-${index}` },
+    });
+    insertCandidate.run(
+      item.id,
+      `fp-${item.id}`,
+      item.title,
+      item.source.url,
+      JSON.stringify(item),
+      now,
+      now,
+      sourceIdentityKey(item),
+    );
+    insertPublished.run(item.id, item.id, item.slug, JSON.stringify(item), now, `${now.slice(0, 19)}.${String(index).padStart(3, "0")}Z`);
+  }
+  const items = await readPublishedContent(db);
+  assert.equal(items.length, 201);
+  assert.ok(items.every((item) => item.status === "published"));
+  database.close();
+});
+
+test("identity migration is compatible with existing rows and unique only when identity is present", () => {
+  const database = new DatabaseSync(":memory:");
+  for (const name of [
+    "0001_automation.sql",
+    "0002_review_audit.sql",
+    "0003_editor_publication.sql",
+    "0004_source_reconciliation.sql",
+    "0005_publication_invariants.sql",
+    "0006_editor_model_attempts.sql",
+  ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
+  database.prepare("INSERT INTO ingest_runs (id, started_at, state, item_count) VALUES ('run-legacy', '2026-08-26T12:00:00.000Z', 'succeeded', 2)").run();
+  const insert = database.prepare(`
+    INSERT INTO content_candidates (
+      id, fingerprint, kind, title, source_origin, source_url, item_status, queue_status,
+      content_json, first_seen_at, last_seen_at, last_run_id
+    ) VALUES (?, 'fp', 'news', 'Legacy', 'rss', ?, 'review', 'review', '{}', '2026-08-26T12:00:00.000Z', '2026-08-26T12:00:00.000Z', 'run-legacy')
+  `);
+  insert.run("legacy-a", "https://example.com/a");
+  insert.run("legacy-b", "https://example.com/b");
+  database.exec(readFileSync(join(root, "migrations/0007_publication_identity.sql"), "utf8"));
+  assert.equal(database.prepare("SELECT source_identity FROM content_candidates WHERE id = 'legacy-a'").get().source_identity, null);
+  database.prepare("UPDATE content_candidates SET source_identity = NULL").run();
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM content_candidates WHERE source_identity IS NULL").get().count, 2);
+  database.prepare("UPDATE content_candidates SET source_identity = 'url:https://example.com/a' WHERE id = 'legacy-a'").run();
+  assert.throws(() => {
+    database.prepare("UPDATE content_candidates SET source_identity = 'url:https://example.com/a' WHERE id = 'legacy-b'").run();
+  });
+  database.close();
 });
 
 test("event anti-FOMO copy rejects adapter boilerplate and title restatements", () => {

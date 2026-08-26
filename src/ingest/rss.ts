@@ -3,6 +3,7 @@ import { Entity, type Entity as EntityRow } from "../content/entity";
 import entityFixtures from "../../fixtures/entities.json";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
+import { collapseBySourceIdentity, normalizeSourceUrl, withCanonicalSource } from "./identity";
 import { mapSeedOrgIds } from "./org-map";
 import type { IngestSourceResult, SourceRunNote } from "./source-health";
 
@@ -102,9 +103,10 @@ export function rssItemToContent(
   const parsed = Date.parse(raw.pubDate);
   if (Number.isFinite(parsed)) publishedAt = new Date(parsed).toISOString();
   const slug = slugify(`${feedName}-${raw.title}`);
-  const externalId = raw.guid || raw.link;
+  const canonicalUrl = normalizeSourceUrl(raw.link) ?? raw.link;
+  const externalId = raw.guid || canonicalUrl;
   const text = `${raw.title} ${raw.description}`;
-  return {
+  return withCanonicalSource({
     id: `rss-${slugify(feedName)}-${slugify(externalId).slice(0, 48)}`,
     slug,
     kind: "news",
@@ -121,15 +123,15 @@ export function rssItemToContent(
     source: {
       kind: "ingest",
       origin: options.origin ?? feedName,
-      url: raw.link,
+      url: canonicalUrl,
       fetchedAt,
       externalId,
     },
-    citations: [{ name: feedName, url: raw.link }],
+    citations: [{ name: feedName, url: canonicalUrl }],
     relatedEventIds: [],
     relatedVoiceIds: [],
     featured: false,
-  };
+  });
 }
 
 type WorkingRss = { url: string; name: string; origin?: string; orgIds?: readonly string[]; status: number; items: ReturnType<typeof parseRssItems> };
@@ -205,7 +207,8 @@ export async function ingestRssWithHealth(
       }));
     });
   }
-  const batch: IngestBatch = { adapter: "rss", fetchedAt, items };
+  const collapsed = collapseBySourceIdentity(items).map((group) => group.item);
+  const batch: IngestBatch = { adapter: "rss", fetchedAt, items: collapsed };
   return { items: toReviewQueue(batch), sources };
 }
 

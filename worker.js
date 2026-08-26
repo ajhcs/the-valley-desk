@@ -9,7 +9,7 @@ import { runAutomation } from "./src/ingest/automation.ts";
 import { handleReviewApi } from "./src/ingest/review-api.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
 import { feedXml, mergePublishedContent, mergedFeed, runtimeItemsScript, sitemapXml } from "./src/ingest/public-feed.ts";
-import { findPublishedContent, readPublicationTombstones, readPublishedContent } from "./src/ingest/persistence.ts";
+import { findPublishedContent, findPublishedSlugAlias, readPublicationTombstones, readPublishedContent } from "./src/ingest/persistence.ts";
 
 const SITE = "The Valley Desk";
 const ORIGIN = "https://thevalleydesk.org";
@@ -74,6 +74,23 @@ function permalinkRedirect(path) {
   const section = dest.kind === "event" ? "events" : dest.kind === "voice" ? "voices" : "news";
   if (dest.slug === match[2]) return null;
   return `/${section}/${dest.slug}`;
+}
+
+/** Ops: migration 0007 content_slug_aliases. Static redirects stay first; D1 aliases 301 after. */
+async function lookupPublishedSlugAlias(env, path) {
+  const match = /^\/(news|events|voices)\/([^/]+)$/.exec(stripSlash(path));
+  if (!match) return null;
+  try {
+    const dest = await findPublishedSlugAlias(env.VALLEY_DESK_DB, match[1] === "events" ? "event" : match[1] === "voices" ? "voice" : "news", match[2]);
+    if (!dest?.slug || dest.slug === match[2]) return null;
+    const section = dest.kind === "event" ? "events" : dest.kind === "voice" ? "voices" : "news";
+    return `/${section}/${dest.slug}`;
+  } catch (error) {
+    console.error("published-slug-alias-fallback", JSON.stringify({
+      message: error instanceof Error ? error.message : "D1 slug alias unavailable",
+    }));
+    return null;
+  }
 }
 
 /** false = unpublished or unknown item permalink. null = not an item permalink. */
@@ -154,10 +171,10 @@ function itemMatchesSection(item, section) {
   return section === "news" && new Set(["news", "policy", "ai", "interview"]).has(item.kind);
 }
 
-async function dynamicOverlay(env, limit = 100) {
+async function dynamicOverlay(env) {
   try {
     const [items, withdrawnIds] = await Promise.all([
-      readPublishedContent(env.VALLEY_DESK_DB, limit),
+      readPublishedContent(env.VALLEY_DESK_DB),
       readPublicationTombstones(env.VALLEY_DESK_DB),
     ]);
     return { items, withdrawnIds };
@@ -223,7 +240,7 @@ export default {
     if (path === "/briefing" || path.startsWith("/briefing/")) {
       return notFound(env, request, path);
     }
-    const redirected = permalinkRedirect(path);
+    const redirected = permalinkRedirect(path) || await lookupPublishedSlugAlias(env, path);
     if (redirected) {
       return Response.redirect(`${url.origin}${redirected}`, 301);
     }

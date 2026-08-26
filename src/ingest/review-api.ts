@@ -1,5 +1,6 @@
 import type { D1DatabaseLike } from "./persistence";
 import { ContentItem, canPublish } from "../content/schema";
+import { retainPublishedIdentity } from "../content/merge";
 import { EDITOR_POLICY_VERSION } from "./editor";
 
 type ReviewEnv = {
@@ -127,6 +128,15 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         return json({ error: "candidate_not_publishable", issues: parsed.success ? [] : parsed.error.issues }, 409);
       }
       approvedContent = parsed.data;
+      const live = await env.VALLEY_DESK_DB.prepare(
+        "SELECT content_json FROM published_content WHERE candidate_id = ? LIMIT 1",
+      ).bind(id).first<{ content_json: string }>();
+      if (live) {
+        const previous = ContentItem.safeParse(JSON.parse(live.content_json));
+        if (previous.success) {
+          approvedContent = ContentItem.parse(retainPublishedIdentity(previous.data, approvedContent));
+        }
+      }
     } else {
       const row = await env.VALLEY_DESK_DB.prepare(
         "SELECT content_json FROM content_candidates WHERE id = ? AND queue_status IN ('review', 'approved')",
@@ -174,8 +184,11 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
           first_published_at, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(candidate_id) DO UPDATE SET
-          kind = excluded.kind, slug = excluded.slug, content_json = excluded.content_json,
-          policy_version = excluded.policy_version, decision_json = excluded.decision_json,
+          kind = excluded.kind,
+          slug = published_content.slug,
+          content_json = excluded.content_json,
+          policy_version = excluded.policy_version,
+          decision_json = excluded.decision_json,
           updated_at = excluded.updated_at
       `).bind(
         id,
@@ -188,6 +201,19 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         approvedContent.publishedAt || decidedAt,
         decidedAt,
       ));
+      for (const alias of approvedContent.previousSlugs ?? []) {
+        if (!alias || alias === approvedContent.slug) continue;
+        statements.push(env.VALLEY_DESK_DB.prepare(`
+          INSERT INTO content_slug_aliases (alias_slug, kind, content_id, candidate_id, created_at)
+          SELECT ?, p.kind, p.id, p.candidate_id, ?
+          FROM published_content p
+          WHERE p.candidate_id = ? AND p.slug != ?
+          ON CONFLICT(kind, alias_slug) DO UPDATE SET
+            content_id = excluded.content_id,
+            candidate_id = excluded.candidate_id
+          WHERE content_slug_aliases.content_id = excluded.content_id
+        `).bind(alias, decidedAt, id, alias));
+      }
     } else {
       statements.push(env.VALLEY_DESK_DB.prepare(`
         INSERT INTO publication_reconciliations (

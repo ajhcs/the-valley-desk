@@ -6,6 +6,12 @@ import { EditorEnrichment, EDITOR_PROMPT_VERSION } from "./editor-model";
 import { EDITOR_POLICY_VERSION } from "./editor";
 import type { EditorModelState } from "./editor-work";
 import type { SourceRunNote } from "./source-health";
+import {
+  collapseBySourceIdentity,
+  normalizeSourceUrl,
+  sourceIdentityKey,
+  withCanonicalSource,
+} from "./identity";
 
 export type D1StatementLike = {
   bind(...values: unknown[]): D1StatementLike;
@@ -35,6 +41,32 @@ export type CandidateEnrichment = {
 export type CandidateEditorialDecision = CandidateEnrichment & {
   decision: EditorDecision;
 };
+
+export type EditorialCounts = {
+  published: number;
+  review: number;
+  rejected: number;
+  quarantined: number;
+};
+
+const PUBLIC_READ_PAGE_SIZE = 100;
+const PUBLIC_READ_MAX_PAGES = 50;
+
+function isConstraintError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return /unique|constraint|SQLITE_CONSTRAINT/i.test(message);
+}
+
+function uniqueAliasSlugs(publication: ContentItem, incomingSlug?: string) {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const slug of [...(publication.previousSlugs ?? []), incomingSlug ?? ""]) {
+    if (!slug || slug === publication.slug || seen.has(slug)) continue;
+    seen.add(slug);
+    out.push(slug);
+  }
+  return out;
+}
 
 async function sha256(value: string) {
   const bytes = new TextEncoder().encode(value);
@@ -83,24 +115,180 @@ type CandidateModelRow = {
   enrichment_attempt_count: number | null;
   first_seen_at: string;
   queue_status: string;
+  source_identity?: string | null;
 };
+
+type ExistingCandidateRow = {
+  id: string;
+  source_identity: string | null;
+  source_url: string | null;
+  fingerprint: string;
+  queue_status: string;
+};
+
+function preferExisting(next: ExistingCandidateRow, current?: ExistingCandidateRow) {
+  if (!current) return true;
+  const rank = (status: string) => (status === "approved" ? 0 : status === "review" ? 1 : 2);
+  return rank(next.queue_status) < rank(current.queue_status);
+}
+
+async function loadRowsByValues<T>(
+  db: D1DatabaseLike,
+  sql: string,
+  values: string[],
+): Promise<T[]> {
+  const out: T[] = [];
+  for (let index = 0; index < values.length; index += 50) {
+    const chunk = values.slice(index, index + 50);
+    if (!chunk.length) continue;
+    const placeholders = chunk.map(() => "?").join(", ");
+    const rows = await db.prepare(sql.replace("IN (?)", `IN (${placeholders})`))
+      .bind(...chunk)
+      .all<T>();
+    out.push(...(rows.results ?? []));
+  }
+  return out;
+}
 
 async function loadCandidateModelRows(db: D1DatabaseLike, items: ContentItem[]) {
   const byId = new Map<string, CandidateModelRow>();
-  for (let index = 0; index < items.length; index += 50) {
-    const chunk = items.slice(index, index + 50);
-    if (!chunk.length) continue;
-    const placeholders = chunk.map(() => "?").join(", ");
-    const rows = await db.prepare(`
-      SELECT id, fingerprint, enrichment_json, enrichment_fingerprint, enrichment_outcome,
-             enrichment_attempted_at, enrichment_error, enrichment_attempt_count,
-             first_seen_at, queue_status
-      FROM content_candidates
-      WHERE id IN (${placeholders})
-    `).bind(...chunk.map((item) => item.id)).all<CandidateModelRow>();
-    for (const row of rows.results ?? []) byId.set(row.id, row);
+  const byIdentity = new Map<string, CandidateModelRow>();
+  const ids = items.map((item) => item.id);
+  const identities = [...new Set(items.map((item) => sourceIdentityKey(item)))];
+  const select = `
+    SELECT id, fingerprint, enrichment_json, enrichment_fingerprint, enrichment_outcome,
+           enrichment_attempted_at, enrichment_error, enrichment_attempt_count,
+           first_seen_at, queue_status, source_identity
+    FROM content_candidates
+    WHERE id IN (?)
+  `;
+  const identitySelect = `
+    SELECT id, fingerprint, enrichment_json, enrichment_fingerprint, enrichment_outcome,
+           enrichment_attempted_at, enrichment_error, enrichment_attempt_count,
+           first_seen_at, queue_status, source_identity
+    FROM content_candidates
+    WHERE source_identity IN (?)
+  `;
+  for (const row of [
+    ...await loadRowsByValues<CandidateModelRow>(db, select, ids),
+    ...await loadRowsByValues<CandidateModelRow>(db, identitySelect, identities),
+  ]) {
+    byId.set(row.id, row);
+    if (row.source_identity) byIdentity.set(row.source_identity, row);
   }
-  return byId;
+  return { byId, byIdentity };
+}
+
+async function loadExistingCandidates(db: D1DatabaseLike, items: ContentItem[]) {
+  const byId = new Map<string, ExistingCandidateRow>();
+  const byIdentity = new Map<string, ExistingCandidateRow>();
+  const byUrl = new Map<string, ExistingCandidateRow>();
+  const remember = (row: ExistingCandidateRow) => {
+    if (preferExisting(row, byId.get(row.id))) byId.set(row.id, row);
+    if (row.source_identity && preferExisting(row, byIdentity.get(row.source_identity))) {
+      byIdentity.set(row.source_identity, row);
+    }
+    const urls = [row.source_url, normalizeSourceUrl(row.source_url)].filter((value): value is string => Boolean(value));
+    for (const url of urls) {
+      if (preferExisting(row, byUrl.get(url))) byUrl.set(url, row);
+    }
+  };
+  const select = `
+    SELECT id, source_identity, source_url, fingerprint, queue_status
+    FROM content_candidates
+    WHERE id IN (?)
+  `;
+  const identitySelect = `
+    SELECT id, source_identity, source_url, fingerprint, queue_status
+    FROM content_candidates
+    WHERE source_identity IN (?)
+  `;
+  const urlSelect = `
+    SELECT id, source_identity, source_url, fingerprint, queue_status
+    FROM content_candidates
+    WHERE source_url IN (?)
+  `;
+  const urls = [...new Set(items.flatMap((item) => (
+    [item.source.url, normalizeSourceUrl(item.source.url)].filter((value): value is string => Boolean(value))
+  )))];
+  for (const row of [
+    ...await loadRowsByValues<ExistingCandidateRow>(db, select, items.map((item) => item.id)),
+    ...await loadRowsByValues<ExistingCandidateRow>(db, identitySelect, items.map((item) => sourceIdentityKey(item))),
+    ...await loadRowsByValues<ExistingCandidateRow>(db, urlSelect, urls),
+  ]) remember(row);
+  return { byId, byIdentity, byUrl };
+}
+
+function existingForItem(
+  item: ContentItem,
+  existing: Awaited<ReturnType<typeof loadExistingCandidates>>,
+) {
+  const identity = sourceIdentityKey(item);
+  const url = normalizeSourceUrl(item.source.url) ?? item.source.url;
+  return existing.byIdentity.get(identity)
+    ?? existing.byId.get(item.id)
+    ?? (url ? existing.byUrl.get(url) : undefined);
+}
+
+async function quarantineIdentity(
+  db: D1DatabaseLike,
+  row: {
+    candidateId?: string;
+    sourceIdentity?: string | null;
+    reason: string;
+    content?: unknown;
+    runId?: string;
+    at?: string;
+  },
+) {
+  try {
+    await db.prepare(`
+      INSERT INTO identity_quarantine (
+        candidate_id, source_identity, reason, content_json, run_id, quarantined_at
+      ) VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(
+      row.candidateId ?? null,
+      row.sourceIdentity ?? null,
+      row.reason.slice(0, 1000),
+      row.content ? JSON.stringify(row.content).slice(0, 8000) : null,
+      row.runId ?? null,
+      row.at ?? new Date().toISOString(),
+    ).run();
+  } catch (error) {
+    console.error("identity-quarantine-write-failed", error instanceof Error ? error.message : "unknown");
+  }
+}
+
+async function runStatementsOrQuarantine(
+  db: D1DatabaseLike,
+  rows: Array<{ statement: D1StatementLike; candidateId?: string; sourceIdentity?: string | null; content?: unknown }>,
+  runId?: string,
+) {
+  let quarantined = 0;
+  for (let index = 0; index < rows.length; index += 50) {
+    const chunk = rows.slice(index, index + 50);
+    try {
+      await db.batch(chunk.map((row) => row.statement));
+    } catch {
+      for (const row of chunk) {
+        try {
+          await row.statement.run();
+        } catch (error) {
+          quarantined += 1;
+          await quarantineIdentity(db, {
+            candidateId: row.candidateId,
+            sourceIdentity: row.sourceIdentity,
+            reason: isConstraintError(error)
+              ? `constraint: ${error instanceof Error ? error.message : "unique conflict"}`
+              : error instanceof Error ? error.message : "persist failed",
+            content: row.content,
+            runId,
+          });
+        }
+      }
+    }
+  }
+  return quarantined;
 }
 
 function parseCachedEnrichment(raw: string | null) {
@@ -121,7 +309,7 @@ export async function readEditorModelCache(
   const states = new Map<string, EditorModelState>();
   const reusable = new Map<string, EditorEnrichment>();
   for (const item of items) {
-    const row = rows.get(item.id);
+    const row = rows.byId.get(item.id) ?? rows.byIdentity.get(sourceIdentityKey(item));
     if (!row) continue;
     const cached = parseCachedEnrichment(row.enrichment_json);
     states.set(item.id, {
@@ -162,10 +350,12 @@ export async function persistEnrichments(
   db: D1DatabaseLike,
   candidates: CandidateEnrichment[],
 ) {
+  const existing = await loadExistingCandidates(db, candidates.map((row) => row.item));
   const statements = candidates.flatMap(({ item, enrichment, attempt }) => {
     if (!attempt) return [];
     const json = enrichment ? JSON.stringify(enrichment) : null;
     const score = enrichment?.relevanceScore ?? null;
+    const candidateId = existingForItem(item, existing)?.id ?? item.id;
     return [db.prepare(`
       UPDATE content_candidates
       SET
@@ -190,7 +380,7 @@ export async function persistEnrichments(
       attempt.outcome,
       attempt.error ? attempt.error.slice(0, 1000) : null,
       attempt.fingerprint,
-      item.id,
+      candidateId,
     )];
   });
   for (let index = 0; index < statements.length; index += 50) {
@@ -206,69 +396,125 @@ export async function persistIngestRun(
 ) {
   const runId = crypto.randomUUID();
   const startedAt = run.fetchedAt;
+  const groups = collapseBySourceIdentity(candidates.map((row) => row.item));
   await db.prepare(
     "INSERT INTO ingest_runs (id, started_at, state, item_count, notes_json) VALUES (?, ?, 'running', ?, ?)",
-  ).bind(runId, startedAt, candidates.length, JSON.stringify(run.notes)).run();
+  ).bind(runId, startedAt, groups.length, JSON.stringify(run.notes)).run();
 
   try {
-    const statements: D1StatementLike[] = [];
-    for (const { item, enrichment } of candidates) {
-      const fingerprint = await candidateFingerprint(item);
-      statements.push(db.prepare(`
-        INSERT INTO content_candidates (
-          id, fingerprint, kind, title, source_origin, source_external_id, source_url,
-          item_status, queue_status, content_json, enrichment_json, relevance_score,
-          first_seen_at, last_seen_at, last_run_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(id) DO UPDATE SET
-          fingerprint = excluded.fingerprint,
-          kind = excluded.kind,
-          title = excluded.title,
-          source_origin = excluded.source_origin,
-          source_external_id = excluded.source_external_id,
-          source_url = excluded.source_url,
-          item_status = CASE
-            WHEN content_candidates.queue_status = 'approved' THEN content_candidates.item_status
-            ELSE excluded.item_status
-          END,
-          content_json = CASE
-            WHEN content_candidates.queue_status = 'approved' THEN content_candidates.content_json
-            ELSE excluded.content_json
-          END,
-          enrichment_json = CASE
-            WHEN content_candidates.queue_status = 'approved' THEN content_candidates.enrichment_json
-            ELSE COALESCE(excluded.enrichment_json, content_candidates.enrichment_json)
-          END,
-          relevance_score = CASE
-            WHEN content_candidates.queue_status = 'approved' THEN content_candidates.relevance_score
-            ELSE COALESCE(excluded.relevance_score, content_candidates.relevance_score)
-          END,
-          last_seen_at = excluded.last_seen_at,
-          last_run_id = excluded.last_run_id,
-          missing_count = 0,
-          last_missing_at = NULL
-        WHERE content_candidates.queue_status != 'rejected'
-      `).bind(
-        item.id,
-        fingerprint,
-        item.kind,
-        item.title,
-        item.source.origin,
-        item.source.externalId ?? null,
-        item.source.url ?? null,
-        item.status,
-        JSON.stringify(item),
-        enrichment ? JSON.stringify(enrichment) : null,
-        enrichment?.relevanceScore ?? null,
-        run.fetchedAt,
-        run.fetchedAt,
-        runId,
-      ));
+    const enrichmentById = new Map(candidates.map((row) => [row.item.id, row.enrichment]));
+    const enrichmentByIdentity = new Map(
+      candidates.map((row) => [sourceIdentityKey(row.item), row.enrichment] as const),
+    );
+    const existing = await loadExistingCandidates(db, groups.map((group) => group.item));
+    const candidateRows: Array<{ statement: D1StatementLike; candidateId?: string; sourceIdentity?: string | null; content?: unknown }> = [];
+    const discoveryRows: Array<{ statement: D1StatementLike; candidateId?: string; sourceIdentity?: string | null; content?: unknown }> = [];
+
+    for (const group of groups) {
+      const item = withCanonicalSource(group.item);
+      const identity = group.identity;
+      const found = existingForItem(item, existing);
+      const candidateId = found?.id ?? item.id;
+      const storedItem = candidateId === item.id ? item : { ...item, id: candidateId };
+      const fingerprint = await candidateFingerprint(storedItem);
+      const enrichment = enrichmentById.get(item.id) ?? enrichmentByIdentity.get(identity) ?? null;
+      candidateRows.push({
+        candidateId,
+        sourceIdentity: identity,
+        content: storedItem,
+        statement: db.prepare(`
+          INSERT INTO content_candidates (
+            id, fingerprint, kind, title, source_origin, source_external_id, source_url,
+            item_status, queue_status, content_json, enrichment_json, relevance_score,
+            first_seen_at, last_seen_at, last_run_id, source_identity
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT(id) DO UPDATE SET
+            fingerprint = excluded.fingerprint,
+            kind = excluded.kind,
+            title = CASE
+              WHEN content_candidates.queue_status = 'approved' THEN content_candidates.title
+              ELSE excluded.title
+            END,
+            source_origin = excluded.source_origin,
+            source_external_id = excluded.source_external_id,
+            source_url = excluded.source_url,
+            source_identity = COALESCE(content_candidates.source_identity, excluded.source_identity),
+            item_status = CASE
+              WHEN content_candidates.queue_status = 'approved' THEN content_candidates.item_status
+              WHEN content_candidates.queue_status = 'rejected'
+                AND content_candidates.fingerprint = excluded.fingerprint THEN content_candidates.item_status
+              ELSE excluded.item_status
+            END,
+            queue_status = CASE
+              WHEN content_candidates.queue_status = 'approved' THEN content_candidates.queue_status
+              WHEN content_candidates.queue_status = 'rejected'
+                AND content_candidates.fingerprint != excluded.fingerprint THEN 'review'
+              ELSE content_candidates.queue_status
+            END,
+            content_json = CASE
+              WHEN content_candidates.queue_status = 'approved' THEN content_candidates.content_json
+              WHEN content_candidates.queue_status = 'rejected'
+                AND content_candidates.fingerprint = excluded.fingerprint THEN content_candidates.content_json
+              ELSE excluded.content_json
+            END,
+            enrichment_json = CASE
+              WHEN content_candidates.queue_status = 'approved' THEN content_candidates.enrichment_json
+              ELSE COALESCE(excluded.enrichment_json, content_candidates.enrichment_json)
+            END,
+            relevance_score = CASE
+              WHEN content_candidates.queue_status = 'approved' THEN content_candidates.relevance_score
+              ELSE COALESCE(excluded.relevance_score, content_candidates.relevance_score)
+            END,
+            last_seen_at = excluded.last_seen_at,
+            last_run_id = excluded.last_run_id,
+            missing_count = 0,
+            last_missing_at = NULL
+          WHERE content_candidates.queue_status != 'rejected'
+             OR content_candidates.fingerprint != excluded.fingerprint
+        `).bind(
+          candidateId,
+          fingerprint,
+          storedItem.kind,
+          storedItem.title,
+          storedItem.source.origin,
+          storedItem.source.externalId ?? null,
+          storedItem.source.url ?? null,
+          storedItem.status,
+          JSON.stringify(storedItem),
+          enrichment ? JSON.stringify(enrichment) : null,
+          enrichment?.relevanceScore ?? null,
+          run.fetchedAt,
+          run.fetchedAt,
+          runId,
+          identity,
+        ),
+      });
+      for (const discovery of group.discoveries) {
+        discoveryRows.push({
+          candidateId,
+          sourceIdentity: identity,
+          content: discovery,
+          statement: db.prepare(`
+            INSERT INTO candidate_discoveries (
+              candidate_id, origin, source_url, first_seen_at, last_seen_at
+            ) VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(candidate_id, origin) DO UPDATE SET
+              source_url = COALESCE(excluded.source_url, candidate_discoveries.source_url),
+              last_seen_at = excluded.last_seen_at
+          `).bind(
+            candidateId,
+            discovery.origin,
+            discovery.url ?? storedItem.source.url ?? null,
+            run.fetchedAt,
+            run.fetchedAt,
+          ),
+        });
+      }
     }
-    for (let index = 0; index < statements.length; index += 50) {
-      await db.batch(statements.slice(index, index + 50));
-    }
-    return { runId, itemCount: candidates.length };
+
+    const quarantined = await runStatementsOrQuarantine(db, candidateRows, runId)
+      + await runStatementsOrQuarantine(db, discoveryRows, runId);
+    return { runId, itemCount: groups.length, quarantinedCount: quarantined };
   } catch (error) {
     const message = error instanceof Error ? error.message.slice(0, 1000) : "Unknown persistence error";
     await db.prepare(
@@ -439,6 +685,30 @@ export async function releaseAutomationLock(db: D1DatabaseLike, owner: string) {
   ).bind(owner).run();
 }
 
+function slugAliasStatements(
+  db: D1DatabaseLike,
+  candidateId: string,
+  publication: ContentItem,
+  incomingSlug: string | undefined,
+  decidedAt: string,
+) {
+  return uniqueAliasSlugs(publication, incomingSlug).map((alias) => db.prepare(`
+    INSERT INTO content_slug_aliases (alias_slug, kind, content_id, candidate_id, created_at)
+    SELECT ?, p.kind, p.id, p.candidate_id, ?
+    FROM published_content p
+    WHERE p.candidate_id = ?
+      AND p.slug != ?
+      AND NOT EXISTS (
+        SELECT 1 FROM published_content other
+        WHERE other.kind = p.kind AND other.slug = ?
+      )
+    ON CONFLICT(kind, alias_slug) DO UPDATE SET
+      content_id = excluded.content_id,
+      candidate_id = excluded.candidate_id
+    WHERE content_slug_aliases.content_id = excluded.content_id
+  `).bind(alias, decidedAt, candidateId, alias, alias));
+}
+
 export async function persistEditorialDecisions(
   db: D1DatabaseLike,
   candidates: CandidateEditorialDecision[],
@@ -446,21 +716,27 @@ export async function persistEditorialDecisions(
   provider: string,
   now = new Date(),
 ) {
-  const counts = { published: 0, review: 0, rejected: 0 };
+  const counts: EditorialCounts = { published: 0, review: 0, rejected: 0, quarantined: 0 };
+  const existingCandidates = await loadExistingCandidates(db, candidates.map((row) => row.item));
   for (const { item, enrichment, decision } of candidates) {
-    const countKey = decision.action === "publish"
-      ? "published"
-      : decision.action === "reject"
-        ? "rejected"
-        : "review";
-    counts[countKey] += 1;
     const decidedAt = now.toISOString();
+    const existingRow = existingForItem(item, existingCandidates);
+    const candidateId = existingRow?.id ?? item.id;
+    if (existingRow?.queue_status === "rejected") {
+      const fingerprint = await candidateFingerprint(withCanonicalSource({ ...item, id: candidateId }));
+      if (fingerprint === existingRow.fingerprint) {
+        counts.rejected += 1;
+        continue;
+      }
+    }
     try {
       if (decision.action === "publish") {
-        let publication = decision.content;
+        let publication = withCanonicalSource(decision.content);
+        if (publication.id !== candidateId) publication = { ...publication, id: candidateId };
+        const incomingSlug = publication.slug;
         const existing = await db.prepare(
-          "SELECT content_json FROM published_content WHERE candidate_id = ? LIMIT 1",
-        ).bind(item.id).first<{ content_json: string }>();
+          "SELECT content_json, id, first_published_at FROM published_content WHERE candidate_id = ? LIMIT 1",
+        ).bind(candidateId).first<{ content_json: string; id: string; first_published_at: string }>();
         if (existing) {
           try {
             const parsed = ContentItemSchema.safeParse(JSON.parse(existing.content_json));
@@ -472,123 +748,154 @@ export async function persistEditorialDecisions(
           }
         }
         const storedDecision = { ...decision, content: publication };
+        const fingerprint = await candidateFingerprint(publication);
+        const metadata = JSON.stringify({ action: decision.action, rule: decision.rule, fingerprint });
         await db.batch([
-        db.prepare(`
-          UPDATE content_candidates
-          SET item_status = 'published', queue_status = 'approved', content_json = ?,
-              enrichment_json = ?, relevance_score = ?, reviewed_at = ?
-          WHERE id = ? AND queue_status != 'rejected'
-        `).bind(
-          JSON.stringify(publication),
-          enrichment ? JSON.stringify(enrichment) : null,
-          enrichment?.relevanceScore ?? Math.round(decision.confidence * 100),
-          decidedAt,
-          item.id,
-        ),
-        db.prepare(`
-          INSERT INTO published_content (
-            candidate_id, id, kind, slug, content_json, policy_version, decision_json,
-            first_published_at, updated_at
-          )
-          SELECT id, id, ?, ?, ?, ?, ?, ?, ? FROM content_candidates
-          WHERE id = ? AND queue_status != 'rejected'
-          ON CONFLICT(candidate_id) DO UPDATE SET
-            kind = excluded.kind,
-            slug = published_content.slug,
-            content_json = excluded.content_json,
-            policy_version = excluded.policy_version,
-            decision_json = excluded.decision_json,
-            updated_at = excluded.updated_at
-        `).bind(
-          publication.kind,
-          publication.slug,
-          JSON.stringify(publication),
-          EDITOR_POLICY_VERSION,
-          JSON.stringify(storedDecision),
-          publication.publishedAt ?? decidedAt,
-          decidedAt,
-          item.id,
-        ),
-        db.prepare(`
-          INSERT INTO candidate_decisions (
-            candidate_id, decision, note, reviewer, decided_at, method, provider,
-            model, policy_version, confidence, evidence_json, metadata_json
-          )
-          SELECT ?, 'approved', ?, 'editor-in-chief', ?, 'automatic', ?, ?, ?, ?, ?, ?
-          WHERE NOT EXISTS (
-            SELECT 1 FROM candidate_decisions
-            WHERE candidate_id = ? AND decision = 'approved' AND method = 'automatic'
-              AND policy_version = ? AND metadata_json = ?
-          )
-        `).bind(
-          item.id,
-          `${decision.rule}: ${decision.reasons.join("; ")}`.slice(0, 1000),
-          decidedAt,
-          provider,
-          model,
-          EDITOR_POLICY_VERSION,
-          decision.confidence,
-          JSON.stringify(enrichment?.evidenceSpans ?? []),
-          JSON.stringify({ action: decision.action, rule: decision.rule }),
-          item.id,
-          EDITOR_POLICY_VERSION,
-          JSON.stringify({ action: decision.action, rule: decision.rule }),
-        ),
+          db.prepare(`
+            UPDATE content_candidates
+            SET item_status = 'published', queue_status = 'approved', content_json = ?,
+                enrichment_json = ?, relevance_score = ?, reviewed_at = ?
+            WHERE id = ? AND queue_status != 'rejected'
+          `).bind(
+            JSON.stringify(publication),
+            enrichment ? JSON.stringify(enrichment) : null,
+            enrichment?.relevanceScore ?? Math.round(decision.confidence * 100),
+            decidedAt,
+            candidateId,
+          ),
+          db.prepare(`
+            INSERT INTO published_content (
+              candidate_id, id, kind, slug, content_json, policy_version, decision_json,
+              first_published_at, updated_at
+            )
+            SELECT id, id, ?, ?, ?, ?, ?, ?, ? FROM content_candidates
+            WHERE id = ? AND queue_status != 'rejected'
+            ON CONFLICT(candidate_id) DO UPDATE SET
+              kind = excluded.kind,
+              slug = published_content.slug,
+              content_json = excluded.content_json,
+              policy_version = excluded.policy_version,
+              decision_json = excluded.decision_json,
+              updated_at = excluded.updated_at
+          `).bind(
+            publication.kind,
+            publication.slug,
+            JSON.stringify(publication),
+            EDITOR_POLICY_VERSION,
+            JSON.stringify(storedDecision),
+            existing?.first_published_at ?? publication.publishedAt ?? decidedAt,
+            decidedAt,
+            candidateId,
+          ),
+          db.prepare(`
+            INSERT INTO candidate_decisions (
+              candidate_id, decision, note, reviewer, decided_at, method, provider,
+              model, policy_version, confidence, evidence_json, metadata_json
+            )
+            SELECT ?, 'approved', ?, 'editor-in-chief', ?, 'automatic', ?, ?, ?, ?, ?, ?
+            WHERE NOT EXISTS (
+              SELECT 1 FROM candidate_decisions
+              WHERE candidate_id = ? AND decision = 'approved' AND method = 'automatic'
+                AND policy_version = ? AND metadata_json = ?
+            )
+          `).bind(
+            candidateId,
+            `${decision.rule}: ${decision.reasons.join("; ")}`.slice(0, 1000),
+            decidedAt,
+            provider,
+            model,
+            EDITOR_POLICY_VERSION,
+            decision.confidence,
+            JSON.stringify(enrichment?.evidenceSpans ?? []),
+            metadata,
+            candidateId,
+            EDITOR_POLICY_VERSION,
+            metadata,
+          ),
+          ...slugAliasStatements(db, candidateId, publication, incomingSlug, decidedAt),
         ]);
+        counts.published += 1;
         continue;
       }
       if (decision.action === "reject") {
+        const fingerprint = await candidateFingerprint(item);
+        const metadata = JSON.stringify({ action: decision.action, rule: decision.rule, fingerprint });
         await db.batch([
-        db.prepare(`
-          UPDATE content_candidates SET queue_status = 'rejected', reviewed_at = ?, item_status = 'unpublished'
-          WHERE id = ? AND queue_status != 'rejected'
-        `).bind(decidedAt, item.id),
-        db.prepare("DELETE FROM published_content WHERE candidate_id = ?").bind(item.id),
-        db.prepare(`
-          INSERT INTO candidate_decisions (
-            candidate_id, decision, note, reviewer, decided_at, method, provider,
-            model, policy_version, confidence, evidence_json, metadata_json
-          )
-          SELECT ?, 'rejected', ?, 'editor-in-chief', ?, 'automatic', ?, ?, ?, ?, ?, ?
-          WHERE NOT EXISTS (
-            SELECT 1 FROM candidate_decisions
-            WHERE candidate_id = ? AND decision = 'rejected' AND method = 'automatic'
-              AND policy_version = ? AND metadata_json = ?
-          )
-        `).bind(
-          item.id,
-          `${decision.rule}: ${decision.reasons.join("; ")}`.slice(0, 1000),
-          decidedAt,
-          provider,
-          model,
-          EDITOR_POLICY_VERSION,
-          decision.confidence,
-          JSON.stringify(enrichment?.evidenceSpans ?? []),
-          JSON.stringify({ action: decision.action, rule: decision.rule }),
-          item.id,
-          EDITOR_POLICY_VERSION,
-          JSON.stringify({ action: decision.action, rule: decision.rule }),
-        ),
+          db.prepare(`
+            UPDATE content_candidates SET queue_status = 'rejected', reviewed_at = ?, item_status = 'unpublished'
+            WHERE id = ? AND queue_status != 'rejected'
+          `).bind(decidedAt, candidateId),
+          db.prepare("DELETE FROM published_content WHERE candidate_id = ?").bind(candidateId),
+          db.prepare(`
+            INSERT INTO candidate_decisions (
+              candidate_id, decision, note, reviewer, decided_at, method, provider,
+              model, policy_version, confidence, evidence_json, metadata_json
+            )
+            SELECT ?, 'rejected', ?, 'editor-in-chief', ?, 'automatic', ?, ?, ?, ?, ?, ?
+            WHERE NOT EXISTS (
+              SELECT 1 FROM candidate_decisions
+              WHERE candidate_id = ? AND decision = 'rejected' AND method = 'automatic'
+                AND policy_version = ? AND metadata_json = ?
+            )
+          `).bind(
+            candidateId,
+            `${decision.rule}: ${decision.reasons.join("; ")}`.slice(0, 1000),
+            decidedAt,
+            provider,
+            model,
+            EDITOR_POLICY_VERSION,
+            decision.confidence,
+            JSON.stringify(enrichment?.evidenceSpans ?? []),
+            metadata,
+            candidateId,
+            EDITOR_POLICY_VERSION,
+            metadata,
+          ),
         ]);
+        counts.rejected += 1;
+        continue;
       }
+      counts.review += 1;
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown D1 error";
-      throw new Error(
-        `Editorial persistence failed for ${item.id} (${decision.action}/${decision.rule}): ${message}`,
-        { cause: error },
-      );
+      counts.quarantined += 1;
+      await quarantineIdentity(db, {
+        candidateId,
+        sourceIdentity: sourceIdentityKey(item),
+        reason: `editorial ${decision.action}/${decision.rule}: ${error instanceof Error ? error.message : "Unknown D1 error"}`,
+        content: decision.content,
+      });
     }
   }
   return counts;
 }
 
-export async function readPublishedContent(db: D1DatabaseLike, limit = 200): Promise<ContentItem[]> {
-  const safeLimit = Math.max(1, Math.min(500, Math.trunc(limit)));
-  const rows = await db.prepare(
-    "SELECT content_json FROM published_content ORDER BY updated_at DESC LIMIT ?",
-  ).bind(safeLimit).all<{ content_json: string }>();
+async function readPagedRows<T>(
+  db: D1DatabaseLike,
+  sql: string,
+  pageSize = PUBLIC_READ_PAGE_SIZE,
+): Promise<T[]> {
+  const out: T[] = [];
+  for (let page = 0; page < PUBLIC_READ_MAX_PAGES; page += 1) {
+    const rows = await db.prepare(sql).bind(pageSize, page * pageSize).all<T>();
+    const batch = rows.results ?? [];
+    if (!batch.length) break;
+    out.push(...batch);
+    if (batch.length < pageSize) break;
+  }
+  if (out.length === PUBLIC_READ_PAGE_SIZE * PUBLIC_READ_MAX_PAGES) {
+    console.error("published-content-page-cap-reached", JSON.stringify({ pages: PUBLIC_READ_MAX_PAGES }));
+  }
+  return out;
+}
+
+/** Complete published overlay. Pages the updated_at index instead of silently truncating at 100/200. */
+export async function readPublishedContent(db: D1DatabaseLike): Promise<ContentItem[]> {
+  const rows = await readPagedRows<{ content_json: string }>(
+    db,
+    "SELECT content_json FROM published_content ORDER BY updated_at DESC, candidate_id DESC LIMIT ? OFFSET ?",
+  );
   const out: ContentItem[] = [];
-  for (const row of rows.results ?? []) {
+  for (const row of rows) {
     try {
       const parsed = ContentItemSchema.safeParse(JSON.parse(row.content_json));
       if (parsed.success && parsed.data.status === "published" && parsed.data.source.url) out.push(parsed.data);
@@ -604,18 +911,19 @@ export async function readPublishedContent(db: D1DatabaseLike, limit = 200): Pro
  * publication. Only current withdrawals without a live publication qualify;
  * a later re-publication automatically clears the public tombstone.
  */
-export async function readPublicationTombstones(db: D1DatabaseLike, limit = 500): Promise<string[]> {
-  const safeLimit = Math.max(1, Math.min(1000, Math.trunc(limit)));
-  const rows = await db.prepare(`
-    SELECT DISTINCT c.id
-    FROM content_candidates c
-    JOIN publication_reconciliations r ON r.candidate_id = c.id AND r.action = 'withdrawn'
-    LEFT JOIN published_content p ON p.candidate_id = c.id
-    WHERE c.item_status = 'unpublished' AND p.candidate_id IS NULL
-    ORDER BY r.reconciled_at DESC
-    LIMIT ?
-  `).bind(safeLimit).all<{ id: string }>();
-  return (rows.results ?? []).map((row) => row.id);
+export async function readPublicationTombstones(db: D1DatabaseLike): Promise<string[]> {
+  const rows = await readPagedRows<{ id: string }>(
+    db,
+    `SELECT c.id
+     FROM content_candidates c
+     JOIN publication_reconciliations r ON r.candidate_id = c.id AND r.action = 'withdrawn'
+     LEFT JOIN published_content p ON p.candidate_id = c.id
+     WHERE c.item_status = 'unpublished' AND p.candidate_id IS NULL
+     GROUP BY c.id
+     ORDER BY MAX(r.reconciled_at) DESC, c.id DESC
+     LIMIT ? OFFSET ?`,
+  );
+  return rows.map((row) => row.id);
 }
 
 export async function findPublishedContent(
@@ -637,4 +945,29 @@ export async function findPublishedContent(
   } catch {
     return undefined;
   }
+}
+
+/**
+ * Ops hook: D1-only previous slugs 301 here after static publishedSlugRedirects.
+ * Apply migration 0007. Do not serve the alias as 200.
+ */
+export async function findPublishedSlugAlias(
+  db: D1DatabaseLike,
+  section: string,
+  slug: string,
+): Promise<{ kind: string; slug: string } | undefined> {
+  const row = await db.prepare(`
+    SELECT p.kind, p.slug
+    FROM content_slug_aliases a
+    JOIN published_content p ON p.id = a.content_id
+    WHERE a.alias_slug = ?
+      AND p.slug != a.alias_slug
+      AND (
+        (? = 'event' AND p.kind = 'event')
+        OR (? = 'voice' AND p.kind = 'voice')
+        OR (? = 'news' AND p.kind IN ('news', 'policy', 'ai', 'interview'))
+      )
+    LIMIT 1
+  `).bind(slug, section, section, section).first<{ kind: string; slug: string }>();
+  return row?.slug ? row : undefined;
 }
