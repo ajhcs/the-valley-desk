@@ -831,12 +831,9 @@ export async function persistEditorialDecisions(
       if (decision.rule === "event-cancelled") {
         const existing = await db.prepare(
           "SELECT content_json FROM published_content WHERE candidate_id = ? LIMIT 1",
-        ).bind(item.id).first<{ content_json: string }>();
+        ).bind(candidateId).first<{ content_json: string }>();
         if (!existing) {
-          if (countKey !== "review") {
-            counts[countKey] -= 1;
-            counts.review += 1;
-          }
+          counts.review += 1;
           continue;
         }
         let publication = decision.content;
@@ -865,21 +862,18 @@ export async function persistEditorialDecisions(
             featured: false,
           });
         }
-        if (countKey !== "published") {
-          counts[countKey] -= 1;
-          counts.published += 1;
-        }
+        counts.published += 1;
         await db.batch([
           db.prepare(`
             UPDATE content_candidates
             SET item_status = 'published', queue_status = 'approved', content_json = ?, reviewed_at = ?
             WHERE id = ?
-          `).bind(JSON.stringify(publication), decidedAt, item.id),
+          `).bind(JSON.stringify(publication), decidedAt, candidateId),
           db.prepare(`
             UPDATE published_content
             SET content_json = ?, updated_at = ?
             WHERE candidate_id = ?
-          `).bind(JSON.stringify(publication), decidedAt, item.id),
+          `).bind(JSON.stringify(publication), decidedAt, candidateId),
         ]);
         continue;
       }
