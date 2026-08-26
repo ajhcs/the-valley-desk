@@ -64,6 +64,7 @@ export function EntityDisclosure({
   const [alignRight, setAlignRight] = useState(false);
   const cardId = useId();
   const root = useRef<HTMLSpanElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const closeTimer = useRef(0);
   const facts = displayFacts(hit.facts).slice(0, 1);
   const primary = facts[0];
@@ -75,18 +76,31 @@ export function EntityDisclosure({
     setAlignRight(Boolean(bounds && bounds.left + 380 > window.innerWidth));
     setOpen(true);
   };
+  const hide = () => {
+    window.clearTimeout(closeTimer.current);
+    setOpen(false);
+  };
   const hideSoon = () => {
     window.clearTimeout(closeTimer.current);
     closeTimer.current = window.setTimeout(() => setOpen(false), 140);
+  };
+  const toggle = () => {
+    window.clearTimeout(closeTimer.current);
+    if (open) hide();
+    else show();
   };
 
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      hide();
+      triggerRef.current?.focus();
     };
     const onPointer = (event: PointerEvent) => {
-      if (!root.current?.contains(event.target as Node)) setOpen(false);
+      if (!root.current?.contains(event.target as Node)) hide();
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onPointer);
@@ -114,22 +128,30 @@ export function EntityDisclosure({
         <button
           type="button"
           className="OrgTick is-help"
+          ref={triggerRef}
           aria-expanded={open}
           aria-controls={cardId}
+          aria-haspopup="dialog"
           aria-label={`${hit.entityName} details`}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
-            setOpen(true);
+            toggle();
           }}
         />
       ) : (
         <button
           type="button"
           className="EntityDisclosure-trigger"
+          ref={triggerRef}
           aria-expanded={open}
           aria-controls={cardId}
-          onClick={() => setOpen(true)}
+          aria-haspopup="dialog"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            toggle();
+          }}
         >
           {hit.entityName}
         </button>

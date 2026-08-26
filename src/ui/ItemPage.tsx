@@ -1,13 +1,16 @@
-import { Navigate } from "@tanstack/react-router";
+import { Link, Navigate } from "@tanstack/react-router";
 import { byPreviousSlug, bySlug } from "../content/queries";
-import { itemCitations, type ContentItem, type EventItem } from "../content/schema";
+import { itemCitations, type ContentItem, type EventItem, type VoiceItem } from "../content/schema";
 import { catalog } from "../lib/catalog";
+import { entities } from "../lib/entities";
 import { itemByline } from "../lib/byline";
 import { eventLifecycle, formatEventWhen, googleCalendarUrl } from "../lib/calendar";
 import { canonicalPath } from "../lib/canonical";
-import { eventWhyCopy } from "../lib/eventCopy";
-import { eventPlace, formatDate } from "../lib/format";
-import { chipKind, kindChip } from "../lib/kind";
+import { eventHostLine, eventLocationLine, eventWhyCopy } from "../lib/eventCopy";
+import { eventFormatLabel, formatDate, itemFreshness } from "../lib/format";
+import { chipKind, itemHref, kindChip } from "../lib/kind";
+import { relatedItems } from "../lib/related";
+import { voiceRegisterLabel } from "../lib/voiceCopy";
 import { ItemJsonLd } from "./ItemJsonLd";
 import { ItemEntityLinks, ItemFactScope, itemAllowedOrgIds, itemFactHits } from "./ItemFacts";
 import { RegisterLink } from "./RegisterLink";
@@ -47,6 +50,9 @@ export function ItemPage({
   const allowed = itemAllowedOrgIds(item);
   const why = event ? eventWhyCopy(event) : undefined;
   const context = item.contextSentence?.trim();
+  const freshness = itemFreshness(item);
+  const related = relatedItems(item, catalog, entities);
+  const voice = item.kind === "voice" ? (item as VoiceItem) : undefined;
   const bylineCovered = byline && hits.some((hit) => {
     const line = byline.toLocaleLowerCase("en-US");
     return line.includes(hit.entityName.toLocaleLowerCase("en-US"))
@@ -57,14 +63,21 @@ export function ItemPage({
       <article className="ItemPage">
         <ItemJsonLd item={item} />
         <GroupChip kind={chipKind(item)}>{kindChip(item)}</GroupChip>
+        {voice ? (
+          <p className="ItemPage-register">{voiceRegisterLabel(voice)}</p>
+        ) : null}
         <div className="ItemPage-lead">
           <h1 className="Lead-headline">
             {item.title}
           </h1>
-          {when || byline || hits.length ? (
+          {when || byline || hits.length || freshness.clock || freshness.updated ? (
             <div className="ItemPage-meta mt-2 text-xs" style={{ color: "var(--mute)" }}>
               {when ? <time dateTime={item.publishedAt}>{when}</time> : null}
-              {when && ((byline && !bylineCovered) || hits.length) ? <span aria-hidden="true">·</span> : null}
+              {when && (freshness.updated || freshness.clock || (byline && !bylineCovered) || hits.length) ? <span aria-hidden="true">·</span> : null}
+              {freshness.updated ? <time dateTime={freshness.updated}>Updated {formatDate(freshness.updated)}</time> : null}
+              {freshness.updated && (freshness.clock || (byline && !bylineCovered) || hits.length) ? <span aria-hidden="true">·</span> : null}
+              {freshness.clock ? <time dateTime={freshness.clock}>Go-live {formatDate(freshness.clock)}</time> : null}
+              {freshness.clock && ((byline && !bylineCovered) || hits.length) ? <span aria-hidden="true">·</span> : null}
               {byline && !bylineCovered ? <span>{byline}</span> : null}
               {byline && !bylineCovered && hits.length ? <span aria-hidden="true">·</span> : null}
               <ItemEntityLinks hits={hits} />
@@ -86,10 +99,14 @@ export function ItemPage({
             {lifecycle === "cancelled" ? <p><strong>Status</strong> Cancelled</p> : null}
             {lifecycle === "completed" ? <p><strong>Status</strong> Completed</p> : null}
             <p><strong>When</strong> <time dateTime={event.startsAt}>{formatEventWhen(event)}</time></p>
-            {eventPlace(event) ? <p><strong>Where</strong> {eventPlace(event)}</p> : null}
-            <p><strong>Host</strong> {event.hostOrg}</p>
+            <p><strong>Where</strong> {eventLocationLine(event)}</p>
+            <p><strong>Host</strong> {eventHostLine(event)}</p>
+            {eventFormatLabel(event) ? <p><strong>Format</strong> {eventFormatLabel(event)}</p> : null}
             <p><strong>Why it’s worth your time</strong> {why ?? "Details not yet published."}</p>
             {event.whoYoullMeet?.length ? <p><strong>Who you’ll meet</strong> {event.whoYoullMeet.join(", ")}</p> : null}
+            {event.healthSystemRelevance && event.healthSystemRelevance !== why ? (
+              <p><strong>Why it belongs here</strong> {event.healthSystemRelevance}</p>
+            ) : null}
             <div className="EventDetail-actions">
               {event.registrationUrl && lifecycle === "upcoming" ? <RegisterLink item={item} /> : null}
               {lifecycle !== "cancelled" ? (
@@ -107,9 +124,21 @@ export function ItemPage({
             <ul className="text-sm">
               {cites.map((cite) => (
                 <li key={cite.url}>
-                  <a href={cite.url} rel="noreferrer" style={{ color: "var(--ink)" }}>
+                  <a href={cite.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--ink)" }}>
                     {cite.name}
                   </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+        {related.length ? (
+          <section className="mt-6 ItemPage-related">
+            <h2 className="text-sm">Related on this desk</h2>
+            <ul className="text-sm">
+              {related.map((row) => (
+                <li key={row.id}>
+                  <Link to={itemHref(row)}>{row.title}</Link>
                 </li>
               ))}
             </ul>

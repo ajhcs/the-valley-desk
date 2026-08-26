@@ -27,7 +27,7 @@ export function LabDetail({
       <p className="LabDetail-kicker">{topicLabel(item)}</p>
       <h3 id={labelledBy} className="LabDetail-title">
         <Link to={itemHref(item)}>
-          <MentionText text={item.title} />
+          <MentionText text={item.title} item={item} />
         </Link>
       </h3>
       {event ? (
@@ -41,7 +41,7 @@ export function LabDetail({
       )}
       {blurb ? (
         <p className="LabDetail-body">
-          <MentionText text={blurb} />
+          <MentionText text={blurb} item={item} />
         </p>
       ) : null}
       <div className="LabDetail-actions">

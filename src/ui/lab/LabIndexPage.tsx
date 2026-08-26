@@ -13,7 +13,7 @@ export function LabIndexPage() {
   return (
     <LabShell title="Four ways to read the same desk." kicker="Lab">
       <p className="LabLead">
-        Live catalog only. {desk.length} published rows, {systems.length} health systems, {horizon.length} upcoming clocks and events, {events.length} future events.
+        The same published desk, four ways to read it. {desk.length} published rows, {systems.length} health systems, {horizon.length} upcoming clocks and events, {events.length} future events.
       </p>
       <ul className="LabIndex">
         <li>

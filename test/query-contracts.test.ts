@@ -48,7 +48,7 @@ import { eventRegisterUrl } from "../src/lib/register.ts";
 import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
 import { canonicalUrl, canonicalPath, DEFAULT_PUBLIC_ORIGIN, publicOrigin } from "../src/lib/canonical.ts";
-import { eventPlace, formatChipLabel, formatDate, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
+import { eventPlace, formatChipLabel, formatDate, formatLeadDate, itemFreshness, listDek, listSourceLine } from "../src/lib/format.ts";
 import { KIND_CHIP, chipKind, kindChip } from "../src/lib/kind.ts";
 import { primaryDisplayLabel, primaryEventLabel, primaryNewsLabel, primaryVoiceLabel } from "../src/lib/taxonomy.ts";
 import { Entity } from "../src/content/entity.ts";
@@ -70,6 +70,9 @@ import { itemByline, newsByline } from "../src/lib/byline.ts";
 import { navSection } from "../src/lib/nav.ts";
 import { eventIsUpcoming, eventLifecycle, eventSchedule, formatEventWhen, googleCalendarDates, googleCalendarUrl } from "../src/lib/calendar.ts";
 import { eventWhyCopy, eventWhyLine, isBoilerplateEventCopy } from "../src/lib/eventCopy.ts";
+import { relatedItems } from "../src/lib/related.ts";
+import { isInstitutionalVoice, voiceRegisterLabel } from "../src/lib/voiceCopy.ts";
+import { sitemapLastmod, sitemapEntriesForFeed } from "../src/content/sitemap.ts";
 import { hasDefensiveEditorialAside, hasInternalProcessLanguage, professionalizeHeadline } from "../src/lib/editorialCopy.ts";
 import { matchingProductUses } from "../src/ingest/product-watch.ts";
 import {
@@ -2099,7 +2102,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.equal(navSection("/events/njdvhimss-fall-conference-october-13th-15th"), "events");
   assert.equal(navSection("/"), null);
 
-  assert.equal(itemJsonLd(honor), undefined);
+  assert.equal(itemJsonLd(honor)?.["@type"], "SocialMediaPosting");
   assert.notEqual(itemJsonLd(honor)?.["@type"], "NewsArticle");
   assert.equal(itemJsonLd(chestnut)?.["@type"], "NewsArticle");
 
@@ -2159,7 +2162,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(!voiceChip.includes("var(--mute)"));
   assert.ok(css.includes(".ItemPage"));
   assert.ok(css.includes(".KindList-title"));
-  assert.ok(head.includes('desc = "Voices"'));
+  assert.ok(head.includes("Named local health-tech voices and institutional notes"));
   assert.ok(head.includes('ogType'));
   assert.ok(!head.includes('item && item.kind !== "event"'));
   assert.ok(crawler.includes('desc = "Voices"'));
@@ -2488,7 +2491,8 @@ test("Sloan SIGN: Inspira Johnson day-6 voice; Honor Roll stays voice; pay facts
     voice.impactSentence,
     "Inspira was on day 6 of an Epic live when its CIIO said so in that comment.",
   );
-  assert.equal(voice.body, voice.dek);
+  assert.ok(voice.body.startsWith(voice.dek));
+  assert.notEqual(voice.body, voice.dek);
   assert.ok(/CIIO/.test(voice.body));
   assert.ok(!/\bCIO\b/.test(voice.body));
   assert.ok(!/Kevin/.test(`${voice.title} ${voice.body} ${voice.dek}`));
@@ -2498,7 +2502,7 @@ test("Sloan SIGN: Inspira Johnson day-6 voice; Honor Roll stays voice; pay facts
   assert.equal(honor.kind, "voice");
   assert.equal(honor.status, "published");
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
-  assert.equal(itemJsonLd(voice), undefined);
+  assert.equal(itemJsonLd(voice)?.["@type"], "SocialMediaPosting");
   assert.notEqual(itemJsonLd(voice)?.["@type"], "NewsArticle");
   assert.ok(latestVoices(catalog, Number.MAX_SAFE_INTEGER).some((i) => i.slug === voice.slug));
   assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.slug === voice.slug));
@@ -2866,7 +2870,7 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
     assert.equal(item.kind === "voice" ? item.originalUrl : "", row.cite);
     assert.ok(item.impactSentence?.trim());
     assert.ok(!/\n/.test(item.impactSentence ?? ""));
-    assert.equal(itemJsonLd(item), undefined);
+    assert.equal(itemJsonLd(item)?.["@type"], "SocialMediaPosting");
     assert.notEqual(itemJsonLd(item)?.["@type"], "NewsArticle");
     assert.equal(canonicalPath(item), `/voices/${row.slug}`);
     assert.notEqual(canonicalPath(item), `/news/${row.slug}`);
@@ -5341,7 +5345,7 @@ test("new HSX, Penn, and ChristianaCare voices are cited, labeled, and off the n
     assert.ok(hasLiveSeedOrg(item.orgs, seedIds), slug);
     assert.ok(voices.some((row) => row.slug === slug), slug);
     assert.ok(!news.some((row) => row.slug === slug), slug);
-    assert.equal(itemJsonLd(item), undefined);
+    assert.equal(itemJsonLd(item)?.["@type"], "SocialMediaPosting");
     assert.equal(canonicalPath(item), `/voices/${slug}`);
     assert.equal(hasDefensiveEditorialAside(`${item.title} ${item.dek} ${item.body} ${item.impactSentence}`), false, slug);
   }
@@ -5642,4 +5646,100 @@ test("human approval uses the same publication safety checks and audited overrid
   const decision = JSON.parse(String(database.prepare("SELECT decision_json FROM published_content WHERE candidate_id = ?").get(item.id).decision_json));
   assert.deepEqual(decision.overrides.codes, ["news-single-source", "news-context"]);
   database.close();
+});
+
+test("catalog remediation, related desk rows, entity popover, lab polish, and sitemap lastmod", () => {
+  const cc = catalog.find((item) => item.slug === "christianacare-epic-go-live")!;
+  const penn = catalog.find((item) => item.slug === "penn-in-house-ai-scribe")!;
+  const dragon = catalog.find((item) => item.slug === "temple-dragon-copilot-400")!;
+  const johnson = catalog.find((item) => item.slug === "inspira-johnson-epic-day-6-2026-07-30")!;
+  const mlhOfficial = catalog.find((item) => item.slug === "mlh-cloud-analytics-2026-08-17")!;
+  const schoenbaum = catalog.find((item) => item.slug === "penn-schoenbaum-ambient-ai-2026-08-18")!;
+  const nucleus = catalog.find((item): item is EventItem => item.slug === "science-center-nucleus-awards-2026-09-29")!;
+  const entrepreneurs = catalog.find((item): item is EventItem => item.slug === "bionj-entrepreneurs-exchange-2026-09-23")!;
+  const manufacturing = catalog.find((item): item is EventItem => item.slug === "bionj-manufacturing-summit-2026-09-29")!;
+
+  assert.match(cc.contextSentence ?? "", /2024 decision/);
+  assert.match(penn.contextSentence ?? "", /JAMA Network Open/);
+  assert.match(dragon.contextSentence ?? "", /Temple University Hospital/);
+  assert.ok(!/honor.?roll/i.test(dragon.contextSentence ?? ""));
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.ok(itemFreshness(cc).clock);
+
+  assert.ok(johnson.body.startsWith(johnson.dek));
+  assert.notEqual(johnson.body, johnson.dek);
+  assert.ok(!/["“]/.test(johnson.body));
+  assert.deepEqual(
+    catalog.find((item) => item.slug === "jefferson-cacchione-board-2026-07-30")?.topics,
+    ["leadership"],
+  );
+  assert.equal(isInstitutionalVoice(mlhOfficial as Extract<typeof mlhOfficial, { kind: "voice" }>), true);
+  assert.equal(voiceRegisterLabel(mlhOfficial as Extract<typeof mlhOfficial, { kind: "voice" }>), "Institutional note");
+  assert.equal(isInstitutionalVoice(schoenbaum as Extract<typeof schoenbaum, { kind: "voice" }>), false);
+  assert.equal(isInstitutionalVoice(johnson as Extract<typeof johnson, { kind: "voice" }>), false);
+
+  assert.equal(entrepreneurs.format, "virtual");
+  assert.equal(manufacturing.format, "in-person");
+  assert.ok(manufacturing.whyAttend?.includes("$150/$275"));
+  assert.equal(eventPlace(nucleus), "Philadelphia");
+  assert.equal(eventWhyLine(nucleus), "Details not yet published.");
+  assert.equal(nucleus.format, undefined);
+  for (const item of catalog.filter((row) => row.kind === "event" && row.status === "published")) {
+    for (const value of [item.title, item.dek, item.body, item.whyAttend, item.healthSystemRelevance]) {
+      assert.equal(hasInternalProcessLanguage(value), false, item.slug);
+    }
+  }
+
+  const related = relatedItems(dragon, catalog, entityRows);
+  assert.ok(related.length > 0);
+  assert.ok(related.every((row) => row.id !== dragon.id && row.status === "published"));
+  assert.ok(related.some((row) => row.orgs.includes("org-temple") || row.topics.some((topic) => dragon.topics.includes(topic))));
+  assert.equal(dragon.kind === "news" ? dragon.relatedVoiceIds.join() : "x", "");
+
+  const pennHits = itemSignedFacts(penn, entityRows);
+  assert.equal(pennHits.some((hit) => hit.orgId === "org-temple"), false);
+  const mention = readFileSync(join(root, "src/ui/MentionText.tsx"), "utf8");
+  const factsUi = readFileSync(join(root, "src/ui/ItemFacts.tsx"), "utf8");
+  const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  const head = readFileSync(join(root, "src/ui/DocumentHead.tsx"), "utf8");
+  const horizon = readFileSync(join(root, "src/ui/lab/LabHorizonPage.tsx"), "utf8");
+  const calendar = readFileSync(join(root, "src/ui/lab/LabCalendarPage.tsx"), "utf8");
+  const chrono = readFileSync(join(root, "src/ui/lab/LabChronoPage.tsx"), "utf8");
+  const systems = readFileSync(join(root, "src/ui/lab/LabSystemsPage.tsx"), "utf8");
+  const labCss = readFileSync(join(root, "src/ui/lab/lab.css"), "utf8");
+  assert.ok(mention.includes("itemOrgGraph"));
+  assert.ok(factsUi.includes("aria-haspopup"));
+  assert.ok(factsUi.includes("toggle"));
+  assert.ok(factsUi.includes("triggerRef.current?.focus()"));
+  assert.ok(itemPage.includes("relatedItems"));
+  assert.ok(itemPage.includes("Related on this desk"));
+  assert.ok(itemPage.includes("itemFreshness"));
+  assert.ok(itemPage.includes("voiceRegisterLabel"));
+  assert.ok(!itemPage.includes("/voices"));
+  assert.ok(head.includes("og:site_name"));
+  assert.ok(head.includes("article:published_time"));
+  assert.ok(horizon.includes("inWindow[inWindow.length - 1]"));
+  assert.ok(horizon.includes("later[later.length - 1]"));
+  assert.ok(!horizon.includes("<code>clockAt</code>"));
+  assert.ok(calendar.includes("nextInMonth"));
+  assert.ok(calendar.includes("LabCalLegend"));
+  assert.ok(calendar.includes("LabCal-count"));
+  assert.ok(calendar.includes("viewingToday"));
+  assert.ok(chrono.includes("isBriefingUnread"));
+  assert.ok(chrono.includes("Next check-in"));
+  assert.ok(!chrono.includes("Worker"));
+  assert.ok(systems.includes("LabChevron"));
+  assert.ok(labCss.includes(".LabCal-count"));
+  assert.ok(labCss.includes("@media (prefers-reduced-motion: reduce)"));
+
+  assert.equal(sitemapLastmod("2026-08-22T20:14:00.000Z"), "2026-08-22");
+  const sitemap = readFileSync(join(root, "public/sitemap.xml"), "utf8");
+  assert.ok(sitemap.includes("<lastmod>"));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/</loc>`));
+  const entries = sitemapEntriesForFeed(catalog.filter((item) => item.status === "published"), "2026-08-26T12:00:00.000Z");
+  assert.ok(entries.every((entry) => entry.lastmod));
+  assert.equal(itemJsonLd(johnson)?.["@type"], "SocialMediaPosting");
+  assert.equal(itemJsonLd(penn)?.articleSection, "AI");
+  assert.equal(itemJsonLd(manufacturing)?.eventAttendanceMode, "https://schema.org/OfflineEventAttendanceMode");
+  assert.equal(itemJsonLd(entrepreneurs)?.eventAttendanceMode, "https://schema.org/OnlineEventAttendanceMode");
 });

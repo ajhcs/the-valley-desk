@@ -60,7 +60,11 @@ export function LeadDekInsert({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!line) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      const tick = tickRef.current;
+      close();
+      tick?.focus();
     };
     const onPointer = (event: MouseEvent) => {
       const target = event.target as Node | null;

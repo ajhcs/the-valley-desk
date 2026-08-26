@@ -35,11 +35,11 @@ export function Desk({
             const queued = item.status === "review";
             const title = queued ? (
               <span>
-                <MentionText text={item.title} />
+                <MentionText text={item.title} item={item} />
               </span>
             ) : (
               <Link to={itemHref(item)}>
-                <MentionText text={item.title} />
+                <MentionText text={item.title} item={item} />
               </Link>
             );
             return (
@@ -53,7 +53,7 @@ export function Desk({
                 </div>
                 {item.impactSentence ? (
                   <p className="DeskRow-impact">
-                    <MentionText text={item.impactSentence} />
+                    <MentionText text={item.impactSentence} item={item} />
                   </p>
                 ) : null}
               </li>

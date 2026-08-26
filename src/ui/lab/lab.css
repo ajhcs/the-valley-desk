@@ -463,6 +463,76 @@
   color: var(--mute);
 }
 
+.LabAxisCue.is-visible {
+  display: block;
+}
+
+.LabCalLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mute);
+}
+
+.LabCalLegend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--event);
+  vertical-align: middle;
+}
+
+.LabCalLegend i.is-clock {
+  background: var(--admiral);
+}
+
+.LabCal-count {
+  display: none;
+  min-width: 16px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--admiral);
+}
+
+.LabUnread {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--admiral);
+}
+
+.LabRow.is-unread .LabRow-time {
+  font-weight: 700;
+  color: var(--admiral);
+}
+
+.LabSystem-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.LabChevron {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  transform: rotate(45deg);
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+
+.LabChevron.is-open {
+  transform: rotate(-135deg);
+}
+
 .LabAxis {
   position: relative;
   display: flex;
@@ -844,6 +914,14 @@
     display: none;
   }
 
+  .LabCal-count {
+    display: inline-block;
+  }
+
+  .LabAxisCue {
+    display: block;
+  }
+
   .LabHead h1 {
     font-size: 28px;
   }
@@ -889,5 +967,10 @@
   .LabCal-day.is-on .LabCal-num {
     transition: none;
     transform: none;
+  }
+
+  .LabChevron,
+  .LabChevron.is-open {
+    transition: none;
   }
 }

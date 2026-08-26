@@ -399,3 +399,34 @@ export function daysUntil(iso: string, now = new Date()) {
   const b = etWallToUtc(target.year, target.month, target.day, 0).getTime();
   return Math.round((b - a) / 86_400_000);
 }
+
+export function pointsInMonth(points: readonly HorizonPoint[], year: number, month: number) {
+  const prefix = `${year}-${pad2(month)}-`;
+  return points.filter((point) => eachEtDay(point.at, point.end).some((day) => day.startsWith(prefix)));
+}
+
+export function nextInMonth(points: readonly HorizonPoint[], year: number, month: number, now = new Date()) {
+  const iso = now.toISOString();
+  return pointsInMonth(points, year, month).find((point) => (point.end ?? point.at) >= iso);
+}
+
+export const BRIEFING_LAST_READ_KEY = "tvd.lab.briefing.lastRead";
+
+export function readBriefingLastRead(storage: Pick<Storage, "getItem"> | null | undefined) {
+  const raw = storage?.getItem(BRIEFING_LAST_READ_KEY);
+  if (!raw) return undefined;
+  return Number.isFinite(Date.parse(raw)) ? raw : undefined;
+}
+
+export function writeBriefingLastRead(storage: Pick<Storage, "setItem"> | null | undefined, iso: string) {
+  try {
+    storage?.setItem(BRIEFING_LAST_READ_KEY, iso);
+  } catch {
+    // Private mode or quota — last-read is optional.
+  }
+}
+
+export function isBriefingUnread(item: ContentItem, lastReadIso: string | undefined) {
+  if (!lastReadIso) return true;
+  return deskInstant(item) > lastReadIso;
+}

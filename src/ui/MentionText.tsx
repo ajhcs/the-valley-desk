@@ -1,6 +1,6 @@
 import { useRef, type ReactNode, type SyntheticEvent } from "react";
 import { entities } from "../lib/entities";
-import { displayFacts, factBearingEntities, findFirstMentions, type MentionHit } from "../lib/entityFacts";
+import { displayFacts, factBearingEntities, findFirstMentions, itemOrgGraph, type MentionHit } from "../lib/entityFacts";
 import { useDekInsert } from "./DekInsert";
 import { useMentionScope } from "./MentionScope";
 import { EntityDisclosure, useAllowedOrgIds, usePrintedFactIds } from "./ItemFacts";
@@ -68,10 +68,11 @@ function OrgTick({ hit }: { hit: MentionHit }) {
 }
 
 /** First mention of a fact-bearing org/person. Sky tick only; no chip. */
-export function MentionText({ text }: { text: string }) {
+export function MentionText({ text, item }: { text: string; item?: { orgs?: string[] } }) {
   const scope = useMentionScope();
-  const allowed = useAllowedOrgIds();
-  const pool = allowed ? FACT_BEARING.filter((entity) => allowed.has(entity.id)) : FACT_BEARING;
+  const allowedCtx = useAllowedOrgIds();
+  const allowed = item ? itemOrgGraph(item, entities) : allowedCtx;
+  const pool = allowed ? FACT_BEARING.filter((entity) => allowed.has(entity.id)) : [];
   const hits = findFirstMentions(text, pool, scope?.claimed ?? new Set());
   const kept = hits.filter((hit) => (scope ? scope.claim(hit.orgId) : true));
   if (!kept.length) return text;

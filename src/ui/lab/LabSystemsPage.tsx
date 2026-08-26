@@ -63,7 +63,7 @@ export function LabSystemsPage() {
               </p>
               {card.latest ? (
                 <Link to={itemHref(card.latest)}>
-                  <MentionText text={card.latest.title} />
+                  <MentionText text={card.latest.title} item={card.latest} />
                 </Link>
               ) : null}
             </li>
@@ -96,7 +96,10 @@ export function LabSystemsPage() {
                   onKeyDown={(event) => onGridKey(event, index)}
                   onClick={() => setOpenId(open ? undefined : card.entity.id)}
                 >
-                  <span className="LabSystem-name">{card.entity.name}</span>
+                  <span className="LabSystem-name">
+                    {card.entity.name}
+                    <span className={open ? "LabChevron is-open" : "LabChevron"} aria-hidden="true" />
+                  </span>
                   <span className="LabSystem-meta">
                     {card.region} · {card.hospitals} hospitals in box
                     {card.items.length ? ` · ${card.items.length} published` : " · no published movement"}
@@ -115,7 +118,7 @@ export function LabSystemsPage() {
                   <p className="LabSystem-latest">
                     <span className="LabTag">{topicLabel(card.latest)}</span>
                     <Link to={itemHref(card.latest)}>
-                      <MentionText text={card.latest.title} />
+                      <MentionText text={card.latest.title} item={card.latest} />
                     </Link>
                     <time dateTime={card.latest.publishedAt}>{formatDate(card.latest.publishedAt)}</time>
                   </p>
@@ -126,7 +129,7 @@ export function LabSystemsPage() {
                     {card.items.filter((item) => item.id !== card.latest?.id).slice(0, 7).map((item) => (
                       <li key={item.id}>
                         <Link to={itemHref(item)}>
-                          <MentionText text={item.title} />
+                          <MentionText text={item.title} item={item} />
                         </Link>
                         <span>{formatDate(item.publishedAt)}</span>
                       </li>

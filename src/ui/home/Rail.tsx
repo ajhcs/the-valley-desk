@@ -40,7 +40,7 @@ export function Rail({
                     <DateChip item={item} />
                   </div>
                   <Link to={itemHref(item)}>
-                    <MentionText text={item.title} />
+                    <MentionText text={item.title} item={item} />
                   </Link>
                   {registerHref ? <RegisterLink item={item} /> : null}
                 </>
@@ -55,7 +55,7 @@ export function Rail({
                     ) : null}
                   </div>
                   <Link to={itemHref(item)}>
-                    <MentionText text={item.title} />
+                    <MentionText text={item.title} item={item} />
                   </Link>
                 </>
               )}

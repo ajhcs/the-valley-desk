@@ -19,8 +19,8 @@ export function ProductWatch({ items }: { items: ContentItem[] }) {
               <GroupChip kind={chipKind(item)}>{kindChip(item)}</GroupChip>
               {item.publishedAt ? <time dateTime={item.publishedAt}>{formatDate(item.publishedAt)}</time> : null}
             </div>
-            <h3><Link to={itemHref(item)}><MentionText text={item.title} /></Link></h3>
-            {item.impactSentence ? <p><MentionText text={item.impactSentence} /></p> : null}
+            <h3><Link to={itemHref(item)}><MentionText text={item.title} item={item} /></Link></h3>
+            {item.impactSentence ? <p><MentionText text={item.impactSentence} item={item} /></p> : null}
           </li>
         ))}
       </ul>

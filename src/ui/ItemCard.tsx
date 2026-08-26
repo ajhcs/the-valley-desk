@@ -23,12 +23,12 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
       </p>
       <h3 className="text-lg leading-snug mt-1">
         <Link to={itemHref(item)} className="hover:underline" style={{ color: "var(--text)" }}>
-          <MentionText text={item.title} />
+          <MentionText text={item.title} item={item} />
         </Link>
       </h3>
       {blurb ? (
         <p className="text-sm mt-1 opacity-90">
-          <MentionText text={blurb} />
+          <MentionText text={blurb} item={item} />
         </p>
       ) : null}
       <p className="text-xs mt-2" style={{ color: accent }}>

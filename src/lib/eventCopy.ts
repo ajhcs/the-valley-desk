@@ -43,3 +43,11 @@ export function eventWhyCopy(item: EventItem) {
 export function eventWhyLine(item: EventItem) {
   return eventWhyCopy(item) ?? "Details not yet published.";
 }
+
+export function eventLocationLine(item: EventItem) {
+  return eventPlace(item) ?? "Location not yet published.";
+}
+
+export function eventHostLine(item: EventItem) {
+  return item.hostOrg.trim() || "Host not yet published.";
+}

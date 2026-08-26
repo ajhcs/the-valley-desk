@@ -1,6 +1,7 @@
 import type { ContentItem, EventItem } from "../content/schema";
 import { mergePublishedOverlay } from "../content/merge";
-import { canonicalPath as itemCanonicalPath, publicOrigin, publicUrl } from "../lib/canonical";
+import { canonicalPath as itemCanonicalPath, publicOrigin } from "../lib/canonical";
+import { sitemapEntriesForFeed, sitemapUrlset } from "../content/sitemap";
 import { eventWhyCopy } from "../lib/eventCopy";
 import { toFeed, type FeedDocument } from "./feed-contract";
 import type { D1DatabaseLike } from "./persistence";
@@ -64,10 +65,7 @@ export function feedXml(feed: FeedDocument, origin = publicOrigin()) {
 }
 
 export function sitemapXml(feed: FeedDocument, origin = publicOrigin()) {
-  const paths = ["/", "/news", "/events", "/voices", "/feed.json", "/feed.xml"];
-  const seen = new Set(paths);
-  for (const item of feed.items) seen.add(canonicalPath(item));
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...seen].map((path) => `  <url><loc>${esc(publicUrl(path, origin))}</loc></url>`).join("\n")}\n</urlset>\n`;
+  return sitemapUrlset(sitemapEntriesForFeed(feed.items, feed.generatedAt, origin));
 }
 
 export function runtimeItemsScript(

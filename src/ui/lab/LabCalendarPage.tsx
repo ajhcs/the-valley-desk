@@ -11,6 +11,7 @@ import {
   formatEtWeekday,
   horizonPoints,
   monthCells,
+  nextInMonth,
   pointsOnDay,
   shiftMonth,
 } from "./lab";
@@ -46,6 +47,8 @@ export function LabCalendarPage() {
   const cells = useMemo(() => monthCells(year, month), [year, month]);
   const dayPoints = pointsOnDay(points, selectedKey);
   const nextVisiblePoint = points.find((point) => point.at >= now.toISOString());
+  const nextMonthPoint = nextInMonth(points, year, month, now);
+  const viewingToday = year === today.year && month === today.month && selectedKey === todayKey;
   const selectedPoint = dayPoints.find((point) => point.id === openId) ?? dayPoints[0];
   const selectedParts = selectedKey.split("-").map(Number);
   const selectedDayLabel = formatEtWeekday(
@@ -147,19 +150,29 @@ export function LabCalendarPage() {
           <button type="button" className="LabFilters-btn" onClick={() => goMonth(1)}>
             Next month
           </button>
-          <button type="button" className="LabFilters-btn is-on" onClick={goToday}>
+          <button type="button" className={viewingToday ? "LabFilters-btn is-on" : "LabFilters-btn"} onClick={goToday}>
             Today
           </button>
         </div>
         <LabFilterGroup label="Calendar filters" value={filter} options={CAL_FILTERS} onChange={setFilter} />
       </div>
+      <p className="LabCalLegend" aria-label="Marker types">
+        <span><i className="is-clock" /> Cutover</span>
+        <span><i className="is-event" /> Event</span>
+      </p>
       {nextVisiblePoint ? (
         <section className="LabCalNext" aria-labelledby="lab-cal-next-title">
-          <p>Next on the desk</p>
+          <p>{nextMonthPoint && nextMonthPoint.id !== nextVisiblePoint.id ? "Next on the desk" : "Next"}</p>
           <button type="button" className="LabTextBtn" onClick={() => selectPoint(nextVisiblePoint)}>
             <strong id="lab-cal-next-title">{nextVisiblePoint.item.title}</strong>
             <span>{formatEtWeekday(nextVisiblePoint.at)} · {nextVisiblePoint.kind === "clock" ? "CUTOVER" : "EVENT"}</span>
           </button>
+          {nextMonthPoint && nextMonthPoint.id !== nextVisiblePoint.id ? (
+            <button type="button" className="LabTextBtn" onClick={() => selectPoint(nextMonthPoint)}>
+              <strong>Next this month</strong>
+              <span>{nextMonthPoint.item.title} · {nextMonthPoint.kind === "clock" ? "CUTOVER" : "EVENT"}</span>
+            </button>
+          ) : null}
         </section>
       ) : null}
       <div className="LabCal" role="grid" aria-label={formatEtMonthTitle(year, month)} onKeyDown={onGridKey}>
@@ -209,6 +222,9 @@ export function LabCalendarPage() {
                     {marks.some((mark) => mark.kind === "clock") ? <i className="is-clock" /> : null}
                     {marks.some((mark) => mark.kind === "event") ? <i className="is-event" /> : null}
                   </span>
+                  {marks.length ? (
+                    <span className="LabCal-count">{marks.length}</span>
+                  ) : null}
                   {marks.slice(0, 2).map((mark) => (
                     <span key={mark.id} className={mark.kind === "clock" ? "LabCal-mark is-clock" : "LabCal-mark"}>
                       {mark.item.title}

@@ -2,7 +2,8 @@ import { Link } from "@tanstack/react-router";
 import type { EventItem } from "../content/schema";
 import { nextChapterEvent, upcomingEvents } from "../content/queries";
 import { formatEventWhen, googleCalendarUrl } from "../lib/calendar";
-import { eventWhyLine } from "../lib/eventCopy";
+import { eventHostLine, eventLocationLine, eventWhyLine } from "../lib/eventCopy";
+import { eventFormatLabel } from "../lib/format";
 import { catalog } from "../lib/catalog";
 import { itemHref } from "../lib/kind";
 import { eventRegisterUrl } from "../lib/register";
@@ -11,8 +12,8 @@ import { RegisterLink } from "./RegisterLink";
 import { DateChip } from "./home/DateChip";
 
 function inferredFormat(item: EventItem) {
-  if (item.format) return item.format;
-  const text = `${item.title} ${item.venue ?? ""}`.toLocaleLowerCase("en-US");
+  if (item.format && item.format !== "unknown") return item.format;
+  const text = `${item.title} ${item.venue ?? ""} ${item.body ?? ""}`.toLocaleLowerCase("en-US");
   if (text.includes("virtual")) return "virtual";
   return item.venue || item.city || item.geo ? "in-person" : "unknown";
 }
@@ -27,9 +28,9 @@ function timingSignal(item: EventItem, now: Date) {
 
 function EventCard({ item, now, radar = false }: { item: EventItem; now: Date; radar?: boolean }) {
   const signal = radar ? "DON’T MISS" : timingSignal(item, now);
-  const format = inferredFormat(item);
+  const format = eventFormatLabel({ ...item, format: inferredFormat(item) }) ?? inferredFormat(item);
   const register = eventRegisterUrl(item);
-  const place = item.venue ?? item.city ?? item.geo;
+  const place = eventLocationLine(item);
   const why = eventWhyLine(item);
   return (
     <article className={radar ? "EventCard is-radar" : "EventCard"}>
@@ -37,11 +38,11 @@ function EventCard({ item, now, radar = false }: { item: EventItem; now: Date; r
       <div className="EventCard-copy">
         <div className="EventCard-signals">
           {signal ? <span>{signal}</span> : null}
-          {format !== "unknown" ? <span>{format}</span> : null}
-          <span>{item.hostOrg}</span>
+          {format && format !== "unknown" ? <span>{format}</span> : null}
+          <span>{eventHostLine(item)}</span>
         </div>
-        <h3><Link to={itemHref(item)}><MentionText text={item.title} /></Link></h3>
-        <p className="EventCard-when">{formatEventWhen(item)}{place ? ` · ${place}` : ""}</p>
+        <h3><Link to={itemHref(item)}><MentionText text={item.title} item={item} /></Link></h3>
+        <p className="EventCard-when">{formatEventWhen(item)} · {place}</p>
         <p className="EventCard-why"><strong>Why it’s worth your time:</strong> {why}</p>
         {item.whoYoullMeet?.length ? (
           <p className="EventCard-meet"><strong>Who you’ll meet:</strong> {item.whoYoullMeet.join(", ")}</p>

@@ -42,6 +42,8 @@ export function LabHorizonPage() {
   const [selectedId, setSelectedId] = useState<string | undefined>(inWindow[0]?.id ?? points[0]?.id);
   const tickRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const laterRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const axisRef = useRef<HTMLDivElement | null>(null);
+  const [axisOverflow, setAxisOverflow] = useState(false);
   const focusMovedTick = useRef(false);
   const selected = points.find((point) => point.id === selectedId)
     ?? inWindow.find((point) => point.id === selectedId)
@@ -58,6 +60,20 @@ export function LabHorizonPage() {
     node?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "auto" });
     focusMovedTick.current = false;
   }, [selected?.id, selectedOnAxis]);
+
+  useEffect(() => {
+    const node = axisRef.current;
+    if (!node) return;
+    const check = () => setAxisOverflow(node.scrollWidth > node.clientWidth + 1);
+    check();
+    const observer = new ResizeObserver(check);
+    observer.observe(node);
+    node.addEventListener("scroll", check, { passive: true });
+    return () => {
+      observer.disconnect();
+      node.removeEventListener("scroll", check);
+    };
+  }, [inWindow.length]);
 
   function move(delta: number) {
     if (!inWindow.length) return;
@@ -85,10 +101,32 @@ export function LabHorizonPage() {
     }
   }
 
+  function onLaterKey(event: KeyboardEvent<HTMLUListElement>) {
+    if (!later.length) return;
+    const index = Math.max(0, later.findIndex((point) => point.id === selected?.id));
+    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+      event.preventDefault();
+      setSelectedId(later[Math.min(later.length - 1, index + 1)]?.id);
+      focusMovedTick.current = true;
+    } else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+      event.preventDefault();
+      setSelectedId(later[Math.max(0, index - 1)]?.id);
+      focusMovedTick.current = true;
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      setSelectedId(later[0]?.id);
+      focusMovedTick.current = true;
+    } else if (event.key === "End") {
+      event.preventDefault();
+      setSelectedId(later[later.length - 1]?.id);
+      focusMovedTick.current = true;
+    }
+  }
+
   return (
     <LabShell title="Deadline horizon" kicker="30-day view">
       <p className="LabLead">
-        Markers are news <code>clockAt</code> values and published event start times. Title-only dates stay off the axis. Clocks stay on the axis even when they sit past 30 days. Events after 30 days are listed under After 30 days and are outside this listbox.
+        Markers are published go-live clocks and event start times. Title-only dates stay off the axis. Clocks stay on the axis even when they sit past 30 days. Events after 30 days are listed under After 30 days and are outside this listbox.
       </p>
       <LabFilterGroup
         label="Horizon filters"
@@ -115,13 +153,14 @@ export function LabHorizonPage() {
       ) : (
         <p className="LabEmpty">No upcoming clocks or events.</p>
       )}
-      {inWindow.length > 2 ? (
-        <p className="LabAxisCue" id="lab-horizon-axis-cue">
+      {inWindow.length > 2 || axisOverflow ? (
+        <p className={`LabAxisCue${axisOverflow ? " is-visible" : ""}`} id="lab-horizon-axis-cue">
           Scroll the axis. Off-edge ticks include monitored cutovers beyond 30 days.
         </p>
       ) : null}
       <div
         className="LabAxis"
+        ref={axisRef}
         role="listbox"
         aria-orientation="horizontal"
         aria-label="Deadline timeline"
@@ -174,7 +213,7 @@ export function LabHorizonPage() {
             {later.length === 0 ? (
               <p className="LabEmpty">Nothing beyond 30 days.</p>
             ) : (
-              <ul className="LabMini">
+              <ul className="LabMini" onKeyDown={onLaterKey}>
                 {later.map((point) => {
                   const on = !selectedOnAxis && point.id === selected?.id;
                   return (

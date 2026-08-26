@@ -75,20 +75,36 @@ ${rssItems}
 </rss>
 `;
 
-const sitemapPaths = [
-  "/",
-  "/news",
-  "/events",
-  "/voices",
-  ...published.map(canonicalPath),
-  "/feed.json",
-  "/feed.xml",
+function sitemapLastmod(iso) {
+  if (!iso) return undefined;
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return undefined;
+  return new Date(t).toISOString().slice(0, 10);
+}
+
+const indexLastmod = sitemapLastmod(generatedAt);
+const sitemapEntries = [
+  { path: "/", lastmod: indexLastmod },
+  { path: "/news", lastmod: indexLastmod },
+  { path: "/events", lastmod: indexLastmod },
+  { path: "/voices", lastmod: indexLastmod },
+  ...published.map((item) => ({
+    path: canonicalPath(item),
+    lastmod: sitemapLastmod(item.updatedAt || item.publishedAt) || indexLastmod,
+  })),
+  { path: "/feed.json", lastmod: indexLastmod },
+  { path: "/feed.xml", lastmod: indexLastmod },
 ];
 const seen = new Set();
-const loc = [...sitemapPaths].filter((p) => (seen.has(p) ? false : seen.add(p)));
+const loc = sitemapEntries.filter((entry) => (seen.has(entry.path) ? false : seen.add(entry.path)));
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${loc.map((path) => `  <url><loc>${SITE}${path === "/" ? "/" : path}</loc></url>`).join("\n")}
+${loc
+  .map((entry) => {
+    const lastmod = entry.lastmod ? `<lastmod>${esc(entry.lastmod)}</lastmod>` : "";
+    return `  <url><loc>${SITE}${entry.path === "/" ? "/" : entry.path}</loc>${lastmod}</url>`;
+  })
+  .join("\n")}
 </urlset>
 `;
 

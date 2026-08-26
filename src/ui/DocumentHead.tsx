@@ -51,12 +51,19 @@ export function DocumentHead() {
     let desc = DEFAULT_DESC;
     if (item) {
       title = `${item.title} · ${SITE}`;
-      desc = item.impactSentence?.trim() || item.title;
-    } else if (path === "/news") title = `News · ${SITE}`;
-    else if (path === "/events") title = `Events · ${SITE}`;
-    else if (path === "/voices") {
+      desc = item.impactSentence?.trim() || item.dek?.trim() || item.title;
+    } else if (path === "/news") {
+      title = `News · ${SITE}`;
+      desc = DEFAULT_DESC;
+    } else if (path === "/events") {
+      title = `Events · ${SITE}`;
+      desc = "Upcoming Delaware Valley health-tech events";
+    } else if (path === "/voices") {
       title = `Voices · ${SITE}`;
-      desc = "Voices";
+      desc = "Named local health-tech voices and institutional notes";
+    } else if (path === "/lab" || path.startsWith("/lab/")) {
+      title = `Lab · ${SITE}`;
+      desc = "Prototype views of the same published desk.";
     }
     const origin = publicOrigin();
     const url = item ? canonicalUrl(item, origin) : publicUrl(path, origin);
@@ -68,9 +75,23 @@ export function DocumentHead() {
     upsertMeta("property", "og:description", desc);
     upsertMeta("property", "og:url", url);
     upsertMeta("property", "og:type", ogType);
+    upsertMeta("property", "og:site_name", SITE);
+    upsertMeta("property", "og:locale", "en_US");
     upsertMeta("name", "twitter:card", "summary");
     upsertMeta("name", "twitter:title", title);
     upsertMeta("name", "twitter:description", desc);
+    if (item && articleKinds.has(item.kind) && item.publishedAt) {
+      upsertMeta("property", "article:published_time", item.publishedAt);
+      upsertMeta("property", "article:modified_time", item.updatedAt || item.publishedAt);
+    } else {
+      document.head.querySelector('meta[property="article:published_time"]')?.remove();
+      document.head.querySelector('meta[property="article:modified_time"]')?.remove();
+    }
+    if (path === "/lab" || path.startsWith("/lab/")) {
+      upsertMeta("name", "robots", "noindex, nofollow");
+    } else {
+      document.head.querySelector('meta[name="robots"]')?.remove();
+    }
     upsertLink("canonical", url);
     upsertLink("alternate", publicUrl("/feed.xml", origin), "application/rss+xml");
     upsertLink("alternate", publicUrl("/feed.json", origin), "application/json");

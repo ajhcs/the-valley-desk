@@ -339,6 +339,30 @@
   text-transform: uppercase;
 }
 
+.ItemPage-register {
+  margin: 10px 0 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--admiral);
+}
+
+.ItemPage-related {
+  max-width: 76ch;
+}
+
+.ItemPage-related h2,
+.ItemPage-sources h2 {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ItemPage-related a {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 720px) {
   .EntityDisclosure-card,
   .EntityDisclosure.is-align-right .EntityDisclosure-card,

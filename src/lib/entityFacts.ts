@@ -130,7 +130,23 @@ function escapeRe(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-/** First mention of each fact-bearing entity in `text`, skipping already-claimed ids. */
+function mentionHit(entity: FactBearingEntity, text: string, start: number, end: number): MentionHit {
+  return {
+    start,
+    end,
+    text: text.slice(start, end),
+    orgId: entity.id,
+    entityName: entity.name,
+    kind: entity.kind,
+    role: entity.role,
+    orgName: entity.orgName,
+    url: entity.url,
+    image: entity.image,
+    facts: entity.facts,
+  };
+}
+
+/** First mention of each fact-bearing entity in `text`, skipping already-claimed ids. Longer spans win overlaps. */
 export function findFirstMentions(
   text: string,
   entities: FactBearingEntity[],
@@ -139,28 +155,19 @@ export function findFirstMentions(
   const found: MentionHit[] = [];
   for (const entity of entities) {
     if (claimed.has(entity.id)) continue;
+    let best: MentionHit | undefined;
     for (const name of entity.names) {
       const re = new RegExp(`(^|[^A-Za-z0-9])(${escapeRe(name)})(?![A-Za-z0-9])`, "gi");
       const match = re.exec(text);
       if (!match) continue;
       const start = match.index + match[1].length;
-      found.push({
-        start,
-        end: start + match[2].length,
-        text: text.slice(start, start + match[2].length),
-        orgId: entity.id,
-        entityName: entity.name,
-        kind: entity.kind,
-        role: entity.role,
-        orgName: entity.orgName,
-        url: entity.url,
-        image: entity.image,
-        facts: entity.facts,
-      });
-      break;
+      const end = start + match[2].length;
+      const hit = mentionHit(entity, text, start, end);
+      if (!best || hit.start < best.start || (hit.start === best.start && hit.end > best.end)) best = hit;
     }
+    if (best) found.push(best);
   }
-  found.sort((a, b) => a.start - b.start || b.end - a.end);
+  found.sort((a, b) => a.start - b.start || b.end - a.end || a.orgId.localeCompare(b.orgId));
   const kept: MentionHit[] = [];
   const used = new Set<string>();
   const spans: [number, number][] = [];

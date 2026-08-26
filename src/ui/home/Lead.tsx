@@ -5,13 +5,13 @@ import { itemHref } from "../../lib/kind";
 import { LeadDekInsert, LeadSignedLine } from "../DekInsert";
 import { MentionText } from "../MentionText";
 
-function LeadImpact({ text }: { text: string }) {
+function LeadImpact({ text, item }: { text: string; item: ContentItem }) {
   const { first, rest } = splitFirstSentence(text);
   return (
     <p className="Lead-impact">
-      <MentionText text={first} />
+      <MentionText text={first} item={item} />
       <LeadSignedLine />
-      {rest ? <MentionText text={rest} /> : null}
+      {rest ? <MentionText text={rest} item={item} /> : null}
     </p>
   );
 }
@@ -26,10 +26,10 @@ export function Lead({ item }: { item: ContentItem }) {
         </p>
         <h1 className="Lead-headline">
           <Link to={itemHref(item)}>
-            <MentionText text={item.title} />
+            <MentionText text={item.title} item={item} />
           </Link>
         </h1>
-        {impact ? <LeadImpact text={impact} /> : null}
+        {impact ? <LeadImpact text={impact} item={item} /> : null}
       </article>
     </LeadDekInsert>
   );

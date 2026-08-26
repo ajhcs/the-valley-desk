@@ -85,7 +85,8 @@
         "name": "HS 1 for HB 383 engrossment, 18 Del. C. 3374A",
         "url": "https://legis.delaware.gov/json/BillDetail/GenerateHtmlDocumentEngrossment?docTypeId=6&engrossmentId=36721"
       }
-    ]
+    ],
+    "contextSentence": "HS 1 for HB 383 became 84 Del. Laws ch. 408 when it was signed and took effect Sept. 19, 2024."
   },
   {
     "id": "news-christianacare-epic",
@@ -131,7 +132,8 @@
         "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/christianacares-epic-go-live-set-for-october/"
       }
     ],
-    "geo": "Newark, DE"
+    "geo": "Newark, DE",
+    "contextSentence": "ChristianaCare’s Epic program has been underway since a 2024 decision; the July 2026 newsroom update fixed the Oct. 3 go-live date."
   },
   {
     "id": "news-jefferson-fy2026-loss",
@@ -175,7 +177,8 @@
         "url": "https://www.fitchratings.com/research/us-public-finance/fitch-rates-thomas-jefferson-univ-pa-cp-notes-f1-affirms-idr-revs-at-a-outlook-negative-18-06-2026"
       }
     ],
-    "geo": "Philadelphia, PA"
+    "geo": "Philadelphia, PA",
+    "contextSentence": "Jefferson completed the Lehigh Valley Health Network close on Aug. 1, 2024; the Inquirer said FY2026 is the first full year of combined results."
   },
   {
     "id": "news-penn-ai-scribe",
@@ -223,7 +226,8 @@
         "url": "https://www.pennmedicine.org/news/ai-scribe-increases-face-to-face-time-with-patients"
       }
     ],
-    "geo": "Philadelphia, PA"
+    "geo": "Philadelphia, PA",
+    "contextSentence": "The 1,200-user in-house scribe count is from the Nov. 10, 2025 Inquirer clip; the DAX Copilot percentages are a separate 46-clinician JAMA Network Open study."
   },
   {
     "id": "news-temple-dragon-copilot",
@@ -272,7 +276,8 @@
         "url": "https://www.bizjournals.com/philadelphia/news/2026/04/01/temple-health-ai-patient-safety.html"
       }
     ],
-    "geo": "Philadelphia, PA"
+    "geo": "Philadelphia, PA",
+    "contextSentence": "Temple’s June 8, 2026 newsroom note names Slovis as CMIO for Temple University Hospital; the April PBJ sponsored article reported the after-hours documentation reduction that preceded the 400-user expansion."
   },
   {
     "id": "news-chop-orca-cds",
@@ -365,7 +370,8 @@
         "url": "https://www.beckershospitalreview.com/digital-health/tech-investments-health-systems-are-scrutinizing-in-2026/"
       }
     ],
-    "geo": "West Reading, PA"
+    "geo": "West Reading, PA",
+    "contextSentence": "The July 23 Becker’s AI-tax comments and the July 30 core-platform comments are separate clips from the same CIO."
   },
   {
     "id": "news-temple-chestnut-hill-jhp",
@@ -405,7 +411,8 @@
         "url": "https://www.templehealth.org/about/newsroom/temple-health-chestnut-hill-hospital-and-jefferson-health-plans"
       }
     ],
-    "geo": "Philadelphia, PA"
+    "geo": "Philadelphia, PA",
+    "contextSentence": "The Sept. 30, 2026 end date is Temple Health’s Aug. 17, 2026 notice for Temple Health–Chestnut Hill Hospital only."
   },
   {
     "id": "news-hap-cms-0057-f",
@@ -449,7 +456,8 @@
         "url": "https://www.cms.gov/newsroom/fact-sheets/cms-interoperability-prior-authorization-final-rule-cms-0057-f"
       }
     ],
-    "geo": "Pennsylvania"
+    "geo": "Pennsylvania",
+    "contextSentence": "CMS’s Jan. 17, 2024 fact sheet gives impacted payers until Jan. 1, 2027 for the FHIR APIs; HAP’s June 10, 2025 letter asks CMS to enforce that rule."
   },
   {
     "id": "voice-mlh-cloud-analytics",
@@ -548,7 +556,7 @@
     "kind": "voice",
     "title": "David Johnson: Inspira on day 6 of an Epic live",
     "dek": "David Johnson, Inspira SVP and CIIO, said in a July 30 LinkedIn comment that the system was on day six of its Epic launch.",
-    "body": "David Johnson, Inspira SVP and CIIO, said in a July 30 LinkedIn comment that the system was on day six of its Epic launch.",
+    "body": "David Johnson, Inspira SVP and CIIO, said in a July 30 LinkedIn comment that the system was on day six of its Epic launch. The dated note is a comment on a colleague’s July 30 LinkedIn post, not an Inspira newsroom release.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-30T16:00:00.000Z",
@@ -633,12 +641,15 @@
     "kind": "voice",
     "title": "Ed Jimenez: MLH exclusive medical provider for SJU Hawks",
     "dek": "Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner in St. Joe’s history. Ed Jimenez is President and CEO of Main Line Health.",
-    "body": "Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner in St. Joe’s history. Ed Jimenez is President and CEO of Main Line Health.",
+    "body": "Main Line Health’s July 22, 2026 newsroom note says the system is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner in St. Joe’s history. Ed Jimenez is President and CEO of Main Line Health.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-22T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "operations",
+      "partnership"
+    ],
     "orgs": [
       "org-main-line"
     ],
@@ -673,12 +684,14 @@
     "kind": "voice",
     "title": "Kevin B. Mahoney: $7 million Muller administrative endowments",
     "dek": "Ralph Muller and Beth Johnston Muller endowed three Penn Medicine administrative posts over the last year, totaling $7 million: HUP CEO, UPHS CFO, and CHIBE director. Kevin B. Mahoney is CEO of the University of Pennsylvania Health System.",
-    "body": "Ralph Muller and Beth Johnston Muller endowed three Penn Medicine administrative posts over the last year, totaling $7 million: HUP CEO, UPHS CFO, and CHIBE director. Kevin B. Mahoney is CEO of the University of Pennsylvania Health System.",
+    "body": "Penn Medicine’s Aug. 4, 2026 newsroom note says Ralph Muller and Beth Johnston Muller endowed three administrative posts over the last year, totaling $7 million: HUP CEO, UPHS CFO, and CHIBE director. Kevin B. Mahoney is CEO of the University of Pennsylvania Health System.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-04T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "finance"
+    ],
     "orgs": [
       "org-penn"
     ],
@@ -713,12 +726,14 @@
     "kind": "voice",
     "title": "Ed Jimenez: MLH official healthcare provider for 2026 U.S. Amateur",
     "dek": "Main Line Health is the official healthcare provider for the 2026 U.S. Amateur Championship, Aug. 10–16 at Merion Golf Club and Philadelphia Country Club. Ed Jimenez is President and CEO of Main Line Health.",
-    "body": "Main Line Health is the official healthcare provider for the 2026 U.S. Amateur Championship, Aug. 10–16 at Merion Golf Club and Philadelphia Country Club. Ed Jimenez is President and CEO of Main Line Health.",
+    "body": "Main Line Health’s Aug. 5, 2026 newsroom note names the system the official healthcare provider for the 2026 U.S. Amateur Championship, Aug. 10–16 at Merion Golf Club and Philadelphia Country Club. Ed Jimenez is President and CEO of Main Line Health.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-05T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "operations"
+    ],
     "orgs": [
       "org-main-line"
     ],
@@ -753,12 +768,14 @@
     "kind": "voice",
     "title": "Joseph G. Cacchione: SKMC four-year Allentown campus",
     "dek": "Thomas Jefferson University plans a four-year Sidney Kimmel Medical College campus in Allentown. The inaugural class is 45 students in July 2029. Joseph G. Cacchione is CEO of Jefferson.",
-    "body": "Thomas Jefferson University plans a four-year Sidney Kimmel Medical College campus in Allentown. The inaugural class is 45 students in July 2029. Joseph G. Cacchione is CEO of Jefferson.",
+    "body": "Jefferson’s July 13, 2026 newsroom note says Thomas Jefferson University plans a four-year Sidney Kimmel Medical College campus in Allentown, with an inaugural class of 45 students in July 2029. Joseph G. Cacchione is CEO of Jefferson.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-13T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "workforce"
+    ],
     "orgs": [
       "org-jefferson"
     ],
@@ -798,7 +815,9 @@
     "featured": false,
     "publishedAt": "2026-07-14T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "finance"
+    ],
     "orgs": [
       "org-jefferson"
     ],
@@ -833,12 +852,14 @@
     "kind": "voice",
     "title": "Joseph G. Cacchione: Delaware’s first medical school",
     "dek": "Jefferson plans Delaware’s first medical school, a four-year SKMC regional campus. The first class is 40 students in July 2028, pending LCME. The page prints a CMS/HHS award totaling $157,394,963.86. Joseph G. Cacchione is CEO of Jefferson.",
-    "body": "Jefferson plans Delaware’s first medical school, a four-year SKMC regional campus. The first class is 40 students in July 2028, pending LCME. The page prints a CMS/HHS award totaling $157,394,963.86. Joseph G. Cacchione is CEO of Jefferson.",
+    "body": "Jefferson’s July 15, 2026 newsroom note says the system plans Delaware’s first medical school, a four-year SKMC regional campus, with a first class of 40 students in July 2028, pending LCME. The page prints a CMS/HHS award totaling $157,394,963.86. Joseph G. Cacchione is CEO of Jefferson.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-15T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "workforce"
+    ],
     "orgs": [
       "org-jefferson"
     ],
@@ -873,12 +894,14 @@
     "kind": "voice",
     "title": "Joseph G. Cacchione: Wellenbach and Fung leaving TJU board",
     "dek": "Patricia D. Wellenbach and John J. Fung are leaving the Thomas Jefferson University Board of Trustees. Joseph G. Cacchione is CEO of Jefferson.",
-    "body": "Patricia D. Wellenbach and John J. Fung are leaving the Thomas Jefferson University Board of Trustees. Joseph G. Cacchione is CEO of Jefferson.",
+    "body": "Jefferson’s July 30, 2026 newsroom note says Patricia D. Wellenbach and John J. Fung are leaving the Thomas Jefferson University Board of Trustees. Joseph G. Cacchione is CEO of Jefferson.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-30T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "leadership"
+    ],
     "orgs": [
       "org-jefferson"
     ],
@@ -913,12 +936,14 @@
     "kind": "voice",
     "title": "Joseph G. Cacchione: $1.75 million BMS Foundation LCS-LINK",
     "dek": "Jefferson Health received a $1.75 million Bristol Myers Squibb Foundation grant for LCS-LINK, July 2026 through June 2029, with Philadelphia FQHCs. Joseph G. Cacchione is CEO of Jefferson.",
-    "body": "Jefferson Health received a $1.75 million Bristol Myers Squibb Foundation grant for LCS-LINK, July 2026 through June 2029, with Philadelphia FQHCs. Joseph G. Cacchione is CEO of Jefferson.",
+    "body": "Jefferson’s Aug. 5, 2026 giving note says Jefferson Health received a $1.75 million Bristol Myers Squibb Foundation grant for LCS-LINK, July 2026 through June 2029, with Philadelphia FQHCs. Joseph G. Cacchione is CEO of Jefferson.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-05T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "finance"
+    ],
     "orgs": [
       "org-jefferson"
     ],
@@ -958,7 +983,9 @@
     "featured": false,
     "publishedAt": "2026-08-14T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "leadership"
+    ],
     "orgs": [
       "org-chop"
     ],
@@ -997,12 +1024,14 @@
     "kind": "voice",
     "title": "Dennis W. Pullin: Here for Good podcast episode",
     "dek": "Dennis W. Pullin hosts Virtua’s Here for Good podcast. The 07.16.26 episode is on the official Virtua page.",
-    "body": "Dennis W. Pullin hosts Virtua’s Here for Good podcast. The 07.16.26 episode is on the official Virtua page.",
+    "body": "Dennis W. Pullin hosts Virtua’s Here for Good podcast. Virtua’s official page lists the episode dated 07.16.26.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-16T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "leadership"
+    ],
     "orgs": [
       "org-virtua"
     ],
@@ -1037,12 +1066,14 @@
     "kind": "voice",
     "title": "Dennis Pullin: Lessons in Leadership, Champions of Humanity, Eat Well",
     "dek": "Virtua’s official LinkedIn posted July 27, 2026 that President and CEO Dennis Pullin spoke on Lessons in Leadership, Virtua’s Champions of Humanity framework, and Eat Well.",
-    "body": "Virtua’s official LinkedIn posted July 27, 2026 that President and CEO Dennis Pullin spoke on Lessons in Leadership, Virtua’s Champions of Humanity framework, and Eat Well.",
+    "body": "Virtua’s official LinkedIn posted July 27, 2026 that President and CEO Dennis Pullin spoke on Lessons in Leadership, Virtua’s Champions of Humanity framework, and Eat Well. The note is from Virtua’s institutional account.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-27T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "leadership"
+    ],
     "orgs": [
       "org-virtua"
     ],
@@ -1077,7 +1108,7 @@
     "kind": "voice",
     "title": "Benjamin Slovis: TUH hiring Mgr Integrated Healthcare Apps",
     "dek": "On July 23, 2026 Benjamin Slovis’s official handle reshared that Temple University Hospital is hiring a Manager of Integrated Healthcare Apps for Epic Orders/ASAP, hybrid, in Philadelphia. Slovis is Temple Health CMIO at Temple University Hospital.",
-    "body": "On July 23, 2026 Benjamin Slovis’s official handle reshared that Temple University Hospital is hiring a Manager of Integrated Healthcare Apps for Epic Orders/ASAP, hybrid, in Philadelphia. Slovis is Temple Health CMIO at Temple University Hospital.",
+    "body": "On July 23, 2026 Benjamin Slovis’s official handle reshared that Temple University Hospital is hiring a Manager of Integrated Healthcare Apps for Epic Orders/ASAP, hybrid, in Philadelphia. Slovis is Temple Health CMIO at Temple University Hospital. The post is a reshare from that handle.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-23T16:00:00.000Z",
@@ -1120,12 +1151,15 @@
     "kind": "voice",
     "title": "Amy B. Mansue: Mullica Hill Neuro ICU, Cooper-Inspira neuroscience tour",
     "dek": "Inspira’s official LinkedIn posted Aug. 4, 2026 on the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour, including a future EMU. Amy B. Mansue is CEO of Inspira Health.",
-    "body": "Inspira’s official LinkedIn posted Aug. 4, 2026 on the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour, including a future EMU. Amy B. Mansue is CEO of Inspira Health.",
+    "body": "Inspira’s official LinkedIn posted Aug. 4, 2026 on the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour, including a future EMU. Amy B. Mansue is CEO of Inspira Health. The note is from Inspira’s institutional account.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-04T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "clinical",
+      "operations"
+    ],
     "orgs": [
       "org-inspira"
     ],
@@ -1290,7 +1324,10 @@
     "venue": "Catalent, 104 Campus Dr, Princeton",
     "geo": "Princeton, NJ",
     "hostOrg": "BioNJ",
-    "registrationUrl": "https://members.bionj.org/NC__Event?id=a0lPe00000nFUBFIA4"
+    "registrationUrl": "https://members.bionj.org/NC__Event?id=a0lPe00000nFUBFIA4",
+    "format": "in-person",
+    "whyAttend": "Fees are $150/$275 at Catalent.",
+    "city": "Princeton"
   },
   {
     "dek": "",
@@ -1327,7 +1364,8 @@
     "endsAt": "2026-09-30T00:30:00.000Z",
     "geo": "Philadelphia, PA",
     "hostOrg": "University City Science Center",
-    "registrationUrl": "https://luma.com/nucleus-awards"
+    "registrationUrl": "https://luma.com/nucleus-awards",
+    "city": "Philadelphia"
   },
   {
     "dek": "",
@@ -1369,7 +1407,8 @@
     "hostOrg": "HAP",
     "format": "in-person",
     "whyAttend": "Two days focused on patient safety, quality, and equity for Pennsylvania hospitals.",
-    "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B0C23A820-246B-F111-A825-7C1E524A88B5%7D"
+    "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B0C23A820-246B-F111-A825-7C1E524A88B5%7D",
+    "city": "Hershey"
   },
   {
     "dek": "",
@@ -1407,7 +1446,9 @@
     "venue": "Sheraton Valley Forge, 480 N Gulph Rd",
     "geo": "King of Prussia, PA",
     "hostOrg": "Life Sciences Pennsylvania",
-    "registrationUrl": "https://events.ticketleap.com/tickets/life-sciences-pennsylvania/life-sciences-future-2026"
+    "registrationUrl": "https://events.ticketleap.com/tickets/life-sciences-pennsylvania/life-sciences-future-2026",
+    "format": "in-person",
+    "city": "King of Prussia"
   },
   {
     "dek": "",
@@ -1447,7 +1488,8 @@
     "hostOrg": "Builds Bio+",
     "registrationUrl": "https://buildsbio.org/builds-bio-philly-5th-annual-symposium-for-life-science-innovation-and-development/",
     "format": "in-person",
-    "whyAttend": "Philadelphia life-science and real-estate leaders at the University City Science Center Quorum, with registration on the official symposium page."
+    "whyAttend": "Philadelphia life-science and real-estate leaders at the University City Science Center Quorum, with registration on the official symposium page.",
+    "city": "Philadelphia"
   },
   {
     "dek": "",
@@ -1489,7 +1531,8 @@
     "whoYoullMeet": [
       "ACHE of Greater Philadelphia members"
     ],
-    "registrationUrl": "https://www.eventbrite.com/e/connect-network-play-tickets-1993874297698?aff=oddtdtcreator"
+    "registrationUrl": "https://www.eventbrite.com/e/connect-network-play-tickets-1993874297698?aff=oddtdtcreator",
+    "city": "Philadelphia"
   },
   {
     "dek": "",
@@ -1565,7 +1608,10 @@
     "venue": "Crystal Springs, Hamburg NJ",
     "geo": "Hamburg, NJ",
     "hostOrg": "ACHE-NJ",
-    "registrationUrl": "https://www.eventbrite.com/e/achenj-4th-annual-golf-outing-wishes-come-true-tickets-1992704291177"
+    "registrationUrl": "https://www.eventbrite.com/e/achenj-4th-annual-golf-outing-wishes-come-true-tickets-1992704291177",
+    "format": "in-person",
+    "whyAttend": "ACHE-NJ’s fourth annual golf outing at Crystal Springs in Hamburg, N.J.",
+    "city": "Hamburg"
   },
   {
     "dek": "",
@@ -1602,7 +1648,10 @@
     "venue": "Bally's Dover",
     "geo": "Dover, DE",
     "hostOrg": "Delaware Healthcare Association",
-    "registrationUrl": "https://web.cvent.com/event/e3dfa25a-e337-4713-8398-eb28b645dce5/register?RefId=Default+Registration+Link&rp=cb1e7694-3afc-4319-9171-719904fd89ec"
+    "registrationUrl": "https://web.cvent.com/event/e3dfa25a-e337-4713-8398-eb28b645dce5/register?RefId=Default+Registration+Link&rp=cb1e7694-3afc-4319-9171-719904fd89ec",
+    "format": "in-person",
+    "whyAttend": "The 30th Delaware Healthcare Forum at Bally’s Dover.",
+    "city": "Dover"
   },
   {
     "dek": "",
@@ -1682,7 +1731,8 @@
         "name": "BioNJ Entrepreneurs Exchange",
         "url": "https://form.jotform.com/232195495610054"
       }
-    ]
+    ],
+    "format": "virtual"
   },
   {
     "dek": "",
@@ -1719,7 +1769,9 @@
         "name": "Life Sciences PA Open House",
         "url": "https://events.ticketleap.com/tickets/life-sciences-pennsylvania/open-house-lspa-q3-2026"
       }
-    ]
+    ],
+    "format": "in-person",
+    "city": "King of Prussia"
   },
   {
     "dek": "",
@@ -1755,7 +1807,8 @@
         "name": "Wistar Philadelphia Drug Discovery Forum",
         "url": "https://www.eventbrite.com/e/1997481870044?aff=oddtdtcreator"
       }
-    ]
+    ],
+    "city": "Philadelphia"
   },
   {
     "featured": false,
@@ -1976,7 +2029,8 @@
     "hostOrg": "HAP",
     "format": "virtual",
     "whyAttend": "Penn Nursing faculty on sepsis documentation and post-acute information transfer, with a required HAP registration path.",
-    "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B4E5F82B3-B1A0-F111-B8DC-7C1E521C50B5%7D"
+    "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B4E5F82B3-B1A0-F111-B8DC-7C1E521C50B5%7D",
+    "healthSystemRelevance": "Penn Nursing faculty report I-TRANSFER findings on sepsis documentation and post-acute information transfer."
   },
   {
     "dek": "HAP’s emergency-management day includes Penn Medicine EHR-downtime informatics, Tower Health security analytics, and a Lower Bucks Hospital surge case.",

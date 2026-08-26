@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { briefingSinceYesterday5pmET, windowStartYesterday5pmET } from "../../content/queries";
 import type { ContentItem } from "../../content/schema";
 import { catalog } from "../../lib/catalog";
@@ -15,8 +15,11 @@ import {
   filterBriefing,
   formatEtClock,
   formatEtWeekday,
+  isBriefingUnread,
   nextBriefingAt,
+  readBriefingLastRead,
   topicLabel,
+  writeBriefingLastRead,
   type BriefingFilter,
 } from "./lab";
 
@@ -27,6 +30,7 @@ function rowTime(item: ContentItem) {
 export function LabChronoPage() {
   const [filter, setFilter] = useState<BriefingFilter>("all");
   const [active, setActive] = useState(0);
+  const [lastRead, setLastRead] = useState<string | undefined>();
   const now = useMemo(() => new Date(), []);
   const windowItems = briefingSinceYesterday5pmET(catalog, now);
   const rows = useMemo(() => filterBriefing(windowItems, filter), [filter, windowItems]);
@@ -34,6 +38,12 @@ export function LabChronoPage() {
   const week = eventsThisWeek(catalog, now);
   const next = nextBriefingAt(now);
   const selected = rows[Math.min(active, Math.max(rows.length - 1, 0))];
+
+  useEffect(() => {
+    const prev = readBriefingLastRead(window.localStorage);
+    setLastRead(prev);
+    writeBriefingLastRead(window.localStorage, now.toISOString());
+  }, [now]);
 
   return (
     <LabShell title="Chronological briefing" kicker="Since 17:00 ET">
@@ -56,15 +66,20 @@ export function LabChronoPage() {
           aria-label="Chronological items"
         >
           {rows.length === 0 ? (
-            <p className="LabEmpty">Nothing published in this filter.</p>
+            <p className="LabEmpty">
+              {windowItems.length === 0
+                ? `Nothing in this catch-up window yet. Next check-in ${formatEtClock(next.toISOString())} ET.`
+                : "Nothing published in this filter."}
+            </p>
           ) : (
             rows.map((item, index) => {
               const on = item.id === selected?.id;
+              const unread = isBriefingUnread(item, lastRead);
               return (
                 <article
                   key={item.id}
                   role="listitem"
-                  className={on ? "LabRow is-active" : "LabRow"}
+                  className={[on ? "LabRow is-active" : "LabRow", unread ? "is-unread" : "is-read"].filter(Boolean).join(" ")}
                   style={{ ["--i" as string]: index }}
                   onClick={() => setActive(index)}
                 >
@@ -74,17 +89,18 @@ export function LabChronoPage() {
                   <div className="LabRow-copy">
                     <h2>
                       <Link to={itemHref(item)}>
-                        <MentionText text={item.title} />
+                        <MentionText text={item.title} item={item} />
                       </Link>
                     </h2>
                     {item.impactSentence ? (
                       <p>
-                        <MentionText text={item.impactSentence} />
+                        <MentionText text={item.impactSentence} item={item} />
                       </p>
                     ) : null}
                     <p className="LabRow-src">{formatDate(item.publishedAt)}</p>
                   </div>
                   <span className="LabTag">{topicLabel(item)}</span>
+                  {unread ? <span className="LabUnread">Unread</span> : null}
                 </article>
               );
             })
@@ -94,7 +110,7 @@ export function LabChronoPage() {
           <section className="LabCard">
             <h2>Next clock</h2>
             <p className="LabCard-clock">{formatEtClock(next.toISOString())} ET</p>
-            <p>Suggested next personal check-in. The Worker continues refreshing hourly.</p>
+            <p>Suggested next personal check-in at the 06:00 / 17:00 ET cadence.</p>
             <p className="LabRow-src">{formatEtWeekday(next.toISOString())}</p>
           </section>
           <section className="LabCard">
@@ -106,7 +122,7 @@ export function LabChronoPage() {
                 {week.map((item) => (
                   <li key={item.id}>
                     <Link to={itemHref(item)}>
-                      <MentionText text={item.title} />
+                      <MentionText text={item.title} item={item} />
                     </Link>
                     <span>{formatEventWhen(item)}</span>
                   </li>

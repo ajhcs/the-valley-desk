@@ -89,13 +89,38 @@ export function sourceLine(item: ContentItem) {
   return item.source.url ? origin + " · cited" : origin;
 }
 
-/** Venue already holding the city is one place, once. */
+/** Venue already holding the city is one place, once. Geo is a last-resort sourced place. */
 export function eventPlace(item: EventItem) {
   const venue = item.venue?.trim() ?? "";
   const city = item.city?.trim() ?? "";
+  const geo = item.geo?.trim() ?? "";
   if (venue && city && venue.toLowerCase().includes(city.toLowerCase())) return venue;
   if (venue && city) return `${venue}, ${city}`;
-  return venue || city;
+  if (venue) return venue;
+  if (city) return city;
+  return geo || undefined;
+}
+
+/** Published / updated / go-live stamps from existing envelope fields only. */
+export function itemFreshness(item: ContentItem) {
+  const published = item.publishedAt;
+  const updated = item.updatedAt;
+  const clock = item.kind === "news" ? (item as NewsItem).clockAt : undefined;
+  const publishedDay = published?.slice(0, 10);
+  const updatedDay = updated?.slice(0, 10);
+  return {
+    published,
+    updated: updated && updatedDay && updatedDay !== publishedDay ? updated : undefined,
+    clock,
+  };
+}
+
+export function eventFormatLabel(item: EventItem) {
+  if (!item.format || item.format === "unknown") return undefined;
+  if (item.format === "in-person") return "In person";
+  if (item.format === "virtual") return "Virtual";
+  if (item.format === "hybrid") return "Hybrid";
+  return undefined;
 }
 
 /** List pages: real dek or nothing. */
