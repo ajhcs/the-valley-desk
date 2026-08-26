@@ -38,10 +38,11 @@ import {
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { fetchDvhimssCalendar, ingestEventsWithHealth, scrapeNjdvhimss } from "../src/ingest/events.ts";
+import { RSS_SOURCES, ingestRssWithHealth, parseAtomItems, parseFeedItems, parseRssItems, rssItemToContent } from "../src/ingest/rss.ts";
 import { ingestLinkedIn } from "../src/ingest/linkedin.ts";
 import { ingestX } from "../src/ingest/x.ts";
-import { mergeReviewQueue } from "../src/ingest/queue.ts";
-import { firstWaveOrigins, isHeldHandle, isLiveSocialKey, liveLinkedInOrigins, liveXOrigins } from "../src/ingest/origins.ts";
+import { mergeReviewQueue, selectPriorityWork, contentPriorityFields, QUEUE_SLA_OVERDUE_MS } from "../src/ingest/queue.ts";
+import { firstWaveOrigins, isHeldHandle, isLiveSocialKey, liveLinkedInOrigins, liveXOrigins, sourceRegistry } from "../src/ingest/origins.ts";
 import { CLOSED_LIVE_SEED_IDS, hasLiveSeedOrg, liveSeedOrgIds } from "../src/content/seed.ts";
 import { eventRegisterUrl } from "../src/lib/register.ts";
 import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
@@ -72,6 +73,7 @@ import { eventWhyCopy, eventWhyLine, isBoilerplateEventCopy } from "../src/lib/e
 import { hasDefensiveEditorialAside, hasInternalProcessLanguage, professionalizeHeadline } from "../src/lib/editorialCopy.ts";
 import { matchingProductUses } from "../src/ingest/product-watch.ts";
 import {
+  acquireAutomationLock,
   candidateFingerprint,
   findPublishedContent,
   findPublishedSlugAlias,
@@ -83,6 +85,8 @@ import {
   readPublishedContent,
   readReusableEnrichments,
   reconcileMissingPublishedEvents,
+  releaseAutomationLock,
+  renewAutomationLock,
   type D1DatabaseLike,
   type D1StatementLike,
 } from "../src/ingest/persistence.ts";
@@ -109,6 +113,7 @@ import {
   editorModelBackoffMs,
   isEditorModelEligible,
   selectEditorModelWork,
+  selectEditorModelWorkWithMetrics,
   shouldEnrichCandidate,
   type EditorModelState,
 } from "../src/ingest/editor-work.ts";
@@ -242,6 +247,115 @@ test("first-party health-system feeds pin their verified organization", () => {
   assert.equal(cooper.origin, "cooper-newsroom");
   assert.deepEqual(cooper.orgIds, ["org-cooper"]);
   assert.equal(cooper.url, "https://blogs.cooperhealth.org/news/feed/");
+  assert.equal(cooper.status, "enabled");
+  assert.equal(sourceRegistry.rss.find((source) => source.id === "cooper-newsroom")?.url, cooper.url);
+});
+
+test("typed source registry is the runtime RSS and event authority", () => {
+  assert.deepEqual(RSS_SOURCES.map((source) => source.id), sourceRegistry.rss.map((source) => source.id));
+  assert.ok(sourceRegistry.events.some((source) => source.id === "dvhimss-events" && source.url.includes("per_page=100")));
+  assert.ok(sourceRegistry.events.some((source) => source.id === "njhimss-events"));
+  const technically = sourceRegistry.rss.find((source) => source.id === "technically");
+  assert.equal(technically?.status, "misconfigured");
+});
+
+test("one malformed RSS item does not discard valid siblings", () => {
+  const xml = `<?xml version="1.0"?><rss><channel>
+    <item><title>Keep me</title><link>https://example.com/keep</link><guid>keep</guid><description>ok</description></item>
+    <item><title>Broken</title><description>missing close
+    <item><title>Also keep</title><link>https://example.com/also</link><guid>also</guid></item>
+  </channel></rss>`;
+  const items = parseRssItems(xml);
+  assert.deepEqual(items.map((item) => item.title), ["Keep me", "Also keep"]);
+});
+
+test("Atom entries are parsed instead of claiming empty RSS success", () => {
+  const xml = `<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom">
+    <entry>
+      <title>Atom story</title>
+      <link rel="alternate" href="https://example.com/atom-story"/>
+      <id>atom-1</id>
+      <updated>2026-08-26T12:00:00Z</updated>
+      <summary>Atom dek</summary>
+    </entry>
+    <entry><title></title><id>bad</id>
+    <entry>
+      <title>Second atom</title>
+      <link href="https://example.com/second"/>
+      <id>atom-2</id>
+    </entry>
+  </feed>`;
+  const items = parseAtomItems(xml);
+  assert.equal(parseFeedItems(xml).length, 2);
+  assert.equal(items[0]?.link, "https://example.com/atom-story");
+  assert.equal(items[1]?.title, "Second atom");
+});
+
+test("Technical.ly is misconfigured and never reported as empty success", async () => {
+  const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async () => {
+    throw new Error("Technical.ly must not be fetched while misconfigured");
+  });
+  const technically = result.sources.find((source) => source.id === "technically");
+  assert.equal(technically?.state, "misconfigured");
+  assert.notEqual(technically?.state, "healthy");
+  assert.notEqual(technically?.state, "healthy-empty");
+});
+
+test("missing social tokens and LinkedIn person origins are misconfigured, not empty success", async () => {
+  const li = await ingestLinkedIn({}, new Date("2026-08-26T12:00:00.000Z"), async () => {
+    throw new Error("LinkedIn must not be fetched without a token");
+  });
+  assert.equal(li.skipped, "no-token");
+  assert.ok(li.sources.length > 0);
+  assert.ok(li.sources.every((source) => source.state === "misconfigured"));
+  assert.ok(li.sources.some((source) => source.id === "linkedin-benjaminslovis"));
+
+  const withToken = await ingestLinkedIn({ LINKEDIN_TOKEN: "token" }, new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    assert.ok(!url.includes("benjaminslovis"));
+    return new Response(JSON.stringify({ elements: [] }), { status: 200 });
+  });
+  const person = withToken.sources.find((source) => source.id === "linkedin-benjaminslovis");
+  const org = withToken.sources.find((source) => source.id === "linkedin-main-line-health");
+  assert.equal(person?.state, "misconfigured");
+  assert.equal(org?.state, "healthy-empty");
+
+  const x = await ingestX({}, new Date("2026-08-26T12:00:00.000Z"));
+  assert.equal(x.skipped, "no-token");
+  assert.equal(x.sources[0]?.state, "misconfigured");
+});
+
+test("upstream RSS and social failures classify timeout, auth, rate-limit, and parser outcomes", async () => {
+  const timed = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    if (url.includes("christianacare.org")) {
+      const error = Object.assign(new Error("aborted"), { name: "TimeoutError" });
+      throw error;
+    }
+    if (url.includes("cooperhealth.org")) return new Response("<html>not a feed</html>", { status: 200 });
+    if (url.includes("inquirer.com/arc/outboundfeeds/rss/category/health")) {
+      return new Response("", { status: 401 });
+    }
+    if (url.includes("inquirer.com/arc/outboundfeeds/rss/category/business")) {
+      return new Response("", { status: 429, headers: { "retry-after": "0" } });
+    }
+    if (url.includes("whyy.org")) {
+      return new Response(`<?xml version="1.0"?><rss><channel></channel></rss>`, { status: 200 });
+    }
+    return new Response("", { status: 503 });
+  });
+  const byId = Object.fromEntries(timed.sources.map((source) => [source.id, source.state]));
+  assert.equal(byId["christianacare-information-technology"], "timed-out");
+  assert.equal(byId["cooper-newsroom"], "parser-failed");
+  assert.equal(byId["inquirer-health"], "auth-failed");
+  assert.equal(byId["inquirer-business"], "rate-limited");
+  assert.equal(byId.whyy, "healthy-empty");
+  assert.equal(byId.technically, "misconfigured");
+
+  const auth = await ingestLinkedIn({ LINKEDIN_TOKEN: "token" }, new Date("2026-08-26T12:00:00.000Z"), async () => (
+    new Response("", { status: 401 })
+  ));
+  assert.ok(auth.sources.some((source) => source.id.startsWith("linkedin-") && source.id !== "linkedin-benjaminslovis" && source.state === "auth-failed"));
 });
 
 test("an unrecognized NJ event page cannot trigger disappearance reconciliation", async () => {
@@ -253,12 +367,12 @@ test("an unrecognized NJ event page cannot trigger disappearance reconciliation"
     return new Response("<html><title>Temporary holding page</title></html>", { status: 200 });
   });
   const nj = result.sources.find((source) => source.id === "njhimss-events");
-  assert.equal(nj?.state, "success");
+  assert.equal(nj?.state, "healthy-empty");
   assert.equal(nj?.complete, false);
   assert.equal(nj?.completeness, "partial");
   assert.equal(sourceAuthorizesDisappearance(nj!), false);
   const dvhimss = result.sources.find((source) => source.id === "dvhimss-events");
-  assert.equal(dvhimss?.state, "success");
+  assert.equal(dvhimss?.state, "healthy-empty");
   assert.equal(dvhimss?.itemCount, 0);
   assert.equal(dvhimss?.completeness, "empty-unverified");
   assert.equal(dvhimss?.complete, false);
@@ -3178,7 +3292,7 @@ test("event reconciliation withdraws only after two complete successful omission
   });
   const source = (
     checkedAt: string,
-    state: "success" | "error",
+    state: "healthy" | "healthy-empty" | "upstream-failed" | "timed-out",
     completeness: "complete" | "partial" | "empty-unverified",
     itemCount: number,
   ) => ({
@@ -3191,10 +3305,10 @@ test("event reconciliation withdraws only after two complete successful omission
     completeness,
     complete: completeness === "complete",
     url: "https://dvhimss.org/events-calendar",
-    ...(state === "error" ? { error: "upstream timeout" } : {}),
+    ...(state === "upstream-failed" || state === "timed-out" ? { error: "upstream timeout" } : {}),
   });
   const initialAt = "2026-08-26T12:00:00.000Z";
-  const initialNote = source(initialAt, "success", "complete", 1);
+  const initialNote = source(initialAt, "healthy", "complete", 1);
   const initialRun = await persistIngestRun(db, {
     fetchedAt: initialAt,
     rss: [],
@@ -3214,7 +3328,7 @@ test("event reconciliation withdraws only after two complete successful omission
 
   async function snapshotRun(
     at: string,
-    state: "success" | "error",
+    state: "healthy" | "healthy-empty" | "upstream-failed" | "timed-out",
     completeness: "complete" | "partial" | "empty-unverified",
     events: EventItem[],
   ) {
@@ -3230,12 +3344,12 @@ test("event reconciliation withdraws only after two complete successful omission
     return reconcileMissingPublishedEvents(db, run.runId, at, [note]);
   }
 
-  assert.deepEqual(await snapshotRun("2026-08-26T13:00:00.000Z", "error", "partial", []), { missing: 0, withdrawn: 0 });
+  assert.deepEqual(await snapshotRun("2026-08-26T13:00:00.000Z", "upstream-failed", "partial", []), { missing: 0, withdrawn: 0 });
   assert.equal(database.prepare("SELECT missing_count FROM content_candidates WHERE id = ?").get(event.id).missing_count, 0);
-  assert.deepEqual(await snapshotRun("2026-08-26T14:00:00.000Z", "success", "partial", []), { missing: 0, withdrawn: 0 });
-  assert.deepEqual(await snapshotRun("2026-08-26T15:00:00.000Z", "success", "complete", [remaining]), { missing: 1, withdrawn: 0 });
+  assert.deepEqual(await snapshotRun("2026-08-26T14:00:00.000Z", "healthy-empty", "empty-unverified", []), { missing: 0, withdrawn: 0 });
+  assert.deepEqual(await snapshotRun("2026-08-26T15:00:00.000Z", "healthy", "complete", [remaining]), { missing: 1, withdrawn: 0 });
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
-  assert.deepEqual(await snapshotRun("2026-08-26T16:00:00.000Z", "success", "complete", [remaining]), { missing: 1, withdrawn: 1 });
+  assert.deepEqual(await snapshotRun("2026-08-26T16:00:00.000Z", "healthy", "complete", [remaining]), { missing: 1, withdrawn: 1 });
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 0);
   const withdrawn = database.prepare(
     "SELECT queue_status, item_status, missing_count FROM content_candidates WHERE id = ?",
@@ -3307,7 +3421,7 @@ test("catastrophic count drops do not withdraw published events", async () => {
     id: "dvhimss-events",
     origin: "dvhimss-events",
     type: "events" as const,
-    state: "success" as const,
+    state: "healthy" as const,
     checkedAt,
     itemCount,
     completeness,
@@ -3389,7 +3503,7 @@ test("bundled ingest events are withdrawable via tombstones from a clean D1", as
     id: "dvhimss-events",
     origin: "dvhimss-events",
     type: "events" as const,
-    state: "success" as const,
+    state: "healthy" as const,
     checkedAt,
     itemCount: 1,
     completeness: "complete" as const,
@@ -3932,7 +4046,8 @@ function applyMigrations(database: DatabaseSync) {
     "0005_publication_invariants.sql",
     "0006_editor_model_attempts.sql",
     "0007_publication_identity.sql",
-    "0008_snapshot_completeness.sql",
+    "0008_source_reliability.sql",
+    "0009_snapshot_completeness.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 
@@ -4013,6 +4128,37 @@ function cannedIngest(items: ContentItem[], fetchedAt = "2026-08-26T12:00:00.000
     },
   });
 }
+
+test("priority selection mixes queue age, authority, diversity, and SLA metrics", () => {
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const rows = [
+    reviewNews("news-old-inquirer", "Inquirer clip"),
+    reviewNews("news-official-penn", "Penn deployment evidence"),
+    reviewNews("news-official-cooper", "Cooper deployment evidence"),
+    reviewNews("news-recent-temple", "Temple deployment evidence"),
+  ].map((item, index) => {
+    const origin = ["inquirer-health", "penn-medicine-newsroom", "cooper-newsroom", "temple-health-newsroom"][index];
+    const orgs = [["org-jefferson"], ["org-penn"], ["org-cooper"], ["org-temple"]][index];
+    return {
+      item: { ...item, orgs, source: { ...item.source, origin } },
+      fingerprint: `fp-${item.id}`,
+    };
+  });
+  rows[3].item.publishedAt = now.toISOString();
+  const records = new Map(rows.map((row, index) => [row.item.id, modelState({
+    id: row.item.id,
+    fingerprint: row.fingerprint,
+    firstSeenAt: new Date(now.getTime() - (index === 0 ? QUEUE_SLA_OVERDUE_MS : 60_000)).toISOString(),
+  })]));
+  const selected = selectEditorModelWorkWithMetrics(rows, records, 3, now);
+  assert.equal(selected.items.length, 3);
+  assert.ok(selected.metrics.overdueCount >= 1);
+  assert.ok(selected.metrics.oldestEligibleAgeMs && selected.metrics.oldestEligibleAgeMs >= QUEUE_SLA_OVERDUE_MS);
+  const origins = new Set(selected.items.map((item) => item.source.origin));
+  assert.ok(origins.size >= 2);
+  const ranked = selectPriorityWork(rows.map((row) => contentPriorityFields(row.item, records.get(row.item.id)?.firstSeenAt)), 3, now);
+  assert.equal(ranked.metrics.selectedCount, 3);
+});
 
 test("editor model work is budgeted, fair, and independent of official events", () => {
   const now = new Date("2026-08-26T12:00:00.000Z");
@@ -4323,7 +4469,7 @@ test("model-stage errors do not leak the lock; unexpected pipeline errors mark t
             id: "x",
             origin: "x",
             type: "social" as const,
-            state: "success" as const,
+            state: "healthy" as const,
             checkedAt: "2026-08-26T12:00:00.000Z",
             itemCount: 0,
             complete: false,
@@ -4347,6 +4493,62 @@ test("model-stage errors do not leak the lock; unexpected pipeline errors mark t
     cannedIngest([reviewNews("news-skipped")]),
   );
   assert.deepEqual(skipped, { skipped: true, reason: "automation-already-running" });
+  database.close();
+});
+
+test("automation lock owner token renews and recovers stranded running ingest", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  assert.equal(await acquireAutomationLock(db, "owner-a", now, 14), true);
+  assert.equal(await acquireAutomationLock(db, "owner-b", now, 14), false);
+  assert.equal(await renewAutomationLock(db, "owner-a", new Date(now.getTime() + 60_000), 14), true);
+  const renewed = database.prepare("SELECT expires_at FROM automation_locks WHERE name = 'hourly-ingest'").get() as { expires_at: string };
+  assert.equal(renewed.expires_at, new Date(now.getTime() + 60_000 + 14 * 60_000).toISOString());
+  assert.equal(await renewAutomationLock(db, "owner-b", now, 14), false);
+  await releaseAutomationLock(db, "owner-a");
+
+  database.prepare(
+    "INSERT INTO ingest_runs (id, started_at, state, item_count) VALUES ('run-stranded', ?, 'running', 0)",
+  ).run("2026-08-26T10:00:00.000Z");
+  assert.equal(await acquireAutomationLock(db, "owner-c", now, 14), true);
+  const stranded = database.prepare("SELECT state, error FROM ingest_runs WHERE id = 'run-stranded'").get() as { state: string; error: string };
+  assert.equal(stranded.state, "failed");
+  assert.match(stranded.error, /Stranded running ingest/);
+  await releaseAutomationLock(db, "owner-c");
+  database.close();
+});
+
+test("lost lock aborts the automation run instead of overlapping", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const inner = sqliteD1(database);
+  let lockQueries = 0;
+  const stolen: D1StatementLike = {
+    bind() { return stolen; },
+    async run() { return undefined; },
+    async first() { return { owner_run_id: "other-owner" }; },
+    async all() { return { results: [] }; },
+  };
+  const db: D1DatabaseLike = {
+    prepare(query: string) {
+      if (query.includes("automation_locks")) {
+        lockQueries += 1;
+        if (lockQueries > 2) return stolen;
+      }
+      return inner.prepare(query);
+    },
+    batch: inner.batch.bind(inner),
+  };
+  await assert.rejects(
+    runAutomation(
+      { VALLEY_DESK_DB: db },
+      fetch,
+      cannedIngest([reviewNews("news-lock-lost")]),
+    ),
+    /automation-lock-lost/,
+  );
   database.close();
 });
 

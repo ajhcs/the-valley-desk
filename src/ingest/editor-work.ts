@@ -1,4 +1,5 @@
 import type { ContentItem } from "../content/schema";
+import { contentPriorityFields, selectPriorityWork, summarizeQueueSla, type QueueSlaMetrics } from "./queue";
 import { matchingProductUses } from "./product-watch";
 
 export const DEFAULT_EDITOR_MODEL_BUDGET = 4;
@@ -78,6 +79,37 @@ export function isEditorModelEligible(
   return elapsed >= editorModelBackoffMs(record.attemptCount);
 }
 
+export function selectEditorModelWorkWithMetrics(
+  items: Array<{ item: ContentItem; fingerprint: string }>,
+  records: Map<string, EditorModelState>,
+  budget: number,
+  now = new Date(),
+  reusableIds?: Set<string>,
+): { items: ContentItem[]; metrics: QueueSlaMetrics } {
+  const eligible = items.filter(({ item, fingerprint }) => (
+    isEditorModelEligible(item, fingerprint, records.get(item.id), now, reusableIds)
+  ));
+  const limit = parseBoundedInt(budget, DEFAULT_EDITOR_MODEL_BUDGET, 0, MAX_EDITOR_MODEL_BUDGET);
+  const neverAttempted = eligible.filter(({ item, fingerprint }) => {
+    const record = records.get(item.id);
+    return !record?.attemptedAt || !sameAttemptFingerprint(record, fingerprint);
+  });
+  const retrying = eligible.filter((row) => !neverAttempted.includes(row));
+  const toFields = (rows: typeof eligible) => rows.map(({ item }) => (
+    contentPriorityFields(item, records.get(item.id)?.firstSeenAt ?? now.toISOString())
+  ));
+  const firstPass = selectPriorityWork(toFields(neverAttempted), limit, now);
+  const remaining = limit - firstPass.selected.length;
+  const secondPass = remaining > 0 ? selectPriorityWork(toFields(retrying), remaining, now) : { selected: [] as ContentItem[] };
+  const selected = [...firstPass.selected, ...secondPass.selected];
+  const selectedIds = new Set(selected.map((item) => item.id));
+  const selectedFields = toFields(eligible).filter((row) => selectedIds.has(row.id));
+  return {
+    items: selected,
+    metrics: summarizeQueueSla(toFields(eligible), selectedFields, now),
+  };
+}
+
 export function selectEditorModelWork(
   items: Array<{ item: ContentItem; fingerprint: string }>,
   records: Map<string, EditorModelState>,
@@ -85,27 +117,5 @@ export function selectEditorModelWork(
   now = new Date(),
   reusableIds?: Set<string>,
 ) {
-  const eligible = items.filter(({ item, fingerprint }) => (
-    isEditorModelEligible(item, fingerprint, records.get(item.id), now, reusableIds)
-  ));
-  const newItemSeenAt = now.getTime();
-  eligible.sort((a, b) => {
-    const ra = records.get(a.item.id);
-    const rb = records.get(b.item.id);
-    const neverA = !ra?.attemptedAt || !sameAttemptFingerprint(ra, a.fingerprint);
-    const neverB = !rb?.attemptedAt || !sameAttemptFingerprint(rb, b.fingerprint);
-    if (neverA !== neverB) return neverA ? -1 : 1;
-    if (neverA && neverB) {
-      const ta = Date.parse(ra?.firstSeenAt ?? "") || newItemSeenAt;
-      const tb = Date.parse(rb?.firstSeenAt ?? "") || newItemSeenAt;
-      if (ta !== tb) return ta - tb;
-      return a.item.id.localeCompare(b.item.id);
-    }
-    const ta = Date.parse(ra?.attemptedAt ?? "") || 0;
-    const tb = Date.parse(rb?.attemptedAt ?? "") || 0;
-    if (ta !== tb) return ta - tb;
-    return a.item.id.localeCompare(b.item.id);
-  });
-  const limit = parseBoundedInt(budget, DEFAULT_EDITOR_MODEL_BUDGET, 0, MAX_EDITOR_MODEL_BUDGET);
-  return eligible.slice(0, limit).map((row) => row.item);
+  return selectEditorModelWorkWithMetrics(items, records, budget, now, reusableIds).items;
 }

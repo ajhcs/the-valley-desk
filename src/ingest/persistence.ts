@@ -11,7 +11,15 @@ import {
   sourceIdentityKey,
   withCanonicalSource,
 } from "./identity";
-import { snapshotCompleteness, sourceAuthorizesDisappearance, type SourceRunNote } from "./source-health";
+import {
+  isFailureSourceState,
+  isSuccessfulSourceState,
+  snapshotCompleteness,
+  sourceAuthorizesDisappearance,
+  type SourceRunNote,
+} from "./source-health";
+
+export const DEFAULT_AUTOMATION_LEASE_MINUTES = 14;
 
 export type D1StatementLike = {
   bind(...values: unknown[]): D1StatementLike;
@@ -544,15 +552,19 @@ export async function persistSourceHealth(
       completeness = excluded.completeness,
       item_count = excluded.item_count,
       consecutive_failures = CASE
-        WHEN excluded.state = 'success' THEN 0
+        WHEN excluded.state IN ('healthy', 'healthy-empty') THEN 0
+        WHEN excluded.state IN ('disabled', 'misconfigured') THEN source_health.consecutive_failures
         ELSE source_health.consecutive_failures + 1
       END,
       last_checked_at = excluded.last_checked_at,
       last_success_at = CASE
-        WHEN excluded.state = 'success' THEN excluded.last_checked_at
+        WHEN excluded.state IN ('healthy', 'healthy-empty') THEN excluded.last_checked_at
         ELSE source_health.last_success_at
       END,
-      last_error = CASE WHEN excluded.state = 'error' THEN excluded.last_error ELSE NULL END,
+      last_error = CASE
+        WHEN excluded.state IN ('healthy', 'healthy-empty') THEN NULL
+        ELSE excluded.last_error
+      END,
       last_run_id = excluded.last_run_id
   `).bind(
     source.id,
@@ -563,9 +575,9 @@ export async function persistSourceHealth(
     snapshotCompleteness(source) === "complete" ? 1 : 0,
     snapshotCompleteness(source),
     source.itemCount,
-    source.state === "error" ? 1 : 0,
+    isFailureSourceState(source.state) ? 1 : 0,
     source.checkedAt,
-    source.state === "success" ? source.checkedAt : null,
+    isSuccessfulSourceState(source.state) ? source.checkedAt : null,
     source.error ?? null,
     runId,
   ));
@@ -758,11 +770,21 @@ export async function markIngestRunFailed(
   ).bind(finishedAt, error.slice(0, 1000), runId).run();
 }
 
+export async function failStrandedIngestRuns(
+  db: D1DatabaseLike,
+  now = new Date(),
+  error = "Stranded running ingest after lock expiry",
+) {
+  await db.prepare(
+    "UPDATE ingest_runs SET state = 'failed', finished_at = ?, error = ? WHERE state = 'running'",
+  ).bind(now.toISOString(), error.slice(0, 1000)).run();
+}
+
 export async function acquireAutomationLock(
   db: D1DatabaseLike,
   owner: string,
   now = new Date(),
-  leaseMinutes = 14,
+  leaseMinutes = DEFAULT_AUTOMATION_LEASE_MINUTES,
 ) {
   const expiresAt = new Date(now.getTime() + leaseMinutes * 60_000).toISOString();
   await db.prepare(`
@@ -771,6 +793,26 @@ export async function acquireAutomationLock(
     ON CONFLICT(name) DO UPDATE SET owner_run_id = excluded.owner_run_id, expires_at = excluded.expires_at
     WHERE automation_locks.expires_at <= ?
   `).bind(owner, expiresAt, now.toISOString()).run();
+  const row = await db.prepare(
+    "SELECT owner_run_id, expires_at FROM automation_locks WHERE name = 'hourly-ingest'",
+  ).first<{ owner_run_id: string; expires_at: string }>();
+  const owned = row?.owner_run_id === owner;
+  if (owned) await failStrandedIngestRuns(db, now);
+  return owned;
+}
+
+export async function renewAutomationLock(
+  db: D1DatabaseLike,
+  owner: string,
+  now = new Date(),
+  leaseMinutes = DEFAULT_AUTOMATION_LEASE_MINUTES,
+) {
+  const expiresAt = new Date(now.getTime() + leaseMinutes * 60_000).toISOString();
+  await db.prepare(`
+    UPDATE automation_locks
+    SET expires_at = ?
+    WHERE name = 'hourly-ingest' AND owner_run_id = ?
+  `).bind(expiresAt, owner).run();
   const row = await db.prepare(
     "SELECT owner_run_id FROM automation_locks WHERE name = 'hourly-ingest'",
   ).first<{ owner_run_id: string }>();

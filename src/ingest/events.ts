@@ -3,11 +3,27 @@ import { eventCopyMarksCancelled } from "../lib/calendar";
 import { hasInternalProcessLanguage } from "../lib/editorialCopy";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
-import type { IngestSourceResult, SnapshotCompleteness, SourceRunNote } from "./source-health";
+import { eventSourceById } from "./origins";
+import {
+  classifyFetchError,
+  sourceNote,
+  sourceStateForItemCount,
+  type IngestSourceResult,
+  type SnapshotCompleteness,
+  type SourceRunNote,
+} from "./source-health";
+import {
+  EVENTS_MAX_BYTES,
+  SOURCE_TIMEOUT_MS,
+  SOURCE_USER_AGENT,
+  UpstreamError,
+  fetchUpstream,
+} from "./upstream";
 
-const UA = "TheValleyDesk/0.1 (+https://github.com/ajhcs/the-valley-desk)";
-const SOURCE_TIMEOUT_MS = 12_000;
+const UA = SOURCE_USER_AGENT;
 const REGISTRATION_HOSTS = ["cvent.me", "web.cvent.com", "dvhimss.org", "njhimss.org", "njdvhimssevent.com"];
+const DVHIMSS_SOURCE = eventSourceById("dvhimss-events");
+const NJHIMSS_SOURCE = eventSourceById("njhimss-events");
 
 function decode(value: string) {
   return value
@@ -118,55 +134,75 @@ function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "auto
 }
 
 async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: string): Promise<EventSnapshot> {
-  const url = "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100";
-  const res = await fetchImpl(url, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS) });
-  if (!res.ok) throw new Error(`DVHIMSS calendar returned HTTP ${res.status}`);
-  const data = (await res.json()) as { events?: Record<string, unknown>[] };
-  if (!Array.isArray(data.events)) throw new Error("DVHIMSS calendar response omitted events");
+  if (DVHIMSS_SOURCE && DVHIMSS_SOURCE.status !== "enabled") {
+    throw new UpstreamError(
+      DVHIMSS_SOURCE.status,
+      DVHIMSS_SOURCE.reason ?? `DVHIMSS source is ${DVHIMSS_SOURCE.status}`,
+    );
+  }
+  const url = DVHIMSS_SOURCE?.url ?? "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100";
+  const response = await fetchUpstream({
+    url,
+    fetchImpl,
+    maxBytes: EVENTS_MAX_BYTES,
+    timeoutMs: SOURCE_TIMEOUT_MS,
+    headers: { "user-agent": UA },
+  });
+  let data: { events?: Record<string, unknown>[] };
+  try {
+    data = JSON.parse(response.body) as { events?: Record<string, unknown>[] };
+  } catch {
+    throw new UpstreamError("parser-failed", "DVHIMSS calendar response was not JSON");
+  }
+  if (!Array.isArray(data.events)) throw new UpstreamError("parser-failed", "DVHIMSS calendar response omitted events");
   const rows: EventItem[] = [];
   for (const e of data.events) {
-    const title = decode(String(e.title ?? ""));
-    const page = String(e.url ?? "https://dvhimss.org/events-calendar");
-    const start = toIso(String(e.utc_start_date ?? e.start_date ?? ""));
-    if (!title || !start) continue;
-    const end = toIso(String(e.utc_end_date ?? e.end_date ?? ""));
-    const registrationUrl = verifiedRegistrationUrl(e.website);
-    const venueObj = e.venue && typeof e.venue === "object" ? (e.venue as { venue?: string; city?: string }) : {};
-    const venue = venueObj.venue ? decode(String(venueObj.venue)) : undefined;
-    const city = venueObj.city ? decode(String(venueObj.city)) : undefined;
-    rows.push(
-      eventRow({
-        id: `evt-dvhimss-${e.id}`,
-        slug: slugify(title),
-        title,
-        dek: "Official DVHIMSS chapter calendar.",
-        body: officialEventBody(title, venue, city, textField(e.description ?? e.excerpt)),
-        publishedAt: fetchedAt,
-        updatedAt: fetchedAt,
-        topics: ["chapter", "events"],
-        orgs: ["org-dvhimss"],
-        region: "regional",
-        source: {
-          kind: "ingest",
-          origin: "dvhimss-events",
-          url: page,
-          fetchedAt,
-          externalId: String(e.id),
-        },
-        citations: [{ name: "DVHIMSS", url: page }],
-        geo: venue,
-        startsAt: start,
-        endsAt: end,
-        timezone: String(e.timezone ?? "America/New_York"),
-        venue,
-        city,
-        hostOrg: "DVHIMSS",
-        registrationUrl,
-        partner: "dvhimss",
-        autoPublish: Boolean(registrationUrl),
-        status: registrationUrl ? "published" : "review",
-      }),
-    );
+    try {
+      const title = decode(String(e.title ?? ""));
+      const page = String(e.url ?? "https://dvhimss.org/events-calendar");
+      const start = toIso(String(e.utc_start_date ?? e.start_date ?? ""));
+      if (!title || !start) continue;
+      const end = toIso(String(e.utc_end_date ?? e.end_date ?? ""));
+      const registrationUrl = verifiedRegistrationUrl(e.website);
+      const venueObj = e.venue && typeof e.venue === "object" ? (e.venue as { venue?: string; city?: string }) : {};
+      const venue = venueObj.venue ? decode(String(venueObj.venue)) : undefined;
+      const city = venueObj.city ? decode(String(venueObj.city)) : undefined;
+      rows.push(
+        eventRow({
+          id: `evt-dvhimss-${e.id}`,
+          slug: slugify(title),
+          title,
+          dek: "Official DVHIMSS chapter calendar.",
+          body: officialEventBody(title, venue, city, textField(e.description ?? e.excerpt)),
+          publishedAt: fetchedAt,
+          updatedAt: fetchedAt,
+          topics: ["chapter", "events"],
+          orgs: ["org-dvhimss"],
+          region: "regional",
+          source: {
+            kind: "ingest",
+            origin: "dvhimss-events",
+            url: page,
+            fetchedAt,
+            externalId: String(e.id),
+          },
+          citations: [{ name: "DVHIMSS", url: page }],
+          geo: venue,
+          startsAt: start,
+          endsAt: end,
+          timezone: String(e.timezone ?? "America/New_York"),
+          venue,
+          city,
+          hostOrg: "DVHIMSS",
+          registrationUrl,
+          partner: "dvhimss",
+          autoPublish: Boolean(registrationUrl),
+          status: registrationUrl ? "published" : "review",
+        }),
+      );
+    } catch {
+      /* one malformed calendar row must not discard valid siblings */
+    }
   }
   const completeness: SnapshotCompleteness = data.events.length === 0
     ? "empty-unverified"
@@ -181,22 +217,36 @@ export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetc
 }
 
 async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) {
-  const urls = ["https://njdvhimssevent.com/", "https://njdvhimssevent.com"];
+  if (NJHIMSS_SOURCE && NJHIMSS_SOURCE.status !== "enabled") {
+    throw new UpstreamError(
+      NJHIMSS_SOURCE.status,
+      NJHIMSS_SOURCE.reason ?? `NJDVHIMSS source is ${NJHIMSS_SOURCE.status}`,
+    );
+  }
+  const primary = NJHIMSS_SOURCE?.url ?? "https://njdvhimssevent.com/";
+  const urls = [...new Set([primary, "https://njdvhimssevent.com/", "https://njdvhimssevent.com"])];
   let html = "";
   let used = urls[0];
+  let lastError: UpstreamError | undefined;
   for (const url of urls) {
     try {
-      const res = await fetchImpl(url, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS) });
-      if (res.ok) {
-        html = await res.text();
-        used = url;
-        break;
-      }
-    } catch {
-      /* try next */
+      const response = await fetchUpstream({
+        url,
+        fetchImpl,
+        maxBytes: EVENTS_MAX_BYTES,
+        timeoutMs: SOURCE_TIMEOUT_MS,
+        headers: { "user-agent": UA },
+      });
+      html = response.body;
+      used = url;
+      break;
+    } catch (error) {
+      lastError = error instanceof UpstreamError
+        ? error
+        : new UpstreamError("upstream-failed", error instanceof Error ? error.message : String(error));
     }
   }
-  if (!html) throw new Error("NJDVHIMSS page was unavailable");
+  if (!html) throw lastError ?? new UpstreamError("upstream-failed", "NJDVHIMSS page was unavailable");
   const rows: EventItem[] = [];
   const registrationUrl = verifiedNjdvhimssRegistrationUrl(html);
   const conference = /October\s+13,\s+2026[\s\S]{0,80}October\s+15,\s+2026|Tuesday,\s+October\s+13,\s+2026/i.test(html);
@@ -291,32 +341,36 @@ export async function ingestEventsWithHealth(
   ]);
   const official = officialResult.status === "fulfilled" ? officialResult.value.items : [];
   const scraped = scrapedResult.status === "fulfilled" ? scrapedResult.value.items : [];
-  const sourceNote = (
+  const toNote = (
     id: string,
     origin: string,
     url: string,
     result: PromiseSettledResult<EventSnapshot>,
-  ): SourceRunNote => result.status === "fulfilled" ? {
-    id,
-    origin,
-    type: "events",
-    state: "success",
-    checkedAt: fetchedAt,
-    itemCount: result.value.items.length,
-    completeness: result.value.completeness,
-    complete: result.value.completeness === "complete",
-    url: result.value.url,
-  } : {
-    id,
-    origin,
-    type: "events",
-    state: "error",
-    checkedAt: fetchedAt,
-    itemCount: 0,
-    completeness: "partial",
-    complete: false,
-    url,
-    error: result.reason instanceof Error ? result.reason.message : String(result.reason),
+  ): SourceRunNote => {
+    if (result.status === "fulfilled") {
+      return sourceNote({
+        id,
+        origin,
+        type: "events",
+        state: sourceStateForItemCount(result.value.items.length),
+        checkedAt: fetchedAt,
+        itemCount: result.value.items.length,
+        completeness: result.value.completeness,
+        complete: result.value.completeness === "complete",
+        url: result.value.url,
+      });
+    }
+    const reason = result.reason;
+    const state = reason instanceof UpstreamError ? reason.code : classifyFetchError(reason);
+    return sourceNote({
+      id,
+      origin,
+      type: "events",
+      state,
+      checkedAt: fetchedAt,
+      url,
+      error: reason instanceof Error ? reason.message : String(reason),
+    });
   };
   const batch: IngestBatch = {
     adapter: "events",
@@ -326,8 +380,8 @@ export async function ingestEventsWithHealth(
   return {
     items: toReviewQueue(batch),
     sources: [
-      sourceNote("dvhimss-events", "dvhimss-events", "https://dvhimss.org/events-calendar", officialResult),
-      sourceNote("njhimss-events", "njhimss-events", "https://njdvhimssevent.com/", scrapedResult),
+      toNote("dvhimss-events", "dvhimss-events", DVHIMSS_SOURCE?.url ?? "https://dvhimss.org/events-calendar", officialResult),
+      toNote("njhimss-events", "njhimss-events", NJHIMSS_SOURCE?.url ?? "https://njdvhimssevent.com/", scrapedResult),
     ],
   };
 }

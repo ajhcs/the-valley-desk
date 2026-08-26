@@ -20,7 +20,7 @@ const OFFICIAL_CHAPTER_SOURCE_HOSTS: Record<string, string[]> = {
   "dvhimss-events": ["dvhimss.org"],
   "njhimss-events": ["njdvhimssevent.com", "njhimss.org"],
 };
-const OFFICIAL_HEALTH_SYSTEM_ORIGINS = new Set([
+export const OFFICIAL_HEALTH_SYSTEM_ORIGINS = new Set([
   "christianacare-newsroom", "chop-newsroom", "cooper-newsroom",
   "jefferson-newsroom", "main-line-health-newsroom", "penn-medicine-newsroom",
   "temple-health-newsroom", "tower-health-newsroom",

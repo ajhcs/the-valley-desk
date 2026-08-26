@@ -14,13 +14,14 @@ import {
   MAX_EDITOR_MODEL_BUDGET,
   MAX_EDITOR_MODEL_CONCURRENCY,
   parseBoundedInt,
-  selectEditorModelWork,
+  selectEditorModelWorkWithMetrics,
   shouldEnrichCandidate,
 } from "./editor-work";
 import { evaluateCandidate } from "./editor";
 import {
   acquireAutomationLock,
   candidateFingerprint,
+  renewAutomationLock,
   markIngestRunFailed,
   markIngestRunSucceeded,
   persistEnrichments,
@@ -127,7 +128,7 @@ async function enrichBounded(
   env: AutomationEnv,
   fetchImpl: typeof fetch,
   reusable: Map<string, NonNullable<CandidateEnrichment["enrichment"]>>,
-  options: { concurrency: number; timeoutMs: number; deadlineAt: number },
+  options: { concurrency: number; timeoutMs: number; deadlineAt: number; heartbeat?: () => Promise<void> },
 ) {
   const out: CandidateEnrichment[] = [];
   const concurrency = Math.max(1, Math.min(options.concurrency, items.length || 1));
@@ -136,6 +137,7 @@ async function enrichBounded(
     while (next < items.length) {
       const remaining = options.deadlineAt - Date.now();
       if (remaining < 1_000) return;
+      if (options.heartbeat) await options.heartbeat();
       const index = next++;
       const timeoutMs = Math.max(1_000, Math.min(options.timeoutMs, remaining));
       out[index] = await enrichCandidate(items[index], env, fetchImpl, timeoutMs, reusable.get(items[index].id));
@@ -153,9 +155,20 @@ export async function runAutomation(
   if (!(await acquireAutomationLock(env.VALLEY_DESK_DB, lockOwner))) {
     return { skipped: true, reason: "automation-already-running" };
   }
+  const heartbeat = setInterval(() => {
+    void renewAutomationLock(env.VALLEY_DESK_DB, lockOwner).catch((error) => {
+      console.error("automation-lock-renew-failed", error);
+    });
+  }, 60_000);
+  const ensureLock = async () => {
+    if (!(await renewAutomationLock(env.VALLEY_DESK_DB, lockOwner))) {
+      throw new Error("automation-lock-lost");
+    }
+  };
   let stage = "fetch-sources";
   let persistedRunId: string | undefined;
   try {
+    await ensureLock();
     const run = await ingest({
       X_BEARER_TOKEN: env.X_BEARER_TOKEN,
       LINKEDIN_TOKEN: env.LINKEDIN_TOKEN,
@@ -213,18 +226,21 @@ export async function runAutomation(
       item,
       fingerprint: await candidateFingerprint(item),
     })));
-    const selected = selectEditorModelWork(
+    await ensureLock();
+    const selectedWork = selectEditorModelWorkWithMetrics(
       fingerprinted,
       modelStates,
       budget,
       new Date(),
       new Set(reusable.keys()),
     );
+    const selected = selectedWork.items;
     stage = "model-enrichment";
     const modeled = await enrichBounded(selected, env, fetchImpl, reusable, {
       concurrency,
       timeoutMs,
       deadlineAt: Date.now() + deadlineMs,
+      heartbeat: ensureLock,
     });
     const modeledById = new Map(modeled.map((row) => [row.item.id, row]));
     const candidates = items.map((item) => (
@@ -253,6 +269,7 @@ export async function runAutomation(
       reusedEnrichmentCount: reusable.size,
       modelBudget: budget,
       modelSelectedCount: selected.length,
+      queueMetrics: selectedWork.metrics,
       modelAttemptedCount: modeled.filter((row) => row.attempt).length,
       modelSucceededCount: modeled.filter((row) => row.attempt?.outcome === "success").length,
       modelFailedCount: modeled.filter((row) => row.attempt?.outcome === "failure").length,
@@ -272,6 +289,7 @@ export async function runAutomation(
     }
     throw new Error(`Automation failed during ${stage}: ${message}`, { cause: error });
   } finally {
+    clearInterval(heartbeat);
     try {
       await releaseAutomationLock(env.VALLEY_DESK_DB, lockOwner);
     } catch (error) {

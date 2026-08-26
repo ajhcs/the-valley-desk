@@ -2,10 +2,22 @@ import type { ContentItem, VoiceItem } from "../content/schema";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
 import { isHeldHandle, liveLinkedInOrigins, type LinkedInOrigin } from "./origins";
+import {
+  sourceNote,
+  sourceStateForItemCount,
+  type SourceRunNote,
+} from "./source-health";
+import {
+  SOCIAL_MAX_BYTES,
+  SOURCE_TIMEOUT_MS,
+  UpstreamError,
+  fetchUpstream,
+} from "./upstream";
 
 export type SocialIngestResult = {
   items: ContentItem[];
   skipped?: string;
+  sources: SourceRunNote[];
 };
 
 function slugify(title: string) {
@@ -64,44 +76,98 @@ async function fetchOriginPosts(
   token: string,
   fetchImpl: typeof fetch,
 ): Promise<Record<string, unknown>[]> {
-  if (isHeldHandle("linkedin", origin.slug)) return [];
-  const urn = origin.kind === "organization" ? `urn:li:organization:(slug:${origin.slug})` : undefined;
-  if (!urn) return [];
+  const urn = `urn:li:organization:(slug:${origin.slug})`;
   const url = `https://api.linkedin.com/rest/posts?q=author&author=${encodeURIComponent(urn)}&count=10`;
-  const res = await fetchImpl(url, {
+  const response = await fetchUpstream({
+    url,
+    fetchImpl,
+    maxBytes: SOCIAL_MAX_BYTES,
+    timeoutMs: SOURCE_TIMEOUT_MS,
     headers: {
       authorization: `Bearer ${token}`,
       "linkedin-version": "202608",
       "x-restli-protocol-version": "2.0.0",
     },
   });
-  if (!res.ok) return [];
-  const data = (await res.json()) as { elements?: Record<string, unknown>[] };
-  return Array.isArray(data.elements) ? data.elements : [];
+  let data: { elements?: Record<string, unknown>[] };
+  try {
+    data = JSON.parse(response.body) as { elements?: Record<string, unknown>[] };
+  } catch {
+    throw new UpstreamError("parser-failed", "LinkedIn posts response was not JSON");
+  }
+  if (!Array.isArray(data.elements)) {
+    throw new UpstreamError("parser-failed", "LinkedIn posts response omitted elements");
+  }
+  return data.elements;
 }
 
-/** Official LinkedIn read. No-op without LINKEDIN_TOKEN. No cookie/like/comment scrape. */
+function originNote(
+  origin: LinkedInOrigin,
+  checkedAt: string,
+  state: SourceRunNote["state"],
+  extra: Partial<SourceRunNote> = {},
+): SourceRunNote {
+  return sourceNote({
+    id: `linkedin-${origin.slug}`,
+    origin: origin.slug,
+    type: "social",
+    state,
+    checkedAt,
+    url: origin.url,
+    ...extra,
+  });
+}
+
+/** Official LinkedIn read. No-op without LINKEDIN_TOKEN. Person origins are unsupported. */
 export async function ingestLinkedIn(
   env: { LINKEDIN_TOKEN?: string } = {},
   now = new Date(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<SocialIngestResult> {
-  const token = env.LINKEDIN_TOKEN?.trim();
-  if (!token) return { items: [], skipped: "no-token" };
   const fetchedAt = now.toISOString();
+  const origins = liveLinkedInOrigins().filter((origin) => !isHeldHandle("linkedin", origin.slug));
+  const token = env.LINKEDIN_TOKEN?.trim();
+  if (!token) {
+    return {
+      items: [],
+      skipped: "no-token",
+      sources: origins.map((origin) => originNote(
+        origin,
+        fetchedAt,
+        "misconfigured",
+        { error: "LINKEDIN_TOKEN is not configured" },
+      )),
+    };
+  }
   const items: ContentItem[] = [];
-  for (const origin of liveLinkedInOrigins()) {
-    if (isHeldHandle("linkedin", origin.slug)) continue;
+  const sources: SourceRunNote[] = [];
+  for (const origin of origins) {
+    if (origin.kind !== "organization") {
+      sources.push(originNote(origin, fetchedAt, "misconfigured", {
+        error: "LinkedIn person origins are not supported by the official organization posts API",
+      }));
+      continue;
+    }
     try {
       const posts = await fetchOriginPosts(origin, token, fetchImpl);
+      const before = items.length;
       for (const raw of posts) {
-        const row = asVoice(origin, raw, fetchedAt);
-        if (row) items.push(row);
+        try {
+          const row = asVoice(origin, raw, fetchedAt);
+          if (row) items.push(row);
+        } catch {
+          /* skip malformed post */
+        }
       }
-    } catch {
-      /* official read failed; do not scrape */
+      const itemCount = items.length - before;
+      sources.push(originNote(origin, fetchedAt, sourceStateForItemCount(itemCount), { itemCount }));
+    } catch (error) {
+      const failed = error instanceof UpstreamError
+        ? error
+        : new UpstreamError("upstream-failed", error instanceof Error ? error.message : String(error));
+      sources.push(originNote(origin, fetchedAt, failed.code, { error: failed.message }));
     }
   }
   const batch: IngestBatch = { adapter: "linkedin", fetchedAt, items };
-  return { items: toReviewQueue(batch) };
+  return { items: toReviewQueue(batch), sources };
 }

@@ -5,49 +5,32 @@ import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
 import { collapseBySourceIdentity, normalizeSourceUrl, withCanonicalSource } from "./identity";
 import { mapSeedOrgIds } from "./org-map";
-import type { IngestSourceResult, SourceRunNote } from "./source-health";
+import { rssSources, type RssSource } from "./origins";
+import {
+  sourceNote,
+  sourceStateForItemCount,
+  type IngestSourceResult,
+  type SourceRunNote,
+} from "./source-health";
+import {
+  RSS_MAX_BYTES,
+  SOURCE_TIMEOUT_MS,
+  SOURCE_USER_AGENT,
+  UpstreamError,
+  fetchUpstream,
+} from "./upstream";
 
 const seedEntities = Entity.array().parse(entityFixtures);
-const SOURCE_TIMEOUT_MS = 12_000;
 
-export const RSS_SOURCES = [
-  {
-    id: "christianacare-information-technology",
-    name: "ChristianaCare News · Information Technology",
-    origin: "christianacare-newsroom",
-    url: "https://news.christianacare.org/category/information-technology/feed/",
-    orgIds: ["org-christianacare"],
-  },
-  {
-    id: "cooper-newsroom",
-    name: "Cooper University Health Care News",
-    origin: "cooper-newsroom",
-    url: "https://blogs.cooperhealth.org/news/feed/",
-    orgIds: ["org-cooper"],
-  },
-  {
-    id: "inquirer-health",
-    name: "Inquirer Health",
-    url: "https://www.inquirer.com/arc/outboundfeeds/rss/category/health/?outputType=xml",
-  },
-  {
-    id: "inquirer-business",
-    name: "Inquirer Business",
-    url: "https://www.inquirer.com/arc/outboundfeeds/rss/category/business/?outputType=xml",
-  },
-  {
-    id: "whyy",
-    name: "WHYY",
-    url: "https://whyy.org/feed/",
-    fallbacks: ["https://whyy.org/topics/health/feed/"],
-  },
-  {
-    id: "technically",
-    name: "Technical.ly",
-    url: "https://technical.ly/feed/",
-    fallbacks: ["https://technical.ly/philadelphia/feed/"],
-  },
-] as const;
+export const RSS_SOURCES = rssSources();
+
+export type ParsedFeedItem = {
+  title: string;
+  link: string;
+  description: string;
+  pubDate: string;
+  guid: string;
+};
 
 function decodeXml(value: string) {
   return value
@@ -75,24 +58,111 @@ function slugify(title: string) {
 }
 
 export function looksLikeRss(body: string) {
-  return /<rss[\s>]|<rdf:RDF|<feed[\s>]/i.test(body);
+  const head = body.slice(0, 4000);
+  return /<rss[\s>]|<rdf:RDF/i.test(head);
 }
 
-export function parseRssItems(xml: string) {
-  return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].map((m) => {
-    const block = m[1];
+export function looksLikeAtom(body: string) {
+  const head = body.slice(0, 4000);
+  return /<feed[\s>]/i.test(head) && !/<rss[\s>]/i.test(head);
+}
+
+export function looksLikeFeed(body: string) {
+  return looksLikeRss(body) || looksLikeAtom(body);
+}
+
+function extractTaggedBlocks(xml: string, tagName: string) {
+  const openRe = new RegExp(`<${tagName}\\b[^>]*>`, "gi");
+  const closeTag = `</${tagName}>`;
+  const blocks: string[] = [];
+  let pos = 0;
+  while (pos < xml.length) {
+    openRe.lastIndex = pos;
+    const open = openRe.exec(xml);
+    if (!open) break;
+    const start = open.index + open[0].length;
+    openRe.lastIndex = start;
+    const nextOpen = openRe.exec(xml);
+    const closeAt = xml.toLowerCase().indexOf(closeTag.toLowerCase(), start);
+    if (closeAt === -1) break;
+    if (nextOpen && nextOpen.index < closeAt) {
+      pos = nextOpen.index;
+      continue;
+    }
+    blocks.push(xml.slice(start, closeAt));
+    pos = closeAt + closeTag.length;
+  }
+  return blocks;
+}
+
+function parseOneRssItem(block: string): ParsedFeedItem | undefined {
+  try {
+    const title = tag(block, "title");
+    const link = tag(block, "link") || tag(block, "guid");
+    if (!title || !link) return undefined;
     return {
-      title: tag(block, "title"),
-      link: tag(block, "link") || tag(block, "guid"),
+      title,
+      link,
       description: tag(block, "description"),
       pubDate: tag(block, "pubDate") || tag(block, "dc:date"),
       guid: tag(block, "guid"),
     };
-  }).filter((item) => item.title && item.link);
+  } catch {
+    return undefined;
+  }
+}
+
+function atomLink(block: string) {
+  const links = [...block.matchAll(/<link\b([^>]*)\/?>/gi)];
+  const alternate = links.find((row) => /rel\s*=\s*["']alternate["']/i.test(row[1] ?? ""));
+  const hrefFrom = (attrs: string) => {
+    const href = attrs.match(/href\s*=\s*["']([^"']+)["']/i);
+    return href ? decodeXml(href[1]) : "";
+  };
+  if (alternate) return hrefFrom(alternate[1] ?? "");
+  for (const row of links) {
+    const href = hrefFrom(row[1] ?? "");
+    if (href) return href;
+  }
+  return tag(block, "link");
+}
+
+function parseOneAtomEntry(block: string): ParsedFeedItem | undefined {
+  try {
+    const title = tag(block, "title");
+    const link = atomLink(block) || tag(block, "id");
+    if (!title || !link) return undefined;
+    return {
+      title,
+      link,
+      description: tag(block, "summary") || tag(block, "content"),
+      pubDate: tag(block, "updated") || tag(block, "published"),
+      guid: tag(block, "id"),
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+export function parseRssItems(xml: string): ParsedFeedItem[] {
+  return extractTaggedBlocks(xml, "item")
+    .map(parseOneRssItem)
+    .filter((item): item is ParsedFeedItem => Boolean(item));
+}
+
+export function parseAtomItems(xml: string): ParsedFeedItem[] {
+  return extractTaggedBlocks(xml, "entry")
+    .map(parseOneAtomEntry)
+    .filter((item): item is ParsedFeedItem => Boolean(item));
+}
+
+export function parseFeedItems(xml: string): ParsedFeedItem[] {
+  if (looksLikeAtom(xml)) return parseAtomItems(xml);
+  return parseRssItems(xml);
 }
 
 export function rssItemToContent(
-  raw: ReturnType<typeof parseRssItems>[number],
+  raw: ParsedFeedItem,
   feedName: string,
   fetchedAt: string,
   _index = 0,
@@ -134,55 +204,95 @@ export function rssItemToContent(
   });
 }
 
-type WorkingRss = { url: string; name: string; origin?: string; orgIds?: readonly string[]; status: number; items: ReturnType<typeof parseRssItems> };
+type WorkingRss = {
+  url: string;
+  name: string;
+  origin?: string;
+  orgIds?: readonly string[];
+  status: number;
+  items: ParsedFeedItem[];
+};
+
+function configNote(source: RssSource, checkedAt: string, state: "disabled" | "misconfigured"): SourceRunNote {
+  return sourceNote({
+    id: source.id,
+    origin: source.origin ?? source.name,
+    type: "rss",
+    state,
+    checkedAt,
+    url: source.url,
+    error: source.reason ?? (state === "disabled" ? "Source is disabled" : "Source is misconfigured"),
+  });
+}
+
+async function readFeed(url: string, fetchImpl: typeof fetch) {
+  const response = await fetchUpstream({
+    url,
+    fetchImpl,
+    maxBytes: RSS_MAX_BYTES,
+    timeoutMs: SOURCE_TIMEOUT_MS,
+    headers: { "user-agent": SOURCE_USER_AGENT, accept: "application/rss+xml, application/atom+xml, application/xml, text/xml, */*" },
+  });
+  if (!looksLikeFeed(response.body)) {
+    throw new UpstreamError("parser-failed", "Response was not a usable RSS or Atom document");
+  }
+  return { ...response, items: parseFeedItems(response.body) };
+}
 
 async function fetchRssSources(
   fetchImpl: typeof fetch,
   checkedAt: string,
 ): Promise<{ working: WorkingRss[]; sources: SourceRunNote[] }> {
-  const working: { url: string; name: string; origin?: string; orgIds?: readonly string[]; status: number; items: ReturnType<typeof parseRssItems> }[] = [];
+  const working: WorkingRss[] = [];
   const sources: SourceRunNote[] = [];
   for (const source of RSS_SOURCES) {
-    const urls = [source.url, ...("fallbacks" in source ? source.fallbacks : [])];
+    if (source.status === "disabled" || source.status === "misconfigured") {
+      sources.push(configNote(source, checkedAt, source.status));
+      continue;
+    }
+    const urls = [source.url, ...(source.fallbacks ?? [])];
     let success: WorkingRss | undefined;
-    let lastError = "No usable RSS response";
+    let lastError: UpstreamError | undefined;
     for (const url of urls) {
       try {
-        const res = await fetchImpl(url, {
-          headers: { "user-agent": "TheValleyDesk/0.1 (+https://github.com/ajhcs/the-valley-desk)" },
-          signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
-        });
-        const body = await res.text();
-        if (res.status === 200 && looksLikeRss(body)) {
-          success = {
-            url,
-            name: source.name,
-            origin: "origin" in source ? source.origin : undefined,
-            orgIds: "orgIds" in source ? source.orgIds : undefined,
-            status: 200,
-            items: parseRssItems(body),
-          };
-          break;
-        }
-        lastError = `HTTP ${res.status} or invalid RSS document`;
+        const feed = await readFeed(url, fetchImpl);
+        success = {
+          url,
+          name: source.name,
+          origin: source.origin,
+          orgIds: source.orgIds,
+          status: feed.status,
+          items: feed.items,
+        };
+        break;
       } catch (error) {
-        lastError = error instanceof Error ? error.message : String(error);
-        /* try next */
+        lastError = error instanceof UpstreamError
+          ? error
+          : new UpstreamError("upstream-failed", error instanceof Error ? error.message : String(error));
       }
     }
-    if (success) working.push(success);
-    sources.push({
+    if (success) {
+      working.push(success);
+      sources.push(sourceNote({
+        id: source.id,
+        origin: source.origin ?? source.name,
+        type: "rss",
+        state: sourceStateForItemCount(success.items.length),
+        checkedAt,
+        itemCount: success.items.length,
+        url: success.url,
+      }));
+      continue;
+    }
+    sources.push(sourceNote({
       id: source.id,
-      origin: "origin" in source && source.origin ? source.origin : source.name,
+      origin: source.origin ?? source.name,
       type: "rss",
-      state: success ? "success" : "error",
+      state: lastError?.code ?? "upstream-failed",
       checkedAt,
-      itemCount: success?.items.length ?? 0,
-      completeness: "partial",
-      complete: false,
-      url: success?.url ?? source.url,
-      ...(success ? {} : { error: lastError }),
-    });
+      url: source.url,
+      error: lastError?.message ?? "No usable RSS response",
+    }));
   }
   return { working, sources };
 }
@@ -201,12 +311,16 @@ export async function ingestRssWithHealth(
   const { working: feeds, sources } = await fetchRssSources(fetchImpl, fetchedAt);
   const items: ContentItem[] = [];
   for (const feed of feeds) {
-    feed.items.forEach((raw, index) => {
-      items.push(rssItemToContent(raw, feed.name, fetchedAt, index, seedEntities, {
-        origin: feed.origin,
-        fixedOrgIds: feed.orgIds,
-      }));
-    });
+    for (const [index, raw] of feed.items.entries()) {
+      try {
+        items.push(rssItemToContent(raw, feed.name, fetchedAt, index, seedEntities, {
+          origin: feed.origin,
+          fixedOrgIds: feed.orgIds,
+        }));
+      } catch {
+        /* one malformed mapped item must not discard valid siblings */
+      }
+    }
   }
   const collapsed = collapseBySourceIdentity(items).map((group) => group.item);
   const batch: IngestBatch = { adapter: "rss", fetchedAt, items: collapsed };

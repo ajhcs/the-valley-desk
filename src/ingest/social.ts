@@ -2,6 +2,7 @@ import { ingestLinkedIn } from "./linkedin";
 import { ingestX } from "./x";
 import type { ContentItem } from "../content/schema";
 import { isLiveSocialKey } from "./origins";
+import type { SourceRunNote } from "./source-health";
 
 export type IngestEnv = {
   X_BEARER_TOKEN?: string;
@@ -12,6 +13,7 @@ export type SocialRun = {
   items: ContentItem[];
   linkedin: { count: number; skipped?: string };
   x: { count: number; skipped?: string };
+  sources: SourceRunNote[];
 };
 
 /** LI + X only. Never RSS. Review-only. Jane Doe is not a live key. */
@@ -29,5 +31,6 @@ export async function ingestSocial(
     items,
     linkedin: { count: linkedin.items.length, skipped: linkedin.skipped },
     x: { count: x.items.length, skipped: x.skipped },
+    sources: [...linkedin.sources, ...x.sources],
   };
 }

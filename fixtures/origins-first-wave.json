@@ -1,13 +1,30 @@
 {
-  "asOf": "2026-08-23",
+  "asOf": "2026-08-26",
   "source": "Wren pairing 2026-08-23",
   "notes": [
     "Jane Doe / voice-01 is not a live key and does not ship.",
     "Official system/association LI+X and people LI are kind=voice.",
     "Newsroom RSS stays kind=news.",
-    "Do not scrape cookies, likes, comments, or unofficial profiles."
+    "Do not scrape cookies, likes, comments, or unofficial profiles.",
+    "Technical.ly remains in the registry as misconfigured until a current official feed URL is confirmed."
   ],
   "rss": [
+    {
+      "id": "christianacare-information-technology",
+      "name": "ChristianaCare News · Information Technology",
+      "origin": "christianacare-newsroom",
+      "url": "https://news.christianacare.org/category/information-technology/feed/",
+      "orgIds": ["org-christianacare"],
+      "kind": "news"
+    },
+    {
+      "id": "cooper-newsroom",
+      "name": "Cooper University Health Care News",
+      "origin": "cooper-newsroom",
+      "url": "https://blogs.cooperhealth.org/news/feed/",
+      "orgIds": ["org-cooper"],
+      "kind": "news"
+    },
     {
       "id": "inquirer-health",
       "name": "Inquirer Health",
@@ -26,13 +43,31 @@
       "url": "https://whyy.org/feed/",
       "fallbacks": ["https://whyy.org/topics/health/feed/"],
       "kind": "news"
+    },
+    {
+      "id": "technically",
+      "name": "Technical.ly",
+      "url": "https://technical.ly/feed/",
+      "fallbacks": ["https://technical.ly/philadelphia/feed/"],
+      "kind": "news",
+      "status": "misconfigured",
+      "reason": "Configured feed URLs do not currently return a usable RSS or Atom document"
     }
   ],
   "events": [
     {
-      "id": "dvhimss-rest",
-      "url": "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=20",
-      "orgs": ["org-dvhimss"]
+      "id": "dvhimss-events",
+      "origin": "dvhimss-events",
+      "url": "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100",
+      "orgs": ["org-dvhimss"],
+      "adapter": "dvhimss-rest"
+    },
+    {
+      "id": "njhimss-events",
+      "origin": "njhimss-events",
+      "url": "https://njdvhimssevent.com/",
+      "orgs": ["org-njhimss", "org-dvhimss"],
+      "adapter": "njdvhimss-page"
     }
   ],
   "linkedin": [
