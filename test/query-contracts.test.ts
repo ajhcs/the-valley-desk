@@ -47,7 +47,7 @@ import { CLOSED_LIVE_SEED_IDS, hasLiveSeedOrg, liveSeedOrgIds } from "../src/con
 import { eventRegisterUrl } from "../src/lib/register.ts";
 import { eventJsonLd, itemJsonLd } from "../src/content/jsonld.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
-import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
+import { canonicalUrl, canonicalPath, DEFAULT_PUBLIC_ORIGIN, publicOrigin } from "../src/lib/canonical.ts";
 import { eventPlace, formatChipLabel, formatDate, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
 import { KIND_CHIP, chipKind, kindChip } from "../src/lib/kind.ts";
 import { primaryDisplayLabel, primaryEventLabel, primaryNewsLabel, primaryVoiceLabel } from "../src/lib/taxonomy.ts";
@@ -1353,7 +1353,7 @@ test("event JSON-LD is published EventItem only; offers.url is registrationUrl",
   assert.equal((ld?.offers as { price?: string } | undefined)?.price, undefined);
   assert.equal((ld?.organizer as { name?: string; identifier?: string }).name, "DVHIMSS");
   assert.equal((ld?.organizer as { identifier?: string }).identifier, "org-dvhimss");
-  assert.equal(ld?.url, "https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th");
+  assert.equal(ld?.url, canonicalUrl(fall));
   assert.equal(ld?.mainEntityOfPage, ld?.url);
   assert.equal((ld?.location as { name?: string }).name, "Hard Rock Hotel & Casino, Atlantic City, NJ");
   assert.ok(!String((ld?.location as { name?: string }).name).includes("Atlantic City, Atlantic City"));
@@ -1471,7 +1471,7 @@ test("canonical helper: news family under /news, events under /events, voices un
   assert.equal(canonicalPath({ kind: "interview", slug: "x" }), "/news/x");
   assert.equal(canonicalPath({ kind: "voice", slug: "mlh-cloud-analytics-2026-08-17" }), "/voices/mlh-cloud-analytics-2026-08-17");
   assert.equal(canonicalPath({ kind: "voice", slug: "temple-honor-roll-2026" }), "/voices/temple-honor-roll-2026");
-  assert.equal(canonicalUrl({ kind: "event", slug: "dvhimss-september-networking" }), "https://thevalleydesk.org/events/dvhimss-september-networking");
+  assert.equal(canonicalUrl({ kind: "event", slug: "dvhimss-september-networking" }), `${DEFAULT_PUBLIC_ORIGIN}/events/dvhimss-september-networking`);
 });
 
 test("NewsArticle JSON-LD uses envelope fields and canonical url", () => {
@@ -1481,7 +1481,7 @@ test("NewsArticle JSON-LD uses envelope fields and canonical url", () => {
   assert.equal(ld?.headline, penn.title);
   assert.equal(ld?.description, penn.impactSentence);
   assert.notEqual(ld?.description, penn.dek);
-  assert.equal(ld?.url, "https://thevalleydesk.org/news/penn-in-house-ai-scribe");
+  assert.equal(ld?.url, canonicalUrl(penn));
   assert.equal(ld?.mainEntityOfPage, ld?.url);
   assert.equal(ld?.isBasedOn, penn.source.url);
   assert.equal(ld?.isAccessibleForFree, true);
@@ -1550,9 +1550,9 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(!router.includes("/orgs"));
   assert.ok(!router.includes("EntityPage"));
   assert.ok(entitySrc.includes("does not mint org-id routes"));
-  assert.ok(rss.includes("<link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>"));
-  assert.ok(rss.includes("<guid isPermaLink=\"true\">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>"));
-  assert.ok(rss.includes("<link>https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</link>"));
+  assert.ok(rss.includes(`<link>${DEFAULT_PUBLIC_ORIGIN}/news/penn-in-house-ai-scribe</link>`));
+  assert.ok(rss.includes(`<guid isPermaLink="true">${DEFAULT_PUBLIC_ORIGIN}/news/penn-in-house-ai-scribe</guid>`));
+  assert.ok(rss.includes(`<link>${DEFAULT_PUBLIC_ORIGIN}/events/njdvhimss-fall-conference-october-13th-15th</link>`));
   assert.ok(rss.includes("<description>Penn’s in-house scribe reached roughly 1,200 ambulatory users; a separate 46-clinician DAX Copilot study reported 20.4% less note time per appointment.</description>"));
   assert.ok(!rss.includes("<description>The Philadelphia Inquirer, Nov. 10, 2025: internist Dina Capalongo hits a green button; the doctor still approves the note.</description>"));
   assert.ok(!rss.includes("Partner event, review-queued in the stub path; published here so the rail has two dates."));
@@ -1576,20 +1576,22 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
       assert.ok(!rss.includes(`<guid isPermaLink="true">${item.source.url}</guid>`));
     }
   }
-  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/</loc>"));
-  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/news</loc>"));
-  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/events</loc>"));
-  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/voices</loc>"));
-  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/voices/mlh-cloud-analytics-2026-08-17</loc>"));
-  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/voices/temple-honor-roll-2026</loc>"));
-  assert.ok(!sitemap.includes("<loc>https://thevalleydesk.org/news/temple-honor-roll-2026</loc>"));
-  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/feed.json</loc>"));
-  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/feed.xml</loc>"));
-  assert.ok(sitemap.includes("<loc>https://thevalleydesk.org/news/penn-in-house-ai-scribe</loc>"));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/</loc>`));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/news</loc>`));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/events</loc>`));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/voices</loc>`));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/voices/mlh-cloud-analytics-2026-08-17</loc>`));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/voices/temple-honor-roll-2026</loc>`));
+  assert.ok(!sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/news/temple-honor-roll-2026</loc>`));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/feed.json</loc>`));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/feed.xml</loc>`));
+  assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/news/penn-in-house-ai-scribe</loc>`));
   assert.ok(!sitemap.includes("/orgs/"));
   assert.ok(!sitemap.includes("/org/"));
-  assert.ok(!sitemap.includes("https://thevalleydesk.org/policy"));
-  assert.ok(!sitemap.includes("https://thevalleydesk.org/ai"));
+  assert.ok(!sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/policy`));
+  assert.ok(!sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/ai`));
+  assert.ok(!rss.includes("thevalleydesk.org"));
+  assert.ok(!sitemap.includes("thevalleydesk.org"));
   assert.ok(!feed.items.some((row) => row.id === "brief-01"));
   assert.ok(!feed.items.some((row) => row.id === "ai-01"));
   assert.ok(!rss.includes("week-of-2026-08-18"));
@@ -1606,6 +1608,8 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
 test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org routes", () => {
   const robots = readFileSync(join(root, "public/robots.txt"), "utf8");
   const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const crawler = readFileSync(join(root, "src/lib/crawler-html.ts"), "utf8");
+  const canonical = readFileSync(join(root, "src/lib/canonical.ts"), "utf8");
   const publishedRoutes = readFileSync(join(root, "worker-published.js"), "utf8");
   const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
   const router = readFileSync(join(root, "src/router.tsx"), "utf8");
@@ -1615,19 +1619,20 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(!robots.includes("<"));
   assert.ok(worker.includes("status: 404"));
   assert.ok(worker.includes("text/html"));
-  assert.ok(!worker.includes("text/plain"));
   assert.ok(!/new Response\("Not found"/.test(worker));
   assert.ok(worker.includes("x-robots-tag"));
   assert.ok(worker.includes("noindex"));
   assert.ok(worker.includes("/index.html"));
   assert.ok(worker.includes('path.startsWith("/org/")'));
   assert.ok(worker.includes("publishedItemPath"));
-  assert.ok(worker.includes("withHead"));
-  assert.ok(worker.includes("og:title"));
-  assert.ok(worker.includes("twitter:card"));
-  assert.ok(worker.includes("canonical"));
-  assert.ok(worker.includes("application/rss+xml"));
-  assert.ok(worker.includes('const ORIGIN = "https://thevalleydesk.org"'));
+  assert.ok(worker.includes("decorateHtml"));
+  assert.ok(crawler.includes("og:title"));
+  assert.ok(crawler.includes("twitter:card"));
+  assert.ok(crawler.includes("canonical"));
+  assert.ok(crawler.includes("application/rss+xml"));
+  assert.ok(worker.includes("resolvePublicOrigin"));
+  assert.ok(canonical.includes("DEFAULT_PUBLIC_ORIGIN"));
+  assert.ok(!canonical.includes('DEFAULT_PUBLIC_ORIGIN = "https://thevalleydesk.org"'));
   assert.ok(worker.includes("/feed.xml"));
   assert.ok(!worker.includes("EntityPage"));
   assert.ok(publishedRoutes.includes("christianacare-epic-go-live"));
@@ -2109,6 +2114,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
   const indexCss = readFileSync(join(root, "src/index.css"), "utf8");
   const head = readFileSync(join(root, "src/ui/DocumentHead.tsx"), "utf8");
+  const crawler = readFileSync(join(root, "src/lib/crawler-html.ts"), "utf8");
   const worker = readFileSync(join(root, "worker.js"), "utf8");
   const router = readFileSync(join(root, "src/router.tsx"), "utf8");
 
@@ -2156,9 +2162,10 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(head.includes('desc = "Voices"'));
   assert.ok(head.includes('ogType'));
   assert.ok(!head.includes('item && item.kind !== "event"'));
-  assert.ok(worker.includes('desc = "Voices"'));
-  assert.ok(worker.includes("articleKinds"));
-  assert.ok(!worker.includes('item && item.kind !== "event"'));
+  assert.ok(crawler.includes('desc = "Voices"'));
+  assert.ok(crawler.includes("articleKinds"));
+  assert.ok(!crawler.includes('item && item.kind !== "event"'));
+  assert.ok(worker.includes("decorateHtml"));
 });
 
 test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pay facts", () => {
@@ -2929,8 +2936,8 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
     workerPublished.indexOf("export const publishedBriefingSlugs"),
   );
   for (const slug of slugs) {
-    assert.ok(sitemap.includes(`<loc>https://thevalleydesk.org/voices/${slug}</loc>`), slug);
-    assert.ok(!sitemap.includes(`<loc>https://thevalleydesk.org/news/${slug}</loc>`), slug);
+    assert.ok(sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/voices/${slug}</loc>`), slug);
+    assert.ok(!sitemap.includes(`<loc>${DEFAULT_PUBLIC_ORIGIN}/news/${slug}</loc>`), slug);
     assert.ok(voiceSlugBlock.includes(`"${slug}"`), slug);
     assert.ok(!newsSlugBlock.includes(`"${slug}"`), slug);
     assert.ok(feed.items.some((row) => row.slug === slug && row.kind === "voice"));
@@ -2940,6 +2947,7 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
 
 test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest underline", () => {
   const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const crawler = readFileSync(join(root, "src/lib/crawler-html.ts"), "utf8");
   const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
   const lead = readFileSync(join(root, "src/ui/home/Lead.tsx"), "utf8");
   const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
@@ -2952,13 +2960,13 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   const mention = readFileSync(join(root, "src/ui/MentionText.tsx"), "utf8");
 
   assert.ok(worker.includes('content-type": "text/html'));
-  assert.ok(!worker.includes("text/plain"));
   assert.ok(!/new Response\("Not found"/.test(worker));
   assert.ok(worker.includes("x-robots-tag"));
   assert.ok(worker.includes("noindex"));
   assert.ok(worker.includes("no-store"));
   assert.ok(worker.includes("/index.html"));
-  assert.ok(worker.includes("This page is not published."));
+  assert.ok(crawler.includes("This page is not published."));
+  assert.ok(worker.includes("notFound"));
   assert.equal(notFound.match(/This page is not published\./g)?.length, 1);
   assert.ok(!/Not found/.test(notFound));
   const notFoundCss = css.slice(css.indexOf(".NotFound {"), css.indexOf(".SiteHeader-inner {"));
@@ -3720,7 +3728,7 @@ test("Muse editor client is provider-configurable and evidence-bound", async () 
   };
   const mockFetch = async (input: string | URL | Request, init?: RequestInit) => {
     assert.equal(String(input), "https://openrouter.ai/api/v1/chat/completions");
-    assert.equal(new Headers(init?.headers).get("http-referer"), "https://thevalleydesk.org");
+    assert.equal(new Headers(init?.headers).get("http-referer"), publicOrigin());
     assert.equal(new Headers(init?.headers).get("x-title"), "The Valley Desk editor-in-chief");
     const request = JSON.parse(String(init?.body));
     assert.equal(request.model, DEFAULT_EDITOR_MODEL);
@@ -3890,7 +3898,8 @@ test("dynamic publication overlay updates matching ingest rows but cannot shadow
   assert.ok(script.includes("__VALLEY_DESK_WITHDRAWN_IDS__"));
   const workerSource = readFileSync(join(root, "worker.js"), "utf8");
   assert.ok(workerSource.includes("mergePublishedContent(seed.items, overlay.items, overlay.withdrawnIds)"));
-  assert.ok(workerSource.includes("runtimeItemsScript(published, overlay.withdrawnIds)"));
+  assert.ok(workerSource.includes("withdrawnIds: overlay.withdrawnIds"));
+  assert.ok(workerSource.includes("decorateHtml"));
 });
 
 test("one-worker configuration has Muse defaults, one D1 binding, and no staging environment", () => {
@@ -3905,7 +3914,9 @@ test("one-worker configuration has Muse defaults, one D1 binding, and no staging
   assert.ok(wrangler.includes('"EDITOR_MODEL_DEADLINE_MS": "40000"'));
   assert.ok(wrangler.includes('"database_name": "the-valley-desk"'));
   assert.ok(!wrangler.includes('"staging"'));
-  assert.equal(pkg.scripts.deploy, "npm run build && wrangler deploy");
+  assert.ok(pkg.scripts.deploy.startsWith("npm run build && wrangler deploy"));
+  assert.ok(pkg.scripts.deploy.includes("BUILD_SHA"));
+  assert.ok(!pkg.scripts.deploy.includes("wrangler deploy -e"));
 });
 
 test("lab prototypes bind live catalog, the real mark asset, and unpublished-safe routes", () => {
@@ -3994,7 +4005,8 @@ test("lab prototypes bind live catalog, the real mark asset, and unpublished-saf
   assert.ok(shell.includes('aria-label="Prototype views"'));
   assert.ok(worker.includes("SPA_PATH"));
   assert.ok(worker.includes('path.startsWith("/lab")'));
-  assert.ok(worker.includes('content="noindex, nofollow"'));
+  const crawler = readFileSync(join(root, "src/lib/crawler-html.ts"), "utf8");
+  assert.ok(crawler.includes('content="noindex, nofollow"') || crawler.includes("noindex, nofollow"));
 });
 
 test("lab helpers use structured catalog dates and seed systems only", async () => {

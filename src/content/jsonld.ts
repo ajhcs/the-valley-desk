@@ -1,6 +1,6 @@
 import type { ContentItem, EventItem } from "./schema";
 import type { Entity } from "./entity";
-import { canonicalUrl } from "../lib/canonical";
+import { canonicalUrl, publicOrigin } from "../lib/canonical";
 import { eventPlace, listDek } from "../lib/format";
 import { eventLifecycle, eventSchedule } from "../lib/calendar";
 import { eventWhyCopy, isBoilerplateEventCopy } from "../lib/eventCopy";
@@ -40,12 +40,13 @@ function organizationFromHost(hostOrg: string, entities: Entity[]) {
 export function itemJsonLd(
   item: ContentItem,
   entities: Entity[] = [],
+  origin = publicOrigin(),
 ): Record<string, unknown> | undefined {
   if (item.status !== "published") return undefined;
-  if (item.kind === "event") return eventJsonLd(item, entities);
+  if (item.kind === "event") return eventJsonLd(item, entities, origin);
   if (!NEWS_ARTICLE_KINDS.has(item.kind)) return undefined;
 
-  const url = canonicalUrl(item);
+  const url = canonicalUrl(item, origin);
   const doc: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
@@ -73,11 +74,12 @@ export function itemJsonLd(
 export function eventJsonLd(
   item: ContentItem,
   entities: Entity[] = [],
+  origin = publicOrigin(),
 ): Record<string, unknown> | undefined {
   if (item.kind !== "event" || item.status !== "published") return undefined;
   const event = item as EventItem;
   const place = eventPlace(event);
-  const url = canonicalUrl(event);
+  const url = canonicalUrl(event, origin);
   const schedule = eventSchedule(event);
   const lifecycle = eventLifecycle(event);
   const description = event.impactSentence

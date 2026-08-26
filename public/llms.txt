@@ -6,15 +6,15 @@ The site is an aggregator with context, not a magazine. Each published item link
 
 ## Sections
 
-- [News](https://thevalleydesk.org/news): health-system technology, policy, finance, AI, EHR, interoperability, workforce, and cybersecurity briefs.
-- [Events](https://thevalleydesk.org/events): confirmed Delaware Valley chapter events, webinars, and regionally relevant programs with registration links.
-- [Voices](https://thevalleydesk.org/voices): attributed statements from regional health-system leaders and official institutional accounts.
+- [News](https://the-valley-desk.clyons.workers.dev/news): health-system technology, policy, finance, AI, EHR, interoperability, workforce, and cybersecurity briefs.
+- [Events](https://the-valley-desk.clyons.workers.dev/events): confirmed Delaware Valley chapter events, webinars, and regionally relevant programs with registration links.
+- [Voices](https://the-valley-desk.clyons.workers.dev/voices): attributed statements from regional health-system leaders and official institutional accounts.
 
 ## Machine-readable feeds
 
-- [JSON feed](https://thevalleydesk.org/feed.json)
-- [XML feed](https://thevalleydesk.org/feed.xml)
-- [Sitemap](https://thevalleydesk.org/sitemap.xml)
+- [JSON feed](https://the-valley-desk.clyons.workers.dev/feed.json)
+- [XML feed](https://the-valley-desk.clyons.workers.dev/feed.xml)
+- [Sitemap](https://the-valley-desk.clyons.workers.dev/sitemap.xml)
 
 ## Editorial notes
 

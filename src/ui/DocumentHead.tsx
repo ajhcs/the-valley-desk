@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { byPreviousSlug, bySlug } from "../content/queries";
 import { catalog } from "../lib/catalog";
-import { canonicalUrl, SITE_ORIGIN } from "../lib/canonical";
+import { canonicalUrl, publicOrigin, publicUrl } from "../lib/canonical";
 
 const SITE = "The Valley Desk";
 const DEFAULT_DESC = "Local health-tech news for people and agents";
@@ -58,7 +58,8 @@ export function DocumentHead() {
       title = `Voices · ${SITE}`;
       desc = "Voices";
     }
-    const url = item ? canonicalUrl(item) : path === "/" ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${path}`;
+    const origin = publicOrigin();
+    const url = item ? canonicalUrl(item, origin) : publicUrl(path, origin);
     const articleKinds = new Set(["news", "policy", "ai", "interview"]);
     const ogType = item && articleKinds.has(item.kind) ? "article" : "website";
     document.title = title;
@@ -71,8 +72,8 @@ export function DocumentHead() {
     upsertMeta("name", "twitter:title", title);
     upsertMeta("name", "twitter:description", desc);
     upsertLink("canonical", url);
-    upsertLink("alternate", `${SITE_ORIGIN}/feed.xml`, "application/rss+xml");
-    upsertLink("alternate", `${SITE_ORIGIN}/feed.json`, "application/json");
+    upsertLink("alternate", publicUrl("/feed.xml", origin), "application/rss+xml");
+    upsertLink("alternate", publicUrl("/feed.json", origin), "application/json");
   }, [pathname]);
   return null;
 }

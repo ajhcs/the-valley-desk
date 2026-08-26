@@ -5,16 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/build-feed.mjs",
+    "prebuild": "tsx scripts/build-feed.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler deploy",
-    "feed": "node scripts/build-feed.mjs",
+    "deploy": "npm run build && wrangler deploy --var BUILD_SHA:$(git rev-parse HEAD)",
+    "feed": "tsx scripts/build-feed.mjs",
     "ingest:rss": "tsx scripts/ingest-rss.mjs",
     "ingest:events": "tsx scripts/ingest-events.mjs",
     "ingest:social": "tsx scripts/ingest-social.mjs",
     "ingest:all": "tsx scripts/ingest-all.mjs",
-    "test": "node --import tsx/esm test/query-contracts.test.ts"
+    "test": "node --import tsx/esm --test --test-concurrency=1 test/query-contracts.test.ts test/cloudflare-ops.test.ts",
+    "ops:smoke": "node --import tsx/esm scripts/ops-smoke.mjs",
+    "secret-scan": "node scripts/secret-scan.mjs"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.170.31",

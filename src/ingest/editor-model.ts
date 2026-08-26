@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ContentCatalog, type ContentItem } from "../content/schema";
 import publishedCatalog from "../content/published-catalog.json";
+import { publicOrigin } from "../lib/canonical";
 import { hasDefensiveEditorialAside, hasInternalProcessLanguage } from "../lib/editorialCopy";
 import { editorContextForItem } from "./editor-context";
 import type { ProductUse } from "./product-watch";
@@ -175,7 +176,7 @@ export async function enrichWithEditorModel(
       headers: {
         authorization: `Bearer ${config.apiKey}`,
         "content-type": "application/json",
-        "http-referer": "https://thevalleydesk.org",
+        "http-referer": publicOrigin(),
         "x-title": "The Valley Desk editor-in-chief",
       },
       signal: AbortSignal.timeout(timeoutMs),

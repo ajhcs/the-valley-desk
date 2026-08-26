@@ -2,23 +2,13 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { canonicalPath, canonicalUrl, llmsTxt, publicOrigin, robotsTxt } from "../src/lib/canonical.ts";
+
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const items = JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8"));
 
-const SITE = "https://thevalleydesk.org";
+const SITE = publicOrigin();
 const NEWS_PERMALINK_KINDS = new Set(["news", "policy", "ai", "interview"]);
-
-function canonicalPath(item) {
-  if (item.kind === "event") return "/events/" + item.slug;
-  if (NEWS_PERMALINK_KINDS.has(item.kind)) return "/news/" + item.slug;
-  if (item.kind === "voice") return "/voices/" + item.slug;
-  if (item.kind === "briefing") return "/briefing/" + item.slug;
-  return "/" + item.kind + "/" + item.slug;
-}
-
-function canonicalUrl(item) {
-  return SITE + canonicalPath(item);
-}
 
 function hasCite(item) {
   const cited = Array.isArray(item.citations) && item.citations.some((c) => c && c.url);
@@ -150,10 +140,12 @@ mkdirSync(join(root, "src/content"), { recursive: true });
 writeFileSync(join(root, "public/feed.json"), JSON.stringify(doc, null, 2) + "\n");
 writeFileSync(join(root, "public/feed.xml"), rss);
 writeFileSync(join(root, "public/sitemap.xml"), sitemap);
+writeFileSync(join(root, "public/robots.txt"), robotsTxt(SITE));
+writeFileSync(join(root, "public/llms.txt"), llmsTxt(SITE));
 writeFileSync(join(root, "worker-published.js"), publishedRoutes);
 writeFileSync(join(root, "src/content/published-catalog.json"), JSON.stringify(published, null, 2) + "\n");
 console.log(
   "wrote public/feed.json (" +
     published.length +
-    "), public/feed.xml, public/sitemap.xml, worker-published.js, src/content/published-catalog.json",
+    "), public/feed.xml, public/sitemap.xml, public/robots.txt, public/llms.txt, worker-published.js, src/content/published-catalog.json",
 );

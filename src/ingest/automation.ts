@@ -34,8 +34,10 @@ import {
   type CandidateEnrichment,
   type D1DatabaseLike,
 } from "./persistence";
+import { logOps } from "../lib/ops";
 import { matchingProductUses } from "./product-watch";
 import { runScheduledIngest, type IngestRun } from "./run-all";
+import { isSuccessfulSourceState } from "./source-health";
 
 export type AutomationEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
@@ -114,7 +116,7 @@ async function enrichCandidate(
       attempt: { fingerprint, attemptedAt, outcome: "success", error: null },
     };
   } catch (error) {
-    console.warn("editor-enrichment-skipped", item.id, attemptError(error));
+    logOps("model", { outcome: "item-failure", itemId: item.id, error: attemptError(error) }, "warn");
     return {
       item,
       enrichment: null,
@@ -153,6 +155,7 @@ export async function runAutomation(
 ) {
   const lockOwner = crypto.randomUUID();
   if (!(await acquireAutomationLock(env.VALLEY_DESK_DB, lockOwner))) {
+    logOps("lock", { outcome: "busy", reason: "automation-already-running" }, "warn");
     return { skipped: true, reason: "automation-already-running" };
   }
   const heartbeat = setInterval(() => {
@@ -165,6 +168,7 @@ export async function runAutomation(
       throw new Error("automation-lock-lost");
     }
   };
+  logOps("lock", { outcome: "acquired" });
   let stage = "fetch-sources";
   let persistedRunId: string | undefined;
   try {
@@ -262,6 +266,54 @@ export async function runAutomation(
     );
     stage = "complete-run";
     const finishedAt = await markIngestRunSucceeded(env.VALLEY_DESK_DB, persisted.runId);
+    const modelAttemptedCount = modeled.filter((row) => row.attempt).length;
+    const modelSucceededCount = modeled.filter((row) => row.attempt?.outcome === "success").length;
+    const modelFailedCount = modeled.filter((row) => row.attempt?.outcome === "failure").length;
+    const sources = (run.notes.sources ?? []).map((source) => ({
+      id: source.id,
+      origin: source.origin,
+      type: source.type,
+      state: source.state,
+      itemCount: source.itemCount,
+      complete: source.complete,
+    }));
+    const sourceErrorCount = sources.filter(
+      (source) => source.state !== "disabled" && !isSuccessfulSourceState(source.state),
+    ).length;
+    logOps("run", {
+      outcome: "succeeded",
+      runId: persisted.runId,
+      itemCount: persisted.itemCount,
+      finishedAt,
+    });
+    logOps("source", {
+      outcome: sourceErrorCount > 0 ? "degraded" : "ok",
+      runId: persisted.runId,
+      checked: sources.length,
+      errors: sourceErrorCount,
+      sources,
+    });
+    logOps("model", {
+      outcome: modelFailedCount && !modelSucceededCount ? "failed" : modelFailedCount ? "degraded" : "ok",
+      runId: persisted.runId,
+      budget,
+      selected: selected.length,
+      attempted: modelAttemptedCount,
+      succeeded: modelSucceededCount,
+      failed: modelFailedCount,
+      reused: reusable.size,
+      editorModel: env.EDITOR_MODEL || DEFAULT_EDITOR_MODEL,
+    });
+    logOps("publication", {
+      outcome: "applied",
+      runId: persisted.runId,
+      ...editorial,
+    });
+    logOps("reconciliation", {
+      outcome: reconciliation.withdrawn ? "withdrawn" : "ok",
+      runId: persisted.runId,
+      ...reconciliation,
+    });
     return {
       ...persisted,
       finishedAt,
@@ -270,9 +322,9 @@ export async function runAutomation(
       modelBudget: budget,
       modelSelectedCount: selected.length,
       queueMetrics: selectedWork.metrics,
-      modelAttemptedCount: modeled.filter((row) => row.attempt).length,
-      modelSucceededCount: modeled.filter((row) => row.attempt?.outcome === "success").length,
-      modelFailedCount: modeled.filter((row) => row.attempt?.outcome === "failure").length,
+      modelAttemptedCount,
+      modelSucceededCount,
+      modelFailedCount,
       sourceHealthCount,
       ...reconciliation,
       ...editorial,
@@ -280,11 +332,16 @@ export async function runAutomation(
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown automation error";
+    logOps("run", { outcome: "failed", stage, runId: persistedRunId, message }, "error");
     if (persistedRunId) {
       try {
         await markIngestRunFailed(env.VALLEY_DESK_DB, persistedRunId, `${stage}: ${message}`);
       } catch (statusError) {
-        console.error("ingest-run-failure-status-write-failed", statusError);
+        logOps("run", {
+          outcome: "status-write-failed",
+          runId: persistedRunId,
+          message: statusError instanceof Error ? statusError.message : "Unknown status write failure",
+        }, "error");
       }
     }
     throw new Error(`Automation failed during ${stage}: ${message}`, { cause: error });
@@ -292,8 +349,12 @@ export async function runAutomation(
     clearInterval(heartbeat);
     try {
       await releaseAutomationLock(env.VALLEY_DESK_DB, lockOwner);
+      logOps("lock", { outcome: "released" });
     } catch (error) {
-      console.error("automation-lock-release-failed", error);
+      logOps("lock", {
+        outcome: "release-failed",
+        message: error instanceof Error ? error.message : "Unknown lock release failure",
+      }, "error");
     }
   }
 }

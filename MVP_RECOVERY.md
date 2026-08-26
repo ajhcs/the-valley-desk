@@ -103,14 +103,14 @@ None currently reproduced on the recovery branch or live preview.
 - Long item-body/source text is now constrained to `76ch` without changing the locked lead/page chrome; desktop body width measures about 730px within the 1328px article canvas, and mobile remains fluid at 350px.
 - Tailwind source detection is scoped to `src/`; the untracked historical archive can no longer inflate or mutate generated production CSS.
 - Small event text now uses `#9A6500` (4.96:1 on white), while the signed `#CA8504` remains the event accent/background; date-chip text uses dark ink on gold.
-- Add a small CI gate after the recovery branch is pushed or proposed for merge.
+- Add a small CI gate after the recovery branch is pushed or proposed for merge. `.github/workflows/ci.yml` now covers locked install, tests, typecheck/build, local D1/scheduled smoke, audit, and a secret scan.
 - Rename or replace stale PR 5 during handoff so its old CIO-slug title cannot be mistaken for current scope.
 
 ### P2 — post-MVP
 
 - Remove intentionally unrouted dead components after a separate dependency check.
 - Add broader browser/device coverage beyond Chrome desktop and 390px mobile.
-- Improve release provenance so a deployed Worker exposes or records its source SHA directly rather than relying on asset-hash reproduction.
+- Improve release provenance so a deployed Worker exposes or records its source SHA directly rather than relying on asset-hash reproduction. `/api/health` and protected automation status now expose `buildSha` plus D1 `schemaVersion`; `npm run deploy` injects the git SHA. Rollback, D1 Time Travel, and alert thresholds live in `docs/OPERATIONS.md`.
 
 ## 7. Recovery validation record
 
@@ -132,3 +132,7 @@ None currently reproduced on the recovery branch or live preview.
 - `main` was not merged or changed.
 - No branch was pushed during forensic recovery.
 - `thevalleydesk.org` DNS and custom-domain binding were not changed.
+
+## 9. Cloudflare operations follow-up
+
+Public canonical/OG/feed/sitemap/robots/llms URLs now use configurable `PUBLIC_ORIGIN`, defaulting to the live Workers preview so the parked `thevalleydesk.org` domain is not advertised. Custom-domain cutover is a vars-only change on the existing `the-valley-desk` Worker. See `docs/OPERATIONS.md`.

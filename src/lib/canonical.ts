@@ -1,6 +1,61 @@
-export const SITE_ORIGIN = "https://thevalleydesk.org";
+/** Live preview host. Public URL generation must not advertise a parked/unresolved domain. */
+export const PREVIEW_ORIGIN = "https://the-valley-desk.clyons.workers.dev";
+
+/** Intended custom domain. Bind it with PUBLIC_ORIGIN only after DNS is actually pointed. */
+export const PRODUCTION_ORIGIN = "https://thevalleydesk.org";
+
+/** Current public origin when PUBLIC_ORIGIN is unset. */
+export const DEFAULT_PUBLIC_ORIGIN = PREVIEW_ORIGIN;
 
 const NEWS_PERMALINK_KINDS = new Set(["news", "policy", "ai", "interview"]);
+
+function readViteOrigin(): string | undefined {
+  try {
+    const value = (import.meta as ImportMeta & { env?: { VITE_PUBLIC_ORIGIN?: string } }).env?.VITE_PUBLIC_ORIGIN;
+    return typeof value === "string" && value.trim() ? value : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function readProcessOrigin(): string | undefined {
+  try {
+    const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
+    return env?.PUBLIC_ORIGIN || env?.VITE_PUBLIC_ORIGIN;
+  } catch {
+    return undefined;
+  }
+}
+
+function readInjectedOrigin(): string | undefined {
+  try {
+    const injected = (globalThis as { __VALLEY_DESK_PUBLIC_ORIGIN__?: unknown }).__VALLEY_DESK_PUBLIC_ORIGIN__;
+    return typeof injected === "string" && injected.trim() ? injected : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Accept only https origins. Anything else falls back to the live preview host. */
+export function resolvePublicOrigin(value?: string | null): string {
+  const raw = String(value ?? "").trim();
+  if (!raw) return DEFAULT_PUBLIC_ORIGIN;
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== "https:") return DEFAULT_PUBLIC_ORIGIN;
+    return url.origin;
+  } catch {
+    return DEFAULT_PUBLIC_ORIGIN;
+  }
+}
+
+/** Runtime public origin: injected Worker value, then env, then the preview default. */
+export function publicOrigin(): string {
+  return resolvePublicOrigin(readInjectedOrigin() || readViteOrigin() || readProcessOrigin());
+}
+
+/** @deprecated Prefer publicOrigin() so a vars-only cutover is visible at request time. */
+export const SITE_ORIGIN = DEFAULT_PUBLIC_ORIGIN;
 
 /** Permalink path. Policy/AI/interview live under /news/{slug}. Events under /events/{slug}. */
 export function canonicalPath(item: { kind: string; slug: string }): string {
@@ -11,6 +66,48 @@ export function canonicalPath(item: { kind: string; slug: string }): string {
   return "/" + item.kind + "/" + item.slug;
 }
 
-export function canonicalUrl(item: { kind: string; slug: string }): string {
-  return SITE_ORIGIN + canonicalPath(item);
+export function publicUrl(path = "/", origin = publicOrigin()): string {
+  if (!path || path === "/") return `${origin}/`;
+  return `${origin}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+export function canonicalUrl(item: { kind: string; slug: string }, origin = publicOrigin()): string {
+  return origin + canonicalPath(item);
+}
+
+export function robotsTxt(origin = publicOrigin()): string {
+  return [
+    "User-agent: *",
+    "Allow: /",
+    "Disallow: /lab",
+    `Sitemap: ${origin}/sitemap.xml`,
+    "",
+  ].join("\n");
+}
+
+export function llmsTxt(origin = publicOrigin()): string {
+  return `# The Valley Desk
+
+> A concise, cited record of how healthcare technology, AI, health policy, interoperability, EHR changes, cybersecurity, and related developments affect Delaware Valley health systems.
+
+The site is an aggregator with context, not a magazine. Each published item links to its source material. Use the canonical pages and machine-readable feeds below.
+
+## Sections
+
+- [News](${origin}/news): health-system technology, policy, finance, AI, EHR, interoperability, workforce, and cybersecurity briefs.
+- [Events](${origin}/events): confirmed Delaware Valley chapter events, webinars, and regionally relevant programs with registration links.
+- [Voices](${origin}/voices): attributed statements from regional health-system leaders and official institutional accounts.
+
+## Machine-readable feeds
+
+- [JSON feed](${origin}/feed.json)
+- [XML feed](${origin}/feed.xml)
+- [Sitemap](${origin}/sitemap.xml)
+
+## Editorial notes
+
+- Prefer the primary source and citations attached to each item.
+- Dates and event times use the America/New_York timezone unless the item states otherwise.
+- Unpublished and review-queue material is not part of the public record.
+`;
 }

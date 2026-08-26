@@ -9,10 +9,15 @@ import {
   validateForPublication,
 } from "../content/publication";
 import { EDITOR_POLICY_VERSION } from "./editor";
+import { resolvePublicOrigin } from "../lib/canonical";
+import { SCHEMA_VERSION, buildShaFromEnv, logOps } from "../lib/ops";
 
 type ReviewEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
   REVIEW_API_TOKEN?: string;
+  BUILD_SHA?: string;
+  CF_VERSION_METADATA?: { id?: string; tag?: string; timestamp?: string };
+  PUBLIC_ORIGIN?: string;
 };
 
 const JSON_HEADERS = {
@@ -20,8 +25,37 @@ const JSON_HEADERS = {
   "cache-control": "no-store",
 };
 
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
+const POST_RATE_LIMIT = 20;
+const POST_RATE_WINDOW_MS = 10 * 60 * 1000;
+const IDEMPOTENCY_TTL_MS = 10 * 60 * 1000;
+const MAX_JSON_BYTES = 8_192;
+
+type GuardState = {
+  posts: Map<string, number[]>;
+  idempotency: Map<string, { expiresAt: number; status: number; body: unknown }>;
+  postLimit: number;
+  windowMs: number;
+};
+
+const guards: GuardState = {
+  posts: new Map(),
+  idempotency: new Map(),
+  postLimit: POST_RATE_LIMIT,
+  windowMs: POST_RATE_WINDOW_MS,
+};
+
+export function configureReviewGuardsForTests(options?: { postLimit?: number; windowMs?: number }) {
+  guards.posts.clear();
+  guards.idempotency.clear();
+  guards.postLimit = options?.postLimit ?? POST_RATE_LIMIT;
+  guards.windowMs = options?.windowMs ?? POST_RATE_WINDOW_MS;
+}
+
+function json(body: unknown, status = 200, extra: HeadersInit = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...JSON_HEADERS, ...extra },
+  });
 }
 
 async function tokenMatches(expected: string, actual: string) {
@@ -51,41 +85,121 @@ function boundedLimit(url: URL) {
   return Number.isFinite(parsed) ? Math.min(100, Math.max(1, parsed)) : 50;
 }
 
-export async function handleReviewApi(request: Request, env: ReviewEnv) {
-  if (!(await isAuthorized(request, env))) return json({ error: "not_found" }, 404);
-  const url = new URL(request.url);
+function isJsonContentType(request: Request) {
+  const value = request.headers.get("content-type") ?? "";
+  return /^application\/json\s*(;|$)/i.test(value);
+}
 
-  if (request.method === "GET" && url.pathname === "/api/automation/status") {
-    const run = await env.VALLEY_DESK_DB.prepare(`
+function clientKey(request: Request, token: string) {
+  const ip = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "local";
+  return `${token}:${ip}`;
+}
+
+function rateLimitPost(request: Request, token: string) {
+  const now = Date.now();
+  const key = clientKey(request, token);
+  const hits = (guards.posts.get(key) ?? []).filter((stamp) => stamp > now - guards.windowMs);
+  if (hits.length >= guards.postLimit) {
+    guards.posts.set(key, hits);
+    return false;
+  }
+  hits.push(now);
+  guards.posts.set(key, hits);
+  return true;
+}
+
+function rememberIdempotent(token: string, key: string, status: number, body: unknown) {
+  guards.idempotency.set(`${token}:${key}`, {
+    expiresAt: Date.now() + IDEMPOTENCY_TTL_MS,
+    status,
+    body,
+  });
+}
+
+function readIdempotent(token: string, key: string) {
+  const cached = guards.idempotency.get(`${token}:${key}`);
+  if (!cached) return undefined;
+  if (cached.expiresAt <= Date.now()) {
+    guards.idempotency.delete(`${token}:${key}`);
+    return undefined;
+  }
+  return cached;
+}
+
+export function isReviewApiPath(pathname: string) {
+  return pathname === "/api/automation/status"
+    || pathname === "/api/automation/status/review"
+    || pathname.startsWith("/api/review-queue");
+}
+
+async function statusPayload(env: ReviewEnv, detailed: boolean) {
+  const run = await env.VALLEY_DESK_DB.prepare(`
       SELECT id, started_at, finished_at, state, item_count, notes_json, error
       FROM ingest_runs ORDER BY started_at DESC LIMIT 1
     `).first();
-    const counts = await env.VALLEY_DESK_DB.prepare(`
+  const counts = await env.VALLEY_DESK_DB.prepare(`
       SELECT queue_status, COUNT(*) AS count
       FROM content_candidates GROUP BY queue_status
     `).all();
-    const publications = await env.VALLEY_DESK_DB.prepare(
-      "SELECT COUNT(*) AS count, MAX(updated_at) AS updated_at FROM published_content",
-    ).first();
-    const sources = await env.VALLEY_DESK_DB.prepare(`
+  const publications = await env.VALLEY_DESK_DB.prepare(
+    "SELECT COUNT(*) AS count, MAX(updated_at) AS updated_at FROM published_content",
+  ).first();
+  const sources = await env.VALLEY_DESK_DB.prepare(`
       SELECT source_id, origin, source_type, source_url, state, complete, item_count,
              consecutive_failures, last_checked_at, last_success_at, last_error
       FROM source_health ORDER BY source_type, source_id
     `).all();
-    const reconciliation = await env.VALLEY_DESK_DB.prepare(`
+  const reconciliation = await env.VALLEY_DESK_DB.prepare(`
       SELECT action, COUNT(*) AS count, MAX(reconciled_at) AS reconciled_at
       FROM publication_reconciliations GROUP BY action
     `).all();
-    return json({
-      run,
-      queue: counts.results ?? [],
-      publications,
-      sources: sources.results ?? [],
-      reconciliation: reconciliation.results ?? [],
-    });
+  const payload: Record<string, unknown> = {
+    schemaVersion: SCHEMA_VERSION,
+    buildSha: buildShaFromEnv(env),
+    publicOrigin: resolvePublicOrigin(env.PUBLIC_ORIGIN),
+    run,
+    queue: counts.results ?? [],
+    publications,
+    sources: sources.results ?? [],
+    reconciliation: reconciliation.results ?? [],
+  };
+  if (!detailed) return payload;
+  const review = await env.VALLEY_DESK_DB.prepare(`
+      SELECT id, kind, title, source_origin, source_url, item_status, queue_status,
+             relevance_score, first_seen_at, last_seen_at
+      FROM content_candidates
+      WHERE queue_status = 'review'
+      ORDER BY COALESCE(relevance_score, -1) DESC, last_seen_at DESC
+      LIMIT 20
+    `).all();
+  const decisions = await env.VALLEY_DESK_DB.prepare(`
+      SELECT candidate_id, decision, reviewer, decided_at
+      FROM candidate_decisions
+      ORDER BY decided_at DESC
+      LIMIT 20
+    `).all();
+  payload.review = { items: review.results ?? [] };
+  payload.decisions = decisions.results ?? [];
+  return payload;
+}
+
+export async function handleReviewApi(request: Request, env: ReviewEnv) {
+  if (!(await isAuthorized(request, env))) return json({ error: "not_found" }, 404);
+  const url = new URL(request.url);
+  const method = request.method.toUpperCase();
+
+  if (url.pathname === "/api/automation/status" || url.pathname === "/api/automation/status/review") {
+    if (method !== "GET" && method !== "HEAD") {
+      return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
+    }
+    const detailed = url.pathname === "/api/automation/status/review";
+    return json(await statusPayload(env, detailed));
   }
 
-  if (request.method === "GET" && url.pathname === "/api/review-queue") {
+  if (url.pathname === "/api/review-queue") {
+    if (method !== "GET" && method !== "HEAD") {
+      return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
+    }
     const status = url.searchParams.get("status") ?? "review";
     if (!new Set(["review", "approved", "rejected"]).has(status)) {
       return json({ error: "invalid_status" }, 400);
@@ -102,10 +216,33 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
   }
 
   const decisionMatch = /^\/api\/review-queue\/([^/]+)\/decision$/.exec(url.pathname);
-  if (request.method === "POST" && decisionMatch) {
+  if (decisionMatch) {
+    if (method !== "POST") {
+      return json({ error: "method_not_allowed" }, 405, { allow: "POST" });
+    }
+    if (!isJsonContentType(request)) {
+      return json({ error: "unsupported_media_type" }, 415);
+    }
+    const token = env.REVIEW_API_TOKEN ?? "";
+    if (!rateLimitPost(request, token)) {
+      return json({ error: "rate_limited" }, 429, { "retry-after": "60" });
+    }
+    const idempotencyKey = request.headers.get("idempotency-key")?.trim();
+    if (idempotencyKey) {
+      if (idempotencyKey.length > 128) return json({ error: "invalid_idempotency_key" }, 400);
+      const cached = readIdempotent(token, idempotencyKey);
+      if (cached) return json(cached.body, cached.status);
+    }
+    let raw = "";
+    try {
+      raw = await request.text();
+    } catch {
+      return json({ error: "invalid_json" }, 400);
+    }
+    if (raw.length > MAX_JSON_BYTES) return json({ error: "payload_too_large" }, 413);
     let body: { decision?: unknown; note?: unknown; overrides?: unknown };
     try {
-      body = await request.json() as { decision?: unknown; note?: unknown; overrides?: unknown };
+      body = JSON.parse(raw) as { decision?: unknown; note?: unknown; overrides?: unknown };
     } catch {
       return json({ error: "invalid_json" }, 400);
     }
@@ -126,6 +263,19 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
       }
     }
     const id = decodeURIComponent(decisionMatch[1]);
+    const current = await env.VALLEY_DESK_DB.prepare(
+      "SELECT queue_status FROM content_candidates WHERE id = ?",
+    ).bind(id).first<{ queue_status: string }>();
+    if (current?.queue_status === body.decision) {
+      const payload = {
+        id,
+        decision: body.decision,
+        idempotent: true,
+        note: "Decision already applied.",
+      };
+      if (idempotencyKey) rememberIdempotent(token, idempotencyKey, 200, payload);
+      return json(payload);
+    }
     const decidedAt = new Date().toISOString();
     const reviewer = request.headers.get("cf-access-authenticated-user-email") ?? "review-api-token";
     let approvedContent: ReturnType<typeof ContentItem.parse> | undefined;
@@ -263,14 +413,21 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
       ).bind(id));
     }
     const [result] = await env.VALLEY_DESK_DB.batch(statements);
-    return json({
+    const payload = {
       id,
       decision: body.decision,
       result,
       note: approvedContent
         ? "Approved candidate is now live in the dynamic site and feeds."
         : "Candidate rejected and removed from live publication if present.",
+    };
+    if (idempotencyKey) rememberIdempotent(token, idempotencyKey, 200, payload);
+    logOps("publication", {
+      outcome: body.decision,
+      candidateId: id,
+      method: "human-review",
     });
+    return json(payload);
   }
 
   return json({ error: "not_found" }, 404);
