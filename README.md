@@ -4,4 +4,44 @@ Product source. Human news + agent feed. Delaware Valley / Greater Philadelphia 
 
 Owner: Cole Lyons (co-founder). Engineering: Knox. Product: Reed. Brand: Mira. CEO: Vale.
 
-Week one: Vite + React + TypeScript + TanStack Router + Tailwind. Humans get a two-rail homepage (News | Events). Agents GET `/feed.json` using the same ContentItem envelope. Fixtures: `fixtures/catalog.json`.
+Vite + React + TypeScript + TanStack Router + Tailwind on Cloudflare Workers. Humans get News, Events, Voices, a local-product watch, and an anti-FOMO event calendar. Agents GET `/feed.json` using the same `ContentItem` envelope. Signed editorial source: `fixtures/catalog.json`.
+
+## Automation
+
+One production Worker runs hourly. It fetches newsroom RSS, official chapter events, and configured social sources, then writes every raw candidate to D1 before any model call. Muse Spark 1.2 Contributor (`meta/muse-spark-1.2-contributor`) classifies and grounds a small budget of relevant candidates through OpenRouter's OpenAI-compatible API. Deterministic rules—not the model—make the final publication decision.
+
+The automatic editor-in-chief publishes official future chapter events when their official source and attendance link validate. Other events require a future date, attendance path, local relevance, and high-confidence evidence. News requires a named local health system, first-party corroboration, a material operating/technology change, literal evidence spans, and a grounded impact sentence. A model failure, timeout, or skipped budget slot leaves news in review; it never blocks rule-confirmed official events. Unchanged successful enrichments are reused. Unchanged failures cool down with exponential backoff instead of retrying every hour. A changed content fingerprint becomes eligible again immediately.
+
+Every source check records success/error state, item count, last success, and consecutive failures. An automatically published event is withdrawn only after two successful, complete checks of its authoritative source omit it. Timeouts, HTTP failures, partial feeds, and rolling RSS windows never trigger disappearance withdrawal. Explicit cancellations still reject immediately.
+
+Approved content is written to `published_content`. The Worker merges that D1 overlay into the bundled signed catalog for HTML, dynamic permalinks, `/feed.json`, `/api/content`, `/feed.xml`, and `/sitemap.xml`. If D1 is unavailable, the bundled catalog remains a complete fallback. Automated rows cannot replace editorial rows or set the featured lead.
+
+Product news is admitted to model review only when `fixtures/product-watch.json` verifies that a named regional health system uses the mentioned product. Generic vendor marketing and unverified local-use claims stay out.
+
+### Local verification
+
+```bash
+cp .dev.vars.example .dev.vars
+npm test
+npm run build
+npm exec -- wrangler d1 migrations apply the-valley-desk --local
+npm exec -- wrangler dev --local --test-scheduled
+```
+
+Trigger the local cron at `/cdn-cgi/handler/scheduled?format=json`. Private endpoints are:
+
+- `GET /api/automation/status`
+- `GET /api/review-queue?status=review`
+- `POST /api/review-queue/:id/decision` with `{"decision":"approved","note":"..."}` or `{"decision":"rejected","note":"..."}`
+
+All require `Authorization: Bearer $REVIEW_API_TOKEN`. A valid approval publishes immediately through the same dynamic content layer.
+
+### Cloudflare provisioning
+
+1. Create the single D1 database: `wrangler d1 create the-valley-desk`.
+2. If Wrangler does not provision the binding automatically, add the returned `database_id` to the root D1 entry in `wrangler.jsonc`.
+3. Apply migrations remotely: `wrangler d1 migrations apply the-valley-desk --remote`.
+4. Add secrets with `wrangler secret put REVIEW_API_TOKEN` and `wrangler secret put OPENROUTER_API_KEY`. The model key must never be added to Git or `wrangler.jsonc`.
+5. `EDITOR_MODEL` is pinned to `meta/muse-spark-1.2-contributor`; `EDITOR_MODEL_BASE_URL` defaults to `https://openrouter.ai/api/v1`. There is no automatic fallback to standard Muse. Contributor requires OpenRouter Settings → Privacy to allow routing to providers that may train on prompts; any account or guardrail Zero Data Retention enforcement for non-frontier models must also be disabled for this key. If those policies block the endpoint, OpenRouter returns HTTP 404 and the item cools down in review while deterministic official-event publication continues. Muse is a reasoning model: unbounded reasoning can consume the output budget and yield empty or truncated JSON, so calls cap reasoning tokens, raise the visible-output budget, request `json_object`, and extract JSON from fences/whitespace without loosening Zod or evidence checks. Each scheduled invocation attempts at most `EDITOR_MODEL_BUDGET` (default 4) eligible items with `EDITOR_MODEL_CONCURRENCY` (default 2). Calls time out after `EDITOR_MODEL_TIMEOUT_MS` (default 25s) and the model stage stops starting new work after `EDITOR_MODEL_DEADLINE_MS` (default 40s) so the run can finish inside Worker `waitUntil`. Set `EDITOR_MODEL_BUDGET=0` to disable model calls without stopping official-event publication. A 100-item backfill therefore progresses across hourly runs instead of trying every candidate in one invocation.
+6. Keep the private review/status routes undiscoverable and token-protected. Cloudflare Access remains optional for this personal site.
+7. Run `npm run deploy` to update the one existing `the-valley-desk` Worker. This does not point or change `thevalleydesk.org` DNS.

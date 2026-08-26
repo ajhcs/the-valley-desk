@@ -1,12 +1,15 @@
-import { bySlug } from "../content/queries";
+import { Navigate } from "@tanstack/react-router";
+import { byPreviousSlug, bySlug } from "../content/queries";
 import { itemCitations, type ContentItem, type EventItem } from "../content/schema";
 import { catalog } from "../lib/catalog";
 import { itemByline } from "../lib/byline";
-import { formatDate, formatWhen } from "../lib/format";
+import { formatEventWhen, googleCalendarUrl } from "../lib/calendar";
+import { canonicalPath } from "../lib/canonical";
+import { eventWhyCopy } from "../lib/eventCopy";
+import { eventPlace, formatDate } from "../lib/format";
 import { chipKind, kindChip } from "../lib/kind";
 import { ItemJsonLd } from "./ItemJsonLd";
-import { ItemFactScope, ItemFacts, itemFactHits } from "./ItemFacts";
-import { MentionText } from "./MentionText";
+import { ItemEntityLinks, ItemFactScope, itemAllowedOrgIds, itemFactHits } from "./ItemFacts";
 import { RegisterLink } from "./RegisterLink";
 import { GroupChip } from "./home/GroupChip";
 import { NotFound } from "./NotFound";
@@ -28,50 +31,70 @@ export function ItemPage({
 }) {
   const item = bySlug(catalog, slug);
   if (!item || !sectionOwns(item, section)) {
+    const aliased = byPreviousSlug(catalog, slug);
+    if (aliased && sectionOwns(aliased, section)) {
+      return <Navigate to={canonicalPath(aliased)} replace />;
+    }
     return <NotFound />;
   }
   const impact = item.impactSentence?.trim();
   const cites = itemCitations(item);
   const event = item.kind === "event" ? (item as EventItem) : undefined;
-  const when = formatDate(item.publishedAt);
+  const when = event ? "" : formatDate(item.publishedAt);
   const byline = itemByline(item, section);
   const hits = itemFactHits(item);
+  const allowed = itemAllowedOrgIds(item);
+  const why = event ? eventWhyCopy(event) : undefined;
+  const context = item.contextSentence?.trim();
+  const bylineCovered = byline && hits.some((hit) => {
+    const line = byline.toLocaleLowerCase("en-US");
+    return line.includes(hit.entityName.toLocaleLowerCase("en-US"))
+      || hit.entityName.toLocaleLowerCase("en-US").includes(line);
+  });
   return (
-    <ItemFactScope hits={hits}>
+    <ItemFactScope hits={hits} allowed={allowed}>
       <article className="ItemPage">
         <ItemJsonLd item={item} />
         <GroupChip kind={chipKind(item)}>{kindChip(item)}</GroupChip>
         <div className="ItemPage-lead">
           <h1 className="Lead-headline">
-            <MentionText text={item.title} />
+            {item.title}
           </h1>
-          {when || byline ? (
-            <p className="mt-2 text-xs" style={{ color: "var(--mute)" }}>
-              {when}
-              {when && byline ? " · " : ""}
-              {byline}
-            </p>
+          {when || byline || hits.length ? (
+            <div className="ItemPage-meta mt-2 text-xs" style={{ color: "var(--mute)" }}>
+              {when ? <time dateTime={item.publishedAt}>{when}</time> : null}
+              {when && ((byline && !bylineCovered) || hits.length) ? <span aria-hidden="true">·</span> : null}
+              {byline && !bylineCovered ? <span>{byline}</span> : null}
+              {byline && !bylineCovered && hits.length ? <span aria-hidden="true">·</span> : null}
+              <ItemEntityLinks hits={hits} />
+            </div>
           ) : null}
           {impact ? (
             <p className="mt-2 ItemPage-dek" style={{ color: "var(--mute)" }}>
-              <MentionText text={impact} />
+              {impact}
             </p>
           ) : null}
         </div>
-        <ItemFacts hits={hits} />
-        {event ? (
-          <p className="mt-2 text-xs" style={{ color: "var(--mute)" }}>
-            {formatWhen(event.startsAt)}
-            {event.registrationUrl ? (
-              <>
-                {" · "}
-                <RegisterLink item={item} />
-              </>
-            ) : null}
+        {context ? (
+          <p className="ItemPage-context">
+            <span>Context</span> {context}
           </p>
         ) : null}
+        {event ? (
+          <section className="EventDetail">
+            <p><strong>When</strong> <time dateTime={event.startsAt}>{formatEventWhen(event)}</time></p>
+            {eventPlace(event) ? <p><strong>Where</strong> {eventPlace(event)}</p> : null}
+            <p><strong>Host</strong> {event.hostOrg}</p>
+            <p><strong>Why it’s worth your time</strong> {why ?? "Details not yet published."}</p>
+            {event.whoYoullMeet?.length ? <p><strong>Who you’ll meet</strong> {event.whoYoullMeet.join(", ")}</p> : null}
+            <div className="EventDetail-actions">
+              {event.registrationUrl ? <RegisterLink item={item} /> : null}
+              <a href={googleCalendarUrl(event)} target="_blank" rel="noreferrer">Add to calendar</a>
+            </div>
+          </section>
+        ) : null}
         <p className="mt-6 whitespace-pre-wrap ItemPage-body">
-          <MentionText text={item.body} />
+          {item.body}
         </p>
         {cites.length > 0 ? (
           <section className="mt-6 ItemPage-sources">

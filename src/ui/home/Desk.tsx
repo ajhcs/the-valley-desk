@@ -10,43 +10,57 @@ function deskAsk(item: ContentItem) {
   return item.annotations?.find((ann) => ann.type === "ask");
 }
 
-export function Desk({ items }: { items: ContentItem[] }) {
-  if (items.length === 0) return null;
+export function Desk({
+  items,
+  editionLine,
+  quiet = false,
+}: {
+  items: ContentItem[];
+  editionLine?: string;
+  quiet?: boolean;
+}) {
   const when = formatLeadDate(new Date().toISOString());
+  if (items.length === 0 && !editionLine) return null;
   return (
     <section className="Desk">
       <p className="lead-kicker Lead-kicker">{when ? `THE DESK · ${when}` : "THE DESK"}</p>
-      <ul className="desk">
-        {items.map((item, i) => {
-          const ask = deskAsk(item);
-          const queued = item.status === "review";
-          const title = queued ? (
-            <span>
-              <MentionText text={item.title} />
-            </span>
-          ) : (
-            <Link to={itemHref(item)}>
-              <MentionText text={item.title} />
-            </Link>
-          );
-          return (
-            <li key={item.id} className="DeskRow" style={{ ["--i" as string]: i }}>
-              <div className="DeskRow-copy">
-                <div className="DeskRow-title">
-                  {ask ? <span className="DateChip" data-ann="ask">ASK</span> : <DateChip item={item} />}
-                  {title}
-                  {queued ? <StatusChip>QUEUED</StatusChip> : null}
+      {editionLine ? <p className="Desk-edition">{editionLine}</p> : null}
+      {quiet || items.length === 0 ? (
+        <p className="Desk-quiet">Quiet edition. Nothing new in this window.</p>
+      ) : null}
+      {items.length === 0 ? null : (
+        <ul className="desk">
+          {items.map((item, i) => {
+            const ask = deskAsk(item);
+            const queued = item.status === "review";
+            const title = queued ? (
+              <span>
+                <MentionText text={item.title} />
+              </span>
+            ) : (
+              <Link to={itemHref(item)}>
+                <MentionText text={item.title} />
+              </Link>
+            );
+            return (
+              <li key={item.id} className="DeskRow" style={{ ["--i" as string]: i }}>
+                <div className="DeskRow-copy">
+                  <div className="DeskRow-title">
+                    {ask ? <span className="DateChip" data-ann="ask">ASK</span> : <DateChip item={item} />}
+                    {title}
+                    {queued ? <StatusChip>QUEUED</StatusChip> : null}
+                  </div>
                 </div>
-              </div>
-              {item.impactSentence ? (
-                <p className="DeskRow-impact">
-                  <MentionText text={item.impactSentence} />
-                </p>
-              ) : null}
-            </li>
-          );
-        })}
-      </ul>
+                {item.impactSentence ? (
+                  <p className="DeskRow-impact">
+                    <MentionText text={item.impactSentence} />
+                  </p>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 }

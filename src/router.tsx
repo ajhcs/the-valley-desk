@@ -6,8 +6,14 @@ import {
 import { Layout } from "./ui/Layout";
 import { HomePage } from "./ui/HomePage";
 import { KindListPage } from "./ui/KindListPage";
+import { EventsPage } from "./ui/EventsPage";
 import { ItemPage } from "./ui/ItemPage";
 import { NotFound } from "./ui/NotFound";
+import { LabIndexPage } from "./ui/lab/LabIndexPage";
+import { LabChronoPage } from "./ui/lab/LabChronoPage";
+import { LabSystemsPage } from "./ui/lab/LabSystemsPage";
+import { LabHorizonPage } from "./ui/lab/LabHorizonPage";
+import { LabCalendarPage } from "./ui/lab/LabCalendarPage";
 
 const rootRoute = createRootRoute({
   component: Layout,
@@ -19,11 +25,41 @@ const indexRoute = createRoute({
   component: HomePage,
 });
 
+const labIndexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/lab",
+  component: LabIndexPage,
+});
+
+const labBriefingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/lab/briefing",
+  component: LabChronoPage,
+});
+
+const labSystemsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/lab/systems",
+  component: LabSystemsPage,
+});
+
+const labHorizonRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/lab/horizon",
+  component: LabHorizonPage,
+});
+
+const labCalendarRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/lab/calendar",
+  component: LabCalendarPage,
+});
+
 function section<TPath extends string>(path: TPath, kind: "news" | "event" | "voice") {
   const list = createRoute({
     getParentRoute: () => rootRoute,
     path,
-    component: () => <KindListPage kind={kind} />,
+    component: () => kind === "event" ? <EventsPage /> : <KindListPage kind={kind} />,
   });
   const detail = createRoute({
     getParentRoute: () => rootRoute,
@@ -43,6 +79,11 @@ const routeTree = rootRoute.addChildren([
   ...section("/news", "news"),
   ...section("/events", "event"),
   ...section("/voices", "voice"),
+  labIndexRoute,
+  labBriefingRoute,
+  labSystemsRoute,
+  labHorizonRoute,
+  labCalendarRoute,
 ]);
 
 export const router = createRouter({

@@ -2,6 +2,9 @@ import type { ContentItem, EventItem } from "./schema";
 import type { Entity } from "./entity";
 import { canonicalUrl } from "../lib/canonical";
 import { eventPlace, listDek } from "../lib/format";
+import { eventSchedule } from "../lib/calendar";
+import { eventWhyCopy, isBoilerplateEventCopy } from "../lib/eventCopy";
+import { primaryDisplayLabel } from "../lib/taxonomy";
 import { entityIndex } from "./entity";
 
 export const NEWS_ARTICLE_KINDS = new Set(["news", "policy", "ai", "interview"]);
@@ -61,6 +64,8 @@ export function itemJsonLd(
     isAccessibleForFree: true,
   };
   if (item.source.url) doc.isBasedOn = item.source.url;
+  const keywords = [...new Set([primaryDisplayLabel(item), ...item.topics].filter(Boolean))];
+  if (keywords.length) doc.keywords = keywords;
   return doc;
 }
 
@@ -73,19 +78,26 @@ export function eventJsonLd(
   const event = item as EventItem;
   const place = eventPlace(event);
   const url = canonicalUrl(event);
+  const schedule = eventSchedule(event);
+  const description = event.impactSentence
+    || eventWhyCopy(event)
+    || listDek(event)
+    || (event.body && !isBoilerplateEventCopy(event.body) ? event.body : undefined)
+    || event.title;
   const doc: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Event",
     name: event.title,
-    startDate: event.startsAt,
-    description: event.impactSentence || listDek(event) || undefined,
+    startDate: schedule.kind === "timed" ? event.startsAt : schedule.startDay,
+    description,
     organizer: organizationFromHost(event.hostOrg, entities),
     url,
     mainEntityOfPage: url,
     eventTimezone: event.timezone,
     about: aboutOrgs(event.orgs, entities),
   };
-  if (event.endsAt) doc.endDate = event.endsAt;
+  if (schedule.kind === "timed" && event.endsAt) doc.endDate = event.endsAt;
+  else if (schedule.kind === "date-only") doc.endDate = schedule.endDay;
   if (place) {
     doc.location = {
       "@type": "Place",

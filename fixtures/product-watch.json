@@ -1,0 +1,64 @@
+{
+  "asOf": "2026-08-25",
+  "notes": [
+    "Each relationship is backed by a source already cited in fixtures/catalog.json.",
+    "A registry match proves local use only; publication still requires primary corroboration, materiality, and grounded editor evidence."
+  ],
+  "products": [
+    {
+      "id": "epic-ehr-christianacare",
+      "vendor": "Epic",
+      "product": "Epic EHR",
+      "aliases": ["Epic", "Epic EHR", "MyChart"],
+      "orgIds": ["org-christianacare"],
+      "evidenceUrl": "https://news.christianacare.org/2026/07/christianacare-advances-epic-electronic-health-record-implementation-for-oct-3-go-live/",
+      "evidenceType": "official-newsroom",
+      "lastVerifiedAt": "2026-08-25",
+      "confidence": 0.99
+    },
+    {
+      "id": "epic-mychart-jefferson",
+      "vendor": "Epic",
+      "product": "MyChart",
+      "aliases": ["MyChart", "MyJeffersonHealth", "MyEinsteinHealth"],
+      "orgIds": ["org-jefferson"],
+      "evidenceUrl": "https://www.jeffersonhealth.org/your-health/my-jefferson-health/einstein-patient-portal",
+      "evidenceType": "official-product-page",
+      "lastVerifiedAt": "2026-08-25",
+      "confidence": 0.99
+    },
+    {
+      "id": "epic-orca-chop",
+      "vendor": "Epic",
+      "product": "ORCA downtime order sets",
+      "aliases": ["ORCA", "Epic downtime", "downtime order sets"],
+      "orgIds": ["org-chop"],
+      "evidenceUrl": "https://github.com/Stephonomon/orca-cds",
+      "evidenceType": "repository",
+      "lastVerifiedAt": "2026-08-25",
+      "confidence": 0.9
+    },
+    {
+      "id": "microsoft-dragon-copilot-temple",
+      "vendor": "Microsoft",
+      "product": "Dragon Copilot",
+      "aliases": ["Dragon Copilot", "DAX Copilot", "Nuance Dragon"],
+      "orgIds": ["org-temple"],
+      "evidenceUrl": "https://www.templehealth.org/about/news/in-the-media/dr-benjamin-slovis-discusses-temple-healths-utilization-of-artificial-intelligence-with-bucks-county-herald",
+      "evidenceType": "official-newsroom",
+      "lastVerifiedAt": "2026-08-25",
+      "confidence": 0.98
+    },
+    {
+      "id": "microsoft-dax-copilot-penn",
+      "vendor": "Microsoft",
+      "product": "DAX Copilot",
+      "aliases": ["DAX Copilot", "Nuance DAX", "ambient scribe"],
+      "orgIds": ["org-penn"],
+      "evidenceUrl": "https://www.pennmedicine.org/news/ai-scribe-increases-face-to-face-time-with-patients",
+      "evidenceType": "official-newsroom",
+      "lastVerifiedAt": "2026-08-25",
+      "confidence": 0.98
+    }
+  ]
+}

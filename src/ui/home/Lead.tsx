@@ -1,8 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import type { NewsItem } from "../../content/schema";
+import type { ContentItem } from "../../content/schema";
 import { splitFirstSentence } from "../../lib/entityFacts";
 import { itemHref } from "../../lib/kind";
-import { formatLeadDate } from "../../lib/format";
 import { LeadDekInsert, LeadSignedLine } from "../DekInsert";
 import { MentionText } from "../MentionText";
 
@@ -17,13 +16,14 @@ function LeadImpact({ text }: { text: string }) {
   );
 }
 
-export function Lead({ item }: { item: NewsItem }) {
-  const when = formatLeadDate(item.publishedAt);
+export function Lead({ item }: { item: ContentItem }) {
   const impact = item.impactSentence;
   return (
     <LeadDekInsert>
       <article className="lead Lead">
-        <p className="lead-kicker Lead-kicker">{when ? `THE DESK · ${when}` : "THE DESK"}</p>
+        <p className="lead-kicker Lead-kicker">
+          LATEST NEWS
+        </p>
         <h1 className="Lead-headline">
           <Link to={itemHref(item)}>
             <MentionText text={item.title} />

@@ -12,8 +12,8 @@ export const publishedNewsSlugs = [
   "tower-ai-tax"
 ];
 export const publishedEventSlugs = [
-  "ache-eastern-pa-fall-symposium-2026-09-30",
   "ache-greater-philly-connect-2026-09-02",
+  "ache-greater-philly-fall-symposium-2026-09-14",
   "ache-nj-golf-outing-2026-09-09",
   "ache-nj-virtual-behavioral-health-2026-08-27",
   "bionj-entrepreneurs-exchange-2026-09-23",
@@ -21,6 +21,8 @@ export const publishedEventSlugs = [
   "bionj-members-cafe-2026-09-15",
   "builds-bio-philly-2026-09-15",
   "dha-healthcare-forum-2026-10-29",
+  "hap-emergency-management-2026-09-16",
+  "hap-i-transfer-sepsis-webinar-2026-09-18",
   "hap-patient-safety-symposium-2026-09-02",
   "life-sciences-future-2026-09-30",
   "lspa-open-house-2026-09-02",
@@ -31,6 +33,8 @@ export const publishedEventSlugs = [
 ];
 export const publishedVoiceSlugs = [
   "chop-bell-breaking-through-2026-08-14",
+  "christianacare-santiago-home-care-cloud-2026-06-29",
+  "hsx-vuong-hitrust-r2-2026-06-02",
   "inspira-johnson-epic-day-6-2026-07-30",
   "inspira-mansue-epic-2026-07-27",
   "inspira-mansue-neuro-icu-2026-08-04",
@@ -43,226 +47,310 @@ export const publishedVoiceSlugs = [
   "mlh-jimenez-sju-hawks-2026-07-22",
   "mlh-jimenez-us-amateur-2026-08-05",
   "penn-mahoney-muller-endowments-2026-08-04",
+  "penn-schoenbaum-ambient-ai-2026-08-18",
   "temple-honor-roll-2026",
   "temple-slovis-tuh-epic-apps-2026-07-23",
   "virtua-pullin-here-for-good-2026-07-16",
   "virtua-pullin-lessons-in-leadership-2026-07-27"
 ];
 export const publishedBriefingSlugs = [];
+export const publishedSlugRedirects = {
+  "njdvhimss-annual-golf-outing-2026": {
+    "kind": "event",
+    "slug": "njdvhimss-annual-golf-outing"
+  },
+  "njdvhimss-fall-conference-2026": {
+    "kind": "event",
+    "slug": "njdvhimss-fall-conference-october-13th-15th"
+  }
+};
 export const publishedHead = {
   "jefferson-einstein-mychart-2026-09-26": {
+    "id": "news-jefferson-einstein-mychart-2026-09-26",
     "kind": "news",
     "title": "Jefferson Einstein Philadelphia and Montgomery: MyEinsteinHealth ends Sept. 26, 2026",
     "description": "After Sept. 26, 2026, patients will no longer access MyEinsteinHealth; records are in MyJeffersonHealth (Epic MyChart) after the next visit to either Einstein hospital, with up to three years of records moved."
   },
   "de-340b-hs1-hb383-2024": {
+    "id": "news-de-340b-hs1-hb383-2024",
     "kind": "news",
     "title": "84 Del. Laws ch. 408, effective Sept. 19, 2024: PBM 340B nondiscrimination",
     "description": "84 Del. Laws ch. 408 (HS 1 for HB 383) took effect Sept. 19, 2024 and bars a PBM or purchaser from paying a 340B covered entity less than the CMS NADAC rate, or WAC if NADAC is unavailable."
   },
   "christianacare-epic-go-live": {
+    "id": "news-christianacare-epic",
     "kind": "news",
     "title": "ChristianaCare Epic go-live, official July 2026 update",
-    "description": "Oct. 3 is a training-gated cutover on ChristianaCare’s own update; Becker’s second-cites that date and does not price Epic."
+    "description": "ChristianaCare’s Oct. 3 Epic cutover is tied to role-based training and readiness checks for caregivers."
   },
   "jefferson-fy2026-operating-loss": {
+    "id": "news-jefferson-fy2026-loss",
     "kind": "news",
     "title": "Jefferson FY2026 operating loss and Fitch liquidity",
     "description": "The $181.5 million year-end operating loss sits next to $5.5 billion / 119 DCOH through March 31; Harrington says the climb holds only if commercial contracts do."
   },
   "penn-in-house-ai-scribe": {
+    "id": "news-penn-ai-scribe",
     "kind": "news",
     "title": "Penn in-house scribe headcount and 2024 JAMA pilot table",
-    "description": "Some 1,200 is an Inquirer headcount for Penn’s later in-house tool; 20.4% less time in notes is a 46-clinician journal table from a 2024 DAX Copilot pilot, not that headcount."
+    "description": "Penn’s in-house scribe reached roughly 1,200 ambulatory users; a separate 46-clinician DAX Copilot study reported 20.4% less note time per appointment."
   },
   "temple-dragon-copilot-400": {
+    "id": "news-temple-dragon-copilot",
     "kind": "news",
-    "title": "Temple Dragon Copilot user count and TUHS cash days",
-    "description": "Dragon Copilot is at 400 end users in the HealthTech clip; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI."
+    "title": "Temple expands Dragon Copilot to 400 end users",
+    "description": "Temple expanded Dragon Copilot to 400 end users after reporting a greater than 10 percent reduction in after-hours documentation during the pilot."
   },
   "chop-orca-cds": {
+    "id": "news-chop-orca-cds",
     "kind": "news",
-    "title": "CHOP ORCA repo for Epic downtime order sets",
+    "title": "CHOP publishes ORCA repo",
     "description": "ORCA is an offline read-only Epic order-set viewer for downtime; it does not hold patient data and cannot place orders."
   },
   "tower-ai-tax": {
+    "id": "news-tower-ai-tax",
     "kind": "news",
     "title": "Tower Health CIO on AI label, AI tax, and owned platforms",
     "description": "Tower will not pay an AI premium without a proof-of-value under its own conditions, and it is pressing vendors for value from platforms it already owns."
   },
   "temple-chestnut-hill-jhp-2026-09-30": {
+    "id": "news-temple-chestnut-hill-jhp",
     "kind": "news",
     "title": "Temple Health–Chestnut Hill Hospital and Jefferson Health Plans: contract scheduled to end Sept. 30, 2026",
     "description": "Temple Health–Chestnut Hill Hospital's contract with Jefferson Health Plans is scheduled to end Sept. 30, 2026, and starting Oct. 1 Jefferson Health Plans would not pay for care there if no new agreement is reached."
   },
   "hap-cms-0057-f-enforce-rfi": {
+    "id": "news-hap-cms-0057-f",
     "kind": "news",
     "title": "HAP June 10, 2025 letter: enforce CMS-0057-F; 1.6 million Pennsylvanians in Medicare Advantage",
     "description": "On June 10, 2025, HAP asked CMS to enforce the Interoperability and Prior Authorization Final Rule (CMS-0057-F), citing 1.6 million Pennsylvanians in Medicare Advantage (54 percent of the state's Medicare beneficiaries)."
   },
   "mlh-cloud-analytics-2026-08-17": {
+    "id": "voice-mlh-cloud-analytics",
     "kind": "voice",
-    "title": "Main Line Health cloud analytics, official Aug. 17 LinkedIn post",
+    "title": "Main Line Health cloud analytics",
     "description": "Main Line Health said Aug. 17 that cloud analytics cut a 30-day wait to near real-time reporting, with 2,017 subscriptions and 6.2 percent monthly access growth since August 2025."
   },
   "temple-honor-roll-2026": {
+    "id": "voice-temple-honor-roll-2026",
     "kind": "voice",
-    "title": "Benjamin Slovis, Aug. 8, 2026: Temple Health on Epic’s 2026 Honor Roll",
+    "title": "Benjamin Slovis: Temple Health on Epic’s 2026 Honor Roll",
     "description": "Temple Health is on Epic’s 2026 Honor Roll; Slovis posted it Aug. 8, and Temple’s July 16 newsroom called the designation Cum Laude and named a $418,000 Epic Good Maintenance grant."
   },
   "inspira-johnson-epic-day-6-2026-07-30": {
+    "id": "voice-li-7483929651741081600",
     "kind": "voice",
-    "title": "David Johnson, July 30, 2026: Inspira on day 6 of an Epic live",
+    "title": "David Johnson: Inspira on day 6 of an Epic live",
     "description": "Inspira was on day 6 of an Epic live when its CIIO said so in that comment."
   },
   "inspira-mansue-epic-2026-07-27": {
+    "id": "voice-inspira-mansue-epic-2026-07-27",
     "kind": "voice",
-    "title": "Amy B. Mansue, July 27, 2026: Inspira launches Epic",
+    "title": "Amy B. Mansue: Inspira launches Epic",
     "description": "Inspira launched Epic on July 27, 2026 with MyChart, Care Everywhere, and more than 50 Epic AI-suite tools on day one; hours saved are Inspira’s estimate."
   },
   "mlh-jimenez-sju-hawks-2026-07-22": {
+    "id": "voice-mlh-jimenez-sju-hawks-2026-07-22",
     "kind": "voice",
-    "title": "Ed Jimenez, July 22, 2026: MLH exclusive medical provider for SJU Hawks",
+    "title": "Ed Jimenez: MLH exclusive medical provider for SJU Hawks",
     "description": "Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner."
   },
   "penn-mahoney-muller-endowments-2026-08-04": {
+    "id": "voice-penn-mahoney-muller-endowments-2026-08-04",
     "kind": "voice",
-    "title": "Kevin B. Mahoney, Aug. 4, 2026: $7 million Muller administrative endowments",
+    "title": "Kevin B. Mahoney: $7 million Muller administrative endowments",
     "description": "Muller administrative endowments total $7 million for the HUP CEO, UPHS CFO, and CHIBE director posts."
   },
   "mlh-jimenez-us-amateur-2026-08-05": {
+    "id": "voice-mlh-jimenez-us-amateur-2026-08-05",
     "kind": "voice",
-    "title": "Ed Jimenez, Aug. 5, 2026: MLH official healthcare provider for 2026 U.S. Amateur",
+    "title": "Ed Jimenez: MLH official healthcare provider for 2026 U.S. Amateur",
     "description": "Main Line Health is the official healthcare provider for the 2026 U.S. Amateur, Aug. 10–16 at Merion and Philadelphia Country Club."
   },
   "jefferson-cacchione-skmc-allentown-2026-07-13": {
+    "id": "voice-jefferson-cacchione-skmc-allentown-2026-07-13",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, July 13, 2026: SKMC four-year Allentown campus",
+    "title": "Joseph G. Cacchione: SKMC four-year Allentown campus",
     "description": "SKMC’s four-year Allentown campus has an inaugural class of 45 in July 2029."
   },
   "jefferson-cacchione-community-impact-2026-07-14": {
+    "id": "voice-jefferson-cacchione-community-impact-2026-07-14",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, July 14, 2026: Jefferson Community Impact Report",
-    "description": "Jefferson’s Community Impact Report prints more than $2.7 billion in community benefit and 10 million patient visits; Jefferson’s figures, not audited."
+    "title": "Joseph G. Cacchione: Jefferson Community Impact Report",
+    "description": "Jefferson’s Community Impact Report cited more than $2.7 billion in community benefit supporting 10 million patient visits."
   },
   "jefferson-cacchione-de-med-school-2026-07-15": {
+    "id": "voice-jefferson-cacchione-de-med-school-2026-07-15",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, July 15, 2026: Delaware’s first medical school",
+    "title": "Joseph G. Cacchione: Delaware’s first medical school",
     "description": "Jefferson plans Delaware’s first medical school, first class 40 in July 2028, pending LCME; the page prints a CMS/HHS award of $157,394,963.86."
   },
   "jefferson-cacchione-board-2026-07-30": {
+    "id": "voice-jefferson-cacchione-board-2026-07-30",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, July 30, 2026: Wellenbach and Fung leaving TJU board",
+    "title": "Joseph G. Cacchione: Wellenbach and Fung leaving TJU board",
     "description": "Wellenbach and Fung are leaving the TJU board."
   },
   "jefferson-cacchione-lcs-link-2026-08-05": {
+    "id": "voice-jefferson-cacchione-lcs-link-2026-08-05",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, Aug. 5, 2026: $1.75 million BMS Foundation LCS-LINK",
+    "title": "Joseph G. Cacchione: $1.75 million BMS Foundation LCS-LINK",
     "description": "BMS Foundation granted $1.75 million for LCS-LINK, July 2026–June 2029, with Philly FQHCs."
   },
   "chop-bell-breaking-through-2026-08-14": {
+    "id": "voice-chop-bell-breaking-through-2026-08-14",
     "kind": "voice",
-    "title": "Madeline Bell, Aug. 14, 2026: official CHOP OPEN final Breaking Through",
-    "description": "Bell’s official CHOP OPEN final Breaking Through; she retires in October; Mitchell is incoming Oct. 1, not current CEO."
+    "title": "Madeline Bell: CHOP OPEN final Breaking Through",
+    "description": "CHOP released Bell’s final Breaking Through episode ahead of Mitchell’s Oct. 1 CEO transition and Bell’s October retirement."
   },
   "virtua-pullin-here-for-good-2026-07-16": {
+    "id": "voice-virtua-pullin-here-for-good-2026-07-16",
     "kind": "voice",
-    "title": "Dennis W. Pullin, July 16, 2026: Here for Good podcast episode 07.16.26",
+    "title": "Dennis W. Pullin: Here for Good podcast episode",
     "description": "Pullin hosts Virtua’s Here for Good podcast; episode 07.16.26."
   },
   "virtua-pullin-lessons-in-leadership-2026-07-27": {
+    "id": "voice-li-7487503653004775426",
     "kind": "voice",
-    "title": "Dennis Pullin, July 27, 2026: Lessons in Leadership, Champions of Humanity, Eat Well",
+    "title": "Dennis Pullin: Lessons in Leadership, Champions of Humanity, Eat Well",
     "description": "Pullin spoke on Lessons in Leadership, Champions of Humanity, and Eat Well."
   },
   "temple-slovis-tuh-epic-apps-2026-07-23": {
+    "id": "voice-li-7486154836821037056",
     "kind": "voice",
-    "title": "Benjamin Slovis, July 23, 2026: TUH hiring Mgr Integrated Healthcare Apps",
+    "title": "Benjamin Slovis: TUH hiring Mgr Integrated Healthcare Apps",
     "description": "TUH is hiring a Manager of Integrated Healthcare Apps — Epic Orders/ASAP (hybrid), Philadelphia."
   },
   "inspira-mansue-neuro-icu-2026-08-04": {
+    "id": "voice-li-7490482263512481792",
     "kind": "voice",
-    "title": "Amy B. Mansue, Aug. 4, 2026: Mullica Hill Neuro ICU, Cooper-Inspira neuroscience tour",
+    "title": "Amy B. Mansue: Mullica Hill Neuro ICU, Cooper-Inspira neuroscience tour",
     "description": "Inspira’s official account posted the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour (future EMU)."
   },
   "njdvhimss-annual-golf-outing": {
+    "id": "evt-dvhimss-23007",
     "kind": "event",
     "title": "NJDVHIMSS Annual Golf Outing",
     "description": "NJDVHIMSS Annual Golf Outing"
   },
   "njdvhimss-fall-conference-october-13th-15th": {
+    "id": "evt-dvhimss-22958",
     "kind": "event",
     "title": "NJDVHIMSS Fall Conference – October 13th – 15th",
     "description": "NJDVHIMSS Fall Conference – October 13th – 15th"
   },
-  "ache-eastern-pa-fall-symposium-2026-09-30": {
-    "kind": "event",
-    "title": "ACHE of Eastern Pennsylvania Fall Healthcare Symposium",
-    "description": "ACHE of Eastern Pennsylvania Fall Healthcare Symposium"
-  },
   "bionj-manufacturing-summit-2026-09-29": {
+    "id": "evt-bionj-manufacturing-summit-2026-09-29",
     "kind": "event",
     "title": "BioNJ Manufacturing Summit",
     "description": "BioNJ Manufacturing Summit"
   },
   "science-center-nucleus-awards-2026-09-29": {
+    "id": "evt-science-center-nucleus-awards-2026-09-29",
     "kind": "event",
     "title": "University City Science Center Nucleus Awards",
     "description": "University City Science Center Nucleus Awards"
   },
   "hap-patient-safety-symposium-2026-09-02": {
+    "id": "evt-hap-patient-safety-symposium-2026-09-02",
     "kind": "event",
     "title": "HAP Patient Safety, Quality, and Equity Symposium",
     "description": "HAP Patient Safety, Quality, and Equity Symposium"
   },
   "life-sciences-future-2026-09-30": {
+    "id": "evt-life-sciences-future-2026-09-30",
     "kind": "event",
     "title": "Life Sciences Future",
     "description": "Life Sciences Future"
   },
   "builds-bio-philly-2026-09-15": {
+    "id": "evt-builds-bio-philly-2026-09-15",
     "kind": "event",
     "title": "Builds Bio+ Philadelphia Life Science Symposium",
     "description": "Builds Bio+ Philadelphia Life Science Symposium"
   },
   "ache-greater-philly-connect-2026-09-02": {
+    "id": "evt-ache-greater-philly-connect-2026-09-02",
     "kind": "event",
     "title": "ACHE of Greater Philadelphia Connect. Network. Play.",
     "description": "ACHE of Greater Philadelphia Connect. Network. Play."
   },
   "ache-nj-virtual-behavioral-health-2026-08-27": {
+    "id": "evt-ache-nj-virtual-behavioral-health-2026-08-27",
     "kind": "event",
     "title": "ACHE-NJ Virtual Behavioral Health",
     "description": "ACHE-NJ Virtual Behavioral Health"
   },
   "ache-nj-golf-outing-2026-09-09": {
+    "id": "evt-ache-nj-golf-outing-2026-09-09",
     "kind": "event",
     "title": "ACHE-NJ 4th Annual Golf Outing",
     "description": "ACHE-NJ 4th Annual Golf Outing"
   },
   "dha-healthcare-forum-2026-10-29": {
+    "id": "evt-dha-healthcare-forum-2026-10-29",
     "kind": "event",
     "title": "30th Delaware Healthcare Forum",
     "description": "30th Delaware Healthcare Forum"
   },
   "bionj-members-cafe-2026-09-15": {
+    "id": "evt-bionj-members-cafe-2026-09-15",
     "kind": "event",
     "title": "BioNJ Members-Only Café",
     "description": "BioNJ Members-Only Café"
   },
   "bionj-entrepreneurs-exchange-2026-09-23": {
+    "id": "evt-bionj-entrepreneurs-exchange-2026-09-23",
     "kind": "event",
     "title": "BioNJ Entrepreneurs Exchange",
     "description": "BioNJ Entrepreneurs Exchange"
   },
   "lspa-open-house-2026-09-02": {
+    "id": "evt-lspa-open-house-2026-09-02",
     "kind": "event",
     "title": "Life Sciences PA Open House",
     "description": "Life Sciences PA Open House"
   },
   "wistar-drug-discovery-forum-2026-09-09": {
+    "id": "evt-wistar-drug-discovery-forum-2026-09-09",
     "kind": "event",
     "title": "Wistar Philadelphia Drug Discovery Forum",
     "description": "Wistar Philadelphia Drug Discovery Forum"
+  },
+  "hsx-vuong-hitrust-r2-2026-06-02": {
+    "id": "voice-hsx-vuong-hitrust-r2-2026-06-02",
+    "kind": "voice",
+    "title": "Alice Vuong: HSX HITRUST r2 recertification",
+    "description": "HSX recertified HITRUST r2 on June 2, 2026 for hosting and data-integration systems, citing 536 controls and certification held since 2017."
+  },
+  "penn-schoenbaum-ambient-ai-2026-08-18": {
+    "id": "voice-penn-schoenbaum-ambient-ai-2026-08-18",
+    "kind": "voice",
+    "title": "Anna Schoenbaum: Penn ambient documentation scale",
+    "description": "Schoenbaum said Penn ambient documentation covers about 1,300 ambulatory providers and 600+ nurses, with 20% less note time and less after-hours documentation for 79% of users."
+  },
+  "christianacare-santiago-home-care-cloud-2026-06-29": {
+    "id": "voice-christianacare-santiago-home-care-cloud-2026-06-29",
+    "kind": "voice",
+    "title": "Anahi Santiago: home-based care expands cloud security",
+    "description": "ChristianaCare’s CISO said home-based care moves more patient data into the cloud, expanding the security surface her team has to protect."
+  },
+  "ache-greater-philly-fall-symposium-2026-09-14": {
+    "id": "evt-ache-greater-philly-fall-symposium-2026-09-14",
+    "kind": "event",
+    "title": "ACHE of Greater Philadelphia 2026 Fall Symposium",
+    "description": "ACHE of Greater Philadelphia 2026 Fall Symposium"
+  },
+  "hap-i-transfer-sepsis-webinar-2026-09-18": {
+    "id": "evt-hap-i-transfer-sepsis-webinar-2026-09-18",
+    "kind": "event",
+    "title": "HAP webinar: I-TRANSFER sepsis documentation and post-acute handoff",
+    "description": "HAP webinar: I-TRANSFER sepsis documentation and post-acute handoff"
+  },
+  "hap-emergency-management-2026-09-16": {
+    "id": "evt-hap-emergency-management-2026-09-16",
+    "kind": "event",
+    "title": "HAP Emergency Management Conference: Security. Continuity. Resilience.",
+    "description": "HAP Emergency Management Conference: Security. Continuity. Resilience."
   }
 };

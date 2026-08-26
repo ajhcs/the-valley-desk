@@ -24,11 +24,65 @@
   }
 }
 
+.SiteSkip {
+  position: absolute;
+  left: -999px;
+  top: 8px;
+  z-index: 4;
+  padding: 8px 12px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.SiteSkip:focus,
+.SiteSkip:focus-visible {
+  left: 8px;
+}
+
+.SiteMain:focus {
+  outline: none;
+}
+
+.SiteMain:focus-visible {
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--ink);
+  outline-offset: 2px;
+}
+
 .NotFound {
   margin: 0;
   padding: 32px 0;
   font-size: 16px;
   color: var(--ink);
+}
+
+.NotFound h1 {
+  margin: 0 0 12px;
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.NotFound p {
+  max-width: 62ch;
+  margin: 0 0 12px;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+.NotFound a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.NotFound a:focus-visible {
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--ink);
+  outline-offset: 2px;
 }
 
 .SiteHeader-inner {
@@ -113,6 +167,7 @@
   flex-direction: column;
   gap: 36px;
   padding-bottom: 32px;
+  overflow-x: clip;
 }
 
 .lead,
@@ -124,6 +179,183 @@
 .ItemPage-body,
 .ItemPage-sources {
   max-width: 76ch;
+}
+
+.ItemPage-meta {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 7px;
+  min-height: 28px;
+}
+
+.ItemEntities {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+
+.EntityDisclosure {
+  position: relative;
+  display: inline-block;
+}
+
+.EntityDisclosure-trigger {
+  min-height: 28px;
+  padding: 2px 7px;
+  border: 1px solid color-mix(in srgb, var(--ink) 24%, var(--rule));
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-out), background var(--motion-fast) var(--ease-out);
+}
+
+.EntityDisclosure-trigger:hover,
+.EntityDisclosure-trigger[aria-expanded="true"] {
+  border-color: var(--sky);
+  background: color-mix(in srgb, var(--sky) 8%, var(--paper));
+}
+
+.EntityDisclosure-trigger:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.EntityDisclosure-card {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 8;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  width: min(360px, calc(100vw - 40px));
+  padding: 14px;
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--sky);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--text);
+  white-space: normal;
+  box-shadow: 0 12px 30px rgba(16, 24, 40, 0.14), 0 2px 6px rgba(16, 24, 40, 0.08);
+}
+
+.EntityDisclosure.is-align-right .EntityDisclosure-card {
+  right: 0;
+  left: auto;
+}
+
+.EntityDisclosure-image {
+  display: block;
+  width: 88px;
+  height: 56px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  object-fit: contain;
+}
+
+.EntityDisclosure-image.is-person {
+  width: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.OrgMention .EntityDisclosure {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.OrgMention .EntityDisclosure-card {
+  left: 0;
+  min-width: 240px;
+}
+
+.OrgMention .EntityDisclosure.is-align-right .EntityDisclosure-card {
+  right: 0;
+  left: auto;
+}
+
+.EntityDisclosure-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.EntityDisclosure-copy strong {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.EntityDisclosure-role {
+  color: var(--mute);
+}
+
+.EntityDisclosure-fact {
+  margin-top: 3px;
+  color: var(--text);
+}
+
+.EntityDisclosure-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  margin-top: 3px;
+}
+
+.EntityDisclosure-links a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
+
+.ItemPage-context {
+  max-width: 76ch;
+  margin: 16px 0 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--sky);
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.ItemPage-context > span:first-child {
+  margin-right: 5px;
+  color: var(--admiral);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .EntityDisclosure-card,
+  .EntityDisclosure.is-align-right .EntityDisclosure-card,
+  .OrgMention .EntityDisclosure.is-align-right .EntityDisclosure-card {
+    position: fixed;
+    top: auto;
+    right: 20px;
+    bottom: 20px;
+    left: 20px;
+    width: auto;
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+  }
+
+  .EntityDisclosure-trigger {
+    min-height: 32px;
+  }
 }
 
 .lead,
@@ -229,14 +461,25 @@ ul.desk {
   color: var(--mute);
 }
 
+@media (max-width: 720px) {
+  .DeskRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .DeskRow-impact {
+    margin-top: 0;
+  }
+}
+
 .DateChip {
   display: inline-block;
-  height: 18px;
+  flex: none;
+  white-space: nowrap;
   padding: 0 7px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  line-height: 18px;
+  line-height: 1.8;
   text-transform: uppercase;
   color: var(--text);
   background: var(--event);
@@ -314,6 +557,294 @@ ul.desk {
   color: var(--text);
 }
 
+.KindList-sections {
+  display: grid;
+  gap: 44px;
+}
+
+.ProductWatch-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 20px;
+  margin-bottom: 8px;
+}
+
+.ProductWatch h2 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--admiral);
+}
+
+.ProductWatch-head p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--mute);
+}
+
+.ProductWatch ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 40px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.ProductWatch li {
+  padding: 16px 0 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.ProductWatch-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.ProductWatch-meta time {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mute);
+}
+
+.ProductWatch h3 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.ProductWatch h3 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.ProductWatch li > p {
+  margin: 7px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+@media (max-width: 720px) {
+  .ProductWatch ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+.EventsPage {
+  padding-bottom: 48px;
+}
+
+.EventsPage-head {
+  max-width: 760px;
+  padding: 48px 0 36px;
+}
+
+.EventsPage-kicker,
+.EventsSection h2 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--event-text);
+}
+
+.EventsPage-head h1 {
+  margin: 10px 0 12px;
+  font-family: var(--font-serif);
+  font-size: clamp(36px, 5vw, 58px);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  color: var(--text);
+}
+
+.EventsPage-head > p:last-child {
+  max-width: 62ch;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--mute);
+}
+
+.EventsSection {
+  margin-top: 44px;
+}
+
+.EventsSection.is-radar {
+  margin-top: 0;
+}
+
+.EventsSection-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.EventsSection-head span {
+  font-size: 12px;
+  color: var(--mute);
+}
+
+.EventList {
+  display: grid;
+}
+
+.EventCard {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  gap: 18px 24px;
+  align-items: start;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.EventCard.is-radar {
+  margin-top: 8px;
+  padding: 22px;
+  border: 1px solid var(--event);
+}
+
+.EventCard-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-bottom: 7px;
+}
+
+.EventCard-signals span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.EventCard-signals span:first-child {
+  color: var(--event-text);
+}
+
+.EventCard h3 {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.EventCard h3 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.EventCard-when,
+.EventCard-why,
+.EventCard-meet {
+  margin: 7px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+.EventCard-why strong,
+.EventCard-meet strong {
+  color: var(--text);
+}
+
+.EventCard-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  min-width: 112px;
+}
+
+.EventCard-actions a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--event-text);
+  text-decoration: none;
+}
+
+.EventCard-actions a:focus-visible,
+.EventCard h3 a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.EventDetail {
+  max-width: 76ch;
+  margin-top: 22px;
+  padding: 16px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.EventDetail p {
+  margin: 5px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+.EventDetail strong {
+  display: inline-block;
+  min-width: 146px;
+  color: var(--text);
+}
+
+.EventDetail-actions {
+  display: flex;
+  gap: 20px;
+  margin-top: 12px;
+}
+
+.EventDetail-actions a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--event-text);
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .EventsPage-head {
+    padding-top: 32px;
+  }
+
+  .EventCard,
+  .EventCard.is-radar {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 20px 0;
+  }
+
+  .EventCard.is-radar {
+    padding: 18px;
+  }
+
+  .EventCard-actions {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    min-width: 0;
+    padding-top: 4px;
+  }
+
+  .EventCard-actions a {
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+  }
+}
+
 .Rail h2 {
   margin: 0 0 8px;
   font-size: 11px;
@@ -323,7 +854,7 @@ ul.desk {
 }
 
 .Rail[data-rail="news"] h2 {
-  color: var(--sky);
+  color: var(--admiral);
 }
 
 .Rail[data-rail="events"] h2 {
@@ -360,10 +891,30 @@ ul.desk {
   grid-template-columns: auto minmax(0, 1fr);
   gap: 10px 12px;
   align-items: center;
+  min-width: 0;
 }
 
 .Rail[data-rail="events"] .RailRow.is-register {
   grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.Rail[data-rail="events"] .RailRow-when {
+  flex: none;
+  white-space: nowrap;
+}
+
+.Rail[data-rail="events"] .RailRow a {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767px) {
+  .Rail[data-rail="events"] .RailRow,
+  .Rail[data-rail="events"] .RailRow.is-register {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+  }
 }
 
 .RailRow-when {
@@ -527,11 +1078,45 @@ ul.desk {
 }
 
 .OrgTick.is-help {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+  background: transparent;
+  vertical-align: middle;
   cursor: help;
+}
+
+.OrgTick.is-help::after {
+  position: absolute;
+  top: 11px;
+  left: 8px;
+  width: 7px;
+  height: 2px;
+  background: var(--sky);
+  content: "";
 }
 
 .Lead-signedTick {
   margin-right: 4px;
+}
+
+.Desk-edition,
+.Desk-quiet {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--mute);
+}
+
+.ItemPage,
+.ItemPage-body,
+.ItemPage-dek,
+.ItemPage-sources,
+.ItemFacts {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .ItemFacts {
@@ -545,9 +1130,13 @@ ul.desk {
   margin: 0 0 6px;
 }
 
-.ItemFacts a {
+.ItemFacts a,
+.ItemPage-body a,
+.ItemPage-sources a {
   color: var(--ink);
   text-decoration: underline;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 @keyframes fade-in {

@@ -3,16 +3,19 @@ import { navSection } from "../lib/nav";
 import { DocumentHead } from "./DocumentHead";
 import { MentionScope } from "./MentionScope";
 import { SiteFooter } from "./home/SiteFooter";
+import { SkipLink } from "./SkipLink";
 
 export function Layout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const current = navSection(pathname);
+  const isLab = pathname === "/lab" || pathname.startsWith("/lab/");
   return (
     <div className="Shell">
       <DocumentHead />
-      <header className="SiteHeader">
+      {!isLab ? <SkipLink className="SiteSkip" href="#main-content">Skip to content</SkipLink> : null}
+      {!isLab ? <header className="SiteHeader">
         <div className="SiteHeader-inner">
-          <Link to="/" className="SiteHeader-brand" aria-label="The Valley Desk home">
+          <Link to="/" className="SiteHeader-brand">
             <img className="MarkFold" src="/mark-a-fold.svg" alt="" />
             <span className="Wordmark">
               <span className="Wordmark-kicker">The</span>
@@ -67,13 +70,13 @@ export function Layout() {
             </Link>
           </nav>
         </div>
-      </header>
-      <main className="SiteMain">
+      </header> : null}
+      <main id="main-content" tabIndex={-1} className={isLab ? "SiteMain is-lab" : "SiteMain"}>
         <MentionScope key={pathname}>
           <Outlet />
         </MentionScope>
       </main>
-      <SiteFooter />
+      {!isLab ? <SiteFooter /> : null}
     </div>
   );
 }

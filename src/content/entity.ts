@@ -43,6 +43,8 @@ export const Entity = z.object({
   geo: z.string().optional(),
   role: z.string().optional(),
   url: z.string().url().optional(),
+  /** Official logo or portrait used in compact entity disclosure cards. */
+  image: z.string().url().optional(),
   /** Attached org ids. For affiliates that are not a child of one parent and not a merge. */
   orgs: z.array(z.string()).optional(),
   /** Other hospital id that shares this campus. */

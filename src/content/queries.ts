@@ -44,6 +44,19 @@ export function publishedNewsList(items: ContentItem[]) {
     .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
 }
 
+/** Curated product changes with a verified local health-system relationship. */
+export function productWatch(items: ContentItem[], n = 8) {
+  return items
+    .filter((item) =>
+      item.status === "published" &&
+      (item.kind === "news" || item.kind === "ai") &&
+      item.topics.includes("product-watch") &&
+      Boolean(item.impactSentence?.trim()),
+    )
+    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
+    .slice(0, n);
+}
+
 /** Published kind=voice only. Never latestNews. Jane Doe stays draft. */
 export function latestVoices(items: ContentItem[], n = 6) {
   return items
@@ -152,6 +165,67 @@ export function byKind<K extends ContentItem["kind"]>(
 
 export function bySlug(items: ContentItem[], slug: string) {
   return items.find((i) => i.slug === slug && i.status === "published");
+}
+
+/** Published item that used to live at this slug. Canonical slug is item.slug. */
+export function byPreviousSlug(items: ContentItem[], slug: string) {
+  return items.find(
+    (item) => item.status === "published" && item.previousSlugs?.includes(slug) && item.slug !== slug,
+  );
+}
+
+export const EDITION_HOURS_ET = [6, 17] as const;
+
+export function lastEditionAt(now = new Date()): Date {
+  const today = etParts(now);
+  const evening = etWallToUtc(today.year, today.month, today.day, EDITION_HOURS_ET[1]);
+  if (now.getTime() >= evening.getTime()) return evening;
+  const morning = etWallToUtc(today.year, today.month, today.day, EDITION_HOURS_ET[0]);
+  if (now.getTime() >= morning.getTime()) return morning;
+  const noon = etWallToUtc(today.year, today.month, today.day, 12);
+  const yesterday = etParts(new Date(noon.getTime() - 24 * 60 * 60 * 1000));
+  return etWallToUtc(yesterday.year, yesterday.month, yesterday.day, EDITION_HOURS_ET[1]);
+}
+
+export function nextEditionAt(now = new Date()): Date {
+  const today = etParts(now);
+  for (const hour of EDITION_HOURS_ET) {
+    const check = etWallToUtc(today.year, today.month, today.day, hour);
+    if (now.getTime() < check.getTime()) return check;
+  }
+  const noon = etWallToUtc(today.year, today.month, today.day, 12);
+  const tomorrow = etParts(new Date(noon.getTime() + 24 * 60 * 60 * 1000));
+  return etWallToUtc(tomorrow.year, tomorrow.month, tomorrow.day, EDITION_HOURS_ET[0]);
+}
+
+export function editionName(at: Date) {
+  return etParts(at).hour < 12 ? "Morning edition" : "Evening edition";
+}
+
+export function formatEditionClock(iso: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: ET,
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(iso));
+}
+
+export function editionStamp(now = new Date()) {
+  const last = lastEditionAt(now);
+  const next = nextEditionAt(now);
+  return {
+    last,
+    next,
+    currentName: editionName(last),
+    nextName: editionName(next),
+    lastClock: formatEditionClock(last.toISOString()),
+    nextClock: formatEditionClock(next.toISOString()),
+  };
+}
+
+export function isStaleLead(item: ContentItem, now = new Date()) {
+  const t = Date.parse(item.publishedAt ?? item.updatedAt);
+  return Number.isFinite(t) && t < lastEditionAt(now).getTime();
 }
 
 const ET = "America/New_York";

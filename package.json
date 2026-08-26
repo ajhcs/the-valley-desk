@@ -14,7 +14,7 @@
     "ingest:events": "tsx scripts/ingest-events.mjs",
     "ingest:social": "tsx scripts/ingest-social.mjs",
     "ingest:all": "tsx scripts/ingest-all.mjs",
-    "test": "tsx --test test/query-contracts.test.ts"
+    "test": "node --import tsx/esm test/query-contracts.test.ts"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.170.31",

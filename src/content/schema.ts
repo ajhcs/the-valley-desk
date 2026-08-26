@@ -16,10 +16,18 @@ export const Kind = z.enum([
 export const IMPACT_PUBLISH_KINDS = ["news", "policy", "ai", "interview"] as const;
 export type ImpactPublishKind = (typeof IMPACT_PUBLISH_KINDS)[number];
 
+export const HttpsUrl = z.string().url().refine((value) => {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}, "URL must use HTTPS");
+
 export const Source = z.object({
   kind: SourceKind,
   origin: z.string(),
-  url: z.string().url().optional(),
+  url: HttpsUrl.optional(),
   fetchedAt: z.string().datetime().optional(),
   externalId: z.string().optional(),
 });
@@ -31,7 +39,7 @@ export const Author = z.object({
 
 export const Citation = z.object({
   name: z.string(),
-  url: z.string().url(),
+  url: HttpsUrl,
 });
 
 /** Editorial marks. Not a kind. Allowed on published desk rows and the featured lead. */
@@ -57,7 +65,11 @@ const Base = z.object({
   source: Source,
   geo: z.string().optional(),
   impactSentence: z.string().optional(),
+  /** One brief, sourced line connecting the current item to prior regional context. */
+  contextSentence: z.string().optional(),
   citations: z.array(Citation).optional(),
+  /** Retired permalinks that must 301 to slug. First published slug stays canonical. */
+  previousSlugs: z.array(z.string()).optional(),
   /** Editorial only. Ingest must never set true. Default false. */
   featured: z.boolean().default(false),
   annotations: z.array(Annotation).optional(),
@@ -79,7 +91,14 @@ export const EventItem = Base.extend({
   venue: z.string().optional(),
   city: z.string().optional(),
   hostOrg: z.string(),
-  registrationUrl: z.string().url().optional(),
+  registrationUrl: HttpsUrl.optional(),
+  format: z.enum(["in-person", "virtual", "hybrid", "unknown"]).optional(),
+  whyAttend: z.string().optional(),
+  whoYoullMeet: z.array(z.string()).optional(),
+  healthSystemRelevance: z.string().optional(),
+  relatedOrgIds: z.array(z.string()).optional(),
+  relatedProductIds: z.array(z.string()).optional(),
+  registrationDeadline: z.string().datetime().optional(),
   partner: z.enum([
     "dvhimss",
     "njhimss",
@@ -97,7 +116,7 @@ export const VoiceItem = Base.extend({
   role: z.string().optional(),
   org: z.string().optional(),
   platform: z.enum(["x", "linkedin", "site", "other"]),
-  originalUrl: z.string().url(),
+  originalUrl: HttpsUrl,
 });
 
 export const PolicyItem = Base.extend({
@@ -159,13 +178,7 @@ export function canPublish(item: {
 }): boolean {
   if (item.status !== "published") return false;
   if (needsImpactSentence(item.kind) && !item.impactSentence?.trim()) return false;
-  if (
-    item.kind === "event" &&
-    (item.partner === "dvhimss" || item.partner === "njhimss") &&
-    !item.registrationUrl
-  ) {
-    return false;
-  }
+  if (item.kind === "event" && !item.registrationUrl) return false;
   return true;
 }
 
@@ -192,16 +205,11 @@ export const ContentItem = ContentItemUnion.superRefine((item, ctx) => {
       message: "annotations are only allowed on published desk rows and the featured lead",
     });
   }
-  if (
-    item.status === "published" &&
-    item.kind === "event" &&
-    (item.partner === "dvhimss" || item.partner === "njhimss") &&
-    !item.registrationUrl
-  ) {
+  if (item.status === "published" && item.kind === "event" && !item.registrationUrl) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["registrationUrl"],
-      message: "registrationUrl is required to publish dvhimss or njhimss events",
+      message: "registrationUrl is required to publish an event",
     });
   }
 });

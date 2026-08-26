@@ -1,23 +1,31 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
+import { DatabaseSync, type StatementSync } from "node:sqlite";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
   briefingSinceYesterday5pmET,
+  byPreviousSlug,
+  bySlug,
+  editionStamp,
   featuredLead,
   isPublicNewsFamily,
-  bySlug,
+  isStaleLead,
+  lastEditionAt,
   latestNews,
   latestVoices,
-  publishedNewsList,
   leadItem,
   nextChapterEvent,
+  nextEditionAt,
   pinnedUpcomingEvents,
+  productWatch,
+  publishedNewsList,
   upcomingEvents,
 } from "../src/content/queries.ts";
+import { mergePublishedOverlay, retainPublishedIdentity } from "../src/content/merge.ts";
 import {
   ContentCatalog,
   ContentItem,
@@ -29,8 +37,8 @@ import {
   Status,
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
-import { fetchDvhimssCalendar } from "../src/ingest/events.ts";
-import { rssItemToContent } from "../src/ingest/rss.ts";
+import { fetchDvhimssCalendar, ingestEventsWithHealth, scrapeNjdvhimss } from "../src/ingest/events.ts";
+import { RSS_SOURCES, rssItemToContent } from "../src/ingest/rss.ts";
 import { ingestLinkedIn } from "../src/ingest/linkedin.ts";
 import { ingestX } from "../src/ingest/x.ts";
 import { mergeReviewQueue } from "../src/ingest/queue.ts";
@@ -42,19 +50,64 @@ import { toFeed } from "../src/ingest/feed-contract.ts";
 import { canonicalUrl, canonicalPath } from "../src/lib/canonical.ts";
 import { eventPlace, formatChipLabel, formatDate, formatLeadDate, listDek, listSourceLine } from "../src/lib/format.ts";
 import { KIND_CHIP, chipKind, kindChip } from "../src/lib/kind.ts";
+import { primaryDisplayLabel, primaryEventLabel, primaryNewsLabel, primaryVoiceLabel } from "../src/lib/taxonomy.ts";
 import { Entity } from "../src/content/entity.ts";
 import {
   citableFacts,
   factBearingEntities,
   findFirstMentions,
+  itemOrgGraph,
   itemSignedFacts,
+  publicEntityRole,
+  publicEntityContext,
   displayFacts,
+  VERIFIED_ENTITY_MEDIA,
   signedHoverLine,
   signedPrintLine,
   splitFirstSentence,
 } from "../src/lib/entityFacts.ts";
 import { itemByline, newsByline } from "../src/lib/byline.ts";
 import { navSection } from "../src/lib/nav.ts";
+import { eventSchedule, formatEventWhen, googleCalendarDates, googleCalendarUrl } from "../src/lib/calendar.ts";
+import { eventWhyCopy, eventWhyLine, isBoilerplateEventCopy } from "../src/lib/eventCopy.ts";
+import { hasDefensiveEditorialAside, hasInternalProcessLanguage, professionalizeHeadline } from "../src/lib/editorialCopy.ts";
+import { matchingProductUses } from "../src/ingest/product-watch.ts";
+import {
+  candidateFingerprint,
+  persistEditorialDecisions,
+  persistEnrichments,
+  persistIngestRun,
+  persistSourceHealth,
+  readPublicationTombstones,
+  readReusableEnrichments,
+  reconcileMissingPublishedEvents,
+  type D1DatabaseLike,
+  type D1StatementLike,
+} from "../src/ingest/persistence.ts";
+import { evaluateCandidate, EDITOR_POLICY_VERSION } from "../src/ingest/editor.ts";
+import {
+  EditorEnrichment,
+  EditorModelError,
+  enrichWithEditorModel,
+  extractEditorJson,
+  DEFAULT_EDITOR_BASE_URL,
+  DEFAULT_EDITOR_MODEL,
+  EDITOR_OUTPUT_MAX_TOKENS,
+  EDITOR_REASONING_MAX_TOKENS,
+} from "../src/ingest/editor-model.ts";
+import {
+  DEFAULT_EDITOR_MODEL_BUDGET,
+  editorModelBackoffMs,
+  isEditorModelEligible,
+  selectEditorModelWork,
+  shouldEnrichCandidate,
+  type EditorModelState,
+} from "../src/ingest/editor-work.ts";
+import { runAutomation } from "../src/ingest/automation.ts";
+import { editorContextForItem } from "../src/ingest/editor-context.ts";
+import { mergePublishedContent, runtimeItemsScript } from "../src/ingest/public-feed.ts";
+import { handleReviewApi } from "../src/ingest/review-api.ts";
+import { runIngestAll } from "../src/ingest/run-all.ts";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -62,6 +115,50 @@ const entities = require("../fixtures/entities.json") as { id: string }[];
 const entityRows = Entity.array().parse(JSON.parse(readFileSync(join(root, "fixtures/entities.json"), "utf8")));
 const catalog = ContentCatalog.parse(JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8")));
 const seedIds = liveSeedOrgIds(entities);
+
+class SqliteD1Statement implements D1StatementLike {
+  private values: unknown[] = [];
+
+  constructor(private readonly statement: StatementSync) {}
+
+  bind(...values: unknown[]) {
+    const bound = new SqliteD1Statement(this.statement);
+    bound.values = values;
+    return bound;
+  }
+
+  async first<T = unknown>() {
+    return (this.statement.get(...this.values as never[]) as T | undefined) ?? null;
+  }
+
+  async run() {
+    return this.statement.run(...this.values as never[]);
+  }
+
+  async all<T = unknown>() {
+    return { results: this.statement.all(...this.values as never[]) as T[] };
+  }
+}
+
+function sqliteD1(database: DatabaseSync): D1DatabaseLike {
+  return {
+    prepare(query: string) {
+      return new SqliteD1Statement(database.prepare(query));
+    },
+    async batch(statements: D1StatementLike[]) {
+      database.exec("BEGIN");
+      try {
+        const results = [];
+        for (const statement of statements) results.push(await statement.run());
+        database.exec("COMMIT");
+        return results;
+      } catch (error) {
+        database.exec("ROLLBACK");
+        throw error;
+      }
+    },
+  };
+}
 
 function dvhimssResponse(website?: unknown) {
   return new Response(JSON.stringify({
@@ -76,17 +173,71 @@ function dvhimssResponse(website?: unknown) {
 }
 
 test("DVHIMSS auto-publishes only with a verified registration URL", async () => {
-  const registered = await fetchDvhimssCalendar(async () => dvhimssResponse("https://tickets.example/register"));
-  assert.equal(registered[0]?.registrationUrl, "https://tickets.example/register");
+  const registered = await fetchDvhimssCalendar(async () => dvhimssResponse("https://web.cvent.com/event/chapter-forum"));
+  assert.equal(registered[0]?.registrationUrl, "https://web.cvent.com/event/chapter-forum");
   assert.equal(registered[0]?.autoPublish, true);
   assert.equal(registered[0]?.status, "published");
 
-  for (const website of [undefined, "javascript:alert(1)", "not a URL"]) {
+  for (const website of [undefined, "javascript:alert(1)", "not a URL", "https://attacker.invalid/register"]) {
     const unverified = await fetchDvhimssCalendar(async () => dvhimssResponse(website));
     assert.equal(unverified[0]?.registrationUrl, undefined);
     assert.equal(unverified[0]?.autoPublish, false);
     assert.equal(unverified[0]?.status, "review");
   }
+});
+
+test("NJDVHIMSS auto-publishes only when its official page exposes a Cvent path", async () => {
+  const page = (body: string) => async () => new Response(body, { status: 200 });
+  const confirmed = await scrapeNjdvhimss(page(`
+    <a href="https://cvent.me/NAqAxv">Register Today</a>
+    Tuesday, October 13, 2026 through October 15, 2026
+  `) as typeof fetch);
+  assert.equal(confirmed[0]?.source.origin, "njhimss-events");
+  assert.equal(confirmed[0]?.partner, "njhimss");
+  assert.equal(confirmed[0]?.registrationUrl, "https://cvent.me/NAqAxv");
+  assert.equal(confirmed[0]?.autoPublish, true);
+
+  const unconfirmed = await scrapeNjdvhimss(page(`
+    <a href="https://njdvhimssevent.com/agenda">Agenda</a>
+    Tuesday, October 13, 2026 through October 15, 2026
+  `) as typeof fetch);
+  assert.equal(unconfirmed[0]?.registrationUrl, undefined);
+  assert.equal(unconfirmed[0]?.autoPublish, false);
+  assert.equal(unconfirmed[0]?.status, "review");
+});
+
+test("one event-source outage does not discard successful RSS ingestion", async () => {
+  const rss = `<?xml version="1.0"?><rss><channel><item><title>ChristianaCare workflow update</title><link>https://news.christianacare.org/workflow-update</link><guid>workflow-update</guid><description>Epic workflow deployment.</description><pubDate>Wed, 26 Aug 2026 12:00:00 GMT</pubDate></item></channel></rss>`;
+  const result = await runIngestAll({}, new Date("2026-08-26T12:30:00.000Z"), async (input) => {
+    const url = String(input);
+    if (url.includes("christianacare.org")) return new Response(rss, { status: 200 });
+    if (url.includes("dvhimss.org/wp-json")) throw new Error("upstream unavailable");
+    if (url.includes("njdvhimssevent.com")) return new Response("", { status: 503 });
+    return new Response("", { status: 503 });
+  });
+  assert.equal(result.rss.length, 1);
+  assert.equal(result.events.length, 0);
+});
+
+test("first-party health-system feeds pin their verified organization", () => {
+  const cooper = RSS_SOURCES.find((source) => source.id === "cooper-newsroom");
+  assert.ok(cooper);
+  assert.equal(cooper.origin, "cooper-newsroom");
+  assert.deepEqual(cooper.orgIds, ["org-cooper"]);
+  assert.equal(cooper.url, "https://blogs.cooperhealth.org/news/feed/");
+});
+
+test("an unrecognized NJ event page cannot trigger disappearance reconciliation", async () => {
+  const result = await ingestEventsWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    if (url.includes("wp-json/tribe")) {
+      return new Response(JSON.stringify({ events: [] }), { status: 200 });
+    }
+    return new Response("<html><title>Temporary holding page</title></html>", { status: 200 });
+  });
+  const nj = result.sources.find((source) => source.id === "njhimss-events");
+  assert.equal(nj?.state, "success");
+  assert.equal(nj?.complete, false);
 });
 
 const base = {
@@ -286,12 +437,12 @@ test("latestNews bounces empty orgs, review, interview, and Crozer-only orgs", (
   assert.deepEqual(rows.map((i) => i.id), []);
 });
 
-test("kind chip is item.kind, never topics[0]; Jefferson loss is HIT", () => {
+test("kind chip is editorial taxonomy, never topics[0]; Jefferson loss is FINANCE", () => {
   const loss = catalog.find((i) => i.id === "news-jefferson-fy2026-loss");
   assert.ok(loss);
   assert.equal(loss.kind, "news");
   assert.equal(loss.topics[0], "finance");
-  assert.equal(kindChip(loss), "HIT");
+  assert.equal(kindChip(loss), "FINANCE");
   assert.notEqual(kindChip(loss), loss.topics[0]);
   const penn = catalog.find((i) => i.id === "news-penn-ai-scribe");
   assert.ok(penn);
@@ -352,17 +503,19 @@ test("kind chip paint is mute/rule, ink, or admiral — never sky, never gold ex
 
 test("KindListPage /news uses publishedNewsList; ai-01 stays out", () => {
   const page = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
+  const productPage = readFileSync(join(root, "src/ui/ProductWatch.tsx"), "utf8");
   const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
   assert.ok(page.includes("publishedNewsList(catalog)"));
   assert.ok(!page.includes("latestNews(catalog, Number.MAX_SAFE_INTEGER)"));
   assert.ok(page.includes("Rail"));
   assert.ok(page.includes("NEWS · LATEST"));
-  assert.ok(page.includes("EVENTS · NEXT"));
+  assert.ok(page.includes("ProductWatch"));
+  assert.ok(productPage.includes("PRODUCTS · WATCH"));
   assert.ok(page.includes("VOICES · LATEST"));
   assert.ok(page.includes("latestVoices(catalog, Number.MAX_SAFE_INTEGER)"));
   assert.ok(!page.includes("ItemCard"));
   assert.ok(!page.includes("newsFamily"));
-  assert.ok(home.includes("latestNews(catalog)"));
+  assert.ok(home.includes("latestNews(catalog, 7)"));
   const ai = catalog.find((i) => i.id === "ai-01");
   assert.ok(ai);
   assert.deepEqual(ai.orgs, []);
@@ -637,7 +790,8 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.ok(!christiana.citations?.some((c) => c.url.includes("app.fac.gov")));
   assert.ok(!christiana.body.includes("49.364"));
   assert.ok(!christiana.body.includes("FAC Note 18"));
-  assert.ok(christiana.body.endsWith("That clip is not an Epic dollar."));
+  assert.ok(christiana.body.includes("underway since a 2024 decision"));
+  assert.ok(!/not an Epic dollar|No FAC dollars/i.test(`${christiana.dek} ${christiana.body} ${christiana.impactSentence}`));
   assert.equal(loss.title, "Jefferson FY2026 operating loss and Fitch liquidity");
   assert.equal(loss.kind === "news" ? loss.clockAt : "none", undefined);
   assert.equal(loss.publishedAt, "2026-08-14T16:00:00.000Z");
@@ -647,7 +801,7 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.ok(loss.body.includes("Independence Blue Cross"));
   assert.ok(loss.body.includes("Aetna"));
   assert.ok(!loss.body.includes("This desk has not opened the EMMA year-end PDF."));
-  assert.ok(loss.body.includes("Those nine-month figures are not a substitute for the June 30 year-end loss."));
+  assert.ok(!loss.body.includes("not a substitute"));
   assert.equal(penn.title, "Penn in-house scribe headcount and 2024 JAMA pilot table");
   assert.equal(penn.kind === "news" ? penn.clockAt : "none", undefined);
   assert.equal(penn.publishedAt, "2025-11-10T16:00:00.000Z");
@@ -656,19 +810,21 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.equal(penn.source.url, penn.citations?.[0]?.url);
   const pennLead = `${penn.title}\n${penn.dek}\n${penn.impactSentence}`;
   assert.ok(pennLead.includes("1,200"));
-  assert.ok(penn.body.endsWith("Temple Dragon counts are not this count."));
+  assert.ok(penn.body.includes("A separate JAMA Network Open study"));
+  assert.ok(!/not this count|not the same product/i.test(`${penn.dek} ${penn.body} ${penn.impactSentence}`));
   assert.ok(!/slovis/i.test(`${penn.title} ${penn.dek} ${penn.body}`));
   assert.ok(!/does not name a commercial vendor|no vendor/i.test(`${penn.title} ${penn.dek} ${penn.body}`));
-  assert.equal(temple.title, "Temple Dragon Copilot user count and TUHS cash days");
+  assert.equal(temple.title, "Temple expands Dragon Copilot to 400 end users");
   assert.equal(temple.slug, "temple-dragon-copilot-400");
   assert.equal(temple.kind === "news" ? temple.clockAt : "none", undefined);
   assert.equal(temple.publishedAt, "2026-08-01T16:00:00.000Z");
   assert.deepEqual(temple.orgs, ["org-temple", "org-temple-tuh-main"]);
-  assert.equal(temple.citations?.length, 4);
+  assert.equal(temple.citations?.length, 3);
   assert.equal(temple.source.url, temple.citations?.[0]?.url);
   assert.ok(temple.body.includes("chief medical information officer at Philadelphia-based Temple Health"));
   assert.ok(temple.body.includes("Chief Medical Information Officer for Temple University Hospital"));
-  assert.ok(temple.body.endsWith("That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count."));
+  assert.ok(temple.body.includes("reduced after-hours documentation time by more than 10 percent"));
+  assert.ok(!/DCOH|not a filing|not this count/i.test(`${temple.title} ${temple.dek} ${temple.body} ${temple.impactSentence}`));
   assert.ok(!temple.body.includes("Do not fuse those two sentences."));
   assert.ok(!/honor.?roll|epic-names-temple|july 16/i.test(JSON.stringify(temple)));
   assert.ok(!/capalongo/i.test(`${temple.title} ${temple.dek} ${temple.body}`));
@@ -701,14 +857,13 @@ test("CHOP ORCA and Tower AI tax fixtures: published, not featured, seed orgs, c
   }
   assert.deepEqual(chop.orgs, ["org-chop"]);
   assert.equal(chop.featured, false);
-  assert.equal(chop.title, "CHOP ORCA repo for Epic downtime order sets");
-  assert.equal(
-    chop.dek,
-    "GitHub plus two Aug. 3 LinkedIn posts. Desai and Salmasian are posters, not authors.",
-  );
+  assert.equal(chop.title, "CHOP publishes ORCA repo");
+  assert.equal(chop.dek, "CHOP’s ORCA repository is an offline, read-only viewer for Epic order sets and SmartSets during downtime.");
   assert.ok(!chop.dek.includes("No paper n"));
-  assert.ok(chop.body.includes("posters, not authors"));
-  assert.ok(chop.body.includes("not MIT"));
+  assert.ok(chop.body.includes("Desai and Hojjat Salmasian shared the repository"));
+  assert.ok(chop.body.includes("reference when the live EHR is unavailable"));
+  assert.ok(chop.body.includes("clear safety boundary"));
+  assert.match(chop.contextSentence ?? "", /Applied Clinical Informatics/i);
   assert.ok(!chop.body.includes("HOLD"));
   assert.equal(chop.citations?.length, 3);
   assert.equal(chop.source.url, chop.citations?.[0]?.url);
@@ -756,7 +911,7 @@ test("HAP CMS-0057-F letter is published, not featured, org-hap only", () => {
   assert.equal(item.publishedAt, "2025-06-10T16:00:00.000Z");
   assert.deepEqual(item.orgs, ["org-hap"]);
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
-  assert.ok(item.body.includes("not a local hospital PA-API go-live"));
+  assert.ok(item.body.includes("until Jan. 1, 2027 for the FHIR APIs"));
   assert.ok(item.body.includes("26 Pennsylvania hospitals"));
   assert.ok(!item.body.includes("Delaware Valley PA-API"));
   assert.equal(item.citations?.length, 2);
@@ -776,7 +931,8 @@ test("homepage binds store queries and kit class names", () => {
   const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
   const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
   const briefing = readFileSync(join(root, "src/ui/BriefingPage.tsx"), "utf8");
-  const eventsPage = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
+  const eventsPage = readFileSync(join(root, "src/ui/EventsPage.tsx"), "utf8");
+  const kindListPage = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
   const lead = readFileSync(join(root, "src/ui/home/Lead.tsx"), "utf8");
   const desk = readFileSync(join(root, "src/ui/home/Desk.tsx"), "utf8");
   const rail = readFileSync(join(root, "src/ui/home/Rail.tsx"), "utf8");
@@ -785,14 +941,18 @@ test("homepage binds store queries and kit class names", () => {
   const tokens = readFileSync(join(root, "src/styles/tokens.css"), "utf8");
   const router = readFileSync(join(root, "src/router.tsx"), "utf8");
   assert.ok(home.includes("leadItem"));
-  assert.ok(home.includes("briefingSinceYesterday5pmET"));
   assert.ok(home.includes("latestNews"));
+  assert.ok(home.includes("rankedNews[0]"));
+  assert.ok(home.includes("item.id !== lead?.id"));
+  assert.ok(!home.includes("<Desk"));
   assert.ok(home.includes("latestVoices"));
   assert.ok(home.includes("pinnedUpcomingEvents"));
-  assert.ok(eventsPage.includes("pinnedUpcomingEvents"));
-  assert.ok(eventsPage.includes("publishedNewsList"));
-  assert.ok(eventsPage.includes("latestVoices"));
-  assert.ok(!eventsPage.includes("newsFamily"));
+  assert.ok(eventsPage.includes("upcomingEvents"));
+  assert.ok(eventsPage.includes("CHAPTER RADAR"));
+  assert.ok(eventsPage.includes("NEXT UP"));
+  assert.ok(kindListPage.includes("publishedNewsList"));
+  assert.ok(kindListPage.includes("latestVoices"));
+  assert.ok(!kindListPage.includes("newsFamily"));
   assert.ok(!rail.includes("topics[0]"));
   assert.ok(!home.includes("briefing[0]"));
   assert.ok(!home.includes("subscribe"));
@@ -802,8 +962,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(home.includes("NEWS · LATEST"));
   assert.ok(home.includes("EVENTS · NEXT"));
   assert.ok(home.includes("VOICES · LATEST"));
-  assert.ok(lead.includes("THE DESK"));
-  assert.ok(lead.includes("item.publishedAt"));
+  assert.ok(lead.includes("LATEST NEWS"));
+  assert.ok(!lead.includes("item.publishedAt"));
   assert.ok(!lead.includes("chipInstant"));
   assert.ok(lead.includes("Lead-headline"));
   assert.ok(lead.includes("Lead-impact"));
@@ -951,6 +1111,15 @@ test("nextChapterEvent prefers a conference in window over mixer/golf and pins t
   assert.equal(eventRegisterUrl(catalog.find((i) => i.id === "evt-02")!), undefined);
   assert.equal(
     canPublish({ kind: "event", status: "published", partner: "health-system" }),
+    false,
+  );
+  assert.equal(
+    canPublish({
+      kind: "event",
+      status: "published",
+      partner: "health-system",
+      registrationUrl: "https://example.com/register",
+    }),
     true,
   );
   assert.equal(pinned.filter((i) => /conference/i.test(i.title)).length, 1);
@@ -993,9 +1162,9 @@ test("nextChapterEvent prefers a conference in window over mixer/golf and pins t
   assert.ok(pinned.every((i) => i.kind === "event" && i.status === "published"));
   assert.ok(pinned.every((i) => i.startsAt >= now.toISOString()));
   const ingest = readFileSync(join(root, "src/ingest/events.ts"), "utf8");
-  const scrapeFn = ingest.slice(ingest.indexOf("export async function scrapeNjdvhimss"));
-  assert.ok(scrapeFn.includes("autoPublish: false"));
-  assert.ok(!scrapeFn.includes("autoPublish: true"));
+  const scrapeFn = ingest.slice(ingest.indexOf("async function scrapeNjdvhimssBatch"));
+  assert.ok(scrapeFn.includes("autoPublish: Boolean(registrationUrl)"));
+  assert.ok(scrapeFn.includes('origin: "njhimss-events"'));
   const register = readFileSync(join(root, "src/lib/register.ts"), "utf8");
   assert.ok(!register.includes("source.url"));
   const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
@@ -1181,8 +1350,14 @@ test("dvhimss/njhimss cannot publish without registrationUrl", () => {
   };
   assert.equal(canPublish({ kind: "event", status: "published", partner: "dvhimss" }), false);
   assert.equal(canPublish({ kind: "event", status: "published", partner: "njhimss" }), false);
+  assert.equal(canPublish({ kind: "event", status: "published", partner: "health-system" }), false);
   assert.equal(
-    canPublish({ kind: "event", status: "published", partner: "health-system" }),
+    canPublish({
+      kind: "event",
+      status: "published",
+      partner: "health-system",
+      registrationUrl: "https://example.com/register",
+    }),
     true,
   );
   assert.throws(() => ContentItem.parse(raw));
@@ -1217,7 +1392,7 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(rss.includes("<link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>"));
   assert.ok(rss.includes("<guid isPermaLink=\"true\">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>"));
   assert.ok(rss.includes("<link>https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</link>"));
-  assert.ok(rss.includes("<description>Some 1,200 is an Inquirer headcount for Penn’s later in-house tool; 20.4% less time in notes is a 46-clinician journal table from a 2024 DAX Copilot pilot, not that headcount.</description>"));
+  assert.ok(rss.includes("<description>Penn’s in-house scribe reached roughly 1,200 ambulatory users; a separate 46-clinician DAX Copilot study reported 20.4% less note time per appointment.</description>"));
   assert.ok(!rss.includes("<description>The Philadelphia Inquirer, Nov. 10, 2025: internist Dina Capalongo hits a green button; the doctor still approves the note.</description>"));
   assert.ok(!rss.includes("Partner event, review-queued in the stub path; published here so the rail has two dates."));
   assert.ok(!rss.includes("Chapter event. Gold rail on the homepage."));
@@ -1257,8 +1432,14 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(!feed.items.some((row) => row.id === "brief-01"));
   assert.ok(!feed.items.some((row) => row.id === "ai-01"));
   assert.ok(!rss.includes("week-of-2026-08-18"));
-  assert.ok(build.includes("new Date().toISOString()"));
+  assert.ok(build.includes("const generatedAt = published"));
+  assert.ok(!build.includes("generatedAt: new Date().toISOString()"));
   assert.ok(build.includes("hasCite"));
+  const lastBuildDate = new Date(feed.generatedAt).valueOf();
+  for (const match of rss.matchAll(/<item>[\s\S]*?<description>([\s\S]*?)<\/description>[\s\S]*?<pubDate>([^<]+)<\/pubDate>[\s\S]*?<\/item>/g)) {
+    assert.ok(match[1].trim().length > 0, "RSS descriptions must never be empty");
+    assert.ok(new Date(match[2]).valueOf() <= lastBuildDate, "RSS publication dates cannot be in the future");
+  }
 });
 
 test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org routes", () => {
@@ -1269,6 +1450,7 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   const router = readFileSync(join(root, "src/router.tsx"), "utf8");
   assert.ok(robots.includes("User-agent: *"));
   assert.ok(robots.includes("Allow: /"));
+  assert.ok(robots.includes("Disallow: /lab"));
   assert.ok(!robots.includes("<"));
   assert.ok(worker.includes("status: 404"));
   assert.ok(worker.includes("text/html"));
@@ -1315,7 +1497,7 @@ test("signed stills kit numbers and Mira addendum locks", () => {
   const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
   const favicon = readFileSync(join(root, "public/favicon.svg"), "utf8");
   const status = readFileSync(join(root, "src/ui/home/StatusChip.tsx"), "utf8");
-  const eventsPage = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
+  const eventsPage = readFileSync(join(root, "src/ui/EventsPage.tsx"), "utf8");
   const card = readFileSync(join(root, "src/ui/ItemCard.tsx"), "utf8");
   const networking = catalog.find((i) => i.id === "evt-01");
   const jefferson = catalog.find((i) => i.id === "evt-02");
@@ -1347,8 +1529,8 @@ test("signed stills kit numbers and Mira addendum locks", () => {
   assert.ok(!card.includes("item.dek"));
   assert.ok(!card.includes("item.orgs"));
   assert.ok(!card.includes("listSourceLine"));
-  assert.ok(eventsPage.includes("pinnedUpcomingEvents"));
-  assert.ok(eventsPage.includes("Rail"));
+  assert.ok(eventsPage.includes("upcomingEvents"));
+  assert.ok(eventsPage.includes("EventCard"));
   assert.ok(!eventsPage.includes("ItemCard"));
 });
 
@@ -1562,7 +1744,8 @@ test("Voices v1: published kind=voice only, Honor Roll is not news, Jane Doe sta
   assert.equal(mlh.citations?.length, 1);
   assert.equal(mlh.citations?.[0]?.name, "Main Line Health official LinkedIn");
   assert.equal(mlh.citations?.[0]?.url, mlh.source.url);
-  assert.equal(mlh.body, mlh.dek);
+  assert.ok(mlh.body.includes("2,017 subscriptions"));
+  assert.ok(!/not an audited filing/i.test(`${mlh.dek} ${mlh.body}`));
   assert.equal(honor.kind, "voice");
   assert.equal(honor.status, "published");
   assert.equal(honor.featured, false);
@@ -1579,7 +1762,8 @@ test("Voices v1: published kind=voice only, Honor Roll is not news, Jane Doe sta
   );
   assert.equal(honor.citations?.length, 3);
   assert.ok(!honor.citations?.some((c) => /credly/i.test(`${c.name} ${c.url}`)));
-  assert.equal(honor.body, honor.dek);
+  assert.ok(honor.body.includes("$418,000 Epic Good Maintenance grant"));
+  assert.ok(!/not a Temple filing|not a Temple operating metric|program dollar/i.test(`${honor.dek} ${honor.body}`));
   const voices = latestVoices(catalog, Number.MAX_SAFE_INTEGER);
   assert.ok(voices.some((i) => i.slug === "inspira-johnson-epic-day-6-2026-07-30"));
   assert.ok(voices.some((i) => i.slug === "mlh-cloud-analytics-2026-08-17"));
@@ -1705,7 +1889,8 @@ test("firehose: stable RSS ids, seed org map, HOLD denylist, social no-op, queue
   assert.ok(!store.includes("review-queue"));
   assert.ok(store.includes("published-catalog.json"));
   assert.ok(worker.includes("async scheduled"));
-  assert.ok(worker.includes("runScheduledIngest"));
+  assert.ok(worker.includes("runAutomation"));
+  assert.ok(wrangler.includes("VALLEY_DESK_DB"));
   assert.ok(wrangler.includes("0 * * * *"));
   assert.ok(!wrangler.includes("routes"));
   assert.ok(!rssSrc.includes("linkedin.com"));
@@ -1764,8 +1949,10 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   const indexCss = readFileSync(join(root, "src/index.css"), "utf8");
   const head = readFileSync(join(root, "src/ui/DocumentHead.tsx"), "utf8");
   const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const router = readFileSync(join(root, "src/router.tsx"), "utf8");
 
-  assert.ok(home.includes("desk.length"));
+  assert.ok(!home.includes("desk.length"));
+  assert.ok(!home.includes("<Desk"));
   assert.ok(desk.includes("items.length === 0"));
   assert.ok(desk.includes("return null"));
   assert.ok(leadSrc.includes("<Link to={itemHref(item)}>"));
@@ -1777,7 +1964,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(!rail.includes("topics[0]"));
   assert.ok(page.includes("KindList-title"));
   assert.ok(page.includes("KIND_LABEL.voice"));
-  assert.ok(page.includes("KIND_LABEL.event"));
+  assert.ok(router.includes("EventsPage"));
   assert.ok(page.includes("KIND_LABEL.news"));
   assert.ok(itemPage.includes("itemByline"));
   assert.ok(itemPage.includes("ItemPage"));
@@ -1912,7 +2099,9 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   assert.ok(mention.includes("is-help"));
   assert.ok(mention.includes('aria-hidden="true"'));
   assert.ok(mention.includes("canInsert"));
-  assert.ok(mention.includes("aria-describedby"));
+  const facts = readFileSync(join(root, "src/ui/ItemFacts.tsx"), "utf8");
+  assert.ok(facts.includes("aria-controls"));
+  assert.ok(facts.includes("aria-expanded"));
   assert.ok(!mention.includes("createPortal"));
   assert.ok(!mention.includes("placeOrgChip"));
   assert.ok(!mention.includes("OrgChip"));
@@ -1946,15 +2135,11 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
   assert.equal(acheGolf && acheGolf.kind === "event" ? acheGolf.startsAt : "", "2026-09-09T11:00:00.000Z");
   assert.equal(acheGolf && acheGolf.kind === "event" ? acheGolf.venue : "", "Crystal Springs, Hamburg NJ");
 
-  const noRegister = [
-    "ache-eastern-pa-fall-symposium-2026-09-30",
-    "builds-bio-philly-2026-09-15",
-  ];
-  for (const slug of noRegister) {
-    const row = catalog.find((i) => i.slug === slug);
-    assert.equal(row?.status, "published", slug);
-    assert.equal(row && row.kind === "event" ? row.registrationUrl : "missing", undefined, slug);
-  }
+  const acheEpa = catalog.find((i) => i.slug === "ache-eastern-pa-fall-symposium-2026-09-30");
+  assert.notEqual(acheEpa?.status, "published");
+  const builds = catalog.find((i) => i.slug === "builds-bio-philly-2026-09-15");
+  assert.equal(builds?.status, "published");
+  assert.ok(builds && builds.kind === "event" && builds.registrationUrl);
 
   const withRegister = [
     "bionj-manufacturing-summit-2026-09-29",
@@ -1967,6 +2152,10 @@ test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pa
     "bionj-entrepreneurs-exchange-2026-09-23",
     "lspa-open-house-2026-09-02",
     "wistar-drug-discovery-forum-2026-09-09",
+    "builds-bio-philly-2026-09-15",
+    "ache-greater-philly-fall-symposium-2026-09-14",
+    "hap-i-transfer-sepsis-webinar-2026-09-18",
+    "hap-emergency-management-2026-09-16",
   ];
   for (const slug of withRegister) {
     const row = catalog.find((i) => i.slug === slug);
@@ -2060,8 +2249,7 @@ test("signed school facts on existing people; pay and CC NPSR unchanged", () => 
   );
   assert.ok(!/Temple Health CMIO/i.test(JSON.stringify(edu("person-benjamin-slovis"))));
   assert.equal(edu("person-thomas-f-gordon")[0]?.label, "BS MIS LaSalle · MBA St. Joseph's Haub");
-  assert.equal(edu("person-dave-johnson")[0]?.label, "Inspira SVP CIIO · MBA Saint Joseph's · BA Animatics Rutgers");
-  assert.equal(edu("person-dave-johnson")[0]?.citation.url, undefined);
+  assert.equal(edu("person-dave-johnson").length, 0);
   assert.ok(!/Kevin/.test(JSON.stringify(byId["person-dave-johnson"])));
   assert.equal(edu("person-bimal-desai")[0]?.label, "MBI OHSU · MD WashU · internship/residency CHOP");
   assert.equal(edu("person-bimal-desai")[0]?.citation.url, "https://www.chop.edu/doctors/desai-bimal");
@@ -2070,7 +2258,7 @@ test("signed school facts on existing people; pay and CC NPSR unchanged", () => 
     "Professor of Clinical Pediatrics · B.S. Biology Emory 1995 · M.D. WashU 2000 · M.B.I. OHSU 2008",
   );
   assert.equal(edu("person-bimal-desai")[1]?.citation.url, "https://www.med.upenn.edu/apps/faculty/index.php/g275/p17256");
-  assert.ok(edu("person-bimal-desai")[1]?.detail?.includes("267-426-6552"));
+  assert.ok(!/267-426-6552/.test(edu("person-bimal-desai")[1]?.detail ?? ""));
   assert.ok(!/@/.test(JSON.stringify(edu("person-bimal-desai"))));
   assert.ok(!/ORCA author/i.test(JSON.stringify(edu("person-bimal-desai"))));
   assert.equal(edu("person-robert-hartmann")[0]?.label, "MBA Northwestern · BA economics Vanderbilt");
@@ -2078,7 +2266,7 @@ test("signed school facts on existing people; pay and CC NPSR unchanged", () => 
     edu("person-anahi-santiago").map((f) => f.label),
     ["EMBA", "MBA Drexel + BS ECE Drexel"],
   );
-  assert.equal(edu("person-tom-bartiromo")[0]?.label, "bachelor's Computer Science, Brick Computer Science Institute");
+  assert.equal(edu("person-tom-bartiromo")[0]?.label, "Computer science education");
   assert.equal(edu("person-randall-gaboriault")[0]?.label, "Randy Gaboriault, MS, MBA");
   assert.equal(
     edu("person-randall-gaboriault")[1]?.label,
@@ -2136,8 +2324,7 @@ test("Sloan SIGN: Inspira Johnson day-6 voice; Honor Roll stays voice; pay facts
   assert.ok(/CIIO/.test(voice.body));
   assert.ok(!/\bCIO\b/.test(voice.body));
   assert.ok(!/Kevin/.test(`${voice.title} ${voice.body} ${voice.dek}`));
-  assert.ok(/not a go-live date/.test(voice.body));
-  assert.ok(/not a user count/.test(voice.body));
+  assert.ok(!/not a go-live date|not a user count/.test(voice.body));
   assert.ok(!/clockAt/.test(voice.body));
   assert.ok(!/["“]/.test(voice.body));
   assert.equal(honor.kind, "voice");
@@ -2460,9 +2647,9 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
       "https://www.linkedin.com/posts/the-childrens-hospital-of-philadelphia_chops-next-chapter-activity-7494090470386696193-XR-j",
     ],
   );
-  assert.ok(/incoming Oct\.? 1/.test(`${bell.dek} ${bell.body} ${bell.impactSentence}`));
-  assert.ok(/retires in October/.test(`${bell.dek} ${bell.body}`));
-  assert.ok(/not (the )?current CEO/.test(`${bell.dek} ${bell.body} ${bell.impactSentence}`));
+  assert.ok(/incoming CEO Joe Mitchell takes over Oct\.? 1/i.test(`${bell.dek} ${bell.body} ${bell.impactSentence}`));
+  assert.ok(/October retirement|retirement later in October/.test(`${bell.dek} ${bell.body}`));
+  assert.ok(!/not (the )?current CEO/.test(`${bell.dek} ${bell.body} ${bell.impactSentence}`));
   assert.ok(!neuro.authors.some((a) => /Johnson/i.test(a.name)));
   assert.notEqual(neuro.kind === "voice" ? neuro.person : "", "David Johnson");
   assert.ok(!JSON.stringify(neuro).includes("7483929651741081600"));
@@ -2550,8 +2737,9 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
   assert.equal(fyLoss.kind === "news" ? fyLoss.relatedVoiceIds.join() : "x", "");
   assert.ok(!JSON.stringify(fyLoss).includes("jefferson-cacchione-community-impact-2026-07-14"));
   assert.ok(!/181\.5|Inquirer|operating loss/i.test(`${impact.title} ${impact.dek} ${impact.body} ${impact.impactSentence}`));
-  assert.ok(/not audited/.test(`${impact.dek} ${impact.impactSentence}`));
-  assert.ok(/quoted/.test(`${impact.dek} ${impact.body}`));
+  assert.ok(/more than \$2\.7 billion/.test(`${impact.dek} ${impact.body}`));
+  assert.ok(/10 million patient visits/.test(`${impact.dek} ${impact.body}`));
+  assert.ok(!hasDefensiveEditorialAside(`${impact.dek} ${impact.body} ${impact.impactSentence}`));
   assert.ok(!/["“]/.test(`${impact.dek} ${impact.body}`));
   assert.ok(!catalog.some((i) => /leaphart/i.test(`${i.id} ${i.slug} ${i.title}`)));
   assert.ok(!entityRows.some((e) => /leaphart/i.test(`${e.id} ${e.name}`)));
@@ -2640,12 +2828,13 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.ok(css.includes("grid-template-columns: auto minmax(0, 1fr) auto"));
   const builds = catalog.find((i) => i.slug === "builds-bio-philly-2026-09-15");
   const acheEpa = catalog.find((i) => i.slug === "ache-eastern-pa-fall-symposium-2026-09-30");
-  assert.equal(builds && builds.kind === "event" ? builds.registrationUrl : "missing", undefined);
-  assert.equal(acheEpa && acheEpa.kind === "event" ? acheEpa.registrationUrl : "missing", undefined);
+  assert.ok(builds && builds.kind === "event" && builds.registrationUrl);
+  assert.notEqual(acheEpa?.status, "published");
 
   assert.ok(rail.includes(">PIN<"));
   assert.ok(home.includes("pinId"));
-  assert.ok(kindList.includes("pinId"));
+  const eventsPage = readFileSync(join(root, "src/ui/EventsPage.tsx"), "utf8");
+  assert.ok(eventsPage.includes("radar"));
   assert.ok(!/himss/i.test(rail));
   const pin = nextChapterEvent(catalog, new Date("2026-08-23T20:00:00.000Z"));
   assert.equal(pin?.slug, "njdvhimss-fall-conference-october-13th-15th");
@@ -2669,4 +2858,1672 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.ok(dekInsert.includes("mousedown"));
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+});
+
+test("product watch is local-use gated and visible as a curated news slice", () => {
+  const rows = productWatch(catalog, 20);
+  const slugs = rows.map((item) => item.slug);
+  assert.ok(slugs.includes("christianacare-epic-go-live"));
+  assert.ok(slugs.includes("jefferson-einstein-mychart-2026-09-26"));
+  assert.ok(slugs.includes("temple-dragon-copilot-400"));
+  assert.ok(slugs.includes("chop-orca-cds"));
+  assert.ok(rows.every((item) => item.topics.includes("product-watch")));
+
+  const temple = catalog.find((item) => item.slug === "temple-dragon-copilot-400");
+  assert.ok(temple);
+  const matches = matchingProductUses(temple);
+  assert.deepEqual(matches.map((row) => row.id), ["microsoft-dragon-copilot-temple"]);
+
+  const unrelated = news({
+    id: "generic",
+    slug: "generic",
+    title: "Epic earnings rise",
+    orgs: [],
+    source: { kind: "ingest", origin: "Epic", url: "https://example.com/epic-earnings" },
+  });
+  assert.deepEqual(matchingProductUses(unrelated), []);
+});
+
+test("event calendar action preserves title, UTC interval, and place", () => {
+  const event = catalog.find((item): item is EventItem => item.id === "evt-dvhimss-22958");
+  assert.ok(event);
+  const url = new URL(googleCalendarUrl(event));
+  assert.equal(url.origin, "https://calendar.google.com");
+  assert.equal(url.searchParams.get("text"), event.title);
+  assert.equal(url.searchParams.get("dates"), "20261013T203000Z/20261015T153000Z");
+  assert.match(url.searchParams.get("location") ?? "", /Hard Rock/i);
+});
+
+test("automation persistence contract is durable and review-first", async () => {
+  const item = catalog.find((row) => row.slug === "temple-dragon-copilot-400");
+  assert.ok(item);
+  assert.equal(await candidateFingerprint(item), await candidateFingerprint(item));
+  assert.notEqual(
+    await candidateFingerprint(item),
+    await candidateFingerprint({ ...item, body: `${item.body} changed` }),
+  );
+  const migration = readFileSync(join(root, "migrations/0001_automation.sql"), "utf8");
+  const auditMigration = readFileSync(join(root, "migrations/0002_review_audit.sql"), "utf8");
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const reviewApi = readFileSync(join(root, "src/ingest/review-api.ts"), "utf8");
+  const automation = readFileSync(join(root, "src/ingest/automation.ts"), "utf8");
+  assert.ok(migration.includes("CREATE TABLE ingest_runs"));
+  assert.ok(migration.includes("CREATE TABLE content_candidates"));
+  assert.ok(migration.includes("queue_status IN ('review', 'approved', 'rejected')"));
+  assert.ok(worker.includes("runAutomation"));
+  assert.ok(worker.includes("handleReviewApi"));
+  assert.ok(worker.includes("ingest-scheduled-failed"));
+  assert.ok(auditMigration.includes("CREATE TABLE candidate_decisions"));
+  assert.ok(reviewApi.includes("candidate_decisions"));
+  assert.ok(automation.indexOf("persistIngestRun") < automation.indexOf("enrichBounded("));
+  assert.ok(readFileSync(join(root, "migrations/0006_editor_model_attempts.sql"), "utf8").includes("enrichment_attempted_at"));
+});
+
+test("automatic editor publishes only rule-confirmed material", () => {
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const officialEvent = EventItem.parse({
+    ...base,
+    id: "evt-auto",
+    slug: "official-chapter-forum",
+    title: "Official Chapter Forum",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-09-20T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: "https://events.dvhimss.org/register",
+    partner: "dvhimss",
+    autoPublish: true,
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/forum" },
+  });
+  const eventDecision = evaluateCandidate(officialEvent, null, now);
+  assert.equal(eventDecision.action, "publish");
+  assert.equal(eventDecision.rule, "official-chapter-event");
+  assert.equal(eventDecision.content.publishedAt, now.toISOString());
+
+  assert.throws(() => EventItem.parse({
+    ...officialEvent,
+    id: "evt-insecure",
+    slug: "insecure",
+    source: { ...officialEvent.source, url: "http://dvhimss.org/event/insecure" },
+    registrationUrl: "javascript:alert(1)",
+  }));
+  const untrustedRegistration = EventItem.parse({
+    ...officialEvent,
+    id: "evt-untrusted-registration",
+    slug: "untrusted-registration",
+    registrationUrl: "https://attacker.invalid/register",
+  });
+  assert.notEqual(evaluateCandidate(untrustedRegistration, null, now).action, "publish");
+
+  const cancelled = EventItem.parse({
+    ...officialEvent,
+    id: "evt-cancelled",
+    slug: "cancelled",
+    title: "Official Chapter Forum — Cancelled",
+  });
+  assert.equal(evaluateCandidate(cancelled, null, now).rule, "event-cancelled");
+
+  const discovery = news({
+    id: "news-discovery",
+    slug: "discovery",
+    title: "A material local change",
+    status: "review",
+    source: { kind: "ingest", origin: "Inquirer Health", url: "https://example.com/story" },
+  });
+  const evidence = EditorEnrichment.parse({
+    relevanceScore: 99,
+    confidence: 0.99,
+    decision: "priority_review",
+    reasons: ["Local deployment"],
+    affectedOrgIds: ["org-penn"],
+    productIds: [],
+    changeType: "deployment",
+    materialityDimensions: ["deployment"],
+    impactSentence: "Penn made a material deployment change.",
+    whyAttend: null,
+    whoYoullMeet: [],
+    evidenceSpans: ["A material local change"],
+  });
+  assert.equal(evaluateCandidate(discovery, evidence, now).rule, "primary-corroboration-required");
+  const firstParty = {
+    ...discovery,
+    source: { ...discovery.source, origin: "penn-medicine-newsroom" },
+  };
+  assert.equal(evaluateCandidate(firstParty, evidence, now).action, "publish");
+  assert.equal(evaluateCandidate(firstParty, { ...evidence, affectedOrgIds: [] }, now).rule, "affected-org-evidence-required");
+  assert.equal(EDITOR_POLICY_VERSION, "tvd-auto-editor-v2");
+});
+
+test("automatic publication SQL executes atomically and deduplicates its audit", async () => {
+  const database = new DatabaseSync(":memory:");
+  database.exec(readFileSync(join(root, "migrations/0001_automation.sql"), "utf8"));
+  database.exec(readFileSync(join(root, "migrations/0002_review_audit.sql"), "utf8"));
+  database.exec(readFileSync(join(root, "migrations/0003_editor_publication.sql"), "utf8"));
+  database.exec(readFileSync(join(root, "migrations/0004_source_reconciliation.sql"), "utf8"));
+  const db = sqliteD1(database);
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const future = EventItem.parse({
+    ...base,
+    id: "evt-sql-publish",
+    slug: "sql-publish",
+    title: "Official SQL Publication Test",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-09-20T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: "https://events.dvhimss.org/register",
+    partner: "dvhimss",
+    autoPublish: true,
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/sql-test" },
+  });
+  const past = EventItem.parse({
+    ...future,
+    id: "evt-sql-reject",
+    slug: "sql-reject",
+    title: "Past SQL Rejection Test",
+    startsAt: "2026-08-20T16:00:00.000Z",
+  });
+  database.prepare(`
+    INSERT INTO ingest_runs (id, started_at, state, item_count)
+    VALUES ('run-sql', ?, 'succeeded', 2)
+  `).run(now.toISOString());
+  const insert = database.prepare(`
+    INSERT INTO content_candidates (
+      id, fingerprint, kind, title, source_origin, source_url, item_status,
+      queue_status, content_json, first_seen_at, last_seen_at, last_run_id
+    ) VALUES (?, ?, ?, ?, ?, ?, 'review', 'review', ?, ?, ?, 'run-sql')
+  `);
+  for (const item of [future, past]) {
+    insert.run(
+      item.id,
+      `fingerprint-${item.id}`,
+      item.kind,
+      item.title,
+      item.source.origin,
+      item.source.url,
+      JSON.stringify(item),
+      now.toISOString(),
+      now.toISOString(),
+    );
+  }
+  const decisions = [future, past].map((item) => ({
+    item,
+    enrichment: null,
+    decision: evaluateCandidate(item, null, now),
+  }));
+  const counts = await persistEditorialDecisions(
+    db,
+    decisions,
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    now,
+  );
+  assert.deepEqual(counts, { published: 1, review: 0, rejected: 1 });
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+  assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(future.id).queue_status, "approved");
+  assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(past.id).queue_status, "rejected");
+
+  const later = new Date("2026-08-26T14:00:00.000Z");
+  await persistEditorialDecisions(
+    db,
+    [{ item: future, enrichment: null, decision: evaluateCandidate(future, null, later) }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    later,
+  );
+  assert.equal(
+    database.prepare("SELECT COUNT(*) AS count FROM candidate_decisions WHERE candidate_id = ?").get(future.id).count,
+    1,
+  );
+  const republished = database.prepare(
+    "SELECT content_json, first_published_at FROM published_content WHERE candidate_id = ?",
+  ).get(future.id);
+  assert.equal(JSON.parse(String(republished.content_json)).publishedAt, now.toISOString());
+  assert.equal(republished.first_published_at, now.toISOString());
+
+  const refetched = EventItem.parse({
+    ...future,
+    title: "Raw source title changed",
+    status: "review",
+    publishedAt: undefined,
+    updatedAt: "2026-08-26T13:00:00.000Z",
+  });
+  await persistIngestRun(
+    db,
+    {
+      fetchedAt: "2026-08-26T13:00:00.000Z",
+      rss: [],
+      events: [refetched],
+      social: [],
+      notes: {
+        rss: 0,
+        events: 1,
+        linkedin: { count: 0, skipped: "no-token" },
+        x: { count: 0, skipped: "no-token" },
+      },
+    },
+    [{ item: refetched, enrichment: null }],
+  );
+  const preserved = database.prepare(
+    "SELECT item_status, queue_status, content_json FROM content_candidates WHERE id = ?",
+  ).get(future.id);
+  assert.equal(preserved.queue_status, "approved");
+  assert.equal(preserved.item_status, "published");
+  assert.equal(JSON.parse(String(preserved.content_json)).title, future.title);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+  database.close();
+});
+
+test("event reconciliation withdraws only after two complete successful omissions", async () => {
+  const database = new DatabaseSync(":memory:");
+  for (const migration of [
+    "0001_automation.sql",
+    "0002_review_audit.sql",
+    "0003_editor_publication.sql",
+    "0004_source_reconciliation.sql",
+  ]) database.exec(readFileSync(join(root, "migrations", migration), "utf8"));
+  const db = sqliteD1(database);
+  const event = EventItem.parse({
+    ...base,
+    id: "evt-reconcile",
+    slug: "reconcile-event",
+    title: "Official Reconciliation Event",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-10-20T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: "https://web.cvent.com/event/reconcile",
+    partner: "dvhimss",
+    autoPublish: true,
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/reconcile" },
+  });
+  const source = (checkedAt: string, state: "success" | "error", complete: boolean) => ({
+    id: "dvhimss-events",
+    origin: "dvhimss-events",
+    type: "events" as const,
+    state,
+    checkedAt,
+    itemCount: 0,
+    complete,
+    url: "https://dvhimss.org/events-calendar",
+    ...(state === "error" ? { error: "upstream timeout" } : {}),
+  });
+  const initialAt = "2026-08-26T12:00:00.000Z";
+  const initialRun = await persistIngestRun(db, {
+    fetchedAt: initialAt,
+    rss: [],
+    events: [event],
+    social: [],
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 }, sources: [source(initialAt, "success", true)] },
+  }, [{ item: event, enrichment: null }]);
+  await persistSourceHealth(db, initialRun.runId, [source(initialAt, "success", true)]);
+  await persistEditorialDecisions(
+    db,
+    [{ item: event, enrichment: null, decision: evaluateCandidate(event, null, new Date(initialAt)) }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    new Date(initialAt),
+  );
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+
+  async function absentRun(at: string, state: "success" | "error", complete: boolean) {
+    const note = source(at, state, complete);
+    const run = await persistIngestRun(db, {
+      fetchedAt: at,
+      rss: [],
+      events: [],
+      social: [],
+      notes: { rss: 0, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [note] },
+    }, []);
+    await persistSourceHealth(db, run.runId, [note]);
+    return reconcileMissingPublishedEvents(db, run.runId, at, [note]);
+  }
+
+  assert.deepEqual(await absentRun("2026-08-26T13:00:00.000Z", "error", false), { missing: 0, withdrawn: 0 });
+  assert.equal(database.prepare("SELECT missing_count FROM content_candidates WHERE id = ?").get(event.id).missing_count, 0);
+  assert.deepEqual(await absentRun("2026-08-26T14:00:00.000Z", "success", false), { missing: 0, withdrawn: 0 });
+  assert.deepEqual(await absentRun("2026-08-26T15:00:00.000Z", "success", true), { missing: 1, withdrawn: 0 });
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+  assert.deepEqual(await absentRun("2026-08-26T16:00:00.000Z", "success", true), { missing: 1, withdrawn: 1 });
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 0);
+  const withdrawn = database.prepare(
+    "SELECT queue_status, item_status, missing_count FROM content_candidates WHERE id = ?",
+  ).get(event.id);
+  assert.deepEqual({ ...withdrawn }, { queue_status: "review", item_status: "unpublished", missing_count: 2 });
+  assert.equal(
+    database.prepare("SELECT COUNT(*) AS count FROM publication_reconciliations WHERE action = 'withdrawn'").get().count,
+    1,
+  );
+  assert.deepEqual(await readPublicationTombstones(db), [event.id]);
+  database.close();
+});
+
+test("authenticated rejection unpublishes a live candidate and creates a tombstone", async () => {
+  const database = new DatabaseSync(":memory:");
+  for (const migration of [
+    "0001_automation.sql",
+    "0002_review_audit.sql",
+    "0003_editor_publication.sql",
+    "0004_source_reconciliation.sql",
+    "0005_publication_invariants.sql",
+  ]) database.exec(readFileSync(join(root, "migrations", migration), "utf8"));
+  const db = sqliteD1(database);
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const event = EventItem.parse({
+    ...base,
+    id: "evt-human-withdraw",
+    slug: "human-withdraw",
+    title: "Human withdrawal test",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-10-20T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: "https://web.cvent.com/event/human-withdraw",
+    partner: "dvhimss",
+    autoPublish: true,
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/human-withdraw" },
+  });
+  await persistIngestRun(db, {
+    fetchedAt: now.toISOString(),
+    rss: [],
+    events: [event],
+    social: [],
+    notes: { rss: 0, events: 1, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
+  }, [{ item: event, enrichment: null }]);
+  await persistEditorialDecisions(
+    db,
+    [{ item: event, enrichment: null, decision: evaluateCandidate(event, null, now) }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    now,
+  );
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+
+  const response = await handleReviewApi(new Request(
+    `https://thevalleydesk.org/api/review-queue/${event.id}/decision`,
+    {
+      method: "POST",
+      headers: { authorization: "Bearer test-review-token", "content-type": "application/json" },
+      body: JSON.stringify({ decision: "rejected", note: "Confirmed withdrawal" }),
+    },
+  ), { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "test-review-token" });
+  assert.equal(response.status, 200);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 0);
+  assert.deepEqual(
+    { ...database.prepare("SELECT queue_status, item_status FROM content_candidates WHERE id = ?").get(event.id) },
+    { queue_status: "rejected", item_status: "unpublished" },
+  );
+  assert.equal(
+    database.prepare("SELECT COUNT(*) AS count FROM publication_reconciliations WHERE candidate_id = ? AND action = 'withdrawn'").get(event.id).count,
+    1,
+  );
+  assert.deepEqual(await readPublicationTombstones(db), [event.id]);
+  database.close();
+});
+
+test("Muse editor client is provider-configurable and evidence-bound", async () => {
+  const item = news({
+    id: "model-item",
+    slug: "model-item",
+    title: "Penn deployment evidence",
+    status: "review",
+    source: { kind: "ingest", origin: "penn-medicine-newsroom", url: "https://example.com/penn" },
+  });
+  const payload = {
+    relevanceScore: 98,
+    confidence: 0.98,
+    decision: "priority_review",
+    reasons: ["Evidence"],
+    affectedOrgIds: ["org-penn"],
+    productIds: [],
+    changeType: "deployment",
+    materialityDimensions: ["deployment"],
+    impactSentence: "Penn deployment evidence is material.",
+    whyAttend: null,
+    whoYoullMeet: [],
+    evidenceSpans: [item.title],
+  };
+  const mockFetch = async (input: string | URL | Request, init?: RequestInit) => {
+    assert.equal(String(input), "https://openrouter.ai/api/v1/chat/completions");
+    assert.equal(new Headers(init?.headers).get("http-referer"), "https://thevalleydesk.org");
+    assert.equal(new Headers(init?.headers).get("x-title"), "The Valley Desk editor-in-chief");
+    const request = JSON.parse(String(init?.body));
+    assert.equal(request.model, DEFAULT_EDITOR_MODEL);
+    assert.equal(request.response_format.type, "json_object");
+    assert.equal(request.max_tokens, EDITOR_OUTPUT_MAX_TOKENS);
+    assert.equal(request.reasoning.max_tokens, EDITOR_REASONING_MAX_TOKENS);
+    assert.equal(request.reasoning.exclude, true);
+    return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(payload) } }] }));
+  };
+  const result = await enrichWithEditorModel(item, [], { apiKey: "test" }, mockFetch as typeof fetch);
+  assert.equal(result?.confidence, 0.98);
+});
+
+test("editor context is bounded to cited prior coverage and defensive filler is rejected", async () => {
+  const jefferson = catalog.find((item) => item.id === "news-jefferson-einstein-mychart-2026-09-26");
+  assert.ok(jefferson?.contextSentence?.includes("completed their merger in October 2021"));
+  assert.ok(jefferson.citations?.some((citation) => citation.url.includes("einstein-healthcare-network-has-joined-jefferson-health")));
+
+  const candidate = news({
+    id: "jefferson-context-candidate",
+    slug: "jefferson-context-candidate",
+    title: "Jefferson deployment update",
+    dek: "Jefferson deployment update reached its next phase.",
+    body: "Jefferson deployment update reached its next phase.",
+    orgs: ["org-jefferson"],
+    status: "review",
+    source: { kind: "ingest", origin: "jefferson-newsroom", url: "https://example.com/new-jefferson-source" },
+  });
+  const context = editorContextForItem(candidate, catalog);
+  assert.ok(context.length > 0 && context.length <= 4);
+  assert.ok(context.every((row) => row.sourceUrl.startsWith("https://")));
+  assert.ok(context.every((row) => catalog.some((item) => item.id === row.id && item.status === "published")));
+
+  for (const item of catalog.filter((row) => row.status === "published")) {
+    for (const value of [item.title, item.dek, item.body, item.impactSentence, item.contextSentence]) {
+      assert.equal(hasDefensiveEditorialAside(value), false, `${item.id}: ${value}`);
+    }
+  }
+  assert.equal(hasDefensiveEditorialAside("Epic’s label, not a Temple filing."), true);
+  assert.equal(hasDefensiveEditorialAside("The $418,000 is not a Temple operating metric."), true);
+  assert.equal(publicEntityRole("CMIO, Temple University Hospital only — not enterprise CMIO"), "CMIO, Temple University Hospital");
+
+  const unsupported = {
+    relevanceScore: 98,
+    confidence: 0.98,
+    decision: "priority_review",
+    reasons: ["Evidence"],
+    affectedOrgIds: ["org-jefferson"],
+    productIds: [],
+    changeType: "deployment",
+    materialityDimensions: ["deployment"],
+    impactSentence: "This is not a Jefferson operating metric.",
+    contextSentence: null,
+    contextItemIds: [],
+    contextEvidenceSpans: [],
+    whyAttend: null,
+    whoYoullMeet: [],
+    evidenceSpans: [candidate.title],
+  };
+  await assert.rejects(
+    enrichWithEditorModel(candidate, [], { apiKey: "test" }, async () => new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify(unsupported) } }],
+    }))),
+    (error: unknown) => error instanceof EditorModelError && error.code === "validation",
+  );
+});
+
+test("dynamic publication overlay updates matching ingest rows but cannot shadow editorial rows", () => {
+  const staticEvent = EventItem.parse({
+    ...base,
+    id: "evt-overlay",
+    slug: "overlay-event",
+    title: "Old title",
+    kind: "event",
+    status: "published",
+    startsAt: "2026-10-01T12:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: "https://example.com/register",
+    partner: "dvhimss",
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://example.com/event" },
+  });
+  const updated = EventItem.parse({ ...staticEvent, title: "Corrected title", updatedAt: "2026-08-26T13:00:00.000Z" });
+  assert.equal(mergePublishedContent([staticEvent], [updated])[0]?.title, "Corrected title");
+  const correctedSlug = EventItem.parse({
+    ...updated,
+    slug: "corrected-overlay-event",
+    title: "Corrected slug and title",
+  });
+  const retained = mergePublishedContent([staticEvent], [correctedSlug])[0];
+  assert.equal(retained?.id, staticEvent.id);
+  assert.equal(retained?.slug, "overlay-event");
+  assert.deepEqual(retained && "previousSlugs" in retained ? retained.previousSlugs : [], ["corrected-overlay-event"]);
+  assert.equal(retained?.title, "Corrected slug and title");
+
+  const occupiedRoute = EventItem.parse({
+    ...staticEvent,
+    id: "evt-route-owner",
+    slug: "corrected-overlay-event",
+    title: "Existing route owner",
+  });
+  const collision = mergePublishedContent([staticEvent, occupiedRoute], [correctedSlug]);
+  assert.equal(collision.find((item) => item.id === staticEvent.id)?.slug, staticEvent.slug);
+  assert.equal(collision.find((item) => item.id === occupiedRoute.id)?.title, occupiedRoute.title);
+
+  const sameScheduleDifferentId = EventItem.parse({
+    ...staticEvent,
+    id: "evt-dynamic-duplicate",
+    slug: "dynamic-duplicate",
+    title: "Same confirmed event from the live overlay",
+  });
+  const deduplicated = mergePublishedContent([staticEvent], [sameScheduleDifferentId]);
+  assert.equal(deduplicated.length, 1);
+  assert.equal(deduplicated[0]?.id, staticEvent.id);
+  assert.equal(deduplicated[0]?.slug, staticEvent.slug);
+  assert.deepEqual(deduplicated[0] && "previousSlugs" in deduplicated[0] ? deduplicated[0].previousSlugs : [], ["dynamic-duplicate"]);
+
+  const staleProcessCopy = EventItem.parse({
+    ...sameScheduleDifferentId,
+    body: "Best-effort scrape of the conference page.",
+    whyAttend: "Ingested from the official REST feed.",
+  });
+  const sanitized = mergePublishedContent([staticEvent], [staleProcessCopy]);
+  assert.equal(sanitized[0]?.body, staticEvent.body);
+  assert.equal(sanitized[0]?.kind === "event" ? sanitized[0].whyAttend : undefined, staticEvent.whyAttend);
+  assert.ok(!hasInternalProcessLanguage(JSON.stringify(sanitized[0])));
+
+  const orphanedStaleCopy = EventItem.parse({
+    ...staleProcessCopy,
+    id: "evt-orphaned-process-copy",
+    slug: "orphaned-process-copy",
+    startsAt: "2026-11-01T12:00:00.000Z",
+    partner: "other",
+  });
+  assert.equal(mergePublishedContent([], [orphanedStaleCopy]).length, 0);
+
+  const editorial = news({ id: "editorial", slug: "protected", title: "Protected" });
+  const hostile = news({
+    id: "hostile",
+    slug: "protected",
+    title: "Shadow",
+    source: { kind: "ingest", origin: "unknown", url: "https://example.com/shadow" },
+  });
+  assert.equal(mergePublishedContent([editorial], [hostile])[0]?.title, "Protected");
+  assert.deepEqual(mergePublishedContent([staticEvent], [], [staticEvent.id]), []);
+  assert.equal(mergePublishedContent([editorial], [], [editorial.id]).length, 1);
+  const script = runtimeItemsScript(
+    [{ ...updated, title: "</script><script>alert(1)</script>" }],
+    ["</script><script>alert(2)</script>"],
+  );
+  assert.ok(!script.includes("</script><script>alert"));
+  assert.ok(script.includes("\\u003c/script\\u003e"));
+  assert.ok(script.includes("__VALLEY_DESK_WITHDRAWN_IDS__"));
+  const workerSource = readFileSync(join(root, "worker.js"), "utf8");
+  assert.ok(workerSource.includes("mergePublishedContent(seed.items, overlay.items, overlay.withdrawnIds)"));
+  assert.ok(workerSource.includes("runtimeItemsScript(published, overlay.withdrawnIds)"));
+});
+
+test("one-worker configuration has Muse defaults, one D1 binding, and no staging environment", () => {
+  const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
+  const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+  assert.ok(wrangler.includes('"EDITOR_MODEL": "meta/muse-spark-1.2-contributor"'));
+  assert.ok(!wrangler.includes("standard Muse"));
+  assert.ok(wrangler.includes("https://openrouter.ai/api/v1"));
+  assert.ok(wrangler.includes('"EDITOR_MODEL_BUDGET": "4"'));
+  assert.ok(wrangler.includes('"EDITOR_MODEL_CONCURRENCY": "2"'));
+  assert.ok(wrangler.includes('"EDITOR_MODEL_TIMEOUT_MS": "25000"'));
+  assert.ok(wrangler.includes('"EDITOR_MODEL_DEADLINE_MS": "40000"'));
+  assert.ok(wrangler.includes('"database_name": "the-valley-desk"'));
+  assert.ok(!wrangler.includes('"staging"'));
+  assert.equal(pkg.scripts.deploy, "npm run build && wrangler deploy");
+});
+
+test("lab prototypes bind live catalog, the real mark asset, and unpublished-safe routes", () => {
+  const router = readFileSync(join(root, "src/router.tsx"), "utf8");
+  const mark = readFileSync(join(root, "public/mark-a-fold.svg"), "utf8");
+  const labMark = readFileSync(join(root, "src/ui/lab/LabMark.tsx"), "utf8");
+  const css = readFileSync(join(root, "src/ui/lab/lab.css"), "utf8");
+  const chrono = readFileSync(join(root, "src/ui/lab/LabChronoPage.tsx"), "utf8");
+  const systems = readFileSync(join(root, "src/ui/lab/LabSystemsPage.tsx"), "utf8");
+  const horizon = readFileSync(join(root, "src/ui/lab/LabHorizonPage.tsx"), "utf8");
+  const calendar = readFileSync(join(root, "src/ui/lab/LabCalendarPage.tsx"), "utf8");
+  const shell = readFileSync(join(root, "src/ui/lab/LabShell.tsx"), "utf8");
+  const index = readFileSync(join(root, "src/ui/lab/LabIndexPage.tsx"), "utf8");
+  const filters = readFileSync(join(root, "src/ui/lab/LabFilters.tsx"), "utf8");
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+  const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
+
+  assert.ok(router.includes('path: "/lab"'));
+  assert.ok(router.includes('path: "/lab/briefing"'));
+  assert.ok(router.includes('path: "/lab/systems"'));
+  assert.ok(router.includes('path: "/lab/horizon"'));
+  assert.ok(router.includes('path: "/lab/calendar"'));
+  assert.ok(router.includes("LabChronoPage"));
+  assert.ok(router.includes("LabSystemsPage"));
+  assert.ok(router.includes("LabHorizonPage"));
+  assert.ok(router.includes("LabCalendarPage"));
+  assert.ok(!router.includes("BriefingPage"));
+  assert.ok(!router.includes('"/briefing"'));
+  assert.ok(!/path:\s*["']\/org\//.test(router));
+  assert.ok(!systems.includes('to="/org'));
+  assert.ok(layout.includes('to="/news"'));
+  assert.ok(layout.includes('to="/events"'));
+  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(!layout.includes('to="/lab"'));
+  assert.ok(layout.includes('pathname.startsWith("/lab/")'));
+
+  assert.ok(mark.includes('points="6,10 34,10 26,54 4,54"'));
+  assert.ok(mark.includes('points="30,10 58,10 60,54 32,54"'));
+  assert.ok(mark.includes('points="30,10 36,10 32,54 26,54"'));
+  assert.ok(labMark.includes('src="/mark-a-fold.svg"'));
+  assert.ok(!labMark.includes("<svg"));
+  assert.ok(!labMark.includes("<polygon"));
+  assert.ok(!labMark.includes("<path"));
+
+  assert.ok(css.includes("@media (prefers-reduced-motion: reduce)"));
+  assert.ok(css.includes("@media (max-width: 320px)"));
+  assert.ok(css.includes("@media (max-width: 390px)"));
+  assert.ok(css.includes("@media (max-width: 720px)"));
+  assert.ok(css.includes("min-height: 44px"));
+  assert.ok(css.includes("outline: 2px solid var(--ink)"));
+
+  for (const src of [chrono, systems, horizon, calendar, index]) {
+    assert.ok(src.includes('from "../../lib/catalog"'));
+    assert.ok(!src.includes("Virtua Advanced Access"));
+    assert.ok(!src.includes("17:06"));
+  }
+  assert.ok(chrono.includes("filterBriefing(windowItems"));
+  assert.ok(chrono.includes("briefingSinceYesterday5pmET"));
+  assert.ok(systems.includes("systemCards(catalog, entities)"));
+  assert.ok(horizon.includes("horizonPoints(catalog)"));
+  assert.ok(calendar.includes("horizonPoints(catalog)"));
+  assert.ok(calendar.includes("monthCells"));
+  assert.ok(filters.includes('role="radiogroup"'));
+  assert.ok(filters.includes("ArrowRight"));
+  assert.ok(horizon.includes("ArrowRight"));
+  assert.ok(horizon.includes('aria-orientation="horizontal"'));
+  assert.ok(horizon.includes("tabIndex={on ? 0 : -1}"));
+  assert.ok(horizon.includes("LabAxisCue"));
+  assert.ok(horizon.includes("Off-edge ticks include monitored cutovers beyond 30 days"));
+  assert.ok(horizon.includes('key={selected.id}'));
+  assert.ok(css.includes(".LabAxisCue"));
+  assert.ok(css.includes("overscroll-behavior-x: contain"));
+  assert.ok(css.includes(".LabTick.is-on .LabTick-dot"));
+  assert.ok(css.includes(".LabCal-day.is-on .LabCal-num"));
+  assert.ok(css.includes(".LabDetail {\n  animation: lab-row-in"));
+  assert.ok(css.includes(".LabDetail {\n    animation: none"));
+  assert.ok(calendar.includes("PageDown"));
+  assert.ok(calendar.includes("LabCalNext"));
+  assert.ok(calendar.includes("cellRefs.current[selectedKey]?.focus()"));
+  assert.ok(calendar.includes("tabIndex={on ? 0 : -1}"));
+  assert.ok(calendar.includes("dayPoints.length > 1"));
+  assert.ok(calendar.includes("{selectedDayLabel}"));
+  assert.ok(calendar.includes("key={selectedPoint.id}"));
+  assert.ok(systems.includes("aria-controls"));
+  assert.ok(systems.includes("item.id !== card.latest?.id"));
+  assert.ok(shell.includes('aria-label="Prototype views"'));
+  assert.ok(worker.includes("SPA_PATH"));
+  assert.ok(worker.includes('path.startsWith("/lab")'));
+  assert.ok(worker.includes('content="noindex, nofollow"'));
+});
+
+test("lab helpers use structured catalog dates and seed systems only", async () => {
+  const { chronologicalDesk, filterBriefing, horizonPoints, horizonWindow, monthCells, systemCards, filterSystems, etYmd, pointsOnDay, nextBriefingAt } = await import("../src/ui/lab/lab.ts");
+  const now = new Date("2026-08-26T15:00:00.000Z");
+  const desk = chronologicalDesk(catalog);
+  assert.ok(desk.length > 0);
+  assert.ok(desk.every((item) => item.status === "published"));
+  for (let i = 1; i < desk.length; i++) {
+    const a = desk[i - 1].publishedAt ?? desk[i - 1].updatedAt;
+    const b = desk[i].publishedAt ?? desk[i].updatedAt;
+    assert.ok(a >= b);
+  }
+  const clocks = filterBriefing(catalog, "clock");
+  assert.ok(clocks.some((item) => item.id === "news-christianacare-epic"));
+  assert.ok(clocks.some((item) => item.id === "news-jefferson-einstein-mychart-2026-09-26" || item.slug === "jefferson-einstein-mychart-2026-09-26"));
+  assert.ok(!clocks.some((item) => item.slug === "temple-chestnut-hill-jhp-2026-09-30"));
+
+  const points = horizonPoints(catalog);
+  assert.ok(points.every((point) => point.item.status === "published"));
+  assert.ok(points.some((point) => point.kind === "clock" && point.item.id === "news-christianacare-epic"));
+  assert.ok(points.some((point) => point.kind === "event" && point.item.slug === "njdvhimss-fall-conference-october-13th-15th"));
+  assert.ok(!points.some((point) => point.item.slug === "temple-chestnut-hill-jhp-2026-09-30"));
+  assert.ok(!points.some((point) => point.item.status !== "published"));
+
+  const cards = systemCards(catalog, entityRows);
+  assert.equal(cards.length, entityRows.filter((row) => row.kind === "system").length);
+  assert.ok(cards.every((card) => card.entity.kind === "system"));
+  const jefferson = cards.find((card) => card.entity.id === "org-jefferson");
+  assert.ok(jefferson);
+  assert.ok(jefferson.items.some((item) => item.slug.includes("jefferson") || item.orgs.includes("org-jefferson")));
+  assert.ok(jefferson.facts.some((fact) => /NPSR|Net patient/i.test(fact.painted)));
+  assert.ok(!jefferson.facts.some((fact) => /operating/i.test(fact.painted)));
+  const cooper = cards.find((card) => card.entity.id === "org-cooper");
+  assert.ok(cooper);
+  assert.equal(cooper.items.length, 0);
+  assert.equal(filterSystems(cards, "DE").every((card) => card.region === "DE"), true);
+
+  const aug = monthCells(2026, 8);
+  assert.equal(aug.length % 7, 0);
+  assert.equal(aug[6]?.key, "2026-08-01");
+  assert.equal(aug[6]?.inMonth, true);
+  assert.equal(aug[0]?.key, "2026-07-26");
+  const octDays = pointsOnDay(points, "2026-10-13");
+  assert.ok(octDays.some((point) => point.item.slug === "njdvhimss-fall-conference-october-13th-15th"));
+  assert.equal(etYmd(now), "2026-08-26");
+  assert.equal(nextBriefingAt(new Date("2026-08-26T09:00:00.000Z")).toISOString(), "2026-08-26T10:00:00.000Z");
+  assert.equal(nextBriefingAt(new Date("2026-08-26T12:00:00.000Z")).toISOString(), "2026-08-26T21:00:00.000Z");
+  assert.equal(nextBriefingAt(new Date("2026-08-26T22:00:00.000Z")).toISOString(), "2026-08-27T10:00:00.000Z");
+  assert.equal(nextBriefingAt(new Date("2026-11-02T10:00:00.000Z")).toISOString(), "2026-11-02T11:00:00.000Z");
+  const thirty = horizonWindow(now, 30);
+  assert.equal(Math.round((thirty.end.getTime() - thirty.start.getTime()) / 86_400_000), 30);
+});
+
+function applyMigrations(database: DatabaseSync) {
+  for (const name of [
+    "0001_automation.sql",
+    "0002_review_audit.sql",
+    "0003_editor_publication.sql",
+    "0004_source_reconciliation.sql",
+    "0005_publication_invariants.sql",
+    "0006_editor_model_attempts.sql",
+  ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
+}
+
+function reviewNews(id: string, title = "Penn deployment evidence"): NewsItem {
+  return news({
+    id,
+    slug: id,
+    title,
+    status: "review",
+    body: "Penn deployment evidence is material for local operations.",
+    source: { kind: "ingest", origin: "penn-medicine-newsroom", url: `https://example.com/${id}` },
+  });
+}
+
+function officialChapterEvent(id = "evt-official"): EventItem {
+  return EventItem.parse({
+    ...base,
+    id,
+    slug: id,
+    title: "Official Chapter Forum",
+    kind: "event",
+    status: "review",
+    startsAt: "2026-09-20T16:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "DVHIMSS",
+    registrationUrl: "https://events.dvhimss.org/register",
+    partner: "dvhimss",
+    autoPublish: true,
+    source: { kind: "ingest", origin: "dvhimss-events", url: "https://dvhimss.org/event/forum" },
+  });
+}
+
+function validEnrichment(item: ContentItem) {
+  return EditorEnrichment.parse({
+    relevanceScore: 98,
+    confidence: 0.98,
+    decision: "priority_review",
+    reasons: ["Evidence"],
+    affectedOrgIds: item.orgs,
+    productIds: [],
+    changeType: "deployment",
+    materialityDimensions: ["deployment"],
+    impactSentence: "Penn deployment evidence is material.",
+    whyAttend: null,
+    whoYoullMeet: [],
+    evidenceSpans: [item.title],
+  });
+}
+
+function modelState(partial: Partial<EditorModelState> & Pick<EditorModelState, "id">): EditorModelState {
+  return {
+    fingerprint: `fp-${partial.id}`,
+    enrichmentFingerprint: null,
+    outcome: null,
+    attemptedAt: null,
+    attemptCount: 0,
+    firstSeenAt: null,
+    queueStatus: "review",
+    hasSuccessfulEnrichment: false,
+    ...partial,
+  };
+}
+
+function cannedIngest(items: ContentItem[], fetchedAt = "2026-08-26T12:00:00.000Z") {
+  const events = items.filter((item) => item.kind === "event");
+  const rss = items.filter((item) => item.kind !== "event");
+  return async () => ({
+    fetchedAt,
+    rss,
+    events,
+    social: [] as ContentItem[],
+    notes: {
+      rss: rss.length,
+      events: events.length,
+      linkedin: { count: 0, skipped: "no-token" },
+      x: { count: 0, skipped: "no-token" },
+      sources: [],
+    },
+  });
+}
+
+test("editor model work is budgeted, fair, and independent of official events", () => {
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const official = officialChapterEvent();
+  assert.equal(shouldEnrichCandidate(official), false);
+  assert.equal(isEditorModelEligible(official, "fp", undefined, now), false);
+
+  const rows = Array.from({ length: 100 }, (_, index) => {
+    const id = `news-${String(index).padStart(3, "0")}`;
+    return {
+      item: reviewNews(id),
+      fingerprint: `fp-${id}`,
+    };
+  });
+  const records = new Map(rows.map((row, index) => [row.item.id, modelState({
+    id: row.item.id,
+    fingerprint: row.fingerprint,
+    firstSeenAt: new Date(now.getTime() - (100 - index) * 60_000).toISOString(),
+  })]));
+  const first = selectEditorModelWork(rows, records, 4, now).map((item) => item.id);
+  assert.deepEqual(first, ["news-000", "news-001", "news-002", "news-003"]);
+  assert.equal(selectEditorModelWork(rows, records, 0, now).length, 0);
+  assert.equal(selectEditorModelWork(rows, records, DEFAULT_EDITOR_MODEL_BUDGET, now).length, 4);
+
+  for (const id of first) {
+    records.set(id, modelState({
+      id,
+      fingerprint: `fp-${id}`,
+      enrichmentFingerprint: `fp-${id}`,
+      outcome: "failure",
+      attemptedAt: now.toISOString(),
+      attemptCount: 1,
+      firstSeenAt: records.get(id)?.firstSeenAt ?? null,
+    }));
+  }
+  const second = selectEditorModelWork(rows, records, 4, now).map((item) => item.id);
+  assert.deepEqual(second, ["news-004", "news-005", "news-006", "news-007"]);
+});
+
+test("successful enrichments stay reusable and failures cool down until the fingerprint changes", () => {
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const item = reviewNews("news-cache");
+  const success = modelState({
+    id: item.id,
+    fingerprint: "fp-a",
+    enrichmentFingerprint: "fp-a",
+    outcome: "success",
+    attemptedAt: now.toISOString(),
+    attemptCount: 1,
+    hasSuccessfulEnrichment: true,
+  });
+  assert.equal(isEditorModelEligible(item, "fp-a", success, now), false);
+
+  const failed = modelState({
+    id: item.id,
+    fingerprint: "fp-a",
+    enrichmentFingerprint: "fp-a",
+    outcome: "failure",
+    attemptedAt: now.toISOString(),
+    attemptCount: 1,
+  });
+  assert.equal(editorModelBackoffMs(1), 6 * 60 * 60 * 1000);
+  assert.equal(editorModelBackoffMs(3), 24 * 60 * 60 * 1000);
+  assert.equal(isEditorModelEligible(item, "fp-a", failed, new Date(now.getTime() + 60 * 60 * 1000)), false);
+  assert.equal(isEditorModelEligible(item, "fp-a", failed, new Date(now.getTime() + 6 * 60 * 60 * 1000)), true);
+  const laterFailure = { ...failed, attemptCount: 3 };
+  assert.equal(isEditorModelEligible(item, "fp-a", laterFailure, new Date(now.getTime() + 7 * 60 * 60 * 1000)), false);
+  assert.equal(isEditorModelEligible(item, "fp-b", failed, now), true);
+});
+
+test("Muse JSON is extracted from fences and whitespace without loosening evidence checks", async () => {
+  const item = reviewNews("news-json");
+  const payload = validEnrichment(item);
+  assert.deepEqual(extractEditorJson(`\n\`\`\`json\n${JSON.stringify(payload)}\n\`\`\`\n`), payload);
+  assert.deepEqual(extractEditorJson(`  ${JSON.stringify(payload)}  `), payload);
+  assert.deepEqual(extractEditorJson(`Here is the object:\n${JSON.stringify(payload)}`), payload);
+  assert.throws(() => extractEditorJson(""), { code: "no_content" });
+  assert.throws(() => extractEditorJson("{"), { code: "malformed" });
+  assert.throws(() => extractEditorJson('{ "relevanceScore": 98,'), { code: "malformed" });
+
+  const fencedFetch = async (_input: string | URL | Request, init?: RequestInit) => {
+    const request = JSON.parse(String(init?.body));
+    assert.equal(request.max_tokens, EDITOR_OUTPUT_MAX_TOKENS);
+    assert.equal(request.reasoning.exclude, true);
+    return new Response(JSON.stringify({
+      choices: [{ message: { content: `\n\`\`\`json\n${JSON.stringify(payload)}\n\`\`\`\n` } }],
+    }));
+  };
+  const result = await enrichWithEditorModel(item, [], { apiKey: "test" }, fencedFetch as typeof fetch);
+  assert.equal(result?.confidence, 0.98);
+
+  await assert.rejects(
+    enrichWithEditorModel(item, [], { apiKey: "test" }, (async () => new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify({ ...payload, affectedOrgIds: ["org-invented"] }) } }],
+    }))) as typeof fetch),
+    (error: unknown) => error instanceof EditorModelError && error.code === "validation",
+  );
+  await assert.rejects(
+    enrichWithEditorModel(item, [], { apiKey: "test" }, (async () => new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify({ ...payload, evidenceSpans: ["not in the source"] }) } }],
+    }))) as typeof fetch),
+    (error: unknown) => error instanceof EditorModelError && error.code === "validation",
+  );
+});
+
+test("editor model timeout, malformed JSON, and empty content are classified failures", async () => {
+  const item = reviewNews("news-degrade");
+  const timeout = Object.assign(new Error("aborted"), { name: "TimeoutError" });
+  await assert.rejects(
+    enrichWithEditorModel(item, [], { apiKey: "test", timeoutMs: 1000 }, (async () => { throw timeout; }) as typeof fetch),
+    (error: unknown) => error instanceof EditorModelError && error.code === "timeout",
+  );
+  await assert.rejects(
+    enrichWithEditorModel(item, [], { apiKey: "test" }, (async () => new Response(JSON.stringify({
+      choices: [{ message: { content: "" } }],
+    }))) as typeof fetch),
+    (error: unknown) => error instanceof EditorModelError && error.code === "no_content",
+  );
+  await assert.rejects(
+    enrichWithEditorModel(item, [], { apiKey: "test" }, (async () => new Response(JSON.stringify({
+      choices: [{ message: { content: '{ "relevanceScore": 98,' } }],
+    }))) as typeof fetch),
+    (error: unknown) => error instanceof EditorModelError && error.code === "malformed",
+  );
+});
+
+test("D1 attempt persistence reuses successes, cools failures, and retries fingerprint changes", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const item = reviewNews("news-persist");
+  const now = "2026-08-26T12:00:00.000Z";
+  await persistIngestRun(db, {
+    fetchedAt: now,
+    rss: [item],
+    events: [],
+    social: [],
+    notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item, enrichment: null }]);
+  const fingerprint = await candidateFingerprint(item);
+  await persistEnrichments(db, [{
+    item,
+    enrichment: null,
+    attempt: {
+      fingerprint,
+      attemptedAt: now,
+      outcome: "failure",
+      error: "timeout: Editor model timed out",
+    },
+  }]);
+  assert.equal((await readReusableEnrichments(db, [item])).size, 0);
+  const failed = database.prepare(
+    "SELECT enrichment_outcome, enrichment_attempt_count, enrichment_error FROM content_candidates WHERE id = ?",
+  ).get(item.id);
+  assert.equal(failed.enrichment_outcome, "failure");
+  assert.equal(failed.enrichment_attempt_count, 1);
+  assert.match(String(failed.enrichment_error), /timeout/);
+
+  const enrichment = validEnrichment(item);
+  await persistEnrichments(db, [{
+    item,
+    enrichment,
+    attempt: {
+      fingerprint,
+      attemptedAt: "2026-08-26T18:00:00.000Z",
+      outcome: "success",
+      error: null,
+    },
+  }]);
+  const reused = await readReusableEnrichments(db, [item]);
+  assert.equal(reused.get(item.id)?.confidence, 0.98);
+  const changed = reviewNews("news-persist", "Changed Penn deployment evidence");
+  assert.equal((await readReusableEnrichments(db, [changed])).size, 0);
+  await persistEnrichments(db, [{
+    item: changed,
+    enrichment: null,
+    attempt: {
+      fingerprint: await candidateFingerprint(changed),
+      attemptedAt: "2026-08-26T18:01:00.000Z",
+      outcome: "failure",
+      error: "malformed: Editor model returned malformed JSON",
+    },
+  }]);
+  const retried = database.prepare(
+    "SELECT enrichment_attempt_count, enrichment_outcome FROM content_candidates WHERE id = ?",
+  ).get(item.id);
+  assert.equal(retried.enrichment_attempt_count, 1);
+  assert.equal(retried.enrichment_outcome, "failure");
+  database.close();
+});
+
+test("scheduled editor pipeline publishes official events when the model fails and stays inside budget", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const official = officialChapterEvent();
+  const newsItems = Array.from({ length: 6 }, (_, index) => reviewNews(`news-budget-${index}`));
+  let modelCalls = 0;
+  const fetchImpl = async () => {
+    modelCalls += 1;
+    return new Response(JSON.stringify({ choices: [{ message: { content: "" } }] }), { status: 200 });
+  };
+  const result = await runAutomation(
+    {
+      VALLEY_DESK_DB: db,
+      OPENROUTER_API_KEY: "test-key",
+      EDITOR_MODEL_BUDGET: 4,
+      EDITOR_MODEL_CONCURRENCY: 2,
+    },
+    fetchImpl as typeof fetch,
+    cannedIngest([official, ...newsItems]),
+  );
+  assert.equal("skipped" in result && result.skipped, false);
+  assert.equal(result.modelBudget, 4);
+  assert.equal(result.modelSelectedCount, 4);
+  assert.equal(result.modelAttemptedCount, 4);
+  assert.equal(result.modelFailedCount, 4);
+  assert.equal(result.modelSucceededCount, 0);
+  assert.equal(modelCalls, 4);
+  assert.equal(result.published, 1);
+  assert.equal(result.review, 6);
+  const run = database.prepare("SELECT state, error FROM ingest_runs ORDER BY started_at DESC LIMIT 1").get();
+  assert.equal(run.state, "succeeded");
+  assert.equal(run.error, null);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
+  assert.equal(
+    database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(official.id).queue_status,
+    "approved",
+  );
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM automation_locks").get().count, 0);
+  assert.equal(
+    database.prepare("SELECT COUNT(*) AS count FROM content_candidates WHERE enrichment_outcome = 'failure'").get().count,
+    4,
+  );
+  database.close();
+});
+
+test("cached enrichments are not re-called and skipped candidates still get editor policy", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const item = reviewNews("news-reuse");
+  const official = officialChapterEvent("evt-reuse");
+  await persistIngestRun(db, {
+    fetchedAt: "2026-08-26T11:00:00.000Z",
+    rss: [item],
+    events: [official],
+    social: [],
+    notes: { rss: 1, events: 1, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item, enrichment: null }, { item: official, enrichment: null }]);
+  await persistEnrichments(db, [{
+    item,
+    enrichment: validEnrichment(item),
+    attempt: {
+      fingerprint: await candidateFingerprint(item),
+      attemptedAt: "2026-08-26T11:00:00.000Z",
+      outcome: "success",
+      error: null,
+    },
+  }]);
+  let modelCalls = 0;
+  await runAutomation(
+    { VALLEY_DESK_DB: db, OPENROUTER_API_KEY: "test-key", EDITOR_MODEL_BUDGET: 4 },
+    (async () => {
+      modelCalls += 1;
+      throw new Error("model should not run for reusable rows");
+    }) as typeof fetch,
+    cannedIngest([item, official], "2026-08-26T12:00:00.000Z"),
+  );
+  assert.equal(modelCalls, 0);
+  assert.equal(
+    database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(official.id).queue_status,
+    "approved",
+  );
+  assert.equal(
+    database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(item.id).queue_status,
+    "approved",
+  );
+  database.close();
+});
+
+test("model-stage errors do not leak the lock; unexpected pipeline errors mark the run failed", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const inner = sqliteD1(database);
+  const db: D1DatabaseLike = {
+    prepare(query: string) {
+      if (query.includes("INSERT INTO source_health")) throw new Error("source-health-boom");
+      return inner.prepare(query);
+    },
+    batch: inner.batch.bind(inner),
+  };
+  await assert.rejects(
+    runAutomation(
+      { VALLEY_DESK_DB: db, OPENROUTER_API_KEY: "test-key" },
+      async () => new Response("{}", { status: 500 }) as unknown as Response,
+      async () => ({
+        fetchedAt: "2026-08-26T12:00:00.000Z",
+        rss: [reviewNews("news-fail-run")],
+        events: [],
+        social: [],
+        notes: {
+          rss: 1,
+          events: 0,
+          linkedin: { count: 0 },
+          x: { count: 0 },
+          sources: [{
+            id: "x",
+            origin: "x",
+            type: "social" as const,
+            state: "success" as const,
+            checkedAt: "2026-08-26T12:00:00.000Z",
+            itemCount: 0,
+            complete: false,
+          }],
+        },
+      }),
+    ),
+    /source-health-boom/,
+  );
+  const run = database.prepare("SELECT state, error FROM ingest_runs ORDER BY started_at DESC LIMIT 1").get();
+  assert.equal(run.state, "failed");
+  assert.match(String(run.error), /source-health-boom/);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM automation_locks").get().count, 0);
+
+  database.prepare(
+    "INSERT INTO automation_locks (name, owner_run_id, expires_at) VALUES ('hourly-ingest', 'other-owner', ?)",
+  ).run("2099-01-01T00:00:00.000Z");
+  const skipped = await runAutomation(
+    { VALLEY_DESK_DB: sqliteD1(database), OPENROUTER_API_KEY: "test-key" },
+    fetch,
+    cannedIngest([reviewNews("news-skipped")]),
+  );
+  assert.deepEqual(skipped, { skipped: true, reason: "automation-already-running" });
+  database.close();
+});
+
+test("editor model config contracts cover migration 0006, knobs, and Muse privacy default", () => {
+  const migration = readFileSync(join(root, "migrations/0006_editor_model_attempts.sql"), "utf8");
+  const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
+  const example = readFileSync(join(root, ".dev.vars.example"), "utf8");
+  const readme = readFileSync(join(root, "README.md"), "utf8");
+  const model = readFileSync(join(root, "src/ingest/editor-model.ts"), "utf8");
+  const automation = readFileSync(join(root, "src/ingest/automation.ts"), "utf8");
+  assert.ok(migration.includes("enrichment_fingerprint"));
+  assert.ok(migration.includes("enrichment_attempted_at"));
+  assert.ok(migration.includes("enrichment_outcome"));
+  assert.ok(migration.includes("enrichment_error"));
+  assert.ok(migration.includes("enrichment_attempt_count"));
+  assert.equal(DEFAULT_EDITOR_MODEL, "meta/muse-spark-1.2-contributor");
+  assert.ok(model.includes("muse-spark-1.2-contributor"));
+  assert.ok(model.includes('"relevanceScore":0'));
+  assert.ok(model.includes("Every affectedOrgId and productId must come verbatim"));
+  assert.ok(wrangler.includes('"crons": ["0 * * * *"]'));
+  assert.ok(example.includes("EDITOR_MODEL_BUDGET=4"));
+  assert.ok(readme.includes("EDITOR_MODEL_BUDGET"));
+  assert.ok(readme.includes("waitUntil"));
+  assert.ok(readme.includes("There is no automatic fallback to standard Muse"));
+  assert.ok(automation.includes("selectEditorModelWork"));
+  assert.ok(automation.includes("markIngestRunSucceeded"));
+  assert.ok(automation.includes("releaseAutomationLock"));
+});
+
+function boxesIntersect(
+  a: { x: number; y: number; w: number; h: number },
+  b: { x: number; y: number; w: number; h: number },
+) {
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+function eventRailBoxes(viewport: number, fontScale: number) {
+  const pad = viewport <= 720 ? 20 : 56;
+  const stacked = viewport < 768;
+  const columns = viewport >= 768 ? 3 : 1;
+  const gap = viewport >= 768 ? 48 : 0;
+  const content = viewport - pad * 2;
+  const col = columns === 1 ? content : (content - gap * (columns - 1)) / columns;
+  const chipW = 92 * fontScale;
+  const chipH = 18 * fontScale;
+  const titleH = 44 * fontScale;
+  if (stacked) {
+    return {
+      content: col,
+      chip: { x: 0, y: 0, w: Math.min(chipW, col), h: chipH },
+      title: { x: 0, y: chipH + 8, w: col, h: titleH },
+    };
+  }
+  return {
+    content: col,
+    chip: { x: 0, y: 0, w: chipW, h: chipH },
+    title: { x: chipW + 12, y: 0, w: col - chipW - 12, h: titleH },
+  };
+}
+
+test("homepage event rows stack on mobile, DateChip cannot wrap, and 200% zoom does not clip", () => {
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  const dateChip = css.slice(css.indexOf(".DateChip"), css.indexOf(".StatusChip"));
+  assert.ok(dateChip.includes("white-space: nowrap"));
+  assert.ok(dateChip.includes("flex: none"));
+  assert.ok(!/height:\s*18px/.test(dateChip));
+  assert.ok(css.includes("grid-template-columns: minmax(0, 1fr)"));
+  assert.match(css, /@media \(max-width: 720px\)[\s\S]*?\.DeskRow\s*\{\s*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
+  assert.ok(css.includes("@media (max-width: 767px)"));
+  assert.ok(css.includes("overflow-x: clip"));
+  for (const width of [320, 375, 390, 412, 768]) {
+    for (const scale of [1, 2]) {
+      const { content, chip, title } = eventRailBoxes(width, scale);
+      assert.ok(chip.w <= content + 0.01, `${width}@${scale} chip overflow`);
+      assert.ok(title.w <= content + 0.01, `${width}@${scale} title overflow`);
+      assert.ok(title.x + title.w <= content + 0.01, `${width}@${scale} horizontal scroll`);
+      assert.ok(!boxesIntersect(chip, title), `${width}@${scale} intersecting rectangles`);
+    }
+  }
+});
+
+test("signed facts stay inside the item org graph; text and product similarity cannot attach another system", () => {
+  const penn = catalog.find((item) => item.slug === "penn-in-house-ai-scribe");
+  assert.ok(penn);
+  const hits = itemSignedFacts(penn, entityRows);
+  assert.equal(hits.some((hit) => hit.orgId === "org-temple" || hit.orgId.startsWith("org-temple")), false);
+  assert.ok(!JSON.stringify(hits).includes("2,574,187,207"));
+  assert.ok(!JSON.stringify(hits).includes("TUH Inc."));
+  const allowed = itemOrgGraph(penn, entityRows);
+  assert.ok(allowed.has("org-penn"));
+  assert.ok(!allowed.has("org-temple"));
+  const comparable = {
+    ...penn,
+    title: "Penn in-house scribe versus Temple Dragon Copilot",
+    impactSentence: "Temple Dragon counts are not this count.",
+  };
+  const stillPenn = itemSignedFacts(comparable, entityRows);
+  assert.equal(stillPenn.some((hit) => hit.orgId === "org-temple"), false);
+  const products = matchingProductUses(penn);
+  assert.ok(products.every((row) => row.orgIds.includes("org-penn")));
+  assert.ok(!products.some((row) => row.orgIds.includes("org-temple") || row.id.includes("temple")));
+  const chop = catalog.find((item) => item.slug === "chop-orca-cds");
+  const chopHits = itemSignedFacts(chop!, entityRows);
+  assert.ok(chopHits.every((hit) => itemOrgGraph(chop!, entityRows).has(hit.orgId)));
+});
+
+test("event times distinguish date-only, timed, and time-TBD without inventing midnight or duration", () => {
+  const lspa = catalog.find((item): item is EventItem => item.slug === "lspa-open-house-2026-09-02")!;
+  const hap = catalog.find((item): item is EventItem => item.slug === "hap-patient-safety-symposium-2026-09-02")!;
+  const future = catalog.find((item): item is EventItem => item.slug === "life-sciences-future-2026-09-30")!;
+  const ache = catalog.find((item): item is EventItem => item.slug === "ache-eastern-pa-fall-symposium-2026-09-30")!;
+  const wistar = catalog.find((item): item is EventItem => item.slug === "wistar-drug-discovery-forum-2026-09-09")!;
+  const bionj = catalog.find((item): item is EventItem => item.slug === "bionj-entrepreneurs-exchange-2026-09-23")!;
+  const dha = catalog.find((item): item is EventItem => item.slug === "dha-healthcare-forum-2026-10-29")!;
+  const cafe = catalog.find((item): item is EventItem => item.slug === "bionj-members-cafe-2026-09-15")!;
+  assert.equal(eventSchedule(lspa).kind, "time-tbd");
+  assert.equal(eventSchedule(wistar).kind, "time-tbd");
+  assert.equal(eventSchedule(bionj).kind, "time-tbd");
+  assert.equal(eventSchedule(ache).kind, "time-tbd");
+  assert.equal(eventSchedule(dha).kind, "time-tbd");
+  assert.equal(eventSchedule(hap).kind, "date-only");
+  assert.equal(eventSchedule(future).kind, "date-only");
+  assert.equal(eventSchedule(cafe).kind, "timed");
+  for (const item of [lspa, hap, future, ache, wistar, bionj, dha]) {
+    const when = formatEventWhen(item);
+    assert.ok(!/12:00|midnight|AM/i.test(when), item.slug);
+  }
+  assert.match(formatEventWhen(lspa), /Time not published/);
+  assert.match(formatEventWhen(hap), /Sep 2/);
+  assert.equal(googleCalendarDates(hap), "20260902/20260904");
+  assert.equal(googleCalendarDates(future), "20260930/20261002");
+  assert.equal(googleCalendarDates(lspa), "20260902/20260903");
+  assert.equal(googleCalendarDates(ache), "20260930/20261001");
+  assert.equal(googleCalendarDates(dha), "20261029/20261030");
+  const startOnly = EventItem.parse({
+    ...base,
+    id: "evt-start-only-timed",
+    slug: "start-only-timed",
+    title: "Start only timed",
+    kind: "event",
+    status: "published",
+    startsAt: "2026-09-23T20:00:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "BioNJ",
+    partner: "other",
+    source: { kind: "editorial", origin: "bionj", url: "https://bionj.org/event" },
+  });
+  assert.equal(eventSchedule(startOnly).kind, "timed");
+  assert.match(formatEventWhen(startOnly), /End time not published/);
+  assert.equal(googleCalendarDates(startOnly), "20260923T200000Z/20260923T200000Z");
+  const dstDate = EventItem.parse({
+    ...startOnly,
+    id: "evt-dst-date",
+    slug: "dst-date",
+    startsAt: "2026-11-01T04:00:00.000Z",
+    endsAt: "2026-11-02T05:00:00.000Z",
+  });
+  assert.equal(eventSchedule(dstDate).kind, "date-only");
+  assert.equal(googleCalendarDates(dstDate), "20261101/20261103");
+  const spring = EventItem.parse({
+    ...startOnly,
+    id: "evt-dst-spring",
+    slug: "dst-spring",
+    startsAt: "2026-03-08T05:00:00.000Z",
+  });
+  assert.equal(eventSchedule(spring).kind, "time-tbd");
+  assert.equal(googleCalendarDates(spring), "20260308/20260309");
+});
+
+test("idempotent event refresh keeps canonical id/slug and aliases the old published permalink", () => {
+  const canonical = catalog.find((item): item is EventItem => item.id === "evt-dvhimss-22958")!;
+  assert.equal(canonical.slug, "njdvhimss-fall-conference-october-13th-15th");
+  assert.ok(canonical.previousSlugs?.includes("njdvhimss-fall-conference-2026"));
+  assert.equal(bySlug(catalog, "njdvhimss-fall-conference-october-13th-15th")?.id, canonical.id);
+  assert.equal(byPreviousSlug(catalog, "njdvhimss-fall-conference-2026")?.slug, canonical.slug);
+  const refresh = EventItem.parse({
+    ...canonical,
+    id: "evt-njdvhimss-fall-2026",
+    slug: "njdvhimss-fall-conference-2026",
+    title: "NJ/DVHIMSS Fall Conference 2026",
+    source: {
+      kind: "ingest",
+      origin: "njhimss-events",
+      url: "https://njdvhimssevent.com/",
+      externalId: "njdvhimss-fall-2026",
+    },
+  });
+  const first = mergePublishedOverlay([canonical], [refresh]);
+  assert.equal(first.length, 1);
+  assert.equal(first[0]?.id, canonical.id);
+  assert.equal(first[0]?.slug, canonical.slug);
+  assert.ok(first[0] && "previousSlugs" in first[0] && first[0].previousSlugs?.includes("njdvhimss-fall-conference-2026"));
+  const second = mergePublishedOverlay(first, [refresh]);
+  assert.equal(second.length, 1);
+  assert.equal(second[0]?.id, canonical.id);
+  assert.equal(second[0]?.slug, canonical.slug);
+  assert.equal(second[0]?.status, "published");
+  const kept = retainPublishedIdentity(canonical, refresh);
+  assert.equal(kept.id, canonical.id);
+  assert.equal(kept.slug, canonical.slug);
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+  assert.ok(worker.includes("publishedSlugRedirects"));
+  assert.ok(worker.includes("Response.redirect"));
+  assert.ok(worker.includes("Response.redirect(`${url.origin}${redirected}`, 301)"));
+  assert.ok(worker.includes(", 301)"));
+  const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
+  assert.ok(itemPage.includes("byPreviousSlug"));
+  assert.ok(itemPage.includes("Navigate"));
+});
+
+test("event anti-FOMO copy rejects adapter boilerplate and title restatements", () => {
+  const scrape = EventItem.parse({
+    ...base,
+    id: "evt-scrape-why",
+    slug: "scrape-why",
+    title: "NJ/DVHIMSS Fall Conference 2026",
+    kind: "event",
+    status: "published",
+    body: "Best-effort scrape of the NJ/DVHIMSS conference page.",
+    whyAttend: "Ingested from the DVHIMSS Events Calendar REST feed.",
+    startsAt: "2026-10-13T20:30:00.000Z",
+    timezone: "America/New_York",
+    hostOrg: "NJDVHIMSS",
+    city: "Atlantic City",
+    partner: "njhimss",
+    source: { kind: "ingest", origin: "njhimss-events", url: "https://njdvhimssevent.com/" },
+  });
+  assert.equal(isBoilerplateEventCopy(scrape.body), true);
+  assert.equal(eventWhyCopy(scrape), undefined);
+  assert.equal(eventWhyLine(scrape), "Details not yet published.");
+  assert.equal(evaluateCandidate(scrape, null, new Date("2026-08-26T12:00:00.000Z")).rule, "reader-copy-exposes-ingestion");
+  const restatement = EventItem.parse({
+    ...scrape,
+    id: "evt-restatement",
+    slug: "restatement",
+    whyAttend: "NJ/DVHIMSS Fall Conference 2026",
+    body: "NJ/DVHIMSS Fall Conference 2026 in Atlantic City",
+  });
+  assert.equal(eventWhyCopy(restatement), undefined);
+  const hap = catalog.find((item): item is EventItem => item.slug === "hap-patient-safety-symposium-2026-09-02")!;
+  assert.match(eventWhyLine(hap), /patient safety/i);
+  const eventsPage = readFileSync(join(root, "src/ui/EventsPage.tsx"), "utf8");
+  assert.ok(eventsPage.includes("eventWhyLine"));
+  assert.ok(!eventsPage.includes("item.whyAttend || item.healthSystemRelevance || item.body"));
+});
+
+test("reader copy permanently normalizes repository headlines and blocks collection notes", () => {
+  assert.equal(professionalizeHeadline("CHOP ORCA repo for Epic downtime order sets"), "CHOP publishes ORCA repo");
+  assert.equal(professionalizeHeadline("Penn FHIR repository for exchange examples"), "Penn publishes FHIR repo");
+  assert.equal(professionalizeHeadline("Jefferson completes MyChart cutover"), "Jefferson completes MyChart cutover");
+  for (const copy of [
+    "Best-effort scrape of the conference page.",
+    "Scraped from njdvhimssevent.com.",
+    "Ingested from the DVHIMSS REST feed.",
+    "The RSS adapter found this event.",
+  ]) assert.equal(hasInternalProcessLanguage(copy), true, copy);
+  assert.equal(hasInternalProcessLanguage("The official chapter page confirms the event in Atlantic City."), false);
+});
+
+test("public skip link, 404 recovery, URL wrap, and twice-daily edition are wired", () => {
+  const layout = readFileSync(join(root, "src/ui/Layout.tsx"), "utf8");
+  const notFound = readFileSync(join(root, "src/ui/NotFound.tsx"), "utf8");
+  const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
+  const desk = readFileSync(join(root, "src/ui/home/Desk.tsx"), "utf8");
+  const lead = readFileSync(join(root, "src/ui/home/Lead.tsx"), "utf8");
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  const facts = readFileSync(join(root, "src/ui/ItemFacts.tsx"), "utf8");
+  const skip = readFileSync(join(root, "src/ui/SkipLink.tsx"), "utf8");
+  const labShell = readFileSync(join(root, "src/ui/lab/LabShell.tsx"), "utf8");
+  const horizon = readFileSync(join(root, "src/ui/lab/LabHorizonPage.tsx"), "utf8");
+  assert.ok(layout.includes("SiteSkip"));
+  assert.ok(layout.includes('href="#main-content"'));
+  assert.ok(layout.includes('id="main-content"'));
+  assert.ok(layout.includes("tabIndex={-1}"));
+  assert.ok(skip.includes("target.focus"));
+  assert.ok(labShell.includes('href="#lab-content"'));
+  assert.ok(labShell.includes("tabIndex={-1}"));
+  assert.equal(notFound.match(/This page is not published\./g)?.length, 1);
+  assert.ok(notFound.includes("<h1>"));
+  assert.ok(notFound.includes("Back to the desk"));
+  assert.ok(css.includes("overflow-wrap: anywhere"));
+  const llms = readFileSync(join(root, "public/llms.txt"), "utf8");
+  assert.match(llms, /^# The Valley Desk/m);
+  assert.ok(llms.includes("/feed.json"));
+  assert.ok(css.includes('.Rail[data-rail="news"] h2 {\n  color: var(--admiral)'));
+  assert.ok(css.includes(".OrgTick.is-help {\n  position: relative;\n  width: 24px;\n  height: 24px;"));
+  assert.ok(facts.includes("ItemEntityLinks"));
+  assert.ok(facts.includes("View data"));
+  assert.ok(!home.includes("editionStamp"));
+  assert.ok(!home.includes("isStaleLead"));
+  assert.ok(desk.includes("Quiet edition"));
+  assert.ok(lead.includes("LATEST NEWS"));
+  assert.ok(!lead.includes("Held from an earlier edition"));
+  const morning = lastEditionAt(new Date("2026-08-26T12:00:00.000Z"));
+  assert.equal(morning.toISOString(), "2026-08-26T10:00:00.000Z");
+  assert.equal(nextEditionAt(new Date("2026-08-26T12:00:00.000Z")).toISOString(), "2026-08-26T21:00:00.000Z");
+  const stamp = editionStamp(new Date("2026-08-26T12:00:00.000Z"));
+  assert.equal(stamp.currentName, "Morning edition");
+  assert.equal(stamp.nextName, "Evening edition");
+  const cc = catalog.find((item) => item.slug === "christianacare-epic-go-live")!;
+  assert.equal(isStaleLead(cc, new Date("2026-08-26T12:00:00.000Z")), true);
+  assert.ok(horizon.includes("inWindow[inWindow.length - 1]"));
+  assert.ok(horizon.includes("After 30 days"));
+  assert.ok(horizon.includes("selectedOnAxis"));
+  assert.ok(css.includes("@media (prefers-reduced-motion: reduce)"));
+});
+
+test("editorial taxonomy is deterministic: one display label, richer topics, never a tag cloud", () => {
+  const loss = catalog.find((i) => i.id === "news-jefferson-fy2026-loss")!;
+  const penn = catalog.find((i) => i.id === "news-penn-ai-scribe")!;
+  const hap = catalog.find((i) => i.slug === "hap-cms-0057-f-enforce-rfi")!;
+  const mychart = catalog.find((i) => i.slug === "jefferson-einstein-mychart-2026-09-26")!;
+  const chestnut = catalog.find((i) => i.slug === "temple-chestnut-hill-jhp-2026-09-30")!;
+  const chop = catalog.find((i) => i.slug === "chop-orca-cds")!;
+  const cc = catalog.find((i) => i.slug === "christianacare-epic-go-live")!;
+  const tower = catalog.find((i) => i.slug === "tower-ai-tax")!;
+  const dragon = catalog.find((i) => i.slug === "temple-dragon-copilot-400")!;
+  const de340b = catalog.find((i) => i.slug === "de-340b-hs1-hb383-2024")!;
+  assert.equal(primaryNewsLabel(loss), "FINANCE");
+  assert.equal(kindChip(loss), "FINANCE");
+  assert.equal(chipKind(loss), "news");
+  assert.notEqual(kindChip(loss), loss.topics[0]);
+  assert.equal(kindChip(penn), "AI");
+  assert.equal(chipKind(penn), "ai");
+  assert.equal(kindChip(hap), "POLICY");
+  assert.equal(chipKind(hap), "policy");
+  assert.ok(hap.topics.includes("interop"));
+  assert.equal(kindChip(mychart), "EHR");
+  assert.equal(kindChip(cc), "EHR");
+  assert.equal(kindChip(chop), "EHR");
+  assert.equal(kindChip(chestnut), "FINANCE");
+  assert.equal(kindChip(tower), "AI");
+  assert.equal(kindChip(dragon), "AI");
+  assert.equal(kindChip(de340b), "POLICY");
+  assert.equal(kindChip({ kind: "news", topics: ["product-watch", "AI"], title: "Ambient", dek: "", body: "" }), "AI");
+  assert.notEqual(kindChip({ kind: "news", topics: ["product-watch"], title: "Watch", dek: "", body: "" }), "product-watch");
+  assert.equal(KIND_CHIP.news, "HIT");
+
+  const honor = catalog.find((i) => i.slug === "temple-honor-roll-2026")!;
+  const johnson = catalog.find((i) => i.slug === "inspira-johnson-epic-day-6-2026-07-30")!;
+  const mansue = catalog.find((i) => i.slug === "inspira-mansue-epic-2026-07-27")!;
+  const mlh = catalog.find((i) => i.slug === "mlh-cloud-analytics-2026-08-17")!;
+  const vuong = catalog.find((i) => i.slug === "hsx-vuong-hitrust-r2-2026-06-02")!;
+  const lupi = catalog.find((i) => i.slug === "hsx-lupinetti-pbj-award-2026-06-22")!;
+  const schoenbaum = catalog.find((i) => i.slug === "penn-schoenbaum-ambient-ai-2026-08-18")!;
+  const santiago = catalog.find((i) => i.slug === "christianacare-santiago-home-care-cloud-2026-06-29")!;
+  const mahoney = catalog.find((i) => i.slug === "penn-mahoney-muller-endowments-2026-08-04")!;
+  assert.equal(honor.kind, "voice");
+  assert.equal(kindChip(honor), "EHR");
+  assert.equal(chipKind(honor), "voice");
+  assert.equal(kindChip(johnson), "EHR");
+  assert.equal(kindChip(mansue), "AI");
+  assert.equal(kindChip(mlh), "OPERATIONS");
+  assert.equal(kindChip(vuong), "SECURITY");
+  const datedVoiceTitle = /\b(?:Jan\.?|Feb\.?|Mar\.?|Apr\.?|May|June|July|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)\s+\d{1,2},\s+\d{4}\b/i;
+  for (const item of latestVoices(catalog, Number.MAX_SAFE_INTEGER)) {
+    assert.equal(datedVoiceTitle.test(item.title), false, item.slug);
+  }
+  assert.equal(lupi.status, "draft");
+  assert.equal(kindChip(lupi), "INTEROP");
+  assert.equal(kindChip(schoenbaum), "AI");
+  assert.equal(kindChip(santiago), "SECURITY");
+  assert.equal(kindChip(mahoney), "FINANCE");
+  assert.notEqual(kindChip(honor), "VOICE");
+  assert.equal(primaryVoiceLabel({ role: "CEO", person: "X", title: "Epic go-live", dek: "", body: "", topics: ["EHR"], org: "Inspira", platform: "site" }), "EHR");
+  assert.equal(KIND_CHIP.voice, "OPERATIONS");
+
+  const conference = catalog.find((i) => i.slug === "njdvhimss-fall-conference-october-13th-15th")!;
+  const webinar = catalog.find((i) => i.slug === "hap-i-transfer-sepsis-webinar-2026-09-18")!;
+  const acheFall = catalog.find((i) => i.slug === "ache-greater-philly-fall-symposium-2026-09-14")!;
+  assert.equal(kindChip(conference), "CHAPTER");
+  assert.equal(primaryEventLabel(webinar as Extract<typeof webinar, { kind: "event" }>), "WEBINAR");
+  assert.equal(kindChip(webinar), "WEBINAR");
+  assert.equal(kindChip(acheFall), "CHAPTER");
+  assert.equal(chipKind(conference), "event");
+
+  const publishedNews = catalog.filter((i) => (i.kind === "news" || i.kind === "policy" || i.kind === "ai") && i.status === "published");
+  for (const item of publishedNews) {
+    assert.equal(kindChip(item), primaryDisplayLabel(item), item.slug);
+    assert.equal(kindChip(item).split(/\s+/).length, 1, item.slug);
+  }
+  const publishedVoices = catalog.filter((i) => i.kind === "voice" && i.status === "published");
+  for (const item of publishedVoices) {
+    assert.notEqual(kindChip(item), "VOICE", item.slug);
+    assert.equal(chipKind(item), "voice", item.slug);
+  }
+});
+
+test("published events require live registration, DV relevance, and no defensive copy", () => {
+  const publishedEvents = catalog.filter((i) => i.kind === "event" && i.status === "published");
+  assert.ok(publishedEvents.length >= 16);
+  for (const item of publishedEvents) {
+    assert.equal(item.kind, "event");
+    assert.ok(item.registrationUrl, item.slug);
+    assert.ok(item.registrationUrl.startsWith("https://"), item.slug);
+    assert.ok(!/[{}]/.test(item.registrationUrl), item.slug);
+    assert.ok(Number.isFinite(Date.parse(item.startsAt)), item.slug);
+    assert.ok(item.timezone, item.slug);
+    for (const value of [item.title, item.dek, item.body, item.whyAttend, item.impactSentence]) {
+      assert.equal(hasDefensiveEditorialAside(value), false, `${item.slug}: ${value}`);
+    }
+  }
+  const acheFall = publishedEvents.find((i) => i.slug === "ache-greater-philly-fall-symposium-2026-09-14");
+  const webinar = publishedEvents.find((i) => i.slug === "hap-i-transfer-sepsis-webinar-2026-09-18");
+  const hapEm = publishedEvents.find((i) => i.slug === "hap-emergency-management-2026-09-16");
+  const builds = publishedEvents.find((i) => i.slug === "builds-bio-philly-2026-09-15");
+  assert.ok(acheFall && acheFall.kind === "event");
+  assert.equal(acheFall.registrationUrl, "https://www.eventbrite.com/e/2026-fall-symposium-tickets-1995143903122");
+  assert.equal(acheFall.city, "Philadelphia");
+  assert.ok(acheFall.whyAttend?.includes("University City"));
+  assert.ok(webinar && webinar.kind === "event");
+  assert.equal(webinar.format, "virtual");
+  assert.ok(webinar.orgs.includes("org-penn"));
+  assert.ok(hapEm && hapEm.kind === "event");
+  assert.ok(hapEm.body.includes("Penn Medicine"));
+  assert.ok(hapEm.body.includes("Tower Health"));
+  assert.ok(builds && builds.kind === "event" && builds.registrationUrl?.includes("buildsbio.org"));
+  assert.notEqual(catalog.find((i) => i.slug === "ache-eastern-pa-fall-symposium-2026-09-30")?.status, "published");
+  assert.equal(itemJsonLd(acheFall)?.["@type"], "Event");
+  const newsLd = itemJsonLd(catalog.find((i) => i.slug === "hap-cms-0057-f-enforce-rfi")!, entityRows);
+  assert.ok(Array.isArray(newsLd?.keywords));
+  assert.ok((newsLd?.keywords as string[]).includes("POLICY"));
+});
+
+test("new HSX, Penn, and ChristianaCare voices are cited, labeled, and off the news rail", () => {
+  const slugs = [
+    "hsx-vuong-hitrust-r2-2026-06-02",
+    "penn-schoenbaum-ambient-ai-2026-08-18",
+    "christianacare-santiago-home-care-cloud-2026-06-29",
+  ];
+  const voices = latestVoices(catalog, Number.MAX_SAFE_INTEGER);
+  const news = latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds);
+  for (const slug of slugs) {
+    const item = catalog.find((i) => i.slug === slug);
+    assert.ok(item, slug);
+    assert.equal(item.kind, "voice");
+    assert.equal(item.status, "published");
+    assert.equal(item.featured, false);
+    assert.ok(item.impactSentence?.trim(), slug);
+    assert.ok(item.source.url?.startsWith("https://"), slug);
+    assert.ok((item.citations ?? []).some((c) => c.url === item.source.url), slug);
+    assert.ok(hasLiveSeedOrg(item.orgs, seedIds), slug);
+    assert.ok(voices.some((row) => row.slug === slug), slug);
+    assert.ok(!news.some((row) => row.slug === slug), slug);
+    assert.equal(itemJsonLd(item), undefined);
+    assert.equal(canonicalPath(item), `/voices/${slug}`);
+    assert.equal(hasDefensiveEditorialAside(`${item.title} ${item.dek} ${item.body} ${item.impactSentence}`), false, slug);
+  }
+  const vuong = catalog.find((i) => i.slug === slugs[0])!;
+  assert.equal(vuong.kind === "voice" ? vuong.person : "", "Alice Vuong");
+  assert.equal(kindChip(vuong), "SECURITY");
+  const schoenbaum = catalog.find((i) => i.slug === "penn-schoenbaum-ambient-ai-2026-08-18")!;
+  assert.equal(schoenbaum.kind === "voice" ? schoenbaum.person : "", "Anna Schoenbaum");
+  assert.ok(schoenbaum.body.includes("1,300"));
+  assert.ok(!/["“]/.test(`${schoenbaum.dek} ${schoenbaum.body}`));
+});
+
+test("entity cards cover fact-bearing rows with local images, public roles, and text fallback", () => {
+  assert.equal(entityRows.length, 92);
+  const bearing = factBearingEntities(entityRows);
+  assert.ok(bearing.some((e) => e.id === "org-hsx"));
+  assert.ok(bearing.some((e) => e.id === "person-hojjat-salmasian"));
+  assert.ok(bearing.some((e) => e.id === "person-jeffrey-pennington"));
+  assert.ok(bearing.some((e) => e.id === "person-mitchell-schnall"));
+  for (const entity of bearing) {
+    assert.ok(entity.facts.length > 0, entity.id);
+    assert.ok(entity.facts.every((fact) => fact.citation.url?.startsWith("https://")), entity.id);
+    assert.ok(!/do not merge|not enterprise|not a merge/i.test(`${entity.role ?? ""} ${entity.facts.map((f) => f.label).join(" ")}`), entity.id);
+    assert.equal(hasDefensiveEditorialAside(entity.role), false, entity.id);
+    if (entity.image) {
+      assert.ok(entity.image.startsWith("/entity-"), entity.id);
+      assert.ok(!entity.image.startsWith("http"), entity.id);
+      assert.ok(existsSync(join(root, "public", entity.image.slice(1))), entity.image);
+    }
+  }
+  for (const [id, path] of Object.entries(VERIFIED_ENTITY_MEDIA)) {
+    assert.ok(path.startsWith("/entity-") && path.endsWith(".webp"), id);
+    assert.ok(existsSync(join(root, "public", path.slice(1))), path);
+  }
+  assert.equal(
+    publicEntityRole("CMIO, Temple University Hospital only — not enterprise CMIO"),
+    "CMIO, Temple University Hospital",
+  );
+  assert.equal(
+    publicEntityContext("SVP and CIO — joined 2020; leads IT and Cybersecurity", "Main Line Health"),
+    "SVP and CIO, Main Line Health",
+  );
+  const mention = readFileSync(join(root, "src/ui/MentionText.tsx"), "utf8");
+  const factsUi = readFileSync(join(root, "src/ui/ItemFacts.tsx"), "utf8");
+  const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
+  assert.ok(mention.includes("EntityDisclosure"));
+  assert.ok(mention.includes("OrgTick"));
+  assert.ok(mention.includes("canInsert"));
+  assert.ok(mention.includes("match(/^\\s*[–—:-]\\s*/)") || mention.includes("match(/^\\s*[–—:-]\\s*/)?.[0]"));
+  assert.ok(factsUi.includes("onError"));
+  assert.ok(factsUi.includes("imageFailed") || factsUi.includes("setImageFailed"));
+  assert.ok(factsUi.includes("slice(0, 1)"));
+  assert.ok(!factsUi.includes("http://"));
+  const cardCss = css.slice(css.indexOf(".EntityDisclosure-card"), css.indexOf(".EntityDisclosure.is-align-right"));
+  assert.ok(cardCss.includes("white-space: normal"));
 });

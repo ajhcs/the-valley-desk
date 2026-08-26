@@ -4,10 +4,26 @@ import entityFixtures from "../../fixtures/entities.json";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
 import { mapSeedOrgIds } from "./org-map";
+import type { IngestSourceResult, SourceRunNote } from "./source-health";
 
 const seedEntities = Entity.array().parse(entityFixtures);
+const SOURCE_TIMEOUT_MS = 12_000;
 
 export const RSS_SOURCES = [
+  {
+    id: "christianacare-information-technology",
+    name: "ChristianaCare News · Information Technology",
+    origin: "christianacare-newsroom",
+    url: "https://news.christianacare.org/category/information-technology/feed/",
+    orgIds: ["org-christianacare"],
+  },
+  {
+    id: "cooper-newsroom",
+    name: "Cooper University Health Care News",
+    origin: "cooper-newsroom",
+    url: "https://blogs.cooperhealth.org/news/feed/",
+    orgIds: ["org-cooper"],
+  },
   {
     id: "inquirer-health",
     name: "Inquirer Health",
@@ -80,6 +96,7 @@ export function rssItemToContent(
   fetchedAt: string,
   _index = 0,
   entities: readonly EntityRow[] = seedEntities,
+  options: { origin?: string; fixedOrgIds?: readonly string[] } = {},
 ): ContentItem {
   let publishedAt: string | undefined;
   const parsed = Date.parse(raw.pubDate);
@@ -98,12 +115,12 @@ export function rssItemToContent(
     publishedAt,
     updatedAt: fetchedAt,
     topics: [],
-    orgs: mapSeedOrgIds(text, entities),
+    orgs: [...new Set([...(options.fixedOrgIds ?? []), ...mapSeedOrgIds(text, entities)])],
     region: "regional",
     authors: [],
     source: {
       kind: "ingest",
-      origin: feedName,
+      origin: options.origin ?? feedName,
       url: raw.link,
       fetchedAt,
       externalId,
@@ -115,39 +132,83 @@ export function rssItemToContent(
   };
 }
 
-export async function fetchWorkingRss(
-  fetchImpl: typeof fetch = fetch,
-): Promise<{ url: string; name: string; status: number; items: ReturnType<typeof parseRssItems> }[]> {
-  const working: { url: string; name: string; status: number; items: ReturnType<typeof parseRssItems> }[] = [];
+type WorkingRss = { url: string; name: string; origin?: string; orgIds?: readonly string[]; status: number; items: ReturnType<typeof parseRssItems> };
+
+async function fetchRssSources(
+  fetchImpl: typeof fetch,
+  checkedAt: string,
+): Promise<{ working: WorkingRss[]; sources: SourceRunNote[] }> {
+  const working: { url: string; name: string; origin?: string; orgIds?: readonly string[]; status: number; items: ReturnType<typeof parseRssItems> }[] = [];
+  const sources: SourceRunNote[] = [];
   for (const source of RSS_SOURCES) {
     const urls = [source.url, ...("fallbacks" in source ? source.fallbacks : [])];
+    let success: WorkingRss | undefined;
+    let lastError = "No usable RSS response";
     for (const url of urls) {
       try {
         const res = await fetchImpl(url, {
           headers: { "user-agent": "TheValleyDesk/0.1 (+https://github.com/ajhcs/the-valley-desk)" },
+          signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS),
         });
         const body = await res.text();
         if (res.status === 200 && looksLikeRss(body)) {
-          working.push({ url, name: source.name, status: 200, items: parseRssItems(body) });
+          success = {
+            url,
+            name: source.name,
+            origin: "origin" in source ? source.origin : undefined,
+            orgIds: "orgIds" in source ? source.orgIds : undefined,
+            status: 200,
+            items: parseRssItems(body),
+          };
           break;
         }
-      } catch {
+        lastError = `HTTP ${res.status} or invalid RSS document`;
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : String(error);
         /* try next */
       }
     }
+    if (success) working.push(success);
+    sources.push({
+      id: source.id,
+      origin: "origin" in source && source.origin ? source.origin : source.name,
+      type: "rss",
+      state: success ? "success" : "error",
+      checkedAt,
+      itemCount: success?.items.length ?? 0,
+      complete: false,
+      url: success?.url ?? source.url,
+      ...(success ? {} : { error: lastError }),
+    });
   }
-  return working;
+  return { working, sources };
 }
 
-export async function ingestRss(now = new Date(), fetchImpl: typeof fetch = fetch): Promise<ContentItem[]> {
+export async function fetchWorkingRss(
+  fetchImpl: typeof fetch = fetch,
+): Promise<WorkingRss[]> {
+  return (await fetchRssSources(fetchImpl, new Date().toISOString())).working;
+}
+
+export async function ingestRssWithHealth(
+  now = new Date(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<IngestSourceResult<ContentItem>> {
   const fetchedAt = now.toISOString();
-  const feeds = await fetchWorkingRss(fetchImpl);
+  const { working: feeds, sources } = await fetchRssSources(fetchImpl, fetchedAt);
   const items: ContentItem[] = [];
   for (const feed of feeds) {
     feed.items.forEach((raw, index) => {
-      items.push(rssItemToContent(raw, feed.name, fetchedAt, index));
+      items.push(rssItemToContent(raw, feed.name, fetchedAt, index, seedEntities, {
+        origin: feed.origin,
+        fixedOrgIds: feed.orgIds,
+      }));
     });
   }
   const batch: IngestBatch = { adapter: "rss", fetchedAt, items };
-  return toReviewQueue(batch);
+  return { items: toReviewQueue(batch), sources };
+}
+
+export async function ingestRss(now = new Date(), fetchImpl: typeof fetch = fetch): Promise<ContentItem[]> {
+  return (await ingestRssWithHealth(now, fetchImpl)).items;
 }

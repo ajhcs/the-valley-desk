@@ -4,7 +4,7 @@
     "slug": "penn-medicine-ai-scribe-rollout",
     "kind": "news",
     "title": "Penn Medicine expands ambient scribe pilots across ambulatory",
-    "dek": "A local operations story, not a vendor release.",
+    "dek": "Penn’s ambient-scribe expansion centers on ambulatory workload and documentation time.",
     "body": "Fixture. Replace with Cole or ingest copy.",
     "status": "draft",
     "featured": false,
@@ -35,7 +35,7 @@
     "relatedVoiceIds": [
       "voice-01"
     ],
-    "impactSentence": "Penn ambient-scribe expansion is an ambulatory labor story, not a vendor launch.",
+    "impactSentence": "Penn’s ambient-scribe expansion centers on ambulatory workload and documentation time.",
     "citations": [
       {
         "name": "Penn Medicine",
@@ -89,7 +89,7 @@
     "slug": "jefferson-einstein-mychart-go-live",
     "kind": "news",
     "title": "Jefferson Einstein records move to MyJeffersonHealth on Sept. 26",
-    "dek": "Einstein patients leave MyEinsteinHealth for Jefferson's Epic MyChart. A go-live clock, not an event.",
+    "dek": "Einstein patients move from MyEinsteinHealth to Jefferson’s Epic MyChart on Sept. 26.",
     "body": "Fixture. Replace with Cole copy.",
     "status": "draft",
     "featured": false,
@@ -118,7 +118,7 @@
     "relatedEventIds": [],
     "relatedVoiceIds": [],
     "clockAt": "2026-09-26T04:00:00.000Z",
-    "impactSentence": "Einstein's Sept. 26 MyChart cutover is a Jefferson operations clock, not a chapter event.",
+    "impactSentence": "Einstein’s Sept. 26 MyChart cutover is a major Jefferson integration milestone.",
     "citations": [
       {
         "name": "Jefferson Health",
@@ -140,7 +140,8 @@
     "updatedAt": "2026-08-23T21:59:23.000Z",
     "topics": [
       "EHR",
-      "Epic"
+      "Epic",
+      "product-watch"
     ],
     "orgs": [
       "org-jefferson",
@@ -162,10 +163,15 @@
     "relatedVoiceIds": [],
     "clockAt": "2026-09-26T04:00:00.000Z",
     "impactSentence": "After Sept. 26, 2026, patients will no longer access MyEinsteinHealth; records are in MyJeffersonHealth (Epic MyChart) after the next visit to either Einstein hospital, with up to three years of records moved.",
+    "contextSentence": "Jefferson and Einstein completed their merger in October 2021, making this portal and EHR cutover a later operational milestone in the systems’ integration.",
     "citations": [
       {
         "name": "Jefferson Health Einstein patient portal",
         "url": "https://www.jeffersonhealth.org/your-health/my-jefferson-health/einstein-patient-portal"
+      },
+      {
+        "name": "Jefferson–Einstein merger completion, Oct. 4, 2021",
+        "url": "https://www.jeffersonhealth.org/about-us/news/2021/10/einstein-healthcare-network-has-joined-jefferson-health"
       }
     ]
   },
@@ -214,15 +220,16 @@
     "slug": "christianacare-epic-go-live",
     "kind": "news",
     "title": "ChristianaCare Epic go-live, official July 2026 update",
-    "dek": "Oct. 3, 2026 and the training gate from the newsroom. Becker’s second-cites the date. No FAC dollars.",
-    "body": "ChristianaCare’s July 2026 newsroom update scheduled an Oct. 3, 2026 Epic go-live and said the system was in the final stage, with less than three months remaining. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction, and that readiness checks are meant to make sure caregivers finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Patients are told to keep appointments unless ChristianaCare contacts them. Becker’s Hospital Review, Naomi Diaz, Wednesday, July 22, 2026, second-cites the Oct. 3 date. That clip says the EHR switch has been underway since a 2024 decision and names Robert Hartmann, vice president of EHR transformation, who spent nine years at Epic. That clip is not an Epic dollar.",
+    "dek": "ChristianaCare’s Oct. 3, 2026 Epic cutover follows a role-based training and readiness program described in the system’s July update.",
+    "body": "ChristianaCare’s July 2026 newsroom update scheduled an Oct. 3, 2026 Epic go-live and said the system was in the final stage, with less than three months remaining. COO Ric Cuming said training mixes on-demand modules with live, role-based instruction, and that readiness checks are meant to make sure caregivers finish required training before they use the new system. The same update said that once ChristianaCare is live, all Delaware health systems — and many in Pennsylvania, New Jersey, and Maryland — will be on Epic, with Care Everywhere for outside visits. Patients are told to keep appointments unless ChristianaCare contacts them. Becker’s Hospital Review, Naomi Diaz, Wednesday, July 22, 2026, also reported the Oct. 3 date and said the EHR switch has been underway since a 2024 decision. It names Robert Hartmann, vice president of EHR transformation, who spent nine years at Epic.",
     "status": "published",
     "featured": true,
     "publishedAt": "2026-07-01T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
       "EHR",
-      "Epic"
+      "Epic",
+      "product-watch"
     ],
     "orgs": [
       "org-christianacare"
@@ -241,7 +248,7 @@
     "relatedEventIds": [],
     "relatedVoiceIds": [],
     "clockAt": "2026-10-03T04:00:00.000Z",
-    "impactSentence": "Oct. 3 is a training-gated cutover on ChristianaCare’s own update; Becker’s second-cites that date and does not price Epic.",
+    "impactSentence": "ChristianaCare’s Oct. 3 Epic cutover is tied to role-based training and readiness checks for caregivers.",
     "citations": [
       {
         "name": "ChristianaCare News",
@@ -259,14 +266,15 @@
     "slug": "jefferson-fy2026-operating-loss",
     "kind": "news",
     "title": "Jefferson FY2026 operating loss and Fitch liquidity",
-    "dek": "Inquirer year-end $181.5 million to bondholders; Fitch $5.5 billion / 119 DCOH through March 31. $112 million is not the LVHN close.",
-    "body": "The Inquirer, Aug. 14, 2026, reported that Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, after a $208 million loss the prior year, in results reported to bondholders.\n\nThe same clip said those FY2026 results included $112 million in costs for layoffs and other moves.\n\nSeparately, Jefferson completed the Lehigh Valley Health Network close on Aug. 1, 2024; the Inquirer said FY2025 revenue included 11 months of LVHN and rose to $17.7 billion in FY2026 from $15.8 billion. Do not read the $112 million as a close cost.\n\nJefferson Health Plans lost $130.3 million on 415,172 members. Results climbed from a $103.8 million first-quarter operating loss to a $71.1 million fourth-quarter operating profit. CFO Michael Harrington said commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law.\n\nSeparately, Fitch on June 18, 2026 assigned F1+ to TJU taxable CP notes, affirmed the A IDR with a Negative Outlook, and cited $5.5 billion unrestricted liquidity and about 119 days cash on hand for fiscal 2026 year-to-date through March 31, 2026, including the health plan and excluding line-of-credit draws and about $1.1 billion donor-restricted funds. Fitch cited about $15.5 billion operating revenue for the year ended June 30, 2025, and about $112 million Jefferson Health Plan losses through the first nine months of both FY2025 and FY2026. Those nine-month figures are not a substitute for the June 30 year-end loss.",
+    "dek": "The Inquirer reported a $181.5 million FY2026 operating loss, including $112 million for layoffs and other moves; Fitch cited $5.5 billion of unrestricted liquidity and 119 days cash on hand through March 31.",
+    "body": "The Inquirer, Aug. 14, 2026, reported that Thomas Jefferson University and Jefferson Health posted a $181.5 million operating loss for the year ended June 30, 2026, after a $208 million loss the prior year, in results reported to bondholders.\n\nThe same clip said those FY2026 results included $112 million in costs for layoffs and other moves. Jefferson completed the Lehigh Valley Health Network close on Aug. 1, 2024; the Inquirer said FY2025 revenue included 11 months of LVHN and rose to $17.7 billion in FY2026 from $15.8 billion.\n\nJefferson Health Plans lost $130.3 million on 415,172 members. Results climbed from a $103.8 million first-quarter operating loss to a $71.1 million fourth-quarter operating profit. CFO Michael Harrington said commercial-insurer actions in Pennsylvania threaten those gains. Jefferson sued Independence Blue Cross over contract reinterpretations and sued Aetna in April over Medicare Advantage stay payments. Independence said it acts for its customers. Aetna said its policies comply with federal law.\n\nSeparately, Fitch on June 18, 2026 assigned F1+ to TJU taxable CP notes, affirmed the A IDR with a Negative Outlook, and cited $5.5 billion unrestricted liquidity and about 119 days cash on hand for fiscal 2026 year-to-date through March 31, 2026, including the health plan and excluding line-of-credit draws and about $1.1 billion donor-restricted funds. Fitch cited about $15.5 billion operating revenue for the year ended June 30, 2025, and about $112 million Jefferson Health Plan losses through the first nine months of both FY2025 and FY2026.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-14T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
-      "finance"
+      "finance",
+      "HIT"
     ],
     "orgs": [
       "org-jefferson"
@@ -302,14 +310,15 @@
     "slug": "penn-in-house-ai-scribe",
     "kind": "news",
     "title": "Penn in-house scribe headcount and 2024 JAMA pilot table",
-    "dek": "Some 1,200 ambulatory users in the Inquirer clip. A separate 46-clinician 2024 QI study used DAX Copilot (Nuance). Not the same product sentence.",
-    "body": "The Philadelphia Inquirer, Nov. 10, 2025, said Dina Capalongo, a Penn Medicine internist, uses an AI scribe Penn designed in-house: she hits a green button on a phone app, ambient listening drafts a sectioned note she still has to approve, usually before she leaves the room. The same clip said some 1,200 Penn Medicine providers were using an AI scribe in ambulatory and outpatient offices. Mitchell Schnall said the system built its own scribe. A separate JAMA Network Open study (Duggan et al., published Feb. 19, 2025; outpatient QI April–June 2024 at one Philadelphia academic system) gave clinicians a commercially available ambient scribe, DAX Copilot (Nuance). Among 46 clinicians in 17 specialties, the abstract associated that tool with 20.4% less time in notes per appointment (10.3 to 8.2 minutes; P<.001), 9.3% greater same-day appointment closure (66.2% to 72.4%), and 30.0% less after-hours work time (50.6 to 35.4 minutes per workday). Those percents are the abstract cells, not the Table 2 model change-%. Penn Medicine’s Feb. 21, 2025 news release quoted Kevin B. Johnson, who leads the AI4AI Lab, calling those “early but promising results,” and said volunteer clinicians were using the tool with patient permission. That release does not name DAX. The 1,200 in-house count is not the study n and is not DAX. Temple Dragon counts are not this count.",
+    "dek": "The Inquirer reported roughly 1,200 ambulatory users of Penn’s in-house scribe. A separate 46-clinician 2024 quality-improvement study evaluated DAX Copilot.",
+    "body": "The Philadelphia Inquirer, Nov. 10, 2025, said Dina Capalongo, a Penn Medicine internist, uses an AI scribe Penn designed in-house: she hits a green button on a phone app, ambient listening drafts a sectioned note she still has to approve, usually before she leaves the room. The same clip said some 1,200 Penn Medicine providers were using the in-house scribe in ambulatory and outpatient offices. Mitchell Schnall said the system built the tool.\n\nA separate JAMA Network Open study (Duggan et al., published Feb. 19, 2025; outpatient QI April–June 2024 at one Philadelphia academic system) evaluated DAX Copilot (Nuance) among 46 clinicians in 17 specialties. The abstract associated that tool with 20.4% less time in notes per appointment (10.3 to 8.2 minutes; P<.001), 9.3% greater same-day appointment closure (66.2% to 72.4%), and 30.0% less after-hours work time (50.6 to 35.4 minutes per workday). Penn Medicine’s Feb. 21, 2025 news release called the early results promising and said volunteer clinicians used the tool with patient permission.",
     "status": "published",
     "featured": false,
     "publishedAt": "2025-11-10T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
-      "AI"
+      "AI",
+      "product-watch"
     ],
     "orgs": [
       "org-penn"
@@ -327,7 +336,7 @@
     },
     "relatedEventIds": [],
     "relatedVoiceIds": [],
-    "impactSentence": "Some 1,200 is an Inquirer headcount for Penn’s later in-house tool; 20.4% less time in notes is a 46-clinician journal table from a 2024 DAX Copilot pilot, not that headcount.",
+    "impactSentence": "Penn’s in-house scribe reached roughly 1,200 ambulatory users; a separate 46-clinician DAX Copilot study reported 20.4% less note time per appointment.",
     "citations": [
       {
         "name": "Inquirer",
@@ -348,15 +357,16 @@
     "id": "news-temple-dragon-copilot",
     "slug": "temple-dragon-copilot-400",
     "kind": "news",
-    "title": "Temple Dragon Copilot user count and TUHS cash days",
-    "dek": "HealthTech 400 end users. Unaudited TUHS 116 DCOH at June 30, 2025. PBJ April 1 is Temple-sponsored advertorial; pilot and nearly-400 are split.",
-    "body": "HealthTech Magazine, August 2026, said Benjamin Slovis has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” HealthTech identified him as chief medical information officer at Philadelphia-based Temple Health. Temple’s June 8, 2026 newsroom note, which names him Chief Medical Information Officer for Temple University Hospital, said he described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews.\n\nThe Philadelphia Business Journal, April 1, 2026, is labeled Sponsored Content by Temple Health (Jon Feld, TBJ Content Studio). Advertorial, not independent reporting, not a filing, not the 116 DCOH line. That page names Dr. Benjamin Slovis as CMIO at Temple University Hospital and names Dragon Copilot as the tool.\n\nPilot data on that page: more than a 10 percent cut in after-hours documentation time. Later expansion on that page: nearly 400 physicians. Separately, Temple University Health System’s unaudited year-end investor report for June 30, 2025 showed 116 days cash on hand (124 at June 30, 2024). That line is not a Copilot, user, or after-hours metric. Penn 1,200 and JAMA 46 are not this count.",
+    "title": "Temple expands Dragon Copilot to 400 end users",
+    "dek": "Temple’s Dragon Copilot rollout reached 400 end users after pilot data showed more than a 10 percent reduction in after-hours documentation time.",
+    "body": "HealthTech Magazine, August 2026, said Benjamin Slovis has a Microsoft Dragon Copilot rollout to 400 end users and quoted him that the tool is “not yet a silver bullet.” HealthTech identified him as chief medical information officer at Philadelphia-based Temple Health. Temple’s June 8, 2026 newsroom note, which names him Chief Medical Information Officer for Temple University Hospital, said he described Dragon Ambient eXperience (DAX) Copilot to the Bucks County Herald: it records the visit and drafts a note the doctor reviews.\n\nA Temple-sponsored Philadelphia Business Journal article from April 1, 2026 names Slovis as CMIO at Temple University Hospital and reports that the pilot reduced after-hours documentation time by more than 10 percent. The same article said the rollout had expanded to nearly 400 physicians.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-01T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
-      "AI"
+      "AI",
+      "product-watch"
     ],
     "orgs": [
       "org-temple",
@@ -375,7 +385,7 @@
     },
     "relatedEventIds": [],
     "relatedVoiceIds": [],
-    "impactSentence": "Dragon Copilot is at 400 end users in the HealthTech clip; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI.",
+    "impactSentence": "Temple expanded Dragon Copilot to 400 end users after reporting a greater than 10 percent reduction in after-hours documentation during the pilot.",
     "citations": [
       {
         "name": "HealthTech",
@@ -388,10 +398,6 @@
       {
         "name": "PBJ April 1 (sponsored)",
         "url": "https://www.bizjournals.com/philadelphia/news/2026/04/01/temple-health-ai-patient-safety.html"
-      },
-      {
-        "name": "TUHS June 30 2025 DCOH PDF",
-        "url": "https://tuhsfinance.templehealth.org/CURRENT%20STATEMENTS/TUHS%20Investor%20Quarterly%20Report%20-%20June%2030,%202025.pdf"
       }
     ],
     "geo": "Philadelphia, PA"
@@ -400,16 +406,17 @@
     "id": "news-chop-orca-cds",
     "slug": "chop-orca-cds",
     "kind": "news",
-    "title": "CHOP ORCA repo for Epic downtime order sets",
-    "dek": "GitHub plus two Aug. 3 LinkedIn posts. Desai and Salmasian are posters, not authors.",
-    "body": "The GitHub repo Stephonomon/orca-cds names the project Offsite Repository of Clinical Assets. It is an offline, read-only viewer of Epic order sets and SmartSets for downtime. The repo says it holds no patient data and cannot place orders. Copyright 2026 Children’s Hospital of Philadelphia. Conceived by Bimal Desai; built by Stephon Proctor. License is academic/non-profit non-commercial, not MIT. Repo created 2026-07-22; last push 2026-08-03. https://github.com/Stephonomon/orca-cds\nBimal Desai posted the repo on LinkedIn Aug. 3, 2026. https://www.linkedin.com/posts/bimaldesai_github-stephonomonorca-cds-orca-cds-activity-7490172435145592832-UOaN\nHojjat Salmasian posted the same repo on LinkedIn Aug. 3, 2026. Those two are posters, not authors. https://www.linkedin.com/posts/salmasian_github-stephonomonorca-cds-orca-cds-activity-7490178627477770240-YnyG\nThe repo lists a paper: Proctor and Desai, Applied Clinical Informatics 2025;16(5):1401-1412, doi:10.1055/a-2620-6221.",
+    "title": "CHOP publishes ORCA repo",
+    "dek": "CHOP’s ORCA repository is an offline, read-only viewer for Epic order sets and SmartSets during downtime.",
+    "body": "Children’s Hospital of Philadelphia published ORCA, the Offsite Repository of Clinical Assets, as a public GitHub repository. The tool gives clinical teams an offline, read-only way to search Epic order sets and SmartSets during downtime.\n\nORCA is designed as a reference when the live EHR is unavailable. It contains no patient data and cannot place orders, preserving a clear safety boundary while giving clinicians access to standardized content during an outage.\n\nCHOP credits Bimal Desai with conceiving the project and Stephon Proctor with building it. Desai and Hojjat Salmasian shared the repository on Aug. 3, and the repository points readers to related work published in Applied Clinical Informatics in 2025.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-03T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
       "EHR",
-      "downtime"
+      "downtime",
+      "product-watch"
     ],
     "orgs": [
       "org-chop"
@@ -428,6 +435,7 @@
     "relatedEventIds": [],
     "relatedVoiceIds": [],
     "impactSentence": "ORCA is an offline read-only Epic order-set viewer for downtime; it does not hold patient data and cannot place orders.",
+    "contextSentence": "The public repository turns CHOP’s earlier Applied Clinical Informatics work on a read-only downtime viewer into an implementation other nonprofit health systems can examine.",
     "citations": [
       {
         "name": "GitHub",
@@ -449,8 +457,8 @@
     "slug": "tower-ai-tax",
     "kind": "news",
     "title": "Tower Health CIO on AI label, AI tax, and owned platforms",
-    "dek": "Two Becker’s clips. Tom Bartiromo, SVP and CIO. No invented dollars. Rama not used.",
-    "body": "Becker’s Hospital Review, July 23, 2026, quoted Tom Bartiromo, senior vice president and CIO of Tower Health in West Reading, Pa., on vendors putting an AI label on existing automation and charging an “AI tax.” He said the test is whether the product delivers a genuinely different outcome or is existing automation with an AI premium. He requires a proof-of-value engagement under real operating conditions, not vendor benchmarks. “A demonstration is not evidence,” he said. If the AI version does not produce a material, measurable improvement, he would keep the proven non-AI product at the original price. A second Becker’s clip, about July 30, 2026, quoted Bartiromo saying Tower is scrutinizing “AI-adjacent add-ons” more aggressively and that the emphasis is less about point solutions and more toward realizing more value from the core platforms it already owns. Vendors are to show measurable, system-level outcomes rather than feature-level promise. No dollar figure is in this brief. Rama is a reprint and is not a third cite.",
+    "dek": "Tower Health CIO Tom Bartiromo is requiring proof of measurable value before paying premiums for AI-labeled products.",
+    "body": "Becker’s Hospital Review, July 23, 2026, quoted Tom Bartiromo, senior vice president and CIO of Tower Health in West Reading, Pa., on vendors putting an AI label on existing automation and charging an “AI tax.” He said the test is whether the product delivers a genuinely different outcome or is existing automation with an AI premium. He requires a proof-of-value engagement under real operating conditions, not vendor benchmarks. “A demonstration is not evidence,” he said. If the AI version does not produce a material, measurable improvement, he would keep the proven non-AI product at the original price. A second Becker’s clip, about July 30, 2026, quoted Bartiromo saying Tower is scrutinizing “AI-adjacent add-ons” more aggressively and that the emphasis is less about point solutions and more toward realizing more value from the core platforms it already owns. Vendors are to show measurable, system-level outcomes rather than feature-level promise.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-23T16:00:00.000Z",
@@ -499,7 +507,8 @@
     "publishedAt": "2026-08-17T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
-      "contract"
+      "contract",
+      "finance"
     ],
     "orgs": [
       "org-temple-chestnut-hill"
@@ -532,13 +541,14 @@
     "kind": "news",
     "title": "HAP June 10, 2025 letter: enforce CMS-0057-F; 1.6 million Pennsylvanians in Medicare Advantage",
     "dek": "HAP, for 235 institutions, asked CMS to enforce the Interoperability and Prior Authorization Final Rule. The letter cites 54 percent of Pennsylvania Medicare beneficiaries, or 1.6 million people, in MA, and a 60 percent rise over ten years.",
-    "body": "On June 10, 2025, HAP told CMS Administrator Mehmet Oz it joins the AHA in asking CMS to enforce CMS-0057-F. Kate McCale, HAP vice president of compliance and regulatory affairs, signed for 235 institutions.\n\nHAP wrote that 54 percent of Medicare beneficiaries in Pennsylvania, or 1.6 million people, are in Medicare Advantage, and that MA enrollment in the state rose 60 percent over the last ten years. It said members face delays and extra documentation with MA organizations on authorization and payment.\n\nThe letter is not a local hospital PA-API go-live. No Delaware Valley system is named as having built or turned on the prior-authorization API.\n\nCMS's Jan. 17, 2024 fact sheet says impacted payers generally have until Jan. 1, 2027 for the FHIR APIs, including the Prior Authorization API. Decision clocks in that fact sheet generally begin Jan. 1, 2026: 72 hours expedited, seven calendar days standard. Drugs excluded. FFE QHP issuers excluded from the decision-timeframe piece.\n\nSame HAP letter, separate ask: TEAM would apply to 26 Pennsylvania hospitals.",
+    "body": "On June 10, 2025, HAP told CMS Administrator Mehmet Oz it joins the AHA in asking CMS to enforce CMS-0057-F. Kate McCale, HAP vice president of compliance and regulatory affairs, signed for 235 institutions.\n\nHAP wrote that 54 percent of Medicare beneficiaries in Pennsylvania, or 1.6 million people, are in Medicare Advantage, and that MA enrollment in the state rose 60 percent over the last ten years. It said members face delays and extra documentation with MA organizations on authorization and payment.\n\nCMS's Jan. 17, 2024 fact sheet gives impacted payers until Jan. 1, 2027 for the FHIR APIs, including the Prior Authorization API. Decision clocks generally begin Jan. 1, 2026: 72 hours for expedited requests and seven calendar days for standard requests. The API requirements exclude drugs, and the decision-timeframe provision excludes FFE QHP issuers.\n\nThe same HAP letter says the TEAM model would apply to 26 Pennsylvania hospitals.",
     "status": "published",
     "featured": false,
     "publishedAt": "2025-06-10T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
-      "policy"
+      "policy",
+      "interop"
     ],
     "orgs": [
       "org-hap"
@@ -693,14 +703,17 @@
     "id": "voice-mlh-cloud-analytics",
     "slug": "mlh-cloud-analytics-2026-08-17",
     "kind": "voice",
-    "title": "Main Line Health cloud analytics, official Aug. 17 LinkedIn post",
-    "dek": "Main Line Health’s official LinkedIn account posted Aug. 17, 2026 that leaders had waited 30 days for data and now get it near real time. The same post cites 2,017 subscriptions and 6.2 percent monthly access growth since August 2025. Those figures are the system’s post, not an audited filing.",
-    "body": "Main Line Health’s official LinkedIn account posted Aug. 17, 2026 that leaders had waited 30 days for data and now get it near real time. The same post cites 2,017 subscriptions and 6.2 percent monthly access growth since August 2025. Those figures are the system’s post, not an audited filing.",
+    "title": "Main Line Health cloud analytics",
+    "dek": "Main Line Health said its cloud analytics program moved leaders from a 30-day data wait to near-real-time reporting, reaching 2,017 subscriptions with 6.2 percent monthly access growth since August 2025.",
+    "body": "Main Line Health’s official LinkedIn account posted Aug. 17, 2026 that leaders had waited 30 days for data and now receive it near real time. The system reported 2,017 subscriptions and 6.2 percent monthly access growth since August 2025.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-17T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
-    "topics": [],
+    "topics": [
+      "operations",
+      "analytics"
+    ],
     "orgs": [
       "org-main-line"
     ],
@@ -731,14 +744,17 @@
     "id": "voice-temple-honor-roll-2026",
     "slug": "temple-honor-roll-2026",
     "kind": "voice",
-    "title": "Benjamin Slovis, Aug. 8, 2026: Temple Health on Epic’s 2026 Honor Roll",
-    "dek": "Benjamin Slovis, Temple Health CMIO, posted Aug. 8, 2026 that Temple Health is on Epic’s 2026 Honor Roll. Temple Health’s official account posted the same recognition Aug. 7. The July 16 Temple newsroom item names Cum Laude and a $418,000 Epic Good Maintenance grant. Epic’s label, not a Temple filing. The $418,000 is Epic’s program dollar, not a Temple operating metric.",
-    "body": "Benjamin Slovis, Temple Health CMIO, posted Aug. 8, 2026 that Temple Health is on Epic’s 2026 Honor Roll. Temple Health’s official account posted the same recognition Aug. 7. The July 16 Temple newsroom item names Cum Laude and a $418,000 Epic Good Maintenance grant. Epic’s label, not a Temple filing. The $418,000 is Epic’s program dollar, not a Temple operating metric.",
+    "title": "Benjamin Slovis: Temple Health on Epic’s 2026 Honor Roll",
+    "dek": "Benjamin Slovis posted Aug. 8 that Temple Health made Epic’s 2026 Honor Roll. Temple’s newsroom identified the designation as Cum Laude and reported a $418,000 Epic Good Maintenance grant.",
+    "body": "Benjamin Slovis, CMIO of Temple University Hospital, posted Aug. 8, 2026 that Temple Health is on Epic’s 2026 Honor Roll. Temple Health’s official account shared the recognition Aug. 7. The system’s July 16 newsroom item identified the designation as Cum Laude and reported a $418,000 Epic Good Maintenance grant.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-08T16:00:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
-    "topics": [],
+    "topics": [
+      "EHR",
+      "clinical"
+    ],
     "orgs": [
       "org-temple"
     ],
@@ -778,14 +794,17 @@
     "id": "voice-li-7483929651741081600",
     "slug": "inspira-johnson-epic-day-6-2026-07-30",
     "kind": "voice",
-    "title": "David Johnson, July 30, 2026: Inspira on day 6 of an Epic live",
-    "dek": "David Johnson, Inspira SVP CIIO, said in a July 30, 2026 LinkedIn comment that Inspira was on day 6 live on Epic. That comment is not a go-live date and not a user count.",
-    "body": "David Johnson, Inspira SVP CIIO, said in a July 30, 2026 LinkedIn comment that Inspira was on day 6 live on Epic. That comment is not a go-live date and not a user count.",
+    "title": "David Johnson: Inspira on day 6 of an Epic live",
+    "dek": "David Johnson, Inspira SVP and CIIO, said in a July 30 LinkedIn comment that the system was on day six of its Epic launch.",
+    "body": "David Johnson, Inspira SVP and CIIO, said in a July 30 LinkedIn comment that the system was on day six of its Epic launch.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-30T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "EHR",
+      "operations"
+    ],
     "orgs": [
       "org-inspira"
     ],
@@ -817,14 +836,17 @@
     "id": "voice-inspira-mansue-epic-2026-07-27",
     "slug": "inspira-mansue-epic-2026-07-27",
     "kind": "voice",
-    "title": "Amy B. Mansue, July 27, 2026: Inspira launches Epic",
-    "dek": "Inspira Health launched Epic on July 27, 2026. Patients get MyChart and Care Everywhere. From day one Inspira is deploying more than 50 digital tools from Epic’s AI suite and cognitive computing models. Warren E. Moore is quoted on the AI suite. Inspira estimates the system will save tens of thousands of hours annually; that figure is Inspira’s claim, not a filing.",
-    "body": "Inspira Health launched Epic on July 27, 2026. Patients get MyChart and Care Everywhere. From day one Inspira is deploying more than 50 digital tools from Epic’s AI suite and cognitive computing models. Warren E. Moore is quoted on the AI suite. Inspira estimates the system will save tens of thousands of hours annually; that figure is Inspira’s claim, not a filing.",
+    "title": "Amy B. Mansue: Inspira launches Epic",
+    "dek": "Inspira Health launched Epic on July 27, giving patients MyChart and Care Everywhere and deploying more than 50 tools from Epic’s AI suite from day one.",
+    "body": "Inspira Health launched Epic on July 27, 2026. Patients gained MyChart and Care Everywhere, and the system began deploying more than 50 digital tools from Epic’s AI suite and cognitive computing models. Inspira estimates the system will save tens of thousands of hours annually.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-27T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "EHR",
+      "leadership"
+    ],
     "orgs": [
       "org-inspira"
     ],
@@ -857,7 +879,7 @@
     "id": "voice-mlh-jimenez-sju-hawks-2026-07-22",
     "slug": "mlh-jimenez-sju-hawks-2026-07-22",
     "kind": "voice",
-    "title": "Ed Jimenez, July 22, 2026: MLH exclusive medical provider for SJU Hawks",
+    "title": "Ed Jimenez: MLH exclusive medical provider for SJU Hawks",
     "dek": "Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner in St. Joe’s history. Ed Jimenez is President and CEO of Main Line Health.",
     "body": "Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner in St. Joe’s history. Ed Jimenez is President and CEO of Main Line Health.",
     "status": "published",
@@ -897,7 +919,7 @@
     "id": "voice-penn-mahoney-muller-endowments-2026-08-04",
     "slug": "penn-mahoney-muller-endowments-2026-08-04",
     "kind": "voice",
-    "title": "Kevin B. Mahoney, Aug. 4, 2026: $7 million Muller administrative endowments",
+    "title": "Kevin B. Mahoney: $7 million Muller administrative endowments",
     "dek": "Ralph Muller and Beth Johnston Muller endowed three Penn Medicine administrative posts over the last year, totaling $7 million: HUP CEO, UPHS CFO, and CHIBE director. Kevin B. Mahoney is CEO of the University of Pennsylvania Health System.",
     "body": "Ralph Muller and Beth Johnston Muller endowed three Penn Medicine administrative posts over the last year, totaling $7 million: HUP CEO, UPHS CFO, and CHIBE director. Kevin B. Mahoney is CEO of the University of Pennsylvania Health System.",
     "status": "published",
@@ -937,7 +959,7 @@
     "id": "voice-mlh-jimenez-us-amateur-2026-08-05",
     "slug": "mlh-jimenez-us-amateur-2026-08-05",
     "kind": "voice",
-    "title": "Ed Jimenez, Aug. 5, 2026: MLH official healthcare provider for 2026 U.S. Amateur",
+    "title": "Ed Jimenez: MLH official healthcare provider for 2026 U.S. Amateur",
     "dek": "Main Line Health is the official healthcare provider for the 2026 U.S. Amateur Championship, Aug. 10–16 at Merion Golf Club and Philadelphia Country Club. Ed Jimenez is President and CEO of Main Line Health.",
     "body": "Main Line Health is the official healthcare provider for the 2026 U.S. Amateur Championship, Aug. 10–16 at Merion Golf Club and Philadelphia Country Club. Ed Jimenez is President and CEO of Main Line Health.",
     "status": "published",
@@ -977,7 +999,7 @@
     "id": "voice-jefferson-cacchione-skmc-allentown-2026-07-13",
     "slug": "jefferson-cacchione-skmc-allentown-2026-07-13",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, July 13, 2026: SKMC four-year Allentown campus",
+    "title": "Joseph G. Cacchione: SKMC four-year Allentown campus",
     "dek": "Thomas Jefferson University plans a four-year Sidney Kimmel Medical College campus in Allentown. The inaugural class is 45 students in July 2029. Joseph G. Cacchione is CEO of Jefferson.",
     "body": "Thomas Jefferson University plans a four-year Sidney Kimmel Medical College campus in Allentown. The inaugural class is 45 students in July 2029. Joseph G. Cacchione is CEO of Jefferson.",
     "status": "published",
@@ -1017,9 +1039,9 @@
     "id": "voice-jefferson-cacchione-community-impact-2026-07-14",
     "slug": "jefferson-cacchione-community-impact-2026-07-14",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, July 14, 2026: Jefferson Community Impact Report",
-    "dek": "Jefferson’s official July 14, 2026 Community Impact Report press names Joseph G. Cacchione, CEO, and he is quoted. The page prints more than $2.7 billion in community benefit and 10 million patient visits supported. Those figures are Jefferson’s, not audited.",
-    "body": "Jefferson’s official July 14, 2026 Community Impact Report press names Joseph G. Cacchione, CEO, and he is quoted. The page prints more than $2.7 billion in community benefit and 10 million patient visits supported. Those figures are Jefferson’s, not audited.",
+    "title": "Joseph G. Cacchione: Jefferson Community Impact Report",
+    "dek": "Jefferson’s July 14 Community Impact Report announcement cited more than $2.7 billion in community benefit and support for 10 million patient visits.",
+    "body": "Jefferson’s official July 14, 2026 Community Impact Report announcement quotes CEO Joseph G. Cacchione and reports more than $2.7 billion in community benefit supporting 10 million patient visits.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-14T16:00:00.000Z",
@@ -1045,7 +1067,7 @@
     "org": "Jefferson Health",
     "platform": "site",
     "originalUrl": "https://www.jeffersonhealth.org/about-us/news/2026/07/driven-to-improve-lives",
-    "impactSentence": "Jefferson’s Community Impact Report prints more than $2.7 billion in community benefit and 10 million patient visits; Jefferson’s figures, not audited.",
+    "impactSentence": "Jefferson’s Community Impact Report cited more than $2.7 billion in community benefit supporting 10 million patient visits.",
     "citations": [
       {
         "name": "Jefferson July 14 Community Impact Report",
@@ -1057,7 +1079,7 @@
     "id": "voice-jefferson-cacchione-de-med-school-2026-07-15",
     "slug": "jefferson-cacchione-de-med-school-2026-07-15",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, July 15, 2026: Delaware’s first medical school",
+    "title": "Joseph G. Cacchione: Delaware’s first medical school",
     "dek": "Jefferson plans Delaware’s first medical school, a four-year SKMC regional campus. The first class is 40 students in July 2028, pending LCME. The page prints a CMS/HHS award totaling $157,394,963.86. Joseph G. Cacchione is CEO of Jefferson.",
     "body": "Jefferson plans Delaware’s first medical school, a four-year SKMC regional campus. The first class is 40 students in July 2028, pending LCME. The page prints a CMS/HHS award totaling $157,394,963.86. Joseph G. Cacchione is CEO of Jefferson.",
     "status": "published",
@@ -1097,7 +1119,7 @@
     "id": "voice-jefferson-cacchione-board-2026-07-30",
     "slug": "jefferson-cacchione-board-2026-07-30",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, July 30, 2026: Wellenbach and Fung leaving TJU board",
+    "title": "Joseph G. Cacchione: Wellenbach and Fung leaving TJU board",
     "dek": "Patricia D. Wellenbach and John J. Fung are leaving the Thomas Jefferson University Board of Trustees. Joseph G. Cacchione is CEO of Jefferson.",
     "body": "Patricia D. Wellenbach and John J. Fung are leaving the Thomas Jefferson University Board of Trustees. Joseph G. Cacchione is CEO of Jefferson.",
     "status": "published",
@@ -1137,7 +1159,7 @@
     "id": "voice-jefferson-cacchione-lcs-link-2026-08-05",
     "slug": "jefferson-cacchione-lcs-link-2026-08-05",
     "kind": "voice",
-    "title": "Joseph G. Cacchione, Aug. 5, 2026: $1.75 million BMS Foundation LCS-LINK",
+    "title": "Joseph G. Cacchione: $1.75 million BMS Foundation LCS-LINK",
     "dek": "Jefferson Health received a $1.75 million Bristol Myers Squibb Foundation grant for LCS-LINK, July 2026 through June 2029, with Philadelphia FQHCs. Joseph G. Cacchione is CEO of Jefferson.",
     "body": "Jefferson Health received a $1.75 million Bristol Myers Squibb Foundation grant for LCS-LINK, July 2026 through June 2029, with Philadelphia FQHCs. Joseph G. Cacchione is CEO of Jefferson.",
     "status": "published",
@@ -1177,9 +1199,9 @@
     "id": "voice-chop-bell-breaking-through-2026-08-14",
     "slug": "chop-bell-breaking-through-2026-08-14",
     "kind": "voice",
-    "title": "Madeline Bell, Aug. 14, 2026: official CHOP OPEN final Breaking Through",
-    "dek": "The official CHOP OPEN final Breaking Through episode was released Aug. 14, 2026. Madeline Bell retires in October. Joe Mitchell is incoming Oct. 1, not the current CEO.",
-    "body": "The official CHOP OPEN final Breaking Through episode was released Aug. 14, 2026. Madeline Bell retires in October. Joe Mitchell is incoming Oct. 1, not the current CEO.",
+    "title": "Madeline Bell: CHOP OPEN final Breaking Through",
+    "dek": "CHOP released Madeline Bell’s final Breaking Through episode Aug. 14. Incoming CEO Joe Mitchell takes over Oct. 1, ahead of Bell’s October retirement.",
+    "body": "CHOP released Madeline Bell’s final Breaking Through episode Aug. 14, 2026. Incoming CEO Joe Mitchell takes over Oct. 1, ahead of Bell’s retirement later in October.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-08-14T16:00:00.000Z",
@@ -1205,7 +1227,7 @@
     "org": "Children's Hospital of Philadelphia",
     "platform": "site",
     "originalUrl": "https://open.chop.edu/courses/chops-next-chapter/",
-    "impactSentence": "Bell’s official CHOP OPEN final Breaking Through; she retires in October; Mitchell is incoming Oct. 1, not current CEO.",
+    "impactSentence": "CHOP released Bell’s final Breaking Through episode ahead of Mitchell’s Oct. 1 CEO transition and Bell’s October retirement.",
     "citations": [
       {
         "name": "CHOP OPEN Aug. 14 Breaking Through",
@@ -1221,7 +1243,7 @@
     "id": "voice-virtua-pullin-here-for-good-2026-07-16",
     "slug": "virtua-pullin-here-for-good-2026-07-16",
     "kind": "voice",
-    "title": "Dennis W. Pullin, July 16, 2026: Here for Good podcast episode 07.16.26",
+    "title": "Dennis W. Pullin: Here for Good podcast episode",
     "dek": "Dennis W. Pullin hosts Virtua’s Here for Good podcast. The 07.16.26 episode is on the official Virtua page.",
     "body": "Dennis W. Pullin hosts Virtua’s Here for Good podcast. The 07.16.26 episode is on the official Virtua page.",
     "status": "published",
@@ -1261,7 +1283,7 @@
     "id": "voice-li-7487503653004775426",
     "slug": "virtua-pullin-lessons-in-leadership-2026-07-27",
     "kind": "voice",
-    "title": "Dennis Pullin, July 27, 2026: Lessons in Leadership, Champions of Humanity, Eat Well",
+    "title": "Dennis Pullin: Lessons in Leadership, Champions of Humanity, Eat Well",
     "dek": "Virtua’s official LinkedIn posted July 27, 2026 that President and CEO Dennis Pullin spoke on Lessons in Leadership, Virtua’s Champions of Humanity framework, and Eat Well.",
     "body": "Virtua’s official LinkedIn posted July 27, 2026 that President and CEO Dennis Pullin spoke on Lessons in Leadership, Virtua’s Champions of Humanity framework, and Eat Well.",
     "status": "published",
@@ -1301,14 +1323,17 @@
     "id": "voice-li-7486154836821037056",
     "slug": "temple-slovis-tuh-epic-apps-2026-07-23",
     "kind": "voice",
-    "title": "Benjamin Slovis, July 23, 2026: TUH hiring Mgr Integrated Healthcare Apps",
+    "title": "Benjamin Slovis: TUH hiring Mgr Integrated Healthcare Apps",
     "dek": "On July 23, 2026 Benjamin Slovis’s official handle reshared that Temple University Hospital is hiring a Manager of Integrated Healthcare Apps for Epic Orders/ASAP, hybrid, in Philadelphia. Slovis is Temple Health CMIO at Temple University Hospital.",
     "body": "On July 23, 2026 Benjamin Slovis’s official handle reshared that Temple University Hospital is hiring a Manager of Integrated Healthcare Apps for Epic Orders/ASAP, hybrid, in Philadelphia. Slovis is Temple Health CMIO at Temple University Hospital.",
     "status": "published",
     "featured": false,
     "publishedAt": "2026-07-23T16:00:00.000Z",
     "updatedAt": "2026-08-24T16:00:00.000Z",
-    "topics": [],
+    "topics": [
+      "EHR",
+      "clinical"
+    ],
     "orgs": [
       "org-temple"
     ],
@@ -1341,7 +1366,7 @@
     "id": "voice-li-7490482263512481792",
     "slug": "inspira-mansue-neuro-icu-2026-08-04",
     "kind": "voice",
-    "title": "Amy B. Mansue, Aug. 4, 2026: Mullica Hill Neuro ICU, Cooper-Inspira neuroscience tour",
+    "title": "Amy B. Mansue: Mullica Hill Neuro ICU, Cooper-Inspira neuroscience tour",
     "dek": "Inspira’s official LinkedIn posted Aug. 4, 2026 on the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour, including a future EMU. Amy B. Mansue is CEO of Inspira Health.",
     "body": "Inspira’s official LinkedIn posted Aug. 4, 2026 on the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour, including a future EMU. Amy B. Mansue is CEO of Inspira Health.",
     "status": "published",
@@ -1522,12 +1547,15 @@
   {
     "id": "evt-dvhimss-23007",
     "slug": "njdvhimss-annual-golf-outing",
+    "previousSlugs": [
+      "njdvhimss-annual-golf-outing-2026"
+    ],
     "kind": "event",
     "title": "NJDVHIMSS Annual Golf Outing",
     "dek": "Official DVHIMSS chapter calendar.",
     "body": "Kickoff to the fall conference.",
     "status": "published",
-    "publishedAt": "2026-10-13T13:30:00.000Z",
+    "publishedAt": "2026-08-22T20:14:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
       "chapter",
@@ -1557,18 +1585,26 @@
     "timezone": "America/New_York",
     "hostOrg": "DVHIMSS",
     "registrationUrl": "https://web.cvent.com/event/30573954-490f-49b3-8395-3757f872c442/summary",
+    "format": "in-person",
+    "whyAttend": "The official chapter golf outing is the kickoff to the fall conference.",
+    "whoYoullMeet": [
+      "NJDVHIMSS members"
+    ],
     "partner": "dvhimss",
     "autoPublish": true
   },
   {
     "id": "evt-dvhimss-22958",
     "slug": "njdvhimss-fall-conference-october-13th-15th",
+    "previousSlugs": [
+      "njdvhimss-fall-conference-2026"
+    ],
     "kind": "event",
     "title": "NJDVHIMSS Fall Conference – October 13th – 15th",
     "dek": "Official DVHIMSS chapter calendar.",
     "body": "The 19th annual NJ/DVHIMSS Fall Conference at Hard Rock Hotel & Casino, Atlantic City.",
     "status": "published",
-    "publishedAt": "2026-10-13T20:30:00.000Z",
+    "publishedAt": "2026-08-22T20:14:00.000Z",
     "updatedAt": "2026-08-22T20:14:00.000Z",
     "topics": [
       "chapter",
@@ -1600,12 +1636,17 @@
     "city": "Atlantic City",
     "hostOrg": "DVHIMSS",
     "registrationUrl": "https://web.cvent.com/event/01ce5c42-9d59-4fea-a0f5-ae4fa59f9e4e/summary",
+    "format": "in-person",
+    "whyAttend": "A three-day NJ/DVHIMSS regional chapter conference in Atlantic City.",
+    "whoYoullMeet": [
+      "NJDVHIMSS members"
+    ],
     "partner": "dvhimss",
     "autoPublish": true
   },
   {
     "dek": "",
-    "status": "published",
+    "status": "unpublished",
     "featured": false,
     "publishedAt": "2026-08-23T16:00:00.000Z",
     "updatedAt": "2026-08-23T23:10:00.000Z",
@@ -1752,6 +1793,8 @@
     "venue": "Hershey Lodge",
     "geo": "Hershey, PA",
     "hostOrg": "HAP",
+    "format": "in-person",
+    "whyAttend": "Two days focused on patient safety, quality, and equity for Pennsylvania hospitals.",
     "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B0C23A820-246B-F111-A825-7C1E524A88B5%7D"
   },
   {
@@ -1819,7 +1862,7 @@
     },
     "citations": [
       {
-        "name": "Builds Bio+ Philadelphia",
+        "name": "Builds Bio+ Philly symposium",
         "url": "https://buildsbio.org/builds-bio-philly-5th-annual-symposium-for-life-science-innovation-and-development/"
       }
     ],
@@ -1827,7 +1870,10 @@
     "endsAt": "2026-09-15T19:30:00.000Z",
     "venue": "Quorum @ Science Center, 3675 Market St #200",
     "geo": "Philadelphia, PA",
-    "hostOrg": "Builds Bio+"
+    "hostOrg": "Builds Bio+",
+    "registrationUrl": "https://buildsbio.org/builds-bio-philly-5th-annual-symposium-for-life-science-innovation-and-development/",
+    "format": "in-person",
+    "whyAttend": "Philadelphia life-science and real-estate leaders at the University City Science Center Quorum, with registration on the official symposium page."
   },
   {
     "dek": "",
@@ -1864,6 +1910,11 @@
     "endsAt": "2026-09-02T23:00:00.000Z",
     "geo": "Philadelphia, PA",
     "hostOrg": "ACHE of Greater Philadelphia",
+    "format": "in-person",
+    "whyAttend": "A two-hour Greater Philadelphia healthcare leadership networking event.",
+    "whoYoullMeet": [
+      "ACHE of Greater Philadelphia members"
+    ],
     "registrationUrl": "https://www.eventbrite.com/e/connect-network-play-tickets-1993874297698?aff=oddtdtcreator"
   },
   {
@@ -1901,6 +1952,8 @@
     "endsAt": "2026-08-27T23:30:00.000Z",
     "geo": "New Jersey",
     "hostOrg": "ACHE-NJ",
+    "format": "virtual",
+    "whyAttend": "A 90-minute virtual ACHE-NJ program focused on behavioral health.",
     "registrationUrl": "https://www.eventbrite.com/e/virtual-behavioral-health-tickets-1997988424161"
   },
   {
@@ -2013,6 +2066,11 @@
     "venue": "Virtual",
     "geo": "New Jersey",
     "hostOrg": "BioNJ",
+    "format": "virtual",
+    "whyAttend": "A one-hour virtual members-only gathering for the New Jersey life-sciences community.",
+    "whoYoullMeet": [
+      "BioNJ members"
+    ],
     "registrationUrl": "https://members.bionj.org/NC__Event?id=a0lPe00000jw1LBIAY"
   },
   {
@@ -2198,5 +2256,319 @@
       }
     ],
     "geo": "Marlton, NJ"
+  },
+  {
+    "featured": false,
+    "updatedAt": "2026-08-26T16:00:00.000Z",
+    "authors": [
+      {
+        "name": "Alice Vuong",
+        "org": "org-hsx"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "hsx",
+      "url": "https://healthshareexchange.org/news/healthshare-exchange-achieves-hitrust-r2-recertification/"
+    },
+    "originalUrl": "https://healthshareexchange.org/news/healthshare-exchange-achieves-hitrust-r2-recertification/",
+    "citations": [
+      {
+        "name": "HSX newsroom June 2, 2026",
+        "url": "https://healthshareexchange.org/news/healthshare-exchange-achieves-hitrust-r2-recertification/"
+      }
+    ],
+    "status": "published",
+    "kind": "voice",
+    "id": "voice-hsx-vuong-hitrust-r2-2026-06-02",
+    "slug": "hsx-vuong-hitrust-r2-2026-06-02",
+    "title": "Alice Vuong: HSX HITRUST r2 recertification",
+    "dek": "HealthShare Exchange recertified HITRUST r2 for its hosting systems and data integration tools, with evidence against 536 controls. HSX has held HITRUST certification since 2017.",
+    "body": "On June 2, 2026, HealthShare Exchange said its hosting systems and data integration tools renewed HITRUST r2 certification. The recertification cited evidence against 536 controls. HSX has maintained HITRUST-certified status since 2017. Alice Vuong, vice president and chief information security officer, said the certification is a continuous organizational effort to safeguard health data moving across Pennsylvania, New Jersey, and Delaware.",
+    "publishedAt": "2026-06-02T16:00:00.000Z",
+    "topics": [
+      "security",
+      "interop"
+    ],
+    "orgs": [
+      "org-hsx"
+    ],
+    "region": "regional",
+    "person": "Alice Vuong",
+    "role": "VP and CISO",
+    "org": "HealthShare Exchange",
+    "platform": "site",
+    "impactSentence": "HSX recertified HITRUST r2 on June 2, 2026 for hosting and data-integration systems, citing 536 controls and certification held since 2017."
+  },
+  {
+    "featured": false,
+    "updatedAt": "2026-08-26T16:00:00.000Z",
+    "authors": [
+      {
+        "name": "Martin Lupinetti",
+        "org": "org-hsx"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "hsx",
+      "url": "https://healthshareexchange.org/news/healthshare-exchange-president-ceo-martin-lupinetti-receiveshealth-care-leadership-award-from-philadelphia-business-journal/"
+    },
+    "originalUrl": "https://healthshareexchange.org/news/healthshare-exchange-president-ceo-martin-lupinetti-receiveshealth-care-leadership-award-from-philadelphia-business-journal/",
+    "citations": [
+      {
+        "name": "HSX newsroom June 22, 2026",
+        "url": "https://healthshareexchange.org/news/healthshare-exchange-president-ceo-martin-lupinetti-receiveshealth-care-leadership-award-from-philadelphia-business-journal/"
+      }
+    ],
+    "status": "draft",
+    "kind": "voice",
+    "id": "voice-hsx-lupinetti-pbj-award-2026-06-22",
+    "slug": "hsx-lupinetti-pbj-award-2026-06-22",
+    "title": "Martin Lupinetti: PBJ board-service recognition",
+    "dek": "HSX’s president and CEO tied a Philadelphia Business Journal Health Care Leadership Award to real-time data access for payers, providers, and care teams in Pennsylvania, New Jersey, and Delaware.",
+    "body": "On June 22, 2026, HealthShare Exchange said President and CEO Martin Lupinetti was named an Outstanding Board Member in the Philadelphia Business Journal’s inaugural Health Care Leadership Awards. In the first-party announcement, Lupinetti said the recognition reflects HSX work offering innovative healthcare solutions and real-time data access that help payers, providers, and care teams collaborate across Pennsylvania, New Jersey, and Delaware.",
+    "publishedAt": "2026-06-22T16:00:00.000Z",
+    "topics": [
+      "interop",
+      "leadership"
+    ],
+    "orgs": [
+      "org-hsx"
+    ],
+    "region": "regional",
+    "person": "Martin Lupinetti",
+    "role": "President and CEO",
+    "org": "HealthShare Exchange",
+    "platform": "site",
+    "impactSentence": "HSX’s CEO said a June 22, 2026 regional leadership award reflects HSX real-time data access for payers, providers, and care teams in PA, NJ, and DE."
+  },
+  {
+    "featured": false,
+    "updatedAt": "2026-08-26T16:00:00.000Z",
+    "authors": [
+      {
+        "name": "Anna Schoenbaum",
+        "org": "org-penn"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "healthtech",
+      "url": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine"
+    },
+    "originalUrl": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine",
+    "citations": [
+      {
+        "name": "HealthTech Magazine Aug. 18, 2026",
+        "url": "https://healthtechmagazine.net/article/2026/08/clinician-perspective-ambient-ai-returning-joy-back-medicine"
+      }
+    ],
+    "status": "published",
+    "kind": "voice",
+    "id": "voice-penn-schoenbaum-ambient-ai-2026-08-18",
+    "slug": "penn-schoenbaum-ambient-ai-2026-08-18",
+    "title": "Anna Schoenbaum: Penn ambient documentation scale",
+    "dek": "Penn Medicine’s chief digital applications officer said ambient documentation covers about 1,300 ambulatory providers and over 600 nurses, with a 20% documentation-time reduction and decreased after-hours documentation for 79% of users.",
+    "body": "In an Aug. 18, 2026 HealthTech Magazine interview, Anna Schoenbaum, vice president and chief digital applications officer at Penn Medicine, said Penn’s ambient documentation covers approximately 1,300 ambulatory providers and over 600 nurses. She reported a 20% reduction in documentation time and decreased after-hours documentation for 79% of users, with full-scale deployment targeted for fall 2026.",
+    "publishedAt": "2026-08-18T16:00:00.000Z",
+    "topics": [
+      "AI",
+      "workforce"
+    ],
+    "orgs": [
+      "org-penn"
+    ],
+    "region": "PA",
+    "person": "Anna Schoenbaum",
+    "role": "VP and Chief Digital Applications Officer",
+    "org": "Penn Medicine",
+    "platform": "site",
+    "impactSentence": "Schoenbaum said Penn ambient documentation covers about 1,300 ambulatory providers and 600+ nurses, with 20% less note time and less after-hours documentation for 79% of users."
+  },
+  {
+    "featured": false,
+    "updatedAt": "2026-08-26T16:00:00.000Z",
+    "authors": [
+      {
+        "name": "Anahi Santiago",
+        "org": "org-christianacare"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "ismg",
+      "url": "https://www.bankinfosecurity.com/interviews/how-cloud-security-risks-grow-home-based-care-i-5552"
+    },
+    "originalUrl": "https://www.bankinfosecurity.com/interviews/how-cloud-security-risks-grow-home-based-care-i-5552",
+    "citations": [
+      {
+        "name": "ISMG / BankInfoSecurity June 29, 2026",
+        "url": "https://www.bankinfosecurity.com/interviews/how-cloud-security-risks-grow-home-based-care-i-5552"
+      }
+    ],
+    "status": "published",
+    "kind": "voice",
+    "id": "voice-christianacare-santiago-home-care-cloud-2026-06-29",
+    "slug": "christianacare-santiago-home-care-cloud-2026-06-29",
+    "title": "Anahi Santiago: home-based care expands cloud security",
+    "dek": "ChristianaCare’s CISO said hospital-at-home and home-based care move more patient data into cloud environments, expanding what security teams have to protect.",
+    "body": "In a June 29, 2026 Information Security Media Group interview, Anahi Santiago, CISO at ChristianaCare, said hospital-at-home and home-based care require patient data to leave hospital walls and move into cloud environments. She said that shift expands the volume of sensitive information her team must protect across public, private, and software-as-a-service platforms.",
+    "publishedAt": "2026-06-29T16:00:00.000Z",
+    "topics": [
+      "security",
+      "operations"
+    ],
+    "orgs": [
+      "org-christianacare"
+    ],
+    "region": "DE",
+    "person": "Anahi Santiago",
+    "role": "CISO",
+    "org": "ChristianaCare",
+    "platform": "site",
+    "impactSentence": "ChristianaCare’s CISO said home-based care moves more patient data into the cloud, expanding the security surface her team has to protect."
+  },
+  {
+    "dek": "All-day Greater Philadelphia healthcare leadership program at Penn’s Smilow Center, with panels on physician executives, data and analytics, ambulatory shift, and legislation.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-26T16:00:00.000Z",
+    "updatedAt": "2026-08-26T16:00:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "chapter",
+    "orgs": [
+      "org-penn"
+    ],
+    "id": "evt-ache-greater-philly-fall-symposium-2026-09-14",
+    "slug": "ache-greater-philly-fall-symposium-2026-09-14",
+    "kind": "event",
+    "title": "ACHE of Greater Philadelphia 2026 Fall Symposium",
+    "body": "ACHE of Greater Philadelphia’s 2026 Fall Symposium is Monday, Sept. 14 at the Smilow Center for Translational Research, 3400 Civic Center Boulevard, Philadelphia. Breakfast and registration open at 7:00 a.m.; the program runs 8:00 a.m. to 4:30 p.m. Registration closes Sept. 6. Programming is sponsored by the Clinical Practices of the University of Pennsylvania and Aya Healthcare. Official panels cover physician leadership, data and advanced analytics, the inpatient-to-ambulatory shift, and legislative issues facing healthcare leaders.",
+    "topics": [
+      "ache",
+      "leadership"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "ache-greater-philly",
+      "url": "https://greaterphilly.ache.org/events/2026-fall-symposium/"
+    },
+    "citations": [
+      {
+        "name": "ACHE of Greater Philadelphia Fall Symposium",
+        "url": "https://greaterphilly.ache.org/events/2026-fall-symposium/"
+      }
+    ],
+    "startsAt": "2026-09-14T11:00:00.000Z",
+    "endsAt": "2026-09-14T20:30:00.000Z",
+    "venue": "Smilow Center for Translational Research",
+    "city": "Philadelphia",
+    "geo": "Philadelphia, PA",
+    "hostOrg": "ACHE of Greater Philadelphia",
+    "format": "in-person",
+    "whyAttend": "Physician leadership, analytics, ambulatory-shift finance, and legislative panels in University City, with registration closing Sept. 6.",
+    "whoYoullMeet": [
+      "ACHE of Greater Philadelphia members",
+      "physician executives"
+    ],
+    "registrationUrl": "https://www.eventbrite.com/e/2026-fall-symposium-tickets-1995143903122",
+    "registrationDeadline": "2026-09-07T03:59:59.000Z"
+  },
+  {
+    "dek": "Penn Nursing’s Kathryn Bowles reports I-TRANSFER findings on sepsis documentation and information transfer to home health and outpatient care.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-26T16:00:00.000Z",
+    "updatedAt": "2026-08-26T16:00:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [
+      "org-hap",
+      "org-penn"
+    ],
+    "id": "evt-hap-i-transfer-sepsis-webinar-2026-09-18",
+    "slug": "hap-i-transfer-sepsis-webinar-2026-09-18",
+    "kind": "event",
+    "title": "HAP webinar: I-TRANSFER sepsis documentation and post-acute handoff",
+    "body": "HAP’s Sept. 18, 2026 10:00–11:00 a.m. ET webinar covers the I-TRANSFER implementation-science study on identifying sepsis survivors, care transitions to home health and outpatient care, and documentation in the first week after discharge. Faculty is Dr. Kathryn H. Bowles, professor at the University of Pennsylvania School of Nursing. HAP says the session is complimentary for general members and requires registration.",
+    "topics": [
+      "interop",
+      "clinical"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "hap",
+      "url": "https://www.haponline.org/Event-Detail/id/1469"
+    },
+    "citations": [
+      {
+        "name": "HAP Event Detail 1469",
+        "url": "https://www.haponline.org/Event-Detail/id/1469"
+      }
+    ],
+    "startsAt": "2026-09-18T14:00:00.000Z",
+    "endsAt": "2026-09-18T15:00:00.000Z",
+    "geo": "Online",
+    "hostOrg": "HAP",
+    "format": "virtual",
+    "whyAttend": "Penn Nursing faculty on sepsis documentation and post-acute information transfer, with a required HAP registration path.",
+    "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B4E5F82B3-B1A0-F111-B8DC-7C1E521C50B5%7D"
+  },
+  {
+    "dek": "HAP’s emergency-management day includes Penn Medicine EHR-downtime informatics, Tower Health security analytics, and a Lower Bucks Hospital surge case.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-26T16:00:00.000Z",
+    "updatedAt": "2026-08-26T16:00:00.000Z",
+    "authors": [],
+    "timezone": "America/New_York",
+    "autoPublish": false,
+    "partner": "other",
+    "orgs": [
+      "org-hap",
+      "org-penn",
+      "org-tower"
+    ],
+    "id": "evt-hap-emergency-management-2026-09-16",
+    "slug": "hap-emergency-management-2026-09-16",
+    "kind": "event",
+    "title": "HAP Emergency Management Conference: Security. Continuity. Resilience.",
+    "body": "HAP’s Sept. 16, 2026 Emergency Management Conference is at the Holiday Inn Harrisburg Hershey in Grantville. Registration opens at 8:00 a.m., the program begins at 9:00 a.m., and the agenda adjourns at 3:45 p.m. Although the venue is outside the Valley, official sessions directly feature Penn Medicine Chester County Hospital and Penn Medicine associate CHIO Joy Iocca on standardized EHR-downtime continuity; Tower Health system director of security Brian Swearingen on AI and analytics for hospital security; and Lower Bucks Hospital leaders on the Bristol Township nursing-home explosion response.",
+    "topics": [
+      "cyber",
+      "operations"
+    ],
+    "region": "PA",
+    "source": {
+      "kind": "editorial",
+      "origin": "hap",
+      "url": "https://www.haponline.org/Event-Detail/id/1463"
+    },
+    "citations": [
+      {
+        "name": "HAP Event Detail 1463",
+        "url": "https://www.haponline.org/Event-Detail/id/1463"
+      }
+    ],
+    "startsAt": "2026-09-16T12:00:00.000Z",
+    "endsAt": "2026-09-16T20:00:00.000Z",
+    "venue": "Holiday Inn Harrisburg Hershey",
+    "city": "Grantville",
+    "geo": "Grantville, PA",
+    "hostOrg": "HAP",
+    "format": "in-person",
+    "whyAttend": "Penn Medicine downtime informatics, Tower Health security analytics, and a Lower Bucks Hospital surge case on the same HAP program.",
+    "healthSystemRelevance": "A statewide HAP program outside the Valley, included because Penn Medicine, Tower Health, and Lower Bucks Hospital lead sessions with direct regional operating relevance.",
+    "whoYoullMeet": [
+      "hospital emergency-management, security, and informatics leaders"
+    ],
+    "registrationUrl": "https://my.haponline.org/Events/Calendar-Of-Events/Meeting-Home-Page?meetingid=%7B5308C096-B674-F111-AB0E-7C1E524A88B5%7D"
   }
 ]

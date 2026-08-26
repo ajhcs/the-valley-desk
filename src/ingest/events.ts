@@ -1,8 +1,11 @@
 import type { ContentItem, EventItem } from "../content/schema";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
+import type { IngestSourceResult, SourceRunNote } from "./source-health";
 
 const UA = "TheValleyDesk/0.1 (+https://github.com/ajhcs/the-valley-desk)";
+const SOURCE_TIMEOUT_MS = 12_000;
+const REGISTRATION_HOSTS = ["cvent.me", "web.cvent.com", "dvhimss.org", "njhimss.org", "njdvhimssevent.com"];
 
 function decode(value: string) {
   return value
@@ -32,10 +35,29 @@ function verifiedRegistrationUrl(value: unknown) {
   if (typeof value !== "string") return undefined;
   try {
     const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:" ? url.href : undefined;
+    const host = url.hostname.toLowerCase();
+    return url.protocol === "https:" && REGISTRATION_HOSTS.some((domain) => host === domain || host.endsWith(`.${domain}`))
+      ? url.href
+      : undefined;
   } catch {
     return undefined;
   }
+}
+
+function verifiedNjdvhimssRegistrationUrl(html: string) {
+  const urls = [...html.matchAll(/href=["']([^"']+)["']/gi)]
+    .map((match) => decode(match[1]))
+    .map((value) => verifiedRegistrationUrl(value))
+    .filter((value): value is string => Boolean(value));
+  return urls.find((value) => {
+    const host = new URL(value).hostname.toLowerCase();
+    return host === "cvent.me" || host === "web.cvent.com";
+  });
+}
+
+function isRecognizedNjdvhimssPage(html: string) {
+  return /<title[^>]*>\s*NJDVHIMSS\s*<\/title>/i.test(html)
+    && /<link[^>]+rel=["']canonical["'][^>]+href=["']https:\/\/njdvhimssevent\.com\/?["']/i.test(html);
 }
 
 function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "autoPublish" | "featured"> & {
@@ -52,13 +74,14 @@ function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "auto
   };
 }
 
-export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetchedAt = new Date().toISOString()) {
-  const url = "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=20";
-  const res = await fetchImpl(url, { headers: { "user-agent": UA } });
-  if (!res.ok) return [] as EventItem[];
+async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: string) {
+  const url = "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100";
+  const res = await fetchImpl(url, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS) });
+  if (!res.ok) throw new Error(`DVHIMSS calendar returned HTTP ${res.status}`);
   const data = (await res.json()) as { events?: Record<string, unknown>[] };
+  if (!Array.isArray(data.events)) throw new Error("DVHIMSS calendar response omitted events");
   const rows: EventItem[] = [];
-  for (const e of data.events ?? []) {
+  for (const e of data.events) {
     const title = decode(String(e.title ?? ""));
     const page = String(e.url ?? "https://dvhimss.org/events-calendar");
     const start = toIso(String(e.utc_start_date ?? e.start_date ?? ""));
@@ -74,7 +97,7 @@ export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetc
         title,
         dek: "Official DVHIMSS chapter calendar.",
         body: "Ingested from the DVHIMSS Events Calendar REST feed.",
-        publishedAt: start,
+        publishedAt: fetchedAt,
         updatedAt: fetchedAt,
         topics: ["chapter", "events"],
         orgs: ["org-dvhimss"],
@@ -101,16 +124,20 @@ export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetc
       }),
     );
   }
-  return rows;
+  return { items: rows, complete: data.events.length < 100, url };
 }
 
-export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt = new Date().toISOString()) {
+export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetchedAt = new Date().toISOString()) {
+  return (await fetchDvhimssCalendarBatch(fetchImpl, fetchedAt)).items;
+}
+
+async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) {
   const urls = ["https://njdvhimssevent.com/", "https://njdvhimssevent.com"];
   let html = "";
   let used = urls[0];
   for (const url of urls) {
     try {
-      const res = await fetchImpl(url, { headers: { "user-agent": UA } });
+      const res = await fetchImpl(url, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(SOURCE_TIMEOUT_MS) });
       if (res.ok) {
         html = await res.text();
         used = url;
@@ -120,8 +147,9 @@ export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt
       /* try next */
     }
   }
-  if (!html) return [] as EventItem[];
+  if (!html) throw new Error("NJDVHIMSS page was unavailable");
   const rows: EventItem[] = [];
+  const registrationUrl = verifiedNjdvhimssRegistrationUrl(html);
   const conference = /October\s+13,\s+2026[\s\S]{0,80}October\s+15,\s+2026|Tuesday,\s+October\s+13,\s+2026/i.test(html);
   if (conference) {
     rows.push(
@@ -129,15 +157,15 @@ export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt
         id: "evt-njdvhimss-fall-2026",
         slug: "njdvhimss-fall-conference-2026",
         title: "NJ/DVHIMSS Fall Conference 2026",
-        dek: "Scraped from njdvhimssevent.com \u2014 review before publish.",
-        body: "Best-effort scrape of the NJ/DVHIMSS conference page.",
+        dek: "The joint New Jersey and Delaware Valley HIMSS fall conference brings regional health-IT leaders together in Atlantic City.",
+        body: "A three-day regional health-IT conference hosted by NJ/DVHIMSS at the Hard Rock Hotel & Casino in Atlantic City.",
         updatedAt: fetchedAt,
         topics: ["chapter", "conference"],
         orgs: ["org-njhimss", "org-dvhimss"],
         region: "NJ",
         source: {
           kind: "ingest",
-          origin: "njdvhimssevent",
+          origin: "njhimss-events",
           url: used,
           fetchedAt,
           externalId: "njdvhimss-fall-2026",
@@ -150,10 +178,10 @@ export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt
         venue: "Hard Rock Hotel & Casino",
         city: "Atlantic City",
         hostOrg: "NJDVHIMSS",
-        registrationUrl: used,
-        partner: "chapter",
-        autoPublish: false,
-        status: "review",
+        registrationUrl,
+        partner: "njhimss",
+        autoPublish: Boolean(registrationUrl),
+        status: registrationUrl ? "published" : "review",
       }),
     );
   }
@@ -163,15 +191,15 @@ export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt
         id: "evt-njdvhimss-golf-2026",
         slug: "njdvhimss-annual-golf-outing-2026",
         title: "NJDVHIMSS Annual Golf Outing",
-        dek: "Scraped from njdvhimssevent.com \u2014 review before publish.",
-        body: "Best-effort scrape of the golf outing listed on the conference site.",
+        dek: "The NJ/DVHIMSS annual golf outing opens the chapter’s fall conference program in Atlantic City.",
+        body: "A chapter networking event held before the NJ/DVHIMSS fall conference in Atlantic City.",
         updatedAt: fetchedAt,
         topics: ["chapter", "networking"],
         orgs: ["org-njhimss"],
         region: "NJ",
         source: {
           kind: "ingest",
-          origin: "njdvhimssevent",
+          origin: "njhimss-events",
           url: used,
           fetchedAt,
           externalId: "njdvhimss-golf-2026",
@@ -183,26 +211,70 @@ export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt
         timezone: "America/New_York",
         city: "Atlantic City",
         hostOrg: "NJDVHIMSS",
-        registrationUrl: used,
-        partner: "chapter",
-        autoPublish: false,
-        status: "review",
+        registrationUrl,
+        partner: "njhimss",
+        autoPublish: Boolean(registrationUrl),
+        status: registrationUrl ? "published" : "review",
       }),
     );
   }
-  return rows;
+  return { items: rows, complete: isRecognizedNjdvhimssPage(html), url: used };
 }
 
-export async function ingestEvents(now = new Date(), fetchImpl: typeof fetch = fetch): Promise<ContentItem[]> {
+export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt = new Date().toISOString()) {
+  return (await scrapeNjdvhimssBatch(fetchImpl, fetchedAt)).items;
+}
+
+export async function ingestEventsWithHealth(
+  now = new Date(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<IngestSourceResult<ContentItem>> {
   const fetchedAt = now.toISOString();
-  const [official, scraped] = await Promise.all([
-    fetchDvhimssCalendar(fetchImpl, fetchedAt),
-    scrapeNjdvhimss(fetchImpl, fetchedAt),
+  const [officialResult, scrapedResult] = await Promise.allSettled([
+    fetchDvhimssCalendarBatch(fetchImpl, fetchedAt),
+    scrapeNjdvhimssBatch(fetchImpl, fetchedAt),
   ]);
+  const official = officialResult.status === "fulfilled" ? officialResult.value.items : [];
+  const scraped = scrapedResult.status === "fulfilled" ? scrapedResult.value.items : [];
+  const sourceNote = (
+    id: string,
+    origin: string,
+    url: string,
+    result: PromiseSettledResult<{ items: EventItem[]; complete: boolean; url: string }>,
+  ): SourceRunNote => result.status === "fulfilled" ? {
+    id,
+    origin,
+    type: "events",
+    state: "success",
+    checkedAt: fetchedAt,
+    itemCount: result.value.items.length,
+    complete: result.value.complete,
+    url: result.value.url,
+  } : {
+    id,
+    origin,
+    type: "events",
+    state: "error",
+    checkedAt: fetchedAt,
+    itemCount: 0,
+    complete: false,
+    url,
+    error: result.reason instanceof Error ? result.reason.message : String(result.reason),
+  };
   const batch: IngestBatch = {
     adapter: "events",
     fetchedAt,
     items: [...official, ...scraped],
   };
-  return toReviewQueue(batch);
+  return {
+    items: toReviewQueue(batch),
+    sources: [
+      sourceNote("dvhimss-events", "dvhimss-events", "https://dvhimss.org/events-calendar", officialResult),
+      sourceNote("njhimss-events", "njhimss-events", "https://njdvhimssevent.com/", scrapedResult),
+    ],
+  };
+}
+
+export async function ingestEvents(now = new Date(), fetchImpl: typeof fetch = fetch): Promise<ContentItem[]> {
+  return (await ingestEventsWithHealth(now, fetchImpl)).items;
 }

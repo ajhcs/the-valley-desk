@@ -1,0 +1,23 @@
+# The Valley Desk
+
+> A concise, cited record of how healthcare technology, AI, health policy, interoperability, EHR changes, cybersecurity, and related developments affect Delaware Valley health systems.
+
+The site is an aggregator with context, not a magazine. Each published item links to its source material. Use the canonical pages and machine-readable feeds below.
+
+## Sections
+
+- [News](https://thevalleydesk.org/news): health-system technology, policy, finance, AI, EHR, interoperability, workforce, and cybersecurity briefs.
+- [Events](https://thevalleydesk.org/events): confirmed Delaware Valley chapter events, webinars, and regionally relevant programs with registration links.
+- [Voices](https://thevalleydesk.org/voices): attributed statements from regional health-system leaders and official institutional accounts.
+
+## Machine-readable feeds
+
+- [JSON feed](https://thevalleydesk.org/feed.json)
+- [XML feed](https://thevalleydesk.org/feed.xml)
+- [Sitemap](https://thevalleydesk.org/sitemap.xml)
+
+## Editorial notes
+
+- Prefer the primary source and citations attached to each item.
+- Dates and event times use the America/New_York timezone unless the item states otherwise.
+- Unpublished and review-queue material is not part of the public record.

@@ -4,7 +4,7 @@
     <title>The Valley Desk</title>
     <link>https://thevalleydesk.org/</link>
     <description>Local health-tech news for people and agents</description>
-    <lastBuildDate>Mon, 24 Aug 2026 16:23:40 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 26 Aug 2026 16:00:00 GMT</lastBuildDate>
     <item>
       <title>Jefferson Einstein Philadelphia and Montgomery: MyEinsteinHealth ends Sept. 26, 2026</title>
       <link>https://thevalleydesk.org/news/jefferson-einstein-mychart-2026-09-26</link>
@@ -23,7 +23,7 @@
       <title>ChristianaCare Epic go-live, official July 2026 update</title>
       <link>https://thevalleydesk.org/news/christianacare-epic-go-live</link>
       <guid isPermaLink="true">https://thevalleydesk.org/news/christianacare-epic-go-live</guid>
-      <description>Oct. 3 is a training-gated cutover on ChristianaCare’s own update; Becker’s second-cites that date and does not price Epic.</description>
+      <description>ChristianaCare’s Oct. 3 Epic cutover is tied to role-based training and readiness checks for caregivers.</description>
       <pubDate>Wed, 01 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
@@ -37,18 +37,18 @@
       <title>Penn in-house scribe headcount and 2024 JAMA pilot table</title>
       <link>https://thevalleydesk.org/news/penn-in-house-ai-scribe</link>
       <guid isPermaLink="true">https://thevalleydesk.org/news/penn-in-house-ai-scribe</guid>
-      <description>Some 1,200 is an Inquirer headcount for Penn’s later in-house tool; 20.4% less time in notes is a 46-clinician journal table from a 2024 DAX Copilot pilot, not that headcount.</description>
+      <description>Penn’s in-house scribe reached roughly 1,200 ambulatory users; a separate 46-clinician DAX Copilot study reported 20.4% less note time per appointment.</description>
       <pubDate>Mon, 10 Nov 2025 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Temple Dragon Copilot user count and TUHS cash days</title>
+      <title>Temple expands Dragon Copilot to 400 end users</title>
       <link>https://thevalleydesk.org/news/temple-dragon-copilot-400</link>
       <guid isPermaLink="true">https://thevalleydesk.org/news/temple-dragon-copilot-400</guid>
-      <description>Dragon Copilot is at 400 end users in the HealthTech clip; 116 DCOH is an unaudited TUHS year-end line, not a Copilot KPI.</description>
+      <description>Temple expanded Dragon Copilot to 400 end users after reporting a greater than 10 percent reduction in after-hours documentation during the pilot.</description>
       <pubDate>Sat, 01 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>CHOP ORCA repo for Epic downtime order sets</title>
+      <title>CHOP publishes ORCA repo</title>
       <link>https://thevalleydesk.org/news/chop-orca-cds</link>
       <guid isPermaLink="true">https://thevalleydesk.org/news/chop-orca-cds</guid>
       <description>ORCA is an offline read-only Epic order-set viewer for downtime; it does not hold patient data and cannot place orders.</description>
@@ -76,119 +76,119 @@
       <pubDate>Tue, 10 Jun 2025 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Main Line Health cloud analytics, official Aug. 17 LinkedIn post</title>
+      <title>Main Line Health cloud analytics</title>
       <link>https://thevalleydesk.org/voices/mlh-cloud-analytics-2026-08-17</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/mlh-cloud-analytics-2026-08-17</guid>
       <description>Main Line Health said Aug. 17 that cloud analytics cut a 30-day wait to near real-time reporting, with 2,017 subscriptions and 6.2 percent monthly access growth since August 2025.</description>
       <pubDate>Mon, 17 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Benjamin Slovis, Aug. 8, 2026: Temple Health on Epic’s 2026 Honor Roll</title>
+      <title>Benjamin Slovis: Temple Health on Epic’s 2026 Honor Roll</title>
       <link>https://thevalleydesk.org/voices/temple-honor-roll-2026</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/temple-honor-roll-2026</guid>
       <description>Temple Health is on Epic’s 2026 Honor Roll; Slovis posted it Aug. 8, and Temple’s July 16 newsroom called the designation Cum Laude and named a $418,000 Epic Good Maintenance grant.</description>
       <pubDate>Sat, 08 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>David Johnson, July 30, 2026: Inspira on day 6 of an Epic live</title>
+      <title>David Johnson: Inspira on day 6 of an Epic live</title>
       <link>https://thevalleydesk.org/voices/inspira-johnson-epic-day-6-2026-07-30</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/inspira-johnson-epic-day-6-2026-07-30</guid>
       <description>Inspira was on day 6 of an Epic live when its CIIO said so in that comment.</description>
       <pubDate>Thu, 30 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Amy B. Mansue, July 27, 2026: Inspira launches Epic</title>
+      <title>Amy B. Mansue: Inspira launches Epic</title>
       <link>https://thevalleydesk.org/voices/inspira-mansue-epic-2026-07-27</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/inspira-mansue-epic-2026-07-27</guid>
       <description>Inspira launched Epic on July 27, 2026 with MyChart, Care Everywhere, and more than 50 Epic AI-suite tools on day one; hours saved are Inspira’s estimate.</description>
       <pubDate>Mon, 27 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Ed Jimenez, July 22, 2026: MLH exclusive medical provider for SJU Hawks</title>
+      <title>Ed Jimenez: MLH exclusive medical provider for SJU Hawks</title>
       <link>https://thevalleydesk.org/voices/mlh-jimenez-sju-hawks-2026-07-22</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/mlh-jimenez-sju-hawks-2026-07-22</guid>
       <description>Main Line Health is the exclusive medical provider for the Saint Joseph’s Hawks and the first jersey-patch partner.</description>
       <pubDate>Wed, 22 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Kevin B. Mahoney, Aug. 4, 2026: $7 million Muller administrative endowments</title>
+      <title>Kevin B. Mahoney: $7 million Muller administrative endowments</title>
       <link>https://thevalleydesk.org/voices/penn-mahoney-muller-endowments-2026-08-04</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/penn-mahoney-muller-endowments-2026-08-04</guid>
       <description>Muller administrative endowments total $7 million for the HUP CEO, UPHS CFO, and CHIBE director posts.</description>
       <pubDate>Tue, 04 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Ed Jimenez, Aug. 5, 2026: MLH official healthcare provider for 2026 U.S. Amateur</title>
+      <title>Ed Jimenez: MLH official healthcare provider for 2026 U.S. Amateur</title>
       <link>https://thevalleydesk.org/voices/mlh-jimenez-us-amateur-2026-08-05</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/mlh-jimenez-us-amateur-2026-08-05</guid>
       <description>Main Line Health is the official healthcare provider for the 2026 U.S. Amateur, Aug. 10–16 at Merion and Philadelphia Country Club.</description>
       <pubDate>Wed, 05 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Joseph G. Cacchione, July 13, 2026: SKMC four-year Allentown campus</title>
+      <title>Joseph G. Cacchione: SKMC four-year Allentown campus</title>
       <link>https://thevalleydesk.org/voices/jefferson-cacchione-skmc-allentown-2026-07-13</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/jefferson-cacchione-skmc-allentown-2026-07-13</guid>
       <description>SKMC’s four-year Allentown campus has an inaugural class of 45 in July 2029.</description>
       <pubDate>Mon, 13 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Joseph G. Cacchione, July 14, 2026: Jefferson Community Impact Report</title>
+      <title>Joseph G. Cacchione: Jefferson Community Impact Report</title>
       <link>https://thevalleydesk.org/voices/jefferson-cacchione-community-impact-2026-07-14</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/jefferson-cacchione-community-impact-2026-07-14</guid>
-      <description>Jefferson’s Community Impact Report prints more than $2.7 billion in community benefit and 10 million patient visits; Jefferson’s figures, not audited.</description>
+      <description>Jefferson’s Community Impact Report cited more than $2.7 billion in community benefit supporting 10 million patient visits.</description>
       <pubDate>Tue, 14 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Joseph G. Cacchione, July 15, 2026: Delaware’s first medical school</title>
+      <title>Joseph G. Cacchione: Delaware’s first medical school</title>
       <link>https://thevalleydesk.org/voices/jefferson-cacchione-de-med-school-2026-07-15</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/jefferson-cacchione-de-med-school-2026-07-15</guid>
       <description>Jefferson plans Delaware’s first medical school, first class 40 in July 2028, pending LCME; the page prints a CMS/HHS award of $157,394,963.86.</description>
       <pubDate>Wed, 15 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Joseph G. Cacchione, July 30, 2026: Wellenbach and Fung leaving TJU board</title>
+      <title>Joseph G. Cacchione: Wellenbach and Fung leaving TJU board</title>
       <link>https://thevalleydesk.org/voices/jefferson-cacchione-board-2026-07-30</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/jefferson-cacchione-board-2026-07-30</guid>
       <description>Wellenbach and Fung are leaving the TJU board.</description>
       <pubDate>Thu, 30 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Joseph G. Cacchione, Aug. 5, 2026: $1.75 million BMS Foundation LCS-LINK</title>
+      <title>Joseph G. Cacchione: $1.75 million BMS Foundation LCS-LINK</title>
       <link>https://thevalleydesk.org/voices/jefferson-cacchione-lcs-link-2026-08-05</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/jefferson-cacchione-lcs-link-2026-08-05</guid>
       <description>BMS Foundation granted $1.75 million for LCS-LINK, July 2026–June 2029, with Philly FQHCs.</description>
       <pubDate>Wed, 05 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Madeline Bell, Aug. 14, 2026: official CHOP OPEN final Breaking Through</title>
+      <title>Madeline Bell: CHOP OPEN final Breaking Through</title>
       <link>https://thevalleydesk.org/voices/chop-bell-breaking-through-2026-08-14</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/chop-bell-breaking-through-2026-08-14</guid>
-      <description>Bell’s official CHOP OPEN final Breaking Through; she retires in October; Mitchell is incoming Oct. 1, not current CEO.</description>
+      <description>CHOP released Bell’s final Breaking Through episode ahead of Mitchell’s Oct. 1 CEO transition and Bell’s October retirement.</description>
       <pubDate>Fri, 14 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Dennis W. Pullin, July 16, 2026: Here for Good podcast episode 07.16.26</title>
+      <title>Dennis W. Pullin: Here for Good podcast episode</title>
       <link>https://thevalleydesk.org/voices/virtua-pullin-here-for-good-2026-07-16</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/virtua-pullin-here-for-good-2026-07-16</guid>
       <description>Pullin hosts Virtua’s Here for Good podcast; episode 07.16.26.</description>
       <pubDate>Thu, 16 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Dennis Pullin, July 27, 2026: Lessons in Leadership, Champions of Humanity, Eat Well</title>
+      <title>Dennis Pullin: Lessons in Leadership, Champions of Humanity, Eat Well</title>
       <link>https://thevalleydesk.org/voices/virtua-pullin-lessons-in-leadership-2026-07-27</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/virtua-pullin-lessons-in-leadership-2026-07-27</guid>
       <description>Pullin spoke on Lessons in Leadership, Champions of Humanity, and Eat Well.</description>
       <pubDate>Mon, 27 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Benjamin Slovis, July 23, 2026: TUH hiring Mgr Integrated Healthcare Apps</title>
+      <title>Benjamin Slovis: TUH hiring Mgr Integrated Healthcare Apps</title>
       <link>https://thevalleydesk.org/voices/temple-slovis-tuh-epic-apps-2026-07-23</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/temple-slovis-tuh-epic-apps-2026-07-23</guid>
       <description>TUH is hiring a Manager of Integrated Healthcare Apps — Epic Orders/ASAP (hybrid), Philadelphia.</description>
       <pubDate>Thu, 23 Jul 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
-      <title>Amy B. Mansue, Aug. 4, 2026: Mullica Hill Neuro ICU, Cooper-Inspira neuroscience tour</title>
+      <title>Amy B. Mansue: Mullica Hill Neuro ICU, Cooper-Inspira neuroscience tour</title>
       <link>https://thevalleydesk.org/voices/inspira-mansue-neuro-icu-2026-08-04</link>
       <guid isPermaLink="true">https://thevalleydesk.org/voices/inspira-mansue-neuro-icu-2026-08-04</guid>
       <description>Inspira’s official account posted the Mullica Hill Neuro ICU and a Cooper-Inspira neuroscience tour (future EMU).</description>
@@ -198,113 +198,148 @@
       <title>NJDVHIMSS Annual Golf Outing</title>
       <link>https://thevalleydesk.org/events/njdvhimss-annual-golf-outing</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/njdvhimss-annual-golf-outing</guid>
-      <description>Official DVHIMSS chapter calendar.</description>
-      <pubDate>Tue, 13 Oct 2026 13:30:00 GMT</pubDate>
+      <description>The official chapter golf outing is the kickoff to the fall conference.</description>
+      <pubDate>Sat, 22 Aug 2026 20:14:00 GMT</pubDate>
     </item>
     <item>
       <title>NJDVHIMSS Fall Conference – October 13th – 15th</title>
       <link>https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/njdvhimss-fall-conference-october-13th-15th</guid>
-      <description>Official DVHIMSS chapter calendar.</description>
-      <pubDate>Tue, 13 Oct 2026 20:30:00 GMT</pubDate>
-    </item>
-    <item>
-      <title>ACHE of Eastern Pennsylvania Fall Healthcare Symposium</title>
-      <link>https://thevalleydesk.org/events/ache-eastern-pa-fall-symposium-2026-09-30</link>
-      <guid isPermaLink="true">https://thevalleydesk.org/events/ache-eastern-pa-fall-symposium-2026-09-30</guid>
-      <description></description>
-      <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
+      <description>A three-day NJ/DVHIMSS regional chapter conference in Atlantic City.</description>
+      <pubDate>Sat, 22 Aug 2026 20:14:00 GMT</pubDate>
     </item>
     <item>
       <title>BioNJ Manufacturing Summit</title>
       <link>https://thevalleydesk.org/events/bionj-manufacturing-summit-2026-09-29</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/bionj-manufacturing-summit-2026-09-29</guid>
-      <description></description>
+      <description>BioNJ Manufacturing Summit at Catalent. Fees $150/$275.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>University City Science Center Nucleus Awards</title>
       <link>https://thevalleydesk.org/events/science-center-nucleus-awards-2026-09-29</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/science-center-nucleus-awards-2026-09-29</guid>
-      <description></description>
+      <description>University City Science Center Nucleus Awards.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>HAP Patient Safety, Quality, and Equity Symposium</title>
       <link>https://thevalleydesk.org/events/hap-patient-safety-symposium-2026-09-02</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/hap-patient-safety-symposium-2026-09-02</guid>
-      <description></description>
+      <description>Two days focused on patient safety, quality, and equity for Pennsylvania hospitals.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Life Sciences Future</title>
       <link>https://thevalleydesk.org/events/life-sciences-future-2026-09-30</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/life-sciences-future-2026-09-30</guid>
-      <description></description>
+      <description>Life Sciences Future at Sheraton Valley Forge.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Builds Bio+ Philadelphia Life Science Symposium</title>
       <link>https://thevalleydesk.org/events/builds-bio-philly-2026-09-15</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/builds-bio-philly-2026-09-15</guid>
-      <description></description>
+      <description>Philadelphia life-science and real-estate leaders at the University City Science Center Quorum, with registration on the official symposium page.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>ACHE of Greater Philadelphia Connect. Network. Play.</title>
       <link>https://thevalleydesk.org/events/ache-greater-philly-connect-2026-09-02</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/ache-greater-philly-connect-2026-09-02</guid>
-      <description></description>
+      <description>A two-hour Greater Philadelphia healthcare leadership networking event.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>ACHE-NJ Virtual Behavioral Health</title>
       <link>https://thevalleydesk.org/events/ache-nj-virtual-behavioral-health-2026-08-27</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/ache-nj-virtual-behavioral-health-2026-08-27</guid>
-      <description></description>
+      <description>A 90-minute virtual ACHE-NJ program focused on behavioral health.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>ACHE-NJ 4th Annual Golf Outing</title>
       <link>https://thevalleydesk.org/events/ache-nj-golf-outing-2026-09-09</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/ache-nj-golf-outing-2026-09-09</guid>
-      <description></description>
+      <description>ACHE-NJ 4th Annual Golf Outing at Crystal Springs, Hamburg NJ.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>30th Delaware Healthcare Forum</title>
       <link>https://thevalleydesk.org/events/dha-healthcare-forum-2026-10-29</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/dha-healthcare-forum-2026-10-29</guid>
-      <description></description>
+      <description>30th Delaware Healthcare Forum at Bally's Dover.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>BioNJ Members-Only Café</title>
       <link>https://thevalleydesk.org/events/bionj-members-cafe-2026-09-15</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/bionj-members-cafe-2026-09-15</guid>
-      <description></description>
+      <description>A one-hour virtual members-only gathering for the New Jersey life-sciences community.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>BioNJ Entrepreneurs Exchange</title>
       <link>https://thevalleydesk.org/events/bionj-entrepreneurs-exchange-2026-09-23</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/bionj-entrepreneurs-exchange-2026-09-23</guid>
-      <description></description>
+      <description>BioNJ Entrepreneurs Exchange, virtual.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Life Sciences PA Open House</title>
       <link>https://thevalleydesk.org/events/lspa-open-house-2026-09-02</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/lspa-open-house-2026-09-02</guid>
-      <description></description>
+      <description>Life Sciences PA Open House in King of Prussia.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Wistar Philadelphia Drug Discovery Forum</title>
       <link>https://thevalleydesk.org/events/wistar-drug-discovery-forum-2026-09-09</link>
       <guid isPermaLink="true">https://thevalleydesk.org/events/wistar-drug-discovery-forum-2026-09-09</guid>
-      <description></description>
+      <description>Wistar Philadelphia Drug Discovery Forum.</description>
       <pubDate>Sun, 23 Aug 2026 16:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Alice Vuong: HSX HITRUST r2 recertification</title>
+      <link>https://thevalleydesk.org/voices/hsx-vuong-hitrust-r2-2026-06-02</link>
+      <guid isPermaLink="true">https://thevalleydesk.org/voices/hsx-vuong-hitrust-r2-2026-06-02</guid>
+      <description>HSX recertified HITRUST r2 on June 2, 2026 for hosting and data-integration systems, citing 536 controls and certification held since 2017.</description>
+      <pubDate>Tue, 02 Jun 2026 16:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Anna Schoenbaum: Penn ambient documentation scale</title>
+      <link>https://thevalleydesk.org/voices/penn-schoenbaum-ambient-ai-2026-08-18</link>
+      <guid isPermaLink="true">https://thevalleydesk.org/voices/penn-schoenbaum-ambient-ai-2026-08-18</guid>
+      <description>Schoenbaum said Penn ambient documentation covers about 1,300 ambulatory providers and 600+ nurses, with 20% less note time and less after-hours documentation for 79% of users.</description>
+      <pubDate>Tue, 18 Aug 2026 16:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Anahi Santiago: home-based care expands cloud security</title>
+      <link>https://thevalleydesk.org/voices/christianacare-santiago-home-care-cloud-2026-06-29</link>
+      <guid isPermaLink="true">https://thevalleydesk.org/voices/christianacare-santiago-home-care-cloud-2026-06-29</guid>
+      <description>ChristianaCare’s CISO said home-based care moves more patient data into the cloud, expanding the security surface her team has to protect.</description>
+      <pubDate>Mon, 29 Jun 2026 16:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>ACHE of Greater Philadelphia 2026 Fall Symposium</title>
+      <link>https://thevalleydesk.org/events/ache-greater-philly-fall-symposium-2026-09-14</link>
+      <guid isPermaLink="true">https://thevalleydesk.org/events/ache-greater-philly-fall-symposium-2026-09-14</guid>
+      <description>Physician leadership, analytics, ambulatory-shift finance, and legislative panels in University City, with registration closing Sept. 6.</description>
+      <pubDate>Wed, 26 Aug 2026 16:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>HAP webinar: I-TRANSFER sepsis documentation and post-acute handoff</title>
+      <link>https://thevalleydesk.org/events/hap-i-transfer-sepsis-webinar-2026-09-18</link>
+      <guid isPermaLink="true">https://thevalleydesk.org/events/hap-i-transfer-sepsis-webinar-2026-09-18</guid>
+      <description>Penn Nursing faculty on sepsis documentation and post-acute information transfer, with a required HAP registration path.</description>
+      <pubDate>Wed, 26 Aug 2026 16:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>HAP Emergency Management Conference: Security. Continuity. Resilience.</title>
+      <link>https://thevalleydesk.org/events/hap-emergency-management-2026-09-16</link>
+      <guid isPermaLink="true">https://thevalleydesk.org/events/hap-emergency-management-2026-09-16</guid>
+      <description>Penn Medicine downtime informatics, Tower Health security analytics, and a Lower Bucks Hospital surge case on the same HAP program.</description>
+      <pubDate>Wed, 26 Aug 2026 16:00:00 GMT</pubDate>
     </item>
   </channel>
 </rss>

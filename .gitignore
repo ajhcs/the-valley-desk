@@ -3,3 +3,7 @@ dist
 .DS_Store
 *.local
 .wrangler
+.dev.vars
+.serena/
+tmp-shots/
+vale-chat-archive-2026-08-24.md

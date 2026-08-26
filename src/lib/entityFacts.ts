@@ -1,11 +1,40 @@
 import type { Entity, EntityFact } from "../content/entity";
+import { hasDefensiveEditorialAside } from "./editorialCopy";
+
+/** Local public/ assets only. Never hotlink. Missing keys fall back to text-only cards. */
+export const VERIFIED_ENTITY_MEDIA: Record<string, string> = {
+  "org-penn": "/entity-penn-medicine.webp",
+  "org-jefferson": "/entity-jefferson-health.webp",
+  "org-cooper": "/entity-cooper-health.webp",
+  "org-christianacare": "/entity-christianacare.webp",
+  "org-main-line": "/entity-main-line-health.webp",
+  "org-temple": "/entity-temple-health.webp",
+  "org-virtua": "/entity-virtua-health.webp",
+  "org-tower": "/entity-tower-health.webp",
+  "org-inspira": "/entity-inspira-health.webp",
+  "org-hsx": "/entity-hsx.webp",
+  "person-luke-olenoski": "/entity-luke-olenoski.webp",
+  "person-thomas-f-gordon": "/entity-thomas-gordon.webp",
+  "person-bimal-desai": "/entity-bimal-desai.webp",
+  "person-robert-hartmann": "/entity-robert-hartmann.webp",
+  "person-dave-johnson": "/entity-dave-johnson.webp",
+  "person-tom-bartiromo": "/entity-tom-bartiromo.webp",
+  "person-hojjat-salmasian": "/entity-hojjat-salmasian.webp",
+  "person-jeffrey-pennington": "/entity-jeffrey-pennington.webp",
+  "person-benjamin-slovis": "/entity-benjamin-slovis.webp",
+};
 
 export type CitableFact = EntityFact & { citation: { name: string; url: string } };
 
 export type FactBearingEntity = {
   id: string;
   kind: Entity["kind"];
+  name: string;
   names: string[];
+  role?: string;
+  orgName?: string;
+  url?: string;
+  image?: string;
   facts: CitableFact[];
 };
 
@@ -14,6 +43,12 @@ export type MentionHit = {
   end: number;
   text: string;
   orgId: string;
+  entityName: string;
+  kind: Entity["kind"];
+  role?: string;
+  orgName?: string;
+  url?: string;
+  image?: string;
   facts: CitableFact[];
 };
 
@@ -29,18 +64,64 @@ function uniqueNames(entity: Entity) {
   return names.sort((a, b) => b.length - a.length);
 }
 
+/** Entity roles also carry ingest/graph notes; disclosure cards expose only the human-facing title. */
+export function publicEntityRole(role: string | undefined) {
+  if (!role) return undefined;
+  return role.split(/\s+[—–]\s+/, 1)[0]?.replace(/\s+only$/i, "").trim() || undefined;
+}
+
+function affiliatedOrgName(entity: Entity, byId: Map<string, Entity>) {
+  if (entity.kind !== "person") return undefined;
+  const parent = entity.parentId ? byId.get(entity.parentId) : undefined;
+  if (parent?.name) return parent.name;
+  const orgId = entity.orgs?.[0];
+  return orgId ? byId.get(orgId)?.name : undefined;
+}
+
+/** Public role plus org, without repeating an org already in the title. */
+export function publicEntityContext(role: string | undefined, orgName: string | undefined) {
+  const title = publicEntityRole(role);
+  if (title && orgName) {
+    const orgKey = orgName.split(/[–—,]/, 1)[0]?.trim() ?? orgName;
+    if (title.toLocaleLowerCase("en-US").includes(orgKey.toLocaleLowerCase("en-US"))) return title;
+    return `${title}, ${orgName}`;
+  }
+  return title || orgName;
+}
+
 export function citableFacts(facts: EntityFact[] | undefined): CitableFact[] {
   return (facts ?? []).filter((fact): fact is CitableFact => Boolean(fact.citation?.url?.trim()));
 }
 
+function localEntityImage(entity: Entity) {
+  const mapped = VERIFIED_ENTITY_MEDIA[entity.id];
+  if (mapped?.startsWith("/")) return mapped;
+  const raw = entity.image;
+  if (raw?.startsWith("/") && !raw.startsWith("//")) return raw;
+  return undefined;
+}
+
+function isPublicFact(fact: CitableFact) {
+  const text = `${fact.label} ${fact.detail ?? ""}`;
+  if (/do not merge|not a merge|not enterprise|graph note|out-of-box/i.test(text)) return false;
+  if (hasDefensiveEditorialAside(text)) return false;
+  return Boolean(fact.citation.url);
+}
+
 /** Only entities with at least one fact that has citation.url. */
 export function factBearingEntities(entities: Entity[]): FactBearingEntity[] {
+  const byId = new Map(entities.map((entity) => [entity.id, entity]));
   return entities
     .map((entity) => ({
       id: entity.id,
       kind: entity.kind,
+      name: entity.name,
       names: uniqueNames(entity),
-      facts: citableFacts(entity.facts),
+      role: publicEntityContext(entity.role, affiliatedOrgName(entity, byId)),
+      orgName: affiliatedOrgName(entity, byId),
+      url: entity.url,
+      image: localEntityImage(entity),
+      facts: citableFacts(entity.facts).filter(isPublicFact),
     }))
     .filter((entity) => entity.facts.length > 0);
 }
@@ -68,6 +149,12 @@ export function findFirstMentions(
         end: start + match[2].length,
         text: text.slice(start, start + match[2].length),
         orgId: entity.id,
+        entityName: entity.name,
+        kind: entity.kind,
+        role: entity.role,
+        orgName: entity.orgName,
+        url: entity.url,
+        image: entity.image,
         facts: entity.facts,
       });
       break;
@@ -87,13 +174,51 @@ export function findFirstMentions(
   return kept.sort((a, b) => a.start - b.start);
 }
 
+/** Declared org ids plus parents, children, and people on that graph. Text mentions do not expand it. */
+export function itemOrgGraph(
+  item: { orgs?: string[] },
+  entities: readonly Entity[],
+): Set<string> {
+  const byId = new Map(entities.map((entity) => [entity.id, entity]));
+  const allowed = new Set(item.orgs ?? []);
+  for (const id of [...allowed]) {
+    let current = byId.get(id);
+    while (current?.parentId && !allowed.has(current.parentId)) {
+      allowed.add(current.parentId);
+      current = byId.get(current.parentId);
+    }
+  }
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const entity of entities) {
+      if (allowed.has(entity.id)) continue;
+      if (entity.parentId && allowed.has(entity.parentId)) {
+        allowed.add(entity.id);
+        grew = true;
+      }
+    }
+  }
+  for (const entity of entities) {
+    if (entity.kind !== "person" || allowed.has(entity.id)) continue;
+    if (entity.parentId && allowed.has(entity.parentId)) allowed.add(entity.id);
+    else if (entity.orgs?.some((org) => allowed.has(org))) allowed.add(entity.id);
+  }
+  return allowed;
+}
+
+function factEntitiesForItem(item: { orgs?: string[] }, entities: Entity[]) {
+  const allowed = itemOrgGraph(item, entities);
+  return factBearingEntities(entities).filter((entity) => allowed.has(entity.id));
+}
+
 /** First-mention signed facts in title + dek + body. Hover line and item-page print share this list. */
 export function itemSignedFacts(
-  item: { title?: string; impactSentence?: string; body?: string },
+  item: { title?: string; impactSentence?: string; body?: string; orgs?: string[] },
   entities: Entity[],
 ) {
   const text = [item.title, item.impactSentence, item.body].filter(Boolean).join("\n");
-  return findFirstMentions(text, factBearingEntities(entities));
+  return findFirstMentions(text, factEntitiesForItem(item, entities));
 }
 
 /** CC paints NPSR, never the words "Net patient service revenue". Other labels stay Sloan signs. */
@@ -118,7 +243,10 @@ export function signedPrintLine(fact: CitableFact) {
 
 /** Paint-ready facts. Stored operating lines stay on the entity; they do not print or hover. */
 export function displayFacts(facts: CitableFact[]): CitableFact[] {
-  return facts.filter((fact) => Boolean(fact.citation.url) && !/operating/i.test(`${fact.label} ${fact.detail ?? ""}`));
+  return facts.filter(
+    (fact) =>
+      isPublicFact(fact) && !/operating/i.test(`${fact.label} ${fact.detail ?? ""}`),
+  );
 }
 
 const ABBREV = new Set([

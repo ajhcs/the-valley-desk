@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ContentItem, EventItem } from "../content/schema";
-import { eventPlace, formatDate, formatWhen, listDek } from "../lib/format";
+import { formatEventWhen } from "../lib/calendar";
+import { eventPlace, formatDate, listDek } from "../lib/format";
 import { chipKind, kindChip, itemHref } from "../lib/kind";
 import { eventRegisterUrl } from "../lib/register";
 import { MentionText } from "./MentionText";
@@ -9,7 +10,7 @@ import { ItemJsonLd } from "./ItemJsonLd";
 import { GroupChip } from "./home/GroupChip";
 
 export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "events" }) {
-  const meta = item.kind === "event" ? formatWhen((item as EventItem).startsAt) : formatDate(item.publishedAt);
+  const meta = item.kind === "event" ? formatEventWhen(item as EventItem) : formatDate(item.publishedAt);
   const place = item.kind === "event" ? eventPlace(item as EventItem) : item.region;
   const accent = rail === "events" ? "var(--events)" : "var(--ink)";
   const blurb = rail === "events" ? listDek(item) : (item.impactSentence?.trim() ?? "");

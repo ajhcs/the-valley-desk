@@ -1,0 +1,893 @@
+/* Lab prototypes. Tokens only. Do not restyle production chrome. */
+
+.Lab {
+  padding-bottom: 48px;
+}
+
+.LabSkip {
+  position: absolute;
+  left: -999px;
+  top: 8px;
+  z-index: 4;
+  padding: 8px 12px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.LabSkip:focus,
+.LabSkip:focus-visible {
+  left: 8px;
+}
+
+.LabBody:focus {
+  outline: none;
+}
+
+.LabBody:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.LabMast {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 8px 0 4px;
+}
+
+.LabMast-note {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.LabHome,
+.LabPublicNav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.LabPublicNav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.LabLockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.LabMark {
+  position: relative;
+  display: block;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+}
+
+.LabMark img {
+  width: 36px;
+  height: 36px;
+  display: block;
+}
+
+.LabMark.is-motion img {
+  animation: lab-mark-settle var(--motion-fast) var(--ease-out) both;
+}
+
+@keyframes lab-mark-settle {
+  from {
+    transform: translateY(1px) scale(0.985);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.LabSwitch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 12px 0 20px;
+  padding: 4px;
+  border: 1px solid var(--rule);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.LabSwitch-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  color: var(--mute);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.LabSwitch-link.is-active,
+.LabSwitch-link[aria-current="page"] {
+  color: var(--ink);
+  box-shadow: inset 0 -3px 0 var(--sky);
+}
+
+.LabHead h1 {
+  margin: 6px 0 0;
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+.LabKicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--admiral);
+}
+
+.LabLead {
+  max-width: 68ch;
+  margin: 12px 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+.LabLead code {
+  font-size: 0.92em;
+}
+
+.LabFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 22px;
+}
+
+.LabFilters-btn,
+.LabCalNav .LabFilters-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.LabFilters-btn.is-on {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.LabSplit {
+  display: grid;
+  gap: 28px;
+}
+
+.LabList:focus,
+.LabGrid:focus,
+.LabAxis:focus,
+.LabCal:focus,
+.LabFilters-btn:focus-visible,
+.LabSwitch-link:focus-visible,
+.LabRow a:focus-visible,
+.LabDetail a:focus-visible,
+.LabSystem-hit:focus-visible,
+.LabTick:focus-visible,
+.LabCal-day:focus-visible,
+.LabTextBtn:focus-visible,
+.LabSkip:focus-visible,
+.LabMini a:focus-visible,
+.LabMoved a:focus-visible,
+.LabIndex a:focus-visible,
+.LabFact a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.LabRow {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 10px 16px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+  animation: lab-row-in var(--motion-base) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+
+.LabRow.is-active {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--sky) 10%, transparent), transparent 70%);
+}
+
+.LabRow-time {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mute);
+}
+
+.LabRow-copy h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.LabRow-copy h2 a,
+.LabSystem-latest a,
+.LabMoved a,
+.LabIndex a,
+.LabMini a,
+.LabDetail-title a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.LabRow-copy p,
+.LabDetail-body,
+.LabSystem-meta {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--mute);
+}
+
+.LabRow-src {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--mute);
+}
+
+.LabTag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+  border: 1px solid var(--rule);
+  padding: 2px 6px;
+  height: fit-content;
+}
+
+.LabSide {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.LabCard,
+.LabSystem,
+.LabDetail,
+.LabNext,
+.LabIndex a {
+  border: 1px solid var(--rule);
+  padding: 16px;
+  background: var(--paper);
+}
+
+.LabDetail {
+  animation: lab-row-in var(--motion-base) var(--ease-out) both;
+}
+
+.LabCard h2,
+.LabSub,
+.LabNext p:first-child {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--admiral);
+}
+
+.LabCard-clock {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 32px;
+  color: var(--ink);
+}
+
+.LabMini {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.LabMini li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.LabMini span {
+  font-size: 12px;
+  color: var(--mute);
+}
+
+.LabEmpty {
+  margin: 0;
+  font-size: 14px;
+  color: var(--mute);
+}
+
+.LabIndex {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.LabIndex a {
+  display: grid;
+  gap: 6px;
+  min-height: 44px;
+  text-decoration: none;
+  color: inherit;
+  animation: lab-row-in var(--motion-base) var(--ease-out) both;
+}
+
+.LabIndex span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--admiral);
+}
+
+.LabIndex strong {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.LabIndex em {
+  font-style: normal;
+  font-size: 14px;
+  color: var(--mute);
+}
+
+.LabMoved {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.LabMoved li {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+  animation: lab-row-in var(--motion-base) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+
+.LabMoved p {
+  margin: 0 0 4px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.LabGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.LabSystem {
+  animation: lab-row-in var(--motion-base) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+
+.LabSystem.is-open {
+  border-color: var(--admiral);
+  box-shadow: inset 3px 0 0 var(--sky);
+}
+
+.LabSystem-hit {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.LabSystem-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.LabFact {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--mute);
+}
+
+.LabFact a {
+  color: var(--ink);
+}
+
+.LabSystem-latest {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+}
+
+.LabSystem-latest time {
+  font-size: 12px;
+  color: var(--mute);
+}
+
+.LabNext h2 {
+  margin: 4px 0 8px;
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 500;
+}
+
+.LabAxisCue {
+  display: none;
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--mute);
+}
+
+.LabAxis {
+  position: relative;
+  display: flex;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 18px 0 28px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mute) var(--rule);
+}
+
+.LabAxis::-webkit-scrollbar {
+  height: 4px;
+}
+
+.LabAxis::-webkit-scrollbar-track {
+  background: var(--rule);
+}
+
+.LabAxis::-webkit-scrollbar-thumb {
+  background: var(--mute);
+}
+
+.LabAxis::before {
+  content: "";
+  position: absolute;
+  top: 52px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--rule);
+  pointer-events: none;
+}
+
+.LabTick {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 140px;
+  max-width: 170px;
+  min-height: 112px;
+  scroll-margin-inline: 16px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  scroll-snap-align: start;
+  animation: lab-row-in var(--motion-base) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+
+.LabTick.is-on {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+
+.LabTick-day,
+.LabTick-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--mute);
+}
+
+.LabTick-dot {
+  position: relative;
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--event);
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+
+.LabTick.is-on .LabTick-dot {
+  transform: scale(1.3);
+}
+
+.LabTick-kind {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--admiral);
+}
+
+.LabTick-label {
+  max-width: 15ch;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+}
+
+.LabTick-dot.is-clock {
+  background: var(--admiral);
+}
+
+.LabTextBtn {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.LabTextBtn.is-on {
+  color: var(--admiral);
+}
+
+.LabDetail-kicker {
+  margin: 0 0 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+}
+
+.LabDetail-title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.LabDetail-meta,
+.LabDetail-body {
+  margin: 8px 0 0;
+}
+
+.LabDetail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 14px;
+}
+
+.LabDetail-actions a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--event-text);
+  text-decoration: none;
+}
+
+.LabCalBar {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.LabCalNext {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--event);
+}
+
+.LabCalNext > p {
+  margin: 0;
+  color: var(--admiral);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.LabCalNext .LabTextBtn {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.LabCalNext strong,
+.LabCalNext span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LabCalNext span {
+  color: var(--mute);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.LabCalNav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.LabCalTitle {
+  margin: 0 auto 0 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.LabCal {
+  border-top: 1px solid var(--rule);
+}
+
+.LabCal-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.LabCal-head,
+.LabCal-day {
+  min-height: 44px;
+  padding: 8px 4px;
+  font-size: 12px;
+}
+
+.LabCal-head {
+  color: var(--mute);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.LabCal-day {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 4px;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.LabCal-mark {
+  display: -webkit-box;
+  width: 100%;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: left;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.LabCal-mark.is-clock {
+  color: var(--admiral);
+}
+
+.LabCal-day.is-out {
+  color: var(--mute);
+}
+
+.LabCal-num {
+  display: inline-block;
+  transform-origin: left center;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+
+.LabCal-day.is-today .LabCal-num {
+  color: var(--admiral);
+  font-weight: 700;
+}
+
+.LabCal-day.is-on .LabCal-num {
+  transform: scale(1.06);
+}
+
+.LabCal-day.is-on {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.LabCal-dots {
+  display: flex;
+  gap: 3px;
+  min-height: 6px;
+}
+
+.LabCal-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--event);
+}
+
+.LabCal-dots i.is-clock {
+  background: var(--admiral);
+}
+
+@keyframes lab-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 720px) {
+  .LabCal-day {
+    min-height: 96px;
+  }
+
+  .LabSplit,
+  .LabIndex,
+  .LabMoved,
+  .LabGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .LabSplit {
+    grid-template-columns: minmax(0, 1.6fr) minmax(220px, 0.8fr);
+  }
+}
+
+@media (min-width: 1100px) {
+  .LabGrid,
+  .LabIndex {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .LabAxisCue {
+    display: block;
+  }
+}
+
+@media (max-width: 390px) {
+  .LabCalNext {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .LabMast-note {
+    width: 100%;
+  }
+
+  .LabPublicNav {
+    order: 3;
+    width: 100%;
+  }
+
+  .LabRow {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+
+  .LabRow .LabTag {
+    grid-column: 2;
+  }
+
+  .LabCal-day,
+  .LabFilters-btn,
+  .LabSwitch-link,
+  .LabTick {
+    min-height: 44px;
+  }
+
+  .LabCal-mark {
+    display: none;
+  }
+
+  .LabHead h1 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 320px) {
+  .LabSwitch {
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+
+  .LabRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .LabCal-head,
+  .LabCal-day {
+    padding: 6px 2px;
+    font-size: 11px;
+  }
+
+  .LabCard-clock {
+    font-size: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .LabMark.is-motion img,
+  .LabRow,
+  .LabSystem,
+  .LabTick,
+  .LabIndex a,
+  .LabMoved li,
+  .LabDetail {
+    animation: none;
+    transform: none;
+  }
+
+  .LabTick-dot,
+  .LabTick.is-on .LabTick-dot,
+  .LabCal-num,
+  .LabCal-day.is-on .LabCal-num {
+    transition: none;
+    transform: none;
+  }
+}

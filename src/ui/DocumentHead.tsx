@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { bySlug } from "../content/queries";
+import { byPreviousSlug, bySlug } from "../content/queries";
 import { catalog } from "../lib/catalog";
-import { SITE_ORIGIN } from "../lib/canonical";
+import { canonicalUrl, SITE_ORIGIN } from "../lib/canonical";
 
 const SITE = "The Valley Desk";
 const DEFAULT_DESC = "Local health-tech news for people and agents";
@@ -38,7 +38,7 @@ export function DocumentHead() {
     const section = parts[0];
     const raw =
       parts.length === 2 && (section === "news" || section === "events" || section === "voices")
-        ? bySlug(catalog, parts[1])
+        ? bySlug(catalog, parts[1]) ?? byPreviousSlug(catalog, parts[1])
         : undefined;
     const item =
       raw &&
@@ -58,7 +58,7 @@ export function DocumentHead() {
       title = `Voices · ${SITE}`;
       desc = "Voices";
     }
-    const url = path === "/" ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${path}`;
+    const url = item ? canonicalUrl(item) : path === "/" ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${path}`;
     const articleKinds = new Set(["news", "policy", "ai", "interview"]);
     const ogType = item && articleKinds.has(item.kind) ? "article" : "website";
     document.title = title;

@@ -1,8 +1,13 @@
 {
   "name": "the-valley-desk",
-  "compatibility_date": "2026-08-22",
+  "compatibility_date": "2026-08-26",
+  "compatibility_flags": ["nodejs_compat"],
   "main": "worker.js",
   "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "triggers": {
     "crons": ["0 * * * *"]
   },
@@ -11,5 +16,21 @@
     "binding": "ASSETS",
     "not_found_handling": "none",
     "run_worker_first": true
-  }
+  },
+  "vars": {
+    "EDITOR_MODEL": "meta/muse-spark-1.2-contributor",
+    "EDITOR_MODEL_BASE_URL": "https://openrouter.ai/api/v1",
+    "EDITOR_MODEL_BUDGET": "4",
+    "EDITOR_MODEL_CONCURRENCY": "2",
+    "EDITOR_MODEL_TIMEOUT_MS": "25000",
+    "EDITOR_MODEL_DEADLINE_MS": "40000"
+  },
+  "d1_databases": [
+    {
+      "binding": "VALLEY_DESK_DB",
+      "database_name": "the-valley-desk",
+      "database_id": "b2dbcf15-4cbd-4189-8775-a2f51e8eb014",
+      "migrations_dir": "migrations"
+    }
+  ]
 }
