@@ -80,7 +80,6 @@ export const SAFETY_CODES = new Set([
   "dedupe-id",
   "dedupe-slug",
   "org-unknown",
-  "event-cancelled",
   "event-registration-https",
   "event-invented-field",
 ]);

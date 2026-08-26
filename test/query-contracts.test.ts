@@ -3631,6 +3631,8 @@ test("cancellation keeps a live permalink and expiry does not unpublish", async 
   assert.equal(live.slug, event.slug);
   assert.equal(bySlug([EventItem.parse(live)], event.slug)?.id, event.id);
   assert.equal(eventLifecycle(EventItem.parse(live), now), "cancelled");
+  assert.equal(isDeliverySafe(EventItem.parse(live), now), true);
+  assert.equal((await readPublishedContent(db)).some((item) => item.id === event.id && item.kind === "event" && item.cancelled), true);
   assert.deepEqual(upcomingEvents([EventItem.parse(live)], now, 10), []);
   assert.deepEqual(await readPublicationTombstones(db), []);
 
