@@ -53,7 +53,7 @@ export function Desk({
                 </div>
                 {item.impactSentence ? (
                   <p className="DeskRow-impact">
-                    <MentionText text={item.impactSentence} item={item} />
+                    <MentionText text={item.impactSentence} item={item} interactive />
                   </p>
                 ) : null}
               </li>

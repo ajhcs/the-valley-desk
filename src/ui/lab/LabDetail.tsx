@@ -41,7 +41,7 @@ export function LabDetail({
       )}
       {blurb ? (
         <p className="LabDetail-body">
-          <MentionText text={blurb} item={item} />
+          <MentionText text={blurb} item={item} interactive />
         </p>
       ) : null}
       <div className="LabDetail-actions">

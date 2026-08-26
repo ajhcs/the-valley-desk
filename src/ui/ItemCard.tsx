@@ -28,7 +28,7 @@ export function ItemCard({ item, rail }: { item: ContentItem; rail?: "news" | "e
       </h3>
       {blurb ? (
         <p className="text-sm mt-1 opacity-90">
-          <MentionText text={blurb} item={item} />
+          <MentionText text={blurb} item={item} interactive />
         </p>
       ) : null}
       <p className="text-xs mt-2" style={{ color: accent }}>

@@ -5395,6 +5395,8 @@ test("entity cards cover fact-bearing rows with local images, public roles, and 
   const css = readFileSync(join(root, "src/styles/home.css"), "utf8");
   assert.ok(mention.includes("EntityDisclosure"));
   assert.ok(mention.includes("OrgTick"));
+  assert.ok(mention.includes("interactive = false"));
+  assert.ok(mention.includes("printed || !interactive"));
   assert.ok(mention.includes("canInsert"));
   assert.ok(mention.includes("match(/^\\s*[–—:-]\\s*/)") || mention.includes("match(/^\\s*[–—:-]\\s*/)?.[0]"));
   assert.ok(factsUi.includes("onError"));

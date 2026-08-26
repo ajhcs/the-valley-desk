@@ -94,7 +94,7 @@ export function LabChronoPage() {
                     </h2>
                     {item.impactSentence ? (
                       <p>
-                        <MentionText text={item.impactSentence} item={item} />
+                        <MentionText text={item.impactSentence} item={item} interactive />
                       </p>
                     ) : null}
                     <p className="LabRow-src">{formatDate(item.publishedAt)}</p>

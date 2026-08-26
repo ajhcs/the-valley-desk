@@ -7,14 +7,14 @@ import { EntityDisclosure, useAllowedOrgIds, usePrintedFactIds } from "./ItemFac
 
 const FACT_BEARING = factBearingEntities(entities);
 
-function OrgTick({ hit }: { hit: MentionHit }) {
+function OrgTick({ hit, interactive }: { hit: MentionHit; interactive: boolean }) {
   const tickRef = useRef<HTMLSpanElement>(null);
   const dek = useDekInsert();
   const printed = usePrintedFactIds()[hit.orgId];
   const painted = displayFacts(hit.facts);
   if (!painted.length) return hit.text;
 
-  if (printed) {
+  if (printed || !interactive) {
     return (
       <span className="OrgMention">
         {hit.text}
@@ -68,7 +68,16 @@ function OrgTick({ hit }: { hit: MentionHit }) {
 }
 
 /** First mention of a fact-bearing org/person. Sky tick only; no chip. */
-export function MentionText({ text, item }: { text: string; item?: { orgs?: string[] } }) {
+export function MentionText({
+  text,
+  item,
+  interactive = false,
+}: {
+  text: string;
+  item?: { orgs?: string[] };
+  /** Opt in only when the mention is not inside a link or another interactive element. */
+  interactive?: boolean;
+}) {
   const scope = useMentionScope();
   const allowedCtx = useAllowedOrgIds();
   const allowed = item ? itemOrgGraph(item, entities) : allowedCtx;
@@ -81,7 +90,7 @@ export function MentionText({ text, item }: { text: string; item?: { orgs?: stri
   let cursor = 0;
   kept.forEach((hit, i) => {
     if (hit.start > cursor) nodes.push(text.slice(cursor, hit.start));
-    nodes.push(<OrgTick key={`${hit.orgId}-${i}`} hit={hit} />);
+    nodes.push(<OrgTick key={`${hit.orgId}-${i}`} hit={hit} interactive={interactive} />);
     const separator = text.slice(hit.end).match(/^\s*[–—:-]\s*/)?.[0];
     if (separator) nodes.push(" ");
     cursor = hit.end + (separator?.length ?? 0);

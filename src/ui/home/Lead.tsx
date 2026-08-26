@@ -9,9 +9,9 @@ function LeadImpact({ text, item }: { text: string; item: ContentItem }) {
   const { first, rest } = splitFirstSentence(text);
   return (
     <p className="Lead-impact">
-      <MentionText text={first} item={item} />
+      <MentionText text={first} item={item} interactive />
       <LeadSignedLine />
-      {rest ? <MentionText text={rest} item={item} /> : null}
+      {rest ? <MentionText text={rest} item={item} interactive /> : null}
     </p>
   );
 }
