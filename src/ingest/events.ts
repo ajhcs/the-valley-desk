@@ -51,6 +51,16 @@ const DVHIMSS_FALLBACK_URL = "https://dvhimss.org/wp-json/tribe/events/v1/events
 const DVHIMSS_LISTING_URL = "https://dvhimss.org/events-calendar";
 const NJ_LISTING_URL = "https://njdvhimssevent.com/";
 
+function validTimeZone(value: unknown): value is string {
+  if (typeof value !== "string" || !value.trim()) return false;
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value }).format(new Date(0));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function originBase(url: string) {
   try {
     const parsed = new URL(url);
@@ -230,7 +240,7 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
   for (const e of collected) {
     try {
       const title = textField(e.title) || decodeHtml(String(e.title ?? ""));
-      const timezone = typeof e.timezone === "string" && e.timezone.includes("/") ? e.timezone : EVENT_TIMEZONE;
+      const timezone = validTimeZone(e.timezone) ? e.timezone : EVENT_TIMEZONE;
       const utcStart = typeof e.utc_start_date === "string" ? e.utc_start_date : "";
       const localStart = typeof e.start_date === "string" ? e.start_date : "";
       const start = utcStart

@@ -293,6 +293,17 @@ test("visible event-card and date/link fallback extracts a dated listing", () =>
   assert.equal(cards.events[0]?.startsAt, "2026-12-04T05:00:00.000Z");
 });
 
+test("visible event cards never borrow a following card's date", () => {
+  const html = recognizedNj(`
+    <article class="event-card"><h2>Undated announcement</h2></article>
+    <article class="event-card"><h2>Dated forum</h2><time datetime="2026-12-04">December 4</time></article>
+  `);
+  const cards = parseVisibleEventCards(html);
+  assert.equal(cards.events.some((event) => event.title === "Undated announcement"), false);
+  assert.equal(cards.events.some((event) => event.title === "Dated forum"), true);
+  assert.equal(cards.malformed, 1);
+});
+
 test("known NJ conference and golf listings are still detected from visible dates", () => {
   const html = recognizedNj(`
     <a href="https://cvent.me/NAqAxv">Register Today</a>
@@ -301,6 +312,19 @@ test("known NJ conference and golf listings are still detected from visible date
   `);
   const known = matchKnownNjdvhimssEvents(html);
   assert.deepEqual(known.map((event) => event.key), ["fall-conference", "golf"]);
+});
+
+test("known events sharing the official listing page keep distinct event identities", async () => {
+  const html = recognizedNj(`
+    <a href="https://cvent.me/NAqAxv">Register Today</a>
+    Tuesday, October 13, 2026 through October 15, 2026
+    <h5>Golf</h5>
+  `);
+  const items = await scrapeNjdvhimss(async () => new Response(html, { status: 200 }), FETCHED_AT);
+  assert.deepEqual(
+    items.map((item) => item.id).sort(),
+    ["evt-njdvhimss-fall-2026", "evt-njdvhimss-golf-2026"],
+  );
 });
 
 test("JSON-LD offers still require a verified Cvent host before auto-publish", async () => {
@@ -384,6 +408,9 @@ test("date-only stays date-only and timezone-less clocks use America/New_York", 
   assert.equal(toIso("2026-10-13T16:30:00"), "2026-10-13T20:30:00.000Z");
   assert.equal(toIso("2026-09-14 13:00:00", "America/New_York", { assumeUtc: true }), "2026-09-14T13:00:00.000Z");
   assert.equal(toIso("2026-09-14 09:00:00"), "2026-09-14T13:00:00.000Z");
+  assert.equal(toIso("2026-02-30"), undefined);
+  assert.equal(toIso("2026-13-01"), undefined);
+  assert.equal(toIso("2026-12-04T09:99:00"), undefined);
   const html = recognizedNj(`
     <script type="application/ld+json">
       ${JSON.stringify({
@@ -408,6 +435,11 @@ test("date-only stays date-only and timezone-less clocks use America/New_York", 
     })]),
   }), FETCHED_AT);
   assert.equal(local[0]?.startsAt, "2026-09-14T13:00:00.000Z");
+  const invalidZone = await fetchDvhimssCalendar(eventsFetch({
+    tribe: () => tribePage([tribeEvent(8, { timezone: "Not/AZone" })]),
+  }), FETCHED_AT);
+  assert.equal(invalidZone[0]?.timezone, "America/New_York");
+  assert.doesNotThrow(() => eventSchedule(invalidZone[0]!));
 });
 
 test("invalid or unusable Tribe pagination metadata forces a partial snapshot", async () => {
@@ -577,7 +609,8 @@ test("missing Tribe IDs use a deterministic fallback or are skipped as malformed
 
 test("known conference and golf keys require event-level title and date evidence", () => {
   assert.equal(classifyNjEventKey("NJ/DVHIMSS Fall Conference 2026", "2026-10-13T20:30:00.000Z"), "fall-conference");
-  assert.equal(classifyNjEventKey("Annual Golf Outing", "2026-10-13T13:30:00.000Z"), "golf");
+  assert.equal(classifyNjEventKey("NJDVHIMSS Annual Golf Outing", "2026-10-13T13:30:00.000Z"), "golf");
+  assert.equal(classifyNjEventKey("Annual Golf Outing", "2026-10-13T13:30:00.000Z").startsWith("generic:"), true);
   assert.equal(classifyNjEventKey("Golf committee meeting", "2026-12-04T05:00:00.000Z").startsWith("generic:"), true);
   assert.equal(classifyNjEventKey("Fall Conference planning webinar", "2026-10-13T20:30:00.000Z").startsWith("generic:"), true);
   assert.equal(classifyNjEventKey("NJ/DVHIMSS Fall Conference 2026", "2026-03-01T05:00:00.000Z").startsWith("generic:"), true);

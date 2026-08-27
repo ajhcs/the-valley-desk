@@ -111,6 +111,19 @@ export function wallTimeToIso(
   second: number,
   timeZone: string,
 ) {
+  if (!Number.isInteger(year) || year < 1970 || year > 2100
+    || !Number.isInteger(month) || month < 1 || month > 12
+    || !Number.isInteger(day) || day < 1 || day > 31
+    || !Number.isInteger(hour) || hour < 0 || hour > 23
+    || !Number.isInteger(minute) || minute < 0 || minute > 59
+    || !Number.isInteger(second) || second < 0 || second > 59) return undefined;
+  const roundTrip = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  if (roundTrip.getUTCFullYear() !== year
+    || roundTrip.getUTCMonth() !== month - 1
+    || roundTrip.getUTCDate() !== day
+    || roundTrip.getUTCHours() !== hour
+    || roundTrip.getUTCMinutes() !== minute
+    || roundTrip.getUTCSeconds() !== second) return undefined;
   const guess = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
   const seen = wallParts(guess, timeZone);
   const asUtc = Date.UTC(
@@ -441,6 +454,7 @@ function offersUrl(value: unknown): string | undefined {
 }
 
 function isCanonicalGolfTitle(normalized: string) {
+  if (!/(?:nj\s*\/\s*dvhimss|njdvhimss|nj\s+himss)/.test(normalized)) return false;
   if (!/\bgolf\b/.test(normalized)) return false;
   if (/committee|meeting|planning|preview|volunteer/.test(normalized)) return false;
   if (/outing|annual|tournament/.test(normalized)) return true;
@@ -448,6 +462,7 @@ function isCanonicalGolfTitle(normalized: string) {
 }
 
 function isCanonicalFallConferenceTitle(normalized: string) {
+  if (!/(?:nj\s*\/\s*dvhimss|njdvhimss|nj\s+himss)/.test(normalized)) return false;
   if (/committee|planning|preview|webinar|volunteer|mixer/.test(normalized)) return false;
   if (/fall conference/.test(normalized)) return true;
   return (/nj\s*\/\s*dvhimss|njdvhimss/.test(normalized)) && /conference/.test(normalized);
@@ -599,11 +614,14 @@ export function parseVisibleEventCards(html: string): {
   const events: ParsedListingEvent[] = [];
   let malformed = 0;
   const open = /<(article|div|li|section)\b([^>]*class=["'][^"']*["'][^>]*)>/gi;
-  for (const match of html.matchAll(open)) {
+  const cardStarts = [...html.matchAll(open)].filter((match) => CARD_CLASS.test(match[2] ?? ""));
+  for (let cardIndex = 0; cardIndex < cardStarts.length; cardIndex += 1) {
+    const match = cardStarts[cardIndex];
     const attrs = match[2] ?? "";
     if (!CARD_CLASS.test(attrs)) continue;
     const start = (match.index ?? 0) + match[0].length;
-    const windowHtml = html.slice(start, start + 3500);
+    const nextCard = cardStarts[cardIndex + 1]?.index ?? html.length;
+    const windowHtml = html.slice(start, Math.min(nextCard, start + 3500));
     const parsed = parseEventWindow(windowHtml);
     if (parsed) events.push(parsed);
     else malformed += 1;

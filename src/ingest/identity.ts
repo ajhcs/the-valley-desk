@@ -46,8 +46,12 @@ export function normalizeSourceUrl(raw: string | undefined | null): string | und
 
 export function sourceIdentityKey(item: {
   id: string;
+  kind?: string;
   source: { origin: string; url?: string; externalId?: string };
 }): string {
+  if (item.kind === "event" && item.source.externalId) {
+    return `ext:${item.source.origin}:${item.source.externalId}`;
+  }
   const normalized = normalizeSourceUrl(item.source.url);
   if (normalized) return `url:${normalized}`;
   if (item.source.externalId) return `ext:${item.source.origin}:${item.source.externalId}`;
