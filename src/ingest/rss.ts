@@ -4,6 +4,7 @@ import entityFixtures from "../../fixtures/entities.json";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
 import { collapseBySourceIdentity, normalizeSourceUrl, withCanonicalSource } from "./identity";
+import { overlayNewsArticles } from "./news-extraction";
 import { mapSeedOrgIds } from "./org-map";
 import { rssSources, type RssSource } from "./origins";
 import {
@@ -303,9 +304,14 @@ export async function fetchWorkingRss(
   return (await fetchRssSources(fetchImpl, new Date().toISOString())).working;
 }
 
+export type RssIngestOptions = {
+  knownSourceUrls?: ReadonlySet<string>;
+};
+
 export async function ingestRssWithHealth(
   now = new Date(),
   fetchImpl: typeof fetch = fetch,
+  options: RssIngestOptions = {},
 ): Promise<IngestSourceResult<ContentItem>> {
   const fetchedAt = now.toISOString();
   const { working: feeds, sources } = await fetchRssSources(fetchImpl, fetchedAt);
@@ -323,10 +329,21 @@ export async function ingestRssWithHealth(
     }
   }
   const collapsed = collapseBySourceIdentity(items).map((group) => group.item);
-  const batch: IngestBatch = { adapter: "rss", fetchedAt, items: collapsed };
+  let extracted = collapsed;
+  try {
+    // Article fetches are best-effort. Failures keep RSS items and must not change source-health.
+    extracted = await overlayNewsArticles(collapsed, {
+      fetchImpl,
+      entities: seedEntities,
+      knownSourceUrls: options.knownSourceUrls,
+    });
+  } catch {
+    extracted = collapsed;
+  }
+  const batch: IngestBatch = { adapter: "rss", fetchedAt, items: extracted };
   return { items: toReviewQueue(batch), sources };
 }
 
-export async function ingestRss(now = new Date(), fetchImpl: typeof fetch = fetch): Promise<ContentItem[]> {
-  return (await ingestRssWithHealth(now, fetchImpl)).items;
+export async function ingestRss(now = new Date(), fetchImpl: typeof fetch = fetch, options: RssIngestOptions = {}): Promise<ContentItem[]> {
+  return (await ingestRssWithHealth(now, fetchImpl, options)).items;
 }
