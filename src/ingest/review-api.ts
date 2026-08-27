@@ -153,6 +153,10 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       SELECT action, COUNT(*) AS count, MAX(reconciled_at) AS reconciled_at
       FROM publication_reconciliations GROUP BY action
     `).all();
+  const emailDiscoveries = await env.VALLEY_DESK_DB.prepare(`
+      SELECT category, status, COUNT(*) AS count
+      FROM email_discoveries GROUP BY category, status
+    `).all();
   const payload: Record<string, unknown> = {
     schemaVersion: SCHEMA_VERSION,
     buildSha: buildShaFromEnv(env),
@@ -162,6 +166,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
     publications,
     sources: sources.results ?? [],
     reconciliation: reconciliation.results ?? [],
+    emailDiscoveries: emailDiscoveries.results ?? [],
   };
   if (!detailed) return payload;
   const review = await env.VALLEY_DESK_DB.prepare(`
@@ -177,9 +182,19 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       FROM candidate_decisions
       ORDER BY decided_at DESC
       LIMIT 20
+  `).all();
+  const emailQueue = await env.VALLEY_DESK_DB.prepare(`
+      SELECT id, message_id, envelope_to, from_address, from_domain, subject, category, status,
+             url_count, urls_json, excerpt, truncated, instruction_like, receive_count,
+             first_seen_at, last_seen_at
+      FROM email_discoveries
+      WHERE status = 'review'
+      ORDER BY last_seen_at DESC
+      LIMIT 50
     `).all();
   payload.review = { items: review.results ?? [] };
   payload.decisions = decisions.results ?? [];
+  payload.emailReview = { items: emailQueue.results ?? [] };
   return payload;
 }
 

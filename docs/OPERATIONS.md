@@ -58,7 +58,28 @@ That rule lives in the Cloudflare dashboard, not in this Worker. Without it, som
 
 Hourly cron writes JSON lines for `cron`, `lock`, `run`, `source`, `model`, `publication`, and `reconciliation` outcomes. Secrets and token-like keys are redacted.
 
-`schemaVersion` is the latest D1 migration prefix (currently `0009`). `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
+`schemaVersion` is the latest D1 migration prefix (currently `0010`). `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
+
+## Email routing and discovery
+
+Email Routing uses the existing `the-valley-desk` Worker and two intentionally separate paths:
+
+- `leads@thevalleydesk.org` forwards to the verified destination `clyons@ajhcs.org`. It does not enter D1.
+- `signals@thevalleydesk.org`, `signals+linkedin@thevalleydesk.org`, `linkedin@thevalleydesk.org`, `page(s)@thevalleydesk.org`, and `newsletter(s)@thevalleydesk.org` route to the Worker's `email()` handler.
+
+The email handler stores only bounded metadata, an excerpt, and normalized public HTTPS URLs in `email_discoveries`. It never stores raw MIME or attachments; all URL query parameters are removed because notification and unsubscribe links commonly carry secrets. Message text remains untrusted data, is never executed as instruction, and prompt-injection-like mail is ignored. Accepted discoveries remain review-only and are visible through the protected detailed automation-status endpoint. Category inboxes require a matching known envelope-sender domain, advisory per-domain/global admission caps limit ordinary flooding, and hourly cleanup expires rows after 90 days. `leads@` is deliberately not an accepted Worker inbox.
+
+Activate routing only after migration `0010_email_discoveries.sql` and the matching Worker version are deployed:
+
+1. Refresh Wrangler OAuth so it includes `email_routing:write`.
+2. Onboard `thevalleydesk.org` in Cloudflare Email Service. Confirm there is no existing MX provider before accepting DNS changes.
+3. Add and verify `clyons@ajhcs.org` as a destination address.
+4. Create an exact routing rule from `leads@thevalleydesk.org` to that verified destination.
+5. Create exact Worker routing rules for the signal inboxes above. Do not use a catch-all.
+6. Send one synthetic LinkedIn notification to `signals+linkedin@thevalleydesk.org`; verify one `email_discoveries` row, then resend the same `Message-ID` and verify `receive_count = 2` rather than a duplicate row.
+7. Send a lead to `leads@thevalleydesk.org` and verify delivery to `clyons@ajhcs.org` without a D1 discovery row.
+
+Inbound email is untrusted discovery evidence. It cannot approve, publish, withdraw, or feature content, and it does not reuse `REVIEW_API_TOKEN`.
 
 ## Rollback
 

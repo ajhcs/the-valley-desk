@@ -6,6 +6,7 @@ import {
   publishedVoiceSlugs,
 } from "./worker-published.js";
 import { runAutomation } from "./src/ingest/automation.ts";
+import { cleanupEmailDiscoveries, handleInboundEmail } from "./src/ingest/email.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
 import { feedXml, mergePublishedContent, mergedFeed, sitemapXml } from "./src/ingest/public-feed.ts";
@@ -258,9 +259,15 @@ async function handleFetch(request, env, origin, nonce) {
 }
 
 export default {
+  async email(message, env) {
+    const result = await handleInboundEmail(message, env);
+    if (result.outcome === "failed") {
+      throw new Error(`Inbound email discovery failed: ${result.reason || "unknown error"}`);
+    }
+  },
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(
-      runAutomation(env).then((result) => {
+      cleanupEmailDiscoveries(env.VALLEY_DESK_DB).then(() => runAutomation(env)).then((result) => {
         logOps("cron", {
           outcome: result.skipped ? "skipped" : "succeeded",
           ...compactAutomation(result),

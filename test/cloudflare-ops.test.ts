@@ -8,6 +8,14 @@ import { fileURLToPath } from "node:url";
 import { ContentCatalog, EventItem } from "../src/content/schema.ts";
 import { evaluateCandidate } from "../src/ingest/editor.ts";
 import { DEFAULT_EDITOR_BASE_URL, DEFAULT_EDITOR_MODEL } from "../src/ingest/editor-model.ts";
+import {
+  EMAIL_MAX_RAW_BYTES,
+  acceptedEmailRecipient,
+  cleanupEmailDiscoveries,
+  handleInboundEmail,
+  keepHttpsDiscoveryUrl,
+  parseEmailDiscovery,
+} from "../src/ingest/email.ts";
 import { persistEditorialDecisions, persistIngestRun, type D1DatabaseLike, type D1StatementLike } from "../src/ingest/persistence.ts";
 import { runAutomation, runtimeFetch } from "../src/ingest/automation.ts";
 import { configureReviewGuardsForTests, handleReviewApi } from "../src/ingest/review-api.ts";
@@ -401,4 +409,212 @@ test("scheduled automation preserves Cloudflare's required fetch receiver", asyn
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+function inboundEmail(raw: string, overrides: Partial<{
+  from: string;
+  to: string;
+  rawSize: number;
+}> = {}) {
+  let rejected = "";
+  const bytes = new TextEncoder().encode(raw);
+  return {
+    message: {
+      from: overrides.from ?? "notifications-noreply@linkedin.com",
+      to: overrides.to ?? "signals+linkedin@thevalleydesk.org",
+      headers: new Headers({
+        from: "LinkedIn <notifications-noreply@linkedin.com>",
+        to: overrides.to ?? "signals+linkedin@thevalleydesk.org",
+        subject: "Temple Health shared an update",
+        "message-id": "<linkedin-123@example.com>",
+        "content-type": "text/plain; charset=utf-8",
+      }),
+      raw: new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(bytes);
+          controller.close();
+        },
+      }),
+      rawSize: overrides.rawSize ?? bytes.byteLength,
+      setReject(reason: string) {
+        rejected = reason;
+      },
+    },
+    rejected: () => rejected,
+  };
+}
+
+test("email discovery accepts only scoped inboxes and public HTTPS URLs", () => {
+  assert.equal(acceptedEmailRecipient("signals@thevalleydesk.org")?.local, "signals");
+  assert.equal(acceptedEmailRecipient("signals+linkedin@thevalleydesk.org")?.categoryHint, "linkedin");
+  assert.equal(acceptedEmailRecipient("linkedin@thevalleydesk.org")?.categoryHint, "linkedin");
+  assert.equal(acceptedEmailRecipient("leads@thevalleydesk.org"), null);
+  assert.equal(acceptedEmailRecipient("signals@example.com"), null);
+  assert.equal(keepHttpsDiscoveryUrl("https://www.linkedin.com/posts/example?utm_source=email"), "https://linkedin.com/posts/example");
+  assert.equal(keepHttpsDiscoveryUrl("http://www.linkedin.com/posts/example"), undefined);
+  assert.equal(keepHttpsDiscoveryUrl("https://127.0.0.1/private"), undefined);
+  assert.equal(keepHttpsDiscoveryUrl("https://user:pass@example.com/private"), undefined);
+  assert.equal(keepHttpsDiscoveryUrl("https://example.com/story?token=secret&id=42&utm_source=email"), "https://example.com/story");
+});
+
+test("email MIME parsing keeps the first multipart part and ignores attachments", async () => {
+  const raw = [
+    "From: LinkedIn <spoofed@attacker.example>",
+    "To: signals+linkedin@thevalleydesk.org",
+    "Subject: Regional health update",
+    "Message-ID: <multipart-1@example.com>",
+    "Content-Type: multipart/mixed; boundary=desk-boundary",
+    "",
+    "--desk-boundary",
+    "Content-Type: text/plain; charset=utf-8",
+    "Content-Transfer-Encoding: quoted-printable",
+    "",
+    "Temple Health posted an update at https://example.com/story?id=3D42",
+    "--desk-boundary",
+    "Content-Type: application/octet-stream",
+    "Content-Disposition: attachment; filename=payload.bin",
+    "Content-Transfer-Encoding: base64",
+    "",
+    "c2VjcmV0LWF0dGFjaG1lbnQ=",
+    "--desk-boundary--",
+  ].join("\r\n");
+  const parsed = await parseEmailDiscovery({
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    headers: new Headers({
+      from: "LinkedIn <spoofed@attacker.example>",
+      to: "signals+linkedin@thevalleydesk.org",
+      subject: "Regional health update",
+      "message-id": "<multipart-1@example.com>",
+      "content-type": "multipart/mixed; boundary=desk-boundary",
+    }),
+    raw,
+    rawSize: new TextEncoder().encode(raw).byteLength,
+    receivedAt: "2026-08-27T17:00:00.000Z",
+  });
+  assert.ok(!("error" in parsed));
+  assert.equal(parsed.fromDomain, "linkedin.com");
+  assert.ok(parsed.excerpt?.includes("Temple Health"));
+  assert.deepEqual(parsed.urls, ["https://example.com/story"]);
+  assert.equal(parsed.excerpt?.includes("secret-attachment"), false);
+});
+
+test("email identity includes normalized content even when Message-ID is reused", async () => {
+  const base = {
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    headers: new Headers({
+      subject: "Update",
+      "message-id": "<reused@example.com>",
+      "content-type": "text/plain",
+    }),
+    rawSize: 100,
+    receivedAt: "2026-08-27T17:00:00.000Z",
+  };
+  const first = await parseEmailDiscovery({ ...base, raw: "Content-Type: text/plain\r\n\r\nhttps://example.com/one" });
+  const second = await parseEmailDiscovery({ ...base, raw: "Content-Type: text/plain\r\n\r\nhttps://example.com/two" });
+  assert.ok(!("error" in first) && !("error" in second));
+  assert.notEqual(first.id, second.id);
+});
+
+test("category aliases require a matching envelope sender and cleanup expires old rows", async () => {
+  const spoofed = await parseEmailDiscovery({
+    envelopeFrom: "attacker@example.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    headers: new Headers({
+      from: "LinkedIn <notifications-noreply@linkedin.com>",
+      subject: "Spoofed notification",
+      "content-type": "text/plain",
+    }),
+    raw: "Content-Type: text/plain\r\n\r\nhttps://example.com/story",
+    rawSize: 80,
+    receivedAt: "2026-08-27T17:00:00.000Z",
+  });
+  assert.ok(!("error" in spoofed));
+  assert.equal(spoofed.fromDomain, "example.com");
+  assert.equal(spoofed.category, "unknown");
+
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  database.prepare(`
+    INSERT INTO email_discoveries (
+      id, envelope_to, from_domain, category, status, url_count, urls_json,
+      raw_size, first_seen_at, last_seen_at
+    ) VALUES ('old', 'linkedin@thevalleydesk.org', 'linkedin.com', 'linkedin', 'review', 0, '[]', 10,
+      '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z')
+  `).run();
+  await cleanupEmailDiscoveries(db, new Date("2026-08-27T17:00:00.000Z"));
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
+  database.close();
+});
+
+test("inbound LinkedIn mail is bounded, idempotent, review-only, and stores no raw MIME", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const raw = [
+    "From: LinkedIn <notifications-noreply@linkedin.com>",
+    "To: signals+linkedin@thevalleydesk.org",
+    "Subject: Temple Health shared an update",
+    "Message-ID: <linkedin-123@example.com>",
+    "Content-Type: text/plain; charset=utf-8",
+    "",
+    "Temple Health published an operational update.",
+    "https://www.linkedin.com/posts/temple-health-update?utm_source=email",
+  ].join("\r\n");
+  const parsed = await parseEmailDiscovery({
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    headers: new Headers({
+      from: "LinkedIn <notifications-noreply@linkedin.com>",
+      to: "signals+linkedin@thevalleydesk.org",
+      subject: "Temple Health shared an update",
+      "message-id": "<linkedin-123@example.com>",
+    }),
+    raw,
+    rawSize: new TextEncoder().encode(raw).byteLength,
+    receivedAt: "2026-08-27T17:00:00.000Z",
+  });
+  assert.ok(!("error" in parsed));
+  assert.equal(parsed.category, "linkedin");
+  assert.equal(parsed.status, "review");
+  assert.deepEqual(parsed.urls, ["https://linkedin.com/posts/temple-health-update"]);
+
+  const first = inboundEmail(raw);
+  const accepted = await handleInboundEmail(first.message, { VALLEY_DESK_DB: db });
+  assert.equal(accepted.outcome, "accepted");
+  assert.equal(first.rejected(), "");
+  const replay = inboundEmail(raw);
+  const duplicate = await handleInboundEmail(replay.message, { VALLEY_DESK_DB: db });
+  assert.equal(duplicate.outcome, "duplicate");
+  const row = database.prepare(`
+    SELECT category, status, url_count, urls_json, receive_count, excerpt
+    FROM email_discoveries
+  `).get() as Record<string, unknown>;
+  assert.equal(row.category, "linkedin");
+  assert.equal(row.status, "review");
+  assert.equal(row.url_count, 1);
+  assert.equal(row.receive_count, 2);
+  assert.ok(String(row.excerpt).includes("Temple Health"));
+  const columns = database.prepare("PRAGMA table_info(email_discoveries)").all() as Array<{ name: string }>;
+  assert.equal(columns.some((column) => ["raw", "raw_mime", "mime", "body"].includes(column.name)), false);
+  assert.ok(columns.some((column) => column.name === "raw_size"));
+  database.close();
+});
+
+test("oversized and unsupported inbound email is rejected before persistence", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const tooLarge = inboundEmail("small", { rawSize: EMAIL_MAX_RAW_BYTES + 1 });
+  const oversized = await handleInboundEmail(tooLarge.message, { VALLEY_DESK_DB: db });
+  assert.equal(oversized.outcome, "too_large");
+  assert.equal(tooLarge.rejected(), "Message too large");
+  const leads = inboundEmail("lead", { to: "leads@thevalleydesk.org" });
+  const unsupported = await handleInboundEmail(leads.message, { VALLEY_DESK_DB: db });
+  assert.equal(unsupported.outcome, "unsupported_recipient");
+  assert.equal(leads.rejected(), "Mailbox unavailable");
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
+  database.close();
 });
