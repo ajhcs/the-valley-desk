@@ -472,6 +472,16 @@ function classifyEmail(input: {
   return "unknown";
 }
 
+function authenticatedEnvelopeSender(headers: Headers, fromDomain: string) {
+  if (!fromDomain || fromDomain === "unknown") return false;
+  const authentication = [
+    headerGet(headers, "authentication-results"),
+    headerGet(headers, "arc-authentication-results"),
+  ].filter(Boolean).join(" ").toLowerCase();
+  if (!authentication || !/(?:spf|dkim|dmarc)\s*=\s*pass\b/.test(authentication)) return false;
+  return authentication.includes(fromDomain.toLowerCase());
+}
+
 function excerptFrom(text: string, html: string) {
   const plain = stripControls(text).replace(/\s+/g, " ").trim();
   const fromHtml = stripHtml(html);
@@ -515,7 +525,10 @@ export async function parseEmailDiscovery(input: {
   const instructionLike = INSTRUCTION_RE.test(`${subject ?? ""}\n${excerpt ?? ""}`);
   const receivedAt = input.receivedAt || new Date().toISOString();
   const rawDigest = await sha256Hex(input.raw);
-  const status: EmailDiscoveryStatus = instructionLike || (urls.length === 0 && category === "unknown") ? "ignored" : "review";
+  const senderAuthenticated = authenticatedEnvelopeSender(input.headers, fromDomain);
+  const status: EmailDiscoveryStatus = instructionLike || !senderAuthenticated || (urls.length === 0 && category === "unknown")
+    ? "ignored"
+    : "review";
   return {
     id: await discoveryId(recipient.address, messageId, rawDigest),
     messageId,
@@ -539,7 +552,18 @@ function isConstraintError(error: unknown) {
   return /unique|constraint|SQLITE_CONSTRAINT/i.test(message);
 }
 
-export async function persistEmailDiscovery(db: D1DatabaseLike, record: EmailDiscoveryRecord): Promise<"accepted" | "duplicate"> {
+function changedRows(result: unknown) {
+  if (!result || typeof result !== "object") return 0;
+  const direct = (result as { changes?: unknown }).changes;
+  const nested = (result as { meta?: { changes?: unknown } }).meta?.changes;
+  const value = typeof nested === "number" || typeof nested === "bigint" ? nested : direct;
+  return typeof value === "number" || typeof value === "bigint" ? Number(value) : 0;
+}
+
+export async function persistEmailDiscovery(
+  db: D1DatabaseLike,
+  record: EmailDiscoveryRecord,
+): Promise<"accepted" | "duplicate" | "quota_exceeded"> {
   const existing = await db.prepare("SELECT id FROM email_discoveries WHERE id = ?").bind(record.id).first<{ id: string }>();
   if (existing) {
     await db.prepare(`
@@ -550,12 +574,16 @@ export async function persistEmailDiscovery(db: D1DatabaseLike, record: EmailDis
     return "duplicate";
   }
   try {
-    await db.prepare(`
+    const dayCutoff = new Date(new Date(record.receivedAt).getTime() - 86_400_000).toISOString();
+    const inserted = await db.prepare(`
       INSERT INTO email_discoveries (
         id, message_id, envelope_to, from_address, from_domain, subject, category, status,
         url_count, urls_json, excerpt, raw_size, truncated, instruction_like, receive_count,
         first_seen_at, last_seen_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+      )
+      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?
+      WHERE (SELECT COUNT(*) FROM email_discoveries WHERE first_seen_at >= ?) < ?
+        AND (SELECT COUNT(*) FROM email_discoveries WHERE from_domain = ? AND first_seen_at >= ?) < ?
     `).bind(
       record.id,
       record.messageId,
@@ -573,8 +601,13 @@ export async function persistEmailDiscovery(db: D1DatabaseLike, record: EmailDis
       record.instructionLike ? 1 : 0,
       record.receivedAt,
       record.receivedAt,
+      dayCutoff,
+      EMAIL_MAX_TOTAL_PER_DAY,
+      record.fromDomain,
+      dayCutoff,
+      EMAIL_MAX_DOMAIN_PER_DAY,
     ).run();
-    return "accepted";
+    return changedRows(inserted) > 0 ? "accepted" : "quota_exceeded";
   } catch (error) {
     if (!isConstraintError(error)) throw error;
     await db.prepare(`
@@ -584,21 +617,6 @@ export async function persistEmailDiscovery(db: D1DatabaseLike, record: EmailDis
     `).bind(record.receivedAt, record.id).run();
     return "duplicate";
   }
-}
-
-async function enforceEmailRetentionAndQuota(db: D1DatabaseLike, fromDomain: string, receivedAt: string) {
-  const now = new Date(receivedAt);
-  const retentionCutoff = new Date(now.getTime() - EMAIL_RETENTION_DAYS * 86_400_000).toISOString();
-  const dayCutoff = new Date(now.getTime() - 86_400_000).toISOString();
-  await db.prepare("DELETE FROM email_discoveries WHERE last_seen_at < ?").bind(retentionCutoff).run();
-  const total = await db.prepare(
-    "SELECT COUNT(*) AS count FROM email_discoveries WHERE first_seen_at >= ?",
-  ).bind(dayCutoff).first<{ count: number }>();
-  const domain = await db.prepare(
-    "SELECT COUNT(*) AS count FROM email_discoveries WHERE from_domain = ? AND first_seen_at >= ?",
-  ).bind(fromDomain, dayCutoff).first<{ count: number }>();
-  return Number(total?.count ?? 0) < EMAIL_MAX_TOTAL_PER_DAY
-    && Number(domain?.count ?? 0) < EMAIL_MAX_DOMAIN_PER_DAY;
 }
 
 export async function cleanupEmailDiscoveries(db: D1DatabaseLike, now = new Date()) {
@@ -706,13 +724,20 @@ export async function handleInboundEmail(message: InboundEmailMessage, env: Emai
       logEmail(result);
       return result;
     }
-    if (parsed.category === "unknown" || !(await enforceEmailRetentionAndQuota(env.VALLEY_DESK_DB, parsed.fromDomain, parsed.receivedAt))) {
+    if (parsed.category === "unknown" || parsed.status !== "review") {
       message.setReject("Mailbox unavailable");
       const result: EmailHandlerResult = { outcome: "rejected", reason: "Message did not meet discovery policy" };
       logEmail(result, { recipient: parsed.envelopeTo, fromDomain: parsed.fromDomain });
       return result;
     }
-    const outcome = await persistEmailDiscovery(env.VALLEY_DESK_DB, parsed);
+    const persisted = await persistEmailDiscovery(env.VALLEY_DESK_DB, parsed);
+    if (persisted === "quota_exceeded") {
+      message.setReject("Mailbox unavailable");
+      const result: EmailHandlerResult = { outcome: "rejected", reason: "Discovery quota exceeded" };
+      logEmail(result, { recipient: parsed.envelopeTo, fromDomain: parsed.fromDomain });
+      return result;
+    }
+    const outcome = persisted;
     const result: EmailHandlerResult = {
       outcome,
       id: parsed.id,

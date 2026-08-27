@@ -428,6 +428,7 @@ function inboundEmail(raw: string, overrides: Partial<{
         subject: "Temple Health shared an update",
         "message-id": "<linkedin-123@example.com>",
         "content-type": "text/plain; charset=utf-8",
+        "authentication-results": "mx.cloudflare.net; dkim=pass header.d=linkedin.com",
       }),
       raw: new ReadableStream<Uint8Array>({
         start(controller) {
@@ -487,6 +488,7 @@ test("email MIME parsing keeps the first multipart part and ignores attachments"
       subject: "Regional health update",
       "message-id": "<multipart-1@example.com>",
       "content-type": "multipart/mixed; boundary=desk-boundary",
+      "authentication-results": "mx.cloudflare.net; dkim=pass header.d=linkedin.com",
     }),
     raw,
     rawSize: new TextEncoder().encode(raw).byteLength,
@@ -571,6 +573,7 @@ test("inbound LinkedIn mail is bounded, idempotent, review-only, and stores no r
       to: "signals+linkedin@thevalleydesk.org",
       subject: "Temple Health shared an update",
       "message-id": "<linkedin-123@example.com>",
+      "authentication-results": "mx.cloudflare.net; dkim=pass header.d=linkedin.com",
     }),
     raw,
     rawSize: new TextEncoder().encode(raw).byteLength,

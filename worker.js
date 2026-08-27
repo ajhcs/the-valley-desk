@@ -267,7 +267,15 @@ export default {
   },
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(
-      cleanupEmailDiscoveries(env.VALLEY_DESK_DB).then(() => runAutomation(env)).then((result) => {
+      cleanupEmailDiscoveries(env.VALLEY_DESK_DB).catch((error) => {
+        logOps("email-cleanup", {
+          outcome: "failed",
+          message: error instanceof Error ? error.message : "Unknown email cleanup failure",
+        }, "warn");
+      }),
+    );
+    ctx.waitUntil(
+      runAutomation(env).then((result) => {
         logOps("cron", {
           outcome: result.skipped ? "skipped" : "succeeded",
           ...compactAutomation(result),
