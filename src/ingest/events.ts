@@ -5,7 +5,14 @@ import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
 import {
   DVHIMSS_MAX_PAGES,
+  EVENT_SOURCE_HOSTS,
+  EVENT_TIMEZONE,
+  REGISTRATION_HOSTS,
+  allowlistedHttps,
+  civilDate,
   decodeHtml,
+  isSafeTribeNextUrl,
+  isSameListingPage,
   njSnapshotCompleteness,
   parseNjdvhimssPage,
   parseTribeEventsResponse,
@@ -13,7 +20,9 @@ import {
   slugify,
   stripHtml,
   toIso,
+  tribeFallbackId,
   tribeNextPageUrl,
+  tribeRecordId,
   tribeSnapshotCompleteness,
   type ParsedListingEvent,
   type TribeEventsPage,
@@ -36,22 +45,24 @@ import {
 } from "./upstream";
 
 const UA = SOURCE_USER_AGENT;
-const REGISTRATION_HOSTS = ["cvent.me", "web.cvent.com", "dvhimss.org", "njhimss.org", "njdvhimssevent.com"];
 const DVHIMSS_SOURCE = eventSourceById("dvhimss-events");
 const NJHIMSS_SOURCE = eventSourceById("njhimss-events");
 const DVHIMSS_FALLBACK_URL = "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100";
+const DVHIMSS_LISTING_URL = "https://dvhimss.org/events-calendar";
+const NJ_LISTING_URL = "https://njdvhimssevent.com/";
 
-function verifiedRegistrationUrl(value: unknown) {
-  if (typeof value !== "string") return undefined;
+function originBase(url: string) {
   try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase();
-    return url.protocol === "https:" && REGISTRATION_HOSTS.some((domain) => host === domain || host.endsWith(`.${domain}`))
-      ? url.href
-      : undefined;
+    const parsed = new URL(url);
+    return `${parsed.protocol}//${parsed.host}/`;
   } catch {
-    return undefined;
+    return url;
   }
+}
+
+function verifiedRegistrationUrl(value: unknown, base: string) {
+  if (typeof value !== "string") return undefined;
+  return allowlistedHttps(value, base, REGISTRATION_HOSTS);
 }
 
 function isCventHost(value: string) {
@@ -63,12 +74,18 @@ function isCventHost(value: string) {
   }
 }
 
-function verifiedNjdvhimssRegistrationUrl(html: string) {
+function verifiedNjdvhimssRegistrationUrl(html: string, base: string) {
   const urls = [...html.matchAll(/href=["']([^"']+)["']/gi)]
     .map((match) => decodeHtml(match[1]))
-    .map((value) => verifiedRegistrationUrl(value))
+    .map((value) => verifiedRegistrationUrl(value, base))
     .filter((value): value is string => Boolean(value));
   return urls.find((value) => isCventHost(value));
+}
+
+function officialEventUrl(value: unknown, base: string, fallback: string) {
+  const candidate = typeof value === "string" ? allowlistedHttps(value, base, EVENT_SOURCE_HOSTS) : undefined;
+  if (candidate && !isSameListingPage(candidate, fallback)) return candidate;
+  return allowlistedHttps(fallback, base, EVENT_SOURCE_HOSTS) ?? fallback;
 }
 
 function isRecognizedNjdvhimssPage(html: string) {
@@ -155,16 +172,22 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
     );
   }
   const startUrl = DVHIMSS_SOURCE?.url ?? DVHIMSS_FALLBACK_URL;
+  const listingBase = originBase(startUrl);
   const perPage = perPageFromUrl(startUrl);
   const collected: Record<string, unknown>[] = [];
   const seenUrls = new Set<string>();
   let url = startUrl;
   let pagesFetched = 0;
+  let total: number | undefined;
   let totalPages: number | undefined;
   let lastPageSize = 0;
   let hitPageCap = false;
   let laterPageFailed = false;
   let hasNext = false;
+  let droppedRows = 0;
+  let paginationInvalid = false;
+  let lastNextRestUrl: string | undefined;
+  let lastRestUrl: string | undefined;
 
   while (url && pagesFetched < DVHIMSS_MAX_PAGES) {
     if (seenUrls.has(url)) break;
@@ -179,7 +202,14 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
     }
     lastPageSize = page.events.length;
     collected.push(...page.events);
+    droppedRows += page.droppedRows;
+    paginationInvalid = paginationInvalid || page.paginationInvalid;
+    if (page.nextRestUrl && !isSafeTribeNextUrl(page.nextRestUrl, startUrl)) paginationInvalid = true;
+    if (page.restUrl && !isSafeTribeNextUrl(page.restUrl, startUrl)) paginationInvalid = true;
+    lastNextRestUrl = page.nextRestUrl;
+    lastRestUrl = page.restUrl;
     pagesFetched += 1;
+    if (typeof page.total === "number") total = page.total;
     if (typeof page.totalPages === "number") totalPages = page.totalPages;
     const next = tribeNextPageUrl(url, page, pagesFetched, startUrl);
     if (!next) {
@@ -196,25 +226,40 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
 
   const rows: EventItem[] = [];
   const seenIds = new Set<string>();
+  let malformedCount = droppedRows;
   for (const e of collected) {
     try {
-      const externalId = String(e.id ?? "");
-      if (externalId) {
-        if (seenIds.has(externalId)) continue;
-        seenIds.add(externalId);
+      const title = textField(e.title) || decodeHtml(String(e.title ?? ""));
+      const timezone = typeof e.timezone === "string" && e.timezone.includes("/") ? e.timezone : EVENT_TIMEZONE;
+      const utcStart = typeof e.utc_start_date === "string" ? e.utc_start_date : "";
+      const localStart = typeof e.start_date === "string" ? e.start_date : "";
+      const start = utcStart
+        ? toIso(utcStart, timezone, { assumeUtc: true })
+        : toIso(localStart, timezone);
+      if (!title || !start) {
+        malformedCount += 1;
+        continue;
       }
-      const title = decodeHtml(String(e.title ?? ""));
-      const page = String(e.url ?? "https://dvhimss.org/events-calendar");
-      const start = toIso(String(e.utc_start_date ?? e.start_date ?? ""));
-      if (!title || !start) continue;
-      const end = toIso(String(e.utc_end_date ?? e.end_date ?? ""));
-      const registrationUrl = verifiedRegistrationUrl(e.website);
+      const utcEnd = typeof e.utc_end_date === "string" ? e.utc_end_date : "";
+      const localEnd = typeof e.end_date === "string" ? e.end_date : "";
+      const end = utcEnd
+        ? toIso(utcEnd, timezone, { assumeUtc: true })
+        : toIso(localEnd, timezone);
+      const sourceUrl = officialEventUrl(e.url, listingBase, DVHIMSS_LISTING_URL);
+      const externalId = tribeRecordId(e) ?? tribeFallbackId(title, start, sourceUrl);
+      if (!externalId) {
+        malformedCount += 1;
+        continue;
+      }
+      if (seenIds.has(externalId)) continue;
+      seenIds.add(externalId);
+      const registrationUrl = verifiedRegistrationUrl(e.website, listingBase);
       const venueObj = e.venue && typeof e.venue === "object" ? (e.venue as { venue?: string; city?: string }) : {};
       const venue = venueObj.venue ? decodeHtml(String(venueObj.venue)) : undefined;
       const city = venueObj.city ? decodeHtml(String(venueObj.city)) : undefined;
       rows.push(
         eventRow({
-          id: `evt-dvhimss-${e.id}`,
+          id: `evt-dvhimss-${externalId}`,
           slug: slugify(title),
           title,
           dek: "Official DVHIMSS chapter calendar.",
@@ -227,15 +272,15 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
           source: {
             kind: "ingest",
             origin: "dvhimss-events",
-            url: page,
+            url: sourceUrl,
             fetchedAt,
-            externalId: String(e.id),
+            externalId,
           },
-          citations: [{ name: "DVHIMSS", url: page }],
+          citations: [{ name: "DVHIMSS", url: sourceUrl }],
           geo: venue,
           startsAt: start,
           endsAt: end,
-          timezone: String(e.timezone ?? "America/New_York"),
+          timezone,
           venue,
           city,
           hostOrg: "DVHIMSS",
@@ -246,19 +291,25 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
         }),
       );
     } catch {
-      /* one malformed calendar row must not discard valid siblings */
+      malformedCount += 1;
     }
   }
   const completeness = tribeSnapshotCompleteness({
     rawCount: collected.length,
     parsedCount: rows.length,
     pagesFetched,
+    total,
     totalPages,
     hasNext,
     hitPageCap,
     laterPageFailed,
     lastPageSize,
     perPage,
+    malformedCount,
+    paginationInvalid,
+    nextRestUrl: lastNextRestUrl,
+    restUrl: lastRestUrl,
+    originUrl: startUrl,
   });
   return { items: rows, completeness, url: startUrl };
 }
@@ -267,15 +318,27 @@ export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetc
   return (await fetchDvhimssCalendarBatch(fetchImpl, fetchedAt)).items;
 }
 
-function njRegistrationUrl(event: ParsedListingEvent, pageRegistrationUrl?: string) {
-  const fromEvent = event.offersUrl ? verifiedRegistrationUrl(event.offersUrl) : undefined;
-  if (fromEvent && isCventHost(fromEvent)) return fromEvent;
-  return pageRegistrationUrl;
+function njRegistrationUrl(
+  event: ParsedListingEvent,
+  used: string,
+  pageRegistrationUrl?: string,
+) {
+  const eventOffers = event.offersUrl ? verifiedRegistrationUrl(event.offersUrl, used) : undefined;
+  if (eventOffers && !isSameListingPage(eventOffers, used)) return eventOffers;
+  if (event.key === "fall-conference" || event.key === "golf") return pageRegistrationUrl;
+  return undefined;
+}
+
+function njSourceUrl(event: ParsedListingEvent, used: string) {
+  const resolved = event.url ? allowlistedHttps(event.url, used, EVENT_SOURCE_HOSTS) : undefined;
+  if (resolved && !isSameListingPage(resolved, used)) return resolved;
+  return allowlistedHttps(used, used, EVENT_SOURCE_HOSTS) ?? NJ_LISTING_URL;
 }
 
 function njEventFields(event: ParsedListingEvent, fetchedAt: string, used: string, pageRegistrationUrl?: string): EventRowInput {
-  const registrationUrl = njRegistrationUrl(event, pageRegistrationUrl);
-  const sourceUrl = event.url && event.url.startsWith("https://") ? event.url : used;
+  const registrationUrl = njRegistrationUrl(event, used, pageRegistrationUrl);
+  const sourceUrl = njSourceUrl(event, used);
+  const listingUrl = allowlistedHttps(used, used, EVENT_SOURCE_HOSTS) ?? NJ_LISTING_URL;
   if (event.key === "fall-conference") {
     return {
       id: "evt-njdvhimss-fall-2026",
@@ -288,8 +351,8 @@ function njEventFields(event: ParsedListingEvent, fetchedAt: string, used: strin
       topics: ["chapter", "conference"],
       orgs: ["org-njhimss", "org-dvhimss"],
       region: "NJ",
-      source: { kind: "ingest", origin: "njhimss-events", url: used, fetchedAt, externalId: "njdvhimss-fall-2026" },
-      citations: [{ name: "NJDVHIMSS", url: used }],
+      source: { kind: "ingest", origin: "njhimss-events", url: listingUrl, fetchedAt, externalId: "njdvhimss-fall-2026" },
+      citations: [{ name: "NJDVHIMSS", url: listingUrl }],
       geo: "Atlantic City, NJ",
       startsAt: event.startsAt,
       endsAt: event.endsAt,
@@ -313,8 +376,8 @@ function njEventFields(event: ParsedListingEvent, fetchedAt: string, used: strin
       topics: ["chapter", "networking"],
       orgs: ["org-njhimss"],
       region: "NJ",
-      source: { kind: "ingest" as const, origin: "njhimss-events", url: used, fetchedAt, externalId: "njdvhimss-golf-2026" },
-      citations: [{ name: "NJDVHIMSS", url: used }],
+      source: { kind: "ingest" as const, origin: "njhimss-events", url: listingUrl, fetchedAt, externalId: "njdvhimss-golf-2026" },
+      citations: [{ name: "NJDVHIMSS", url: listingUrl }],
       geo: "Atlantic City, NJ",
       startsAt: event.startsAt,
       endsAt: event.endsAt,
@@ -325,8 +388,10 @@ function njEventFields(event: ParsedListingEvent, fetchedAt: string, used: strin
       partner: "njhimss",
     };
   }
+  const day = civilDate(event.startsAt) ?? event.startsAt.slice(0, 10);
+  const identity = `${slugify(event.title)}-${day}`;
   return {
-    id: `evt-njdvhimss-${slugify(event.title)}-${event.startsAt.slice(0, 10)}`,
+    id: `evt-njdvhimss-${identity}`,
     slug: slugify(event.title),
     title: event.title,
     dek: "Official NJ/DVHIMSS chapter event.",
@@ -335,7 +400,7 @@ function njEventFields(event: ParsedListingEvent, fetchedAt: string, used: strin
     topics: ["chapter", "events"],
     orgs: ["org-njhimss"],
     region: "NJ",
-    source: { kind: "ingest" as const, origin: "njhimss-events", url: sourceUrl, fetchedAt, externalId: slugify(event.title) },
+    source: { kind: "ingest" as const, origin: "njhimss-events", url: sourceUrl, fetchedAt, externalId: identity },
     citations: [{ name: "NJDVHIMSS", url: sourceUrl }],
     geo: [event.venue, event.city].filter(Boolean).join(", ") || undefined,
     startsAt: event.startsAt,
@@ -381,7 +446,7 @@ async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) 
   }
   if (!html) throw lastError ?? new UpstreamError("upstream-failed", "NJDVHIMSS page was unavailable");
   const parsed = parseNjdvhimssPage(html);
-  const pageRegistrationUrl = verifiedNjdvhimssRegistrationUrl(html);
+  const pageRegistrationUrl = verifiedNjdvhimssRegistrationUrl(html, used);
   const rows: EventItem[] = [];
   for (const event of parsed.events) {
     try {
@@ -403,6 +468,7 @@ async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) 
     itemCount: rows.length,
     jsonLdEventCount: parsed.jsonLdEventCount,
     jsonLdMalformed: parsed.jsonLdMalformed,
+    cardMalformed: parsed.cardMalformed,
   });
   return { items: rows, completeness, url: used };
 }

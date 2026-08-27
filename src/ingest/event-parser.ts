@@ -3,6 +3,12 @@ import type { SnapshotCompleteness } from "./source-health";
 /** Hard cap on Tribe archive pages. A truncated walk is always a partial snapshot. */
 export const DVHIMSS_MAX_PAGES = 5;
 export const DVHIMSS_DEFAULT_PER_PAGE = 100;
+export const EVENT_TIMEZONE = "America/New_York";
+export const EVENT_SOURCE_HOSTS = ["dvhimss.org", "njhimss.org", "njdvhimssevent.com"];
+export const REGISTRATION_HOSTS = ["cvent.me", "web.cvent.com", ...EVENT_SOURCE_HOSTS];
+export const FALL_CONFERENCE_START = "2026-10-13";
+export const FALL_CONFERENCE_END = "2026-10-15";
+export const GOLF_OUTING_DATE = "2026-10-13";
 
 const EVENT_TYPES = new Set([
   "event",
@@ -16,12 +22,21 @@ const EVENT_TYPES = new Set([
 
 const CARD_CLASS = /event-card|event-item|h-event|tribe-events-calendar-list__event/i;
 const MONTH = "January|February|March|April|May|June|July|August|September|October|November|December";
+const MONTH_INDEX: Record<string, number> = {
+  january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+  july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+};
 const DATE_TEXT = new RegExp(
   `\\b(?:${MONTH})\\s+\\d{1,2}(?:st|nd|rd|th)?(?:,)?\\s+\\d{4}\\b`,
   "i",
 );
 const DATE_RANGE = new RegExp(
   `(${MONTH})\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:,)?\\s+(\\d{4})(?:\\s*(?:--|–|—|through|to|-|and)\\s*)(?:(${MONTH})\\s+)?(\\d{1,2})(?:st|nd|rd|th)?(?:,)?(?:\\s+(\\d{4}))?`,
+  "i",
+);
+const ISO_LIKE = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?)?(Z|[+-]\d{2}:?\d{2})?$/i;
+const MONTH_NAME_DATE = new RegExp(
+  `^(${MONTH})\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:,)?\\s+(\\d{4})$`,
   "i",
 );
 
@@ -31,6 +46,8 @@ export type TribeEventsPage = {
   totalPages?: number;
   nextRestUrl?: string;
   restUrl?: string;
+  droppedRows: number;
+  paginationInvalid: boolean;
 };
 
 export type ParsedListingEvent = {
@@ -68,17 +85,101 @@ export function slugify(title: string) {
     .slice(0, 72) || "event";
 }
 
-export function toIso(value: string) {
+function wallParts(date: Date, timeZone: string) {
+  const map: Record<string, string> = {};
+  for (const part of new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date)) {
+    if (part.type !== "literal") map[part.type] = part.value;
+  }
+  return map;
+}
+
+export function wallTimeToIso(
+  year: number,
+  month: number,
+  day: number,
+  hour: number,
+  minute: number,
+  second: number,
+  timeZone: string,
+) {
+  const guess = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  const seen = wallParts(guess, timeZone);
+  const asUtc = Date.UTC(
+    Number(seen.year),
+    Number(seen.month) - 1,
+    Number(seen.day),
+    Number(seen.hour),
+    Number(seen.minute),
+    Number(seen.second),
+  );
+  const wanted = Date.UTC(year, month - 1, day, hour, minute, second);
+  return new Date(guess.getTime() - (asUtc - wanted)).toISOString();
+}
+
+export function civilDate(iso: string, timeZone = EVENT_TIMEZONE): string | undefined {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+  const parsed = Date.parse(iso);
+  if (!Number.isFinite(parsed)) return undefined;
+  const seen = wallParts(new Date(parsed), timeZone);
+  return `${seen.year}-${seen.month}-${seen.day}`;
+}
+
+export function toIso(
+  value: string,
+  timeZone = EVENT_TIMEZONE,
+  options: { assumeUtc?: boolean } = {},
+) {
   const trimmed = value.trim();
   if (!trimmed) return undefined;
-  if (/[zZ]|[+-]\d{2}:\d{2}$/.test(trimmed)) {
-    const parsed = Date.parse(trimmed);
+
+  const monthName = MONTH_NAME_DATE.exec(trimmed);
+  if (monthName) {
+    const month = MONTH_INDEX[monthName[1]!.toLowerCase()];
+    const day = Number(monthName[2]);
+    const year = Number(monthName[3]);
+    if (!month || !Number.isInteger(day) || !Number.isInteger(year)) return undefined;
+    if (options.assumeUtc) return new Date(Date.UTC(year, month - 1, day)).toISOString();
+    return wallTimeToIso(year, month, day, 0, 0, 0, timeZone);
+  }
+
+  const iso = ISO_LIKE.exec(trimmed);
+  if (!iso) {
+    if (/[zZ]|[+-]\d{2}:\d{2}$/.test(trimmed)) {
+      const parsed = Date.parse(trimmed);
+      return Number.isFinite(parsed) ? new Date(parsed).toISOString() : undefined;
+    }
+    return undefined;
+  }
+
+  const year = Number(iso[1]);
+  const month = Number(iso[2]);
+  const day = Number(iso[3]);
+  const hour = iso[4] === undefined ? undefined : Number(iso[4]);
+  const minute = iso[5] === undefined ? undefined : Number(iso[5]);
+  const second = iso[6] === undefined ? 0 : Number(iso[6]);
+  const offset = iso[7];
+  if (offset) {
+    const normalized = trimmed.includes("T") ? trimmed : trimmed.replace(" ", "T");
+    const parsed = Date.parse(normalized);
     return Number.isFinite(parsed) ? new Date(parsed).toISOString() : undefined;
   }
-  const asUtc = Date.parse(trimmed.replace(" ", "T") + "Z");
-  if (Number.isFinite(asUtc)) return new Date(asUtc).toISOString();
-  const local = Date.parse(trimmed);
-  return Number.isFinite(local) ? new Date(local).toISOString() : undefined;
+  if (hour === undefined) {
+    if (options.assumeUtc) return new Date(Date.UTC(year, month - 1, day)).toISOString();
+    return wallTimeToIso(year, month, day, 0, 0, 0, timeZone);
+  }
+  if (options.assumeUtc) {
+    return new Date(Date.UTC(year, month - 1, day, hour, minute ?? 0, second)).toISOString();
+  }
+  return wallTimeToIso(year, month, day, hour, minute ?? 0, second, timeZone);
 }
 
 export function perPageFromUrl(url: string, fallback = DVHIMSS_DEFAULT_PER_PAGE) {
@@ -101,6 +202,13 @@ function optionalUrl(value: unknown): string | undefined {
   return decodeHtml(value.trim());
 }
 
+function paginationFieldInvalid(present: boolean, value: number | undefined, opts: { integer?: boolean; min: number }) {
+  if (!present) return false;
+  if (value === undefined) return true;
+  if (opts.integer !== false && !Number.isInteger(value)) return true;
+  return value < opts.min;
+}
+
 export function parseTribeEventsResponse(body: string): TribeEventsPage {
   let data: Record<string, unknown>;
   try {
@@ -111,12 +219,21 @@ export function parseTribeEventsResponse(body: string): TribeEventsPage {
   if (!Array.isArray(data.events)) {
     throw new Error("DVHIMSS calendar response omitted events");
   }
+  const events = data.events.filter((row): row is Record<string, unknown> => Boolean(row) && typeof row === "object");
+  const totalPresent = Object.prototype.hasOwnProperty.call(data, "total");
+  const totalPagesPresent = Object.prototype.hasOwnProperty.call(data, "total_pages");
+  const total = optionalNumber(data.total);
+  const totalPages = optionalNumber(data.total_pages);
+  const paginationInvalid = paginationFieldInvalid(totalPresent, total, { min: 0 })
+    || paginationFieldInvalid(totalPagesPresent, totalPages, { min: 1 });
   return {
-    events: data.events.filter((row): row is Record<string, unknown> => Boolean(row) && typeof row === "object"),
-    total: optionalNumber(data.total),
-    totalPages: optionalNumber(data.total_pages),
+    events,
+    total: total !== undefined && Number.isInteger(total) && total >= 0 ? total : undefined,
+    totalPages: totalPages !== undefined && Number.isInteger(totalPages) && totalPages > 0 ? totalPages : undefined,
     nextRestUrl: optionalUrl(data.next_rest_url),
     restUrl: optionalUrl(data.rest_url),
+    droppedRows: data.events.length - events.length,
+    paginationInvalid,
   };
 }
 
@@ -126,7 +243,7 @@ function tribeArchivePath(pathname: string) {
 
 export function isSafeTribeNextUrl(candidate: string, originUrl: string) {
   try {
-    const next = new URL(candidate);
+    const next = new URL(candidate, originUrl);
     const origin = new URL(originUrl);
     return next.protocol === "https:"
       && next.hostname.toLowerCase() === origin.hostname.toLowerCase()
@@ -149,7 +266,7 @@ export function tribeNextPageUrl(
   originUrl: string,
 ): string | undefined {
   if (page.nextRestUrl && isSafeTribeNextUrl(page.nextRestUrl, originUrl)) {
-    return page.nextRestUrl;
+    return new URL(page.nextRestUrl, originUrl).href;
   }
   if (typeof page.totalPages === "number" && pagesFetched < page.totalPages) {
     const next = withQueryPage(currentUrl, pagesFetched + 1);
@@ -158,25 +275,111 @@ export function tribeNextPageUrl(
   return undefined;
 }
 
+export function tribePaginationUnusable(input: {
+  paginationInvalid?: boolean;
+  nextRestUrl?: string;
+  restUrl?: string;
+  originUrl: string;
+  total?: number;
+  rawCount: number;
+  hasNext: boolean;
+  hitPageCap: boolean;
+  laterPageFailed: boolean;
+}) {
+  if (input.paginationInvalid) return true;
+  if (input.nextRestUrl && !isSafeTribeNextUrl(input.nextRestUrl, input.originUrl)) return true;
+  if (input.restUrl && !isSafeTribeNextUrl(input.restUrl, input.originUrl)) return true;
+  if (typeof input.total === "number" && input.total > input.rawCount && !input.hasNext && !input.hitPageCap && !input.laterPageFailed) {
+    return true;
+  }
+  return false;
+}
+
 export function tribeSnapshotCompleteness(input: {
   rawCount: number;
   parsedCount: number;
   pagesFetched: number;
+  total?: number;
   totalPages?: number;
   hasNext: boolean;
   hitPageCap: boolean;
   laterPageFailed: boolean;
   lastPageSize: number;
   perPage: number;
+  malformedCount?: number;
+  paginationInvalid?: boolean;
+  nextRestUrl?: string;
+  restUrl?: string;
+  originUrl?: string;
 }): SnapshotCompleteness {
-  if (input.rawCount === 0) return "empty-unverified";
+  if (input.rawCount === 0 && (input.malformedCount ?? 0) === 0) return "empty-unverified";
   if (input.parsedCount === 0) return "partial";
+  if ((input.malformedCount ?? 0) > 0) return "partial";
   if (input.laterPageFailed || input.hitPageCap || input.hasNext) return "partial";
+  if (
+    input.originUrl
+    && tribePaginationUnusable({
+      paginationInvalid: input.paginationInvalid,
+      nextRestUrl: input.nextRestUrl,
+      restUrl: input.restUrl,
+      originUrl: input.originUrl,
+      total: input.total,
+      rawCount: input.rawCount,
+      hasNext: input.hasNext,
+      hitPageCap: input.hitPageCap,
+      laterPageFailed: input.laterPageFailed,
+    })
+  ) {
+    return "partial";
+  }
+  if (input.paginationInvalid) return "partial";
   if (typeof input.totalPages === "number") {
     return input.pagesFetched >= input.totalPages ? "complete" : "partial";
   }
   if (input.lastPageSize >= input.perPage) return "partial";
   return "complete";
+}
+
+export function hostAllowed(hostname: string, hosts: string[]) {
+  const host = hostname.toLowerCase();
+  return hosts.some((domain) => host === domain || host.endsWith(`.${domain}`));
+}
+
+export function resolveAgainst(value: string | undefined, base: string): URL | undefined {
+  if (!value || !value.trim()) return undefined;
+  const trimmed = decodeHtml(value.trim());
+  try {
+    if (/^https:\/\//i.test(trimmed)) {
+      const url = new URL(trimmed);
+      return url.protocol === "https:" ? url : undefined;
+    }
+    if (trimmed.startsWith("/") && !trimmed.startsWith("//")) {
+      const url = new URL(trimmed, base);
+      return url.protocol === "https:" ? url : undefined;
+    }
+    return undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function allowlistedHttps(value: string | undefined, base: string, hosts = EVENT_SOURCE_HOSTS): string | undefined {
+  const url = resolveAgainst(value, base);
+  if (!url || !hostAllowed(url.hostname, hosts)) return undefined;
+  return url.href;
+}
+
+export function isSameListingPage(eventUrl: string, listingUrl: string) {
+  try {
+    const event = new URL(eventUrl);
+    const listing = new URL(listingUrl);
+    const path = (value: string) => value.replace(/\/+$/, "") || "/";
+    return event.protocol === listing.protocol
+      && event.hostname.toLowerCase() === listing.hostname.toLowerCase()
+      && path(event.pathname) === path(listing.pathname);
+  } catch {
+    return false;
+  }
 }
 
 function typeNames(value: unknown): string[] {
@@ -237,24 +440,40 @@ function offersUrl(value: unknown): string | undefined {
   return undefined;
 }
 
-export function classifyNjEventKey(title: string) {
-  const normalized = title.toLowerCase();
-  if (/\bgolf\b/.test(normalized)) return "golf";
-  if (/fall conference/.test(normalized) || (/nj\s*\/\s*dvhimss/.test(normalized) && /conference/.test(normalized))) {
-    return "fall-conference";
-  }
-  return `generic:${slugify(title)}`;
+function isCanonicalGolfTitle(normalized: string) {
+  if (!/\bgolf\b/.test(normalized)) return false;
+  if (/committee|meeting|planning|preview|volunteer/.test(normalized)) return false;
+  if (/outing|annual|tournament/.test(normalized)) return true;
+  return /^((the|njdvhimss|nj himss|nj\/dvhimss)\s+)*golf$/.test(normalized);
+}
+
+function isCanonicalFallConferenceTitle(normalized: string) {
+  if (/committee|planning|preview|webinar|volunteer|mixer/.test(normalized)) return false;
+  if (/fall conference/.test(normalized)) return true;
+  return (/nj\s*\/\s*dvhimss|njdvhimss/.test(normalized)) && /conference/.test(normalized);
+}
+
+function isFallConferenceDay(day?: string) {
+  return Boolean(day && day >= FALL_CONFERENCE_START && day <= FALL_CONFERENCE_END);
+}
+
+export function classifyNjEventKey(title: string, startsAt?: string) {
+  const normalized = title.toLowerCase().replace(/\s+/g, " ").trim();
+  const day = startsAt ? civilDate(startsAt) : undefined;
+  if (isCanonicalGolfTitle(normalized) && day === GOLF_OUTING_DATE) return "golf";
+  if (isCanonicalFallConferenceTitle(normalized) && isFallConferenceDay(day)) return "fall-conference";
+  return `generic:${slugify(title)}${day ? `:${day}` : ""}`;
 }
 
 function listingEvent(partial: Omit<ParsedListingEvent, "key"> & { key?: string }): ParsedListingEvent | undefined {
   const title = stripHtml(partial.title);
-  const startsAt = toIso(partial.startsAt) ?? (partial.startsAt.includes("T") ? partial.startsAt : undefined);
+  const startsAt = toIso(partial.startsAt);
   if (!title || !startsAt) return undefined;
   return {
-    key: partial.key ?? classifyNjEventKey(title),
+    key: partial.key ?? classifyNjEventKey(title, startsAt),
     title,
     startsAt,
-    endsAt: partial.endsAt ? toIso(partial.endsAt) ?? partial.endsAt : undefined,
+    endsAt: partial.endsAt ? toIso(partial.endsAt) : undefined,
     venue: partial.venue,
     city: partial.city,
     description: partial.description ? stripHtml(partial.description) : undefined,
@@ -400,7 +619,7 @@ export function parseVisibleEventCards(html: string): {
       || /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/i.exec(lookbehind);
     if (!heading) continue;
     const title = stripHtml(heading[2] ?? heading[1] ?? "");
-    const href = heading[1]?.startsWith("http") ? heading[1] : firstHref(lookbehind);
+    const href = heading[1]?.startsWith("http") || heading[1]?.startsWith("/") ? heading[1] : firstHref(lookbehind);
     const parsed = listingEvent({ title, startsAt: iso, url: href, offersUrl: href });
     if (parsed && !events.some((event) => event.key === parsed.key)) events.push(parsed);
   }
@@ -410,7 +629,7 @@ export function parseVisibleEventCards(html: string): {
 export function matchKnownNjdvhimssEvents(html: string): ParsedListingEvent[] {
   const events: ParsedListingEvent[] = [];
   const conference = /October\s+13,\s+2026[\s\S]{0,80}October\s+15,\s+2026|Tuesday,\s+October\s+13,\s+2026/i.test(html)
-    || (/fall conference/i.test(html) && /October\s+13/i.test(html) && /October\s+15/i.test(html));
+    || (/fall conference/i.test(html) && /October\s+13,\s+2026/i.test(html) && /October\s+15,\s+2026/i.test(html));
   if (conference) {
     events.push({
       key: "fall-conference",
@@ -421,7 +640,10 @@ export function matchKnownNjdvhimssEvents(html: string): ParsedListingEvent[] {
       city: "Atlantic City",
     });
   }
-  if (/Golf/i.test(html) && /October\s+13/i.test(html)) {
+  if (
+    /October\s+13,\s+2026/i.test(html)
+    && (/<h[1-6][^>]*>\s*Golf\s*<\/h[1-6]>/i.test(html) || /annual golf outing/i.test(html))
+  ) {
     events.push({
       key: "golf",
       title: "NJDVHIMSS Annual Golf Outing",
@@ -463,10 +685,34 @@ export function njSnapshotCompleteness(input: {
   itemCount: number;
   jsonLdEventCount: number;
   jsonLdMalformed: number;
+  cardMalformed?: number;
 }): SnapshotCompleteness {
   if (!input.recognized) return "partial";
-  if (input.jsonLdEventCount > 0 && input.jsonLdMalformed > 0) return "partial";
+  if (input.jsonLdMalformed > 0 || (input.cardMalformed ?? 0) > 0) return "partial";
   if (input.itemCount === 0) return "empty-unverified";
   if (input.jsonLdEventCount > 0) return "complete";
   return input.itemCount < 2 ? "partial" : "complete";
+}
+
+export function tribeRecordId(row: Record<string, unknown>): string | undefined {
+  const raw = row.id;
+  if (typeof raw === "number" && Number.isInteger(raw) && raw >= 0) return String(raw);
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (/^[A-Za-z0-9._-]+$/.test(trimmed)) return trimmed;
+  }
+  return undefined;
+}
+
+export function tribeFallbackId(title: string, startsAt: string, url?: string): string | undefined {
+  const day = civilDate(startsAt);
+  if (!title || !day) return undefined;
+  const path = url ? (() => {
+    try {
+      return new URL(url).pathname.replace(/\/+$/, "");
+    } catch {
+      return "";
+    }
+  })() : "";
+  return `fallback-${slugify(`${title}-${day}-${path}`)}`;
 }

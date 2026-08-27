@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { evaluateCandidate } from "../src/ingest/editor.ts";
+import { eventSchedule } from "../src/lib/calendar.ts";
 import {
   DVHIMSS_MAX_PAGES,
+  classifyNjEventKey,
   isSafeTribeNextUrl,
   matchKnownNjdvhimssEvents,
   njSnapshotCompleteness,
@@ -11,7 +13,10 @@ import {
   parseNjdvhimssPage,
   parseTribeEventsResponse,
   parseVisibleEventCards,
+  toIso,
+  tribeFallbackId,
   tribeNextPageUrl,
+  tribeRecordId,
   tribeSnapshotCompleteness,
 } from "../src/ingest/event-parser.ts";
 import { fetchDvhimssCalendar, ingestEventsWithHealth, scrapeNjdvhimss } from "../src/ingest/events.ts";
@@ -285,7 +290,7 @@ test("visible event-card and date/link fallback extracts a dated listing", () =>
   const cards = parseVisibleEventCards(html);
   assert.equal(cards.events.length, 1);
   assert.equal(cards.events[0]?.title, "Winter Forum");
-  assert.equal(cards.events[0]?.startsAt, "2026-12-04T00:00:00.000Z");
+  assert.equal(cards.events[0]?.startsAt, "2026-12-04T05:00:00.000Z");
 });
 
 test("known NJ conference and golf listings are still detected from visible dates", () => {
@@ -345,4 +350,252 @@ test("one well-formed JSON-LD Event on a recognized page is a complete snapshot"
   assert.equal(nj?.itemCount, 1);
   assert.equal(nj?.completeness, "complete");
   assert.equal(sourceAuthorizesDisappearance(nj!), true);
+});
+
+test("page-wide Cvent is not assigned to unrelated generic events", async () => {
+  const html = recognizedNj(`
+    <a href="https://cvent.me/NAqAxv">Register Today</a>
+    Tuesday, October 13, 2026 through October 15, 2026
+    <h5>Golf</h5>
+    <script type="application/ld+json">
+      ${JSON.stringify({
+        "@type": "Event",
+        name: "Winter Forum",
+        startDate: "2026-12-04",
+        url: "https://njdvhimssevent.com/winter-forum",
+      })}
+    </script>
+  `);
+  const items = await scrapeNjdvhimss(async () => new Response(html, { status: 200 }), FETCHED_AT);
+  const conference = items.find((item) => item.id === "evt-njdvhimss-fall-2026");
+  const golf = items.find((item) => item.id === "evt-njdvhimss-golf-2026");
+  const winter = items.find((item) => item.title === "Winter Forum");
+  assert.equal(conference?.registrationUrl, "https://cvent.me/NAqAxv");
+  assert.equal(golf?.registrationUrl, "https://cvent.me/NAqAxv");
+  assert.ok(winter);
+  assert.equal(winter?.registrationUrl, undefined);
+  assert.equal(winter?.autoPublish, false);
+  assert.equal(winter?.status, "review");
+});
+
+test("date-only stays date-only and timezone-less clocks use America/New_York", async () => {
+  assert.equal(toIso("2026-12-04"), "2026-12-04T05:00:00.000Z");
+  assert.equal(toIso("December 4, 2026"), "2026-12-04T05:00:00.000Z");
+  assert.equal(toIso("2026-10-13T16:30:00"), "2026-10-13T20:30:00.000Z");
+  assert.equal(toIso("2026-09-14 13:00:00", "America/New_York", { assumeUtc: true }), "2026-09-14T13:00:00.000Z");
+  assert.equal(toIso("2026-09-14 09:00:00"), "2026-09-14T13:00:00.000Z");
+  const html = recognizedNj(`
+    <script type="application/ld+json">
+      ${JSON.stringify({
+        "@type": "Event",
+        name: "Winter Forum",
+        startDate: "2026-12-04",
+        endDate: "2026-12-05",
+      })}
+    </script>
+  `);
+  const items = await scrapeNjdvhimss(async () => new Response(html, { status: 200 }), FETCHED_AT);
+  const winter = items.find((item) => item.title === "Winter Forum");
+  assert.equal(winter?.startsAt, "2026-12-04T05:00:00.000Z");
+  assert.equal(winter?.endsAt, "2026-12-05T05:00:00.000Z");
+  assert.equal(eventSchedule(winter!).kind, "date-only");
+  assert.equal(eventSchedule(winter!).startDay, "2026-12-04");
+  const local = await fetchDvhimssCalendar(eventsFetch({
+    tribe: () => tribePage([tribeEvent(7, {
+      utc_start_date: undefined,
+      start_date: "2026-09-14 09:00:00",
+      timezone: "America/New_York",
+    })]),
+  }), FETCHED_AT);
+  assert.equal(local[0]?.startsAt, "2026-09-14T13:00:00.000Z");
+});
+
+test("invalid or unusable Tribe pagination metadata forces a partial snapshot", async () => {
+  assert.equal(
+    tribeSnapshotCompleteness({
+      rawCount: 1,
+      parsedCount: 1,
+      pagesFetched: 1,
+      totalPages: 1,
+      hasNext: false,
+      hitPageCap: false,
+      laterPageFailed: false,
+      lastPageSize: 1,
+      perPage: 100,
+      paginationInvalid: true,
+      originUrl: TRIBE_ARCHIVE,
+    }),
+    "partial",
+  );
+  const unsafeNext = await ingestEventsWithHealth(new Date(FETCHED_AT), eventsFetch({
+    tribe: () => tribePage([tribeEvent(1)], {
+      next_rest_url: "https://attacker.invalid/wp-json/tribe/events/v1/events?page=2",
+    }),
+  }));
+  const unsafe = unsafeNext.sources.find((source) => source.id === "dvhimss-events");
+  assert.equal(unsafe?.itemCount, 1);
+  assert.equal(unsafe?.completeness, "partial");
+  assert.equal(sourceAuthorizesDisappearance(unsafe!), false);
+
+  const zeroPages = await ingestEventsWithHealth(new Date(FETCHED_AT), eventsFetch({
+    tribe: () => tribePage([tribeEvent(1)], { total_pages: 0, total: 1 }),
+  }));
+  assert.equal(zeroPages.sources.find((source) => source.id === "dvhimss-events")?.completeness, "partial");
+
+  const lyingTotal = await ingestEventsWithHealth(new Date(FETCHED_AT), eventsFetch({
+    tribe: () => tribePage([tribeEvent(1)], { total: 40 }),
+  }));
+  assert.equal(lyingTotal.sources.find((source) => source.id === "dvhimss-events")?.completeness, "partial");
+});
+
+test("relative event URLs resolve against the official source and same-page links do not collapse identity", async () => {
+  assert.equal(isSafeTribeNextUrl("/wp-json/tribe/events/v1/events?page=2", TRIBE_ARCHIVE), true);
+  const html = recognizedNj(`
+    <script type="application/ld+json">
+      ${JSON.stringify({
+        "@graph": [
+          {
+            "@type": "Event",
+            name: "Winter Forum",
+            startDate: "2026-12-04",
+            url: "/winter-forum",
+            offers: { url: "https://cvent.me/Winter" },
+          },
+          {
+            "@type": "Event",
+            name: "Spring Mixer",
+            startDate: "2026-03-03",
+            url: "https://njdvhimssevent.com/",
+          },
+          {
+            "@type": "Event",
+            name: "Board Breakfast",
+            startDate: "2026-04-01",
+            url: "/",
+          },
+        ],
+      })}
+    </script>
+  `);
+  const items = await scrapeNjdvhimss(async () => new Response(html, { status: 200 }), FETCHED_AT);
+  const winter = items.find((item) => item.title === "Winter Forum");
+  const mixer = items.find((item) => item.title === "Spring Mixer");
+  const breakfast = items.find((item) => item.title === "Board Breakfast");
+  assert.equal(winter?.source.url, "https://njdvhimssevent.com/winter-forum");
+  assert.equal(winter?.id, "evt-njdvhimss-winter-forum-2026-12-04");
+  assert.equal(mixer?.id, "evt-njdvhimss-spring-mixer-2026-03-03");
+  assert.equal(breakfast?.id, "evt-njdvhimss-board-breakfast-2026-04-01");
+  assert.notEqual(mixer?.id, breakfast?.id);
+  assert.equal(mixer?.source.url, "https://njdvhimssevent.com/");
+  assert.equal(breakfast?.source.url, "https://njdvhimssevent.com/");
+  const relativeTribe = await fetchDvhimssCalendar(eventsFetch({
+    tribe: () => tribePage([tribeEvent(8, { url: "/event/8/" })]),
+  }), FETCHED_AT);
+  assert.equal(relativeTribe[0]?.source.url, "https://dvhimss.org/event/8/");
+});
+
+test("event source URLs and citations stay on official chapter hosts", async () => {
+  const html = recognizedNj(`
+    <script type="application/ld+json">
+      ${JSON.stringify({
+        "@type": "Event",
+        name: "Winter Forum",
+        startDate: "2026-12-04",
+        url: "https://attacker.invalid/winter-forum",
+        offers: { url: "https://attacker.invalid/register" },
+      })}
+    </script>
+  `);
+  const items = await scrapeNjdvhimss(async () => new Response(html, { status: 200 }), FETCHED_AT);
+  const winter = items.find((item) => item.title === "Winter Forum");
+  assert.equal(winter?.source.url, "https://njdvhimssevent.com/");
+  assert.equal(winter?.citations?.[0]?.url, "https://njdvhimssevent.com/");
+  assert.equal(winter?.registrationUrl, undefined);
+  const tribe = await fetchDvhimssCalendar(eventsFetch({
+    tribe: () => tribePage([tribeEvent(9, {
+      url: "https://attacker.invalid/event/9",
+      website: "https://attacker.invalid/register",
+    })]),
+  }), FETCHED_AT);
+  assert.equal(tribe[0]?.source.url, "https://dvhimss.org/events-calendar");
+  assert.equal(tribe[0]?.citations?.[0]?.url, "https://dvhimss.org/events-calendar");
+  assert.equal(tribe[0]?.registrationUrl, undefined);
+});
+
+test("card parse failures keep valid siblings and mark the NJ snapshot partial", async () => {
+  const html = recognizedNj(`
+    <article class="event-card"><p>Broken card with no title or date</p></article>
+    <script type="application/ld+json">
+      ${JSON.stringify({
+        "@type": "Event",
+        name: "Winter Forum",
+        startDate: "2026-12-04",
+        offers: { url: "https://cvent.me/Winter" },
+      })}
+    </script>
+  `);
+  const parsed = parseNjdvhimssPage(html);
+  assert.equal(parsed.cardMalformed, 1);
+  assert.equal(parsed.events.some((event) => event.title === "Winter Forum"), true);
+  const result = await ingestEventsWithHealth(new Date(FETCHED_AT), eventsFetch({ nj: html }));
+  const nj = result.sources.find((source) => source.id === "njhimss-events");
+  assert.equal(nj?.itemCount, 1);
+  assert.equal(nj?.completeness, "partial");
+  assert.equal(sourceAuthorizesDisappearance(nj!), false);
+});
+
+test("missing Tribe IDs use a deterministic fallback or are skipped as malformed", async () => {
+  assert.equal(tribeRecordId({ title: "No id" }), undefined);
+  assert.equal(tribeFallbackId("Keep me", "2026-09-14T13:00:00.000Z", "https://dvhimss.org/event/keep/"), "fallback-keep-me-2026-09-14-event-keep");
+  const kept = await fetchDvhimssCalendar(eventsFetch({
+    tribe: () => tribePage([{
+      title: "Keep me",
+      utc_start_date: "2026-09-14 13:00:00",
+      url: "https://dvhimss.org/event/keep/",
+      website: "https://web.cvent.com/event/keep",
+    }]),
+  }), FETCHED_AT);
+  assert.equal(kept.length, 1);
+  assert.equal(kept[0]?.id, "evt-dvhimss-fallback-keep-me-2026-09-14-event-keep");
+  assert.equal(kept[0]?.source.externalId, "fallback-keep-me-2026-09-14-event-keep");
+  const again = await fetchDvhimssCalendar(eventsFetch({
+    tribe: () => tribePage([{
+      title: "Keep me",
+      utc_start_date: "2026-09-14 13:00:00",
+      url: "https://dvhimss.org/event/keep/",
+    }]),
+  }), FETCHED_AT);
+  assert.equal(again[0]?.id, kept[0]?.id);
+  const skipped = await ingestEventsWithHealth(new Date(FETCHED_AT), eventsFetch({
+    tribe: () => tribePage([{ website: "https://web.cvent.com/event/x" }, tribeEvent(42)]),
+  }));
+  const dvhimss = skipped.sources.find((source) => source.id === "dvhimss-events");
+  assert.equal(skipped.items.filter((item) => item.source.origin === "dvhimss-events").length, 1);
+  assert.equal(dvhimss?.completeness, "partial");
+  assert.equal(sourceAuthorizesDisappearance(dvhimss!), false);
+});
+
+test("known conference and golf keys require event-level title and date evidence", () => {
+  assert.equal(classifyNjEventKey("NJ/DVHIMSS Fall Conference 2026", "2026-10-13T20:30:00.000Z"), "fall-conference");
+  assert.equal(classifyNjEventKey("Annual Golf Outing", "2026-10-13T13:30:00.000Z"), "golf");
+  assert.equal(classifyNjEventKey("Golf committee meeting", "2026-12-04T05:00:00.000Z").startsWith("generic:"), true);
+  assert.equal(classifyNjEventKey("Fall Conference planning webinar", "2026-10-13T20:30:00.000Z").startsWith("generic:"), true);
+  assert.equal(classifyNjEventKey("NJ/DVHIMSS Fall Conference 2026", "2026-03-01T05:00:00.000Z").startsWith("generic:"), true);
+  const html = recognizedNj(`
+    <a href="https://cvent.me/NAqAxv">Register Today</a>
+    Tuesday, October 13, 2026 through October 15, 2026
+    <script type="application/ld+json">
+      ${JSON.stringify({
+        "@type": "Event",
+        name: "Golf committee meeting",
+        startDate: "2026-12-04",
+        url: "https://njdvhimssevent.com/golf-committee",
+      })}
+    </script>
+  `);
+  const parsed = parseNjdvhimssPage(html);
+  const committee = parsed.events.find((event) => event.title === "Golf committee meeting");
+  assert.equal(committee?.key.startsWith("generic:"), true);
+  assert.equal(parsed.events.some((event) => event.key === "fall-conference"), true);
+  assert.equal(parsed.events.some((event) => event.key === "golf"), false);
 });
