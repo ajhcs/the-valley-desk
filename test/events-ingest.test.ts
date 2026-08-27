@@ -304,6 +304,17 @@ test("visible event cards never borrow a following card's date", () => {
   assert.equal(cards.malformed, 1);
 });
 
+test("a registration link without a real event heading is malformed", () => {
+  const cards = parseVisibleEventCards(recognizedNj(`
+    <article class="event-card">
+      <a href="https://cvent.me/NAqAxv">Register</a>
+      <time datetime="2026-12-04">December 4</time>
+    </article>
+  `));
+  assert.equal(cards.events.length, 0);
+  assert.equal(cards.malformed, 1);
+});
+
 test("known NJ conference and golf listings are still detected from visible dates", () => {
   const html = recognizedNj(`
     <a href="https://cvent.me/NAqAxv">Register Today</a>
@@ -409,6 +420,8 @@ test("date-only stays date-only and timezone-less clocks use America/New_York", 
   assert.equal(toIso("2026-09-14 13:00:00", "America/New_York", { assumeUtc: true }), "2026-09-14T13:00:00.000Z");
   assert.equal(toIso("2026-09-14 09:00:00"), "2026-09-14T13:00:00.000Z");
   assert.equal(toIso("2026-02-30"), undefined);
+  assert.equal(toIso("2026-02-30T09:00:00Z"), undefined);
+  assert.equal(toIso("2026-02-30T09:00:00-04:00"), undefined);
   assert.equal(toIso("2026-13-01"), undefined);
   assert.equal(toIso("2026-12-04T09:99:00"), undefined);
   const html = recognizedNj(`
@@ -440,6 +453,16 @@ test("date-only stays date-only and timezone-less clocks use America/New_York", 
   }), FETCHED_AT);
   assert.equal(invalidZone[0]?.timezone, "America/New_York");
   assert.doesNotThrow(() => eventSchedule(invalidZone[0]!));
+});
+
+test("event source redirects cannot leave the official host allowlist", async () => {
+  await assert.rejects(
+    fetchDvhimssCalendar(async () => new Response(null, {
+      status: 302,
+      headers: { location: "https://attacker.example/events.json" },
+    }), FETCHED_AT),
+    /allowlist/,
+  );
 });
 
 test("invalid or unusable Tribe pagination metadata forces a partial snapshot", async () => {

@@ -111,19 +111,7 @@ export function wallTimeToIso(
   second: number,
   timeZone: string,
 ) {
-  if (!Number.isInteger(year) || year < 1970 || year > 2100
-    || !Number.isInteger(month) || month < 1 || month > 12
-    || !Number.isInteger(day) || day < 1 || day > 31
-    || !Number.isInteger(hour) || hour < 0 || hour > 23
-    || !Number.isInteger(minute) || minute < 0 || minute > 59
-    || !Number.isInteger(second) || second < 0 || second > 59) return undefined;
-  const roundTrip = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
-  if (roundTrip.getUTCFullYear() !== year
-    || roundTrip.getUTCMonth() !== month - 1
-    || roundTrip.getUTCDate() !== day
-    || roundTrip.getUTCHours() !== hour
-    || roundTrip.getUTCMinutes() !== minute
-    || roundTrip.getUTCSeconds() !== second) return undefined;
+  if (!validDateTimeParts(year, month, day, hour, minute, second)) return undefined;
   const guess = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
   const seen = wallParts(guess, timeZone);
   const asUtc = Date.UTC(
@@ -136,6 +124,23 @@ export function wallTimeToIso(
   );
   const wanted = Date.UTC(year, month - 1, day, hour, minute, second);
   return new Date(guess.getTime() - (asUtc - wanted)).toISOString();
+}
+
+function validDateTimeParts(year: number, month: number, day: number, hour: number, minute: number, second: number) {
+  if (!Number.isInteger(year) || year < 1970 || year > 2100
+    || !Number.isInteger(month) || month < 1 || month > 12
+    || !Number.isInteger(day) || day < 1 || day > 31
+    || !Number.isInteger(hour) || hour < 0 || hour > 23
+    || !Number.isInteger(minute) || minute < 0 || minute > 59
+    || !Number.isInteger(second) || second < 0 || second > 59) return false;
+  const roundTrip = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  if (roundTrip.getUTCFullYear() !== year
+    || roundTrip.getUTCMonth() !== month - 1
+    || roundTrip.getUTCDate() !== day
+    || roundTrip.getUTCHours() !== hour
+    || roundTrip.getUTCMinutes() !== minute
+    || roundTrip.getUTCSeconds() !== second) return false;
+  return true;
 }
 
 export function civilDate(iso: string, timeZone = EVENT_TIMEZONE): string | undefined {
@@ -180,6 +185,7 @@ export function toIso(
   const minute = iso[5] === undefined ? undefined : Number(iso[5]);
   const second = iso[6] === undefined ? 0 : Number(iso[6]);
   const offset = iso[7];
+  if (!validDateTimeParts(year, month, day, hour ?? 0, minute ?? 0, second)) return undefined;
   if (offset) {
     const normalized = trimmed.includes("T") ? trimmed : trimmed.replace(" ", "T");
     const parsed = Date.parse(normalized);
@@ -596,6 +602,7 @@ function datetimeFrom(html: string): { start?: string; end?: string } {
 
 function parseEventWindow(windowHtml: string): ParsedListingEvent | undefined {
   const title = firstHeading(windowHtml);
+  if (!title || /^(register|register now|rsvp|learn more|details|click here)$/i.test(title.trim())) return undefined;
   const dates = datetimeFrom(windowHtml);
   const href = firstHref(windowHtml);
   return listingEvent({

@@ -14,8 +14,11 @@ import {
 import {
   extractArticleText,
   isEligibleNewsArticleUrl,
+  newsArticleBackoffMs,
   overlayNewsArticles,
   rssArticleHostAllowlist,
+  selectFairNewsArticleCandidates,
+  type NewsArticleExtractionState,
 } from "../src/ingest/news-extraction.ts";
 import { RSS_SOURCES, ingestRssWithHealth, rssItemToContent } from "../src/ingest/rss.ts";
 
@@ -275,9 +278,9 @@ test("candidate cap and concurrency bounds apply only to article fetches", async
   );
   assert.equal(articleUrls.length, NEWS_ARTICLE_CANDIDATE_CAP);
   assert.ok(maxInFlight <= NEWS_ARTICLE_CONCURRENCY);
-  assert.equal(result.length, 12);
-  assert.equal(result.filter((item) => item.body.startsWith("Full page for ")).length, NEWS_ARTICLE_CANDIDATE_CAP);
-  assert.equal(result.filter((item) => item.body === "RSS dek.").length, 12 - NEWS_ARTICLE_CANDIDATE_CAP);
+  assert.equal(result.items.length, 12);
+  assert.equal(result.items.filter((item) => item.body.startsWith("Full page for ")).length, NEWS_ARTICLE_CANDIDATE_CAP);
+  assert.equal(result.items.filter((item) => item.body === "RSS dek.").length, 12 - NEWS_ARTICLE_CANDIDATE_CAP);
 });
 
 test("off-allowlist redirects are not followed", async () => {
@@ -305,7 +308,7 @@ test("off-allowlist redirects are not followed", async () => {
 });
 
 test("oversized article responses stay on the RSS snippet", async () => {
-  const [item] = await overlayNewsArticles([
+  const result = await overlayNewsArticles([
     rssItemToContent({
       title: "Huge page",
       link: ARTICLE_URL,
@@ -320,5 +323,111 @@ test("oversized article responses stay on the RSS snippet", async () => {
       headers: { "content-type": "text/html" },
     }),
   });
+  const [item] = result.items;
   assert.equal(item?.body, "RSS dek.");
+});
+
+test("durable extraction cache reuses bounded text until the refresh is due", async () => {
+  const cachedText = longText("Cached full article");
+  const item = rssItemToContent({
+    title: "Cached article",
+    link: ARTICLE_URL,
+    description: "RSS dek.",
+    pubDate: "Wed, 26 Aug 2026 12:00:00 GMT",
+    guid: ARTICLE_URL,
+  }, "ChristianaCare News · Information Technology", "2026-08-27T12:00:00.000Z");
+  const state: NewsArticleExtractionState = {
+    url: ARTICLE_URL,
+    state: "success",
+    cachedText,
+    method: "article",
+    attemptCount: 1,
+    lastAttemptedAt: "2026-08-26T12:00:00.000Z",
+    lastSuccessAt: "2026-08-26T12:00:00.000Z",
+    nextAttemptAt: "2026-09-02T12:00:00.000Z",
+  };
+  let fetches = 0;
+  const result = await overlayNewsArticles([item], {
+    allowedHosts: ALLOWED_HOSTS,
+    newsExtractions: new Map([[ARTICLE_URL, state]]),
+    now: new Date("2026-08-27T12:00:00.000Z"),
+    fetchImpl: async () => {
+      fetches += 1;
+      throw new Error("not due");
+    },
+  });
+  assert.equal(fetches, 0);
+  assert.equal(result.items[0]?.body, cachedText);
+  assert.equal(result.attempts.length, 0);
+  assert.equal(result.metrics.reused, 1);
+});
+
+test("failed due refresh preserves stale cache and records bounded retry backoff", async () => {
+  const cachedText = longText("Previously extracted article");
+  const item = rssItemToContent({
+    title: "Updated article",
+    link: ARTICLE_URL,
+    description: "RSS dek.",
+    pubDate: "Wed, 26 Aug 2026 12:00:00 GMT",
+    guid: ARTICLE_URL,
+  }, "ChristianaCare News · Information Technology", "2026-08-27T12:00:00.000Z");
+  const previous: NewsArticleExtractionState = {
+    url: ARTICLE_URL,
+    state: "success",
+    cachedText,
+    method: "json-ld",
+    attemptCount: 1,
+    lastAttemptedAt: "2026-08-20T12:00:00.000Z",
+    lastSuccessAt: "2026-08-20T12:00:00.000Z",
+    nextAttemptAt: "2026-08-27T12:00:00.000Z",
+  };
+  const now = new Date("2026-08-27T12:00:00.000Z");
+  const result = await overlayNewsArticles([item], {
+    allowedHosts: ALLOWED_HOSTS,
+    newsExtractions: new Map([[ARTICLE_URL, previous]]),
+    now,
+    fetchImpl: async () => new Response("upstream error", { status: 503 }),
+  });
+  assert.equal(result.items[0]?.body, cachedText);
+  assert.equal(result.metrics.failed, 1);
+  assert.equal(result.metrics.preserved, 1);
+  assert.equal(result.attempts[0]?.state, "failed");
+  assert.equal(result.attempts[0]?.cachedText, cachedText);
+  assert.equal(
+    result.attempts[0]?.nextAttemptAt,
+    new Date(now.getTime() + newsArticleBackoffMs("failed", 1)).toISOString(),
+  );
+});
+
+test("a successful page without usable article text records no-content cooldown", async () => {
+  const item = rssItemToContent({
+    title: "Thin page",
+    link: ARTICLE_URL,
+    description: "RSS dek.",
+    pubDate: "Wed, 26 Aug 2026 12:00:00 GMT",
+    guid: ARTICLE_URL,
+  }, "ChristianaCare News · Information Technology", "2026-08-27T12:00:00.000Z");
+  const result = await overlayNewsArticles([item], {
+    allowedHosts: ALLOWED_HOSTS,
+    now: new Date("2026-08-27T12:00:00.000Z"),
+    fetchImpl: async () => new Response(articlePage("<main>Too short.</main>"), {
+      status: 200,
+      headers: { "content-type": "text/html" },
+    }),
+  });
+  assert.equal(result.items[0]?.body, "RSS dek.");
+  assert.equal(result.metrics.noContent, 1);
+  assert.equal(result.attempts[0]?.state, "no-content");
+  assert.match(result.attempts[0]?.error ?? "", /No usable article body/);
+});
+
+test("fair News selection gives each source a turn before taking a second item", () => {
+  const selected = selectFairNewsArticleCandidates([
+    { origin: "source-a", publishedAt: 4, index: 0, id: "a1" },
+    { origin: "source-a", publishedAt: 3, index: 1, id: "a2" },
+    { origin: "source-b", publishedAt: 2, index: 2, id: "b1" },
+    { origin: "source-c", publishedAt: 1, index: 3, id: "c1" },
+  ], 3);
+  assert.deepEqual(selected.map((row) => row.id), ["a1", "b1", "c1"]);
+  assert.equal(newsArticleBackoffMs("failed", 99), 7 * 24 * 60 * 60 * 1000);
 });

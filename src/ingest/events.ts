@@ -50,6 +50,7 @@ const NJHIMSS_SOURCE = eventSourceById("njhimss-events");
 const DVHIMSS_FALLBACK_URL = "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100";
 const DVHIMSS_LISTING_URL = "https://dvhimss.org/events-calendar";
 const NJ_LISTING_URL = "https://njdvhimssevent.com/";
+const EVENT_REDIRECT_HOSTS = new Set(EVENT_SOURCE_HOSTS);
 
 function validTimeZone(value: unknown): value is string {
   if (typeof value !== "string" || !value.trim()) return false;
@@ -163,6 +164,7 @@ async function readTribePage(url: string, fetchImpl: typeof fetch): Promise<Trib
     maxBytes: EVENTS_MAX_BYTES,
     timeoutMs: SOURCE_TIMEOUT_MS,
     headers: { "user-agent": UA },
+    allowedRedirectHosts: EVENT_REDIRECT_HOSTS,
   });
   try {
     return parseTribeEventsResponse(response.body);
@@ -444,6 +446,7 @@ async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) 
         maxBytes: EVENTS_MAX_BYTES,
         timeoutMs: SOURCE_TIMEOUT_MS,
         headers: { "user-agent": UA },
+        allowedRedirectHosts: EVENT_REDIRECT_HOSTS,
       });
       html = response.body;
       used = url;

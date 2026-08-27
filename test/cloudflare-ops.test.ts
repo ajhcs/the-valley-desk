@@ -16,7 +16,14 @@ import {
   keepHttpsDiscoveryUrl,
   parseEmailDiscovery,
 } from "../src/ingest/email.ts";
-import { persistEditorialDecisions, persistIngestRun, type D1DatabaseLike, type D1StatementLike } from "../src/ingest/persistence.ts";
+import {
+  persistEditorialDecisions,
+  persistIngestRun,
+  persistNewsArticleExtractions,
+  readNewsArticleExtractions,
+  type D1DatabaseLike,
+  type D1StatementLike,
+} from "../src/ingest/persistence.ts";
 import { runAutomation, runtimeFetch } from "../src/ingest/automation.ts";
 import { configureReviewGuardsForTests, handleReviewApi } from "../src/ingest/review-api.ts";
 import { feedXml, sitemapXml } from "../src/ingest/public-feed.ts";
@@ -619,5 +626,43 @@ test("oversized and unsupported inbound email is rejected before persistence", a
   assert.equal(unsupported.outcome, "unsupported_recipient");
   assert.equal(leads.rejected(), "Mailbox unavailable");
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
+  database.close();
+});
+
+test("News article extraction state upserts idempotently and preserves cached text on failure", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const url = "https://news.christianacare.org/article";
+  const cachedText = "A bounded extracted article body that remains available after a refresh failure.";
+  await persistNewsArticleExtractions(db, [{
+    url,
+    state: "success",
+    cachedText,
+    method: "article",
+    attemptCount: 1,
+    lastAttemptedAt: "2026-08-20T12:00:00.000Z",
+    lastSuccessAt: "2026-08-20T12:00:00.000Z",
+    nextAttemptAt: "2026-08-27T12:00:00.000Z",
+    error: null,
+    attemptedAt: "2026-08-20T12:00:00.000Z",
+  }]);
+  await persistNewsArticleExtractions(db, [{
+    url,
+    state: "failed",
+    cachedText,
+    method: "article",
+    attemptCount: 1,
+    lastAttemptedAt: "2026-08-27T12:00:00.000Z",
+    lastSuccessAt: "2026-08-20T12:00:00.000Z",
+    nextAttemptAt: "2026-08-27T18:00:00.000Z",
+    error: "HTTP 503",
+    attemptedAt: "2026-08-27T12:00:00.000Z",
+  }]);
+  const state = await readNewsArticleExtractions(db, [url]);
+  assert.equal(state.size, 1);
+  assert.equal(state.get(url)?.state, "failed");
+  assert.equal(state.get(url)?.cachedText, cachedText);
+  assert.equal(state.get(url)?.error, "HTTP 503");
   database.close();
 });
