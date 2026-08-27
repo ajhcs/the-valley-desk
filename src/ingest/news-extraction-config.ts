@@ -10,3 +10,7 @@ export const NEWS_ARTICLE_SUCCESS_REFRESH_MS = 7 * 24 * 60 * 60 * 1000;
 export const NEWS_ARTICLE_FAILURE_BASE_MS = 6 * 60 * 60 * 1000;
 export const NEWS_ARTICLE_FAILURE_MAX_MS = 7 * 24 * 60 * 60 * 1000;
 export const NEWS_ARTICLE_ERROR_MAX_CHARS = 1_000;
+/** Independent scheduled cleanup. Keep recent success caches and in-window backoff. */
+export const NEWS_ARTICLE_RETENTION_DAYS = 45;
+export const NEWS_ARTICLE_MAX_ROWS = 2_000;
+export const NEWS_ARTICLE_CLEANUP_BATCH = 200;

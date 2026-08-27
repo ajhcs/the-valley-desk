@@ -1,6 +1,7 @@
 import type { D1DatabaseLike } from "./persistence";
 import { normalizeSourceUrl } from "./identity";
 import { logOps } from "../lib/ops";
+import { looksInstructionLike } from "./untrusted-text";
 
 export const EMAIL_DOMAIN = "thevalleydesk.org";
 export const EMAIL_DISCOVERY_VERSION = "email-discovery-v1";
@@ -18,6 +19,14 @@ export const EMAIL_MAX_HEADER_CHARS = 16_384;
 export const EMAIL_RETENTION_DAYS = 90;
 export const EMAIL_MAX_DOMAIN_PER_DAY = 250;
 export const EMAIL_MAX_TOTAL_PER_DAY = 2_000;
+/**
+ * Cloudflare Email Workers expose ordinary MIME headers. This repository does
+ * not prove that inbound Authentication-Results / ARC-Authentication-Results
+ * are stripped and restamped with a Worker-visible Cloudflare authserv-id.
+ * Until that operational prerequisite exists, no header regex authenticates
+ * mail and nothing is admitted as review.
+ */
+export const EMAIL_TRUSTED_AUTHSERV_ID = "";
 
 export const EMAIL_LOCAL_PARTS = [
   "signals",
@@ -49,6 +58,7 @@ export type InboundEmailMessage = {
 
 export type EmailEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
+  EMAIL_TRUSTED_AUTHSERV_ID?: string;
 };
 
 export type AcceptedRecipient = {
@@ -118,8 +128,6 @@ const NEWSLETTER_SENDER_ROOTS = [
   "klaviyo.com",
   "kmail-lists.com",
 ];
-
-const INSTRUCTION_RE = /(ignore (all )?(previous|above) instructions|you are (an? )?(chatgpt|language model|helpful assistant)|system prompt|REVIEW_API_TOKEN|authorization:\s*bearer|auto-?publish|publish (this|now|immediately))/i;
 
 class EmailLimitError extends Error {
   readonly code = "too_large" as const;
@@ -472,14 +480,31 @@ function classifyEmail(input: {
   return "unknown";
 }
 
-function authenticatedEnvelopeSender(headers: Headers, fromDomain: string) {
-  if (!fromDomain || fromDomain === "unknown") return false;
-  const authentication = [
-    headerGet(headers, "authentication-results"),
-    headerGet(headers, "arc-authentication-results"),
-  ].filter(Boolean).join(" ").toLowerCase();
-  if (!authentication || !/(?:spf|dkim|dmarc)\s*=\s*pass\b/.test(authentication)) return false;
-  return authentication.includes(fromDomain.toLowerCase());
+function trustedAuthservId(value: string): string | undefined {
+  const match = /^\s*([A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*)\b/.exec(value);
+  return match?.[1]?.toLowerCase();
+}
+
+function headerHasTrustedCloudflareAuthserv(value: string, expectedAuthservId: string): boolean {
+  return trustedAuthservId(value) === expectedAuthservId.toLowerCase();
+}
+
+function authenticatedEnvelopeSender(headers: Headers, fromDomain: string, expectedAuthservId: string) {
+  if (!expectedAuthservId || !fromDomain || fromDomain === "unknown") return false;
+  const results = [
+    ...headerGet(headers, "authentication-results").split(/\n+/),
+    ...headerGet(headers, "arc-authentication-results").split(/\n+/),
+  ].map((row) => row.trim()).filter(Boolean);
+  const trusted = results.filter((value) => headerHasTrustedCloudflareAuthserv(value, expectedAuthservId));
+  if (trusted.length === 0) return false;
+  const joined = trusted.join(" ").toLowerCase();
+  const escapedDomain = fromDomain.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const exactDomain = `\\s*=?\\s*\"?${escapedDomain}\"?(?=[;,\\s]|$)`;
+  return [
+    new RegExp(`\\bdkim\\s*=\\s*pass\\b[^;,]*(?:header\\.d|d)${exactDomain}`, "i"),
+    new RegExp(`\\bspf\\s*=\\s*pass\\b[^;,]*(?:smtp\\.mailfrom|mailfrom)${exactDomain}`, "i"),
+    new RegExp(`\\bdmarc\\s*=\\s*pass\\b[^;,]*(?:header\\.from|from)${exactDomain}`, "i"),
+  ].some((pattern) => pattern.test(joined));
 }
 
 function excerptFrom(text: string, html: string) {
@@ -501,6 +526,7 @@ export async function parseEmailDiscovery(input: {
   raw: string;
   rawSize: number;
   receivedAt?: string;
+  trustedAuthservId?: string;
 }): Promise<EmailDiscoveryRecord | { error: "unsupported_recipient" }> {
   const recipient = acceptedEmailRecipient(input.envelopeTo) ?? acceptedEmailRecipient(headerGet(input.headers, "to"));
   if (!recipient) return { error: "unsupported_recipient" };
@@ -522,10 +548,14 @@ export async function parseEmailDiscovery(input: {
   const messageId = messageIdRaw || null;
   const excerpt = excerptFrom(mime.text, mime.html);
   const category = classifyEmail({ recipient, fromDomain, subject: subject ?? "", headers: input.headers });
-  const instructionLike = INSTRUCTION_RE.test(`${subject ?? ""}\n${excerpt ?? ""}`);
+  const instructionLike = looksInstructionLike(subject, excerpt);
   const receivedAt = input.receivedAt || new Date().toISOString();
   const rawDigest = await sha256Hex(input.raw);
-  const senderAuthenticated = authenticatedEnvelopeSender(input.headers, fromDomain);
+  const senderAuthenticated = authenticatedEnvelopeSender(
+    input.headers,
+    fromDomain,
+    input.trustedAuthservId?.trim() || EMAIL_TRUSTED_AUTHSERV_ID,
+  );
   const status: EmailDiscoveryStatus = instructionLike || !senderAuthenticated || (urls.length === 0 && category === "unknown")
     ? "ignored"
     : "review";
@@ -565,14 +595,7 @@ export async function persistEmailDiscovery(
   record: EmailDiscoveryRecord,
 ): Promise<"accepted" | "duplicate" | "quota_exceeded"> {
   const existing = await db.prepare("SELECT id FROM email_discoveries WHERE id = ?").bind(record.id).first<{ id: string }>();
-  if (existing) {
-    await db.prepare(`
-      UPDATE email_discoveries
-      SET last_seen_at = ?, receive_count = receive_count + 1
-      WHERE id = ?
-    `).bind(record.receivedAt, record.id).run();
-    return "duplicate";
-  }
+  if (existing) return "duplicate";
   try {
     const dayCutoff = new Date(new Date(record.receivedAt).getTime() - 86_400_000).toISOString();
     const inserted = await db.prepare(`
@@ -610,11 +633,6 @@ export async function persistEmailDiscovery(
     return changedRows(inserted) > 0 ? "accepted" : "quota_exceeded";
   } catch (error) {
     if (!isConstraintError(error)) throw error;
-    await db.prepare(`
-      UPDATE email_discoveries
-      SET last_seen_at = ?, receive_count = receive_count + 1
-      WHERE id = ?
-    `).bind(record.receivedAt, record.id).run();
     return "duplicate";
   }
 }
@@ -717,6 +735,7 @@ export async function handleInboundEmail(message: InboundEmailMessage, env: Emai
       headers: message.headers,
       raw,
       rawSize: message.rawSize,
+      trustedAuthservId: env.EMAIL_TRUSTED_AUTHSERV_ID,
     });
     if ("error" in parsed) {
       message.setReject("Mailbox unavailable");

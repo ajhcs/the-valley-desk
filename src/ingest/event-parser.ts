@@ -9,6 +9,10 @@ export const REGISTRATION_HOSTS = ["cvent.me", "web.cvent.com", ...EVENT_SOURCE_
 export const FALL_CONFERENCE_START = "2026-10-13";
 export const FALL_CONFERENCE_END = "2026-10-15";
 export const GOLF_OUTING_DATE = "2026-10-13";
+/** Closed JSON-LD walk. Excess depth or nodes fail closed as a truncated/partial snapshot. */
+export const JSON_LD_MAX_DEPTH = 8;
+export const JSON_LD_MAX_VISITED = 256;
+export const JSON_LD_MAX_COLLECTION = 64;
 
 const EVENT_TYPES = new Set([
   "event",
@@ -478,12 +482,75 @@ function isFallConferenceDay(day?: string) {
   return Boolean(day && day >= FALL_CONFERENCE_START && day <= FALL_CONFERENCE_END);
 }
 
-export function classifyNjEventKey(title: string, startsAt?: string) {
+export type NjEventKeyExtras = {
+  url?: string;
+  venue?: string;
+};
+
+function listingPathname(value: string | undefined): string {
+  if (!value || !value.trim()) return "";
+  const trimmed = decodeHtml(value.trim());
+  try {
+    const parsed = /^https?:\/\//i.test(trimmed)
+      ? new URL(trimmed)
+      : new URL(trimmed, "https://njdvhimssevent.com/");
+    return parsed.pathname.replace(/\/+$/, "") || "/";
+  } catch {
+    return "";
+  }
+}
+
+function detailPathSlug(url?: string): string {
+  if (!url || !url.trim()) return "";
+  const trimmed = decodeHtml(url.trim());
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      if (!hostAllowed(new URL(trimmed).hostname, EVENT_SOURCE_HOSTS)) return "";
+    } catch {
+      return "";
+    }
+  } else if (trimmed.startsWith("//") || !trimmed.startsWith("/")) {
+    return "";
+  }
+  const path = listingPathname(trimmed);
+  if (!path || path === "/" || path === "/events-calendar") return "";
+  return slugify(path.replace(/^\/+/, "").replace(/\//g, "-"));
+}
+
+function clockDisambiguator(startsAt?: string): string {
+  if (!startsAt) return "";
+  const iso = /^\d{4}-\d{2}-\d{2}T/.test(startsAt) ? startsAt : toIso(startsAt);
+  if (!iso) return "";
+  const day = civilDate(iso);
+  if (!day) return "";
+  const dateOnly = toIso(day);
+  if (!dateOnly || iso === dateOnly) return "";
+  const seen = wallParts(new Date(iso), EVENT_TIMEZONE);
+  if (!seen.hour || !seen.minute) return "";
+  return `${seen.hour}${seen.minute}`;
+}
+
+function genericNjEventDisambiguator(startsAt?: string, extras?: NjEventKeyExtras): string {
+  return detailPathSlug(extras?.url)
+    || (extras?.venue ? slugify(stripHtml(extras.venue)) : "")
+    || clockDisambiguator(startsAt);
+}
+
+export function classifyNjEventKey(title: string, startsAt?: string, extras?: NjEventKeyExtras) {
   const normalized = title.toLowerCase().replace(/\s+/g, " ").trim();
   const day = startsAt ? civilDate(startsAt) : undefined;
   if (isCanonicalGolfTitle(normalized) && day === GOLF_OUTING_DATE) return "golf";
   if (isCanonicalFallConferenceTitle(normalized) && isFallConferenceDay(day)) return "fall-conference";
-  return `generic:${slugify(title)}${day ? `:${day}` : ""}`;
+  const disambiguator = genericNjEventDisambiguator(startsAt, extras);
+  return `generic:${slugify(title)}${day ? `:${day}` : ""}${disambiguator ? `:${disambiguator}` : ""}`;
+}
+
+export function genericNjEventIdentity(event: Pick<ParsedListingEvent, "key" | "title" | "startsAt">) {
+  if (event.key.startsWith("generic:")) {
+    return event.key.slice("generic:".length).replace(/:/g, "-");
+  }
+  const day = civilDate(event.startsAt) ?? event.startsAt.slice(0, 10);
+  return `${slugify(event.title)}-${day}`;
 }
 
 function listingEvent(partial: Omit<ParsedListingEvent, "key"> & { key?: string }): ParsedListingEvent | undefined {
@@ -491,7 +558,7 @@ function listingEvent(partial: Omit<ParsedListingEvent, "key"> & { key?: string 
   const startsAt = toIso(partial.startsAt);
   if (!title || !startsAt) return undefined;
   return {
-    key: partial.key ?? classifyNjEventKey(title, startsAt),
+    key: partial.key ?? classifyNjEventKey(title, startsAt, { url: partial.url, venue: partial.venue }),
     title,
     startsAt,
     endsAt: partial.endsAt ? toIso(partial.endsAt) : undefined,
@@ -533,33 +600,57 @@ function parseJsonLdDocument(raw: string): unknown {
   }
 }
 
+const JSON_LD_GRAPH_KEYS = ["@graph", "itemListElement", "item", "subEvent", "subEvents"] as const;
+
+function walkJsonLdEvents(doc: unknown, stats: {
+  events: ParsedListingEvent[];
+  nodeCount: number;
+  malformed: number;
+  truncated: boolean;
+}) {
+  const stack: Array<{ node: unknown; depth: number }> = [{ node: doc, depth: 0 }];
+  let visited = 0;
+  while (stack.length) {
+    if (visited >= JSON_LD_MAX_VISITED) {
+      stats.truncated = true;
+      return;
+    }
+    const current = stack.pop();
+    if (!current || current.node == null) continue;
+    visited += 1;
+    if (current.depth > JSON_LD_MAX_DEPTH) {
+      stats.truncated = true;
+      continue;
+    }
+    if (Array.isArray(current.node)) {
+      const limit = Math.min(current.node.length, JSON_LD_MAX_COLLECTION);
+      if (current.node.length > JSON_LD_MAX_COLLECTION) stats.truncated = true;
+      for (let index = limit - 1; index >= 0; index -= 1) {
+        stack.push({ node: current.node[index], depth: current.depth + 1 });
+      }
+      continue;
+    }
+    if (typeof current.node !== "object") continue;
+    const obj = current.node as Record<string, unknown>;
+    for (const key of JSON_LD_GRAPH_KEYS) {
+      if (obj[key] != null) stack.push({ node: obj[key], depth: current.depth + 1 });
+    }
+    if (isEventType(obj["@type"])) {
+      stats.nodeCount += 1;
+      const parsed = eventFromJsonLd(obj);
+      if (parsed) stats.events.push(parsed);
+      else stats.malformed += 1;
+    }
+  }
+}
+
 export function parseJsonLdEvents(html: string): {
   events: ParsedListingEvent[];
   nodeCount: number;
   malformed: number;
+  truncated: boolean;
 } {
-  const events: ParsedListingEvent[] = [];
-  const stats = { nodeCount: 0, malformed: 0 };
-  const walk = (node: unknown) => {
-    if (!node) return;
-    if (Array.isArray(node)) {
-      for (const entry of node) walk(entry);
-      return;
-    }
-    if (typeof node !== "object") return;
-    const obj = node as Record<string, unknown>;
-    if (obj["@graph"]) walk(obj["@graph"]);
-    if (obj.itemListElement) walk(obj.itemListElement);
-    if (obj.item) walk(obj.item);
-    if (obj.subEvent) walk(obj.subEvent);
-    if (obj.subEvents) walk(obj.subEvents);
-    if (isEventType(obj["@type"])) {
-      stats.nodeCount += 1;
-      const parsed = eventFromJsonLd(obj);
-      if (parsed) events.push(parsed);
-      else stats.malformed += 1;
-    }
-  };
+  const stats = { events: [] as ParsedListingEvent[], nodeCount: 0, malformed: 0, truncated: false };
   for (const match of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
     const raw = match[1] ?? "";
     const doc = parseJsonLdDocument(raw);
@@ -570,9 +661,10 @@ export function parseJsonLdEvents(html: string): {
       }
       continue;
     }
-    walk(doc);
+    walkJsonLdEvents(doc, stats);
+    if (stats.truncated) break;
   }
-  return { events, nodeCount: stats.nodeCount, malformed: stats.malformed };
+  return { events: stats.events, nodeCount: stats.nodeCount, malformed: stats.malformed, truncated: stats.truncated };
 }
 
 function firstHref(html: string): string | undefined {
@@ -692,6 +784,7 @@ export function parseNjdvhimssPage(html: string): {
   events: ParsedListingEvent[];
   jsonLdEventCount: number;
   jsonLdMalformed: number;
+  jsonLdTruncated: boolean;
   cardMalformed: number;
 } {
   const jsonLd = parseJsonLdEvents(html);
@@ -701,6 +794,7 @@ export function parseNjdvhimssPage(html: string): {
     events: mergeListingEvents([...jsonLd.events, ...cards.events], known),
     jsonLdEventCount: jsonLd.nodeCount,
     jsonLdMalformed: jsonLd.malformed,
+    jsonLdTruncated: jsonLd.truncated,
     cardMalformed: cards.malformed,
   };
 }
@@ -711,8 +805,10 @@ export function njSnapshotCompleteness(input: {
   jsonLdEventCount: number;
   jsonLdMalformed: number;
   cardMalformed?: number;
+  jsonLdTruncated?: boolean;
 }): SnapshotCompleteness {
   if (!input.recognized) return "partial";
+  if (input.jsonLdTruncated) return "partial";
   if (input.jsonLdMalformed > 0 || (input.cardMalformed ?? 0) > 0) return "partial";
   if (input.itemCount === 0) return "empty-unverified";
   if (input.jsonLdEventCount > 0) return "complete";

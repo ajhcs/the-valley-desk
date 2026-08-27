@@ -62,6 +62,8 @@ Hourly cron writes JSON lines for `cron`, `lock`, `run`, `source`, `news-extract
 
 News article extraction is URL-keyed in `news_article_extractions` (`0011`). Successful rows cache bounded normalized text only (never raw HTML) and refresh after 7 days. `failed` and `no-content` cool down from 6 hours with exponential backoff capped at 7 days. A failed refresh keeps the last successful body so the item never regresses to the RSS snippet. Article fetches stay on exact-host HTTPS, with redirect, size, time, concurrency, and per-source candidate-cap bounds.
 
+The scheduled handler starts extraction-cache cleanup in its own `waitUntil`, independently of the content automation promise. Cleanup removes stale rows after 45 days, preserves active backoff and recent successful bodies, and converges the table to a 2,000-row cap in bounded 200-row batches.
+
 ## Email routing and discovery
 
 Email Routing uses the existing `the-valley-desk` Worker and two intentionally separate paths:
@@ -69,7 +71,9 @@ Email Routing uses the existing `the-valley-desk` Worker and two intentionally s
 - `leads@thevalleydesk.org` forwards to the verified destination `clyons@ajhcs.org`. It does not enter D1.
 - `signals@thevalleydesk.org`, `signals+linkedin@thevalleydesk.org`, `linkedin@thevalleydesk.org`, `page(s)@thevalleydesk.org`, and `newsletter(s)@thevalleydesk.org` route to the Worker's `email()` handler.
 
-The email handler stores only bounded metadata, an excerpt, and normalized public HTTPS URLs in `email_discoveries`. It never stores raw MIME or attachments; all URL query parameters are removed because notification and unsubscribe links commonly carry secrets. Message text remains untrusted data, is never executed as instruction, and prompt-injection-like mail is rejected. Accepted discoveries remain review-only and are visible through the protected detailed automation-status endpoint. Category inboxes require a matching envelope-sender domain plus a passing SPF, DKIM, or DMARC result; atomic per-domain/global admission caps limit flooding, and isolated hourly cleanup expires rows after 90 days without blocking the content automation. `leads@` is deliberately not an accepted Worker inbox.
+The email handler stores only bounded metadata, an excerpt, and normalized public HTTPS URLs in `email_discoveries`. It never stores raw MIME or attachments; all URL query parameters are removed because notification and unsubscribe links commonly carry secrets. Message text remains untrusted data, is never executed as instruction, and prompt-injection-like mail is rejected. Accepted discoveries remain review-only and are visible through the protected detailed automation-status endpoint. Atomic per-domain/global admission caps limit flooding, and isolated hourly cleanup expires rows after 90 days without blocking the content automation. `leads@` is deliberately not an accepted Worker inbox.
+
+Email discovery currently fails closed: ordinary MIME `Authentication-Results` and `ARC-Authentication-Results` headers are not trusted because the Worker API does not establish their provenance. `EMAIL_TRUSTED_AUTHSERV_ID` is unset/empty, so signal messages are rejected rather than admitted on spoofable header text. Do not set it or enable discovery aliases until a production capture establishes a Cloudflare-controlled authentication result with a stable authserv-id, or the admission design is replaced with another platform-authenticated signal. Lead forwarding is independent of this gate.
 
 Activate routing only after migration `0010_email_discoveries.sql` and the matching Worker version are deployed:
 
@@ -78,7 +82,7 @@ Activate routing only after migration `0010_email_discoveries.sql` and the match
 3. Add and verify `clyons@ajhcs.org` as a destination address.
 4. Create an exact routing rule from `leads@thevalleydesk.org` to that verified destination.
 5. Create exact Worker routing rules for the signal inboxes above. Do not use a catch-all.
-6. Send one synthetic LinkedIn notification to `signals+linkedin@thevalleydesk.org`; verify one `email_discoveries` row, then resend the same `Message-ID` and verify `receive_count = 2` rather than a duplicate row.
+6. After the trusted-auth prerequisite above is implemented, send one synthetic LinkedIn notification to `signals+linkedin@thevalleydesk.org`; verify one `email_discoveries` row, then resend the exact message and verify the original row remains unchanged (`receive_count = 1`, unchanged `last_seen_at`).
 7. Send a lead to `leads@thevalleydesk.org` and verify delivery to `clyons@ajhcs.org` without a D1 discovery row.
 
 Inbound email is untrusted discovery evidence. It cannot approve, publish, withdraw, or feature content, and it does not reuse `REVIEW_API_TOKEN`.

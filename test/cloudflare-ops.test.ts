@@ -10,13 +10,16 @@ import { evaluateCandidate } from "../src/ingest/editor.ts";
 import { DEFAULT_EDITOR_BASE_URL, DEFAULT_EDITOR_MODEL } from "../src/ingest/editor-model.ts";
 import {
   EMAIL_MAX_RAW_BYTES,
+  EMAIL_TRUSTED_AUTHSERV_ID,
   acceptedEmailRecipient,
   cleanupEmailDiscoveries,
   handleInboundEmail,
   keepHttpsDiscoveryUrl,
   parseEmailDiscovery,
+  persistEmailDiscovery,
 } from "../src/ingest/email.ts";
 import {
+  cleanupNewsArticleExtractions,
   persistEditorialDecisions,
   persistIngestRun,
   persistNewsArticleExtractions,
@@ -24,6 +27,10 @@ import {
   type D1DatabaseLike,
   type D1StatementLike,
 } from "../src/ingest/persistence.ts";
+import {
+  NEWS_ARTICLE_MAX_ROWS,
+  NEWS_ARTICLE_RETENTION_DAYS,
+} from "../src/ingest/news-extraction-config.ts";
 import { runAutomation, runtimeFetch } from "../src/ingest/automation.ts";
 import { configureReviewGuardsForTests, handleReviewApi } from "../src/ingest/review-api.ts";
 import { feedXml, sitemapXml } from "../src/ingest/public-feed.ts";
@@ -558,7 +565,7 @@ test("category aliases require a matching envelope sender and cleanup expires ol
   database.close();
 });
 
-test("inbound LinkedIn mail is bounded, idempotent, review-only, and stores no raw MIME", async () => {
+test("inbound LinkedIn mail is bounded, review-only, and stores no raw MIME", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
   const db = sqliteD1(database);
@@ -588,28 +595,144 @@ test("inbound LinkedIn mail is bounded, idempotent, review-only, and stores no r
   });
   assert.ok(!("error" in parsed));
   assert.equal(parsed.category, "linkedin");
-  assert.equal(parsed.status, "review");
+  assert.equal(parsed.status, "ignored");
   assert.deepEqual(parsed.urls, ["https://linkedin.com/posts/temple-health-update"]);
+  assert.equal(EMAIL_TRUSTED_AUTHSERV_ID, "");
 
   const first = inboundEmail(raw);
-  const accepted = await handleInboundEmail(first.message, { VALLEY_DESK_DB: db });
-  assert.equal(accepted.outcome, "accepted");
-  assert.equal(first.rejected(), "");
-  const replay = inboundEmail(raw);
-  const duplicate = await handleInboundEmail(replay.message, { VALLEY_DESK_DB: db });
-  assert.equal(duplicate.outcome, "duplicate");
-  const row = database.prepare(`
-    SELECT category, status, url_count, urls_json, receive_count, excerpt
-    FROM email_discoveries
-  `).get() as Record<string, unknown>;
-  assert.equal(row.category, "linkedin");
-  assert.equal(row.status, "review");
-  assert.equal(row.url_count, 1);
-  assert.equal(row.receive_count, 2);
-  assert.ok(String(row.excerpt).includes("Temple Health"));
+  const rejected = await handleInboundEmail(first.message, { VALLEY_DESK_DB: db });
+  assert.equal(rejected.outcome, "rejected");
+  assert.equal(first.rejected(), "Mailbox unavailable");
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
   const columns = database.prepare("PRAGMA table_info(email_discoveries)").all() as Array<{ name: string }>;
   assert.equal(columns.some((column) => ["raw", "raw_mime", "mime", "body"].includes(column.name)), false);
   assert.ok(columns.some((column) => column.name === "raw_size"));
+  const emailSrc = readFileSync(join(root, "src/ingest/email.ts"), "utf8");
+  assert.equal(emailSrc.includes("persistEditorialDecisions"), false);
+  assert.equal(emailSrc.includes("evaluateCandidate"), false);
+  database.close();
+});
+
+test("spoofed Authentication-Results never authenticates inbound email", async () => {
+  const raw = "Content-Type: text/plain\r\n\r\nTemple Health posted https://example.com/story";
+  for (const headers of [
+    new Headers({
+      subject: "Update",
+      "message-id": "<spoof-1@example.com>",
+      "authentication-results": "mx.cloudflare.net; dkim=pass header.d=linkedin.com",
+    }),
+    new Headers({
+      subject: "Update",
+      "message-id": "<spoof-2@example.com>",
+      "arc-authentication-results": "i=1; mx.google.com; dkim=pass header.d=linkedin.com",
+    }),
+    new Headers({
+      subject: "Update",
+      "message-id": "<spoof-3@example.com>",
+    }),
+  ]) {
+    const parsed = await parseEmailDiscovery({
+      envelopeFrom: "notifications-noreply@linkedin.com",
+      envelopeTo: "signals+linkedin@thevalleydesk.org",
+      headers,
+      raw,
+      rawSize: 80,
+      receivedAt: "2026-08-27T17:00:00.000Z",
+    });
+    assert.ok(!("error" in parsed));
+    assert.equal(parsed.status, "ignored");
+  }
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const inbound = inboundEmail(raw);
+  const result = await handleInboundEmail(inbound.message, { VALLEY_DESK_DB: db });
+  assert.equal(result.outcome, "rejected");
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
+  database.close();
+});
+
+test("email authentication accepts only an explicitly configured exact authserv-id", async () => {
+  const raw = "Content-Type: text/plain\r\n\r\nTemple Health posted https://example.com/story";
+  const base = {
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    raw,
+    rawSize: 80,
+    receivedAt: "2026-08-27T17:00:00.000Z",
+    trustedAuthservId: "trusted.mx.cloudflare.net",
+  };
+  const accepted = await parseEmailDiscovery({
+    ...base,
+    headers: new Headers({
+      subject: "Update",
+      "message-id": "<trusted-1@example.com>",
+      "authentication-results": "trusted.mx.cloudflare.net; dkim=pass header.d=linkedin.com",
+    }),
+  });
+  assert.ok(!("error" in accepted));
+  assert.equal(accepted.status, "review");
+
+  const lookalike = await parseEmailDiscovery({
+    ...base,
+    headers: new Headers({
+      subject: "Update",
+      "message-id": "<trusted-2@example.com>",
+      "authentication-results": "trusted.mx.cloudflare.net.attacker.example; dkim=pass header.d=linkedin.com",
+    }),
+  });
+  assert.ok(!("error" in lookalike));
+  assert.equal(lookalike.status, "ignored");
+
+  const senderLookalike = await parseEmailDiscovery({
+    ...base,
+    headers: new Headers({
+      subject: "Update",
+      "message-id": "<trusted-3@example.com>",
+      "authentication-results": "trusted.mx.cloudflare.net; dkim=pass header.d=linkedin.com.attacker.example",
+    }),
+  });
+  assert.ok(!("error" in senderLookalike));
+  assert.equal(senderLookalike.status, "ignored");
+});
+
+test("exact duplicate email replays are idempotent without extra writes or cap refresh", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const raw = "Content-Type: text/plain\r\n\r\nhttps://example.com/story";
+  const parsed = await parseEmailDiscovery({
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    headers: new Headers({
+      subject: "Update",
+      "message-id": "<dup-1@example.com>",
+      "content-type": "text/plain",
+    }),
+    raw,
+    rawSize: 80,
+    receivedAt: "2026-08-26T12:00:00.000Z",
+  });
+  assert.ok(!("error" in parsed));
+  parsed.status = "review";
+  assert.equal(await persistEmailDiscovery(db, parsed), "accepted");
+  const first = database.prepare(`
+    SELECT last_seen_at, receive_count, first_seen_at FROM email_discoveries WHERE id = ?
+  `).get(parsed.id) as { last_seen_at: string; receive_count: number; first_seen_at: string };
+  assert.equal(first.receive_count, 1);
+  assert.equal(first.last_seen_at, "2026-08-26T12:00:00.000Z");
+  const replay = { ...parsed, receivedAt: "2026-08-27T17:00:00.000Z", status: "review" as const };
+  for (let index = 0; index < 8; index += 1) {
+    assert.equal(await persistEmailDiscovery(db, replay), "duplicate");
+  }
+  const after = database.prepare(`
+    SELECT last_seen_at, receive_count FROM email_discoveries WHERE id = ?
+  `).get(parsed.id) as { last_seen_at: string; receive_count: number };
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 1);
+  assert.equal(after.receive_count, 1);
+  assert.equal(after.last_seen_at, "2026-08-26T12:00:00.000Z");
+  await cleanupEmailDiscoveries(db, new Date("2026-12-01T00:00:00.000Z"));
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
   database.close();
 });
 
@@ -626,6 +749,86 @@ test("oversized and unsupported inbound email is rejected before persistence", a
   assert.equal(unsupported.outcome, "unsupported_recipient");
   assert.equal(leads.rejected(), "Mailbox unavailable");
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
+  database.close();
+});
+
+test("news article extraction cleanup expires stale rows and preserves recent success and backoff", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const now = new Date("2026-08-27T12:00:00.000Z");
+  const stale = new Date(now.getTime() - (NEWS_ARTICLE_RETENTION_DAYS + 5) * 86_400_000).toISOString();
+  const recent = "2026-08-26T12:00:00.000Z";
+  const futureBackoff = "2026-08-28T12:00:00.000Z";
+  const cachedText = "A bounded extracted article body that remains available after cleanup.";
+  await persistNewsArticleExtractions(db, [
+    {
+      url: "https://news.christianacare.org/stale-failure",
+      state: "failed",
+      cachedText: null,
+      method: null,
+      attemptCount: 3,
+      lastAttemptedAt: stale,
+      lastSuccessAt: null,
+      nextAttemptAt: stale,
+      error: "HTTP 503",
+      attemptedAt: stale,
+    },
+    {
+      url: "https://news.christianacare.org/recent-success",
+      state: "success",
+      cachedText,
+      method: "article",
+      attemptCount: 1,
+      lastAttemptedAt: recent,
+      lastSuccessAt: recent,
+      nextAttemptAt: "2026-09-02T12:00:00.000Z",
+      error: null,
+      attemptedAt: recent,
+    },
+    {
+      url: "https://news.christianacare.org/active-backoff",
+      state: "failed",
+      cachedText,
+      method: "article",
+      attemptCount: 2,
+      lastAttemptedAt: stale,
+      lastSuccessAt: stale,
+      nextAttemptAt: futureBackoff,
+      error: "Timed out",
+      attemptedAt: stale,
+    },
+  ]);
+  await cleanupNewsArticleExtractions(db, now);
+  const remaining = [...(await readNewsArticleExtractions(db)).keys()].sort();
+  assert.deepEqual(remaining, [
+    "https://news.christianacare.org/active-backoff",
+    "https://news.christianacare.org/recent-success",
+  ]);
+  assert.equal((await readNewsArticleExtractions(db, ["https://news.christianacare.org/recent-success"])).get("https://news.christianacare.org/recent-success")?.cachedText, cachedText);
+
+  const overflow = Array.from({ length: NEWS_ARTICLE_MAX_ROWS + 5 }, (_, index) => ({
+    url: `https://news.christianacare.org/overflow-${index}`,
+    state: "failed" as const,
+    cachedText: null,
+    method: null,
+    attemptCount: 1,
+    lastAttemptedAt: `2026-08-01T${String(index % 24).padStart(2, "0")}:00:00.000Z`,
+    lastSuccessAt: null,
+    nextAttemptAt: stale,
+    error: "HTTP 404",
+    attemptedAt: stale,
+  }));
+  await persistNewsArticleExtractions(db, overflow);
+  await cleanupNewsArticleExtractions(db, now);
+  const afterCap = await readNewsArticleExtractions(db);
+  assert.ok(afterCap.size <= NEWS_ARTICLE_MAX_ROWS);
+  assert.ok(afterCap.has("https://news.christianacare.org/recent-success"));
+  assert.ok(afterCap.has("https://news.christianacare.org/active-backoff"));
+  const worker = readFileSync(join(root, "worker.js"), "utf8");
+  assert.ok(worker.includes("cleanupNewsArticleExtractions"));
+  assert.ok(worker.includes("news-extraction-cleanup"));
+  assert.ok(worker.indexOf("cleanupNewsArticleExtractions") < worker.indexOf("runAutomation(env)"));
   database.close();
 });
 

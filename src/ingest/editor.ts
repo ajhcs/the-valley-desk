@@ -4,8 +4,9 @@ import { isOfficialChapterEvent, validateForPublication } from "../content/publi
 import type { EditorEnrichment } from "./editor-model";
 import { matchingProductUses } from "./product-watch";
 import { professionalizeHeadline } from "../lib/editorialCopy";
+import { looksInstructionLike } from "./untrusted-text";
 
-export const EDITOR_POLICY_VERSION = "tvd-auto-editor-v3";
+export const EDITOR_POLICY_VERSION = "tvd-auto-editor-v4";
 
 export type EditorAction = "publish" | "review" | "reject";
 export type EditorDecision = {
@@ -158,6 +159,9 @@ export function evaluateCandidate(
 
   if (item.kind !== "news" && item.kind !== "policy" && item.kind !== "ai") {
     return review("unsupported-auto-kind", ["This content kind is not automatically published"]);
+  }
+  if (looksInstructionLike(item.title, item.dek, item.body, item.source.origin, item.source.url)) {
+    return review("untrusted-source-instructions", ["Source text contains instruction-like content and is held from automatic publication"]);
   }
   if (item.orgs.length === 0) return review("local-org-required", ["No verified regional health-system relationship"]);
   if (!enrichment) return review("model-evidence-required", ["Model evidence was unavailable"]);

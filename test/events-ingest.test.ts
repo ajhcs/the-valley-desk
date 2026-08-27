@@ -5,6 +5,9 @@ import { evaluateCandidate } from "../src/ingest/editor.ts";
 import { eventSchedule } from "../src/lib/calendar.ts";
 import {
   DVHIMSS_MAX_PAGES,
+  JSON_LD_MAX_COLLECTION,
+  JSON_LD_MAX_DEPTH,
+  JSON_LD_MAX_VISITED,
   classifyNjEventKey,
   isSafeTribeNextUrl,
   matchKnownNjdvhimssEvents,
@@ -537,7 +540,7 @@ test("relative event URLs resolve against the official source and same-page link
   const mixer = items.find((item) => item.title === "Spring Mixer");
   const breakfast = items.find((item) => item.title === "Board Breakfast");
   assert.equal(winter?.source.url, "https://njdvhimssevent.com/winter-forum");
-  assert.equal(winter?.id, "evt-njdvhimss-winter-forum-2026-12-04");
+  assert.equal(winter?.id, "evt-njdvhimss-winter-forum-2026-12-04-winter-forum");
   assert.equal(mixer?.id, "evt-njdvhimss-spring-mixer-2026-03-03");
   assert.equal(breakfast?.id, "evt-njdvhimss-board-breakfast-2026-04-01");
   assert.notEqual(mixer?.id, breakfast?.id);
@@ -654,4 +657,100 @@ test("known conference and golf keys require event-level title and date evidence
   assert.equal(committee?.key.startsWith("generic:"), true);
   assert.equal(parsed.events.some((event) => event.key === "fall-conference"), true);
   assert.equal(parsed.events.some((event) => event.key === "golf"), false);
+});
+
+test("deeply nested NJ JSON-LD fails closed as a truncated partial snapshot", async () => {
+  let nested: unknown = {
+    "@type": "Event",
+    name: "Buried Forum",
+    startDate: "2026-12-04",
+    url: "https://njdvhimssevent.com/buried-forum",
+  };
+  for (let depth = 0; depth < JSON_LD_MAX_DEPTH + 40; depth += 1) {
+    nested = { "@graph": [nested] };
+  }
+  const html = recognizedNj(`<script type="application/ld+json">${JSON.stringify(nested)}</script>`);
+  const parsed = parseJsonLdEvents(html);
+  assert.equal(parsed.truncated, true);
+  assert.ok(parsed.events.length <= JSON_LD_MAX_VISITED);
+  assert.equal(parsed.events.some((event) => event.title === "Buried Forum"), false);
+  assert.equal(
+    njSnapshotCompleteness({
+      recognized: true,
+      itemCount: parsed.events.length,
+      jsonLdEventCount: parsed.nodeCount,
+      jsonLdMalformed: parsed.malformed,
+      jsonLdTruncated: parsed.truncated,
+    }),
+    "partial",
+  );
+  const result = await ingestEventsWithHealth(new Date(FETCHED_AT), eventsFetch({ nj: html }));
+  const nj = result.sources.find((source) => source.id === "njhimss-events");
+  assert.equal(nj?.completeness, "partial");
+  assert.equal(sourceAuthorizesDisappearance(nj!), false);
+
+  const wide = Array.from({ length: JSON_LD_MAX_COLLECTION + 80 }, (_, index) => ({
+    "@type": "Event",
+    name: `Overflow Forum ${index}`,
+    startDate: "2026-12-04",
+    url: `https://njdvhimssevent.com/overflow-${index}`,
+  }));
+  const wideParsed = parseJsonLdEvents(recognizedNj(
+    `<script type="application/ld+json">${JSON.stringify({ "@graph": wide })}</script>`,
+  ));
+  assert.equal(wideParsed.truncated, true);
+  assert.ok(wideParsed.events.length <= JSON_LD_MAX_COLLECTION);
+  assert.ok(wideParsed.events.length < wide.length);
+});
+
+test("generic NJ events with the same title and day keep distinct identities unless they are true duplicates", async () => {
+  const html = recognizedNj(`
+    <script type="application/ld+json">
+      ${JSON.stringify({
+        "@graph": [
+          {
+            "@type": "Event",
+            name: "Chapter Briefing",
+            startDate: "2026-11-10T09:00:00-05:00",
+            url: "https://njdvhimssevent.com/briefing-morning",
+            location: { "@type": "Place", name: "Newark" },
+          },
+          {
+            "@type": "Event",
+            name: "Chapter Briefing",
+            startDate: "2026-11-10T14:00:00-05:00",
+            url: "https://njdvhimssevent.com/briefing-afternoon",
+            location: { "@type": "Place", name: "Princeton" },
+          },
+          {
+            "@type": "Event",
+            name: "Chapter Briefing",
+            startDate: "2026-11-10T09:00:00-05:00",
+            url: "https://njdvhimssevent.com/briefing-morning",
+            location: { "@type": "Place", name: "Newark" },
+          },
+        ],
+      })}
+    </script>
+  `);
+  const parsed = parseNjdvhimssPage(html);
+  const briefings = parsed.events.filter((event) => event.title === "Chapter Briefing");
+  assert.equal(briefings.length, 2);
+  assert.notEqual(briefings[0]?.key, briefings[1]?.key);
+  const items = await scrapeNjdvhimss(async () => new Response(html, { status: 200 }), FETCHED_AT);
+  const ids = items.filter((item) => item.title === "Chapter Briefing").map((item) => item.id).sort();
+  assert.equal(ids.length, 2);
+  assert.notEqual(ids[0], ids[1]);
+  assert.equal(
+    classifyNjEventKey("Winter Forum", "2026-12-04"),
+    classifyNjEventKey("Winter Forum", "2026-12-04T05:00:00.000Z"),
+  );
+  assert.notEqual(
+    classifyNjEventKey("Chapter Briefing", "2026-11-10T14:00:00-05:00", { venue: "Newark" }),
+    classifyNjEventKey("Chapter Briefing", "2026-11-10T14:00:00-05:00", { venue: "Princeton" }),
+  );
+  assert.notEqual(
+    classifyNjEventKey("Chapter Briefing", "2026-11-10T09:00:00-05:00"),
+    classifyNjEventKey("Chapter Briefing", "2026-11-10T14:00:00-05:00"),
+  );
 });

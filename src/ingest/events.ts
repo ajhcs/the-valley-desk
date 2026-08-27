@@ -9,8 +9,8 @@ import {
   EVENT_TIMEZONE,
   REGISTRATION_HOSTS,
   allowlistedHttps,
-  civilDate,
   decodeHtml,
+  genericNjEventIdentity,
   isSafeTribeNextUrl,
   isSameListingPage,
   njSnapshotCompleteness,
@@ -400,11 +400,10 @@ function njEventFields(event: ParsedListingEvent, fetchedAt: string, used: strin
       partner: "njhimss",
     };
   }
-  const day = civilDate(event.startsAt) ?? event.startsAt.slice(0, 10);
-  const identity = `${slugify(event.title)}-${day}`;
+  const identity = genericNjEventIdentity(event);
   return {
     id: `evt-njdvhimss-${identity}`,
-    slug: slugify(event.title),
+    slug: slugify(identity),
     title: event.title,
     dek: "Official NJ/DVHIMSS chapter event.",
     body: officialEventBody(event.title, event.venue, event.city, event.description),
@@ -481,6 +480,7 @@ async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) 
     itemCount: rows.length,
     jsonLdEventCount: parsed.jsonLdEventCount,
     jsonLdMalformed: parsed.jsonLdMalformed,
+    jsonLdTruncated: parsed.jsonLdTruncated,
     cardMalformed: parsed.cardMalformed,
   });
   return { items: rows, completeness, url: used };

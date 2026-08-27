@@ -17,6 +17,11 @@ import type {
   NewsArticleExtractionState,
 } from "./news-extraction";
 import {
+  NEWS_ARTICLE_CLEANUP_BATCH,
+  NEWS_ARTICLE_MAX_ROWS,
+  NEWS_ARTICLE_RETENTION_DAYS,
+} from "./news-extraction-config";
+import {
   isFailureSourceState,
   isSuccessfulSourceState,
   snapshotCompleteness,
@@ -699,6 +704,40 @@ export async function persistNewsArticleExtractions(
     await db.batch(statements.slice(index, index + 50));
   }
   return statements.length;
+}
+
+export async function cleanupNewsArticleExtractions(db: D1DatabaseLike, now = new Date()) {
+  const nowIso = now.toISOString();
+  const retentionCutoff = new Date(now.getTime() - NEWS_ARTICLE_RETENTION_DAYS * 86_400_000).toISOString();
+  await db.prepare(`
+    DELETE FROM news_article_extractions
+    WHERE url IN (
+      SELECT url FROM news_article_extractions
+      WHERE last_attempted_at < ?
+        AND next_attempt_at < ?
+        AND (last_success_at IS NULL OR last_success_at < ?)
+      ORDER BY COALESCE(last_success_at, last_attempted_at) ASC, url ASC
+      LIMIT ?
+    )
+  `).bind(retentionCutoff, nowIso, retentionCutoff, NEWS_ARTICLE_CLEANUP_BATCH).run();
+
+  const counted = await db.prepare("SELECT COUNT(*) AS count FROM news_article_extractions").first<{ count: number }>();
+  const count = Number(counted?.count ?? 0);
+  if (!Number.isFinite(count) || count <= NEWS_ARTICLE_MAX_ROWS) return;
+  const excess = Math.min(NEWS_ARTICLE_CLEANUP_BATCH, count - NEWS_ARTICLE_MAX_ROWS);
+  if (excess <= 0) return;
+  await db.prepare(`
+    DELETE FROM news_article_extractions
+    WHERE url IN (
+      SELECT url FROM news_article_extractions
+      ORDER BY
+        CASE WHEN next_attempt_at >= ? THEN 1 ELSE 0 END ASC,
+        CASE WHEN last_success_at IS NOT NULL AND last_success_at >= ? THEN 1 ELSE 0 END ASC,
+        COALESCE(last_success_at, last_attempted_at) ASC,
+        url ASC
+      LIMIT ?
+    )
+  `).bind(nowIso, retentionCutoff, excess).run();
 }
 
 export const EVENT_CATASTROPHIC_DROP_RATIO = 0.5;
