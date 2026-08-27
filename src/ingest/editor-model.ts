@@ -10,9 +10,10 @@ import { looksInstructionLike } from "./untrusted-text";
 export const DEFAULT_EDITOR_MODEL = "meta/muse-spark-1.2-contributor";
 export const DEFAULT_EDITOR_BASE_URL = "https://openrouter.ai/api/v1";
 export const EDITOR_PROMPT_VERSION = "tvd-editor-v6";
-export const DEFAULT_EDITOR_TIMEOUT_MS = 25_000;
+export const DEFAULT_EDITOR_TIMEOUT_MS = 45_000;
 export const EDITOR_OUTPUT_MAX_TOKENS = 4096;
-export const EDITOR_REASONING_MAX_TOKENS = 512;
+export const EDITOR_REASONING_EFFORT = "low";
+export const MAX_EDITOR_TIMEOUT_MS = 120_000;
 
 const VERIFIED_PUBLISHED_CONTEXT = ContentCatalog.parse(publishedCatalog);
 
@@ -207,7 +208,7 @@ export async function enrichWithEditorModel(
         temperature: 0.1,
         max_tokens: EDITOR_OUTPUT_MAX_TOKENS,
         reasoning: {
-          max_tokens: EDITOR_REASONING_MAX_TOKENS,
+          effort: EDITOR_REASONING_EFFORT,
           exclude: true,
         },
         messages: [

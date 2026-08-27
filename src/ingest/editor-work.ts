@@ -5,7 +5,7 @@ import { matchingProductUses } from "./product-watch";
 
 export const DEFAULT_EDITOR_MODEL_BUDGET = 4;
 export const DEFAULT_EDITOR_MODEL_CONCURRENCY = 2;
-export const DEFAULT_EDITOR_MODEL_DEADLINE_MS = 40_000;
+export const DEFAULT_EDITOR_MODEL_DEADLINE_MS = 110_000;
 export const DEFAULT_FAILURE_COOLDOWN_HOURS = 6;
 export const MAX_FAILURE_COOLDOWN_HOURS = 24 * 7;
 export const MAX_EDITOR_MODEL_BUDGET = 20;

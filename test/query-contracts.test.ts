@@ -118,12 +118,14 @@ import {
   DEFAULT_EDITOR_BASE_URL,
   DEFAULT_EDITOR_MODEL,
   EDITOR_OUTPUT_MAX_TOKENS,
-  EDITOR_REASONING_MAX_TOKENS,
+  EDITOR_REASONING_EFFORT,
+  MAX_EDITOR_TIMEOUT_MS,
 } from "../src/ingest/editor-model.ts";
 import {
   DEFAULT_EDITOR_MODEL_BUDGET,
   editorModelBackoffMs,
   isEditorModelEligible,
+  parseBoundedInt,
   selectEditorModelWork,
   selectEditorModelWorkWithMetrics,
   shouldEnrichCandidate,
@@ -3776,7 +3778,8 @@ test("Muse editor client is provider-configurable and evidence-bound", async () 
     assert.equal(request.model, DEFAULT_EDITOR_MODEL);
     assert.equal(request.response_format.type, "json_object");
     assert.equal(request.max_tokens, EDITOR_OUTPUT_MAX_TOKENS);
-    assert.equal(request.reasoning.max_tokens, EDITOR_REASONING_MAX_TOKENS);
+    assert.equal(request.reasoning.effort, EDITOR_REASONING_EFFORT);
+    assert.equal(request.reasoning.max_tokens, undefined);
     assert.equal(request.reasoning.exclude, true);
     return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(payload) } }] }));
   };
@@ -3952,8 +3955,8 @@ test("one-worker configuration has Muse defaults, one D1 binding, and no staging
   assert.ok(wrangler.includes("https://openrouter.ai/api/v1"));
   assert.ok(wrangler.includes('"EDITOR_MODEL_BUDGET": "4"'));
   assert.ok(wrangler.includes('"EDITOR_MODEL_CONCURRENCY": "2"'));
-  assert.ok(wrangler.includes('"EDITOR_MODEL_TIMEOUT_MS": "25000"'));
-  assert.ok(wrangler.includes('"EDITOR_MODEL_DEADLINE_MS": "40000"'));
+  assert.ok(wrangler.includes('"EDITOR_MODEL_TIMEOUT_MS": "45000"'));
+  assert.ok(wrangler.includes('"EDITOR_MODEL_DEADLINE_MS": "110000"'));
   assert.ok(wrangler.includes('"database_name": "the-valley-desk"'));
   assert.ok(!wrangler.includes('"staging"'));
   assert.ok(pkg.scripts.deploy.startsWith("npm run build && wrangler deploy"));
@@ -4310,6 +4313,7 @@ test("Muse JSON is extracted from fences and whitespace without loosening eviden
   const fencedFetch = async (_input: string | URL | Request, init?: RequestInit) => {
     const request = JSON.parse(String(init?.body));
     assert.equal(request.max_tokens, EDITOR_OUTPUT_MAX_TOKENS);
+    assert.equal(request.reasoning.effort, EDITOR_REASONING_EFFORT);
     assert.equal(request.reasoning.exclude, true);
     return new Response(JSON.stringify({
       choices: [{ message: { content: `\n\`\`\`json\n${JSON.stringify(payload)}\n\`\`\`\n` } }],
@@ -4657,6 +4661,11 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(model.includes("Every affectedOrgId and productId must come verbatim"));
   assert.ok(wrangler.includes('"crons": ["0 * * * *"]'));
   assert.ok(example.includes("EDITOR_MODEL_BUDGET=4"));
+  assert.ok(example.includes("EDITOR_MODEL_TIMEOUT_MS=45000"));
+  assert.ok(example.includes("EDITOR_MODEL_DEADLINE_MS=110000"));
+  assert.equal(MAX_EDITOR_TIMEOUT_MS, 120_000);
+  assert.equal(parseBoundedInt("45000", 45_000, 1_000, MAX_EDITOR_TIMEOUT_MS), 45_000);
+  assert.equal(parseBoundedInt("25001", 45_000, 1_000, MAX_EDITOR_TIMEOUT_MS), 25_001);
   assert.ok(readme.includes("EDITOR_MODEL_BUDGET"));
   assert.ok(readme.includes("waitUntil"));
   assert.ok(readme.includes("There is no automatic fallback to standard Muse"));

@@ -4,6 +4,7 @@ import {
   DEFAULT_EDITOR_BASE_URL,
   DEFAULT_EDITOR_MODEL,
   DEFAULT_EDITOR_TIMEOUT_MS,
+  MAX_EDITOR_TIMEOUT_MS,
   EditorModelError,
   enrichWithEditorModel,
 } from "./editor-model";
@@ -235,7 +236,7 @@ export async function runAutomation(
       env.EDITOR_MODEL_TIMEOUT_MS,
       DEFAULT_EDITOR_TIMEOUT_MS,
       1_000,
-      DEFAULT_EDITOR_TIMEOUT_MS,
+      MAX_EDITOR_TIMEOUT_MS,
     );
     const deadlineMs = parseBoundedInt(
       env.EDITOR_MODEL_DEADLINE_MS,
