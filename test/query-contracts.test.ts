@@ -1177,7 +1177,9 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(footer.includes("Voices"));
   assert.ok(footer.includes("feed.json"));
   assert.ok(footer.includes("feed.xml"));
-  assert.ok(footer.includes("© The Valley Desk"));
+  assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
+  assert.ok(footer.includes("© thedeskgroup -"));
+  assert.ok(footer.includes('href="https://ushso.org/"'));
   assert.ok(!footer.toLowerCase().includes("subscribe"));
   assert.ok(!home.includes("SiteFooter"));
   assert.ok(layout.includes("SiteFooter"));
@@ -2163,8 +2165,9 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(layout.includes("is-voices"));
   assert.ok(layout.includes("navSection"));
   assert.ok(layout.includes('to="/voices"'));
-  assert.ok(footer.includes("Delaware Valley"));
-  assert.ok(footer.includes("© The Valley Desk"));
+  assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
+  assert.ok(footer.includes("© thedeskgroup -"));
+  assert.ok(footer.includes(">USHSO.org<"));
   assert.ok(css.includes(".NavLink:focus-visible"));
   assert.ok(css.includes("outline-width: 2px"));
   assert.ok(css.includes("outline-style: solid"));
