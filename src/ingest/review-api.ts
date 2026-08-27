@@ -262,7 +262,12 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         return json({ error: "invalid_overrides" }, 400);
       }
     }
-    const id = decodeURIComponent(decisionMatch[1]);
+    let id = "";
+    try {
+      id = decodeURIComponent(decisionMatch[1]);
+    } catch {
+      return json({ error: "invalid_candidate_id" }, 400);
+    }
     const current = await env.VALLEY_DESK_DB.prepare(
       "SELECT queue_status FROM content_candidates WHERE id = ?",
     ).bind(id).first<{ queue_status: string }>();
@@ -285,7 +290,12 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         "SELECT content_json FROM content_candidates WHERE id = ? AND queue_status = 'review'",
       ).bind(id).first<{ content_json: string }>();
       if (!row) return json({ error: "candidate_not_reviewable" }, 409);
-      const raw = JSON.parse(row.content_json) as Record<string, unknown>;
+      let raw: Record<string, unknown>;
+      try {
+        raw = JSON.parse(row.content_json) as Record<string, unknown>;
+      } catch {
+        return json({ error: "candidate_not_publishable", issues: [] }, 409);
+      }
       const parsed = ContentItem.safeParse({
         ...raw,
         status: "published",
@@ -310,8 +320,13 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         "SELECT content_json FROM published_content WHERE candidate_id = ? LIMIT 1",
       ).bind(id).first<{ content_json: string }>();
       if (live) {
-        const previous = ContentItem.safeParse(JSON.parse(live.content_json));
-        if (previous.success) {
+        let previous: ReturnType<typeof ContentItem.safeParse> | null = null;
+        try {
+          previous = ContentItem.safeParse(JSON.parse(live.content_json));
+        } catch {
+          previous = null;
+        }
+        if (previous?.success) {
           approvedContent = ContentItem.parse(retainPublishedIdentity(previous.data, approvedContent));
         }
       }
@@ -320,8 +335,14 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         "SELECT content_json FROM content_candidates WHERE id = ? AND queue_status IN ('review', 'approved')",
       ).bind(id).first<{ content_json: string }>();
       if (!row) return json({ error: "candidate_not_reviewable" }, 409);
+      let raw: Record<string, unknown>;
+      try {
+        raw = JSON.parse(row.content_json) as Record<string, unknown>;
+      } catch {
+        return json({ error: "candidate_not_publishable", issues: [] }, 409);
+      }
       const parsed = ContentItem.safeParse({
-        ...JSON.parse(row.content_json),
+        ...raw,
         status: "unpublished",
         featured: false,
       });
@@ -360,7 +381,10 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
         INSERT INTO published_content (
           candidate_id, id, kind, slug, content_json, policy_version, decision_json,
           first_published_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        )
+        SELECT c.id, ?, ?, ?, ?, ?, ?, ?, ?
+        FROM content_candidates c
+        WHERE c.id = ? AND c.queue_status = 'approved' AND c.reviewed_at = ?
         ON CONFLICT(candidate_id) DO UPDATE SET
           kind = excluded.kind,
           slug = published_content.slug,
@@ -369,7 +393,6 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
           decision_json = excluded.decision_json,
           updated_at = excluded.updated_at
       `).bind(
-        id,
         approvedContent.id,
         approvedContent.kind,
         approvedContent.slug,
@@ -382,6 +405,8 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
           overrides: overrides ?? undefined,
         }),
         approvedContent.publishedAt || decidedAt,
+        decidedAt,
+        id,
         decidedAt,
       ));
       for (const alias of approvedContent.previousSlugs ?? []) {

@@ -76,25 +76,6 @@
   flex: 0 0 36px;
 }
 
-.LabMark img {
-  width: 36px;
-  height: 36px;
-  display: block;
-}
-
-.LabMark.is-motion img {
-  animation: lab-mark-settle var(--motion-fast) var(--ease-out) both;
-}
-
-@keyframes lab-mark-settle {
-  from {
-    transform: translateY(1px) scale(0.985);
-  }
-  to {
-    transform: none;
-  }
-}
-
 .LabSwitch {
   display: flex;
   flex-wrap: wrap;
@@ -950,7 +931,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .LabMark.is-motion img,
   .LabRow,
   .LabSystem,
   .LabTick,

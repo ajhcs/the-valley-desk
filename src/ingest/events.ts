@@ -322,7 +322,12 @@ async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) 
     ? "partial"
     : rows.length === 0
       ? "empty-unverified"
-      : "complete";
+      : rows.length < 2
+        // This page currently carries the conference and golf outing. A
+        // one-card regex match is a partial parser result, not evidence that
+        // the other confirmed event disappeared.
+        ? "partial"
+        : "complete";
   return { items: rows, completeness, url: used };
 }
 

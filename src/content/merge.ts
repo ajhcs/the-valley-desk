@@ -75,7 +75,6 @@ function sameScheduledEvent(left: ContentItem, right: ContentItem) {
   if (left.kind !== "event" || right.kind !== "event" || left.startsAt !== right.startsAt) return false;
   const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   if (normalize(left.title) === normalize(right.title)) return true;
-  if (left.partner === right.partner) return true;
   const chapterPartners = new Set(["dvhimss", "njhimss"]);
   return chapterPartners.has(left.partner)
     && chapterPartners.has(right.partner)

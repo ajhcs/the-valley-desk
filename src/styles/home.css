@@ -108,11 +108,52 @@
 }
 
 .MarkFold {
+  --fold-ms: 800ms;
   display: block;
   width: 36px;
   height: 36px;
+  flex: 0 0 36px;
+  overflow: hidden;
   animation: none;
   transform: none;
+}
+
+.MarkFold svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.MarkFold-left,
+.MarkFold-right,
+.MarkFold-crease {
+  transform-box: view-box;
+  transform-origin: 32px 32px;
+}
+
+.MarkFold.is-session-fold .MarkFold-left,
+.MarkFold.is-session-fold .MarkFold-right {
+  animation: fold-open-plane var(--fold-ms) var(--ease-out) 1 both;
+}
+
+.MarkFold.is-session-fold .MarkFold-crease {
+  animation: fold-open-crease var(--fold-ms) var(--ease-out) 1 both;
+}
+
+@keyframes fold-open-plane {
+  from { transform: scaleX(0.14); }
+  to { transform: none; }
+}
+
+@keyframes fold-open-crease {
+  from {
+    opacity: 0.4;
+    transform: scaleX(0.35);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .Wordmark {
@@ -1050,7 +1091,6 @@ ul.desk {
   animation-delay: calc(var(--stagger) * 2);
 }
 
-.HomePage.is-session-first .MarkFold,
 .HomePage.is-session-first .DateChip,
 .HomePage.is-session-first .StatusChip[data-queued="true"] {
   animation: none;
@@ -1173,6 +1213,14 @@ ul.desk {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .MarkFold.is-session-fold .MarkFold-left,
+  .MarkFold.is-session-fold .MarkFold-right,
+  .MarkFold.is-session-fold .MarkFold-crease {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+
   .HomePage.is-session-first .lead,
   .HomePage.is-session-first .Lead,
   .HomePage.is-session-first ul.desk > .DeskRow,

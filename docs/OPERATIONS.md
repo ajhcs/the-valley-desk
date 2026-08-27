@@ -1,30 +1,28 @@
 # The Valley Desk operations
 
-One production Worker (`the-valley-desk`) serves the preview and, later, the custom domain. Do not create a second staging or production Worker. Do not change DNS from this repository.
+One production Worker (`the-valley-desk`) serves workers.dev plus the apex and `www` Custom Domains. Do not create a second staging or production Worker.
 
 ## Canonical origin
 
 Public HTML canonical/OG tags, JSON-LD, `/feed.json`, `/feed.xml`, `/sitemap.xml`, `/robots.txt`, and `/llms.txt` all resolve URLs through `PUBLIC_ORIGIN`.
 
-Current default (and the wrangler var) is the live preview:
+Current default (and the Wrangler var) is the canonical live origin:
 
 ```
-https://the-valley-desk.clyons.workers.dev
+https://thevalleydesk.org
 ```
 
-`thevalleydesk.org` is parked. The Worker must not advertise it until that host actually answers for this site.
+The workers.dev hostname remains enabled as an operational fallback. Requests to `www.thevalleydesk.org` receive a 308 redirect to the apex with path and query preserved.
 
-### Cutover (vars only)
+### Custom-domain deployment
 
-When DNS is pointed and the custom domain is bound in the Cloudflare dashboard:
+1. `wrangler.jsonc` attaches `thevalleydesk.org` and `www.thevalleydesk.org` as Custom Domains on the existing Worker. Cloudflare creates the required DNS records and certificates during deploy.
+2. Build with `PUBLIC_ORIGIN=https://thevalleydesk.org` so static fallbacks match the runtime var.
+3. Redeploy the same Worker with `BUILD_SHA` set to the exact git SHA.
+4. Confirm apex `/`, `/feed.json`, `/sitemap.xml`, `/robots.txt`, and `/llms.txt` use `https://thevalleydesk.org` and `www` redirects to the apex.
+5. Keep the initial one-day HSTS policy until the domain has a stable operational history; do not preload yet.
 
-1. Set the Worker var `PUBLIC_ORIGIN=https://thevalleydesk.org` (`wrangler secret` is not required; this is a public var).
-2. Redeploy the same Worker with `BUILD_SHA` set to the git SHA.
-3. Optionally set `PUBLIC_ORIGIN` in the deploy environment so `scripts/build-feed.mjs` writes matching static fallbacks.
-4. Confirm `/`, `/feed.json`, `/sitemap.xml`, `/robots.txt`, and `/llms.txt` use `https://thevalleydesk.org`.
-5. Only then consider raising HSTS (see below).
-
-No second Worker, no `env.staging` block, and no DNS change is performed by application code.
+No second Worker or `env.staging` block is used.
 
 ## Endpoints
 
@@ -114,10 +112,10 @@ Watch Cloudflare Worker logs / `/api/automation/status` (token-protected):
 - [ ] `npm ci && npm test && npm run build` green
 - [ ] `npm run ops:smoke` applies local migrations and a mocked scheduled run
 - [ ] `npm run secret-scan` and `npm audit --audit-level=high` clean
-- [ ] Deploy the existing `the-valley-desk` Worker only (`npm run deploy`); no DNS edit
+- [ ] Deploy the existing `the-valley-desk` Worker only (`npm run deploy`); verify both configured Custom Domains
 - [ ] `GET /api/health` returns `ok`, current `schemaVersion`, and the git `buildSha`
 - [ ] `/`, `/news`, `/events`, `/voices`, `/feed.json`, `/feed.xml` return 200
-- [ ] HTML canonical/OG/JSON-LD/noscript use `PUBLIC_ORIGIN`, not `thevalleydesk.org`, until cutover
+- [ ] HTML canonical/OG/JSON-LD/noscript use `https://thevalleydesk.org`
 - [ ] `HEAD /feed.json` and `HEAD /api/health` return 200 with empty bodies
 - [ ] Homepage lead remains latest News (`rankedNews[0]`)
 - [ ] Public copy does not mention collection machinery
