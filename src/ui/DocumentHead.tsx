@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { byPreviousSlug, bySlug } from "../content/queries";
+import { listCanonicalPath, listPagePath, pageFromSearch, paginate } from "../content/pagination";
+import { byPreviousSlug, bySlug, latestVoices, newsIndexItems } from "../content/queries";
 import { catalog } from "../lib/catalog";
 import { canonicalUrl, publicOrigin, publicUrl } from "../lib/canonical";
 
@@ -30,8 +31,17 @@ function upsertLink(rel: string, href: string, type?: string) {
   el.setAttribute("href", href);
 }
 
+function upsertOrRemoveLink(rel: "prev" | "next", href?: string) {
+  if (!href) {
+    document.head.querySelector(`link[rel="${rel}"]:not([type])`)?.remove();
+    return;
+  }
+  upsertLink(rel, href);
+}
+
 export function DocumentHead() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const searchStr = useRouterState({ select: (s) => s.location.searchStr });
   useEffect(() => {
     const path = pathname.replace(/\/+$/, "") || "/";
     const parts = path.split("/").filter(Boolean);
@@ -47,26 +57,36 @@ export function DocumentHead() {
         (section === "news" && (raw.kind === "news" || raw.kind === "policy" || raw.kind === "ai" || raw.kind === "interview")))
         ? raw
         : undefined;
+    const list = !item && (path === "/news" || path === "/voices")
+      ? paginate(
+        path === "/voices" ? latestVoices(catalog, Number.MAX_SAFE_INTEGER) : newsIndexItems(catalog),
+        pageFromSearch(searchStr),
+      )
+      : undefined;
     let title = SITE;
     let desc = DEFAULT_DESC;
     if (item) {
       title = `${item.title} · ${SITE}`;
       desc = item.impactSentence?.trim() || item.dek?.trim() || item.title;
     } else if (path === "/news") {
-      title = `News · ${SITE}`;
+      title = list?.indexable && list.page > 1 ? `News · Page ${list.page} · ${SITE}` : `News · ${SITE}`;
       desc = DEFAULT_DESC;
     } else if (path === "/events") {
       title = `Events · ${SITE}`;
       desc = "Upcoming Delaware Valley health-tech events";
     } else if (path === "/voices") {
-      title = `Voices · ${SITE}`;
+      title = list?.indexable && list.page > 1 ? `Voices · Page ${list.page} · ${SITE}` : `Voices · ${SITE}`;
       desc = "Named local health-tech voices and institutional notes";
     } else if (path === "/lab" || path.startsWith("/lab/")) {
       title = `Lab · ${SITE}`;
       desc = "Prototype views of the same published desk.";
     }
     const origin = publicOrigin();
-    const url = item ? canonicalUrl(item, origin) : publicUrl(path, origin);
+    const url = item
+      ? canonicalUrl(item, origin)
+      : list
+        ? publicUrl(listCanonicalPath(path, list), origin)
+        : publicUrl(path, origin);
     const articleKinds = new Set(["news", "policy", "ai", "interview"]);
     const ogType = item && articleKinds.has(item.kind) ? "article" : "website";
     document.title = title;
@@ -89,12 +109,16 @@ export function DocumentHead() {
     }
     if (path === "/lab" || path.startsWith("/lab/")) {
       upsertMeta("name", "robots", "noindex, nofollow");
+    } else if (list && !list.indexable) {
+      upsertMeta("name", "robots", "noindex");
     } else {
       document.head.querySelector('meta[name="robots"]')?.remove();
     }
     upsertLink("canonical", url);
+    upsertOrRemoveLink("prev", list?.prevPage != null ? publicUrl(listPagePath(path, list.prevPage), origin) : undefined);
+    upsertOrRemoveLink("next", list?.nextPage != null ? publicUrl(listPagePath(path, list.nextPage), origin) : undefined);
     upsertLink("alternate", publicUrl("/feed.xml", origin), "application/rss+xml");
     upsertLink("alternate", publicUrl("/feed.json", origin), "application/json");
-  }, [pathname]);
+  }, [pathname, searchStr]);
   return null;
 }

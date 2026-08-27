@@ -1,5 +1,6 @@
 import type { ContentItem, EventItem, NewsItem } from "./schema";
 import { eventIsUpcoming } from "../lib/calendar";
+import { compareNewestThenId } from "./pagination";
 import { hasLiveSeedOrg } from "./seed";
 
 let boundSeedOrgIds = new Set<string>();
@@ -29,7 +30,7 @@ export function latestNews(
 ) {
   return items
     .filter((item) => isPublicNewsFamily(item, seedOrgIds) && item.featured !== true)
-    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
+    .sort(compareNewestThenId)
     .slice(0, n);
 }
 
@@ -42,7 +43,7 @@ export function publishedNewsList(items: ContentItem[]) {
       if (item.featured === true) return false;
       return true;
     })
-    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
+    .sort(compareNewestThenId);
 }
 
 /** Curated product changes with a verified local health-system relationship. */
@@ -54,15 +55,21 @@ export function productWatch(items: ContentItem[], n = 8) {
       item.topics.includes("product-watch") &&
       Boolean(item.impactSentence?.trim()),
     )
-    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
+    .sort(compareNewestThenId)
     .slice(0, n);
+}
+
+/** /news list after product-watch is pulled into its own rail. */
+export function newsIndexItems(items: ContentItem[]) {
+  const watchedIds = new Set(productWatch(items).map((item) => item.id));
+  return publishedNewsList(items).filter((item) => !watchedIds.has(item.id));
 }
 
 /** Published kind=voice only. Never latestNews. Jane Doe stays draft. */
 export function latestVoices(items: ContentItem[], n = 6) {
   return items
     .filter((item) => item.kind === "voice" && item.status === "published")
-    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
+    .sort(compareNewestThenId)
     .slice(0, n);
 }
 

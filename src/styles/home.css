@@ -627,6 +627,27 @@ ul.desk {
   gap: 44px;
 }
 
+.Pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px 24px;
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  font-size: 14px;
+}
+
+.Pagination a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.Pagination-status {
+  margin: 0;
+  color: var(--mute);
+}
+
 .ProductWatch-head {
   display: flex;
   flex-wrap: wrap;

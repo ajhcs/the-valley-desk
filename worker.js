@@ -243,6 +243,7 @@ async function handleFetch(request, env, origin, nonce) {
     const html = decorateHtml({
       html: await asset.text(),
       path,
+      search: url.search,
       origin,
       nonce,
       item: dynamicItem,

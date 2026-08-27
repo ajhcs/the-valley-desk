@@ -23,7 +23,8 @@ body {
 }
 
 .SiteHeader-brand:focus-visible,
-.SiteFooter a:focus-visible {
+.SiteFooter a:focus-visible,
+.Pagination a:focus-visible {
   outline-width: 2px;
   outline-style: solid;
   outline-color: var(--ink);
