@@ -15,6 +15,7 @@ import { feedXml, sitemapXml } from "../src/ingest/public-feed.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
 import {
   DEFAULT_PUBLIC_ORIGIN,
+  PREVIEW_ORIGIN,
   PRODUCTION_ORIGIN,
   canonicalUrl,
   llmsTxt,
@@ -28,6 +29,7 @@ import {
   applySecurityHeaders,
   asHeadResponse,
   buildShaFromEnv,
+  canonicalHostRedirect,
   handlePublicHealth,
   hstsHeader,
   htmlCsp,
@@ -93,9 +95,8 @@ function applyMigrations(database: DatabaseSync) {
   }
 }
 
-test("PUBLIC_ORIGIN defaults to the live preview and rejects non-https values", () => {
-  assert.equal(DEFAULT_PUBLIC_ORIGIN, "https://the-valley-desk.clyons.workers.dev");
-  assert.ok(!DEFAULT_PUBLIC_ORIGIN.includes("thevalleydesk.org"));
+test("PUBLIC_ORIGIN defaults to the live domain and rejects non-https values", () => {
+  assert.equal(DEFAULT_PUBLIC_ORIGIN, PRODUCTION_ORIGIN);
   assert.equal(resolvePublicOrigin(undefined), DEFAULT_PUBLIC_ORIGIN);
   assert.equal(resolvePublicOrigin(""), DEFAULT_PUBLIC_ORIGIN);
   assert.equal(resolvePublicOrigin("http://thevalleydesk.org"), DEFAULT_PUBLIC_ORIGIN);
@@ -109,7 +110,7 @@ test("PUBLIC_ORIGIN defaults to the live preview and rejects non-https values", 
   );
 });
 
-test("generated machine documents do not advertise the parked domain", () => {
+test("generated machine documents advertise the canonical live domain", () => {
   const origin = DEFAULT_PUBLIC_ORIGIN;
   const feed = toFeed(catalog, "2026-08-26T12:00:00.000Z");
   const rss = feedXml(feed, origin);
@@ -118,11 +119,22 @@ test("generated machine documents do not advertise the parked domain", () => {
   const llms = llmsTxt(origin);
   for (const document of [rss, sitemap, robots, llms]) {
     assert.ok(document.includes(origin));
-    assert.ok(!document.includes("thevalleydesk.org"));
+    assert.ok(document.includes("thevalleydesk.org"));
     assert.equal(/scrape|ingested from|rss adapter/i.test(document), false);
   }
   assert.ok(robots.includes(`Sitemap: ${origin}/sitemap.xml`));
   assert.ok(llms.includes(`${origin}/feed.json`));
+});
+
+test("www redirects permanently to the canonical apex without losing the request target", () => {
+  const redirect = canonicalHostRedirect(
+    new Request("https://www.thevalleydesk.org/news/example?from=www"),
+    PRODUCTION_ORIGIN,
+  );
+  assert.equal(redirect?.status, 308);
+  assert.equal(redirect?.headers.get("location"), "https://thevalleydesk.org/news/example?from=www");
+  assert.equal(canonicalHostRedirect(new Request("https://thevalleydesk.org/news"), PRODUCTION_ORIGIN), undefined);
+  assert.equal(canonicalHostRedirect(new Request("https://the-valley-desk.clyons.workers.dev/"), PRODUCTION_ORIGIN), undefined);
 });
 
 test("public health is unauthenticated and exposes only build/schema stamps", async () => {
@@ -251,18 +263,29 @@ test("review mutations validate method/content-type, stay idempotent, and rate-l
   assert.equal(limited.status, 429);
   database.close();
   configureReviewGuardsForTests();
+  const malformed = await handleReviewApi(new Request(
+    `${DEFAULT_PUBLIC_ORIGIN}/api/review-queue/%E0%A4%A/decision`,
+    {
+      method: "POST",
+      headers: { authorization: "Bearer ops-token", "content-type": "application/json" },
+      body: '{"decision":"rejected"}',
+    },
+  ), env);
+  assert.equal(malformed.status, 400);
+  assert.deepEqual(await malformed.json(), { error: "invalid_candidate_id" });
+  configureReviewGuardsForTests();
 });
 
 test("security headers are present and HSTS is omitted on workers.dev", () => {
-  const previewReq = new Request(`${DEFAULT_PUBLIC_ORIGIN}/`);
-  assert.equal(hstsHeader(previewReq, DEFAULT_PUBLIC_ORIGIN), undefined);
+  const previewReq = new Request(`${PREVIEW_ORIGIN}/`);
+  assert.equal(hstsHeader(previewReq, PREVIEW_ORIGIN), undefined);
   const prodReq = new Request(`${PRODUCTION_ORIGIN}/news`);
   assert.equal(hstsHeader(prodReq, PRODUCTION_ORIGIN), "max-age=86400");
   assert.equal(hstsHeader(previewReq, PRODUCTION_ORIGIN), undefined);
   const nonce = "csp-nonce-1";
   const html = applySecurityHeaders(new Response("<html></html>", {
     headers: { "content-type": "text/html; charset=utf-8" },
-  }), { request: previewReq, publicOrigin: DEFAULT_PUBLIC_ORIGIN, html: true, nonce });
+  }), { request: previewReq, publicOrigin: PREVIEW_ORIGIN, html: true, nonce });
   assert.equal(html.headers.get("x-content-type-options"), "nosniff");
   assert.equal(html.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
   assert.equal(html.headers.get("x-frame-options"), "DENY");
@@ -289,7 +312,7 @@ test("initial HTML includes noscript primary copy and JSON-LD for the latest new
   assert.ok(html.includes(`nonce="n1"`));
   assert.ok(html.includes("__VALLEY_DESK_PUBLIC_ORIGIN__"));
   assert.ok(html.includes(DEFAULT_PUBLIC_ORIGIN));
-  assert.ok(!html.includes("thevalleydesk.org"));
+  assert.ok(html.includes("thevalleydesk.org"));
   assert.ok(html.includes("application/ld+json"));
   assert.ok(html.includes("Latest news") || html.includes("News"));
   const noscript = primaryNoscript("/", DEFAULT_PUBLIC_ORIGIN, catalog.filter((item) => item.status === "published"));
@@ -307,10 +330,14 @@ test("SCHEMA_VERSION matches the latest D1 migration and wrangler stays a single
   assert.ok(wrangler.includes("CF_VERSION_METADATA"));
   assert.ok(!wrangler.includes("env.staging") && !wrangler.includes('"staging"'));
   assert.ok(!wrangler.includes("the-valley-desk-staging"));
+  assert.ok(wrangler.includes('"pattern": "thevalleydesk.org", "custom_domain": true'));
+  assert.ok(wrangler.includes('"pattern": "www.thevalleydesk.org", "custom_domain": true'));
   const worker = readFileSync(join(root, "worker.js"), "utf8");
   assert.ok(worker.includes("/api/health"));
   assert.ok(worker.includes("HEAD"));
   assert.ok(worker.includes("robots.txt"));
+  assert.ok(worker.includes("let dynamicItem = section && slug"));
+  assert.ok(!worker.includes("let dynamicItem = staticPathState !== true"));
   const workflow = readFileSync(join(root, ".github/workflows/ci.yml"), "utf8");
   assert.ok(workflow.includes("npm ci"));
   assert.ok(workflow.includes("npm test"));

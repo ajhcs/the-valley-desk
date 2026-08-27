@@ -1,6 +1,7 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { navSection } from "../lib/nav";
 import { DocumentHead } from "./DocumentHead";
+import { FoldMark } from "./FoldMark";
 import { MentionScope } from "./MentionScope";
 import { SiteFooter } from "./home/SiteFooter";
 import { SkipLink } from "./SkipLink";
@@ -16,7 +17,7 @@ export function Layout() {
       {!isLab ? <header className="SiteHeader">
         <div className="SiteHeader-inner">
           <Link to="/" className="SiteHeader-brand">
-            <img className="MarkFold" src="/mark-a-fold.svg" alt="" />
+            <FoldMark />
             <span className="Wordmark">
               <span className="Wordmark-kicker">The</span>
               <span className="Wordmark-name">Valley Desk</span>

@@ -81,6 +81,26 @@ export function asHeadResponse(response: Response) {
   return new Response(null, { status: response.status, statusText: response.statusText, headers: response.headers });
 }
 
+/** Redirect the www alias to the configured apex without losing path or query. */
+export function canonicalHostRedirect(request: Request, publicOrigin = DEFAULT_PUBLIC_ORIGIN) {
+  try {
+    const requested = new URL(request.url);
+    const canonical = new URL(resolvePublicOrigin(publicOrigin));
+    if (requested.hostname !== `www.${canonical.hostname}`) return undefined;
+    requested.protocol = canonical.protocol;
+    requested.host = canonical.host;
+    return new Response(null, {
+      status: 308,
+      headers: {
+        location: requested.toString(),
+        "cache-control": "public, max-age=3600",
+      },
+    });
+  } catch {
+    return undefined;
+  }
+}
+
 export function htmlCsp(nonce?: string) {
   const scriptSrc = nonce ? `'self' 'nonce-${nonce}'` : "'self'";
   return [

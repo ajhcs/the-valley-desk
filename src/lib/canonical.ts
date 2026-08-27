@@ -1,11 +1,11 @@
-/** Live preview host. Public URL generation must not advertise a parked/unresolved domain. */
+/** Stable workers.dev fallback and operational preview host. */
 export const PREVIEW_ORIGIN = "https://the-valley-desk.clyons.workers.dev";
 
-/** Intended custom domain. Bind it with PUBLIC_ORIGIN only after DNS is actually pointed. */
+/** Canonical public domain. */
 export const PRODUCTION_ORIGIN = "https://thevalleydesk.org";
 
 /** Current public origin when PUBLIC_ORIGIN is unset. */
-export const DEFAULT_PUBLIC_ORIGIN = PREVIEW_ORIGIN;
+export const DEFAULT_PUBLIC_ORIGIN = PRODUCTION_ORIGIN;
 
 const NEWS_PERMALINK_KINDS = new Set(["news", "policy", "ai", "interview"]);
 
@@ -36,7 +36,7 @@ function readInjectedOrigin(): string | undefined {
   }
 }
 
-/** Accept only https origins. Anything else falls back to the live preview host. */
+/** Accept only https origins. Anything else falls back to the canonical domain. */
 export function resolvePublicOrigin(value?: string | null): string {
   const raw = String(value ?? "").trim();
   if (!raw) return DEFAULT_PUBLIC_ORIGIN;
@@ -49,12 +49,12 @@ export function resolvePublicOrigin(value?: string | null): string {
   }
 }
 
-/** Runtime public origin: injected Worker value, then env, then the preview default. */
+/** Runtime public origin: injected Worker value, then env, then the canonical default. */
 export function publicOrigin(): string {
   return resolvePublicOrigin(readInjectedOrigin() || readViteOrigin() || readProcessOrigin());
 }
 
-/** @deprecated Prefer publicOrigin() so a vars-only cutover is visible at request time. */
+/** @deprecated Prefer publicOrigin() so runtime origin configuration is visible at request time. */
 export const SITE_ORIGIN = DEFAULT_PUBLIC_ORIGIN;
 
 /** Permalink path. Policy/AI/interview live under /news/{slug}. Events under /events/{slug}. */

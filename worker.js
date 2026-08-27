@@ -13,7 +13,7 @@ import { findPublishedContent, findPublishedSlugAlias, readPublicationTombstones
 import { loadEntities } from "./src/content/store.ts";
 import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts";
 import { decorateHtml } from "./src/lib/crawler-html.ts";
-import { applySecurityHeaders, asHeadResponse, handlePublicHealth, logOps } from "./src/lib/ops.ts";
+import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -216,7 +216,9 @@ async function handleFetch(request, env, origin, nonce) {
     const staticPathState = publishedItemPath(path);
     const staticHead = slug ? publishedHead[slug] : undefined;
     const staticWithdrawn = Boolean(staticHead?.id && withdrawnIds.has(staticHead.id));
-    let dynamicItem = staticPathState !== true && section && slug
+    // Resolve signed seed items as well as D1-only items so crawler HTML for
+    // every permalink receives article metadata, JSON-LD, and noscript copy.
+    let dynamicItem = section && slug
       ? published.find((item) => item.slug === slug && itemMatchesSection(item, section))
       : undefined;
     if (!dynamicItem && staticPathState === false && section && slug) {
@@ -273,7 +275,7 @@ export default {
   async fetch(request, env) {
     const origin = resolvePublicOrigin(env.PUBLIC_ORIGIN);
     const nonce = crypto.randomUUID();
-    const response = await handleFetch(request, env, origin, nonce);
+    const response = canonicalHostRedirect(request, origin) ?? await handleFetch(request, env, origin, nonce);
     const contentType = response.headers.get("content-type") || "";
     const html = contentType.includes("text/html");
     const secured = applySecurityHeaders(response, {

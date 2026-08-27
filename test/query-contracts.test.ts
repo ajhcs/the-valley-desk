@@ -393,6 +393,24 @@ test("an unrecognized NJ event page cannot trigger disappearance reconciliation"
   assert.equal(sourceAuthorizesDisappearance(dvhimss!), false);
 });
 
+test("a recognized NJ page with only one known event is a partial snapshot", async () => {
+  const result = await ingestEventsWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    if (String(input).includes("wp-json/tribe")) {
+      return new Response(JSON.stringify({ events: [] }), { status: 200 });
+    }
+    return new Response(`
+      <html><head><title>NJDVHIMSS Annual Fall Conference</title></head><body>
+        <a href="https://cvent.me/NAqAxv">Register Today</a>
+        Tuesday, October 13, 2026 through October 15, 2026
+      </body></html>
+    `, { status: 200 });
+  });
+  const nj = result.sources.find((source) => source.id === "njhimss-events");
+  assert.equal(nj?.itemCount, 1);
+  assert.equal(nj?.completeness, "partial");
+  assert.equal(sourceAuthorizesDisappearance(nj!), false);
+});
+
 const base = {
   dek: "dek",
   body: "body",
@@ -1165,7 +1183,7 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(layout.includes("SiteFooter"));
   assert.ok(!layout.includes("SiteChromeFooter"));
   assert.ok(!layout.includes("isHome"));
-  assert.ok(layout.includes("MarkFold"));
+  assert.ok(layout.includes("FoldMark"));
   assert.ok(layout.includes("Wordmark"));
   assert.ok(layout.includes("NavLink"));
   assert.ok(layout.includes('to="/news"'));
@@ -1593,8 +1611,8 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   assert.ok(!sitemap.includes("/org/"));
   assert.ok(!sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/policy`));
   assert.ok(!sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/ai`));
-  assert.ok(!rss.includes("thevalleydesk.org"));
-  assert.ok(!sitemap.includes("thevalleydesk.org"));
+  assert.ok(rss.includes("thevalleydesk.org"));
+  assert.ok(sitemap.includes("thevalleydesk.org"));
   assert.ok(!feed.items.some((row) => row.id === "brief-01"));
   assert.ok(!feed.items.some((row) => row.id === "ai-01"));
   assert.ok(!rss.includes("week-of-2026-08-18"));
@@ -1635,7 +1653,7 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(crawler.includes("application/rss+xml"));
   assert.ok(worker.includes("resolvePublicOrigin"));
   assert.ok(canonical.includes("DEFAULT_PUBLIC_ORIGIN"));
-  assert.ok(!canonical.includes('DEFAULT_PUBLIC_ORIGIN = "https://thevalleydesk.org"'));
+  assert.ok(canonical.includes("DEFAULT_PUBLIC_ORIGIN = PRODUCTION_ORIGIN"));
   assert.ok(worker.includes("/feed.xml"));
   assert.ok(!worker.includes("EntityPage"));
   assert.ok(publishedRoutes.includes("christianacare-epic-go-live"));
@@ -1658,7 +1676,8 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(!worker.includes("voices|briefing"));
   assert.ok(wrangler.includes('"not_found_handling": "none"'));
   assert.ok(!wrangler.includes("single-page-application"));
-  assert.ok(!wrangler.includes("routes"));
+  assert.ok(wrangler.includes('"pattern": "thevalleydesk.org", "custom_domain": true'));
+  assert.ok(wrangler.includes('"pattern": "www.thevalleydesk.org", "custom_domain": true'));
   assert.ok(!/path:\s*["']\/org\//.test(router));
 });
 
@@ -2061,7 +2080,7 @@ test("firehose: stable RSS ids, seed org map, HOLD denylist, social no-op, queue
   assert.ok(worker.includes("runAutomation"));
   assert.ok(wrangler.includes("VALLEY_DESK_DB"));
   assert.ok(wrangler.includes("0 * * * *"));
-  assert.ok(!wrangler.includes("routes"));
+  assert.ok(wrangler.includes('"custom_domain": true'));
   assert.ok(!rssSrc.includes("linkedin.com"));
   assert.ok(!rssSrc.includes("api.twitter.com"));
   assert.ok(eventsStub.includes("events-stub"));
@@ -3088,6 +3107,8 @@ test("automation persistence contract is durable and review-first", async () => 
   assert.ok(worker.includes("ingest-scheduled-failed"));
   assert.ok(auditMigration.includes("CREATE TABLE candidate_decisions"));
   assert.ok(reviewApi.includes("candidate_decisions"));
+  assert.ok(reviewApi.includes("SELECT c.id, ?, ?, ?, ?, ?, ?, ?, ?"));
+  assert.ok(reviewApi.includes("c.queue_status = 'approved' AND c.reviewed_at = ?"));
   assert.ok(automation.indexOf("persistIngestRun") < automation.indexOf("enrichBounded("));
   assert.ok(readFileSync(join(root, "migrations/0006_editor_model_attempts.sql"), "utf8").includes("enrichment_attempted_at"));
 });
@@ -3962,7 +3983,7 @@ test("lab prototypes bind live catalog, the real mark asset, and unpublished-saf
   assert.ok(mark.includes('points="6,10 34,10 26,54 4,54"'));
   assert.ok(mark.includes('points="30,10 58,10 60,54 32,54"'));
   assert.ok(mark.includes('points="30,10 36,10 32,54 26,54"'));
-  assert.ok(labMark.includes('src="/mark-a-fold.svg"'));
+  assert.ok(labMark.includes("<FoldMark"));
   assert.ok(!labMark.includes("<svg"));
   assert.ok(!labMark.includes("<polygon"));
   assert.ok(!labMark.includes("<path"));
@@ -4802,6 +4823,29 @@ test("idempotent event refresh keeps canonical id/slug and aliases the old publi
   const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
   assert.ok(itemPage.includes("byPreviousSlug"));
   assert.ok(itemPage.includes("Navigate"));
+});
+
+test("same-partner events at the same time remain distinct when their identities differ", () => {
+  const template = catalog.find((item): item is EventItem => item.id === "evt-dvhimss-22958")!;
+  const first = EventItem.parse({
+    ...template,
+    id: "evt-partner-a",
+    slug: "partner-roundtable-a",
+    title: "Partner Security Roundtable",
+    partner: "other",
+    orgs: ["org-penn"],
+    source: { kind: "ingest", origin: "partner-events", url: "https://example.org/a", externalId: "a" },
+  });
+  const second = EventItem.parse({
+    ...template,
+    id: "evt-partner-b",
+    slug: "partner-workforce-forum-b",
+    title: "Partner Workforce Forum",
+    partner: "other",
+    orgs: ["org-chop"],
+    source: { kind: "ingest", origin: "partner-events", url: "https://example.org/b", externalId: "b" },
+  });
+  assert.equal(mergePublishedOverlay([], [first, second]).length, 2);
 });
 
 test("canonical source URLs collapse across feeds and keep discovery provenance", async () => {

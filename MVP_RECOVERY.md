@@ -9,7 +9,7 @@ Recovered on 2026-08-25. The historical `vale-chat-archive-2026-08-24.md` was tr
 - The archive's final handoff named `ff35367e` and assets `index-BOiD8pOX.js` / `index-Bv2o7jRR.css`. That snapshot was superseded by one commit: `9a93b243` added the final 404 spacing fix.
 - The live preview serves `index-6SBTDc0I.js` / `index-5hbDopyD.css`. An isolated build of `9a93b243` produced those exact asset names. Its commit time (22:43:15Z) also precedes the live feed generation time (22:43:45Z) by 30 seconds.
 - The live preview is [the-valley-desk.clyons.workers.dev](https://the-valley-desk.clyons.workers.dev). It has News, Events, and Voices; 43 published feed rows; 17 published Voices; the ChristianaCare lead; cited item pages; real Workers 404 handling; and generated JSON/XML feeds.
-- `thevalleydesk.org` remains parked. No DNS, custom-domain, or production cutover was performed during recovery.
+- At the time of the recovery audit, `thevalleydesk.org` remained parked and no production cutover had been performed. That historical boundary was superseded by the explicit 2026-08-27 go-live authorization.
 - The live tree's 49 original contract tests pass and its production build succeeds. The recovery branch adds source-boundary and registration-policy coverage, bringing the total to 51.
 - The live branch's checked-in `package-lock.json` was invalid: `npm ci` rejected missing optional platform packages. Recovery commit `243c856` regenerates it; clean `npm ci` now succeeds with zero audit findings.
 - The former Bloomberg gate passes on the live build: lead hover, item resting facts, no rail reflow, Escape dismissal, click-away dismissal, and hover-out dismissal. No `.OrgChip` exists.
@@ -68,7 +68,7 @@ The product remains free in v1. There is no subscription or paywall CTA.
 | Signed facts | ChristianaCare NPSR `$3,140,501,000`; Jefferson NPSR `$11,054,287,000`; no rejected operating fact | Matches item pages and tests | Preserve exactly |
 | Responsive | No horizontal overflow at 390px; peer nav remains usable | Pass | Continue hostile QA on final build |
 | Accessibility | Keyboard navigation and focus; rail ticks visual only; small text meets contrast | Pass sampled tab walk; rail ticks `aria-hidden` and not tabbable; event text uses an AA-safe darker gold while the signed gold remains on accents/backgrounds | Keep in final regression pass |
-| Deployment | Workers preview only; production parked | Preview matches `9a93b243`; main/DNS untouched | Do not cut over without explicit approval |
+| Deployment (recovery snapshot) | Workers preview only; production parked | Preview matched `9a93b243`; main/DNS untouched | Historical state; later go-live is governed by `docs/OPERATIONS.md` |
 
 ## 5. Explicitly not MVP
 
@@ -135,4 +135,4 @@ None currently reproduced on the recovery branch or live preview.
 
 ## 9. Cloudflare operations follow-up
 
-Public canonical/OG/feed/sitemap/robots/llms URLs now use configurable `PUBLIC_ORIGIN`, defaulting to the live Workers preview so the parked `thevalleydesk.org` domain is not advertised. Custom-domain cutover is a vars-only change on the existing `the-valley-desk` Worker. See `docs/OPERATIONS.md`.
+Public canonical/OG/feed/sitemap/robots/llms URLs use configurable `PUBLIC_ORIGIN`, now defaulting to `https://thevalleydesk.org`. The existing `the-valley-desk` Worker owns the apex and `www` Custom Domains while workers.dev remains available as an operational fallback. See `docs/OPERATIONS.md`.

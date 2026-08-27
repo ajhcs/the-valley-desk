@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /lab
-Sitemap: https://the-valley-desk.clyons.workers.dev/sitemap.xml
+Sitemap: https://thevalleydesk.org/sitemap.xml
