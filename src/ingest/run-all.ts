@@ -2,7 +2,17 @@ import { ingestEventsWithHealth } from "./events";
 import { ingestRssWithHealth } from "./rss";
 import { ingestSocial, type IngestEnv } from "./social";
 import type { ContentItem } from "../content/schema";
+import type {
+  NewsArticleExtractionAttempt,
+  NewsArticleExtractionMetrics,
+  NewsArticleExtractionState,
+} from "./news-extraction";
 import { sourceNote, type SourceRunNote } from "./source-health";
+
+export type IngestRunOptions = {
+  knownSourceUrls?: ReadonlySet<string>;
+  newsExtractions?: ReadonlyMap<string, NewsArticleExtractionState>;
+};
 
 export type IngestRun = {
   fetchedAt: string;
@@ -16,6 +26,11 @@ export type IngestRun = {
     x: { count: number; skipped?: string };
     failures?: string[];
     sources?: SourceRunNote[];
+    newsExtraction?: NewsArticleExtractionMetrics;
+  };
+  newsExtraction?: {
+    attempts: NewsArticleExtractionAttempt[];
+    metrics: NewsArticleExtractionMetrics;
   };
 };
 
@@ -23,10 +38,11 @@ export async function runIngestAll(
   env: IngestEnv = {},
   now = new Date(),
   fetchImpl: typeof fetch = fetch,
+  options: IngestRunOptions = {},
 ): Promise<IngestRun> {
   const fetchedAt = now.toISOString();
   const [rssResult, eventsResult, socialResult] = await Promise.allSettled([
-    ingestRssWithHealth(now, fetchImpl),
+    ingestRssWithHealth(now, fetchImpl, options),
     ingestEventsWithHealth(now, fetchImpl),
     ingestSocial(env, now, fetchImpl),
   ]);
@@ -65,6 +81,7 @@ export async function runIngestAll(
     ...(eventsResult.status === "fulfilled" ? eventsResult.value.sources : []),
     ...socialSources,
   ];
+  const newsExtraction = rssResult.status === "fulfilled" ? rssResult.value.newsExtraction : undefined;
   return {
     fetchedAt,
     rss,
@@ -77,7 +94,9 @@ export async function runIngestAll(
       x: social.x,
       ...(failures.length ? { failures } : {}),
       sources,
+      ...(newsExtraction ? { newsExtraction: newsExtraction.metrics } : {}),
     },
+    newsExtraction,
   };
 }
 
@@ -85,6 +104,7 @@ export async function runIngestAll(
 export async function runScheduledIngest(
   env: IngestEnv = {},
   fetchImpl: typeof fetch = fetch,
+  options: IngestRunOptions = {},
 ): Promise<IngestRun> {
-  return runIngestAll(env, new Date(), fetchImpl);
+  return runIngestAll(env, new Date(), fetchImpl, options);
 }

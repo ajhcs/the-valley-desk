@@ -56,9 +56,11 @@ That rule lives in the Cloudflare dashboard, not in this Worker. Without it, som
 
 ## Logs and provenance
 
-Hourly cron writes JSON lines for `cron`, `lock`, `run`, `source`, `model`, `publication`, and `reconciliation` outcomes. Secrets and token-like keys are redacted.
+Hourly cron writes JSON lines for `cron`, `lock`, `run`, `source`, `news-extraction`, `model`, `publication`, and `reconciliation` outcomes. Secrets and token-like keys are redacted.
 
-`schemaVersion` is the latest D1 migration prefix (currently `0010`). `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
+`schemaVersion` is the latest D1 migration prefix (currently `0011`). `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
+
+News article extraction is URL-keyed in `news_article_extractions` (`0011`). Successful rows cache bounded normalized text only (never raw HTML) and refresh after 7 days. `failed` and `no-content` cool down from 6 hours with exponential backoff capped at 7 days. A failed refresh keeps the last successful body so the item never regresses to the RSS snippet. Article fetches stay on exact-host HTTPS, with redirect, size, time, concurrency, and per-source candidate-cap bounds.
 
 ## Email routing and discovery
 

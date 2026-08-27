@@ -27,8 +27,10 @@ import {
   persistEnrichments,
   persistEditorialDecisions,
   persistIngestRun,
+  persistNewsArticleExtractions,
   persistSourceHealth,
   readEditorModelCache,
+  readNewsArticleExtractions,
   reconcileMissingPublishedEvents,
   releaseAutomationLock,
   type CandidateEnrichment,
@@ -36,7 +38,7 @@ import {
 } from "./persistence";
 import { logOps } from "../lib/ops";
 import { matchingProductUses } from "./product-watch";
-import { runScheduledIngest, type IngestRun } from "./run-all";
+import { runScheduledIngest, type IngestRun, type IngestRunOptions } from "./run-all";
 import { isSuccessfulSourceState } from "./source-health";
 
 export type AutomationEnv = {
@@ -57,6 +59,7 @@ export type AutomationEnv = {
 export type AutomationIngest = (
   env: { X_BEARER_TOKEN?: string; LINKEDIN_TOKEN?: string },
   fetchImpl: typeof fetch,
+  options?: IngestRunOptions,
 ) => Promise<IngestRun>;
 
 // Cloudflare Workers requires the platform fetch function to be invoked with
@@ -175,15 +178,23 @@ export async function runAutomation(
     }
   };
   logOps("lock", { outcome: "acquired" });
-  let stage = "fetch-sources";
+  let stage = "load-news-extractions";
   let persistedRunId: string | undefined;
   try {
     await ensureLock();
+    const newsExtractions = await readNewsArticleExtractions(env.VALLEY_DESK_DB);
+    stage = "fetch-sources";
     const run = await ingest({
       X_BEARER_TOKEN: env.X_BEARER_TOKEN,
       LINKEDIN_TOKEN: env.LINKEDIN_TOKEN,
-    }, fetchImpl);
+    }, fetchImpl, { newsExtractions });
     const items = allCandidates(run);
+    stage = "persist-news-extractions";
+    const newsExtractionCount = await persistNewsArticleExtractions(
+      env.VALLEY_DESK_DB,
+      run.newsExtraction?.attempts ?? [],
+    );
+    const newsMetrics = run.newsExtraction?.metrics;
     stage = "load-enrichment-cache";
     const { reusable, states: modelStates } = await readEditorModelCache(env.VALLEY_DESK_DB, items);
     stage = "persist-raw-candidates";
@@ -299,6 +310,18 @@ export async function runAutomation(
       errors: sourceErrorCount,
       sources,
     });
+    logOps("news-extraction", {
+      outcome: !newsMetrics
+        ? "ok"
+        : newsMetrics.failed && !newsMetrics.success && !newsMetrics.reused && !newsMetrics.preserved
+          ? "failed"
+          : newsMetrics.failed || newsMetrics.noContent
+            ? "degraded"
+            : "ok",
+      runId: persisted.runId,
+      persisted: newsExtractionCount,
+      ...(newsMetrics ?? {}),
+    });
     logOps("model", {
       outcome: modelFailedCount && !modelSucceededCount ? "failed" : modelFailedCount ? "degraded" : "ok",
       runId: persisted.runId,
@@ -332,6 +355,7 @@ export async function runAutomation(
       modelSucceededCount,
       modelFailedCount,
       sourceHealthCount,
+      newsExtractionCount,
       ...reconciliation,
       ...editorial,
       notes: run.notes,
