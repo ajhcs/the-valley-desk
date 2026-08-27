@@ -59,6 +59,12 @@ export type AutomationIngest = (
   fetchImpl: typeof fetch,
 ) => Promise<IngestRun>;
 
+// Cloudflare Workers requires the platform fetch function to be invoked with
+// globalThis as its receiver. Passing the bare function through the ingest
+// pipeline causes `Illegal invocation` in production even though Node accepts
+// it in tests.
+export const runtimeFetch: typeof fetch = (input, init) => globalThis.fetch(input, init);
+
 const BUNDLED_INGEST_EVENTS = ContentCatalog.parse(publishedCatalog)
   .filter((item): item is Extract<ContentItem, { kind: "event" }> => (
     item.kind === "event" && item.source.kind === "ingest"
@@ -150,7 +156,7 @@ async function enrichBounded(
 
 export async function runAutomation(
   env: AutomationEnv,
-  fetchImpl: typeof fetch = fetch,
+  fetchImpl: typeof fetch = runtimeFetch,
   ingest: AutomationIngest = runScheduledIngest,
 ) {
   const lockOwner = crypto.randomUUID();
