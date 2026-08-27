@@ -46,6 +46,16 @@ function jsonLdScript(payload: unknown) {
   return `<script type="application/ld+json">${JSON.stringify(payload)}</script>`;
 }
 
+function articleItem(link = ARTICLE_URL) {
+  return rssItemToContent({
+    title: "Redirected article",
+    link,
+    description: "RSS dek.",
+    pubDate: "Wed, 26 Aug 2026 12:00:00 GMT",
+    guid: link,
+  }, "ChristianaCare News · Information Technology", "2026-08-26T12:00:00.000Z");
+}
+
 function isRegistryFeedUrl(url: string) {
   return RSS_SOURCES.some((source) => source.url === url || source.fallbacks?.includes(url));
 }
@@ -305,6 +315,167 @@ test("off-allowlist redirects are not followed", async () => {
     },
   });
   assert.deepEqual(requested, [ARTICLE_URL]);
+});
+
+test("same-host trailing-slash redirects preserve the server target", async () => {
+  const requested: string[] = [];
+  const slashUrl = `${ARTICLE_URL}/`;
+  const result = await overlayNewsArticles([articleItem()], {
+    allowedHosts: ALLOWED_HOSTS,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      if (url === ARTICLE_URL) {
+        return new Response(null, { status: 301, headers: { location: "/epic-workflow-update/" } });
+      }
+      if (url === slashUrl) {
+        return new Response(articlePage(`<article>${longText("Full redirected article")}</article>`), {
+          status: 200,
+          headers: { "content-type": "text/html" },
+        });
+      }
+      return new Response("unexpected", { status: 500 });
+    },
+  });
+  assert.deepEqual(requested, [ARTICLE_URL, slashUrl]);
+  assert.equal(result.metrics.success, 1);
+  assert.equal(result.attempts[0]?.state, "success");
+  assert.equal(result.attempts[0]?.url, ARTICLE_URL);
+  assert.equal(result.items[0]?.source.url, ARTICLE_URL);
+  assert.ok(result.items[0]?.body.includes("Full redirected article"));
+});
+
+test("www redirects remain allowlisted without being rewritten to the apex", async () => {
+  const apexUrl = "https://inquirer.com/health/redirected-story";
+  const wwwUrl = "https://www.inquirer.com/health/redirected-story";
+  const requested: string[] = [];
+  const result = await overlayNewsArticles([articleItem(apexUrl)], {
+    allowedHosts: ALLOWED_HOSTS,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      if (url === apexUrl) return new Response(null, { status: 302, headers: { location: wwwUrl } });
+      if (url === wwwUrl) {
+        return new Response(articlePage(`<main>${longText("Inquirer redirected body")}</main>`), {
+          status: 200,
+          headers: { "content-type": "text/html" },
+        });
+      }
+      return new Response("unexpected", { status: 500 });
+    },
+  });
+  assert.deepEqual(requested, [apexUrl, wwwUrl]);
+  assert.equal(result.metrics.success, 1);
+  assert.equal(result.attempts[0]?.url, apexUrl);
+  assert.equal(result.items[0]?.source.url, apexUrl);
+});
+
+test("same-host cleartext redirect targets are upgraded without an HTTP request", async () => {
+  const requested: string[] = [];
+  const slashUrl = `${ARTICLE_URL}/`;
+  const result = await overlayNewsArticles([articleItem()], {
+    allowedHosts: ALLOWED_HOSTS,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      if (url === ARTICLE_URL) {
+        return new Response(null, { status: 301, headers: { location: `http://news.christianacare.org/epic-workflow-update/` } });
+      }
+      return new Response(articlePage(`<article>${longText("Safely upgraded article")}</article>`), {
+        status: 200,
+        headers: { "content-type": "text/html" },
+      });
+    },
+  });
+  assert.deepEqual(requested, [ARTICLE_URL, slashUrl]);
+  assert.ok(requested.every((url) => url.startsWith("https://")));
+  assert.equal(result.metrics.success, 1);
+});
+
+test("redirect validation rejects cross-host cleartext, feed-shaped, and non-default-port targets", async () => {
+  for (const location of [
+    "http://whyy.org/unsafe/",
+    "http://news.christianacare.org:8080/unsafe/",
+    "https://news.christianacare.org/feed/",
+    "https://news.christianacare.org:8443/article/",
+    "https://user:pass@news.christianacare.org/article/",
+    "https://news.christianacare.org.evil.example/article/",
+    "//evil.example/article/",
+    "javascript:alert(1)",
+    "data:text/html,unsafe",
+  ]) {
+    const requested: string[] = [];
+    const result = await overlayNewsArticles([articleItem()], {
+      allowedHosts: ALLOWED_HOSTS,
+      fetchImpl: async (input) => {
+        requested.push(String(input));
+        return new Response(null, { status: 301, headers: { location } });
+      },
+    });
+    assert.deepEqual(requested, [ARTICLE_URL]);
+    assert.equal(result.attempts[0]?.error, "Redirect left allowlist");
+  }
+});
+
+test("redirect cycles fail immediately within the fixed hop budget", async () => {
+  const requested: string[] = [];
+  const result = await overlayNewsArticles([articleItem()], {
+    allowedHosts: ALLOWED_HOSTS,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      return new Response(null, { status: 301, headers: { location: url } });
+    },
+  });
+  assert.deepEqual(requested, [ARTICLE_URL]);
+  assert.equal(result.attempts[0]?.error, "Too many redirects");
+});
+
+test("multi-URL redirect cycles are detected before repeating a request", async () => {
+  const requested: string[] = [];
+  const second = `${ARTICLE_URL}/second`;
+  const result = await overlayNewsArticles([articleItem()], {
+    allowedHosts: ALLOWED_HOSTS,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      return new Response(null, {
+        status: 302,
+        headers: { location: url === ARTICLE_URL ? second : ARTICLE_URL },
+      });
+    },
+  });
+  assert.deepEqual(requested, [ARTICLE_URL, second]);
+  assert.equal(result.attempts[0]?.error, "Too many redirects");
+});
+
+test("unique redirect chains cannot exceed the fixed hop budget", async () => {
+  const requested: string[] = [];
+  const result = await overlayNewsArticles([articleItem()], {
+    allowedHosts: ALLOWED_HOSTS,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      const next = `${ARTICLE_URL}/hop-${requested.length}`;
+      return new Response(null, { status: 302, headers: { location: next } });
+    },
+  });
+  assert.equal(requested.length, NEWS_ARTICLE_MAX_REDIRECTS + 1);
+  assert.equal(new Set(requested).size, requested.length);
+  assert.equal(result.attempts[0]?.error, "Too many redirects");
+});
+
+test("non-redirect 3xx statuses do not follow Location", async () => {
+  const requested: string[] = [];
+  const result = await overlayNewsArticles([articleItem()], {
+    allowedHosts: ALLOWED_HOSTS,
+    fetchImpl: async (input) => {
+      requested.push(String(input));
+      return new Response(null, { status: 304, headers: { location: `${ARTICLE_URL}/` } });
+    },
+  });
+  assert.deepEqual(requested, [ARTICLE_URL]);
+  assert.equal(result.attempts[0]?.error, "HTTP 304");
 });
 
 test("oversized article responses stay on the RSS snippet", async () => {

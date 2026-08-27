@@ -291,10 +291,47 @@ function contentTypeLooksLikeHtml(value: string | null) {
   return /html|xhtml|text\/plain|json/.test(type) || type.startsWith("text/");
 }
 
-function redirectLocation(current: string, location: string | null): string | undefined {
+const ARTICLE_REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
+
+function articleHostAllowed(hostname: string, allowedHosts: ReadonlySet<string>) {
+  const host = normalizedArticleHostname(hostname);
+  const withoutWww = host.replace(/^www\./, "");
+  return allowedHosts.has(host) || allowedHosts.has(withoutWww);
+}
+
+function normalizedArticleHostname(hostname: string) {
+  return hostname.replace(/\.$/, "").toLowerCase();
+}
+
+function allowlistedRedirectLocation(
+  current: string,
+  location: string | null,
+  allowedHosts: ReadonlySet<string>,
+): string | undefined {
   if (!location) return undefined;
   try {
-    return new URL(location, current).toString();
+    const next = new URL(location, current);
+    if (next.username || next.password) return undefined;
+    if (next.protocol === "http:") {
+      const currentUrl = new URL(current);
+      if (normalizedArticleHostname(next.hostname) !== normalizedArticleHostname(currentUrl.hostname)) {
+        return undefined;
+      }
+      if (next.port && next.port !== "80") return undefined;
+      // Some legacy publishers emit an http Location from an HTTPS page and
+      // immediately redirect it back to HTTPS. Upgrade it in memory so the
+      // Worker never sends a cleartext request, while preserving path/query.
+      next.protocol = "https:";
+      next.port = "";
+    } else if (next.protocol !== "https:") {
+      return undefined;
+    }
+    if (next.port && next.port !== "443") return undefined;
+    if (!articleHostAllowed(next.hostname, allowedHosts)) return undefined;
+    next.hash = "";
+    const href = next.toString();
+    if (looksLikeFeedUrl(href)) return undefined;
+    return href;
   } catch {
     return undefined;
   }
@@ -317,7 +354,10 @@ export async function fetchAllowlistedArticlePage(options: {
 }): Promise<ArticlePageFetchResult> {
   let current = isEligibleNewsArticleUrl(options.url, options.allowedHosts);
   if (!current) return { ok: false, error: "URL is not an allowlisted article page" };
+  const seen = new Set<string>();
   for (let hop = 0; hop <= NEWS_ARTICLE_MAX_REDIRECTS; hop += 1) {
+    if (seen.has(current)) return { ok: false, error: "Too many redirects" };
+    seen.add(current);
     let response: Response;
     try {
       response = await options.fetchImpl(current, {
@@ -331,12 +371,17 @@ export async function fetchAllowlistedArticlePage(options: {
     } catch (error) {
       return { ok: false, error: articleFetchError(error) };
     }
-    if (response.status >= 300 && response.status < 400) {
-      const next = redirectLocation(current, response.headers.get("location"));
+    if (ARTICLE_REDIRECT_STATUSES.has(response.status)) {
+      const next = allowlistedRedirectLocation(current, response.headers.get("location"), options.allowedHosts);
       await response.body?.cancel().catch(() => undefined);
-      const eligible = isEligibleNewsArticleUrl(next, options.allowedHosts);
-      if (!eligible) return { ok: false, error: "Redirect left allowlist" };
-      current = eligible;
+      if (!next) return { ok: false, error: "Redirect left allowlist" };
+      if (hop >= NEWS_ARTICLE_MAX_REDIRECTS || seen.has(next)) {
+        return { ok: false, error: "Too many redirects" };
+      }
+      // Preserve the validated server target exactly. Identity/cache keys remain
+      // canonical, but removing a trailing slash or www here can recreate the
+      // redirect we just followed and turn a one-hop redirect into a loop.
+      current = next;
       continue;
     }
     if (!response.ok) {
