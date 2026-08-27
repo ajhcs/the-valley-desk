@@ -12,6 +12,15 @@ import {
   sourceIdentityKey,
   withCanonicalSource,
 } from "./identity";
+import type {
+  NewsArticleExtractionAttempt,
+  NewsArticleExtractionState,
+} from "./news-extraction";
+import {
+  NEWS_ARTICLE_CLEANUP_BATCH,
+  NEWS_ARTICLE_MAX_ROWS,
+  NEWS_ARTICLE_RETENTION_DAYS,
+} from "./news-extraction-config";
 import {
   isFailureSourceState,
   isSuccessfulSourceState,
@@ -586,6 +595,149 @@ export async function persistSourceHealth(
     await db.batch(statements.slice(index, index + 50));
   }
   return statements.length;
+}
+
+type NewsExtractionRow = {
+  url: string;
+  state: string;
+  cached_text: string | null;
+  method: string | null;
+  attempt_count: number | null;
+  last_attempted_at: string;
+  last_success_at: string | null;
+  next_attempt_at: string;
+  error: string | null;
+};
+
+function parseNewsExtractionRow(row: NewsExtractionRow): NewsArticleExtractionState | undefined {
+  if (row.state !== "success" && row.state !== "failed" && row.state !== "no-content") return undefined;
+  const method = row.method === "json-ld" || row.method === "article" || row.method === "main"
+    ? row.method
+    : null;
+  return {
+    url: row.url,
+    state: row.state,
+    cachedText: row.cached_text,
+    method,
+    attemptCount: Number(row.attempt_count ?? 0),
+    lastAttemptedAt: row.last_attempted_at,
+    lastSuccessAt: row.last_success_at,
+    nextAttemptAt: row.next_attempt_at,
+    error: row.error,
+  };
+}
+
+const NEWS_EXTRACTION_SELECT = `
+  SELECT url, state, cached_text, method, attempt_count,
+         last_attempted_at, last_success_at, next_attempt_at, error
+  FROM news_article_extractions
+`;
+
+export async function readNewsArticleExtractions(
+  db: D1DatabaseLike,
+  urls?: readonly string[],
+): Promise<Map<string, NewsArticleExtractionState>> {
+  const out = new Map<string, NewsArticleExtractionState>();
+  const remember = (row: NewsExtractionRow) => {
+    const parsed = parseNewsExtractionRow(row);
+    if (parsed) out.set(parsed.url, parsed);
+  };
+  if (urls?.length) {
+    for (const row of await loadRowsByValues<NewsExtractionRow>(
+      db,
+      `${NEWS_EXTRACTION_SELECT} WHERE url IN (?)`,
+      [...new Set(urls)],
+    )) remember(row);
+    return out;
+  }
+  const pageSize = 200;
+  let offset = 0;
+  while (true) {
+    const rows = await db.prepare(`${NEWS_EXTRACTION_SELECT} ORDER BY url LIMIT ? OFFSET ?`)
+      .bind(pageSize, offset)
+      .all<NewsExtractionRow>();
+    const results = rows.results ?? [];
+    for (const row of results) remember(row);
+    if (results.length < pageSize) break;
+    offset += pageSize;
+  }
+  return out;
+}
+
+export async function persistNewsArticleExtractions(
+  db: D1DatabaseLike,
+  attempts: readonly NewsArticleExtractionAttempt[],
+) {
+  if (attempts.length === 0) return 0;
+  const statements = attempts.map((attempt) => db.prepare(`
+    INSERT INTO news_article_extractions (
+      url, state, cached_text, method, attempt_count,
+      last_attempted_at, last_success_at, next_attempt_at, error
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(url) DO UPDATE SET
+      state = excluded.state,
+      cached_text = CASE
+        WHEN excluded.cached_text IS NOT NULL AND length(excluded.cached_text) > 0 THEN excluded.cached_text
+        ELSE news_article_extractions.cached_text
+      END,
+      method = CASE
+        WHEN excluded.method IS NOT NULL THEN excluded.method
+        ELSE news_article_extractions.method
+      END,
+      attempt_count = excluded.attempt_count,
+      last_attempted_at = excluded.last_attempted_at,
+      last_success_at = COALESCE(excluded.last_success_at, news_article_extractions.last_success_at),
+      next_attempt_at = excluded.next_attempt_at,
+      error = excluded.error
+  `).bind(
+    attempt.url,
+    attempt.state,
+    attempt.cachedText || null,
+    attempt.method ?? null,
+    attempt.attemptCount,
+    attempt.lastAttemptedAt,
+    attempt.lastSuccessAt ?? null,
+    attempt.nextAttemptAt,
+    attempt.error ?? null,
+  ));
+  for (let index = 0; index < statements.length; index += 50) {
+    await db.batch(statements.slice(index, index + 50));
+  }
+  return statements.length;
+}
+
+export async function cleanupNewsArticleExtractions(db: D1DatabaseLike, now = new Date()) {
+  const nowIso = now.toISOString();
+  const retentionCutoff = new Date(now.getTime() - NEWS_ARTICLE_RETENTION_DAYS * 86_400_000).toISOString();
+  await db.prepare(`
+    DELETE FROM news_article_extractions
+    WHERE url IN (
+      SELECT url FROM news_article_extractions
+      WHERE last_attempted_at < ?
+        AND next_attempt_at < ?
+        AND (last_success_at IS NULL OR last_success_at < ?)
+      ORDER BY COALESCE(last_success_at, last_attempted_at) ASC, url ASC
+      LIMIT ?
+    )
+  `).bind(retentionCutoff, nowIso, retentionCutoff, NEWS_ARTICLE_CLEANUP_BATCH).run();
+
+  const counted = await db.prepare("SELECT COUNT(*) AS count FROM news_article_extractions").first<{ count: number }>();
+  const count = Number(counted?.count ?? 0);
+  if (!Number.isFinite(count) || count <= NEWS_ARTICLE_MAX_ROWS) return;
+  const excess = Math.min(NEWS_ARTICLE_CLEANUP_BATCH, count - NEWS_ARTICLE_MAX_ROWS);
+  if (excess <= 0) return;
+  await db.prepare(`
+    DELETE FROM news_article_extractions
+    WHERE url IN (
+      SELECT url FROM news_article_extractions
+      ORDER BY
+        CASE WHEN next_attempt_at >= ? THEN 1 ELSE 0 END ASC,
+        CASE WHEN last_success_at IS NOT NULL AND last_success_at >= ? THEN 1 ELSE 0 END ASC,
+        COALESCE(last_success_at, last_attempted_at) ASC,
+        url ASC
+      LIMIT ?
+    )
+  `).bind(nowIso, retentionCutoff, excess).run();
 }
 
 export const EVENT_CATASTROPHIC_DROP_RATIO = 0.5;

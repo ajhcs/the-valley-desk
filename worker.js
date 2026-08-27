@@ -6,10 +6,17 @@ import {
   publishedVoiceSlugs,
 } from "./worker-published.js";
 import { runAutomation } from "./src/ingest/automation.ts";
+import { cleanupEmailDiscoveries, handleInboundEmail } from "./src/ingest/email.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
 import { feedXml, mergePublishedContent, mergedFeed, sitemapXml } from "./src/ingest/public-feed.ts";
-import { findPublishedContent, findPublishedSlugAlias, readPublicationTombstones, readPublishedContent } from "./src/ingest/persistence.ts";
+import {
+  cleanupNewsArticleExtractions,
+  findPublishedContent,
+  findPublishedSlugAlias,
+  readPublicationTombstones,
+  readPublishedContent,
+} from "./src/ingest/persistence.ts";
 import { loadEntities } from "./src/content/store.ts";
 import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts";
 import { decorateHtml } from "./src/lib/crawler-html.ts";
@@ -258,7 +265,29 @@ async function handleFetch(request, env, origin, nonce) {
 }
 
 export default {
+  async email(message, env) {
+    const result = await handleInboundEmail(message, env);
+    if (result.outcome === "failed") {
+      throw new Error(`Inbound email discovery failed: ${result.reason || "unknown error"}`);
+    }
+  },
   async scheduled(_event, env, ctx) {
+    ctx.waitUntil(
+      cleanupEmailDiscoveries(env.VALLEY_DESK_DB).catch((error) => {
+        logOps("email-cleanup", {
+          outcome: "failed",
+          message: error instanceof Error ? error.message : "Unknown email cleanup failure",
+        }, "warn");
+      }),
+    );
+    ctx.waitUntil(
+      cleanupNewsArticleExtractions(env.VALLEY_DESK_DB).catch((error) => {
+        logOps("news-extraction-cleanup", {
+          outcome: "failed",
+          message: error instanceof Error ? error.message : "Unknown news extraction cleanup failure",
+        }, "warn");
+      }),
+    );
     ctx.waitUntil(
       runAutomation(env).then((result) => {
         logOps("cron", {

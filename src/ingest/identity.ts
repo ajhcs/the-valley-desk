@@ -46,9 +46,22 @@ export function normalizeSourceUrl(raw: string | undefined | null): string | und
 
 export function sourceIdentityKey(item: {
   id: string;
+  kind?: string;
   source: { origin: string; url?: string; externalId?: string };
 }): string {
   const normalized = normalizeSourceUrl(item.source.url);
+  if (item.kind === "event" && item.source.externalId) {
+    let listingOnly = !normalized;
+    if (normalized) {
+      try {
+        const path = new URL(normalized).pathname.replace(/\/+$/, "") || "/";
+        listingOnly = path === "/" || path === "/events-calendar";
+      } catch {
+        listingOnly = true;
+      }
+    }
+    if (listingOnly) return `ext:${item.source.origin}:${item.source.externalId}`;
+  }
   if (normalized) return `url:${normalized}`;
   if (item.source.externalId) return `ext:${item.source.origin}:${item.source.externalId}`;
   return `id:${item.id}`;

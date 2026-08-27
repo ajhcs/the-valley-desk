@@ -3,6 +3,30 @@ import { eventCopyMarksCancelled } from "../lib/calendar";
 import { hasInternalProcessLanguage } from "../lib/editorialCopy";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
+import {
+  DVHIMSS_MAX_PAGES,
+  EVENT_SOURCE_HOSTS,
+  EVENT_TIMEZONE,
+  REGISTRATION_HOSTS,
+  allowlistedHttps,
+  decodeHtml,
+  genericNjEventIdentity,
+  isSafeTribeNextUrl,
+  isSameListingPage,
+  njSnapshotCompleteness,
+  parseNjdvhimssPage,
+  parseTribeEventsResponse,
+  perPageFromUrl,
+  slugify,
+  stripHtml,
+  toIso,
+  tribeFallbackId,
+  tribeNextPageUrl,
+  tribeRecordId,
+  tribeSnapshotCompleteness,
+  type ParsedListingEvent,
+  type TribeEventsPage,
+} from "./event-parser";
 import { eventSourceById } from "./origins";
 import {
   classifyFetchError,
@@ -21,65 +45,63 @@ import {
 } from "./upstream";
 
 const UA = SOURCE_USER_AGENT;
-const REGISTRATION_HOSTS = ["cvent.me", "web.cvent.com", "dvhimss.org", "njhimss.org", "njdvhimssevent.com"];
 const DVHIMSS_SOURCE = eventSourceById("dvhimss-events");
 const NJHIMSS_SOURCE = eventSourceById("njhimss-events");
+const DVHIMSS_FALLBACK_URL = "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100";
+const DVHIMSS_LISTING_URL = "https://dvhimss.org/events-calendar";
+const NJ_LISTING_URL = "https://njdvhimssevent.com/";
+const EVENT_REDIRECT_HOSTS = new Set(EVENT_SOURCE_HOSTS);
 
-function decode(value: string) {
-  return value
-    .replace(/&#8211;/g, "\u2013")
-    .replace(/&#038;/g, "&")
-    .replace(/&amp;/g, "&")
-    .replace(/&nbsp;/g, " ")
-    .trim();
-}
-
-function slugify(title: string) {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 72) || "event";
-}
-
-function toIso(value: string) {
-  const t = Date.parse(value.replace(" ", "T") + (value.includes("Z") || value.includes("+") ? "" : "Z"));
-  if (Number.isFinite(t)) return new Date(t).toISOString();
-  const local = Date.parse(value);
-  return Number.isFinite(local) ? new Date(local).toISOString() : undefined;
-}
-
-function verifiedRegistrationUrl(value: unknown) {
-  if (typeof value !== "string") return undefined;
+function validTimeZone(value: unknown): value is string {
+  if (typeof value !== "string" || !value.trim()) return false;
   try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase();
-    return url.protocol === "https:" && REGISTRATION_HOSTS.some((domain) => host === domain || host.endsWith(`.${domain}`))
-      ? url.href
-      : undefined;
+    new Intl.DateTimeFormat("en-US", { timeZone: value }).format(new Date(0));
+    return true;
   } catch {
-    return undefined;
+    return false;
   }
 }
 
-function verifiedNjdvhimssRegistrationUrl(html: string) {
-  const urls = [...html.matchAll(/href=["']([^"']+)["']/gi)]
-    .map((match) => decode(match[1]))
-    .map((value) => verifiedRegistrationUrl(value))
-    .filter((value): value is string => Boolean(value));
-  return urls.find((value) => {
+function originBase(url: string) {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.protocol}//${parsed.host}/`;
+  } catch {
+    return url;
+  }
+}
+
+function verifiedRegistrationUrl(value: unknown, base: string) {
+  if (typeof value !== "string") return undefined;
+  return allowlistedHttps(value, base, REGISTRATION_HOSTS);
+}
+
+function isCventHost(value: string) {
+  try {
     const host = new URL(value).hostname.toLowerCase();
     return host === "cvent.me" || host === "web.cvent.com";
-  });
+  } catch {
+    return false;
+  }
+}
+
+function verifiedNjdvhimssRegistrationUrl(html: string, base: string) {
+  const urls = [...html.matchAll(/href=["']([^"']+)["']/gi)]
+    .map((match) => decodeHtml(match[1]))
+    .map((value) => verifiedRegistrationUrl(value, base))
+    .filter((value): value is string => Boolean(value));
+  return urls.find((value) => isCventHost(value));
+}
+
+function officialEventUrl(value: unknown, base: string, fallback: string) {
+  const candidate = typeof value === "string" ? allowlistedHttps(value, base, EVENT_SOURCE_HOSTS) : undefined;
+  if (candidate && !isSameListingPage(candidate, fallback)) return candidate;
+  return allowlistedHttps(fallback, base, EVENT_SOURCE_HOSTS) ?? fallback;
 }
 
 function isRecognizedNjdvhimssPage(html: string) {
   return /<title[^>]*>\s*NJDVHIMSS\s*<\/title>/i.test(html)
     && /<link[^>]+rel=["']canonical["'][^>]+href=["']https:\/\/njdvhimssevent\.com\/?["']/i.test(html);
-}
-
-function stripHtml(value: string) {
-  return decode(value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " "));
 }
 
 function textField(value: unknown): string {
@@ -111,10 +133,12 @@ type EventSnapshot = {
   url: string;
 };
 
-function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "autoPublish" | "featured"> & {
+type EventRowInput = Omit<EventItem, "kind" | "status" | "authors" | "autoPublish" | "featured"> & {
   status?: EventItem["status"];
   autoPublish?: boolean;
-}): EventItem {
+};
+
+function eventRow(partial: EventRowInput): EventItem {
   const cancelled = eventCopyMarksCancelled({
     title: partial.title,
     dek: partial.dek,
@@ -133,6 +157,25 @@ function eventRow(partial: Omit<EventItem, "kind" | "status" | "authors" | "auto
   };
 }
 
+async function readTribePage(url: string, fetchImpl: typeof fetch): Promise<TribeEventsPage> {
+  const response = await fetchUpstream({
+    url,
+    fetchImpl,
+    maxBytes: EVENTS_MAX_BYTES,
+    timeoutMs: SOURCE_TIMEOUT_MS,
+    headers: { "user-agent": UA },
+    allowedRedirectHosts: EVENT_REDIRECT_HOSTS,
+  });
+  try {
+    return parseTribeEventsResponse(response.body);
+  } catch (error) {
+    throw new UpstreamError(
+      "parser-failed",
+      error instanceof Error ? error.message : "DVHIMSS calendar response was not JSON",
+    );
+  }
+}
+
 async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: string): Promise<EventSnapshot> {
   if (DVHIMSS_SOURCE && DVHIMSS_SOURCE.status !== "enabled") {
     throw new UpstreamError(
@@ -140,36 +183,95 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
       DVHIMSS_SOURCE.reason ?? `DVHIMSS source is ${DVHIMSS_SOURCE.status}`,
     );
   }
-  const url = DVHIMSS_SOURCE?.url ?? "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100";
-  const response = await fetchUpstream({
-    url,
-    fetchImpl,
-    maxBytes: EVENTS_MAX_BYTES,
-    timeoutMs: SOURCE_TIMEOUT_MS,
-    headers: { "user-agent": UA },
-  });
-  let data: { events?: Record<string, unknown>[] };
-  try {
-    data = JSON.parse(response.body) as { events?: Record<string, unknown>[] };
-  } catch {
-    throw new UpstreamError("parser-failed", "DVHIMSS calendar response was not JSON");
-  }
-  if (!Array.isArray(data.events)) throw new UpstreamError("parser-failed", "DVHIMSS calendar response omitted events");
-  const rows: EventItem[] = [];
-  for (const e of data.events) {
+  const startUrl = DVHIMSS_SOURCE?.url ?? DVHIMSS_FALLBACK_URL;
+  const listingBase = originBase(startUrl);
+  const perPage = perPageFromUrl(startUrl);
+  const collected: Record<string, unknown>[] = [];
+  const seenUrls = new Set<string>();
+  let url = startUrl;
+  let pagesFetched = 0;
+  let total: number | undefined;
+  let totalPages: number | undefined;
+  let lastPageSize = 0;
+  let hitPageCap = false;
+  let laterPageFailed = false;
+  let hasNext = false;
+  let droppedRows = 0;
+  let paginationInvalid = false;
+  let lastNextRestUrl: string | undefined;
+  let lastRestUrl: string | undefined;
+
+  while (url && pagesFetched < DVHIMSS_MAX_PAGES) {
+    if (seenUrls.has(url)) break;
+    seenUrls.add(url);
+    let page: TribeEventsPage;
     try {
-      const title = decode(String(e.title ?? ""));
-      const page = String(e.url ?? "https://dvhimss.org/events-calendar");
-      const start = toIso(String(e.utc_start_date ?? e.start_date ?? ""));
-      if (!title || !start) continue;
-      const end = toIso(String(e.utc_end_date ?? e.end_date ?? ""));
-      const registrationUrl = verifiedRegistrationUrl(e.website);
+      page = await readTribePage(url, fetchImpl);
+    } catch (error) {
+      if (pagesFetched === 0) throw error;
+      laterPageFailed = true;
+      break;
+    }
+    lastPageSize = page.events.length;
+    collected.push(...page.events);
+    droppedRows += page.droppedRows;
+    paginationInvalid = paginationInvalid || page.paginationInvalid;
+    if (page.nextRestUrl && !isSafeTribeNextUrl(page.nextRestUrl, startUrl)) paginationInvalid = true;
+    if (page.restUrl && !isSafeTribeNextUrl(page.restUrl, startUrl)) paginationInvalid = true;
+    lastNextRestUrl = page.nextRestUrl;
+    lastRestUrl = page.restUrl;
+    pagesFetched += 1;
+    if (typeof page.total === "number") total = page.total;
+    if (typeof page.totalPages === "number") totalPages = page.totalPages;
+    const next = tribeNextPageUrl(url, page, pagesFetched, startUrl);
+    if (!next) {
+      hasNext = false;
+      break;
+    }
+    hasNext = true;
+    if (pagesFetched >= DVHIMSS_MAX_PAGES) {
+      hitPageCap = true;
+      break;
+    }
+    url = next;
+  }
+
+  const rows: EventItem[] = [];
+  const seenIds = new Set<string>();
+  let malformedCount = droppedRows;
+  for (const e of collected) {
+    try {
+      const title = textField(e.title) || decodeHtml(String(e.title ?? ""));
+      const timezone = validTimeZone(e.timezone) ? e.timezone : EVENT_TIMEZONE;
+      const utcStart = typeof e.utc_start_date === "string" ? e.utc_start_date : "";
+      const localStart = typeof e.start_date === "string" ? e.start_date : "";
+      const start = utcStart
+        ? toIso(utcStart, timezone, { assumeUtc: true })
+        : toIso(localStart, timezone);
+      if (!title || !start) {
+        malformedCount += 1;
+        continue;
+      }
+      const utcEnd = typeof e.utc_end_date === "string" ? e.utc_end_date : "";
+      const localEnd = typeof e.end_date === "string" ? e.end_date : "";
+      const end = utcEnd
+        ? toIso(utcEnd, timezone, { assumeUtc: true })
+        : toIso(localEnd, timezone);
+      const sourceUrl = officialEventUrl(e.url, listingBase, DVHIMSS_LISTING_URL);
+      const externalId = tribeRecordId(e) ?? tribeFallbackId(title, start, sourceUrl);
+      if (!externalId) {
+        malformedCount += 1;
+        continue;
+      }
+      if (seenIds.has(externalId)) continue;
+      seenIds.add(externalId);
+      const registrationUrl = verifiedRegistrationUrl(e.website, listingBase);
       const venueObj = e.venue && typeof e.venue === "object" ? (e.venue as { venue?: string; city?: string }) : {};
-      const venue = venueObj.venue ? decode(String(venueObj.venue)) : undefined;
-      const city = venueObj.city ? decode(String(venueObj.city)) : undefined;
+      const venue = venueObj.venue ? decodeHtml(String(venueObj.venue)) : undefined;
+      const city = venueObj.city ? decodeHtml(String(venueObj.city)) : undefined;
       rows.push(
         eventRow({
-          id: `evt-dvhimss-${e.id}`,
+          id: `evt-dvhimss-${externalId}`,
           slug: slugify(title),
           title,
           dek: "Official DVHIMSS chapter calendar.",
@@ -182,15 +284,15 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
           source: {
             kind: "ingest",
             origin: "dvhimss-events",
-            url: page,
+            url: sourceUrl,
             fetchedAt,
-            externalId: String(e.id),
+            externalId,
           },
-          citations: [{ name: "DVHIMSS", url: page }],
+          citations: [{ name: "DVHIMSS", url: sourceUrl }],
           geo: venue,
           startsAt: start,
           endsAt: end,
-          timezone: String(e.timezone ?? "America/New_York"),
+          timezone,
           venue,
           city,
           hostOrg: "DVHIMSS",
@@ -201,19 +303,126 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
         }),
       );
     } catch {
-      /* one malformed calendar row must not discard valid siblings */
+      malformedCount += 1;
     }
   }
-  const completeness: SnapshotCompleteness = data.events.length === 0
-    ? "empty-unverified"
-    : rows.length === 0 || data.events.length >= 100
-      ? "partial"
-      : "complete";
-  return { items: rows, completeness, url };
+  const completeness = tribeSnapshotCompleteness({
+    rawCount: collected.length,
+    parsedCount: rows.length,
+    pagesFetched,
+    total,
+    totalPages,
+    hasNext,
+    hitPageCap,
+    laterPageFailed,
+    lastPageSize,
+    perPage,
+    malformedCount,
+    paginationInvalid,
+    nextRestUrl: lastNextRestUrl,
+    restUrl: lastRestUrl,
+    originUrl: startUrl,
+  });
+  return { items: rows, completeness, url: startUrl };
 }
 
 export async function fetchDvhimssCalendar(fetchImpl: typeof fetch = fetch, fetchedAt = new Date().toISOString()) {
   return (await fetchDvhimssCalendarBatch(fetchImpl, fetchedAt)).items;
+}
+
+function njRegistrationUrl(
+  event: ParsedListingEvent,
+  used: string,
+  pageRegistrationUrl?: string,
+) {
+  const eventOffers = event.offersUrl ? verifiedRegistrationUrl(event.offersUrl, used) : undefined;
+  if (eventOffers && !isSameListingPage(eventOffers, used)) return eventOffers;
+  if (event.key === "fall-conference" || event.key === "golf") return pageRegistrationUrl;
+  return undefined;
+}
+
+function njSourceUrl(event: ParsedListingEvent, used: string) {
+  const resolved = event.url ? allowlistedHttps(event.url, used, EVENT_SOURCE_HOSTS) : undefined;
+  if (resolved && !isSameListingPage(resolved, used)) return resolved;
+  return allowlistedHttps(used, used, EVENT_SOURCE_HOSTS) ?? NJ_LISTING_URL;
+}
+
+function njEventFields(event: ParsedListingEvent, fetchedAt: string, used: string, pageRegistrationUrl?: string): EventRowInput {
+  const registrationUrl = njRegistrationUrl(event, used, pageRegistrationUrl);
+  const sourceUrl = njSourceUrl(event, used);
+  const listingUrl = allowlistedHttps(used, used, EVENT_SOURCE_HOSTS) ?? NJ_LISTING_URL;
+  if (event.key === "fall-conference") {
+    return {
+      id: "evt-njdvhimss-fall-2026",
+      slug: "njdvhimss-fall-conference-2026",
+      title: "NJ/DVHIMSS Fall Conference 2026",
+      dek: "The joint New Jersey and Delaware Valley HIMSS fall conference brings regional health-IT leaders together in Atlantic City.",
+      body: readerSafeText(event.description ?? "")
+        || "A three-day regional health-IT conference hosted by NJ/DVHIMSS at the Hard Rock Hotel & Casino in Atlantic City.",
+      updatedAt: fetchedAt,
+      topics: ["chapter", "conference"],
+      orgs: ["org-njhimss", "org-dvhimss"],
+      region: "NJ",
+      source: { kind: "ingest", origin: "njhimss-events", url: listingUrl, fetchedAt, externalId: "njdvhimss-fall-2026" },
+      citations: [{ name: "NJDVHIMSS", url: listingUrl }],
+      geo: "Atlantic City, NJ",
+      startsAt: event.startsAt,
+      endsAt: event.endsAt,
+      timezone: "America/New_York",
+      venue: event.venue ?? "Hard Rock Hotel & Casino",
+      city: event.city ?? "Atlantic City",
+      hostOrg: "NJDVHIMSS",
+      registrationUrl,
+      partner: "njhimss",
+    };
+  }
+  if (event.key === "golf") {
+    return {
+      id: "evt-njdvhimss-golf-2026",
+      slug: "njdvhimss-annual-golf-outing-2026",
+      title: "NJDVHIMSS Annual Golf Outing",
+      dek: "The NJ/DVHIMSS annual golf outing opens the chapter’s fall conference program in Atlantic City.",
+      body: readerSafeText(event.description ?? "")
+        || "A chapter networking event held before the NJ/DVHIMSS fall conference in Atlantic City.",
+      updatedAt: fetchedAt,
+      topics: ["chapter", "networking"],
+      orgs: ["org-njhimss"],
+      region: "NJ",
+      source: { kind: "ingest" as const, origin: "njhimss-events", url: listingUrl, fetchedAt, externalId: "njdvhimss-golf-2026" },
+      citations: [{ name: "NJDVHIMSS", url: listingUrl }],
+      geo: "Atlantic City, NJ",
+      startsAt: event.startsAt,
+      endsAt: event.endsAt,
+      timezone: "America/New_York",
+      city: event.city ?? "Atlantic City",
+      hostOrg: "NJDVHIMSS",
+      registrationUrl,
+      partner: "njhimss",
+    };
+  }
+  const identity = genericNjEventIdentity(event);
+  return {
+    id: `evt-njdvhimss-${identity}`,
+    slug: slugify(identity),
+    title: event.title,
+    dek: "Official NJ/DVHIMSS chapter event.",
+    body: officialEventBody(event.title, event.venue, event.city, event.description),
+    updatedAt: fetchedAt,
+    topics: ["chapter", "events"],
+    orgs: ["org-njhimss"],
+    region: "NJ",
+    source: { kind: "ingest" as const, origin: "njhimss-events", url: sourceUrl, fetchedAt, externalId: identity },
+    citations: [{ name: "NJDVHIMSS", url: sourceUrl }],
+    geo: [event.venue, event.city].filter(Boolean).join(", ") || undefined,
+    startsAt: event.startsAt,
+    endsAt: event.endsAt,
+    timezone: "America/New_York",
+    venue: event.venue,
+    city: event.city,
+    hostOrg: "NJDVHIMSS",
+    registrationUrl,
+    partner: "njhimss",
+  };
 }
 
 async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) {
@@ -236,6 +445,7 @@ async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) 
         maxBytes: EVENTS_MAX_BYTES,
         timeoutMs: SOURCE_TIMEOUT_MS,
         headers: { "user-agent": UA },
+        allowedRedirectHosts: EVENT_REDIRECT_HOSTS,
       });
       html = response.body;
       used = url;
@@ -247,87 +457,32 @@ async function scrapeNjdvhimssBatch(fetchImpl: typeof fetch, fetchedAt: string) 
     }
   }
   if (!html) throw lastError ?? new UpstreamError("upstream-failed", "NJDVHIMSS page was unavailable");
+  const parsed = parseNjdvhimssPage(html);
+  const pageRegistrationUrl = verifiedNjdvhimssRegistrationUrl(html, used);
   const rows: EventItem[] = [];
-  const registrationUrl = verifiedNjdvhimssRegistrationUrl(html);
-  const conference = /October\s+13,\s+2026[\s\S]{0,80}October\s+15,\s+2026|Tuesday,\s+October\s+13,\s+2026/i.test(html);
-  if (conference) {
-    rows.push(
-      eventRow({
-        id: "evt-njdvhimss-fall-2026",
-        slug: "njdvhimss-fall-conference-2026",
-        title: "NJ/DVHIMSS Fall Conference 2026",
-        dek: "The joint New Jersey and Delaware Valley HIMSS fall conference brings regional health-IT leaders together in Atlantic City.",
-        body: "A three-day regional health-IT conference hosted by NJ/DVHIMSS at the Hard Rock Hotel & Casino in Atlantic City.",
-        updatedAt: fetchedAt,
-        topics: ["chapter", "conference"],
-        orgs: ["org-njhimss", "org-dvhimss"],
-        region: "NJ",
-        source: {
-          kind: "ingest",
-          origin: "njhimss-events",
-          url: used,
-          fetchedAt,
-          externalId: "njdvhimss-fall-2026",
-        },
-        citations: [{ name: "NJDVHIMSS", url: used }],
-        geo: "Atlantic City, NJ",
-        startsAt: "2026-10-13T20:30:00.000Z",
-        endsAt: "2026-10-15T15:30:00.000Z",
-        timezone: "America/New_York",
-        venue: "Hard Rock Hotel & Casino",
-        city: "Atlantic City",
-        hostOrg: "NJDVHIMSS",
-        registrationUrl,
-        partner: "njhimss",
+  for (const event of parsed.events) {
+    try {
+      const fields = njEventFields(event, fetchedAt, used, pageRegistrationUrl);
+      const registrationUrl = fields.registrationUrl;
+      rows.push(eventRow({
+        ...fields,
+        source: { ...fields.source, origin: "njhimss-events" },
         autoPublish: Boolean(registrationUrl),
         status: registrationUrl ? "published" : "review",
-      }),
-    );
-  }
-  if (/Golf/i.test(html) && /October\s+13/i.test(html)) {
-    rows.push(
-      eventRow({
-        id: "evt-njdvhimss-golf-2026",
-        slug: "njdvhimss-annual-golf-outing-2026",
-        title: "NJDVHIMSS Annual Golf Outing",
-        dek: "The NJ/DVHIMSS annual golf outing opens the chapter’s fall conference program in Atlantic City.",
-        body: "A chapter networking event held before the NJ/DVHIMSS fall conference in Atlantic City.",
-        updatedAt: fetchedAt,
-        topics: ["chapter", "networking"],
-        orgs: ["org-njhimss"],
-        region: "NJ",
-        source: {
-          kind: "ingest",
-          origin: "njhimss-events",
-          url: used,
-          fetchedAt,
-          externalId: "njdvhimss-golf-2026",
-        },
-        citations: [{ name: "NJDVHIMSS", url: used }],
-        geo: "Atlantic City, NJ",
-        startsAt: "2026-10-13T13:30:00.000Z",
-        endsAt: "2026-10-13T19:30:00.000Z",
-        timezone: "America/New_York",
-        city: "Atlantic City",
-        hostOrg: "NJDVHIMSS",
-        registrationUrl,
-        partner: "njhimss",
-        autoPublish: Boolean(registrationUrl),
-        status: registrationUrl ? "published" : "review",
-      }),
-    );
+      }));
+    } catch {
+      /* one malformed page event must not discard valid siblings */
+    }
   }
   const recognized = isRecognizedNjdvhimssPage(html);
-  const completeness: SnapshotCompleteness = !recognized
-    ? "partial"
-    : rows.length === 0
-      ? "empty-unverified"
-      : rows.length < 2
-        // This page currently carries the conference and golf outing. A
-        // one-card regex match is a partial parser result, not evidence that
-        // the other confirmed event disappeared.
-        ? "partial"
-        : "complete";
+  const completeness = njSnapshotCompleteness({
+    recognized,
+    itemCount: rows.length,
+    jsonLdEventCount: parsed.jsonLdEventCount,
+    jsonLdMalformed: parsed.jsonLdMalformed,
+    jsonLdTruncated: parsed.jsonLdTruncated,
+    cardMalformed: parsed.cardMalformed,
+  });
   return { items: rows, completeness, url: used };
 }
 

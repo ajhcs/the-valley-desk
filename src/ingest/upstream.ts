@@ -103,6 +103,8 @@ export async function fetchUpstream(options: {
   timeoutMs?: number;
   headers?: Record<string, string>;
   attempts?: number;
+  allowedRedirectHosts?: ReadonlySet<string>;
+  maxRedirects?: number;
 }): Promise<{ status: number; body: string; url: string; headers: Headers }> {
   const attempts = Math.max(1, options.attempts ?? MAX_UPSTREAM_ATTEMPTS);
   const timeoutMs = options.timeoutMs ?? SOURCE_TIMEOUT_MS;
@@ -110,13 +112,34 @@ export async function fetchUpstream(options: {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     let res: Response | undefined;
     try {
-      res = await options.fetchImpl(options.url, {
-        headers: options.headers,
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+      let currentUrl = options.url;
+      const redirectLimit = Math.max(0, Math.min(options.maxRedirects ?? 3, 5));
+      for (let hop = 0; ; hop += 1) {
+        res = await options.fetchImpl(currentUrl, {
+          headers: options.headers,
+          signal: AbortSignal.timeout(timeoutMs),
+          redirect: options.allowedRedirectHosts ? "manual" : "follow",
+        });
+        if (!options.allowedRedirectHosts || res.status < 300 || res.status >= 400) break;
+        const location = res.headers.get("location");
+        await res.body?.cancel().catch(() => undefined);
+        if (!location || hop >= redirectLimit) {
+          throw new UpstreamError("upstream-failed", "Upstream redirect limit exceeded");
+        }
+        let next: URL;
+        try {
+          next = new URL(location, currentUrl);
+        } catch {
+          throw new UpstreamError("upstream-failed", "Upstream redirect URL was invalid");
+        }
+        if (next.protocol !== "https:" || !options.allowedRedirectHosts.has(next.hostname.toLowerCase())) {
+          throw new UpstreamError("upstream-failed", "Upstream redirect left the source allowlist");
+        }
+        currentUrl = next.toString();
+      }
       if (res.ok) {
         const body = await readBoundedText(res, options.maxBytes);
-        return { status: res.status, body, url: options.url, headers: res.headers };
+        return { status: res.status, body, url: res.url || currentUrl, headers: res.headers };
       }
       await res.body?.cancel().catch(() => undefined);
       lastError = new UpstreamError(
