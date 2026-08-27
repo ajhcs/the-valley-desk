@@ -9,7 +9,7 @@ import { ContentCatalog, EventItem } from "../src/content/schema.ts";
 import { evaluateCandidate } from "../src/ingest/editor.ts";
 import { DEFAULT_EDITOR_BASE_URL, DEFAULT_EDITOR_MODEL } from "../src/ingest/editor-model.ts";
 import { persistEditorialDecisions, persistIngestRun, type D1DatabaseLike, type D1StatementLike } from "../src/ingest/persistence.ts";
-import { runAutomation } from "../src/ingest/automation.ts";
+import { runAutomation, runtimeFetch } from "../src/ingest/automation.ts";
 import { configureReviewGuardsForTests, handleReviewApi } from "../src/ingest/review-api.ts";
 import { feedXml, sitemapXml } from "../src/ingest/public-feed.ts";
 import { toFeed } from "../src/ingest/feed-contract.ts";
@@ -385,4 +385,20 @@ test("scheduled automation smoke persists a run and emits lock/run outcomes", as
   assert.equal(run.state, "succeeded");
   assert.equal(run.item_count, 0);
   database.close();
+});
+
+test("scheduled automation preserves Cloudflare's required fetch receiver", async () => {
+  const originalFetch = globalThis.fetch;
+  let receiver: unknown;
+  globalThis.fetch = function (this: unknown) {
+    receiver = this;
+    return Promise.resolve(new Response("ok"));
+  } as typeof fetch;
+  try {
+    const response = await runtimeFetch("https://example.com/health");
+    assert.equal(await response.text(), "ok");
+    assert.equal(receiver, globalThis);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
