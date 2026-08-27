@@ -340,6 +340,8 @@ test("same-host trailing-slash redirects preserve the server target", async () =
   assert.deepEqual(requested, [ARTICLE_URL, slashUrl]);
   assert.equal(result.metrics.success, 1);
   assert.equal(result.attempts[0]?.state, "success");
+  assert.equal(result.attempts[0]?.url, ARTICLE_URL);
+  assert.equal(result.items[0]?.source.url, ARTICLE_URL);
   assert.ok(result.items[0]?.body.includes("Full redirected article"));
 });
 
@@ -364,6 +366,8 @@ test("www redirects remain allowlisted without being rewritten to the apex", asy
   });
   assert.deepEqual(requested, [apexUrl, wwwUrl]);
   assert.equal(result.metrics.success, 1);
+  assert.equal(result.attempts[0]?.url, apexUrl);
+  assert.equal(result.items[0]?.source.url, apexUrl);
 });
 
 test("same-host cleartext redirect targets are upgraded without an HTTP request", async () => {
@@ -391,10 +395,14 @@ test("same-host cleartext redirect targets are upgraded without an HTTP request"
 test("redirect validation rejects cross-host cleartext, feed-shaped, and non-default-port targets", async () => {
   for (const location of [
     "http://whyy.org/unsafe/",
+    "http://news.christianacare.org:8080/unsafe/",
     "https://news.christianacare.org/feed/",
     "https://news.christianacare.org:8443/article/",
     "https://user:pass@news.christianacare.org/article/",
     "https://news.christianacare.org.evil.example/article/",
+    "//evil.example/article/",
+    "javascript:alert(1)",
+    "data:text/html,unsafe",
   ]) {
     const requested: string[] = [];
     const result = await overlayNewsArticles([articleItem()], {
@@ -420,6 +428,24 @@ test("redirect cycles fail immediately within the fixed hop budget", async () =>
     },
   });
   assert.deepEqual(requested, [ARTICLE_URL]);
+  assert.equal(result.attempts[0]?.error, "Too many redirects");
+});
+
+test("multi-URL redirect cycles are detected before repeating a request", async () => {
+  const requested: string[] = [];
+  const second = `${ARTICLE_URL}/second`;
+  const result = await overlayNewsArticles([articleItem()], {
+    allowedHosts: ALLOWED_HOSTS,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      return new Response(null, {
+        status: 302,
+        headers: { location: url === ARTICLE_URL ? second : ARTICLE_URL },
+      });
+    },
+  });
+  assert.deepEqual(requested, [ARTICLE_URL, second]);
   assert.equal(result.attempts[0]?.error, "Too many redirects");
 });
 
