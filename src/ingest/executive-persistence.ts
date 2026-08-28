@@ -358,6 +358,31 @@ type VerifiedLeadershipEvidence = {
   history: StoredLeadershipSnapshot[];
 };
 
+type EnrollmentCandidateRow = {
+  id: string;
+  institution_id: string;
+  normalized_name: string;
+  display_name: string;
+  latest_title: string;
+  normalized_title: string;
+  aliases_json: string;
+  source_ids_json: string;
+  first_seen_at: string;
+  last_seen_at: string;
+  complete_snapshot_count: number;
+  independent_source_count: number;
+  status: "pending" | "enrolled" | "ambiguous" | "rejected";
+  enrolled_person_id: string | null;
+  last_evidence_at: string | null;
+  note: string | null;
+};
+
+type EnrollmentDiscovery = {
+  institutionId: string;
+  leader: ExtractedLeader;
+  evidence: VerifiedLeadershipEvidence[];
+};
+
 function parseStoredLeaders(raw: string) {
   try {
     const value = JSON.parse(raw) as unknown;
@@ -391,9 +416,11 @@ function leaderForPerson(
   snapshot: StoredLeadershipSnapshot,
   personId: string,
   pack: CoveragePackDocument,
+  storedNames?: ReadonlyMap<string, string>,
 ) {
   return completeSnapshotLeaders(snapshot).find((leader) => (
     resolvePersonId(leader.name, pack.people, snapshot.institution_id) === personId
+    || storedNames?.get(personId) === leader.normalizedName
   ));
 }
 
@@ -405,6 +432,245 @@ function sourceIsOfficialAndMonitorable(source: CoverageSource | undefined) {
     && !source.kind.startsWith("linkedin")
     && source.url.startsWith("https://"),
   );
+}
+
+/**
+ * Only complete roster-like pages can introduce a new person identity. A
+ * person bio or newsroom item may verify a seeded person, but it cannot create
+ * a new executive record because it does not establish roster completeness.
+ */
+function sourceCanEnrollExecutive(source: CoverageSource) {
+  return source.kind === "leadership-page" || source.kind === "about-page";
+}
+
+function parseStringArray(raw: string | null | undefined) {
+  if (!raw) return [];
+  try {
+    const value = JSON.parse(raw) as unknown;
+    return Array.isArray(value)
+      ? value.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function enrollmentCandidateId(institutionId: string, normalizedName: string) {
+  return `enrollment-${slugPart(institutionId)}-${slugPart(normalizedName)}`.slice(0, 160);
+}
+
+function enrollmentPersonId(institutionId: string, normalizedName: string) {
+  return `person-${slugPart(institutionId)}-${slugPart(normalizedName)}`.slice(0, 160);
+}
+
+async function readStoredPersonForInstitution(
+  db: D1DatabaseLike,
+  leader: ExtractedLeader,
+  institutionId: string,
+  sourceId: string,
+  pack: CoveragePackDocument,
+) {
+  const seeded = resolvePersonId(leader.name, pack.people, institutionId);
+  if (seeded) return seeded;
+  const row = await db.prepare(`
+    SELECT id, source_ids_json
+    FROM covered_people
+    WHERE normalized_name = ?
+  `).bind(leader.normalizedName).first<{ id: string; source_ids_json: string | null }>();
+  if (!row) return undefined;
+  const sourceIds = parseStringArray(row.source_ids_json);
+  const role = await db.prepare(`
+    SELECT id
+    FROM executive_roles
+    WHERE person_id = ? AND institution_id = ?
+    LIMIT 1
+  `).bind(row.id, institutionId).first<{ id: string }>();
+  // A source link or an existing role is the only way a stored same-name
+  // person can be reused. Otherwise this is a namesake and must remain
+  // ambiguous rather than being silently attached to this institution.
+  return sourceIds.includes(sourceId) || role ? row.id : undefined;
+}
+
+async function recordEnrollmentDiscovery(
+  db: D1DatabaseLike,
+  discovery: EnrollmentDiscovery,
+  now: Date,
+) {
+  const evidence = discovery.evidence.filter((item) => sourceCanEnrollExecutive(item.source));
+  if (!evidence.length) return { status: "pending" as const, confirmed: false, personId: undefined };
+  const sourceIds = [...new Set(evidence.map((item) => item.sourceId))];
+  const snapshotTimes = evidence.flatMap((item) => (
+    item.history
+      .filter((snapshot) => completeSnapshotLeaders(snapshot).some((leader) => leader.normalizedName === discovery.leader.normalizedName))
+      .map((snapshot) => snapshot.fetched_at)
+  ));
+  const latestEvidenceAt = [...snapshotTimes].sort().at(-1) ?? now.toISOString();
+  const firstEvidenceAt = [...snapshotTimes].sort()[0] ?? latestEvidenceAt;
+  const completeSnapshotCount = snapshotTimes.length;
+  const independentSourceCount = sourceIds.length;
+  const hasTwoDailySnapshots = evidence.some((item) => {
+    if (item.source.cadence !== "daily" || item.history.length < 2) return false;
+    const latestAt = Date.parse(item.history[0]?.fetched_at ?? "");
+    const previousAt = Date.parse(item.history[1]?.fetched_at ?? "");
+    if (!Number.isFinite(latestAt) || !Number.isFinite(previousAt)) return false;
+    if (latestAt - previousAt < LEADERSHIP_CADENCE_MS.daily) return false;
+    return item.history.slice(0, 2).every((snapshot) => (
+      completeSnapshotLeaders(snapshot).some((leader) => (
+        leader.normalizedName === discovery.leader.normalizedName
+        && leader.normalizedTitle === discovery.leader.normalizedTitle
+      ))
+    ));
+  });
+  const confirmed = independentSourceCount >= 2 || hasTwoDailySnapshots;
+  const existing = await db.prepare(`
+    SELECT id, institution_id, normalized_name, display_name, latest_title,
+           normalized_title, aliases_json, source_ids_json, first_seen_at,
+           last_seen_at, complete_snapshot_count, independent_source_count,
+           status, enrolled_person_id, last_evidence_at, note
+    FROM executive_enrollment_candidates
+    WHERE institution_id = ? AND normalized_name = ?
+  `).bind(discovery.institutionId, discovery.leader.normalizedName).first<EnrollmentCandidateRow>();
+  const aliases = [...new Set([
+    ...parseStringArray(existing?.aliases_json),
+    discovery.leader.name,
+  ])];
+  const combinedSources = [...new Set([
+    ...parseStringArray(existing?.source_ids_json),
+    ...sourceIds,
+  ])];
+  const firstSeenAt = existing?.first_seen_at && existing.first_seen_at < firstEvidenceAt
+    ? existing.first_seen_at
+    : firstEvidenceAt;
+  const nextStatus = existing?.status === "enrolled" || existing?.status === "ambiguous" || existing?.status === "rejected"
+    ? existing.status
+    : "pending";
+  const note = confirmed
+    ? "Evidence threshold met; identity enrollment is being attempted conservatively."
+    : "Awaiting a second complete daily snapshot or an independent official roster source.";
+  const candidateId = existing?.id ?? enrollmentCandidateId(discovery.institutionId, discovery.leader.normalizedName);
+  await db.prepare(`
+    INSERT INTO executive_enrollment_candidates (
+      id, institution_id, normalized_name, display_name, latest_title,
+      normalized_title, aliases_json, source_ids_json, first_seen_at,
+      last_seen_at, complete_snapshot_count, independent_source_count,
+      status, enrolled_person_id, last_evidence_at, note
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(institution_id, normalized_name) DO UPDATE SET
+      display_name = excluded.display_name,
+      latest_title = excluded.latest_title,
+      normalized_title = excluded.normalized_title,
+      aliases_json = excluded.aliases_json,
+      source_ids_json = excluded.source_ids_json,
+      first_seen_at = MIN(executive_enrollment_candidates.first_seen_at, excluded.first_seen_at),
+      last_seen_at = MAX(executive_enrollment_candidates.last_seen_at, excluded.last_seen_at),
+      complete_snapshot_count = MAX(executive_enrollment_candidates.complete_snapshot_count, excluded.complete_snapshot_count),
+      independent_source_count = MAX(executive_enrollment_candidates.independent_source_count, excluded.independent_source_count),
+      last_evidence_at = excluded.last_evidence_at,
+      note = excluded.note
+  `).bind(
+    candidateId,
+    discovery.institutionId,
+    discovery.leader.normalizedName,
+    discovery.leader.name,
+    discovery.leader.title,
+    discovery.leader.normalizedTitle,
+    JSON.stringify(aliases),
+    JSON.stringify(combinedSources),
+    firstSeenAt,
+    latestEvidenceAt,
+    completeSnapshotCount,
+    independentSourceCount,
+    nextStatus,
+    existing?.enrolled_person_id ?? null,
+    latestEvidenceAt,
+    note,
+  ).run();
+  return { status: nextStatus, confirmed, personId: existing?.enrolled_person_id ?? undefined };
+}
+
+async function enrollExecutiveDiscovery(
+  db: D1DatabaseLike,
+  discovery: EnrollmentDiscovery,
+  now: Date,
+) {
+  const recorded = await recordEnrollmentDiscovery(db, discovery, now);
+  if (!recorded.confirmed || recorded.status !== "pending") return recorded.personId;
+  const row = await db.prepare(`
+    SELECT id, display_name, normalized_name, aliases_json, source_ids_json,
+           status, enrolled_person_id
+    FROM executive_enrollment_candidates
+    WHERE institution_id = ? AND normalized_name = ?
+  `).bind(discovery.institutionId, discovery.leader.normalizedName).first<Pick<EnrollmentCandidateRow, "id" | "display_name" | "normalized_name" | "aliases_json" | "source_ids_json" | "status" | "enrolled_person_id">>();
+  if (!row || row.status !== "pending") return row?.enrolled_person_id ?? undefined;
+  const existing = await db.prepare(`
+    SELECT id, source_ids_json
+    FROM covered_people
+    WHERE normalized_name = ?
+  `).bind(discovery.leader.normalizedName).first<{ id: string; source_ids_json: string | null }>();
+  let personId = existing?.id;
+  const evidenceSourceIds = new Set(discovery.evidence.filter((item) => sourceCanEnrollExecutive(item.source)).map((item) => item.sourceId));
+  if (existing) {
+    const role = await db.prepare(`
+      SELECT id FROM executive_roles WHERE person_id = ? AND institution_id = ? LIMIT 1
+    `).bind(existing.id, discovery.institutionId).first<{ id: string }>();
+    const linked = parseStringArray(existing.source_ids_json).some((sourceId) => evidenceSourceIds.has(sourceId));
+    if (!role && !linked) {
+      await db.prepare(`
+        UPDATE executive_enrollment_candidates
+        SET status = 'ambiguous', note = ?
+        WHERE id = ? AND status = 'pending'
+      `).bind(
+        "Exact name already belongs to an unrelated stored identity; awaiting an explicit identity link.",
+        row.id,
+      ).run();
+      return undefined;
+    }
+  } else {
+    personId = enrollmentPersonId(discovery.institutionId, discovery.leader.normalizedName);
+    try {
+      await db.prepare(`
+        INSERT INTO covered_people (
+          id, display_name, normalized_name, aliases_json, known_title,
+          source_ids_json, linkedin_url, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, NULL, ?)
+      `).bind(
+        personId,
+        row.display_name,
+        row.normalized_name,
+        JSON.stringify(parseStringArray(row.aliases_json)),
+        discovery.leader.title,
+        JSON.stringify(parseStringArray(row.source_ids_json)),
+        now.toISOString(),
+      ).run();
+    } catch (error) {
+      // A concurrent run may have inserted the same normalized identity. Do
+      // not guess which person it is; mark the enrollment ambiguous instead.
+      const concurrent = await db.prepare(
+        "SELECT id FROM covered_people WHERE normalized_name = ?",
+      ).bind(row.normalized_name).first<{ id: string }>();
+      if (!concurrent) throw error;
+      await db.prepare(`
+        UPDATE executive_enrollment_candidates
+        SET status = 'ambiguous', note = ?
+        WHERE id = ? AND status = 'pending'
+      `).bind(
+        "A concurrent same-name identity was found; enrollment requires explicit corroboration.",
+        row.id,
+      ).run();
+      return undefined;
+    }
+  }
+  if (!personId) return undefined;
+  await db.prepare(`
+    UPDATE executive_enrollment_candidates
+    SET status = 'enrolled', enrolled_person_id = ?, note = ?
+    WHERE id = ? AND status = 'pending'
+  `).bind(
+    personId,
+    "Identity enrolled after repeated or independently corroborated first-party roster evidence.",
+    row.id,
+  ).run();
+  return personId;
 }
 
 function isOfficialEvidenceUrl(source: CoverageSource, finalUrl: string) {
@@ -453,20 +719,24 @@ function executiveEditorialCandidate(
   evidence: VerifiedLeadershipEvidence,
   pack: CoveragePackDocument,
   now: Date,
+  displayNameOverride?: string,
 ): ContentItem {
   const institution = pack.institutions.find((row) => row.id === institutionId);
   const person = pack.people.find((row) => row.id === personId);
-  if (!institution || !person) throw new Error("Cannot build executive candidate without registry identity");
+  if (!institution || (!person && !displayNameOverride)) {
+    throw new Error("Cannot build executive candidate without institution-scoped identity");
+  }
+  const displayName = person?.displayName ?? displayNameOverride!;
   const effectiveDate = evidence.latest.fetched_at.slice(0, 10);
   const normalized = normalizeTitle(title);
   const id = `exec-${slugPart(personId)}-${slugPart(action)}-${slugPart(normalized)}-${effectiveDate}`;
   const verb = action === "departure" ? "no longer lists" : "lists";
-  const body = `${institution.name}'s official leadership source ${verb} ${person.displayName} as ${title}. This source-backed executive update was autonomously verified and remains an editorial candidate for review.`;
+  const body = `${institution.name}'s official leadership source ${verb} ${displayName} as ${title}.`;
   return NewsItem.parse({
     id,
     slug: id,
-    title: `Leadership update: ${person.displayName} — ${title}`,
-    dek: `An official ${institution.shortName} leadership source supports an autonomously verified executive record.`,
+    title: `Leadership update: ${displayName} — ${title}`,
+    dek: `An official ${institution.shortName} leadership source records a change in its executive roster.`,
     body,
     kind: "news",
     status: "review",
@@ -535,8 +805,10 @@ export async function autonomouslyVerifyLeadership(
   }
 
   type Candidate = {
-    personId: string;
+    personId?: string;
     institutionId: string;
+    normalizedName: string;
+    displayName: string;
     title: string;
     normalizedTitle: string;
     evidence: Map<string, VerifiedLeadershipEvidence>;
@@ -547,16 +819,29 @@ export async function autonomouslyVerifyLeadership(
     const source = sourceById(sourceId, pack);
     if (!latest || !source) continue;
     for (const leader of completeSnapshotLeaders(latest)) {
-      const personId = resolvePersonId(leader.name, pack.people, latest.institution_id);
-      if (!personId) continue;
-      const key = candidateKey(personId, latest.institution_id, leader.normalizedTitle);
+      const personId = await readStoredPersonForInstitution(
+        db,
+        leader,
+        latest.institution_id,
+        sourceId,
+        pack,
+      );
+      // Seeded identities retain the existing title-keyed behavior. Unknown
+      // names are keyed by institution + normalized name so their evidence is
+      // retained across sources and runs instead of being dropped.
+      const key = personId
+        ? candidateKey(personId, latest.institution_id, leader.normalizedTitle)
+        : `discovered:${latest.institution_id}:${leader.normalizedName}`;
       const candidate = candidates.get(key) ?? {
         personId,
         institutionId: latest.institution_id,
+        normalizedName: leader.normalizedName,
+        displayName: leader.name,
         title: leader.title,
         normalizedTitle: leader.normalizedTitle,
         evidence: new Map(),
       };
+      if (personId && !candidate.personId) candidate.personId = personId;
       candidate.evidence.set(sourceId, {
         sourceId,
         source,
@@ -570,8 +855,12 @@ export async function autonomouslyVerifyLeadership(
 
   const personTitles = new Map<string, Set<string>>();
   for (const candidate of candidates.values()) {
-    const key = `${candidate.personId}:${candidate.institutionId}`;
+    const key = `${candidate.personId ?? `discovered:${candidate.normalizedName}`}:${candidate.institutionId}`;
     const titles = personTitles.get(key) ?? new Set<string>();
+    for (const evidence of candidate.evidence.values()) {
+      const leader = evidence.latestLeader;
+      if (leader.normalizedName === candidate.normalizedName) titles.add(leader.normalizedTitle);
+    }
     titles.add(candidate.normalizedTitle);
     personTitles.set(key, titles);
   }
@@ -582,18 +871,76 @@ export async function autonomouslyVerifyLeadership(
   let conflicts = 0;
   const verifiedPeople = new Set<string>();
   for (const candidate of candidates.values()) {
-    const personKey = `${candidate.personId}:${candidate.institutionId}`;
+    const discovered = !candidate.personId;
+    const personKey = `${candidate.personId ?? `discovered:${candidate.normalizedName}`}:${candidate.institutionId}`;
     if ((personTitles.get(personKey)?.size ?? 0) > 1) {
+      if (discovered) {
+        await recordEnrollmentDiscovery(db, {
+          institutionId: candidate.institutionId,
+          leader: {
+            name: candidate.displayName,
+            normalizedName: candidate.normalizedName,
+            title: candidate.title,
+            normalizedTitle: candidate.normalizedTitle,
+          },
+          evidence: [...candidate.evidence.values()],
+        }, now);
+      }
       conflicts += 1;
       continue;
     }
     const evidence = [...candidate.evidence.values()]
       .sort((left, right) => right.source.precedence - left.source.precedence);
-    const hasIndependentSources = evidence.length >= 2;
-    const hasTwoDailySnapshots = evidence.some((item) => evidenceMeetsConfirmation(item, pack));
+    const enrollmentEvidence = evidence.filter((item) => sourceCanEnrollExecutive(item.source));
+    const hasIndependentSources = candidate.personId ? evidence.length >= 2 : enrollmentEvidence.length >= 2;
+    const hasTwoDailySnapshots = candidate.personId
+      ? evidence.some((item) => evidenceMeetsConfirmation(item, pack))
+      : enrollmentEvidence.some((item) => {
+        if (item.source.cadence !== "daily" || item.history.length < 2) return false;
+        const latestAt = Date.parse(item.history[0]?.fetched_at ?? "");
+        const previousAt = Date.parse(item.history[1]?.fetched_at ?? "");
+        return Number.isFinite(latestAt)
+          && Number.isFinite(previousAt)
+          && latestAt - previousAt >= LEADERSHIP_CADENCE_MS.daily
+          && item.history.slice(0, 2).every((snapshot) => (
+            completeSnapshotLeaders(snapshot).some((leader) => (
+              leader.normalizedName === candidate.normalizedName
+              && leader.normalizedTitle === candidate.normalizedTitle
+            ))
+          ));
+      });
     if (!hasIndependentSources && !hasTwoDailySnapshots) {
+      if (!candidate.personId) {
+        await recordEnrollmentDiscovery(db, {
+          institutionId: candidate.institutionId,
+          leader: {
+            name: candidate.displayName,
+            normalizedName: candidate.normalizedName,
+            title: candidate.title,
+            normalizedTitle: candidate.normalizedTitle,
+          },
+          evidence,
+        }, now);
+      }
       unresolved += 1;
       continue;
+    }
+    if (!candidate.personId) {
+      const personId = await enrollExecutiveDiscovery(db, {
+        institutionId: candidate.institutionId,
+        leader: {
+          name: candidate.displayName,
+          normalizedName: candidate.normalizedName,
+          title: candidate.title,
+          normalizedTitle: candidate.normalizedTitle,
+        },
+        evidence: enrollmentEvidence,
+      }, now);
+      if (!personId) {
+        unresolved += 1;
+        continue;
+      }
+      candidate.personId = personId;
     }
     const current = roles.filter((role) => (
       role.personId === candidate.personId
@@ -606,11 +953,17 @@ export async function autonomouslyVerifyLeadership(
       continue;
     }
     const prior = current[0];
-    const selected = evidence[0];
+    const selected = discovered ? (enrollmentEvidence[0] ?? evidence[0]) : evidence[0];
     if (!selected) continue;
     const effectiveFrom = selected.latest.fetched_at;
     if (prior && Date.parse(prior.effectiveFrom) >= Date.parse(effectiveFrom)) {
       unresolved += 1;
+      continue;
+    }
+    if (prior && prior.normalizedTitle === candidate.normalizedTitle && prior.verificationStatus === "verified") {
+      // The same roster evidence remains true on the next run. Preserve an
+      // idempotent role history and avoid emitting duplicate reader-facing
+      // candidates for an unchanged title.
       continue;
     }
     const action = prior
@@ -651,6 +1004,7 @@ export async function autonomouslyVerifyLeadership(
       hasTwoDailySnapshots
         ? "Autonomously verified across two consecutive complete daily snapshots."
         : "Autonomously verified across two independent registered official sources.",
+      candidate.normalizedName,
     );
     editorialCandidates.push(executiveEditorialCandidate(
       action,
@@ -660,12 +1014,19 @@ export async function autonomouslyVerifyLeadership(
       selected,
       pack,
       now,
+      candidate.displayName,
     ));
   }
 
   // Departures require two consecutive complete snapshots from two distinct
   // registered official sources. A source must have been the role's source
   // when known; this avoids auto-closing a role from an unrelated roster.
+  const roleIdentityRows = await db.prepare(`
+    SELECT DISTINCT r.person_id, p.normalized_name
+    FROM executive_roles r
+    JOIN covered_people p ON p.id = r.person_id
+  `).all<{ person_id: string; normalized_name: string }>();
+  const storedNames = new Map((roleIdentityRows.results ?? []).map((row) => [row.person_id, row.normalized_name]));
   const currentRoles = await readExecutiveRoles(db);
   for (const role of currentRoles) {
     if (
@@ -678,7 +1039,7 @@ export async function autonomouslyVerifyLeadership(
       const source = sourceById(sourceId, pack);
       if (!source || history.length < 2 || !sourceIsOfficialAndMonitorable(source)) continue;
       if (!history.slice(0, 2).every((snapshot) => completeSnapshotLeaders(snapshot).length > 0)) continue;
-      if (history.slice(0, 2).some((snapshot) => leaderForPerson(snapshot, role.personId, pack)?.normalizedTitle === role.normalizedTitle)) continue;
+      if (history.slice(0, 2).some((snapshot) => leaderForPerson(snapshot, role.personId, pack, storedNames)?.normalizedTitle === role.normalizedTitle)) continue;
       if (role.sourceId && role.sourceId !== sourceId && !source.monitor) continue;
       absences.push({
         sourceId,
@@ -716,6 +1077,7 @@ export async function autonomouslyVerifyLeadership(
       role.personId,
       now.toISOString(),
       "Autonomously verified after two consecutive complete snapshots with independent official corroboration.",
+      undefined,
     );
     editorialCandidates.push(executiveEditorialCandidate(
       "departure",
@@ -898,16 +1260,29 @@ async function markAutonomousObservations(
   personId: string,
   reviewedAt: string,
   note: string,
+  normalizedName?: string,
 ) {
   for (const sourceId of new Set(sourceIds)) {
     await db.prepare(`
       UPDATE source_observations
       SET verification_status = 'verified', reviewed_at = ?,
-          reviewed_by = 'autonomous-leadership-monitor', review_note = ?
+          reviewed_by = 'autonomous-leadership-monitor', review_note = ?,
+          person_id = COALESCE(person_id, ?)
       WHERE source_id = ? AND person_id = ? AND status = 'review'
         AND verification_status = 'unverified'
         AND kind IN ('person-appeared', 'person-departed', 'title-changed')
-    `).bind(reviewedAt, note, sourceId, personId).run();
+    `).bind(reviewedAt, note, personId, sourceId, personId).run();
+    if (normalizedName) {
+      await db.prepare(`
+        UPDATE source_observations
+        SET verification_status = 'verified', reviewed_at = ?,
+            reviewed_by = 'autonomous-leadership-monitor', review_note = ?, person_id = ?
+        WHERE source_id = ? AND person_id IS NULL AND status = 'review'
+          AND verification_status = 'unverified'
+          AND kind IN ('person-appeared', 'person-departed', 'title-changed')
+          AND payload_json LIKE ?
+      `).bind(reviewedAt, note, personId, sourceId, `%${normalizedName}%`).run();
+    }
   }
 }
 

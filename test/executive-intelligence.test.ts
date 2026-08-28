@@ -4,6 +4,7 @@ import { DatabaseSync, type StatementSync } from "node:sqlite";
 import { test } from "node:test";
 
 import {
+  CoveragePackDocument,
   coverageBoundsAreClosed,
   coveragePack,
   coveredInstitutions,
@@ -117,7 +118,7 @@ test("coverage registry has closed geography, bounded fetches, and explicit 16-s
   assert.equal(coverageBoundsAreClosed(), true);
   const statuses = new Map(officialSourceCoverage().map((row) => [row.shortName, row.status]));
   assert.equal(statuses.get("Jefferson"), "degraded");
-  assert.equal(statuses.get("LVHN"), "degraded");
+  assert.equal(statuses.get("LVHN"), "active");
   assert.equal(statuses.get("Penn Princeton"), "degraded");
   assert.equal(statuses.get("Penn Doylestown"), "degraded");
   assert.equal(statuses.get("Cooper"), "active");
@@ -133,6 +134,10 @@ test("coverage registry has closed geography, bounded fetches, and explicit 16-s
   assert.equal(
     sourceById("src-st-lukes-leadership")?.url,
     "https://www.slhn.org/about/leadership/executive-leadership",
+  );
+  assert.equal(
+    sourceById("src-lvhn-leadership-committees")?.url,
+    "https://www.lvhn.org/medical-staff-services/leadership-and-committees",
   );
   assert.equal(coveragePack.sources.some((source) => source.kind.startsWith("linkedin") && source.monitor), false);
 });
@@ -296,6 +301,124 @@ test("autonomous verification applies only after two daily snapshots and emits a
   assert.equal(role.verificationStatus, "verified");
   assert.equal(role.verifiedBy, "autonomous-leadership-monitor");
   assert.equal(role.evidenceUrl, sourceById(sourceId)!.url);
+  database.close();
+});
+
+test("unknown roster names persist and enroll only after repeated first-party evidence", async () => {
+  const database = migratedDatabase();
+  const db = sqliteD1(database);
+  await seedCoveragePack(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
+  const sourceId = "src-penn-is-leadership";
+  const leader = { name: "Morgan Example", title: "Chief Operating Officer" };
+  await persistLeadershipSnapshots(db, [storedLeadershipSnapshot(
+    sourceId,
+    "2026-08-27T12:00:00.000Z",
+    [leader],
+  )]);
+  const pending = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
+  assert.equal(pending.verifiedRoles, 0);
+  assert.equal(database.prepare(
+    "SELECT status, enrolled_person_id FROM executive_enrollment_candidates WHERE institution_id = 'inst-penn' AND normalized_name = 'morgan example'",
+  ).get().status, "pending");
+  assert.equal((await readExecutiveRoles(db, undefined, "inst-penn")).some((role) => role.title === leader.title), false);
+
+  await persistLeadershipSnapshots(db, [storedLeadershipSnapshot(
+    sourceId,
+    "2026-08-28T12:00:00.000Z",
+    [leader],
+  )]);
+  const enrolled = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-28T12:00:00.000Z"));
+  assert.equal(enrolled.verifiedRoles, 1);
+  const candidate = database.prepare(
+    "SELECT status, enrolled_person_id FROM executive_enrollment_candidates WHERE institution_id = 'inst-penn' AND normalized_name = 'morgan example'",
+  ).get() as { status: string; enrolled_person_id: string };
+  assert.equal(candidate.status, "enrolled");
+  assert.match(candidate.enrolled_person_id, /^person-inst-penn-morgan-example$/);
+  const role = (await readExecutiveRoles(db, candidate.enrolled_person_id, "inst-penn"))[0]!;
+  assert.equal(role.verificationStatus, "verified");
+  assert.equal(enrolled.editorialCandidates.length, 1);
+  assert.doesNotMatch(enrolled.editorialCandidates[0]!.body, /autonomously|editorial candidate|review/i);
+  assert.doesNotMatch(enrolled.editorialCandidates[0]!.dek, /autonomously|editorial candidate|review/i);
+  await persistLeadershipSnapshots(db, [storedLeadershipSnapshot(
+    sourceId,
+    "2026-08-29T12:00:00.000Z",
+    [leader],
+  )]);
+  const unchanged = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-29T12:00:00.000Z"));
+  assert.equal(unchanged.verifiedRoles, 0);
+  assert.equal(unchanged.editorialCandidates.length, 0);
+  database.close();
+});
+
+test("same-name identities across institutions remain ambiguous", async () => {
+  const database = migratedDatabase();
+  const db = sqliteD1(database);
+  await seedCoveragePack(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
+  await persistExecutiveRoleChange(db, {
+    personId: "person-julian-mihai",
+    institutionId: "inst-penn",
+    title: "Chief Operating Officer",
+    sourceId: "src-penn-is-leadership",
+    evidenceUrl: sourceById("src-penn-is-leadership")!.url,
+    effectiveFrom: "2026-01-01T00:00:00.000Z",
+  });
+  const sourceId = "src-main-line-leadership";
+  const leader = { name: "Julian Mihai", title: "Chief Operating Officer" };
+  await persistLeadershipSnapshots(db, [
+    storedLeadershipSnapshot(sourceId, "2026-08-27T12:00:00.000Z", [leader]),
+    storedLeadershipSnapshot(sourceId, "2026-08-28T12:00:00.000Z", [leader]),
+  ]);
+  const result = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-28T12:00:00.000Z"));
+  assert.equal(result.verifiedRoles, 0);
+  const candidate = database.prepare(
+    "SELECT status FROM executive_enrollment_candidates WHERE institution_id = 'inst-main-line' AND normalized_name = 'julian mihai'",
+  ).get() as { status: string };
+  assert.equal(candidate.status, "ambiguous");
+  assert.equal((await readExecutiveRoles(db, "person-julian-mihai", "inst-main-line")).length, 0);
+  database.close();
+});
+
+test("conflicting titles retain an unknown identity without auto-enrollment", async () => {
+  const database = migratedDatabase();
+  const db = sqliteD1(database);
+  const testPack = CoveragePackDocument.parse({
+    ...coveragePack,
+    sources: [...coveragePack.sources, {
+      id: "src-main-line-alt",
+      institutionId: "inst-main-line",
+      kind: "leadership-page",
+      url: "https://alt.mainlinehealth.org/about/leadership",
+      host: "alt.mainlinehealth.org",
+      precedence: 90,
+      monitor: true,
+      cadence: "daily",
+      status: "enabled",
+    }],
+  });
+  await seedCoveragePack(db, testPack, new Date("2026-08-27T12:00:00.000Z"));
+  const leader = { name: "Taylor Example", title: "Chief Operating Officer" };
+  await persistLeadershipSnapshots(db, [
+    storedLeadershipSnapshot("src-main-line-leadership", "2026-08-27T12:00:00.000Z", [leader]),
+    storedLeadershipSnapshot("src-main-line-leadership", "2026-08-28T12:00:00.000Z", [leader]),
+  ]);
+  const alternate = storedLeadershipSnapshot("src-main-line-leadership", "2026-08-28T12:00:00.000Z", [{
+    name: leader.name,
+    title: "Chief Financial Officer",
+  }]);
+  await persistLeadershipSnapshots(db, [{
+    ...alternate,
+    id: "test-src-main-line-alt-2026-08-28T12:00:00.000Z",
+    sourceId: "src-main-line-alt",
+    finalUrl: "https://alt.mainlinehealth.org/about/leadership",
+  }]);
+  const result = await autonomouslyVerifyLeadership(db, testPack, new Date("2026-08-28T12:00:00.000Z"));
+  assert.equal(result.verifiedRoles, 0);
+  assert.ok(result.conflicts >= 1);
+  const candidate = database.prepare(
+    "SELECT status, independent_source_count FROM executive_enrollment_candidates WHERE institution_id = 'inst-main-line' AND normalized_name = 'taylor example'",
+  ).get() as { status: string; independent_source_count: number };
+  assert.equal(candidate.status, "pending");
+  assert.equal(candidate.independent_source_count, 2);
   database.close();
 });
 

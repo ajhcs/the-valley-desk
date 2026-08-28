@@ -7,7 +7,7 @@
     "Reusable coverage-pack/source-registry for the approved Delaware Valley geography.",
     "The 16 covered systems are the first-wave monitor set. Additional LinkedIn inventory orgs stay reusable but uncovered.",
     "LinkedIn URLs are inventory-only. Do not scrape LinkedIn or store LinkedIn credentials.",
-    "Leadership-page monitoring writes review observations only. It does not auto-publish.",
+    "Leadership-page monitoring writes review observations only. It does not auto-publish; new roster identities require repeated or independently corroborated evidence before enrollment.",
     "St. Luke's and LVHN are covered for reuse and remain geographically edge relative to ENTITY_BOUNDARY."
   ],
   "geography": {
@@ -584,6 +584,16 @@
       "monitor": false,
       "cadence": "weekly",
       "status": "disabled"
+    },
+    {
+      "id": "src-lvhn-leadership-committees",
+      "institutionId": "inst-lvhn",
+      "kind": "about-page",
+      "url": "https://www.lvhn.org/medical-staff-services/leadership-and-committees",
+      "precedence": 80,
+      "monitor": true,
+      "cadence": "daily",
+      "status": "enabled"
     },
     {
       "id": "src-nemours-leadership",

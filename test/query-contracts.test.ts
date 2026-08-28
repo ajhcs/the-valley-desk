@@ -4140,6 +4140,7 @@ function applyMigrations(database: DatabaseSync) {
     "0014_editor_review_verification.sql",
     "0015_signals_alerts.sql",
     "0016_operational_alert_recovery.sql",
+    "0017_executive_enrollment.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 
