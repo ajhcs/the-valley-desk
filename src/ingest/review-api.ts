@@ -21,6 +21,13 @@ type ReviewEnv = {
   PUBLIC_ORIGIN?: string;
 };
 
+export type ReviewApiOptions = {
+  /** Set only after the caller has validated ctx.access with Cloudflare. */
+  trustedAccessEmail?: string;
+  /** Re-map an Access-only prefix (for example /ops/api) to /api routes. */
+  routePrefix?: string;
+};
+
 const JSON_HEADERS = {
   "content-type": "application/json; charset=utf-8",
   "cache-control": "no-store",
@@ -74,7 +81,8 @@ async function tokenMatches(expected: string, actual: string) {
   return mismatch === 0;
 }
 
-async function isAuthorized(request: Request, env: ReviewEnv) {
+async function isAuthorized(request: Request, env: ReviewEnv, trustedAccessEmail?: string) {
+  if (trustedAccessEmail === "clyons@ajhcs.org") return true;
   if (!env.REVIEW_API_TOKEN) return false;
   const auth = request.headers.get("authorization") ?? "";
   if (!auth.startsWith("Bearer ")) return false;
@@ -215,7 +223,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       LIMIT 20
   `).all();
   const emailQueue = await env.VALLEY_DESK_DB.prepare(`
-      SELECT id, message_id, envelope_to, from_address, from_domain, subject, category, status,
+      SELECT id, message_id, envelope_to, from_address, from_domain, subject, category, status, trust_state,
              url_count, urls_json, excerpt, truncated, instruction_like, receive_count,
              first_seen_at, last_seen_at
       FROM email_discoveries
@@ -248,20 +256,23 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   return payload;
 }
 
-export async function handleReviewApi(request: Request, env: ReviewEnv) {
-  if (!(await isAuthorized(request, env))) return json({ error: "not_found" }, 404);
+export async function handleReviewApi(request: Request, env: ReviewEnv, options: ReviewApiOptions = {}) {
+  if (!(await isAuthorized(request, env, options.trustedAccessEmail))) return json({ error: "not_found" }, 404);
   const url = new URL(request.url);
   const method = request.method.toUpperCase();
+  const pathname = options.routePrefix && (url.pathname === options.routePrefix || url.pathname.startsWith(`${options.routePrefix}/`))
+    ? `/api${url.pathname.slice(options.routePrefix.length)}`
+    : url.pathname;
 
-  if (url.pathname === "/api/automation/status" || url.pathname === "/api/automation/status/review") {
+  if (pathname === "/api/automation/status" || pathname === "/api/automation/status/review") {
     if (method !== "GET" && method !== "HEAD") {
       return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
     }
-    const detailed = url.pathname === "/api/automation/status/review";
+    const detailed = pathname === "/api/automation/status/review";
     return json(await statusPayload(env, detailed));
   }
 
-  if (url.pathname === "/api/executive-observations") {
+  if (pathname === "/api/executive-observations") {
     if (method !== "GET" && method !== "HEAD") {
       return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
     }
@@ -287,7 +298,7 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
     }
   }
 
-  const executiveDecisionMatch = /^\/api\/executive-observations\/([^/]+)\/decision$/.exec(url.pathname);
+  const executiveDecisionMatch = /^\/api\/executive-observations\/([^/]+)\/decision$/.exec(pathname);
   if (executiveDecisionMatch) {
     if (method !== "POST") {
       return json({ error: "method_not_allowed" }, 405, { allow: "POST" });
@@ -326,7 +337,7 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
     if (body.note !== undefined && (typeof body.note !== "string" || body.note.length > 1_000)) {
       return json({ error: "invalid_note" }, 400);
     }
-    const reviewer = request.headers.get("cf-access-authenticated-user-email") ?? "review-api-token";
+    const reviewer = options.trustedAccessEmail ?? "review-api-token";
     try {
       const result = await reviewLeadershipObservation(
         env.VALLEY_DESK_DB,
@@ -345,7 +356,7 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
     }
   }
 
-  if (url.pathname === "/api/review-queue") {
+  if (pathname === "/api/review-queue") {
     if (method !== "GET" && method !== "HEAD") {
       return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
     }
@@ -364,7 +375,7 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
     return json({ items: rows.results ?? [] });
   }
 
-  const decisionMatch = /^\/api\/review-queue\/([^/]+)\/decision$/.exec(url.pathname);
+  const decisionMatch = /^\/api\/review-queue\/([^/]+)\/decision$/.exec(pathname);
   if (decisionMatch) {
     if (method !== "POST") {
       return json({ error: "method_not_allowed" }, 405, { allow: "POST" });
@@ -431,7 +442,9 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
       return json(payload);
     }
     const decidedAt = new Date().toISOString();
-    const reviewer = request.headers.get("cf-access-authenticated-user-email") ?? "review-api-token";
+    // Never trust cf-access-* request headers. Access callers pass the
+    // identity only after trustedOpsIdentity() validates ctx.access.
+    const reviewer = options.trustedAccessEmail ?? "review-api-token";
     let approvedContent: ReturnType<typeof ContentItem.parse> | undefined;
     let rejectedContent: ReturnType<typeof ContentItem.parse> | undefined;
     if (body.decision === "approved") {

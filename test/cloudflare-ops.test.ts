@@ -58,6 +58,18 @@ import {
   logOps,
   publicHealth,
 } from "../src/lib/ops.ts";
+import {
+  OPS_ALERT_RECIPIENT,
+  OPS_ALERT_SENDER,
+  dispatchOperationalAlert,
+  dispatchOperationalDigest,
+  sanitizeAlertDetails,
+} from "../src/lib/alerts.ts";
+import {
+  handleOpsRequest,
+  isOpsPath,
+  trustedOpsIdentity,
+} from "../src/ingest/ops-access.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = ContentCatalog.parse(JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8")));
@@ -465,11 +477,32 @@ test("email discovery accepts only scoped inboxes and public HTTPS URLs", () => 
   assert.equal(acceptedEmailRecipient("linkedin@thevalleydesk.org")?.categoryHint, "linkedin");
   assert.equal(acceptedEmailRecipient("leads@thevalleydesk.org"), null);
   assert.equal(acceptedEmailRecipient("signals@example.com"), null);
+  assert.equal(acceptedEmailRecipient("signals+garbage@thevalleydesk.org"), null);
   assert.equal(keepHttpsDiscoveryUrl("https://www.linkedin.com/posts/example?utm_source=email"), "https://linkedin.com/posts/example");
   assert.equal(keepHttpsDiscoveryUrl("http://www.linkedin.com/posts/example"), undefined);
   assert.equal(keepHttpsDiscoveryUrl("https://127.0.0.1/private"), undefined);
   assert.equal(keepHttpsDiscoveryUrl("https://user:pass@example.com/private"), undefined);
   assert.equal(keepHttpsDiscoveryUrl("https://example.com/story?token=secret&id=42&utm_source=email"), "https://example.com/story");
+});
+
+test("email pointer policy never calls editorial/model machinery", () => {
+  const emailSrc = readFileSync(join(root, "src/ingest/email.ts"), "utf8");
+  assert.equal(/fetch\s*\(|enrichWithEditorModel|persistEditorialDecisions|evaluateCandidate/.test(emailSrc), false);
+});
+
+test("email MIME To cannot override an invalid envelope alias", async () => {
+  const parsed = await parseEmailDiscovery({
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+garbage@thevalleydesk.org",
+    headers: new Headers({
+      to: "signals+linkedin@thevalleydesk.org",
+      subject: "Update",
+      "content-type": "text/plain",
+    }),
+    raw: "Content-Type: text/plain\r\n\r\nhttps://example.com/story",
+    rawSize: 80,
+  });
+  assert.deepEqual(parsed, { error: "unsupported_recipient" });
 });
 
 test("email MIME parsing keeps the first multipart part and ignores attachments", async () => {
@@ -533,7 +566,7 @@ test("email identity includes normalized content even when Message-ID is reused"
   assert.notEqual(first.id, second.id);
 });
 
-test("category aliases require a matching envelope sender and cleanup expires old rows", async () => {
+test("exact category aliases survive forwarded sender rewriting and cleanup expires old rows", async () => {
   const spoofed = await parseEmailDiscovery({
     envelopeFrom: "attacker@example.com",
     envelopeTo: "signals+linkedin@thevalleydesk.org",
@@ -548,7 +581,8 @@ test("category aliases require a matching envelope sender and cleanup expires ol
   });
   assert.ok(!("error" in spoofed));
   assert.equal(spoofed.fromDomain, "example.com");
-  assert.equal(spoofed.category, "unknown");
+  assert.equal(spoofed.category, "linkedin");
+  assert.equal(spoofed.trustState, "untrusted-pointer");
 
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
@@ -565,7 +599,7 @@ test("category aliases require a matching envelope sender and cleanup expires ol
   database.close();
 });
 
-test("inbound LinkedIn mail is bounded, review-only, and stores no raw MIME", async () => {
+test("inbound LinkedIn mail is bounded, review-only, untrusted, and stores no raw MIME", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
   const db = sqliteD1(database);
@@ -595,15 +629,17 @@ test("inbound LinkedIn mail is bounded, review-only, and stores no raw MIME", as
   });
   assert.ok(!("error" in parsed));
   assert.equal(parsed.category, "linkedin");
-  assert.equal(parsed.status, "ignored");
+  assert.equal(parsed.status, "review");
+  assert.equal(parsed.trustState, "untrusted-pointer");
   assert.deepEqual(parsed.urls, ["https://linkedin.com/posts/temple-health-update"]);
   assert.equal(EMAIL_TRUSTED_AUTHSERV_ID, "");
 
   const first = inboundEmail(raw);
-  const rejected = await handleInboundEmail(first.message, { VALLEY_DESK_DB: db });
-  assert.equal(rejected.outcome, "rejected");
-  assert.equal(first.rejected(), "Mailbox unavailable");
-  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
+  const accepted = await handleInboundEmail(first.message, { VALLEY_DESK_DB: db });
+  assert.equal(accepted.outcome, "accepted");
+  assert.equal(first.rejected(), "");
+  const stored = database.prepare("SELECT trust_state FROM email_discoveries").get() as { trust_state: string };
+  assert.equal(stored.trust_state, "untrusted-pointer");
   const columns = database.prepare("PRAGMA table_info(email_discoveries)").all() as Array<{ name: string }>;
   assert.equal(columns.some((column) => ["raw", "raw_mime", "mime", "body"].includes(column.name)), false);
   assert.ok(columns.some((column) => column.name === "raw_size"));
@@ -613,7 +649,7 @@ test("inbound LinkedIn mail is bounded, review-only, and stores no raw MIME", as
   database.close();
 });
 
-test("spoofed Authentication-Results never authenticates inbound email", async () => {
+test("spoofed Authentication-Results never authenticates an inbound pointer", async () => {
   const raw = "Content-Type: text/plain\r\n\r\nTemple Health posted https://example.com/story";
   for (const headers of [
     new Headers({
@@ -640,15 +676,16 @@ test("spoofed Authentication-Results never authenticates inbound email", async (
       receivedAt: "2026-08-27T17:00:00.000Z",
     });
     assert.ok(!("error" in parsed));
-    assert.equal(parsed.status, "ignored");
+    assert.equal(parsed.status, "review");
+    assert.equal(parsed.trustState, "untrusted-pointer");
   }
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
   const db = sqliteD1(database);
   const inbound = inboundEmail(raw);
   const result = await handleInboundEmail(inbound.message, { VALLEY_DESK_DB: db });
-  assert.equal(result.outcome, "rejected");
-  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
+  assert.equal(result.outcome, "accepted");
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 1);
   database.close();
 });
 
@@ -672,6 +709,7 @@ test("email authentication accepts only an explicitly configured exact authserv-
   });
   assert.ok(!("error" in accepted));
   assert.equal(accepted.status, "review");
+  assert.equal(accepted.trustState, "authenticated-pointer");
 
   const lookalike = await parseEmailDiscovery({
     ...base,
@@ -682,7 +720,8 @@ test("email authentication accepts only an explicitly configured exact authserv-
     }),
   });
   assert.ok(!("error" in lookalike));
-  assert.equal(lookalike.status, "ignored");
+  assert.equal(lookalike.status, "review");
+  assert.equal(lookalike.trustState, "untrusted-pointer");
 
   const senderLookalike = await parseEmailDiscovery({
     ...base,
@@ -693,7 +732,8 @@ test("email authentication accepts only an explicitly configured exact authserv-
     }),
   });
   assert.ok(!("error" in senderLookalike));
-  assert.equal(senderLookalike.status, "ignored");
+  assert.equal(senderLookalike.status, "review");
+  assert.equal(senderLookalike.trustState, "untrusted-pointer");
 });
 
 test("exact duplicate email replays are idempotent without extra writes or cap refresh", async () => {
@@ -749,6 +789,135 @@ test("oversized and unsupported inbound email is rejected before persistence", a
   assert.equal(unsupported.outcome, "unsupported_recipient");
   assert.equal(leads.rejected(), "Mailbox unavailable");
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
+  database.close();
+});
+
+test("Access context gates ops on both apex and workers.dev without trusting headers", async () => {
+  assert.equal(isOpsPath("/ops"), true);
+  assert.equal(isOpsPath("/ops/"), true);
+  assert.equal(isOpsPath("/ops/api/automation/status"), true);
+  assert.equal(isOpsPath("/opsx"), false);
+  assert.equal(await trustedOpsIdentity(undefined), undefined);
+  assert.equal(await trustedOpsIdentity({ access: { getIdentity: async () => ({ email: "attacker@example.com" }) } }), undefined);
+  assert.equal(await trustedOpsIdentity({ access: { getIdentity: async () => ({ email: "Clyons@AJHCS.org" }) } }), "clyons@ajhcs.org");
+
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const env = { VALLEY_DESK_DB: db, PUBLIC_ORIGIN: DEFAULT_PUBLIC_ORIGIN };
+  const denied = await handleOpsRequest(
+    new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops`, { headers: { "cf-access-authenticated-user-email": "clyons@ajhcs.org" } }),
+    env,
+    undefined,
+    DEFAULT_PUBLIC_ORIGIN,
+    async () => "private",
+  );
+  assert.equal(denied.status, 404);
+  const allowed = await handleOpsRequest(
+    new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops`),
+    env,
+    { access: { getIdentity: async () => ({ email: "clyons@ajhcs.org" }) } },
+    DEFAULT_PUBLIC_ORIGIN,
+    async () => "private-shell",
+  );
+  assert.equal(allowed.status, 200);
+  assert.equal(await allowed.text(), "private-shell");
+  const workersDev = await handleOpsRequest(
+    new Request(`${PREVIEW_ORIGIN}/ops`),
+    env,
+    { access: { getIdentity: async () => ({ email: "clyons@ajhcs.org" }) } },
+    DEFAULT_PUBLIC_ORIGIN,
+    async () => "private-shell",
+  );
+  assert.equal(workersDev.status, 404);
+  const api = await handleOpsRequest(
+    new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops/api/automation/status`),
+    env,
+    { access: { getIdentity: async () => ({ email: "clyons@ajhcs.org" }) } },
+    DEFAULT_PUBLIC_ORIGIN,
+    async () => "unused",
+  );
+  assert.equal(api.status, 200);
+  const spoofed = await handleOpsRequest(
+    new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops/api/automation/status`, { headers: { "cf-access-authenticated-user-email": "clyons@ajhcs.org" } }),
+    env,
+    undefined,
+    DEFAULT_PUBLIC_ORIGIN,
+    async () => "unused",
+  );
+  assert.equal(spoofed.status, 404);
+  database.close();
+});
+
+test("operational alerts dedupe durably, sanitize secrets, and send to the fixed owner", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: Array<{ to: string; from: string; subject: string; text: string }> = [];
+  const binding = {
+    async send(message: { to: string; from: string; subject: string; text: string }) {
+      sent.push(message);
+      return { messageId: "message-1" };
+    },
+  };
+  const firstAt = new Date("2026-08-28T08:00:00.000Z");
+  const input = {
+    fingerprint: "valley-desk:test-alert",
+    event: "source-degraded",
+    severity: "warning" as const,
+    threshold: 2,
+    now: firstAt,
+    details: {
+      sourceId: "source-1",
+      reason: "safe detail",
+      token: "do-not-send",
+      body: "do-not-send",
+      injected: "line\nheader",
+    },
+  };
+  assert.equal((await dispatchOperationalAlert(db, binding, input)).outcome, "deduped");
+  assert.equal((await dispatchOperationalAlert(db, binding, { ...input, now: new Date("2026-08-28T09:00:00.000Z") })).outcome, "sent");
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].to, OPS_ALERT_RECIPIENT);
+  assert.equal(sent[0].from, OPS_ALERT_SENDER);
+  assert.equal(sent[0].text.includes("do-not-send"), false);
+  assert.equal(sent[0].text.includes("\nheader"), false);
+  assert.deepEqual(sanitizeAlertDetails(input.details), {
+    sourceId: "source-1",
+    reason: "safe detail",
+    injected: "line header",
+  });
+  const replay = await dispatchOperationalAlert(db, binding, { ...input, now: new Date("2026-08-28T09:10:00.000Z") });
+  assert.equal(replay.outcome, "deduped");
+  assert.equal(sent.length, 1);
+  database.close();
+});
+
+test("daily operational digest claims once per pack and remains bounded", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  await dispatchOperationalAlert(db, undefined, {
+    fingerprint: "valley-desk:digest-alert",
+    event: "source-degraded",
+    severity: "warning",
+    threshold: 1,
+    now: new Date("2026-08-28T08:00:00.000Z"),
+    details: { sourceId: "source-1" },
+  });
+  const sent: string[] = [];
+  const binding = {
+    async send(message: { to: string; from: string; subject: string; text: string }) {
+      sent.push(message.text);
+      return { messageId: "digest-1" };
+    },
+  };
+  const first = await dispatchOperationalDigest(db, binding, new Date("2026-08-28T08:05:00.000Z"));
+  assert.equal(first.outcome, "sent");
+  const second = await dispatchOperationalDigest(db, binding, new Date("2026-08-28T08:06:00.000Z"));
+  assert.equal(second.outcome, "deduped");
+  assert.equal(sent.length, 1);
+  assert.ok(sent[0].includes("source-degraded"));
   database.close();
 });
 

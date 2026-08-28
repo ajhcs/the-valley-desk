@@ -9,6 +9,7 @@ import { KindListPage } from "./ui/KindListPage";
 import { EventsPage } from "./ui/EventsPage";
 import { ItemPage } from "./ui/ItemPage";
 import { NotFound } from "./ui/NotFound";
+import { OpsPage } from "./ui/OpsPage";
 import { LabIndexPage } from "./ui/lab/LabIndexPage";
 import { LabChronoPage } from "./ui/lab/LabChronoPage";
 import { LabSystemsPage } from "./ui/lab/LabSystemsPage";
@@ -23,6 +24,12 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   component: HomePage,
+});
+
+const opsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/ops",
+  component: OpsPage,
 });
 
 const labIndexRoute = createRoute({
@@ -76,6 +83,7 @@ function section<TPath extends string>(path: TPath, kind: "news" | "event" | "vo
 // Briefing stays unpublished. Worker 404s unpublished, /org, and unknown as HTML shell.
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  opsRoute,
   ...section("/news", "news"),
   ...section("/events", "event"),
   ...section("/voices", "voice"),

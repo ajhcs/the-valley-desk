@@ -15,6 +15,13 @@
   "version_metadata": {
     "binding": "CF_VERSION_METADATA"
   },
+  "send_email": [
+    {
+      "name": "NOTIFY_OPS",
+      "destination_address": "clyons@ajhcs.org",
+      "allowed_sender_addresses": ["alerts@thevalleydesk.org"]
+    }
+  ],
   "triggers": {
     "crons": ["0 * * * *"]
   },

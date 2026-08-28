@@ -8,6 +8,7 @@ import {
 import { runAutomation } from "./src/ingest/automation.ts";
 import { cleanupEmailDiscoveries, handleInboundEmail } from "./src/ingest/email.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
+import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
 import { feedXml, mergePublishedContent, mergedFeed, sitemapXml } from "./src/ingest/public-feed.ts";
 import {
@@ -21,6 +22,7 @@ import { loadEntities } from "./src/content/store.ts";
 import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts";
 import { decorateHtml } from "./src/lib/crawler-html.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
+import { dispatchOperationalAlert, dispatchOperationalDigest } from "./src/lib/alerts.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -158,13 +160,75 @@ function compactAutomation(result) {
   };
 }
 
-async function handleFetch(request, env, origin, nonce) {
+function safeAlertError(error) {
+  const raw = error instanceof Error ? error.message : "Unknown automation failure";
+  return raw
+    .replace(/[\u0000-\u001F\u007F]/g, " ")
+    .replace(/\bauthorization\b\s*[:=]\s*bearer\s+\S+/gi, "authorization=[redacted]")
+    .replace(/\b(bearer|authorization|token|secret|password|api[-_]?key)\b\s*[:=]?\s*\S+/gi, "$1=[redacted]")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 240) || "Unknown automation failure";
+}
+
+async function sendAutomationAlerts(env, result, now = new Date()) {
+  if (result?.skipped) {
+    await dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, {
+      fingerprint: "valley-desk:automation-lock-busy",
+      event: "automation-lock-busy",
+      severity: "warning",
+      threshold: 3,
+      now,
+      details: { reason: "automation-already-running" },
+    });
+    return;
+  }
+  const sourceNotes = Array.isArray(result?.notes?.sources) ? result.notes.sources : [];
+  for (const source of sourceNotes) {
+    if (!source || source.state === "disabled" || source.state === "healthy" || source.state === "healthy-empty") continue;
+    const sourceId = typeof source.id === "string" ? source.id.slice(0, 100) : "unknown";
+    await dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, {
+      fingerprint: `valley-desk:source:${sourceId}:${source.state}`,
+      event: "source-degraded",
+      severity: source.state === "auth-failed" ? "critical" : "warning",
+      threshold: 3,
+      now,
+      details: { sourceId, state: source.state, failures: source.consecutiveFailures },
+    });
+  }
+}
+
+async function sendDailyOpsDigest(env, now = new Date()) {
+  // Run once at a predictable UTC hour; D1 claim state makes retries and
+  // duplicate cron deliveries safe.
+  if (now.getUTCHours() !== 8) return;
+  await dispatchOperationalDigest(env.VALLEY_DESK_DB, env.NOTIFY_OPS, now);
+}
+
+async function handleFetch(request, env, origin, nonce, ctx) {
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method.toUpperCase();
 
   if (path === "/api/health") {
     return handlePublicHealth(request, env);
+  }
+  if (isOpsPath(path)) {
+    return handleOpsRequest(
+      request,
+      env,
+      ctx,
+      origin,
+      async () => {
+        const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
+        return decorateHtml({
+          html: await asset.text(),
+          path: "/ops",
+          origin,
+          nonce,
+        });
+      },
+    );
   }
   if (isReviewApiPath(path)) {
     return handleReviewApi(request, env);
@@ -295,17 +359,27 @@ export default {
           outcome: result.skipped ? "skipped" : "succeeded",
           ...compactAutomation(result),
         });
+        return sendAutomationAlerts(env, result).then(() => sendDailyOpsDigest(env));
       }).catch((error) => {
         logOps("ingest-scheduled-failed", {
-          message: error instanceof Error ? error.message : "Unknown automation failure",
+          message: safeAlertError(error),
         }, "error");
+        return dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, {
+          fingerprint: "valley-desk:automation-run-failed",
+          event: "automation-run-failed",
+          severity: "critical",
+          threshold: 2,
+          details: { stage: "scheduled", reason: safeAlertError(error) },
+        }).catch((alertError) => {
+          logOps("ops-alert", { outcome: "dispatch-failed", message: safeAlertError(alertError) }, "warn");
+        });
       }),
     );
   },
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const origin = resolvePublicOrigin(env.PUBLIC_ORIGIN);
     const nonce = crypto.randomUUID();
-    const response = canonicalHostRedirect(request, origin) ?? await handleFetch(request, env, origin, nonce);
+    const response = canonicalHostRedirect(request, origin) ?? await handleFetch(request, env, origin, nonce, ctx);
     const contentType = response.headers.get("content-type") || "";
     const html = contentType.includes("text/html");
     const secured = applySecurityHeaders(response, {

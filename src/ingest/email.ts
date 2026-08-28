@@ -39,6 +39,8 @@ export const EMAIL_LOCAL_PARTS = [
 
 export type EmailCategory = "linkedin" | "page" | "newsletter" | "unknown";
 export type EmailDiscoveryStatus = "review" | "ignored";
+/** Email is a discovery pointer, never an authoritative editorial source. */
+export type EmailTrustState = "untrusted-pointer" | "authenticated-pointer";
 export type EmailHandlerOutcome =
   | "accepted"
   | "duplicate"
@@ -77,6 +79,7 @@ export type EmailDiscoveryRecord = {
   subject: string | null;
   category: EmailCategory;
   status: EmailDiscoveryStatus;
+  trustState: EmailTrustState;
   urls: string[];
   excerpt: string | null;
   rawSize: number;
@@ -193,6 +196,9 @@ export function acceptedEmailRecipient(to: string): AcceptedRecipient | null {
   const plus = plusAt >= 0 ? localFull.slice(plusAt + 1) : null;
   if (!ACCEPTED_LOCAL.has(local)) return null;
   if (plus && local !== "signals") return null;
+  // Plus aliases are an allowlist, not a free-form category input. This keeps
+  // future-domain routing from accidentally collapsing into the generic inbox.
+  if (plus && !LOCAL_CATEGORY[plus]) return null;
   const hintKey = plus && LOCAL_CATEGORY[plus] ? plus : local;
   return {
     address,
@@ -528,7 +534,10 @@ export async function parseEmailDiscovery(input: {
   receivedAt?: string;
   trustedAuthservId?: string;
 }): Promise<EmailDiscoveryRecord | { error: "unsupported_recipient" }> {
-  const recipient = acceptedEmailRecipient(input.envelopeTo) ?? acceptedEmailRecipient(headerGet(input.headers, "to"));
+  // The platform-provided envelope recipient is the routing authority. A
+  // MIME To header is sender-controlled and must never turn an invalid route
+  // into an accepted alias.
+  const recipient = acceptedEmailRecipient(input.envelopeTo);
   if (!recipient) return { error: "unsupported_recipient" };
 
   const mime = parseMimeMessage(input.raw, input.headers);
@@ -547,7 +556,11 @@ export async function parseEmailDiscovery(input: {
   const messageIdRaw = clampText(stripControls(headerGet(input.headers, "message-id")).trim(), EMAIL_MAX_MESSAGE_ID);
   const messageId = messageIdRaw || null;
   const excerpt = excerptFrom(mime.text, mime.html);
-  const category = classifyEmail({ recipient, fromDomain, subject: subject ?? "", headers: input.headers });
+  // The exact recipient alias is the only category signal trusted from the
+  // forwarding path. Envelope/header senders can be rewritten by Gmail and
+  // are retained solely for later public-source verification diagnostics.
+  const category = recipient.categoryHint
+    ?? classifyEmail({ recipient, fromDomain, subject: subject ?? "", headers: input.headers });
   const instructionLike = looksInstructionLike(subject, excerpt);
   const receivedAt = input.receivedAt || new Date().toISOString();
   const rawDigest = await sha256Hex(input.raw);
@@ -556,7 +569,8 @@ export async function parseEmailDiscovery(input: {
     fromDomain,
     input.trustedAuthservId?.trim() || EMAIL_TRUSTED_AUTHSERV_ID,
   );
-  const status: EmailDiscoveryStatus = instructionLike || !senderAuthenticated || (urls.length === 0 && category === "unknown")
+  const trustState: EmailTrustState = senderAuthenticated ? "authenticated-pointer" : "untrusted-pointer";
+  const status: EmailDiscoveryStatus = instructionLike || (urls.length === 0 && category === "unknown")
     ? "ignored"
     : "review";
   return {
@@ -568,6 +582,7 @@ export async function parseEmailDiscovery(input: {
     subject,
     category,
     status,
+    trustState,
     urls,
     excerpt,
     rawSize: input.rawSize,
@@ -601,10 +616,10 @@ export async function persistEmailDiscovery(
     const inserted = await db.prepare(`
       INSERT INTO email_discoveries (
         id, message_id, envelope_to, from_address, from_domain, subject, category, status,
-        url_count, urls_json, excerpt, raw_size, truncated, instruction_like, receive_count,
+        trust_state, url_count, urls_json, excerpt, raw_size, truncated, instruction_like, receive_count,
         first_seen_at, last_seen_at
       )
-      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?
+      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?
       WHERE (SELECT COUNT(*) FROM email_discoveries WHERE first_seen_at >= ?) < ?
         AND (SELECT COUNT(*) FROM email_discoveries WHERE from_domain = ? AND first_seen_at >= ?) < ?
     `).bind(
@@ -616,6 +631,7 @@ export async function persistEmailDiscovery(
       record.subject,
       record.category,
       record.status,
+      record.trustState,
       record.urls.length,
       JSON.stringify(record.urls),
       record.excerpt,

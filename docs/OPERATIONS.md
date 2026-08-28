@@ -35,8 +35,10 @@ No second Worker or `env.staging` block is used.
 | `POST` `/api/review-queue/:id/decision` | bearer token | Approve or reject. JSON body, 20 POSTs / 10 min / token+IP, `Idempotency-Key` supported |
 | `GET`/`HEAD` `/api/executive-observations` | bearer token | Leadership observations filtered by verification status |
 | `POST` `/api/executive-observations/:id/decision` | bearer token | Verify or ignore one complete, non-hostile leadership observation |
+| `GET`/`HEAD` `/ops` | Cloudflare Access (`clyons@ajhcs.org`) | Private operations shell |
+| `GET`/`HEAD` `/ops/api/*` | Cloudflare Access context | Browser status API; no bearer token in browser |
 
-Unauthorized private routes return `404 { error: "not_found" }` so they stay undiscoverable. Health never includes run details, source URLs, or tokens.
+Unauthorized private routes return `404 { error: "not_found" }` so they stay undiscoverable. The Worker requires trusted Cloudflare `ctx.access` identity for `/ops` and `/ops/api/*`; it never trusts spoofable `cf-access-authenticated-user-email` headers. Direct `workers.dev/ops` access is denied in code even when Access is configured for the apex path. Health never includes run details, source URLs, or tokens.
 
 ## Security headers
 
@@ -60,7 +62,7 @@ That rule lives in the Cloudflare dashboard, not in this Worker. Without it, som
 
 Hourly cron writes JSON lines for `cron`, `lock`, `leadership`, `leadership-review`, `run`, `source`, `news-extraction`, `model`, `publication`, and `reconciliation` outcomes. Secrets and token-like keys are redacted. Leadership monitoring is review-only and failure-isolated from news/event ingestion; each run seeds the 16-institution coverage registry, fetches at most 16 bounded first-party sources, persists snapshots/observations, and records explicit active/degraded coverage posture. LinkedIn inventory and partial/PDF sources are retained but never fetched.
 
-`schemaVersion` is the latest D1 migration prefix (currently `0014`). `0014_editor_review_verification.sql` adds content-change freshness plus durable claim-ledger and verification results; apply it before deploying code that reads the review backlog. `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
+`schemaVersion` is the latest D1 migration prefix (currently `0015`). `0014_editor_review_verification.sql` adds content-change freshness plus durable claim-ledger and verification results, and `0015_signals_alerts.sql` adds signal trust state and durable operational alerts; apply both before deploying code that reads these tables. `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
 
 News article extraction is URL-keyed in `news_article_extractions` (`0011`). Successful rows cache bounded normalized text only (never raw HTML) and refresh after 7 days. `failed` and `no-content` cool down from 6 hours with exponential backoff capped at 7 days. A failed refresh keeps the last successful body so the item never regresses to the RSS snippet. Article fetches stay on exact-host HTTPS, with redirect, size, time, concurrency, and per-source candidate-cap bounds.
 
@@ -73,23 +75,31 @@ The scheduled handler starts extraction-cache cleanup in its own `waitUntil`, in
 Email Routing uses the existing `the-valley-desk` Worker and two intentionally separate paths:
 
 - `leads@thevalleydesk.org` forwards to the verified destination `clyons@ajhcs.org`. It does not enter D1.
-- `signals@thevalleydesk.org`, `signals+linkedin@thevalleydesk.org`, `linkedin@thevalleydesk.org`, `page(s)@thevalleydesk.org`, and `newsletter(s)@thevalleydesk.org` route to the Worker's `email()` handler.
+- `signals@thevalleydesk.org`, `signals+linkedin@thevalleydesk.org`, `linkedin@thevalleydesk.org`, `page(s)@thevalleydesk.org`, and `newsletter(s)@thevalleydesk.org` route to the Worker's `email()` handler. Plus aliases are an exact allowlist; arbitrary `signals+...` categories are rejected.
 
-The email handler stores only bounded metadata, an excerpt, and normalized public HTTPS URLs in `email_discoveries`. It never stores raw MIME or attachments; all URL query parameters are removed because notification and unsubscribe links commonly carry secrets. Message text remains untrusted data, is never executed as instruction, and prompt-injection-like mail is rejected. Accepted discoveries remain review-only and are visible through the protected detailed automation-status endpoint. Atomic per-domain/global admission caps limit flooding, and isolated hourly cleanup expires rows after 90 days without blocking the content automation. `leads@` is deliberately not an accepted Worker inbox.
+The email handler stores only bounded metadata, an excerpt, and normalized public HTTPS URLs in `email_discoveries`. Each row has explicit `trust_state` (`untrusted-pointer` or `authenticated-pointer`); the platform envelope recipient determines the category, while MIME `To`, sender, and authentication data are diagnostic only because forwarded mail can rewrite or spoof them. It never stores raw MIME or attachments; all URL query parameters are removed because notification and unsubscribe links commonly carry secrets. Message text remains untrusted data, is never executed as instruction, and prompt-injection-like mail is rejected. Accepted discoveries remain review-only and are visible through the protected detailed automation-status endpoint. Inbound email never calls the model, fetches a URL, or publishes content; a separate allowlisted public-source verification step is required. Atomic per-domain/global admission caps limit flooding, and isolated hourly cleanup expires rows after 90 days without blocking the content automation. `leads@` is deliberately not an accepted Worker inbox.
 
-Email discovery currently fails closed: ordinary MIME `Authentication-Results` and `ARC-Authentication-Results` headers are not trusted because the Worker API does not establish their provenance. `EMAIL_TRUSTED_AUTHSERV_ID` is unset/empty, so signal messages are rejected rather than admitted on spoofable header text. Do not set it or enable discovery aliases until a production capture establishes a Cloudflare-controlled authentication result with a stable authserv-id, or the admission design is replaced with another platform-authenticated signal. Lead forwarding is independent of this gate.
+Email discovery does not use ordinary MIME `Authentication-Results` or `ARC-Authentication-Results` as authority. A message may be retained as an untrusted pointer when it uses an exact signal alias and contains a bounded public URL; only a separately proven Cloudflare-authenticated result can mark it `authenticated-pointer`. Neither trust state can publish without public-source verification. Lead forwarding is independent of this gate.
 
-Activate routing only after migration `0010_email_discoveries.sql` and the matching Worker version are deployed:
+Activate routing only after migrations `0010_email_discoveries.sql` and `0015_signals_alerts.sql`, plus the matching Worker version, are deployed:
 
 1. Refresh Wrangler OAuth so it includes `email_routing:write`.
 2. Onboard `thevalleydesk.org` in Cloudflare Email Service. Confirm there is no existing MX provider before accepting DNS changes.
 3. Add and verify `clyons@ajhcs.org` as a destination address.
 4. Create an exact routing rule from `leads@thevalleydesk.org` to that verified destination.
 5. Create exact Worker routing rules for the signal inboxes above. Do not use a catch-all.
-6. After the trusted-auth prerequisite above is implemented, send one synthetic LinkedIn notification to `signals+linkedin@thevalleydesk.org`; verify one `email_discoveries` row, then resend the exact message and verify the original row remains unchanged (`receive_count = 1`, unchanged `last_seen_at`).
+6. Configure a Gmail filter on the primary `clyons@ajhcs.org` mailbox to forward only LinkedIn notifications to `signals+linkedin@thevalleydesk.org`, label/archive them, and avoid a user-facing copy. Send one synthetic LinkedIn notification; verify one `email_discoveries` row with `trust_state = 'untrusted-pointer'`, then resend the exact message and verify the original row remains unchanged (`receive_count = 1`, unchanged `last_seen_at`).
 7. Send a lead to `leads@thevalleydesk.org` and verify delivery to `clyons@ajhcs.org` without a D1 discovery row.
 
 Inbound email is untrusted discovery evidence. It cannot approve, publish, withdraw, or feature content, and it does not reuse `REVIEW_API_TOKEN`.
+
+## Operational alerts and daily digest
+
+Migration `0015_signals_alerts.sql` adds D1-backed `operational_alerts` and `operational_digests`. Alert fingerprints, occurrence counts, notification backoff, and digest claims are durable across Worker isolates; in-memory maps are not used for notification deduplication. Details are allowlisted and bounded, and secrets, raw MIME, body/excerpt text, email addresses, cookies, and URLs are removed before persistence or delivery.
+
+Wrangler declares a restricted `NOTIFY_OPS` send binding: sender `alerts@thevalleydesk.org` and destination `clyons@ajhcs.org`. The binding is intentionally unavailable to arbitrary recipients. Immediate alerts trigger only after repeated run/source failures; the daily digest is claimed at 08:00 UTC and contains bounded operational counts. A send failure is recorded for bounded retry and does not recursively create another alert. No model-budget alert is configured.
+
+Create the Access application for `thevalleydesk.org/ops*` with a deny-by-default policy allowing only `clyons@ajhcs.org`. Keep the same production Worker and do not protect the public site globally.
 
 ## Rollback
 
