@@ -3180,10 +3180,10 @@ test("automatic editor publishes only rule-confirmed material", () => {
     productIds: [],
     changeType: "deployment",
     materialityDimensions: ["deployment"],
-    impactSentence: "Penn made a material deployment change.",
+    impactSentence: "Penn made a material local change to clinical operations this week.",
     whyAttend: null,
     whoYoullMeet: [],
-    evidenceSpans: ["A material local change"],
+    evidenceSpans: ["A material local change", "Penn made a material local change to clinical operations this week."],
   });
   assert.equal(evaluateCandidate(discovery, evidence, now).rule, "primary-corroboration-required");
   const firstParty = {
@@ -4119,6 +4119,7 @@ function applyMigrations(database: DatabaseSync) {
     "0009_snapshot_completeness.sql",
     "0010_email_discoveries.sql",
     "0011_news_article_extractions.sql",
+    "0012_editor_review_verification.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 

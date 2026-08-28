@@ -20,14 +20,9 @@ export type ClaimLedgerEntry = z.infer<typeof ClaimLedgerEntry>;
 export type ClaimLedger = z.infer<typeof ClaimLedger>;
 export type ClaimType = z.infer<typeof ClaimType>;
 
-function normalizedHaystack(value: string) {
-  return value.toLocaleLowerCase("en-US").replace(/\s+/g, " ").trim();
-}
-
 export function containsExact(haystack: string, needle: string) {
-  const h = normalizedHaystack(haystack);
-  const n = normalizedHaystack(needle);
-  return n.length > 0 && h.includes(n);
+  const n = needle.trim();
+  return n.length > 0 && haystack.includes(n);
 }
 
 /**
@@ -41,21 +36,28 @@ export function validateClaimLedger(
   ledger: ClaimLedger | undefined | null,
   sourceHaystack: string,
   contextHaystack: string,
+  allowedSourceIds?: ReadonlySet<string>,
+  allowedContextIds?: ReadonlySet<string>,
 ): { ok: boolean; errors: string[] } {
   if (!ledger || !ledger.claims.length) return { ok: true, errors: [] };
   const errors: string[] = [];
-  const sourceNorm = normalizedHaystack(sourceHaystack);
-  const contextNorm = normalizedHaystack(contextHaystack);
-  const combinedNorm = `${sourceNorm}\n${contextNorm}`;
   for (const entry of ledger.claims) {
+    if ((allowedSourceIds || allowedContextIds) && entry.sourceIds.length === 0 && entry.contextIds.length === 0) {
+      errors.push(`claim ${entry.claimId} has no source or context ID`);
+    }
+    if (allowedSourceIds && entry.sourceIds.some((id) => !allowedSourceIds.has(id))) {
+      errors.push(`claim ${entry.claimId} references an unsupported source ID`);
+    }
+    if (allowedContextIds && entry.contextIds.some((id) => !allowedContextIds.has(id))) {
+      errors.push(`claim ${entry.claimId} references an unsupported context ID`);
+    }
     if (looksInstructionLike(entry.claimText, ...entry.evidenceSpans)) {
       errors.push(`claim ${entry.claimId} contains instruction-like content`);
       continue;
     }
     for (const span of entry.evidenceSpans) {
-      const spanNorm = normalizedHaystack(span);
-      const inSource = spanNorm.length > 0 && sourceNorm.includes(spanNorm);
-      const inContext = spanNorm.length > 0 && contextNorm.includes(spanNorm);
+      const inSource = containsExact(sourceHaystack, span);
+      const inContext = containsExact(contextHaystack, span);
       if (!inSource && !inContext) {
         errors.push(`claim ${entry.claimId} span not verbatim in source or context: ${span.slice(0,80)}`);
       }
@@ -63,21 +65,14 @@ export function validateClaimLedger(
         errors.push(`claim ${entry.claimId} evidence span looks instructional`);
       }
     }
-    // For exact types, claimText must be exact within at least one evidence span
-    if (["name", "number", "date", "role"].includes(entry.claimType)) {
-      const textNorm = normalizedHaystack(entry.claimText);
-      const grounded = entry.evidenceSpans.some((span) => normalizedHaystack(span).includes(textNorm));
-      const inCombined = combinedNorm.includes(textNorm);
-      if (!grounded || !inCombined) {
-        errors.push(`claim ${entry.claimId} exact ${entry.claimType} "${entry.claimText}" not verbatim in evidence`);
-      }
-    } else {
-      // for fact/other, also require grounding
-      const textNorm = normalizedHaystack(entry.claimText);
-      const grounded = entry.evidenceSpans.some((span) => normalizedHaystack(span).includes(textNorm) || sourceNorm.includes(textNorm) || contextNorm.includes(textNorm));
-      if (!grounded) {
-        errors.push(`claim ${entry.claimId} text not grounded: ${entry.claimText.slice(0,80)}`);
-      }
+    // Every atomic claim, including general facts, must be literal in one of
+    // its evidence spans. Exact types additionally need to occur in the
+    // supplied source/context haystacks.
+    const grounded = entry.evidenceSpans.some((span) => containsExact(span, entry.claimText));
+    const inCombined = containsExact(sourceHaystack, entry.claimText)
+      || containsExact(contextHaystack, entry.claimText);
+    if (!grounded || !inCombined) {
+      errors.push(`claim ${entry.claimId} ${entry.claimType} "${entry.claimText}" not verbatim in evidence`);
     }
     if (entry.evidenceSpans.length === 0) {
       errors.push(`claim ${entry.claimId} has no evidence`);

@@ -60,7 +60,7 @@ That rule lives in the Cloudflare dashboard, not in this Worker. Without it, som
 
 Hourly cron writes JSON lines for `cron`, `lock`, `leadership`, `leadership-review`, `run`, `source`, `news-extraction`, `model`, `publication`, and `reconciliation` outcomes. Secrets and token-like keys are redacted. Leadership monitoring is review-only and failure-isolated from news/event ingestion; each run seeds the 16-institution coverage registry, fetches at most 16 bounded first-party sources, persists snapshots/observations, and records explicit active/degraded coverage posture. LinkedIn inventory and partial/PDF sources are retained but never fetched.
 
-`schemaVersion` is the latest D1 migration prefix (currently `0013`). `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
+`schemaVersion` is the latest D1 migration prefix (currently `0014`). `0014_editor_review_verification.sql` adds content-change freshness plus durable claim-ledger and verification results; apply it before deploying code that reads the review backlog. `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
 
 News article extraction is URL-keyed in `news_article_extractions` (`0011`). Successful rows cache bounded normalized text only (never raw HTML) and refresh after 7 days. `failed` and `no-content` cool down from 6 hours with exponential backoff capped at 7 days. A failed refresh keeps the last successful body so the item never regresses to the RSS snippet. Article fetches stay on exact-host HTTPS, with redirect, size, time, concurrency, and per-source candidate-cap bounds.
 

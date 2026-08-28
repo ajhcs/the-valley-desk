@@ -19,6 +19,8 @@ export type EditorModelState = {
   attemptedAt: string | null;
   attemptCount: number;
   firstSeenAt: string | null;
+  contentChangedAt?: string | null;
+  lastSeenAt?: string | null;
   queueStatus: string | null;
   hasSuccessfulEnrichment: boolean;
 };
@@ -62,7 +64,8 @@ export function isEditorModelEligible(
   reusableIds?: Set<string>,
 ) {
   if (!shouldEnrichCandidate(item)) return false;
-  if (record?.queueStatus === "approved" || record?.queueStatus === "rejected") return false;
+  if (record?.queueStatus === "approved") return false;
+  if (record?.queueStatus === "rejected" && sameAttemptFingerprint(record, contentFingerprint)) return false;
   if (reusableIds?.has(item.id)) return false;
   if (!record) return true;
   if (!sameAttemptFingerprint(record, contentFingerprint)) return true;
@@ -85,20 +88,19 @@ export function selectEditorModelWorkWithMetrics(
     isEditorModelEligible(item, fingerprint, records.get(item.id), now, reusableIds)
   ));
   const limit = parseBoundedInt(budget, DEFAULT_EDITOR_MODEL_BUDGET, 0, MAX_EDITOR_MODEL_BUDGET);
-  const neverAttempted = eligible.filter(({ item, fingerprint }) => {
-    const record = records.get(item.id);
-    return !record?.attemptedAt || !sameAttemptFingerprint(record, fingerprint);
-  });
-  const retrying = eligible.filter((row) => !neverAttempted.includes(row));
-  const toFields = (rows: typeof eligible) => rows.map(({ item }) => (
-    contentPriorityFields(item, records.get(item.id)?.firstSeenAt ?? now.toISOString(), now)
+  const toFields = (rows: typeof eligible) => rows.map(({ item, fingerprint }) => (
+    contentPriorityFields(
+      item,
+      records.get(item.id)?.firstSeenAt ?? now.toISOString(),
+      now,
+      records.get(item.id)?.contentChangedAt
+        ?? (records.get(item.id) && !sameAttemptFingerprint(records.get(item.id)!, fingerprint) ? now.toISOString() : undefined),
+    )
   ));
-  const firstPass = selectPriorityWork(toFields(neverAttempted), limit, now);
-  const remaining = limit - firstPass.selected.length;
-  const secondPass = remaining > 0 ? selectPriorityWork(toFields(retrying), remaining, now) : { selected: [] as ContentItem[] };
-  const selected = [...firstPass.selected, ...secondPass.selected];
-  // Freshness guard already handled in selectPriorityWork, but ensure no starvation across passes:
-  // If eligible has fresh (<72h) and selected is all stale, prefer fresh.
+  // Never split fresh and retrying rows into separate passes: doing so lets a
+  // stale never-attempted row consume the slot that a fresh retry needs.
+  const selectedWork = selectPriorityWork(toFields(eligible), limit, now);
+  const selected = selectedWork.selected;
   const selectedIds = new Set(selected.map((item) => item.id));
   const selectedFields = toFields(eligible).filter((row) => selectedIds.has(row.id));
   return {

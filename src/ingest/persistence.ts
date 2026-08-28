@@ -6,6 +6,7 @@ import type { EditorDecision } from "./editor";
 import { EditorEnrichment, EDITOR_PROMPT_VERSION } from "./editor-model";
 import { EDITOR_POLICY_VERSION } from "./editor";
 import type { EditorModelState } from "./editor-work";
+import { VerificationResult, type VerificationResult as VerificationResultType } from "./verification";
 import {
   collapseBySourceIdentity,
   normalizeSourceUrl,
@@ -54,6 +55,7 @@ export type CandidateEnrichment = {
   item: ContentItem;
   enrichment: EditorEnrichment | null;
   attempt?: EnrichmentAttempt;
+  verification?: VerificationResultType | null;
 };
 
 export type CandidateEditorialDecision = CandidateEnrichment & {
@@ -95,7 +97,6 @@ async function sha256(value: string) {
 export async function candidateFingerprint(item: ContentItem) {
   return sha256(JSON.stringify({
     editorPromptVersion: EDITOR_PROMPT_VERSION,
-    id: item.id,
     kind: item.kind,
     slug: item.slug,
     title: item.title,
@@ -133,7 +134,12 @@ type CandidateModelRow = {
   enrichment_error: string | null;
   enrichment_attempt_count: number | null;
   first_seen_at: string;
+  last_seen_at: string;
+  content_changed_at: string | null;
   queue_status: string;
+  claim_ledger_json: string | null;
+  verification_json: string | null;
+  verification_at: string | null;
   source_identity?: string | null;
 };
 
@@ -177,14 +183,16 @@ async function loadCandidateModelRows(db: D1DatabaseLike, items: ContentItem[]) 
   const select = `
     SELECT id, fingerprint, enrichment_json, enrichment_fingerprint, enrichment_outcome,
            enrichment_attempted_at, enrichment_error, enrichment_attempt_count,
-           first_seen_at, queue_status, source_identity
+           first_seen_at, last_seen_at, content_changed_at, queue_status,
+           claim_ledger_json, verification_json, verification_at, source_identity
     FROM content_candidates
     WHERE id IN (?)
   `;
   const identitySelect = `
     SELECT id, fingerprint, enrichment_json, enrichment_fingerprint, enrichment_outcome,
            enrichment_attempted_at, enrichment_error, enrichment_attempt_count,
-           first_seen_at, queue_status, source_identity
+           first_seen_at, last_seen_at, content_changed_at, queue_status,
+           claim_ledger_json, verification_json, verification_at, source_identity
     FROM content_candidates
     WHERE source_identity IN (?)
   `;
@@ -320,6 +328,43 @@ function parseCachedEnrichment(raw: string | null) {
   }
 }
 
+function parseCachedVerification(raw: string | null) {
+  if (!raw) return null;
+  try {
+    const parsed = VerificationResult.safeParse(JSON.parse(raw));
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Load review rows that were not present in the latest source snapshot. */
+export async function readReviewBacklog(db: D1DatabaseLike, limit = 200) {
+  const rows = await db.prepare(`
+    SELECT id, content_json
+    FROM content_candidates
+    WHERE queue_status = 'review'
+    ORDER BY
+      CASE WHEN content_changed_at IS NULL THEN 1 ELSE 0 END ASC,
+      content_changed_at DESC,
+      first_seen_at ASC,
+      id ASC
+    LIMIT ?
+  `).bind(Math.max(1, Math.min(1000, Math.trunc(limit) || 200))).all<{ id: string; content_json: string }>();
+  const byIdentity = new Map<string, ContentItem>();
+  for (const row of rows.results ?? []) {
+    try {
+      const item = ContentItemSchema.parse(JSON.parse(row.content_json));
+      const identity = sourceIdentityKey(item);
+      if (!byIdentity.has(identity)) byIdentity.set(identity, item);
+    } catch {
+      // A malformed historic row remains visible to the review API, but must
+      // not be allowed to crash the automation scheduler.
+    }
+  }
+  return [...byIdentity.values()];
+}
+
 export async function readEditorModelCache(
   db: D1DatabaseLike,
   items: ContentItem[],
@@ -327,6 +372,7 @@ export async function readEditorModelCache(
   const rows = await loadCandidateModelRows(db, items);
   const states = new Map<string, EditorModelState>();
   const reusable = new Map<string, EditorEnrichment>();
+  const verifications = new Map<string, VerificationResultType>();
   for (const item of items) {
     const row = rows.byId.get(item.id) ?? rows.byIdentity.get(sourceIdentityKey(item));
     if (!row) continue;
@@ -339,15 +385,21 @@ export async function readEditorModelCache(
       attemptedAt: row.enrichment_attempted_at,
       attemptCount: Number(row.enrichment_attempt_count ?? 0),
       firstSeenAt: row.first_seen_at,
+      contentChangedAt: row.content_changed_at,
+      lastSeenAt: row.last_seen_at,
       queueStatus: row.queue_status,
       hasSuccessfulEnrichment: Boolean(cached),
     });
+    const verification = parseCachedVerification(row.verification_json);
+    if (verification && row.enrichment_fingerprint === (await candidateFingerprint(item))) {
+      verifications.set(item.id, verification);
+    }
     if (row.enrichment_outcome === "failure" || !cached) continue;
     const itemFingerprint = await candidateFingerprint(item);
     const cachedFingerprint = row.enrichment_fingerprint || row.fingerprint;
     if (cachedFingerprint === itemFingerprint) reusable.set(item.id, cached);
   }
-  return { reusable, states };
+  return { reusable, states, verifications };
 }
 
 export async function readEditorModelStates(
@@ -364,43 +416,69 @@ export async function readReusableEnrichments(
   return (await readEditorModelCache(db, items)).reusable;
 }
 
+export async function readEditorVerifications(
+  db: D1DatabaseLike,
+  items: ContentItem[],
+) {
+  return (await readEditorModelCache(db, items)).verifications;
+}
+
 /** Sidecar enrichment happens only after the raw firehose is durably queued. */
 export async function persistEnrichments(
   db: D1DatabaseLike,
   candidates: CandidateEnrichment[],
 ) {
   const existing = await loadExistingCandidates(db, candidates.map((row) => row.item));
-  const statements = candidates.flatMap(({ item, enrichment, attempt }) => {
-    if (!attempt) return [];
-    const json = enrichment ? JSON.stringify(enrichment) : null;
-    const score = enrichment?.relevanceScore ?? null;
+  const statements = candidates.flatMap(({ item, enrichment, attempt, verification }) => {
     const candidateId = existingForItem(item, existing)?.id ?? item.id;
-    return [db.prepare(`
-      UPDATE content_candidates
-      SET
-        enrichment_json = CASE WHEN ? IS NOT NULL THEN ? ELSE enrichment_json END,
-        relevance_score = CASE WHEN ? IS NOT NULL THEN ? ELSE relevance_score END,
-        enrichment_fingerprint = ?,
-        enrichment_attempted_at = ?,
-        enrichment_outcome = ?,
-        enrichment_error = ?,
-        enrichment_attempt_count = CASE
-          WHEN enrichment_fingerprint IS NULL OR enrichment_fingerprint != ? THEN 1
-          ELSE enrichment_attempt_count + 1
-        END
-      WHERE id = ? AND queue_status = 'review'
-    `).bind(
-      json,
-      json,
-      score,
-      score,
-      attempt.fingerprint,
-      attempt.attemptedAt,
-      attempt.outcome,
-      attempt.error ? attempt.error.slice(0, 1000) : null,
-      attempt.fingerprint,
-      candidateId,
-    )];
+    if (attempt) {
+      const successful = attempt.outcome === "success" && enrichment;
+      const json = successful ? JSON.stringify(enrichment) : null;
+      const ledger = successful ? JSON.stringify(enrichment.claimLedger ?? { claims: [] }) : null;
+      const score = successful ? enrichment.relevanceScore : null;
+      return [db.prepare(`
+        UPDATE content_candidates
+        SET
+          enrichment_json = ?,
+          relevance_score = ?,
+          enrichment_fingerprint = ?,
+          enrichment_attempted_at = ?,
+          enrichment_outcome = ?,
+          enrichment_error = ?,
+          enrichment_attempt_count = CASE
+            WHEN enrichment_fingerprint IS NULL OR enrichment_fingerprint != ? THEN 1
+            ELSE COALESCE(enrichment_attempt_count, 0) + 1
+          END,
+          claim_ledger_json = ?,
+          verification_json = ?,
+          verification_at = ?
+        WHERE id = ? AND queue_status = 'review'
+      `).bind(
+        json,
+        score,
+        attempt.fingerprint,
+        attempt.attemptedAt,
+        attempt.outcome,
+        attempt.error ? attempt.error.slice(0, 1000) : null,
+        attempt.fingerprint,
+        ledger,
+        verification ? JSON.stringify(verification) : null,
+        verification ? verification.verifiedAt : null,
+        candidateId,
+      )];
+    }
+    if (verification !== undefined && verification !== null) {
+      return [db.prepare(`
+        UPDATE content_candidates
+        SET verification_json = ?, verification_at = ?
+        WHERE id = ? AND queue_status = 'review'
+      `).bind(
+        verification ? JSON.stringify(verification) : null,
+        verification?.verifiedAt ?? null,
+        candidateId,
+      )];
+    }
+    return [];
   });
   for (let index = 0; index < statements.length; index += 50) {
     await db.batch(statements.slice(index, index + 50));
@@ -445,21 +523,31 @@ export async function persistIngestRun(
           INSERT INTO content_candidates (
             id, fingerprint, kind, title, source_origin, source_external_id, source_url,
             item_status, queue_status, content_json, enrichment_json, relevance_score,
-            first_seen_at, last_seen_at, last_run_id, source_identity
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?, ?)
+            first_seen_at, last_seen_at, last_run_id, source_identity,
+            content_changed_at, claim_ledger_json, verification_json, verification_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL)
           ON CONFLICT(id) DO UPDATE SET
-            fingerprint = excluded.fingerprint,
-            kind = excluded.kind,
+            fingerprint = CASE
+              WHEN content_candidates.queue_status = 'approved'
+                OR (content_candidates.queue_status = 'rejected'
+                  AND content_candidates.fingerprint = excluded.fingerprint)
+                OR excluded.last_seen_at < content_candidates.last_seen_at
+                THEN content_candidates.fingerprint
+              ELSE excluded.fingerprint
+            END,
+            kind = CASE WHEN excluded.last_seen_at >= content_candidates.last_seen_at THEN excluded.kind ELSE content_candidates.kind END,
             title = CASE
               WHEN content_candidates.queue_status = 'approved' THEN content_candidates.title
+              WHEN excluded.last_seen_at < content_candidates.last_seen_at THEN content_candidates.title
               ELSE excluded.title
             END,
-            source_origin = excluded.source_origin,
-            source_external_id = excluded.source_external_id,
-            source_url = excluded.source_url,
+            source_origin = CASE WHEN excluded.last_seen_at >= content_candidates.last_seen_at THEN excluded.source_origin ELSE content_candidates.source_origin END,
+            source_external_id = CASE WHEN excluded.last_seen_at >= content_candidates.last_seen_at THEN excluded.source_external_id ELSE content_candidates.source_external_id END,
+            source_url = CASE WHEN excluded.last_seen_at >= content_candidates.last_seen_at THEN excluded.source_url ELSE content_candidates.source_url END,
             source_identity = COALESCE(content_candidates.source_identity, excluded.source_identity),
             item_status = CASE
               WHEN content_candidates.queue_status = 'approved' THEN content_candidates.item_status
+              WHEN excluded.last_seen_at < content_candidates.last_seen_at THEN content_candidates.item_status
               WHEN content_candidates.queue_status = 'rejected'
                 AND content_candidates.fingerprint = excluded.fingerprint THEN content_candidates.item_status
               ELSE excluded.item_status
@@ -467,29 +555,87 @@ export async function persistIngestRun(
             queue_status = CASE
               WHEN content_candidates.queue_status = 'approved' THEN content_candidates.queue_status
               WHEN content_candidates.queue_status = 'rejected'
-                AND content_candidates.fingerprint != excluded.fingerprint THEN 'review'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN 'review'
               ELSE content_candidates.queue_status
             END,
             content_json = CASE
               WHEN content_candidates.queue_status = 'approved' THEN content_candidates.content_json
               WHEN content_candidates.queue_status = 'rejected'
                 AND content_candidates.fingerprint = excluded.fingerprint THEN content_candidates.content_json
+              WHEN excluded.last_seen_at < content_candidates.last_seen_at THEN content_candidates.content_json
               ELSE excluded.content_json
             END,
             enrichment_json = CASE
               WHEN content_candidates.queue_status = 'approved' THEN content_candidates.enrichment_json
-              ELSE COALESCE(excluded.enrichment_json, content_candidates.enrichment_json)
+              WHEN content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN excluded.enrichment_json
+              ELSE content_candidates.enrichment_json
             END,
             relevance_score = CASE
               WHEN content_candidates.queue_status = 'approved' THEN content_candidates.relevance_score
-              ELSE COALESCE(excluded.relevance_score, content_candidates.relevance_score)
+              WHEN content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN excluded.relevance_score
+              ELSE content_candidates.relevance_score
             END,
-            last_seen_at = excluded.last_seen_at,
-            last_run_id = excluded.last_run_id,
+            enrichment_fingerprint = CASE
+              WHEN content_candidates.queue_status != 'approved'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN NULL
+              ELSE content_candidates.enrichment_fingerprint
+            END,
+            enrichment_attempted_at = CASE
+              WHEN content_candidates.queue_status != 'approved'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN NULL
+              ELSE content_candidates.enrichment_attempted_at
+            END,
+            enrichment_outcome = CASE
+              WHEN content_candidates.queue_status != 'approved'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN NULL
+              ELSE content_candidates.enrichment_outcome
+            END,
+            enrichment_error = CASE
+              WHEN content_candidates.queue_status != 'approved'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN NULL
+              ELSE content_candidates.enrichment_error
+            END,
+            enrichment_attempt_count = CASE
+              WHEN content_candidates.queue_status != 'approved'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN 0
+              ELSE content_candidates.enrichment_attempt_count
+            END,
+            claim_ledger_json = CASE
+              WHEN content_candidates.queue_status != 'approved'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN NULL
+              ELSE content_candidates.claim_ledger_json
+            END,
+            verification_json = CASE
+              WHEN content_candidates.queue_status != 'approved'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN NULL
+              ELSE content_candidates.verification_json
+            END,
+            verification_at = CASE
+              WHEN content_candidates.queue_status != 'approved'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN NULL
+              ELSE content_candidates.verification_at
+            END,
+            content_changed_at = CASE
+              WHEN content_candidates.queue_status != 'approved'
+                AND content_candidates.fingerprint != excluded.fingerprint
+                AND excluded.last_seen_at >= content_candidates.last_seen_at THEN excluded.last_seen_at
+              ELSE content_candidates.content_changed_at
+            END,
+            last_seen_at = CASE WHEN excluded.last_seen_at > content_candidates.last_seen_at THEN excluded.last_seen_at ELSE content_candidates.last_seen_at END,
+            last_run_id = CASE WHEN excluded.last_seen_at >= content_candidates.last_seen_at THEN excluded.last_run_id ELSE content_candidates.last_run_id END,
             missing_count = 0,
             last_missing_at = NULL
-          WHERE content_candidates.queue_status != 'rejected'
-             OR content_candidates.fingerprint != excluded.fingerprint
         `).bind(
           candidateId,
           fingerprint,
@@ -519,7 +665,8 @@ export async function persistIngestRun(
             ) VALUES (?, ?, ?, ?, ?)
             ON CONFLICT(candidate_id, origin) DO UPDATE SET
               source_url = COALESCE(excluded.source_url, candidate_discoveries.source_url),
-              last_seen_at = excluded.last_seen_at
+              last_seen_at = CASE WHEN excluded.last_seen_at > candidate_discoveries.last_seen_at
+                THEN excluded.last_seen_at ELSE candidate_discoveries.last_seen_at END
           `).bind(
             candidateId,
             discovery.origin,

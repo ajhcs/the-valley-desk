@@ -48,6 +48,7 @@ export type PriorityWorkItem<T> = {
   origin: string;
   orgs: readonly string[];
   firstSeenAt?: string | null;
+  contentChangedAt?: string | null;
   publishedAt?: string;
   startsAt?: string;
   official: boolean;
@@ -68,8 +69,10 @@ export type QueueSlaMetrics = {
   selectedOriginCounts: Record<string, number>;
 };
 
-export function queueAgeMs(firstSeenAt: string | null | undefined, now: Date) {
-  const seen = firstSeenAt ? Date.parse(firstSeenAt) : now.getTime();
+export function queueAgeMs(firstSeenAt: string | null | undefined, now: Date, contentChangedAt?: string | null) {
+  const first = firstSeenAt ? Date.parse(firstSeenAt) : Number.NaN;
+  const changed = contentChangedAt ? Date.parse(contentChangedAt) : Number.NaN;
+  const seen = Number.isFinite(changed) && (!Number.isFinite(first) || changed > first) ? changed : first;
   if (!Number.isFinite(seen)) return 0;
   return Math.max(0, now.getTime() - seen);
 }
@@ -139,7 +142,7 @@ export function summarizeQueueSla<T>(
   selected: Array<PriorityWorkItem<T>>,
   now: Date,
 ): QueueSlaMetrics {
-  const ages = eligible.map((row) => queueAgeMs(row.firstSeenAt, now));
+  const ages = eligible.map((row) => queueAgeMs(row.firstSeenAt, now, row.contentChangedAt));
   const selectedOriginCounts: Record<string, number> = {};
   for (const row of selected) {
     selectedOriginCounts[row.origin] = (selectedOriginCounts[row.origin] ?? 0) + 1;
@@ -154,8 +157,8 @@ export function summarizeQueueSla<T>(
   };
 }
 
-export function contentPriorityFields(item: ContentItem, firstSeenAt?: string | null, now: Date = new Date()): PriorityWorkItem<ContentItem> {
-  const ageMs = queueAgeMs(firstSeenAt, now);
+export function contentPriorityFields(item: ContentItem, firstSeenAt?: string | null, now: Date = new Date(), contentChangedAt?: string | null): PriorityWorkItem<ContentItem> {
+  const ageMs = queueAgeMs(firstSeenAt, now, contentChangedAt);
   const isEvent = item.kind === "event";
   const hasExecutiveChange = /executive|leadership|CEO|CFO|CMIO|chief|appoint|hire|resign|depart/i.test([item.title, item.dek, item.body].join(" "));
   const materialityRank = matchingProductUses(item).length > 0 ? 0 : 1;
@@ -167,6 +170,7 @@ export function contentPriorityFields(item: ContentItem, firstSeenAt?: string | 
     origin: item.source.origin,
     orgs: item.orgs,
     firstSeenAt,
+    contentChangedAt,
     publishedAt: item.publishedAt,
     startsAt: item.kind === "event" ? item.startsAt : undefined,
     official: OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin),
@@ -188,7 +192,7 @@ export function selectPriorityWork<T>(
     return { selected: [], metrics: summarizeQueueSla(candidates, [], now) };
   }
   for (const c of candidates) {
-    c.ageMs = queueAgeMs(c.firstSeenAt, now);
+    c.ageMs = queueAgeMs(c.firstSeenAt, now, c.contentChangedAt);
   }
   const sorted = [...candidates].sort(comparePriority);
   const uniqueOrigins = new Set(candidates.map((row) => row.origin)).size;
@@ -219,10 +223,11 @@ export function selectPriorityWork<T>(
     const freshRemaining = remaining.filter((r) => r.ageMs < FRESH_72_MS).sort(comparePriority);
     if (freshRemaining.length && worstPicked.ageMs >= FRESH_72_MS) {
       const bestFresh = freshRemaining[0];
-      if (comparePriority(bestFresh, worstPicked) < 0) {
-        const idx = picked.indexOf(worstPicked);
-        picked[idx] = bestFresh;
-      }
+      // A fresh item must get a slot even when an older first-party item has
+      // a stronger editorial rank. This prevents the durable backlog from
+      // starving current developments indefinitely.
+      const idx = picked.indexOf(worstPicked);
+      picked[idx] = bestFresh;
     }
   }
   return {

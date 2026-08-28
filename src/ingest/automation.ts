@@ -31,6 +31,7 @@ import {
   persistNewsArticleExtractions,
   persistSourceHealth,
   readEditorModelCache,
+  readReviewBacklog,
   readNewsArticleExtractions,
   reconcileMissingPublishedEvents,
   releaseAutomationLock,
@@ -39,6 +40,7 @@ import {
 } from "./persistence";
 import { logOps } from "../lib/ops";
 import { matchingProductUses } from "./product-watch";
+import { sourceIdentityKey } from "./identity";
 import { runScheduledIngest, type IngestRun, type IngestRunOptions } from "./run-all";
 import { isSuccessfulSourceState } from "./source-health";
 import {
@@ -94,6 +96,17 @@ const BUNDLED_INGEST_EVENTS = ContentCatalog.parse(publishedCatalog)
 
 function allCandidates(run: IngestRun) {
   return [...run.rss, ...run.events, ...run.social];
+}
+
+function mergeCurrentAndBacklog(current: ContentItem[], backlog: ContentItem[]) {
+  const byIdentity = new Map<string, ContentItem>();
+  // Current source content wins over a historic review row with the same
+  // canonical identity; the backlog fills gaps in partial source snapshots.
+  for (const item of [...current, ...backlog]) {
+    const identity = sourceIdentityKey(item);
+    if (!byIdentity.has(identity)) byIdentity.set(identity, item);
+  }
+  return [...byIdentity.values()];
 }
 
 function attemptError(error: unknown) {
@@ -271,7 +284,9 @@ export async function runAutomation(
       X_BEARER_TOKEN: env.X_BEARER_TOKEN,
       LINKEDIN_TOKEN: env.LINKEDIN_TOKEN,
     }, fetchImpl, { newsExtractions });
-    const items = allCandidates(run);
+    const currentItems = allCandidates(run);
+    const backlog = await readReviewBacklog(env.VALLEY_DESK_DB);
+    const items = mergeCurrentAndBacklog(currentItems, backlog);
     stage = "persist-news-extractions";
     const newsExtractionCount = await persistNewsArticleExtractions(
       env.VALLEY_DESK_DB,
@@ -279,12 +294,12 @@ export async function runAutomation(
     );
     const newsMetrics = run.newsExtraction?.metrics;
     stage = "load-enrichment-cache";
-    const { reusable, states: modelStates } = await readEditorModelCache(env.VALLEY_DESK_DB, items);
+    const { reusable, states: modelStates, verifications } = await readEditorModelCache(env.VALLEY_DESK_DB, items);
     stage = "persist-raw-candidates";
     const persisted = await persistIngestRun(
       env.VALLEY_DESK_DB,
       run,
-      items.map((item) => ({ item, enrichment: null })),
+      currentItems.map((item) => ({ item, enrichment: null })),
     );
     persistedRunId = persisted.runId;
     stage = "persist-source-health";
@@ -347,15 +362,17 @@ export async function runAutomation(
       heartbeat: ensureLock,
     });
     const modeledById = new Map(modeled.map((row) => [row.item.id, row]));
-    const candidates = items.map((item) => (
-      modeledById.get(item.id) ?? { item, enrichment: reusable.get(item.id) ?? null }
-    ));
+    const candidates = items.map((item) => {
+      const modeledCandidate = modeledById.get(item.id);
+      if (modeledCandidate) return { ...modeledCandidate, verification: modeledCandidate.verification ?? null };
+      return { item, enrichment: reusable.get(item.id) ?? null, verification: verifications.get(item.id) ?? null };
+    });
     stage = "persist-enrichments";
     const enrichedCount = await persistEnrichments(env.VALLEY_DESK_DB, candidates);
     stage = "editor-policy";
     const decisions = candidates.map((candidate) => ({
       ...candidate,
-      decision: evaluateCandidate(candidate.item, candidate.enrichment),
+      decision: evaluateCandidate(candidate.item, candidate.enrichment, new Date(), candidate.verification),
     }));
     stage = "persist-editorial-decisions";
     const editorial = await persistEditorialDecisions(

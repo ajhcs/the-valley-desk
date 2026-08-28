@@ -110,13 +110,9 @@ function boundedPayload(item: ContentItem, products: ProductUse[]) {
   };
 }
 
-function normalizedEvidenceText(value: string) {
-  return value.toLocaleLowerCase("en-US").replace(/\s+/g, " ").trim();
-}
-
 function verbatimSupported(value: string, haystack: string) {
-  const normalized = normalizedEvidenceText(value);
-  return normalized.length > 0 && normalizedEvidenceText(haystack).includes(normalized);
+  const literal = value.trim();
+  return literal.length > 0 && haystack.includes(literal);
 }
 
 function bodySegments(value: string) {
@@ -189,11 +185,10 @@ export async function enrichWithEditorModel(
   const allowedProductIds = new Set(products.map((row) => row.id));
   const context = editorContextForItem(item, VERIFIED_PUBLISHED_CONTEXT);
   const allowedContextIds = new Set(context.map((row) => row.id));
-  const evidenceHaystack = sourceText(item).toLocaleLowerCase("en-US");
+  const evidenceHaystack = sourceText(item);
   const contextHaystack = context
     .flatMap((row) => [row.title, row.summary])
-    .join("\n")
-    .toLocaleLowerCase("en-US");
+    .join("\n");
   let response: Response;
   try {
     response = await fetchImpl(`${baseUrl}/chat/completions`, {
@@ -280,10 +275,10 @@ export async function enrichWithEditorModel(
   if (parsed.productIds.some((id) => !allowedProductIds.has(id))) {
     throw new EditorModelError("validation", "Editor model introduced an unverified product");
   }
-  if (parsed.evidenceSpans.some((span) => !evidenceHaystack.includes(span.toLocaleLowerCase("en-US")))) {
+  if (parsed.evidenceSpans.some((span) => !evidenceHaystack.includes(span))) {
     throw new EditorModelError("validation", "Editor model returned an unsupported evidence span");
   }
-  if (parsed.bodyEvidenceSpans.some((span) => !evidenceHaystack.includes(span.toLocaleLowerCase("en-US")))) {
+  if (parsed.bodyEvidenceSpans.some((span) => !evidenceHaystack.includes(span))) {
     throw new EditorModelError("validation", "Editor model returned an unsupported body evidence span");
   }
   if ([...parsed.evidenceSpans, ...parsed.bodyEvidenceSpans].some((span) => looksInstructionLike(span))) {
@@ -300,20 +295,20 @@ export async function enrichWithEditorModel(
   }
   if (parsed.whyAttend) {
     const spans = parsed.whyAttendEvidenceSpans.length ? parsed.whyAttendEvidenceSpans : parsed.evidenceSpans;
-    if (!spans.length || spans.some((span) => !evidenceHaystack.includes(span.toLocaleLowerCase("en-US")))) {
+    if (!spans.length || spans.some((span) => !evidenceHaystack.includes(span))) {
       throw new EditorModelError("validation", "Editor model returned an under-evidenced whyAttend");
     }
   }
   if (parsed.whoYoullMeet.length) {
     const spans = parsed.whoYoullMeetEvidenceSpans.length ? parsed.whoYoullMeetEvidenceSpans : parsed.evidenceSpans;
-    if (!spans.length || spans.some((span) => !evidenceHaystack.includes(span.toLocaleLowerCase("en-US")))) {
+    if (!spans.length || spans.some((span) => !evidenceHaystack.includes(span))) {
       throw new EditorModelError("validation", "Editor model returned an under-evidenced whoYoullMeet");
     }
   }
   if (parsed.contextItemIds.some((id) => !allowedContextIds.has(id))) {
     throw new EditorModelError("validation", "Editor model introduced unsupported prior coverage");
   }
-  if (parsed.contextEvidenceSpans.some((span) => !contextHaystack.includes(span.toLocaleLowerCase("en-US")))) {
+  if (parsed.contextEvidenceSpans.some((span) => !contextHaystack.includes(span))) {
     throw new EditorModelError("validation", "Editor model returned unsupported context evidence");
   }
   if (
@@ -334,7 +329,13 @@ export async function enrichWithEditorModel(
   }
   // Claim-ledger validation: exact types must be verbatim, all spans must be grounded
   if (parsed.claimLedger && parsed.claimLedger.claims.length > 0) {
-    const ledgerResult = validateClaimLedger(parsed.claimLedger, sourceText(item), context.flatMap((r) => [r.title, r.summary]).join("\n"));
+    const ledgerResult = validateClaimLedger(
+      parsed.claimLedger,
+      sourceText(item),
+      context.flatMap((r) => [r.title, r.summary]).join("\n"),
+      new Set([item.id, item.source.origin, item.source.url, item.source.externalId].filter((id): id is string => Boolean(id))),
+      allowedContextIds,
+    );
     if (!ledgerResult.ok) {
       throw new EditorModelError("validation", `Editor model claimLedger not grounded: ${ledgerResult.errors[0]}`);
     }

@@ -1,12 +1,16 @@
-import { ContentItem, type ContentItem as ContentItemType } from "../content/schema";
+import { ContentCatalog, ContentItem, type ContentItem as ContentItemType } from "../content/schema";
+import publishedCatalog from "../content/published-catalog.json";
 import { eventCopyMarksCancelled } from "../lib/calendar";
 import { isOfficialChapterEvent, validateForPublication } from "../content/publication";
 import type { EditorEnrichment } from "./editor-model";
 import { matchingProductUses } from "./product-watch";
 import { professionalizeHeadline } from "../lib/editorialCopy";
 import { looksInstructionLike } from "./untrusted-text";
-import { isHighRiskNews, verifyHighRisk } from "./verification";
+import { isHighRiskNews, verifyHighRisk, type VerificationResult } from "./verification";
 import { validateClaimLedger } from "./claim-ledger";
+import { editorContextForItem } from "./editor-context";
+
+const VERIFIED_PUBLISHED_CONTEXT = ContentCatalog.parse(publishedCatalog);
 
 export const EDITOR_POLICY_VERSION = "tvd-auto-editor-v4";
 
@@ -89,6 +93,7 @@ export function evaluateCandidate(
   item: ContentItemType,
   enrichment: EditorEnrichment | null,
   now = new Date(),
+  verification?: VerificationResult | null,
 ): EditorDecision {
   const review = (rule: string, reasons: string[], confidence = enrichment?.confidence ?? 0): EditorDecision => ({
     action: "review", rule, reasons, confidence, content: { ...item, status: "review", featured: false },
@@ -198,7 +203,16 @@ export function evaluateCandidate(
   // Claim-ledger: exact claims must be grounded; fail review if not
   if (enrichment.claimLedger && enrichment.claimLedger.claims.length > 0) {
     const hay = [item.title, item.dek, item.body].join("\n");
-    const ledgerResult = validateClaimLedger(enrichment.claimLedger, hay, "");
+    const context = editorContextForItem(item, VERIFIED_PUBLISHED_CONTEXT);
+    const sourceIds = new Set([item.id, item.source.origin, item.source.url, item.source.externalId].filter((id): id is string => Boolean(id)));
+    const contextIds = new Set(context.map((row) => row.id));
+    const ledgerResult = validateClaimLedger(
+      enrichment.claimLedger,
+      hay,
+      context.flatMap((row) => [row.title, row.summary]).join("\n"),
+      sourceIds,
+      contextIds,
+    );
     if (!ledgerResult.ok) {
       return review("claim-ledger-unverified", ledgerResult.errors.slice(0, 3));
     }
@@ -208,6 +222,7 @@ export function evaluateCandidate(
 
   // Two-pass verification for high-risk news classes (financial, policy/regulatory, security/safety/outage, executive change)
   // Fail-closed: any objection => review
+  const context = editorContextForItem(item, VERIFIED_PUBLISHED_CONTEXT);
   const highRiskInput = {
     id: item.id,
     kind: item.kind,
@@ -220,12 +235,16 @@ export function evaluateCandidate(
     changeType: enrichment.changeType,
     evidenceSpans: enrichment.evidenceSpans,
     contextEvidenceSpans: enrichment.contextEvidenceSpans,
+    contextItemIds: enrichment.contextItemIds,
+    contextHaystack: context.flatMap((row) => [row.title, row.summary]).join("\n"),
+    allowedSourceIds: new Set([item.id, item.source.origin, item.source.url, item.source.externalId].filter((id): id is string => Boolean(id))),
+    allowedContextIds: new Set(context.map((row) => row.id)),
     claimLedger: enrichment.claimLedger ?? null,
   };
   if (isHighRiskNews(highRiskInput)) {
-    const secondPass = verifyHighRisk(highRiskInput);
-    if (!secondPass.approved) {
-      return review("second-pass-failed", secondPass.objections.map((o) => `${o.code}: ${o.reason}`));
+    const secondPass = verification === undefined ? verifyHighRisk(highRiskInput) : verification;
+    if (!secondPass || !secondPass.approved) {
+      return review("second-pass-failed", secondPass?.objections.map((o) => `${o.code}: ${o.reason}`) ?? ["Second-pass verification unavailable"]);
     }
   }
 

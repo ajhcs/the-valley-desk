@@ -11,12 +11,38 @@ import { isHighRiskNews, verifyHighRisk, verifyWithSecondModel } from "../src/in
 import { looksInstructionLike } from "../src/ingest/untrusted-text.ts";
 import { EventItem, NewsItem } from "../src/content/schema.ts";
 import { runAutomation } from "../src/ingest/automation.ts";
-import { persistIngestRun, persistIngestRun as _persist, type D1DatabaseLike, type D1StatementLike } from "../src/ingest/persistence.ts";
+import { candidateFingerprint, persistEnrichments, persistIngestRun, persistIngestRun as _persist, readReviewBacklog, type D1DatabaseLike, type D1StatementLike } from "../src/ingest/persistence.ts";
 import { readdirSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+class CoverageSqliteD1Statement implements D1StatementLike {
+  private values: unknown[] = [];
+  constructor(private readonly statement: import("node:sqlite").StatementSync) {}
+  bind(...values: unknown[]) { const bound = new CoverageSqliteD1Statement(this.statement); bound.values = values; return bound; }
+  async first<T>() { return (this.statement.get(...this.values as never[]) as T | undefined) ?? null; }
+  async run() { return this.statement.run(...this.values as never[]); }
+  async all<T>() { return { results: this.statement.all(...this.values as never[]) as T[] }; }
+}
+
+function coverageD1(database: DatabaseSync): D1DatabaseLike {
+  return {
+    prepare: (query: string) => new CoverageSqliteD1Statement(database.prepare(query)),
+    async batch(statements) {
+      database.exec("BEGIN");
+      try { const result = []; for (const statement of statements) result.push(await statement.run()); database.exec("COMMIT"); return result; }
+      catch (error) { database.exec("ROLLBACK"); throw error; }
+    },
+  };
+}
+
+function coverageMigrations(database: DatabaseSync) {
+  for (const name of readdirSync(join(root, "migrations")).filter((file) => file.endsWith(".sql")).sort()) {
+    database.exec(readFileSync(join(root, "migrations", name), "utf8"));
+  }
+}
 
 const base = {
   dek: "Dek",
@@ -97,6 +123,50 @@ test("mixed retry states: never-attempted prioritized over retry, but retry elig
   assert.ok(!sel.map(i=>i.id).includes("news-0"));
 });
 
+test("fresh retry is not starved by stale never-attempted backlog", () => {
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const stale = reviewNews("stale-never");
+  const fresh = reviewNews("fresh-retry");
+  const rows = [{ item: stale, fingerprint: "stale-new" }, { item: fresh, fingerprint: "fresh-old" }];
+  const records = new Map<string, EditorModelState>([
+    [stale.id, modelState({ id: stale.id, fingerprint: "stale-new", firstSeenAt: new Date(now.getTime() - 10 * 86_400_000).toISOString() })],
+    [fresh.id, modelState({ id: fresh.id, fingerprint: "fresh-old", enrichmentFingerprint: "fresh-old", attemptedAt: new Date(now.getTime() - 8 * 60 * 60 * 1000).toISOString(), outcome: "failure", attemptCount: 1, firstSeenAt: new Date(now.getTime() - 8 * 86_400_000).toISOString(), contentChangedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString() })],
+  ]);
+  assert.deepEqual(selectEditorModelWork(rows, records, 1, now).map((item) => item.id), [fresh.id]);
+});
+
+test("fresh secondary work displaces stale first-party work", () => {
+  const now = new Date("2026-08-26T12:00:00.000Z");
+  const stale = contentPriorityFields(reviewNews("stale-official"), new Date(now.getTime() - 8 * 86_400_000).toISOString(), now);
+  const fresh = contentPriorityFields(reviewNews("fresh-secondary", "Fresh secondary report"), new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(), now);
+  stale.firstPartyRank = 0;
+  fresh.firstPartyRank = 1;
+  assert.equal((selectPriorityWork([stale, fresh], 1, now).selected[0] as NewsItem).id, "fresh-secondary");
+});
+
+test("durable backlog preserves first_seen, advances last_seen monotonically, and clears stale enrichment", async () => {
+  const database = new DatabaseSync(":memory:");
+  coverageMigrations(database);
+  const db = coverageD1(database);
+  const first = reviewNews("durable-backlog", "Original deployment evidence");
+  const changed = reviewNews("durable-backlog", "Changed deployment evidence");
+  const firstAt = "2026-08-20T12:00:00.000Z";
+  const changedAt = "2026-08-21T12:00:00.000Z";
+  const notes = { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 } };
+  await persistIngestRun(db, { fetchedAt: firstAt, rss: [first], events: [], social: [], notes }, [{ item: first, enrichment: null }]);
+  const fp = await candidateFingerprint(first);
+  await persistEnrichments(db, [{ item: first, enrichment: validEnrichment(first), attempt: { fingerprint: fp, attemptedAt: firstAt, outcome: "success", error: null } }]);
+  await persistIngestRun(db, { fetchedAt: changedAt, rss: [changed], events: [], social: [], notes }, [{ item: changed, enrichment: null }]);
+  await persistIngestRun(db, { fetchedAt: "2026-08-19T12:00:00.000Z", rss: [first], events: [], social: [], notes }, [{ item: first, enrichment: null }]);
+  const row = database.prepare("SELECT first_seen_at, last_seen_at, content_changed_at, enrichment_json FROM content_candidates WHERE id = ?").get(first.id) as { first_seen_at: string; last_seen_at: string; content_changed_at: string; enrichment_json: string | null };
+  assert.equal(row.first_seen_at, firstAt);
+  assert.equal(row.last_seen_at, changedAt);
+  assert.equal(row.content_changed_at, changedAt);
+  assert.equal(row.enrichment_json, null);
+  assert.equal((await readReviewBacklog(db)).find((item) => item.id === first.id)?.title, changed.title);
+  database.close();
+});
+
 test("two-pass fail closed for financial", () => {
   const item=reviewNews("news-fin", "Temple reports \$5 million shortfall", "Temple reports \$5 million shortfall this quarter.");
   const enrichment=EditorEnrichment.parse({
@@ -142,7 +212,7 @@ test("model failure isolation: automation publishes official events even when mo
   // Instead exercise real automation with failing model fetch
   const { DatabaseSync : DS } = await import("node:sqlite");
   const dbImpl=new DS(":memory:");
-  for (const name of ["0001_automation.sql","0002_review_audit.sql","0003_editor_publication.sql","0004_source_reconciliation.sql","0005_publication_invariants.sql","0006_editor_model_attempts.sql","0007_publication_identity.sql","0008_source_reliability.sql","0009_snapshot_completeness.sql","0010_email_discoveries.sql","0011_news_article_extractions.sql"]) {
+  for (const name of ["0001_automation.sql","0002_review_audit.sql","0003_editor_publication.sql","0004_source_reconciliation.sql","0005_publication_invariants.sql","0006_editor_model_attempts.sql","0007_publication_identity.sql","0008_source_reliability.sql","0009_snapshot_completeness.sql","0010_email_discoveries.sql","0011_news_article_extractions.sql","0012_editor_review_verification.sql"]) {
     dbImpl.exec(readFileSync(join(root,"migrations",name),"utf8"));
   }
   class SqliteD1Statement implements D1StatementLike { private values:unknown[]=[]; constructor(private st: import("node:sqlite").StatementSync){} bind(...vals:unknown[]){const b=new SqliteD1Statement(this.st); b.values=vals; return b;} async first<T>(){return (this.st.get(...this.values as never[]) as T | undefined) ?? null;} async run(){return this.st.run(...this.values as never[]);} async all<T>(){return {results:this.st.all(...this.values as never[]) as T[]};}
@@ -164,6 +234,8 @@ test("claim-ledger exact types must be verbatim", () => {
   assert.equal(ok.ok,true);
   const bad=validateClaimLedger({claims:[{claimId:"c1", claimText:"\$10 million", claimType:"number", evidenceSpans:[source], sourceIds:[], contextIds:[]}]}, source, "");
   assert.equal(bad.ok,false);
+  const spacing = validateClaimLedger({claims:[{claimId:"c2", claimText:"Jane Doe", claimType:"name", evidenceSpans:["Jefferson hires jane   doe"], sourceIds:["other-source"], contextIds:[]}]}, source, "", new Set(["source-id"]), new Set());
+  assert.equal(spacing.ok, false, "case/whitespace normalization and unsupported IDs must not pass");
 });
 
 test("high-risk classes trigger second pass", () => {
@@ -182,4 +254,24 @@ test("second verification does not add facts and is fail-closed on model error",
   const second=await verifyWithSecondModel(input, {apiKey:"key"}, failingFetch as typeof fetch);
   assert.equal(second.approved,false);
   assert.ok(second.objections.length>0);
+});
+
+test("second verification treats model objections as rejection and clears its timer", async () => {
+  const input = {
+    id: "news-verifier-objection",
+    kind: "news",
+    title: "Penn financial report",
+    dek: "Dek",
+    body: "Penn financial report was released.",
+    impactSentence: "Penn financial report",
+    changeType: "commercial",
+    evidenceSpans: ["Penn financial report"],
+  };
+  const started = Date.now();
+  const result = await verifyWithSecondModel(input, { apiKey: "key", timeoutMs: 1_000 }, async () => new Response(JSON.stringify({
+    choices: [{ message: { content: JSON.stringify({ approved: true, objections: [{ code: "uncertain", reason: "Insufficient corroboration" }] }) } }],
+  })) as typeof fetch);
+  assert.equal(result.approved, false);
+  assert.equal(result.objections[0]?.code, "uncertain");
+  assert.ok(Date.now() - started < 500, "successful verifier response must not leave a 1s timer behind");
 });
