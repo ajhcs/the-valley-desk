@@ -6,7 +6,7 @@ import type { EditorEnrichment } from "./editor-model";
 import { matchingProductUses } from "./product-watch";
 import { professionalizeHeadline } from "../lib/editorialCopy";
 import { looksInstructionLike } from "./untrusted-text";
-import { isHighRiskNews, verifyHighRisk, type VerificationResult } from "./verification";
+import { isHighRiskNews, verifyHighRisk, type VerificationInput, type VerificationResult } from "./verification";
 import { validateClaimLedger } from "./claim-ledger";
 import { editorContextForItem } from "./editor-context";
 
@@ -87,6 +87,34 @@ function withEditorialFields(item: ContentItemType, enrichment: EditorEnrichment
     } : {}),
   };
   return ContentItem.parse(content);
+}
+
+export function verificationInputForCandidate(
+  item: ContentItemType,
+  enrichment: EditorEnrichment,
+): VerificationInput {
+  const context = editorContextForItem(item, VERIFIED_PUBLISHED_CONTEXT);
+  return {
+    id: item.id,
+    kind: item.kind,
+    title: item.title,
+    dek: item.dek,
+    body: item.body,
+    impactSentence: enrichment.impactSentence,
+    contextSentence: enrichment.contextSentence,
+    topics: item.topics,
+    changeType: enrichment.changeType,
+    evidenceSpans: enrichment.evidenceSpans,
+    contextEvidenceSpans: enrichment.contextEvidenceSpans,
+    contextItemIds: enrichment.contextItemIds,
+    contextHaystack: context.flatMap((row) => [row.title, row.summary]).join("\n"),
+    allowedSourceIds: new Set(
+      [item.id, item.source.origin, item.source.url, item.source.externalId]
+        .filter((id): id is string => Boolean(id)),
+    ),
+    allowedContextIds: new Set(context.map((row) => row.id)),
+    claimLedger: enrichment.claimLedger ?? null,
+  };
 }
 
 export function evaluateCandidate(
@@ -222,25 +250,7 @@ export function evaluateCandidate(
 
   // Two-pass verification for high-risk news classes (financial, policy/regulatory, security/safety/outage, executive change)
   // Fail-closed: any objection => review
-  const context = editorContextForItem(item, VERIFIED_PUBLISHED_CONTEXT);
-  const highRiskInput = {
-    id: item.id,
-    kind: item.kind,
-    title: item.title,
-    dek: item.dek,
-    body: item.body,
-    impactSentence: enrichment.impactSentence,
-    contextSentence: enrichment.contextSentence,
-    topics: item.topics,
-    changeType: enrichment.changeType,
-    evidenceSpans: enrichment.evidenceSpans,
-    contextEvidenceSpans: enrichment.contextEvidenceSpans,
-    contextItemIds: enrichment.contextItemIds,
-    contextHaystack: context.flatMap((row) => [row.title, row.summary]).join("\n"),
-    allowedSourceIds: new Set([item.id, item.source.origin, item.source.url, item.source.externalId].filter((id): id is string => Boolean(id))),
-    allowedContextIds: new Set(context.map((row) => row.id)),
-    claimLedger: enrichment.claimLedger ?? null,
-  };
+  const highRiskInput = verificationInputForCandidate(item, enrichment);
   if (isHighRiskNews(highRiskInput)) {
     const secondPass = verification === undefined ? verifyHighRisk(highRiskInput) : verification;
     if (!secondPass || !secondPass.approved) {

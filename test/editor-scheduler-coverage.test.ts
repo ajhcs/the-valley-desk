@@ -212,7 +212,7 @@ test("model failure isolation: automation publishes official events even when mo
   // Instead exercise real automation with failing model fetch
   const { DatabaseSync : DS } = await import("node:sqlite");
   const dbImpl=new DS(":memory:");
-  for (const name of ["0001_automation.sql","0002_review_audit.sql","0003_editor_publication.sql","0004_source_reconciliation.sql","0005_publication_invariants.sql","0006_editor_model_attempts.sql","0007_publication_identity.sql","0008_source_reliability.sql","0009_snapshot_completeness.sql","0010_email_discoveries.sql","0011_news_article_extractions.sql","0012_editor_review_verification.sql"]) {
+  for (const name of ["0001_automation.sql","0002_review_audit.sql","0003_editor_publication.sql","0004_source_reconciliation.sql","0005_publication_invariants.sql","0006_editor_model_attempts.sql","0007_publication_identity.sql","0008_source_reliability.sql","0009_snapshot_completeness.sql","0010_email_discoveries.sql","0011_news_article_extractions.sql","0012_executive_intelligence.sql","0013_executive_verification.sql","0014_editor_review_verification.sql","0015_signals_alerts.sql"]) {
     dbImpl.exec(readFileSync(join(root,"migrations",name),"utf8"));
   }
   class SqliteD1Statement implements D1StatementLike { private values:unknown[]=[]; constructor(private st: import("node:sqlite").StatementSync){} bind(...vals:unknown[]){const b=new SqliteD1Statement(this.st); b.values=vals; return b;} async first<T>(){return (this.st.get(...this.values as never[]) as T | undefined) ?? null;} async run(){return this.st.run(...this.values as never[]);} async all<T>(){return {results:this.st.all(...this.values as never[]) as T[]};}
@@ -274,4 +274,71 @@ test("second verification treats model objections as rejection and clears its ti
   assert.equal(result.approved, false);
   assert.equal(result.objections[0]?.code, "uncertain");
   assert.ok(Date.now() - started < 500, "successful verifier response must not leave a 1s timer behind");
+});
+
+test("automation invokes the independent verifier and persists its approval", async () => {
+  const database = new DatabaseSync(":memory:");
+  coverageMigrations(database);
+  const db = coverageD1(database);
+  const item = reviewNews(
+    "news-automation-verifier",
+    "Penn reports $5 million financial change",
+    "Penn reports $5 million financial change.",
+  );
+  const observedAt = "2026-08-26T12:00:00.000Z";
+  const enrichment = validEnrichment(item, {
+    changeType: "commercial",
+    evidenceSpans: [item.title],
+    impactSentence: item.title,
+  });
+  await persistIngestRun(
+    db,
+    {
+      fetchedAt: observedAt,
+      rss: [item],
+      events: [],
+      social: [],
+      notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
+    },
+    [{ item, enrichment: null }],
+  );
+  await persistEnrichments(db, [{
+    item,
+    enrichment,
+    attempt: {
+      fingerprint: await candidateFingerprint(item),
+      attemptedAt: observedAt,
+      outcome: "success",
+      error: null,
+    },
+  }]);
+  let verifierCalls = 0;
+  const fetchImpl = async (input: RequestInfo | URL, init?: RequestInit) => {
+    if (!String(input).includes("/chat/completions")) return new Response("not found", { status: 404 });
+    verifierCalls += 1;
+    const payload = JSON.parse(String(init?.body ?? "{}")) as { messages?: Array<{ content?: string }> };
+    assert.match(payload.messages?.[0]?.content ?? "", /independent evidence verifier/i);
+    return new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify({ approved: true, objections: [] }) } }],
+    }), { status: 200 });
+  };
+  const result = await runAutomation(
+    { VALLEY_DESK_DB: db, OPENROUTER_API_KEY: "test-key", EDITOR_MODEL_BUDGET: 4 },
+    fetchImpl as typeof fetch,
+    async () => ({
+      fetchedAt: "2026-08-26T13:00:00.000Z",
+      rss: [item],
+      events: [],
+      social: [],
+      notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
+    }),
+  );
+  assert.equal(verifierCalls, 1);
+  assert.equal(result.verifierAttemptedCount, 1);
+  assert.equal(result.verifierApprovedCount, 1);
+  const row = database.prepare(
+    "SELECT verification_json FROM content_candidates WHERE id = ?",
+  ).get(item.id) as { verification_json: string };
+  assert.equal(JSON.parse(row.verification_json).approved, true);
+  database.close();
 });

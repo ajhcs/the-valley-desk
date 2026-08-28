@@ -4452,9 +4452,12 @@ test("scheduled editor pipeline publishes official events when the model fails a
   const official = officialChapterEvent();
   const newsItems = Array.from({ length: 6 }, (_, index) => reviewNews(`news-budget-${index}`));
   let modelCalls = 0;
-  const fetchImpl = async () => {
-    modelCalls += 1;
-    return new Response(JSON.stringify({ choices: [{ message: { content: "" } }] }), { status: 200 });
+  const fetchImpl = async (input: RequestInfo | URL) => {
+    if (String(input).includes("/chat/completions")) {
+      modelCalls += 1;
+      return new Response(JSON.stringify({ choices: [{ message: { content: "" } }] }), { status: 200 });
+    }
+    return new Response("not found", { status: 404 });
   };
   const result = await runAutomation(
     {
@@ -4507,6 +4510,11 @@ test("cached enrichments are not re-called and skipped candidates still get edit
   await persistEnrichments(db, [{
     item,
     enrichment: validEnrichment(item),
+    verification: {
+      approved: true,
+      objections: [],
+      verifiedAt: "2026-08-26T11:00:00.000Z",
+    },
     attempt: {
       fingerprint: await candidateFingerprint(item),
       attemptedAt: "2026-08-26T11:00:00.000Z",
@@ -4517,9 +4525,12 @@ test("cached enrichments are not re-called and skipped candidates still get edit
   let modelCalls = 0;
   await runAutomation(
     { VALLEY_DESK_DB: db, OPENROUTER_API_KEY: "test-key", EDITOR_MODEL_BUDGET: 4 },
-    (async () => {
-      modelCalls += 1;
-      throw new Error("model should not run for reusable rows");
+    (async (input: RequestInfo | URL) => {
+      if (String(input).includes("/chat/completions")) {
+        modelCalls += 1;
+        throw new Error("model should not run for reusable rows");
+      }
+      return new Response("not found", { status: 404 });
     }) as typeof fetch,
     cannedIngest([item, official], "2026-08-26T12:00:00.000Z"),
   );

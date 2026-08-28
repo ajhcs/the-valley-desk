@@ -18,7 +18,8 @@ import {
   selectEditorModelWorkWithMetrics,
   shouldEnrichCandidate,
 } from "./editor-work";
-import { evaluateCandidate } from "./editor";
+import { evaluateCandidate, verificationInputForCandidate } from "./editor";
+import { isHighRiskNews, verifyWithSecondModel, type VerificationResult } from "./verification";
 import {
   acquireAutomationLock,
   candidateFingerprint,
@@ -181,6 +182,59 @@ async function enrichBounded(
     }
   }));
   return out.filter((row): row is CandidateEnrichment => Boolean(row));
+}
+
+async function verifyBounded(
+  candidates: Array<{ item: ContentItem; enrichment: NonNullable<CandidateEnrichment["enrichment"]> }>,
+  env: AutomationEnv,
+  fetchImpl: typeof fetch,
+  existing: Map<string, VerificationResult>,
+  options: {
+    budget: number;
+    concurrency: number;
+    timeoutMs: number;
+    deadlineAt: number;
+    heartbeat?: () => Promise<void>;
+  },
+) {
+  const results = new Map(existing);
+  const work = candidates
+    .filter(({ item, enrichment }) => (
+      !results.has(item.id)
+      && isHighRiskNews(verificationInputForCandidate(item, enrichment))
+    ))
+    .slice(0, Math.max(0, options.budget));
+  let next = 0;
+  let attempted = 0;
+  await Promise.all(Array.from(
+    { length: Math.min(Math.max(1, options.concurrency), work.length) },
+    async () => {
+      while (next < work.length) {
+        const remaining = options.deadlineAt - Date.now();
+        if (remaining < 1_000) return;
+        if (options.heartbeat) await options.heartbeat();
+        const row = work[next++];
+        attempted += 1;
+        const verification = await verifyWithSecondModel(
+          verificationInputForCandidate(row.item, row.enrichment),
+          {
+            apiKey: env.OPENROUTER_API_KEY || env.EDITOR_MODEL_API_KEY,
+            baseUrl: env.EDITOR_MODEL_BASE_URL,
+            model: env.EDITOR_MODEL,
+            timeoutMs: Math.max(1_000, Math.min(options.timeoutMs, remaining)),
+          },
+          fetchImpl,
+        );
+        results.set(row.item.id, verification);
+      }
+    },
+  ));
+  return {
+    results,
+    attempted,
+    approved: [...results.values()].filter((row) => row.approved).length,
+    rejected: [...results.values()].filter((row) => !row.approved).length,
+  };
 }
 
 type LeadershipAutomationResult = {
@@ -354,18 +408,46 @@ export async function runAutomation(
       new Set(reusable.keys()),
     );
     const selected = selectedWork.items;
+    const modelDeadlineAt = Date.now() + deadlineMs;
     stage = "model-enrichment";
     const modeled = await enrichBounded(selected, env, fetchImpl, reusable, {
       concurrency,
       timeoutMs,
-      deadlineAt: Date.now() + deadlineMs,
+      deadlineAt: modelDeadlineAt,
       heartbeat: ensureLock,
     });
     const modeledById = new Map(modeled.map((row) => [row.item.id, row]));
+    const verificationCandidates = items.flatMap((item) => {
+      const enrichment = modeledById.get(item.id)?.enrichment ?? reusable.get(item.id);
+      return enrichment ? [{ item, enrichment }] : [];
+    });
+    stage = "model-verification";
+    const verificationRun = await verifyBounded(
+      verificationCandidates,
+      env,
+      fetchImpl,
+      verifications,
+      {
+        budget,
+        concurrency,
+        timeoutMs,
+        deadlineAt: modelDeadlineAt,
+        heartbeat: ensureLock,
+      },
+    );
     const candidates = items.map((item) => {
       const modeledCandidate = modeledById.get(item.id);
-      if (modeledCandidate) return { ...modeledCandidate, verification: modeledCandidate.verification ?? null };
-      return { item, enrichment: reusable.get(item.id) ?? null, verification: verifications.get(item.id) ?? null };
+      if (modeledCandidate) {
+        return {
+          ...modeledCandidate,
+          verification: verificationRun.results.get(item.id) ?? null,
+        };
+      }
+      return {
+        item,
+        enrichment: reusable.get(item.id) ?? null,
+        verification: verificationRun.results.get(item.id) ?? null,
+      };
     });
     stage = "persist-enrichments";
     const enrichedCount = await persistEnrichments(env.VALLEY_DESK_DB, candidates);
@@ -431,6 +513,9 @@ export async function runAutomation(
       succeeded: modelSucceededCount,
       failed: modelFailedCount,
       reused: reusable.size,
+      verifierAttempted: verificationRun.attempted,
+      verifierApproved: verificationRun.approved,
+      verifierRejected: verificationRun.rejected,
       editorModel: env.EDITOR_MODEL || DEFAULT_EDITOR_MODEL,
     });
     logOps("publication", {
@@ -454,6 +539,9 @@ export async function runAutomation(
       modelAttemptedCount,
       modelSucceededCount,
       modelFailedCount,
+      verifierAttemptedCount: verificationRun.attempted,
+      verifierApprovedCount: verificationRun.approved,
+      verifierRejectedCount: verificationRun.rejected,
       sourceHealthCount,
       newsExtractionCount,
       leadership,
