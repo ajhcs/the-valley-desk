@@ -1,0 +1,41 @@
+version = 1
+authority = "local-exact-tree"
+changed_from = "origin/main"
+artifacts = ["dist/**"]
+
+[[stages]]
+name = "bootstrap"
+kind = "bootstrap"
+command = ["npm", "ci"]
+failure_class = "environment_blocked"
+
+[[stages]]
+name = "tests"
+kind = "unit_tests"
+command = ["npm", "run", "test"]
+failure_class = "product_test_failed"
+
+[[stages]]
+name = "operations-smoke"
+kind = "integration_tests"
+command = ["npm", "run", "ops:smoke"]
+failure_class = "product_test_failed"
+
+[[stages]]
+name = "build"
+kind = "build"
+command = ["npm", "run", "build"]
+artifacts = ["dist/**"]
+failure_class = "product_test_failed"
+
+[[stages]]
+name = "secret-scan"
+kind = "security_checks"
+command = ["npm", "run", "secret-scan"]
+failure_class = "product_test_failed"
+
+[[stages]]
+name = "dependency-audit"
+kind = "security_checks"
+command = ["npm", "audit", "--audit-level=high"]
+failure_class = "product_test_failed"

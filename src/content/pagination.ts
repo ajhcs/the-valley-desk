@@ -33,7 +33,8 @@ export function compareNewestThenId(
 
 /** Missing page is 1. Only canonical positive integers are valid. */
 export function parsePageQuery(raw: string | null | undefined): PageRequest {
-  if (raw == null || raw === "") return { raw: raw ?? null, page: 1, invalid: false };
+  if (raw == null) return { raw: null, page: 1, invalid: false };
+  if (raw === "") return { raw, page: 1, invalid: true };
   if (!/^[1-9]\d{0,8}$/.test(raw)) return { raw, page: 1, invalid: true };
   return { raw, page: Number(raw), invalid: false };
 }

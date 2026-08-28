@@ -98,6 +98,7 @@ test("invalid and out-of-range pages stay empty and do not fall back to page 1",
   const ordered = publishedNewsList(manyNews(5));
   const page1 = paginate(ordered, parsePageQuery(null), 2);
   const invalid = paginate(ordered, pageFromSearch("?page=foo"), 2);
+  const empty = paginate(ordered, pageFromSearch("?page="), 2);
   const zero = paginate(ordered, pageFromSearch("?page=0"), 2);
   const padded = paginate(ordered, pageFromSearch("?page=02"), 2);
   const oob = paginate(ordered, pageFromSearch("?page=99"), 2);
@@ -107,6 +108,8 @@ test("invalid and out-of-range pages stay empty and do not fall back to page 1",
   assert.equal(invalid.invalid, true);
   assert.equal(invalid.indexable, false);
   assert.deepEqual(invalid.items, []);
+  assert.equal(empty.invalid, true);
+  assert.deepEqual(empty.items, []);
   assert.equal(zero.invalid, true);
   assert.deepEqual(zero.items, []);
   assert.equal(padded.invalid, true);
