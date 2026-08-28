@@ -5,6 +5,8 @@ import type { EditorEnrichment } from "./editor-model";
 import { matchingProductUses } from "./product-watch";
 import { professionalizeHeadline } from "../lib/editorialCopy";
 import { looksInstructionLike } from "./untrusted-text";
+import { isHighRiskNews, verifyHighRisk } from "./verification";
+import { validateClaimLedger } from "./claim-ledger";
 
 export const EDITOR_POLICY_VERSION = "tvd-auto-editor-v4";
 
@@ -192,7 +194,41 @@ export function evaluateCandidate(
   if (!OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin)) {
     return review("primary-corroboration-required", ["Discovery source requires first-party corroboration"]);
   }
+
+  // Claim-ledger: exact claims must be grounded; fail review if not
+  if (enrichment.claimLedger && enrichment.claimLedger.claims.length > 0) {
+    const hay = [item.title, item.dek, item.body].join("\n");
+    const ledgerResult = validateClaimLedger(enrichment.claimLedger, hay, "");
+    if (!ledgerResult.ok) {
+      return review("claim-ledger-unverified", ledgerResult.errors.slice(0, 3));
+    }
+  }
+
   const content = withEditorialFields(item, enrichment, now);
+
+  // Two-pass verification for high-risk news classes (financial, policy/regulatory, security/safety/outage, executive change)
+  // Fail-closed: any objection => review
+  const highRiskInput = {
+    id: item.id,
+    kind: item.kind,
+    title: item.title,
+    dek: item.dek,
+    body: item.body,
+    impactSentence: enrichment.impactSentence,
+    contextSentence: enrichment.contextSentence,
+    topics: item.topics,
+    changeType: enrichment.changeType,
+    evidenceSpans: enrichment.evidenceSpans,
+    contextEvidenceSpans: enrichment.contextEvidenceSpans,
+    claimLedger: enrichment.claimLedger ?? null,
+  };
+  if (isHighRiskNews(highRiskInput)) {
+    const secondPass = verifyHighRisk(highRiskInput);
+    if (!secondPass.approved) {
+      return review("second-pass-failed", secondPass.objections.map((o) => `${o.code}: ${o.reason}`));
+    }
+  }
+
   const publishedContent = isProductNews
     ? ContentItem.parse({ ...content, topics: [...new Set([...content.topics, "product-watch"])] })
     : content;

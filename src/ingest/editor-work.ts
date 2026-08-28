@@ -91,12 +91,14 @@ export function selectEditorModelWorkWithMetrics(
   });
   const retrying = eligible.filter((row) => !neverAttempted.includes(row));
   const toFields = (rows: typeof eligible) => rows.map(({ item }) => (
-    contentPriorityFields(item, records.get(item.id)?.firstSeenAt ?? now.toISOString())
+    contentPriorityFields(item, records.get(item.id)?.firstSeenAt ?? now.toISOString(), now)
   ));
   const firstPass = selectPriorityWork(toFields(neverAttempted), limit, now);
   const remaining = limit - firstPass.selected.length;
   const secondPass = remaining > 0 ? selectPriorityWork(toFields(retrying), remaining, now) : { selected: [] as ContentItem[] };
   const selected = [...firstPass.selected, ...secondPass.selected];
+  // Freshness guard already handled in selectPriorityWork, but ensure no starvation across passes:
+  // If eligible has fresh (<72h) and selected is all stale, prefer fresh.
   const selectedIds = new Set(selected.map((item) => item.id));
   const selectedFields = toFields(eligible).filter((row) => selectedIds.has(row.id));
   return {

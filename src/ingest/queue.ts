@@ -52,6 +52,11 @@ export type PriorityWorkItem<T> = {
   startsAt?: string;
   official: boolean;
   material: boolean;
+  // freshness-first extension
+  ageMs: number;
+  materialityRank: number;
+  firstPartyRank: number;
+  eventChangeRank: number;
 };
 
 export type QueueSlaMetrics = {
@@ -76,36 +81,56 @@ function median(values: number[]) {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
-function orgFrequency(items: Array<{ orgs: readonly string[] }>) {
+function _orgFrequency(items: Array<{ orgs: readonly string[] }>) {
   const counts = new Map<string, number>();
   for (const item of items) {
     for (const org of item.orgs) counts.set(org, (counts.get(org) ?? 0) + 1);
   }
   return counts;
 }
+void _orgFrequency;
 
-export function priorityScore(row: PriorityWorkItem<unknown>, now: Date, orgCounts: Map<string, number>, medianOrgCount: number) {
-  const ageMs = queueAgeMs(row.firstSeenAt, now);
-  let score = (ageMs / 3_600_000) * 10;
-  if (row.publishedAt) {
-    const published = Date.parse(row.publishedAt);
-    if (Number.isFinite(published)) {
-      const recency = now.getTime() - published;
-      if (recency >= 0 && recency <= 48 * 60 * 60 * 1000) score += 25;
-      else if (recency >= 0 && recency <= QUEUE_DEADLINE_WEEK_MS) score += 10;
-    }
-  }
-  if (row.official) score += 20;
-  if (row.material) score += 15;
-  if (row.orgs.some((org) => (orgCounts.get(org) ?? 0) < medianOrgCount)) score += 12;
-  if (row.startsAt) {
-    const starts = Date.parse(row.startsAt);
-    if (Number.isFinite(starts)) {
-      const until = starts - now.getTime();
-      if (until > 0 && until <= QUEUE_DEADLINE_SOON_MS) score += 30;
-      else if (until > 0 && until <= QUEUE_DEADLINE_WEEK_MS) score += 15;
-    }
-  }
+export function freshnessPriorityRank(row: PriorityWorkItem<unknown>) {
+  const age = row.ageMs;
+  const isFresh24 = age < 24 * 60 * 60 * 1000;
+  const isFresh72 = age < 72 * 60 * 60 * 1000;
+  return {
+    critical: row.materialityRank === 0 ? 0 : 1,
+    firstParty: row.firstPartyRank,
+    fresh24: isFresh24 ? 0 : 1,
+    fresh72: isFresh72 ? 0 : 1,
+    eventChange: row.eventChangeRank,
+    secondary: row.firstPartyRank === 1 ? 0 : 1,
+    backlog: isFresh72 ? 0 : 1,
+    ageMs: row.ageMs,
+  };
+}
+
+function comparePriority(a: PriorityWorkItem<unknown>, b: PriorityWorkItem<unknown>) {
+  const ra = freshnessPriorityRank(a);
+  const rb = freshnessPriorityRank(b);
+  if (ra.critical !== rb.critical) return ra.critical - rb.critical;
+  if (ra.firstParty !== rb.firstParty) return ra.firstParty - rb.firstParty;
+  if (ra.fresh24 !== rb.fresh24) return ra.fresh24 - rb.fresh24;
+  if (ra.fresh72 !== rb.fresh72) return ra.fresh72 - rb.fresh72;
+  if (ra.eventChange !== rb.eventChange) return ra.eventChange - rb.eventChange;
+  if (ra.secondary !== rb.secondary) return ra.secondary - rb.secondary;
+  if (ra.backlog !== rb.backlog) return ra.backlog - rb.backlog;
+  if (a.ageMs !== b.ageMs) return b.ageMs - a.ageMs;
+  return a.id.localeCompare(b.id);
+}
+
+export function priorityScore(row: PriorityWorkItem<unknown>, _now: Date, _orgCounts: Map<string, number>, _medianOrgCount: number) {
+  const rank = freshnessPriorityRank(row);
+  let score = 1000;
+  score -= rank.critical * 500;
+  score -= rank.firstParty * 200;
+  score -= rank.fresh24 * 100;
+  score -= rank.fresh72 * 80;
+  score -= rank.eventChange * 60;
+  score -= rank.secondary * 30;
+  score -= rank.backlog * 20;
+  score += Math.min(row.ageMs / 3_600_000, 72);
   return score;
 }
 
@@ -129,7 +154,13 @@ export function summarizeQueueSla<T>(
   };
 }
 
-export function contentPriorityFields(item: ContentItem, firstSeenAt?: string | null): PriorityWorkItem<ContentItem> {
+export function contentPriorityFields(item: ContentItem, firstSeenAt?: string | null, now: Date = new Date()): PriorityWorkItem<ContentItem> {
+  const ageMs = queueAgeMs(firstSeenAt, now);
+  const isEvent = item.kind === "event";
+  const hasExecutiveChange = /executive|leadership|CEO|CFO|CMIO|chief|appoint|hire|resign|depart/i.test([item.title, item.dek, item.body].join(" "));
+  const materialityRank = matchingProductUses(item).length > 0 ? 0 : 1;
+  const firstParty = OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin) ? 0 : 1;
+  const eventChangeRank = isEvent || hasExecutiveChange ? 0 : 1;
   return {
     item,
     id: item.id,
@@ -140,6 +171,10 @@ export function contentPriorityFields(item: ContentItem, firstSeenAt?: string | 
     startsAt: item.kind === "event" ? item.startsAt : undefined,
     official: OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin),
     material: matchingProductUses(item).length > 0,
+    ageMs,
+    materialityRank,
+    firstPartyRank: firstParty,
+    eventChangeRank,
   };
 }
 
@@ -152,41 +187,46 @@ export function selectPriorityWork<T>(
   if (limit === 0 || candidates.length === 0) {
     return { selected: [], metrics: summarizeQueueSla(candidates, [], now) };
   }
-  const orgCounts = orgFrequency(candidates);
-  const medianOrgCount = median([...orgCounts.values()]) ?? 0;
-  const scored = candidates.map((row) => ({
-    row,
-    score: priorityScore(row, now, orgCounts, medianOrgCount),
-  }));
-  const byPriority = (a: typeof scored[number], b: typeof scored[number]) => {
-    if (a.score !== b.score) return b.score - a.score;
-    const ageA = queueAgeMs(a.row.firstSeenAt, now);
-    const ageB = queueAgeMs(b.row.firstSeenAt, now);
-    if (ageA !== ageB) return ageB - ageA;
-    return a.row.id.localeCompare(b.row.id);
-  };
-  const remaining = [...scored];
-  const picked: typeof scored = [];
-  const originCount = new Map<string, number>();
+  for (const c of candidates) {
+    c.ageMs = queueAgeMs(c.firstSeenAt, now);
+  }
+  const sorted = [...candidates].sort(comparePriority);
   const uniqueOrigins = new Set(candidates.map((row) => row.origin)).size;
   const maxPerOrigin = Math.max(1, Math.ceil(limit / Math.max(1, uniqueOrigins)));
-
-  const take = (cap: number) => {
-    remaining.sort(byPriority);
-    for (let index = 0; index < remaining.length && picked.length < limit; index += 1) {
-      const candidate = remaining[index];
-      const count = originCount.get(candidate.row.origin) ?? 0;
-      if (count >= cap) continue;
-      picked.push(candidate);
-      originCount.set(candidate.row.origin, count + 1);
-      remaining.splice(index, 1);
-      index -= 1;
+  const originCount = new Map<string, number>();
+  const picked: Array<PriorityWorkItem<T>> = [];
+  const remaining: Array<PriorityWorkItem<T>> = [];
+  for (const cand of sorted) {
+    const cnt = originCount.get(cand.origin) ?? 0;
+    if (picked.length < limit && cnt < maxPerOrigin) {
+      picked.push(cand);
+      originCount.set(cand.origin, cnt + 1);
+    } else {
+      remaining.push(cand);
     }
-  };
-  take(maxPerOrigin);
-  if (picked.length < limit) take(limit);
+  }
+  if (picked.length < limit) {
+    remaining.sort(comparePriority);
+    for (const cand of remaining) {
+      if (picked.length >= limit) break;
+      picked.push(cand);
+    }
+  }
+  const FRESH_72_MS = 72 * 60 * 60 * 1000;
+  if (picked.length === limit && remaining.length) {
+    const pickedSorted = [...picked].sort(comparePriority);
+    const worstPicked = pickedSorted[pickedSorted.length - 1];
+    const freshRemaining = remaining.filter((r) => r.ageMs < FRESH_72_MS).sort(comparePriority);
+    if (freshRemaining.length && worstPicked.ageMs >= FRESH_72_MS) {
+      const bestFresh = freshRemaining[0];
+      if (comparePriority(bestFresh, worstPicked) < 0) {
+        const idx = picked.indexOf(worstPicked);
+        picked[idx] = bestFresh;
+      }
+    }
+  }
   return {
-    selected: picked.map((row) => row.row.item),
-    metrics: summarizeQueueSla(candidates, picked.map((row) => row.row), now),
+    selected: picked.map((row) => row.item),
+    metrics: summarizeQueueSla(candidates, picked, now),
   };
 }
