@@ -5,6 +5,8 @@ const DEFENSIVE_EDITORIAL_ASIDES = [
   /\bnot the same (?:product|count|metric|study|source)\b/i,
   /\bnot this count\b/i,
   /\bnot a substitute for\b/i,
+  /\bnot (?:intended|to be|meant) as\b/i,
+  /\bcannot be (?:used|interpreted|read)\b/i,
 ];
 
 const INTERNAL_PROCESS_LANGUAGE = [
@@ -13,6 +15,8 @@ const INTERNAL_PROCESS_LANGUAGE = [
   /\bingested? from\b/i,
   /\b(?:rss|rest|api) (?:feed|adapter|ingest(?:ion)?)\b/i,
   /\b(?:crawler|scraper|adapter) (?:found|output|provenance|note)\b/i,
+  /\b(?:source[- ]audit|data[- ]collection|automated collection)\b/i,
+  /\b(?:scraping|crawling) (?:note|method|process)\b/i,
 ];
 
 /** Reader-facing copy should state supported facts, not expose the model's source-audit monologue. */
@@ -35,7 +39,16 @@ export function hasInternalProcessLanguage(value: string | null | undefined) {
 export function professionalizeHeadline(value: string) {
   const title = value.replace(/\s+/g, " ").trim();
   const repo = /^(.+?)\s+([A-Z][A-Za-z0-9.+-]*)\s+repo(?:sitory)?\s+for\b.+$/i.exec(title);
-  if (!repo) return title;
+  if (!repo) {
+    // Normalize common passive event titles into active publication style without inventing facts
+    const passive = /^(.+?)\s+(?:will be|to be|is being)\s+(?:held|hosted)\b(.+)?$/i.exec(title);
+    if (passive) {
+      const subj = passive[1].trim();
+      const rest = (passive[2] ?? "").trim();
+      if (subj && rest) return `${subj} ${rest}`.replace(/\s{2,}/g, " ").trim();
+    }
+    return title;
+  }
   const [, subject, product] = repo;
   return `${subject.trim()} publishes ${product.trim()} repo`;
 }

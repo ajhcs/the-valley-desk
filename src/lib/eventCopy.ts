@@ -14,11 +14,27 @@ function isTrivialRestatement(text: string, item: EventItem) {
   if (n === title) return true;
   if (place && (n === place || n === `${title} ${place}` || n === `${title} in ${place}`)) return true;
   if (title && n === `${title} in ${normalize(item.city ?? "")}`) return true;
+  // Placeholder / passive filler never qualifies as professional attendance copy
+  if (/^(join us|learn more|networking|details|tbd|tba|to be announced|coming soon)/i.test(n)) return true;
+  if (/^(event details|more information|stay tuned)/i.test(title) && n.length < 24) return true;
+  return false;
+}
+
+function isPlaceholderEventCopy(text: string) {
+  const n = normalize(text);
+  if (!n) return true;
+  if (/\b(tbd|tba|to be announced|to be determined|coming soon|stay tuned|details to follow)\b/i.test(n)) return true;
+  if (/^(join us|learn more|save the date)/i.test(n) && n.split(/\s+/).length < 8) return true;
   return false;
 }
 
 export function isBoilerplateEventCopy(text: string | undefined) {
-  return hasInternalProcessLanguage(text);
+  if (!text?.trim()) return false;
+  if (hasInternalProcessLanguage(text)) return true;
+  if (isPlaceholderEventCopy(text)) return true;
+  // Defensive negative-disclaimer patterns also count as boilerplate for events
+  if (/\bnot (?:a|an|the)\b/i.test(text) && /\b(not the same|not a filing|not audited)\b/i.test(text)) return true;
+  return false;
 }
 
 /** Genuine whyAttend / audience / fee / deadline copy only. Never adapter provenance. */
