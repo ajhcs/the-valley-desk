@@ -202,25 +202,34 @@ export function selectEditorModelWorkWithLanes(
     0,
     MAX_EDITOR_LANE_TOTAL_BUDGET,
   );
+  const reservedPools = {} as Record<EditorLane, ContentItem[]>;
   const pools = {} as Record<EditorLane, ContentItem[]>;
   const metricsByLane = {} as Record<EditorLane, EditorLaneSelectionMetrics>;
   const eligibleByLane = {} as Record<EditorLane, number>;
 
   for (const lane of EDITOR_LANE_ORDER) {
     const laneItems = items.filter(({ item }) => editorLaneForItem(item) === lane);
-    const selected = selectEditorModelWorkWithMetrics(
+    const reserved = selectEditorModelWorkWithMetrics(
+      laneItems,
+      records,
+      budgets[lane],
+      now,
+      options.reusableIds,
+    );
+    const expanded = selectEditorModelWorkWithMetrics(
       laneItems,
       records,
       totalBudget,
       now,
       options.reusableIds,
     );
-    pools[lane] = selected.items;
-    eligibleByLane[lane] = selected.metrics.eligibleCount;
+    reservedPools[lane] = reserved.items;
+    pools[lane] = budgets[lane] > 0 ? expanded.items : [];
+    eligibleByLane[lane] = expanded.metrics.eligibleCount;
     metricsByLane[lane] = {
       lane,
       budget: budgets[lane],
-      ...selected.metrics,
+      ...expanded.metrics,
       // The per-lane selection is only a pool; the final interleaving below
       // may trim it to the global hard ceiling.
       selectedCount: 0,
@@ -230,6 +239,7 @@ export function selectEditorModelWorkWithLanes(
   const selectedByLane = {} as Record<EditorLane, ContentItem[]>;
   for (const lane of EDITOR_LANE_ORDER) selectedByLane[lane] = [];
   const selected: ContentItem[] = [];
+  const selectedIds = new Set<string>();
   // Phase one reserves each specialist's configured quota. Round-robin keeps
   // every non-empty lane moving before a busy lane receives another slot.
   let round = 0;
@@ -237,10 +247,11 @@ export function selectEditorModelWorkWithLanes(
     let added = false;
     for (const lane of EDITOR_LANE_ORDER) {
       if (round >= budgets[lane]) continue;
-      const candidate = pools[lane][round];
+      const candidate = reservedPools[lane][round];
       if (!candidate) continue;
       selected.push(candidate);
       selectedByLane[lane].push(candidate);
+      selectedIds.add(candidate.id);
       added = true;
       if (selected.length >= totalBudget) break;
     }
@@ -252,13 +263,19 @@ export function selectEditorModelWorkWithLanes(
   // work. This lets an all-News cycle consume the complete global budget
   // without allowing News to starve policy, finance, events, or other desks
   // when those specialists have candidates waiting.
+  const poolCursor = Object.fromEntries(EDITOR_LANE_ORDER.map((lane) => [lane, 0])) as Record<EditorLane, number>;
   while (selected.length < totalBudget) {
     let added = false;
     for (const lane of EDITOR_LANE_ORDER) {
-      const candidate = pools[lane][selectedByLane[lane].length];
+      if (budgets[lane] === 0) continue;
+      let candidate = pools[lane][poolCursor[lane]++];
+      while (candidate && selectedIds.has(candidate.id)) {
+        candidate = pools[lane][poolCursor[lane]++];
+      }
       if (!candidate) continue;
       selected.push(candidate);
       selectedByLane[lane].push(candidate);
+      selectedIds.add(candidate.id);
       added = true;
       if (selected.length >= totalBudget) break;
     }
@@ -267,9 +284,14 @@ export function selectEditorModelWorkWithLanes(
 
   for (const lane of EDITOR_LANE_ORDER) {
     const laneSelected = selectedByLane[lane];
+    const selectedOriginCounts: Record<string, number> = {};
+    for (const item of laneSelected) {
+      selectedOriginCounts[item.source.origin] = (selectedOriginCounts[item.source.origin] ?? 0) + 1;
+    }
     metricsByLane[lane] = {
       ...metricsByLane[lane],
       selectedCount: laneSelected.length,
+      selectedOriginCounts,
     };
   }
   return { items: selected, selectedByLane, metricsByLane, eligibleByLane, totalBudget };

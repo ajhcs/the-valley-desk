@@ -186,6 +186,36 @@ test("specialists receive reserved work before a busy news lane borrows the rema
   );
 });
 
+test("a reserved news quota preserves source-origin diversity before borrowing", () => {
+  const candidates = [
+    ...Array.from({ length: 5 }, (_, index) => news(`penn-${index}`, { origin: "penn-medicine-newsroom" })),
+    ...Array.from({ length: 5 }, (_, index) => news(`cooper-${index}`, { origin: "cooper-newsroom" })),
+  ];
+  const result = selectEditorModelWorkWithLanes(rows(candidates), new Map(), {
+    laneBudgets: { news: 2 },
+    totalBudget: 8,
+    now: new Date("2026-08-28T10:00:00.000Z"),
+  });
+  assert.deepEqual(
+    new Set(result.selectedByLane.news.slice(0, 2).map((item) => item.source.origin)),
+    new Set(["penn-medicine-newsroom", "cooper-newsroom"]),
+  );
+  assert.equal(
+    Object.values(result.metricsByLane.news.selectedOriginCounts).reduce((sum, count) => sum + count, 0),
+    result.selectedByLane.news.length,
+  );
+});
+
+test("a disabled specialist cannot borrow unused capacity", () => {
+  const result = selectEditorModelWorkWithLanes(rows([news("disabled-news")]), new Map(), {
+    laneBudgets: { news: 0 },
+    totalBudget: 8,
+  });
+  assert.equal(result.items.length, 0);
+  assert.equal(result.selectedByLane.news.length, 0);
+  assert.deepEqual(result.metricsByLane.news.selectedOriginCounts, {});
+});
+
 test("hard total cap is enforced even when lane quotas sum higher", () => {
   const candidates = [news("news-0"), news("news-1"), policy("policy-0"), event("event-0")];
   const result = selectEditorModelWorkWithLanes(rows(candidates), new Map(), {
