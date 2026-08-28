@@ -3795,7 +3795,8 @@ test("Muse editor client is provider-configurable and evidence-bound", async () 
     assert.equal(new Headers(init?.headers).get("x-title"), "The Valley Desk editor-in-chief");
     const request = JSON.parse(String(init?.body));
     assert.equal(request.model, DEFAULT_EDITOR_MODEL);
-    assert.equal(request.response_format.type, "json_object");
+    assert.equal(request.response_format.type, "json_schema");
+    assert.equal(request.response_format.json_schema.strict, true);
     assert.equal(request.max_tokens, requestCount === 1 ? EDITOR_CLASSIFICATION_MAX_TOKENS : EDITOR_COPY_MAX_TOKENS);
     assert.equal(request.reasoning.effort, EDITOR_REASONING_EFFORT);
     assert.equal(request.reasoning.max_tokens, undefined);

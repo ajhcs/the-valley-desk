@@ -365,42 +365,42 @@ test("second verification treats model objections as rejection and clears its ti
   assert.ok(Date.now() - started < 500, "successful verifier response must not leave a 1s timer behind");
 });
 
-test("automation invokes the independent verifier and persists its approval", async () => {
+test("bounded verifier workers claim every candidate before async heartbeats", async () => {
   const database = new DatabaseSync(":memory:");
   coverageMigrations(database);
   const db = coverageD1(database);
-  const item = reviewNews(
-    "news-automation-verifier",
-    "Penn reports $5 million financial change",
-    "Penn reports $5 million financial change.",
-  );
+  const items = Array.from({ length: 3 }, (_, index) => reviewNews(
+    `news-automation-verifier-${index}`,
+    `Penn reports $${index + 5} million financial change`,
+    `Penn reports $${index + 5} million financial change.`,
+  ));
   const observedAt = "2026-08-26T12:00:00.000Z";
-  const enrichment = validEnrichment(item, {
+  const enrichments = items.map((item) => validEnrichment(item, {
     changeType: "commercial",
     evidenceSpans: [item.title],
     impactSentence: item.title,
-  });
+  }));
   await persistIngestRun(
     db,
     {
       fetchedAt: observedAt,
-      rss: [item],
+      rss: items,
       events: [],
       social: [],
       notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
     },
-    [{ item, enrichment: null }],
+    items.map((item) => ({ item, enrichment: null })),
   );
-  await persistEnrichments(db, [{
+  await persistEnrichments(db, await Promise.all(items.map(async (item, index) => ({
     item,
-    enrichment,
+    enrichment: enrichments[index],
     attempt: {
       fingerprint: await candidateFingerprint(item),
       attemptedAt: observedAt,
       outcome: "success",
       error: null,
     },
-  }]);
+  }))));
   let verifierCalls = 0;
   const fetchImpl = async (input: RequestInfo | URL, init?: RequestInit) => {
     if (!String(input).includes("/chat/completions")) return new Response("not found", { status: 404 });
@@ -412,22 +412,23 @@ test("automation invokes the independent verifier and persists its approval", as
     }), { status: 200 });
   };
   const result = await runAutomation(
-    { VALLEY_DESK_DB: db, OPENROUTER_API_KEY: "test-key", EDITOR_MODEL_BUDGET: 4 },
+    { VALLEY_DESK_DB: db, OPENROUTER_API_KEY: "test-key", EDITOR_MODEL_BUDGET: 4, EDITOR_MODEL_CONCURRENCY: 2 },
     fetchImpl as typeof fetch,
     async () => ({
       fetchedAt: "2026-08-26T13:00:00.000Z",
-      rss: [item],
+      rss: items,
       events: [],
       social: [],
       notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
     }),
   );
-  assert.equal(verifierCalls, 1);
-  assert.equal(result.verifierAttemptedCount, 1);
-  assert.equal(result.verifierApprovedCount, 1);
-  const row = database.prepare(
-    "SELECT verification_json FROM content_candidates WHERE id = ?",
-  ).get(item.id) as { verification_json: string };
-  assert.equal(JSON.parse(row.verification_json).approved, true);
+  assert.equal(verifierCalls, 3);
+  assert.equal(result.verifierAttemptedCount, 3);
+  assert.equal(result.verifierApprovedCount, 3);
+  const rows = database.prepare(
+    "SELECT verification_json FROM content_candidates WHERE id LIKE 'news-automation-verifier-%'",
+  ).all() as Array<{ verification_json: string }>;
+  assert.equal(rows.length, 3);
+  assert.equal(rows.every((row) => JSON.parse(row.verification_json).approved === true), true);
   database.close();
 });

@@ -185,13 +185,16 @@ async function enrichBounded(
   const concurrency = Math.max(1, Math.min(options.concurrency, items.length || 1));
   let next = 0;
   await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, async () => {
-    while (next < items.length) {
+    while (true) {
+      if (options.deadlineAt - Date.now() < 1_000) return;
+      const index = next++;
+      const item = items[index];
+      if (!item) return;
+      if (options.heartbeat) await options.heartbeat();
       const remaining = options.deadlineAt - Date.now();
       if (remaining < 1_000) return;
-      if (options.heartbeat) await options.heartbeat();
-      const index = next++;
       const timeoutMs = Math.max(1_000, Math.min(options.timeoutMs, remaining));
-      out[index] = await enrichCandidate(items[index], env, fetchImpl, timeoutMs, reusable.get(items[index].id));
+      out[index] = await enrichCandidate(item, env, fetchImpl, timeoutMs, reusable.get(item.id));
     }
   }));
   return out.filter((row): row is CandidateEnrichment => Boolean(row));
@@ -223,11 +226,13 @@ async function verifyBounded(
   await Promise.all(Array.from(
     { length: Math.min(Math.max(1, options.concurrency), work.length) },
     async () => {
-      while (next < work.length) {
+      while (true) {
+        if (options.deadlineAt - Date.now() < 1_000) return;
+        const row = work[next++];
+        if (!row) return;
+        if (options.heartbeat) await options.heartbeat();
         const remaining = options.deadlineAt - Date.now();
         if (remaining < 1_000) return;
-        if (options.heartbeat) await options.heartbeat();
-        const row = work[next++];
         attempted += 1;
         const verification = await verifyWithSecondModel(
           verificationInputForCandidate(row.item, row.enrichment),

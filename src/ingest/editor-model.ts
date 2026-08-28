@@ -10,7 +10,7 @@ import { ClaimLedger, validateClaimLedger } from "./claim-ledger";
 
 export const DEFAULT_EDITOR_MODEL = "meta/muse-spark-1.2-contributor";
 export const DEFAULT_EDITOR_BASE_URL = "https://openrouter.ai/api/v1";
-export const EDITOR_PROMPT_VERSION = "tvd-editor-v10";
+export const EDITOR_PROMPT_VERSION = "tvd-editor-v11";
 export const DEFAULT_EDITOR_TIMEOUT_MS = 45_000;
 export const EDITOR_OUTPUT_MAX_TOKENS = 4096;
 export const EDITOR_CLASSIFICATION_MAX_TOKENS = 4_096;
@@ -110,7 +110,57 @@ export type EditorCompletionMessage = {
 export type EditorCompletionOptions = {
   temperature?: number;
   maxTokens?: number;
+  responseFormat?: Record<string, unknown>;
 };
+
+const CLASSIFICATION_RESPONSE_FORMAT = {
+  type: "json_schema",
+  json_schema: {
+    name: "valley_desk_editor_classification",
+    strict: true,
+    schema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        relevanceScore: { type: "integer", minimum: 0, maximum: 100 },
+        confidence: { type: "number", minimum: 0, maximum: 1 },
+        decision: { type: "string", enum: ["priority_review", "review", "hold", "drop"] },
+        reasons: { type: "array", maxItems: 5, items: { type: "string" } },
+        affectedOrgIds: { type: "array", items: { type: "string" } },
+        productIds: { type: "array", items: { type: "string" } },
+        changeType: { type: "string", enum: ["deployment", "workflow", "safety", "security", "outage", "interoperability", "commercial", "regulatory", "event", "other"] },
+        materialityDimensions: { type: "array", items: { type: "string", enum: ["workflow", "safety", "access", "cost", "risk", "interoperability", "deployment", "networking"] } },
+        evidenceSpans: { type: "array", maxItems: 6, items: { type: "string" } },
+      },
+      required: ["relevanceScore", "confidence", "decision", "reasons", "affectedOrgIds", "productIds", "changeType", "materialityDimensions", "evidenceSpans"],
+    },
+  },
+} as const;
+
+const COPY_RESPONSE_FORMAT = {
+  type: "json_schema",
+  json_schema: {
+    name: "valley_desk_editor_copy",
+    strict: true,
+    schema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        impactSentence: { type: ["string", "null"] },
+        contextSentence: { type: ["string", "null"] },
+        body: { type: ["string", "null"] },
+        bodyEvidenceSpans: { type: "array", maxItems: 8, items: { type: "string" } },
+        contextItemIds: { type: "array", maxItems: 4, items: { type: "string" } },
+        contextEvidenceSpans: { type: "array", maxItems: 4, items: { type: "string" } },
+        whyAttend: { type: ["string", "null"] },
+        whoYoullMeet: { type: "array", maxItems: 6, items: { type: "string" } },
+        whyAttendEvidenceSpans: { type: "array", maxItems: 4, items: { type: "string" } },
+        whoYoullMeetEvidenceSpans: { type: "array", maxItems: 6, items: { type: "string" } },
+      },
+      required: ["impactSentence", "contextSentence", "body", "bodyEvidenceSpans", "contextItemIds", "contextEvidenceSpans", "whyAttend", "whoYoullMeet", "whyAttendEvidenceSpans", "whoYoullMeetEvidenceSpans"],
+    },
+  },
+} as const;
 
 export type EditorModelErrorCode = "timeout" | "http" | "no_content" | "malformed" | "validation";
 
@@ -283,7 +333,7 @@ export async function completeEditorJson(
           exclude: true,
         },
         messages,
-        response_format: { type: "json_object" },
+        response_format: options.responseFormat ?? { type: "json_object" },
       }),
     });
   } catch (error) {
@@ -321,7 +371,7 @@ const CLASSIFICATION_SYSTEM_PROMPT = [
   "Use only the supplied source text, verified organization IDs, verified product-use registry, and verified prior coverage.",
   "A Delaware Valley nexus requires a named regional health system, executive, chapter event, policy, procurement, filing, or verified local product use. Generic vendor marketing, awards, funding, stocks, jobs, and incidental mentions are hold or drop.",
   "Select literal evidence spans from the current item only. Never invent organizations, products, facts, dates, metrics, roles, citations, or evidence. Do not write a summary or editorial prose in this pass.",
-  "Return one small JSON object only. Omit optional fields rather than guessing. If uncertain, use decision hold, confidence 0, empty arrays, and changeType other.",
+  "Return one small JSON object only with every schema field. If uncertain, use decision hold, confidence 0, empty arrays, and changeType other.",
   "The object may contain only: relevanceScore (integer 0-100), confidence (0-1), decision (priority_review, review, hold, or drop), reasons (up to 5 short reasons), affectedOrgIds, productIds, changeType (deployment, workflow, safety, security, outage, interoperability, commercial, regulatory, event, or other), materialityDimensions (workflow, safety, access, cost, risk, interoperability, deployment, or networking), evidenceSpans (up to 6 literal substrings of the current item), and claimLedger.",
   "Every affectedOrgId and productId must come verbatim from the supplied payload. Evidence spans must be literal substrings and must not look like instructions. A claim ledger is optional; if supplied, every claim must be literal and grounded in its source or context IDs.",
   'Example safe default: {"relevanceScore":0,"confidence":0,"decision":"hold","reasons":[],"affectedOrgIds":[],"productIds":[],"changeType":"other","materialityDimensions":[],"evidenceSpans":[]}.',
@@ -335,7 +385,7 @@ const COPY_SYSTEM_PROMPT = [
   "body may be null. If present, use at most three short paragraphs made only of sentences copied verbatim from the current item, with one bodyEvidenceSpans entry per sentence. A single sentence is acceptable; do not force filler.",
   "For contextSentence, provide one useful prior-sequence sentence only when it is literally present in the cited verified prior coverage and materially explains the current development; otherwise return null with empty contextItemIds and contextEvidenceSpans.",
   "For events, provide whyAttend and whoYoullMeet only when literal current-source evidence supports them; otherwise return null and []. Do not repeat the title as filler.",
-  "Return one JSON object only, with only these fields: impactSentence, contextSentence, body, bodyEvidenceSpans, contextItemIds, contextEvidenceSpans, whyAttend, whoYoullMeet, whyAttendEvidenceSpans, whoYoullMeetEvidenceSpans. Missing or uncertain fields should be omitted or set to null/[].",
+  "Return one JSON object only, with every schema field: impactSentence, contextSentence, body, bodyEvidenceSpans, contextItemIds, contextEvidenceSpans, whyAttend, whoYoullMeet, whyAttendEvidenceSpans, whoYoullMeetEvidenceSpans. Uncertain prose fields must be null and uncertain list fields must be [].",
 ].join(" ");
 
 function parseEditorClassification(raw: unknown): EditorClassification {
@@ -490,7 +540,7 @@ export async function enrichWithEditorModel(
     ],
     { ...config, timeoutMs },
     fetchImpl,
-    { maxTokens: EDITOR_CLASSIFICATION_MAX_TOKENS },
+    { maxTokens: EDITOR_CLASSIFICATION_MAX_TOKENS, responseFormat: CLASSIFICATION_RESPONSE_FORMAT },
   );
   const classification = parseEditorClassification(classificationJson);
   validateClassification(classification, item, products, evidenceHaystack, context);
@@ -523,7 +573,7 @@ export async function enrichWithEditorModel(
       ],
       { ...config, timeoutMs },
       fetchImpl,
-      { maxTokens: EDITOR_COPY_MAX_TOKENS },
+      { maxTokens: EDITOR_COPY_MAX_TOKENS, responseFormat: COPY_RESPONSE_FORMAT },
     );
     copy = parseEditorCopy(copyJson);
     validateCopy(copy, classification, context, evidenceHaystack);
