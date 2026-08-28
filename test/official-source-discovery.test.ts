@@ -412,3 +412,42 @@ test("detail redirects stay on the exact candidate host and cannot become open f
   assert.notEqual(hydrated.candidates[0]?.detailState, "success");
   assert.equal(hydrated.candidates[0]?.detailText, undefined);
 });
+
+test("failed detail URLs cool down instead of consuming every hourly detail budget", async () => {
+  const candidate: OfficialDiscoveryCandidate = {
+    id: "official-detail-backoff",
+    sourceId: pennNews.id,
+    institutionId: "inst-penn",
+    category: "news",
+    region: "PA",
+    title: "Penn Medicine update",
+    url: "https://pennmedicine.org/news/dead-link",
+    sourcePageUrl: pennNews.url,
+    sourceName: pennNews.name,
+    trust: pennNews.trust,
+    discoveredAt: "2026-08-28T12:00:00.000Z",
+    status: "review",
+    instructionLike: false,
+  };
+  let calls = 0;
+  const failed = await hydrateOfficialCandidates([candidate], {
+    sources: [pennNews],
+    now: new Date("2026-08-28T12:00:00.000Z"),
+    fetchImpl: async () => {
+      calls += 1;
+      return new Response("", { status: 503 });
+    },
+  });
+  assert.equal(calls, 1);
+  assert.equal(failed.candidates[0]?.detailAttemptCount, 1);
+  assert.ok(failed.candidates[0]?.detailNextAttemptAt);
+  await hydrateOfficialCandidates(failed.candidates, {
+    sources: [pennNews],
+    now: new Date("2026-08-28T13:00:00.000Z"),
+    fetchImpl: async () => {
+      calls += 1;
+      return new Response("", { status: 503 });
+    },
+  });
+  assert.equal(calls, 1, "candidate remains cooled down before its retry timestamp");
+});

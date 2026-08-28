@@ -62,6 +62,9 @@ type RetryCandidateRow = {
   detail_hash: string | null;
   detail_state: OfficialDiscoveryCandidate["detailState"] | null;
   detail_error: string | null;
+  detail_final_url: string | null;
+  detail_attempt_count: number | null;
+  detail_next_attempt_at: string | null;
   event_starts_at: string | null;
   event_ends_at: string | null;
   venue: string | null;
@@ -82,23 +85,32 @@ function snapshotForCandidate(
   ));
 }
 
-export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limit = 24) {
+export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limit = 24, now = new Date()) {
   const rows = await db.prepare(`
     SELECT id, source_id, institution_id, category, region, title, url,
            source_page_url, source_name, trust, product_ids_json, discovered_at,
            instruction_like, detail_title, detail_text, detail_fetched_at,
-           detail_hash, detail_state, detail_error, event_starts_at,
+           detail_hash, detail_state, detail_error, detail_final_url,
+           detail_attempt_count, detail_next_attempt_at, event_starts_at,
            event_ends_at, venue, city
     FROM official_source_candidates
     WHERE content_item_id IS NULL
       AND instruction_like = 0
       AND (
-        detail_state IS NULL OR detail_state IN ('failed', 'blocked')
-        OR relevance_decision IS NULL OR relevance_decision = 'review'
+        detail_state IS NULL
+        OR (
+          detail_state IN ('failed', 'blocked')
+          AND (detail_next_attempt_at IS NULL OR detail_next_attempt_at <= ?)
+        )
+        OR (
+          detail_state = 'success'
+          AND (relevance_decision IS NULL OR relevance_decision = 'review')
+        )
       )
-    ORDER BY last_seen_at ASC, id ASC
+    ORDER BY CASE WHEN detail_state IS NULL THEN 0 ELSE 1 END,
+             COALESCE(detail_next_attempt_at, last_seen_at) ASC, id ASC
     LIMIT ?
-  `).bind(Math.max(1, Math.min(48, Math.trunc(limit) || 24))).all<RetryCandidateRow>();
+  `).bind(now.toISOString(), Math.max(1, Math.min(48, Math.trunc(limit) || 24))).all<RetryCandidateRow>();
   return (rows.results ?? []).map((row) => {
     let productIds: string[] = [];
     try {
@@ -128,6 +140,9 @@ export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limi
       ...(row.detail_hash ? { detailHash: row.detail_hash } : {}),
       ...(row.detail_state ? { detailState: row.detail_state } : {}),
       ...(row.detail_error ? { detailError: row.detail_error } : {}),
+      ...(row.detail_final_url ? { detailFinalUrl: row.detail_final_url } : {}),
+      detailAttemptCount: Number(row.detail_attempt_count ?? 0),
+      ...(row.detail_next_attempt_at ? { detailNextAttemptAt: row.detail_next_attempt_at } : {}),
       ...(row.event_starts_at ? { eventStartsAt: row.event_starts_at } : {}),
       ...(row.event_ends_at ? { eventEndsAt: row.event_ends_at } : {}),
       ...(row.venue ? { venue: row.venue } : {}),
@@ -242,8 +257,10 @@ export async function persistOfficialSourceCandidates(
         last_seen_at, status, instruction_like, relevance_decision, relevance_score,
         relevance_confidence, relevance_reasons_json, relevance_evidence_json,
         content_item_id, detail_title, detail_text, detail_fetched_at, detail_hash,
-        detail_state, detail_error, event_starts_at, event_ends_at, venue, city
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        detail_state, detail_error, detail_final_url, detail_attempt_count,
+        detail_next_attempt_at, relevance_model, relevance_prompt_version,
+        event_starts_at, event_ends_at, venue, city
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(source_id, url) DO UPDATE SET
         snapshot_id = COALESCE(excluded.snapshot_id, official_source_candidates.snapshot_id),
         title = excluded.title,
@@ -261,6 +278,11 @@ export async function persistOfficialSourceCandidates(
         detail_hash = COALESCE(excluded.detail_hash, official_source_candidates.detail_hash),
         detail_state = excluded.detail_state,
         detail_error = excluded.detail_error,
+        detail_final_url = COALESCE(excluded.detail_final_url, official_source_candidates.detail_final_url),
+        detail_attempt_count = excluded.detail_attempt_count,
+        detail_next_attempt_at = excluded.detail_next_attempt_at,
+        relevance_model = COALESCE(excluded.relevance_model, official_source_candidates.relevance_model),
+        relevance_prompt_version = COALESCE(excluded.relevance_prompt_version, official_source_candidates.relevance_prompt_version),
         event_starts_at = COALESCE(excluded.event_starts_at, official_source_candidates.event_starts_at),
         event_ends_at = COALESCE(excluded.event_ends_at, official_source_candidates.event_ends_at),
         venue = COALESCE(excluded.venue, official_source_candidates.venue),
@@ -295,6 +317,11 @@ export async function persistOfficialSourceCandidates(
       candidate.detailHash ?? null,
       candidate.detailState ?? null,
       candidate.detailError ?? null,
+      candidate.detailFinalUrl ?? null,
+      candidate.detailAttemptCount ?? 0,
+      candidate.detailNextAttemptAt ?? null,
+      candidate.relevance ? OFFICIAL_SOURCE_RELEVANCE_MODEL : null,
+      candidate.relevance ? OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION : null,
       candidate.eventStartsAt ?? null,
       candidate.eventEndsAt ?? null,
       candidate.venue ?? null,
@@ -372,7 +399,7 @@ export async function runOfficialSourceStage(
   };
   try {
     const states = await readOfficialSourceSchedule(db);
-    const retryCandidates = await readRetryOfficialSourceCandidates(db);
+    const retryCandidates = await readRetryOfficialSourceCandidates(db, 24, now);
     const apiKey = env.OPENROUTER_API_KEY || env.EDITOR_MODEL_API_KEY;
     const timeoutMs = parseBoundedInt(
       env.EDITOR_MODEL_TIMEOUT_MS,

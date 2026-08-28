@@ -220,6 +220,9 @@ export type OfficialDiscoveryCandidate = {
   detailHash?: string;
   detailState?: "success" | "failed" | "blocked" | "hostile";
   detailError?: string | null;
+  detailFinalUrl?: string;
+  detailAttemptCount?: number;
+  detailNextAttemptAt?: string;
   eventStartsAt?: string;
   eventEndsAt?: string;
   venue?: string;
@@ -656,6 +659,15 @@ function detailCandidateOrder(candidates: readonly OfficialDiscoveryCandidate[])
   return selected;
 }
 
+function detailRetryAt(candidate: OfficialDiscoveryCandidate, now: Date) {
+  const attempt = Math.max(1, (candidate.detailAttemptCount ?? 0) + 1);
+  const base = candidate.detailState === "blocked" ? 24 * 60 * 60 * 1000 : 6 * 60 * 60 * 1000;
+  return new Date(now.getTime() + Math.min(
+    7 * 24 * 60 * 60 * 1000,
+    base * (2 ** Math.min(attempt - 1, 5)),
+  )).toISOString();
+}
+
 export function selectOfficialDetailCandidates(
   candidates: readonly OfficialDiscoveryCandidate[],
   cap = OFFICIAL_SOURCE_DETAIL_CAP,
@@ -687,7 +699,10 @@ export async function hydrateOfficialCandidates(
     OFFICIAL_SOURCE_DETAIL_CAP,
     Math.max(0, Math.trunc(options.cap ?? OFFICIAL_SOURCE_DETAIL_CAP)),
   );
-  const selected = selectOfficialDetailCandidates(candidates, cap);
+  const selected = selectOfficialDetailCandidates(candidates.filter((candidate) => {
+    const next = Date.parse(candidate.detailNextAttemptAt ?? "");
+    return !Number.isFinite(next) || now.getTime() >= next;
+  }), cap);
   const deadlineAt = options.deadlineAt ?? Number.POSITIVE_INFINITY;
   const maxChars = Math.min(
     OFFICIAL_SOURCE_DETAIL_MAX_CHARS,
@@ -715,6 +730,7 @@ export async function hydrateOfficialCandidates(
         allowedRedirectHosts: exactHostAllowlist(candidate.url),
         maxRedirects: OFFICIAL_SOURCE_MAX_REDIRECTS,
         attempts: 1,
+        deadlineAt,
       });
       if (host(response.url) !== host(candidate.url)) {
         throw new UpstreamError("upstream-failed", "Official detail redirect changed host");
@@ -735,6 +751,7 @@ export async function hydrateOfficialCandidates(
         hydrated.set(candidate.id, {
           ...candidate,
           detailFetchedAt: startedAt,
+          detailFinalUrl: response.url,
           detailState: "hostile",
           detailError: instructionLike ? "Detail page contains instruction-like text" : "Detail page returned an access challenge",
           instructionLike: true,
@@ -745,8 +762,11 @@ export async function hydrateOfficialCandidates(
         hydrated.set(candidate.id, {
           ...candidate,
           detailFetchedAt: startedAt,
+          detailFinalUrl: response.url,
           detailState: "failed",
           detailError: "Detail page did not contain enough readable evidence",
+          detailAttemptCount: Math.max(1, (candidate.detailAttemptCount ?? 0) + 1),
+          detailNextAttemptAt: detailRetryAt(candidate, now),
         });
         return;
       }
@@ -757,6 +777,9 @@ export async function hydrateOfficialCandidates(
         detailTitle: normalized.title || candidate.title,
         detailText: normalized.text,
         detailFetchedAt: startedAt,
+        detailFinalUrl: response.url,
+        detailAttemptCount: 0,
+        detailNextAttemptAt: undefined,
         detailHash,
         detailState: "success",
         detailError: null,
@@ -770,6 +793,8 @@ export async function hydrateOfficialCandidates(
         detailFetchedAt: startedAt,
         detailState: error instanceof UpstreamError && error.code === "auth-failed" ? "blocked" : "failed",
         detailError: clipError(error) || "Official detail fetch failed",
+        detailAttemptCount: Math.max(1, (candidate.detailAttemptCount ?? 0) + 1),
+        detailNextAttemptAt: detailRetryAt(candidate, now),
       });
     }
   });
@@ -998,6 +1023,7 @@ async function discoverOne(
       allowedRedirectHosts: officialSourceHostAllowlist(source),
       maxRedirects: officialSourceRegistry.limits.maxRedirects,
       attempts: 1,
+      deadlineAt: options.deadlineAt,
     });
     if (!sourceSupportsResponse(source, response.headers.get("content-type"), response.body)) {
       return empty("blocked", "Unsupported source content type", response.url, "", new TextEncoder().encode(response.body).byteLength);
@@ -1111,7 +1137,9 @@ export async function discoverOfficialSources(options: OfficialDiscoveryOptions 
   if (options.relevanceGate && candidates.length) {
     // Candidates without a successful detail fetch remain provenance-only. A
     // listing label alone is not enough evidence for a model or publication.
-    const relevanceCandidates = candidates.filter((candidate) => candidate.detailState === "success");
+    const relevanceCandidates = candidates
+      .filter((candidate) => candidate.detailState === "success")
+      .sort((left, right) => Date.parse(right.discoveredAt) - Date.parse(left.discoveredAt));
     const gated = await applyOfficialSourceRelevanceGate(relevanceCandidates.slice(0, OFFICIAL_SOURCE_RELEVANCE_CAP), options.relevanceGate, {
       concurrency: options.relevanceConcurrency ?? OFFICIAL_SOURCE_RELEVANCE_CONCURRENCY,
       timeoutMs: options.relevanceTimeoutMs,

@@ -105,6 +105,8 @@ export async function fetchUpstream(options: {
   attempts?: number;
   allowedRedirectHosts?: ReadonlySet<string>;
   maxRedirects?: number;
+  /** Absolute wall-clock deadline shared across attempts and redirect hops. */
+  deadlineAt?: number;
 }): Promise<{ status: number; body: string; url: string; headers: Headers }> {
   const attempts = Math.max(1, options.attempts ?? MAX_UPSTREAM_ATTEMPTS);
   const timeoutMs = options.timeoutMs ?? SOURCE_TIMEOUT_MS;
@@ -115,9 +117,13 @@ export async function fetchUpstream(options: {
       let currentUrl = options.url;
       const redirectLimit = Math.max(0, Math.min(options.maxRedirects ?? 3, 5));
       for (let hop = 0; ; hop += 1) {
+        const remaining = options.deadlineAt === undefined
+          ? timeoutMs
+          : Math.min(timeoutMs, options.deadlineAt - Date.now());
+        if (remaining <= 0) throw new UpstreamError("timed-out", "Upstream deadline exceeded");
         res = await options.fetchImpl(currentUrl, {
           headers: options.headers,
-          signal: AbortSignal.timeout(timeoutMs),
+          signal: AbortSignal.timeout(Math.max(1, remaining)),
           redirect: options.allowedRedirectHosts ? "manual" : "follow",
         });
         if (!options.allowedRedirectHosts || res.status < 300 || res.status >= 400) break;
