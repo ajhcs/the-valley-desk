@@ -117,7 +117,8 @@ import {
   extractEditorJson,
   DEFAULT_EDITOR_BASE_URL,
   DEFAULT_EDITOR_MODEL,
-  EDITOR_OUTPUT_MAX_TOKENS,
+  EDITOR_CLASSIFICATION_MAX_TOKENS,
+  EDITOR_COPY_MAX_TOKENS,
   EDITOR_REASONING_EFFORT,
   MAX_EDITOR_TIMEOUT_MS,
 } from "../src/ingest/editor-model.ts";
@@ -3786,14 +3787,16 @@ test("Muse editor client is provider-configurable and evidence-bound", async () 
     whoYoullMeet: [],
     evidenceSpans: ["Penn deployment evidence is material."],
   };
+  let requestCount = 0;
   const mockFetch = async (input: string | URL | Request, init?: RequestInit) => {
+    requestCount += 1;
     assert.equal(String(input), "https://openrouter.ai/api/v1/chat/completions");
     assert.equal(new Headers(init?.headers).get("http-referer"), publicOrigin());
     assert.equal(new Headers(init?.headers).get("x-title"), "The Valley Desk editor-in-chief");
     const request = JSON.parse(String(init?.body));
     assert.equal(request.model, DEFAULT_EDITOR_MODEL);
     assert.equal(request.response_format.type, "json_object");
-    assert.equal(request.max_tokens, EDITOR_OUTPUT_MAX_TOKENS);
+    assert.equal(request.max_tokens, requestCount === 1 ? EDITOR_CLASSIFICATION_MAX_TOKENS : EDITOR_COPY_MAX_TOKENS);
     assert.equal(request.reasoning.effort, EDITOR_REASONING_EFFORT);
     assert.equal(request.reasoning.max_tokens, undefined);
     assert.equal(request.reasoning.exclude, true);
@@ -4187,7 +4190,7 @@ function validEnrichment(item: ContentItem) {
     impactSentence: "Penn deployment evidence is material.",
     whyAttend: null,
     whoYoullMeet: [],
-    evidenceSpans: [item.title],
+    evidenceSpans: ["Penn deployment evidence is material."],
   });
 }
 
@@ -4333,9 +4336,11 @@ test("Muse JSON is extracted from fences and whitespace without loosening eviden
   assert.throws(() => extractEditorJson("{"), { code: "malformed" });
   assert.throws(() => extractEditorJson('{ "relevanceScore": 98,'), { code: "malformed" });
 
+  let requestCount = 0;
   const fencedFetch = async (_input: string | URL | Request, init?: RequestInit) => {
+    requestCount += 1;
     const request = JSON.parse(String(init?.body));
-    assert.equal(request.max_tokens, EDITOR_OUTPUT_MAX_TOKENS);
+    assert.equal(request.max_tokens, requestCount === 1 ? EDITOR_CLASSIFICATION_MAX_TOKENS : EDITOR_COPY_MAX_TOKENS);
     assert.equal(request.reasoning.effort, EDITOR_REASONING_EFFORT);
     assert.equal(request.reasoning.exclude, true);
     return new Response(JSON.stringify({
