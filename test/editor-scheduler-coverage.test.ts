@@ -11,6 +11,7 @@ import { isHighRiskNews, verifyHighRisk, verifyWithSecondModel } from "../src/in
 import { looksInstructionLike } from "../src/ingest/untrusted-text.ts";
 import { EventItem, NewsItem } from "../src/content/schema.ts";
 import { runAutomation } from "../src/ingest/automation.ts";
+import { persistOfficialSourceCandidates } from "../src/ingest/official-source-automation.ts";
 import { candidateFingerprint, persistEnrichments, persistIngestRun, persistIngestRun as _persist, readReviewBacklog, type D1DatabaseLike, type D1StatementLike } from "../src/ingest/persistence.ts";
 import { readdirSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -43,6 +44,31 @@ function coverageMigrations(database: DatabaseSync) {
     database.exec(readFileSync(join(root, "migrations", name), "utf8"));
   }
 }
+
+test("official candidate persistence executes against the production schema", async () => {
+  const database = new DatabaseSync(":memory:");
+  coverageMigrations(database);
+  const db = coverageD1(database);
+  const persisted = await persistOfficialSourceCandidates(db, [{
+    id: "official-test-candidate",
+    sourceId: "ofs-penn-news",
+    institutionId: "inst-penn",
+    category: "news",
+    region: "PA",
+    title: "Penn publishes an interoperability update",
+    url: "https://pennmedicine.org/news/interoperability-update",
+    sourcePageUrl: "https://pennmedicine.org/news",
+    sourceName: "Penn Medicine News",
+    trust: "first-party",
+    productIds: [],
+    discoveredAt: "2026-08-28T03:15:00.000Z",
+    status: "review",
+    instructionLike: false,
+    detailAttemptCount: 0,
+  }], [], new Set());
+  assert.equal(persisted, 1);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM official_source_candidates").get()?.count, 1);
+});
 
 const base = {
   dek: "Dek",

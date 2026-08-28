@@ -260,7 +260,7 @@ export async function persistOfficialSourceCandidates(
         detail_state, detail_error, detail_final_url, detail_attempt_count,
         detail_next_attempt_at, relevance_model, relevance_prompt_version,
         event_starts_at, event_ends_at, venue, city
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(source_id, url) DO UPDATE SET
         snapshot_id = COALESCE(excluded.snapshot_id, official_source_candidates.snapshot_id),
         title = excluded.title,
