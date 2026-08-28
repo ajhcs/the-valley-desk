@@ -563,6 +563,10 @@ export async function runAutomation(
     });
     const verificationEligibleCandidates = verificationCandidates.filter(({ item, enrichment }) => (
       !verifications.has(item.id)
+      && enrichment.decision === "priority_review"
+      && enrichment.relevanceScore >= 94
+      && enrichment.confidence >= 0.94
+      && Boolean(enrichment.impactSentence?.trim())
       && isHighRiskNews(verificationInputForCandidate(item, enrichment))
     ));
     const fingerprintById = new Map(fingerprinted.map((row) => [row.item.id, row.fingerprint]));

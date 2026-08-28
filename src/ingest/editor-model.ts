@@ -10,7 +10,7 @@ import { ClaimLedger, validateClaimLedger } from "./claim-ledger";
 
 export const DEFAULT_EDITOR_MODEL = "meta/muse-spark-1.2-contributor";
 export const DEFAULT_EDITOR_BASE_URL = "https://openrouter.ai/api/v1";
-export const EDITOR_PROMPT_VERSION = "tvd-editor-v11";
+export const EDITOR_PROMPT_VERSION = "tvd-editor-v12";
 export const DEFAULT_EDITOR_TIMEOUT_MS = 45_000;
 export const EDITOR_OUTPUT_MAX_TOKENS = 4096;
 export const EDITOR_CLASSIFICATION_MAX_TOKENS = 4_096;
@@ -542,8 +542,16 @@ export async function enrichWithEditorModel(
     fetchImpl,
     { maxTokens: EDITOR_CLASSIFICATION_MAX_TOKENS, responseFormat: CLASSIFICATION_RESPONSE_FORMAT },
   );
-  const classification = parseEditorClassification(classificationJson);
-  validateClassification(classification, item, products, evidenceHaystack, context);
+  const parsedClassification = parseEditorClassification(classificationJson);
+  validateClassification(parsedClassification, item, products, evidenceHaystack, context);
+  // The title is a trusted field of the current source record and the
+  // verifier requires it as literal headline evidence. Keep it out of the
+  // copy prompt so it cannot become duplicative body copy, then add it to the
+  // final verifier record deterministically.
+  const titleEvidence = item.title.length <= 280 && !looksInstructionLike(item.title)
+    ? [item.title]
+    : [];
+  const classification = parsedClassification;
 
   // Low-confidence and held candidates need no prose pass. This materially
   // lowers model traffic while ensuring every candidate that could publish has
@@ -583,7 +591,14 @@ export async function enrichWithEditorModel(
   }
 
   try {
-    return EditorEnrichment.parse({ ...classification, ...copy });
+    const evidenceSpans = [
+      ...new Set([
+        ...titleEvidence,
+        ...(copy.impactSentence ? [copy.impactSentence] : []),
+        ...classification.evidenceSpans,
+      ]),
+    ].slice(0, 6);
+    return EditorEnrichment.parse({ ...classification, ...copy, evidenceSpans });
   } catch (error) {
     throw new EditorModelError("validation", "Editor model returned an unassemblable enrichment", { cause: error });
   }

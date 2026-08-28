@@ -60,6 +60,7 @@ test("two-pass editor assembles classification and literal copy into the stable 
   assert.equal(calls.every((request) => request.model === DEFAULT_EDITOR_MODEL), true);
   assert.equal(result?.decision, "priority_review");
   assert.equal(result?.affectedOrgIds[0], "org-penn");
+  assert.equal(result?.evidenceSpans.includes(item().title), true);
   assert.equal(result?.impactSentence, "Penn launches a new deployment for regional clinicians.");
   assert.equal(result?.body, "Penn launches a new deployment for regional clinicians.");
 });
@@ -76,7 +77,7 @@ test("missing model fields become a conservative hold instead of publishable evi
   assert.equal(result?.confidence, 0);
   assert.deepEqual(result?.affectedOrgIds, []);
   assert.equal(result?.impactSentence, null);
-  assert.deepEqual(result?.evidenceSpans, []);
+  assert.deepEqual(result?.evidenceSpans, [item().title]);
 });
 
 test("a missing writing pass fails instead of poisoning the reusable cache", async () => {
