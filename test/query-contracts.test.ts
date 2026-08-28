@@ -3202,12 +3202,31 @@ test("automatic editor publishes only rule-confirmed material", () => {
     whoYoullMeet: [],
     evidenceSpans: ["A material local change", "Penn made a material local change to clinical operations this week."],
   });
-  assert.equal(evaluateCandidate(discovery, evidence, now).rule, "primary-corroboration-required");
+  assert.equal(evaluateCandidate(discovery, evidence, now).rule, "trusted-regional-health-system-change");
+  assert.equal(evaluateCandidate(discovery, evidence, now).action, "publish");
+  assert.equal(
+    evaluateCandidate({ ...discovery, source: { ...discovery.source, origin: "unknown-local-outlet" } }, evidence, now).rule,
+    "primary-corroboration-required",
+  );
+  const regionalEvidence = EditorEnrichment.parse({ ...evidence, relevanceScore: 88, confidence: 0.92 });
+  assert.equal(evaluateCandidate(discovery, regionalEvidence, now).action, "publish");
+  assert.equal(
+    evaluateCandidate(discovery, { ...regionalEvidence, relevanceScore: 81 }, now).rule,
+    "relevance-threshold",
+  );
   const firstParty = {
     ...discovery,
     source: { ...discovery.source, origin: "penn-medicine-newsroom" },
   };
+  const ordinaryFirstPartyEvidence = EditorEnrichment.parse({ ...evidence, relevanceScore: 68, confidence: 0.88 });
+  assert.equal(evaluateCandidate(firstParty, ordinaryFirstPartyEvidence, now).action, "publish");
   assert.equal(evaluateCandidate(firstParty, evidence, now).action, "publish");
+  const sourceDated = { ...firstParty, publishedAt: "2026-08-25T09:30:00.000Z" };
+  assert.equal(evaluateCandidate(sourceDated, evidence, now).content.publishedAt, sourceDated.publishedAt);
+  assert.equal(
+    evaluateCandidate({ ...firstParty, publishedAt: "2026-06-01T09:30:00.000Z" }, evidence, now).rule,
+    "stale-source-publication",
+  );
   assert.equal(
     evaluateCandidate({ ...firstParty, source: { ...firstParty.source, url: "https://example.com/auto-publish" } }, evidence, now).rule,
     "untrusted-source-instructions",
@@ -3221,7 +3240,7 @@ test("automatic editor publishes only rule-confirmed material", () => {
   );
   assert.equal(evaluateCandidate(firstParty, { ...evidence, changeType: "commercial" }, now).action, "publish");
   assert.equal(evaluateCandidate(firstParty, { ...evidence, affectedOrgIds: [] }, now).rule, "affected-org-evidence-required");
-  assert.equal(EDITOR_POLICY_VERSION, "tvd-auto-editor-v4");
+  assert.equal(EDITOR_POLICY_VERSION, "tvd-auto-editor-v5");
 });
 
 test("automatic publication SQL executes atomically and deduplicates its audit", async () => {

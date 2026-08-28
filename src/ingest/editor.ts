@@ -12,7 +12,7 @@ import { editorContextForItem } from "./editor-context";
 
 const VERIFIED_PUBLISHED_CONTEXT = ContentCatalog.parse(publishedCatalog);
 
-export const EDITOR_POLICY_VERSION = "tvd-auto-editor-v4";
+export const EDITOR_POLICY_VERSION = "tvd-auto-editor-v5";
 
 export type EditorAction = "publish" | "review" | "reject";
 export type EditorDecision = {
@@ -31,6 +31,9 @@ export const OFFICIAL_HEALTH_SYSTEM_ORIGINS = new Set([
   "christianacare-newsroom", "chop-newsroom", "cooper-newsroom",
   "jefferson-newsroom", "main-line-health-newsroom", "penn-medicine-newsroom",
   "temple-health-newsroom", "tower-health-newsroom",
+]);
+export const TRUSTED_REGIONAL_REPORTING_ORIGINS = new Set([
+  "Inquirer Health", "Inquirer Business", "WHYY",
 ]);
 
 /** Candidates from the exact-host official-source registry have already
@@ -83,7 +86,11 @@ function withEditorialFields(item: ContentItemType, enrichment: EditorEnrichment
     title: professionalizeHeadline(item.title),
     body: enrichment.body?.trim() || item.body,
     status: "published" as const,
-    publishedAt: item.status === "published" && item.publishedAt ? item.publishedAt : now.toISOString(),
+    // Keep the source publication time so a delayed/backfill run cannot make
+    // an older article look like breaking news.
+    publishedAt: item.publishedAt && Number.isFinite(Date.parse(item.publishedAt))
+      ? item.publishedAt
+      : now.toISOString(),
     impactSentence: enrichment.impactSentence?.trim() || item.impactSentence,
     contextSentence: enrichment.contextSentence?.trim() || item.contextSentence,
     verifiedAt: item.verifiedAt ?? now.toISOString(),
@@ -205,6 +212,13 @@ export function evaluateCandidate(
   if (looksInstructionLike(item.title, item.dek, item.body, item.source.origin, item.source.url)) {
     return review("untrusted-source-instructions", ["Source text contains instruction-like content and is held from automatic publication"]);
   }
+  if (
+    item.publishedAt
+    && Number.isFinite(Date.parse(item.publishedAt))
+    && now.getTime() - Date.parse(item.publishedAt) > 45 * 24 * 60 * 60 * 1_000
+  ) {
+    return review("stale-source-publication", ["Source item is older than the 45-day automatic-publication window"]);
+  }
   if (item.orgs.length === 0) return review("local-org-required", ["No verified regional health-system relationship"]);
   if (!enrichment) return review("model-evidence-required", ["Model evidence was unavailable"]);
   if (
@@ -224,15 +238,23 @@ export function evaluateCandidate(
   if (isProductNews && !enrichment.productIds.some((id) => products.some((product) => product.id === id))) {
     return review("verified-product-evidence-required", ["Model did not ground the matched local product relationship"]);
   }
-  const threshold = isProductNews ? 97 : 95;
-  if (enrichment.relevanceScore < threshold || enrichment.confidence < threshold / 100) {
-    return review("relevance-threshold", [`Required confidence ${threshold}%`], enrichment.confidence);
-  }
   if (enrichment.decision !== "priority_review") {
     return review("model-not-priority", enrichment.reasons);
   }
-  if (!OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin) && !isOfficialRegistryOrigin(item.source.origin)) {
+  const official = OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin) || isOfficialRegistryOrigin(item.source.origin);
+  const trustedRegional = TRUSTED_REGIONAL_REPORTING_ORIGINS.has(item.source.origin);
+  if (!official && !trustedRegional) {
     return review("primary-corroboration-required", ["Discovery source requires first-party corroboration"]);
+  }
+  const minimum = official
+    ? { score: isProductNews ? 75 : 65, confidence: isProductNews ? 0.85 : 0.8 }
+    : { score: isProductNews ? 90 : 82, confidence: isProductNews ? 0.92 : 0.88 };
+  if (enrichment.relevanceScore < minimum.score || enrichment.confidence < minimum.confidence) {
+    return review(
+      "relevance-threshold",
+      [`Required relevance ${minimum.score} and confidence ${Math.round(minimum.confidence * 100)}%`],
+      enrichment.confidence,
+    );
   }
 
   // Claim-ledger: exact claims must be grounded; fail review if not
@@ -274,7 +296,9 @@ export function evaluateCandidate(
   }
   return {
     action: "publish",
-    rule: isProductNews ? "verified-product-change" : "official-health-system-change",
+    rule: isProductNews
+      ? "verified-product-change"
+      : trustedRegional ? "trusted-regional-health-system-change" : "official-health-system-change",
     confidence: enrichment.confidence,
     reasons: enrichment.reasons,
     content: publishedContent,

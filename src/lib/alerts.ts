@@ -180,7 +180,10 @@ export async function recordOperationalAlert(
       event = excluded.event,
       severity = excluded.severity,
       state = 'open',
-      occurrence_count = operational_alerts.occurrence_count + 1,
+      occurrence_count = CASE
+        WHEN operational_alerts.state = 'resolved' THEN 1
+        ELSE operational_alerts.occurrence_count + 1
+      END,
       last_seen_at = excluded.last_seen_at,
       detail_json = excluded.detail_json,
       next_notify_at = CASE

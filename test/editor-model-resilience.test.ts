@@ -65,6 +65,33 @@ test("two-pass editor assembles classification and literal copy into the stable 
   assert.equal(result?.body, "Penn launches a new deployment for regional clinicians.");
 });
 
+test("ordinary but relevant first-party news receives the evidence-writing pass", async () => {
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls += 1;
+    return response(calls === 1
+      ? {
+        relevanceScore: 68,
+        confidence: 0.88,
+        decision: "priority_review",
+        reasons: ["Covered system deployment"],
+        affectedOrgIds: ["org-penn"],
+        productIds: [],
+        changeType: "deployment",
+        materialityDimensions: ["deployment"],
+        evidenceSpans: ["Penn launches a new deployment for regional clinicians."],
+      }
+      : {
+        impactSentence: "Penn launches a new deployment for regional clinicians.",
+        body: "Penn launches a new deployment for regional clinicians.",
+        bodyEvidenceSpans: ["Penn launches a new deployment for regional clinicians."],
+      });
+  };
+  const result = await enrichWithEditorModel(item(), [], { apiKey: "test" }, fetchImpl as typeof fetch);
+  assert.equal(calls, 2);
+  assert.equal(result?.impactSentence, "Penn launches a new deployment for regional clinicians.");
+});
+
 test("missing model fields become a conservative hold instead of publishable evidence", async () => {
   const result = await enrichWithEditorModel(
     item(),

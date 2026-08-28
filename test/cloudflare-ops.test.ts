@@ -927,13 +927,22 @@ test("operational alerts require durable consecutive recovery and reopen cleanly
     fingerprint,
     event: "source-degraded",
     severity: "warning",
-    threshold: 1,
+    threshold: 2,
     now: new Date("2026-08-28T03:00:00.000Z"),
   });
-  assert.equal(reopened.outcome, "sent");
+  assert.equal(reopened.outcome, "deduped");
+  assert.equal(reopened.row.occurrence_count, 1, "a reopened alert starts a fresh consecutive-failure streak");
+  const resent = await dispatchOperationalAlert(db, binding, {
+    fingerprint,
+    event: "source-degraded",
+    severity: "warning",
+    threshold: 2,
+    now: new Date("2026-08-28T04:00:00.000Z"),
+  });
+  assert.equal(resent.outcome, "sent");
   assert.equal(sent.length, 2);
-  const row = database.prepare("SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = ?").get(fingerprint) as { state: string; recovery_count: number };
-  assert.deepEqual({ ...row }, { state: "open", recovery_count: 0 });
+  const row = database.prepare("SELECT state, recovery_count, occurrence_count FROM operational_alerts WHERE fingerprint = ?").get(fingerprint) as { state: string; recovery_count: number; occurrence_count: number };
+  assert.deepEqual({ ...row }, { state: "open", recovery_count: 0, occurrence_count: 2 });
   database.close();
 });
 
@@ -984,6 +993,34 @@ test("automation alerts cover leadership/model failures and stable source finger
   await sendAutomationAlerts(env, healthy, new Date("2026-08-28T08:00:00.000Z"));
   const resolved = database.prepare("SELECT COUNT(*) AS count FROM operational_alerts WHERE state = 'resolved'").get() as { count: number };
   assert.equal(resolved.count, 3);
+  database.close();
+});
+
+test("intentional source gaps and evidence-validation rejections do not generate failure mail", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const binding = {
+    async send(message: { subject: string }) {
+      sent.push(message.subject);
+      return { messageId: `message-${sent.length}` };
+    },
+  };
+  const env = { VALLEY_DESK_DB: db, NOTIFY_OPS: binding };
+  await sendAutomationAlerts(env, {
+    notes: { sources: [{ id: "linkedin-person", state: "misconfigured", consecutiveFailures: 99 }] },
+    modelSelectedCount: 1,
+    modelFailedCount: 1,
+    modelValidationRejectedCount: 1,
+    modelOperationalFailedCount: 0,
+    modelSucceededCount: 0,
+  }, new Date("2026-08-28T10:00:00.000Z"));
+  assert.deepEqual(sent, []);
+  assert.equal(
+    database.prepare("SELECT COUNT(*) AS count FROM operational_alerts WHERE state = 'open'").get().count,
+    0,
+  );
   database.close();
 });
 

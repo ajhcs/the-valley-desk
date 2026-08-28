@@ -209,6 +209,34 @@ test("relevance gate receives the exact Muse model hook and cannot change review
   assert.equal(gated[0]?.relevance?.decision, "accept");
 });
 
+test("ordinary material official developments can enter the downstream editor", () => {
+  const candidate: OfficialDiscoveryCandidate = {
+    id: "official-routine-material-change",
+    sourceId: pennNews.id,
+    institutionId: "inst-penn",
+    category: "news",
+    region: "PA",
+    title: "Penn opens a new outpatient service",
+    url: "https://pennmedicine.org/news/outpatient-service",
+    sourcePageUrl: pennNews.url,
+    sourceName: pennNews.name,
+    trust: pennNews.trust,
+    discoveredAt: "2026-08-28T12:00:00.000Z",
+    status: "review",
+    instructionLike: false,
+    detailState: "success",
+    detailText: "Penn opens a new outpatient service in the Delaware Valley.",
+    relevance: {
+      decision: "accept",
+      relevanceScore: 68,
+      confidence: 0.88,
+      reasons: ["Covered health-system service change"],
+      evidenceSpans: ["Penn opens a new outpatient service"],
+    },
+  };
+  assert.equal(canProceedOfficialCandidate(candidate, { requireEvidence: true }), true);
+});
+
 test("product/vendor relevance carries verified local-use context and remains review-only", async () => {
   const epic = officialSourceRegistry.sources.find((source) => source.id === "ofs-epic-newsroom")!;
   const [candidate] = await discoverOfficialSources({

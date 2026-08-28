@@ -221,7 +221,10 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     if (!source) continue;
     const sourceId = typeof source.id === "string" ? source.id.slice(0, 100) : "unknown";
     const fingerprint = `valley-desk:source:${sourceId}`;
-    if (source.state === "disabled") continue;
+    if (source.state === "disabled" || source.state === "misconfigured") {
+      await recover(fingerprint, 1);
+      continue;
+    }
     if (source.state === "healthy" || source.state === "healthy-empty") {
       await recover(fingerprint, 2);
       continue;
@@ -257,7 +260,8 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   }
 
   const selected = Number(result?.modelSelectedCount ?? 0);
-  const modelFailed = Number(result?.modelFailedCount ?? 0);
+  const modelFailed = Number(result?.modelOperationalFailedCount ?? result?.modelFailedCount ?? 0);
+  const validationRejected = Number(result?.modelValidationRejectedCount ?? 0);
   if (selected > 0 && modelFailed > 0) {
     await dispatch({
       fingerprint: "valley-desk:model-enrichment",
@@ -269,9 +273,10 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
         selected,
         failed: modelFailed,
         succeeded: Number(result?.modelSucceededCount ?? 0),
+        validationRejected,
       },
     });
-  } else if (selected > 0) {
+  } else {
     await recover("valley-desk:model-enrichment", 2);
   }
 

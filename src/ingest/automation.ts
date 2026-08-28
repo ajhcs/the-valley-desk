@@ -4,6 +4,8 @@ import {
   DEFAULT_EDITOR_BASE_URL,
   DEFAULT_EDITOR_MODEL,
   DEFAULT_EDITOR_TIMEOUT_MS,
+  EDITOR_COPY_MIN_CONFIDENCE,
+  EDITOR_COPY_MIN_RELEVANCE,
   MAX_EDITOR_TIMEOUT_MS,
   EditorModelError,
   enrichWithEditorModel,
@@ -564,8 +566,8 @@ export async function runAutomation(
     const verificationEligibleCandidates = verificationCandidates.filter(({ item, enrichment }) => (
       !verifications.has(item.id)
       && enrichment.decision === "priority_review"
-      && enrichment.relevanceScore >= 94
-      && enrichment.confidence >= 0.94
+      && enrichment.relevanceScore >= EDITOR_COPY_MIN_RELEVANCE
+      && enrichment.confidence >= EDITOR_COPY_MIN_CONFIDENCE
       && Boolean(enrichment.impactSentence?.trim())
       && isHighRiskNews(verificationInputForCandidate(item, enrichment))
     ));
@@ -633,6 +635,10 @@ export async function runAutomation(
     const modelAttemptedCount = modeled.filter((row) => row.attempt).length;
     const modelSucceededCount = modeled.filter((row) => row.attempt?.outcome === "success").length;
     const modelFailedCount = modeled.filter((row) => row.attempt?.outcome === "failure").length;
+    const modelValidationRejectedCount = modeled.filter((row) => (
+      row.attempt?.outcome === "failure" && row.attempt.error?.startsWith("validation:")
+    )).length;
+    const modelOperationalFailedCount = modelFailedCount - modelValidationRejectedCount;
     const sources = (run.notes.sources ?? []).map((source) => ({
       id: source.id,
       origin: source.origin,
@@ -642,7 +648,7 @@ export async function runAutomation(
       complete: source.complete,
     }));
     const sourceErrorCount = sources.filter(
-      (source) => source.state !== "disabled" && !isSuccessfulSourceState(source.state),
+      (source) => !["disabled", "misconfigured"].includes(source.state) && !isSuccessfulSourceState(source.state),
     ).length;
     logOps("run", {
       outcome: "succeeded",
@@ -671,13 +677,17 @@ export async function runAutomation(
       ...(newsMetrics ?? {}),
     });
     logOps("model", {
-      outcome: modelFailedCount && !modelSucceededCount ? "failed" : modelFailedCount ? "degraded" : "ok",
+      outcome: modelOperationalFailedCount && !modelSucceededCount
+        ? "failed"
+        : modelOperationalFailedCount ? "degraded" : "ok",
       runId: persisted.runId,
       budget,
       selected: selected.length,
       attempted: modelAttemptedCount,
       succeeded: modelSucceededCount,
       failed: modelFailedCount,
+      validationRejected: modelValidationRejectedCount,
+      operationalFailed: modelOperationalFailedCount,
       reused: reusable.size,
       verifierAttempted: verificationRun.attempted,
       verifierFailed: verificationRun.failed,
@@ -721,6 +731,8 @@ export async function runAutomation(
       modelAttemptedCount,
       modelSucceededCount,
       modelFailedCount,
+      modelValidationRejectedCount,
+      modelOperationalFailedCount,
       verifierAttemptedCount: verificationRun.attempted,
       verifierFailedCount: verificationRun.failed,
       verifierApprovedCount: verificationRun.approved,
