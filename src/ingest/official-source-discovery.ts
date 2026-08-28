@@ -1237,7 +1237,7 @@ export function contentItemFromOfficialCandidate(
   const citations = [{ name: candidate.sourceName, url: candidate.url }];
   try {
     if (kind === "event") {
-      const startsAt = eventStartsAtFromTitle(candidate.title);
+      const startsAt = candidate.eventStartsAt ?? eventStartsAtFromTitle(candidate.title);
       if (!startsAt) return undefined;
       return withCanonicalSource(EventItem.parse({
         id: candidate.id,
@@ -1254,7 +1254,7 @@ export function contentItemFromOfficialCandidate(
         authors: [],
         source,
         citations,
-        startsAt: candidate.eventStartsAt ?? startsAt,
+        startsAt,
         ...(candidate.eventEndsAt ? { endsAt: candidate.eventEndsAt } : {}),
         timezone: EVENT_TIMEZONE,
         hostOrg: candidate.sourceName,

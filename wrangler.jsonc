@@ -1,5 +1,6 @@
 {
   "name": "the-valley-desk",
+  "account_id": "1e5f92087e779df50f3f3546a0eed22e",
   "compatibility_date": "2026-08-26",
   "compatibility_flags": ["nodejs_compat"],
   "main": "worker.js",

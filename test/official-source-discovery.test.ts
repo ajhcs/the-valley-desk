@@ -303,6 +303,39 @@ test("detail hydration supplies normalized evidence before relevance and convers
   assert.match(item?.body ?? "", /documented workflow/);
 });
 
+test("event conversion uses a structured detail-page date when the title omits it", () => {
+  const event: OfficialDiscoveryCandidate = {
+    id: "official-ofs-penn-events-structured-date",
+    sourceId: pennEvents.id,
+    institutionId: "inst-penn",
+    category: "events",
+    region: "PA",
+    title: "Penn Medicine interoperability forum",
+    url: "https://events.pennmedicine.org/interoperability-forum",
+    sourcePageUrl: pennEvents.url,
+    sourceName: pennEvents.name,
+    trust: pennEvents.trust,
+    discoveredAt: "2026-08-28T12:00:00.000Z",
+    status: "review",
+    instructionLike: false,
+    detailState: "success",
+    detailTitle: "Penn Medicine interoperability forum",
+    detailText: "Penn Medicine will host an interoperability forum for regional health leaders.",
+    eventStartsAt: "2026-09-18T00:00:00.000Z",
+    relevance: {
+      decision: "accept",
+      relevanceScore: 98,
+      confidence: 0.98,
+      reasons: ["Official regional event"],
+      evidenceSpans: ["Penn Medicine will host an interoperability forum"],
+    },
+  };
+  const [item] = contentItemsFromOfficialCandidates([event]);
+  assert.equal(item?.kind, "event");
+  assert.equal(item?.status, "review");
+  assert.equal(item?.startsAt, event.eventStartsAt);
+});
+
 test("detail redirects stay on the exact candidate host and cannot become open fetches", async () => {
   const candidate: OfficialDiscoveryCandidate = {
     id: "official-detail-redirect",
