@@ -28,7 +28,7 @@ export const DEFAULT_EDITOR_MODEL_CONCURRENCY = 2;
 export const DEFAULT_EDITOR_MODEL_DEADLINE_MS = 110_000;
 export const DEFAULT_FAILURE_COOLDOWN_HOURS = 6;
 export const MAX_FAILURE_COOLDOWN_HOURS = 24 * 7;
-export const MAX_EDITOR_MODEL_BUDGET = 20;
+export const MAX_EDITOR_MODEL_BUDGET = MAX_EDITOR_LANE_TOTAL_BUDGET;
 export const MAX_EDITOR_MODEL_CONCURRENCY = 4;
 
 export type EditorModelState = {
@@ -211,7 +211,7 @@ export function selectEditorModelWorkWithLanes(
     const selected = selectEditorModelWorkWithMetrics(
       laneItems,
       records,
-      budgets[lane],
+      totalBudget,
       now,
       options.reusableIds,
     );
@@ -230,10 +230,13 @@ export function selectEditorModelWorkWithLanes(
   const selectedByLane = {} as Record<EditorLane, ContentItem[]>;
   for (const lane of EDITOR_LANE_ORDER) selectedByLane[lane] = [];
   const selected: ContentItem[] = [];
+  // Phase one reserves each specialist's configured quota. Round-robin keeps
+  // every non-empty lane moving before a busy lane receives another slot.
   let round = 0;
   while (selected.length < totalBudget) {
     let added = false;
     for (const lane of EDITOR_LANE_ORDER) {
+      if (round >= budgets[lane]) continue;
       const candidate = pools[lane][round];
       if (!candidate) continue;
       selected.push(candidate);
@@ -243,6 +246,23 @@ export function selectEditorModelWorkWithLanes(
     }
     if (!added) break;
     round += 1;
+  }
+
+  // Phase two lends unused reservations to lanes that still have eligible
+  // work. This lets an all-News cycle consume the complete global budget
+  // without allowing News to starve policy, finance, events, or other desks
+  // when those specialists have candidates waiting.
+  while (selected.length < totalBudget) {
+    let added = false;
+    for (const lane of EDITOR_LANE_ORDER) {
+      const candidate = pools[lane][selectedByLane[lane].length];
+      if (!candidate) continue;
+      selected.push(candidate);
+      selectedByLane[lane].push(candidate);
+      added = true;
+      if (selected.length >= totalBudget) break;
+    }
+    if (!added) break;
   }
 
   for (const lane of EDITOR_LANE_ORDER) {

@@ -152,6 +152,40 @@ test("each nonempty lane gets an initial slot before unused quota is redistribut
   );
 });
 
+test("an active specialist borrows every unused slot without losing its reserved capacity", () => {
+  const candidates = Array.from({ length: 40 }, (_, index) => news(`news-${index}`));
+  const result = selectEditorModelWorkWithLanes(rows(candidates), new Map(), {
+    laneBudgets: { news: 12 },
+    totalBudget: 32,
+    now: new Date("2026-08-28T10:00:00.000Z"),
+  });
+  assert.equal(result.items.length, 32);
+  assert.equal(result.selectedByLane.news.length, 32);
+  assert.equal(result.metricsByLane.news.selectedCount, 32);
+  assert.equal(new Set(result.items.map((item) => item.id)).size, 32);
+});
+
+test("specialists receive reserved work before a busy news lane borrows the remainder", () => {
+  const candidates = [
+    ...Array.from({ length: 12 }, (_, index) => news(`news-${index}`)),
+    policy("policy-0"),
+    event("event-0"),
+  ];
+  const result = selectEditorModelWorkWithLanes(rows(candidates), new Map(), {
+    laneBudgets: { news: 2, policy: 1, events: 1 },
+    totalBudget: 8,
+    now: new Date("2026-08-28T10:00:00.000Z"),
+  });
+  assert.equal(result.items.length, 8);
+  assert.equal(result.selectedByLane.policy.length, 1);
+  assert.equal(result.selectedByLane.events.length, 1);
+  assert.equal(result.selectedByLane.news.length, 6);
+  assert.deepEqual(
+    result.items.slice(0, 3).map((item) => editorLaneForItem(item)),
+    ["news", "policy", "events"],
+  );
+});
+
 test("hard total cap is enforced even when lane quotas sum higher", () => {
   const candidates = [news("news-0"), news("news-1"), policy("policy-0"), event("event-0")];
   const result = selectEditorModelWorkWithLanes(rows(candidates), new Map(), {
