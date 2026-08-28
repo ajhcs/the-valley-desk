@@ -10,12 +10,12 @@ import { ClaimLedger, validateClaimLedger } from "./claim-ledger";
 
 export const DEFAULT_EDITOR_MODEL = "meta/muse-spark-1.2-contributor";
 export const DEFAULT_EDITOR_BASE_URL = "https://openrouter.ai/api/v1";
-export const EDITOR_PROMPT_VERSION = "tvd-editor-v9";
+export const EDITOR_PROMPT_VERSION = "tvd-editor-v10";
 export const DEFAULT_EDITOR_TIMEOUT_MS = 45_000;
 export const EDITOR_OUTPUT_MAX_TOKENS = 4096;
-export const EDITOR_CLASSIFICATION_MAX_TOKENS = 900;
-export const EDITOR_COPY_MAX_TOKENS = 1_400;
-export const EDITOR_REASONING_EFFORT = "low";
+export const EDITOR_CLASSIFICATION_MAX_TOKENS = 4_096;
+export const EDITOR_COPY_MAX_TOKENS = 4_096;
+export const EDITOR_REASONING_EFFORT = "minimal";
 export const MAX_EDITOR_TIMEOUT_MS = 120_000;
 
 const VERIFIED_PUBLISHED_CONTEXT = ContentCatalog.parse(publishedCatalog);
@@ -301,7 +301,12 @@ export async function completeEditorJson(
   } catch (error) {
     throw new EditorModelError("malformed", "Editor model returned malformed JSON", { cause: error });
   }
-  const raw = messageContent(payload.choices?.[0]?.message?.content);
+  const choice = payload.choices?.[0];
+  const raw = messageContent(choice?.message?.content);
+  if (!raw?.trim()) {
+    const finishReason = choice?.finish_reason ? ` (finish_reason: ${choice.finish_reason})` : "";
+    throw new EditorModelError("no_content", `Editor model returned no content${finishReason}`);
+  }
   try {
     return extractEditorJson(raw);
   } catch (error) {
