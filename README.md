@@ -22,7 +22,7 @@ Untrusted email and LinkedIn notifications are pointers only. The hourly signal-
 
 Approved content is written to `published_content`. The Worker merges that D1 overlay into the bundled signed catalog for HTML, dynamic permalinks, `/feed.json`, `/api/content`, `/feed.xml`, and `/sitemap.xml`. If D1 is unavailable, the bundled catalog remains a complete fallback. Automated rows cannot replace editorial rows or set the featured lead.
 
-Product news is admitted to model review only when `fixtures/product-watch.json` verifies that a named regional health system uses the mentioned product. Generic vendor marketing and unverified local-use claims stay out.
+Product news is admitted to model review only when `fixtures/product-watch.json` verifies that a named regional health system uses the mentioned product. Generic vendor marketing and unverified local-use claims stay out. The official-source discovery lane also watches three verified product/vendor channels (Epic and Microsoft) and three exact, institution-scoped procurement pages (Penn, CHOP, and Cooper). Product/vendor candidates carry a trusted mapped-product relationship; procurement candidates must additionally name a mapped product for the covered institution. Both categories require an accepted Muse regional/materiality result before entering the normal evidence editor and second-pass verifier, and remain review-only until those downstream gates pass.
 
 Public URL generation uses `PUBLIC_ORIGIN=https://thevalleydesk.org`. The same Worker remains available on its workers.dev hostname for operational fallback; `www.thevalleydesk.org` redirects to the apex. See `docs/OPERATIONS.md`.
 

@@ -7,7 +7,7 @@
     "Every URL in this registry was verified as an official source during the 2026-08-28 source review.",
     "HTML discovery is bounded and review-only. It never publishes a discovered link directly.",
     "Partial listings never authorize disappearance or deletion of previously observed content.",
-    "The registry intentionally leaves procurement pages unconfigured until an exact official URL is verified.",
+    "Product/vendor channels are tied only to verified local-use product rows; exact procurement pages are registered only for Penn, CHOP, and Cooper after URL verification.",
     "LinkedIn is outside this registry and remains notification inventory only."
   ],
   "limits": {
@@ -354,6 +354,87 @@
       "institutionId": "inst-st-lukes",
       "region": "PA",
       "url": "https://go.activecalendar.com/sluhn/",
+      "cadence": "daily",
+      "completeness": "partial",
+      "trust": "first-party",
+      "status": "enabled"
+    },
+    {
+      "id": "ofs-epic-newsroom",
+      "name": "Epic newsroom",
+      "category": "product",
+      "productIds": [
+        "epic-ehr-christianacare",
+        "epic-mychart-jefferson"
+      ],
+      "region": "regional",
+      "url": "https://www.epic.com/epic/newsroom/",
+      "cadence": "hourly",
+      "completeness": "partial",
+      "trust": "first-party",
+      "status": "enabled"
+    },
+    {
+      "id": "ofs-microsoft-healthcare-blog",
+      "name": "Microsoft Healthcare and Life Sciences Blog",
+      "category": "product",
+      "productIds": [
+        "microsoft-dragon-copilot-temple",
+        "microsoft-dax-copilot-penn"
+      ],
+      "region": "regional",
+      "url": "https://techcommunity.microsoft.com/category/healthcareandlifesciences/blog/healthcareandlifesciencesblog",
+      "cadence": "hourly",
+      "completeness": "partial",
+      "trust": "first-party",
+      "status": "enabled"
+    },
+    {
+      "id": "ofs-microsoft-cloud-healthcare",
+      "name": "Microsoft Cloud Blog healthcare",
+      "category": "product",
+      "productIds": [
+        "microsoft-dragon-copilot-temple",
+        "microsoft-dax-copilot-penn"
+      ],
+      "region": "regional",
+      "url": "https://www.microsoft.com/en-us/industry/blog/healthcare/",
+      "cadence": "hourly",
+      "completeness": "partial",
+      "trust": "first-party",
+      "status": "enabled"
+    },
+    {
+      "id": "ofs-penn-procurement",
+      "name": "Penn Procurement Services",
+      "category": "procurement",
+      "institutionId": "inst-penn",
+      "region": "PA",
+      "url": "https://procurement.upenn.edu/",
+      "cadence": "daily",
+      "completeness": "partial",
+      "trust": "first-party",
+      "status": "enabled"
+    },
+    {
+      "id": "ofs-chop-procurement",
+      "name": "CHOP supplier information",
+      "category": "procurement",
+      "institutionId": "inst-chop",
+      "region": "PA",
+      "url": "https://www.chop.edu/centers-programs/doing-business-chop-information-suppliers",
+      "cadence": "daily",
+      "completeness": "partial",
+      "trust": "first-party",
+      "status": "enabled"
+    },
+    {
+      "id": "ofs-cooper-procurement",
+      "name": "Cooper Supplier Gateway",
+      "category": "procurement",
+      "institutionId": "inst-cooper",
+      "region": "NJ",
+      "url": "https://www.cooperhealth.org/supplier-gateway-project-imagine",
       "cadence": "daily",
       "completeness": "partial",
       "trust": "first-party",

@@ -5,6 +5,7 @@ import {
   OFFICIAL_SOURCE_RELEVANCE_MODEL,
   OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION,
   applyOfficialSourceRelevanceGate,
+  canProceedOfficialCandidate,
   discoverOfficialLinks,
   discoverOfficialSources,
   isOfficialSourceDue,
@@ -16,6 +17,7 @@ import {
   type OfficialDiscoveryCandidate,
   type OfficialSource,
 } from "../src/ingest/official-source-discovery.ts";
+import { verifiedProductUsesForOfficialSource } from "../src/ingest/product-watch.ts";
 
 const pennNews = officialSourceRegistry.sources.find((source) => source.id === "ofs-penn-news")!;
 const pennEvents = officialSourceRegistry.sources.find((source) => source.id === "ofs-penn-events")!;
@@ -27,7 +29,8 @@ test("official source registry has explicit cadence, trust, and bounded discover
   assert.equal(officialSourcesForCategory("events").length, 19);
   assert.ok(officialSourcesForCategory("policy").some((source) => source.region === "federal"));
   assert.ok(officialSourcesForCategory("filing").length >= 4);
-  assert.equal(officialSourcesForCategory("procurement").length, 0, "procurement remains intentionally unconfigured until exact URLs are verified");
+  assert.equal(officialSourcesForCategory("product").length, 3);
+  assert.equal(officialSourcesForCategory("procurement").length, 3);
   assert.equal(officialSourcesForInstitution("inst-penn-princeton").length, 2);
   assert.equal(officialSourceRegistry.limits.maxBytes, 524288);
   assert.equal(officialSourceRegistry.limits.timeoutMs, 8000);
@@ -39,6 +42,11 @@ test("official source registry has explicit cadence, trust, and bounded discover
     assert.ok(source.completeness === "partial" || source.completeness === "complete" || source.completeness === "unknown");
     assert.ok(source.trust === "first-party" || source.trust === "regulatory" || source.trust === "association");
   }
+  const productSources = officialSourcesForCategory("product");
+  assert.ok(productSources.every((source) => source.productIds.length > 0));
+  assert.ok(productSources.every((source) => source.productIds.every((id) => id.length > 0)));
+  assert.ok(productSources.every((source) => verifiedProductUsesForOfficialSource(source).length > 0));
+  assert.ok(officialSourcesForCategory("procurement").every((source) => source.institutionId));
 });
 
 test("source scheduling follows hourly/daily cadence and backs off failures", () => {
@@ -166,4 +174,83 @@ test("relevance gate receives the exact Muse model hook and cannot change review
   assert.equal((received as { promptVersion: string }).promptVersion, OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION);
   assert.equal(gated[0]?.status, "review");
   assert.equal(gated[0]?.relevance?.decision, "accept");
+});
+
+test("product/vendor relevance carries verified local-use context and remains review-only", async () => {
+  const epic = officialSourceRegistry.sources.find((source) => source.id === "ofs-epic-newsroom")!;
+  const [candidate] = await discoverOfficialSources({
+    sources: [epic],
+    now: new Date("2026-08-28T12:00:00.000Z"),
+    concurrency: 1,
+    candidateCapPerSource: 1,
+    fetchImpl: async () => new Response(
+      '<html><title>Epic newsroom</title><a href="/epic/newsroom/updates">Epic announces MyChart update for regional health systems</a></html>',
+      { status: 200, headers: { "content-type": "text/html" } },
+    ),
+    relevanceGate: async (input) => {
+      assert.deepEqual(input.verifiedProductUses.map((row) => row.id), ["epic-ehr-christianacare", "epic-mychart-jefferson"]);
+      assert.deepEqual(input.candidate.productIds, epic.productIds);
+      return {
+        decision: "accept",
+        relevanceScore: 94,
+        confidence: 0.94,
+        reasons: ["Verified product channel"],
+        evidenceSpans: ["Epic announces MyChart update for regional health systems"],
+      };
+    },
+  }).then((result) => result.candidates);
+  assert.ok(candidate);
+  assert.equal(candidate?.status, "review");
+  assert.equal(canProceedOfficialCandidate(candidate!), true);
+});
+
+test("generic procurement candidates cannot pass without a named mapped product", async () => {
+  const chop = officialSourceRegistry.sources.find((source) => source.id === "ofs-chop-procurement")!;
+  const result = await discoverOfficialSources({
+    sources: [chop],
+    now: new Date("2026-08-28T12:00:00.000Z"),
+    concurrency: 1,
+    candidateCapPerSource: 2,
+    fetchImpl: async () => new Response(
+      '<html><title>CHOP supplier information</title><a href="/supplier-engagement">Supplier engagement and registration</a><a href="/rfp">Upcoming sourcing opportunity</a></html>',
+      { status: 200, headers: { "content-type": "text/html" } },
+    ),
+    relevanceGate: async () => ({
+      decision: "accept",
+      relevanceScore: 99,
+      confidence: 0.99,
+      reasons: ["First-party page"],
+      evidenceSpans: [],
+    }),
+  });
+  assert.equal(result.candidates.length, 2);
+  assert.ok(result.candidates.every((candidate) => !canProceedOfficialCandidate(candidate)));
+});
+
+test("procurement candidates need a covered institution and a product alias", () => {
+  const candidate: OfficialDiscoveryCandidate = {
+    id: "official-ofs-chop-procurement-epic",
+    sourceId: "ofs-chop-procurement",
+    institutionId: "inst-chop",
+    category: "procurement",
+    region: "PA",
+    title: "CHOP ORCA downtime order sets procurement update",
+    url: "https://www.chop.edu/rfp/orca-downtime-order-sets",
+    sourcePageUrl: "https://www.chop.edu/centers-programs/doing-business-chop-information-suppliers",
+    sourceName: "CHOP supplier information",
+    trust: "first-party",
+    discoveredAt: "2026-08-28T12:00:00.000Z",
+    status: "review",
+    instructionLike: false,
+    relevance: {
+      decision: "accept",
+      relevanceScore: 96,
+      confidence: 0.96,
+      reasons: ["Material local procurement development"],
+      evidenceSpans: ["CHOP ORCA downtime order sets procurement update"],
+    },
+  };
+  assert.equal(canProceedOfficialCandidate(candidate), true);
+  assert.equal(canProceedOfficialCandidate({ ...candidate, institutionId: undefined }), false);
+  assert.equal(canProceedOfficialCandidate({ ...candidate, title: "CHOP supplier engagement update" }), false);
 });
