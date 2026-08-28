@@ -693,14 +693,13 @@ test("kind chip paint is mute/rule, ink, or admiral — never sky, never gold ex
 
 test("KindListPage /news uses publishedNewsList; ai-01 stays out", () => {
   const page = readFileSync(join(root, "src/ui/KindListPage.tsx"), "utf8");
-  const productPage = readFileSync(join(root, "src/ui/ProductWatch.tsx"), "utf8");
   const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
   assert.ok(page.includes("publishedNewsList(catalog)"));
   assert.ok(!page.includes("latestNews(catalog, Number.MAX_SAFE_INTEGER)"));
   assert.ok(page.includes("Rail"));
   assert.ok(page.includes("NEWS · LATEST"));
-  assert.ok(page.includes("ProductWatch"));
-  assert.ok(productPage.includes("PRODUCTS · WATCH"));
+  assert.ok(!page.includes("ProductWatch"));
+  assert.ok(!page.includes("productWatch("));
   assert.ok(page.includes("VOICES · LATEST"));
   assert.ok(page.includes("latestVoices(catalog, Number.MAX_SAFE_INTEGER)"));
   assert.ok(!page.includes("ItemCard"));

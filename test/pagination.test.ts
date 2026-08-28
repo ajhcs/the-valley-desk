@@ -151,7 +151,7 @@ test("home rails stay newest-bounded and do not paginate", () => {
   assert.ok(!noscript.includes('rel="next"'));
 });
 
-test("product-watch is filtered before news pagination", () => {
+test("product-watch items participate in normal news pagination", () => {
   const watched = Array.from({ length: 3 }, (_, index) => news({
     id: `watch-${index}`,
     slug: `watch-${index}`,
@@ -163,10 +163,10 @@ test("product-watch is filtered before news pagination", () => {
   const items = [...watched, ...rest];
   assert.equal(productWatch(items).length, 3);
   const index = newsIndexItems(items);
-  assert.equal(index.some((item) => item.id.startsWith("watch-")), false);
-  assert.equal(index.length, 4);
+  assert.equal(index.filter((item) => item.id.startsWith("watch-")).length, 3);
+  assert.equal(index.length, 7);
   const page1 = paginate(index, parsePageQuery(null), 2);
-  assert.equal(page1.items.some((item) => item.topics.includes("product-watch")), false);
+  assert.equal(page1.items.every((item) => item.topics.includes("product-watch")), true);
 });
 
 test("query-aware crawler HTML does not show page 1 for page 2", () => {
@@ -285,7 +285,7 @@ test("KindListPage and Worker stay query-aware without a second Worker", () => {
 
   assert.ok(page.includes("publishedNewsList(catalog)"));
   assert.ok(page.includes("latestVoices(catalog, Number.MAX_SAFE_INTEGER)"));
-  assert.ok(page.includes("productWatch(catalog)"));
+  assert.ok(!page.includes("productWatch(catalog)"));
   assert.ok(page.includes("pageFromSearch"));
   assert.ok(page.includes('rel="prev"'));
   assert.ok(page.includes('rel="next"'));

@@ -3,16 +3,20 @@ import { ingestX } from "./x";
 import type { ContentItem } from "../content/schema";
 import { isLiveSocialKey } from "./origins";
 import type { SourceRunNote } from "./source-health";
+import { ingestSocialEvidence } from "./social-evidence";
+import type { D1DatabaseLike } from "./persistence";
 
 export type IngestEnv = {
   X_BEARER_TOKEN?: string;
   LINKEDIN_TOKEN?: string;
+  VALLEY_DESK_DB?: D1DatabaseLike;
 };
 
 export type SocialRun = {
   items: ContentItem[];
   linkedin: { count: number; skipped?: string };
   x: { count: number; skipped?: string };
+  grok: { count: number; pending: number; skipped?: string };
   sources: SourceRunNote[];
 };
 
@@ -22,15 +26,19 @@ export async function ingestSocial(
   now = new Date(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<SocialRun> {
-  const [linkedin, x] = await Promise.all([
+  const [linkedin, x, grok] = await Promise.all([
     ingestLinkedIn(env, now, fetchImpl),
     ingestX(env, now, fetchImpl),
+    env.VALLEY_DESK_DB
+      ? ingestSocialEvidence(env.VALLEY_DESK_DB, now)
+      : Promise.resolve({ items: [], pending: 0, sources: [] as SourceRunNote[] }),
   ]);
-  const items = [...linkedin.items, ...x.items].filter((item) => isLiveSocialKey(item.id) && item.slug !== "cio-note-workforce-ai");
+  const items = [...linkedin.items, ...x.items, ...grok.items].filter((item) => isLiveSocialKey(item.id) && item.slug !== "cio-note-workforce-ai");
   return {
     items,
     linkedin: { count: linkedin.items.length, skipped: linkedin.skipped },
     x: { count: x.items.length, skipped: x.skipped },
-    sources: [...linkedin.sources, ...x.sources],
+    grok: { count: grok.items.length, pending: grok.pending, ...(!env.VALLEY_DESK_DB ? { skipped: "no-database" } : {}) },
+    sources: [...linkedin.sources, ...x.sources, ...grok.sources],
   };
 }

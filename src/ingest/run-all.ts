@@ -28,6 +28,7 @@ export type IngestRun = {
     events: number;
     linkedin: { count: number; skipped?: string };
     x: { count: number; skipped?: string };
+    grok: { count: number; pending: number; skipped?: string };
     cadence?: "hourly" | "daily";
     failures?: string[];
     sources?: SourceRunNote[];
@@ -61,7 +62,7 @@ export async function runIngestAll(
     : [];
   const social = socialResult.status === "fulfilled"
     ? socialResult.value
-    : { items: [], linkedin: { count: 0, skipped: "source-error" }, x: { count: 0, skipped: "source-error" }, sources: [] as SourceRunNote[] };
+    : { items: [], linkedin: { count: 0, skipped: "source-error" }, x: { count: 0, skipped: "source-error" }, grok: { count: 0, pending: 0, skipped: "source-error" }, sources: [] as SourceRunNote[] };
   const failures = [
     rssResult.status === "rejected" ? `rss: ${String(rssResult.reason)}` : undefined,
     eventsResult?.status === "rejected" ? `events: ${String(eventsResult.reason)}` : undefined,
@@ -103,6 +104,7 @@ export async function runIngestAll(
       events: events.length,
       linkedin: social.linkedin,
       x: social.x,
+      grok: social.grok,
       ...(options.mode ? { cadence: options.mode } : {}),
       ...(failures.length ? { failures } : {}),
       sources,

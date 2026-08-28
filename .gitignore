@@ -4,6 +4,7 @@ dist
 *.local
 .wrangler
 .dev.vars
+.social-ingest-token
 .serena/
 tmp-shots/
 vale-chat-archive-2026-08-24.md

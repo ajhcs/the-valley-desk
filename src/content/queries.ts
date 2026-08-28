@@ -59,10 +59,9 @@ export function productWatch(items: ContentItem[], n = 8) {
     .slice(0, n);
 }
 
-/** /news list after product-watch is pulled into its own rail. */
+/** /news list. Product-related developments remain in chronological News. */
 export function newsIndexItems(items: ContentItem[]) {
-  const watchedIds = new Set(productWatch(items).map((item) => item.id));
-  return publishedNewsList(items).filter((item) => !watchedIds.has(item.id));
+  return publishedNewsList(items);
 }
 
 /** Published kind=voice only. Never latestNews. Jane Doe stays draft. */

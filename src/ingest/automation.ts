@@ -78,10 +78,11 @@ export type AutomationEnv = {
   EDITOR_MODEL_DEADLINE_MS?: string | number;
   X_BEARER_TOKEN?: string;
   LINKEDIN_TOKEN?: string;
+  SOCIAL_INGEST_TOKEN?: string;
 };
 
 export type AutomationIngest = (
-  env: { X_BEARER_TOKEN?: string; LINKEDIN_TOKEN?: string },
+  env: { X_BEARER_TOKEN?: string; LINKEDIN_TOKEN?: string; VALLEY_DESK_DB?: D1DatabaseLike },
   fetchImpl: typeof fetch,
   options?: IngestRunOptions,
 ) => Promise<IngestRun>;

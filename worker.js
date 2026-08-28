@@ -8,6 +8,7 @@ import {
 import { runAutomation } from "./src/ingest/automation.ts";
 import { cleanupEmailDiscoveries, handleInboundEmail } from "./src/ingest/email.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
+import { cleanupSocialEvidencePackets, handleSocialEvidence, isSocialEvidencePath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
 import { feedXml, mergePublishedContent, mergedFeed, sitemapXml } from "./src/ingest/public-feed.ts";
@@ -317,6 +318,9 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   if (path === "/api/health") {
     return handlePublicHealth(request, env);
   }
+  if (isSocialEvidencePath(path)) {
+    return handleSocialEvidence(request, env);
+  }
   if (isOpsPath(path)) {
     return handleOpsRequest(
       request,
@@ -455,6 +459,14 @@ export default {
         logOps("news-extraction-cleanup", {
           outcome: "failed",
           message: error instanceof Error ? error.message : "Unknown news extraction cleanup failure",
+        }, "warn");
+      }),
+    );
+    ctx.waitUntil(
+      cleanupSocialEvidencePackets(env.VALLEY_DESK_DB).catch((error) => {
+        logOps("social-evidence-cleanup", {
+          outcome: "failed",
+          message: error instanceof Error ? error.message : "Unknown social evidence cleanup failure",
         }, "warn");
       }),
     );

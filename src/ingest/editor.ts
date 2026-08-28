@@ -42,6 +42,9 @@ export const TRUSTED_REGIONAL_REPORTING_ORIGINS = new Set([
 export function isOfficialRegistryOrigin(origin: string) {
   return origin.startsWith("official-ofs-");
 }
+export function isAuthenticatedSocialEvidenceOrigin(origin: string) {
+  return origin === "grok-social-linkedin" || origin === "grok-social-x";
+}
 const MATERIAL_CHANGES = new Set([
   "deployment", "workflow", "safety", "security", "outage",
   "interoperability", "commercial", "regulatory",
@@ -206,11 +209,54 @@ export function evaluateCandidate(
     };
   }
 
-  if (item.kind !== "news" && item.kind !== "policy" && item.kind !== "ai") {
-    return review("unsupported-auto-kind", ["This content kind is not automatically published"]);
-  }
   if (looksInstructionLike(item.title, item.dek, item.body, item.source.origin, item.source.url)) {
     return review("untrusted-source-instructions", ["Source text contains instruction-like content and is held from automatic publication"]);
+  }
+  if (item.kind === "voice") {
+    if (!isAuthenticatedSocialEvidenceOrigin(item.source.origin)) {
+      return review("voice-authenticated-collector-required", ["Automatic Voices require the authenticated social collector"]);
+    }
+    if (!item.role?.trim() || item.orgs.length === 0) {
+      return review("voice-verified-executive-required", ["The speaker needs a current publicly verified role at a covered health system"]);
+    }
+    if (!enrichment || enrichment.decision !== "priority_review") {
+      return review("voice-model-priority-required", enrichment?.reasons ?? ["Model evidence was unavailable"]);
+    }
+    if (enrichment.relevanceScore < 85 || enrichment.confidence < 0.9) {
+      return review("voice-relevance-threshold", ["Voice requires relevance 85 and confidence 90%"]);
+    }
+    if (!enrichment.affectedOrgIds.some((id) => item.orgs.includes(id))) {
+      return review("affected-org-evidence-required", ["Model evidence did not match the speaker's verified organization"]);
+    }
+    if (!enrichment.body?.trim() || !enrichment.impactSentence?.trim() || enrichment.evidenceSpans.length === 0) {
+      return review("voice-grounded-copy-required", ["Voice needs evidence-written body and a grounded operational takeaway"]);
+    }
+    if (hasSourcePageChrome(enrichment.body)) {
+      return review("curated-body-source-chrome", ["Reader body contains navigation, byline, or source boilerplate"]);
+    }
+    const content = ContentItem.parse({
+      ...withEditorialFields(item, enrichment, now),
+      topics: [...new Set([...item.topics, "leadership"])],
+    });
+    const highRiskInput = verificationInputForCandidate(item, enrichment);
+    if (isHighRiskNews(highRiskInput)) {
+      const secondPass = verification === undefined ? verifyHighRisk(highRiskInput) : verification;
+      if (!secondPass || !secondPass.approved) {
+        return review("second-pass-failed", secondPass?.objections.map((o) => `${o.code}: ${o.reason}`) ?? ["Second-pass verification unavailable"]);
+      }
+    }
+    const verdict = validateForPublication(content, policyContext);
+    if (!verdict.ok) return review(verdict.blocking[0]?.code ?? "publication-policy", verdict.blocking.map((row) => row.message));
+    return {
+      action: "publish",
+      rule: "verified-executive-social-voice",
+      confidence: enrichment.confidence,
+      reasons: enrichment.reasons,
+      content,
+    };
+  }
+  if (item.kind !== "news" && item.kind !== "policy" && item.kind !== "ai") {
+    return review("unsupported-auto-kind", ["This content kind is not automatically published"]);
   }
   if (
     isOfficialRegistryOrigin(item.source.origin)
@@ -253,7 +299,9 @@ export function evaluateCandidate(
   if (enrichment.decision !== "priority_review") {
     return review("model-not-priority", enrichment.reasons);
   }
-  const official = OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin) || isOfficialRegistryOrigin(item.source.origin);
+  const official = OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin)
+    || isOfficialRegistryOrigin(item.source.origin)
+    || isAuthenticatedSocialEvidenceOrigin(item.source.origin);
   const trustedRegional = TRUSTED_REGIONAL_REPORTING_ORIGINS.has(item.source.origin);
   if (!official && !trustedRegional) {
     return review("primary-corroboration-required", ["Discovery source requires first-party corroboration"]);
