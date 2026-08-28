@@ -9,6 +9,7 @@ export const ALERT_MAX_DETAIL_KEYS = 20;
 export const ALERT_MAX_DIGEST_ROWS = 50;
 export const ALERT_DEFAULT_THRESHOLD = 2;
 export const ALERT_MAX_BACKOFF_MS = 24 * 60 * 60 * 1_000;
+export const ALERT_REPEAT_BASE_MS = 6 * 60 * 60 * 1_000;
 
 export type SendEmailBindingLike = {
   send(message: {
@@ -46,6 +47,8 @@ export type OperationalAlertRow = {
   notification_attempt_count: number;
   last_notification_error: string | null;
   detail_json: string;
+  recovery_count: number;
+  last_recovered_at: string | null;
   resolved_at: string | null;
 };
 
@@ -133,12 +136,19 @@ function backoffMs(attempt: number) {
   return Math.min(ALERT_MAX_BACKOFF_MS, 15 * 60 * 1_000 * (2 ** Math.max(0, Math.min(attempt, 7))));
 }
 
+function alertBackoffMs(attempt: number) {
+  // Runs are hourly. Keep a continuing incident from generating an email on
+  // every run; the daily digest remains the bounded status channel.
+  return Math.min(ALERT_MAX_BACKOFF_MS, ALERT_REPEAT_BASE_MS * (2 ** Math.max(0, Math.min(attempt, 3))));
+}
+
 function rowSelect() {
   return `
     SELECT fingerprint, pack_id, event, severity, state, occurrence_count,
            first_seen_at, last_seen_at, next_notify_at,
            last_notification_attempt_at, last_notified_at,
            notification_attempt_count, last_notification_error, detail_json,
+           recovery_count, last_recovered_at,
            resolved_at
     FROM operational_alerts WHERE fingerprint = ?
   `;
@@ -173,6 +183,11 @@ export async function recordOperationalAlert(
       occurrence_count = operational_alerts.occurrence_count + 1,
       last_seen_at = excluded.last_seen_at,
       detail_json = excluded.detail_json,
+      next_notify_at = CASE
+        WHEN operational_alerts.state = 'resolved' THEN excluded.next_notify_at
+        ELSE operational_alerts.next_notify_at
+      END,
+      recovery_count = 0,
       resolved_at = NULL
   `).bind(
     fingerprint,
@@ -194,7 +209,7 @@ export async function recordOperationalAlert(
   if (!eligible) return { row: before, claimed: false };
 
   const attemptAt = nowIso;
-  const next = new Date(now.getTime() + backoffMs(before.notification_attempt_count)).toISOString();
+  const next = new Date(now.getTime() + alertBackoffMs(before.notification_attempt_count)).toISOString();
   const claimed = await db.prepare(`
     UPDATE operational_alerts
     SET last_notification_attempt_at = ?,
@@ -220,6 +235,43 @@ export async function markOperationalAlertSent(
     SET last_notified_at = ?, last_notification_error = NULL
     WHERE fingerprint = ?
   `).bind(now.toISOString(), fingerprint).run();
+}
+
+/**
+ * Record a healthy observation without sending a recovery email. An alert is
+ * resolved only after consecutive healthy observations; one flaky success
+ * therefore cannot silence a still-degraded source. D1 owns this counter so
+ * recovery remains safe across Worker isolates and retries.
+ */
+export async function resolveOperationalAlert(
+  db: D1DatabaseLike,
+  fingerprint: string,
+  now = new Date(),
+  requiredSuccesses = 2,
+) {
+  const safeFingerprint = stripControls(fingerprint).slice(0, 240);
+  const required = Math.max(1, Math.min(20, Math.trunc(requiredSuccesses) || 1));
+  const nowIso = now.toISOString();
+  await db.prepare(`
+    UPDATE operational_alerts
+    SET recovery_count = MIN(?, recovery_count + 1),
+        last_recovered_at = ?
+    WHERE fingerprint = ? AND state = 'open'
+  `).bind(required, nowIso, safeFingerprint).run();
+  await db.prepare(`
+    UPDATE operational_alerts
+    SET state = 'resolved', resolved_at = ?, last_notification_error = NULL
+    WHERE fingerprint = ? AND state = 'open' AND recovery_count >= ?
+  `).bind(nowIso, safeFingerprint, required).run();
+  const row = await db.prepare(rowSelect()).bind(safeFingerprint).first<OperationalAlertRow>();
+  if (row?.state === "resolved") {
+    logOps("ops-alert", {
+      outcome: "resolved",
+      fingerprint: safeFingerprint,
+      recoveryCount: row.recovery_count,
+    });
+  }
+  return row;
 }
 
 export async function markOperationalAlertFailed(

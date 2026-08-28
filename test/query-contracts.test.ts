@@ -256,6 +256,22 @@ test("one event-source outage does not discard successful RSS ingestion", async 
   assert.equal(result.events.length, 0);
 });
 
+test("scheduled cadence keeps hourly freshness separate from the daily event deep scan", async () => {
+  const requested: string[] = [];
+  const fetchImpl = async (input: RequestInfo | URL) => {
+    const url = String(input);
+    requested.push(url);
+    return new Response("", { status: 503 });
+  };
+  await runIngestAll({}, new Date("2026-08-28T02:00:00.000Z"), fetchImpl, { mode: "hourly" });
+  assert.equal(requested.some((url) => url.includes("dvhimss.org") || url.includes("njdvhimssevent.com")), false);
+
+  requested.length = 0;
+  await runIngestAll({}, new Date("2026-08-28T03:15:00.000Z"), fetchImpl, { mode: "daily" });
+  assert.equal(requested.some((url) => url.includes("dvhimss.org")), true);
+  assert.equal(requested.some((url) => url.includes("njdvhimssevent.com")), true);
+});
+
 test("first-party health-system feeds pin their verified organization", () => {
   const cooper = RSS_SOURCES.find((source) => source.id === "cooper-newsroom");
   assert.ok(cooper);
@@ -4123,6 +4139,7 @@ function applyMigrations(database: DatabaseSync) {
     "0013_executive_verification.sql",
     "0014_editor_review_verification.sql",
     "0015_signals_alerts.sql",
+    "0016_operational_alert_recovery.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 
@@ -4674,7 +4691,7 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(model.includes("muse-spark-1.2-contributor"));
   assert.ok(model.includes('"relevanceScore":0'));
   assert.ok(model.includes("Every affectedOrgId and productId must come verbatim"));
-  assert.ok(wrangler.includes('"crons": ["0 * * * *"]'));
+  assert.ok(wrangler.includes('"crons": ["0 * * * *", "15 3 * * *"]'));
   assert.ok(example.includes("EDITOR_MODEL_BUDGET=4"));
   assert.ok(example.includes("EDITOR_MODEL_TIMEOUT_MS=45000"));
   assert.ok(example.includes("EDITOR_MODEL_DEADLINE_MS=110000"));

@@ -63,6 +63,7 @@ import {
   OPS_ALERT_SENDER,
   dispatchOperationalAlert,
   dispatchOperationalDigest,
+  resolveOperationalAlert,
   sanitizeAlertDetails,
 } from "../src/lib/alerts.ts";
 import {
@@ -70,6 +71,7 @@ import {
   isOpsPath,
   trustedOpsIdentity,
 } from "../src/ingest/ops-access.ts";
+import { sendAutomationAlerts } from "../worker.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = ContentCatalog.parse(JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8")));
@@ -893,6 +895,98 @@ test("operational alerts dedupe durably, sanitize secrets, and send to the fixed
   database.close();
 });
 
+test("operational alerts require durable consecutive recovery and reopen cleanly", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const binding = {
+    async send(message: { to: string; from: string; subject: string; text: string }) {
+      sent.push(message.subject);
+      return { messageId: `message-${sent.length}` };
+    },
+  };
+  const fingerprint = "valley-desk:recovery-test";
+  const first = new Date("2026-08-28T00:00:00.000Z");
+  await dispatchOperationalAlert(db, binding, {
+    fingerprint,
+    event: "source-degraded",
+    severity: "warning",
+    threshold: 1,
+    now: first,
+  });
+  assert.equal(sent.length, 1);
+  const firstRecovery = await resolveOperationalAlert(db, fingerprint, new Date("2026-08-28T01:00:00.000Z"), 2);
+  assert.equal(firstRecovery?.state, "open");
+  assert.equal(firstRecovery?.recovery_count, 1);
+  const resolved = await resolveOperationalAlert(db, fingerprint, new Date("2026-08-28T02:00:00.000Z"), 2);
+  assert.equal(resolved?.state, "resolved");
+  assert.equal(resolved?.recovery_count, 2);
+
+  const reopened = await dispatchOperationalAlert(db, binding, {
+    fingerprint,
+    event: "source-degraded",
+    severity: "warning",
+    threshold: 1,
+    now: new Date("2026-08-28T03:00:00.000Z"),
+  });
+  assert.equal(reopened.outcome, "sent");
+  assert.equal(sent.length, 2);
+  const row = database.prepare("SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = ?").get(fingerprint) as { state: string; recovery_count: number };
+  assert.deepEqual({ ...row }, { state: "open", recovery_count: 0 });
+  database.close();
+});
+
+test("automation alerts cover leadership/model failures and stable source fingerprints", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const binding = {
+    async send(message: { to: string; from: string; subject: string; text: string }) {
+      sent.push(message.subject);
+      return { messageId: `message-${sent.length}` };
+    },
+  };
+  const env = { VALLEY_DESK_DB: db, NOTIFY_OPS: binding };
+  const failed = {
+    notes: {
+      sources: [{ id: "source-1", state: "upstream-failed", type: "rss", itemCount: 0, consecutiveFailures: 3 }],
+    },
+    leadership: { outcome: "failed", fetched: 0, error: "upstream unavailable" },
+    modelSelectedCount: 1,
+    modelFailedCount: 1,
+    modelSucceededCount: 0,
+  };
+  const at = new Date("2026-08-28T04:00:00.000Z");
+  for (const [index, state] of ["upstream-failed", "parser-failed", "timed-out"].entries()) {
+    await sendAutomationAlerts(env, {
+      ...failed,
+      notes: { sources: [{ ...failed.notes.sources[0], state }] },
+    }, new Date(at.getTime() + index * 60 * 60 * 1_000));
+  }
+  assert.equal(sent.length, 3, "one alert per stable source/leadership/model fingerprint");
+  const rows = database.prepare("SELECT fingerprint, state, occurrence_count FROM operational_alerts ORDER BY fingerprint").all() as Array<{ fingerprint: string; state: string; occurrence_count: number }>;
+  assert.deepEqual(rows.map((row) => row.fingerprint), [
+    "valley-desk:leadership-monitor",
+    "valley-desk:model-enrichment",
+    "valley-desk:source:source-1",
+  ]);
+
+  const healthy = {
+    notes: { sources: [{ id: "source-1", state: "healthy", type: "rss", itemCount: 1 }] },
+    leadership: { outcome: "ok", fetched: 1 },
+    modelSelectedCount: 1,
+    modelFailedCount: 0,
+    modelSucceededCount: 1,
+  };
+  await sendAutomationAlerts(env, healthy, new Date("2026-08-28T07:00:00.000Z"));
+  await sendAutomationAlerts(env, healthy, new Date("2026-08-28T08:00:00.000Z"));
+  const resolved = database.prepare("SELECT COUNT(*) AS count FROM operational_alerts WHERE state = 'resolved'").get() as { count: number };
+  assert.equal(resolved.count, 3);
+  database.close();
+});
+
 test("daily operational digest claims once per pack and remains bounded", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
@@ -997,7 +1091,7 @@ test("news article extraction cleanup expires stale rows and preserves recent su
   const worker = readFileSync(join(root, "worker.js"), "utf8");
   assert.ok(worker.includes("cleanupNewsArticleExtractions"));
   assert.ok(worker.includes("news-extraction-cleanup"));
-  assert.ok(worker.indexOf("cleanupNewsArticleExtractions") < worker.indexOf("runAutomation(env)"));
+  assert.ok(worker.indexOf("cleanupNewsArticleExtractions") < worker.indexOf("runAutomation(env"));
   database.close();
 });
 

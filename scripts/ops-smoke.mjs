@@ -63,14 +63,19 @@ const db = {
   },
 };
 
-const scheduled = await runAutomation({ VALLEY_DESK_DB: db }, async () => new Response("", { status: 404 }), async () => ({
-  fetchedAt: new Date().toISOString(),
-  rss: [],
-  events: [],
-  social: [],
-  notes: { rss: 0, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
-}));
+let scheduledCadence;
+const scheduled = await runAutomation({ VALLEY_DESK_DB: db }, async () => new Response("", { status: 404 }), async (_env, _fetch, options) => {
+  scheduledCadence = options?.mode;
+  return {
+    fetchedAt: new Date().toISOString(),
+    rss: [],
+    events: [],
+    social: [],
+    notes: { rss: 0, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
+  };
+}, { mode: "daily" });
 if ("skipped" in scheduled && scheduled.skipped) throw new Error("Scheduled smoke skipped unexpectedly");
+if (scheduledCadence !== "daily") throw new Error("Daily scheduled cadence was not propagated");
 
 const health = await handlePublicHealth(new Request("https://the-valley-desk.clyons.workers.dev/api/health"), {
   BUILD_SHA: "smoke",

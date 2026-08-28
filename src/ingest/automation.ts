@@ -79,6 +79,13 @@ export type AutomationIngest = (
   options?: IngestRunOptions,
 ) => Promise<IngestRun>;
 
+export type AutomationMode = "hourly" | "daily";
+
+export type AutomationOptions = {
+  /** Hourly keeps the freshness lane hot; daily enables the deep event scan. */
+  mode?: AutomationMode;
+};
+
 // Cloudflare Workers requires the platform fetch function to be invoked with
 // globalThis as its receiver. Passing the bare function through the ingest
 // pipeline causes `Illegal invocation` in production even though Node accepts
@@ -207,6 +214,7 @@ async function verifyBounded(
     .slice(0, Math.max(0, options.budget));
   let next = 0;
   let attempted = 0;
+  let failed = 0;
   await Promise.all(Array.from(
     { length: Math.min(Math.max(1, options.concurrency), work.length) },
     async () => {
@@ -226,6 +234,9 @@ async function verifyBounded(
           },
           fetchImpl,
         );
+        if (verification.objections.some((objection) => objection.code.startsWith("verifier-"))) {
+          failed += 1;
+        }
         results.set(row.item.id, verification);
       }
     },
@@ -233,6 +244,7 @@ async function verifyBounded(
   return {
     results,
     attempted,
+    failed,
     approved: [...results.values()].filter((row) => row.approved).length,
     rejected: [...results.values()].filter((row) => !row.approved).length,
   };
@@ -257,6 +269,7 @@ async function runLeadershipStage(
   env: AutomationEnv,
   fetchImpl: typeof fetch,
   now: Date,
+  mode: AutomationMode = "hourly",
 ): Promise<LeadershipAutomationResult> {
   const coverage = officialSourceCoverage(coveragePack);
   try {
@@ -273,6 +286,7 @@ async function runLeadershipStage(
     const outcome = failed > 0 ? "degraded" : "ok";
     logOps("leadership", {
       outcome,
+      cadence: mode,
       fetched: result.fetchedUrls.length,
       snapshots,
       observations,
@@ -324,7 +338,9 @@ export async function runAutomation(
   env: AutomationEnv,
   fetchImpl: typeof fetch = runtimeFetch,
   ingest: AutomationIngest = runScheduledIngest,
+  options: AutomationOptions = {},
 ) {
+  const mode = options.mode ?? "hourly";
   const lockOwner = crypto.randomUUID();
   if (!(await acquireAutomationLock(env.VALLEY_DESK_DB, lockOwner))) {
     logOps("lock", { outcome: "busy", reason: "automation-already-running" }, "warn");
@@ -348,14 +364,18 @@ export async function runAutomation(
   try {
     await ensureLock();
     stage = "leadership-monitor";
-    leadership = await runLeadershipStage(env, fetchImpl, leadershipNow);
+    leadership = await runLeadershipStage(env, fetchImpl, leadershipNow, mode);
     stage = "load-news-extractions";
     const newsExtractions = await readNewsArticleExtractions(env.VALLEY_DESK_DB);
     stage = "fetch-sources";
     const ingestedRun = await ingest({
       X_BEARER_TOKEN: env.X_BEARER_TOKEN,
       LINKEDIN_TOKEN: env.LINKEDIN_TOKEN,
-    }, fetchImpl, { newsExtractions });
+    }, fetchImpl, {
+      newsExtractions,
+      mode,
+      includeEvents: mode === "daily",
+    });
     const run = leadership.editorialCandidates.length > 0
       ? {
         ...ingestedRun,
@@ -509,6 +529,7 @@ export async function runAutomation(
     ).length;
     logOps("run", {
       outcome: "succeeded",
+      cadence: mode,
       runId: persisted.runId,
       itemCount: persisted.itemCount,
       finishedAt,
@@ -542,6 +563,7 @@ export async function runAutomation(
       failed: modelFailedCount,
       reused: reusable.size,
       verifierAttempted: verificationRun.attempted,
+      verifierFailed: verificationRun.failed,
       verifierApproved: verificationRun.approved,
       verifierRejected: verificationRun.rejected,
       editorModel: env.EDITOR_MODEL || DEFAULT_EDITOR_MODEL,
@@ -558,6 +580,7 @@ export async function runAutomation(
     });
     return {
       ...persisted,
+      cadence: mode,
       finishedAt,
       enrichedCount,
       reusedEnrichmentCount: reusable.size,
@@ -568,6 +591,7 @@ export async function runAutomation(
       modelSucceededCount,
       modelFailedCount,
       verifierAttemptedCount: verificationRun.attempted,
+      verifierFailedCount: verificationRun.failed,
       verifierApprovedCount: verificationRun.approved,
       verifierRejectedCount: verificationRun.rejected,
       sourceHealthCount,

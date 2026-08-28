@@ -22,7 +22,7 @@ import { loadEntities } from "./src/content/store.ts";
 import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts";
 import { decorateHtml } from "./src/lib/crawler-html.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
-import { dispatchOperationalAlert, dispatchOperationalDigest } from "./src/lib/alerts.ts";
+import { dispatchOperationalAlert, dispatchOperationalDigest, resolveOperationalAlert } from "./src/lib/alerts.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -32,6 +32,11 @@ const PUBLIC_MACHINE_PATHS = new Set([
   "/robots.txt",
   "/llms.txt",
 ]);
+
+// One Worker handles both lanes. The daily trigger is intentionally a
+// separate cron expression so event/deep scans do not consume the hourly
+// freshness budget or depend on an in-memory timer.
+export const DAILY_DEEP_SCAN_CRON = "15 3 * * *";
 
 function notFoundHeaders() {
   return {
@@ -171,9 +176,37 @@ function safeAlertError(error) {
     .slice(0, 240) || "Unknown automation failure";
 }
 
-async function sendAutomationAlerts(env, result, now = new Date()) {
+export async function sendAutomationAlerts(env, result, now = new Date()) {
+  // Alert delivery is best-effort and must never turn a successful content
+  // run into a false automation failure. Durable state is still written when
+  // the send binding is unavailable, and each helper isolates its own D1 or
+  // provider error.
+  const dispatch = async (input) => {
+    try {
+      return await dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, input);
+    } catch (error) {
+      logOps("ops-alert", {
+        outcome: "record-failed",
+        fingerprint: input.fingerprint,
+        message: safeAlertError(error),
+      }, "warn");
+      return undefined;
+    }
+  };
+  const recover = async (fingerprint, requiredSuccesses = 2) => {
+    try {
+      return await resolveOperationalAlert(env.VALLEY_DESK_DB, fingerprint, now, requiredSuccesses);
+    } catch (error) {
+      logOps("ops-alert", {
+        outcome: "recovery-record-failed",
+        fingerprint,
+        message: safeAlertError(error),
+      }, "warn");
+      return undefined;
+    }
+  };
   if (result?.skipped) {
-    await dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, {
+    await dispatch({
       fingerprint: "valley-desk:automation-lock-busy",
       event: "automation-lock-busy",
       severity: "warning",
@@ -185,10 +218,16 @@ async function sendAutomationAlerts(env, result, now = new Date()) {
   }
   const sourceNotes = Array.isArray(result?.notes?.sources) ? result.notes.sources : [];
   for (const source of sourceNotes) {
-    if (!source || source.state === "disabled" || source.state === "healthy" || source.state === "healthy-empty") continue;
+    if (!source) continue;
     const sourceId = typeof source.id === "string" ? source.id.slice(0, 100) : "unknown";
-    await dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, {
-      fingerprint: `valley-desk:source:${sourceId}:${source.state}`,
+    const fingerprint = `valley-desk:source:${sourceId}`;
+    if (source.state === "disabled") continue;
+    if (source.state === "healthy" || source.state === "healthy-empty") {
+      await recover(fingerprint, 2);
+      continue;
+    }
+    await dispatch({
+      fingerprint,
       event: "source-degraded",
       severity: source.state === "auth-failed" ? "critical" : "warning",
       threshold: 3,
@@ -196,13 +235,73 @@ async function sendAutomationAlerts(env, result, now = new Date()) {
       details: { sourceId, state: source.state, failures: source.consecutiveFailures },
     });
   }
+
+  const leadership = result?.leadership;
+  if (leadership) {
+    if (leadership.outcome === "ok") {
+      await recover("valley-desk:leadership-monitor", 2);
+    } else {
+      await dispatch({
+        fingerprint: "valley-desk:leadership-monitor",
+        event: "leadership-monitor-failed",
+        severity: leadership.outcome === "failed" ? "critical" : "warning",
+        threshold: 2,
+        now,
+        details: {
+          outcome: leadership.outcome,
+          fetched: leadership.fetched,
+          failed: leadership.error ? safeAlertError(leadership.error) : undefined,
+        },
+      });
+    }
+  }
+
+  const selected = Number(result?.modelSelectedCount ?? 0);
+  const modelFailed = Number(result?.modelFailedCount ?? 0);
+  if (selected > 0 && modelFailed > 0) {
+    await dispatch({
+      fingerprint: "valley-desk:model-enrichment",
+      event: "model-enrichment-failed",
+      severity: modelFailed === selected ? "critical" : "warning",
+      threshold: 2,
+      now,
+      details: {
+        selected,
+        failed: modelFailed,
+        succeeded: Number(result?.modelSucceededCount ?? 0),
+      },
+    });
+  } else if (selected > 0) {
+    await recover("valley-desk:model-enrichment", 2);
+  }
+
+  const verifierAttempted = Number(result?.verifierAttemptedCount ?? 0);
+  const verifierFailed = Number(result?.verifierFailedCount ?? 0);
+  if (verifierAttempted > 0 && verifierFailed > 0) {
+    await dispatch({
+      fingerprint: "valley-desk:model-verifier",
+      event: "model-verifier-failed",
+      severity: verifierFailed === verifierAttempted ? "critical" : "warning",
+      threshold: 2,
+      now,
+      details: { attempted: verifierAttempted, failed: verifierFailed },
+    });
+  } else if (verifierAttempted > 0) {
+    await recover("valley-desk:model-verifier", 2);
+  }
+
+  await recover("valley-desk:automation-run-failed", 2);
 }
 
 async function sendDailyOpsDigest(env, now = new Date()) {
   // Run once at a predictable UTC hour; D1 claim state makes retries and
   // duplicate cron deliveries safe.
   if (now.getUTCHours() !== 8) return;
-  await dispatchOperationalDigest(env.VALLEY_DESK_DB, env.NOTIFY_OPS, now);
+  try {
+    await dispatchOperationalDigest(env.VALLEY_DESK_DB, env.NOTIFY_OPS, now);
+  } catch (error) {
+    logOps("ops-digest", { outcome: "record-failed", message: safeAlertError(error) }, "warn");
+  }
 }
 
 async function handleFetch(request, env, origin, nonce, ctx) {
@@ -336,7 +435,8 @@ export default {
       throw new Error(`Inbound email discovery failed: ${result.reason || "unknown error"}`);
     }
   },
-  async scheduled(_event, env, ctx) {
+  async scheduled(event, env, ctx) {
+    const cadence = event?.cron === DAILY_DEEP_SCAN_CRON ? "daily" : "hourly";
     ctx.waitUntil(
       cleanupEmailDiscoveries(env.VALLEY_DESK_DB).catch((error) => {
         logOps("email-cleanup", {
@@ -354,9 +454,10 @@ export default {
       }),
     );
     ctx.waitUntil(
-      runAutomation(env).then((result) => {
+      runAutomation(env, undefined, undefined, { mode: cadence }).then((result) => {
         logOps("cron", {
           outcome: result.skipped ? "skipped" : "succeeded",
+          cadence,
           ...compactAutomation(result),
         });
         return sendAutomationAlerts(env, result).then(() => sendDailyOpsDigest(env));

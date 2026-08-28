@@ -12,6 +12,10 @@ import { sourceNote, type SourceRunNote } from "./source-health";
 export type IngestRunOptions = {
   knownSourceUrls?: ReadonlySet<string>;
   newsExtractions?: ReadonlyMap<string, NewsArticleExtractionState>;
+  /** The Worker uses hourly for freshness and daily for deep event discovery. */
+  mode?: "hourly" | "daily";
+  /** Explicit override for callers that need to run a one-off all-source scan. */
+  includeEvents?: boolean;
 };
 
 export type IngestRun = {
@@ -24,6 +28,7 @@ export type IngestRun = {
     events: number;
     linkedin: { count: number; skipped?: string };
     x: { count: number; skipped?: string };
+    cadence?: "hourly" | "daily";
     failures?: string[];
     sources?: SourceRunNote[];
     newsExtraction?: NewsArticleExtractionMetrics;
@@ -41,19 +46,25 @@ export async function runIngestAll(
   options: IngestRunOptions = {},
 ): Promise<IngestRun> {
   const fetchedAt = now.toISOString();
+  // A normal scheduled run is freshness-first. Event pages are broader and
+  // more expensive, so they run on the daily deep-scan trigger. Direct
+  // callers without a mode retain the historical all-source behavior.
+  const includeEvents = options.includeEvents ?? (options.mode ? options.mode === "daily" : true);
   const [rssResult, eventsResult, socialResult] = await Promise.allSettled([
     ingestRssWithHealth(now, fetchImpl, options),
-    ingestEventsWithHealth(now, fetchImpl),
+    includeEvents ? ingestEventsWithHealth(now, fetchImpl) : Promise.resolve(undefined),
     ingestSocial(env, now, fetchImpl),
   ]);
   const rss = rssResult.status === "fulfilled" ? rssResult.value.items : [];
-  const events = eventsResult.status === "fulfilled" ? eventsResult.value.items : [];
+  const events = eventsResult?.status === "fulfilled" && eventsResult.value
+    ? eventsResult.value.items
+    : [];
   const social = socialResult.status === "fulfilled"
     ? socialResult.value
     : { items: [], linkedin: { count: 0, skipped: "source-error" }, x: { count: 0, skipped: "source-error" }, sources: [] as SourceRunNote[] };
   const failures = [
     rssResult.status === "rejected" ? `rss: ${String(rssResult.reason)}` : undefined,
-    eventsResult.status === "rejected" ? `events: ${String(eventsResult.reason)}` : undefined,
+    eventsResult?.status === "rejected" ? `events: ${String(eventsResult.reason)}` : undefined,
     socialResult.status === "rejected" ? `social: ${String(socialResult.reason)}` : undefined,
   ].filter((value): value is string => Boolean(value));
   const socialSources: SourceRunNote[] = socialResult.status === "fulfilled"
@@ -78,7 +89,7 @@ export async function runIngestAll(
     ];
   const sources = [
     ...(rssResult.status === "fulfilled" ? rssResult.value.sources : []),
-    ...(eventsResult.status === "fulfilled" ? eventsResult.value.sources : []),
+    ...(eventsResult?.status === "fulfilled" && eventsResult.value ? eventsResult.value.sources : []),
     ...socialSources,
   ];
   const newsExtraction = rssResult.status === "fulfilled" ? rssResult.value.newsExtraction : undefined;
@@ -92,6 +103,7 @@ export async function runIngestAll(
       events: events.length,
       linkedin: social.linkedin,
       x: social.x,
+      ...(options.mode ? { cadence: options.mode } : {}),
       ...(failures.length ? { failures } : {}),
       sources,
       ...(newsExtraction ? { newsExtraction: newsExtraction.metrics } : {}),
@@ -100,7 +112,7 @@ export async function runIngestAll(
   };
 }
 
-/** Worker cron. Secrets missing → social no-op; RSS and events still run. */
+/** Worker cron. Secrets missing → social no-op; daily mode adds event scans. */
 export async function runScheduledIngest(
   env: IngestEnv = {},
   fetchImpl: typeof fetch = fetch,
