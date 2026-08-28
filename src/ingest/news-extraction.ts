@@ -351,11 +351,23 @@ export async function fetchAllowlistedArticlePage(options: {
   url: string;
   fetchImpl: typeof fetch;
   allowedHosts: ReadonlySet<string>;
+  maxBytes?: number;
+  timeoutMs?: number;
+  maxRedirects?: number;
 }): Promise<ArticlePageFetchResult> {
   let current = isEligibleNewsArticleUrl(options.url, options.allowedHosts);
   if (!current) return { ok: false, error: "URL is not an allowlisted article page" };
+  const maxBytes = Number.isFinite(options.maxBytes)
+    ? Math.max(1, Math.trunc(options.maxBytes!))
+    : NEWS_ARTICLE_MAX_BYTES;
+  const timeoutMs = Number.isFinite(options.timeoutMs)
+    ? Math.max(1, Math.trunc(options.timeoutMs!))
+    : NEWS_ARTICLE_TIMEOUT_MS;
+  const maxRedirects = Number.isFinite(options.maxRedirects)
+    ? Math.max(0, Math.min(5, Math.trunc(options.maxRedirects!)))
+    : NEWS_ARTICLE_MAX_REDIRECTS;
   const seen = new Set<string>();
-  for (let hop = 0; hop <= NEWS_ARTICLE_MAX_REDIRECTS; hop += 1) {
+  for (let hop = 0; hop <= maxRedirects; hop += 1) {
     if (seen.has(current)) return { ok: false, error: "Too many redirects" };
     seen.add(current);
     let response: Response;
@@ -365,7 +377,7 @@ export async function fetchAllowlistedArticlePage(options: {
           "user-agent": SOURCE_USER_AGENT,
           accept: "text/html,application/xhtml+xml;q=0.9,text/plain;q=0.1",
         },
-        signal: AbortSignal.timeout(NEWS_ARTICLE_TIMEOUT_MS),
+        signal: AbortSignal.timeout(timeoutMs),
         redirect: "manual",
       });
     } catch (error) {
@@ -375,7 +387,7 @@ export async function fetchAllowlistedArticlePage(options: {
       const next = allowlistedRedirectLocation(current, response.headers.get("location"), options.allowedHosts);
       await response.body?.cancel().catch(() => undefined);
       if (!next) return { ok: false, error: "Redirect left allowlist" };
-      if (hop >= NEWS_ARTICLE_MAX_REDIRECTS || seen.has(next)) {
+      if (hop >= maxRedirects || seen.has(next)) {
         return { ok: false, error: "Too many redirects" };
       }
       // Preserve the validated server target exactly. Identity/cache keys remain
@@ -393,7 +405,7 @@ export async function fetchAllowlistedArticlePage(options: {
       return { ok: false, error: "Unsupported content type" };
     }
     try {
-      const body = await readBoundedText(response, NEWS_ARTICLE_MAX_BYTES);
+      const body = await readBoundedText(response, maxBytes);
       return { ok: true, url: current, body };
     } catch (error) {
       return { ok: false, error: articleFetchError(error) };

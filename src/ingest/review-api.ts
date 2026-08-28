@@ -9,6 +9,7 @@ import {
   validateForPublication,
 } from "../content/publication";
 import { EDITOR_POLICY_VERSION } from "./editor";
+import { reviewLeadershipObservation } from "./executive-persistence";
 import { resolvePublicOrigin } from "../lib/canonical";
 import { SCHEMA_VERSION, buildShaFromEnv, logOps } from "../lib/ops";
 
@@ -129,6 +130,7 @@ function readIdempotent(token: string, key: string) {
 export function isReviewApiPath(pathname: string) {
   return pathname === "/api/automation/status"
     || pathname === "/api/automation/status/review"
+    || pathname.startsWith("/api/executive-observations")
     || pathname.startsWith("/api/review-queue");
 }
 
@@ -157,6 +159,34 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       SELECT category, status, COUNT(*) AS count
       FROM email_discoveries GROUP BY category, status
     `).all();
+  let executiveIntelligence: Record<string, unknown> = { available: false };
+  try {
+    const coverage = await env.VALLEY_DESK_DB.prepare(`
+      SELECT id, name, short_name, covered, official_source_status, official_source_note
+      FROM covered_institutions
+      WHERE covered = 1
+      ORDER BY short_name
+    `).all();
+    const sourceStates = await env.VALLEY_DESK_DB.prepare(`
+      SELECT state, COUNT(*) AS count
+      FROM scheduled_source_state GROUP BY state ORDER BY state
+    `).all();
+    const observations = await env.VALLEY_DESK_DB.prepare(`
+      SELECT verification_status, COUNT(*) AS count
+      FROM source_observations GROUP BY verification_status ORDER BY verification_status
+    `).all();
+    executiveIntelligence = {
+      available: true,
+      coverage: coverage.results ?? [],
+      sourceStates: sourceStates.results ?? [],
+      observations: observations.results ?? [],
+    };
+  } catch (error) {
+    executiveIntelligence = {
+      available: false,
+      error: error instanceof Error ? error.message : "Executive intelligence schema unavailable",
+    };
+  }
   const payload: Record<string, unknown> = {
     schemaVersion: SCHEMA_VERSION,
     buildSha: buildShaFromEnv(env),
@@ -167,6 +197,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
     sources: sources.results ?? [],
     reconciliation: reconciliation.results ?? [],
     emailDiscoveries: emailDiscoveries.results ?? [],
+    executiveIntelligence,
   };
   if (!detailed) return payload;
   const review = await env.VALLEY_DESK_DB.prepare(`
@@ -195,6 +226,25 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   payload.review = { items: review.results ?? [] };
   payload.decisions = decisions.results ?? [];
   payload.emailReview = { items: emailQueue.results ?? [] };
+  try {
+    const pendingObservations = await env.VALLEY_DESK_DB.prepare(`
+      SELECT o.id, o.source_id, o.snapshot_id, o.institution_id, o.person_id,
+             o.kind, o.status, o.verification_status, o.payload_json,
+             o.instruction_like, o.created_at, o.reviewed_at, o.reviewed_by,
+             o.review_note, s.final_url, s.extraction_status
+      FROM source_observations o
+      LEFT JOIN source_snapshots s ON s.id = o.snapshot_id
+      WHERE o.verification_status = 'unverified'
+      ORDER BY o.created_at DESC
+      LIMIT 100
+    `).all();
+    payload.executiveReview = { items: pendingObservations.results ?? [] };
+  } catch (error) {
+    payload.executiveReview = {
+      items: [],
+      error: error instanceof Error ? error.message : "Executive intelligence schema unavailable",
+    };
+  }
   return payload;
 }
 
@@ -209,6 +259,90 @@ export async function handleReviewApi(request: Request, env: ReviewEnv) {
     }
     const detailed = url.pathname === "/api/automation/status/review";
     return json(await statusPayload(env, detailed));
+  }
+
+  if (url.pathname === "/api/executive-observations") {
+    if (method !== "GET" && method !== "HEAD") {
+      return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
+    }
+    const status = url.searchParams.get("status") ?? "unverified";
+    if (!new Set(["unverified", "verified", "ignored"]).has(status)) {
+      return json({ error: "invalid_status" }, 400);
+    }
+    try {
+      const rows = await env.VALLEY_DESK_DB.prepare(`
+        SELECT o.id, o.source_id, o.snapshot_id, o.institution_id, o.person_id,
+               o.kind, o.status, o.verification_status, o.payload_json,
+               o.instruction_like, o.created_at, o.reviewed_at, o.reviewed_by,
+               o.review_note, s.final_url, s.extraction_status
+        FROM source_observations o
+        LEFT JOIN source_snapshots s ON s.id = o.snapshot_id
+        WHERE o.verification_status = ?
+        ORDER BY o.created_at DESC
+        LIMIT ?
+      `).bind(status, boundedLimit(url)).all();
+      return json({ items: rows.results ?? [] });
+    } catch (error) {
+      return json({ error: "executive_intelligence_unavailable" }, 503);
+    }
+  }
+
+  const executiveDecisionMatch = /^\/api\/executive-observations\/([^/]+)\/decision$/.exec(url.pathname);
+  if (executiveDecisionMatch) {
+    if (method !== "POST") {
+      return json({ error: "method_not_allowed" }, 405, { allow: "POST" });
+    }
+    if (!isJsonContentType(request)) return json({ error: "unsupported_media_type" }, 415);
+    const token = env.REVIEW_API_TOKEN ?? "";
+    if (!rateLimitPost(request, token)) return json({ error: "rate_limited" }, 429, { "retry-after": "60" });
+    const idempotencyKey = request.headers.get("idempotency-key")?.trim();
+    if (idempotencyKey) {
+      if (idempotencyKey.length > 128) return json({ error: "invalid_idempotency_key" }, 400);
+      const cached = readIdempotent(token, idempotencyKey);
+      if (cached) return json(cached.body, cached.status);
+    }
+    let id = "";
+    try {
+      id = decodeURIComponent(executiveDecisionMatch[1]);
+    } catch {
+      return json({ error: "invalid_observation_id" }, 400);
+    }
+    let raw = "";
+    try {
+      raw = await request.text();
+    } catch {
+      return json({ error: "invalid_json" }, 400);
+    }
+    if (raw.length > MAX_JSON_BYTES) return json({ error: "payload_too_large" }, 413);
+    let body: { decision?: unknown; note?: unknown };
+    try {
+      body = JSON.parse(raw) as { decision?: unknown; note?: unknown };
+    } catch {
+      return json({ error: "invalid_json" }, 400);
+    }
+    if (body.decision !== "verified" && body.decision !== "ignored") {
+      return json({ error: "invalid_decision" }, 400);
+    }
+    if (body.note !== undefined && (typeof body.note !== "string" || body.note.length > 1_000)) {
+      return json({ error: "invalid_note" }, 400);
+    }
+    const reviewer = request.headers.get("cf-access-authenticated-user-email") ?? "review-api-token";
+    try {
+      const result = await reviewLeadershipObservation(
+        env.VALLEY_DESK_DB,
+        id,
+        body.decision,
+        reviewer,
+        typeof body.note === "string" ? body.note : undefined,
+      );
+      const payload = { ...result, idempotent: result.idempotent ?? false };
+      if (idempotencyKey) rememberIdempotent(token, idempotencyKey, 200, payload);
+      logOps("leadership-review", { outcome: body.decision, observationId: id, reviewer });
+      return json(payload);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Executive observation could not be reviewed";
+      return json({ error: "observation_not_reviewable", message }, 409);
+    }
   }
 
   if (url.pathname === "/api/review-queue") {

@@ -14,7 +14,7 @@
     "ingest:events": "tsx scripts/ingest-events.mjs",
     "ingest:social": "tsx scripts/ingest-social.mjs",
     "ingest:all": "tsx scripts/ingest-all.mjs",
-    "test": "node --import tsx/esm --test --test-concurrency=1 test/query-contracts.test.ts test/cloudflare-ops.test.ts test/brand-prod.test.ts test/events-ingest.test.ts test/news-extraction.test.ts test/pagination.test.ts",
+    "test": "node --import tsx/esm --test --test-concurrency=1 test/query-contracts.test.ts test/cloudflare-ops.test.ts test/brand-prod.test.ts test/events-ingest.test.ts test/news-extraction.test.ts test/pagination.test.ts test/executive-intelligence.test.ts",
     "ops:smoke": "node --import tsx/esm scripts/ops-smoke.mjs",
     "secret-scan": "node scripts/secret-scan.mjs"
   },

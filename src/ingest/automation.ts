@@ -41,6 +41,18 @@ import { logOps } from "../lib/ops";
 import { matchingProductUses } from "./product-watch";
 import { runScheduledIngest, type IngestRun, type IngestRunOptions } from "./run-all";
 import { isSuccessfulSourceState } from "./source-health";
+import {
+  officialSourceCoverage,
+  coveragePack,
+} from "./coverage-pack";
+import {
+  persistLeadershipObservations,
+  persistLeadershipSnapshots,
+  persistScheduledSourceState,
+  readScheduledSourceStates,
+  seedCoveragePack,
+} from "./executive-persistence";
+import { monitorLeadershipSources } from "./leadership-monitor";
 
 export type AutomationEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
@@ -158,6 +170,71 @@ async function enrichBounded(
   return out.filter((row): row is CandidateEnrichment => Boolean(row));
 }
 
+type LeadershipAutomationResult = {
+  outcome: "ok" | "degraded" | "failed";
+  coverage: ReturnType<typeof officialSourceCoverage>;
+  seeded: boolean;
+  fetched: number;
+  snapshots: number;
+  observations: number;
+  schedules: number;
+  error?: string;
+};
+
+async function runLeadershipStage(
+  env: AutomationEnv,
+  fetchImpl: typeof fetch,
+  now: Date,
+): Promise<LeadershipAutomationResult> {
+  const coverage = officialSourceCoverage(coveragePack);
+  try {
+    await seedCoveragePack(env.VALLEY_DESK_DB, coveragePack, now);
+    const states = await readScheduledSourceStates(env.VALLEY_DESK_DB);
+    const result = await monitorLeadershipSources({ fetchImpl, pack: coveragePack, states, now });
+    const snapshots = await persistLeadershipSnapshots(env.VALLEY_DESK_DB, result.snapshots);
+    const observations = await persistLeadershipObservations(env.VALLEY_DESK_DB, result.observations);
+    const schedules = await persistScheduledSourceState(env.VALLEY_DESK_DB, result.schedule);
+    const failed = result.snapshots.filter((snapshot) => (
+      snapshot.state !== "success" && snapshot.state !== "unchanged"
+    )).length;
+    const outcome = failed > 0 ? "degraded" : "ok";
+    logOps("leadership", {
+      outcome,
+      fetched: result.fetchedUrls.length,
+      snapshots,
+      observations,
+      schedules,
+      failed,
+      coverage,
+    }, outcome === "ok" ? "info" : "warn");
+    return {
+      outcome,
+      coverage,
+      seeded: true,
+      fetched: result.fetchedUrls.length,
+      snapshots,
+      observations,
+      schedules,
+    };
+  } catch (error) {
+    const message = attemptError(error);
+    // Leadership monitoring is review-only and must not make the ordinary
+    // hourly news/event ingest fail when its additive schema or upstreams are
+    // unavailable.
+    logOps("leadership", { outcome: "failed", error: message, coverage }, "error");
+    return {
+      outcome: "failed",
+      coverage,
+      seeded: false,
+      fetched: 0,
+      snapshots: 0,
+      observations: 0,
+      schedules: 0,
+      error: message,
+    };
+  }
+}
+
 export async function runAutomation(
   env: AutomationEnv,
   fetchImpl: typeof fetch = runtimeFetch,
@@ -181,8 +258,13 @@ export async function runAutomation(
   logOps("lock", { outcome: "acquired" });
   let stage = "load-news-extractions";
   let persistedRunId: string | undefined;
+  const leadershipNow = new Date();
+  let leadership: LeadershipAutomationResult;
   try {
     await ensureLock();
+    stage = "leadership-monitor";
+    leadership = await runLeadershipStage(env, fetchImpl, leadershipNow);
+    stage = "load-news-extractions";
     const newsExtractions = await readNewsArticleExtractions(env.VALLEY_DESK_DB);
     stage = "fetch-sources";
     const run = await ingest({
@@ -357,6 +439,7 @@ export async function runAutomation(
       modelFailedCount,
       sourceHealthCount,
       newsExtractionCount,
+      leadership,
       ...reconciliation,
       ...editorial,
       notes: run.notes,

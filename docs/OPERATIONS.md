@@ -33,6 +33,8 @@ No second Worker or `env.staging` block is used.
 | `GET`/`HEAD` `/api/automation/status/review` | bearer token | Status plus a short review queue and recent decisions |
 | `GET`/`HEAD` `/api/review-queue` | bearer token | Review queue |
 | `POST` `/api/review-queue/:id/decision` | bearer token | Approve or reject. JSON body, 20 POSTs / 10 min / token+IP, `Idempotency-Key` supported |
+| `GET`/`HEAD` `/api/executive-observations` | bearer token | Leadership observations filtered by verification status |
+| `POST` `/api/executive-observations/:id/decision` | bearer token | Verify or ignore one complete, non-hostile leadership observation |
 
 Unauthorized private routes return `404 { error: "not_found" }` so they stay undiscoverable. Health never includes run details, source URLs, or tokens.
 
@@ -56,11 +58,13 @@ That rule lives in the Cloudflare dashboard, not in this Worker. Without it, som
 
 ## Logs and provenance
 
-Hourly cron writes JSON lines for `cron`, `lock`, `run`, `source`, `news-extraction`, `model`, `publication`, and `reconciliation` outcomes. Secrets and token-like keys are redacted.
+Hourly cron writes JSON lines for `cron`, `lock`, `leadership`, `leadership-review`, `run`, `source`, `news-extraction`, `model`, `publication`, and `reconciliation` outcomes. Secrets and token-like keys are redacted. Leadership monitoring is review-only and failure-isolated from news/event ingestion; each run seeds the 16-institution coverage registry, fetches at most 16 bounded first-party sources, persists snapshots/observations, and records explicit active/degraded coverage posture. LinkedIn inventory and partial/PDF sources are retained but never fetched.
 
-`schemaVersion` is the latest D1 migration prefix (currently `0011`). `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
+`schemaVersion` is the latest D1 migration prefix (currently `0013`). `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker.
 
 News article extraction is URL-keyed in `news_article_extractions` (`0011`). Successful rows cache bounded normalized text only (never raw HTML) and refresh after 7 days. `failed` and `no-content` cool down from 6 hours with exponential backoff capped at 7 days. A failed refresh keeps the last successful body so the item never regresses to the RSS snippet. Article fetches stay on exact-host HTTPS, with redirect, size, time, concurrency, and per-source candidate-cap bounds.
+
+Executive intelligence is additive in `0012_executive_intelligence.sql` and `0013_executive_verification.sql`. `covered_institutions.official_source_status` is explicit for every covered institution. Empty, challenge, partial, unrecognized, hostile, and failed snapshots do not create departure/title-change observations. A reviewer must verify a complete, non-hostile snapshot with an HTTPS final URL before role history is changed; replacements close only the normalized prior open title and preserve the old row.
 
 The scheduled handler starts extraction-cache cleanup in its own `waitUntil`, independently of the content automation promise. Cleanup removes stale rows after 45 days, preserves active backoff and recent successful bodies, and converges the table to a 2,000-row cap in bounded 200-row batches.
 

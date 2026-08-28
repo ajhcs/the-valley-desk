@@ -10,6 +10,8 @@ Vite + React + TypeScript + TanStack Router + Tailwind on Cloudflare Workers. Hu
 
 One production Worker runs hourly. It fetches newsroom RSS, official chapter events, and configured social sources, then writes every raw candidate to D1 before any model call. Muse Spark 1.2 Contributor (`meta/muse-spark-1.2-contributor`) classifies and grounds a small budget of relevant candidates through OpenRouter's OpenAI-compatible API. Deterministic rules—not the model—make the final publication decision.
 
+The same locked hourly run seeds the 16-system executive coverage registry and performs bounded, review-only checks against enabled first-party leadership sources. Every canonical system has an explicit active or degraded official-source posture; transitional, partial, and PDF evidence is retained as metadata without being used to infer departures. LinkedIn inventory is reusable for identity context but is never fetched. Complete, non-hostile snapshots produce protected review observations, and a reviewer must verify evidence before role history changes.
+
 The automatic editor-in-chief publishes official future chapter events when their official source and attendance link validate. Other events require a future date, attendance path, local relevance, and high-confidence evidence. News requires a named local health system, first-party corroboration, a material operating/technology change, literal evidence spans, and impact/body copy that is verbatim-supported by the source; cited context must likewise be verbatim-supported by verified prior coverage. Unsupported paraphrase or model-written claims stay in review. A model failure, timeout, or skipped budget slot leaves news in review; it never blocks rule-confirmed official events. Unchanged successful enrichments are reused. Unchanged failures cool down with exponential backoff instead of retrying every hour. A changed content fingerprint becomes eligible again immediately.
 
 Allowlisted HTTPS article pages are fetched after RSS discovery. JSON-LD `articleBody` wins, then `article`/`main`. Normalized text is cached in D1 by URL (`0011`); successes refresh after 7 days, while `failed`/`no-content` cool down from 6 hours with exponential backoff capped at 7 days. A failed refresh keeps the last successful body so the full article never regresses to the RSS snippet. Raw HTML is never stored. The candidate cap is round-robin across sources; exact-host HTTPS, redirects, size, time, and concurrency bounds stay closed.
@@ -39,6 +41,8 @@ Trigger the local cron at `/cdn-cgi/handler/scheduled?format=json`. Public healt
 - `GET /api/automation/status/review`
 - `GET /api/review-queue?status=review`
 - `POST /api/review-queue/:id/decision` with `{"decision":"approved","note":"..."}` or `{"decision":"rejected","note":"..."}`
+- `GET /api/executive-observations?status=unverified`
+- `POST /api/executive-observations/:id/decision` with `{"decision":"verified","note":"..."}` or `{"decision":"ignored","note":"..."}`
 
 All private routes require `Authorization: Bearer $REVIEW_API_TOKEN`. A valid approval publishes immediately through the same dynamic content layer. `HEAD` is supported on public machine routes and private GET APIs. GitHub Actions runs locked install, tests, typecheck/build, local D1/scheduled smoke, `npm audit`, and a secret scan without production secrets.
 
