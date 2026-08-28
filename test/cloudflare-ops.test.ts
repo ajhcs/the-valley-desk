@@ -1024,6 +1024,36 @@ test("intentional source gaps and evidence-validation rejections do not generate
   database.close();
 });
 
+test("an empty cooldown queue does not falsely resolve a model outage", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const env = { VALLEY_DESK_DB: db };
+  for (let index = 0; index < 2; index += 1) {
+    await sendAutomationAlerts(env, {
+      notes: { sources: [] },
+      modelSelectedCount: 1,
+      modelFailedCount: 1,
+      modelOperationalFailedCount: 1,
+      modelSucceededCount: 0,
+    }, new Date(`2026-08-28T0${index}:00:00.000Z`));
+  }
+  for (let index = 2; index < 4; index += 1) {
+    await sendAutomationAlerts(env, {
+      notes: { sources: [] },
+      modelSelectedCount: 0,
+      modelFailedCount: 0,
+      modelOperationalFailedCount: 0,
+      modelSucceededCount: 0,
+    }, new Date(`2026-08-28T0${index}:00:00.000Z`));
+  }
+  const row = database.prepare(
+    "SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:model-enrichment'",
+  ).get() as { state: string; recovery_count: number };
+  assert.deepEqual({ ...row }, { state: "open", recovery_count: 0 });
+  database.close();
+});
+
 test("daily operational digest claims once per pack and remains bounded", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);

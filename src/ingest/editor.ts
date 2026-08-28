@@ -213,6 +213,12 @@ export function evaluateCandidate(
     return review("untrusted-source-instructions", ["Source text contains instruction-like content and is held from automatic publication"]);
   }
   if (
+    isOfficialRegistryOrigin(item.source.origin)
+    && (!item.publishedAt || !Number.isFinite(Date.parse(item.publishedAt)))
+  ) {
+    return review("source-publication-date-required", ["Official discovery needs a verified source publication date"]);
+  }
+  if (
     item.publishedAt
     && Number.isFinite(Date.parse(item.publishedAt))
     && now.getTime() - Date.parse(item.publishedAt) > 45 * 24 * 60 * 60 * 1_000

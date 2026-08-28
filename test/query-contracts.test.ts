@@ -3214,6 +3214,19 @@ test("automatic editor publishes only rule-confirmed material", () => {
     evaluateCandidate(discovery, { ...regionalEvidence, relevanceScore: 81 }, now).rule,
     "relevance-threshold",
   );
+  const undatedOfficialDiscovery = {
+    ...discovery,
+    publishedAt: undefined,
+    source: { ...discovery.source, origin: "official-ofs-penn-newsroom" },
+  };
+  assert.equal(
+    evaluateCandidate(undatedOfficialDiscovery, evidence, now).rule,
+    "source-publication-date-required",
+  );
+  assert.equal(
+    evaluateCandidate({ ...undatedOfficialDiscovery, publishedAt: "2026-08-25T09:30:00.000Z" }, evidence, now).action,
+    "publish",
+  );
   const firstParty = {
     ...discovery,
     source: { ...discovery.source, origin: "penn-medicine-newsroom" },

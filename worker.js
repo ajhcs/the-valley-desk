@@ -276,7 +276,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
         validationRejected,
       },
     });
-  } else {
+  } else if (selected > 0) {
     await recover("valley-desk:model-enrichment", 2);
   }
 
