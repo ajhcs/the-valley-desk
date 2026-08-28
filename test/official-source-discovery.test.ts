@@ -6,12 +6,16 @@ import {
   OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION,
   applyOfficialSourceRelevanceGate,
   canProceedOfficialCandidate,
+  contentItemsFromOfficialCandidates,
   discoverOfficialLinks,
   discoverOfficialSources,
+  hydrateOfficialCandidates,
   isOfficialSourceDue,
   officialSourceBackoffMs,
   officialSourceHostAllowlist,
   officialSourceRegistry,
+  selectDueOfficialSources,
+  selectOfficialDetailCandidates,
   officialSourcesForCategory,
   officialSourcesForInstitution,
   type OfficialDiscoveryCandidate,
@@ -253,4 +257,76 @@ test("procurement candidates need a covered institution and a product alias", ()
   assert.equal(canProceedOfficialCandidate(candidate), true);
   assert.equal(canProceedOfficialCandidate({ ...candidate, institutionId: undefined }), false);
   assert.equal(canProceedOfficialCandidate({ ...candidate, title: "CHOP supplier engagement update" }), false);
+});
+
+test("detail hydration supplies normalized evidence before relevance and conversion", async () => {
+  const source: OfficialSource = {
+    ...pennNews,
+    id: "ofs-test-detail",
+    url: "https://pennmedicine.org/news",
+  };
+  const calls: string[] = [];
+  const result = await discoverOfficialSources({
+    sources: [source],
+    now: new Date("2026-08-28T12:00:00.000Z"),
+    concurrency: 1,
+    detailConcurrency: 1,
+    relevanceConcurrency: 1,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      calls.push(url);
+      if (url === source.url) {
+        return new Response('<html><a href="/news/epic-update">Penn Medicine publishes Epic update</a></html>', {
+          headers: { "content-type": "text/html" },
+        });
+      }
+      return new Response('<main><h1>Penn Medicine publishes Epic update</h1><p>Penn Medicine published an Epic update for regional caregivers.</p><p>The update changes a documented workflow.</p></main>', {
+        headers: { "content-type": "text/html" },
+      });
+    },
+    relevanceGate: async (input) => {
+      assert.match(input.candidate.detailText ?? "", /documented workflow/);
+      return {
+        decision: "accept",
+        relevanceScore: 99,
+        confidence: 0.99,
+        reasons: ["Official detail evidence"],
+        evidenceSpans: ["The update changes a documented workflow."],
+      };
+    },
+  });
+  assert.equal(calls.length, 2, "one bounded listing fetch plus one detail fetch");
+  assert.equal(result.candidates[0]?.detailState, "success");
+  assert.match(result.candidates[0]?.detailText ?? "", /documented workflow/);
+  const [item] = contentItemsFromOfficialCandidates(result.candidates);
+  assert.equal(item?.status, "review");
+  assert.match(item?.body ?? "", /documented workflow/);
+});
+
+test("detail redirects stay on the exact candidate host and cannot become open fetches", async () => {
+  const candidate: OfficialDiscoveryCandidate = {
+    id: "official-detail-redirect",
+    sourceId: pennNews.id,
+    institutionId: "inst-penn",
+    category: "news",
+    region: "PA",
+    title: "Penn Medicine update",
+    url: "https://pennmedicine.org/news/update",
+    sourcePageUrl: pennNews.url,
+    sourceName: pennNews.name,
+    trust: pennNews.trust,
+    discoveredAt: "2026-08-28T12:00:00.000Z",
+    status: "review",
+    instructionLike: false,
+  };
+  const hydrated = await hydrateOfficialCandidates([candidate], {
+    sources: [pennNews],
+    concurrency: 1,
+    fetchImpl: async () => new Response(null, {
+      status: 302,
+      headers: { location: "https://evil.example/article" },
+    }),
+  });
+  assert.notEqual(hydrated.candidates[0]?.detailState, "success");
+  assert.equal(hydrated.candidates[0]?.detailText, undefined);
 });

@@ -32,6 +32,13 @@ export const OFFICIAL_HEALTH_SYSTEM_ORIGINS = new Set([
   "jefferson-newsroom", "main-line-health-newsroom", "penn-medicine-newsroom",
   "temple-health-newsroom", "tower-health-newsroom",
 ]);
+
+/** Candidates from the exact-host official-source registry have already
+ * passed its first-party/regulatory relevance gate. They still remain subject
+ * to this editor and the second-pass verifier before publication. */
+export function isOfficialRegistryOrigin(origin: string) {
+  return origin.startsWith("official-ofs-");
+}
 const MATERIAL_CHANGES = new Set([
   "deployment", "workflow", "safety", "security", "outage",
   "interoperability", "commercial", "regulatory",
@@ -224,7 +231,7 @@ export function evaluateCandidate(
   if (enrichment.decision !== "priority_review") {
     return review("model-not-priority", enrichment.reasons);
   }
-  if (!OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin)) {
+  if (!OFFICIAL_HEALTH_SYSTEM_ORIGINS.has(item.source.origin) && !isOfficialRegistryOrigin(item.source.origin)) {
     return review("primary-corroboration-required", ["Discovery source requires first-party corroboration"]);
   }
 

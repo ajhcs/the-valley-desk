@@ -58,6 +58,10 @@ import {
 } from "./executive-persistence";
 import { monitorLeadershipSources } from "./leadership-monitor";
 import { verifyPendingSignalPointers, type SignalVerificationResult } from "./signal-verification";
+import {
+  runOfficialSourceStage,
+  type OfficialSourceAutomationResult,
+} from "./official-source-automation";
 
 export type AutomationEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
@@ -372,10 +376,47 @@ export async function runAutomation(
     failed: 0,
     candidates: [],
   };
+  let officialDiscovery: OfficialSourceAutomationResult = {
+    outcome: "ok",
+    fetched: 0,
+    snapshots: 0,
+    schedules: 0,
+    candidates: 0,
+    accepted: 0,
+    editorialCandidates: [],
+  };
   try {
     await ensureLock();
     stage = "leadership-monitor";
     leadership = await runLeadershipStage(env, fetchImpl, leadershipNow, mode);
+    stage = "official-source-discovery";
+    try {
+      officialDiscovery = await runOfficialSourceStage(
+        env.VALLEY_DESK_DB,
+        env,
+        fetchImpl,
+        leadershipNow,
+      );
+      logOps("official-source-discovery", {
+        outcome: officialDiscovery.outcome,
+        cadence: mode,
+        fetched: officialDiscovery.fetched,
+        snapshots: officialDiscovery.snapshots,
+        schedules: officialDiscovery.schedules,
+        candidates: officialDiscovery.candidates,
+        accepted: officialDiscovery.accepted,
+        editorialCandidates: officialDiscovery.editorialCandidates.length,
+      }, officialDiscovery.outcome === "ok" ? "info" : "warn");
+    } catch (error) {
+      // Official-source discovery is additive. A D1/schema or upstream failure
+      // must not stop the ordinary hourly ingest, and no discovery can publish here.
+      officialDiscovery = {
+        ...officialDiscovery,
+        outcome: "failed",
+        error: error instanceof Error ? error.message : "Official source discovery failed",
+      };
+      logOps("official-source-discovery", { outcome: "failed", error: officialDiscovery.error }, "error");
+    }
     stage = "signal-verification";
     try {
       signalVerification = await verifyPendingSignalPointers(
@@ -415,14 +456,18 @@ export async function runAutomation(
       includeEvents: mode === "daily",
     });
     const signalCandidates = signalVerification.candidates;
-    const additiveCandidates = [...leadership.editorialCandidates, ...signalCandidates];
-    const run = additiveCandidates.length > 0
+    const officialNews = officialDiscovery.editorialCandidates.filter((item) => item.kind !== "event");
+    const officialEvents = officialDiscovery.editorialCandidates.filter((item) => item.kind === "event");
+    const additiveNews = [...leadership.editorialCandidates, ...signalCandidates, ...officialNews];
+    const run = additiveNews.length > 0 || officialEvents.length > 0
       ? {
         ...ingestedRun,
-        rss: [...ingestedRun.rss, ...additiveCandidates],
+        rss: additiveNews.length > 0 ? [...ingestedRun.rss, ...additiveNews] : ingestedRun.rss,
+        events: officialEvents.length > 0 ? [...ingestedRun.events, ...officialEvents] : ingestedRun.events,
         notes: {
           ...ingestedRun.notes,
-          rss: ingestedRun.notes.rss + additiveCandidates.length,
+          rss: ingestedRun.notes.rss + additiveNews.length,
+          events: ingestedRun.notes.events + officialEvents.length,
         },
       }
       : ingestedRun;
@@ -637,6 +682,7 @@ export async function runAutomation(
       sourceHealthCount,
       newsExtractionCount,
       signalVerification,
+      officialDiscovery,
       leadership,
       ...reconciliation,
       ...editorial,

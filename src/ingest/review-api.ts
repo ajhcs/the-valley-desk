@@ -188,6 +188,34 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       error: error instanceof Error ? error.message : "Signal verification schema unavailable",
     };
   }
+  let officialSourceDiscovery: Record<string, unknown> = { available: false };
+  try {
+    const schedules = await env.VALLEY_DESK_DB.prepare(`
+      SELECT state, COUNT(*) AS count
+      FROM official_source_schedule GROUP BY state ORDER BY state
+    `).all();
+    const snapshots = await env.VALLEY_DESK_DB.prepare(`
+      SELECT state, COUNT(*) AS count
+      FROM official_source_snapshots GROUP BY state ORDER BY state
+    `).all();
+    const candidates = await env.VALLEY_DESK_DB.prepare(`
+      SELECT status, relevance_decision, COUNT(*) AS count
+      FROM official_source_candidates
+      GROUP BY status, relevance_decision
+      ORDER BY status, relevance_decision
+    `).all();
+    officialSourceDiscovery = {
+      available: true,
+      schedules: schedules.results ?? [],
+      snapshots: snapshots.results ?? [],
+      candidates: candidates.results ?? [],
+    };
+  } catch (error) {
+    officialSourceDiscovery = {
+      available: false,
+      error: error instanceof Error ? error.message : "Official source discovery schema unavailable",
+    };
+  }
   let executiveIntelligence: Record<string, unknown> = { available: false };
   try {
     const coverage = await env.VALLEY_DESK_DB.prepare(`
@@ -227,6 +255,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
     reconciliation: reconciliation.results ?? [],
     emailDiscoveries: emailDiscoveries.results ?? [],
     signalVerification,
+    officialSourceDiscovery,
     executiveIntelligence,
   };
   if (!detailed) return payload;
