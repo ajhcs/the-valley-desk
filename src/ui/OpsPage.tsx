@@ -9,6 +9,11 @@ type OpsPayload = {
   sources?: Array<{ source_id?: string; state?: string; consecutive_failures?: number; last_checked_at?: string }>;
   review?: { items?: unknown[] };
   emailReview?: { items?: unknown[] };
+  signalVerification?: {
+    discoveries?: Array<{ verification_state?: string; count?: number }>;
+    pointers?: Array<{ state?: string; count?: number }>;
+  };
+  signalReview?: { items?: unknown[] };
 };
 
 function OpsPage() {
@@ -48,6 +53,8 @@ function OpsPage() {
             <div><dt>Published</dt><dd>{payload.publications?.count ?? 0}</dd></div>
             <div><dt>Review candidates</dt><dd>{payload.review?.items?.length ?? 0}</dd></div>
             <div><dt>Email pointers</dt><dd>{payload.emailReview?.items?.length ?? 0}</dd></div>
+            <div><dt>Signal verified</dt><dd>{payload.signalVerification?.pointers?.find((row) => row.state === "verified")?.count ?? 0}</dd></div>
+            <div><dt>Signal failed</dt><dd>{payload.signalVerification?.pointers?.find((row) => row.state === "failed")?.count ?? 0}</dd></div>
           </dl>
           <h2>Source health</h2>
           <ul>
@@ -65,4 +72,3 @@ function OpsPage() {
 }
 
 export { OpsPage };
-

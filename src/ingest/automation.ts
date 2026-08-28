@@ -57,6 +57,7 @@ import {
   autonomouslyVerifyLeadership,
 } from "./executive-persistence";
 import { monitorLeadershipSources } from "./leadership-monitor";
+import { verifyPendingSignalPointers, type SignalVerificationResult } from "./signal-verification";
 
 export type AutomationEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
@@ -361,10 +362,47 @@ export async function runAutomation(
   let persistedRunId: string | undefined;
   const leadershipNow = new Date();
   let leadership: LeadershipAutomationResult;
+  let signalVerification: SignalVerificationResult = {
+    outcome: "ok",
+    discoveries: 0,
+    pointers: 0,
+    fetched: 0,
+    verified: 0,
+    rejected: 0,
+    failed: 0,
+    candidates: [],
+  };
   try {
     await ensureLock();
     stage = "leadership-monitor";
     leadership = await runLeadershipStage(env, fetchImpl, leadershipNow, mode);
+    stage = "signal-verification";
+    try {
+      signalVerification = await verifyPendingSignalPointers(
+        env.VALLEY_DESK_DB,
+        fetchImpl,
+        leadershipNow,
+      );
+      logOps("signal-verification", {
+        outcome: signalVerification.outcome,
+        discoveries: signalVerification.discoveries,
+        pointers: signalVerification.pointers,
+        fetched: signalVerification.fetched,
+        verified: signalVerification.verified,
+        rejected: signalVerification.rejected,
+        failed: signalVerification.failed,
+        candidates: signalVerification.candidates.length,
+      }, signalVerification.outcome === "ok" ? "info" : "warn");
+    } catch (error) {
+      // Signal verification is additive. A D1/schema or upstream failure must
+      // not stop the ordinary hourly ingest, and no pointer can publish here.
+      signalVerification = {
+        ...signalVerification,
+        outcome: "failed",
+        error: error instanceof Error ? error.message : "Signal verification failed",
+      };
+      logOps("signal-verification", { outcome: "failed", error: signalVerification.error }, "error");
+    }
     stage = "load-news-extractions";
     const newsExtractions = await readNewsArticleExtractions(env.VALLEY_DESK_DB);
     stage = "fetch-sources";
@@ -376,13 +414,15 @@ export async function runAutomation(
       mode,
       includeEvents: mode === "daily",
     });
-    const run = leadership.editorialCandidates.length > 0
+    const signalCandidates = signalVerification.candidates;
+    const additiveCandidates = [...leadership.editorialCandidates, ...signalCandidates];
+    const run = additiveCandidates.length > 0
       ? {
         ...ingestedRun,
-        rss: [...ingestedRun.rss, ...leadership.editorialCandidates],
+        rss: [...ingestedRun.rss, ...additiveCandidates],
         notes: {
           ...ingestedRun.notes,
-          rss: ingestedRun.notes.rss + leadership.editorialCandidates.length,
+          rss: ingestedRun.notes.rss + additiveCandidates.length,
         },
       }
       : ingestedRun;
@@ -596,6 +636,7 @@ export async function runAutomation(
       verifierRejectedCount: verificationRun.rejected,
       sourceHealthCount,
       newsExtractionCount,
+      signalVerification,
       leadership,
       ...reconciliation,
       ...editorial,

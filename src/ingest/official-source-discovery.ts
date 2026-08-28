@@ -674,7 +674,23 @@ export async function discoverOfficialSources(options: OfficialDiscoveryOptions 
   const now = options.now ?? new Date();
   const states = options.states ?? new Map<string, OfficialSourceScheduleState>();
   const sourceCap = Math.max(0, Math.trunc(options.sourceCap ?? OFFICIAL_SOURCE_RUN_CAP));
-  const due = sources.filter((source) => isOfficialSourceDue(source, states.get(source.id), now)).slice(0, sourceCap);
+  // Prefer never-attempted and oldest-due sources before applying the run cap.
+  // Registry order must not let fast sources permanently starve later policy,
+  // finance, filing, procurement, or event sources.
+  const due = sources
+    .filter((source) => isOfficialSourceDue(source, states.get(source.id), now))
+    .sort((left, right) => {
+      const leftState = states.get(left.id);
+      const rightState = states.get(right.id);
+      if (!leftState && rightState) return -1;
+      if (leftState && !rightState) return 1;
+      const leftDue = Date.parse(leftState?.nextAttemptAt ?? "");
+      const rightDue = Date.parse(rightState?.nextAttemptAt ?? "");
+      const leftTime = Number.isFinite(leftDue) ? leftDue : 0;
+      const rightTime = Number.isFinite(rightDue) ? rightDue : 0;
+      return leftTime - rightTime || left.id.localeCompare(right.id);
+    })
+    .slice(0, sourceCap);
   const concurrency = options.concurrency ?? OFFICIAL_SOURCE_CONCURRENCY;
   const rows = await mapWithConcurrency(due, concurrency, (source) => discoverOne(source, states.get(source.id), {
     fetchImpl: options.fetchImpl ?? fetch,

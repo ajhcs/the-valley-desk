@@ -167,6 +167,27 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       SELECT category, status, COUNT(*) AS count
       FROM email_discoveries GROUP BY category, status
     `).all();
+  let signalVerification: Record<string, unknown> = { available: false };
+  try {
+    const states = await env.VALLEY_DESK_DB.prepare(`
+      SELECT verification_state, COUNT(*) AS count
+      FROM email_discoveries GROUP BY verification_state ORDER BY verification_state
+    `).all();
+    const pointers = await env.VALLEY_DESK_DB.prepare(`
+      SELECT state, COUNT(*) AS count
+      FROM signal_pointer_verifications GROUP BY state ORDER BY state
+    `).all();
+    signalVerification = {
+      available: true,
+      discoveries: states.results ?? [],
+      pointers: pointers.results ?? [],
+    };
+  } catch (error) {
+    signalVerification = {
+      available: false,
+      error: error instanceof Error ? error.message : "Signal verification schema unavailable",
+    };
+  }
   let executiveIntelligence: Record<string, unknown> = { available: false };
   try {
     const coverage = await env.VALLEY_DESK_DB.prepare(`
@@ -205,6 +226,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
     sources: sources.results ?? [],
     reconciliation: reconciliation.results ?? [],
     emailDiscoveries: emailDiscoveries.results ?? [],
+    signalVerification,
     executiveIntelligence,
   };
   if (!detailed) return payload;
@@ -225,15 +247,37 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   const emailQueue = await env.VALLEY_DESK_DB.prepare(`
       SELECT id, message_id, envelope_to, from_address, from_domain, subject, category, status, trust_state,
              url_count, urls_json, excerpt, truncated, instruction_like, receive_count,
-             first_seen_at, last_seen_at
+             first_seen_at, last_seen_at, verification_state,
+             verification_attempt_count, verification_attempted_at,
+             verification_next_attempt_at, verification_error,
+             verified_url_count, candidate_count, verified_at
       FROM email_discoveries
       WHERE status = 'review'
       ORDER BY last_seen_at DESC
       LIMIT 50
     `).all();
+  let signalQueue: Record<string, unknown> = { items: [] };
+  try {
+    const rows = await env.VALLEY_DESK_DB.prepare(`
+      SELECT v.id, v.discovery_id, v.pointer_url, v.normalized_url,
+             v.source_id, v.source_origin, v.trust_state, v.state,
+             v.attempt_count, v.attempted_at, v.next_attempt_at,
+             v.final_url, v.content_hash, v.candidate_ids_json, v.error
+      FROM signal_pointer_verifications v
+      ORDER BY v.attempted_at DESC
+      LIMIT 100
+    `).all();
+    signalQueue = { items: rows.results ?? [] };
+  } catch (error) {
+    signalQueue = {
+      items: [],
+      error: error instanceof Error ? error.message : "Signal verification schema unavailable",
+    };
+  }
   payload.review = { items: review.results ?? [] };
   payload.decisions = decisions.results ?? [];
   payload.emailReview = { items: emailQueue.results ?? [] };
+  payload.signalReview = signalQueue;
   try {
     const pendingObservations = await env.VALLEY_DESK_DB.prepare(`
       SELECT o.id, o.source_id, o.snapshot_id, o.institution_id, o.person_id,
