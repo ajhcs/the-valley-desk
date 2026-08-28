@@ -137,11 +137,16 @@ test("source discovery is bounded, partial snapshots stay review-only, and hosti
   assert.equal(result.candidates[0]?.instructionLike, true);
   assert.equal(result.schedule[0]?.consecutiveFailures, 0);
 
+  let failingCalls = 0;
   const failing = await discoverOfficialSources({
     sources: [source],
     now,
-    fetchImpl: async () => new Response("", { status: 503 }),
+    fetchImpl: async () => {
+      failingCalls += 1;
+      return new Response("", { status: 503 });
+    },
   });
+  assert.equal(failingCalls, 1, "official discovery never retries beyond its shared stage deadline");
   assert.equal(failing.candidates.length, 0);
   assert.equal(failing.snapshots[0]?.state, "failed");
   assert.equal(failing.schedule[0]?.consecutiveFailures, 1);
@@ -257,6 +262,50 @@ test("procurement candidates need a covered institution and a product alias", ()
   assert.equal(canProceedOfficialCandidate(candidate), true);
   assert.equal(canProceedOfficialCandidate({ ...candidate, institutionId: undefined }), false);
   assert.equal(canProceedOfficialCandidate({ ...candidate, title: "CHOP supplier engagement update" }), false);
+  assert.equal(canProceedOfficialCandidate({
+    ...candidate,
+    title: "CHOP sourcing update",
+    detailText: "CHOP published ORCA downtime order sets for its Epic downtime workflow.",
+  }), true);
+});
+
+test("persisted pending candidates retry when the listing itself is unchanged", async () => {
+  const source: OfficialSource = {
+    ...pennNews,
+    id: "ofs-test-retry",
+    url: "https://pennmedicine.org/retry-news",
+  };
+  const listing = '<html><a href="/retry-news/workflow">Penn Medicine workflow update</a></html>';
+  const first = await discoverOfficialSources({
+    sources: [source],
+    now: new Date("2026-08-28T12:00:00.000Z"),
+    detailCapPerRun: 0,
+    fetchImpl: async () => new Response(listing, { headers: { "content-type": "text/html" } }),
+  });
+  assert.equal(first.candidates[0]?.detailState, undefined);
+  const retryState = {
+    ...first.schedule[0]!,
+    nextAttemptAt: "2026-08-28T12:59:00.000Z",
+  };
+  const second = await discoverOfficialSources({
+    sources: [source],
+    states: new Map([[source.id, retryState]]),
+    retryCandidates: first.candidates,
+    now: new Date("2026-08-28T13:00:00.000Z"),
+    fetchImpl: async (input) => String(input) === source.url
+      ? new Response(listing, { headers: { "content-type": "text/html" } })
+      : new Response("<main><h1>Penn Medicine workflow update</h1><p>Penn Medicine changed a documented regional workflow.</p></main>", { headers: { "content-type": "text/html" } }),
+    relevanceGate: async () => ({
+      decision: "accept",
+      relevanceScore: 99,
+      confidence: 0.99,
+      reasons: ["Official regional evidence"],
+      evidenceSpans: ["Penn Medicine changed a documented regional workflow."],
+    }),
+  });
+  assert.equal(second.snapshots[0]?.state, "unchanged");
+  assert.equal(second.candidates[0]?.detailState, "success");
+  assert.equal(second.candidates[0]?.relevance?.decision, "accept");
 });
 
 test("detail hydration supplies normalized evidence before relevance and conversion", async () => {

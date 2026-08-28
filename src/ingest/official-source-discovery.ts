@@ -247,6 +247,7 @@ export type OfficialSourceRelevanceResult = {
 
 export type OfficialSourceRelevanceGate = (
   input: OfficialSourceRelevanceInput,
+  timeoutMs?: number,
 ) => Promise<OfficialSourceRelevanceResult>;
 
 export type OfficialDiscoveryResult = {
@@ -280,6 +281,8 @@ export type OfficialDiscoveryOptions = {
   detailCapPerRun?: number;
   detailConcurrency?: number;
   detailMaxChars?: number;
+  /** Previously persisted candidates that still need detail or relevance work. */
+  retryCandidates?: readonly OfficialDiscoveryCandidate[];
   /** Absolute wall-clock deadline for this additive stage. */
   deadlineMs?: number;
 };
@@ -631,7 +634,7 @@ function normalizeDetailPage(html: string, maxChars = OFFICIAL_SOURCE_DETAIL_MAX
 function detailCandidateOrder(candidates: readonly OfficialDiscoveryCandidate[]) {
   const buckets = new Map<string, OfficialDiscoveryCandidate[]>();
   for (const candidate of candidates) {
-    if (candidate.instructionLike || candidate.detailState) continue;
+    if (candidate.instructionLike || candidate.detailState === "success" || candidate.detailState === "hostile") continue;
     const bucket = buckets.get(candidate.sourceId) ?? [];
     bucket.push(candidate);
     buckets.set(candidate.sourceId, bucket);
@@ -711,6 +714,7 @@ export async function hydrateOfficialCandidates(
         // page from turning the allowlist into an open redirect fetcher.
         allowedRedirectHosts: exactHostAllowlist(candidate.url),
         maxRedirects: OFFICIAL_SOURCE_MAX_REDIRECTS,
+        attempts: 1,
       });
       if (host(response.url) !== host(candidate.url)) {
         throw new UpstreamError("upstream-failed", "Official detail redirect changed host");
@@ -925,7 +929,7 @@ export async function applyOfficialSourceRelevanceGate(
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
       const result = await Promise.race([
-        gate(officialSourceRelevanceInput(candidate)),
+        gate(officialSourceRelevanceInput(candidate), timeoutMs),
         new Promise<OfficialSourceRelevanceResult>((_, reject) => {
           timer = setTimeout(() => reject(new Error("Relevance gate timed out")), timeoutMs);
         }),
@@ -993,6 +997,7 @@ async function discoverOne(
       },
       allowedRedirectHosts: officialSourceHostAllowlist(source),
       maxRedirects: officialSourceRegistry.limits.maxRedirects,
+      attempts: 1,
     });
     if (!sourceSupportsResponse(source, response.headers.get("content-type"), response.body)) {
       return empty("blocked", "Unsupported source content type", response.url, "", new TextEncoder().encode(response.body).byteLength);
@@ -1091,8 +1096,9 @@ export async function discoverOfficialSources(options: OfficialDiscoveryOptions 
     deadlineAt,
   }));
   const rows = discoveredRows.filter((row): row is NonNullable<typeof row> => Boolean(row));
-  const listedCandidates = rows.flatMap((row) => row.candidates);
-  const hydrated = await hydrateOfficialCandidates(listedCandidates, {
+  const combined = new Map((options.retryCandidates ?? []).map((candidate) => [candidate.id, candidate]));
+  for (const candidate of rows.flatMap((row) => row.candidates)) combined.set(candidate.id, candidate);
+  const hydrated = await hydrateOfficialCandidates([...combined.values()], {
     sources,
     fetchImpl: options.fetchImpl ?? fetch,
     now,

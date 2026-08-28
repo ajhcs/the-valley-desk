@@ -42,6 +42,32 @@ type ScheduleRow = {
   last_error: string | null;
 };
 
+type RetryCandidateRow = {
+  id: string;
+  source_id: string;
+  institution_id: string | null;
+  category: OfficialDiscoveryCandidate["category"];
+  region: OfficialDiscoveryCandidate["region"];
+  title: string;
+  url: string;
+  source_page_url: string;
+  source_name: string;
+  trust: OfficialDiscoveryCandidate["trust"];
+  product_ids_json: string;
+  discovered_at: string;
+  instruction_like: number;
+  detail_title: string | null;
+  detail_text: string | null;
+  detail_fetched_at: string | null;
+  detail_hash: string | null;
+  detail_state: OfficialDiscoveryCandidate["detailState"] | null;
+  detail_error: string | null;
+  event_starts_at: string | null;
+  event_ends_at: string | null;
+  venue: string | null;
+  city: string | null;
+};
+
 function json(value: unknown) {
   return JSON.stringify(value);
 }
@@ -54,6 +80,60 @@ function snapshotForCandidate(
     snapshot.sourceId === candidate.sourceId
     && snapshot.fetchedAt === candidate.discoveredAt
   ));
+}
+
+export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limit = 24) {
+  const rows = await db.prepare(`
+    SELECT id, source_id, institution_id, category, region, title, url,
+           source_page_url, source_name, trust, product_ids_json, discovered_at,
+           instruction_like, detail_title, detail_text, detail_fetched_at,
+           detail_hash, detail_state, detail_error, event_starts_at,
+           event_ends_at, venue, city
+    FROM official_source_candidates
+    WHERE content_item_id IS NULL
+      AND instruction_like = 0
+      AND (
+        detail_state IS NULL OR detail_state IN ('failed', 'blocked')
+        OR relevance_decision IS NULL OR relevance_decision = 'review'
+      )
+    ORDER BY last_seen_at ASC, id ASC
+    LIMIT ?
+  `).bind(Math.max(1, Math.min(48, Math.trunc(limit) || 24))).all<RetryCandidateRow>();
+  return (rows.results ?? []).map((row) => {
+    let productIds: string[] = [];
+    try {
+      const parsed = JSON.parse(row.product_ids_json);
+      if (Array.isArray(parsed)) productIds = parsed.filter((value): value is string => typeof value === "string");
+    } catch {
+      productIds = [];
+    }
+    return {
+      id: row.id,
+      sourceId: row.source_id,
+      ...(row.institution_id ? { institutionId: row.institution_id } : {}),
+      category: row.category,
+      region: row.region,
+      title: row.title,
+      url: row.url,
+      sourcePageUrl: row.source_page_url,
+      sourceName: row.source_name,
+      trust: row.trust,
+      ...(productIds.length ? { productIds } : {}),
+      discoveredAt: row.discovered_at,
+      status: "review" as const,
+      instructionLike: Boolean(row.instruction_like),
+      ...(row.detail_title ? { detailTitle: row.detail_title } : {}),
+      ...(row.detail_text ? { detailText: row.detail_text } : {}),
+      ...(row.detail_fetched_at ? { detailFetchedAt: row.detail_fetched_at } : {}),
+      ...(row.detail_hash ? { detailHash: row.detail_hash } : {}),
+      ...(row.detail_state ? { detailState: row.detail_state } : {}),
+      ...(row.detail_error ? { detailError: row.detail_error } : {}),
+      ...(row.event_starts_at ? { eventStartsAt: row.event_starts_at } : {}),
+      ...(row.event_ends_at ? { eventEndsAt: row.event_ends_at } : {}),
+      ...(row.venue ? { venue: row.venue } : {}),
+      ...(row.city ? { city: row.city } : {}),
+    } satisfies OfficialDiscoveryCandidate;
+  });
 }
 
 export async function readOfficialSourceSchedule(db: D1DatabaseLike) {
@@ -232,7 +312,7 @@ export function officialSourceRelevanceGateFromEditor(
   fetchImpl: typeof fetch,
 ): OfficialSourceRelevanceGate | undefined {
   if (!config.apiKey) return undefined;
-  return async (input: OfficialSourceRelevanceInput) => {
+  return async (input: OfficialSourceRelevanceInput, callTimeoutMs?: number) => {
     const parsed = await completeEditorJson(
       [
         {
@@ -261,7 +341,7 @@ export function officialSourceRelevanceGateFromEditor(
         apiKey: config.apiKey,
         baseUrl: config.baseUrl,
         model: OFFICIAL_SOURCE_RELEVANCE_MODEL,
-        timeoutMs: config.timeoutMs,
+        timeoutMs: Math.min(config.timeoutMs ?? DEFAULT_EDITOR_TIMEOUT_MS, callTimeoutMs ?? Number.POSITIVE_INFINITY),
       },
       fetchImpl,
       { temperature: 0.1, maxTokens: 1024 },
@@ -292,6 +372,7 @@ export async function runOfficialSourceStage(
   };
   try {
     const states = await readOfficialSourceSchedule(db);
+    const retryCandidates = await readRetryOfficialSourceCandidates(db);
     const apiKey = env.OPENROUTER_API_KEY || env.EDITOR_MODEL_API_KEY;
     const timeoutMs = parseBoundedInt(
       env.EDITOR_MODEL_TIMEOUT_MS,
@@ -314,6 +395,7 @@ export async function runOfficialSourceStage(
       now,
       relevanceGate,
       relevanceTimeoutMs: timeoutMs,
+      retryCandidates,
     });
     const editorialCandidates = contentItemsFromOfficialCandidates(result.candidates);
     const convertedIds = new Set(editorialCandidates.map((item) => item.id));

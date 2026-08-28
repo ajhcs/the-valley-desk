@@ -34,6 +34,7 @@ export type OfficialProductCandidateLike = OfficialProductSourceLike & {
   title: string;
   body?: string;
   dek?: string;
+  detailText?: string;
 };
 
 function normalized(value: string) {
@@ -112,7 +113,7 @@ export function verifiedProductRelationshipForOfficialCandidate(candidate: Offic
     return [] as ProductUse[];
   }
   return matchingProductUsesInText(
-    [candidate.title, candidate.dek ?? "", candidate.body ?? ""].join("\n"),
+    [candidate.title, candidate.dek ?? "", candidate.body ?? "", candidate.detailText ?? ""].join("\n"),
     {
       productIds: candidate.productIds,
       orgIds: institutionOrgIds(candidate.institutionId),
