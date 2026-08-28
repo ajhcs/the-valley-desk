@@ -110,6 +110,36 @@ test("trusted fixed source organization mappings survive generic alias filtering
   assert.deepEqual(item.orgs, ["org-cooper"]);
 });
 
+test("distinct long newsroom headlines receive stable collision-resistant slugs", () => {
+  const shared = "Cooper University Hospital Cape Regional ";
+  const first = rssItemToContent({
+    title: `${shared}introduces a new MRI system for Cape May`,
+    link: "https://blogs.cooperhealth.org/news/p/14376",
+    description: "Cooper introduced a new MRI system.",
+    pubDate: "Thu, 20 Aug 2026 12:00:00 GMT",
+    guid: "https://blogs.cooperhealth.org/news/p/14376",
+  }, "Cooper University Health Care News", "2026-08-28T12:00:00.000Z");
+  const second = rssItemToContent({
+    title: `${shared}earns cardiac arrest quality recognition`,
+    link: "https://blogs.cooperhealth.org/news/p/14383",
+    description: "Cooper earned quality recognition.",
+    pubDate: "Thu, 27 Aug 2026 12:00:00 GMT",
+    guid: "https://blogs.cooperhealth.org/news/p/14383",
+  }, "Cooper University Health Care News", "2026-08-28T12:00:00.000Z");
+  assert.notEqual(first.slug, second.slug);
+  assert.equal(first.slug.length <= 72, true);
+  assert.equal(
+    first.slug,
+    rssItemToContent({
+      title: first.title,
+      link: first.source.url!,
+      description: first.dek,
+      pubDate: first.publishedAt!,
+      guid: first.source.externalId!,
+    }, "Cooper University Health Care News", "2026-08-29T12:00:00.000Z").slug,
+  );
+});
+
 test("news extraction caps stay bounded and closed", () => {
   assert.equal(NEWS_ARTICLE_CANDIDATE_CAP, 8);
   assert.equal(NEWS_ARTICLE_CONCURRENCY, 2);

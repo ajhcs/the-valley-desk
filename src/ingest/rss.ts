@@ -64,6 +64,20 @@ function slugify(title: string) {
     .slice(0, 72) || "item";
 }
 
+/** Long titles from one newsroom commonly share their first 72 characters.
+ * Add a deterministic source-identity suffix so two distinct articles can
+ * never collapse onto the same public route. */
+function rssSlug(feedName: string, title: string, externalId: string) {
+  let hash = 0x811c9dc5;
+  for (const character of externalId) {
+    hash ^= character.codePointAt(0) ?? 0;
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  const suffix = hash.toString(36).padStart(7, "0").slice(-7);
+  const base = slugify(`${feedName}-${title}`);
+  return `${base.slice(0, 64).replace(/-+$/g, "")}-${suffix}`;
+}
+
 export function looksLikeRss(body: string) {
   const head = body.slice(0, 4000);
   return /<rss[\s>]|<rdf:RDF/i.test(head);
@@ -179,9 +193,9 @@ export function rssItemToContent(
   let publishedAt: string | undefined;
   const parsed = Date.parse(raw.pubDate);
   if (Number.isFinite(parsed)) publishedAt = new Date(parsed).toISOString();
-  const slug = slugify(`${feedName}-${raw.title}`);
   const canonicalUrl = normalizeSourceUrl(raw.link) ?? raw.link;
   const externalId = raw.guid || canonicalUrl;
+  const slug = rssSlug(feedName, raw.title, externalId);
   const text = `${raw.title} ${raw.description}`;
   return withCanonicalSource({
     id: `rss-${slugify(feedName)}-${slugify(externalId).slice(0, 48)}`,
