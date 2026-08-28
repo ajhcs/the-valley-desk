@@ -1,12 +1,18 @@
 import {
   coveragePack,
   officialSourceCoverage,
+  sourceById,
   type CoveragePackDocument,
+  type CoverageSource,
 } from "./coverage-pack";
+import { NewsItem, type ContentItem } from "../content/schema";
+import { LEADERSHIP_CADENCE_MS } from "./leadership-config";
 import {
   applyRoleChange,
   normalizePersonName,
   normalizeTitle,
+  resolvePersonId,
+  type ExtractedLeader,
   type ExecutiveRole,
   type RoleApplyRequest,
   type RoleApplyResult,
@@ -331,6 +337,400 @@ export async function readExecutiveRoles(
   return (rows.results ?? []).map(asRole);
 }
 
+type StoredLeadershipSnapshot = {
+  id: string;
+  source_id: string;
+  institution_id: string;
+  fetched_at: string;
+  final_url: string;
+  extracted_json: string;
+  state: LeadershipSnapshot["state"];
+  extraction_status: LeadershipSnapshot["extractionStatus"];
+  source_cadence: CoverageSource["cadence"];
+  source_precedence: number;
+};
+
+type VerifiedLeadershipEvidence = {
+  sourceId: string;
+  source: CoverageSource;
+  latest: StoredLeadershipSnapshot;
+  latestLeader: ExtractedLeader;
+  history: StoredLeadershipSnapshot[];
+};
+
+function parseStoredLeaders(raw: string) {
+  try {
+    const value = JSON.parse(raw) as unknown;
+    if (!Array.isArray(value)) return [];
+    const leaders: ExtractedLeader[] = [];
+    for (const item of value) {
+      if (!item || typeof item !== "object") continue;
+      const row = item as Record<string, unknown>;
+      const name = typeof row.name === "string" ? row.name.trim() : "";
+      const title = typeof row.title === "string" ? row.title.trim() : "";
+      const normalizedName = normalizePersonName(name);
+      const normalizedTitle = normalizeTitle(title);
+      if (!name || !title || !normalizedName || !normalizedTitle) continue;
+      leaders.push({ name, title, normalizedName, normalizedTitle });
+    }
+    return leaders;
+  } catch {
+    return [];
+  }
+}
+
+function completeSnapshotLeaders(snapshot: StoredLeadershipSnapshot) {
+  if (
+    (snapshot.state !== "success" && snapshot.state !== "unchanged")
+    || snapshot.extraction_status !== "complete"
+  ) return [];
+  return parseStoredLeaders(snapshot.extracted_json);
+}
+
+function leaderForPerson(
+  snapshot: StoredLeadershipSnapshot,
+  personId: string,
+  pack: CoveragePackDocument,
+) {
+  return completeSnapshotLeaders(snapshot).find((leader) => (
+    resolvePersonId(leader.name, pack.people, snapshot.institution_id) === personId
+  ));
+}
+
+function sourceIsOfficialAndMonitorable(source: CoverageSource | undefined) {
+  return Boolean(
+    source
+    && source.monitor
+    && source.status === "enabled"
+    && !source.kind.startsWith("linkedin")
+    && source.url.startsWith("https://"),
+  );
+}
+
+function isOfficialEvidenceUrl(source: CoverageSource, finalUrl: string) {
+  try {
+    const evidence = new URL(finalUrl);
+    const sourceHost = source.host.replace(/^www\./, "").replace(/\.$/, "").toLowerCase();
+    const evidenceHost = evidence.hostname.replace(/^www\./, "").replace(/\.$/, "").toLowerCase();
+    return evidence.protocol === "https:"
+      && !evidence.username
+      && !evidence.password
+      && evidenceHost === sourceHost;
+  } catch {
+    return false;
+  }
+}
+
+function evidenceMeetsConfirmation(evidence: VerifiedLeadershipEvidence, pack: CoveragePackDocument) {
+  const latestAt = Date.parse(evidence.history[0]?.fetched_at ?? "");
+  const previousAt = Date.parse(evidence.history[1]?.fetched_at ?? "");
+  const twoDailySnapshots = evidence.source.cadence === "daily"
+    && evidence.history.length >= 2
+    && Number.isFinite(latestAt)
+    && Number.isFinite(previousAt)
+    && latestAt - previousAt >= LEADERSHIP_CADENCE_MS.daily
+    && evidence.history.slice(0, 2).every((snapshot) => completeSnapshotLeaders(snapshot).length > 0)
+    && evidence.history.slice(0, 2).every((snapshot) => (
+      leaderForPerson(snapshot, resolvePersonId(evidence.latestLeader.name, pack.people, snapshot.institution_id) ?? "", pack)
+        ?.normalizedTitle === evidence.latestLeader.normalizedTitle
+    ));
+  return twoDailySnapshots;
+}
+
+function candidateKey(personId: string, institutionId: string, normalizedTitle: string) {
+  return `${personId}:${institutionId}:${normalizedTitle}`;
+}
+
+function slugPart(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80) || "leadership";
+}
+
+function executiveEditorialCandidate(
+  action: "addition" | "title-change" | "departure",
+  personId: string,
+  institutionId: string,
+  title: string,
+  evidence: VerifiedLeadershipEvidence,
+  pack: CoveragePackDocument,
+  now: Date,
+): ContentItem {
+  const institution = pack.institutions.find((row) => row.id === institutionId);
+  const person = pack.people.find((row) => row.id === personId);
+  if (!institution || !person) throw new Error("Cannot build executive candidate without registry identity");
+  const effectiveDate = evidence.latest.fetched_at.slice(0, 10);
+  const normalized = normalizeTitle(title);
+  const id = `exec-${slugPart(personId)}-${slugPart(action)}-${slugPart(normalized)}-${effectiveDate}`;
+  const verb = action === "departure" ? "no longer lists" : "lists";
+  const body = `${institution.name}'s official leadership source ${verb} ${person.displayName} as ${title}. This source-backed executive update was autonomously verified and remains an editorial candidate for review.`;
+  return NewsItem.parse({
+    id,
+    slug: id,
+    title: `Leadership update: ${person.displayName} — ${title}`,
+    dek: `An official ${institution.shortName} leadership source supports an autonomously verified executive record.`,
+    body,
+    kind: "news",
+    status: "review",
+    updatedAt: now.toISOString(),
+    topics: ["leadership"],
+    orgs: institution.orgIds,
+    region: institution.regions.length === 1 ? institution.regions[0] : "regional",
+    authors: [{ name: "The Valley Desk" }],
+    source: {
+      kind: "ingest",
+      origin: "executive-leadership-monitor",
+      url: evidence.latest.final_url,
+      fetchedAt: evidence.latest.fetched_at,
+      externalId: `${personId}:${institutionId}:${normalized}:${action}:${effectiveDate}`,
+    },
+    relatedEventIds: [],
+    relatedVoiceIds: [],
+    featured: false,
+  });
+}
+
+export type AutonomousLeadershipVerificationResult = {
+  verifiedRoles: number;
+  unresolved: number;
+  conflicts: number;
+  editorialCandidates: ContentItem[];
+};
+
+/**
+ * Apply only evidence that clears the autonomous confirmation policy. This is
+ * deliberately separate from the diagnostics/override review API: routine
+ * arrivals and title changes need two daily snapshots or two official source
+ * records, while departures need two consecutive snapshots from two sources.
+ */
+export async function autonomouslyVerifyLeadership(
+  db: D1DatabaseLike,
+  pack: CoveragePackDocument = coveragePack,
+  now = new Date(),
+): Promise<AutonomousLeadershipVerificationResult> {
+  const sourceRows = await db.prepare(`
+    SELECT s.id, s.source_id, c.institution_id, s.fetched_at, s.final_url,
+           s.extracted_json, s.state, s.extraction_status,
+           c.cadence AS source_cadence, c.precedence AS source_precedence
+    FROM (
+      SELECT *, ROW_NUMBER() OVER (PARTITION BY source_id ORDER BY fetched_at DESC, id DESC) AS row_number
+      FROM source_snapshots
+    ) s
+    JOIN coverage_sources c ON c.id = s.source_id
+    WHERE s.row_number <= 2
+      AND c.monitor = 1 AND c.status = 'enabled'
+      AND c.kind NOT IN ('linkedin-organization', 'linkedin-person')
+    ORDER BY s.source_id, s.fetched_at DESC, s.id DESC
+  `).all<StoredLeadershipSnapshot>();
+  const bySource = new Map<string, StoredLeadershipSnapshot[]>();
+  for (const row of sourceRows.results ?? []) {
+    const source = sourceById(row.source_id, pack);
+    if (
+      !source
+      || !sourceIsOfficialAndMonitorable(source)
+      || row.institution_id !== source.institutionId
+      || !isOfficialEvidenceUrl(source, row.final_url)
+    ) continue;
+    const history = bySource.get(row.source_id) ?? [];
+    history.push(row);
+    bySource.set(row.source_id, history);
+  }
+
+  type Candidate = {
+    personId: string;
+    institutionId: string;
+    title: string;
+    normalizedTitle: string;
+    evidence: Map<string, VerifiedLeadershipEvidence>;
+  };
+  const candidates = new Map<string, Candidate>();
+  for (const [sourceId, history] of bySource) {
+    const latest = history[0];
+    const source = sourceById(sourceId, pack);
+    if (!latest || !source) continue;
+    for (const leader of completeSnapshotLeaders(latest)) {
+      const personId = resolvePersonId(leader.name, pack.people, latest.institution_id);
+      if (!personId) continue;
+      const key = candidateKey(personId, latest.institution_id, leader.normalizedTitle);
+      const candidate = candidates.get(key) ?? {
+        personId,
+        institutionId: latest.institution_id,
+        title: leader.title,
+        normalizedTitle: leader.normalizedTitle,
+        evidence: new Map(),
+      };
+      candidate.evidence.set(sourceId, {
+        sourceId,
+        source,
+        latest,
+        latestLeader: leader,
+        history,
+      });
+      candidates.set(key, candidate);
+    }
+  }
+
+  const personTitles = new Map<string, Set<string>>();
+  for (const candidate of candidates.values()) {
+    const key = `${candidate.personId}:${candidate.institutionId}`;
+    const titles = personTitles.get(key) ?? new Set<string>();
+    titles.add(candidate.normalizedTitle);
+    personTitles.set(key, titles);
+  }
+  const roles = await readExecutiveRoles(db);
+  const editorialCandidates: ContentItem[] = [];
+  let verifiedRoles = 0;
+  let unresolved = 0;
+  let conflicts = 0;
+  const verifiedPeople = new Set<string>();
+  for (const candidate of candidates.values()) {
+    const personKey = `${candidate.personId}:${candidate.institutionId}`;
+    if ((personTitles.get(personKey)?.size ?? 0) > 1) {
+      conflicts += 1;
+      continue;
+    }
+    const evidence = [...candidate.evidence.values()]
+      .sort((left, right) => right.source.precedence - left.source.precedence);
+    const hasIndependentSources = evidence.length >= 2;
+    const hasTwoDailySnapshots = evidence.some((item) => evidenceMeetsConfirmation(item, pack));
+    if (!hasIndependentSources && !hasTwoDailySnapshots) {
+      unresolved += 1;
+      continue;
+    }
+    const current = roles.filter((role) => (
+      role.personId === candidate.personId
+      && role.institutionId === candidate.institutionId
+      && role.effectiveTo == null
+      && Date.parse(role.effectiveFrom) <= now.getTime()
+    ));
+    if (current.length > 1) {
+      conflicts += 1;
+      continue;
+    }
+    const prior = current[0];
+    const selected = evidence[0];
+    if (!selected) continue;
+    const effectiveFrom = selected.latest.fetched_at;
+    if (prior && Date.parse(prior.effectiveFrom) >= Date.parse(effectiveFrom)) {
+      unresolved += 1;
+      continue;
+    }
+    const action = prior
+      ? "title-change"
+      : "addition";
+    const result = await persistExecutiveRoleChange(db, {
+      personId: candidate.personId,
+      institutionId: candidate.institutionId,
+      title: candidate.title,
+      sourceId: selected.sourceId,
+      evidenceUrl: selected.latest.final_url,
+      effectiveFrom,
+      ...(prior ? { replacesNormalizedTitle: prior.normalizedTitle } : {}),
+      verificationStatus: "verified",
+      verifiedAt: now.toISOString(),
+      verifiedBy: "autonomous-leadership-monitor",
+      verificationNote: hasTwoDailySnapshots
+        ? "Confirmed across two consecutive complete daily snapshots."
+        : "Confirmed across two independent registered official sources.",
+    }, now);
+    const applied = result.applied !== "unchanged" || result.roles.some((role) => (
+      role.personId === candidate.personId
+      && role.institutionId === candidate.institutionId
+      && role.normalizedTitle === candidate.normalizedTitle
+      && role.verificationStatus === "verified"
+    ));
+    if (!applied) {
+      unresolved += 1;
+      continue;
+    }
+    verifiedRoles += 1;
+    verifiedPeople.add(personKey);
+    await markAutonomousObservations(
+      db,
+      evidence.map((item) => item.sourceId),
+      candidate.personId,
+      now.toISOString(),
+      hasTwoDailySnapshots
+        ? "Autonomously verified across two consecutive complete daily snapshots."
+        : "Autonomously verified across two independent registered official sources.",
+    );
+    editorialCandidates.push(executiveEditorialCandidate(
+      action,
+      candidate.personId,
+      candidate.institutionId,
+      candidate.title,
+      selected,
+      pack,
+      now,
+    ));
+  }
+
+  // Departures require two consecutive complete snapshots from two distinct
+  // registered official sources. A source must have been the role's source
+  // when known; this avoids auto-closing a role from an unrelated roster.
+  const currentRoles = await readExecutiveRoles(db);
+  for (const role of currentRoles) {
+    if (
+      role.effectiveTo != null
+      || Date.parse(role.effectiveFrom) > now.getTime()
+      || verifiedPeople.has(`${role.personId}:${role.institutionId}`)
+    ) continue;
+    const absences: VerifiedLeadershipEvidence[] = [];
+    for (const [sourceId, history] of bySource) {
+      const source = sourceById(sourceId, pack);
+      if (!source || history.length < 2 || !sourceIsOfficialAndMonitorable(source)) continue;
+      if (!history.slice(0, 2).every((snapshot) => completeSnapshotLeaders(snapshot).length > 0)) continue;
+      if (history.slice(0, 2).some((snapshot) => leaderForPerson(snapshot, role.personId, pack)?.normalizedTitle === role.normalizedTitle)) continue;
+      if (role.sourceId && role.sourceId !== sourceId && !source.monitor) continue;
+      absences.push({
+        sourceId,
+        source,
+        latest: history[0]!,
+        latestLeader: { name: "", normalizedName: "", title: role.title, normalizedTitle: role.normalizedTitle },
+        history,
+      });
+    }
+    const independentAbsences = absences.filter((absence) => absence.sourceId !== role.sourceId);
+    if (absences.length < 2 || (role.sourceId && independentAbsences.length < 1)) {
+      continue;
+    }
+    const selected = absences.sort((left, right) => right.source.precedence - left.source.precedence)[0];
+    if (!selected) continue;
+    const effectiveTo = selected.latest.fetched_at;
+    if (Date.parse(effectiveTo) <= Date.parse(role.effectiveFrom)) continue;
+    const closed = await db.prepare(`
+      UPDATE executive_roles
+      SET effective_to = ?
+      WHERE id = ? AND effective_to IS NULL AND normalized_title = ?
+    `).bind(effectiveTo, role.id, role.normalizedTitle).run();
+    const changes = resultChanges(closed);
+    if (changes === 0) continue;
+    if (changes === undefined) {
+      const checked = await db.prepare(
+        "SELECT effective_to FROM executive_roles WHERE id = ?",
+      ).bind(role.id).first<{ effective_to: string | null }>();
+      if (checked?.effective_to !== effectiveTo) continue;
+    }
+    verifiedRoles += 1;
+    await markAutonomousObservations(
+      db,
+      absences.map((item) => item.sourceId),
+      role.personId,
+      now.toISOString(),
+      "Autonomously verified after two consecutive complete snapshots with independent official corroboration.",
+    );
+    editorialCandidates.push(executiveEditorialCandidate(
+      "departure",
+      role.personId,
+      role.institutionId,
+      role.title,
+      selected,
+      pack,
+      now,
+    ));
+  }
+
+  return { verifiedRoles, unresolved, conflicts, editorialCandidates };
+}
+
 /**
  * Insert or supersede a role without mutating the previous title in place.
  */
@@ -492,6 +892,25 @@ function resultChanges(value: unknown) {
   return changes === undefined ? undefined : Number(changes);
 }
 
+async function markAutonomousObservations(
+  db: D1DatabaseLike,
+  sourceIds: readonly string[],
+  personId: string,
+  reviewedAt: string,
+  note: string,
+) {
+  for (const sourceId of new Set(sourceIds)) {
+    await db.prepare(`
+      UPDATE source_observations
+      SET verification_status = 'verified', reviewed_at = ?,
+          reviewed_by = 'autonomous-leadership-monitor', review_note = ?
+      WHERE source_id = ? AND person_id = ? AND status = 'review'
+        AND verification_status = 'unverified'
+        AND kind IN ('person-appeared', 'person-departed', 'title-changed')
+    `).bind(reviewedAt, note, sourceId, personId).run();
+  }
+}
+
 export type LeadershipObservationReviewResult = {
   observationId: string;
   decision: "verified" | "ignored";
@@ -499,7 +918,7 @@ export type LeadershipObservationReviewResult = {
   role?: RoleApplyResult;
 };
 
-/** Verify one review observation and, only then, mutate role history. */
+/** Explicitly override one observation; routine role verification is autonomous. */
 export async function reviewLeadershipObservation(
   db: D1DatabaseLike,
   observationId: string,

@@ -54,6 +54,7 @@ import {
   persistScheduledSourceState,
   readScheduledSourceStates,
   seedCoveragePack,
+  autonomouslyVerifyLeadership,
 } from "./executive-persistence";
 import { monitorLeadershipSources } from "./leadership-monitor";
 
@@ -245,6 +246,10 @@ type LeadershipAutomationResult = {
   snapshots: number;
   observations: number;
   schedules: number;
+  verifiedRoles: number;
+  unresolved: number;
+  conflicts: number;
+  editorialCandidates: ContentItem[];
   error?: string;
 };
 
@@ -261,6 +266,7 @@ async function runLeadershipStage(
     const snapshots = await persistLeadershipSnapshots(env.VALLEY_DESK_DB, result.snapshots);
     const observations = await persistLeadershipObservations(env.VALLEY_DESK_DB, result.observations);
     const schedules = await persistScheduledSourceState(env.VALLEY_DESK_DB, result.schedule);
+    const autonomous = await autonomouslyVerifyLeadership(env.VALLEY_DESK_DB, coveragePack, now);
     const failed = result.snapshots.filter((snapshot) => (
       snapshot.state !== "success" && snapshot.state !== "unchanged"
     )).length;
@@ -271,6 +277,10 @@ async function runLeadershipStage(
       snapshots,
       observations,
       schedules,
+      verifiedRoles: autonomous.verifiedRoles,
+      unresolved: autonomous.unresolved,
+      conflicts: autonomous.conflicts,
+      editorialCandidates: autonomous.editorialCandidates.length,
       failed,
       coverage,
     }, outcome === "ok" ? "info" : "warn");
@@ -282,12 +292,16 @@ async function runLeadershipStage(
       snapshots,
       observations,
       schedules,
+      verifiedRoles: autonomous.verifiedRoles,
+      unresolved: autonomous.unresolved,
+      conflicts: autonomous.conflicts,
+      editorialCandidates: autonomous.editorialCandidates,
     };
   } catch (error) {
     const message = attemptError(error);
-    // Leadership monitoring is review-only and must not make the ordinary
-    // hourly news/event ingest fail when its additive schema or upstreams are
-    // unavailable.
+    // Leadership monitoring and autonomous history application must not make
+    // the ordinary hourly news/event ingest fail when its additive schema or
+    // upstreams are unavailable. Emitted editorial candidates remain review.
     logOps("leadership", { outcome: "failed", error: message, coverage }, "error");
     return {
       outcome: "failed",
@@ -297,6 +311,10 @@ async function runLeadershipStage(
       snapshots: 0,
       observations: 0,
       schedules: 0,
+      verifiedRoles: 0,
+      unresolved: 0,
+      conflicts: 0,
+      editorialCandidates: [],
       error: message,
     };
   }
@@ -334,10 +352,20 @@ export async function runAutomation(
     stage = "load-news-extractions";
     const newsExtractions = await readNewsArticleExtractions(env.VALLEY_DESK_DB);
     stage = "fetch-sources";
-    const run = await ingest({
+    const ingestedRun = await ingest({
       X_BEARER_TOKEN: env.X_BEARER_TOKEN,
       LINKEDIN_TOKEN: env.LINKEDIN_TOKEN,
     }, fetchImpl, { newsExtractions });
+    const run = leadership.editorialCandidates.length > 0
+      ? {
+        ...ingestedRun,
+        rss: [...ingestedRun.rss, ...leadership.editorialCandidates],
+        notes: {
+          ...ingestedRun.notes,
+          rss: ingestedRun.notes.rss + leadership.editorialCandidates.length,
+        },
+      }
+      : ingestedRun;
     const currentItems = allCandidates(run);
     const backlog = await readReviewBacklog(env.VALLEY_DESK_DB);
     const items = mergeCurrentAndBacklog(currentItems, backlog);

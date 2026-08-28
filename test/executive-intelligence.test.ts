@@ -24,8 +24,9 @@ import {
   readExecutiveRoles,
   reviewLeadershipObservation,
   seedCoveragePack,
+  autonomouslyVerifyLeadership,
 } from "../src/ingest/executive-persistence.ts";
-import { monitorLeadershipSources } from "../src/ingest/leadership-monitor.ts";
+import { monitorLeadershipSources, type LeadershipSnapshot } from "../src/ingest/leadership-monitor.ts";
 import type { D1DatabaseLike, D1StatementLike } from "../src/ingest/persistence.ts";
 import { normalizeSourceUrl } from "../src/ingest/identity.ts";
 
@@ -79,6 +80,34 @@ function migratedDatabase() {
     database.exec(readFileSync(`migrations/${name}`, "utf8"));
   }
   return database;
+}
+
+function storedLeadershipSnapshot(
+  sourceId: string,
+  fetchedAt: string,
+  leaders: Array<{ name: string; title: string }>,
+  state: LeadershipSnapshot["state"] = "success",
+  extractionStatus: LeadershipSnapshot["extractionStatus"] = "complete",
+): LeadershipSnapshot {
+  const extracted = leaders.map((leader) => ({
+    ...leader,
+    normalizedName: leader.name.toLowerCase(),
+    normalizedTitle: normalizeTitle(leader.title),
+  }));
+  return {
+    id: `test-${sourceId}-${fetchedAt}`,
+    sourceId,
+    fetchedAt,
+    finalUrl: sourceById(sourceId)!.url,
+    contentHash: `${sourceId}-${fetchedAt}`,
+    normalizedText: leaders.map((leader) => `${leader.name} ${leader.title}`).join(" "),
+    byteCount: new TextEncoder().encode(JSON.stringify(leaders)).byteLength,
+    extracted,
+    extractionStatus,
+    state,
+    error: null,
+    instructionLike: false,
+  };
 }
 
 test("coverage registry has closed geography, bounded fetches, and explicit 16-system posture", () => {
@@ -204,7 +233,7 @@ test("coverage seed and reviewer verification persist identity, evidence, and ro
   assert.equal(review.role?.applied, "inserted");
   const role = (await readExecutiveRoles(db, "person-julian-mihai", "inst-penn"))[0]!;
   assert.equal(role.verificationStatus, "verified");
-  assert.equal(role.evidenceUrl, sourceById(monitored.snapshots[0]!.sourceId)?.url);
+  assert.equal(role.evidenceUrl, normalizeSourceUrl(sourceById(monitored.snapshots[0]!.sourceId)?.url));
   const observation = database.prepare(
     "SELECT status, verification_status, reviewed_by FROM source_observations WHERE id = ?",
   ).get(observationId) as { status: string; verification_status: string; reviewed_by: string };
@@ -235,5 +264,73 @@ test("requested replacements never silently become concurrent roles", async () =
   });
   assert.equal(result.applied, "unchanged");
   assert.equal((await readExecutiveRoles(db, "person-julian-mihai", "inst-penn")).length, 1);
+  database.close();
+});
+
+test("autonomous verification applies only after two daily snapshots and emits a review candidate", async () => {
+  const database = migratedDatabase();
+  const db = sqliteD1(database);
+  await seedCoveragePack(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
+  const sourceId = "src-penn-is-leadership";
+  const leader = { name: "Julian Mihai", title: "CISO" };
+  await persistLeadershipSnapshots(db, [storedLeadershipSnapshot(
+    sourceId,
+    "2026-08-27T12:00:00.000Z",
+    [leader],
+  )]);
+  const pending = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
+  assert.equal(pending.verifiedRoles, 0);
+  assert.equal((await readExecutiveRoles(db, "person-julian-mihai", "inst-penn")).length, 0);
+
+  await persistLeadershipSnapshots(db, [storedLeadershipSnapshot(
+    sourceId,
+    "2026-08-28T12:00:00.000Z",
+    [leader],
+  )]);
+  const verified = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-28T12:00:00.000Z"));
+  assert.equal(verified.verifiedRoles, 1);
+  assert.equal(verified.editorialCandidates.length, 1);
+  assert.equal(verified.editorialCandidates[0]?.status, "review");
+  assert.equal(verified.editorialCandidates[0]?.source.origin, "executive-leadership-monitor");
+  const role = (await readExecutiveRoles(db, "person-julian-mihai", "inst-penn"))[0]!;
+  assert.equal(role.verificationStatus, "verified");
+  assert.equal(role.verifiedBy, "autonomous-leadership-monitor");
+  assert.equal(role.evidenceUrl, sourceById(sourceId)!.url);
+  database.close();
+});
+
+test("autonomous departure requires two snapshots on two independent official sources", async () => {
+  const database = migratedDatabase();
+  const db = sqliteD1(database);
+  await seedCoveragePack(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
+  const roleSourceId = "src-chop-salmasian";
+  await persistExecutiveRoleChange(db, {
+    personId: "person-hojjat-salmasian",
+    institutionId: "inst-chop",
+    title: "Vice President and Chief Data and Analytics Officer",
+    sourceId: roleSourceId,
+    evidenceUrl: sourceById(roleSourceId)!.url,
+    effectiveFrom: "2026-08-01T12:00:00.000Z",
+    verificationStatus: "verified",
+    verifiedBy: "fixture",
+    verifiedAt: "2026-08-01T12:00:00.000Z",
+  });
+  const absent = [{ name: "Alicia Example", title: "Chief Executive Officer" }];
+  await persistLeadershipSnapshots(db, [
+    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-27T12:00:00.000Z", absent),
+    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-28T12:00:00.000Z", absent),
+    storedLeadershipSnapshot("src-chop-desai", "2026-08-28T12:00:00.000Z", absent),
+  ]);
+  const pending = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-28T12:00:00.000Z"));
+  assert.equal(pending.editorialCandidates.some((item) => item.title.includes("Hojjat")), false);
+  assert.equal((await readExecutiveRoles(db, "person-hojjat-salmasian", "inst-chop"))[0]!.effectiveTo, null);
+
+  await persistLeadershipSnapshots(db, [
+    storedLeadershipSnapshot("src-chop-desai", "2026-08-29T12:00:00.000Z", absent),
+  ]);
+  const verified = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-29T12:00:00.000Z"));
+  const role = (await readExecutiveRoles(db, "person-hojjat-salmasian", "inst-chop"))[0]!;
+  assert.equal(role.effectiveTo, "2026-08-29T12:00:00.000Z");
+  assert.equal(verified.editorialCandidates.some((item) => item.title.includes("Hojjat")), true);
   database.close();
 });

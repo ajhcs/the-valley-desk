@@ -1,6 +1,8 @@
 PRAGMA foreign_keys = ON;
 
--- Executive intelligence and reusable coverage-pack state. Review-only.
+-- Executive intelligence and reusable coverage-pack state. Role changes are
+-- source-verified automatically; resulting editorial candidates remain in
+-- review until the editor-in-chief publication policy allows them.
 -- Role history is append-only: close with effective_to, never overwrite title.
 
 CREATE TABLE covered_institutions (

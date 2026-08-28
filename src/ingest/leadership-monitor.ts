@@ -526,7 +526,7 @@ export async function monitorLeadershipSources(
         id: `snap-${source.id}-${now.toISOString()}`,
         sourceId: source.id,
         fetchedAt: now.toISOString(),
-        finalUrl: source.url,
+        finalUrl: page.url,
         contentHash,
         normalizedText,
         byteCount: new TextEncoder().encode(page.body).byteLength,
