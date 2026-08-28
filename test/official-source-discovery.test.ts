@@ -73,6 +73,30 @@ test("source scheduling follows hourly/daily cadence and backs off failures", ()
   assert.ok(officialSourceBackoffMs(pennNews, "failed", 2) > officialSourceBackoffMs(pennNews, "failed", 1));
 });
 
+test("normal source pass reserves capacity for every due News source", () => {
+  const now = new Date("2026-08-28T12:00:00.000Z");
+  const selected = selectDueOfficialSources(
+    officialSourceRegistry.sources,
+    new Map(),
+    now,
+    officialSourceRegistry.limits.sourceCapPerRun,
+  );
+  const dueNewsIds = officialSourceRegistry.sources
+    .filter((source) => source.category === "news" && isOfficialSourceDue(source, undefined, now))
+    .map((source) => source.id);
+  const selectedNewsIds = selected
+    .filter((source) => source.category === "news")
+    .map((source) => source.id);
+
+  assert.equal(dueNewsIds.length, 14);
+  assert.deepEqual(
+    new Set(selectedNewsIds),
+    new Set(dueNewsIds),
+    "all due News sources must be admitted before category rotation",
+  );
+  assert.equal(selected.length, officialSourceRegistry.limits.sourceCapPerRun, "the overall source cap remains bounded");
+});
+
 test("HTML link discovery allows only the source host and explicit event link hosts", () => {
   const html = `
     <html><head><title>Penn Medicine News</title><script>ignore <a href="https://evil.example/no">evil</a></script></head>

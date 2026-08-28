@@ -228,7 +228,6 @@
       "Jefferson Health",
       "Jefferson",
       "Thomas Jefferson University and Jefferson Health",
-      "Lehigh Valley Health Network",
       "Einstein Healthcare Network"
     ],
     "geo": "Philadelphia, PA",
@@ -252,6 +251,58 @@
       }
     ],
     "url": "https://www.jeffersonhealth.org/"
+  },
+  {
+    "id": "org-lvhn",
+    "kind": "system",
+    "name": "Lehigh Valley Health Network",
+    "aliases": [
+      "LVHN",
+      "Lehigh Valley Health Network"
+    ],
+    "geo": "Allentown, PA",
+    "role": "regional health system — edge of the Delaware Valley coverage area",
+    "url": "https://www.lvhn.org/"
+  },
+  {
+    "id": "org-nemours",
+    "kind": "system",
+    "name": "Nemours Children's Health",
+    "aliases": [
+      "Nemours",
+      "Nemours Children's Health",
+      "Nemours Children’s Health"
+    ],
+    "geo": "Wilmington, DE",
+    "role": "pediatric health system",
+    "url": "https://www.nemours.org/"
+  },
+  {
+    "id": "org-rwjbarnabas",
+    "kind": "system",
+    "name": "RWJBarnabas Health",
+    "aliases": [
+      "RWJBarnabas",
+      "RWJBarnabas Health"
+    ],
+    "geo": "New Brunswick, NJ",
+    "role": "regional health system — extended New Jersey coverage",
+    "url": "https://www.rwjbh.org/"
+  },
+  {
+    "id": "org-st-lukes",
+    "kind": "system",
+    "name": "St. Luke's University Health Network",
+    "aliases": [
+      "St. Luke's",
+      "St Luke's",
+      "St. Luke's University Health Network",
+      "St Luke's University Health Network",
+      "SLUHN"
+    ],
+    "geo": "Bethlehem, PA",
+    "role": "regional health system — edge of the Delaware Valley coverage area",
+    "url": "https://www.slhn.org/"
   },
   {
     "id": "org-jefferson-tju",

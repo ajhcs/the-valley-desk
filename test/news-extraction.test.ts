@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { DEFAULT_EDITOR_MODEL } from "../src/ingest/editor-model.ts";
+import { Entity } from "../src/content/entity.ts";
+import entityFixtures from "../fixtures/entities.json";
 import { sourceIdentityKey } from "../src/ingest/identity.ts";
 import {
   NEWS_ARTICLE_CANDIDATE_CAP,
@@ -21,10 +23,12 @@ import {
   type NewsArticleExtractionState,
 } from "../src/ingest/news-extraction.ts";
 import { RSS_SOURCES, ingestRssWithHealth, rssItemToContent } from "../src/ingest/rss.ts";
+import { mapSeedOrgIds } from "../src/ingest/org-map.ts";
 
 const EMPTY_RSS = `<?xml version="1.0"?><rss><channel></channel></rss>`;
 const ARTICLE_URL = "https://news.christianacare.org/epic-workflow-update";
 const ALLOWED_HOSTS = rssArticleHostAllowlist();
+const SEED_ENTITIES = Entity.array().parse(entityFixtures);
 
 function rssFeed(items: Array<{ title: string; link: string; description?: string; guid?: string; pubDate?: string }>) {
   const rows = items.map((item) => (
@@ -72,6 +76,38 @@ function feedAwareFetch(handlers: (url: string) => Response | undefined): typeof
 
 test("runtime editor model remains Muse Spark 1.2 Contributor", () => {
   assert.equal(DEFAULT_EDITOR_MODEL, "meta/muse-spark-1.2-contributor");
+});
+
+test("generic organization aliases require institutional context", () => {
+  assert.deepEqual(mapSeedOrgIds("Alice Cooper announces a concert in Philadelphia", SEED_ENTITIES), []);
+  assert.deepEqual(mapSeedOrgIds("Temple architecture project opens downtown", SEED_ENTITIES), []);
+  assert.deepEqual(mapSeedOrgIds("Tower crane construction begins this week", SEED_ENTITIES), []);
+  assert.deepEqual(mapSeedOrgIds("Alice Cooper cares about hospital patients", SEED_ENTITIES), []);
+  assert.deepEqual(mapSeedOrgIds("St. Luke's church announces a fundraiser", SEED_ENTITIES), []);
+  assert.deepEqual(
+    mapSeedOrgIds("Cooper University Health Care announces a new hospital", SEED_ENTITIES),
+    ["org-cooper"],
+  );
+  assert.deepEqual(mapSeedOrgIds("Temple University Health System update", SEED_ENTITIES), ["org-temple"]);
+  assert.deepEqual(mapSeedOrgIds("Tower Health announces a new clinic", SEED_ENTITIES), ["org-tower"]);
+  assert.deepEqual(
+    mapSeedOrgIds("Lehigh Valley Health Network names a chief executive", SEED_ENTITIES),
+    ["org-lvhn"],
+  );
+  assert.deepEqual(mapSeedOrgIds("Jefferson Health names a chief executive", SEED_ENTITIES), ["org-jefferson"]);
+});
+
+test("trusted fixed source organization mappings survive generic alias filtering", () => {
+  const item = rssItemToContent({
+    title: "Alice Cooper announces a concert in Philadelphia",
+    link: "https://example.org/alice-cooper",
+    description: "A source-specific health-system feed item.",
+    pubDate: "Wed, 26 Aug 2026 12:00:00 GMT",
+    guid: "alice-cooper",
+  }, "Trusted source", "2026-08-26T12:00:00.000Z", 0, SEED_ENTITIES, {
+    fixedOrgIds: ["org-cooper"],
+  });
+  assert.deepEqual(item.orgs, ["org-cooper"]);
 });
 
 test("news extraction caps stay bounded and closed", () => {

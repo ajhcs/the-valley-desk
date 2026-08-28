@@ -9,13 +9,13 @@ import {
   enrichWithEditorModel,
 } from "./editor-model";
 import {
-  DEFAULT_EDITOR_MODEL_BUDGET,
+  DEFAULT_EDITOR_LANE_TOTAL_BUDGET,
   DEFAULT_EDITOR_MODEL_CONCURRENCY,
   DEFAULT_EDITOR_MODEL_DEADLINE_MS,
-  MAX_EDITOR_MODEL_BUDGET,
+  MAX_EDITOR_LANE_TOTAL_BUDGET,
   MAX_EDITOR_MODEL_CONCURRENCY,
   parseBoundedInt,
-  selectEditorModelWorkWithMetrics,
+  selectEditorModelWorkWithLanes,
   shouldEnrichCandidate,
 } from "./editor-work";
 import { evaluateCandidate, verificationInputForCandidate } from "./editor";
@@ -506,9 +506,9 @@ export async function runAutomation(
     );
     const budget = parseBoundedInt(
       env.EDITOR_MODEL_BUDGET,
-      DEFAULT_EDITOR_MODEL_BUDGET,
+      DEFAULT_EDITOR_LANE_TOTAL_BUDGET,
       0,
-      MAX_EDITOR_MODEL_BUDGET,
+      MAX_EDITOR_LANE_TOTAL_BUDGET,
     );
     const concurrency = parseBoundedInt(
       env.EDITOR_MODEL_CONCURRENCY,
@@ -533,12 +533,14 @@ export async function runAutomation(
       fingerprint: await candidateFingerprint(item),
     })));
     await ensureLock();
-    const selectedWork = selectEditorModelWorkWithMetrics(
+    const selectedWork = selectEditorModelWorkWithLanes(
       fingerprinted,
       modelStates,
-      budget,
-      new Date(),
-      new Set(reusable.keys()),
+      {
+        totalBudget: budget,
+        now: new Date(),
+        reusableIds: new Set(reusable.keys()),
+      },
     );
     const selected = selectedWork.items;
     const modelDeadlineAt = Date.now() + deadlineMs;
@@ -554,9 +556,27 @@ export async function runAutomation(
       const enrichment = modeledById.get(item.id)?.enrichment ?? reusable.get(item.id);
       return enrichment ? [{ item, enrichment }] : [];
     });
+    const verificationEligibleCandidates = verificationCandidates.filter(({ item, enrichment }) => (
+      !verifications.has(item.id)
+      && isHighRiskNews(verificationInputForCandidate(item, enrichment))
+    ));
+    const fingerprintById = new Map(fingerprinted.map((row) => [row.item.id, row.fingerprint]));
+    const verificationSelection = selectEditorModelWorkWithLanes(
+      verificationEligibleCandidates.map(({ item }) => ({
+        item,
+        fingerprint: fingerprintById.get(item.id) ?? item.id,
+      })),
+      new Map(),
+      { totalBudget: budget, now: new Date() },
+    );
+    const verificationById = new Map(verificationEligibleCandidates.map((row) => [row.item.id, row]));
+    const prioritizedVerificationCandidates = verificationSelection.items.flatMap((item) => {
+      const row = verificationById.get(item.id);
+      return row ? [row] : [];
+    });
     stage = "model-verification";
     const verificationRun = await verifyBounded(
-      verificationCandidates,
+      prioritizedVerificationCandidates,
       env,
       fetchImpl,
       verifications,
@@ -564,7 +584,10 @@ export async function runAutomation(
         budget,
         concurrency,
         timeoutMs,
-        deadlineAt: modelDeadlineAt,
+        // Verification is an independent specialist pass. Giving it a fresh
+        // bounded window prevents enrichment from consuming the entire run
+        // deadline and leaving high-risk stories permanently unverified.
+        deadlineAt: Date.now() + deadlineMs,
         heartbeat: ensureLock,
       },
     );
@@ -651,6 +674,16 @@ export async function runAutomation(
       verifierFailed: verificationRun.failed,
       verifierApproved: verificationRun.approved,
       verifierRejected: verificationRun.rejected,
+      verifierLanes: Object.fromEntries(Object.entries(verificationSelection.selectedByLane).map(([lane, rows]) => [
+        lane,
+        rows.length,
+      ])),
+      lanes: Object.fromEntries(Object.entries(selectedWork.metricsByLane).map(([lane, metrics]) => [lane, {
+        eligible: metrics.eligibleCount,
+        selected: metrics.selectedCount,
+        budget: metrics.budget,
+        oldestAgeMs: metrics.oldestEligibleAgeMs,
+      }])),
       editorModel: env.EDITOR_MODEL || DEFAULT_EDITOR_MODEL,
     });
     logOps("publication", {
@@ -671,7 +704,11 @@ export async function runAutomation(
       reusedEnrichmentCount: reusable.size,
       modelBudget: budget,
       modelSelectedCount: selected.length,
-      queueMetrics: selectedWork.metrics,
+      queueMetrics: selectedWork.metricsByLane,
+      selectedByLane: Object.fromEntries(Object.entries(selectedWork.selectedByLane).map(([lane, rows]) => [
+        lane,
+        rows.length,
+      ])),
       modelAttemptedCount,
       modelSucceededCount,
       modelFailedCount,

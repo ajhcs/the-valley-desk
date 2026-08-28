@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { DatabaseSync, type StatementSync } from "node:sqlite";
 import { test } from "node:test";
+import entityFixtures from "../fixtures/entities.json";
+import linkedInInventory from "../fixtures/linkedin-notification-targets.json";
 
 import {
   CoveragePackDocument,
@@ -30,6 +32,7 @@ import {
 import { monitorLeadershipSources, type LeadershipSnapshot } from "../src/ingest/leadership-monitor.ts";
 import type { D1DatabaseLike, D1StatementLike } from "../src/ingest/persistence.ts";
 import { normalizeSourceUrl } from "../src/ingest/identity.ts";
+import { Entity } from "../src/content/entity.ts";
 
 class SqliteD1Statement implements D1StatementLike {
   private values: unknown[] = [];
@@ -140,6 +143,37 @@ test("coverage registry has closed geography, bounded fetches, and explicit 16-s
     "https://www.lvhn.org/medical-staff-services/leadership-and-committees",
   );
   assert.equal(coveragePack.sources.some((source) => source.kind.startsWith("linkedin") && source.monitor), false);
+});
+
+test("covered health-system identities and LinkedIn mappings stay canonical", () => {
+  const entities = Entity.array().parse(entityFixtures);
+  const entityIds = new Set(entities.map((entity) => entity.id));
+  const byName = new Map(linkedInInventory.organizations.map((row) => [row.name, row]));
+
+  for (const institution of coveredInstitutions()) {
+    assert.ok(institution.orgIds.length > 0, `${institution.name} must resolve to a canonical org`);
+    assert.ok(
+      institution.orgIds.every((id) => entityIds.has(id)),
+      `${institution.name} contains an unknown coverage org id`,
+    );
+  }
+
+  for (const [name, expected] of [
+    ["Lehigh Valley Health Network", ["org-lvhn"]],
+    ["Penn Medicine Princeton Health", ["org-penn-princeton", "org-penn"]],
+    ["Nemours Children's Health", ["org-nemours"]],
+    ["RWJBarnabas Health", ["org-rwjbarnabas"]],
+    ["St. Luke's University Health Network", ["org-st-lukes"]],
+  ] as const) {
+    const row = byName.get(name);
+    assert.ok(row, `missing LinkedIn target ${name}`);
+    assert.deepEqual(row.orgs, expected, `${name} must use canonical org ids`);
+    assert.ok(row.orgs.every((id) => entityIds.has(id)), `${name} contains an unknown org id`);
+  }
+
+  const jefferson = entities.find((entity) => entity.id === "org-jefferson");
+  assert.ok(jefferson);
+  assert.ok(!jefferson.aliases.includes("Lehigh Valley Health Network"));
 });
 
 test("leadership monitor persists exact bytes and never infers departures from incomplete pages", async () => {

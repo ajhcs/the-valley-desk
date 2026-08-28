@@ -69,10 +69,27 @@ export type QueueSlaMetrics = {
   selectedOriginCounts: Record<string, number>;
 };
 
-export function queueAgeMs(firstSeenAt: string | null | undefined, now: Date, contentChangedAt?: string | null) {
+/**
+ * Calculate queue age from the item's source freshness, not from the time it
+ * happened to be hydrated into the durable queue. A first hydration can set
+ * contentChangedAt to now even when the source article is years old, so a
+ * valid publishedAt must take precedence. Invalid or missing dates fall back
+ * in order to a genuine content change and then first-seen time.
+ */
+export function queueAgeMs(
+  firstSeenAt: string | null | undefined,
+  now: Date,
+  contentChangedAt?: string | null,
+  publishedAt?: string | null,
+) {
   const first = firstSeenAt ? Date.parse(firstSeenAt) : Number.NaN;
   const changed = contentChangedAt ? Date.parse(contentChangedAt) : Number.NaN;
-  const seen = Number.isFinite(changed) && (!Number.isFinite(first) || changed > first) ? changed : first;
+  const published = publishedAt ? Date.parse(publishedAt) : Number.NaN;
+  const seen = Number.isFinite(published)
+    ? published
+    : Number.isFinite(changed)
+      ? changed
+      : first;
   if (!Number.isFinite(seen)) return 0;
   return Math.max(0, now.getTime() - seen);
 }
@@ -142,7 +159,7 @@ export function summarizeQueueSla<T>(
   selected: Array<PriorityWorkItem<T>>,
   now: Date,
 ): QueueSlaMetrics {
-  const ages = eligible.map((row) => queueAgeMs(row.firstSeenAt, now, row.contentChangedAt));
+  const ages = eligible.map((row) => queueAgeMs(row.firstSeenAt, now, row.contentChangedAt, row.publishedAt));
   const selectedOriginCounts: Record<string, number> = {};
   for (const row of selected) {
     selectedOriginCounts[row.origin] = (selectedOriginCounts[row.origin] ?? 0) + 1;
@@ -158,7 +175,7 @@ export function summarizeQueueSla<T>(
 }
 
 export function contentPriorityFields(item: ContentItem, firstSeenAt?: string | null, now: Date = new Date(), contentChangedAt?: string | null): PriorityWorkItem<ContentItem> {
-  const ageMs = queueAgeMs(firstSeenAt, now, contentChangedAt);
+  const ageMs = queueAgeMs(firstSeenAt, now, contentChangedAt, item.publishedAt);
   const isEvent = item.kind === "event";
   const hasExecutiveChange = /executive|leadership|CEO|CFO|CMIO|chief|appoint|hire|resign|depart/i.test([item.title, item.dek, item.body].join(" "));
   const materialityRank = matchingProductUses(item).length > 0 ? 0 : 1;
@@ -192,7 +209,7 @@ export function selectPriorityWork<T>(
     return { selected: [], metrics: summarizeQueueSla(candidates, [], now) };
   }
   for (const c of candidates) {
-    c.ageMs = queueAgeMs(c.firstSeenAt, now, c.contentChangedAt);
+    c.ageMs = queueAgeMs(c.firstSeenAt, now, c.contentChangedAt, c.publishedAt);
   }
   const sorted = [...candidates].sort(comparePriority);
   const uniqueOrigins = new Set(candidates.map((row) => row.origin)).size;

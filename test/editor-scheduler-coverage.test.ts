@@ -122,6 +122,50 @@ test("fresh-over-stale selection", () => {
   assert.equal((selected[0] as NewsItem).id, "news-fresh", "fresh must win over stale");
 });
 
+test("source publication date prevents first hydration of a historical article from outranking current news", () => {
+  const now = new Date("2026-08-28T04:00:00.000Z");
+  const historical = reviewNews(
+    "news-2017-hydrated",
+    "ChristianaCare historical IT update",
+    "Historical source body",
+    "christianacare-newsroom",
+    ["org-christianacare"],
+  );
+  historical.publishedAt = "2017-07-31T20:10:56.000Z";
+  const current = reviewNews(
+    "news-2026-current",
+    "Cooper Cape Regional current update",
+    "Current source body",
+    "cooper-newsroom",
+    ["org-cooper"],
+  );
+  current.publishedAt = "2026-08-27T21:46:39.000Z";
+
+  // Both rows were hydrated during the same current run. The historical row
+  // must still sort behind the genuinely current source publication.
+  const historicalField = contentPriorityFields(
+    historical,
+    "2026-08-26T16:41:02.055Z",
+    now,
+    "2026-08-28T03:26:08.860Z",
+  );
+  const currentField = contentPriorityFields(
+    current,
+    "2026-08-27T21:46:39.253Z",
+    now,
+    "2026-08-28T03:26:08.860Z",
+  );
+  historicalField.materialityRank = 1;
+  currentField.materialityRank = 1;
+  historicalField.firstPartyRank = 0;
+  currentField.firstPartyRank = 0;
+
+  const { selected } = selectPriorityWork([historicalField, currentField], 1, now);
+  assert.equal((selected[0] as NewsItem).id, current.id);
+  assert.ok(historicalField.ageMs > 250_000_000_000, "historical age should use source publication date");
+  assert.ok(currentField.ageMs < 24 * 60 * 60 * 1000, "current age should use source publication date");
+});
+
 test("no starvation: mixed backlog still yields fresh in final slot", () => {
   const now=new Date("2026-08-26T12:00:00.000Z");
   // 3 stale (>72h) and 1 fresh (<24h), budget 2, stale historically would dominate without guard
@@ -190,6 +234,25 @@ test("durable backlog preserves first_seen, advances last_seen monotonically, an
   assert.equal(row.content_changed_at, changedAt);
   assert.equal(row.enrichment_json, null);
   assert.equal((await readReviewBacklog(db)).find((item) => item.id === first.id)?.title, changed.title);
+  database.close();
+});
+
+test("durable backlog limit uses source publication time before hydration time", async () => {
+  const database = new DatabaseSync(":memory:");
+  coverageMigrations(database);
+  const db = coverageD1(database);
+  const historical = reviewNews("durable-history", "Historical article hydrated today");
+  historical.publishedAt = "2017-07-31T20:10:56.000Z";
+  const current = reviewNews("durable-current", "Current article hydrated today");
+  current.publishedAt = "2026-08-27T21:46:39.000Z";
+  const fetchedAt = "2026-08-28T04:00:00.000Z";
+  const notes = { rss: 2, events: 0, linkedin: { count: 0 }, x: { count: 0 } };
+  await persistIngestRun(
+    db,
+    { fetchedAt, rss: [historical, current], events: [], social: [], notes },
+    [{ item: historical, enrichment: null }, { item: current, enrichment: null }],
+  );
+  assert.deepEqual((await readReviewBacklog(db, 1)).map((item) => item.id), [current.id]);
   database.close();
 });
 

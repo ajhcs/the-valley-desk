@@ -376,9 +376,13 @@ export function isOfficialSourceDue(
 }
 
 /**
- * Select due sources with category rotation. A source-cap is necessary for a
- * Worker run, but registry order must not make policy, filings, products, or
- * events wait forever behind the larger newsroom lane.
+ * Select due sources with a dedicated News reservation and category rotation
+ * for everything else. News is the frequent-pass contract for the site: all
+ * due first-party News sources must be admitted before the remaining source
+ * categories take their turn. The source cap remains a hard total cap, so a
+ * large News lane cannot make the run unbounded; with the current registry
+ * (14 News sources and a 32-source cap) every due News source fits and the
+ * remaining 18 slots continue to rotate across the other categories.
  */
 export function selectDueOfficialSources(
   sources: readonly OfficialSource[],
@@ -399,14 +403,19 @@ export function selectDueOfficialSources(
       const rightTime = Number.isFinite(rightDue) ? rightDue : 0;
       return leftTime - rightTime || left.id.localeCompare(right.id);
     });
+  const dueNews = due.filter((source) => source.category === "news");
+  const selected: OfficialSource[] = dueNews.slice(0, limit);
+  const remaining = limit - selected.length;
+  if (remaining <= 0) return selected;
+
   const byCategory = new Map<OfficialSourceCategory, OfficialSource[]>();
   for (const source of due) {
+    if (source.category === "news") continue;
     const bucket = byCategory.get(source.category) ?? [];
     bucket.push(source);
     byCategory.set(source.category, bucket);
   }
   const categories = [...byCategory.keys()].sort();
-  const selected: OfficialSource[] = [];
   while (selected.length < limit && categories.length) {
     for (let index = categories.length - 1; index >= 0 && selected.length < limit; index -= 1) {
       const category = categories[index]!;

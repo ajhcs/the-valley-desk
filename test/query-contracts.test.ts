@@ -1586,7 +1586,7 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   };
   const router = readFileSync(join(root, "src/router.tsx"), "utf8");
   const entitySrc = readFileSync(join(root, "src/content/entity.ts"), "utf8");
-  assert.equal(entityRows.length, 92);
+  assert.equal(entityRows.length, 96);
   assert.ok(!/path:\s*["']\/org\//.test(router));
   assert.ok(!router.includes("/orgs"));
   assert.ok(!router.includes("EntityPage"));
@@ -2099,7 +2099,7 @@ test("firehose: stable RSS ids, seed org map, HOLD denylist, social no-op, queue
   assert.ok(worker.includes("async scheduled"));
   assert.ok(worker.includes("runAutomation"));
   assert.ok(wrangler.includes("VALLEY_DESK_DB"));
-  assert.ok(wrangler.includes("0 * * * *"));
+  assert.ok(wrangler.includes("*/15 * * * *"));
   assert.ok(wrangler.includes('"custom_domain": true'));
   assert.ok(!rssSrc.includes("linkedin.com"));
   assert.ok(!rssSrc.includes("api.twitter.com"));
@@ -2212,7 +2212,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
 });
 
 test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pay facts", () => {
-  assert.equal(entityRows.length, 92);
+  assert.equal(entityRows.length, 96);
   const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
   const labels = (id: string) => (byId[id]?.facts ?? []).map((f) => f.label);
 
@@ -2437,7 +2437,7 @@ test("signed school facts on existing people; pay and CC NPSR unchanged", () => 
   const edu = (id: string) => (byId[id]?.facts ?? []).filter((f) => f.kind === "education");
   const salary = (id: string) => (byId[id]?.facts ?? []).filter((f) => f.kind === "salary");
 
-  assert.equal(entityRows.length, 92);
+  assert.equal(entityRows.length, 96);
   assert.deepEqual(
     (byId["org-christianacare"]?.facts ?? []).map((f) => f.label),
     ["Net patient service revenue $3,140,501,000 · YE June 30, 2025"],
@@ -2549,7 +2549,7 @@ test("Sloan SIGN: Inspira Johnson day-6 voice; Honor Roll stays voice; pay facts
   assert.equal(canonicalPath(voice), "/voices/inspira-johnson-epic-day-6-2026-07-30");
   const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
   assert.equal(byId["person-dave-johnson"]?.facts?.find((f) => f.kind === "salary")?.filerOrg, "Inspira Medical Centers, Inc.");
-  assert.equal(entityRows.length, 92);
+  assert.equal(entityRows.length, 96);
   assert.ok(!/Kevin/.test(JSON.stringify(byId["person-dave-johnson"])));
 });
 
@@ -2957,7 +2957,7 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
   assert.ok(!entityRows.some((e) => /leaphart/i.test(`${e.id} ${e.name}`)));
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
-  assert.equal(entityRows.length, 92);
+  assert.equal(entityRows.length, 96);
   assert.ok(!entityRows.some((e) => /mansue|jimenez|mahoney|cacchione|madeline-bell|pullin/i.test(e.id)));
   assert.ok(!entityRows.some((e) => e.id.startsWith("person-") && /Mansue|Jimenez|Mahoney|Cacchione|Madeline Bell|Dennis/.test(e.name)));
 
@@ -3969,8 +3969,8 @@ test("one-worker configuration has Muse defaults, one D1 binding, and no staging
   assert.ok(wrangler.includes('"EDITOR_MODEL": "meta/muse-spark-1.2-contributor"'));
   assert.ok(!wrangler.includes("standard Muse"));
   assert.ok(wrangler.includes("https://openrouter.ai/api/v1"));
-  assert.ok(wrangler.includes('"EDITOR_MODEL_BUDGET": "4"'));
-  assert.ok(wrangler.includes('"EDITOR_MODEL_CONCURRENCY": "2"'));
+  assert.ok(wrangler.includes('"EDITOR_MODEL_BUDGET": "32"'));
+  assert.ok(wrangler.includes('"EDITOR_MODEL_CONCURRENCY": "4"'));
   assert.ok(wrangler.includes('"EDITOR_MODEL_TIMEOUT_MS": "45000"'));
   assert.ok(wrangler.includes('"EDITOR_MODEL_DEADLINE_MS": "110000"'));
   assert.ok(wrangler.includes('"database_name": "the-valley-desk"'));
@@ -4693,8 +4693,8 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(model.includes("muse-spark-1.2-contributor"));
   assert.ok(model.includes('"relevanceScore":0'));
   assert.ok(model.includes("Every affectedOrgId and productId must come verbatim"));
-  assert.ok(wrangler.includes('"crons": ["0 * * * *", "15 3 * * *"]'));
-  assert.ok(example.includes("EDITOR_MODEL_BUDGET=4"));
+  assert.ok(wrangler.includes('"crons": ["*/15 * * * *", "17 3 * * *"]'));
+  assert.ok(example.includes("EDITOR_MODEL_BUDGET=32"));
   assert.ok(example.includes("EDITOR_MODEL_TIMEOUT_MS=45000"));
   assert.ok(example.includes("EDITOR_MODEL_DEADLINE_MS=110000"));
   assert.equal(MAX_EDITOR_TIMEOUT_MS, 120_000);
@@ -5484,7 +5484,7 @@ test("new HSX, Penn, and ChristianaCare voices are cited, labeled, and off the n
 });
 
 test("entity cards cover fact-bearing rows with local images, public roles, and text fallback", () => {
-  assert.equal(entityRows.length, 92);
+  assert.equal(entityRows.length, 96);
   const bearing = factBearingEntities(entityRows);
   assert.ok(bearing.some((e) => e.id === "org-hsx"));
   assert.ok(bearing.some((e) => e.id === "person-hojjat-salmasian"));

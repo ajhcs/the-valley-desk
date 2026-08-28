@@ -339,18 +339,21 @@ function parseCachedVerification(raw: string | null) {
 }
 
 /** Load review rows that were not present in the latest source snapshot. */
-export async function readReviewBacklog(db: D1DatabaseLike, limit = 200) {
+export async function readReviewBacklog(db: D1DatabaseLike, limit = 1000) {
   const rows = await db.prepare(`
     SELECT id, content_json
     FROM content_candidates
     WHERE queue_status = 'review'
     ORDER BY
-      CASE WHEN content_changed_at IS NULL THEN 1 ELSE 0 END ASC,
-      content_changed_at DESC,
+      COALESCE(
+        json_extract(content_json, '$.publishedAt'),
+        content_changed_at,
+        first_seen_at
+      ) DESC,
       first_seen_at ASC,
       id ASC
     LIMIT ?
-  `).bind(Math.max(1, Math.min(1000, Math.trunc(limit) || 200))).all<{ id: string; content_json: string }>();
+  `).bind(Math.max(1, Math.min(1000, Math.trunc(limit) || 1000))).all<{ id: string; content_json: string }>();
   const byIdentity = new Map<string, ContentItem>();
   for (const row of rows.results ?? []) {
     try {
