@@ -19,6 +19,15 @@ const INTERNAL_PROCESS_LANGUAGE = [
   /\b(?:scraping|crawling) (?:note|method|process)\b/i,
 ];
 
+const SOURCE_PAGE_CHROME = [
+  /\blatest\s*[›»>]\s*(?:press releases?|news|stories)\b/i,
+  /\bpress releases?\s+press releases?\b/i,
+  /\b(?:read|learn|see) more\s*:/i,
+  /\babout (?:cooper|jefferson|penn medicine|temple health|nemours|christianacare|main line health)\b/i,
+  /\b(?:photo|image|video) credit\b/i,
+  /\b(?:share|print|subscribe) this (?:article|story|page)\b/i,
+];
+
 /** Reader-facing copy should state supported facts, not expose the model's source-audit monologue. */
 export function hasDefensiveEditorialAside(value: string | null | undefined) {
   if (!value) return false;
@@ -29,6 +38,14 @@ export function hasDefensiveEditorialAside(value: string | null | undefined) {
 export function hasInternalProcessLanguage(value: string | null | undefined) {
   if (!value) return false;
   return INTERNAL_PROCESS_LANGUAGE.some((pattern) => pattern.test(value));
+}
+
+/** Navigation, bylines, related links, and institutional boilerplate are source
+ * metadata, not a publishable article body. This is deliberately narrow so it
+ * cannot reject ordinary prose that merely names a newsroom. */
+export function hasSourcePageChrome(value: string | null | undefined) {
+  if (!value) return false;
+  return SOURCE_PAGE_CHROME.some((pattern) => pattern.test(value));
 }
 
 /**

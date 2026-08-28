@@ -103,10 +103,25 @@ function modelState(partial: Partial<EditorModelState> & Pick<EditorModelState,"
 function validEnrichment(item: NewsItem, overrides: Partial<ReturnType<typeof EditorEnrichment.parse>> = {}) {
   return EditorEnrichment.parse({
     relevanceScore:98, confidence:0.98, decision:"priority_review", reasons:["Evidence"], affectedOrgIds:item.orgs, productIds:[], changeType:"deployment", materialityDimensions:["deployment"],
-    impactSentence:item.title, whyAttend:null, whoYoullMeet:[], evidenceSpans:[item.title],
+    impactSentence:item.title, body:item.body, bodyEvidenceSpans:[item.body], whyAttend:null, whoYoullMeet:[], evidenceSpans:[item.title],
     ...overrides,
   });
 }
+
+test("automatic news publication requires curated body copy and rejects source-page chrome", () => {
+  const item = reviewNews("news-curated-body", "Penn expands a regional service", "Penn expands a regional service for patients across the region.");
+  assert.equal(
+    evaluateCandidate(item, validEnrichment(item, { body: null, bodyEvidenceSpans: [] })).rule,
+    "curated-body-required",
+  );
+  assert.equal(
+    evaluateCandidate(item, validEnrichment(item, {
+      body: "Latest › Press Releases Press Releases Penn expands a regional service for patients across the region.",
+      bodyEvidenceSpans: [item.body],
+    })).rule,
+    "curated-body-source-chrome",
+  );
+});
 
 // 1) fresh-over-stale selection
 test("fresh-over-stale selection", () => {
@@ -261,6 +276,7 @@ test("two-pass fail closed for financial", () => {
   const enrichment=EditorEnrichment.parse({
     relevanceScore:98, confidence:0.98, decision:"priority_review", reasons:["Evidence"], affectedOrgIds:item.orgs, productIds:[], changeType:"commercial", materialityDimensions:["cost"],
     impactSentence:"Temple reports \$10 million shortfall", // not verbatim, contains number
+    body:item.body, bodyEvidenceSpans:[item.body],
     whyAttend:null, whoYoullMeet:[], evidenceSpans:[item.title],
   });
   const decision=evaluateCandidate(item, enrichment, new Date("2026-08-26T12:00:00.000Z"));
@@ -273,6 +289,7 @@ test("unsupported claim rejection (name/number not literal)", () => {
   const enrichment=EditorEnrichment.parse({
     relevanceScore:98, confidence:0.98, decision:"priority_review", reasons:["Evidence"], affectedOrgIds:item.orgs, productIds:[], changeType:"deployment", materialityDimensions:["deployment"],
     impactSentence:item.title, whyAttend:null, whoYoullMeet:[], evidenceSpans:[item.title],
+    body:item.body, bodyEvidenceSpans:[item.body],
     claimLedger:{claims:[{claimId:"c1", claimText:"John Smith", claimType:"name", evidenceSpans:[item.title], sourceIds:[], contextIds:[]}]},
   });
   // editor-model would reject claimLedger at model validation; evaluateCandidate also rejects

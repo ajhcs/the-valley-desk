@@ -4,7 +4,7 @@ import { eventCopyMarksCancelled } from "../lib/calendar";
 import { isOfficialChapterEvent, validateForPublication } from "../content/publication";
 import type { EditorEnrichment } from "./editor-model";
 import { matchingProductUses } from "./product-watch";
-import { professionalizeHeadline } from "../lib/editorialCopy";
+import { hasSourcePageChrome, professionalizeHeadline } from "../lib/editorialCopy";
 import { looksInstructionLike } from "./untrusted-text";
 import { isHighRiskNews, verifyHighRisk, type VerificationInput, type VerificationResult } from "./verification";
 import { validateClaimLedger } from "./claim-ledger";
@@ -235,6 +235,12 @@ export function evaluateCandidate(
   }
   if (!enrichment.impactSentence?.trim() || enrichment.evidenceSpans.length === 0) {
     return review("grounded-impact-required", ["No grounded impact sentence and evidence"]);
+  }
+  if (!enrichment.body?.trim()) {
+    return review("curated-body-required", ["No evidence-written reader body; raw source text cannot be published"]);
+  }
+  if (hasSourcePageChrome(enrichment.body)) {
+    return review("curated-body-source-chrome", ["Reader body contains navigation, byline, or source boilerplate"]);
   }
   if (!MATERIAL_CHANGES.has(enrichment.changeType)) {
     return review("material-change-required", ["No material operating or technology change"]);
