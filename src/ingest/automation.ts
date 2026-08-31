@@ -15,10 +15,12 @@ import {
   DEFAULT_EDITOR_MODEL_CONCURRENCY,
   DEFAULT_EDITOR_MODEL_DEADLINE_MS,
   MAX_EDITOR_LANE_TOTAL_BUDGET,
+  DEFAULT_EDITOR_WORK_PRIORITY_RESERVATIONS,
   MAX_EDITOR_MODEL_CONCURRENCY,
   parseBoundedInt,
   selectEditorModelWorkWithLanes,
   shouldEnrichCandidate,
+  type EditorWorkPriority,
 } from "./editor-work";
 import { evaluateCandidate, verificationInputForCandidate } from "./editor";
 import { isHighRiskNews, verifyWithSecondModel, type VerificationResult } from "./verification";
@@ -97,7 +99,7 @@ export type AutomationIngest = (
 export type AutomationMode = "hourly" | "daily";
 
 export type AutomationOptions = {
-  /** Hourly keeps the freshness lane hot; daily enables the deep event scan. */
+  /** Hourly keeps the freshness lane hot; daily retains the broader scan cadence. */
   mode?: AutomationMode;
 };
 
@@ -131,6 +133,14 @@ function mergeCurrentAndBacklog(current: ContentItem[], backlog: ContentItem[]) 
     if (!byIdentity.has(identity)) byIdentity.set(identity, item);
   }
   return [...byIdentity.values()];
+}
+
+function currentWorkPriority(item: ContentItem): Exclude<EditorWorkPriority, "backlog"> {
+  if (item.kind === "event") return "time-sensitive-events";
+  if (item.kind === "voice" || item.source.origin.startsWith("grok-social-") || item.source.origin === "executive-leadership-monitor") {
+    return "current-social";
+  }
+  return "current-news";
 }
 
 function attemptError(error: unknown) {
@@ -528,7 +538,7 @@ export async function runAutomation(
     }, fetchImpl, {
       newsExtractions,
       mode,
-      includeEvents: mode === "daily",
+      includeEvents: true,
     });
     const signalCandidates = signalVerification.candidates;
     const officialNews = officialDiscovery.editorialCandidates.filter((item) => item.kind !== "event");
@@ -607,14 +617,22 @@ export async function runAutomation(
       item,
       fingerprint: await candidateFingerprint(item),
     })));
+    const currentIdentities = new Set(currentItems.map((item) => sourceIdentityKey(item)));
+    const workItems = fingerprinted.map((row) => ({
+      ...row,
+      priority: currentIdentities.has(sourceIdentityKey(row.item))
+        ? currentWorkPriority(row.item)
+        : "backlog" as const,
+    }));
     await ensureLock();
     const selectedWork = selectEditorModelWorkWithLanes(
-      fingerprinted,
+      workItems,
       modelStates,
       {
         totalBudget: budget,
         now: new Date(),
         reusableIds: new Set(reusable.keys()),
+        priorityReservations: DEFAULT_EDITOR_WORK_PRIORITY_RESERVATIONS,
       },
     );
     const selected = selectedWork.items;
@@ -779,6 +797,10 @@ export async function runAutomation(
         lane,
         rows.length,
       ])),
+      priorities: Object.fromEntries(Object.entries(selectedWork.selectedByPriority).map(([priority, rows]) => [
+        priority,
+        rows.length,
+      ])),
       lanes: Object.fromEntries(Object.entries(selectedWork.metricsByLane).map(([lane, metrics]) => [lane, {
         eligible: metrics.eligibleCount,
         selected: metrics.selectedCount,
@@ -796,6 +818,7 @@ export async function runAutomation(
       outcome: "acknowledged",
       runId: persisted.runId,
       processed: socialEvidenceProcessedCount,
+      quarantined: run.notes.grok?.quarantined ?? 0,
     });
     logOps("reconciliation", {
       outcome: reconciliation.withdrawn ? "withdrawn" : "ok",
@@ -813,6 +836,10 @@ export async function runAutomation(
       queueMetrics: selectedWork.metricsByLane,
       selectedByLane: Object.fromEntries(Object.entries(selectedWork.selectedByLane).map(([lane, rows]) => [
         lane,
+        rows.length,
+      ])),
+      selectedByPriority: Object.fromEntries(Object.entries(selectedWork.selectedByPriority).map(([priority, rows]) => [
+        priority,
         rows.length,
       ])),
       modelAttemptedCount,

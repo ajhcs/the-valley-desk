@@ -29,7 +29,7 @@ export type IngestRun = {
     events: number;
     linkedin: { count: number; skipped?: string };
     x: { count: number; skipped?: string };
-    grok: { count: number; pending: number; skipped?: string };
+    grok: { count: number; pending: number; quarantined?: number; skipped?: string };
     cadence?: "hourly" | "daily";
     failures?: string[];
     sources?: SourceRunNote[];
@@ -50,10 +50,10 @@ export async function runIngestAll(
   options: IngestRunOptions = {},
 ): Promise<IngestRun> {
   const fetchedAt = now.toISOString();
-  // A normal scheduled run is freshness-first. Event pages are broader and
-  // more expensive, so they run on the daily deep-scan trigger. Direct
-  // callers without a mode retain the historical all-source behavior.
-  const includeEvents = options.includeEvents ?? (options.mode ? options.mode === "daily" : true);
+  // A normal scheduled run is freshness-first, so time-sensitive event
+  // listings stay in the same current-work pool as News and social evidence.
+  // Callers can still opt out explicitly for a narrow one-off probe.
+  const includeEvents = options.includeEvents ?? true;
   const [rssResult, eventsResult, socialResult] = await Promise.allSettled([
     ingestRssWithHealth(now, fetchImpl, { ...options, sourceHealth: env.sourceHealth }),
     includeEvents ? ingestEventsWithHealth(now, fetchImpl, env.sourceHealth) : Promise.resolve(undefined),
@@ -68,7 +68,7 @@ export async function runIngestAll(
     : {
       items: [], linkedin: { count: 0, skipped: "source-error" },
       x: { count: 0, skipped: "source-error" },
-      grok: { count: 0, pending: 0, skipped: "source-error" },
+      grok: { count: 0, pending: 0, quarantined: 0, skipped: "source-error" },
       processedPackets: [],
       editorEvidence: new Map<string, SocialEvidenceEditorContext>(),
       sources: [] as SourceRunNote[],
@@ -134,7 +134,7 @@ export async function runIngestAll(
   };
 }
 
-/** Worker cron. Secrets missing → social no-op; daily mode adds event scans. */
+/** Worker cron. Secrets missing → social no-op; every scheduled pass checks current events. */
 export async function runScheduledIngest(
   env: IngestEnv = {},
   fetchImpl: typeof fetch = fetch,

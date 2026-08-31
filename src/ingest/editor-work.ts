@@ -31,6 +31,28 @@ export const MAX_FAILURE_COOLDOWN_HOURS = 24 * 7;
 export const MAX_EDITOR_MODEL_BUDGET = MAX_EDITOR_LANE_TOTAL_BUDGET;
 export const MAX_EDITOR_MODEL_CONCURRENCY = 4;
 
+/**
+ * Freshness classes are intentionally separate from specialist lanes. A
+ * current social Voice and a current News item may use different lanes, but
+ * both must be able to claim capacity ahead of an older review row.
+ */
+export const EDITOR_WORK_PRIORITY_ORDER = [
+  "current-news",
+  "time-sensitive-events",
+  "current-social",
+  "backlog",
+] as const;
+
+export type EditorWorkPriority = (typeof EDITOR_WORK_PRIORITY_ORDER)[number];
+export type EditorWorkPriorityReservations = Partial<Record<EditorWorkPriority, number>>;
+
+/** Default minimum pools for a normal 32-item editor pass. */
+export const DEFAULT_EDITOR_WORK_PRIORITY_RESERVATIONS: Record<Exclude<EditorWorkPriority, "backlog">, number> = {
+  "current-news": 4,
+  "time-sensitive-events": 4,
+  "current-social": 4,
+};
+
 export type EditorModelState = {
   id: string;
   fingerprint: string;
@@ -142,6 +164,7 @@ export function selectEditorModelWork(
 export type EditorLaneWorkItem = {
   item: ContentItem;
   fingerprint: string;
+  priority?: EditorWorkPriority;
 };
 
 export type EditorLaneSelectionMetrics = QueueSlaMetrics & {
@@ -152,6 +175,7 @@ export type EditorLaneSelectionMetrics = QueueSlaMetrics & {
 export type EditorLaneSelectionResult = {
   items: ContentItem[];
   selectedByLane: Record<EditorLane, ContentItem[]>;
+  selectedByPriority: Record<EditorWorkPriority, ContentItem[]>;
   metricsByLane: Record<EditorLane, EditorLaneSelectionMetrics>;
   eligibleByLane: Record<EditorLane, number>;
   totalBudget: number;
@@ -162,6 +186,7 @@ export type EditorLaneSelectionOptions = {
   totalBudget?: number;
   now?: Date;
   reusableIds?: Set<string>;
+  priorityReservations?: EditorWorkPriorityReservations;
 };
 
 function boundedLaneBudget(value: number | undefined, fallback: number) {
@@ -177,6 +202,72 @@ function laneBudgetMap(options: EditorLaneSelectionOptions) {
     );
   }
   return budgets;
+}
+
+function priorityOf(item: EditorLaneWorkItem) {
+  return item.priority ?? "backlog";
+}
+
+function priorityReservationMap(options: EditorLaneSelectionOptions) {
+  const reservations = {} as Record<EditorWorkPriority, number>;
+  for (const priority of EDITOR_WORK_PRIORITY_ORDER) {
+    const fallback = priority === "backlog"
+      ? 0
+      : DEFAULT_EDITOR_WORK_PRIORITY_RESERVATIONS[priority];
+    reservations[priority] = parseBoundedInt(
+      options.priorityReservations?.[priority],
+      fallback,
+      0,
+      MAX_EDITOR_LANE_TOTAL_BUDGET,
+    );
+  }
+  return reservations;
+}
+
+function reservePriorityWork(
+  items: EditorLaneWorkItem[],
+  records: Map<string, EditorModelState>,
+  options: EditorLaneSelectionOptions,
+  budgets: EditorLaneBudgets,
+  totalBudget: number,
+  now: Date,
+) {
+  const selected: ContentItem[] = [];
+  const selectedIds = new Set<string>();
+  if (!options.priorityReservations || totalBudget === 0) return { selected, selectedIds };
+  const reservations = priorityReservationMap(options);
+  const addFromPriority = (priority: EditorWorkPriority, count: number) => {
+    if (count <= 0 || selected.length >= totalBudget) return;
+    const candidates = items.filter((row) => (
+      priorityOf(row) === priority
+      && !selectedIds.has(row.item.id)
+      && budgets[editorLaneForItem(row.item)] > 0
+    ));
+    const picked = selectEditorModelWorkWithMetrics(
+      candidates,
+      records,
+      Math.min(count, totalBudget - selected.length),
+      now,
+      options.reusableIds,
+    ).items;
+    for (const item of picked) {
+      if (selected.length >= totalBudget || selectedIds.has(item.id)) break;
+      selected.push(item);
+      selectedIds.add(item.id);
+    }
+  };
+
+  // Give each non-empty requested class one slot first. This matters when an
+  // operator lowers the total budget below the sum of the configured pools.
+  for (const priority of EDITOR_WORK_PRIORITY_ORDER) {
+    if (reservations[priority] <= 0) continue;
+    addFromPriority(priority, 1);
+  }
+  // Spend the rest of each requested reservation in deterministic order.
+  for (const priority of EDITOR_WORK_PRIORITY_ORDER) {
+    addFromPriority(priority, reservations[priority] - 1);
+  }
+  return { selected, selectedIds };
 }
 
 /**
@@ -206,9 +297,18 @@ export function selectEditorModelWorkWithLanes(
   const pools = {} as Record<EditorLane, ContentItem[]>;
   const metricsByLane = {} as Record<EditorLane, EditorLaneSelectionMetrics>;
   const eligibleByLane = {} as Record<EditorLane, number>;
+  const selectedByLane = {} as Record<EditorLane, ContentItem[]>;
+  for (const lane of EDITOR_LANE_ORDER) selectedByLane[lane] = [];
+  const selected: ContentItem[] = [];
+  const priorityReservation = reservePriorityWork(items, records, options, budgets, totalBudget, now);
+  const selectedIds = priorityReservation.selectedIds;
+  for (const item of priorityReservation.selected) {
+    selected.push(item);
+    selectedByLane[editorLaneForItem(item)].push(item);
+  }
 
   for (const lane of EDITOR_LANE_ORDER) {
-    const laneItems = items.filter(({ item }) => editorLaneForItem(item) === lane);
+    const laneItems = items.filter(({ item }) => editorLaneForItem(item) === lane && !selectedIds.has(item.id));
     const reserved = selectEditorModelWorkWithMetrics(
       laneItems,
       records,
@@ -236,10 +336,6 @@ export function selectEditorModelWorkWithLanes(
     };
   }
 
-  const selectedByLane = {} as Record<EditorLane, ContentItem[]>;
-  for (const lane of EDITOR_LANE_ORDER) selectedByLane[lane] = [];
-  const selected: ContentItem[] = [];
-  const selectedIds = new Set<string>();
   // Phase one reserves each specialist's configured quota. Round-robin keeps
   // every non-empty lane moving before a busy lane receives another slot.
   let round = 0;
@@ -294,7 +390,13 @@ export function selectEditorModelWorkWithLanes(
       selectedOriginCounts,
     };
   }
-  return { items: selected, selectedByLane, metricsByLane, eligibleByLane, totalBudget };
+  const priorityById = new Map<string, EditorWorkPriority>(
+    items.map((row): [string, EditorWorkPriority] => [row.item.id, priorityOf(row)]),
+  );
+  const selectedByPriority = {} as Record<EditorWorkPriority, ContentItem[]>;
+  for (const priority of EDITOR_WORK_PRIORITY_ORDER) selectedByPriority[priority] = [];
+  for (const item of selected) selectedByPriority[priorityById.get(item.id) ?? "backlog"].push(item);
+  return { items: selected, selectedByLane, selectedByPriority, metricsByLane, eligibleByLane, totalBudget };
 }
 
 /** Short alias for scheduler callers. */

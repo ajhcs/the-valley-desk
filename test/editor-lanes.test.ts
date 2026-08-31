@@ -152,6 +152,31 @@ test("each nonempty lane gets an initial slot before unused quota is redistribut
   );
 });
 
+test("freshness reservations keep current news, events, and social work ahead of backlog", () => {
+  const candidates = [
+    { item: news("backlog-a"), fingerprint: "backlog-a", priority: "backlog" as const },
+    { item: news("backlog-b"), fingerprint: "backlog-b", priority: "backlog" as const },
+    { item: news("current-news"), fingerprint: "current-news", priority: "current-news" as const },
+    { item: event("current-event"), fingerprint: "current-event", priority: "time-sensitive-events" as const },
+    { item: voice("current-social"), fingerprint: "current-social", priority: "current-social" as const },
+  ];
+  const result = selectEditorModelWorkWithLanes(candidates, new Map(), {
+    laneBudgets: { news: 4, events: 4, voices: 4 },
+    totalBudget: 3,
+    priorityReservations: {
+      "current-news": 1,
+      "time-sensitive-events": 1,
+      "current-social": 1,
+    },
+    now: new Date("2026-08-28T10:00:00.000Z"),
+  });
+  assert.deepEqual(result.items.map((item) => item.id), ["current-news", "current-event", "current-social"]);
+  assert.equal(result.selectedByPriority["backlog"].length, 0);
+  assert.equal(result.selectedByPriority["current-news"].length, 1);
+  assert.equal(result.selectedByPriority["time-sensitive-events"].length, 1);
+  assert.equal(result.selectedByPriority["current-social"].length, 1);
+});
+
 test("an active specialist borrows every unused slot without losing its reserved capacity", () => {
   const candidates = Array.from({ length: 40 }, (_, index) => news(`news-${index}`));
   const result = selectEditorModelWorkWithLanes(rows(candidates), new Map(), {
