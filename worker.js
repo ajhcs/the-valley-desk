@@ -206,6 +206,33 @@ function safeAlertDetails(error, context = {}) {
   };
 }
 
+function sourceInstitutionIds(source) {
+  const values = [];
+  if (typeof source?.institutionId === "string") values.push(source.institutionId);
+  if (Array.isArray(source?.institutionIds)) values.push(...source.institutionIds);
+  return [...new Set(values.filter((value) => typeof value === "string" && value.trim()).map((value) => value.slice(0, 120)))].slice(0, 8);
+}
+
+function sourceAlertScope(source, sourceId) {
+  const institutionIds = sourceInstitutionIds(source);
+  const subsystem = typeof source?.type === "string" && source.type.trim() ? source.type : "automation";
+  const institutionId = institutionIds.length === 1 ? institutionIds[0] : undefined;
+  return {
+    ...(institutionId ? { institutionId } : {}),
+    subsystem,
+    groupKey: `valley-desk:${subsystem}:${institutionId ?? sourceId}`.slice(0, 240),
+  };
+}
+
+function sourceConditionState(source) {
+  if (source?.state === "backoff") return "backoff";
+  if (source?.state === "upstream-blocked") return "blocked";
+  if (source?.state === "healthy" || source?.state === "healthy-empty") {
+    return source?.fallbackUrl ? "degraded" : "healthy";
+  }
+  return "failed";
+}
+
 export async function sendAutomationAlerts(env, result, now = new Date()) {
   // Alert delivery is best-effort and must never turn a successful content
   // run into a false automation failure. Durable state is still written when
@@ -261,6 +288,9 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       fingerprint: "valley-desk:automation-lock-busy",
       event: "automation-lock-busy",
       severity: "warning",
+      conditionState: "degraded",
+      subsystem: "automation",
+      groupKey: "valley-desk:automation:lock",
       threshold: 3,
       now,
       details: { reason: "automation-already-running" },
@@ -292,6 +322,28 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
         nextRetryAt: source.nextAttemptAt,
         failures: source.consecutiveFailures,
       });
+      if (source.fallbackUrl) {
+        const fallbackFingerprint = `valley-desk:source-fallback:${sourceId}`;
+        await recordWarning({
+          fingerprint: fallbackFingerprint,
+          event: "source-fallback-active",
+          severity: "warning",
+          conditionState: "degraded",
+          threshold: 1,
+          now,
+          ...sourceAlertScope(source, sourceId),
+          details: {
+            sourceId,
+            state: source.state,
+            fallbackActive: true,
+            primaryBackoff: true,
+            itemCount: source.itemCount,
+            lastSuccessAt: source.lastSuccessAt ?? null,
+            nextRetryAt: source.nextAttemptAt ?? null,
+            affectedCoverage: "fallback-serving-during-backoff",
+          },
+        });
+      }
       continue;
     }
     if (source.state === "healthy" || source.state === "healthy-empty") {
@@ -302,8 +354,10 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
           fingerprint: fallbackFingerprint,
           event: "source-fallback-active",
           severity: "warning",
+          conditionState: "degraded",
           threshold: 1,
           now,
+          ...sourceAlertScope(source, sourceId),
           details: {
             sourceId,
             state: source.state,
@@ -328,8 +382,10 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       fingerprint,
       event: "source-degraded",
       severity: coverageLost && !source.fallbackUrl ? "critical" : "warning",
-      threshold: 3,
+      conditionState: sourceConditionState(source),
+      threshold: coverageLost && !source.fallbackUrl ? 1 : 3,
       now,
+      ...sourceAlertScope(source, sourceId),
       details: {
         sourceId,
         state: source.state,
@@ -359,15 +415,19 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     if (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0) {
       await recover("valley-desk:leadership-monitor", 2);
     } else if (leadership.outcome !== "ok") {
-      await dispatch({
+      const leadershipSeverity = leadership.outcome === "failed"
+        || (Number(leadership.failed ?? 0) > 0 && Number(leadership.failed) >= Number(leadership.coverage?.length ?? 1))
+        ? "critical"
+        : "warning";
+      const leadershipAlert = {
         fingerprint: "valley-desk:leadership-monitor",
         event: "leadership-monitor-failed",
-        severity: leadership.outcome === "failed"
-          || (Number(leadership.failed ?? 0) > 0 && Number(leadership.failed) >= Number(leadership.coverage?.length ?? 1))
-          ? "critical"
-          : "warning",
-        threshold: 2,
+        severity: leadershipSeverity,
+        conditionState: leadershipSeverity === "critical" ? "failed" : "degraded",
+        threshold: leadershipSeverity === "critical" ? 1 : 2,
         now,
+        subsystem: "leadership",
+        groupKey: "valley-desk:leadership:monitor",
         details: {
           outcome: leadership.outcome,
           fetched: leadership.fetched,
@@ -382,7 +442,9 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
             })
             : safeAlertDetails(leadership.error ?? leadership.outcome, { stage: "leadership-monitor" })),
         },
-      });
+      };
+      if (leadershipSeverity === "critical") await dispatch(leadershipAlert);
+      else await recordWarning(leadershipAlert);
     }
   }
 
@@ -394,6 +456,9 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       fingerprint: "valley-desk:model-enrichment",
       event: "model-enrichment-failed",
       severity: "warning",
+      conditionState: "degraded",
+      subsystem: "model",
+      groupKey: "valley-desk:model:enrichment",
       threshold: 2,
       now,
       details: {
@@ -414,6 +479,9 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       fingerprint: "valley-desk:model-verifier",
       event: "model-verifier-failed",
       severity: "warning",
+      conditionState: "degraded",
+      subsystem: "model",
+      groupKey: "valley-desk:model:verifier",
       threshold: 2,
       now,
       details: { attempted: verifierAttempted, failed: verifierFailed },
@@ -456,7 +524,10 @@ async function handleFetch(request, env, origin, nonce, ctx) {
           fingerprint: "valley-desk:social:vale",
           event: "social-collector-paused",
           severity: "warning",
+          conditionState: "failed",
           threshold: 1,
+          subsystem: "social",
+          groupKey: "valley-desk:social:vale",
           details: {
             runId: report.runId,
             outcome: report.outcome,
@@ -464,7 +535,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
             pauseRequired: true,
           },
         }).catch((error) => {
-          logOps("ops-alert", { outcome: "dispatch-failed", fingerprint: "valley-desk:social:vale", message: error instanceof Error ? error.message : String(error) }, "warn");
+          logOps("ops-alert", { outcome: "dispatch-failed", fingerprint: "valley-desk:social:vale", message: safeAlertError(error) }, "warn");
         }));
       } else if (report.recoveryObserved) {
         ctx.waitUntil(resolveOperationalAlertWithTransition(

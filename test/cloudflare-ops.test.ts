@@ -883,6 +883,10 @@ test("operational alerts dedupe durably, sanitize secrets, and send to the fixed
     fingerprint: "valley-desk:test-alert",
     event: "source-degraded",
     severity: "warning" as const,
+    conditionState: "blocked" as const,
+    institutionId: "inst-cooper",
+    subsystem: "rss",
+    groupKey: "valley-desk:rss:inst-cooper",
     threshold: 2,
     now: firstAt,
     details: {
@@ -900,6 +904,17 @@ test("operational alerts dedupe durably, sanitize secrets, and send to the fixed
   assert.equal(sent[0].from, OPS_ALERT_SENDER);
   assert.equal(sent[0].text.includes("do-not-send"), false);
   assert.equal(sent[0].text.includes("\nheader"), false);
+  const context = database.prepare(
+    "SELECT condition_state, institution_id, subsystem, group_key FROM operational_alerts WHERE fingerprint = ?",
+  ).get(input.fingerprint) as { condition_state: string; institution_id: string; subsystem: string; group_key: string };
+  assert.deepEqual({ ...context }, {
+    condition_state: "blocked",
+    institution_id: "inst-cooper",
+    subsystem: "rss",
+    group_key: "valley-desk:rss:inst-cooper",
+  });
+  assert.match(sent[0].text, /condition_state: blocked/);
+  assert.match(sent[0].text, /institution: inst-cooper/);
   assert.deepEqual(sanitizeAlertDetails(input.details), {
     sourceId: "source-1",
     reason: "safe detail",
@@ -1186,7 +1201,7 @@ test("incomplete leadership extraction surfaces a bounded actionable reason with
       },
     }, new Date(`2026-08-28T0${index}:00:00.000Z`));
   }
-  assert.equal(sent.length, 1, "degraded leadership with remaining coverage is a warning transition, not a critical storm");
+  assert.equal(sent.length, 0, "degraded leadership with remaining coverage belongs in the digest, not immediate mail");
   const row = database.prepare(
     "SELECT severity, detail_json FROM operational_alerts WHERE fingerprint = 'valley-desk:leadership-monitor'",
   ).get() as { severity: string; detail_json: string };

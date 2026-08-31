@@ -1,5 +1,8 @@
 import type { D1DatabaseLike } from "../ingest/persistence";
 import { logOps } from "./ops";
+import type { OperationalConditionState } from "./operational-status";
+
+export { OPERATIONAL_CONDITION_STATES } from "./operational-status";
 
 export const OPS_ALERT_RECIPIENT = "clyons@ajhcs.org";
 export const OPS_ALERT_SENDER = "alerts@thevalleydesk.org";
@@ -21,12 +24,18 @@ export type SendEmailBindingLike = {
 };
 
 export type AlertSeverity = "info" | "warning" | "critical";
+export type { OperationalConditionState } from "./operational-status";
 
 export type OperationalAlertInput = {
   fingerprint: string;
   packId?: string;
   event: string;
   severity: AlertSeverity;
+  /** Condition state is separate from the open/resolved incident lifecycle. */
+  conditionState?: OperationalConditionState;
+  institutionId?: string | null;
+  subsystem?: string;
+  groupKey?: string;
   details?: Record<string, unknown>;
   threshold?: number;
   now?: Date;
@@ -40,6 +49,10 @@ export type OperationalAlertRow = {
   event: string;
   severity: AlertSeverity;
   state: "open" | "resolved";
+  condition_state: OperationalConditionState;
+  institution_id: string | null;
+  subsystem: string;
+  group_key: string;
   occurrence_count: number;
   first_seen_at: string;
   last_seen_at: string;
@@ -69,6 +82,10 @@ type DigestRow = {
   pack_id: string;
   event: string;
   severity: AlertSeverity;
+  condition_state: OperationalConditionState;
+  institution_id: string | null;
+  subsystem: string;
+  group_key: string;
   occurrence_count: number;
   first_seen_at: string;
   last_seen_at: string;
@@ -100,6 +117,15 @@ function safeErrorMessage(error: unknown) {
     .replace(/\bauthorization\b\s*[:=]\s*bearer\s+\S+/gi, "authorization=[redacted]")
     .replace(/\b(bearer|authorization|token|secret|password|api[-_]?key)\b\s*[:=]?\s*\S+/gi, "$1=[redacted]")
     .slice(0, ALERT_DETAIL_MAX_CHARS) || "notification failed";
+}
+
+function safeField(value: unknown, max: number, fallback: string) {
+  if (typeof value !== "string") return fallback;
+  return stripControls(value).slice(0, max) || fallback;
+}
+
+function defaultConditionState(severity: AlertSeverity): OperationalConditionState {
+  return severity === "critical" ? "failed" : severity === "warning" ? "degraded" : "healthy";
 }
 
 function sanitizedScalar(value: unknown): string | number | boolean | null | undefined {
@@ -153,6 +179,7 @@ function alertBackoffMs(attempt: number) {
 function rowSelect() {
   return `
     SELECT fingerprint, pack_id, event, severity, state, occurrence_count,
+           condition_state, institution_id, subsystem, group_key,
            first_seen_at, last_seen_at, next_notify_at,
            last_notification_attempt_at, last_notified_at,
            notification_attempt_count, last_notification_error, detail_json,
@@ -176,18 +203,29 @@ export async function recordOperationalAlert(
   const packId = stripControls(input.packId ?? "").slice(0, 120) || DEFAULT_ALERT_PACK_ID;
   const event = stripControls(input.event).slice(0, 120) || "unknown";
   const severity = input.severity;
+  const conditionState = input.conditionState ?? defaultConditionState(severity);
+  const institutionId = input.institutionId == null
+    ? null
+    : safeField(input.institutionId, 120, "");
+  const subsystem = safeField(input.subsystem, 80, "automation");
+  const groupKey = safeField(input.groupKey, 240, `${packId}:${subsystem}:${event}`);
   const threshold = Math.max(1, Math.min(100, Math.trunc(input.threshold ?? ALERT_DEFAULT_THRESHOLD)));
   const detailJson = safeDetailJson(input.details);
   await db.prepare(`
     INSERT INTO operational_alerts (
       fingerprint, pack_id, event, severity, state, occurrence_count,
+      condition_state, institution_id, subsystem, group_key,
       first_seen_at, last_seen_at, next_notify_at, detail_json
-    ) VALUES (?, ?, ?, ?, 'open', 1, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, 'open', 1, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(fingerprint) DO UPDATE SET
       pack_id = excluded.pack_id,
       event = excluded.event,
       severity = excluded.severity,
       state = 'open',
+      condition_state = excluded.condition_state,
+      institution_id = excluded.institution_id,
+      subsystem = excluded.subsystem,
+      group_key = excluded.group_key,
       occurrence_count = CASE
         WHEN operational_alerts.state = 'resolved' THEN 1
         ELSE operational_alerts.occurrence_count + 1
@@ -198,6 +236,22 @@ export async function recordOperationalAlert(
         WHEN operational_alerts.state = 'resolved' THEN excluded.next_notify_at
         ELSE operational_alerts.next_notify_at
       END,
+      last_notification_attempt_at = CASE
+        WHEN operational_alerts.state = 'resolved' THEN NULL
+        ELSE operational_alerts.last_notification_attempt_at
+      END,
+      last_notified_at = CASE
+        WHEN operational_alerts.state = 'resolved' THEN NULL
+        ELSE operational_alerts.last_notified_at
+      END,
+      notification_attempt_count = CASE
+        WHEN operational_alerts.state = 'resolved' THEN 0
+        ELSE operational_alerts.notification_attempt_count
+      END,
+      last_notification_error = CASE
+        WHEN operational_alerts.state = 'resolved' THEN NULL
+        ELSE operational_alerts.last_notification_error
+      END,
       recovery_count = 0,
       resolved_at = NULL
   `).bind(
@@ -205,6 +259,10 @@ export async function recordOperationalAlert(
     packId,
     event,
     severity,
+    conditionState,
+    institutionId,
+    subsystem,
+    groupKey,
     nowIso,
     nowIso,
     nowIso,
@@ -266,13 +324,14 @@ export async function resolveOperationalAlertWithTransition(
   const nowIso = now.toISOString();
   await db.prepare(`
     UPDATE operational_alerts
-    SET recovery_count = MIN(?, recovery_count + 1),
+    SET condition_state = 'healthy',
+        recovery_count = MIN(?, recovery_count + 1),
         last_recovered_at = ?
     WHERE fingerprint = ? AND state = 'open'
   `).bind(required, nowIso, safeFingerprint).run();
   const resolution = await db.prepare(`
     UPDATE operational_alerts
-    SET state = 'resolved', resolved_at = ?, last_notification_error = NULL
+    SET state = 'resolved', condition_state = 'resolved', resolved_at = ?, last_notification_error = NULL
     WHERE fingerprint = ? AND state = 'open' AND recovery_count >= ?
   `).bind(nowIso, safeFingerprint, required).run();
   const resolved = changedRows(resolution) > 0;
@@ -315,8 +374,12 @@ function alertText(row: OperationalAlertRow) {
   return [
     "The Valley Desk operational alert",
     `severity: ${row.severity}`,
+    `condition_state: ${row.condition_state}`,
     `event: ${row.event}`,
     `pack: ${row.pack_id}`,
+    `subsystem: ${row.subsystem}`,
+    `group_key: ${row.group_key}`,
+    `institution: ${row.institution_id ?? "pack-wide"}`,
     `occurrences: ${row.occurrence_count}`,
     `first_seen: ${row.first_seen_at}`,
     `last_seen: ${row.last_seen_at}`,
@@ -334,6 +397,9 @@ function recoveryText(row: OperationalAlertRow) {
     "The Valley Desk operational alert recovered",
     `event: ${row.event}`,
     `pack: ${row.pack_id}`,
+    `subsystem: ${row.subsystem}`,
+    `group_key: ${row.group_key}`,
+    `institution: ${row.institution_id ?? "pack-wide"}`,
     `recovered_at: ${row.resolved_at ?? row.last_recovered_at ?? row.last_seen_at}`,
     `recovery_checks: ${row.recovery_count}`,
     `details: ${row.detail_json}`,
@@ -400,7 +466,7 @@ export async function dispatchOperationalAlert(
     logOps("ops-alert", {
       outcome: "failed",
       fingerprint: result.row.fingerprint,
-      message: error instanceof Error ? error.message : "email send failed",
+      message: safeErrorMessage(error),
     }, "warn");
     return { outcome: "failed" as const, row: result.row };
   }
@@ -409,6 +475,7 @@ export async function dispatchOperationalAlert(
 function digestSelect() {
   return `
     SELECT fingerprint, pack_id, event, severity, occurrence_count,
+           condition_state, institution_id, subsystem, group_key,
            first_seen_at, last_seen_at, detail_json
     FROM operational_alerts
     WHERE pack_id = ? AND state = 'open' AND last_seen_at >= ?
@@ -437,7 +504,8 @@ function digestText(date: string, rows: DigestRow[]) {
   const lines = ["The Valley Desk daily operational digest", `date: ${date}`, `alerts: ${rows.length}`];
   for (const row of rows) {
     const details = digestDetailText(row.detail_json);
-    lines.push(`- ${row.severity} ${row.event} (${row.occurrence_count} occurrences; last ${row.last_seen_at}${details ? `; ${details}` : ""})`);
+    const scope = row.institution_id ?? row.group_key;
+    lines.push(`- ${row.condition_state} ${row.severity} ${row.subsystem}/${scope} ${row.event} (${row.occurrence_count} occurrences; last ${row.last_seen_at}${details ? `; ${details}` : ""})`);
   }
   lines.push("ops: /ops");
   return lines.join("\n");
