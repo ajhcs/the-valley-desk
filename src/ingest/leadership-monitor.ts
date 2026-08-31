@@ -45,6 +45,7 @@ export type LeadershipSnapshot = {
   extractionStatus: LeadershipExtractionStatus;
   state: LeadershipSnapshotState;
   error?: string | null;
+  httpStatus?: number | null;
   instructionLike: boolean;
 };
 
@@ -255,6 +256,11 @@ function extractionStatus(normalizedText: string, extracted: readonly ExtractedL
   if (!extracted.length && CHALLENGE_RE.test(normalizedText)) return "challenge";
   if (!extracted.length) return "unrecognized";
   return "complete";
+}
+
+function httpStatusFromError(error?: string | null) {
+  const match = /\bHTTP\s+(\d{3})\b/i.exec(error ?? "");
+  return match ? Number(match[1]) : undefined;
 }
 
 export function isEligibleLeadershipSource(source: CoverageSource) {
@@ -507,6 +513,7 @@ export async function monitorLeadershipSources(
           extractionStatus: "partial",
           state: blocked ? "blocked" : "failed",
           error: clipError(page.error),
+          httpStatus: httpStatusFromError(page.error),
           instructionLike: false,
         };
         return { snapshot, previous, fetchedUrl: source.url };

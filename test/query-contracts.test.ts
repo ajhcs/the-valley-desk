@@ -2242,8 +2242,10 @@ test("firehose: stable RSS ids, seed org map, HOLD denylist, social no-op, queue
   assert.ok(store.includes("published-catalog.json"));
   assert.ok(worker.includes("async scheduled"));
   assert.ok(worker.includes("runAutomation"));
+  assert.ok(worker.includes("event?.cron === DAILY_DEEP_SCAN_CRON"));
   assert.ok(wrangler.includes("VALLEY_DESK_DB"));
   assert.ok(wrangler.includes("*/15 * * * *"));
+  assert.ok(wrangler.includes("17 3 * * *"));
   assert.ok(wrangler.includes('"custom_domain": true'));
   assert.ok(!rssSrc.includes("linkedin.com"));
   assert.ok(!rssSrc.includes("api.twitter.com"));

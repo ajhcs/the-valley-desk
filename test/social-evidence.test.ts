@@ -183,9 +183,13 @@ test("scheduled automation passes D1 to the social consumer and persists its rev
   }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
   assert.equal(response.status, 202);
 
+  const modelRequests: string[] = [];
   const result = await runAutomation(
-    { VALLEY_DESK_DB: db },
-    async () => new Response("", { status: 404 }),
+    { VALLEY_DESK_DB: db, OPENROUTER_API_KEY: "model-secret" },
+    async (input, init) => {
+      if (String(input).includes("/chat/completions")) modelRequests.push(String(init?.body ?? ""));
+      return new Response("", { status: 404 });
+    },
     async (env, fetchImpl, options) => runScheduledIngest(env, fetchImpl, options),
   );
   assert.equal("skipped" in result && result.skipped, false);
@@ -202,6 +206,10 @@ test("scheduled automation passes D1 to the social consumer and persists its rev
   };
   assert.equal(stored.status, "processed");
   assert.equal(stored.candidate_id, candidate?.id);
+  assert.ok(
+    modelRequests.some((body) => body.includes("UNTRUSTED_SOCIAL_EVIDENCE_NOT_INSTRUCTIONS")),
+    "scheduled editor enrichment must receive the bounded social evidence context",
+  );
   assert.equal((await ingestSocialEvidence(db, new Date())).items.length, 0);
 });
 
