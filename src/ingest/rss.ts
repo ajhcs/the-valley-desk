@@ -53,6 +53,18 @@ function decodeXml(value: string) {
     .trim();
 }
 
+function decodeHtml(value: string) {
+  return decodeXml(value)
+    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(Number.parseInt(n, 16)))
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)));
+}
+
+function htmlText(value: string) {
+  return decodeHtml(value.replace(/<script\b[\s\S]*?<\/script>/gi, "").replace(/<style\b[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " "))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function tag(block: string, name: string) {
   const m = block.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)</${name}>`, "i"));
   return m ? decodeXml(m[1]) : "";
@@ -184,13 +196,65 @@ export function parseFeedItems(xml: string): ParsedFeedItem[] {
   return parseRssItems(xml);
 }
 
+const COOPER_NEWSROOM_URL = "https://www.cooperhealth.org/about-us/newsroom";
+const COOPER_BLOG_HOST = "blogs.cooperhealth.org";
+const MONTH_DATE = /\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},\s+\d{4}\b/i;
+const NUMERIC_DATE = /\b\d{1,2}\/\d{1,2}\/\d{4}\b/;
+const GENERIC_LINK_TEXT = /^(?:read more|learn more|more|view|details|click here|continue reading)$/i;
+
+/**
+ * Cooper's public newsroom is the authority page for releases, while the
+ * linked blog remains the canonical article URL. Keep this adapter narrow so
+ * an arbitrary HTML page cannot be mistaken for a successful source.
+ */
+export function parseCooperNewsroomItems(html: string, baseUrl = COOPER_NEWSROOM_URL): ParsedFeedItem[] {
+  if (!/\b(?:cooper university health care|cooperhealth)\b/i.test(html)) return [];
+  const headings: Array<{ end: number; text: string }> = [];
+  for (const match of html.matchAll(/<h[2-4]\b[^>]*>([\s\S]*?)<\/h[2-4]>/gi)) {
+    headings.push({ end: match.index ?? 0, text: htmlText(match[1] ?? "") });
+  }
+  const items: ParsedFeedItem[] = [];
+  const seen = new Set<string>();
+  const anchors = /<a\b([^>]*?)href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  for (const match of html.matchAll(anchors)) {
+    const href = decodeHtml(match[2] ?? "");
+    let url: URL;
+    try {
+      url = new URL(href, baseUrl);
+    } catch {
+      continue;
+    }
+    if (url.protocol !== "https:" || url.hostname.toLowerCase() !== COOPER_BLOG_HOST) continue;
+    if (url.pathname === "/" || url.pathname.length < 2) continue;
+    const canonicalUrl = normalizeSourceUrl(url.toString()) ?? url.toString();
+    if (seen.has(canonicalUrl)) continue;
+    const end = (match.index ?? 0) + match[0].length;
+    const surrounding = html.slice(Math.max(0, (match.index ?? 0) - 1800), Math.min(html.length, end + 900));
+    const rawAnchorText = htmlText(match[3] ?? "");
+    const heading = [...headings].reverse().find((row) => row.end <= (match.index ?? 0))?.text ?? "";
+    const title = rawAnchorText && !GENERIC_LINK_TEXT.test(rawAnchorText) ? rawAnchorText : heading;
+    if (!title || GENERIC_LINK_TEXT.test(title) || title.length < 8 || title.length > 240) continue;
+    const dateMatch = surrounding.match(MONTH_DATE) ?? surrounding.match(NUMERIC_DATE);
+    const pubDate = dateMatch?.[0] ?? "";
+    seen.add(canonicalUrl);
+    items.push({
+      title,
+      link: canonicalUrl,
+      description: "",
+      pubDate,
+      guid: canonicalUrl,
+    });
+  }
+  return items;
+}
+
 export function rssItemToContent(
   raw: ParsedFeedItem,
   feedName: string,
   fetchedAt: string,
   _index = 0,
   entities: readonly EntityRow[] = seedEntities,
-  options: { origin?: string; fixedOrgIds?: readonly string[] } = {},
+  options: { origin?: string; fixedOrgIds?: readonly string[]; authorityUrl?: string } = {},
 ): ContentItem {
   let publishedAt: string | undefined;
   const parsed = Date.parse(raw.pubDate);
@@ -220,7 +284,12 @@ export function rssItemToContent(
       fetchedAt,
       externalId,
     },
-    citations: [{ name: feedName, url: canonicalUrl }],
+    citations: [
+      { name: feedName, url: canonicalUrl },
+      ...(options.authorityUrl && options.authorityUrl !== canonicalUrl
+        ? [{ name: `${feedName} official newsroom`, url: options.authorityUrl }]
+        : []),
+    ],
     relatedEventIds: [],
     relatedVoiceIds: [],
     featured: false,
@@ -232,6 +301,7 @@ type WorkingRss = {
   name: string;
   origin?: string;
   orgIds?: readonly string[];
+  authorityUrl?: string;
   status: number;
   items: ParsedFeedItem[];
 };
@@ -262,6 +332,19 @@ async function readFeed(url: string, fetchImpl: typeof fetch) {
   return { ...response, items: parseFeedItems(response.body) };
 }
 
+async function readCooperNewsroom(url: string, fetchImpl: typeof fetch) {
+  const response = await fetchUpstream({
+    url,
+    fetchImpl,
+    maxBytes: RSS_MAX_BYTES,
+    timeoutMs: SOURCE_TIMEOUT_MS,
+    headers: { "user-agent": SOURCE_USER_AGENT, accept: "text/html,application/xhtml+xml" },
+  });
+  const items = parseCooperNewsroomItems(response.body, url);
+  if (!items.length) throw new UpstreamError("parser-failed", "Cooper official newsroom had no recognized release links");
+  return { ...response, items };
+}
+
 async function fetchRssSources(
   fetchImpl: typeof fetch,
   checkedAt: string,
@@ -279,17 +362,23 @@ async function fetchRssSources(
       sources.push(sourceBackoffNote(source.id, source.origin ?? source.name, "rss", checkedAt, prior, source.url));
       continue;
     }
-    const urls = [source.url, ...(source.fallbacks ?? [])];
+    const candidates: Array<{ url: string; adapter?: "cooper-newsroom" }> = [
+      ...[source.url, ...(source.fallbacks ?? [])].map((url) => ({ url })),
+      ...(source.htmlFallbacks ?? []),
+    ];
     let success: WorkingRss | undefined;
     let lastError: UpstreamError | undefined;
-    for (const url of urls) {
+    for (const candidate of candidates) {
       try {
-        const feed = await readFeed(url, fetchImpl);
+        const feed = candidate.adapter === "cooper-newsroom"
+          ? await readCooperNewsroom(candidate.url, fetchImpl)
+          : await readFeed(candidate.url, fetchImpl);
         success = {
-          url,
+          url: candidate.url,
           name: source.name,
           origin: source.origin,
           orgIds: source.orgIds,
+          ...(candidate.adapter ? { authorityUrl: candidate.url } : {}),
           status: feed.status,
           items: feed.items,
         };
@@ -362,6 +451,7 @@ export async function ingestRssWithHealth(
         items.push(rssItemToContent(raw, feed.name, fetchedAt, index, seedEntities, {
           origin: feed.origin,
           fixedOrgIds: feed.orgIds,
+          authorityUrl: feed.authorityUrl,
         }));
       } catch {
         /* one malformed mapped item must not discard valid siblings */

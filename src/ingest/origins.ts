@@ -11,6 +11,10 @@ const RssSource = z.object({
   name: z.string().min(1),
   url: z.string().url(),
   fallbacks: z.array(z.string().url()).optional(),
+  htmlFallbacks: z.array(z.object({
+    url: z.string().url(),
+    adapter: z.literal("cooper-newsroom"),
+  })).optional(),
   kind: z.literal("news"),
   origin: z.string().min(1).optional(),
   orgIds: z.array(z.string().min(1)).optional(),
