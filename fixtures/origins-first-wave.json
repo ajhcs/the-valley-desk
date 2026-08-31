@@ -22,6 +22,10 @@
       "name": "Cooper University Health Care News",
       "origin": "cooper-newsroom",
       "url": "https://blogs.cooperhealth.org/news/feed/",
+      "htmlFallbacks": [{
+        "url": "https://www.cooperhealth.org/about-us/newsroom",
+        "adapter": "cooper-newsroom"
+      }],
       "orgIds": ["org-cooper"],
       "kind": "news"
     },

@@ -38,7 +38,7 @@ import {
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { fetchDvhimssCalendar, ingestEventsWithHealth, scrapeNjdvhimss } from "../src/ingest/events.ts";
-import { RSS_SOURCES, ingestRssWithHealth, parseAtomItems, parseFeedItems, parseRssItems, rssItemToContent } from "../src/ingest/rss.ts";
+import { RSS_SOURCES, ingestRssWithHealth, parseAtomItems, parseCooperNewsroomItems, parseFeedItems, parseRssItems, rssItemToContent } from "../src/ingest/rss.ts";
 import { ingestLinkedIn } from "../src/ingest/linkedin.ts";
 import { ingestX } from "../src/ingest/x.ts";
 import { mergeReviewQueue, selectPriorityWork, contentPriorityFields, QUEUE_SLA_OVERDUE_MS } from "../src/ingest/queue.ts";
@@ -322,6 +322,49 @@ test("Atom entries are parsed instead of claiming empty RSS success", () => {
   assert.equal(parseFeedItems(xml).length, 2);
   assert.equal(items[0]?.link, "https://example.com/atom-story");
   assert.equal(items[1]?.title, "Second atom");
+});
+
+test("Cooper official newsroom fallback only accepts linked Cooper release pages", () => {
+  const html = `
+    <html><body><header>Cooper University Health Care</header>
+      <section><h2>Cooper University Health Care announces a new regional program</h2>
+        <span>August 26, 2026</span>
+        <a href="https://blogs.cooperhealth.org/news/regional-program/">Cooper University Health Care announces a new regional program</a>
+      </section>
+      <a href="https://www.cooperhealth.org/about-us">About Cooper</a>
+    </body></html>`;
+  const items = parseCooperNewsroomItems(html);
+  assert.equal(items.length, 1);
+  assert.equal(items[0]?.link, "https://blogs.cooperhealth.org/news/regional-program");
+  assert.equal(items[0]?.pubDate, "August 26, 2026");
+  assert.deepEqual(parseCooperNewsroomItems("<html>holding page</html>"), []);
+});
+
+test("Cooper public RSS blocks fall back to the official newsroom and retain authority", async () => {
+  const requested: string[] = [];
+  const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    requested.push(url);
+    if (url === "https://blogs.cooperhealth.org/news/feed/") return new Response("", { status: 403 });
+    if (url === "https://www.cooperhealth.org/about-us/newsroom") {
+      return new Response(`
+        <html><body><header>Cooper University Health Care</header>
+          <h2>Cooper launches a regional program</h2><span>August 26, 2026</span>
+          <a href="https://blogs.cooperhealth.org/news/regional-program/">Cooper launches a regional program</a>
+        </body></html>`, { status: 200 });
+    }
+    return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+  });
+  const cooper = result.sources.find((source) => source.id === "cooper-newsroom");
+  assert.equal(cooper?.state, "healthy");
+  assert.equal(cooper?.fallbackUrl, "https://www.cooperhealth.org/about-us/newsroom");
+  const cooperFeedIndex = requested.indexOf("https://blogs.cooperhealth.org/news/feed/");
+  assert.ok(cooperFeedIndex >= 0);
+  assert.equal(requested[cooperFeedIndex + 1], "https://www.cooperhealth.org/about-us/newsroom");
+  const item = result.items.find((candidate) => candidate.title === "Cooper launches a regional program");
+  assert.ok(item);
+  assert.deepEqual(item.orgs, ["org-cooper"]);
+  assert.ok(item.citations?.some((citation) => citation.name.includes("official newsroom")));
 });
 
 test("Technical.ly is misconfigured and never reported as empty success", async () => {
