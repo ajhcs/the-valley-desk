@@ -25,6 +25,11 @@ import { VoiceItem } from "../src/content/schema.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+async function sha256(value: string) {
+  const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 class Statement implements D1StatementLike {
   private values: unknown[] = [];
   constructor(private readonly statement: StatementSync) {}
@@ -122,9 +127,34 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   assert.ok(manifest.targets.length > 0);
   assert.ok(manifest.targets.every((target) => !target.active && target.state === "inactive"));
   assert.equal(manifest.targets.some((target) => target.verificationSource === "executive-ledger"), false);
+  const { generatedAt: _generatedAt, manifestVersion: _manifestVersion, manifestHash, ...canonicalManifest } = manifest;
+  const recomputedHash = await sha256(JSON.stringify(canonicalManifest));
+  assert.equal(manifestHash, recomputedHash);
+  assert.equal(manifest.manifestVersion, `social-targets-v1-${recomputedHash.slice(0, 16)}`);
+  const repeatedManifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
+  assert.equal(repeatedManifest.manifestHash, manifest.manifestHash);
+  assert.equal(repeatedManifest.manifestVersion, manifest.manifestVersion);
+  const beforeReadOnlyCounts = sqlite.prepare(`
+    SELECT
+      (SELECT COUNT(*) FROM social_evidence_packets) AS packets,
+      (SELECT COUNT(*) FROM social_collector_runs) AS runs,
+      (SELECT COUNT(*) FROM ingest_runs) AS ingest_runs
+  `).get() as { packets: number; runs: number; ingest_runs: number };
+  const manifestPost = await handleSocialManifest(new Request(`https://thevalleydesk.org${SOCIAL_MANIFEST_PATH}`, {
+    method: "POST", headers: { authorization: "Bearer separate-social-secret" },
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret" });
+  assert.equal(manifestPost.status, 405);
   const activated = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"), {
     linkedinAccessVerified: true,
   });
+  const afterReadOnlyCounts = sqlite.prepare(`
+    SELECT
+      (SELECT COUNT(*) FROM social_evidence_packets) AS packets,
+      (SELECT COUNT(*) FROM social_collector_runs) AS runs,
+      (SELECT COUNT(*) FROM ingest_runs) AS ingest_runs
+  `).get() as typeof beforeReadOnlyCounts;
+  assert.deepEqual({ ...afterReadOnlyCounts }, { ...beforeReadOnlyCounts });
+  assert.notEqual(activated.manifestHash, manifest.manifestHash);
   assert.ok(activated.targets.every((target) => target.active && target.state === "active"));
   assert.equal(activated.platformHealth.linkedin.collectionMode, "public-observation");
   const manifestResponse = await handleSocialManifest(new Request(`https://thevalleydesk.org${SOCIAL_MANIFEST_PATH}`, {
