@@ -424,15 +424,11 @@ export async function buildSocialTargetManifest(
         };
       }),
   );
-  let ledgerAvailable = false;
-  let executiveTargets: Executive[] = [];
+  let executiveTargets: Executive[];
   try {
     executiveTargets = await verifiedExecutives(db, now);
-    ledgerAvailable = true;
-  } catch {
-    // A manifest must say that its ledger is unavailable instead of silently
-    // claiming that an empty executive list is current and complete.
-    ledgerAvailable = false;
+  } catch (error) {
+    throw new Error("executive_ledger_unavailable", { cause: error });
   }
   const executiveManifestTargets = await Promise.all(
     executiveTargets.map(async (row): Promise<SocialManifestTarget> => {
@@ -498,7 +494,7 @@ export async function buildSocialTargetManifest(
     manifestType: "social-target-manifest",
     coveragePack: { packId: coveragePack.packId, schemaVersion: coveragePack.schemaVersion, asOf: coveragePack.asOf },
     source: "curated-account-inventory-plus-current-executive-ledger",
-    ledger: { state: ledgerAvailable ? "available" : "unavailable" },
+    ledger: { state: "available" as const },
     platformHealth,
     coverage: covered,
     targets,
@@ -547,6 +543,44 @@ type CollectorRunRow = {
   paused_at: string | null;
 };
 
+function collectorRunSelectSql() {
+  return `
+    SELECT id, schema_version, collector, manifest_version, manifest_hash,
+           started_at, finished_at, outcome, accounts_checked, posts_seen,
+           accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at,
+           consecutive_failures, paused_at
+    FROM social_collector_runs
+  `;
+}
+
+function collectorRunConflicts(row: CollectorRunRow, input: SocialCollectorRun) {
+  return row.schema_version !== input.schemaVersion
+    || row.collector !== input.collector
+    || row.manifest_version !== input.manifestVersion
+    || row.manifest_hash !== input.manifestHash
+    || row.started_at !== input.startedAt
+    || row.finished_at !== input.finishedAt
+    || row.outcome !== input.outcome
+    || Number(row.accounts_checked) !== input.accountsChecked
+    || Number(row.posts_seen) !== input.postsSeen
+    || Number(row.accepted) !== input.accepted
+    || Number(row.duplicates) !== input.duplicates
+    || Number(row.failures) !== input.failures
+    || row.platforms_json !== JSON.stringify(input.platforms)
+    || row.failure_reasons_json !== JSON.stringify(input.failureReasons);
+}
+
+function activeTargetCoverageIncomplete(
+  manifest: Awaited<ReturnType<typeof buildSocialTargetManifest>>,
+  input: SocialCollectorRun,
+) {
+  if (input.outcome !== "success") return false;
+  const activeTargetCount = manifest.targets.filter((target) => target.active).length;
+  return input.accountsChecked < activeTargetCount
+    || input.platforms.linkedin.targetsChecked < manifest.platformHealth.linkedin.activeTargetCount
+    || input.platforms.x.targetsChecked < manifest.platformHealth.x.activeTargetCount;
+}
+
 function collectorRunPayload(row: CollectorRunRow | null) {
   if (!row) return null;
   return {
@@ -581,20 +615,12 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
     try {
       const [latest, lastSuccessful] = await Promise.all([
         env.VALLEY_DESK_DB.prepare(`
-          SELECT id, schema_version, collector, manifest_version, manifest_hash,
-                 started_at, finished_at, outcome, accounts_checked, posts_seen,
-                 accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at,
-                 consecutive_failures, paused_at
-          FROM social_collector_runs
+          ${collectorRunSelectSql()}
           WHERE collector = 'vale'
           ORDER BY finished_at DESC, id DESC LIMIT 1
         `).first<CollectorRunRow>(),
         env.VALLEY_DESK_DB.prepare(`
-          SELECT id, schema_version, collector, manifest_version, manifest_hash,
-                 started_at, finished_at, outcome, accounts_checked, posts_seen,
-                 accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at,
-                 consecutive_failures, paused_at
-          FROM social_collector_runs
+          ${collectorRunSelectSql()}
           WHERE collector = 'vale' AND outcome = 'success'
           ORDER BY finished_at DESC, id DESC LIMIT 1
         `).first<CollectorRunRow>(),
@@ -648,28 +674,42 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
         manifestHash: manifest.manifestHash,
       });
     }
+    if (activeTargetCoverageIncomplete(manifest, input)) {
+      return json(422, {
+        error: "active_target_coverage_incomplete",
+        activeTargetCount: manifest.targets.filter((target) => target.active).length,
+        accountsChecked: input.accountsChecked,
+      });
+    }
     const existing = await env.VALLEY_DESK_DB.prepare(`
-      SELECT consecutive_failures, paused_at
-      FROM social_collector_runs
+      ${collectorRunSelectSql()}
       WHERE id = ?
-    `).bind(input.runId).first<{ consecutive_failures: number; paused_at: string | null }>();
-    const previous = existing ? null : await env.VALLEY_DESK_DB.prepare(`
+    `).bind(input.runId).first<CollectorRunRow>();
+    if (existing) {
+      if (collectorRunConflicts(existing, input)) {
+        return json(409, { error: "collector_run_conflict", runId: input.runId });
+      }
+      return json(202, {
+        accepted: 1,
+        runId: input.runId,
+        outcome: existing.outcome,
+        idempotent: true,
+        consecutiveFailures: Math.max(0, Number(existing.consecutive_failures) || 0),
+        pauseRequired: Number(existing.consecutive_failures) >= 3,
+        pausedAt: existing.paused_at,
+        recoveryObserved: false,
+      });
+    }
+    const previous = await env.VALLEY_DESK_DB.prepare(`
       SELECT consecutive_failures
       FROM social_collector_runs
       WHERE collector = 'vale'
       ORDER BY finished_at DESC, id DESC LIMIT 1
     `).first<{ consecutive_failures: number }>();
-    const idempotent = Boolean(existing);
-    const consecutiveFailures = existing
-      ? Math.max(0, Number(existing.consecutive_failures) || 0)
-      : input.outcome === "success"
-        ? 0
-        : Math.max(0, Number(previous?.consecutive_failures) || 0) + 1;
-    const pausedAt = existing
-      ? existing.paused_at
-      : consecutiveFailures >= 3
-        ? input.finishedAt
-        : null;
+    const consecutiveFailures = input.outcome === "success"
+      ? 0
+      : Math.max(0, Number(previous?.consecutive_failures) || 0) + 1;
+    const pausedAt = consecutiveFailures >= 3 ? input.finishedAt : null;
     const createdAt = new Date().toISOString();
     await env.VALLEY_DESK_DB.prepare(`
       INSERT INTO social_collector_runs (
@@ -678,19 +718,7 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
         accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at,
         consecutive_failures, paused_at
       ) VALUES (?, ?, 'vale', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        manifest_version = excluded.manifest_version,
-        manifest_hash = excluded.manifest_hash,
-        started_at = excluded.started_at,
-        finished_at = excluded.finished_at,
-        outcome = excluded.outcome,
-        accounts_checked = excluded.accounts_checked,
-        posts_seen = excluded.posts_seen,
-        accepted = excluded.accepted,
-        duplicates = excluded.duplicates,
-        failures = excluded.failures,
-        platforms_json = excluded.platforms_json,
-        failure_reasons_json = excluded.failure_reasons_json
+      ON CONFLICT(id) DO NOTHING
     `).bind(
       input.runId, input.schemaVersion, input.manifestVersion, input.manifestHash,
       input.startedAt, input.finishedAt, input.outcome, input.accountsChecked,
@@ -698,15 +726,24 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
       JSON.stringify(input.platforms), JSON.stringify(input.failureReasons), createdAt,
       consecutiveFailures, pausedAt,
     ).run();
+    const stored = await env.VALLEY_DESK_DB.prepare(`
+      ${collectorRunSelectSql()}
+      WHERE id = ?
+    `).bind(input.runId).first<CollectorRunRow>();
+    if (!stored) return json(500, { error: "collector_report_failed" });
+    if (collectorRunConflicts(stored, input)) {
+      return json(409, { error: "collector_run_conflict", runId: input.runId });
+    }
+    const idempotent = stored.created_at !== createdAt;
     return json(202, {
       accepted: 1,
       runId: input.runId,
-      outcome: input.outcome,
+      outcome: stored.outcome,
       idempotent,
-      consecutiveFailures,
-      pauseRequired: consecutiveFailures >= 3,
-      pausedAt,
-      recoveryObserved: !idempotent && input.outcome === "success",
+      consecutiveFailures: Math.max(0, Number(stored.consecutive_failures) || 0),
+      pauseRequired: Number(stored.consecutive_failures) >= 3,
+      pausedAt: stored.paused_at,
+      recoveryObserved: !idempotent && stored.outcome === "success",
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_collector_run";
@@ -871,9 +908,17 @@ export async function markSocialEvidenceProcessed(
   await db.batch(candidates.map(({ packetId, candidateId }) => db.prepare(
     `UPDATE social_evidence_packets
      SET status = 'processed', processed_at = COALESCE(processed_at, ?), candidate_id = COALESCE(candidate_id, ?)
-     WHERE id = ? AND status = 'review'`,
-  ).bind(now.toISOString(), candidateId, packetId)));
-  return candidates.length;
+     WHERE id = ?
+       AND (
+         (status = 'review' AND EXISTS (SELECT 1 FROM content_candidates WHERE id = ?))
+         OR (status = 'processed' AND candidate_id = ?)
+       )`,
+  ).bind(now.toISOString(), candidateId, packetId, candidateId, candidateId)));
+  const acknowledged = await Promise.all(candidates.map(({ packetId, candidateId }) => db.prepare(
+    `SELECT 1 AS ok FROM social_evidence_packets
+     WHERE id = ? AND status = 'processed' AND candidate_id = ?`,
+  ).bind(packetId, candidateId).first<{ ok: number }>()));
+  return acknowledged.filter(Boolean).length;
 }
 
 export async function cleanupSocialEvidencePackets(db: D1DatabaseLike, now = new Date()) {

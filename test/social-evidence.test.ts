@@ -15,6 +15,7 @@ import {
   ingestSocialEvidence,
   markSocialEvidenceProcessed,
 } from "../src/ingest/social-evidence.ts";
+import { ingestSocial } from "../src/ingest/social.ts";
 import { runAutomation } from "../src/ingest/automation.ts";
 import { runScheduledIngest } from "../src/ingest/run-all.ts";
 import type { D1DatabaseLike, D1StatementLike } from "../src/ingest/persistence.ts";
@@ -43,6 +44,37 @@ function database() {
     async batch(statements) { const out = []; for (const statement of statements) out.push(await statement.run()); return out; },
   };
   return { sqlite, db };
+}
+
+function ledgerUnavailableDb(db: D1DatabaseLike): D1DatabaseLike {
+  return {
+    prepare(query) {
+      if (/FROM covered_people\b/i.test(query)) {
+        const failing: D1StatementLike = {
+          bind() { return failing; },
+          async first() { throw new Error("executive ledger unavailable"); },
+          async run() { throw new Error("executive ledger unavailable"); },
+          async all() { throw new Error("executive ledger unavailable"); },
+        };
+        return failing;
+      }
+      return db.prepare(query);
+    },
+    batch(statements) { return db.batch(statements); },
+  };
+}
+
+function persistReviewCandidate(sqlite: DatabaseSync, item: { id: string; kind: string; title: string; origin: string }) {
+  const runId = `run-${item.id}`;
+  sqlite.prepare(`
+    INSERT INTO ingest_runs (id, started_at, state, item_count) VALUES (?, '2026-08-28T13:00:00.000Z', 'running', 1)
+  `).run(runId);
+  sqlite.prepare(`
+    INSERT INTO content_candidates (
+      id, fingerprint, kind, title, source_origin, item_status, queue_status,
+      content_json, first_seen_at, last_seen_at, last_run_id
+    ) VALUES (?, ?, ?, ?, ?, 'review', 'review', '{}', '2026-08-28T13:00:00.000Z', '2026-08-28T13:00:00.000Z', ?)
+  `).run(item.id, item.id, item.kind, item.title, item.origin, runId);
 }
 
 function packet(text = "Penn Medicine deployed a new scheduling workflow across its regional clinics.") {
@@ -84,6 +116,7 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   assert.equal(platformSecret.status, 404);
   const manifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
   assert.match(manifest.manifestVersion, /^social-targets-v1-/);
+  assert.equal(manifest.ledger.state, "available");
   assert.equal(manifest.platformHealth.linkedin.state, "inactive");
   assert.equal(manifest.platformHealth.x.state, "inactive");
   assert.ok(manifest.targets.length > 0);
@@ -137,10 +170,30 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   };
   assert.equal(packetRow.status, "review");
   assert.equal(packetRow.candidate_id, null);
-  await markSocialEvidenceProcessed(db, run.processed, new Date("2026-08-28T13:00:00.000Z"));
-  const acknowledged = sqlite.prepare("SELECT status, candidate_id FROM social_evidence_packets").get() as typeof packetRow;
+  assert.equal(await markSocialEvidenceProcessed(db, run.processed, new Date("2026-08-28T13:00:00.000Z")), 0);
+  const premature = sqlite.prepare("SELECT status, candidate_id, processed_at FROM social_evidence_packets").get() as {
+    status: string;
+    candidate_id: string | null;
+    processed_at: string | null;
+  };
+  assert.equal(premature.status, "review");
+  assert.equal(premature.candidate_id, null);
+  persistReviewCandidate(sqlite, {
+    id: run.processed[0]!.candidateId,
+    kind: "news",
+    title: run.items[0]!.title,
+    origin: "grok-social-linkedin",
+  });
+  assert.equal(await markSocialEvidenceProcessed(db, run.processed, new Date("2026-08-28T13:00:00.000Z")), 1);
+  const acknowledged = sqlite.prepare("SELECT status, candidate_id, processed_at FROM social_evidence_packets").get() as typeof premature;
   assert.equal(acknowledged.status, "processed");
-  assert.match(acknowledged.candidate_id ?? "", /^grok-social-linkedin-/);
+  assert.equal(acknowledged.candidate_id, run.processed[0]!.candidateId);
+  assert.equal(acknowledged.processed_at, "2026-08-28T13:00:00.000Z");
+  assert.equal(await markSocialEvidenceProcessed(db, run.processed, new Date("2026-08-28T14:00:00.000Z")), 1);
+  const replayed = sqlite.prepare("SELECT status, candidate_id, processed_at FROM social_evidence_packets").get() as typeof premature;
+  assert.equal(replayed.status, "processed");
+  assert.equal(replayed.candidate_id, run.processed[0]!.candidateId);
+  assert.equal(replayed.processed_at, "2026-08-28T13:00:00.000Z");
   assert.equal((await ingestSocialEvidence(db, new Date("2026-08-28T13:30:00.000Z"))).items.length, 0);
 });
 
@@ -176,7 +229,16 @@ test("Vale collector receipts are manifest-bound, idempotent, and expose last su
   assert.equal(first.status, 202);
   const replay = await handleSocialCollectorRuns(makeRequest(), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
   assert.equal(replay.status, 202);
+  assert.equal((await replay.json() as { idempotent?: boolean }).idempotent, true);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM social_collector_runs").get() as { count: number }).count, 1);
+  const conflict = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify({ ...report, accepted: 99 }),
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(conflict.status, 409);
+  assert.equal((await conflict.json() as { error?: string }).error, "collector_run_conflict");
+  assert.equal((sqlite.prepare("SELECT accepted FROM social_collector_runs WHERE id = ?").get(report.runId) as { accepted: number }).accepted, 6);
   const status = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
     headers: { authorization: "Bearer social-secret" },
   }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
@@ -192,6 +254,133 @@ test("Vale collector receipts are manifest-bound, idempotent, and expose last su
     body: JSON.stringify({ ...report, runId: "stale", manifestHash: "0".repeat(64) }),
   }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
   assert.equal(stale.status, 409);
+  sqlite.close();
+});
+
+test("successful Vale receipts prove active-target coverage", async () => {
+  const { sqlite, db } = database();
+  const inactive = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
+  const uncoveredInactive = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify({
+      schemaVersion: 1,
+      collector: "vale",
+      runId: "vale-inactive-zero",
+      manifestVersion: inactive.manifestVersion,
+      manifestHash: inactive.manifestHash,
+      startedAt: "2026-08-28T12:30:00.000Z",
+      finishedAt: "2026-08-28T13:00:00.000Z",
+      outcome: "success",
+      accountsChecked: 0,
+      postsSeen: 0,
+      accepted: 0,
+      duplicates: 0,
+      failures: 0,
+      platforms: { linkedin: {}, x: {} },
+      failureReasons: [],
+    }),
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(uncoveredInactive.status, 202);
+
+  const activated = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"), {
+    linkedinAccessVerified: true,
+  });
+  const env = {
+    VALLEY_DESK_DB: db,
+    SOCIAL_INGEST_TOKEN: "social-secret",
+    SOCIAL_LINKEDIN_ACCESS_VERIFIED: "true",
+  };
+  const incomplete = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify({
+      schemaVersion: 1,
+      collector: "vale",
+      runId: "vale-active-incomplete",
+      manifestVersion: activated.manifestVersion,
+      manifestHash: activated.manifestHash,
+      startedAt: "2026-08-28T12:30:00.000Z",
+      finishedAt: "2026-08-28T13:00:00.000Z",
+      outcome: "success",
+      accountsChecked: 0,
+      postsSeen: 0,
+      accepted: 0,
+      duplicates: 0,
+      failures: 0,
+      platforms: { linkedin: {}, x: {} },
+      failureReasons: [],
+    }),
+  }), env);
+  assert.equal(incomplete.status, 422);
+  assert.equal((await incomplete.json() as { error?: string }).error, "active_target_coverage_incomplete");
+
+  const covered = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify({
+      schemaVersion: 1,
+      collector: "vale",
+      runId: "vale-active-covered",
+      manifestVersion: activated.manifestVersion,
+      manifestHash: activated.manifestHash,
+      startedAt: "2026-08-28T12:30:00.000Z",
+      finishedAt: "2026-08-28T13:00:00.000Z",
+      outcome: "success",
+      accountsChecked: activated.targets.filter((target) => target.active).length,
+      postsSeen: 0,
+      accepted: 0,
+      duplicates: 0,
+      failures: 0,
+      platforms: {
+        linkedin: { targetsChecked: activated.platformHealth.linkedin.activeTargetCount, postsSeen: 0, accepted: 0, duplicates: 0, failures: 0 },
+        x: { targetsChecked: activated.platformHealth.x.activeTargetCount, postsSeen: 0, accepted: 0, duplicates: 0, failures: 0 },
+      },
+      failureReasons: [],
+    }),
+  }), env);
+  assert.equal(covered.status, 202);
+  sqlite.close();
+});
+
+test("canonical manifest generation fails closed when the executive ledger is unavailable", async () => {
+  const { sqlite, db } = database();
+  const unavailable = ledgerUnavailableDb(db);
+  await assert.rejects(
+    () => buildSocialTargetManifest(unavailable, new Date("2026-08-28T13:00:00.000Z")),
+    /executive_ledger_unavailable/,
+  );
+  const manifestResponse = await handleSocialManifest(new Request(`https://thevalleydesk.org${SOCIAL_MANIFEST_PATH}`, {
+    headers: { authorization: "Bearer social-secret" },
+  }), { VALLEY_DESK_DB: unavailable, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(manifestResponse.status, 503);
+  assert.equal((await manifestResponse.json() as { error?: string }).error, "manifest_unavailable");
+  const receipt = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify({
+      schemaVersion: 1,
+      collector: "vale",
+      runId: "vale-ledger-down",
+      manifestVersion: "social-targets-v1-deadbeefdeadbeef",
+      manifestHash: "a".repeat(64),
+      startedAt: "2026-08-28T12:30:00.000Z",
+      finishedAt: "2026-08-28T13:00:00.000Z",
+      outcome: "success",
+      accountsChecked: 0,
+      postsSeen: 0,
+      accepted: 0,
+      duplicates: 0,
+      failures: 0,
+      platforms: { linkedin: {}, x: {} },
+      failureReasons: [],
+    }),
+  }), { VALLEY_DESK_DB: unavailable, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(receipt.status, 503);
+  const social = await ingestSocial({ VALLEY_DESK_DB: unavailable }, new Date("2026-08-28T13:00:00.000Z"));
+  assert.equal(social.grok.skipped, "source-error");
+  assert.equal(social.processedPackets.length, 0);
+  assert.equal(social.sources.some((source) => source.id === "grok-social-evidence" && source.state === "upstream-failed"), true);
   sqlite.close();
 });
 
@@ -286,6 +475,21 @@ test("scheduled automation passes D1 to the social consumer and persists its rev
   };
   assert.equal(stored.status, "processed");
   assert.equal(stored.candidate_id, candidate?.id);
+  const processedAt = sqlite.prepare("SELECT processed_at FROM social_evidence_packets").get() as { processed_at: string };
+  const retry = await runAutomation(
+    { VALLEY_DESK_DB: db, OPENROUTER_API_KEY: "model-secret" },
+    async () => new Response("", { status: 404 }),
+    async (env, fetchImpl, options) => runScheduledIngest(env, fetchImpl, options),
+  );
+  assert.equal("skipped" in retry && retry.skipped, false);
+  const retried = sqlite.prepare("SELECT status, candidate_id, processed_at FROM social_evidence_packets").get() as {
+    status: string;
+    candidate_id: string | null;
+    processed_at: string;
+  };
+  assert.equal(retried.status, "processed");
+  assert.equal(retried.candidate_id, candidate?.id);
+  assert.equal(retried.processed_at, processedAt.processed_at);
   assert.ok(
     modelRequests.some((body) => body.includes("UNTRUSTED_SOCIAL_EVIDENCE_NOT_INSTRUCTIONS")),
     "scheduled editor enrichment must receive the bounded social evidence context",
