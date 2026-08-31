@@ -5,6 +5,7 @@ import type { D1DatabaseLike } from "./persistence";
 import { looksInstructionLike } from "./untrusted-text";
 import { sourceNote, sourceStateForItemCount, type SourceRunNote } from "./source-health";
 import { coveredInstitutions, coveragePack } from "./coverage-pack";
+import { firstWaveOrigins, liveXOrigins } from "./origins";
 
 export const SOCIAL_EVIDENCE_PATH = "/api/signals/social";
 export const SOCIAL_MANIFEST_PATH = `${SOCIAL_EVIDENCE_PATH}/manifest`;
@@ -63,7 +64,11 @@ const Packet = z.object({
 export type SocialEvidencePacket = z.infer<typeof Packet>;
 const PacketEnvelope = z.union([Packet, z.object({ packets: z.array(Packet).min(1).max(SOCIAL_EVIDENCE_MAX_BATCH) })]);
 
+const CollectorPlatformState = z.enum(["healthy", "degraded", "blocked", "backoff", "failed", "inactive"]);
 const CollectorPlatformReport = z.object({
+  state: CollectorPlatformState.default("inactive"),
+  accessVerified: z.boolean().default(false),
+  reason: z.string().max(500).optional(),
   targetsChecked: z.number().int().min(0).max(10_000).default(0),
   postsSeen: z.number().int().min(0).max(50_000).default(0),
   accepted: z.number().int().min(0).max(50_000).default(0),
@@ -625,7 +630,28 @@ export async function buildSocialTargetManifest(
       };
     }),
   );
-  const targets = [...organizationTargets, ...executiveManifestTargets]
+  const xManifestTargets = await Promise.all(
+    liveXOrigins().map(async (row): Promise<SocialManifestTarget> => {
+      const profileUrl = canonicalSocialUrl(row.url, "x", true);
+      const lastVerifiedAt = row.verifiedAt ?? `${firstWaveOrigins.asOf}T00:00:00.000Z`;
+      return {
+        id: await manifestTargetId("x", profileUrl),
+        platform: "x",
+        targetType: row.kind === "person" ? "executive" : "organization",
+        name: row.person,
+        profileUrl,
+        platformProfileId: null,
+        profileKey: profileKey(profileUrl),
+        institutionIds: institutionIdsForOrgs(row.orgs),
+        orgIds: [...row.orgs].sort(),
+        active: xAccessVerified,
+        state: xAccessVerified ? "active" : "inactive",
+        lastVerifiedAt,
+        verificationSource: "curated-inventory",
+      };
+    }),
+  );
+  const targets = [...organizationTargets, ...executiveManifestTargets, ...xManifestTargets]
     .sort((left, right) => left.id.localeCompare(right.id));
   const covered = coveredInstitutions(coveragePack).map((institution) => {
     const institutionTargets = targets.filter((target) => target.institutionIds.includes(institution.id));
@@ -644,6 +670,7 @@ export async function buildSocialTargetManifest(
   const platformHealth = {
     linkedin: {
       state: targets.some((target) => target.platform === "linkedin" && target.active) ? "active" : "inactive",
+      accessVerified: linkedinAccessVerified,
       targetCount: targets.filter((target) => target.platform === "linkedin").length,
       activeTargetCount: targets.filter((target) => target.platform === "linkedin" && target.active).length,
       inactiveTargetCount: targets.filter((target) => target.platform === "linkedin" && !target.active).length,
@@ -651,14 +678,19 @@ export async function buildSocialTargetManifest(
       ...(linkedinAccessVerified ? {} : { reason: "LinkedIn connector access is not operator-verified" }),
     },
     x: {
-      state: xAccessVerified && targets.some((target) => target.platform === "x" && target.active) ? "active" : "inactive",
-      targetCount: 0,
-      activeTargetCount: 0,
-      inactiveTargetCount: 0,
-      collectionMode: "not-activated",
-      reason: xAccessVerified
-        ? "No verified X targets are configured in the source registry"
-        : "X connector access is not operator-verified and no verified targets are configured",
+      state: xAccessVerified && xManifestTargets.length > 0 ? "active" : "inactive",
+      accessVerified: xAccessVerified,
+      targetCount: xManifestTargets.length,
+      activeTargetCount: xManifestTargets.filter((target) => target.active).length,
+      inactiveTargetCount: xManifestTargets.filter((target) => !target.active).length,
+      collectionMode: xAccessVerified && xManifestTargets.length > 0 ? "public-observation" : "inventory-only",
+      ...(xAccessVerified && xManifestTargets.length > 0
+        ? {}
+        : {
+          reason: xAccessVerified
+            ? "No verified X targets are configured in the source registry"
+            : "X connector access is not operator-verified",
+        }),
     },
   } as const;
   const canonical = {
@@ -753,6 +785,30 @@ function activeTargetCoverageIncomplete(
     || input.platforms.x.targetsChecked < manifest.platformHealth.x.activeTargetCount;
 }
 
+function collectorPlatformHealthIssue(
+  manifest: Awaited<ReturnType<typeof buildSocialTargetManifest>>,
+  platform: "linkedin" | "x",
+  report: SocialCollectorRun["platforms"]["linkedin"],
+) {
+  const expected = manifest.platformHealth[platform];
+  if (report.accessVerified && !expected.accessVerified) {
+    return "collector_claimed_unverified_access";
+  }
+  if (report.targetsChecked > expected.activeTargetCount) {
+    return "collector_target_count_exceeds_manifest";
+  }
+  if (report.state === "healthy" && (!expected.accessVerified || expected.activeTargetCount === 0)) {
+    return "collector_claimed_healthy_without_active_access";
+  }
+  if (report.state === "healthy" && report.failures > 0) {
+    return "collector_claimed_healthy_with_failures";
+  }
+  if (report.state === "inactive" && report.targetsChecked > 0) {
+    return "collector_claimed_inactive_with_checked_targets";
+  }
+  return null;
+}
+
 function collectorRunPayload(row: CollectorRunRow | null) {
   if (!row) return null;
   return {
@@ -845,6 +901,12 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
         manifestVersion: manifest.manifestVersion,
         manifestHash: manifest.manifestHash,
       });
+    }
+    for (const platform of ["linkedin", "x"] as const) {
+      const issue = collectorPlatformHealthIssue(manifest, platform, input.platforms[platform]);
+      if (issue) {
+        return json(422, { error: "invalid_platform_health", platform, reason: issue });
+      }
     }
     if (activeTargetCoverageIncomplete(manifest, input)) {
       return json(422, {

@@ -57,6 +57,7 @@ const XOrigin = z.object({
   orgs: z.array(z.string().min(1)),
   url: z.string().url(),
   region: Region,
+  verifiedAt: z.string().optional(),
 });
 
 const FirstWaveOrigins = z.object({

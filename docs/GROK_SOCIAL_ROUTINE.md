@@ -98,13 +98,15 @@ At the end of the run, POST a receipt to `https://thevalleydesk.org/api/signals/
   "duplicates": 0,
   "failures": 0,
   "platforms": {
-    "linkedin": { "targetsChecked": 0, "postsSeen": 0, "accepted": 0, "duplicates": 0, "failures": 0 },
-    "x": { "targetsChecked": 0, "postsSeen": 0, "accepted": 0, "duplicates": 0, "failures": 0 }
+    "linkedin": { "state": "healthy|degraded|blocked|backoff|failed|inactive", "accessVerified": true, "targetsChecked": 0, "postsSeen": 0, "accepted": 0, "duplicates": 0, "failures": 0, "reason": "bounded operator-safe reason when not healthy" },
+    "x": { "state": "healthy|degraded|blocked|backoff|failed|inactive", "accessVerified": true, "targetsChecked": 0, "postsSeen": 0, "accepted": 0, "duplicates": 0, "failures": 0, "reason": "bounded operator-safe reason when not healthy" }
   },
   "failureReasons": []
 }
 
 Treat HTTP 202 as a durable receipt. A 409 means the manifest changed: do not claim success for that run; fetch the manifest again on the next run and retain the delivery queue.
+
+Only report `state: "healthy"` when the manifest marks that platform access as verified, the run checked active targets, and the platform had zero failures. The server rejects an unverified healthy claim. When a platform has no active targets or connector access is not verified, report `inactive` and preserve the reason.
 
 Maintain a durable watermark per monitored account and a durable delivery queue. Never log, display, or include SOCIAL_INGEST_TOKEN in a report. The run receipt reports only counts and bounded failure reasons: accounts checked, posts observed, packets accepted, duplicates/resubmissions, excluded items by reason, delivery failures, and oldest queued packet age.
 ```

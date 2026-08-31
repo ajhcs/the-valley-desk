@@ -331,6 +331,43 @@ test("Vale collector receipts are manifest-bound, idempotent, and expose last su
   sqlite.close();
 });
 
+test("Vale cannot report healthy access that the manifest has not verified", async () => {
+  const { sqlite, db } = database();
+  const manifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
+  const response = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify({
+      schemaVersion: 1,
+      collector: "vale",
+      runId: "vale-unverified-healthy",
+      manifestVersion: manifest.manifestVersion,
+      manifestHash: manifest.manifestHash,
+      startedAt: "2026-08-28T12:30:00.000Z",
+      finishedAt: "2026-08-28T13:00:00.000Z",
+      outcome: "success",
+      accountsChecked: 0,
+      postsSeen: 0,
+      accepted: 0,
+      duplicates: 0,
+      failures: 0,
+      platforms: {
+        linkedin: { state: "healthy", accessVerified: true },
+        x: {},
+      },
+      failureReasons: [],
+    }),
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(response.status, 422);
+  assert.deepEqual(await response.json(), {
+    error: "invalid_platform_health",
+    platform: "linkedin",
+    reason: "collector_claimed_unverified_access",
+  });
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM social_collector_runs").get() as { count: number }).count, 0);
+  sqlite.close();
+});
+
 test("social post IDs collapse equivalent X URL aliases", async () => {
   const { sqlite, db } = database();
   const first = packet("Cooper announced a current operational update.");
@@ -475,7 +512,7 @@ test("successful Vale receipts prove active-target coverage", async () => {
       duplicates: 0,
       failures: 0,
       platforms: {
-        linkedin: { targetsChecked: activated.platformHealth.linkedin.activeTargetCount, postsSeen: 0, accepted: 0, duplicates: 0, failures: 0 },
+        linkedin: { state: "healthy", accessVerified: true, targetsChecked: activated.platformHealth.linkedin.activeTargetCount, postsSeen: 0, accepted: 0, duplicates: 0, failures: 0 },
         x: { targetsChecked: activated.platformHealth.x.activeTargetCount, postsSeen: 0, accepted: 0, duplicates: 0, failures: 0 },
       },
       failureReasons: [],
