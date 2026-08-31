@@ -1014,6 +1014,7 @@ test("automation alerts cover leadership/model failures and stable source finger
   await sendAutomationAlerts(env, healthy, new Date("2026-08-28T08:00:00.000Z"));
   const resolved = database.prepare("SELECT COUNT(*) AS count FROM operational_alerts WHERE state = 'resolved'").get() as { count: number };
   assert.equal(resolved.count, 3);
+  assert.equal(sent.filter((subject) => subject.includes("RECOVERED")).length, 3);
   database.close();
 });
 
@@ -1034,7 +1035,10 @@ test("public source blocks are warning-level and deliberate backoff does not cre
   const base = new Date("2026-08-28T00:00:00.000Z");
   for (let index = 0; index < 3; index += 1) {
     await sendAutomationAlerts(env, {
-      notes: { sources: [{ id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403", lastSuccessAt: "2026-08-27T12:00:00.000Z", fallbackUrl: "https://www.cooperhealth.org/about-us/newsroom" }] },
+      notes: { sources: [
+        { id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403", lastSuccessAt: "2026-08-27T12:00:00.000Z", fallbackUrl: "https://www.cooperhealth.org/about-us/newsroom" },
+        { id: "penn-medicine-newsroom", state: "healthy", type: "rss", itemCount: 1 },
+      ] },
     }, new Date(base.getTime() + index * 60 * 60 * 1_000));
   }
   const blocked = database.prepare(
@@ -1054,6 +1058,36 @@ test("public source blocks are warning-level and deliberate backoff does not cre
     database.prepare("SELECT COUNT(*) AS count FROM operational_alerts WHERE fingerprint = 'valley-desk:source:cooper-newsroom'").get().count,
     1,
   );
+  database.close();
+});
+
+test("pack-wide public source blocks escalate only after required peers are lost", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const env = {
+    VALLEY_DESK_DB: db,
+    NOTIFY_OPS: {
+      async send(message: { subject: string }) {
+        sent.push(message.subject);
+        return { messageId: `message-${sent.length}` };
+      },
+    },
+  };
+  for (let index = 0; index < 3; index += 1) {
+    await sendAutomationAlerts(env, {
+      notes: { sources: [
+        { id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403" },
+        { id: "penn-medicine-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403" },
+      ] },
+    }, new Date(`2026-08-28T0${index}:00:00.000Z`));
+  }
+  const row = database.prepare(
+    "SELECT severity FROM operational_alerts WHERE fingerprint = 'valley-desk:source:cooper-newsroom'",
+  ).get() as { severity: string };
+  assert.equal(row.severity, "critical");
+  assert.equal(sent.length, 2, "each blocked source gets one thresholded critical transition");
   database.close();
 });
 
@@ -1100,6 +1134,52 @@ test("incomplete leadership extraction surfaces a bounded actionable reason with
   assert.match(row.detail_json, /no recognized leadership structure/);
   assert.match(row.detail_json, /src-example-leadership/);
   assert.doesNotMatch(row.detail_json, /Unknown automation failure/);
+  database.close();
+});
+
+test("leadership backoff does not count as a healthy recovery", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const env = {
+    VALLEY_DESK_DB: db,
+    NOTIFY_OPS: {
+      async send() {
+        return { messageId: "message-1" };
+      },
+    },
+  };
+  const failed = {
+    notes: { sources: [] },
+    leadership: {
+      outcome: "degraded",
+      fetched: 1,
+      failed: 1,
+      coverage: [{ institutionId: "inst-example", status: "active" }],
+    },
+  };
+  await sendAutomationAlerts(env, failed, new Date("2026-08-28T00:00:00.000Z"));
+  await sendAutomationAlerts(env, failed, new Date("2026-08-28T01:00:00.000Z"));
+  await sendAutomationAlerts(env, {
+    notes: { sources: [] },
+    leadership: { outcome: "ok", fetched: 0, backoff: 1 },
+  }, new Date("2026-08-28T02:00:00.000Z"));
+  let row = database.prepare(
+    "SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:leadership-monitor'",
+  ).get() as { state: string; recovery_count: number };
+  assert.deepEqual({ ...row }, { state: "open", recovery_count: 0 });
+  await sendAutomationAlerts(env, {
+    notes: { sources: [] },
+    leadership: { outcome: "ok", fetched: 0, backoff: 0 },
+  }, new Date("2026-08-28T03:00:00.000Z"));
+  await sendAutomationAlerts(env, {
+    notes: { sources: [] },
+    leadership: { outcome: "ok", fetched: 0, backoff: 0 },
+  }, new Date("2026-08-28T04:00:00.000Z"));
+  row = database.prepare(
+    "SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:leadership-monitor'",
+  ).get() as { state: string; recovery_count: number };
+  assert.deepEqual({ ...row }, { state: "resolved", recovery_count: 2 });
   database.close();
 });
 

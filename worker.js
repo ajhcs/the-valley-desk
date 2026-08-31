@@ -23,7 +23,7 @@ import { loadEntities } from "./src/content/store.ts";
 import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts";
 import { decorateHtml } from "./src/lib/crawler-html.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
-import { dispatchOperationalAlert, dispatchOperationalDigest, recordOperationalAlert, resolveOperationalAlert } from "./src/lib/alerts.ts";
+import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -237,7 +237,16 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   };
   const recover = async (fingerprint, requiredSuccesses = 2) => {
     try {
-      return await resolveOperationalAlert(env.VALLEY_DESK_DB, fingerprint, now, requiredSuccesses);
+      const recovery = await resolveOperationalAlertWithTransition(
+        env.VALLEY_DESK_DB,
+        fingerprint,
+        now,
+        requiredSuccesses,
+      );
+      if (recovery.resolved && recovery.row) {
+        await dispatchOperationalRecovery(env.VALLEY_DESK_DB, env.NOTIFY_OPS, recovery.row);
+      }
+      return recovery.row;
     } catch (error) {
       logOps("ops-alert", {
         outcome: "recovery-record-failed",
@@ -292,9 +301,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     const alert = {
       fingerprint,
       event: "source-degraded",
-      severity: source.state === "upstream-blocked"
-        ? "warning"
-        : sourceCoverageLost(source) && !source.fallbackUrl ? "critical" : "warning",
+      severity: sourceCoverageLost(source) && !source.fallbackUrl ? "critical" : "warning",
       threshold: 3,
       now,
       details: {
@@ -319,7 +326,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
 
   const leadership = result?.leadership;
   if (leadership) {
-    if (leadership.outcome === "ok" && Number(leadership.fetched ?? 0) > 0) {
+    if (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0) {
       await recover("valley-desk:leadership-monitor", 2);
     } else if (leadership.outcome !== "ok") {
       await dispatch({
@@ -430,8 +437,15 @@ async function handleFetch(request, env, origin, nonce, ctx) {
           logOps("ops-alert", { outcome: "dispatch-failed", fingerprint: "valley-desk:social:vale", message: error instanceof Error ? error.message : String(error) }, "warn");
         }));
       } else if (report.recoveryObserved) {
-        ctx.waitUntil(resolveOperationalAlert(env.VALLEY_DESK_DB, "valley-desk:social:vale").catch((error) => {
-          logOps("ops-alert", { outcome: "recovery-failed", fingerprint: "valley-desk:social:vale", message: error instanceof Error ? error.message : String(error) }, "warn");
+        ctx.waitUntil(resolveOperationalAlertWithTransition(
+          env.VALLEY_DESK_DB,
+          "valley-desk:social:vale",
+        ).then((recovery) => (
+          recovery.resolved && recovery.row
+            ? dispatchOperationalRecovery(env.VALLEY_DESK_DB, env.NOTIFY_OPS, recovery.row)
+            : undefined
+        )).catch((error) => {
+          logOps("ops-alert", { outcome: "recovery-failed", fingerprint: "valley-desk:social:vale", message: safeAlertError(error) }, "warn");
         }));
       }
     }

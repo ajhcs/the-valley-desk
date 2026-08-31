@@ -373,6 +373,12 @@ async function fetchRssSources(
         const feed = candidate.adapter === "cooper-newsroom"
           ? await readCooperNewsroom(candidate.url, fetchImpl)
           : await readFeed(candidate.url, fetchImpl);
+        // A syntactically valid but empty Cooper feed is not useful coverage;
+        // continue to the authoritative newsroom adapter instead of stopping
+        // with a misleading healthy-empty result.
+        if (source.id === "cooper-newsroom" && !candidate.adapter && feed.items.length === 0) {
+          throw new UpstreamError("parser-failed", "Cooper RSS feed returned no items; trying official newsroom fallback");
+        }
         success = {
           url: candidate.url,
           name: source.name,

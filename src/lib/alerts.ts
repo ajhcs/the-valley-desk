@@ -59,6 +59,11 @@ type AlertRecordResult = {
   claimed: boolean;
 };
 
+export type AlertRecoveryResult = {
+  row: OperationalAlertRow | null;
+  resolved: boolean;
+};
+
 type DigestRow = {
   fingerprint: string;
   pack_id: string;
@@ -249,7 +254,7 @@ export async function markOperationalAlertSent(
  * therefore cannot silence a still-degraded source. D1 owns this counter so
  * recovery remains safe across Worker isolates and retries.
  */
-export async function resolveOperationalAlert(
+export async function resolveOperationalAlertWithTransition(
   db: D1DatabaseLike,
   fingerprint: string,
   now = new Date(),
@@ -264,20 +269,30 @@ export async function resolveOperationalAlert(
         last_recovered_at = ?
     WHERE fingerprint = ? AND state = 'open'
   `).bind(required, nowIso, safeFingerprint).run();
-  await db.prepare(`
+  const resolution = await db.prepare(`
     UPDATE operational_alerts
     SET state = 'resolved', resolved_at = ?, last_notification_error = NULL
     WHERE fingerprint = ? AND state = 'open' AND recovery_count >= ?
   `).bind(nowIso, safeFingerprint, required).run();
+  const resolved = changedRows(resolution) > 0;
   const row = await db.prepare(rowSelect()).bind(safeFingerprint).first<OperationalAlertRow>();
-  if (row?.state === "resolved") {
+  if (resolved && row?.state === "resolved") {
     logOps("ops-alert", {
       outcome: "resolved",
       fingerprint: safeFingerprint,
       recoveryCount: row.recovery_count,
     });
   }
-  return row;
+  return { row, resolved };
+}
+
+export async function resolveOperationalAlert(
+  db: D1DatabaseLike,
+  fingerprint: string,
+  now = new Date(),
+  requiredSuccesses = 2,
+) {
+  return (await resolveOperationalAlertWithTransition(db, fingerprint, now, requiredSuccesses)).row;
 }
 
 export async function markOperationalAlertFailed(
@@ -307,6 +322,53 @@ function alertText(row: OperationalAlertRow) {
     `details: ${row.detail_json}`,
     "ops: /ops",
   ].join("\n");
+}
+
+function recoverySubject(row: OperationalAlertRow) {
+  return `[The Valley Desk] RECOVERED: ${row.event}`.slice(0, 180);
+}
+
+function recoveryText(row: OperationalAlertRow) {
+  return [
+    "The Valley Desk operational alert recovered",
+    `event: ${row.event}`,
+    `pack: ${row.pack_id}`,
+    `recovered_at: ${row.resolved_at ?? row.last_recovered_at ?? row.last_seen_at}`,
+    `recovery_checks: ${row.recovery_count}`,
+    `details: ${row.detail_json}`,
+    "ops: /ops",
+  ].join("\n");
+}
+
+/** Send one fixed-recipient notice for an atomically claimed recovery. */
+export async function dispatchOperationalRecovery(
+  db: D1DatabaseLike,
+  binding: SendEmailBindingLike | undefined,
+  row: OperationalAlertRow,
+) {
+  if (!binding) {
+    await markOperationalAlertFailed(db, row.fingerprint, "NOTIFY_OPS binding unavailable");
+    logOps("ops-alert", { outcome: "recovery-unconfigured", fingerprint: row.fingerprint });
+    return { outcome: "unconfigured" as const, row };
+  }
+  try {
+    const sent = await binding.send({
+      to: OPS_ALERT_RECIPIENT,
+      from: OPS_ALERT_SENDER,
+      subject: recoverySubject(row),
+      text: recoveryText(row),
+    });
+    logOps("ops-alert", { outcome: "recovery-sent", fingerprint: row.fingerprint });
+    return { outcome: "sent" as const, row, messageId: sent.messageId };
+  } catch (error) {
+    await markOperationalAlertFailed(db, row.fingerprint, error);
+    logOps("ops-alert", {
+      outcome: "recovery-failed",
+      fingerprint: row.fingerprint,
+      message: safeErrorMessage(error),
+    }, "warn");
+    return { outcome: "failed" as const, row };
+  }
 }
 
 /** Send only sanitized, fixed-recipient operational mail. */

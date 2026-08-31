@@ -214,6 +214,23 @@ test("leadership monitor persists exact bytes and never infers departures from i
     "Page fetched, but no recognized leadership structure was found",
   );
 
+  const repeatedIncomplete = await monitorLeadershipSources({
+    now: new Date("2026-08-30T00:00:00.000Z"),
+    candidateCap: 1,
+    concurrency: 1,
+    states: new Map([[
+      source.id,
+      {
+        ...incomplete.schedule[0]!,
+        lastHash: incomplete.snapshots[0]!.contentHash,
+        nextAttemptAt: "2026-08-29T00:00:00.000Z",
+      },
+    ]]),
+    fetchImpl: async () => new Response("<html><body>Just a normal page</body></html>", { status: 200 }),
+  });
+  assert.equal(repeatedIncomplete.snapshots[0]?.state, "failed");
+  assert.equal(repeatedIncomplete.snapshots[0]?.extractionStatus, "unrecognized");
+
   const challenge = await monitorLeadershipSources({
     now: new Date("2026-08-30T12:00:00.000Z"),
     candidateCap: 1,

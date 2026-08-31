@@ -545,7 +545,11 @@ export async function monitorLeadershipSources(
         normalizedText,
         extracted.map((row) => `${row.name} ${row.title}`).join("\n"),
       );
-      const unchanged = Boolean(previous?.lastHash && previous.lastHash === contentHash);
+      // A repeated incomplete page is still degraded. Treating it as merely
+      // unchanged would let a persistent empty/unrecognized page recover the
+      // source without ever proving a usable roster.
+      const unchanged = extraction === "complete"
+        && Boolean(previous?.lastHash && previous.lastHash === contentHash);
       const hostile = instructionLike || extraction === "challenge";
       const incompleteError = incompleteExtractionError(extraction);
       const snapshot: LeadershipSnapshot = {
