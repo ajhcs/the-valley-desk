@@ -8,7 +8,7 @@ import {
 import { runAutomation } from "./src/ingest/automation.ts";
 import { cleanupEmailDiscoveries, handleInboundEmail } from "./src/ingest/email.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
-import { cleanupSocialEvidencePackets, handleSocialEvidence, isSocialEvidencePath } from "./src/ingest/social-evidence.ts";
+import { cleanupSocialEvidencePackets, handleSocialEvidence, handleSocialManifest, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
 import { feedXml, mergePublishedContent, mergedFeed, sitemapXml } from "./src/ingest/public-feed.ts";
@@ -362,6 +362,9 @@ async function handleFetch(request, env, origin, nonce, ctx) {
 
   if (path === "/api/health") {
     return handlePublicHealth(request, env);
+  }
+  if (isSocialManifestPath(path)) {
+    return handleSocialManifest(request, env);
   }
   if (isSocialEvidencePath(path)) {
     return handleSocialEvidence(request, env);

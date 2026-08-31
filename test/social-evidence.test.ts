@@ -6,7 +6,10 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   SOCIAL_EVIDENCE_PATH,
+  SOCIAL_MANIFEST_PATH,
+  buildSocialTargetManifest,
   handleSocialEvidence,
+  handleSocialManifest,
   ingestSocialEvidence,
   markSocialEvidenceProcessed,
 } from "../src/ingest/social-evidence.ts";
@@ -65,6 +68,22 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
     VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret",
   });
   assert.equal(unauthorized.status, 404);
+  const manifestUnauthorized = await handleSocialManifest(new Request(`https://thevalleydesk.org${SOCIAL_MANIFEST_PATH}`), {
+    VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret",
+  });
+  assert.equal(manifestUnauthorized.status, 404);
+  const manifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
+  assert.match(manifest.manifestVersion, /^social-targets-v1-/);
+  assert.equal(manifest.platformHealth.linkedin.state, "active");
+  assert.equal(manifest.platformHealth.x.state, "inactive");
+  assert.ok(manifest.targets.length > 0);
+  assert.ok(manifest.targets.every((target) => target.active && target.state === "active"));
+  assert.equal(manifest.targets.some((target) => target.verificationSource === "executive-ledger"), false);
+  const manifestResponse = await handleSocialManifest(new Request(`https://thevalleydesk.org${SOCIAL_MANIFEST_PATH}`, {
+    headers: { authorization: "Bearer separate-social-secret" },
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret" });
+  assert.equal(manifestResponse.status, 200);
+  assert.equal((await manifestResponse.json()).manifestType, "social-target-manifest");
 
   const submit = () => handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
     method: "POST",
@@ -188,6 +207,10 @@ test("an exact publicly verified executive profile becomes a role-grounded Voice
   assert.equal(run.items[0].role, "Chief Information Officer");
   assert.deepEqual(run.items[0].orgs, ["org-penn"]);
   assert.equal(run.items[0].org, "Penn");
+  const manifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
+  const roleTarget = manifest.targets.find((target) => target.roleId === "role-test");
+  assert.equal(roleTarget?.verificationSource, "executive-ledger");
+  assert.equal(roleTarget?.active, true);
 });
 
 test("social endpoint rejects platform mismatches and oversized payloads", async () => {

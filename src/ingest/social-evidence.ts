@@ -4,8 +4,10 @@ import type { ContentItem, NewsItem, VoiceItem } from "../content/schema";
 import type { D1DatabaseLike } from "./persistence";
 import { looksInstructionLike } from "./untrusted-text";
 import { sourceNote, sourceStateForItemCount, type SourceRunNote } from "./source-health";
+import { coveredInstitutions, coveragePack } from "./coverage-pack";
 
 export const SOCIAL_EVIDENCE_PATH = "/api/signals/social";
+export const SOCIAL_MANIFEST_PATH = `${SOCIAL_EVIDENCE_PATH}/manifest`;
 export const SOCIAL_EVIDENCE_SCHEMA_VERSION = 1;
 export const SOCIAL_EVIDENCE_MAX_BYTES = 96 * 1024;
 export const SOCIAL_EVIDENCE_MAX_BATCH = 25;
@@ -181,6 +183,7 @@ async function persistPacket(db: D1DatabaseLike, input: SocialEvidencePacket, no
 }
 
 export function isSocialEvidencePath(pathname: string) { return pathname === SOCIAL_EVIDENCE_PATH; }
+export function isSocialManifestPath(pathname: string) { return pathname === SOCIAL_MANIFEST_PATH; }
 
 export async function handleSocialEvidence(request: Request, env: SocialEvidenceEnv) {
   if (!await tokenMatches(env.SOCIAL_INGEST_TOKEN, request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? null)) {
@@ -236,10 +239,23 @@ function region(value?: string): "PA" | "NJ" | "DE" | "regional" {
   return value === "PA" || value === "NJ" || value === "DE" ? value : "regional";
 }
 
-type Executive = { name: string; profileUrl: string; orgs: string[]; role?: string; org?: string };
+type Executive = {
+  name: string;
+  profileUrl: string;
+  orgs: string[];
+  role?: string;
+  org?: string;
+  personId?: string;
+  roleId?: string;
+  institutionId?: string;
+  verifiedAt?: string;
+  sourceId?: string;
+};
 async function verifiedExecutives(db: D1DatabaseLike, now: Date): Promise<Executive[]> {
   try {
-    const result = await db.prepare(`SELECT p.display_name, p.linkedin_url, r.title, i.org_ids_json, i.short_name
+    const result = await db.prepare(`SELECT p.id AS person_id, p.display_name, p.linkedin_url,
+        r.id AS role_id, r.title, r.source_id, r.verified_at, i.id AS institution_id,
+        i.org_ids_json, i.short_name
       FROM covered_people p
       JOIN executive_roles r ON r.person_id = p.id
       JOIN covered_institutions i ON i.id = r.institution_id
@@ -247,20 +263,183 @@ async function verifiedExecutives(db: D1DatabaseLike, now: Date): Promise<Execut
         AND r.effective_from <= ?
         AND (r.effective_to IS NULL OR r.effective_to > ?)
         AND (r.verified_at IS NULL OR r.verified_at <= ?)
-        AND r.verification_status = 'verified'`).bind(
+        AND r.verification_status = 'verified'
+      ORDER BY i.id, p.id, r.id`).bind(
           now.toISOString(), now.toISOString(), now.toISOString(),
         ).all<{
-        display_name: string; linkedin_url: string; title: string; org_ids_json: string; short_name: string;
+        person_id: string; display_name: string; linkedin_url: string; role_id: string; title: string;
+        source_id: string | null; verified_at: string | null; institution_id: string;
+        org_ids_json: string; short_name: string;
       }>();
     return (result.results ?? []).flatMap((row) => {
       try {
         const orgs = z.array(z.string().min(1)).parse(JSON.parse(row.org_ids_json));
         return orgs.length ? [{
           name: row.display_name, profileUrl: row.linkedin_url, orgs, role: row.title, org: row.short_name,
+          personId: row.person_id, roleId: row.role_id, institutionId: row.institution_id,
+          verifiedAt: row.verified_at ?? undefined, sourceId: row.source_id ?? undefined,
         }] : [];
       } catch { return []; }
     });
   } catch { return []; }
+}
+
+type SocialManifestTarget = {
+  id: string;
+  platform: "linkedin" | "x";
+  targetType: "organization" | "executive";
+  name: string;
+  profileUrl: string;
+  platformProfileId: string | null;
+  profileKey: string;
+  institutionIds: string[];
+  orgIds: string[];
+  active: boolean;
+  state: "active" | "inactive";
+  lastVerifiedAt: string | null;
+  verificationSource: "curated-inventory" | "executive-ledger";
+  personId?: string;
+  roleId?: string;
+  role?: string;
+};
+
+function profileKey(value: string) {
+  try {
+    const parts = new URL(value).pathname.split("/").filter(Boolean);
+    return parts.at(-1) ?? "";
+  } catch { return ""; }
+}
+
+function institutionIdsForOrgs(orgIds: readonly string[]) {
+  const allowed = new Set(orgIds);
+  return coveredInstitutions(coveragePack)
+    .filter((institution) => institution.orgIds.some((orgId) => allowed.has(orgId)))
+    .map((institution) => institution.id)
+    .sort();
+}
+
+async function manifestTargetId(platform: "linkedin" | "x", profileUrl: string) {
+  return `social-${platform}-${(await digest(`${platform}:${profileUrl}`)).slice(0, 24)}`;
+}
+
+export async function buildSocialTargetManifest(db: D1DatabaseLike, now = new Date()) {
+  const organizationTargets = await Promise.all(
+    linkedinTargets.organizations
+      .filter((row) => row.orgs.length > 0)
+      .map(async (row): Promise<SocialManifestTarget> => {
+        const profileUrl = canonicalSocialUrl(row.url, "linkedin", true);
+        return {
+          id: await manifestTargetId("linkedin", profileUrl),
+          platform: "linkedin",
+          targetType: "organization",
+          name: row.name,
+          profileUrl,
+          platformProfileId: null,
+          profileKey: profileKey(profileUrl),
+          institutionIds: institutionIdsForOrgs(row.orgs),
+          orgIds: [...row.orgs].sort(),
+          active: true,
+          state: "active",
+          lastVerifiedAt: `${linkedinTargets.verifiedAt}T00:00:00.000Z`,
+          verificationSource: "curated-inventory",
+        };
+      }),
+  );
+  let ledgerAvailable = true;
+  try {
+    await db.prepare("SELECT 1 FROM executive_roles LIMIT 1").first();
+  } catch {
+    ledgerAvailable = false;
+  }
+  const executiveTargets = ledgerAvailable
+    ? await verifiedExecutives(db, now)
+    : [];
+  const executiveManifestTargets = await Promise.all(
+    executiveTargets.map(async (row): Promise<SocialManifestTarget> => {
+      const profileUrl = canonicalSocialUrl(row.profileUrl, "linkedin", true);
+      return {
+        id: await manifestTargetId("linkedin", profileUrl),
+        platform: "linkedin",
+        targetType: "executive",
+        name: row.name,
+        profileUrl,
+        platformProfileId: null,
+        profileKey: profileKey(profileUrl),
+        institutionIds: row.institutionId ? [row.institutionId] : institutionIdsForOrgs(row.orgs),
+        orgIds: [...row.orgs].sort(),
+        active: true,
+        state: "active",
+        lastVerifiedAt: row.verifiedAt ?? null,
+        verificationSource: "executive-ledger",
+        ...(row.personId ? { personId: row.personId } : {}),
+        ...(row.roleId ? { roleId: row.roleId } : {}),
+        ...(row.role ? { role: row.role } : {}),
+      };
+    }),
+  );
+  const targets = [...organizationTargets, ...executiveManifestTargets]
+    .sort((left, right) => left.id.localeCompare(right.id));
+  const covered = coveredInstitutions(coveragePack).map((institution) => {
+    const institutionTargets = targets.filter((target) => target.institutionIds.includes(institution.id));
+    const dates = institutionTargets
+      .map((target) => target.lastVerifiedAt)
+      .filter((value): value is string => Boolean(value))
+      .sort();
+    return {
+      institutionId: institution.id,
+      shortName: institution.shortName,
+      targetCount: institutionTargets.length,
+      activeTargetCount: institutionTargets.filter((target) => target.active).length,
+      lastVerifiedAt: dates.at(-1) ?? null,
+    };
+  });
+  const platformHealth = {
+    linkedin: {
+      state: targets.some((target) => target.platform === "linkedin" && target.active) ? "active" : "inactive",
+      targetCount: targets.filter((target) => target.platform === "linkedin").length,
+      activeTargetCount: targets.filter((target) => target.platform === "linkedin" && target.active).length,
+      inactiveTargetCount: targets.filter((target) => target.platform === "linkedin" && !target.active).length,
+      collectionMode: "public-observation",
+    },
+    x: {
+      state: "inactive",
+      targetCount: 0,
+      activeTargetCount: 0,
+      inactiveTargetCount: 0,
+      collectionMode: "not-activated",
+      reason: "No verified X targets are configured in the source registry",
+    },
+  } as const;
+  const canonical = {
+    schemaVersion: 1,
+    manifestType: "social-target-manifest",
+    coveragePack: { packId: coveragePack.packId, schemaVersion: coveragePack.schemaVersion, asOf: coveragePack.asOf },
+    source: "curated-account-inventory-plus-current-executive-ledger",
+    ledger: { state: ledgerAvailable ? "available" : "unavailable" },
+    platformHealth,
+    coverage: covered,
+    targets,
+  } as const;
+  const manifestHash = await digest(JSON.stringify(canonical));
+  return {
+    ...canonical,
+    generatedAt: now.toISOString(),
+    manifestVersion: `social-targets-v1-${manifestHash.slice(0, 16)}`,
+    manifestHash,
+  };
+}
+
+export async function handleSocialManifest(request: Request, env: SocialEvidenceEnv) {
+  if (!await tokenMatches(env.SOCIAL_INGEST_TOKEN, request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? null)) {
+    return json(404, { error: "not_found" });
+  }
+  if (request.method.toUpperCase() !== "GET") return json(405, { error: "method_not_allowed" }, { allow: "GET" });
+  try {
+    return json(200, await buildSocialTargetManifest(env.VALLEY_DESK_DB));
+  } catch (error) {
+    console.error("social-target-manifest", JSON.stringify({ outcome: "failed", message: error instanceof Error ? error.message : String(error) }));
+    return json(503, { error: "manifest_unavailable" });
+  }
 }
 
 function readableText(row: PacketRow) {
@@ -322,7 +501,6 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
   const rows = result.results ?? [];
   const executives: Executive[] = [
     ...await verifiedExecutives(db, now),
-    ...linkedinTargets.people.map((row) => ({ name: row.name, profileUrl: row.url, orgs: row.orgs })),
   ];
   const orgs = linkedinTargets.organizations.filter((row) => row.orgs.length > 0);
   const items: ContentItem[] = [];
