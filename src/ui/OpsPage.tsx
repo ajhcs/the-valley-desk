@@ -47,6 +47,17 @@ type OpsPayload = {
       paused_at?: string | null;
       platforms_json?: string;
       failure_reasons_json?: string;
+      platforms?: Record<string, {
+        state?: string;
+        accessVerified?: boolean;
+        targetsChecked?: number;
+        postsSeen?: number;
+        accepted?: number;
+        duplicates?: number;
+        failures?: number;
+        reason?: string;
+      }>;
+      failureReasons?: string[];
     } | null;
     lastSuccessful?: { finished_at?: string; manifest_version?: string; manifest_hash?: string } | null;
   };
@@ -156,7 +167,21 @@ function OpsPage() {
               ? `${latestVale.outcome ?? "unknown"} · finished ${latestVale.finished_at ?? "unknown"} · ${latestVale.accounts_checked ?? 0} accounts · ${latestVale.posts_seen ?? 0} posts · ${latestVale.accepted ?? 0} accepted · ${latestVale.duplicates ?? 0} duplicates · ${latestVale.failures ?? 0} failures${latestVale.paused_at ? ` · paused ${latestVale.paused_at}` : ""}`
               : "No Vale collector receipt has been reported."}
           </p>
-          {latestVale ? <p>Platform health: {latestVale.platforms_json ?? "{}"} · failure reasons: {latestVale.failure_reasons_json ?? "[]"}</p> : null}
+          {latestVale ? (
+            <>
+              <h3>Platform health</h3>
+              <ul>
+                {Object.entries(latestVale.platforms ?? {}).map(([platform, health]) => (
+                  <li key={platform}>
+                    {platform}: {health.state ?? "unknown"} · access {health.accessVerified ? "verified" : "not verified"}
+                    {` · ${health.targetsChecked ?? 0} targets · ${health.postsSeen ?? 0} posts · ${health.accepted ?? 0} accepted · ${health.duplicates ?? 0} duplicates · ${health.failures ?? 0} failures`}
+                    {health.reason ? ` · ${health.reason}` : ""}
+                  </li>
+                ))}
+              </ul>
+              {latestVale.failureReasons?.length ? <p>Failure reasons: {latestVale.failureReasons.join(" · ")}</p> : null}
+            </>
+          ) : null}
           <h2>Open alerts</h2>
           {(payload.alerts?.open ?? []).length ? (
             <ul>

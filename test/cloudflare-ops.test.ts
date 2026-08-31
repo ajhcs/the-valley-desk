@@ -251,6 +251,50 @@ test("protected automation status/review require the bearer token and constant-t
   database.close();
 });
 
+test("operations status exposes bounded Vale platform health", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  database.prepare(`
+    INSERT INTO social_collector_runs (
+      id, schema_version, collector, manifest_version, manifest_hash,
+      started_at, finished_at, outcome, accounts_checked, posts_seen,
+      accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at
+    ) VALUES (?, 1, 'vale', ?, ?, ?, ?, 'success', ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    "vale-ops-health", "manifest-v1", "a".repeat(64),
+    "2026-08-31T12:00:00.000Z", "2026-08-31T12:30:00.000Z",
+    4, 8, 6, 1, 1,
+    JSON.stringify({
+      linkedin: { state: "healthy", accessVerified: true, targetsChecked: 4, postsSeen: 8, accepted: 6, duplicates: 1, failures: 0 },
+      x: { state: "inactive", accessVerified: false, targetsChecked: 0, postsSeen: 0, accepted: 0, duplicates: 0, failures: 0, reason: "X connector is not activated" },
+    }),
+    JSON.stringify(["bounded upstream note"]),
+    "2026-08-31T12:30:00.000Z",
+  );
+  const response = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status`, {
+    headers: { authorization: "Bearer ops-token" },
+  }), { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "ops-token" });
+  assert.equal(response.status, 200);
+  const body = await response.json() as {
+    valeCollector?: {
+      latest?: {
+        platforms?: Record<string, { state?: string; accessVerified?: boolean; targetsChecked?: number; reason?: string }>;
+        failureReasons?: string[];
+      } | null;
+    };
+  };
+  assert.deepEqual(body.valeCollector?.latest?.platforms?.linkedin, {
+    state: "healthy", accessVerified: true, targetsChecked: 4, postsSeen: 8, accepted: 6, duplicates: 1, failures: 0,
+  });
+  assert.deepEqual(body.valeCollector?.latest?.platforms?.x, {
+    state: "inactive", accessVerified: false, targetsChecked: 0, postsSeen: 0, accepted: 0, duplicates: 0, failures: 0,
+    reason: "X connector is not activated",
+  });
+  assert.deepEqual(body.valeCollector?.latest?.failureReasons, ["bounded upstream note"]);
+  database.close();
+});
+
 test("review mutations validate method/content-type, stay idempotent, and rate-limit", async () => {
   configureReviewGuardsForTests({ postLimit: 3 });
   const database = new DatabaseSync(":memory:");

@@ -92,6 +92,60 @@ function boundedStringArray(value: unknown, max = 8) {
   }
 }
 
+function boundedCount(value: unknown) {
+  const count = Number(value);
+  return Number.isInteger(count) && count >= 0 ? Math.min(count, 50_000) : 0;
+}
+
+function boundedCollectorPlatforms(value: unknown) {
+  let parsed: unknown = value;
+  if (typeof value === "string") {
+    try { parsed = JSON.parse(value); } catch { parsed = undefined; }
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+  const record = parsed as Record<string, unknown>;
+  return Object.fromEntries(["linkedin", "x"].flatMap((platform) => {
+    const candidate = record[platform];
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return [];
+    const row = candidate as Record<string, unknown>;
+    const reason = boundedText(row.reason, 500);
+    return [[platform, {
+      state: boundedText(row.state, 32) ?? "unknown",
+      accessVerified: row.accessVerified === true,
+      targetsChecked: boundedCount(row.targetsChecked),
+      postsSeen: boundedCount(row.postsSeen),
+      accepted: boundedCount(row.accepted),
+      duplicates: boundedCount(row.duplicates),
+      failures: boundedCount(row.failures),
+      ...(reason ? { reason } : {}),
+    }]];
+  }));
+}
+
+function boundedCollectorFailureReasons(value: unknown) {
+  let parsed: unknown = value;
+  if (typeof value === "string") {
+    try { parsed = JSON.parse(value); } catch { parsed = undefined; }
+  }
+  return Array.isArray(parsed)
+    ? parsed
+      .filter((entry): entry is string => typeof entry === "string")
+      .map((entry) => boundedText(entry, 500))
+      .filter((entry): entry is string => Boolean(entry))
+      .slice(0, 20)
+    : [];
+}
+
+function normalizedCollectorRow(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const row = value as Record<string, unknown>;
+  return {
+    ...row,
+    platforms: boundedCollectorPlatforms(row.platforms_json),
+    failureReasons: boundedCollectorFailureReasons(row.failure_reasons_json),
+  };
+}
+
 function sourceFailureAgeMs(row: SourceHealthStatusRow, nowMs: number) {
   if (["healthy", "healthy-empty", "disabled", "misconfigured"].includes(row.state)) return null;
   const lastSuccessMs = row.last_success_at ? Date.parse(row.last_success_at) : NaN;
@@ -411,7 +465,12 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
         ORDER BY finished_at DESC, id DESC LIMIT 1
       `).first(),
     ]);
-    valeCollector = { available: true, collector: "vale", latest, lastSuccessful };
+    valeCollector = {
+      available: true,
+      collector: "vale",
+      latest: normalizedCollectorRow(latest),
+      lastSuccessful: normalizedCollectorRow(lastSuccessful),
+    };
   } catch (error) {
     valeCollector = {
       available: false,
