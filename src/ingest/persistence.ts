@@ -1233,6 +1233,7 @@ export async function persistEditorialDecisions(
   model: string,
   provider: string,
   now = new Date(),
+  persistedCandidateIds?: Set<string>,
 ) {
   const counts: EditorialCounts = { published: 0, review: 0, rejected: 0, quarantined: 0 };
   const existingCandidates = await loadExistingCandidates(db, candidates.map((row) => row.item));
@@ -1244,6 +1245,7 @@ export async function persistEditorialDecisions(
       const fingerprint = await candidateFingerprint(withCanonicalSource({ ...item, id: candidateId }));
       if (fingerprint === existingRow.fingerprint) {
         counts.rejected += 1;
+        persistedCandidateIds?.add(candidateId);
         continue;
       }
     }
@@ -1254,6 +1256,7 @@ export async function persistEditorialDecisions(
         ).bind(candidateId).first<{ content_json: string }>();
         if (!existing) {
           counts.review += 1;
+          persistedCandidateIds?.add(candidateId);
           continue;
         }
         let publication = decision.content;
@@ -1282,7 +1285,6 @@ export async function persistEditorialDecisions(
             featured: false,
           });
         }
-        counts.published += 1;
         await db.batch([
           db.prepare(`
             UPDATE content_candidates
@@ -1295,6 +1297,8 @@ export async function persistEditorialDecisions(
             WHERE candidate_id = ?
           `).bind(JSON.stringify(publication), decidedAt, candidateId),
         ]);
+        counts.published += 1;
+        persistedCandidateIds?.add(candidateId);
         continue;
       }
       if (decision.action === "publish") {
@@ -1382,6 +1386,7 @@ export async function persistEditorialDecisions(
           ...slugAliasStatements(db, candidateId, publication, incomingSlug, decidedAt),
         ]);
         counts.published += 1;
+        persistedCandidateIds?.add(candidateId);
         continue;
       }
       if (decision.action === "reject") {
@@ -1420,9 +1425,11 @@ export async function persistEditorialDecisions(
           ),
         ]);
         counts.rejected += 1;
+        persistedCandidateIds?.add(candidateId);
         continue;
       }
       counts.review += 1;
+      persistedCandidateIds?.add(candidateId);
     } catch (error) {
       counts.quarantined += 1;
       await quarantineIdentity(db, {

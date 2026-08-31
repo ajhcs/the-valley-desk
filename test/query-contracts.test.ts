@@ -368,6 +368,31 @@ test("Cooper public RSS blocks fall back to the official newsroom and retain aut
   assert.ok(item.citations?.some((citation) => citation.name.includes("official newsroom")));
 });
 
+test("Cooper empty RSS falls back instead of claiming healthy-empty coverage", async () => {
+  const requested: string[] = [];
+  const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    requested.push(url);
+    if (url === "https://blogs.cooperhealth.org/news/feed/") {
+      return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+    }
+    if (url === "https://www.cooperhealth.org/about-us/newsroom") {
+      return new Response(`
+        <html><body><header>Cooper University Health Care</header>
+          <h2>Cooper publishes an operational update</h2><span>August 26, 2026</span>
+          <a href="https://blogs.cooperhealth.org/news/operational-update/">Cooper publishes an operational update</a>
+        </body></html>`, { status: 200 });
+    }
+    return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+  });
+  const cooper = result.sources.find((source) => source.id === "cooper-newsroom");
+  assert.equal(cooper?.state, "healthy");
+  assert.equal(cooper?.fallbackUrl, "https://www.cooperhealth.org/about-us/newsroom");
+  const feedIndex = requested.indexOf("https://blogs.cooperhealth.org/news/feed/");
+  assert.equal(requested[feedIndex + 1], "https://www.cooperhealth.org/about-us/newsroom");
+  assert.ok(result.items.some((item) => item.title === "Cooper publishes an operational update"));
+});
+
 test("Technical.ly is misconfigured and never reported as empty success", async () => {
   const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async () => {
     throw new Error("Technical.ly must not be fetched while misconfigured");
@@ -3459,14 +3484,33 @@ test("automatic publication SQL executes atomically and deduplicates its audit",
     enrichment: null,
     decision: evaluateCandidate(item, null, now),
   }));
+  const persistedCandidateIds = new Set<string>();
   const counts = await persistEditorialDecisions(
     db,
     decisions,
     DEFAULT_EDITOR_MODEL,
     DEFAULT_EDITOR_BASE_URL,
     now,
+    persistedCandidateIds,
   );
   assert.deepEqual(counts, { published: 1, review: 1, rejected: 0, quarantined: 0 });
+  assert.deepEqual([...persistedCandidateIds].sort(), [future.id, past.id].sort());
+  const invalidPersistedIds = new Set<string>();
+  const invalidDecision = {
+    ...evaluateCandidate(future, null, now),
+    action: "publish" as const,
+    content: undefined,
+  } as unknown as typeof decisions[number]["decision"];
+  const invalidCounts = await persistEditorialDecisions(
+    db,
+    [{ item: future, enrichment: null, decision: invalidDecision }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    now,
+    invalidPersistedIds,
+  );
+  assert.equal(invalidCounts.quarantined, 1);
+  assert.deepEqual([...invalidPersistedIds], []);
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
   assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(future.id).queue_status, "approved");
   assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(past.id).queue_status, "review");

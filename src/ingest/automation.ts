@@ -295,6 +295,7 @@ type LeadershipAutomationResult = {
   coverage: ReturnType<typeof officialSourceCoverage>;
   seeded: boolean;
   fetched: number;
+  backoff: number;
   snapshots: number;
   observations: number;
   schedules: number;
@@ -358,6 +359,10 @@ async function runLeadershipStage(
   try {
     await seedCoveragePack(env.VALLEY_DESK_DB, coveragePack, now);
     const states = await readScheduledSourceStates(env.VALLEY_DESK_DB);
+    const backoff = [...states.values()].filter((state) => {
+      const next = Date.parse(state.nextAttemptAt);
+      return state.consecutiveFailures > 0 && Number.isFinite(next) && next > now.getTime();
+    }).length;
     const result = await monitorLeadershipSources({ fetchImpl, pack: coveragePack, states, now });
     const snapshots = await persistLeadershipSnapshots(env.VALLEY_DESK_DB, result.snapshots);
     const observations = await persistLeadershipObservations(env.VALLEY_DESK_DB, result.observations);
@@ -371,6 +376,7 @@ async function runLeadershipStage(
       outcome,
       cadence: mode,
       fetched: result.fetchedUrls.length,
+      backoff,
       snapshots,
       observations,
       schedules,
@@ -386,6 +392,7 @@ async function runLeadershipStage(
       coverage,
       seeded: true,
       fetched: result.fetchedUrls.length,
+      backoff,
       snapshots,
       observations,
       schedules,
@@ -407,6 +414,7 @@ async function runLeadershipStage(
       coverage,
       seeded: false,
       fetched: 0,
+      backoff: 0,
       snapshots: 0,
       observations: 0,
       schedules: 0,
@@ -710,16 +718,22 @@ export async function runAutomation(
       decision: evaluateCandidate(candidate.item, candidate.enrichment, new Date(), candidate.verification),
     }));
     stage = "persist-editorial-decisions";
+    const editorialPersistedCandidateIds = new Set<string>();
     const editorial = await persistEditorialDecisions(
       env.VALLEY_DESK_DB,
       decisions,
       env.EDITOR_MODEL || DEFAULT_EDITOR_MODEL,
       env.EDITOR_MODEL_BASE_URL || DEFAULT_EDITOR_BASE_URL,
+      new Date(),
+      editorialPersistedCandidateIds,
     );
     stage = "ack-social-evidence";
+    const editoriallyPersistedSocialEvidence = (run.socialEvidenceProcessed ?? []).filter(({ candidateId }) => (
+      editorialPersistedCandidateIds.has(candidateId)
+    ));
     const socialEvidenceProcessedCount = await markSocialEvidenceProcessed(
       env.VALLEY_DESK_DB,
-      run.socialEvidenceProcessed ?? [],
+      editoriallyPersistedSocialEvidence,
       new Date(),
     );
     stage = "complete-run";
