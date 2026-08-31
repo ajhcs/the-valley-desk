@@ -84,6 +84,7 @@ import {
   persistEnrichments,
   persistIngestRun,
   persistSourceHealth,
+  readSourceHealth,
   readPublicationTombstones,
   readPublishedContent,
   readReusableEnrichments,
@@ -390,6 +391,102 @@ test("upstream RSS and social failures distinguish public blocks from auth, rate
   assert.ok(auth.sources.some((source) => source.id.startsWith("linkedin-") && source.id !== "linkedin-benjaminslovis" && source.state === "auth-failed"));
   assert.equal(classifyHttpStatus(403), "upstream-blocked");
   assert.equal(classifyHttpStatus(403, { requiresAuth: true }), "auth-failed");
+});
+
+test("source retry backoff is durable and skips upstream calls until due", async () => {
+  const checkedAt = "2026-08-26T12:00:00.000Z";
+  const nextAttemptAt = "2026-08-26T12:30:00.000Z";
+  const prior = (sourceId: string, state: "upstream-blocked" | "upstream-failed") => ({
+    sourceId,
+    state,
+    itemCount: 0,
+    complete: false,
+    completeness: "partial" as const,
+    consecutiveFailures: 2,
+    lastCheckedAt: checkedAt,
+    lastSuccessAt: null,
+    lastError: "HTTP 403",
+    nextAttemptAt,
+    lastHttpStatus: 403,
+    requiresAuth: false,
+  });
+  let cooperCalls = 0;
+  const rss = await ingestRssWithHealth(new Date(checkedAt), async (input) => {
+    if (String(input).includes("cooperhealth.org")) {
+      cooperCalls += 1;
+      throw new Error("Cooper should remain in backoff");
+    }
+    return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+  }, { sourceHealth: new Map([["cooper-newsroom", prior("cooper-newsroom", "upstream-blocked")]]) });
+  assert.equal(cooperCalls, 0);
+  const cooper = rss.sources.find((source) => source.id === "cooper-newsroom");
+  assert.equal(cooper?.state, "backoff");
+  assert.equal(cooper?.nextAttemptAt, nextAttemptAt);
+  assert.equal(cooper?.consecutiveFailures, 2);
+
+  let eventCalls = 0;
+  const events = await ingestEventsWithHealth(new Date(checkedAt), async () => {
+    eventCalls += 1;
+    throw new Error("Events should remain in backoff");
+  }, new Map([
+    ["dvhimss-events", prior("dvhimss-events", "upstream-failed")],
+    ["njhimss-events", prior("njhimss-events", "upstream-failed")],
+  ]));
+  assert.equal(eventCalls, 0);
+  assert.ok(events.sources.every((source) => source.state === "backoff"));
+});
+
+test("source-health persistence follows 15-minute, hourly, and recovery transitions", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const source = (checkedAt: string, state: "upstream-failed" | "backoff" | "healthy", nextAttemptAt?: string) => ({
+    id: "retry-source",
+    origin: "retry-source",
+    type: "rss" as const,
+    state,
+    checkedAt,
+    itemCount: state === "healthy" ? 1 : 0,
+    complete: state === "healthy",
+    completeness: state === "healthy" ? "complete" as const : "partial" as const,
+    url: "https://example.com/feed",
+    ...(state === "healthy" ? {} : { error: "HTTP 503", httpStatus: 503 }),
+    ...(nextAttemptAt ? { nextAttemptAt } : {}),
+  });
+  const run = async (fetchedAt: string) => persistIngestRun(db, {
+    fetchedAt,
+    rss: [], events: [], social: [],
+    notes: { rss: 0, events: 0, linkedin: { count: 0 }, x: { count: 0 } },
+  }, []);
+  const firstAt = "2026-08-26T12:00:00.000Z";
+  const firstRun = await run(firstAt);
+  await persistSourceHealth(db, firstRun.runId, [source(firstAt, "upstream-failed")]);
+  let row = await readSourceHealth(db);
+  assert.equal(row.get("retry-source")?.consecutiveFailures, 1);
+  assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T12:15:00.000Z");
+
+  const secondAt = "2026-08-26T12:15:00.000Z";
+  const secondRun = await run(secondAt);
+  await persistSourceHealth(db, secondRun.runId, [source(secondAt, "upstream-failed")]);
+  row = await readSourceHealth(db);
+  assert.equal(row.get("retry-source")?.consecutiveFailures, 2);
+  assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T13:15:00.000Z");
+
+  const backoffAt = "2026-08-26T12:30:00.000Z";
+  const backoffRun = await run(backoffAt);
+  await persistSourceHealth(db, backoffRun.runId, [source(backoffAt, "backoff", "2026-08-26T13:15:00.000Z")]);
+  row = await readSourceHealth(db);
+  assert.equal(row.get("retry-source")?.consecutiveFailures, 2);
+  assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T13:15:00.000Z");
+
+  const healthyAt = "2026-08-26T13:15:00.000Z";
+  const healthyRun = await run(healthyAt);
+  await persistSourceHealth(db, healthyRun.runId, [source(healthyAt, "healthy")]);
+  row = await readSourceHealth(db);
+  assert.equal(row.get("retry-source")?.consecutiveFailures, 0);
+  assert.equal(row.get("retry-source")?.lastSuccessAt, healthyAt);
+  assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T13:30:00.000Z");
+  database.close();
 });
 
 test("an unrecognized NJ event page cannot trigger disappearance reconciliation", async () => {

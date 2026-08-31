@@ -55,8 +55,8 @@ export async function runIngestAll(
   // callers without a mode retain the historical all-source behavior.
   const includeEvents = options.includeEvents ?? (options.mode ? options.mode === "daily" : true);
   const [rssResult, eventsResult, socialResult] = await Promise.allSettled([
-    ingestRssWithHealth(now, fetchImpl, options),
-    includeEvents ? ingestEventsWithHealth(now, fetchImpl) : Promise.resolve(undefined),
+    ingestRssWithHealth(now, fetchImpl, { ...options, sourceHealth: env.sourceHealth }),
+    includeEvents ? ingestEventsWithHealth(now, fetchImpl, env.sourceHealth) : Promise.resolve(undefined),
     ingestSocial(env, now, fetchImpl),
   ]);
   const rss = rssResult.status === "fulfilled" ? rssResult.value.items : [];

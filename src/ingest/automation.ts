@@ -33,6 +33,7 @@ import {
   persistIngestRun,
   persistNewsArticleExtractions,
   persistSourceHealth,
+  readSourceHealth,
   readEditorModelCache,
   readReviewBacklog,
   readNewsArticleExtractions,
@@ -83,7 +84,12 @@ export type AutomationEnv = {
 };
 
 export type AutomationIngest = (
-  env: { X_BEARER_TOKEN?: string; LINKEDIN_TOKEN?: string; VALLEY_DESK_DB?: D1DatabaseLike },
+  env: {
+    X_BEARER_TOKEN?: string;
+    LINKEDIN_TOKEN?: string;
+    VALLEY_DESK_DB?: D1DatabaseLike;
+    sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>;
+  },
   fetchImpl: typeof fetch,
   options?: IngestRunOptions,
 ) => Promise<IngestRun>;
@@ -465,11 +471,13 @@ export async function runAutomation(
     }
     stage = "load-news-extractions";
     const newsExtractions = await readNewsArticleExtractions(env.VALLEY_DESK_DB);
+    const sourceHealth = await readSourceHealth(env.VALLEY_DESK_DB);
     stage = "fetch-sources";
     const ingestedRun = await ingest({
       X_BEARER_TOKEN: env.X_BEARER_TOKEN,
       LINKEDIN_TOKEN: env.LINKEDIN_TOKEN,
       VALLEY_DESK_DB: env.VALLEY_DESK_DB,
+      sourceHealth,
     }, fetchImpl, {
       newsExtractions,
       mode,

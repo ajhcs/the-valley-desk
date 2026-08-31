@@ -30,6 +30,8 @@ import {
 import { eventSourceById } from "./origins";
 import {
   classifyFetchError,
+  sourceBackoffNote,
+  sourceIsInBackoff,
   sourceNote,
   sourceStateForItemCount,
   type IngestSourceResult,
@@ -493,31 +495,39 @@ export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt
 export async function ingestEventsWithHealth(
   now = new Date(),
   fetchImpl: typeof fetch = fetch,
+  sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>,
 ): Promise<IngestSourceResult<ContentItem>> {
   const fetchedAt = now.toISOString();
+  const officialBackoff = sourceIsInBackoff(sourceHealth?.get("dvhimss-events"), now);
+  const scrapedBackoff = sourceIsInBackoff(sourceHealth?.get("njhimss-events"), now);
   const [officialResult, scrapedResult] = await Promise.allSettled([
-    fetchDvhimssCalendarBatch(fetchImpl, fetchedAt),
-    scrapeNjdvhimssBatch(fetchImpl, fetchedAt),
+    officialBackoff ? Promise.resolve(undefined) : fetchDvhimssCalendarBatch(fetchImpl, fetchedAt),
+    scrapedBackoff ? Promise.resolve(undefined) : scrapeNjdvhimssBatch(fetchImpl, fetchedAt),
   ]);
-  const official = officialResult.status === "fulfilled" ? officialResult.value.items : [];
-  const scraped = scrapedResult.status === "fulfilled" ? scrapedResult.value.items : [];
+  const official = officialResult.status === "fulfilled" && officialResult.value ? officialResult.value.items : [];
+  const scraped = scrapedResult.status === "fulfilled" && scrapedResult.value ? scrapedResult.value.items : [];
   const toNote = (
     id: string,
     origin: string,
     url: string,
-    result: PromiseSettledResult<EventSnapshot>,
+    result: PromiseSettledResult<EventSnapshot | undefined>,
+    prior?: import("./source-health").PersistedSourceHealth,
   ): SourceRunNote => {
+    const snapshot = result.status === "fulfilled" ? result.value : undefined;
+    if (!snapshot) {
+      return sourceBackoffNote(id, origin, "events", fetchedAt, prior, url);
+    }
     if (result.status === "fulfilled") {
       return sourceNote({
         id,
         origin,
         type: "events",
-        state: sourceStateForItemCount(result.value.items.length),
+        state: sourceStateForItemCount(snapshot.items.length),
         checkedAt: fetchedAt,
-        itemCount: result.value.items.length,
-        completeness: result.value.completeness,
-        complete: result.value.completeness === "complete",
-        url: result.value.url,
+        itemCount: snapshot.items.length,
+        completeness: snapshot.completeness,
+        complete: snapshot.completeness === "complete",
+        url: snapshot.url,
       });
     }
     const reason = result.reason;
@@ -530,6 +540,7 @@ export async function ingestEventsWithHealth(
       checkedAt: fetchedAt,
       url,
       error: reason instanceof Error ? reason.message : String(reason),
+      ...(reason instanceof UpstreamError && reason.httpStatus !== undefined ? { httpStatus: reason.httpStatus } : {}),
     });
   };
   const batch: IngestBatch = {
@@ -540,8 +551,8 @@ export async function ingestEventsWithHealth(
   return {
     items: toReviewQueue(batch),
     sources: [
-      toNote("dvhimss-events", "dvhimss-events", DVHIMSS_SOURCE?.url ?? "https://dvhimss.org/events-calendar", officialResult),
-      toNote("njhimss-events", "njhimss-events", NJHIMSS_SOURCE?.url ?? "https://njdvhimssevent.com/", scrapedResult),
+      toNote("dvhimss-events", "dvhimss-events", DVHIMSS_SOURCE?.url ?? "https://dvhimss.org/events-calendar", officialResult, sourceHealth?.get("dvhimss-events")),
+      toNote("njhimss-events", "njhimss-events", NJHIMSS_SOURCE?.url ?? "https://njdvhimssevent.com/", scrapedResult, sourceHealth?.get("njhimss-events")),
     ],
   };
 }

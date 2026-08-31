@@ -3,6 +3,8 @@ import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
 import { isHeldHandle, liveXOrigins, type XOrigin } from "./origins";
 import {
+  sourceBackoffNote,
+  sourceIsInBackoff,
   sourceNote,
   sourceStateForItemCount,
   type SourceRunNote,
@@ -118,7 +120,10 @@ function originNote(
 
 /** Allowlisted X handles only. No-op without X_BEARER_TOKEN. Personal X stays HOLD. */
 export async function ingestX(
-  env: { X_BEARER_TOKEN?: string } = {},
+  env: {
+    X_BEARER_TOKEN?: string;
+    sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>;
+  } = {},
   now = new Date(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<XIngestResult> {
@@ -160,6 +165,12 @@ export async function ingestX(
   const items: ContentItem[] = [];
   const sources: SourceRunNote[] = [];
   for (const origin of allow) {
+    const sourceId = `x-${origin.handle}`;
+    const prior = env.sourceHealth?.get(sourceId);
+    if (sourceIsInBackoff(prior, now)) {
+      sources.push(sourceBackoffNote(sourceId, origin.handle, "social", fetchedAt, prior, origin.url));
+      continue;
+    }
     try {
       const tweets = await fetchOriginTweets(origin, token, fetchImpl);
       const before = items.length;

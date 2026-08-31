@@ -734,9 +734,11 @@ export async function persistSourceHealth(
     ...(() => {
       const prior = previous.get(source.id);
       const deliberateBackoff = source.state === "backoff";
-      const consecutiveFailures = isFailureSourceState(source.state)
-        ? (prior?.consecutiveFailures ?? 0) + 1
-        : prior?.consecutiveFailures ?? 0;
+      const consecutiveFailures = isSuccessfulSourceState(source.state)
+        ? 0
+        : isFailureSourceState(source.state)
+          ? (prior?.consecutiveFailures ?? 0) + 1
+          : prior?.consecutiveFailures ?? 0;
       const nextAttemptAt = source.nextAttemptAt
         ?? (source.state === "disabled" || source.state === "misconfigured"
           ? source.checkedAt
