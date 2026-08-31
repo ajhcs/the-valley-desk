@@ -78,18 +78,39 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
     headers: { authorization: "Bearer shared-secret" },
   }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "shared-secret", REVIEW_API_TOKEN: "shared-secret" });
   assert.equal(sharedSecret.status, 404);
+  const platformSecret = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+    headers: { authorization: "Bearer platform-secret" },
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "platform-secret", X_BEARER_TOKEN: "platform-secret" });
+  assert.equal(platformSecret.status, 404);
   const manifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
   assert.match(manifest.manifestVersion, /^social-targets-v1-/);
-  assert.equal(manifest.platformHealth.linkedin.state, "active");
+  assert.equal(manifest.platformHealth.linkedin.state, "inactive");
   assert.equal(manifest.platformHealth.x.state, "inactive");
   assert.ok(manifest.targets.length > 0);
-  assert.ok(manifest.targets.every((target) => target.active && target.state === "active"));
+  assert.ok(manifest.targets.every((target) => !target.active && target.state === "inactive"));
   assert.equal(manifest.targets.some((target) => target.verificationSource === "executive-ledger"), false);
+  const activated = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"), {
+    linkedinAccessVerified: true,
+  });
+  assert.ok(activated.targets.every((target) => target.active && target.state === "active"));
+  assert.equal(activated.platformHealth.linkedin.collectionMode, "public-observation");
   const manifestResponse = await handleSocialManifest(new Request(`https://thevalleydesk.org${SOCIAL_MANIFEST_PATH}`, {
     headers: { authorization: "Bearer separate-social-secret" },
   }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret" });
   assert.equal(manifestResponse.status, 200);
   assert.equal((await manifestResponse.json()).manifestType, "social-target-manifest");
+  const headEvidence = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+    method: "HEAD", headers: { authorization: "Bearer separate-social-secret" },
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret" });
+  const headManifest = await handleSocialManifest(new Request(`https://thevalleydesk.org${SOCIAL_MANIFEST_PATH}`, {
+    method: "HEAD", headers: { authorization: "Bearer separate-social-secret" },
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret" });
+  const headRuns = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    method: "HEAD", headers: { authorization: "Bearer separate-social-secret" },
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret" });
+  assert.equal(headEvidence.status, 200);
+  assert.equal(headManifest.status, 200);
+  assert.equal(headRuns.status, 200);
 
   const submit = () => handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
     method: "POST",
@@ -174,6 +195,65 @@ test("Vale collector receipts are manifest-bound, idempotent, and expose last su
   sqlite.close();
 });
 
+test("collector failure streak signals pause after three new failed runs and ignores replay", async () => {
+  const { sqlite, db } = database();
+  const manifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
+  const submit = async (runId: string, outcome: "failed" | "success") => {
+    const response = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+      method: "POST",
+      headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+      body: JSON.stringify({
+        schemaVersion: 1,
+        collector: "vale",
+        runId,
+        manifestVersion: manifest.manifestVersion,
+        manifestHash: manifest.manifestHash,
+        startedAt: "2026-08-28T12:30:00.000Z",
+        finishedAt: `2026-08-28T12:${runId.endsWith("3") ? "33" : runId.endsWith("2") ? "32" : "31"}:00.000Z`,
+        outcome,
+        accountsChecked: 1,
+        postsSeen: 0,
+        accepted: 0,
+        duplicates: 0,
+        failures: outcome === "failed" ? 1 : 0,
+        platforms: { linkedin: {}, x: {} },
+        failureReasons: outcome === "failed" ? ["upstream unavailable"] : [],
+      }),
+    }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+    assert.equal(response.status, 202);
+    const body = await response.json() as {
+      idempotent: boolean;
+      consecutiveFailures: number;
+      pauseRequired: boolean;
+      recoveryObserved: boolean;
+    };
+    return {
+      idempotent: body.idempotent,
+      consecutiveFailures: body.consecutiveFailures,
+      pauseRequired: body.pauseRequired,
+      recoveryObserved: body.recoveryObserved,
+    };
+  };
+  assert.deepEqual(await submit("vale-failure-1", "failed"), {
+    idempotent: false, consecutiveFailures: 1, pauseRequired: false, recoveryObserved: false,
+  });
+  assert.deepEqual(await submit("vale-failure-2", "failed"), {
+    idempotent: false, consecutiveFailures: 2, pauseRequired: false, recoveryObserved: false,
+  });
+  assert.deepEqual(await submit("vale-failure-3", "failed"), {
+    idempotent: false, consecutiveFailures: 3, pauseRequired: true, recoveryObserved: false,
+  });
+  assert.deepEqual(await submit("vale-failure-3", "failed"), {
+    idempotent: true, consecutiveFailures: 3, pauseRequired: true, recoveryObserved: false,
+  });
+  const success = await submit("vale-success-1", "success");
+  assert.deepEqual(success, {
+    idempotent: false, consecutiveFailures: 0, pauseRequired: false, recoveryObserved: true,
+  });
+  assert.equal((sqlite.prepare("SELECT consecutive_failures, paused_at FROM social_collector_runs WHERE id = 'vale-failure-3'").get() as { consecutive_failures: number; paused_at: string | null }).consecutive_failures, 3);
+  sqlite.close();
+});
+
 test("scheduled automation passes D1 to the social consumer and persists its review candidate", async () => {
   const { sqlite, db } = database();
   const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
@@ -224,6 +304,9 @@ test("instruction-like social evidence is retained but never enters editorial wo
   assert.equal(response.status, 202);
   assert.equal((sqlite.prepare("SELECT instruction_like FROM social_evidence_packets").get() as { instruction_like: number }).instruction_like, 1);
   assert.equal((await ingestSocialEvidence(db, new Date("2026-08-28T13:00:00.000Z"))).items.length, 0);
+  const quarantine = sqlite.prepare("SELECT status, quarantine_reason FROM social_evidence_packets").get() as { status: string; quarantine_reason: string | null };
+  assert.equal(quarantine.status, "quarantined");
+  assert.equal(quarantine.quarantine_reason, "instruction-like");
 });
 
 test("an exact publicly verified executive profile becomes a role-grounded Voice candidate", async () => {
@@ -275,7 +358,7 @@ test("an exact publicly verified executive profile becomes a role-grounded Voice
   const manifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
   const roleTarget = manifest.targets.find((target) => target.roleId === "role-test");
   assert.equal(roleTarget?.verificationSource, "executive-ledger");
-  assert.equal(roleTarget?.active, true);
+  assert.equal(roleTarget?.active, false);
 });
 
 test("social endpoint rejects platform mismatches and oversized payloads", async () => {

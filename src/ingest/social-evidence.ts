@@ -95,9 +95,14 @@ export type SocialCollectorRun = z.infer<typeof CollectorRun>;
 type SocialEvidenceEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
   SOCIAL_INGEST_TOKEN?: string;
+  /** Explicit operator gate: target rows stay inactive until connector access is proven. */
+  SOCIAL_LINKEDIN_ACCESS_VERIFIED?: string;
+  SOCIAL_X_ACCESS_VERIFIED?: string;
   REVIEW_API_TOKEN?: string;
   OPENROUTER_API_KEY?: string;
   EDITOR_MODEL_API_KEY?: string;
+  X_BEARER_TOKEN?: string;
+  LINKEDIN_TOKEN?: string;
 };
 
 function json(status: number, value: unknown, headers: HeadersInit = {}) {
@@ -122,7 +127,13 @@ async function tokenMatches(expected: string | undefined, actual: string | null)
 
 async function socialAuthorized(request: Request, env: SocialEvidenceEnv) {
   const token = env.SOCIAL_INGEST_TOKEN?.trim();
-  if (!token || token === env.REVIEW_API_TOKEN?.trim() || token === env.OPENROUTER_API_KEY?.trim() || token === env.EDITOR_MODEL_API_KEY?.trim()) {
+  if (!token || [
+    env.REVIEW_API_TOKEN,
+    env.OPENROUTER_API_KEY,
+    env.EDITOR_MODEL_API_KEY,
+    env.X_BEARER_TOKEN,
+    env.LINKEDIN_TOKEN,
+  ].some((candidate) => candidate?.trim() === token)) {
     return false;
   }
   return tokenMatches(token, request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? null);
@@ -234,7 +245,8 @@ export async function handleSocialEvidence(request: Request, env: SocialEvidence
   if (!await socialAuthorized(request, env)) {
     return json(404, { error: "not_found" });
   }
-  if (request.method.toUpperCase() === "GET") {
+  const method = request.method.toUpperCase();
+  if (method === "GET" || method === "HEAD") {
     return json(200, {
       schemaVersion: SOCIAL_EVIDENCE_SCHEMA_VERSION,
       accepts: ["linkedin", "x"],
@@ -243,7 +255,7 @@ export async function handleSocialEvidence(request: Request, env: SocialEvidence
       publication: "editor_only",
     });
   }
-  if (request.method.toUpperCase() !== "POST") return json(405, { error: "method_not_allowed" }, { allow: "GET, POST" });
+  if (method !== "POST") return json(405, { error: "method_not_allowed" }, { allow: "GET, HEAD, POST" });
   if (!(request.headers.get("content-type") || "").toLowerCase().startsWith("application/json")) return json(415, { error: "application_json_required" });
   try {
     const decoded = PacketEnvelope.safeParse(await boundedJson(request));
@@ -297,36 +309,36 @@ type Executive = {
   sourceId?: string;
 };
 async function verifiedExecutives(db: D1DatabaseLike, now: Date): Promise<Executive[]> {
-  try {
-    const result = await db.prepare(`SELECT p.id AS person_id, p.display_name, p.linkedin_url,
-        r.id AS role_id, r.title, r.source_id, r.verified_at, i.id AS institution_id,
-        i.org_ids_json, i.short_name
-      FROM covered_people p
-      JOIN executive_roles r ON r.person_id = p.id
-      JOIN covered_institutions i ON i.id = r.institution_id
-      WHERE p.linkedin_url IS NOT NULL
-        AND r.effective_from <= ?
-        AND (r.effective_to IS NULL OR r.effective_to > ?)
-        AND (r.verified_at IS NULL OR r.verified_at <= ?)
-        AND r.verification_status = 'verified'
-      ORDER BY i.id, p.id, r.id`).bind(
-          now.toISOString(), now.toISOString(), now.toISOString(),
-        ).all<{
-        person_id: string; display_name: string; linkedin_url: string; role_id: string; title: string;
-        source_id: string | null; verified_at: string | null; institution_id: string;
-        org_ids_json: string; short_name: string;
-      }>();
-    return (result.results ?? []).flatMap((row) => {
-      try {
-        const orgs = z.array(z.string().min(1)).parse(JSON.parse(row.org_ids_json));
-        return orgs.length ? [{
-          name: row.display_name, profileUrl: row.linkedin_url, orgs, role: row.title, org: row.short_name,
-          personId: row.person_id, roleId: row.role_id, institutionId: row.institution_id,
-          verifiedAt: row.verified_at ?? undefined, sourceId: row.source_id ?? undefined,
-        }] : [];
-      } catch { return []; }
-    });
-  } catch { return []; }
+  const result = await db.prepare(`SELECT p.id AS person_id, p.display_name, p.linkedin_url,
+      r.id AS role_id, r.title, r.source_id, r.verified_at, i.id AS institution_id,
+      i.org_ids_json, i.short_name
+    FROM covered_people p
+    JOIN executive_roles r ON r.person_id = p.id
+    JOIN covered_institutions i ON i.id = r.institution_id
+    WHERE i.covered = 1
+      AND p.linkedin_url IS NOT NULL
+      AND r.effective_from <= ?
+      AND (r.effective_to IS NULL OR r.effective_to > ?)
+      AND r.verified_at IS NOT NULL
+      AND r.verified_at <= ?
+      AND r.verification_status = 'verified'
+    ORDER BY i.id, p.id, r.id`).bind(
+        now.toISOString(), now.toISOString(), now.toISOString(),
+      ).all<{
+      person_id: string; display_name: string; linkedin_url: string; role_id: string; title: string;
+      source_id: string | null; verified_at: string; institution_id: string;
+      org_ids_json: string; short_name: string;
+    }>();
+  return (result.results ?? []).flatMap((row) => {
+    try {
+      const orgs = z.array(z.string().min(1)).parse(JSON.parse(row.org_ids_json));
+      return orgs.length ? [{
+        name: row.display_name, profileUrl: row.linkedin_url, orgs, role: row.title, org: row.short_name,
+        personId: row.person_id, roleId: row.role_id, institutionId: row.institution_id,
+        verifiedAt: row.verified_at, sourceId: row.source_id ?? undefined,
+      }] : [];
+    } catch { return []; }
+  });
 }
 
 type SocialManifestTarget = {
@@ -355,6 +367,17 @@ function profileKey(value: string) {
   } catch { return ""; }
 }
 
+function accessVerified(value?: string) {
+  return value?.trim().toLowerCase() === "true";
+}
+
+function manifestOptions(env: SocialEvidenceEnv): SocialManifestOptions {
+  return {
+    linkedinAccessVerified: accessVerified(env.SOCIAL_LINKEDIN_ACCESS_VERIFIED),
+    xAccessVerified: accessVerified(env.SOCIAL_X_ACCESS_VERIFIED),
+  };
+}
+
 function institutionIdsForOrgs(orgIds: readonly string[]) {
   const allowed = new Set(orgIds);
   return coveredInstitutions(coveragePack)
@@ -367,7 +390,18 @@ async function manifestTargetId(platform: "linkedin" | "x", profileUrl: string) 
   return `social-${platform}-${(await digest(`${platform}:${profileUrl}`)).slice(0, 24)}`;
 }
 
-export async function buildSocialTargetManifest(db: D1DatabaseLike, now = new Date()) {
+export type SocialManifestOptions = {
+  linkedinAccessVerified?: boolean;
+  xAccessVerified?: boolean;
+};
+
+export async function buildSocialTargetManifest(
+  db: D1DatabaseLike,
+  now = new Date(),
+  options: SocialManifestOptions = {},
+) {
+  const linkedinAccessVerified = options.linkedinAccessVerified ?? false;
+  const xAccessVerified = options.xAccessVerified ?? false;
   const organizationTargets = await Promise.all(
     linkedinTargets.organizations
       .filter((row) => row.orgs.length > 0)
@@ -383,22 +417,23 @@ export async function buildSocialTargetManifest(db: D1DatabaseLike, now = new Da
           profileKey: profileKey(profileUrl),
           institutionIds: institutionIdsForOrgs(row.orgs),
           orgIds: [...row.orgs].sort(),
-          active: true,
-          state: "active",
+          active: linkedinAccessVerified,
+          state: linkedinAccessVerified ? "active" : "inactive",
           lastVerifiedAt: `${linkedinTargets.verifiedAt}T00:00:00.000Z`,
           verificationSource: "curated-inventory",
         };
       }),
   );
-  let ledgerAvailable = true;
+  let ledgerAvailable = false;
+  let executiveTargets: Executive[] = [];
   try {
-    await db.prepare("SELECT 1 FROM executive_roles LIMIT 1").first();
+    executiveTargets = await verifiedExecutives(db, now);
+    ledgerAvailable = true;
   } catch {
+    // A manifest must say that its ledger is unavailable instead of silently
+    // claiming that an empty executive list is current and complete.
     ledgerAvailable = false;
   }
-  const executiveTargets = ledgerAvailable
-    ? await verifiedExecutives(db, now)
-    : [];
   const executiveManifestTargets = await Promise.all(
     executiveTargets.map(async (row): Promise<SocialManifestTarget> => {
       const profileUrl = canonicalSocialUrl(row.profileUrl, "linkedin", true);
@@ -412,8 +447,8 @@ export async function buildSocialTargetManifest(db: D1DatabaseLike, now = new Da
         profileKey: profileKey(profileUrl),
         institutionIds: row.institutionId ? [row.institutionId] : institutionIdsForOrgs(row.orgs),
         orgIds: [...row.orgs].sort(),
-        active: true,
-        state: "active",
+        active: linkedinAccessVerified,
+        state: linkedinAccessVerified ? "active" : "inactive",
         lastVerifiedAt: row.verifiedAt ?? null,
         verificationSource: "executive-ledger",
         ...(row.personId ? { personId: row.personId } : {}),
@@ -444,15 +479,18 @@ export async function buildSocialTargetManifest(db: D1DatabaseLike, now = new Da
       targetCount: targets.filter((target) => target.platform === "linkedin").length,
       activeTargetCount: targets.filter((target) => target.platform === "linkedin" && target.active).length,
       inactiveTargetCount: targets.filter((target) => target.platform === "linkedin" && !target.active).length,
-      collectionMode: "public-observation",
+      collectionMode: linkedinAccessVerified ? "public-observation" : "inventory-only",
+      ...(linkedinAccessVerified ? {} : { reason: "LinkedIn connector access is not operator-verified" }),
     },
     x: {
-      state: "inactive",
+      state: xAccessVerified && targets.some((target) => target.platform === "x" && target.active) ? "active" : "inactive",
       targetCount: 0,
       activeTargetCount: 0,
       inactiveTargetCount: 0,
       collectionMode: "not-activated",
-      reason: "No verified X targets are configured in the source registry",
+      reason: xAccessVerified
+        ? "No verified X targets are configured in the source registry"
+        : "X connector access is not operator-verified and no verified targets are configured",
     },
   } as const;
   const canonical = {
@@ -478,9 +516,10 @@ export async function handleSocialManifest(request: Request, env: SocialEvidence
   if (!await socialAuthorized(request, env)) {
     return json(404, { error: "not_found" });
   }
-  if (request.method.toUpperCase() !== "GET") return json(405, { error: "method_not_allowed" }, { allow: "GET" });
+  const method = request.method.toUpperCase();
+  if (method !== "GET" && method !== "HEAD") return json(405, { error: "method_not_allowed" }, { allow: "GET, HEAD" });
   try {
-    return json(200, await buildSocialTargetManifest(env.VALLEY_DESK_DB));
+    return json(200, await buildSocialTargetManifest(env.VALLEY_DESK_DB, new Date(), manifestOptions(env)));
   } catch (error) {
     console.error("social-target-manifest", JSON.stringify({ outcome: "failed", message: error instanceof Error ? error.message : String(error) }));
     return json(503, { error: "manifest_unavailable" });
@@ -504,6 +543,8 @@ type CollectorRunRow = {
   platforms_json: string;
   failure_reasons_json: string;
   created_at: string;
+  consecutive_failures: number;
+  paused_at: string | null;
 };
 
 function collectorRunPayload(row: CollectorRunRow | null) {
@@ -524,6 +565,9 @@ function collectorRunPayload(row: CollectorRunRow | null) {
     failures: Number(row.failures) || 0,
     platforms: parseJson(row.platforms_json, { linkedin: {}, x: {} }),
     failureReasons: parseJson(row.failure_reasons_json, []),
+    consecutiveFailures: Number(row.consecutive_failures) || 0,
+    pauseRequired: Number(row.consecutive_failures) >= 3,
+    pausedAt: row.paused_at,
     createdAt: row.created_at,
   };
 }
@@ -539,7 +583,8 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
         env.VALLEY_DESK_DB.prepare(`
           SELECT id, schema_version, collector, manifest_version, manifest_hash,
                  started_at, finished_at, outcome, accounts_checked, posts_seen,
-                 accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at
+                 accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at,
+                 consecutive_failures, paused_at
           FROM social_collector_runs
           WHERE collector = 'vale'
           ORDER BY finished_at DESC, id DESC LIMIT 1
@@ -547,7 +592,8 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
         env.VALLEY_DESK_DB.prepare(`
           SELECT id, schema_version, collector, manifest_version, manifest_hash,
                  started_at, finished_at, outcome, accounts_checked, posts_seen,
-                 accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at
+                 accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at,
+                 consecutive_failures, paused_at
           FROM social_collector_runs
           WHERE collector = 'vale' AND outcome = 'success'
           ORDER BY finished_at DESC, id DESC LIMIT 1
@@ -564,7 +610,10 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
       return json(503, { error: "collector_status_unavailable" });
     }
   }
-  if (method !== "POST") return json(405, { error: "method_not_allowed" }, { allow: "GET, POST" });
+  if (method === "HEAD") {
+    return json(200, { schemaVersion: SOCIAL_EVIDENCE_SCHEMA_VERSION, collector: "vale" });
+  }
+  if (method !== "POST") return json(405, { error: "method_not_allowed" }, { allow: "GET, HEAD, POST" });
   if (!(request.headers.get("content-type") || "").toLowerCase().startsWith("application/json")) {
     return json(415, { error: "application_json_required" });
   }
@@ -584,7 +633,11 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
     }
     let manifest: Awaited<ReturnType<typeof buildSocialTargetManifest>>;
     try {
-      manifest = await buildSocialTargetManifest(env.VALLEY_DESK_DB, new Date(input.finishedAt));
+      manifest = await buildSocialTargetManifest(
+        env.VALLEY_DESK_DB,
+        new Date(input.finishedAt),
+        manifestOptions(env),
+      );
     } catch {
       return json(503, { error: "manifest_unavailable" });
     }
@@ -595,13 +648,36 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
         manifestHash: manifest.manifestHash,
       });
     }
+    const existing = await env.VALLEY_DESK_DB.prepare(`
+      SELECT consecutive_failures, paused_at
+      FROM social_collector_runs
+      WHERE id = ?
+    `).bind(input.runId).first<{ consecutive_failures: number; paused_at: string | null }>();
+    const previous = existing ? null : await env.VALLEY_DESK_DB.prepare(`
+      SELECT consecutive_failures
+      FROM social_collector_runs
+      WHERE collector = 'vale'
+      ORDER BY finished_at DESC, id DESC LIMIT 1
+    `).first<{ consecutive_failures: number }>();
+    const idempotent = Boolean(existing);
+    const consecutiveFailures = existing
+      ? Math.max(0, Number(existing.consecutive_failures) || 0)
+      : input.outcome === "success"
+        ? 0
+        : Math.max(0, Number(previous?.consecutive_failures) || 0) + 1;
+    const pausedAt = existing
+      ? existing.paused_at
+      : consecutiveFailures >= 3
+        ? input.finishedAt
+        : null;
     const createdAt = new Date().toISOString();
     await env.VALLEY_DESK_DB.prepare(`
       INSERT INTO social_collector_runs (
         id, schema_version, collector, manifest_version, manifest_hash,
         started_at, finished_at, outcome, accounts_checked, posts_seen,
-        accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at
-      ) VALUES (?, ?, 'vale', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at,
+        consecutive_failures, paused_at
+      ) VALUES (?, ?, 'vale', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
         manifest_version = excluded.manifest_version,
         manifest_hash = excluded.manifest_hash,
@@ -620,8 +696,18 @@ export async function handleSocialCollectorRuns(request: Request, env: SocialEvi
       input.startedAt, input.finishedAt, input.outcome, input.accountsChecked,
       input.postsSeen, input.accepted, input.duplicates, input.failures,
       JSON.stringify(input.platforms), JSON.stringify(input.failureReasons), createdAt,
+      consecutiveFailures, pausedAt,
     ).run();
-    return json(202, { accepted: 1, runId: input.runId, outcome: input.outcome });
+    return json(202, {
+      accepted: 1,
+      runId: input.runId,
+      outcome: input.outcome,
+      idempotent,
+      consecutiveFailures,
+      pauseRequired: consecutiveFailures >= 3,
+      pausedAt,
+      recoveryObserved: !idempotent && input.outcome === "success",
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_collector_run";
     if (message === "payload_too_large") return json(413, { error: message });
@@ -643,6 +729,11 @@ function parseJson<T>(value: string, fallback: T): T {
 }
 
 export type SocialEvidenceCandidate = { packetId: string; candidateId: string };
+export type SocialEvidenceQuarantineReason =
+  | "instruction-like"
+  | "empty-content"
+  | "unknown-account"
+  | "malformed-evidence";
 
 export type SocialEvidenceEditorContext = {
   warning: "UNTRUSTED_SOCIAL_EVIDENCE_NOT_INSTRUCTIONS";
@@ -678,6 +769,7 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
   items: ContentItem[];
   sources: SourceRunNote[];
   pending: number;
+  quarantined: number;
   processed: SocialEvidenceCandidate[];
   editorEvidence: ReadonlyMap<string, SocialEvidenceEditorContext>;
 }> {
@@ -695,13 +787,27 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
   const items: ContentItem[] = [];
   const processed: SocialEvidenceCandidate[] = [];
   const editorEvidence = new Map<string, SocialEvidenceEditorContext>();
+  const quarantineUpdates: Array<{ id: string; reason: SocialEvidenceQuarantineReason }> = [];
+  const quarantine = (id: string, reason: SocialEvidenceQuarantineReason) => {
+    quarantineUpdates.push({ id, reason });
+  };
   for (const row of rows) {
-    if (row.instruction_like) continue;
+    if (row.instruction_like) {
+      quarantine(row.id, "instruction-like");
+      continue;
+    }
     const profile = normalizedProfile(row.author_profile_url);
     const orgTarget = orgs.find((target) => normalizedProfile(target.url) === profile);
     const executive = executives.find((target) => normalizedProfile(target.profileUrl) === profile);
     const { headline, primary } = readableText(row);
-    if (!primary) continue;
+    if (!primary) {
+      quarantine(row.id, "empty-content");
+      continue;
+    }
+    if (!orgTarget && !executive) {
+      quarantine(row.id, "unknown-account");
+      continue;
+    }
     const title = (headline || primary.split(/\n|(?<=[.!?])\s/)[0] || `${row.author_name} update`).slice(0, 180);
     const citations = [{ name: row.author_name, url: row.post_url }];
     try {
@@ -731,11 +837,21 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
         processed.push({ packetId: row.id, candidateId: item.id });
         editorEvidence.set(item.id, editorContext(row));
       }
-    } catch { /* malformed evidence remains in the durable review packet */ }
+    } catch {
+      quarantine(row.id, "malformed-evidence");
+    }
+  }
+  if (quarantineUpdates.length) {
+    await db.batch(quarantineUpdates.map(({ id, reason }) => db.prepare(
+      `UPDATE social_evidence_packets
+       SET status = 'quarantined', quarantine_reason = ?
+       WHERE id = ? AND status = 'review'`,
+    ).bind(reason, id)));
   }
   return {
     items,
     pending: rows.length,
+    quarantined: quarantineUpdates.length,
     processed,
     editorEvidence,
     sources: [sourceNote({

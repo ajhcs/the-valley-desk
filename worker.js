@@ -23,7 +23,7 @@ import { loadEntities } from "./src/content/store.ts";
 import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts";
 import { decorateHtml } from "./src/lib/crawler-html.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
-import { dispatchOperationalAlert, dispatchOperationalDigest, resolveOperationalAlert } from "./src/lib/alerts.ts";
+import { dispatchOperationalAlert, dispatchOperationalDigest, recordOperationalAlert, resolveOperationalAlert } from "./src/lib/alerts.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -35,8 +35,8 @@ const PUBLIC_MACHINE_PATHS = new Set([
 ]);
 
 // One Worker handles both lanes. The daily trigger is intentionally a
-// separate cron expression so event/deep scans do not consume the hourly
-// freshness budget or depend on an in-memory timer.
+// separate cron expression so the catch-up pass has its own scheduled
+// invocation and never depends on an in-memory timer.
 export const DAILY_DEEP_SCAN_CRON = "17 3 * * *";
 
 function notFoundHeaders() {
@@ -223,6 +223,18 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       return undefined;
     }
   };
+  const recordWarning = async (input) => {
+    try {
+      return await recordOperationalAlert(env.VALLEY_DESK_DB, { ...input, notify: false });
+    } catch (error) {
+      logOps("ops-alert", {
+        outcome: "record-failed",
+        fingerprint: input.fingerprint,
+        message: safeAlertError(error),
+      }, "warn");
+      return undefined;
+    }
+  };
   const recover = async (fingerprint, requiredSuccesses = 2) => {
     try {
       return await resolveOperationalAlert(env.VALLEY_DESK_DB, fingerprint, now, requiredSuccesses);
@@ -277,7 +289,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       await recover(fingerprint, 2);
       continue;
     }
-    await dispatch({
+    const alert = {
       fingerprint,
       event: "source-degraded",
       severity: source.state === "upstream-blocked"
@@ -297,14 +309,16 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
           nextRetryAt: source.nextAttemptAt,
         }),
       },
-    });
+    };
+    if (alert.severity === "critical") await dispatch(alert);
+    else await recordWarning(alert);
   }
 
   const leadership = result?.leadership;
   if (leadership) {
-    if (leadership.outcome === "ok") {
+    if (leadership.outcome === "ok" && Number(leadership.fetched ?? 0) > 0) {
       await recover("valley-desk:leadership-monitor", 2);
-    } else {
+    } else if (leadership.outcome !== "ok") {
       await dispatch({
         fingerprint: "valley-desk:leadership-monitor",
         event: "leadership-monitor-failed",
@@ -336,7 +350,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   const modelFailed = Number(result?.modelOperationalFailedCount ?? result?.modelFailedCount ?? 0);
   const validationRejected = Number(result?.modelValidationRejectedCount ?? 0);
   if (selected > 0 && modelFailed > 0) {
-    await dispatch({
+    await recordWarning({
       fingerprint: "valley-desk:model-enrichment",
       event: "model-enrichment-failed",
       severity: "warning",
@@ -356,7 +370,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   const verifierAttempted = Number(result?.verifierAttemptedCount ?? 0);
   const verifierFailed = Number(result?.verifierFailedCount ?? 0);
   if (verifierAttempted > 0 && verifierFailed > 0) {
-    await dispatch({
+    await recordWarning({
       fingerprint: "valley-desk:model-verifier",
       event: "model-verifier-failed",
       severity: "warning",
@@ -394,7 +408,31 @@ async function handleFetch(request, env, origin, nonce, ctx) {
     return handleSocialManifest(request, env);
   }
   if (isSocialCollectorRunsPath(path)) {
-    return handleSocialCollectorRuns(request, env);
+    const response = await handleSocialCollectorRuns(request, env);
+    if (method === "POST" && response.status === 202 && ctx && typeof ctx.waitUntil === "function") {
+      const report = await response.clone().json().catch(() => ({}));
+      if (report.pauseRequired) {
+        ctx.waitUntil(dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, {
+          fingerprint: "valley-desk:social:vale",
+          event: "social-collector-paused",
+          severity: "warning",
+          threshold: 1,
+          details: {
+            runId: report.runId,
+            outcome: report.outcome,
+            consecutiveFailures: report.consecutiveFailures,
+            pauseRequired: true,
+          },
+        }).catch((error) => {
+          logOps("ops-alert", { outcome: "dispatch-failed", fingerprint: "valley-desk:social:vale", message: error instanceof Error ? error.message : String(error) }, "warn");
+        }));
+      } else if (report.recoveryObserved) {
+        ctx.waitUntil(resolveOperationalAlert(env.VALLEY_DESK_DB, "valley-desk:social:vale").catch((error) => {
+          logOps("ops-alert", { outcome: "recovery-failed", fingerprint: "valley-desk:social:vale", message: error instanceof Error ? error.message : String(error) }, "warn");
+        }));
+      }
+    }
+    return response;
   }
   if (isSocialEvidencePath(path)) {
     return handleSocialEvidence(request, env);
