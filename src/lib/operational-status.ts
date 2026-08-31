@@ -9,7 +9,9 @@ export const OPERATIONAL_CONDITION_STATES = [
 
 export type OperationalConditionState = (typeof OPERATIONAL_CONDITION_STATES)[number];
 
-export const LEADERSHIP_FRESHNESS_SLO_MS = 2 * 60 * 60 * 1_000;
+/** A recent successful observation keeps a transient source failure non-critical. */
+export const SOURCE_FRESHNESS_SLO_MS = 2 * 60 * 60 * 1_000;
+export const LEADERSHIP_FRESHNESS_SLO_MS = SOURCE_FRESHNESS_SLO_MS;
 
 /** Map source scheduler vocabulary onto the operator-facing state model. */
 export function conditionStateForSourceState(state: unknown, fallbackActive = false): OperationalConditionState {

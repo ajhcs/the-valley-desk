@@ -564,6 +564,8 @@ async function fetchRssSources(
       error: lastError?.message ?? "No usable RSS response",
       ...(lastError?.httpStatus === undefined ? {} : { httpStatus: lastError.httpStatus }),
       requiresAuth: false,
+      consecutiveFailures: (prior?.consecutiveFailures ?? 0) + 1,
+      lastSuccessAt: prior?.lastSuccessAt ?? null,
       institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
     }));
   }

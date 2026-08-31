@@ -194,6 +194,8 @@ export async function ingestX(
         error: failed.message,
         requiresAuth: true,
         httpStatus: failed.httpStatus,
+        consecutiveFailures: (prior?.consecutiveFailures ?? 0) + 1,
+        lastSuccessAt: prior?.lastSuccessAt ?? null,
       }));
     }
   }

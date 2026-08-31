@@ -61,6 +61,8 @@ async function consumeSocialEvidence(env: IngestEnv, now: Date) {
         state: "upstream-failed",
         checkedAt: now.toISOString(),
         error: message || "Social evidence consumer error",
+        consecutiveFailures: (env.sourceHealth?.get("grok-social-evidence")?.consecutiveFailures ?? 0) + 1,
+        lastSuccessAt: env.sourceHealth?.get("grok-social-evidence")?.lastSuccessAt ?? null,
       })],
     };
   }

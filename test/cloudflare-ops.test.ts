@@ -1180,6 +1180,48 @@ test("pack-wide public source blocks escalate only after required peers are lost
   database.close();
 });
 
+test("recent source success keeps a transient public failure below critical coverage loss", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const env = {
+    VALLEY_DESK_DB: db,
+    NOTIFY_OPS: {
+      async send(message: { subject: string }) {
+        sent.push(message.subject);
+        return { messageId: `message-${sent.length}` };
+      },
+    },
+  };
+  const now = new Date("2026-08-28T12:00:00.000Z");
+  for (const sourceId of ["cooper-newsroom", "cooper-newsroom-alt"]) {
+    await sendAutomationAlerts(env, {
+      notes: {
+        sources: [{
+          id: sourceId,
+          state: "upstream-blocked",
+          type: "rss",
+          itemCount: 0,
+          consecutiveFailures: 1,
+          httpStatus: 403,
+          error: "HTTP 403",
+          lastSuccessAt: "2026-08-28T11:30:00.000Z",
+          institutionIds: ["inst-cooper"],
+        }],
+      },
+    }, now);
+  }
+  const rows = database.prepare(
+    "SELECT severity, detail_json FROM operational_alerts WHERE group_key LIKE 'valley-desk:rss:inst-cooper%' ORDER BY fingerprint",
+  ).all() as Array<{ severity: string; detail_json: string }>;
+  assert.equal(rows.length, 2);
+  assert.ok(rows.every((row) => row.severity === "warning"));
+  assert.ok(rows.every((row) => row.detail_json.includes('"coverageLost":false')));
+  assert.equal(sent.length, 0);
+  database.close();
+});
+
 test("incomplete leadership extraction surfaces a bounded actionable reason without inventing departures", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);

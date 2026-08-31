@@ -24,7 +24,7 @@ import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts"
 import { decorateHtml } from "./src/lib/crawler-html.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
 import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
-import { conditionStateForSourceState } from "./src/lib/operational-status.ts";
+import { conditionStateForSourceState, SOURCE_FRESHNESS_SLO_MS } from "./src/lib/operational-status.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -299,8 +299,14 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       && candidate.state !== "misconfigured"
       && sourceInstitutionIds(candidate).some((institutionId) => institutionIds.includes(institutionId))
     ));
+    const hasFreshCoverage = (candidate) => {
+      if (candidate.state === "healthy" || candidate.state === "healthy-empty") return true;
+      const lastSuccess = Date.parse(candidate.lastSuccessAt ?? "");
+      const age = now.getTime() - lastSuccess;
+      return Number.isFinite(lastSuccess) && age >= 0 && age <= SOURCE_FRESHNESS_SLO_MS;
+    };
     return peers.length > 0 && peers.every((candidate) => (
-      candidate.state !== "healthy" && candidate.state !== "healthy-empty"
+      !hasFreshCoverage(candidate)
     ));
   };
   for (const source of sourceNotes) {

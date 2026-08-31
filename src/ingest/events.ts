@@ -543,6 +543,8 @@ export async function ingestEventsWithHealth(
       url,
       error: reason instanceof Error ? reason.message : String(reason),
       ...(reason instanceof UpstreamError && reason.httpStatus !== undefined ? { httpStatus: reason.httpStatus } : {}),
+      consecutiveFailures: (prior?.consecutiveFailures ?? 0) + 1,
+      lastSuccessAt: prior?.lastSuccessAt ?? null,
     });
   };
   const batch: IngestBatch = {
