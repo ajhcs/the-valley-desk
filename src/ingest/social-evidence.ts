@@ -209,14 +209,14 @@ async function persistPacket(db: D1DatabaseLike, input: SocialEvidencePacket, no
   const profileUrl = canonicalSocialUrl(input.author.profileUrl, input.platform, true);
   const postId = input.postId?.trim() || undefined;
   const existingByUrl = await db.prepare(`
-    SELECT post_id, author_json, post_json, attachments_json, linked_sources_json,
+    SELECT id, post_id, author_json, post_json, attachments_json, linked_sources_json,
            entities_json, collector_analysis_json, post_url
     FROM social_evidence_packets
     WHERE platform = ? AND post_url = ?
   `).bind(input.platform, canonicalPostUrl).first<ExistingPacketEvidence>();
   const existing = existingByUrl ?? (postId
     ? await db.prepare(`
-      SELECT post_id, author_json, post_json, attachments_json, linked_sources_json,
+      SELECT id, post_id, author_json, post_json, attachments_json, linked_sources_json,
              entities_json, collector_analysis_json, post_url
       FROM social_evidence_packets
       WHERE platform = ? AND post_id = ?
@@ -243,7 +243,13 @@ async function persistPacket(db: D1DatabaseLike, input: SocialEvidencePacket, no
     ...packet,
     post: { ...packet.post, observedAt: undefined },
   }));
-  const id = `social-${input.platform}-${(await digest(postUrl)).slice(0, 24)}`;
+  // Bind new posts to their platform ID at the primary-key level. The URL
+  // lookup remains the normal enrichment path, while two concurrent aliases
+  // converge without creating duplicate packets or erasing the first writer.
+  const identity = postId
+    ? `${input.platform}:post:${postId}`
+    : `${input.platform}:url:${postUrl}`;
+  const id = existing?.id ?? `social-${input.platform}-${(await digest(identity)).slice(0, 24)}`;
   const receivedAt = now.toISOString();
   const instructionLike = looksInstructionLike(...packetText(packet)) ? 1 : 0;
   await db.prepare(`INSERT INTO social_evidence_packets (
@@ -281,19 +287,28 @@ async function persistPacket(db: D1DatabaseLike, input: SocialEvidencePacket, no
       END,
       receive_count = social_evidence_packets.receive_count + 1,
       posted_at = COALESCE(excluded.posted_at, social_evidence_packets.posted_at),
-      observed_at = excluded.observed_at, last_seen_at = excluded.last_seen_at`)
+      observed_at = excluded.observed_at, last_seen_at = excluded.last_seen_at
+    ON CONFLICT(id) DO NOTHING`)
     .bind(
       id, packet.platform, postUrl, packet.postId ?? null, packet.author.name, profileUrl,
       JSON.stringify(packet.author), JSON.stringify(packet.post), JSON.stringify(packet.attachments),
       JSON.stringify(packet.linkedSources), JSON.stringify(packet.entities), JSON.stringify(packet.collectorAnalysis),
       evidenceHash, instructionLike, packet.post.postedAt ?? null, packet.post.observedAt, receivedAt, receivedAt,
     ).run();
-  return { id, postUrl, instructionLike: Boolean(instructionLike) };
+  const stored = await db.prepare(
+    "SELECT id, post_url FROM social_evidence_packets WHERE platform = ? AND (post_url = ? OR id = ?) LIMIT 1",
+  ).bind(input.platform, postUrl, id).first<{ id: string; post_url: string }>();
+  return {
+    id: stored?.id ?? id,
+    postUrl: stored?.post_url ?? postUrl,
+    instructionLike: Boolean(instructionLike),
+  };
 }
 
 type PacketAttachment = SocialEvidencePacket["attachments"][number];
 type PacketLinkedSource = SocialEvidencePacket["linkedSources"][number];
 type ExistingPacketEvidence = {
+  id: string;
   post_id: string | null;
   post_url: string;
   author_json: string;

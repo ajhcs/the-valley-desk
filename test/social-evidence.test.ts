@@ -368,6 +368,37 @@ test("social post IDs collapse equivalent X URL aliases", async () => {
   sqlite.close();
 });
 
+test("concurrent URL aliases converge on one post-ID packet", async () => {
+  const { sqlite, db } = database();
+  const first = packet("Cooper announced a concurrent operational update.");
+  first.platform = "x";
+  first.postUrl = "https://x.com/cooperhealth/status/246813579";
+  first.postId = "246813579";
+  first.author = {
+    name: "Cooper University Health Care",
+    profileUrl: "https://x.com/cooperhealth",
+    accountType: "organization",
+  };
+  const submit = (payload: typeof first) => handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify(payload),
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  const alias = {
+    ...first,
+    postUrl: "https://twitter.com/i/status/246813579",
+    post: { ...first.post, observedAt: "2026-08-28T12:07:00.000Z" },
+  };
+  const responses = await Promise.all([submit(first), submit(alias)]);
+  assert.deepEqual(responses.map((response) => response.status).sort(), [202, 202]);
+  const rows = sqlite.prepare("SELECT id, post_id, receive_count FROM social_evidence_packets").all() as Array<{ id: string; post_id: string; receive_count: number }>;
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]?.post_id, "246813579");
+  assert.ok(rows[0]?.id);
+  assert.ok(rows[0]?.receive_count === 1 || rows[0]?.receive_count === 2);
+  sqlite.close();
+});
+
 test("successful Vale receipts prove active-target coverage", async () => {
   const { sqlite, db } = database();
   const inactive = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
