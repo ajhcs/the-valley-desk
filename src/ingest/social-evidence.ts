@@ -267,7 +267,7 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
   const result = await db.prepare(`SELECT id, platform, post_url, author_name, author_profile_url,
       author_json, post_json, attachments_json, linked_sources_json, instruction_like, posted_at, observed_at
     FROM social_evidence_packets
-    WHERE status IN ('review', 'processed') AND observed_at >= datetime(?, '-14 days')
+    WHERE status = 'review' AND observed_at >= datetime(?, '-14 days')
     ORDER BY observed_at DESC LIMIT 100`).bind(now.toISOString()).all<PacketRow>();
   const rows = result.results ?? [];
   const executives: Executive[] = [
