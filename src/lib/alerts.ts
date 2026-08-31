@@ -30,6 +30,8 @@ export type OperationalAlertInput = {
   details?: Record<string, unknown>;
   threshold?: number;
   now?: Date;
+  /** Record the occurrence for the daily digest without claiming immediate mail. */
+  notify?: boolean;
 };
 
 export type OperationalAlertRow = {
@@ -205,6 +207,7 @@ export async function recordOperationalAlert(
 
   const before = await db.prepare(rowSelect()).bind(fingerprint).first<OperationalAlertRow>();
   if (!before) throw new Error("Operational alert row was not persisted");
+  if (input.notify === false) return { row: before, claimed: false };
   const due = Date.parse(before.next_notify_at) <= now.getTime();
   const eligible = before.state === "open"
     && before.occurrence_count >= threshold

@@ -990,7 +990,7 @@ test("automation alerts cover leadership/model failures and stable source finger
       notes: { sources: [{ ...failed.notes.sources[0], state }] },
     }, new Date(at.getTime() + index * 60 * 60 * 1_000));
   }
-  assert.equal(sent.length, 3, "one alert per stable source/leadership/model fingerprint");
+  assert.equal(sent.length, 2, "only the critical source/leadership transitions send immediate mail; model warnings stay in the digest");
   const rows = database.prepare("SELECT fingerprint, state, occurrence_count FROM operational_alerts ORDER BY fingerprint").all() as Array<{ fingerprint: string; state: string; occurrence_count: number }>;
   assert.deepEqual(rows.map((row) => row.fingerprint), [
     "valley-desk:leadership-monitor",
@@ -1042,7 +1042,7 @@ test("public source blocks are warning-level and deliberate backoff does not cre
   ).get() as { severity: string; detail_json: string };
   assert.equal(blocked.severity, "warning");
   assert.match(blocked.detail_json, /403/);
-  assert.equal(sent.length, 1);
+  assert.equal(sent.length, 0, "public upstream blocks are durable warning data for the digest");
 
   await sendAutomationAlerts(env, {
     notes: { sources: [{ id: "cooper-newsroom", state: "backoff", type: "rss", itemCount: 0, consecutiveFailures: 4, nextAttemptAt: "2026-08-28T06:00:00.000Z" }] },

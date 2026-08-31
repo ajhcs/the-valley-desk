@@ -63,7 +63,10 @@ SELECT
     ELSE datetime(last_checked_at, '+1 day')
   END,
   NULL,
-  CASE WHEN state = 'auth-failed' THEN 1 ELSE 0 END
+  -- The pre-0022 table used auth-failed for some public 401/403 responses.
+  -- There was no credential-context bit to justify carrying that label forward;
+  -- re-probe those sources instead of inferring an authentication requirement.
+  0
 FROM source_health;
 
 DROP TABLE source_health;

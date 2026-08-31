@@ -147,6 +147,17 @@ test("a later Tribe page failure keeps earlier rows and does not authorize disap
   assert.equal(sourceAuthorizesDisappearance(dvhimss!), false);
 });
 
+test("a failed event source is classified as a failure instead of a backoff skip", async () => {
+  const result = await ingestEventsWithHealth(new Date(FETCHED_AT), async (input) => {
+    if (String(input).includes("wp-json/tribe")) throw new Error("DVHIMSS upstream unavailable");
+    return new Response(recognizedNj("Season recap"), { status: 200 });
+  });
+  const dvhimss = result.sources.find((source) => source.id === "dvhimss-events");
+  assert.equal(dvhimss?.state, "upstream-failed");
+  assert.equal(dvhimss?.error, "DVHIMSS upstream unavailable");
+  assert.equal(dvhimss?.nextAttemptAt, undefined);
+});
+
 test("a full Tribe page without pagination metadata is a partial snapshot", () => {
   assert.equal(
     tribeSnapshotCompleteness({
