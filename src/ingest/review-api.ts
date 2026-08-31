@@ -12,6 +12,7 @@ import { EDITOR_POLICY_VERSION } from "./editor";
 import { reviewLeadershipObservation } from "./executive-persistence";
 import { resolvePublicOrigin } from "../lib/canonical";
 import { SCHEMA_VERSION, buildShaFromEnv, logOps } from "../lib/ops";
+import { buildRuntimeLeadershipCoverage } from "../lib/operational-status";
 
 type ReviewEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
@@ -37,6 +38,65 @@ const POST_RATE_LIMIT = 20;
 const POST_RATE_WINDOW_MS = 10 * 60 * 1000;
 const IDEMPOTENCY_TTL_MS = 10 * 60 * 1000;
 const MAX_JSON_BYTES = 8_192;
+
+type SourceHealthStatusRow = {
+  source_id: string;
+  origin: string;
+  source_type: string;
+  source_url: string | null;
+  state: string;
+  complete: number;
+  item_count: number;
+  consecutive_failures: number;
+  last_checked_at: string;
+  last_success_at: string | null;
+  last_error: string | null;
+  next_attempt_at: string | null;
+  last_http_status: number | null;
+  requires_auth: number;
+  last_fallback_url: string | null;
+  institution_ids_json: string | null;
+};
+
+type CoverageStatusRow = {
+  id: string;
+  short_name: string;
+  official_source_status: string;
+};
+
+type RuntimeLeadershipSourceRow = {
+  source_id: string;
+  institution_id: string;
+  state: string | null;
+  last_attempted_at: string | null;
+  last_success_at: string | null;
+  next_attempt_at: string | null;
+  consecutive_failures: number | null;
+  last_error: string | null;
+};
+
+function boundedText(value: unknown, max = 240) {
+  if (typeof value !== "string") return null;
+  return value.replace(/[\u0000-\u001F\u007F]/g, " ").replace(/\s+/g, " ").trim().slice(0, max) || null;
+}
+
+function boundedStringArray(value: unknown, max = 8) {
+  if (typeof value !== "string") return [];
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0).slice(0, max)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function sourceFailureAgeMs(row: SourceHealthStatusRow, nowMs: number) {
+  if (["healthy", "healthy-empty", "disabled", "misconfigured"].includes(row.state)) return null;
+  const lastSuccessMs = row.last_success_at ? Date.parse(row.last_success_at) : NaN;
+  return Number.isFinite(lastSuccessMs) ? Math.max(0, nowMs - lastSuccessMs) : null;
+}
 
 type GuardState = {
   posts: Map<string, number[]>;
@@ -143,6 +203,7 @@ export function isReviewApiPath(pathname: string) {
 }
 
 async function statusPayload(env: ReviewEnv, detailed: boolean) {
+  const nowMs = Date.now();
   const run = await env.VALLEY_DESK_DB.prepare(`
       SELECT id, started_at, finished_at, state, item_count, notes_json, error
       FROM ingest_runs ORDER BY started_at DESC LIMIT 1
@@ -157,9 +218,29 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   const sources = await env.VALLEY_DESK_DB.prepare(`
       SELECT source_id, origin, source_type, source_url, state, complete, item_count,
              consecutive_failures, last_checked_at, last_success_at, last_error,
-             next_attempt_at, last_http_status, requires_auth, last_fallback_url
+             next_attempt_at, last_http_status, requires_auth, last_fallback_url,
+             institution_ids_json
       FROM source_health ORDER BY source_type, source_id
-    `).all();
+    `).all<SourceHealthStatusRow>();
+  const sourceHealth = (sources.results ?? []).map((row) => ({
+    source_id: row.source_id,
+    origin: row.origin,
+    source_type: row.source_type,
+    source_url: row.source_url,
+    state: row.state,
+    complete: row.complete,
+    item_count: row.item_count,
+    consecutive_failures: row.consecutive_failures,
+    last_checked_at: row.last_checked_at,
+    last_success_at: row.last_success_at,
+    last_error: boundedText(row.last_error),
+    next_attempt_at: row.next_attempt_at,
+    last_http_status: row.last_http_status,
+    requires_auth: row.requires_auth,
+    last_fallback_url: row.last_fallback_url,
+    institution_ids: boundedStringArray(row.institution_ids_json),
+    failure_age_ms: sourceFailureAgeMs(row, nowMs),
+  }));
   const reconciliation = await env.VALLEY_DESK_DB.prepare(`
       SELECT action, COUNT(*) AS count, MAX(reconciled_at) AS reconciled_at
       FROM publication_reconciliations GROUP BY action
@@ -224,20 +305,65 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       FROM covered_institutions
       WHERE covered = 1
       ORDER BY short_name
-    `).all();
+    `).all<CoverageStatusRow & { name: string; covered: number; official_source_note: string | null }>();
     const sourceStates = await env.VALLEY_DESK_DB.prepare(`
       SELECT state, COUNT(*) AS count
       FROM scheduled_source_state GROUP BY state ORDER BY state
     `).all();
+    const runtimeSources = await env.VALLEY_DESK_DB.prepare(`
+      SELECT c.id AS source_id, c.institution_id, s.state,
+             s.last_attempted_at, s.last_success_at, s.next_attempt_at,
+             s.consecutive_failures, s.last_error
+      FROM coverage_sources c
+      LEFT JOIN scheduled_source_state s ON s.source_id = c.id
+      WHERE c.monitor = 1 AND c.status = 'enabled'
+      ORDER BY c.institution_id, c.id
+    `).all<RuntimeLeadershipSourceRow>();
     const observations = await env.VALLEY_DESK_DB.prepare(`
       SELECT verification_status, COUNT(*) AS count
       FROM source_observations GROUP BY verification_status ORDER BY verification_status
     `).all();
+    const configured = (coverage.results ?? []).map((row) => ({
+      institutionId: row.id,
+      shortName: row.short_name,
+      configuredStatus: row.official_source_status === "active" ? "active" as const : "degraded" as const,
+      sourceIds: (runtimeSources.results ?? [])
+        .filter((source) => source.institution_id === row.id)
+        .map((source) => source.source_id),
+    }));
+    const runtimeCoverage = buildRuntimeLeadershipCoverage(
+      configured,
+      (runtimeSources.results ?? []).map((source) => ({
+        sourceId: source.source_id,
+        institutionId: source.institution_id,
+        state: source.state,
+        lastAttemptedAt: source.last_attempted_at,
+        lastSuccessAt: source.last_success_at,
+        nextAttemptAt: source.next_attempt_at,
+        consecutiveFailures: source.consecutive_failures ?? 0,
+        lastError: boundedText(source.last_error),
+      })),
+      new Date(nowMs),
+    ).map((row) => ({
+      ...row,
+      sourceStates: row.sourceStates.map((source) => ({
+        sourceId: source.sourceId,
+        state: source.state,
+        rawState: source.rawState,
+        lastSuccessAt: source.lastSuccessAt,
+        lastAttemptedAt: source.lastAttemptedAt,
+        nextRetryAt: source.nextRetryAt,
+        failureAgeMs: source.failureAgeMs,
+        consecutiveFailures: source.consecutiveFailures,
+        reason: boundedText(source.reason),
+      })),
+    }));
     executiveIntelligence = {
       available: true,
       coverage: coverage.results ?? [],
       sourceStates: sourceStates.results ?? [],
       observations: observations.results ?? [],
+      runtimeCoverage,
     };
   } catch (error) {
     executiveIntelligence = {
@@ -314,11 +440,16 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   let alerts: Record<string, unknown> = { available: false, open: [] };
   try {
     const open = await env.VALLEY_DESK_DB.prepare(`
-      SELECT fingerprint, event, severity, state, occurrence_count,
-             first_seen_at, last_seen_at, detail_json
+      SELECT fingerprint, event, severity, state, condition_state,
+             institution_id, subsystem, group_key, occurrence_count,
+             first_seen_at, last_seen_at, next_notify_at,
+             last_notification_attempt_at, last_notified_at,
+             notification_attempt_count, last_notification_error,
+             recovery_count, last_recovered_at, resolved_at, detail_json
       FROM operational_alerts
       WHERE state = 'open'
-      ORDER BY CASE severity WHEN 'critical' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END,
+      ORDER BY group_key,
+               CASE severity WHEN 'critical' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END,
                last_seen_at DESC
       LIMIT 50
     `).all();
@@ -337,7 +468,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
     run,
     queue: counts.results ?? [],
     publications,
-    sources: sources.results ?? [],
+      sources: sourceHealth,
     reconciliation: reconciliation.results ?? [],
     emailDiscoveries: emailDiscoveries.results ?? [],
     signalVerification,

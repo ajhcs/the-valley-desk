@@ -71,6 +71,7 @@ import {
   isOpsPath,
   trustedOpsIdentity,
 } from "../src/ingest/ops-access.ts";
+import { seedCoveragePack } from "../src/ingest/executive-persistence.ts";
 import { sendAutomationAlerts } from "../worker.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -194,6 +195,14 @@ test("protected automation status/review require the bearer token and constant-t
   applyMigrations(database);
   const db = sqliteD1(database);
   const env = { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "ops-token", BUILD_SHA: "deadbeef" };
+  await seedCoveragePack(db, undefined, new Date());
+  const pennLastSuccess = new Date(Date.now() - 30 * 60 * 1_000).toISOString();
+  database.prepare(`
+    UPDATE scheduled_source_state
+    SET state = 'healthy', last_attempted_at = ?, last_success_at = ?,
+        next_attempt_at = ?, consecutive_failures = 0, last_error = NULL
+    WHERE source_id = 'src-penn-is-leadership'
+  `).run(pennLastSuccess, pennLastSuccess, new Date(Date.now() + 30 * 60 * 1_000).toISOString());
   const missing = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status`), env);
   assert.equal(missing.status, 404);
   const wrong = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status`, {
@@ -213,6 +222,7 @@ test("protected automation status/review require the bearer token and constant-t
     valeCollector?: { available?: boolean; lastSuccessful?: unknown };
     modelHealth?: { available?: boolean };
     alerts?: { available?: boolean; open?: unknown[] };
+    executiveIntelligence?: { runtimeCoverage?: Array<{ institutionId?: string; state?: string; coverageLost?: boolean }> };
   };
   assert.equal(statusBody.schemaVersion, SCHEMA_VERSION);
   assert.equal(statusBody.buildSha, "deadbeef");
@@ -223,6 +233,9 @@ test("protected automation status/review require the bearer token and constant-t
   assert.equal(statusBody.valeCollector?.lastSuccessful, null);
   assert.equal(statusBody.modelHealth?.available, true);
   assert.equal(statusBody.alerts?.available, true);
+  const pennCoverage = statusBody.executiveIntelligence?.runtimeCoverage?.find((row) => row.institutionId === "inst-penn");
+  assert.equal(pennCoverage?.state, "healthy");
+  assert.equal(pennCoverage?.coverageLost, false);
   const review = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status/review`, {
     headers: { authorization: "Bearer ops-token" },
   }), env);
