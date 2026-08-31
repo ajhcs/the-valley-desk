@@ -103,6 +103,8 @@ export async function fetchUpstream(options: {
   timeoutMs?: number;
   headers?: Record<string, string>;
   attempts?: number;
+  /** Public sources must not be mislabeled as authentication failures. */
+  requiresAuth?: boolean;
   allowedRedirectHosts?: ReadonlySet<string>;
   maxRedirects?: number;
   /** Absolute wall-clock deadline shared across attempts and redirect hops. */
@@ -149,7 +151,7 @@ export async function fetchUpstream(options: {
       }
       await res.body?.cancel().catch(() => undefined);
       lastError = new UpstreamError(
-        classifyHttpStatus(res.status),
+        classifyHttpStatus(res.status, { requiresAuth: options.requiresAuth }),
         `HTTP ${res.status}`,
         res.status,
       );

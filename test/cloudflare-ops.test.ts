@@ -981,6 +981,11 @@ test("automation alerts cover leadership/model failures and stable source finger
     "valley-desk:model-enrichment",
     "valley-desk:source:source-1",
   ]);
+  const leadershipAlert = database.prepare(
+    "SELECT detail_json FROM operational_alerts WHERE fingerprint = 'valley-desk:leadership-monitor'",
+  ).get() as { detail_json: string };
+  assert.match(leadershipAlert.detail_json, /upstream unavailable/);
+  assert.doesNotMatch(leadershipAlert.detail_json, /Unknown automation failure/);
 
   const healthy = {
     notes: { sources: [{ id: "source-1", state: "healthy", type: "rss", itemCount: 1 }] },
@@ -993,6 +998,43 @@ test("automation alerts cover leadership/model failures and stable source finger
   await sendAutomationAlerts(env, healthy, new Date("2026-08-28T08:00:00.000Z"));
   const resolved = database.prepare("SELECT COUNT(*) AS count FROM operational_alerts WHERE state = 'resolved'").get() as { count: number };
   assert.equal(resolved.count, 3);
+  database.close();
+});
+
+test("public source blocks are warning-level and deliberate backoff does not create an alert", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const env = {
+    VALLEY_DESK_DB: db,
+    NOTIFY_OPS: {
+      async send(message: { subject: string }) {
+        sent.push(message.subject);
+        return { messageId: `message-${sent.length}` };
+      },
+    },
+  };
+  const base = new Date("2026-08-28T00:00:00.000Z");
+  for (let index = 0; index < 3; index += 1) {
+    await sendAutomationAlerts(env, {
+      notes: { sources: [{ id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403" }] },
+    }, new Date(base.getTime() + index * 60 * 60 * 1_000));
+  }
+  const blocked = database.prepare(
+    "SELECT severity, detail_json FROM operational_alerts WHERE fingerprint = 'valley-desk:source:cooper-newsroom'",
+  ).get() as { severity: string; detail_json: string };
+  assert.equal(blocked.severity, "warning");
+  assert.match(blocked.detail_json, /403/);
+  assert.equal(sent.length, 1);
+
+  await sendAutomationAlerts(env, {
+    notes: { sources: [{ id: "cooper-newsroom", state: "backoff", type: "rss", itemCount: 0, consecutiveFailures: 4, nextAttemptAt: "2026-08-28T06:00:00.000Z" }] },
+  }, new Date("2026-08-28T04:00:00.000Z"));
+  assert.equal(
+    database.prepare("SELECT COUNT(*) AS count FROM operational_alerts WHERE fingerprint = 'valley-desk:source:cooper-newsroom'").get().count,
+    1,
+  );
   database.close();
 });
 

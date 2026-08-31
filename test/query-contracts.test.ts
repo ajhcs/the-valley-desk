@@ -99,7 +99,7 @@ import {
   sourceIdentityKey,
 } from "../src/ingest/identity.ts";
 import { RSS_SOURCES, ingestRssWithHealth, rssItemToContent } from "../src/ingest/rss.ts";
-import { snapshotCompleteness, sourceAuthorizesDisappearance } from "../src/ingest/source-health.ts";
+import { classifyHttpStatus, snapshotCompleteness, sourceAuthorizesDisappearance } from "../src/ingest/source-health.ts";
 import { evaluateCandidate, EDITOR_POLICY_VERSION } from "../src/ingest/editor.ts";
 import {
   PUBLICATION_POLICY_VERSION,
@@ -357,7 +357,7 @@ test("missing social tokens and LinkedIn person origins are misconfigured, not e
   assert.equal(x.sources[0]?.state, "misconfigured");
 });
 
-test("upstream RSS and social failures classify timeout, auth, rate-limit, and parser outcomes", async () => {
+test("upstream RSS and social failures distinguish public blocks from auth, rate-limit, and parser outcomes", async () => {
   const timed = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
     const url = String(input);
     if (url.includes("christianacare.org")) {
@@ -379,7 +379,7 @@ test("upstream RSS and social failures classify timeout, auth, rate-limit, and p
   const byId = Object.fromEntries(timed.sources.map((source) => [source.id, source.state]));
   assert.equal(byId["christianacare-information-technology"], "timed-out");
   assert.equal(byId["cooper-newsroom"], "parser-failed");
-  assert.equal(byId["inquirer-health"], "auth-failed");
+  assert.equal(byId["inquirer-health"], "upstream-blocked");
   assert.equal(byId["inquirer-business"], "rate-limited");
   assert.equal(byId.whyy, "healthy-empty");
   assert.equal(byId.technically, "misconfigured");
@@ -388,6 +388,8 @@ test("upstream RSS and social failures classify timeout, auth, rate-limit, and p
     new Response("", { status: 401 })
   ));
   assert.ok(auth.sources.some((source) => source.id.startsWith("linkedin-") && source.id !== "linkedin-benjaminslovis" && source.state === "auth-failed"));
+  assert.equal(classifyHttpStatus(403), "upstream-blocked");
+  assert.equal(classifyHttpStatus(403, { requiresAuth: true }), "auth-failed");
 });
 
 test("an unrecognized NJ event page cannot trigger disappearance reconciliation", async () => {
@@ -4181,6 +4183,10 @@ function applyMigrations(database: DatabaseSync) {
     "0016_operational_alert_recovery.sql",
     "0017_executive_enrollment.sql",
     "0018_signal_pointer_verification.sql",
+    "0019_official_source_discovery.sql",
+    "0020_official_source_retry_provenance.sql",
+    "0021_social_evidence_packets.sql",
+    "0022_source_health_backoff.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 

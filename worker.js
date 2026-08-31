@@ -37,7 +37,7 @@ const PUBLIC_MACHINE_PATHS = new Set([
 // One Worker handles both lanes. The daily trigger is intentionally a
 // separate cron expression so event/deep scans do not consume the hourly
 // freshness budget or depend on an in-memory timer.
-export const DAILY_DEEP_SCAN_CRON = "15 3 * * *";
+export const DAILY_DEEP_SCAN_CRON = "17 3 * * *";
 
 function notFoundHeaders() {
   return {
@@ -167,7 +167,13 @@ function compactAutomation(result) {
 }
 
 function safeAlertError(error) {
-  const raw = error instanceof Error ? error.message : "Unknown automation failure";
+  const raw = typeof error === "string"
+    ? error
+    : error instanceof Error
+      ? error.message
+      : error && typeof error === "object" && typeof error.message === "string"
+        ? error.message
+        : "Unknown automation failure";
   return raw
     .replace(/[\u0000-\u001F\u007F]/g, " ")
     .replace(/\bauthorization\b\s*[:=]\s*bearer\s+\S+/gi, "authorization=[redacted]")
@@ -175,6 +181,27 @@ function safeAlertError(error) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 240) || "Unknown automation failure";
+}
+
+function safeAlertDetails(error, context = {}) {
+  const candidate = error && typeof error === "object" ? error : {};
+  const errorClass = typeof candidate.name === "string"
+    ? candidate.name
+    : typeof error === "string" ? "string" : "unknown";
+  const httpStatus = Number.isInteger(context.httpStatus)
+    ? context.httpStatus
+    : Number.isInteger(candidate.httpStatus) ? candidate.httpStatus : undefined;
+  const nextRetryAt = typeof context.nextRetryAt === "string"
+    ? context.nextRetryAt
+    : typeof candidate.nextAttemptAt === "string" ? candidate.nextAttemptAt : undefined;
+  return {
+    ...(typeof context.stage === "string" ? { stage: context.stage } : {}),
+    ...(typeof context.sourceId === "string" ? { sourceId: context.sourceId } : {}),
+    errorClass,
+    ...(httpStatus === undefined ? {} : { httpStatus }),
+    ...(nextRetryAt ? { nextRetryAt } : {}),
+    reason: safeAlertError(error),
+  };
 }
 
 export async function sendAutomationAlerts(env, result, now = new Date()) {
@@ -226,6 +253,14 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       await recover(fingerprint, 1);
       continue;
     }
+    if (source.state === "backoff") {
+      logOps("source-backoff", {
+        sourceId,
+        nextRetryAt: source.nextAttemptAt,
+        failures: source.consecutiveFailures,
+      });
+      continue;
+    }
     if (source.state === "healthy" || source.state === "healthy-empty") {
       await recover(fingerprint, 2);
       continue;
@@ -236,7 +271,17 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       severity: source.state === "auth-failed" ? "critical" : "warning",
       threshold: 3,
       now,
-      details: { sourceId, state: source.state, failures: source.consecutiveFailures },
+      details: {
+        sourceId,
+        state: source.state,
+        failures: source.consecutiveFailures,
+        ...safeAlertDetails(source.error ?? source.state, {
+          stage: "source-health",
+          sourceId,
+          httpStatus: source.httpStatus,
+          nextRetryAt: source.nextAttemptAt,
+        }),
+      },
     });
   }
 
@@ -254,7 +299,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
         details: {
           outcome: leadership.outcome,
           fetched: leadership.fetched,
-          failed: leadership.error ? safeAlertError(leadership.error) : undefined,
+          ...safeAlertDetails(leadership.error ?? leadership.outcome, { stage: "leadership-monitor" }),
         },
       });
     }
@@ -487,7 +532,7 @@ export default {
           event: "automation-run-failed",
           severity: "critical",
           threshold: 2,
-          details: { stage: "scheduled", reason: safeAlertError(error) },
+          details: safeAlertDetails(error, { stage: "scheduled" }),
         }).catch((alertError) => {
           logOps("ops-alert", { outcome: "dispatch-failed", message: safeAlertError(alertError) }, "warn");
         });
