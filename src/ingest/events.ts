@@ -513,11 +513,13 @@ export async function ingestEventsWithHealth(
     result: PromiseSettledResult<EventSnapshot | undefined>,
     prior?: import("./source-health").PersistedSourceHealth,
   ): SourceRunNote => {
-    const snapshot = result.status === "fulfilled" ? result.value : undefined;
-    if (!snapshot) {
-      return sourceBackoffNote(id, origin, "events", fetchedAt, prior, url);
-    }
+    // `undefined` is the explicit result of a durable backoff skip. A rejected
+    // fetch must still be classified as a real failure so the next retry and
+    // alert state are advanced instead of being silently mislabeled as a
+    // second backoff.
     if (result.status === "fulfilled") {
+      const snapshot = result.value;
+      if (!snapshot) return sourceBackoffNote(id, origin, "events", fetchedAt, prior, url);
       return sourceNote({
         id,
         origin,
