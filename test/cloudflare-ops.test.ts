@@ -63,6 +63,7 @@ import {
   OPS_ALERT_SENDER,
   dispatchOperationalAlert,
   dispatchOperationalDigest,
+  recordOperationalAlert,
   resolveOperationalAlert,
   sanitizeAlertDetails,
 } from "../src/lib/alerts.ts";
@@ -1453,6 +1454,53 @@ test("daily operational digest claims once per pack and remains bounded", async 
   assert.match(sent[0], /nextRetryAt=2026-08-28T08:15:00.000Z/);
   assert.match(sent[0], /affectedCoverage=remaining-source-peers/);
   assert.match(sent[0], /ops: \/ops/);
+  database.close();
+});
+
+test("daily operational digest groups related source alerts by subsystem and institution", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const groupKey = "valley-desk:rss:inst-cooper";
+  await recordOperationalAlert(db, {
+    fingerprint: "valley-desk:grouped-primary",
+    event: "source-degraded",
+    severity: "warning",
+    conditionState: "blocked",
+    institutionId: "inst-cooper",
+    subsystem: "rss",
+    groupKey,
+    notify: false,
+    now: new Date("2026-08-28T08:00:00.000Z"),
+    details: { sourceId: "source-1", httpStatus: 403 },
+  });
+  await recordOperationalAlert(db, {
+    fingerprint: "valley-desk:grouped-fallback",
+    event: "source-fallback-active",
+    severity: "warning",
+    conditionState: "degraded",
+    institutionId: "inst-cooper",
+    subsystem: "rss",
+    groupKey,
+    notify: false,
+    now: new Date("2026-08-28T08:01:00.000Z"),
+    details: { sourceId: "source-2", currentFallback: true },
+  });
+  const sent: string[] = [];
+  const binding = {
+    async send(message: { text: string }) {
+      sent.push(message.text);
+      return { messageId: "grouped-digest" };
+    },
+  };
+  const result = await dispatchOperationalDigest(db, binding, new Date("2026-08-28T08:05:00.000Z"));
+  assert.equal(result.outcome, "sent");
+  assert.equal(sent.length, 1);
+  assert.match(sent[0], /alerts: 2/);
+  assert.match(sent[0], /groups: 1/);
+  assert.match(sent[0], /rss\/inst-cooper/);
+  assert.match(sent[0], /source-1/);
+  assert.match(sent[0], /source-2/);
   database.close();
 });
 

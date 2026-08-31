@@ -500,12 +500,50 @@ function digestDetailText(detailJson: string) {
   }
 }
 
+function digestSourceId(detailJson: string) {
+  try {
+    const details = JSON.parse(detailJson) as Record<string, unknown>;
+    return typeof details.sourceId === "string" ? stripControls(details.sourceId).slice(0, 120) : "";
+  } catch {
+    return "";
+  }
+}
+
+function severityRank(severity: AlertSeverity) {
+  return severity === "critical" ? 3 : severity === "warning" ? 2 : 1;
+}
+
+function conditionRank(condition: OperationalConditionState) {
+  return condition === "failed" ? 6
+    : condition === "blocked" ? 5
+      : condition === "degraded" ? 4
+        : condition === "backoff" ? 3
+          : condition === "healthy" ? 2
+            : 1;
+}
+
 function digestText(date: string, rows: DigestRow[]) {
-  const lines = ["The Valley Desk daily operational digest", `date: ${date}`, `alerts: ${rows.length}`];
+  const groups = new Map<string, DigestRow[]>();
   for (const row of rows) {
-    const details = digestDetailText(row.detail_json);
-    const scope = row.institution_id ?? row.group_key;
-    lines.push(`- ${row.condition_state} ${row.severity} ${row.subsystem}/${scope} ${row.event} (${row.occurrence_count} occurrences; last ${row.last_seen_at}${details ? `; ${details}` : ""})`);
+    const group = groups.get(row.group_key) ?? [];
+    group.push(row);
+    groups.set(row.group_key, group);
+  }
+  const lines = ["The Valley Desk daily operational digest", `date: ${date}`, `alerts: ${rows.length}`, `groups: ${groups.size}`];
+  for (const groupRows of groups.values()) {
+    const first = groupRows[0]!;
+    const severity = groupRows.reduce((current, row) => (
+      severityRank(row.severity) > severityRank(current) ? row.severity : current
+    ), first.severity);
+    const conditionStates = [...new Set(groupRows.map((row) => row.condition_state))]
+      .sort((left, right) => conditionRank(right) - conditionRank(left));
+    const events = [...new Set(groupRows.map((row) => row.event))].join("+");
+    const sourceIds = [...new Set(groupRows.map((row) => digestSourceId(row.detail_json)).filter(Boolean))].join(",");
+    const details = groupRows.map((row) => digestDetailText(row.detail_json)).filter(Boolean).join(" | ");
+    const occurrenceCount = groupRows.reduce((total, row) => total + row.occurrence_count, 0);
+    const lastSeenAt = groupRows.map((row) => row.last_seen_at).sort().at(-1) ?? first.last_seen_at;
+    const scope = first.institution_id ?? first.group_key;
+    lines.push(`- ${conditionStates.join("/")} ${severity} ${first.subsystem}/${scope} ${events} (${occurrenceCount} occurrences; last ${lastSeenAt}${sourceIds ? `; sources=${sourceIds}` : ""}${details ? `; ${details}` : ""})`);
   }
   lines.push("ops: /ops");
   return lines.join("\n");
