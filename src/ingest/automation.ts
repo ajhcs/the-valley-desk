@@ -458,6 +458,7 @@ export async function runAutomation(
     const ingestedRun = await ingest({
       X_BEARER_TOKEN: env.X_BEARER_TOKEN,
       LINKEDIN_TOKEN: env.LINKEDIN_TOKEN,
+      VALLEY_DESK_DB: env.VALLEY_DESK_DB,
     }, fetchImpl, {
       newsExtractions,
       mode,

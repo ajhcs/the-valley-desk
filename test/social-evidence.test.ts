@@ -9,6 +9,8 @@ import {
   handleSocialEvidence,
   ingestSocialEvidence,
 } from "../src/ingest/social-evidence.ts";
+import { runAutomation } from "../src/ingest/automation.ts";
+import { runScheduledIngest } from "../src/ingest/run-all.ts";
 import type { D1DatabaseLike, D1StatementLike } from "../src/ingest/persistence.ts";
 import { evaluateCandidate } from "../src/ingest/editor.ts";
 import { EditorEnrichment } from "../src/ingest/editor-model.ts";
@@ -80,6 +82,44 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   assert.equal(run.items[0]?.kind, "news");
   assert.deepEqual(run.items[0]?.orgs, ["org-penn"]);
   assert.equal(run.items[0]?.source.origin, "grok-social-linkedin");
+  const packetRow = sqlite.prepare("SELECT status, candidate_id FROM social_evidence_packets").get() as {
+    status: string;
+    candidate_id: string | null;
+  };
+  assert.equal(packetRow.status, "processed");
+  assert.match(packetRow.candidate_id ?? "", /^grok-social-linkedin-/);
+  assert.equal((await ingestSocialEvidence(db, new Date("2026-08-28T13:30:00.000Z"))).items.length, 0);
+});
+
+test("scheduled automation passes D1 to the social consumer and persists its review candidate", async () => {
+  const { sqlite, db } = database();
+  const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify(packet()),
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(response.status, 202);
+
+  const result = await runAutomation(
+    { VALLEY_DESK_DB: db },
+    async () => new Response("", { status: 404 }),
+    async (env, fetchImpl, options) => runScheduledIngest(env, fetchImpl, options),
+  );
+  assert.equal("skipped" in result && result.skipped, false);
+  const candidate = sqlite.prepare(`
+    SELECT id, queue_status, source_origin FROM content_candidates
+    WHERE source_origin = 'grok-social-linkedin'
+  `).get() as { id: string; queue_status: string; source_origin: string } | undefined;
+  assert.ok(candidate);
+  assert.equal(candidate?.queue_status, "review");
+  assert.equal(candidate?.source_origin, "grok-social-linkedin");
+  const stored = sqlite.prepare("SELECT status, candidate_id FROM social_evidence_packets").get() as {
+    status: string;
+    candidate_id: string | null;
+  };
+  assert.equal(stored.status, "processed");
+  assert.equal(stored.candidate_id, candidate?.id);
+  assert.equal((await ingestSocialEvidence(db, new Date())).items.length, 0);
 });
 
 test("instruction-like social evidence is retained but never enters editorial work", async () => {
