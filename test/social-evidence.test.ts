@@ -145,10 +145,10 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   assert.equal(headManifest.status, 200);
   assert.equal(headRuns.status, 200);
 
-  const submit = () => handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+  const submit = (payload = packet()) => handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
     method: "POST",
     headers: { authorization: "Bearer separate-social-secret", "content-type": "application/json" },
-    body: JSON.stringify(packet()),
+    body: JSON.stringify(payload),
   }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret" });
   assert.equal((await submit()).status, 202);
   assert.equal((await submit()).status, 202);
@@ -194,7 +194,31 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   assert.equal(replayed.status, "processed");
   assert.equal(replayed.candidate_id, run.processed[0]!.candidateId);
   assert.equal(replayed.processed_at, "2026-08-28T13:00:00.000Z");
-  assert.equal((await ingestSocialEvidence(db, new Date("2026-08-28T13:30:00.000Z"))).items.length, 0);
+
+  const observationOnly = packet();
+  observationOnly.post.observedAt = "2026-08-28T12:30:00.000Z";
+  assert.equal((await submit(observationOnly)).status, 202);
+  const observedAgain = sqlite.prepare("SELECT status, candidate_id, processed_at, receive_count FROM social_evidence_packets").get() as typeof premature & { receive_count: number };
+  assert.equal(observedAgain.status, "processed");
+  assert.equal(observedAgain.candidate_id, run.processed[0]!.candidateId);
+  assert.equal(observedAgain.processed_at, "2026-08-28T13:00:00.000Z");
+  assert.equal(observedAgain.receive_count, 3);
+
+  const enriched = packet();
+  enriched.post.observedAt = "2026-08-28T12:35:00.000Z";
+  enriched.attachments = [
+    ...enriched.attachments,
+    { type: "link", url: "https://www.pennmedicine.org/news/example", caption: "Additional source context" },
+  ];
+  assert.equal((await submit(enriched)).status, 202);
+  const reopened = sqlite.prepare("SELECT status, candidate_id, processed_at, receive_count FROM social_evidence_packets").get() as typeof observedAgain;
+  assert.equal(reopened.status, "review");
+  assert.equal(reopened.candidate_id, null);
+  assert.equal(reopened.processed_at, null);
+  assert.equal(reopened.receive_count, 4);
+  const enrichedRun = await ingestSocialEvidence(db, new Date("2026-08-28T13:30:00.000Z"));
+  assert.equal(enrichedRun.items.length, 1);
+  assert.equal(enrichedRun.processed.length, 1);
 });
 
 test("Vale collector receipts are manifest-bound, idempotent, and expose last success", async () => {

@@ -208,7 +208,13 @@ async function persistPacket(db: D1DatabaseLike, input: SocialEvidencePacket, no
   const postUrl = canonicalSocialUrl(input.postUrl, input.platform);
   const profileUrl = canonicalSocialUrl(input.author.profileUrl, input.platform, true);
   const packet = { ...input, postUrl, author: { ...input.author, profileUrl } };
-  const evidenceHash = await digest(JSON.stringify(packet));
+  // Observation time changes on every poll; it is receipt metadata rather than
+  // new editorial evidence. Excluding it keeps routine polling idempotent
+  // while allowing material packet enrichment to reopen a completed review.
+  const evidenceHash = await digest(JSON.stringify({
+    ...packet,
+    post: { ...packet.post, observedAt: undefined },
+  }));
   const id = `social-${input.platform}-${(await digest(postUrl)).slice(0, 24)}`;
   const receivedAt = now.toISOString();
   const instructionLike = looksInstructionLike(...packetText(packet)) ? 1 : 0;
@@ -225,6 +231,26 @@ async function persistPacket(db: D1DatabaseLike, input: SocialEvidencePacket, no
       linked_sources_json = excluded.linked_sources_json, entities_json = excluded.entities_json,
       collector_analysis_json = excluded.collector_analysis_json,
       evidence_hash = excluded.evidence_hash, instruction_like = excluded.instruction_like,
+      status = CASE
+        WHEN social_evidence_packets.evidence_hash != excluded.evidence_hash
+          AND social_evidence_packets.status IN ('processed', 'quarantined') THEN 'review'
+        ELSE social_evidence_packets.status
+      END,
+      quarantine_reason = CASE
+        WHEN social_evidence_packets.evidence_hash != excluded.evidence_hash
+          AND social_evidence_packets.status IN ('processed', 'quarantined') THEN NULL
+        ELSE social_evidence_packets.quarantine_reason
+      END,
+      processed_at = CASE
+        WHEN social_evidence_packets.evidence_hash != excluded.evidence_hash
+          AND social_evidence_packets.status IN ('processed', 'quarantined') THEN NULL
+        ELSE social_evidence_packets.processed_at
+      END,
+      candidate_id = CASE
+        WHEN social_evidence_packets.evidence_hash != excluded.evidence_hash
+          AND social_evidence_packets.status IN ('processed', 'quarantined') THEN NULL
+        ELSE social_evidence_packets.candidate_id
+      END,
       receive_count = social_evidence_packets.receive_count + 1,
       posted_at = COALESCE(excluded.posted_at, social_evidence_packets.posted_at),
       observed_at = excluded.observed_at, last_seen_at = excluded.last_seen_at`)
@@ -281,6 +307,7 @@ type PacketRow = {
   author_profile_url: string; author_json: string; post_json: string; attachments_json: string;
   linked_sources_json: string; entities_json: string; collector_analysis_json: string;
   instruction_like: number; posted_at: string | null; observed_at: string;
+  status: "review" | "quarantined"; quarantine_reason: SocialEvidenceQuarantineReason | null;
 };
 
 function normalizedProfile(value: string) {
@@ -812,15 +839,31 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
 }> {
   const result = await db.prepare(`SELECT id, platform, post_url, author_name, author_profile_url,
       author_json, post_json, attachments_json, linked_sources_json, entities_json,
-      collector_analysis_json, instruction_like, posted_at, observed_at
+      collector_analysis_json, instruction_like, posted_at, observed_at, status, quarantine_reason
     FROM social_evidence_packets
-    WHERE status = 'review' AND observed_at >= datetime(?, '-14 days')
+    WHERE (
+      status = 'review'
+      OR (status = 'quarantined' AND quarantine_reason = 'unknown-account')
+    ) AND observed_at >= datetime(?, '-14 days')
     ORDER BY observed_at DESC LIMIT 100`).bind(now.toISOString()).all<PacketRow>();
   const rows = result.results ?? [];
   const executives: Executive[] = [
     ...await verifiedExecutives(db, now),
   ];
   const orgs = linkedinTargets.organizations.filter((row) => row.orgs.length > 0);
+  const requeueUnknown = rows.filter((row) => {
+    if (row.status !== "quarantined" || row.quarantine_reason !== "unknown-account") return false;
+    const profile = normalizedProfile(row.author_profile_url);
+    return orgs.some((target) => normalizedProfile(target.url) === profile)
+      || executives.some((target) => normalizedProfile(target.profileUrl) === profile);
+  });
+  if (requeueUnknown.length) {
+    await db.batch(requeueUnknown.map((row) => db.prepare(
+      `UPDATE social_evidence_packets
+       SET status = 'review', quarantine_reason = NULL, processed_at = NULL, candidate_id = NULL
+       WHERE id = ? AND status = 'quarantined' AND quarantine_reason = 'unknown-account'`,
+    ).bind(row.id)));
+  }
   const items: ContentItem[] = [];
   const processed: SocialEvidenceCandidate[] = [];
   const editorEvidence = new Map<string, SocialEvidenceEditorContext>();
