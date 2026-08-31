@@ -104,6 +104,8 @@ export type EditorModelConfig = {
   baseUrl?: string;
   model?: string;
   timeoutMs?: number;
+  /** Collector-supplied context remains explicitly untrusted model evidence. */
+  untrustedSourceEvidence?: Record<string, unknown>;
 };
 
 export type EditorCompletionMessage = {
@@ -184,7 +186,11 @@ function sourceText(item: ContentItem) {
     .join("\n");
 }
 
-function boundedPayload(item: ContentItem, products: ProductUse[]) {
+function boundedPayload(
+  item: ContentItem,
+  products: ProductUse[],
+  untrustedSourceEvidence?: Record<string, unknown>,
+) {
   const verifiedPriorCoverage = editorContextForItem(
     item,
     VERIFIED_PUBLISHED_CONTEXT,
@@ -205,6 +211,7 @@ function boundedPayload(item: ContentItem, products: ProductUse[]) {
         orgs: item.orgs,
         topics: item.topics,
         source: item.source,
+        ...(untrustedSourceEvidence ? { evidence: untrustedSourceEvidence } : {}),
         ...(item.kind === "event" ? {
           startsAt: item.startsAt,
           venue: item.venue,
@@ -543,7 +550,7 @@ export async function enrichWithEditorModel(
   const timeoutMs = Math.max(1_000, config.timeoutMs || DEFAULT_EDITOR_TIMEOUT_MS);
   const context = editorContextForItem(item, VERIFIED_PUBLISHED_CONTEXT);
   const evidenceHaystack = sourceText(item);
-  const sourcePayload = boundedPayload(item, products);
+  const sourcePayload = boundedPayload(item, products, config.untrustedSourceEvidence);
   const classificationJson = await completeEditorJson(
     [
       { role: "system", content: CLASSIFICATION_SYSTEM_PROMPT },
