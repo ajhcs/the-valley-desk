@@ -435,31 +435,83 @@ async function fetchRssSources(
       sources.push(configNote(source, checkedAt, source.status));
       continue;
     }
-    const prior = sourceHealth?.get(source.id);
-    if (sourceIsInBackoff(prior, new Date(checkedAt))) {
-      sources.push(sourceBackoffNote(source.id, source.origin ?? source.name, "rss", checkedAt, prior, source.url));
-      continue;
-    }
     const candidates: Array<{ url: string; adapter?: "cooper-newsroom" | "cooper-independent" }> = [
       ...[source.url, ...(source.fallbacks ?? [])].map((url) => ({ url })),
       ...(source.htmlFallbacks ?? []),
       ...(source.independentFallbacks ?? []),
     ];
+    const readCandidate = async (candidate: typeof candidates[number]) => {
+      const feed = candidate.adapter === "cooper-newsroom"
+        ? await readCooperNewsroom(candidate.url, fetchImpl)
+        : candidate.adapter === "cooper-independent"
+          ? await readCooperIndependent(candidate.url, fetchImpl)
+          : await readFeed(candidate.url, fetchImpl);
+      // A syntactically valid but empty Cooper feed is not useful coverage;
+      // continue to the authoritative newsroom adapter instead of stopping
+      // with a misleading healthy-empty result.
+      if (source.id === "cooper-newsroom" && !candidate.adapter && feed.items.length === 0) {
+        throw new UpstreamError("parser-failed", "Cooper RSS feed returned no items; trying official newsroom fallback");
+      }
+      return feed;
+    };
+    const prior = sourceHealth?.get(source.id);
+    if (sourceIsInBackoff(prior, new Date(checkedAt))) {
+      // A primary cooldown must not take a configured fallback out of service.
+      // Keep the primary failure streak/timer intact while serving any healthy
+      // fallback snapshot found during this run.
+      let fallback: WorkingRss | undefined;
+      for (const candidate of candidates.slice(1)) {
+        try {
+          const feed = await readCandidate(candidate);
+          const independent = candidate.adapter === "cooper-independent";
+          fallback = {
+            url: candidate.url,
+            name: source.name,
+            origin: independent ? "cooper-independent-discovery" : source.origin,
+            orgIds: source.orgIds,
+            ...(candidate.adapter === "cooper-newsroom" ? { authorityUrl: candidate.url } : {}),
+            ...(independent ? {
+              authorityUrl: COOPER_NEWSROOM_URL,
+              authorityName: "Cooper University Health Care official newsroom (corroboration required)",
+            } : {}),
+            status: feed.status,
+            items: feed.items,
+          };
+          break;
+        } catch {
+          // The primary error remains the durable source-health error. A
+          // failed fallback simply leaves the source in its existing cooldown.
+        }
+      }
+      if (fallback) {
+        working.push(fallback);
+        sources.push(sourceNote({
+          id: source.id,
+          origin: source.origin ?? source.name,
+          type: "rss",
+          state: "backoff",
+          checkedAt,
+          itemCount: fallback.items.length,
+          completeness: "partial",
+          url: source.url,
+          error: prior?.lastError ?? "Primary source is in retry backoff; fallback is serving",
+          nextAttemptAt: prior?.nextAttemptAt,
+          httpStatus: prior?.lastHttpStatus ?? undefined,
+          requiresAuth: prior?.requiresAuth,
+          fallbackUrl: fallback.url,
+          consecutiveFailures: prior?.consecutiveFailures ?? 0,
+          lastSuccessAt: prior?.lastSuccessAt ?? null,
+        }));
+      } else {
+        sources.push(sourceBackoffNote(source.id, source.origin ?? source.name, "rss", checkedAt, prior, source.url));
+      }
+      continue;
+    }
     let success: WorkingRss | undefined;
     let lastError: UpstreamError | undefined;
     for (const candidate of candidates) {
       try {
-        const feed = candidate.adapter === "cooper-newsroom"
-          ? await readCooperNewsroom(candidate.url, fetchImpl)
-          : candidate.adapter === "cooper-independent"
-            ? await readCooperIndependent(candidate.url, fetchImpl)
-            : await readFeed(candidate.url, fetchImpl);
-        // A syntactically valid but empty Cooper feed is not useful coverage;
-        // continue to the authoritative newsroom adapter instead of stopping
-        // with a misleading healthy-empty result.
-        if (source.id === "cooper-newsroom" && !candidate.adapter && feed.items.length === 0) {
-          throw new UpstreamError("parser-failed", "Cooper RSS feed returned no items; trying official newsroom fallback");
-        }
+        const feed = await readCandidate(candidate);
         const independent = candidate.adapter === "cooper-independent";
         success = {
           url: candidate.url,

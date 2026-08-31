@@ -731,7 +731,7 @@ export async function persistSourceHealth(
       last_http_status = excluded.last_http_status,
       requires_auth = excluded.requires_auth,
       last_fallback_url = CASE
-        WHEN excluded.state IN ('healthy', 'healthy-empty') THEN excluded.last_fallback_url
+        WHEN excluded.state IN ('healthy', 'healthy-empty', 'backoff') THEN excluded.last_fallback_url
         ELSE source_health.last_fallback_url
       END
   `).bind(

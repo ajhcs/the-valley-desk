@@ -530,19 +530,19 @@ test("source retry backoff is durable and skips upstream calls until due", async
     lastHttpStatus: 403,
     requiresAuth: false,
   });
-  let cooperCalls = 0;
+  let primaryCalls = 0;
   const rss = await ingestRssWithHealth(new Date(checkedAt), async (input) => {
-    if (String(input).includes("cooperhealth.org")) {
-      cooperCalls += 1;
-      throw new Error("Cooper should remain in backoff");
+    if (String(input) === "https://www.inquirer.com/arc/outboundfeeds/rss/category/health/?outputType=xml") {
+      primaryCalls += 1;
+      throw new Error("Inquirer should remain in backoff");
     }
     return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
-  }, { sourceHealth: new Map([["cooper-newsroom", prior("cooper-newsroom", "upstream-blocked")]]) });
-  assert.equal(cooperCalls, 0);
-  const cooper = rss.sources.find((source) => source.id === "cooper-newsroom");
-  assert.equal(cooper?.state, "backoff");
-  assert.equal(cooper?.nextAttemptAt, nextAttemptAt);
-  assert.equal(cooper?.consecutiveFailures, 2);
+  }, { sourceHealth: new Map([["inquirer-health", prior("inquirer-health", "upstream-blocked")]]) });
+  assert.equal(primaryCalls, 0);
+  const inquirer = rss.sources.find((source) => source.id === "inquirer-health");
+  assert.equal(inquirer?.state, "backoff");
+  assert.equal(inquirer?.nextAttemptAt, nextAttemptAt);
+  assert.equal(inquirer?.consecutiveFailures, 2);
 
   let eventCalls = 0;
   const events = await ingestEventsWithHealth(new Date(checkedAt), async () => {
@@ -554,6 +554,49 @@ test("source retry backoff is durable and skips upstream calls until due", async
   ]));
   assert.equal(eventCalls, 0);
   assert.ok(events.sources.every((source) => source.state === "backoff"));
+});
+
+test("a configured Cooper fallback keeps serving while the primary is in backoff", async () => {
+  const checkedAt = "2026-08-26T12:00:00.000Z";
+  const primaryUrl = "https://blogs.cooperhealth.org/news/feed/";
+  const fallbackUrl = "https://www.cooperhealth.org/about-us/newsroom";
+  const prior = {
+    sourceId: "cooper-newsroom",
+    state: "upstream-blocked" as const,
+    itemCount: 0,
+    complete: false,
+    completeness: "partial" as const,
+    consecutiveFailures: 2,
+    lastCheckedAt: checkedAt,
+    lastSuccessAt: null,
+    lastError: "HTTP 403",
+    nextAttemptAt: "2026-08-26T12:30:00.000Z",
+    lastHttpStatus: 403,
+    requiresAuth: false,
+  };
+  const requested: string[] = [];
+  const result = await ingestRssWithHealth(new Date(checkedAt), async (input) => {
+    const url = String(input);
+    requested.push(url);
+    if (url === fallbackUrl) {
+      return new Response(`<html><body><header>Cooper University Health Care</header>
+        <h2>Cooper publishes a current update</h2><span>August 26, 2026</span>
+        <a href="https://blogs.cooperhealth.org/news/current-update/">Cooper publishes a current update</a>
+      </body></html>`, { status: 200 });
+    }
+    if (url === primaryUrl) throw new Error("primary must remain in backoff");
+    return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+  }, { sourceHealth: new Map([["cooper-newsroom", prior]]) });
+
+  assert.equal(requested.includes(primaryUrl), false);
+  assert.equal(requested.includes(fallbackUrl), true);
+  const cooper = result.sources.find((source) => source.id === "cooper-newsroom");
+  assert.equal(cooper?.state, "backoff");
+  assert.equal(cooper?.fallbackUrl, fallbackUrl);
+  assert.equal(cooper?.itemCount, 1);
+  assert.equal(cooper?.nextAttemptAt, prior.nextAttemptAt);
+  assert.equal(cooper?.consecutiveFailures, prior.consecutiveFailures);
+  assert.ok(result.items.some((item) => item.title === "Cooper publishes a current update"));
 });
 
 test("source-health persistence follows 15-minute, hourly, and recovery transitions", async () => {
@@ -595,10 +638,11 @@ test("source-health persistence follows 15-minute, hourly, and recovery transiti
 
   const backoffAt = "2026-08-26T12:30:00.000Z";
   const backoffRun = await run(backoffAt);
-  await persistSourceHealth(db, backoffRun.runId, [source(backoffAt, "backoff", "2026-08-26T13:15:00.000Z")]);
+  await persistSourceHealth(db, backoffRun.runId, [source(backoffAt, "backoff", "2026-08-26T13:15:00.000Z", "https://example.com/official")]);
   row = await readSourceHealth(db);
   assert.equal(row.get("retry-source")?.consecutiveFailures, 2);
   assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T13:15:00.000Z");
+  assert.equal(row.get("retry-source")?.lastFallbackUrl, "https://example.com/official");
 
   const healthyAt = "2026-08-26T13:15:00.000Z";
   const healthyRun = await run(healthyAt);
