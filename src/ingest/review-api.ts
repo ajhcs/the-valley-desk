@@ -271,7 +271,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       env.VALLEY_DESK_DB.prepare(`
         SELECT id, manifest_version, manifest_hash, started_at, finished_at, outcome,
                accounts_checked, posts_seen, accepted, duplicates, failures,
-               platforms_json, failure_reasons_json
+               platforms_json, failure_reasons_json, consecutive_failures, paused_at
         FROM social_collector_runs
         WHERE collector = 'vale'
         ORDER BY finished_at DESC, id DESC LIMIT 1
@@ -279,7 +279,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       env.VALLEY_DESK_DB.prepare(`
         SELECT id, manifest_version, manifest_hash, started_at, finished_at, outcome,
                accounts_checked, posts_seen, accepted, duplicates, failures,
-               platforms_json, failure_reasons_json
+               platforms_json, failure_reasons_json, consecutive_failures, paused_at
         FROM social_collector_runs
         WHERE collector = 'vale' AND outcome = 'success'
         ORDER BY finished_at DESC, id DESC LIMIT 1

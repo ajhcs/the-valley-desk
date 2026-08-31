@@ -18,7 +18,7 @@ export type SocialRun = {
   items: ContentItem[];
   linkedin: { count: number; skipped?: string };
   x: { count: number; skipped?: string };
-  grok: { count: number; pending: number; skipped?: string };
+  grok: { count: number; pending: number; quarantined?: number; skipped?: string };
   processedPackets: SocialEvidenceCandidate[];
   editorEvidence: ReadonlyMap<string, SocialEvidenceEditorContext>;
   sources: SourceRunNote[];
@@ -36,8 +36,9 @@ export async function ingestSocial(
     env.VALLEY_DESK_DB && !sourceIsInBackoff(env.sourceHealth?.get("grok-social-evidence"), now)
       ? ingestSocialEvidence(env.VALLEY_DESK_DB, now)
       : env.VALLEY_DESK_DB
-        ? Promise.resolve({
+      ? Promise.resolve({
           items: [], pending: 0, processed: [],
+          quarantined: 0,
           editorEvidence: new Map<string, SocialEvidenceEditorContext>(),
           sources: [sourceBackoffNote(
             "grok-social-evidence", "grok-social-evidence", "social", now.toISOString(),
@@ -46,6 +47,7 @@ export async function ingestSocial(
         })
       : Promise.resolve({
         items: [], pending: 0, processed: [],
+        quarantined: 0,
         editorEvidence: new Map<string, SocialEvidenceEditorContext>(),
         sources: [] as SourceRunNote[],
       }),
@@ -55,7 +57,12 @@ export async function ingestSocial(
     items,
     linkedin: { count: linkedin.items.length, skipped: linkedin.skipped },
     x: { count: x.items.length, skipped: x.skipped },
-    grok: { count: grok.items.length, pending: grok.pending, ...(!env.VALLEY_DESK_DB ? { skipped: "no-database" } : {}) },
+    grok: {
+      count: grok.items.length,
+      pending: grok.pending,
+      quarantined: grok.quarantined,
+      ...(!env.VALLEY_DESK_DB ? { skipped: "no-database" } : {}),
+    },
     processedPackets: grok.processed,
     editorEvidence: grok.editorEvidence,
     sources: [...linkedin.sources, ...x.sources, ...grok.sources],

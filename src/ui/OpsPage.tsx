@@ -30,8 +30,20 @@ type OpsPayload = {
   };
   valeCollector?: {
     available?: boolean;
-    latest?: { outcome?: string; finished_at?: string; accounts_checked?: number; posts_seen?: number; accepted?: number; duplicates?: number; failures?: number } | null;
-    lastSuccessful?: { finished_at?: string } | null;
+    latest?: {
+      manifest_version?: string;
+      manifest_hash?: string;
+      outcome?: string;
+      finished_at?: string;
+      accounts_checked?: number;
+      posts_seen?: number;
+      accepted?: number;
+      duplicates?: number;
+      failures?: number;
+      consecutive_failures?: number;
+      paused_at?: string | null;
+    } | null;
+    lastSuccessful?: { finished_at?: string; manifest_version?: string; manifest_hash?: string } | null;
   };
   modelHealth?: { available?: boolean; attempts?: Array<{ outcome?: string; count?: number; last_attempted_at?: string }> };
   alerts?: { available?: boolean; open?: Array<{ fingerprint?: string; event?: string; severity?: string; occurrence_count?: number }> };
@@ -70,6 +82,7 @@ function OpsPage() {
   );
   const latestVale = payload?.valeCollector?.latest;
   const lastSuccessfulVale = payload?.valeCollector?.lastSuccessful?.finished_at;
+  const valePauseRequired = Number(latestVale?.consecutive_failures ?? 0) >= 3 || Boolean(latestVale?.paused_at);
 
   return (
     <article aria-labelledby="ops-title" className="OpsPage">
@@ -91,11 +104,13 @@ function OpsPage() {
             <div><dt>Social packets in review</dt><dd>{packetCount("review")}</dd></div>
             <div><dt>Social packets processed</dt><dd>{packetCount("processed")}</dd></div>
             <div><dt>Vale last success</dt><dd>{lastSuccessfulVale ?? "not reported"}</dd></div>
+            <div><dt>Vale collector state</dt><dd>{valePauseRequired ? "paused after repeated failures" : latestVale ? "reported" : "not reported"}</dd></div>
+            <div><dt>Vale failure streak</dt><dd>{latestVale?.consecutive_failures ?? 0}</dd></div>
           </dl>
           <h2>Vale collector</h2>
           <p>
             {latestVale
-              ? `${latestVale.outcome ?? "unknown"} · finished ${latestVale.finished_at ?? "unknown"} · ${latestVale.accounts_checked ?? 0} accounts · ${latestVale.posts_seen ?? 0} posts · ${latestVale.accepted ?? 0} accepted · ${latestVale.duplicates ?? 0} duplicates · ${latestVale.failures ?? 0} failures`
+              ? `${latestVale.outcome ?? "unknown"} · finished ${latestVale.finished_at ?? "unknown"} · ${latestVale.accounts_checked ?? 0} accounts · ${latestVale.posts_seen ?? 0} posts · ${latestVale.accepted ?? 0} accepted · ${latestVale.duplicates ?? 0} duplicates · ${latestVale.failures ?? 0} failures${latestVale.paused_at ? ` · paused ${latestVale.paused_at}` : ""}`
               : "No Vale collector receipt has been reported."}
           </p>
           <h2>Open alerts</h2>
