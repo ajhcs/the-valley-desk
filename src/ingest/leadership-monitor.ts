@@ -90,8 +90,16 @@ export type LeadershipMonitorResult = {
 };
 
 const TITLE_HINT = /\b(chief|cio|ciso|cmio|cnio|cdoo|cdao|ceo|coo|cfo|president|svp|evp|vice president|\bvp\b|director|officer|interim|informatics)\b/i;
-const PERSON_NAME_RE = /^[a-z][a-z.'-]+(?: [a-z][a-z.'-]+){0,5}$/i;
+const PERSON_NAME_RE = /^[a-z](?:[a-z.'-]+)?(?: [a-z](?:[a-z.'-]+)?){0,5}$/i;
 const CHALLENGE_RE = /\b(?:access denied|captcha|checking your browser|cloudflare|enable javascript|just a moment|robot|unusual traffic|verify you are human)\b/i;
+
+// Article pages often expose one explicit leadership fact in a title, meta
+// description, or opening paragraph instead of a roster-shaped h2/p pair. Keep
+// this grammar deliberately narrow: only a named executive role may become an
+// extracted leader, and the statement must be tied to the configured institution.
+const ARTICLE_ROLE_PATTERN = "(?:chief executive officer|chief operating officer|chief information officer|chief digital and information officer|chief clinical officer|president(?:\\s+and\\s+ceo)?|ceo|coo|cfo|cio|ciso|cmio|cnio|cdao|cdoo|svp|evp|vice president|vp|director|officer)";
+const ARTICLE_NAME_PATTERN = "[A-Z][A-Za-z.'’\\-]*(?:\\s+[A-Z][A-Za-z.'’\\-]*){1,5}";
+const ARTICLE_CREDENTIAL_PATTERN = "(?:MD|DO|PhD|DNP|MBA|MPH|MS|BS|BSN|EMBA|CISM|RN|FACHE|JD|MPA|MHA|FNP|NP)";
 
 function clipError(value: string) {
   return value.replace(/\s+/g, " ").trim().slice(0, LEADERSHIP_ERROR_MAX_CHARS).trim();
@@ -130,6 +138,78 @@ function stripNonContent(html: string) {
     .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, "")
     .replace(/<iframe\b[\s\S]*?<\/iframe>/gi, "")
     .replace(/<svg\b[\s\S]*?<\/svg>/gi, "");
+}
+
+function compactEvidenceText(value: string) {
+  return decodeHtml(value).replace(/\s+/g, " ").trim();
+}
+
+function documentEvidenceTexts(html: string) {
+  const cleaned = stripNonContent(html);
+  const texts: string[] = [];
+  const titleRe = /<title\b[^>]*>([\s\S]*?)<\/title>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = titleRe.exec(cleaned))) {
+    const text = compactEvidenceText(match[1] ?? "");
+    if (text) texts.push(text);
+  }
+  const metaRe = /<meta\b[^>]*>/gi;
+  while ((match = metaRe.exec(cleaned))) {
+    const tag = match[0] ?? "";
+    const name = /\b(?:name|property)\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1]?.toLowerCase();
+    if (!name || !["description", "og:title", "og:description", "twitter:title", "twitter:description"].includes(name)) continue;
+    const content = /\bcontent\s*=\s*["']([^"']*)["']/i.exec(tag)?.[1];
+    const text = compactEvidenceText(content ?? "");
+    if (text) texts.push(text);
+  }
+  const headingRe = /<h[1-3]\b[^>]*>([\s\S]*?)<\/h[1-3]>/gi;
+  while ((match = headingRe.exec(cleaned))) {
+    const text = compactEvidenceText(htmlToText(match[1] ?? ""));
+    if (text) texts.push(text);
+  }
+  const main = /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(cleaned)?.[1];
+  if (main) {
+    const text = compactEvidenceText(htmlToText(main));
+    if (text) texts.push(text);
+  }
+  return [...new Set(texts)];
+}
+
+function extractArticleLeaders(html: string, institutionAliases: readonly string[]) {
+  const aliases = institutionAliases
+    .map(compactEvidenceText)
+    .filter((alias) => alias.length >= 3)
+    .map((alias) => alias.toLowerCase());
+  if (!aliases.length) return [];
+
+  const evidenceSentences: string[] = [];
+  for (const text of documentEvidenceTexts(html)) {
+    for (const sentence of text.split(/(?<=[!?])\s+|(?<![A-Z])\.\s+|\n+/)) {
+      const compact = compactEvidenceText(sentence);
+      const folded = compact.toLowerCase();
+      if (compact && aliases.some((alias) => folded.includes(alias))) {
+        evidenceSentences.push(compact);
+      }
+    }
+  }
+
+  const merged = new Map<string, ExtractedLeader>();
+  const add = (name: string, title: string) => {
+    if (!/^[A-Z][A-Za-z.'’\-]*(?:\s+[A-Z][A-Za-z.'’\-]*){1,5}$/.test(name.trim())) return;
+    const leader = asLeader(name, title);
+    if (leader && !merged.has(leader.normalizedName)) merged.set(leader.normalizedName, leader);
+  };
+  const afterRole = new RegExp("\\b(" + ARTICLE_ROLE_PATTERN + ")\\s+(" + ARTICLE_NAME_PATTERN + ")\\b", "gi");
+  const named = new RegExp(
+    "\\b(" + ARTICLE_NAME_PATTERN + ")(?:\\s*,\\s*" + ARTICLE_CREDENTIAL_PATTERN + ")*(?:\\s*,)?\\s+(?:has been|was|is|will be|will serve as|serves as|appointed as|named|appointed|selected|elected|promoted to)\\s+(" + ARTICLE_ROLE_PATTERN + ")\\b",
+    "gi",
+  );
+  for (const sentence of evidenceSentences) {
+    let match: RegExpExecArray | null;
+    while ((match = afterRole.exec(sentence))) add(match[2] ?? "", match[1] ?? "");
+    while ((match = named.exec(sentence))) add(match[1] ?? "", match[2] ?? "");
+  }
+  return [...merged.values()];
 }
 
 export async function sha256Hex(value: string) {
@@ -237,11 +317,12 @@ function extractHeadingLeaders(html: string): ExtractedLeader[] {
   return out;
 }
 
-export function extractLeaders(html: string): ExtractedLeader[] {
+export function extractLeaders(html: string, institutionAliases: readonly string[] = []): ExtractedLeader[] {
   const jsonLd = extractJsonLdLeaders(html);
   const headings = extractHeadingLeaders(stripNonContent(html));
+  const article = extractArticleLeaders(html, institutionAliases);
   const merged = new Map<string, ExtractedLeader>();
-  for (const row of [...jsonLd, ...headings]) {
+  for (const row of [...jsonLd, ...headings, ...article]) {
     if (!merged.has(row.normalizedName)) merged.set(row.normalizedName, row);
   }
   return [...merged.values()];
@@ -557,7 +638,8 @@ export async function monitorLeadershipSources(
           }
           const normalizedText = normalizeLeadershipText(page.body);
           const contentHash = await sha256Hex(normalizedText);
-          const extracted = extractLeaders(page.body);
+          const institution = pack.institutions.find((row) => row.id === source.institutionId);
+          const extracted = extractLeaders(page.body, institution?.aliases ?? []);
           const extraction = extractionStatus(normalizedText, extracted);
           const instructionLike = looksInstructionLike(
             page.body,

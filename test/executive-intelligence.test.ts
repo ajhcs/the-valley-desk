@@ -29,7 +29,7 @@ import {
   seedCoveragePack,
   autonomouslyVerifyLeadership,
 } from "../src/ingest/executive-persistence.ts";
-import { monitorLeadershipSources, type LeadershipSnapshot } from "../src/ingest/leadership-monitor.ts";
+import { extractLeaders, monitorLeadershipSources, type LeadershipSnapshot } from "../src/ingest/leadership-monitor.ts";
 import type { D1DatabaseLike, D1StatementLike } from "../src/ingest/persistence.ts";
 import { normalizeSourceUrl } from "../src/ingest/identity.ts";
 import { Entity } from "../src/content/entity.ts";
@@ -121,10 +121,10 @@ test("coverage registry has closed geography, bounded fetches, and explicit 16-s
   assert.equal(geographyMatchesEntityBoundary(), true);
   assert.equal(coverageBoundsAreClosed(), true);
   const statuses = new Map(officialSourceCoverage().map((row) => [row.shortName, row.status]));
-  assert.equal(statuses.get("Jefferson"), "degraded");
+  assert.equal(statuses.get("Jefferson"), "active");
   assert.equal(statuses.get("LVHN"), "active");
-  assert.equal(statuses.get("Penn Princeton"), "degraded");
-  assert.equal(statuses.get("Penn Doylestown"), "degraded");
+  assert.equal(statuses.get("Penn Princeton"), "active");
+  assert.equal(statuses.get("Penn Doylestown"), "active");
   assert.equal(statuses.get("Cooper"), "active");
   assert.equal(statuses.get("Nemours"), "active");
   assert.equal(statuses.get("RWJBarnabas"), "active");
@@ -133,11 +133,23 @@ test("coverage registry has closed geography, bounded fetches, and explicit 16-s
   assert.equal(new Set(sourceUrls).size, sourceUrls.length);
   assert.equal(
     sourceById("src-jefferson-enterprise-leadership")?.url,
-    "https://magazine.jefferson.edu/content/dam/oia/2026/jim-spring-2026/Jefferson_Innovator_Magazine_Spring_2026.pdf",
+    "https://www.jeffersonhealth.org/about-us/news/2025/05/jefferson-extends-contract-with-ceo-joseph-g-cacchione-md",
   );
   assert.equal(
     sourceById("src-st-lukes-leadership")?.url,
     "https://www.slhn.org/about/leadership/executive-leadership",
+  );
+  assert.equal(
+    sourceById("src-penn-princeton-leadership")?.url,
+    "https://www.pennmedicine.org/news/penn-medicine-to-break-ground-on-cancer-center-at-princeton-health",
+  );
+  assert.deepEqual(
+    sourceById("src-penn-princeton-leadership")?.alternateUrls,
+    ["https://www.pennmedicine.org/locations/entity/princeton-health/financial-reporting"],
+  );
+  assert.equal(
+    sourceById("src-penn-doylestown-ceo")?.url,
+    "https://www.pennmedicine.org/news/craig-gronczewski-named-ceo-of-penn-medicine-doylestown-health",
   );
   assert.equal(
     sourceById("src-lvhn-leadership-committees")?.url,
@@ -213,7 +225,8 @@ test("runtime leadership coverage separates configured posture from fresh source
   assert.equal(byName.get("Cooper")?.state, "blocked");
   assert.equal(byName.get("Cooper")?.coverageLost, true);
   assert.equal(byName.get("Temple")?.state, "failed", "stale success is not current coverage");
-  assert.equal(byName.get("Jefferson")?.state, "degraded", "configured gaps remain explicit");
+  assert.equal(byName.get("Jefferson")?.configuredStatus, "active");
+  assert.equal(byName.get("Jefferson")?.state, "failed", "configured sources still need a fresh runtime observation");
   assert.equal(byName.get("Main Line")?.sourceStates[0]?.state, "backoff");
 
   const transient = buildRuntimeLeadershipCoverage([
@@ -279,6 +292,50 @@ test("public leadership 403 is a blocked source with retry metadata", async () =
   assert.equal(result.snapshots[0]?.httpStatus, 403);
   assert.equal(result.schedule[0]?.state, "blocked");
   assert.ok(result.schedule[0]?.nextAttemptAt);
+});
+
+test("leadership monitor recognizes institution-bound executive facts in official article pages", async () => {
+  const cases = [
+    {
+      sourceId: "src-jefferson-enterprise-leadership",
+      expectedName: "joseph g cacchione",
+      body: "<html><head><title>Jefferson Extends Contract with CEO Joseph G. Cacchione, MD | Jefferson Health</title></head><body></body></html>",
+    },
+    {
+      sourceId: "src-penn-princeton-leadership",
+      expectedName: "james demetriades",
+      body: "<main><h1>Penn Medicine breaks ground on cancer center at Princeton Health</h1><p>\"This is a significant first step,\" said Princeton Health CEO James Demetriades.</p></main>",
+    },
+    {
+      sourceId: "src-penn-doylestown-ceo",
+      expectedName: "craig gronczewski",
+      body: "<main><h1>Craig Gronczewski, MD, MBA, FACHE, named Chief Executive Officer of Penn Medicine Doylestown Health</h1></main>",
+    },
+  ] as const;
+
+  for (const row of cases) {
+    const source = sourceById(row.sourceId)!;
+    const pack = CoveragePackDocument.parse({
+      ...coveragePack,
+      sources: coveragePack.sources.map((candidate) => (
+        candidate.id === row.sourceId
+          ? candidate
+          : { ...candidate, monitor: false, cadence: "inventory", status: "inventory-only" }
+      )),
+    });
+    const institution = pack.institutions.find((candidate) => candidate.id === source.institutionId)!;
+    const direct = extractLeaders(row.body, institution.aliases);
+    assert.equal(direct[0]?.normalizedName, row.expectedName);
+    const result = await monitorLeadershipSources({
+      pack,
+      now: new Date("2026-08-31T12:00:00.000Z"),
+      candidateCap: 1,
+      concurrency: 1,
+      fetchImpl: async () => new Response(row.body, { status: 200 }),
+    });
+    assert.equal(result.snapshots[0]?.state, "success");
+    assert.equal(result.snapshots[0]?.extracted[0]?.normalizedName, row.expectedName);
+  }
 });
 
 test("covered health-system identities and LinkedIn mappings stay canonical", () => {
@@ -415,7 +472,7 @@ test("coverage seed and reviewer verification persist identity, evidence, and ro
   const degraded = database.prepare(
     "SELECT official_source_status FROM covered_institutions WHERE id = 'inst-jefferson'",
   ).get() as { official_source_status: string };
-  assert.equal(degraded.official_source_status, "degraded");
+  assert.equal(degraded.official_source_status, "active");
 
   const body = "<h2>Julian Mihai</h2><p>CISO</p>";
   const monitored = await monitorLeadershipSources({
