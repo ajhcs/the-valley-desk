@@ -3,6 +3,8 @@ import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
 import { isHeldHandle, liveLinkedInOrigins, type LinkedInOrigin } from "./origins";
 import {
+  sourceBackoffNote,
+  sourceIsInBackoff,
   sourceNote,
   sourceStateForItemCount,
   type SourceRunNote,
@@ -121,7 +123,10 @@ function originNote(
 
 /** Official LinkedIn read. No-op without LINKEDIN_TOKEN. Person origins are unsupported. */
 export async function ingestLinkedIn(
-  env: { LINKEDIN_TOKEN?: string } = {},
+  env: {
+    LINKEDIN_TOKEN?: string;
+    sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>;
+  } = {},
   now = new Date(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<SocialIngestResult> {
@@ -143,6 +148,12 @@ export async function ingestLinkedIn(
   const items: ContentItem[] = [];
   const sources: SourceRunNote[] = [];
   for (const origin of origins) {
+    const sourceId = `linkedin-${origin.slug}`;
+    const prior = env.sourceHealth?.get(sourceId);
+    if (sourceIsInBackoff(prior, now)) {
+      sources.push(sourceBackoffNote(sourceId, origin.slug, "social", fetchedAt, prior, origin.url));
+      continue;
+    }
     if (origin.kind !== "organization") {
       sources.push(originNote(origin, fetchedAt, "misconfigured", {
         error: "LinkedIn person origins are not supported by the official organization posts API",

@@ -14,6 +14,8 @@ import {
 import { mapSeedOrgIds } from "./org-map";
 import { rssSources, type RssSource } from "./origins";
 import {
+  sourceBackoffNote,
+  sourceIsInBackoff,
   sourceNote,
   sourceStateForItemCount,
   type IngestSourceResult,
@@ -263,12 +265,18 @@ async function readFeed(url: string, fetchImpl: typeof fetch) {
 async function fetchRssSources(
   fetchImpl: typeof fetch,
   checkedAt: string,
+  sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>,
 ): Promise<{ working: WorkingRss[]; sources: SourceRunNote[] }> {
   const working: WorkingRss[] = [];
   const sources: SourceRunNote[] = [];
   for (const source of RSS_SOURCES) {
     if (source.status === "disabled" || source.status === "misconfigured") {
       sources.push(configNote(source, checkedAt, source.status));
+      continue;
+    }
+    const prior = sourceHealth?.get(source.id);
+    if (sourceIsInBackoff(prior, new Date(checkedAt))) {
+      sources.push(sourceBackoffNote(source.id, source.origin ?? source.name, "rss", checkedAt, prior, source.url));
       continue;
     }
     const urls = [source.url, ...(source.fallbacks ?? [])];
@@ -302,6 +310,7 @@ async function fetchRssSources(
         checkedAt,
         itemCount: success.items.length,
         url: success.url,
+        ...(success.url !== source.url ? { fallbackUrl: success.url } : {}),
       }));
       continue;
     }
@@ -313,6 +322,8 @@ async function fetchRssSources(
       checkedAt,
       url: source.url,
       error: lastError?.message ?? "No usable RSS response",
+      ...(lastError?.httpStatus === undefined ? {} : { httpStatus: lastError.httpStatus }),
+      requiresAuth: false,
     }));
   }
   return { working, sources };
@@ -327,6 +338,7 @@ export async function fetchWorkingRss(
 export type RssIngestOptions = {
   knownSourceUrls?: ReadonlySet<string>;
   newsExtractions?: ReadonlyMap<string, NewsArticleExtractionState>;
+  sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>;
 };
 
 export type RssIngestResult = IngestSourceResult<ContentItem> & {
@@ -342,7 +354,7 @@ export async function ingestRssWithHealth(
   options: RssIngestOptions = {},
 ): Promise<RssIngestResult> {
   const fetchedAt = now.toISOString();
-  const { working: feeds, sources } = await fetchRssSources(fetchImpl, fetchedAt);
+  const { working: feeds, sources } = await fetchRssSources(fetchImpl, fetchedAt, options.sourceHealth);
   const items: ContentItem[] = [];
   for (const feed of feeds) {
     for (const [index, raw] of feed.items.entries()) {

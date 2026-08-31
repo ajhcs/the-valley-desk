@@ -59,6 +59,11 @@ export type SourceRunNote = {
   httpStatus?: number;
   /** Durable cooldown returned by the source scheduler, when applicable. */
   nextAttemptAt?: string;
+  /** URL that served the successful snapshot when a fallback was used. */
+  fallbackUrl?: string;
+  /** Durable streak metadata copied into operational results when available. */
+  consecutiveFailures?: number;
+  lastSuccessAt?: string | null;
 };
 
 export type IngestSourceResult<T> = {
@@ -106,6 +111,33 @@ export function sourceIsInBackoff(
   if (!state || (!isFailureSourceState(state.state) && state.state !== "backoff")) return false;
   const next = Date.parse(state.nextAttemptAt);
   return Number.isFinite(next) && next > now.getTime();
+}
+
+export function sourceBackoffNote(
+  id: string,
+  origin: string,
+  type: SourceRunNote["type"],
+  checkedAt: string,
+  prior?: PersistedSourceHealth,
+  url?: string,
+): SourceRunNote {
+  return sourceNote({
+    id,
+    origin,
+    type,
+    state: "backoff",
+    checkedAt,
+    itemCount: prior?.itemCount ?? 0,
+    complete: prior?.complete ?? false,
+    ...(prior?.completeness ? { completeness: prior.completeness } : {}),
+    ...(url ? { url } : {}),
+    error: prior?.lastError ?? "Source is in retry backoff",
+    nextAttemptAt: prior?.nextAttemptAt,
+    httpStatus: prior?.lastHttpStatus ?? undefined,
+    requiresAuth: prior?.requiresAuth,
+    consecutiveFailures: prior?.consecutiveFailures ?? 0,
+    lastSuccessAt: prior?.lastSuccessAt ?? null,
+  });
 }
 
 export function sourceStateForItemCount(count: number): Extract<SourceRunState, "healthy" | "healthy-empty"> {

@@ -3,6 +3,7 @@ import { ingestX } from "./x";
 import type { ContentItem } from "../content/schema";
 import { isLiveSocialKey } from "./origins";
 import type { SourceRunNote } from "./source-health";
+import { sourceBackoffNote, sourceIsInBackoff } from "./source-health";
 import { ingestSocialEvidence, type SocialEvidenceCandidate, type SocialEvidenceEditorContext } from "./social-evidence";
 import type { D1DatabaseLike } from "./persistence";
 
@@ -10,6 +11,7 @@ export type IngestEnv = {
   X_BEARER_TOKEN?: string;
   LINKEDIN_TOKEN?: string;
   VALLEY_DESK_DB?: D1DatabaseLike;
+  sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>;
 };
 
 export type SocialRun = {
@@ -31,8 +33,17 @@ export async function ingestSocial(
   const [linkedin, x, grok] = await Promise.all([
     ingestLinkedIn(env, now, fetchImpl),
     ingestX(env, now, fetchImpl),
-    env.VALLEY_DESK_DB
+    env.VALLEY_DESK_DB && !sourceIsInBackoff(env.sourceHealth?.get("grok-social-evidence"), now)
       ? ingestSocialEvidence(env.VALLEY_DESK_DB, now)
+      : env.VALLEY_DESK_DB
+        ? Promise.resolve({
+          items: [], pending: 0, processed: [],
+          editorEvidence: new Map<string, SocialEvidenceEditorContext>(),
+          sources: [sourceBackoffNote(
+            "grok-social-evidence", "grok-social-evidence", "social", now.toISOString(),
+            env.sourceHealth?.get("grok-social-evidence"),
+          )],
+        })
       : Promise.resolve({
         items: [], pending: 0, processed: [],
         editorEvidence: new Map<string, SocialEvidenceEditorContext>(),
