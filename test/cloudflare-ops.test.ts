@@ -911,6 +911,66 @@ test("operational alerts dedupe durably, sanitize secrets, and send to the fixed
   database.close();
 });
 
+test("operational alert reminders send once, then no more than daily", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const binding = {
+    async send(message: { to: string; from: string; subject: string; text: string }) {
+      sent.push(message.subject);
+      return { messageId: `message-${sent.length}` };
+    },
+  };
+  const fingerprint = "valley-desk:critical-reminder-cadence";
+  const first = new Date("2026-08-28T00:00:00.000Z");
+
+  await dispatchOperationalAlert(db, binding, {
+    fingerprint,
+    event: "source-coverage-lost",
+    severity: "critical",
+    threshold: 1,
+    now: first,
+  });
+  assert.equal(sent.length, 1, "the threshold transition is immediate");
+  let row = database.prepare(
+    "SELECT next_notify_at FROM operational_alerts WHERE fingerprint = ?",
+  ).get(fingerprint) as { next_notify_at: string };
+  assert.equal(row.next_notify_at, "2026-08-28T06:00:00.000Z");
+
+  await dispatchOperationalAlert(db, binding, {
+    fingerprint,
+    event: "source-coverage-lost",
+    severity: "critical",
+    threshold: 1,
+    now: new Date("2026-08-28T06:00:00.000Z"),
+  });
+  assert.equal(sent.length, 2, "one sustained-incident reminder is allowed");
+  row = database.prepare(
+    "SELECT next_notify_at FROM operational_alerts WHERE fingerprint = ?",
+  ).get(fingerprint) as { next_notify_at: string };
+  assert.equal(row.next_notify_at, "2026-08-29T06:00:00.000Z");
+
+  await dispatchOperationalAlert(db, binding, {
+    fingerprint,
+    event: "source-coverage-lost",
+    severity: "critical",
+    threshold: 1,
+    now: new Date("2026-08-28T12:00:00.000Z"),
+  });
+  assert.equal(sent.length, 2, "the same incident is quiet between daily reminders");
+
+  await dispatchOperationalAlert(db, binding, {
+    fingerprint,
+    event: "source-coverage-lost",
+    severity: "critical",
+    threshold: 1,
+    now: new Date("2026-08-29T06:00:00.000Z"),
+  });
+  assert.equal(sent.length, 3, "a continuing incident may remind once per day");
+  database.close();
+});
+
 test("operational alerts require durable consecutive recovery and reopen cleanly", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);

@@ -144,9 +144,9 @@ function backoffMs(attempt: number) {
 }
 
 function alertBackoffMs(attempt: number) {
-  // Runs are hourly. Keep a continuing incident from generating an email on
-  // every run; the daily digest remains the bounded status channel.
-  return Math.min(ALERT_MAX_BACKOFF_MS, ALERT_REPEAT_BASE_MS * (2 ** Math.max(0, Math.min(attempt, 3))));
+  // Send one sustained-incident reminder after the immediate transition,
+  // then keep all later reminders to at most one per day.
+  return attempt <= 0 ? ALERT_REPEAT_BASE_MS : ALERT_MAX_BACKOFF_MS;
 }
 
 function rowSelect() {
