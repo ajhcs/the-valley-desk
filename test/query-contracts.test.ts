@@ -258,7 +258,7 @@ test("one event-source outage does not discard successful RSS ingestion", async 
   assert.equal(result.events.length, 0);
 });
 
-test("scheduled cadence keeps hourly freshness separate from the daily event deep scan", async () => {
+test("scheduled cadence keeps current event checks in the hourly freshness lane", async () => {
   const requested: string[] = [];
   const fetchImpl = async (input: RequestInfo | URL) => {
     const url = String(input);
@@ -266,7 +266,8 @@ test("scheduled cadence keeps hourly freshness separate from the daily event dee
     return new Response("", { status: 503 });
   };
   await runIngestAll({}, new Date("2026-08-28T02:00:00.000Z"), fetchImpl, { mode: "hourly" });
-  assert.equal(requested.some((url) => url.includes("dvhimss.org") || url.includes("njdvhimssevent.com")), false);
+  assert.equal(requested.some((url) => url.includes("dvhimss.org")), true);
+  assert.equal(requested.some((url) => url.includes("njdvhimssevent.com")), true);
 
   requested.length = 0;
   await runIngestAll({}, new Date("2026-08-28T03:15:00.000Z"), fetchImpl, { mode: "daily" });
@@ -4332,6 +4333,7 @@ function applyMigrations(database: DatabaseSync) {
     "0021_social_evidence_packets.sql",
     "0022_source_health_backoff.sql",
     "0023_social_collector_runs.sql",
+    "0024_social_lifecycle.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 
@@ -4878,6 +4880,7 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   const readme = readFileSync(join(root, "README.md"), "utf8");
   const model = readFileSync(join(root, "src/ingest/editor-model.ts"), "utf8");
   const automation = readFileSync(join(root, "src/ingest/automation.ts"), "utf8");
+  const secretScan = readFileSync(join(root, "scripts/secret-scan.mjs"), "utf8");
   assert.ok(migration.includes("enrichment_fingerprint"));
   assert.ok(migration.includes("enrichment_attempted_at"));
   assert.ok(migration.includes("enrichment_outcome"));
@@ -4899,6 +4902,7 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(readme.includes("waitUntil"));
   assert.ok(readme.includes("There is no automatic fallback to standard Muse"));
   assert.ok(readme.includes("SOCIAL_INGEST_TOKEN"));
+  assert.ok(secretScan.includes("live-social-ingest-token"));
   assert.ok(automation.includes("selectEditorModelWork"));
   assert.ok(automation.includes("markIngestRunSucceeded"));
   assert.ok(automation.includes("releaseAutomationLock"));
