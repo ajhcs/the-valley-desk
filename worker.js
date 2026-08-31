@@ -185,9 +185,11 @@ function safeAlertError(error) {
 
 function safeAlertDetails(error, context = {}) {
   const candidate = error && typeof error === "object" ? error : {};
-  const errorClass = typeof candidate.name === "string"
-    ? candidate.name
-    : typeof error === "string" ? "string" : "unknown";
+  const errorClass = typeof context.errorClass === "string"
+    ? context.errorClass
+    : typeof candidate.name === "string"
+      ? candidate.name
+      : typeof error === "string" ? "string" : "unknown";
   const httpStatus = Number.isInteger(context.httpStatus)
     ? context.httpStatus
     : Number.isInteger(candidate.httpStatus) ? candidate.httpStatus : undefined;
@@ -315,7 +317,16 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
         details: {
           outcome: leadership.outcome,
           fetched: leadership.fetched,
-          ...safeAlertDetails(leadership.error ?? leadership.outcome, { stage: "leadership-monitor" }),
+          failed: Number(leadership.failed ?? 0),
+          ...(leadership.failureDetails?.[0]
+            ? safeAlertDetails(leadership.failureDetails[0].reason, {
+              stage: "leadership-monitor",
+              sourceId: leadership.failureDetails[0].sourceId,
+              errorClass: leadership.failureDetails[0].errorClass,
+              httpStatus: leadership.failureDetails[0].httpStatus,
+              nextRetryAt: leadership.failureDetails[0].nextRetryAt,
+            })
+            : safeAlertDetails(leadership.error ?? leadership.outcome, { stage: "leadership-monitor" })),
         },
       });
     }

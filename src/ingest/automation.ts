@@ -292,9 +292,51 @@ type LeadershipAutomationResult = {
   unresolved: number;
   conflicts: number;
   failed: number;
+  failureDetails: Array<{
+    sourceId: string;
+    errorClass: string;
+    httpStatus?: number;
+    nextRetryAt?: string;
+    reason: string;
+  }>;
   editorialCandidates: ContentItem[];
   error?: string;
 };
+
+function leadershipFailureDetails(
+  snapshots: Awaited<ReturnType<typeof monitorLeadershipSources>>["snapshots"],
+  schedules: Awaited<ReturnType<typeof monitorLeadershipSources>>["schedule"],
+) {
+  return snapshots
+    .filter((snapshot) => snapshot.state !== "success" && snapshot.state !== "unchanged")
+    .slice(0, 16)
+    .map((snapshot) => {
+      const schedule = schedules.find((row) => row.sourceId === snapshot.sourceId);
+      const errorClass = snapshot.httpStatus
+        ? "http"
+        : snapshot.state === "blocked"
+          ? "blocked"
+          : snapshot.state === "hostile"
+            ? "hostile-content"
+            : /timed out/i.test(snapshot.error ?? "")
+              ? "timeout"
+              : snapshot.extractionStatus === "unrecognized"
+                ? "unrecognized"
+                : snapshot.extractionStatus;
+      return {
+        sourceId: snapshot.sourceId,
+        errorClass,
+        ...(snapshot.httpStatus === undefined || snapshot.httpStatus === null
+          ? {}
+          : { httpStatus: snapshot.httpStatus }),
+        ...(schedule?.nextAttemptAt ? { nextRetryAt: schedule.nextAttemptAt } : {}),
+        reason: (snapshot.error || `Leadership source ${snapshot.sourceId} failed`)
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 240),
+      };
+    });
+}
 
 async function runLeadershipStage(
   env: AutomationEnv,
@@ -341,6 +383,7 @@ async function runLeadershipStage(
       unresolved: autonomous.unresolved,
       conflicts: autonomous.conflicts,
       failed,
+      failureDetails: leadershipFailureDetails(result.snapshots, result.schedule),
       editorialCandidates: autonomous.editorialCandidates,
     };
   } catch (error) {
@@ -361,6 +404,7 @@ async function runLeadershipStage(
       unresolved: 0,
       conflicts: 0,
       failed: 0,
+      failureDetails: [],
       editorialCandidates: [],
       error: message,
     };
@@ -581,7 +625,7 @@ export async function runAutomation(
       timeoutMs,
       deadlineAt: modelDeadlineAt,
       heartbeat: ensureLock,
-    });
+    }, run.editorEvidence);
     const modeledById = new Map(modeled.map((row) => [row.item.id, row]));
     const verificationCandidates = items.flatMap((item) => {
       const enrichment = modeledById.get(item.id)?.enrichment ?? reusable.get(item.id);
@@ -676,6 +720,14 @@ export async function runAutomation(
       state: source.state,
       itemCount: source.itemCount,
       complete: source.complete,
+      ...(source.completeness ? { completeness: source.completeness } : {}),
+      ...(source.error ? { error: source.error.replace(/\s+/g, " ").trim().slice(0, 240) } : {}),
+      ...(source.httpStatus === undefined ? {} : { httpStatus: source.httpStatus }),
+      ...(source.nextAttemptAt ? { nextAttemptAt: source.nextAttemptAt } : {}),
+      ...(source.fallbackUrl ? { fallbackUrl: source.fallbackUrl } : {}),
+      ...(source.consecutiveFailures === undefined ? {} : { consecutiveFailures: source.consecutiveFailures }),
+      ...(source.lastSuccessAt === undefined ? {} : { lastSuccessAt: source.lastSuccessAt }),
+      ...(source.requiresAuth === undefined ? {} : { requiresAuth: source.requiresAuth }),
     }));
     const sourceErrorCount = sources.filter(
       (source) => !["disabled", "misconfigured"].includes(source.state) && !isSuccessfulSourceState(source.state),
