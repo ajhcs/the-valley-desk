@@ -408,11 +408,13 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   const leadership = result?.leadership;
   if (leadership) {
     const runtimeCoverage = Array.isArray(leadership.runtimeCoverage) ? leadership.runtimeCoverage : [];
+    const runtimeCoverageAvailable = runtimeCoverage.length > 0;
     const runtimeCoverageLost = runtimeCoverage.filter((row) => (
       row && row.configuredStatus === "active" && row.coverageLost
     ));
     const stageFailed = leadership.outcome === "failed";
-    const legacyCoverageLost = Number(leadership.failed ?? 0) > 0
+    const legacyCoverageLost = !runtimeCoverageAvailable
+      && Number(leadership.failed ?? 0) > 0
       && Number(leadership.failed) >= Number(leadership.coverage?.length ?? 1);
     if (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageLost.length === 0) {
       await recover("valley-desk:leadership-monitor", 2);

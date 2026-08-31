@@ -130,6 +130,9 @@ export function buildRuntimeLeadershipCoverage(
       nowMs,
     ));
     const healthySourceIds = sourceStates.filter((source) => source.state === "healthy").map((source) => source.sourceId);
+    const freshSourceIds = sourceStates
+      .filter((source) => source.failureAgeMs !== null && source.failureAgeMs <= LEADERSHIP_FRESHNESS_SLO_MS)
+      .map((source) => source.sourceId);
     const allBackoff = sourceStates.length > 0 && sourceStates.every((source) => source.state === "backoff");
     const anyBlocked = sourceStates.some((source) => source.state === "blocked");
     const state: Exclude<OperationalConditionState, "resolved"> = sourceStates.length === 0
@@ -155,7 +158,10 @@ export function buildRuntimeLeadershipCoverage(
       shortName: institution.shortName,
       configuredStatus: institution.configuredStatus,
       state,
-      coverageLost: healthySourceIds.length === 0,
+      // A blocked/backoff source can still provide current coverage until its
+      // last successful observation ages past the freshness SLO. Alerting
+      // should distinguish that degraded condition from actual coverage loss.
+      coverageLost: freshSourceIds.length === 0,
       sourceIds: [...institution.sourceIds],
       healthySourceIds,
       lastSuccessAt: latestSuccess?.value ?? null,

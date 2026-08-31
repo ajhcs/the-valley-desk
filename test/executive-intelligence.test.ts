@@ -215,6 +215,21 @@ test("runtime leadership coverage separates configured posture from fresh source
   assert.equal(byName.get("Temple")?.state, "failed", "stale success is not current coverage");
   assert.equal(byName.get("Jefferson")?.state, "degraded", "configured gaps remain explicit");
   assert.equal(byName.get("Main Line")?.sourceStates[0]?.state, "backoff");
+
+  const transient = buildRuntimeLeadershipCoverage([
+    { institutionId: "inst-transient", shortName: "Transient", configuredStatus: "active", sourceIds: ["src-transient"] },
+  ], [{
+    sourceId: "src-transient",
+    institutionId: "inst-transient",
+    state: "blocked",
+    lastSuccessAt: "2026-08-28T11:30:00.000Z",
+    lastAttemptedAt: "2026-08-28T11:45:00.000Z",
+    nextAttemptAt: "2026-08-28T12:30:00.000Z",
+    consecutiveFailures: 1,
+    lastError: "HTTP 403",
+  }], now)[0]!;
+  assert.equal(transient.state, "blocked");
+  assert.equal(transient.coverageLost, false, "recent blocked sources retain coverage within the freshness SLO");
 });
 
 test("leadership source alternatives stay allowlisted and rescue incomplete primaries", async () => {

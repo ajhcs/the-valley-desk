@@ -1272,6 +1272,59 @@ test("leadership backoff does not count as a healthy recovery", async () => {
   database.close();
 });
 
+test("recent leadership source failure remains warning while fresh coverage survives", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  await sendAutomationAlerts({
+    VALLEY_DESK_DB: db,
+    NOTIFY_OPS: {
+      async send(message: { subject: string }) {
+        sent.push(message.subject);
+        return { messageId: "message-1" };
+      },
+    },
+  }, {
+    notes: { sources: [] },
+    leadership: {
+      outcome: "degraded",
+      fetched: 1,
+      failed: 1,
+      coverage: [{ institutionId: "inst-example", status: "active" }],
+      runtimeCoverage: [{
+        institutionId: "inst-example",
+        shortName: "Example",
+        configuredStatus: "active",
+        state: "blocked",
+        coverageLost: false,
+        sourceIds: ["src-example-leadership"],
+        healthySourceIds: [],
+        lastSuccessAt: "2026-08-28T11:30:00.000Z",
+        failureAgeMs: 1_800_000,
+        nextRetryAt: "2026-08-28T12:30:00.000Z",
+        sourceStates: [],
+      }],
+      failureDetails: [{
+        sourceId: "src-example-leadership",
+        institutionId: "inst-example",
+        errorClass: "upstream-blocked",
+        httpStatus: 403,
+        nextRetryAt: "2026-08-28T12:30:00.000Z",
+        reason: "HTTP 403",
+      }],
+    },
+  }, new Date("2026-08-28T12:00:00.000Z"));
+  assert.equal(sent.length, 0, "fresh coverage keeps a transient source failure in the digest");
+  const row = database.prepare(
+    "SELECT severity, condition_state, detail_json FROM operational_alerts WHERE fingerprint = 'valley-desk:leadership-monitor'",
+  ).get() as { severity: string; condition_state: string; detail_json: string };
+  assert.equal(row.severity, "warning");
+  assert.equal(row.condition_state, "degraded");
+  assert.match(row.detail_json, /src-example-leadership/);
+  database.close();
+});
+
 test("source coverage loss stays warning when a healthy fallback is still serving the origin", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
