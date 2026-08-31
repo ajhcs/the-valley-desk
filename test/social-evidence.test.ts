@@ -22,6 +22,7 @@ import type { D1DatabaseLike, D1StatementLike } from "../src/ingest/persistence.
 import { evaluateCandidate } from "../src/ingest/editor.ts";
 import { EditorEnrichment } from "../src/ingest/editor-model.ts";
 import { VoiceItem } from "../src/content/schema.ts";
+import worker from "../worker.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -674,6 +675,44 @@ test("scheduled automation passes D1 to the social consumer and persists its rev
     "scheduled editor enrichment must receive the bounded social evidence context",
   );
   assert.equal((await ingestSocialEvidence(db, new Date())).items.length, 0);
+});
+
+test("Worker scheduled entrypoint consumes a social packet through the default automation wiring", async () => {
+  const { sqlite, db } = database();
+  const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify(packet("A current Penn Medicine workflow update entered review.")),
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(response.status, 202);
+
+  const waits: Promise<unknown>[] = [];
+  const context = {
+    waitUntil(value: Promise<unknown>) { waits.push(value); },
+  };
+  const previousFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response("not found", { status: 404 });
+  try {
+    await worker.scheduled({ cron: "0 * * * *" }, { VALLEY_DESK_DB: db }, context);
+    await Promise.all(waits);
+  } finally {
+    globalThis.fetch = previousFetch;
+  }
+
+  const candidate = sqlite.prepare(`
+    SELECT id, queue_status, source_origin FROM content_candidates
+    WHERE source_origin = 'grok-social-linkedin'
+  `).get() as { id: string; queue_status: string; source_origin: string } | undefined;
+  assert.ok(candidate);
+  assert.equal(candidate?.queue_status, "review");
+  const stored = sqlite.prepare("SELECT status, candidate_id FROM social_evidence_packets").get() as {
+    status: string;
+    candidate_id: string | null;
+  };
+  assert.equal(stored.status, "processed");
+  assert.equal(stored.candidate_id, candidate?.id);
+  assert.ok(waits.length >= 4, "scheduled handler must register cleanup and automation work with waitUntil");
+  sqlite.close();
 });
 
 test("social evidence reaches both editor passes before an approved publication", async () => {
