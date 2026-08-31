@@ -8,6 +8,7 @@ import { coveredInstitutions, coveragePack } from "./coverage-pack";
 
 export const SOCIAL_EVIDENCE_PATH = "/api/signals/social";
 export const SOCIAL_MANIFEST_PATH = `${SOCIAL_EVIDENCE_PATH}/manifest`;
+export const SOCIAL_COLLECTOR_RUNS_PATH = `${SOCIAL_EVIDENCE_PATH}/runs`;
 export const SOCIAL_EVIDENCE_SCHEMA_VERSION = 1;
 export const SOCIAL_EVIDENCE_MAX_BYTES = 96 * 1024;
 export const SOCIAL_EVIDENCE_MAX_BATCH = 25;
@@ -62,7 +63,42 @@ const Packet = z.object({
 export type SocialEvidencePacket = z.infer<typeof Packet>;
 const PacketEnvelope = z.union([Packet, z.object({ packets: z.array(Packet).min(1).max(SOCIAL_EVIDENCE_MAX_BATCH) })]);
 
-type SocialEvidenceEnv = { VALLEY_DESK_DB: D1DatabaseLike; SOCIAL_INGEST_TOKEN?: string };
+const CollectorPlatformReport = z.object({
+  targetsChecked: z.number().int().min(0).max(10_000).default(0),
+  postsSeen: z.number().int().min(0).max(50_000).default(0),
+  accepted: z.number().int().min(0).max(50_000).default(0),
+  duplicates: z.number().int().min(0).max(50_000).default(0),
+  failures: z.number().int().min(0).max(10_000).default(0),
+});
+const CollectorRun = z.object({
+  schemaVersion: z.literal(SOCIAL_EVIDENCE_SCHEMA_VERSION),
+  collector: z.literal("vale"),
+  runId: z.string().min(1).max(120),
+  manifestVersion: z.string().min(1).max(120),
+  manifestHash: z.string().regex(/^[a-f0-9]{64}$/),
+  startedAt: z.string().datetime(),
+  finishedAt: z.string().datetime(),
+  outcome: z.enum(["success", "partial", "failed"]),
+  accountsChecked: z.number().int().min(0).max(10_000).default(0),
+  postsSeen: z.number().int().min(0).max(50_000).default(0),
+  accepted: z.number().int().min(0).max(50_000).default(0),
+  duplicates: z.number().int().min(0).max(50_000).default(0),
+  failures: z.number().int().min(0).max(10_000).default(0),
+  platforms: z.object({
+    linkedin: CollectorPlatformReport.default({}),
+    x: CollectorPlatformReport.default({}),
+  }).default({ linkedin: {}, x: {} }),
+  failureReasons: z.array(z.string().max(500)).max(20).default([]),
+});
+export type SocialCollectorRun = z.infer<typeof CollectorRun>;
+
+type SocialEvidenceEnv = {
+  VALLEY_DESK_DB: D1DatabaseLike;
+  SOCIAL_INGEST_TOKEN?: string;
+  REVIEW_API_TOKEN?: string;
+  OPENROUTER_API_KEY?: string;
+  EDITOR_MODEL_API_KEY?: string;
+};
 
 function json(status: number, value: unknown, headers: HeadersInit = {}) {
   return new Response(JSON.stringify(value), {
@@ -82,6 +118,14 @@ async function tokenMatches(expected: string | undefined, actual: string | null)
   let different = a.length ^ b.length;
   for (let i = 0; i < Math.max(a.length, b.length); i += 1) different |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
   return Boolean(expected?.trim()) && different === 0;
+}
+
+async function socialAuthorized(request: Request, env: SocialEvidenceEnv) {
+  const token = env.SOCIAL_INGEST_TOKEN?.trim();
+  if (!token || token === env.REVIEW_API_TOKEN?.trim() || token === env.OPENROUTER_API_KEY?.trim() || token === env.EDITOR_MODEL_API_KEY?.trim()) {
+    return false;
+  }
+  return tokenMatches(token, request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? null);
 }
 
 async function boundedJson(request: Request) {
@@ -184,9 +228,10 @@ async function persistPacket(db: D1DatabaseLike, input: SocialEvidencePacket, no
 
 export function isSocialEvidencePath(pathname: string) { return pathname === SOCIAL_EVIDENCE_PATH; }
 export function isSocialManifestPath(pathname: string) { return pathname === SOCIAL_MANIFEST_PATH; }
+export function isSocialCollectorRunsPath(pathname: string) { return pathname === SOCIAL_COLLECTOR_RUNS_PATH; }
 
 export async function handleSocialEvidence(request: Request, env: SocialEvidenceEnv) {
-  if (!await tokenMatches(env.SOCIAL_INGEST_TOKEN, request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? null)) {
+  if (!await socialAuthorized(request, env)) {
     return json(404, { error: "not_found" });
   }
   if (request.method.toUpperCase() === "GET") {
@@ -430,7 +475,7 @@ export async function buildSocialTargetManifest(db: D1DatabaseLike, now = new Da
 }
 
 export async function handleSocialManifest(request: Request, env: SocialEvidenceEnv) {
-  if (!await tokenMatches(env.SOCIAL_INGEST_TOKEN, request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? null)) {
+  if (!await socialAuthorized(request, env)) {
     return json(404, { error: "not_found" });
   }
   if (request.method.toUpperCase() !== "GET") return json(405, { error: "method_not_allowed" }, { allow: "GET" });
@@ -439,6 +484,150 @@ export async function handleSocialManifest(request: Request, env: SocialEvidence
   } catch (error) {
     console.error("social-target-manifest", JSON.stringify({ outcome: "failed", message: error instanceof Error ? error.message : String(error) }));
     return json(503, { error: "manifest_unavailable" });
+  }
+}
+
+type CollectorRunRow = {
+  id: string;
+  schema_version: number;
+  collector: "vale";
+  manifest_version: string;
+  manifest_hash: string;
+  started_at: string;
+  finished_at: string;
+  outcome: "success" | "partial" | "failed";
+  accounts_checked: number;
+  posts_seen: number;
+  accepted: number;
+  duplicates: number;
+  failures: number;
+  platforms_json: string;
+  failure_reasons_json: string;
+  created_at: string;
+};
+
+function collectorRunPayload(row: CollectorRunRow | null) {
+  if (!row) return null;
+  return {
+    schemaVersion: row.schema_version,
+    collector: row.collector,
+    runId: row.id,
+    manifestVersion: row.manifest_version,
+    manifestHash: row.manifest_hash,
+    startedAt: row.started_at,
+    finishedAt: row.finished_at,
+    outcome: row.outcome,
+    accountsChecked: Number(row.accounts_checked) || 0,
+    postsSeen: Number(row.posts_seen) || 0,
+    accepted: Number(row.accepted) || 0,
+    duplicates: Number(row.duplicates) || 0,
+    failures: Number(row.failures) || 0,
+    platforms: parseJson(row.platforms_json, { linkedin: {}, x: {} }),
+    failureReasons: parseJson(row.failure_reasons_json, []),
+    createdAt: row.created_at,
+  };
+}
+
+export async function handleSocialCollectorRuns(request: Request, env: SocialEvidenceEnv) {
+  if (!await socialAuthorized(request, env)) {
+    return json(404, { error: "not_found" });
+  }
+  const method = request.method.toUpperCase();
+  if (method === "GET") {
+    try {
+      const [latest, lastSuccessful] = await Promise.all([
+        env.VALLEY_DESK_DB.prepare(`
+          SELECT id, schema_version, collector, manifest_version, manifest_hash,
+                 started_at, finished_at, outcome, accounts_checked, posts_seen,
+                 accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at
+          FROM social_collector_runs
+          WHERE collector = 'vale'
+          ORDER BY finished_at DESC, id DESC LIMIT 1
+        `).first<CollectorRunRow>(),
+        env.VALLEY_DESK_DB.prepare(`
+          SELECT id, schema_version, collector, manifest_version, manifest_hash,
+                 started_at, finished_at, outcome, accounts_checked, posts_seen,
+                 accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at
+          FROM social_collector_runs
+          WHERE collector = 'vale' AND outcome = 'success'
+          ORDER BY finished_at DESC, id DESC LIMIT 1
+        `).first<CollectorRunRow>(),
+      ]);
+      return json(200, {
+        schemaVersion: SOCIAL_EVIDENCE_SCHEMA_VERSION,
+        collector: "vale",
+        latest: collectorRunPayload(latest),
+        lastSuccessful: collectorRunPayload(lastSuccessful),
+      });
+    } catch (error) {
+      console.error("social-collector-status", JSON.stringify({ outcome: "failed", message: error instanceof Error ? error.message : String(error) }));
+      return json(503, { error: "collector_status_unavailable" });
+    }
+  }
+  if (method !== "POST") return json(405, { error: "method_not_allowed" }, { allow: "GET, POST" });
+  if (!(request.headers.get("content-type") || "").toLowerCase().startsWith("application/json")) {
+    return json(415, { error: "application_json_required" });
+  }
+  try {
+    const decoded = CollectorRun.safeParse(await boundedJson(request));
+    if (!decoded.success) {
+      return json(422, {
+        error: "invalid_collector_run",
+        issues: decoded.error.issues.slice(0, 12).map(({ path, message }) => ({ path, message })),
+      });
+    }
+    const input = decoded.data;
+    const started = Date.parse(input.startedAt);
+    const finished = Date.parse(input.finishedAt);
+    if (!Number.isFinite(started) || !Number.isFinite(finished) || finished < started || finished > Date.now() + 10 * 60_000) {
+      return json(422, { error: "collector_run_time_invalid" });
+    }
+    let manifest: Awaited<ReturnType<typeof buildSocialTargetManifest>>;
+    try {
+      manifest = await buildSocialTargetManifest(env.VALLEY_DESK_DB, new Date(input.finishedAt));
+    } catch {
+      return json(503, { error: "manifest_unavailable" });
+    }
+    if (manifest.manifestVersion !== input.manifestVersion || manifest.manifestHash !== input.manifestHash) {
+      return json(409, {
+        error: "manifest_mismatch",
+        manifestVersion: manifest.manifestVersion,
+        manifestHash: manifest.manifestHash,
+      });
+    }
+    const createdAt = new Date().toISOString();
+    await env.VALLEY_DESK_DB.prepare(`
+      INSERT INTO social_collector_runs (
+        id, schema_version, collector, manifest_version, manifest_hash,
+        started_at, finished_at, outcome, accounts_checked, posts_seen,
+        accepted, duplicates, failures, platforms_json, failure_reasons_json, created_at
+      ) VALUES (?, ?, 'vale', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        manifest_version = excluded.manifest_version,
+        manifest_hash = excluded.manifest_hash,
+        started_at = excluded.started_at,
+        finished_at = excluded.finished_at,
+        outcome = excluded.outcome,
+        accounts_checked = excluded.accounts_checked,
+        posts_seen = excluded.posts_seen,
+        accepted = excluded.accepted,
+        duplicates = excluded.duplicates,
+        failures = excluded.failures,
+        platforms_json = excluded.platforms_json,
+        failure_reasons_json = excluded.failure_reasons_json
+    `).bind(
+      input.runId, input.schemaVersion, input.manifestVersion, input.manifestHash,
+      input.startedAt, input.finishedAt, input.outcome, input.accountsChecked,
+      input.postsSeen, input.accepted, input.duplicates, input.failures,
+      JSON.stringify(input.platforms), JSON.stringify(input.failureReasons), createdAt,
+    ).run();
+    return json(202, { accepted: 1, runId: input.runId, outcome: input.outcome });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "invalid_collector_run";
+    if (message === "payload_too_large") return json(413, { error: message });
+    if (error instanceof SyntaxError) return json(400, { error: "invalid_json" });
+    console.error("social-collector-report", JSON.stringify({ outcome: "failed", message: message.slice(0, 160) }));
+    return json(500, { error: "collector_report_failed" });
   }
 }
 

@@ -8,7 +8,7 @@ import {
 import { runAutomation } from "./src/ingest/automation.ts";
 import { cleanupEmailDiscoveries, handleInboundEmail } from "./src/ingest/email.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
-import { cleanupSocialEvidencePackets, handleSocialEvidence, handleSocialManifest, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
+import { cleanupSocialEvidencePackets, handleSocialCollectorRuns, handleSocialEvidence, handleSocialManifest, isSocialCollectorRunsPath, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
 import { feedXml, mergePublishedContent, mergedFeed, sitemapXml } from "./src/ingest/public-feed.ts";
@@ -245,6 +245,16 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     return;
   }
   const sourceNotes = Array.isArray(result?.notes?.sources) ? result.notes.sources : [];
+  const sourceCoverageLost = (source) => {
+    const peers = sourceNotes.filter((candidate) => (
+      candidate && candidate.type === source.type
+      && candidate.state !== "disabled"
+      && candidate.state !== "misconfigured"
+    ));
+    return peers.length > 0 && peers.every((candidate) => (
+      candidate.state !== "healthy" && candidate.state !== "healthy-empty"
+    ));
+  };
   for (const source of sourceNotes) {
     if (!source) continue;
     const sourceId = typeof source.id === "string" ? source.id.slice(0, 100) : "unknown";
@@ -268,13 +278,16 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     await dispatch({
       fingerprint,
       event: "source-degraded",
-      severity: source.state === "auth-failed" ? "critical" : "warning",
+      severity: source.state === "upstream-blocked"
+        ? "warning"
+        : sourceCoverageLost(source) && !source.fallbackUrl ? "critical" : "warning",
       threshold: 3,
       now,
       details: {
         sourceId,
         state: source.state,
         failures: source.consecutiveFailures,
+        coverageLost: sourceCoverageLost(source),
         ...safeAlertDetails(source.error ?? source.state, {
           stage: "source-health",
           sourceId,
@@ -293,7 +306,10 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       await dispatch({
         fingerprint: "valley-desk:leadership-monitor",
         event: "leadership-monitor-failed",
-        severity: leadership.outcome === "failed" ? "critical" : "warning",
+        severity: leadership.outcome === "failed"
+          || (Number(leadership.failed ?? 0) > 0 && Number(leadership.failed) >= Number(leadership.coverage?.length ?? 1))
+          ? "critical"
+          : "warning",
         threshold: 2,
         now,
         details: {
@@ -312,7 +328,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     await dispatch({
       fingerprint: "valley-desk:model-enrichment",
       event: "model-enrichment-failed",
-      severity: modelFailed === selected ? "critical" : "warning",
+      severity: "warning",
       threshold: 2,
       now,
       details: {
@@ -332,7 +348,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     await dispatch({
       fingerprint: "valley-desk:model-verifier",
       event: "model-verifier-failed",
-      severity: verifierFailed === verifierAttempted ? "critical" : "warning",
+      severity: "warning",
       threshold: 2,
       now,
       details: { attempted: verifierAttempted, failed: verifierFailed },
@@ -365,6 +381,9 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   }
   if (isSocialManifestPath(path)) {
     return handleSocialManifest(request, env);
+  }
+  if (isSocialCollectorRunsPath(path)) {
+    return handleSocialCollectorRuns(request, env);
   }
   if (isSocialEvidencePath(path)) {
     return handleSocialEvidence(request, env);

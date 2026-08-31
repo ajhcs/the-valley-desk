@@ -156,7 +156,8 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   ).first();
   const sources = await env.VALLEY_DESK_DB.prepare(`
       SELECT source_id, origin, source_type, source_url, state, complete, item_count,
-             consecutive_failures, last_checked_at, last_success_at, last_error
+             consecutive_failures, last_checked_at, last_success_at, last_error,
+             next_attempt_at, last_http_status, requires_auth, last_fallback_url
       FROM source_health ORDER BY source_type, source_id
     `).all();
   const reconciliation = await env.VALLEY_DESK_DB.prepare(`
@@ -244,6 +245,91 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       error: error instanceof Error ? error.message : "Executive intelligence schema unavailable",
     };
   }
+  let socialEvidence: Record<string, unknown> = { available: false };
+  try {
+    const packets = await env.VALLEY_DESK_DB.prepare(`
+      SELECT status, COUNT(*) AS count, MAX(last_seen_at) AS last_seen_at,
+             MAX(processed_at) AS last_processed_at
+      FROM social_evidence_packets
+      GROUP BY status ORDER BY status
+    `).all();
+    socialEvidence = { available: true, packets: packets.results ?? [] };
+  } catch (error) {
+    socialEvidence = {
+      available: false,
+      error: error instanceof Error ? error.message : "Social evidence schema unavailable",
+    };
+  }
+  let valeCollector: Record<string, unknown> = {
+    available: false,
+    collector: "vale",
+    latest: null,
+    lastSuccessful: null,
+  };
+  try {
+    const [latest, lastSuccessful] = await Promise.all([
+      env.VALLEY_DESK_DB.prepare(`
+        SELECT id, manifest_version, manifest_hash, started_at, finished_at, outcome,
+               accounts_checked, posts_seen, accepted, duplicates, failures,
+               platforms_json, failure_reasons_json
+        FROM social_collector_runs
+        WHERE collector = 'vale'
+        ORDER BY finished_at DESC, id DESC LIMIT 1
+      `).first(),
+      env.VALLEY_DESK_DB.prepare(`
+        SELECT id, manifest_version, manifest_hash, started_at, finished_at, outcome,
+               accounts_checked, posts_seen, accepted, duplicates, failures,
+               platforms_json, failure_reasons_json
+        FROM social_collector_runs
+        WHERE collector = 'vale' AND outcome = 'success'
+        ORDER BY finished_at DESC, id DESC LIMIT 1
+      `).first(),
+    ]);
+    valeCollector = { available: true, collector: "vale", latest, lastSuccessful };
+  } catch (error) {
+    valeCollector = {
+      available: false,
+      collector: "vale",
+      latest: null,
+      lastSuccessful: null,
+      error: error instanceof Error ? error.message : "Social collector schema unavailable",
+    };
+  }
+  let modelHealth: Record<string, unknown> = { available: false };
+  try {
+    const attempts = await env.VALLEY_DESK_DB.prepare(`
+      SELECT enrichment_outcome AS outcome, COUNT(*) AS count,
+             MAX(enrichment_attempted_at) AS last_attempted_at
+      FROM content_candidates
+      WHERE enrichment_attempted_at IS NOT NULL
+      GROUP BY enrichment_outcome ORDER BY enrichment_outcome
+    `).all();
+    modelHealth = { available: true, attempts: attempts.results ?? [] };
+  } catch (error) {
+    modelHealth = {
+      available: false,
+      error: error instanceof Error ? error.message : "Editor model health unavailable",
+    };
+  }
+  let alerts: Record<string, unknown> = { available: false, open: [] };
+  try {
+    const open = await env.VALLEY_DESK_DB.prepare(`
+      SELECT fingerprint, event, severity, state, occurrence_count,
+             first_seen_at, last_seen_at, detail_json
+      FROM operational_alerts
+      WHERE state = 'open'
+      ORDER BY CASE severity WHEN 'critical' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END,
+               last_seen_at DESC
+      LIMIT 50
+    `).all();
+    alerts = { available: true, open: open.results ?? [] };
+  } catch (error) {
+    alerts = {
+      available: false,
+      open: [],
+      error: error instanceof Error ? error.message : "Operational alert schema unavailable",
+    };
+  }
   const payload: Record<string, unknown> = {
     schemaVersion: SCHEMA_VERSION,
     buildSha: buildShaFromEnv(env),
@@ -257,6 +343,10 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
     signalVerification,
     officialSourceDiscovery,
     executiveIntelligence,
+    socialEvidence,
+    valeCollector,
+    modelHealth,
+    alerts,
   };
   if (!detailed) return payload;
   const review = await env.VALLEY_DESK_DB.prepare(`

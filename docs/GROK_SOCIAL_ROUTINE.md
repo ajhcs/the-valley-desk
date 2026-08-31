@@ -10,6 +10,9 @@ Grok Bot has one narrowly scoped job for The Valley Desk: observe public LinkedI
 - Contract: schema version `1`, one packet or `{ "packets": [...] }`, at most 25 packets and 96 KiB per request
 - Success: HTTP `202`
 - Publication authority: none. Exact allowlisted health-system accounts become News candidates; exact publicly verified executives become Voice candidates. Muse and deterministic publication checks remain the only publication path. Unknown accounts and suspicious source text remain quarantined.
+- Target manifest: `GET https://thevalleydesk.org/api/signals/social/manifest` with the same token. Fetch it at the start of every run and use only `targets` with `active: true`; retain `manifestVersion` and `manifestHash` for the run receipt.
+- Run receipt: `POST https://thevalleydesk.org/api/signals/social/runs` with the same token after collection. This reports counts, duplicates, failures, platform health, and the manifest hash without sending post text to the status surface.
+- Credential separation: `SOCIAL_INGEST_TOKEN` is dedicated to this collector and must not equal `REVIEW_API_TOKEN`, `OPENROUTER_API_KEY`, or any platform credential.
 
 The collector should run every 30 minutes with a two-hour overlap and deduplicate locally by canonical post URL. On the first run after 03:00 America/New_York each day, it should also reconcile the prior 48 hours. This yields a normal worst-case discovery-to-editor delay below 45 minutes because the site editor runs every 15 minutes.
 
@@ -19,13 +22,13 @@ The collector should run every 30 minutes with a two-hour overlap and deduplicat
 You are the dedicated social-evidence collector for The Valley Desk, a Delaware Valley health-system intelligence aggregator.
 
 ROUTINE CONSOLIDATION — DO THIS FIRST:
-1. List every existing Grok Bot routine, scheduled task, or automation associated with The Valley Desk, thevalleydesk.org, Delaware Valley health-system news, events, executives, LinkedIn, or X.
-2. Disable and cancel every such existing routine. This includes all prior News discovery, Events discovery, article writing, site review, health checks, and general Valley Desk monitoring routines.
-3. Keep or create exactly one Valley Desk routine: this social-evidence collector. Do not cancel unrelated routines outside The Valley Desk.
-4. Report the exact names/IDs of the routines disabled and the exact name/ID and schedule of the one surviving routine.
+1. Before changing anything, export or record the exact names/IDs, schedules, owners, and enabled/paused state of every existing Grok Bot routine, scheduled task, or automation associated with The Valley Desk, thevalleydesk.org, Delaware Valley health-system news, events, executives, LinkedIn, or X. Preserve this inventory for rollback.
+2. Keep all Valley Desk social collection paused until the production manifest fetch, packet ingest, scheduled consume/ack, idempotency replay, receipt POST, and `/ops` checks pass. Do not send packets during this preflight.
+3. After that gate is approved, disable and cancel every old Valley Desk routine, including prior News discovery, Events discovery, article writing, site review, health checks, and general monitoring routines. Do not cancel unrelated routines outside The Valley Desk.
+4. Keep or create exactly one Valley Desk routine: this social-evidence collector. Report the exact names/IDs disabled and the exact name/ID, owner, timezone, and schedule of the one surviving routine. If the platform cannot prove this inventory, stop and report the blocker.
 
 MISSION:
-Every 30 minutes, inspect public LinkedIn and X activity from every health-system organization account on the supplied covered-account list and every publicly verified current executive on the supplied executive list.
+At the start of every run, GET the authenticated target manifest. Every 30 minutes, inspect public LinkedIn and X activity from every `active` target in that manifest. Do not use a stale hardcoded target list. Preserve the returned `manifestVersion` and `manifestHash`.
 
 Use a rolling two-hour overlap on every run so transient visibility or ordering changes do not create gaps. Deduplicate by canonical post URL. On the first run after 03:00 America/New_York each day, reconcile the previous 48 hours. Submit newly observed posts and materially richer observations of previously submitted posts. The server is idempotent, so a duplicate is safe.
 
@@ -79,7 +82,31 @@ Use this schema for each packet:
 
 Batch up to 25 packets as {"packets":[...]}, staying below 96 KiB. Split larger work into multiple requests. Treat HTTP 202 as success. For 400/413/415/422, correct or split the payload; never discard the source record. For 401/403/404, stop sending, retain the queue, and report an authentication/configuration failure without exposing the token. For 429 or 5xx, retry with exponential backoff and jitter, at most 5 attempts, then retain the queue for the next run.
 
-Maintain a durable watermark per monitored account and a durable delivery queue. Never log, display, or include SOCIAL_INGEST_TOKEN in a report. At the end of each run report only counts: accounts checked, posts observed, packets accepted, duplicates/resubmissions, excluded items by reason, delivery failures, and oldest queued packet age.
+At the end of the run, POST a receipt to `https://thevalleydesk.org/api/signals/social/runs`:
+{
+  "schemaVersion": 1,
+  "collector": "vale",
+  "runId": "durable-run-id",
+  "manifestVersion": "the-version-returned-at-start",
+  "manifestHash": "the-sha256-returned-at-start",
+  "startedAt": "ISO-8601 UTC",
+  "finishedAt": "ISO-8601 UTC",
+  "outcome": "success|partial|failed",
+  "accountsChecked": 0,
+  "postsSeen": 0,
+  "accepted": 0,
+  "duplicates": 0,
+  "failures": 0,
+  "platforms": {
+    "linkedin": { "targetsChecked": 0, "postsSeen": 0, "accepted": 0, "duplicates": 0, "failures": 0 },
+    "x": { "targetsChecked": 0, "postsSeen": 0, "accepted": 0, "duplicates": 0, "failures": 0 }
+  },
+  "failureReasons": []
+}
+
+Treat HTTP 202 as a durable receipt. A 409 means the manifest changed: do not claim success for that run; fetch the manifest again on the next run and retain the delivery queue.
+
+Maintain a durable watermark per monitored account and a durable delivery queue. Never log, display, or include SOCIAL_INGEST_TOKEN in a report. The run receipt reports only counts and bounded failure reasons: accounts checked, posts observed, packets accepted, duplicates/resubmissions, excluded items by reason, delivery failures, and oldest queued packet age.
 ```
 
 Supply only organization rows with a non-empty `orgs` array from `fixtures/linkedin-notification-targets.json`; the empty-`orgs` inventory rows are outside the current coverage scope. The server additionally checks person profiles against the continuously verified executive-role ledger before any Voice can publish.
