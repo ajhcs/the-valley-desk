@@ -13,6 +13,7 @@ const PATTERNS = [
   { name: "cloudflare-token", re: /\bCF_API_TOKEN\s*=\s*['\"]?[A-Za-z0-9_-]{20,}/ },
   { name: "live-openrouter-env", re: /\bOPENROUTER_API_KEY\s*=\s*(?!optional-openrouter-key\b)['\"]?[A-Za-z0-9_-]{16,}/ },
   { name: "live-review-token", re: /\bREVIEW_API_TOKEN\s*=\s*(?!replace-with-a-long-random-token\b)['\"]?[A-Za-z0-9_-]{16,}/ },
+  { name: "live-social-ingest-token", re: /\bSOCIAL_INGEST_TOKEN\s*=\s*(?!replace-with-a-different-long-random-token\b)['\"]?[A-Za-z0-9_-]{16,}/ },
 ];
 
 const files = execFileSync("git", ["ls-files"], { encoding: "utf8" })
