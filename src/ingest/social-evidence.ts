@@ -205,9 +205,37 @@ function validatePacketSemantics(packet: SocialEvidencePacket, now: Date) {
 }
 
 async function persistPacket(db: D1DatabaseLike, input: SocialEvidencePacket, now: Date) {
-  const postUrl = canonicalSocialUrl(input.postUrl, input.platform);
+  const canonicalPostUrl = canonicalSocialUrl(input.postUrl, input.platform);
   const profileUrl = canonicalSocialUrl(input.author.profileUrl, input.platform, true);
-  const packet = { ...input, postUrl, author: { ...input.author, profileUrl } };
+  const postId = input.postId?.trim() || undefined;
+  const existingByUrl = await db.prepare(`
+    SELECT post_id, author_json, post_json, attachments_json, linked_sources_json,
+           entities_json, collector_analysis_json, post_url
+    FROM social_evidence_packets
+    WHERE platform = ? AND post_url = ?
+  `).bind(input.platform, canonicalPostUrl).first<ExistingPacketEvidence>();
+  const existing = existingByUrl ?? (postId
+    ? await db.prepare(`
+      SELECT post_id, author_json, post_json, attachments_json, linked_sources_json,
+             entities_json, collector_analysis_json, post_url
+      FROM social_evidence_packets
+      WHERE platform = ? AND post_id = ?
+      ORDER BY last_seen_at DESC, id DESC LIMIT 1
+    `).bind(input.platform, postId).first<ExistingPacketEvidence>()
+    : null);
+  // A platform post ID is a stronger identity than a URL path. Reuse the
+  // first canonical URL when a collector sends an equivalent alias such as
+  // x.com/user/status/123 and x.com/i/status/123.
+  const postUrl = existing?.post_url ?? canonicalPostUrl;
+  const normalizedPacket = {
+    ...input,
+    postId,
+    postUrl,
+    author: { ...input.author, profileUrl },
+  };
+  const packet = existing
+    ? mergePacketEvidence(normalizedPacket, existing)
+    : normalizedPacket;
   // Observation time changes on every poll; it is receipt metadata rather than
   // new editorial evidence. Excluding it keeps routine polling idempotent
   // while allowing material packet enrichment to reopen a completed review.
@@ -261,6 +289,108 @@ async function persistPacket(db: D1DatabaseLike, input: SocialEvidencePacket, no
       evidenceHash, instructionLike, packet.post.postedAt ?? null, packet.post.observedAt, receivedAt, receivedAt,
     ).run();
   return { id, postUrl, instructionLike: Boolean(instructionLike) };
+}
+
+type PacketAttachment = SocialEvidencePacket["attachments"][number];
+type PacketLinkedSource = SocialEvidencePacket["linkedSources"][number];
+type ExistingPacketEvidence = {
+  post_id: string | null;
+  post_url: string;
+  author_json: string;
+  post_json: string;
+  attachments_json: string;
+  linked_sources_json: string;
+  entities_json: string;
+  collector_analysis_json: string;
+};
+
+function mergeUniqueStrings(existing: readonly string[], incoming: readonly string[]) {
+  return [...new Set([...existing, ...incoming])];
+}
+
+function mergeEvidenceRows<T extends Record<string, unknown>>(
+  existing: readonly T[],
+  incoming: readonly T[],
+  key: (row: T) => string,
+) {
+  const merged = existing.map((row) => ({ ...row }));
+  const indexes = new Map(existing.map((row, index) => [key(row), index]));
+  for (const row of incoming) {
+    const rowKey = key(row);
+    const index = indexes.get(rowKey);
+    if (index === undefined) {
+      indexes.set(rowKey, merged.length);
+      merged.push({ ...row });
+    } else {
+      merged[index] = { ...merged[index], ...row };
+    }
+  }
+  return merged;
+}
+
+function attachmentKey(row: PacketAttachment) {
+  return row.url || JSON.stringify([row.type, row.altText, row.ocrText, row.caption]);
+}
+
+function linkedSourceKey(row: PacketLinkedSource) {
+  return row.url;
+}
+
+function mergePacketEvidence(
+  incoming: SocialEvidencePacket & { postUrl: string; author: SocialEvidencePacket["author"] },
+  existing: ExistingPacketEvidence,
+): SocialEvidencePacket & { postUrl: string; author: SocialEvidencePacket["author"] } {
+  const previousAuthor = parseJson(existing.author_json, {} as Partial<SocialEvidencePacket["author"]>);
+  const previousPost = parseJson(existing.post_json, {} as Partial<SocialEvidencePacket["post"]>);
+  const previousAttachments = parseJson(existing.attachments_json, [] as PacketAttachment[]);
+  const previousLinkedSources = parseJson(existing.linked_sources_json, [] as PacketLinkedSource[]);
+  const previousEntities = parseJson(existing.entities_json, {} as Partial<SocialEvidencePacket["entities"]>);
+  const previousAnalysis = parseJson(existing.collector_analysis_json, {} as Partial<SocialEvidencePacket["collectorAnalysis"]>);
+  const text = incoming.post.text.trim() || previousPost.text || "";
+  const headline = incoming.post.headline?.trim() || previousPost.headline;
+  const mergedPost = {
+    ...previousPost,
+    ...incoming.post,
+    text,
+    ...(headline ? { headline } : {}),
+    ...(incoming.post.postedAt || previousPost.postedAt ? { postedAt: incoming.post.postedAt ?? previousPost.postedAt } : {}),
+    ...(incoming.post.language || previousPost.language ? { language: incoming.post.language ?? previousPost.language } : {}),
+  };
+  const mergedAttachments = mergeEvidenceRows(previousAttachments, incoming.attachments, attachmentKey);
+  const mergedLinkedSources = mergeEvidenceRows(previousLinkedSources, incoming.linkedSources, linkedSourceKey)
+    .map((row, index) => {
+      const previous = previousLinkedSources[index];
+      const passages = mergeUniqueStrings(previous?.exactPassages ?? [], row.exactPassages ?? []);
+      return { ...row, exactPassages: passages };
+    });
+  const mergedEntities = {
+    people: mergeUniqueStrings(previousEntities.people ?? [], incoming.entities.people),
+    organizations: mergeUniqueStrings(previousEntities.organizations ?? [], incoming.entities.organizations),
+    products: mergeUniqueStrings(previousEntities.products ?? [], incoming.entities.products),
+    places: mergeUniqueStrings(previousEntities.places ?? [], incoming.entities.places),
+  };
+  const whyRelevant = incoming.collectorAnalysis.whyRelevant?.trim() || previousAnalysis.whyRelevant;
+  return {
+    ...incoming,
+    post: mergedPost,
+    postId: incoming.postId ?? existing.post_id ?? undefined,
+    author: {
+      ...previousAuthor,
+      ...incoming.author,
+      ...(incoming.author.headline || previousAuthor.headline ? { headline: incoming.author.headline ?? previousAuthor.headline } : {}),
+      ...(incoming.author.accountType || previousAuthor.accountType ? { accountType: incoming.author.accountType ?? previousAuthor.accountType } : {}),
+    },
+    attachments: mergedAttachments,
+    linkedSources: mergedLinkedSources,
+    entities: mergedEntities,
+    collectorAnalysis: {
+      ...previousAnalysis,
+      ...incoming.collectorAnalysis,
+      ...(whyRelevant ? { whyRelevant } : {}),
+      suggestedTopics: mergeUniqueStrings(previousAnalysis.suggestedTopics ?? [], incoming.collectorAnalysis.suggestedTopics),
+      possibleClaims: mergeUniqueStrings(previousAnalysis.possibleClaims ?? [], incoming.collectorAnalysis.possibleClaims),
+    },
+  };
 }
 
 export function isSocialEvidencePath(pathname: string) { return pathname === SOCIAL_EVIDENCE_PATH; }

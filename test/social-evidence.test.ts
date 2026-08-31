@@ -204,6 +204,26 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   assert.equal(observedAgain.processed_at, "2026-08-28T13:00:00.000Z");
   assert.equal(observedAgain.receive_count, 3);
 
+  const sparse = packet("");
+  sparse.post = { text: "", observedAt: "2026-08-28T12:32:00.000Z" };
+  sparse.attachments = [];
+  sparse.linkedSources = [];
+  sparse.entities = { people: [], organizations: [], products: [], places: [] };
+  sparse.collectorAnalysis = { suggestedTopics: [], possibleClaims: [] };
+  assert.equal((await submit(sparse)).status, 202);
+  const sparseReplay = sqlite.prepare("SELECT status, receive_count, post_json, attachments_json, linked_sources_json, collector_analysis_json FROM social_evidence_packets").get() as typeof observedAgain & {
+    post_json: string;
+    attachments_json: string;
+    linked_sources_json: string;
+    collector_analysis_json: string;
+  };
+  assert.equal(sparseReplay.status, "processed");
+  assert.equal(sparseReplay.receive_count, 4);
+  assert.match(sparseReplay.post_json, /Penn Medicine deployed a new scheduling workflow/);
+  assert.match(sparseReplay.attachments_json, /Clinic scheduling screen/);
+  assert.match(sparseReplay.linked_sources_json, /The change began this month/);
+  assert.match(sparseReplay.collector_analysis_json, /Scheduling operations/);
+
   const enriched = packet();
   enriched.post.observedAt = "2026-08-28T12:35:00.000Z";
   enriched.attachments = [
@@ -215,7 +235,7 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   assert.equal(reopened.status, "review");
   assert.equal(reopened.candidate_id, null);
   assert.equal(reopened.processed_at, null);
-  assert.equal(reopened.receive_count, 4);
+  assert.equal(reopened.receive_count, 5);
   const enrichedRun = await ingestSocialEvidence(db, new Date("2026-08-28T13:30:00.000Z"));
   assert.equal(enrichedRun.items.length, 1);
   assert.equal(enrichedRun.processed.length, 1);
@@ -278,6 +298,43 @@ test("Vale collector receipts are manifest-bound, idempotent, and expose last su
     body: JSON.stringify({ ...report, runId: "stale", manifestHash: "0".repeat(64) }),
   }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
   assert.equal(stale.status, 409);
+  sqlite.close();
+});
+
+test("social post IDs collapse equivalent X URL aliases", async () => {
+  const { sqlite, db } = database();
+  const first = packet("Cooper announced a current operational update.");
+  first.platform = "x";
+  first.postUrl = "https://twitter.com/cooperhealth/status/987654321";
+  first.postId = "987654321";
+  first.author = {
+    name: "Cooper University Health Care",
+    profileUrl: "https://twitter.com/cooperhealth",
+    accountType: "organization",
+  };
+  const submit = (payload: typeof first) => handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify(payload),
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal((await submit(first)).status, 202);
+  const alias = {
+    ...first,
+    postUrl: "https://x.com/i/status/987654321",
+    post: { ...first.post, observedAt: "2026-08-28T12:06:00.000Z" },
+  };
+  assert.equal((await submit(alias)).status, 202);
+  const row = sqlite.prepare("SELECT post_url, post_id, receive_count FROM social_evidence_packets").get() as {
+    post_url: string;
+    post_id: string;
+    receive_count: number;
+  };
+  assert.deepEqual({ ...row }, {
+    post_url: "https://x.com/cooperhealth/status/987654321",
+    post_id: "987654321",
+    receive_count: 2,
+  });
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM social_evidence_packets").get() as { count: number }).count, 1);
   sqlite.close();
 });
 
