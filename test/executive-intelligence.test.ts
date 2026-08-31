@@ -200,11 +200,19 @@ test("leadership monitor persists exact bytes and never infers departures from i
     states: new Map([[source.id, { ...previous, nextAttemptAt: "2026-08-29T00:00:00.000Z" }]]),
     fetchImpl: async () => new Response("<html><body>Just a normal page</body></html>", { status: 200 }),
   });
-  assert.equal(incomplete.snapshots[0]?.state, "success");
+  assert.equal(incomplete.snapshots[0]?.state, "failed");
   assert.equal(incomplete.snapshots[0]?.extractionStatus, "unrecognized");
+  assert.equal(
+    incomplete.snapshots[0]?.error,
+    "Page fetched, but no recognized leadership structure was found",
+  );
   assert.equal(incomplete.observations.length, 0);
   assert.equal(incomplete.schedule[0]?.state, "upstream-failed");
   assert.equal(incomplete.schedule[0]?.lastHash, previous.lastHash);
+  assert.equal(
+    incomplete.schedule[0]?.lastError,
+    "Page fetched, but no recognized leadership structure was found",
+  );
 
   const challenge = await monitorLeadershipSources({
     now: new Date("2026-08-30T12:00:00.000Z"),

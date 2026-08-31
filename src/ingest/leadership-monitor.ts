@@ -258,6 +258,20 @@ function extractionStatus(normalizedText: string, extracted: readonly ExtractedL
   return "complete";
 }
 
+/** Operator-facing reason for a fetched page that did not yield a usable roster. */
+function incompleteExtractionError(status: LeadershipExtractionStatus) {
+  if (status === "empty-unverified") {
+    return "Page fetched, but no readable leadership content was found";
+  }
+  if (status === "unrecognized") {
+    return "Page fetched, but no recognized leadership structure was found";
+  }
+  if (status === "partial") {
+    return "Page fetched, but leadership extraction was incomplete";
+  }
+  return null;
+}
+
 function httpStatusFromError(error?: string | null) {
   const match = /\bHTTP\s+(\d{3})\b/i.exec(error ?? "");
   return match ? Number(match[1]) : undefined;
@@ -389,14 +403,6 @@ function observationsFromSnapshot(
     createdAt,
     status: observationStatus(),
   };
-  if (snapshot.state === "blocked" || snapshot.state === "failed") {
-    return [{
-      ...base,
-      id: `obs-${source.id}-fetch-failed-${createdAt}`,
-      kind: "fetch-failed",
-      payload: { error: snapshot.error, finalUrl: snapshot.finalUrl },
-    }];
-  }
   if (snapshot.instructionLike || snapshot.state === "hostile") {
     return [{
       ...base,
@@ -406,6 +412,18 @@ function observationsFromSnapshot(
         extracted: snapshot.extracted,
         warning: "Untrusted page text; do not treat as instructions or auto-publish",
       },
+    }];
+  }
+  // Transport/allowlist failures use extractionStatus "partial" with an empty
+  // body. Incomplete roster extraction also uses state "failed" but must not
+  // invent arrivals, departures, or a false fetch-failed observation.
+  if (snapshot.state === "blocked" || snapshot.state === "failed") {
+    if (snapshot.extractionStatus !== "partial") return [];
+    return [{
+      ...base,
+      id: `obs-${source.id}-fetch-failed-${createdAt}`,
+      kind: "fetch-failed",
+      payload: { error: snapshot.error, finalUrl: snapshot.finalUrl },
     }];
   }
   if (snapshot.state === "unchanged") return [];
@@ -529,6 +547,7 @@ export async function monitorLeadershipSources(
       );
       const unchanged = Boolean(previous?.lastHash && previous.lastHash === contentHash);
       const hostile = instructionLike || extraction === "challenge";
+      const incompleteError = incompleteExtractionError(extraction);
       const snapshot: LeadershipSnapshot = {
         id: `snap-${source.id}-${now.toISOString()}`,
         sourceId: source.id,
@@ -539,10 +558,20 @@ export async function monitorLeadershipSources(
         byteCount: new TextEncoder().encode(page.body).byteLength,
         extracted,
         extractionStatus: extraction,
-        state: hostile ? "hostile" : unchanged ? "unchanged" : "success",
+        // Fetch succeeded, but an incomplete roster is still a degraded source
+        // for scheduling and operator alerts—never a healthy success.
+        state: hostile
+          ? "hostile"
+          : unchanged
+            ? "unchanged"
+            : extraction === "complete"
+              ? "success"
+              : "failed",
         error: instructionLike
           ? "Instruction-like text in untrusted page"
-          : extraction === "challenge" ? "Challenge-like page in untrusted source" : null,
+          : extraction === "challenge"
+            ? "Challenge-like page in untrusted source"
+            : incompleteError,
         instructionLike: instructionLike || extraction === "challenge",
       };
       return { snapshot, previous, fetchedUrl: page.url };
