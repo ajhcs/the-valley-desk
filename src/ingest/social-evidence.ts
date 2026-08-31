@@ -485,6 +485,25 @@ type Executive = {
   verifiedAt?: string;
   sourceId?: string;
 };
+
+type SocialOrganizationTarget = {
+  name: string;
+  url: string;
+  orgs: string[];
+  region: string;
+};
+
+function socialOrganizationTargets(platform: "linkedin" | "x"): SocialOrganizationTarget[] {
+  if (platform === "linkedin") {
+    return linkedinTargets.organizations
+      .filter((row) => row.orgs.length > 0)
+      .map((row) => ({ name: row.name, url: row.url, orgs: [...row.orgs], region: row.region }));
+  }
+  return liveXOrigins()
+    .filter((row) => row.kind === "organization" && row.orgs.length > 0)
+    .map((row) => ({ name: row.person, url: row.url, orgs: [...row.orgs], region: row.region }));
+}
+
 async function verifiedExecutives(db: D1DatabaseLike, now: Date): Promise<Executive[]> {
   const result = await db.prepare(`SELECT p.id AS person_id, p.display_name, p.linkedin_url,
       r.id AS role_id, r.title, r.source_id, r.verified_at, i.id AS institution_id,
@@ -1057,11 +1076,10 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
   const executives: Executive[] = [
     ...await verifiedExecutives(db, now),
   ];
-  const orgs = linkedinTargets.organizations.filter((row) => row.orgs.length > 0);
   const requeueUnknown = rows.filter((row) => {
     if (row.status !== "quarantined" || row.quarantine_reason !== "unknown-account") return false;
     const profile = normalizedProfile(row.author_profile_url);
-    return orgs.some((target) => normalizedProfile(target.url) === profile)
+    return socialOrganizationTargets(row.platform).some((target) => normalizedProfile(target.url) === profile)
       || executives.some((target) => normalizedProfile(target.profileUrl) === profile);
   });
   if (requeueUnknown.length) {
@@ -1084,7 +1102,7 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
       continue;
     }
     const profile = normalizedProfile(row.author_profile_url);
-    const orgTarget = orgs.find((target) => normalizedProfile(target.url) === profile);
+    const orgTarget = socialOrganizationTargets(row.platform).find((target) => normalizedProfile(target.url) === profile);
     const executive = executives.find((target) => normalizedProfile(target.profileUrl) === profile);
     const { headline, primary } = readableText(row);
     if (!primary) {

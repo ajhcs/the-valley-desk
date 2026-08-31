@@ -15,6 +15,7 @@ import {
   ingestSocialEvidence,
   markSocialEvidenceProcessed,
 } from "../src/ingest/social-evidence.ts";
+import { firstWaveOrigins } from "../src/ingest/origins.ts";
 import { ingestSocial } from "../src/ingest/social.ts";
 import { runAutomation } from "../src/ingest/automation.ts";
 import { runScheduledIngest } from "../src/ingest/run-all.ts";
@@ -404,6 +405,56 @@ test("social post IDs collapse equivalent X URL aliases", async () => {
   });
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM social_evidence_packets").get() as { count: number }).count, 1);
   sqlite.close();
+});
+
+test("configured X organization targets enter the same review-only evidence consumer", async () => {
+  const { sqlite, db } = database();
+  const testOrigin = {
+    handle: "cooper-health-test",
+    kind: "organization" as const,
+    person: "Cooper University Health Care",
+    orgs: ["org-cooper"],
+    url: "https://x.com/cooper-health-test",
+    region: "NJ" as const,
+  };
+  firstWaveOrigins.x.push(testOrigin);
+  try {
+    const evidence = packet("Cooper announced a current operational update on X.");
+    evidence.platform = "x";
+    evidence.postUrl = "https://x.com/cooper-health-test/status/987654321";
+    evidence.postId = "987654321";
+    evidence.author = {
+      name: "Cooper University Health Care",
+      profileUrl: testOrigin.url,
+      accountType: "organization",
+    };
+    const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+      method: "POST",
+      headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+      body: JSON.stringify(evidence),
+    }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+    assert.equal(response.status, 202);
+    const replay = {
+      ...evidence,
+      post: { ...evidence.post, observedAt: "2026-08-28T12:06:00.000Z" },
+    };
+    assert.equal((await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+      method: "POST",
+      headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+      body: JSON.stringify(replay),
+    }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" })).status, 202);
+    const consumed = await ingestSocialEvidence(db, new Date("2026-08-28T13:00:00.000Z"));
+    assert.equal(consumed.items.length, 1);
+    assert.equal(consumed.items[0]?.kind, "news");
+    assert.equal(consumed.items[0]?.source.origin, "grok-social-x");
+    assert.deepEqual(consumed.items[0]?.orgs, ["org-cooper"]);
+    assert.equal(consumed.processed.length, 1);
+    assert.equal((sqlite.prepare("SELECT receive_count FROM social_evidence_packets").get() as { receive_count: number }).receive_count, 2);
+  } finally {
+    const index = firstWaveOrigins.x.indexOf(testOrigin);
+    if (index >= 0) firstWaveOrigins.x.splice(index, 1);
+    sqlite.close();
+  }
 });
 
 test("concurrent URL aliases converge on one post-ID packet", async () => {
