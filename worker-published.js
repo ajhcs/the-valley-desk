@@ -6,6 +6,7 @@ export const publishedNewsSlugs = [
   "hap-cms-0057-f-enforce-rfi",
   "jefferson-einstein-mychart-2026-09-26",
   "jefferson-fy2026-operating-loss",
+  "penn-chop-christianacare-qgenda-quicklinks-2026-08-31",
   "penn-in-house-ai-scribe",
   "temple-chestnut-hill-jhp-2026-09-30",
   "temple-dragon-copilot-400",
@@ -124,6 +125,12 @@ export const publishedHead = {
     "kind": "news",
     "title": "HAP June 10, 2025 letter: enforce CMS-0057-F; 1.6 million Pennsylvanians in Medicare Advantage",
     "description": "On June 10, 2025, HAP asked CMS to enforce the Interoperability and Prior Authorization Final Rule (CMS-0057-F), citing 1.6 million Pennsylvanians in Medicare Advantage (54 percent of the state's Medicare beneficiaries)."
+  },
+  "penn-chop-christianacare-qgenda-quicklinks-2026-08-31": {
+    "id": "news-penn-chop-christianacare-qgenda-quicklinks-2026-08-31",
+    "kind": "news",
+    "title": "QGenda QuickLinks showed on-call schedules and clinician cell numbers at Penn, CHOP, and ChristianaCare",
+    "description": "Penn, CHOP, and ChristianaCare pulled public QGenda QuickLinks in late August after the Inquirer showed they displayed on-call schedules and clinician cell numbers without a login; CHOP said the platform holds no patient information."
   },
   "mlh-cloud-analytics-2026-08-17": {
     "id": "voice-mlh-cloud-analytics",

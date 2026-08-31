@@ -557,6 +557,7 @@ test("latestNews is published news|policy|ai with impactSentence and a live seed
     "hap-cms-0057-f-enforce-rfi",
     "jefferson-einstein-mychart-2026-09-26",
     "jefferson-fy2026-operating-loss",
+    "penn-chop-christianacare-qgenda-quicklinks-2026-08-31",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",
     "temple-dragon-copilot-400",
@@ -1034,7 +1035,11 @@ test("Sloan four: published, ChristianaCare featured, source publishedAt, Penn a
   assert.ok(!blob.includes("org-microsoft"));
   assert.ok(
     !catalog.some(
-      (i) => i.id.startsWith("news-") && i.id !== "news-chop-orca-cds" && /chop/i.test(`${i.id} ${i.title}`),
+      (i) =>
+        i.id.startsWith("news-")
+        && i.id !== "news-chop-orca-cds"
+        && i.id !== "news-penn-chop-christianacare-qgenda-quicklinks-2026-08-31"
+        && /chop/i.test(`${i.id} ${i.title}`),
     ),
   );
   assert.equal(catalog.filter((i) => i.id.startsWith("news-") && i.featured).length, 1);
@@ -1116,6 +1121,44 @@ test("HAP CMS-0057-F letter is published, not featured, org-hap only", () => {
   assert.equal(item.citations?.length, 2);
   assert.equal(item.source.url, "https://www.haponline.org/Resource-Center?resourceid=1357");
   assert.equal(item.citations?.[0]?.url, item.source.url);
+});
+
+test("Sloan QGenda QuickLinks 2026-08-31 is published, not featured, seed orgs only", () => {
+  const item = catalog.find((i) => i.slug === "penn-chop-christianacare-qgenda-quicklinks-2026-08-31");
+  assert.ok(item);
+  assert.equal(item.id, "news-penn-chop-christianacare-qgenda-quicklinks-2026-08-31");
+  assert.equal(item.kind, "news");
+  assert.equal(item.status, "published");
+  assert.equal(item.featured, false);
+  assert.equal(item.region, "regional");
+  assert.equal(item.publishedAt, "2026-08-31T17:27:00.000Z");
+  assert.deepEqual(item.orgs, ["org-penn", "org-chop", "org-christianacare"]);
+  assert.ok(item.orgs.every((id) => seedIds.has(id)));
+  assert.deepEqual(item.topics, ["cyber", "identity", "workforce"]);
+  assert.equal(kindChip(item), "CYBER");
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+  assert.ok(isPublicNewsFamily(item, seedIds));
+  assert.ok(latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.slug === item.slug));
+  assert.ok(publishedNewsList(catalog).some((i) => i.slug === item.slug));
+  assert.equal(item.impactSentence, "Penn, CHOP, and ChristianaCare pulled public QGenda QuickLinks in late August after the Inquirer showed they displayed on-call schedules and clinician cell numbers without a login; CHOP said the platform holds no patient information.");
+  assert.equal(item.contextSentence, "QGenda documents QuickLinks for unauthenticated staff and an optional IP restriction on public landing pages.");
+  assert.notEqual(item.dek, item.impactSentence);
+  assert.equal(item.citations?.length, 3);
+  assert.equal(item.source.url, item.citations?.[0]?.url);
+  assert.equal(item.citations?.[0]?.url, "https://www.inquirer.com/health/qgenda-schedule-privacy-links-cell-numbers-20260831.html");
+  assert.equal(item.citations?.[1]?.url, "https://www.qgenda.com/blog/distribution-hospital-wide-call-schedules-physician-schedules/");
+  assert.equal(item.citations?.[2]?.url, "https://www.qgenda.com/blog/considering-data-security-in-selecting-software-for-your-practice/");
+  assert.ok(!/CIO|CMIO|CISO|CHIO|CTO/i.test(`${item.title} ${item.dek} ${item.body} ${item.impactSentence} ${item.contextSentence}`));
+  assert.ok(!/\b(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]*)\d{3}[-.\s]\d{4}\b/.test(JSON.stringify(item)));
+  assert.ok(!/quicklink\.qgenda|qgenda\.com\/quicklink|schedule\.qgenda/i.test(JSON.stringify(item)));
+  assert.equal(hasDefensiveEditorialAside(`${item.title} ${item.dek} ${item.body} ${item.impactSentence} ${item.contextSentence}`), false);
+  const ld = itemJsonLd(item, entityRows);
+  assert.equal(ld?.["@type"], "NewsArticle");
+  assert.equal(ld?.description, item.impactSentence);
+  assert.equal(ld?.headline, item.title);
+  assert.ok(!/\b(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]*)\d{3}[-.\s]\d{4}\b/.test(JSON.stringify(ld)));
+  assert.ok(!/quicklink\.qgenda|qgenda\.com\/quicklink|schedule\.qgenda/i.test(JSON.stringify(ld)));
 });
 
 test("leadItem source does not call briefingSinceYesterday5pmET", () => {
@@ -1864,6 +1907,7 @@ test("Reed hold: published news slugs; stub origins and mixer are unpublished", 
     "hap-cms-0057-f-enforce-rfi",
     "jefferson-einstein-mychart-2026-09-26",
     "jefferson-fy2026-operating-loss",
+    "penn-chop-christianacare-qgenda-quicklinks-2026-08-31",
     "penn-in-house-ai-scribe",
     "temple-chestnut-hill-jhp-2026-09-30",
     "temple-dragon-copilot-400",

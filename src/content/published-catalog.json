@@ -460,6 +460,58 @@
     "contextSentence": "CMS’s Jan. 17, 2024 fact sheet gives impacted payers until Jan. 1, 2027 for the FHIR APIs; HAP’s June 10, 2025 letter asks CMS to enforce that rule."
   },
   {
+    "id": "news-penn-chop-christianacare-qgenda-quicklinks-2026-08-31",
+    "slug": "penn-chop-christianacare-qgenda-quicklinks-2026-08-31",
+    "kind": "news",
+    "title": "QGenda QuickLinks showed on-call schedules and clinician cell numbers at Penn, CHOP, and ChristianaCare",
+    "dek": "The Inquirer, Aug. 31, 2026, reported public QGenda landing pages for those three systems and nearly 50 hospitals nationally. No patient PHI. Philly systems pulled the links in late August after the paper alerted them.",
+    "body": "The Philadelphia Inquirer, Aug. 31, 2026, 1:27 p.m. ET (Abraham Gutman, Sarah Gantz), reported that QGenda QuickLinks publicly displayed months of on-call schedules and cell phone numbers for thousands of workers at Penn Medicine, Children’s Hospital of Philadelphia, ChristianaCare, and nearly 50 health systems or hospitals nationwide, including Veterans Affairs hospitals. The paper said the pages were not in Google search results but could be retrieved with AI tools, including OpenAI’s Codex. It said QGenda, an Atlanta-based Hearst-owned workforce vendor, did not respond to comment requests.\n\nQGenda’s own site advertises QuickLinks so “any staff member without a QGenda account” can bookmark a live provider schedule, and separately says landing pages can be IP-restricted so only devices on a practice’s secure network can see public-facing schedule data.\n\nThe Inquirer said Philly-area systems took the pages down in late August after it alerted them. A ChristianaCare spokesperson said the system recently became aware the pages were public, immediately worked with QGenda to eliminate the vulnerability, and was not aware of any impact to caregivers, clinicians, patient care, or operations. CHOP told staff last week it was updating access to QGenda on-call displays “out of an abundance of caution”; a CHOP spokesperson said the platform does not contain patient information. Penn said it uses QGenda for care-team communication and is adding controls. Penn and CHOP did not answer whether they knew the links were reachable without a login. Other Philadelphia-area systems did not appear to have public links.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-31T17:27:00.000Z",
+    "updatedAt": "2026-08-31T21:55:00.000Z",
+    "topics": [
+      "cyber",
+      "identity",
+      "workforce"
+    ],
+    "orgs": [
+      "org-penn",
+      "org-chop",
+      "org-christianacare"
+    ],
+    "region": "regional",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://www.inquirer.com/health/qgenda-schedule-privacy-links-cell-numbers-20260831.html"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Penn, CHOP, and ChristianaCare pulled public QGenda QuickLinks in late August after the Inquirer showed they displayed on-call schedules and clinician cell numbers without a login; CHOP said the platform holds no patient information.",
+    "contextSentence": "QGenda documents QuickLinks for unauthenticated staff and an optional IP restriction on public landing pages.",
+    "citations": [
+      {
+        "name": "Inquirer Aug. 31, 2026",
+        "url": "https://www.inquirer.com/health/qgenda-schedule-privacy-links-cell-numbers-20260831.html"
+      },
+      {
+        "name": "QGenda QuickLinks",
+        "url": "https://www.qgenda.com/blog/distribution-hospital-wide-call-schedules-physician-schedules/"
+      },
+      {
+        "name": "QGenda landing-page IP restrictions",
+        "url": "https://www.qgenda.com/blog/considering-data-security-in-selecting-software-for-your-practice/"
+      }
+    ],
+    "geo": "Delaware Valley"
+  },
+  {
     "id": "voice-mlh-cloud-analytics",
     "slug": "mlh-cloud-analytics-2026-08-17",
     "kind": "voice",
