@@ -15,6 +15,15 @@ const RssSource = z.object({
     url: z.string().url(),
     adapter: z.literal("cooper-newsroom"),
   })).optional(),
+  /**
+   * Independent discovery is deliberately separate from first-party
+   * fallbacks. Its items remain non-authoritative and must be corroborated by
+   * the health system before the editor can publish them.
+   */
+  independentFallbacks: z.array(z.object({
+    url: z.string().url(),
+    adapter: z.literal("cooper-independent"),
+  })).optional(),
   kind: z.literal("news"),
   origin: z.string().min(1).optional(),
   orgIds: z.array(z.string().min(1)).optional(),

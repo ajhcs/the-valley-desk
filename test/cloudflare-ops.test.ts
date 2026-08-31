@@ -1223,6 +1223,50 @@ test("source coverage loss stays warning when a healthy fallback is still servin
   database.close();
 });
 
+test("active source fallback is visible in the digest and recovers only after primary success", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const env = {
+    VALLEY_DESK_DB: db,
+    NOTIFY_OPS: {
+      async send(message: { subject: string }) {
+        sent.push(message.subject);
+        return { messageId: `message-${sent.length}` };
+      },
+    },
+  };
+  const fallback = {
+    id: "cooper-newsroom",
+    state: "healthy",
+    type: "rss",
+    itemCount: 3,
+    fallbackUrl: "https://phillyvoice.com/tags/cooperuniversity-health-care",
+  };
+  await sendAutomationAlerts(env, { notes: { sources: [fallback] } }, new Date("2026-08-28T00:00:00.000Z"));
+  const active = database.prepare(
+    "SELECT severity, event, state, detail_json FROM operational_alerts WHERE fingerprint = 'valley-desk:source-fallback:cooper-newsroom'",
+  ).get() as { severity: string; event: string; state: string; detail_json: string };
+  assert.deepEqual({ severity: active.severity, event: active.event, state: active.state }, {
+    severity: "warning",
+    event: "source-fallback-active",
+    state: "open",
+  });
+  assert.match(active.detail_json, /"fallbackActive":true/);
+  assert.equal(sent.length, 0, "fallback use is digest data, not an immediate alert");
+
+  const primary = { notes: { sources: [{ id: "cooper-newsroom", state: "healthy", type: "rss", itemCount: 3 }] } };
+  await sendAutomationAlerts(env, primary, new Date("2026-08-28T01:00:00.000Z"));
+  await sendAutomationAlerts(env, primary, new Date("2026-08-28T02:00:00.000Z"));
+  const recovered = database.prepare(
+    "SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:source-fallback:cooper-newsroom'",
+  ).get() as { state: string; recovery_count: number };
+  assert.deepEqual({ ...recovered }, { state: "resolved", recovery_count: 2 });
+  assert.equal(sent.filter((subject) => subject.includes("RECOVERED")).length, 1);
+  database.close();
+});
+
 test("intentional source gaps and evidence-validation rejections do not generate failure mail", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);

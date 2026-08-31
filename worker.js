@@ -295,6 +295,24 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       continue;
     }
     if (source.state === "healthy" || source.state === "healthy-empty") {
+      const fallbackFingerprint = `valley-desk:source-fallback:${sourceId}`;
+      if (source.fallbackUrl) {
+        await recordWarning({
+          fingerprint: fallbackFingerprint,
+          event: "source-fallback-active",
+          severity: "warning",
+          threshold: 1,
+          now,
+          details: {
+            sourceId,
+            state: source.state,
+            fallbackActive: true,
+            itemCount: source.itemCount,
+          },
+        });
+      } else {
+        await recover(fallbackFingerprint, 2);
+      }
       await recover(fingerprint, 2);
       continue;
     }

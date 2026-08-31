@@ -38,7 +38,7 @@ import {
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { fetchDvhimssCalendar, ingestEventsWithHealth, scrapeNjdvhimss } from "../src/ingest/events.ts";
-import { RSS_SOURCES, ingestRssWithHealth, parseAtomItems, parseCooperNewsroomItems, parseFeedItems, parseRssItems, rssItemToContent } from "../src/ingest/rss.ts";
+import { RSS_SOURCES, ingestRssWithHealth, parseAtomItems, parseCooperIndependentItems, parseCooperNewsroomItems, parseFeedItems, parseRssItems, rssItemToContent } from "../src/ingest/rss.ts";
 import { ingestLinkedIn } from "../src/ingest/linkedin.ts";
 import { ingestX } from "../src/ingest/x.ts";
 import { mergeReviewQueue, selectPriorityWork, contentPriorityFields, QUEUE_SLA_OVERDUE_MS } from "../src/ingest/queue.ts";
@@ -341,6 +341,21 @@ test("Cooper official newsroom fallback only accepts linked Cooper release pages
   assert.deepEqual(parseCooperNewsroomItems("<html>holding page</html>"), []);
 });
 
+test("Cooper independent fallback is bounded discovery and never an authority source", () => {
+  const html = `
+    <html><body><header>Cooper University Health Care</header>
+      <article><a href="https://www.phillyvoice.com/cooper-new-campus/">Cooper University Health Care plans a new campus</a>
+        <time>August 27, 2026</time><span>by cooperhealth.org</span></article>
+      <article><a href="https://www.phillyvoice.com/tags/health/">Health tag</a></article>
+    </body></html>`;
+  const items = parseCooperIndependentItems(html);
+  assert.equal(items.length, 1);
+  assert.equal(items[0]?.link, "https://phillyvoice.com/cooper-new-campus");
+  assert.equal(items[0]?.pubDate, "August 27, 2026");
+  assert.deepEqual(parseCooperIndependentItems(html, "https://evil.example/cooper"), []);
+  assert.deepEqual(parseCooperIndependentItems(html, "https://www.phillyvoice.com/tags/other"), []);
+});
+
 test("Cooper public RSS blocks fall back to the official newsroom and retain authority", async () => {
   const requested: string[] = [];
   const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
@@ -393,6 +408,41 @@ test("Cooper empty RSS falls back instead of claiming healthy-empty coverage", a
   assert.ok(result.items.some((item) => item.title === "Cooper publishes an operational update"));
 });
 
+test("Cooper independent fallback keeps third-party discovery held for first-party corroboration", async () => {
+  const requested: string[] = [];
+  const independent = "https://www.phillyvoice.com/tags/cooperuniversity-health-care/";
+  const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    requested.push(url);
+    if (url === "https://blogs.cooperhealth.org/news/feed/" || url === "https://www.cooperhealth.org/about-us/newsroom") {
+      return new Response("", { status: 403 });
+    }
+    if (url === independent) {
+      return new Response(`
+        <html><body><header>Cooper University Health Care</header>
+          <article><a href="https://www.phillyvoice.com/cooper-new-campus/">Cooper University Health Care plans a new campus</a>
+            <time>August 27, 2026</time><span>by cooperhealth.org</span></article>
+        </body></html>`, { status: 200 });
+    }
+    return new Response(EMPTY_RSS, { status: 200 });
+  });
+  const cooper = result.sources.find((source) => source.id === "cooper-newsroom");
+  assert.equal(cooper?.state, "healthy");
+  assert.equal(cooper?.fallbackUrl, independent);
+  const feedIndex = requested.indexOf("https://blogs.cooperhealth.org/news/feed/");
+  assert.ok(feedIndex >= 0);
+  assert.deepEqual(requested.slice(feedIndex, feedIndex + 3), [
+    "https://blogs.cooperhealth.org/news/feed/",
+    "https://www.cooperhealth.org/about-us/newsroom",
+    independent,
+  ]);
+  const item = result.items.find((candidate) => candidate.title.includes("new campus"));
+  assert.ok(item);
+  assert.equal(item.source.origin, "cooper-independent-discovery");
+  assert.deepEqual(item.orgs, ["org-cooper"]);
+  assert.ok(item.citations?.some((citation) => citation.name.includes("corroboration required")));
+});
+
 test("Technical.ly is misconfigured and never reported as empty success", async () => {
   const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async () => {
     throw new Error("Technical.ly must not be fetched while misconfigured");
@@ -435,6 +485,7 @@ test("upstream RSS and social failures distinguish public blocks from auth, rate
       throw error;
     }
     if (url.includes("cooperhealth.org")) return new Response("<html>not a feed</html>", { status: 200 });
+    if (url.includes("phillyvoice.com/tags/cooperuniversity-health-care")) return new Response("<html>not a Cooper page</html>", { status: 200 });
     if (url.includes("inquirer.com/arc/outboundfeeds/rss/category/health")) {
       return new Response("", { status: 401 });
     }

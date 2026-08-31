@@ -198,6 +198,9 @@ export function parseFeedItems(xml: string): ParsedFeedItem[] {
 
 const COOPER_NEWSROOM_URL = "https://www.cooperhealth.org/about-us/newsroom";
 const COOPER_BLOG_HOST = "blogs.cooperhealth.org";
+const COOPER_INDEPENDENT_HOST = "phillyvoice.com";
+const COOPER_INDEPENDENT_PATH = "/tags/cooperuniversity-health-care";
+const COOPER_INDEPENDENT_ITEM_CAP = 40;
 const MONTH_DATE = /\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},\s+\d{4}\b/i;
 const NUMERIC_DATE = /\b\d{1,2}\/\d{1,2}\/\d{4}\b/;
 const GENERIC_LINK_TEXT = /^(?:read more|learn more|more|view|details|click here|continue reading)$/i;
@@ -248,13 +251,74 @@ export function parseCooperNewsroomItems(html: string, baseUrl = COOPER_NEWSROOM
   return items;
 }
 
+/**
+ * Parse only the current, explicit PhillyVoice Cooper tag page. This is a
+ * discovery safety net, not a source of authority: the resulting origin is
+ * intentionally non-official and the editor requires first-party
+ * corroboration before publication. Article pages from this host are not
+ * added to the article-fetch allowlist, so a blocked Cooper newsroom cannot
+ * turn a third-party snippet into authoritative copy.
+ */
+export function parseCooperIndependentItems(
+  html: string,
+  baseUrl = "https://www.phillyvoice.com/tags/cooperuniversity-health-care/",
+): ParsedFeedItem[] {
+  let base: URL;
+  try {
+    base = new URL(baseUrl);
+  } catch {
+    return [];
+  }
+  const baseHost = base.hostname.replace(/^www\./i, "").toLowerCase();
+  const basePath = base.pathname.replace(/\/+$/, "").toLowerCase();
+  if (base.protocol !== "https:" || baseHost !== COOPER_INDEPENDENT_HOST || basePath !== COOPER_INDEPENDENT_PATH) {
+    return [];
+  }
+  if (!/\b(?:cooper university health care|cooperhealth\.org)\b/i.test(htmlText(html))) return [];
+
+  const items: ParsedFeedItem[] = [];
+  const seen = new Set<string>();
+  const anchors = /<a\b([^>]*?)href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  for (const match of html.matchAll(anchors)) {
+    let url: URL;
+    try {
+      url = new URL(decodeHtml(match[2] ?? ""), baseUrl);
+    } catch {
+      continue;
+    }
+    const host = url.hostname.replace(/^www\./i, "").toLowerCase();
+    const path = url.pathname.replace(/\/+$/, "").toLowerCase();
+    if (url.protocol !== "https:" || host !== COOPER_INDEPENDENT_HOST) continue;
+    if (!path || path === COOPER_INDEPENDENT_PATH || path.startsWith("/tags/")) continue;
+    const canonicalUrl = normalizeSourceUrl(url.toString()) ?? url.toString();
+    if (seen.has(canonicalUrl)) continue;
+    const rawTitle = htmlText(match[3] ?? "");
+    if (!rawTitle || GENERIC_LINK_TEXT.test(rawTitle) || rawTitle.length < 8 || rawTitle.length > 240) continue;
+    const start = match.index ?? 0;
+    const end = start + match[0].length;
+    const surrounding = htmlText(html.slice(Math.max(0, start - 700), Math.min(html.length, end + 900)));
+    if (!/\b(?:cooper university health care|cooper health|cooperhealth\.org)\b/i.test(`${rawTitle} ${surrounding}`)) continue;
+    const dateMatch = surrounding.match(MONTH_DATE) ?? surrounding.match(NUMERIC_DATE);
+    seen.add(canonicalUrl);
+    items.push({
+      title: rawTitle,
+      link: canonicalUrl,
+      description: "",
+      pubDate: dateMatch?.[0] ?? "",
+      guid: canonicalUrl,
+    });
+    if (items.length >= COOPER_INDEPENDENT_ITEM_CAP) break;
+  }
+  return items;
+}
+
 export function rssItemToContent(
   raw: ParsedFeedItem,
   feedName: string,
   fetchedAt: string,
   _index = 0,
   entities: readonly EntityRow[] = seedEntities,
-  options: { origin?: string; fixedOrgIds?: readonly string[]; authorityUrl?: string } = {},
+  options: { origin?: string; fixedOrgIds?: readonly string[]; authorityUrl?: string; authorityName?: string } = {},
 ): ContentItem {
   let publishedAt: string | undefined;
   const parsed = Date.parse(raw.pubDate);
@@ -287,7 +351,7 @@ export function rssItemToContent(
     citations: [
       { name: feedName, url: canonicalUrl },
       ...(options.authorityUrl && options.authorityUrl !== canonicalUrl
-        ? [{ name: `${feedName} official newsroom`, url: options.authorityUrl }]
+        ? [{ name: options.authorityName ?? `${feedName} official newsroom`, url: options.authorityUrl }]
         : []),
     ],
     relatedEventIds: [],
@@ -302,6 +366,7 @@ type WorkingRss = {
   origin?: string;
   orgIds?: readonly string[];
   authorityUrl?: string;
+  authorityName?: string;
   status: number;
   items: ParsedFeedItem[];
 };
@@ -345,6 +410,19 @@ async function readCooperNewsroom(url: string, fetchImpl: typeof fetch) {
   return { ...response, items };
 }
 
+async function readCooperIndependent(url: string, fetchImpl: typeof fetch) {
+  const response = await fetchUpstream({
+    url,
+    fetchImpl,
+    maxBytes: RSS_MAX_BYTES,
+    timeoutMs: SOURCE_TIMEOUT_MS,
+    headers: { "user-agent": SOURCE_USER_AGENT, accept: "text/html,application/xhtml+xml" },
+  });
+  const items = parseCooperIndependentItems(response.body, url);
+  if (!items.length) throw new UpstreamError("parser-failed", "Independent Cooper discovery had no recognized article links");
+  return { ...response, items };
+}
+
 async function fetchRssSources(
   fetchImpl: typeof fetch,
   checkedAt: string,
@@ -362,9 +440,10 @@ async function fetchRssSources(
       sources.push(sourceBackoffNote(source.id, source.origin ?? source.name, "rss", checkedAt, prior, source.url));
       continue;
     }
-    const candidates: Array<{ url: string; adapter?: "cooper-newsroom" }> = [
+    const candidates: Array<{ url: string; adapter?: "cooper-newsroom" | "cooper-independent" }> = [
       ...[source.url, ...(source.fallbacks ?? [])].map((url) => ({ url })),
       ...(source.htmlFallbacks ?? []),
+      ...(source.independentFallbacks ?? []),
     ];
     let success: WorkingRss | undefined;
     let lastError: UpstreamError | undefined;
@@ -372,19 +451,26 @@ async function fetchRssSources(
       try {
         const feed = candidate.adapter === "cooper-newsroom"
           ? await readCooperNewsroom(candidate.url, fetchImpl)
-          : await readFeed(candidate.url, fetchImpl);
+          : candidate.adapter === "cooper-independent"
+            ? await readCooperIndependent(candidate.url, fetchImpl)
+            : await readFeed(candidate.url, fetchImpl);
         // A syntactically valid but empty Cooper feed is not useful coverage;
         // continue to the authoritative newsroom adapter instead of stopping
         // with a misleading healthy-empty result.
         if (source.id === "cooper-newsroom" && !candidate.adapter && feed.items.length === 0) {
           throw new UpstreamError("parser-failed", "Cooper RSS feed returned no items; trying official newsroom fallback");
         }
+        const independent = candidate.adapter === "cooper-independent";
         success = {
           url: candidate.url,
           name: source.name,
-          origin: source.origin,
+          origin: independent ? "cooper-independent-discovery" : source.origin,
           orgIds: source.orgIds,
-          ...(candidate.adapter ? { authorityUrl: candidate.url } : {}),
+          ...(candidate.adapter === "cooper-newsroom" ? { authorityUrl: candidate.url } : {}),
+          ...(independent ? {
+            authorityUrl: COOPER_NEWSROOM_URL,
+            authorityName: "Cooper University Health Care official newsroom (corroboration required)",
+          } : {}),
           status: feed.status,
           items: feed.items,
         };
@@ -458,6 +544,7 @@ export async function ingestRssWithHealth(
           origin: feed.origin,
           fixedOrgIds: feed.orgIds,
           authorityUrl: feed.authorityUrl,
+          authorityName: feed.authorityName,
         }));
       } catch {
         /* one malformed mapped item must not discard valid siblings */

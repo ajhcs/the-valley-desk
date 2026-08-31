@@ -26,6 +26,10 @@
         "url": "https://www.cooperhealth.org/about-us/newsroom",
         "adapter": "cooper-newsroom"
       }],
+      "independentFallbacks": [{
+        "url": "https://www.phillyvoice.com/tags/cooperuniversity-health-care/",
+        "adapter": "cooper-independent"
+      }],
       "orgIds": ["org-cooper"],
       "kind": "news"
     },
