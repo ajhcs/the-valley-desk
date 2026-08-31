@@ -23,10 +23,13 @@ import {
   NEWS_ARTICLE_RETENTION_DAYS,
 } from "./news-extraction-config";
 import {
+  SOURCE_RUN_STATES,
   isFailureSourceState,
   isSuccessfulSourceState,
   snapshotCompleteness,
+  sourceNextAttemptAt,
   sourceAuthorizesDisappearance,
+  type PersistedSourceHealth,
   type SourceRunNote,
 } from "./source-health";
 
@@ -698,11 +701,13 @@ export async function persistSourceHealth(
   runId: string,
   sources: SourceRunNote[],
 ) {
+  const previous = await readSourceHealth(db);
   const statements = sources.map((source) => db.prepare(`
     INSERT INTO source_health (
       source_id, origin, source_type, source_url, state, complete, completeness, item_count,
-      consecutive_failures, last_checked_at, last_success_at, last_error, last_run_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      consecutive_failures, last_checked_at, last_success_at, last_error, last_run_id,
+      next_attempt_at, last_http_status, requires_auth
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(source_id) DO UPDATE SET
       origin = excluded.origin,
       source_type = excluded.source_type,
@@ -711,11 +716,7 @@ export async function persistSourceHealth(
       complete = excluded.complete,
       completeness = excluded.completeness,
       item_count = excluded.item_count,
-      consecutive_failures = CASE
-        WHEN excluded.state IN ('healthy', 'healthy-empty') THEN 0
-        WHEN excluded.state IN ('disabled', 'misconfigured') THEN source_health.consecutive_failures
-        ELSE source_health.consecutive_failures + 1
-      END,
+      consecutive_failures = excluded.consecutive_failures,
       last_checked_at = excluded.last_checked_at,
       last_success_at = CASE
         WHEN excluded.state IN ('healthy', 'healthy-empty') THEN excluded.last_checked_at
@@ -725,26 +726,91 @@ export async function persistSourceHealth(
         WHEN excluded.state IN ('healthy', 'healthy-empty') THEN NULL
         ELSE excluded.last_error
       END,
-      last_run_id = excluded.last_run_id
+      last_run_id = excluded.last_run_id,
+      next_attempt_at = excluded.next_attempt_at,
+      last_http_status = excluded.last_http_status,
+      requires_auth = excluded.requires_auth
   `).bind(
-    source.id,
-    source.origin,
-    source.type,
-    source.url ?? null,
-    source.state,
-    snapshotCompleteness(source) === "complete" ? 1 : 0,
-    snapshotCompleteness(source),
-    source.itemCount,
-    isFailureSourceState(source.state) ? 1 : 0,
-    source.checkedAt,
-    isSuccessfulSourceState(source.state) ? source.checkedAt : null,
-    source.error ?? null,
-    runId,
+    ...(() => {
+      const prior = previous.get(source.id);
+      const deliberateBackoff = source.state === "backoff";
+      const consecutiveFailures = isFailureSourceState(source.state)
+        ? (prior?.consecutiveFailures ?? 0) + 1
+        : prior?.consecutiveFailures ?? 0;
+      const nextAttemptAt = source.nextAttemptAt
+        ?? (source.state === "disabled" || source.state === "misconfigured"
+          ? source.checkedAt
+          : sourceNextAttemptAt(source.state, source.checkedAt, consecutiveFailures, prior?.nextAttemptAt && deliberateBackoff ? prior.nextAttemptAt : undefined));
+      return [
+        source.id,
+        source.origin,
+        source.type,
+        source.url ?? null,
+        source.state,
+        snapshotCompleteness(source) === "complete" ? 1 : 0,
+        snapshotCompleteness(source),
+        source.itemCount,
+        consecutiveFailures,
+        source.checkedAt,
+        isSuccessfulSourceState(source.state) ? source.checkedAt : null,
+        source.error ?? (deliberateBackoff ? prior?.lastError ?? "Source is in retry backoff" : null),
+        runId,
+        nextAttemptAt,
+        source.httpStatus ?? (deliberateBackoff ? prior?.lastHttpStatus ?? null : null),
+        source.requiresAuth ? 1 : (deliberateBackoff && prior?.requiresAuth ? 1 : 0),
+      ];
+    })(),
   ));
   for (let index = 0; index < statements.length; index += 50) {
     await db.batch(statements.slice(index, index + 50));
   }
   return statements.length;
+}
+
+type SourceHealthRow = {
+  source_id: string;
+  state: string;
+  item_count: number;
+  complete: number;
+  completeness: string | null;
+  consecutive_failures: number;
+  last_checked_at: string;
+  last_success_at: string | null;
+  last_error: string | null;
+  next_attempt_at: string;
+  last_http_status: number | null;
+  requires_auth: number;
+};
+
+export async function readSourceHealth(db: D1DatabaseLike): Promise<Map<string, PersistedSourceHealth>> {
+  try {
+    const result = await db.prepare(`SELECT source_id, state, item_count, complete, completeness,
+        consecutive_failures, last_checked_at, last_success_at, last_error, next_attempt_at,
+        last_http_status, requires_auth
+      FROM source_health`).all<SourceHealthRow>();
+    return new Map((result.results ?? []).flatMap((row) => {
+      if (!(SOURCE_RUN_STATES as readonly string[]).includes(row.state)) return [];
+      const completeness = row.completeness === "complete" || row.completeness === "partial" || row.completeness === "empty-unverified"
+        ? row.completeness
+        : undefined;
+      return [[row.source_id, {
+        sourceId: row.source_id,
+        state: row.state as PersistedSourceHealth["state"],
+        itemCount: Number(row.item_count) || 0,
+        complete: Boolean(row.complete),
+        ...(completeness ? { completeness } : {}),
+        consecutiveFailures: Number(row.consecutive_failures) || 0,
+        lastCheckedAt: row.last_checked_at,
+        lastSuccessAt: row.last_success_at,
+        lastError: row.last_error,
+        nextAttemptAt: row.next_attempt_at,
+        lastHttpStatus: row.last_http_status == null ? null : Number(row.last_http_status),
+        requiresAuth: Boolean(row.requires_auth),
+      } satisfies PersistedSourceHealth]] as const;
+    }));
+  } catch {
+    return new Map();
+  }
 }
 
 type NewsExtractionRow = {

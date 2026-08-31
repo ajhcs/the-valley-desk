@@ -4,6 +4,8 @@ export const SOURCE_RUN_STATES = [
   "disabled",
   "misconfigured",
   "auth-failed",
+  "upstream-blocked",
+  "backoff",
   "rate-limited",
   "upstream-failed",
   "parser-failed",
@@ -11,6 +13,29 @@ export const SOURCE_RUN_STATES = [
 ] as const;
 
 export type SourceRunState = (typeof SOURCE_RUN_STATES)[number];
+
+export type PersistedSourceHealth = {
+  sourceId: string;
+  state: SourceRunState;
+  itemCount: number;
+  complete: boolean;
+  completeness?: SnapshotCompleteness;
+  consecutiveFailures: number;
+  lastCheckedAt: string;
+  lastSuccessAt: string | null;
+  lastError: string | null;
+  nextAttemptAt: string;
+  lastHttpStatus: number | null;
+  requiresAuth: boolean;
+};
+
+export const SOURCE_HEALTHY_REFRESH_MS = 15 * 60 * 1_000;
+export const SOURCE_RETRY_DELAYS_MS = [
+  15 * 60 * 1_000,
+  60 * 60 * 1_000,
+  6 * 60 * 60 * 1_000,
+  24 * 60 * 60 * 1_000,
+] as const;
 
 /** Snapshot trust for disappearance reconciliation. Empty and shape-changed feeds are never complete. */
 export type SnapshotCompleteness = "complete" | "partial" | "empty-unverified";
@@ -28,6 +53,12 @@ export type SourceRunNote = {
   completeness?: SnapshotCompleteness;
   url?: string;
   error?: string;
+  /** True only when the source was explicitly configured to require credentials. */
+  requiresAuth?: boolean;
+  /** HTTP status supplied by the upstream, when a response was received. */
+  httpStatus?: number;
+  /** Durable cooldown returned by the source scheduler, when applicable. */
+  nextAttemptAt?: string;
 };
 
 export type IngestSourceResult<T> = {
@@ -41,18 +72,48 @@ export function isSuccessfulSourceState(state: SourceRunState) {
 
 export function isFailureSourceState(state: SourceRunState) {
   return state === "auth-failed"
+    || state === "upstream-blocked"
     || state === "rate-limited"
     || state === "upstream-failed"
     || state === "parser-failed"
     || state === "timed-out";
 }
 
+export function sourceRetryDelayMs(consecutiveFailures: number) {
+  const index = Math.max(0, Math.min(SOURCE_RETRY_DELAYS_MS.length - 1, Math.trunc(consecutiveFailures) - 1));
+  return SOURCE_RETRY_DELAYS_MS[index] ?? SOURCE_RETRY_DELAYS_MS[0];
+}
+
+export function sourceNextAttemptAt(
+  state: SourceRunState,
+  checkedAt: string,
+  consecutiveFailures: number,
+  explicit?: string,
+) {
+  if (explicit) return explicit;
+  const timestamp = Date.parse(checkedAt);
+  if (!Number.isFinite(timestamp)) return checkedAt;
+  const delay = (isFailureSourceState(state) || state === "backoff")
+    ? sourceRetryDelayMs(consecutiveFailures)
+    : SOURCE_HEALTHY_REFRESH_MS;
+  return new Date(timestamp + delay).toISOString();
+}
+
+export function sourceIsInBackoff(
+  state: Pick<PersistedSourceHealth, "state" | "nextAttemptAt"> | undefined,
+  now: Date,
+) {
+  if (!state || (!isFailureSourceState(state.state) && state.state !== "backoff")) return false;
+  const next = Date.parse(state.nextAttemptAt);
+  return Number.isFinite(next) && next > now.getTime();
+}
+
 export function sourceStateForItemCount(count: number): Extract<SourceRunState, "healthy" | "healthy-empty"> {
   return count > 0 ? "healthy" : "healthy-empty";
 }
 
-export function classifyHttpStatus(status: number): SourceRunState {
-  if (status === 401 || status === 403) return "auth-failed";
+export function classifyHttpStatus(status: number, options: { requiresAuth?: boolean } = {}): SourceRunState {
+  if (status === 401 || status === 403) return options.requiresAuth ? "auth-failed" : "upstream-blocked";
   if (status === 429) return "rate-limited";
   if (status === 408) return "timed-out";
   return "upstream-failed";

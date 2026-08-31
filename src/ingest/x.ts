@@ -79,6 +79,7 @@ async function fetchOriginTweets(
     maxBytes: SOCIAL_MAX_BYTES,
     timeoutMs: SOURCE_TIMEOUT_MS,
     headers,
+    requiresAuth: true,
   });
   const user = parseJson<{ data?: { id?: string } }>(userRes.body, "X user response was not JSON");
   const userId = user.data?.id;
@@ -89,6 +90,7 @@ async function fetchOriginTweets(
     maxBytes: SOCIAL_MAX_BYTES,
     timeoutMs: SOURCE_TIMEOUT_MS,
     headers,
+    requiresAuth: true,
   });
   const tweets = parseJson<{ data?: { id: string; text?: string; created_at?: string }[] }>(
     tweetsRes.body,
@@ -175,7 +177,11 @@ export async function ingestX(
       const failed = error instanceof UpstreamError
         ? error
         : new UpstreamError("upstream-failed", error instanceof Error ? error.message : String(error));
-      sources.push(originNote(origin, fetchedAt, failed.code, { error: failed.message }));
+      sources.push(originNote(origin, fetchedAt, failed.code, {
+        error: failed.message,
+        requiresAuth: true,
+        httpStatus: failed.httpStatus,
+      }));
     }
   }
   const batch: IngestBatch = { adapter: "x", fetchedAt, items };

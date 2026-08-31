@@ -88,6 +88,7 @@ async function fetchOriginPosts(
       "linkedin-version": "202608",
       "x-restli-protocol-version": "2.0.0",
     },
+    requiresAuth: true,
   });
   let data: { elements?: Record<string, unknown>[] };
   try {
@@ -165,7 +166,11 @@ export async function ingestLinkedIn(
       const failed = error instanceof UpstreamError
         ? error
         : new UpstreamError("upstream-failed", error instanceof Error ? error.message : String(error));
-      sources.push(originNote(origin, fetchedAt, failed.code, { error: failed.message }));
+      sources.push(originNote(origin, fetchedAt, failed.code, {
+        error: failed.message,
+        requiresAuth: true,
+        httpStatus: failed.httpStatus,
+      }));
     }
   }
   const batch: IngestBatch = { adapter: "linkedin", fetchedAt, items };
