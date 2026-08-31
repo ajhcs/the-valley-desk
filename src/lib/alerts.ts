@@ -72,6 +72,7 @@ type DigestRow = {
   occurrence_count: number;
   first_seen_at: string;
   last_seen_at: string;
+  detail_json: string;
 };
 
 type DigestRecord = {
@@ -408,7 +409,7 @@ export async function dispatchOperationalAlert(
 function digestSelect() {
   return `
     SELECT fingerprint, pack_id, event, severity, occurrence_count,
-           first_seen_at, last_seen_at
+           first_seen_at, last_seen_at, detail_json
     FROM operational_alerts
     WHERE pack_id = ? AND state = 'open' AND last_seen_at >= ?
     ORDER BY CASE severity WHEN 'critical' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END,
@@ -416,10 +417,27 @@ function digestSelect() {
   `;
 }
 
+function digestDetailText(detailJson: string) {
+  try {
+    const details = JSON.parse(detailJson) as Record<string, unknown>;
+    const keys = [
+      "sourceId", "stage", "errorClass", "httpStatus", "lastSuccessAt",
+      "failureAgeMs", "currentFallback", "nextRetryAt", "affectedCoverage",
+    ];
+    return keys
+      .filter((key) => Object.prototype.hasOwnProperty.call(details, key))
+      .map((key) => `${key}=${stripControls(String(details[key])).slice(0, ALERT_DETAIL_MAX_CHARS)}`)
+      .join(", ");
+  } catch {
+    return "";
+  }
+}
+
 function digestText(date: string, rows: DigestRow[]) {
   const lines = ["The Valley Desk daily operational digest", `date: ${date}`, `alerts: ${rows.length}`];
   for (const row of rows) {
-    lines.push(`- ${row.severity} ${row.event} (${row.occurrence_count} occurrences; last ${row.last_seen_at})`);
+    const details = digestDetailText(row.detail_json);
+    lines.push(`- ${row.severity} ${row.event} (${row.occurrence_count} occurrences; last ${row.last_seen_at}${details ? `; ${details}` : ""})`);
   }
   lines.push("ops: /ops");
   return lines.join("\n");

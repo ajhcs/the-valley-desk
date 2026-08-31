@@ -1395,7 +1395,14 @@ test("daily operational digest claims once per pack and remains bounded", async 
     severity: "warning",
     threshold: 1,
     now: new Date("2026-08-28T08:00:00.000Z"),
-    details: { sourceId: "source-1" },
+    details: {
+      sourceId: "source-1",
+      lastSuccessAt: "2026-08-27T08:00:00.000Z",
+      failureAgeMs: 86_400_000,
+      currentFallback: true,
+      nextRetryAt: "2026-08-28T08:15:00.000Z",
+      affectedCoverage: "remaining-source-peers",
+    },
   });
   const sent: string[] = [];
   const binding = {
@@ -1410,6 +1417,12 @@ test("daily operational digest claims once per pack and remains bounded", async 
   assert.equal(second.outcome, "deduped");
   assert.equal(sent.length, 1);
   assert.ok(sent[0].includes("source-degraded"));
+  assert.match(sent[0], /lastSuccessAt=2026-08-27T08:00:00.000Z/);
+  assert.match(sent[0], /failureAgeMs=86400000/);
+  assert.match(sent[0], /currentFallback=true/);
+  assert.match(sent[0], /nextRetryAt=2026-08-28T08:15:00.000Z/);
+  assert.match(sent[0], /affectedCoverage=remaining-source-peers/);
+  assert.match(sent[0], /ops: \/ops/);
   database.close();
 });
 

@@ -297,6 +297,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     if (source.state === "healthy" || source.state === "healthy-empty") {
       const fallbackFingerprint = `valley-desk:source-fallback:${sourceId}`;
       if (source.fallbackUrl) {
+        const lastSuccessMs = Date.parse(source.lastSuccessAt ?? "");
         await recordWarning({
           fingerprint: fallbackFingerprint,
           event: "source-fallback-active",
@@ -308,6 +309,11 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
             state: source.state,
             fallbackActive: true,
             itemCount: source.itemCount,
+            lastSuccessAt: source.lastSuccessAt ?? null,
+            failureAgeMs: Number.isFinite(lastSuccessMs) ? Math.max(0, now.getTime() - lastSuccessMs) : null,
+            currentFallback: true,
+            nextRetryAt: source.nextAttemptAt ?? null,
+            affectedCoverage: "fallback-serving",
           },
         });
       } else {
@@ -316,20 +322,26 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       await recover(fingerprint, 2);
       continue;
     }
+    const lastSuccessMs = Date.parse(source.lastSuccessAt ?? "");
+    const coverageLost = sourceCoverageLost(source);
     const alert = {
       fingerprint,
       event: "source-degraded",
-      severity: sourceCoverageLost(source) && !source.fallbackUrl ? "critical" : "warning",
+      severity: coverageLost && !source.fallbackUrl ? "critical" : "warning",
       threshold: 3,
       now,
       details: {
         sourceId,
         state: source.state,
         failures: source.consecutiveFailures,
-        coverageLost: sourceCoverageLost(source),
+        coverageLost,
+        affectedCoverage: coverageLost ? "all-source-peers" : "remaining-source-peers",
+        lastSuccessAt: source.lastSuccessAt ?? null,
+        failureAgeMs: Number.isFinite(lastSuccessMs) ? Math.max(0, now.getTime() - lastSuccessMs) : null,
+        currentFallback: Boolean(source.fallbackUrl),
+        nextRetryAt: source.nextAttemptAt ?? null,
         // URLs are stripped from alert details; keep a non-sensitive fallback signal.
         hasFallback: Boolean(source.fallbackUrl),
-        ...(typeof source.lastSuccessAt === "string" ? { lastSuccessAt: source.lastSuccessAt } : {}),
         ...safeAlertDetails(source.error ?? source.state, {
           stage: "source-health",
           sourceId,

@@ -46,7 +46,7 @@ type OpsPayload = {
     lastSuccessful?: { finished_at?: string; manifest_version?: string; manifest_hash?: string } | null;
   };
   modelHealth?: { available?: boolean; attempts?: Array<{ outcome?: string; count?: number; last_attempted_at?: string }> };
-  alerts?: { available?: boolean; open?: Array<{ fingerprint?: string; event?: string; severity?: string; occurrence_count?: number }> };
+  alerts?: { available?: boolean; open?: Array<{ fingerprint?: string; event?: string; severity?: string; occurrence_count?: number; detail_json?: string }> };
   executiveIntelligence?: { coverage?: Array<{ short_name?: string; official_source_status?: string; official_source_note?: string }> };
 };
 
@@ -120,6 +120,7 @@ function OpsPage() {
                 <li key={alert.fingerprint ?? alert.event ?? "alert"}>
                   {alert.severity ?? "unknown"}: {alert.event ?? alert.fingerprint ?? "alert"}
                   {alert.occurrence_count ? ` (${alert.occurrence_count} occurrences)` : ""}
+                  {alert.detail_json ? ` · ${alert.detail_json}` : ""}
                 </li>
               ))}
             </ul>
