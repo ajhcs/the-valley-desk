@@ -8,6 +8,7 @@ import type {
   NewsArticleExtractionState,
 } from "./news-extraction";
 import { sourceNote, type SourceRunNote } from "./source-health";
+import type { SocialEvidenceCandidate, SocialEvidenceEditorContext } from "./social-evidence";
 
 export type IngestRunOptions = {
   knownSourceUrls?: ReadonlySet<string>;
@@ -38,6 +39,8 @@ export type IngestRun = {
     attempts: NewsArticleExtractionAttempt[];
     metrics: NewsArticleExtractionMetrics;
   };
+  socialEvidenceProcessed?: SocialEvidenceCandidate[];
+  editorEvidence?: ReadonlyMap<string, SocialEvidenceEditorContext>;
 };
 
 export async function runIngestAll(
@@ -62,7 +65,14 @@ export async function runIngestAll(
     : [];
   const social = socialResult.status === "fulfilled"
     ? socialResult.value
-    : { items: [], linkedin: { count: 0, skipped: "source-error" }, x: { count: 0, skipped: "source-error" }, grok: { count: 0, pending: 0, skipped: "source-error" }, sources: [] as SourceRunNote[] };
+    : {
+      items: [], linkedin: { count: 0, skipped: "source-error" },
+      x: { count: 0, skipped: "source-error" },
+      grok: { count: 0, pending: 0, skipped: "source-error" },
+      processedPackets: [],
+      editorEvidence: new Map<string, SocialEvidenceEditorContext>(),
+      sources: [] as SourceRunNote[],
+    };
   const failures = [
     rssResult.status === "rejected" ? `rss: ${String(rssResult.reason)}` : undefined,
     eventsResult?.status === "rejected" ? `events: ${String(eventsResult.reason)}` : undefined,
@@ -86,6 +96,14 @@ export async function runIngestAll(
         state: "upstream-failed",
         checkedAt: fetchedAt,
         error: "X source error",
+      }),
+      sourceNote({
+        id: "grok-social-evidence",
+        origin: "grok-social-evidence",
+        type: "social",
+        state: "upstream-failed",
+        checkedAt: fetchedAt,
+        error: "Social evidence consumer error",
       }),
     ];
   const sources = [
@@ -111,6 +129,8 @@ export async function runIngestAll(
       ...(newsExtraction ? { newsExtraction: newsExtraction.metrics } : {}),
     },
     newsExtraction,
+    socialEvidenceProcessed: social.processedPackets,
+    editorEvidence: social.editorEvidence,
   };
 }
 

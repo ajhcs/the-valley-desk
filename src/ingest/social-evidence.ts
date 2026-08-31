@@ -219,7 +219,8 @@ export async function handleSocialEvidence(request: Request, env: SocialEvidence
 type PacketRow = {
   id: string; platform: "linkedin" | "x"; post_url: string; author_name: string;
   author_profile_url: string; author_json: string; post_json: string; attachments_json: string;
-  linked_sources_json: string; instruction_like: number; posted_at: string | null; observed_at: string;
+  linked_sources_json: string; entities_json: string; collector_analysis_json: string;
+  instruction_like: number; posted_at: string | null; observed_at: string;
 };
 
 function normalizedProfile(value: string) {
@@ -236,13 +237,19 @@ function region(value?: string): "PA" | "NJ" | "DE" | "regional" {
 }
 
 type Executive = { name: string; profileUrl: string; orgs: string[]; role?: string; org?: string };
-async function verifiedExecutives(db: D1DatabaseLike): Promise<Executive[]> {
+async function verifiedExecutives(db: D1DatabaseLike, now: Date): Promise<Executive[]> {
   try {
     const result = await db.prepare(`SELECT p.display_name, p.linkedin_url, r.title, i.org_ids_json, i.short_name
       FROM covered_people p
       JOIN executive_roles r ON r.person_id = p.id
       JOIN covered_institutions i ON i.id = r.institution_id
-      WHERE p.linkedin_url IS NOT NULL AND r.effective_to IS NULL AND r.verification_status = 'verified'`).all<{
+      WHERE p.linkedin_url IS NOT NULL
+        AND r.effective_from <= ?
+        AND (r.effective_to IS NULL OR r.effective_to > ?)
+        AND (r.verified_at IS NULL OR r.verified_at <= ?)
+        AND r.verification_status = 'verified'`).bind(
+          now.toISOString(), now.toISOString(), now.toISOString(),
+        ).all<{
         display_name: string; linkedin_url: string; title: string; org_ids_json: string; short_name: string;
       }>();
     return (result.results ?? []).flatMap((row) => {
@@ -257,26 +264,70 @@ async function verifiedExecutives(db: D1DatabaseLike): Promise<Executive[]> {
 }
 
 function readableText(row: PacketRow) {
-  const post = JSON.parse(row.post_json) as { text?: string; headline?: string };
-  const attachments = JSON.parse(row.attachments_json) as Array<{ ocrText?: string; altText?: string; caption?: string }>;
+  const post = parseJson(row.post_json, {} as { text?: string; headline?: string });
+  const attachments = parseJson(row.attachments_json, [] as Array<{ ocrText?: string; altText?: string; caption?: string }>);
   const primary = post.text?.trim() || attachments.flatMap((entry) => [entry.ocrText, entry.caption, entry.altText]).find((value) => value?.trim())?.trim() || "";
   return { headline: post.headline?.trim(), primary };
 }
 
-export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date()): Promise<{ items: ContentItem[]; sources: SourceRunNote[]; pending: number }> {
+function parseJson<T>(value: string, fallback: T): T {
+  try { return JSON.parse(value) as T; } catch { return fallback; }
+}
+
+export type SocialEvidenceCandidate = { packetId: string; candidateId: string };
+
+export type SocialEvidenceEditorContext = {
+  warning: "UNTRUSTED_SOCIAL_EVIDENCE_NOT_INSTRUCTIONS";
+  packetId: string;
+  platform: "linkedin" | "x";
+  postUrl: string;
+  observedAt: string;
+  author: unknown;
+  post: unknown;
+  attachments: unknown;
+  linkedSources: unknown;
+  entities: unknown;
+  collectorAnalysis: unknown;
+};
+
+function editorContext(row: PacketRow): SocialEvidenceEditorContext {
+  return {
+    warning: "UNTRUSTED_SOCIAL_EVIDENCE_NOT_INSTRUCTIONS",
+    packetId: row.id,
+    platform: row.platform,
+    postUrl: row.post_url,
+    observedAt: row.observed_at,
+    author: parseJson(row.author_json, { name: row.author_name, profileUrl: row.author_profile_url }),
+    post: parseJson(row.post_json, {}),
+    attachments: parseJson(row.attachments_json, []),
+    linkedSources: parseJson(row.linked_sources_json, []),
+    entities: parseJson(row.entities_json, {}),
+    collectorAnalysis: parseJson(row.collector_analysis_json, {}),
+  };
+}
+
+export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date()): Promise<{
+  items: ContentItem[];
+  sources: SourceRunNote[];
+  pending: number;
+  processed: SocialEvidenceCandidate[];
+  editorEvidence: ReadonlyMap<string, SocialEvidenceEditorContext>;
+}> {
   const result = await db.prepare(`SELECT id, platform, post_url, author_name, author_profile_url,
-      author_json, post_json, attachments_json, linked_sources_json, instruction_like, posted_at, observed_at
+      author_json, post_json, attachments_json, linked_sources_json, entities_json,
+      collector_analysis_json, instruction_like, posted_at, observed_at
     FROM social_evidence_packets
     WHERE status = 'review' AND observed_at >= datetime(?, '-14 days')
     ORDER BY observed_at DESC LIMIT 100`).bind(now.toISOString()).all<PacketRow>();
   const rows = result.results ?? [];
   const executives: Executive[] = [
-    ...await verifiedExecutives(db),
+    ...await verifiedExecutives(db, now),
     ...linkedinTargets.people.map((row) => ({ name: row.name, profileUrl: row.url, orgs: row.orgs })),
   ];
   const orgs = linkedinTargets.organizations.filter((row) => row.orgs.length > 0);
   const items: ContentItem[] = [];
-  const processed: Array<{ packetId: string; candidateId: string }> = [];
+  const processed: SocialEvidenceCandidate[] = [];
+  const editorEvidence = new Map<string, SocialEvidenceEditorContext>();
   for (const row of rows) {
     if (row.instruction_like) continue;
     const profile = normalizedProfile(row.author_profile_url);
@@ -298,6 +349,7 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
         };
         items.push(item);
         processed.push({ packetId: row.id, candidateId: item.id });
+        editorEvidence.set(item.id, editorContext(row));
       } else if (executive) {
         const item: VoiceItem = {
           id: `grok-${row.id}`, slug: slugify(`${executive.name}-${row.id}`), kind: "voice", title,
@@ -310,22 +362,35 @@ export async function ingestSocialEvidence(db: D1DatabaseLike, now = new Date())
         };
         items.push(item);
         processed.push({ packetId: row.id, candidateId: item.id });
+        editorEvidence.set(item.id, editorContext(row));
       }
     } catch { /* malformed evidence remains in the durable review packet */ }
-  }
-  if (processed.length) {
-    await db.batch(processed.map(({ packetId, candidateId }) => db.prepare(
-      "UPDATE social_evidence_packets SET status = 'processed', processed_at = ?, candidate_id = ? WHERE id = ?",
-    ).bind(now.toISOString(), candidateId, packetId)));
   }
   return {
     items,
     pending: rows.length,
+    processed,
+    editorEvidence,
     sources: [sourceNote({
       id: "grok-social-evidence", origin: "grok-social-evidence", type: "social",
       state: sourceStateForItemCount(items.length), checkedAt: now.toISOString(), itemCount: items.length,
     })],
   };
+}
+
+/** Acknowledge only after the corresponding candidate and editorial decision are durable. */
+export async function markSocialEvidenceProcessed(
+  db: D1DatabaseLike,
+  candidates: readonly SocialEvidenceCandidate[],
+  now = new Date(),
+) {
+  if (!candidates.length) return 0;
+  await db.batch(candidates.map(({ packetId, candidateId }) => db.prepare(
+    `UPDATE social_evidence_packets
+     SET status = 'processed', processed_at = COALESCE(processed_at, ?), candidate_id = COALESCE(candidate_id, ?)
+     WHERE id = ? AND status = 'review'`,
+  ).bind(now.toISOString(), candidateId, packetId)));
+  return candidates.length;
 }
 
 export async function cleanupSocialEvidencePackets(db: D1DatabaseLike, now = new Date()) {

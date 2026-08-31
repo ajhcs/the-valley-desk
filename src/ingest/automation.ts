@@ -46,6 +46,7 @@ import { matchingProductUses } from "./product-watch";
 import { sourceIdentityKey } from "./identity";
 import { runScheduledIngest, type IngestRun, type IngestRunOptions } from "./run-all";
 import { isSuccessfulSourceState } from "./source-health";
+import { markSocialEvidenceProcessed } from "./social-evidence";
 import {
   officialSourceCoverage,
   coveragePack,
@@ -128,7 +129,7 @@ function mergeCurrentAndBacklog(current: ContentItem[], backlog: ContentItem[]) 
 
 function attemptError(error: unknown) {
   if (error instanceof EditorModelError) return `${error.code}: ${error.message}`;
-  return error instanceof Error ? error.message : "Unknown editor-model error";
+  return error instanceof Error ? error.message : String(error);
 }
 
 async function enrichCandidate(
@@ -137,6 +138,7 @@ async function enrichCandidate(
   fetchImpl: typeof fetch,
   timeoutMs: number,
   reusable?: CandidateEnrichment["enrichment"],
+  untrustedSourceEvidence?: Record<string, unknown>,
 ): Promise<CandidateEnrichment> {
   if (reusable) return { item, enrichment: reusable };
   const apiKey = env.OPENROUTER_API_KEY || env.EDITOR_MODEL_API_KEY;
@@ -152,6 +154,7 @@ async function enrichCandidate(
         baseUrl: env.EDITOR_MODEL_BASE_URL,
         model: env.EDITOR_MODEL,
         timeoutMs,
+        untrustedSourceEvidence,
       },
       fetchImpl,
     );
@@ -183,6 +186,7 @@ async function enrichBounded(
   fetchImpl: typeof fetch,
   reusable: Map<string, NonNullable<CandidateEnrichment["enrichment"]>>,
   options: { concurrency: number; timeoutMs: number; deadlineAt: number; heartbeat?: () => Promise<void> },
+  editorEvidence: ReadonlyMap<string, Record<string, unknown>> = new Map(),
 ) {
   const out: CandidateEnrichment[] = [];
   const concurrency = Math.max(1, Math.min(options.concurrency, items.length || 1));
@@ -197,7 +201,14 @@ async function enrichBounded(
       const remaining = options.deadlineAt - Date.now();
       if (remaining < 1_000) return;
       const timeoutMs = Math.max(1_000, Math.min(options.timeoutMs, remaining));
-      out[index] = await enrichCandidate(item, env, fetchImpl, timeoutMs, reusable.get(item.id));
+      out[index] = await enrichCandidate(
+        item,
+        env,
+        fetchImpl,
+        timeoutMs,
+        reusable.get(item.id),
+        editorEvidence.get(item.id),
+      );
     }
   }));
   return out.filter((row): row is CandidateEnrichment => Boolean(row));
@@ -632,6 +643,12 @@ export async function runAutomation(
       env.EDITOR_MODEL || DEFAULT_EDITOR_MODEL,
       env.EDITOR_MODEL_BASE_URL || DEFAULT_EDITOR_BASE_URL,
     );
+    stage = "ack-social-evidence";
+    const socialEvidenceProcessedCount = await markSocialEvidenceProcessed(
+      env.VALLEY_DESK_DB,
+      run.socialEvidenceProcessed ?? [],
+      new Date(),
+    );
     stage = "complete-run";
     const finishedAt = await markIngestRunSucceeded(env.VALLEY_DESK_DB, persisted.runId);
     const modelAttemptedCount = modeled.filter((row) => row.attempt).length;
@@ -712,6 +729,11 @@ export async function runAutomation(
       runId: persisted.runId,
       ...editorial,
     });
+    logOps("social-evidence", {
+      outcome: "acknowledged",
+      runId: persisted.runId,
+      processed: socialEvidenceProcessedCount,
+    });
     logOps("reconciliation", {
       outcome: reconciliation.withdrawn ? "withdrawn" : "ok",
       runId: persisted.runId,
@@ -740,6 +762,7 @@ export async function runAutomation(
       verifierApprovedCount: verificationRun.approved,
       verifierRejectedCount: verificationRun.rejected,
       sourceHealthCount,
+      socialEvidenceProcessedCount,
       newsExtractionCount,
       signalVerification,
       officialDiscovery,
@@ -749,7 +772,7 @@ export async function runAutomation(
       notes: run.notes,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown automation error";
+    const message = error instanceof Error ? error.message : String(error);
     logOps("run", { outcome: "failed", stage, runId: persistedRunId, message }, "error");
     if (persistedRunId) {
       try {

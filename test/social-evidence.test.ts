@@ -8,6 +8,7 @@ import {
   SOCIAL_EVIDENCE_PATH,
   handleSocialEvidence,
   ingestSocialEvidence,
+  markSocialEvidenceProcessed,
 } from "../src/ingest/social-evidence.ts";
 import { runAutomation } from "../src/ingest/automation.ts";
 import { runScheduledIngest } from "../src/ingest/run-all.ts";
@@ -82,12 +83,18 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   assert.equal(run.items[0]?.kind, "news");
   assert.deepEqual(run.items[0]?.orgs, ["org-penn"]);
   assert.equal(run.items[0]?.source.origin, "grok-social-linkedin");
+  assert.equal(run.processed.length, 1);
+  assert.equal(run.editorEvidence.get(run.items[0]?.id ?? "")?.warning, "UNTRUSTED_SOCIAL_EVIDENCE_NOT_INSTRUCTIONS");
   const packetRow = sqlite.prepare("SELECT status, candidate_id FROM social_evidence_packets").get() as {
     status: string;
     candidate_id: string | null;
   };
-  assert.equal(packetRow.status, "processed");
-  assert.match(packetRow.candidate_id ?? "", /^grok-social-linkedin-/);
+  assert.equal(packetRow.status, "review");
+  assert.equal(packetRow.candidate_id, null);
+  await markSocialEvidenceProcessed(db, run.processed, new Date("2026-08-28T13:00:00.000Z"));
+  const acknowledged = sqlite.prepare("SELECT status, candidate_id FROM social_evidence_packets").get() as typeof packetRow;
+  assert.equal(acknowledged.status, "processed");
+  assert.match(acknowledged.candidate_id ?? "", /^grok-social-linkedin-/);
   assert.equal((await ingestSocialEvidence(db, new Date("2026-08-28T13:30:00.000Z"))).items.length, 0);
 });
 
