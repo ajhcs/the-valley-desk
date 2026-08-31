@@ -1034,7 +1034,7 @@ test("public source blocks are warning-level and deliberate backoff does not cre
   const base = new Date("2026-08-28T00:00:00.000Z");
   for (let index = 0; index < 3; index += 1) {
     await sendAutomationAlerts(env, {
-      notes: { sources: [{ id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403" }] },
+      notes: { sources: [{ id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403", lastSuccessAt: "2026-08-27T12:00:00.000Z", fallbackUrl: "https://www.cooperhealth.org/about-us/newsroom" }] },
     }, new Date(base.getTime() + index * 60 * 60 * 1_000));
   }
   const blocked = database.prepare(
@@ -1042,6 +1042,9 @@ test("public source blocks are warning-level and deliberate backoff does not cre
   ).get() as { severity: string; detail_json: string };
   assert.equal(blocked.severity, "warning");
   assert.match(blocked.detail_json, /403/);
+  assert.match(blocked.detail_json, /"hasFallback":true/);
+  assert.match(blocked.detail_json, /2026-08-27T12:00:00.000Z/);
+  assert.doesNotMatch(blocked.detail_json, /cooperhealth\.org/);
   assert.equal(sent.length, 0, "public upstream blocks are durable warning data for the digest");
 
   await sendAutomationAlerts(env, {
@@ -1051,6 +1054,92 @@ test("public source blocks are warning-level and deliberate backoff does not cre
     database.prepare("SELECT COUNT(*) AS count FROM operational_alerts WHERE fingerprint = 'valley-desk:source:cooper-newsroom'").get().count,
     1,
   );
+  database.close();
+});
+
+test("incomplete leadership extraction surfaces a bounded actionable reason without inventing departures", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const env = {
+    VALLEY_DESK_DB: db,
+    NOTIFY_OPS: {
+      async send(message: { subject: string }) {
+        sent.push(message.subject);
+        return { messageId: `message-${sent.length}` };
+      },
+    },
+  };
+  const reason = "Page fetched, but no recognized leadership structure was found";
+  for (let index = 0; index < 2; index += 1) {
+    await sendAutomationAlerts(env, {
+      notes: { sources: [] },
+      leadership: {
+        outcome: "degraded",
+        fetched: 1,
+        failed: 1,
+        coverage: [
+          { institutionId: "inst-example", status: "active" },
+          { institutionId: "inst-peer", status: "active" },
+        ],
+        failureDetails: [{
+          sourceId: "src-example-leadership",
+          errorClass: "unrecognized",
+          reason,
+          nextRetryAt: "2026-08-28T06:00:00.000Z",
+        }],
+      },
+    }, new Date(`2026-08-28T0${index}:00:00.000Z`));
+  }
+  assert.equal(sent.length, 1, "degraded leadership with remaining coverage is a warning transition, not a critical storm");
+  const row = database.prepare(
+    "SELECT severity, detail_json FROM operational_alerts WHERE fingerprint = 'valley-desk:leadership-monitor'",
+  ).get() as { severity: string; detail_json: string };
+  assert.equal(row.severity, "warning");
+  assert.match(row.detail_json, /no recognized leadership structure/);
+  assert.match(row.detail_json, /src-example-leadership/);
+  assert.doesNotMatch(row.detail_json, /Unknown automation failure/);
+  database.close();
+});
+
+test("source coverage loss stays warning when a healthy fallback is still serving the origin", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sent: string[] = [];
+  const env = {
+    VALLEY_DESK_DB: db,
+    NOTIFY_OPS: {
+      async send(message: { subject: string }) {
+        sent.push(message.subject);
+        return { messageId: `message-${sent.length}` };
+      },
+    },
+  };
+  for (let index = 0; index < 3; index += 1) {
+    await sendAutomationAlerts(env, {
+      notes: {
+        sources: [{
+          id: "cooper-newsroom",
+          state: "upstream-failed",
+          type: "rss",
+          itemCount: 0,
+          consecutiveFailures: index + 1,
+          httpStatus: 502,
+          error: "HTTP 502",
+          fallbackUrl: "https://www.cooperhealth.org/about-us/newsroom",
+        }],
+      },
+    }, new Date(`2026-08-28T0${index}:00:00.000Z`));
+  }
+  const row = database.prepare(
+    "SELECT severity, detail_json FROM operational_alerts WHERE fingerprint = 'valley-desk:source:cooper-newsroom'",
+  ).get() as { severity: string; detail_json: string };
+  assert.equal(row.severity, "warning");
+  assert.match(row.detail_json, /"hasFallback":true/);
+  assert.match(row.detail_json, /"coverageLost":true/);
+  assert.equal(sent.length, 0, "fallback coverage keeps the incident in the digest instead of immediate critical mail");
   database.close();
 });
 

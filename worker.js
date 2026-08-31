@@ -302,6 +302,9 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
         state: source.state,
         failures: source.consecutiveFailures,
         coverageLost: sourceCoverageLost(source),
+        // URLs are stripped from alert details; keep a non-sensitive fallback signal.
+        hasFallback: Boolean(source.fallbackUrl),
+        ...(typeof source.lastSuccessAt === "string" ? { lastSuccessAt: source.lastSuccessAt } : {}),
         ...safeAlertDetails(source.error ?? source.state, {
           stage: "source-health",
           sourceId,
