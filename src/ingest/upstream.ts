@@ -25,7 +25,7 @@ export class UpstreamError extends Error {
   }
 }
 
-const RETRYABLE_STATUS = new Set([429, 502, 503, 504]);
+const RETRYABLE_STATUS = new Set([408, 429, 502, 503, 504]);
 
 function concat(chunks: Uint8Array[]) {
   const total = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);

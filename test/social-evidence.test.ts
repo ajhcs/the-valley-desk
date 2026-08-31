@@ -6,8 +6,10 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   SOCIAL_EVIDENCE_PATH,
+  SOCIAL_COLLECTOR_RUNS_PATH,
   SOCIAL_MANIFEST_PATH,
   buildSocialTargetManifest,
+  handleSocialCollectorRuns,
   handleSocialEvidence,
   handleSocialManifest,
   ingestSocialEvidence,
@@ -72,6 +74,10 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
     VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "separate-social-secret",
   });
   assert.equal(manifestUnauthorized.status, 404);
+  const sharedSecret = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+    headers: { authorization: "Bearer shared-secret" },
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "shared-secret", REVIEW_API_TOKEN: "shared-secret" });
+  assert.equal(sharedSecret.status, 404);
   const manifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
   assert.match(manifest.manifestVersion, /^social-targets-v1-/);
   assert.equal(manifest.platformHealth.linkedin.state, "active");
@@ -115,6 +121,57 @@ test("social evidence intake fails closed, stores a rich packet, and deduplicate
   assert.equal(acknowledged.status, "processed");
   assert.match(acknowledged.candidate_id ?? "", /^grok-social-linkedin-/);
   assert.equal((await ingestSocialEvidence(db, new Date("2026-08-28T13:30:00.000Z"))).items.length, 0);
+});
+
+test("Vale collector receipts are manifest-bound, idempotent, and expose last success", async () => {
+  const { sqlite, db } = database();
+  const manifest = await buildSocialTargetManifest(db, new Date("2026-08-28T13:00:00.000Z"));
+  const report = {
+    schemaVersion: 1,
+    collector: "vale",
+    runId: "vale-run-20260828-1300",
+    manifestVersion: manifest.manifestVersion,
+    manifestHash: manifest.manifestHash,
+    startedAt: "2026-08-28T12:30:00.000Z",
+    finishedAt: "2026-08-28T13:00:00.000Z",
+    outcome: "success",
+    accountsChecked: manifest.targets.length,
+    postsSeen: 7,
+    accepted: 6,
+    duplicates: 1,
+    failures: 0,
+    platforms: {
+      linkedin: { targetsChecked: manifest.platformHealth.linkedin.activeTargetCount, postsSeen: 7, accepted: 6, duplicates: 1, failures: 0 },
+      x: { targetsChecked: 0, postsSeen: 0, accepted: 0, duplicates: 0, failures: 0 },
+    },
+    failureReasons: [],
+  };
+  const makeRequest = () => new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify(report),
+  });
+  const first = await handleSocialCollectorRuns(makeRequest(), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(first.status, 202);
+  const replay = await handleSocialCollectorRuns(makeRequest(), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(replay.status, 202);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM social_collector_runs").get() as { count: number }).count, 1);
+  const status = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    headers: { authorization: "Bearer social-secret" },
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(status.status, 200);
+  const statusBody = await status.json() as { latest?: { runId?: string; duplicates?: number }; lastSuccessful?: { runId?: string } };
+  assert.equal(statusBody.latest?.runId, report.runId);
+  assert.equal(statusBody.latest?.duplicates, 1);
+  assert.equal(statusBody.lastSuccessful?.runId, report.runId);
+
+  const stale = await handleSocialCollectorRuns(new Request(`https://thevalleydesk.org${SOCIAL_COLLECTOR_RUNS_PATH}`, {
+    method: "POST",
+    headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+    body: JSON.stringify({ ...report, runId: "stale", manifestHash: "0".repeat(64) }),
+  }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+  assert.equal(stale.status, 409);
+  sqlite.close();
 });
 
 test("scheduled automation passes D1 to the social consumer and persists its review candidate", async () => {

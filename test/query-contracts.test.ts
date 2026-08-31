@@ -483,7 +483,7 @@ test("source-health persistence follows 15-minute, hourly, and recovery transiti
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
   const db = sqliteD1(database);
-  const source = (checkedAt: string, state: "upstream-failed" | "backoff" | "healthy", nextAttemptAt?: string) => ({
+  const source = (checkedAt: string, state: "upstream-failed" | "backoff" | "healthy", nextAttemptAt?: string, fallbackUrl?: string) => ({
     id: "retry-source",
     origin: "retry-source",
     type: "rss" as const,
@@ -495,6 +495,7 @@ test("source-health persistence follows 15-minute, hourly, and recovery transiti
     url: "https://example.com/feed",
     ...(state === "healthy" ? {} : { error: "HTTP 503", httpStatus: 503 }),
     ...(nextAttemptAt ? { nextAttemptAt } : {}),
+    ...(fallbackUrl ? { fallbackUrl } : {}),
   });
   const run = async (fetchedAt: string) => persistIngestRun(db, {
     fetchedAt,
@@ -524,11 +525,12 @@ test("source-health persistence follows 15-minute, hourly, and recovery transiti
 
   const healthyAt = "2026-08-26T13:15:00.000Z";
   const healthyRun = await run(healthyAt);
-  await persistSourceHealth(db, healthyRun.runId, [source(healthyAt, "healthy")]);
+  await persistSourceHealth(db, healthyRun.runId, [source(healthyAt, "healthy", undefined, "https://example.com/official")]);
   row = await readSourceHealth(db);
   assert.equal(row.get("retry-source")?.consecutiveFailures, 0);
   assert.equal(row.get("retry-source")?.lastSuccessAt, healthyAt);
   assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T13:30:00.000Z");
+  assert.equal(row.get("retry-source")?.lastFallbackUrl, "https://example.com/official");
   database.close();
 });
 
@@ -4327,6 +4329,7 @@ function applyMigrations(database: DatabaseSync) {
     "0020_official_source_retry_provenance.sql",
     "0021_social_evidence_packets.sql",
     "0022_source_health_backoff.sql",
+    "0023_social_collector_runs.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 
@@ -4884,6 +4887,7 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(model.includes("Every affectedOrgId and productId must come verbatim"));
   assert.ok(wrangler.includes('"crons": ["*/15 * * * *", "17 3 * * *"]'));
   assert.ok(example.includes("EDITOR_MODEL_BUDGET=32"));
+  assert.ok(example.includes("SOCIAL_INGEST_TOKEN=replace-with-a-different-long-random-token"));
   assert.ok(example.includes("EDITOR_MODEL_TIMEOUT_MS=45000"));
   assert.ok(example.includes("EDITOR_MODEL_DEADLINE_MS=110000"));
   assert.equal(MAX_EDITOR_TIMEOUT_MS, 120_000);
@@ -4892,6 +4896,7 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(readme.includes("EDITOR_MODEL_BUDGET"));
   assert.ok(readme.includes("waitUntil"));
   assert.ok(readme.includes("There is no automatic fallback to standard Muse"));
+  assert.ok(readme.includes("SOCIAL_INGEST_TOKEN"));
   assert.ok(automation.includes("selectEditorModelWork"));
   assert.ok(automation.includes("markIngestRunSucceeded"));
   assert.ok(automation.includes("releaseAutomationLock"));

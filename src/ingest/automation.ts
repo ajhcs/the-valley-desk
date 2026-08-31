@@ -291,6 +291,7 @@ type LeadershipAutomationResult = {
   verifiedRoles: number;
   unresolved: number;
   conflicts: number;
+  failed: number;
   editorialCandidates: ContentItem[];
   error?: string;
 };
@@ -339,6 +340,7 @@ async function runLeadershipStage(
       verifiedRoles: autonomous.verifiedRoles,
       unresolved: autonomous.unresolved,
       conflicts: autonomous.conflicts,
+      failed,
       editorialCandidates: autonomous.editorialCandidates,
     };
   } catch (error) {
@@ -358,6 +360,7 @@ async function runLeadershipStage(
       verifiedRoles: 0,
       unresolved: 0,
       conflicts: 0,
+      failed: 0,
       editorialCandidates: [],
       error: message,
     };

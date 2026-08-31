@@ -204,11 +204,25 @@ test("protected automation status/review require the bearer token and constant-t
     headers: { authorization: "Bearer ops-token" },
   }), env);
   assert.equal(status.status, 200);
-  const statusBody = await status.json() as { schemaVersion: string; buildSha: string; publicOrigin: string; review?: unknown };
+  const statusBody = await status.json() as {
+    schemaVersion: string;
+    buildSha: string;
+    publicOrigin: string;
+    review?: unknown;
+    socialEvidence?: { available?: boolean };
+    valeCollector?: { available?: boolean; lastSuccessful?: unknown };
+    modelHealth?: { available?: boolean };
+    alerts?: { available?: boolean; open?: unknown[] };
+  };
   assert.equal(statusBody.schemaVersion, SCHEMA_VERSION);
   assert.equal(statusBody.buildSha, "deadbeef");
   assert.equal(statusBody.publicOrigin, DEFAULT_PUBLIC_ORIGIN);
   assert.equal(statusBody.review, undefined);
+  assert.equal(statusBody.socialEvidence?.available, true);
+  assert.equal(statusBody.valeCollector?.available, true);
+  assert.equal(statusBody.valeCollector?.lastSuccessful, null);
+  assert.equal(statusBody.modelHealth?.available, true);
+  assert.equal(statusBody.alerts?.available, true);
   const review = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status/review`, {
     headers: { authorization: "Bearer ops-token" },
   }), env);
@@ -370,6 +384,8 @@ test("SCHEMA_VERSION matches the latest D1 migration and wrangler stays a single
   assert.ok(wrangler.includes('"pattern": "www.thevalleydesk.org", "custom_domain": true'));
   const worker = readFileSync(join(root, "worker.js"), "utf8");
   assert.ok(worker.includes("/api/health"));
+  assert.ok(worker.includes("isSocialManifestPath"));
+  assert.ok(worker.includes("isSocialCollectorRunsPath"));
   assert.ok(worker.includes("HEAD"));
   assert.ok(worker.includes("robots.txt"));
   assert.ok(worker.includes("let dynamicItem = section && slug"));

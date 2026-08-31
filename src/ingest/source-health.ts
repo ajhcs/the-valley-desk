@@ -27,6 +27,7 @@ export type PersistedSourceHealth = {
   nextAttemptAt: string;
   lastHttpStatus: number | null;
   requiresAuth: boolean;
+  lastFallbackUrl?: string | null;
 };
 
 export const SOURCE_HEALTHY_REFRESH_MS = 15 * 60 * 1_000;
@@ -135,6 +136,7 @@ export function sourceBackoffNote(
     nextAttemptAt: prior?.nextAttemptAt,
     httpStatus: prior?.lastHttpStatus ?? undefined,
     requiresAuth: prior?.requiresAuth,
+    ...(prior?.lastFallbackUrl ? { fallbackUrl: prior.lastFallbackUrl } : {}),
     consecutiveFailures: prior?.consecutiveFailures ?? 0,
     lastSuccessAt: prior?.lastSuccessAt ?? null,
   });
