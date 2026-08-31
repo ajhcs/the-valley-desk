@@ -676,12 +676,14 @@ async function enrollExecutiveDiscovery(
 function isOfficialEvidenceUrl(source: CoverageSource, finalUrl: string) {
   try {
     const evidence = new URL(finalUrl);
-    const sourceHost = source.host.replace(/^www\./, "").replace(/\.$/, "").toLowerCase();
     const evidenceHost = evidence.hostname.replace(/^www\./, "").replace(/\.$/, "").toLowerCase();
+    const sourceHosts = new Set([source.url, ...(source.alternateUrls ?? [])].map((url) => (
+      new URL(url).hostname.replace(/^www\./, "").replace(/\.$/, "").toLowerCase()
+    )));
     return evidence.protocol === "https:"
       && !evidence.username
       && !evidence.password
-      && evidenceHost === sourceHost;
+      && sourceHosts.has(evidenceHost);
   } catch {
     return false;
   }

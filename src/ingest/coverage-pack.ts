@@ -74,6 +74,7 @@ const CoverageSourceBase = z.object({
   institutionId: z.string().regex(/^inst-[a-z0-9-]+$/),
   kind: SourceKind,
   url: HttpsUrl,
+  alternateUrls: z.array(HttpsUrl).max(4).optional(),
   host: z.string().min(1),
   precedence: z.number().int().min(0).max(100),
   monitor: z.boolean(),
@@ -117,6 +118,15 @@ export const CoverageSource = CoverageSourceBase.superRefine((source, ctx) => {
         message: "LinkedIn sources must remain inventory-only",
         path: ["status"],
       });
+    }
+  }
+  for (const alternateUrl of source.alternateUrls ?? []) {
+    try {
+      if (isLinkedInHost(new URL(alternateUrl).hostname)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Leadership alternatives cannot use LinkedIn", path: ["alternateUrls"] });
+      }
+    } catch {
+      // HttpsUrl already reports malformed URLs.
     }
   }
   if (source.monitor && source.status !== "enabled") {
@@ -189,12 +199,14 @@ export const CoveragePackDocument = z.object({
   }
   const sourceUrls = new Set<string>();
   for (const source of pack.sources) {
-    const normalized = normalizeSourceUrl(source.url);
-    if (!normalized) continue;
-    if (sourceUrls.has(normalized)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Duplicate normalized source URL ${normalized}`, path: ["sources"] });
+    for (const url of [source.url, ...(source.alternateUrls ?? [])]) {
+      const normalized = normalizeSourceUrl(url);
+      if (!normalized) continue;
+      if (sourceUrls.has(normalized)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Duplicate normalized source URL ${normalized}`, path: ["sources"] });
+      }
+      sourceUrls.add(normalized);
     }
-    sourceUrls.add(normalized);
   }
   const personIds = new Set<string>();
   for (const person of pack.people) {
@@ -410,10 +422,11 @@ export function inventorySources(pack: CoveragePackDocument = coveragePack) {
 export function leadershipHostAllowlist(pack: CoveragePackDocument = coveragePack): ReadonlySet<string> {
   const hosts = new Set<string>();
   for (const source of monitorableSources(pack)) {
-    const host = source.host.replace(/^www\./, "").toLowerCase();
-    hosts.add(host);
-    hosts.add(`www.${host}`);
-    hosts.add(source.host.toLowerCase());
+    for (const candidate of [source.url, ...(source.alternateUrls ?? [])]) {
+      const host = hostFromUrl(candidate).replace(/^www\./, "").toLowerCase();
+      hosts.add(host);
+      hosts.add(`www.${host}`);
+    }
   }
   for (const blocked of pack.blockedHosts) {
     hosts.delete(blocked.toLowerCase());
@@ -422,8 +435,13 @@ export function leadershipHostAllowlist(pack: CoveragePackDocument = coveragePac
 }
 
 export function hostsForSource(source: CoverageSource): ReadonlySet<string> {
-  const host = source.host.replace(/^www\./, "").toLowerCase();
-  return new Set([host, `www.${host}`, source.host.toLowerCase()]);
+  const hosts = new Set<string>();
+  for (const candidate of [source.url, ...(source.alternateUrls ?? [])]) {
+    const host = hostFromUrl(candidate).replace(/^www\./, "").toLowerCase();
+    hosts.add(host);
+    hosts.add(`www.${host}`);
+  }
+  return hosts;
 }
 
 export function sourceById(id: string, pack: CoveragePackDocument = coveragePack) {

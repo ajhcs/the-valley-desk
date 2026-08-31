@@ -142,7 +142,48 @@ test("coverage registry has closed geography, bounded fetches, and explicit 16-s
     sourceById("src-lvhn-leadership-committees")?.url,
     "https://www.lvhn.org/medical-staff-services/leadership-and-committees",
   );
+  assert.equal(
+    sourceById("src-christianacare-leadership")?.url,
+    "https://christianacare.org/us/en/about-us/who-we-are/our-leadership",
+  );
+  assert.equal(
+    sourceById("src-tower-leadership")?.url,
+    "https://towerhealth.org/about/tower-health-leadership-team",
+  );
   assert.equal(coveragePack.sources.some((source) => source.kind.startsWith("linkedin") && source.monitor), false);
+});
+
+test("leadership source alternatives stay allowlisted and rescue incomplete primaries", async () => {
+  const source = monitorableSources()[0]!;
+  const alternateUrl = "https://www.pennmedicine.org/information-services/leadership/alternate";
+  const pack = CoveragePackDocument.parse({
+    ...coveragePack,
+    sources: coveragePack.sources.map((row) => (
+      row.id === source.id ? { ...row, alternateUrls: [alternateUrl] } : row
+    )),
+  });
+  const sourceUrl = normalizeSourceUrl(source.url)!;
+  const alternateCanonicalUrl = normalizeSourceUrl(alternateUrl)!;
+  const requested: string[] = [];
+  const result = await monitorLeadershipSources({
+    pack,
+    now: new Date("2026-08-28T12:00:00.000Z"),
+    candidateCap: 1,
+    concurrency: 1,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      if (url === sourceUrl) return new Response("<html><body>No roster here</body></html>", { status: 200 });
+      if (url === alternateCanonicalUrl) return new Response("<h2>Julian Mihai</h2><p>CISO</p>", { status: 200 });
+      return new Response("", { status: 503 });
+    },
+  });
+  assert.deepEqual(requested, [sourceUrl, alternateCanonicalUrl]);
+  assert.equal(result.snapshots[0]?.sourceId, source.id);
+  assert.equal(result.snapshots[0]?.finalUrl, alternateCanonicalUrl);
+  assert.equal(result.snapshots[0]?.state, "success");
+  assert.equal(result.snapshots[0]?.extractionStatus, "complete");
+  assert.deepEqual(result.fetchedUrls, [alternateCanonicalUrl]);
 });
 
 test("covered health-system identities and LinkedIn mappings stay canonical", () => {

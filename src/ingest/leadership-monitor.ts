@@ -288,6 +288,15 @@ export function isEligibleLeadershipSource(source: CoverageSource) {
   } catch {
     return false;
   }
+  for (const alternateUrl of source.alternateUrls ?? []) {
+    const normalizedAlternate = normalizeSourceUrl(alternateUrl);
+    if (!normalizedAlternate || !normalizedAlternate.startsWith("https://")) return false;
+    try {
+      if (isLinkedInHost(new URL(normalizedAlternate).hostname)) return false;
+    } catch {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -509,76 +518,108 @@ export async function monitorLeadershipSources(
         };
         return { snapshot, previous, fetchedUrl: undefined };
       }
-      const page = await fetchAllowlistedArticlePage({
-        url: source.url,
-        fetchImpl: options.fetchImpl,
-        allowedHosts: hostsForSource(source),
-        maxBytes: LEADERSHIP_MAX_BYTES,
-        timeoutMs: LEADERSHIP_TIMEOUT_MS,
-        maxRedirects: LEADERSHIP_MAX_REDIRECTS,
-      });
-      if (!page.ok) {
-        const blocked = /allowlist|linkedin/i.test(page.error);
-        const snapshot: LeadershipSnapshot = {
-          id: `snap-${source.id}-${now.toISOString()}`,
-          sourceId: source.id,
-          fetchedAt: now.toISOString(),
-          finalUrl: source.url,
-          contentHash: previous?.lastHash ?? "",
-          normalizedText: "",
-          byteCount: 0,
-          extracted: [],
-          extractionStatus: "partial",
-          state: blocked ? "blocked" : "failed",
-          error: clipError(page.error),
-          httpStatus: httpStatusFromError(page.error),
-          instructionLike: false,
-        };
-        return { snapshot, previous, fetchedUrl: source.url };
+      const allowedHosts = hostsForSource(source);
+      const candidateUrls = [source.url, ...(source.alternateUrls ?? [])];
+      let lastSnapshot: LeadershipSnapshot | undefined;
+      let lastFetchedUrl: string | undefined;
+      for (const candidateUrl of candidateUrls) {
+        try {
+          const page = await fetchAllowlistedArticlePage({
+            url: candidateUrl,
+            fetchImpl: options.fetchImpl,
+            allowedHosts,
+            maxBytes: LEADERSHIP_MAX_BYTES,
+            timeoutMs: LEADERSHIP_TIMEOUT_MS,
+            maxRedirects: LEADERSHIP_MAX_REDIRECTS,
+          });
+          if (!page.ok) {
+            const blocked = /allowlist|linkedin/i.test(page.error);
+            lastSnapshot = {
+              id: `snap-${source.id}-${now.toISOString()}`,
+              sourceId: source.id,
+              fetchedAt: now.toISOString(),
+              finalUrl: candidateUrl,
+              contentHash: previous?.lastHash ?? "",
+              normalizedText: "",
+              byteCount: 0,
+              extracted: [],
+              extractionStatus: "partial",
+              state: blocked ? "blocked" : "failed",
+              error: clipError(page.error),
+              httpStatus: httpStatusFromError(page.error),
+              instructionLike: false,
+            };
+            lastFetchedUrl = candidateUrl;
+            continue;
+          }
+          const normalizedText = normalizeLeadershipText(page.body);
+          const contentHash = await sha256Hex(normalizedText);
+          const extracted = extractLeaders(page.body);
+          const extraction = extractionStatus(normalizedText, extracted);
+          const instructionLike = looksInstructionLike(
+            page.body,
+            normalizedText,
+            extracted.map((row) => `${row.name} ${row.title}`).join("\n"),
+          );
+          // A repeated incomplete page is still degraded. Treating it as merely
+          // unchanged would let a persistent empty/unrecognized page recover the
+          // source without ever proving a usable roster. Continue to an explicit
+          // alternate only when this page is incomplete.
+          const unchanged = extraction === "complete"
+            && Boolean(previous?.lastHash && previous.lastHash === contentHash);
+          const hostile = instructionLike || extraction === "challenge";
+          const incompleteError = incompleteExtractionError(extraction);
+          const snapshot: LeadershipSnapshot = {
+            id: `snap-${source.id}-${now.toISOString()}`,
+            sourceId: source.id,
+            fetchedAt: now.toISOString(),
+            finalUrl: page.url,
+            contentHash,
+            normalizedText,
+            byteCount: new TextEncoder().encode(page.body).byteLength,
+            extracted,
+            extractionStatus: extraction,
+            // Fetch succeeded, but an incomplete roster is still a degraded source
+            // for scheduling and operator alerts—never a healthy success.
+            state: hostile
+              ? "hostile"
+              : unchanged
+                ? "unchanged"
+                : extraction === "complete"
+                  ? "success"
+                  : "failed",
+            error: instructionLike
+              ? "Instruction-like text in untrusted page"
+              : extraction === "challenge"
+                ? "Challenge-like page in untrusted source"
+                : incompleteError,
+            instructionLike: instructionLike || extraction === "challenge",
+          };
+          lastSnapshot = snapshot;
+          lastFetchedUrl = page.url;
+          if (snapshot.state !== "failed") {
+            return { snapshot, previous, fetchedUrl: page.url };
+          }
+        } catch (error) {
+          lastSnapshot = {
+            id: `snap-${source.id}-${now.toISOString()}`,
+            sourceId: source.id,
+            fetchedAt: now.toISOString(),
+            finalUrl: candidateUrl,
+            contentHash: previous?.lastHash ?? "",
+            normalizedText: "",
+            byteCount: 0,
+            extracted: [],
+            extractionStatus: "partial",
+            state: "failed",
+            error: clipError(error instanceof Error ? error.message : "Leadership source failed"),
+            instructionLike: false,
+          };
+          lastFetchedUrl = candidateUrl;
+        }
       }
-      const normalizedText = normalizeLeadershipText(page.body);
-      const contentHash = await sha256Hex(normalizedText);
-      const extracted = extractLeaders(page.body);
-      const extraction = extractionStatus(normalizedText, extracted);
-      const instructionLike = looksInstructionLike(
-        page.body,
-        normalizedText,
-        extracted.map((row) => `${row.name} ${row.title}`).join("\n"),
-      );
-      // A repeated incomplete page is still degraded. Treating it as merely
-      // unchanged would let a persistent empty/unrecognized page recover the
-      // source without ever proving a usable roster.
-      const unchanged = extraction === "complete"
-        && Boolean(previous?.lastHash && previous.lastHash === contentHash);
-      const hostile = instructionLike || extraction === "challenge";
-      const incompleteError = incompleteExtractionError(extraction);
-      const snapshot: LeadershipSnapshot = {
-        id: `snap-${source.id}-${now.toISOString()}`,
-        sourceId: source.id,
-        fetchedAt: now.toISOString(),
-        finalUrl: page.url,
-        contentHash,
-        normalizedText,
-        byteCount: new TextEncoder().encode(page.body).byteLength,
-        extracted,
-        extractionStatus: extraction,
-        // Fetch succeeded, but an incomplete roster is still a degraded source
-        // for scheduling and operator alerts—never a healthy success.
-        state: hostile
-          ? "hostile"
-          : unchanged
-            ? "unchanged"
-            : extraction === "complete"
-              ? "success"
-              : "failed",
-        error: instructionLike
-          ? "Instruction-like text in untrusted page"
-          : extraction === "challenge"
-            ? "Challenge-like page in untrusted source"
-            : incompleteError,
-        instructionLike: instructionLike || extraction === "challenge",
-      };
-      return { snapshot, previous, fetchedUrl: page.url };
+      if (lastSnapshot) return { snapshot: lastSnapshot, previous, fetchedUrl: lastFetchedUrl };
+      throw new Error("Leadership source failed");
     } catch (error) {
       const snapshot: LeadershipSnapshot = {
         id: `snap-${source.id}-${now.toISOString()}`,
