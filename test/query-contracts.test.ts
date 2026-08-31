@@ -613,6 +613,7 @@ test("source-health persistence follows 15-minute, hourly, and recovery transiti
     complete: state === "healthy",
     completeness: state === "healthy" ? "complete" as const : "partial" as const,
     url: "https://example.com/feed",
+    institutionIds: ["inst-cooper"],
     ...(state === "healthy" ? {} : { error: "HTTP 503", httpStatus: 503 }),
     ...(nextAttemptAt ? { nextAttemptAt } : {}),
     ...(fallbackUrl ? { fallbackUrl } : {}),
@@ -627,6 +628,7 @@ test("source-health persistence follows 15-minute, hourly, and recovery transiti
   await persistSourceHealth(db, firstRun.runId, [source(firstAt, "upstream-failed")]);
   let row = await readSourceHealth(db);
   assert.equal(row.get("retry-source")?.consecutiveFailures, 1);
+  assert.deepEqual(row.get("retry-source")?.institutionIds, ["inst-cooper"]);
   assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T12:15:00.000Z");
 
   const secondAt = "2026-08-26T12:15:00.000Z";
@@ -4473,6 +4475,8 @@ function applyMigrations(database: DatabaseSync) {
     "0022_source_health_backoff.sql",
     "0023_social_collector_runs.sql",
     "0024_social_lifecycle.sql",
+    "0025_operational_alert_context.sql",
+    "0026_source_health_attribution.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 

@@ -33,6 +33,7 @@ import { monitorLeadershipSources, type LeadershipSnapshot } from "../src/ingest
 import type { D1DatabaseLike, D1StatementLike } from "../src/ingest/persistence.ts";
 import { normalizeSourceUrl } from "../src/ingest/identity.ts";
 import { Entity } from "../src/content/entity.ts";
+import { buildRuntimeLeadershipCoverage } from "../src/lib/operational-status.ts";
 
 class SqliteD1Statement implements D1StatementLike {
   private values: unknown[] = [];
@@ -153,6 +154,69 @@ test("coverage registry has closed geography, bounded fetches, and explicit 16-s
   assert.equal(coveragePack.sources.some((source) => source.kind.startsWith("linkedin") && source.monitor), false);
 });
 
+test("runtime leadership coverage separates configured posture from fresh source health", () => {
+  const configured = officialSourceCoverage().map((row) => ({ ...row, configuredStatus: row.status }));
+  const now = new Date("2026-08-28T12:00:00.000Z");
+  const pennSource = configured.find((row) => row.shortName === "Penn")!.sourceIds[0]!;
+  const mainLineSources = configured.find((row) => row.shortName === "Main Line")!.sourceIds;
+  const cooperSource = configured.find((row) => row.shortName === "Cooper")!.sourceIds[0]!;
+  const templeSource = configured.find((row) => row.shortName === "Temple")!.sourceIds[0]!;
+  const coverage = buildRuntimeLeadershipCoverage(configured, [
+    {
+      sourceId: pennSource,
+      institutionId: "inst-penn",
+      state: "healthy",
+      lastSuccessAt: "2026-08-28T11:30:00.000Z",
+      lastAttemptedAt: "2026-08-28T11:30:00.000Z",
+      nextAttemptAt: "2026-08-28T12:30:00.000Z",
+    },
+    {
+      sourceId: mainLineSources[0]!,
+      institutionId: "inst-main-line",
+      state: "upstream-failed",
+      lastSuccessAt: "2026-08-28T09:00:00.000Z",
+      lastAttemptedAt: "2026-08-28T11:00:00.000Z",
+      nextAttemptAt: "2026-08-28T12:15:00.000Z",
+      consecutiveFailures: 2,
+      lastError: "HTTP 503",
+    },
+    {
+      sourceId: mainLineSources[1]!,
+      institutionId: "inst-main-line",
+      state: "healthy",
+      lastSuccessAt: "2026-08-28T11:45:00.000Z",
+      lastAttemptedAt: "2026-08-28T11:45:00.000Z",
+      nextAttemptAt: "2026-08-28T12:45:00.000Z",
+    },
+    {
+      sourceId: cooperSource,
+      institutionId: "inst-cooper",
+      state: "blocked",
+      lastAttemptedAt: "2026-08-28T11:30:00.000Z",
+      nextAttemptAt: "2026-08-28T12:30:00.000Z",
+      consecutiveFailures: 1,
+      lastError: "HTTP 403",
+    },
+    {
+      sourceId: templeSource,
+      institutionId: "inst-temple",
+      state: "healthy",
+      lastSuccessAt: "2026-08-28T08:00:00.000Z",
+      lastAttemptedAt: "2026-08-28T08:00:00.000Z",
+      nextAttemptAt: "2026-08-28T13:00:00.000Z",
+    },
+  ], now);
+  const byName = new Map(coverage.map((row) => [row.shortName, row]));
+  assert.equal(byName.get("Penn")?.state, "healthy");
+  assert.equal(byName.get("Main Line")?.state, "degraded");
+  assert.equal(byName.get("Main Line")?.coverageLost, false);
+  assert.equal(byName.get("Cooper")?.state, "blocked");
+  assert.equal(byName.get("Cooper")?.coverageLost, true);
+  assert.equal(byName.get("Temple")?.state, "failed", "stale success is not current coverage");
+  assert.equal(byName.get("Jefferson")?.state, "degraded", "configured gaps remain explicit");
+  assert.equal(byName.get("Main Line")?.sourceStates[0]?.state, "backoff");
+});
+
 test("leadership source alternatives stay allowlisted and rescue incomplete primaries", async () => {
   const source = monitorableSources()[0]!;
   const alternateUrl = "https://www.pennmedicine.org/information-services/leadership/alternate";
@@ -184,6 +248,22 @@ test("leadership source alternatives stay allowlisted and rescue incomplete prim
   assert.equal(result.snapshots[0]?.state, "success");
   assert.equal(result.snapshots[0]?.extractionStatus, "complete");
   assert.deepEqual(result.fetchedUrls, [alternateCanonicalUrl]);
+});
+
+test("public leadership 403 is a blocked source with retry metadata", async () => {
+  const source = monitorableSources()[0]!;
+  const result = await monitorLeadershipSources({
+    pack: coveragePack,
+    now: new Date("2026-08-28T12:00:00.000Z"),
+    candidateCap: 1,
+    concurrency: 1,
+    fetchImpl: async () => new Response("access denied", { status: 403 }),
+  });
+  assert.equal(result.snapshots[0]?.sourceId, source.id);
+  assert.equal(result.snapshots[0]?.state, "blocked");
+  assert.equal(result.snapshots[0]?.httpStatus, 403);
+  assert.equal(result.schedule[0]?.state, "blocked");
+  assert.ok(result.schedule[0]?.nextAttemptAt);
 });
 
 test("covered health-system identities and LinkedIn mappings stay canonical", () => {

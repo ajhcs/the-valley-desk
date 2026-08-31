@@ -9,6 +9,7 @@ import {
   sourceStateForItemCount,
   type SourceRunNote,
 } from "./source-health";
+import { institutionIdsForOrgIds } from "./coverage-pack";
 import {
   SOCIAL_MAX_BYTES,
   SOURCE_TIMEOUT_MS,
@@ -114,6 +115,7 @@ function originNote(
     state,
     checkedAt,
     url: origin.url,
+    institutionIds: institutionIdsForOrgIds(origin.orgs),
     ...extra,
   });
 }

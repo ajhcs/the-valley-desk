@@ -1051,7 +1051,7 @@ test("automation alerts cover leadership/model failures and stable source finger
   const env = { VALLEY_DESK_DB: db, NOTIFY_OPS: binding };
   const failed = {
     notes: {
-      sources: [{ id: "source-1", state: "upstream-failed", type: "rss", itemCount: 0, consecutiveFailures: 3 }],
+      sources: [{ id: "source-1", state: "upstream-failed", type: "rss", itemCount: 0, consecutiveFailures: 3, institutionIds: ["inst-cooper"] }],
     },
     leadership: { outcome: "failed", fetched: 0, error: "upstream unavailable" },
     modelSelectedCount: 1,
@@ -1111,8 +1111,8 @@ test("public source blocks are warning-level and deliberate backoff does not cre
   for (let index = 0; index < 3; index += 1) {
     await sendAutomationAlerts(env, {
       notes: { sources: [
-        { id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403", lastSuccessAt: "2026-08-27T12:00:00.000Z", fallbackUrl: "https://www.cooperhealth.org/about-us/newsroom" },
-        { id: "penn-medicine-newsroom", state: "healthy", type: "rss", itemCount: 1 },
+        { id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403", lastSuccessAt: "2026-08-27T12:00:00.000Z", fallbackUrl: "https://www.cooperhealth.org/about-us/newsroom", institutionIds: ["inst-cooper"] },
+        { id: "penn-medicine-newsroom", state: "healthy", type: "rss", itemCount: 1, institutionIds: ["inst-penn"] },
       ] },
     }, new Date(base.getTime() + index * 60 * 60 * 1_000));
   }
@@ -1153,8 +1153,8 @@ test("pack-wide public source blocks escalate only after required peers are lost
   for (let index = 0; index < 3; index += 1) {
     await sendAutomationAlerts(env, {
       notes: { sources: [
-        { id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403" },
-        { id: "penn-medicine-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403" },
+        { id: "cooper-newsroom", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403", institutionIds: ["inst-cooper"] },
+        { id: "cooper-newsroom-alt", state: "upstream-blocked", type: "rss", itemCount: 0, consecutiveFailures: index + 1, httpStatus: 403, error: "HTTP 403", institutionIds: ["inst-cooper"] },
       ] },
     }, new Date(`2026-08-28T0${index}:00:00.000Z`));
   }
@@ -1284,6 +1284,7 @@ test("source coverage loss stays warning when a healthy fallback is still servin
           httpStatus: 502,
           error: "HTTP 502",
           fallbackUrl: "https://www.cooperhealth.org/about-us/newsroom",
+          institutionIds: ["inst-cooper"],
         }],
       },
     }, new Date(`2026-08-28T0${index}:00:00.000Z`));
@@ -1318,6 +1319,7 @@ test("active source fallback is visible in the digest and recovers only after pr
     type: "rss",
     itemCount: 3,
     fallbackUrl: "https://phillyvoice.com/tags/cooperuniversity-health-care",
+    institutionIds: ["inst-cooper"],
   };
   await sendAutomationAlerts(env, { notes: { sources: [fallback] } }, new Date("2026-08-28T00:00:00.000Z"));
   const active = database.prepare(

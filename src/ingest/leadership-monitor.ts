@@ -533,7 +533,10 @@ export async function monitorLeadershipSources(
             maxRedirects: LEADERSHIP_MAX_REDIRECTS,
           });
           if (!page.ok) {
-            const blocked = /allowlist|linkedin/i.test(page.error);
+            const httpStatus = httpStatusFromError(page.error);
+            const blocked = /allowlist|linkedin/i.test(page.error)
+              || httpStatus === 401
+              || httpStatus === 403;
             lastSnapshot = {
               id: `snap-${source.id}-${now.toISOString()}`,
               sourceId: source.id,
@@ -546,7 +549,7 @@ export async function monitorLeadershipSources(
               extractionStatus: "partial",
               state: blocked ? "blocked" : "failed",
               error: clipError(page.error),
-              httpStatus: httpStatusFromError(page.error),
+              httpStatus,
               instructionLike: false,
             };
             lastFetchedUrl = candidateUrl;

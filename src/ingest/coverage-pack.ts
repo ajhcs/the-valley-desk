@@ -448,6 +448,16 @@ export function sourceById(id: string, pack: CoveragePackDocument = coveragePack
   return pack.sources.find((source) => source.id === id);
 }
 
+export function institutionIdsForOrgIds(
+  orgIds: readonly string[],
+  pack: CoveragePackDocument = coveragePack,
+) {
+  const allowed = new Set(orgIds);
+  return pack.institutions
+    .filter((institution) => institution.covered && institution.orgIds.some((orgId) => allowed.has(orgId)))
+    .map((institution) => institution.id);
+}
+
 export function preferSource<T extends { sourceId: string }>(
   rows: readonly T[],
   pack: CoveragePackDocument = coveragePack,

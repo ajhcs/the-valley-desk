@@ -28,6 +28,7 @@ export type PersistedSourceHealth = {
   lastHttpStatus: number | null;
   requiresAuth: boolean;
   lastFallbackUrl?: string | null;
+  institutionIds?: string[];
 };
 
 export const SOURCE_HEALTHY_REFRESH_MS = 15 * 60 * 1_000;
@@ -65,6 +66,8 @@ export type SourceRunNote = {
   /** Durable streak metadata copied into operational results when available. */
   consecutiveFailures?: number;
   lastSuccessAt?: string | null;
+  /** Canonical coverage institutions associated with this source, when known. */
+  institutionIds?: string[];
 };
 
 export type IngestSourceResult<T> = {
@@ -137,6 +140,7 @@ export function sourceBackoffNote(
     httpStatus: prior?.lastHttpStatus ?? undefined,
     requiresAuth: prior?.requiresAuth,
     ...(prior?.lastFallbackUrl ? { fallbackUrl: prior.lastFallbackUrl } : {}),
+    ...(prior?.institutionIds?.length ? { institutionIds: [...prior.institutionIds] } : {}),
     consecutiveFailures: prior?.consecutiveFailures ?? 0,
     lastSuccessAt: prior?.lastSuccessAt ?? null,
   });

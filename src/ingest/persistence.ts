@@ -706,8 +706,9 @@ export async function persistSourceHealth(
     INSERT INTO source_health (
       source_id, origin, source_type, source_url, state, complete, completeness, item_count,
       consecutive_failures, last_checked_at, last_success_at, last_error, last_run_id,
-      next_attempt_at, last_http_status, requires_auth, last_fallback_url
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      next_attempt_at, last_http_status, requires_auth, last_fallback_url,
+      institution_ids_json
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(source_id) DO UPDATE SET
       origin = excluded.origin,
       source_type = excluded.source_type,
@@ -730,6 +731,7 @@ export async function persistSourceHealth(
       next_attempt_at = excluded.next_attempt_at,
       last_http_status = excluded.last_http_status,
       requires_auth = excluded.requires_auth,
+      institution_ids_json = excluded.institution_ids_json,
       last_fallback_url = CASE
         WHEN excluded.state IN ('healthy', 'healthy-empty', 'backoff') THEN excluded.last_fallback_url
         ELSE source_health.last_fallback_url
@@ -765,6 +767,7 @@ export async function persistSourceHealth(
         source.httpStatus ?? (deliberateBackoff ? prior?.lastHttpStatus ?? null : null),
         source.requiresAuth ? 1 : (deliberateBackoff && prior?.requiresAuth ? 1 : 0),
         source.fallbackUrl ?? (deliberateBackoff ? prior?.lastFallbackUrl ?? null : null),
+        JSON.stringify(source.institutionIds ?? prior?.institutionIds ?? []),
       ];
     })(),
   ));
@@ -788,13 +791,14 @@ type SourceHealthRow = {
   last_http_status: number | null;
   requires_auth: number;
   last_fallback_url: string | null;
+  institution_ids_json: string | null;
 };
 
 export async function readSourceHealth(db: D1DatabaseLike): Promise<Map<string, PersistedSourceHealth>> {
   try {
     const result = await db.prepare(`SELECT source_id, state, item_count, complete, completeness,
         consecutive_failures, last_checked_at, last_success_at, last_error, next_attempt_at,
-        last_http_status, requires_auth, last_fallback_url
+        last_http_status, requires_auth, last_fallback_url, institution_ids_json
       FROM source_health`).all<SourceHealthRow>();
     return new Map((result.results ?? []).flatMap((row) => {
       if (!(SOURCE_RUN_STATES as readonly string[]).includes(row.state)) return [];
@@ -815,6 +819,16 @@ export async function readSourceHealth(db: D1DatabaseLike): Promise<Map<string, 
         lastHttpStatus: row.last_http_status == null ? null : Number(row.last_http_status),
         requiresAuth: Boolean(row.requires_auth),
         lastFallbackUrl: row.last_fallback_url,
+        ...(() => {
+          try {
+            const parsed = JSON.parse(row.institution_ids_json ?? "[]");
+            return Array.isArray(parsed) && parsed.every((value) => typeof value === "string") && parsed.length > 0
+              ? { institutionIds: parsed.slice(0, 8) }
+              : {};
+          } catch {
+            return {};
+          }
+        })(),
       } satisfies PersistedSourceHealth]] as const;
     }));
   } catch {

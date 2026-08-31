@@ -12,6 +12,7 @@ import {
   type NewsArticleExtractionState,
 } from "./news-extraction";
 import { mapSeedOrgIds } from "./org-map";
+import { institutionIdsForOrgIds } from "./coverage-pack";
 import { rssSources, type RssSource } from "./origins";
 import {
   sourceBackoffNote,
@@ -380,6 +381,7 @@ function configNote(source: RssSource, checkedAt: string, state: "disabled" | "m
     checkedAt,
     url: source.url,
     error: source.reason ?? (state === "disabled" ? "Source is disabled" : "Source is misconfigured"),
+    institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
   });
 }
 
@@ -501,9 +503,13 @@ async function fetchRssSources(
           fallbackUrl: fallback.url,
           consecutiveFailures: prior?.consecutiveFailures ?? 0,
           lastSuccessAt: prior?.lastSuccessAt ?? null,
+          institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
         }));
       } else {
-        sources.push(sourceBackoffNote(source.id, source.origin ?? source.name, "rss", checkedAt, prior, source.url));
+        sources.push({
+          ...sourceBackoffNote(source.id, source.origin ?? source.name, "rss", checkedAt, prior, source.url),
+          institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
+        });
       }
       continue;
     }
@@ -544,6 +550,7 @@ async function fetchRssSources(
         itemCount: success.items.length,
         url: success.url,
         ...(success.url !== source.url ? { fallbackUrl: success.url } : {}),
+        institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
       }));
       continue;
     }
@@ -557,6 +564,7 @@ async function fetchRssSources(
       error: lastError?.message ?? "No usable RSS response",
       ...(lastError?.httpStatus === undefined ? {} : { httpStatus: lastError.httpStatus }),
       requiresAuth: false,
+      institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
     }));
   }
   return { working, sources };

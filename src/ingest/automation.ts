@@ -53,7 +53,13 @@ import { markSocialEvidenceProcessed } from "./social-evidence";
 import {
   officialSourceCoverage,
   coveragePack,
+  monitorableSources,
+  sourceById,
 } from "./coverage-pack";
+import {
+  buildRuntimeLeadershipCoverage,
+  type RuntimeLeadershipCoverage,
+} from "../lib/operational-status";
 import {
   persistLeadershipObservations,
   persistLeadershipSnapshots,
@@ -305,12 +311,14 @@ type LeadershipAutomationResult = {
   failed: number;
   failureDetails: Array<{
     sourceId: string;
+    institutionId?: string;
     errorClass: string;
     httpStatus?: number;
     nextRetryAt?: string;
     reason: string;
   }>;
   editorialCandidates: ContentItem[];
+  runtimeCoverage: RuntimeLeadershipCoverage[];
   error?: string;
 };
 
@@ -323,6 +331,7 @@ function leadershipFailureDetails(
     .slice(0, 16)
     .map((snapshot) => {
       const schedule = schedules.find((row) => row.sourceId === snapshot.sourceId);
+      const source = sourceById(snapshot.sourceId);
       const errorClass = snapshot.httpStatus
         ? "http"
         : snapshot.state === "blocked"
@@ -336,6 +345,9 @@ function leadershipFailureDetails(
                 : snapshot.extractionStatus;
       return {
         sourceId: snapshot.sourceId,
+        ...(source?.institutionId
+          ? { institutionId: source.institutionId }
+          : {}),
         errorClass,
         ...(snapshot.httpStatus === undefined || snapshot.httpStatus === null
           ? {}
@@ -367,6 +379,22 @@ async function runLeadershipStage(
     const snapshots = await persistLeadershipSnapshots(env.VALLEY_DESK_DB, result.snapshots);
     const observations = await persistLeadershipObservations(env.VALLEY_DESK_DB, result.observations);
     const schedules = await persistScheduledSourceState(env.VALLEY_DESK_DB, result.schedule);
+    const currentSchedule = new Map([
+      ...states.entries(),
+      ...result.schedule.map((row) => [row.sourceId, row] as const),
+    ]);
+    const runtimeCoverage = buildRuntimeLeadershipCoverage(
+      coverage.map((row) => ({ ...row, configuredStatus: row.status })),
+      monitorableSources(coveragePack).map((source) => {
+        const state = currentSchedule.get(source.id);
+        return {
+          sourceId: source.id,
+          institutionId: source.institutionId,
+          ...(state ?? { state: "pending", consecutiveFailures: 0 }),
+        };
+      }),
+      now,
+    );
     const autonomous = await autonomouslyVerifyLeadership(env.VALLEY_DESK_DB, coveragePack, now);
     const failed = result.snapshots.filter((snapshot) => (
       snapshot.state !== "success" && snapshot.state !== "unchanged"
@@ -386,6 +414,16 @@ async function runLeadershipStage(
       editorialCandidates: autonomous.editorialCandidates.length,
       failed,
       coverage,
+      runtimeCoverage: runtimeCoverage.map((row) => ({
+        institutionId: row.institutionId,
+        state: row.state,
+        coverageLost: row.coverageLost,
+        sourceCount: row.sourceIds.length,
+        healthySourceCount: row.healthySourceIds.length,
+        lastSuccessAt: row.lastSuccessAt,
+        failureAgeMs: row.failureAgeMs,
+        nextRetryAt: row.nextRetryAt,
+      })),
     }, outcome === "ok" ? "info" : "warn");
     return {
       outcome,
@@ -402,6 +440,7 @@ async function runLeadershipStage(
       failed,
       failureDetails: leadershipFailureDetails(result.snapshots, result.schedule),
       editorialCandidates: autonomous.editorialCandidates,
+      runtimeCoverage,
     };
   } catch (error) {
     const message = attemptError(error);
@@ -424,6 +463,11 @@ async function runLeadershipStage(
       failed: 0,
       failureDetails: [],
       editorialCandidates: [],
+      runtimeCoverage: buildRuntimeLeadershipCoverage(
+        coverage.map((row) => ({ ...row, configuredStatus: row.status })),
+        [],
+        now,
+      ),
       error: message,
     };
   }

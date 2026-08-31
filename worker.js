@@ -24,6 +24,7 @@ import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts"
 import { decorateHtml } from "./src/lib/crawler-html.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
 import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
+import { conditionStateForSourceState } from "./src/lib/operational-status.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -224,15 +225,6 @@ function sourceAlertScope(source, sourceId) {
   };
 }
 
-function sourceConditionState(source) {
-  if (source?.state === "backoff") return "backoff";
-  if (source?.state === "upstream-blocked") return "blocked";
-  if (source?.state === "healthy" || source?.state === "healthy-empty") {
-    return source?.fallbackUrl ? "degraded" : "healthy";
-  }
-  return "failed";
-}
-
 export async function sendAutomationAlerts(env, result, now = new Date()) {
   // Alert delivery is best-effort and must never turn a successful content
   // run into a false automation failure. Durable state is still written when
@@ -299,10 +291,13 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   }
   const sourceNotes = Array.isArray(result?.notes?.sources) ? result.notes.sources : [];
   const sourceCoverageLost = (source) => {
+    const institutionIds = sourceInstitutionIds(source);
+    if (institutionIds.length === 0) return false;
     const peers = sourceNotes.filter((candidate) => (
       candidate && candidate.type === source.type
       && candidate.state !== "disabled"
       && candidate.state !== "misconfigured"
+      && sourceInstitutionIds(candidate).some((institutionId) => institutionIds.includes(institutionId))
     ));
     return peers.length > 0 && peers.every((candidate) => (
       candidate.state !== "healthy" && candidate.state !== "healthy-empty"
@@ -382,7 +377,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       fingerprint,
       event: "source-degraded",
       severity: coverageLost && !source.fallbackUrl ? "critical" : "warning",
-      conditionState: sourceConditionState(source),
+      conditionState: conditionStateForSourceState(source.state, Boolean(source.fallbackUrl)),
       threshold: coverageLost && !source.fallbackUrl ? 1 : 3,
       now,
       ...sourceAlertScope(source, sourceId),
@@ -412,33 +407,59 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
 
   const leadership = result?.leadership;
   if (leadership) {
-    if (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0) {
+    const runtimeCoverage = Array.isArray(leadership.runtimeCoverage) ? leadership.runtimeCoverage : [];
+    const runtimeCoverageLost = runtimeCoverage.filter((row) => (
+      row && row.configuredStatus === "active" && row.coverageLost
+    ));
+    const stageFailed = leadership.outcome === "failed";
+    const legacyCoverageLost = Number(leadership.failed ?? 0) > 0
+      && Number(leadership.failed) >= Number(leadership.coverage?.length ?? 1);
+    if (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageLost.length === 0) {
       await recover("valley-desk:leadership-monitor", 2);
-    } else if (leadership.outcome !== "ok") {
-      const leadershipSeverity = leadership.outcome === "failed"
-        || (Number(leadership.failed ?? 0) > 0 && Number(leadership.failed) >= Number(leadership.coverage?.length ?? 1))
+    } else if (leadership.outcome !== "ok" || (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageLost.length > 0)) {
+      const leadershipSeverity = stageFailed
+        || legacyCoverageLost
+        || runtimeCoverageLost.length > 0
         ? "critical"
         : "warning";
+      const failureDetails = Array.isArray(leadership.failureDetails) ? leadership.failureDetails : [];
+      const failureSummary = failureDetails
+        .slice(0, 4)
+        .map((detail) => `${detail.sourceId ?? "source"}: ${detail.reason ?? detail.errorClass ?? "failed"}`)
+        .join(" | ")
+        .slice(0, 240);
+      const affectedInstitutions = runtimeCoverageLost.map((row) => row.shortName ?? row.institutionId).filter(Boolean).join(", ");
+      const firstFailure = failureDetails[0];
+      const institutionId = runtimeCoverageLost.length === 1
+        ? runtimeCoverageLost[0].institutionId
+        : firstFailure?.institutionId;
       const leadershipAlert = {
         fingerprint: "valley-desk:leadership-monitor",
         event: "leadership-monitor-failed",
         severity: leadershipSeverity,
-        conditionState: leadershipSeverity === "critical" ? "failed" : "degraded",
+        conditionState: leadershipSeverity === "critical"
+          ? runtimeCoverageLost.some((row) => row.state === "blocked") ? "blocked" : "failed"
+          : "degraded",
         threshold: leadershipSeverity === "critical" ? 1 : 2,
         now,
+        ...(institutionId ? { institutionId } : {}),
         subsystem: "leadership",
-        groupKey: "valley-desk:leadership:monitor",
+        groupKey: institutionId ? `valley-desk:leadership:${institutionId}` : "valley-desk:leadership:monitor",
         details: {
           outcome: leadership.outcome,
           fetched: leadership.fetched,
           failed: Number(leadership.failed ?? 0),
-          ...(leadership.failureDetails?.[0]
-            ? safeAlertDetails(leadership.failureDetails[0].reason, {
+          failureCount: failureDetails.length,
+          ...(failureSummary ? { failureSummary } : {}),
+          ...(affectedInstitutions ? { affectedInstitutions } : {}),
+          ...(runtimeCoverageLost.length ? { affectedCoverage: "institution-coverage-lost" } : {}),
+          ...(firstFailure
+            ? safeAlertDetails(firstFailure.reason, {
               stage: "leadership-monitor",
-              sourceId: leadership.failureDetails[0].sourceId,
-              errorClass: leadership.failureDetails[0].errorClass,
-              httpStatus: leadership.failureDetails[0].httpStatus,
-              nextRetryAt: leadership.failureDetails[0].nextRetryAt,
+              sourceId: firstFailure.sourceId,
+              errorClass: firstFailure.errorClass,
+              httpStatus: firstFailure.httpStatus,
+              nextRetryAt: firstFailure.nextRetryAt,
             })
             : safeAlertDetails(leadership.error ?? leadership.outcome, { stage: "leadership-monitor" })),
         },
