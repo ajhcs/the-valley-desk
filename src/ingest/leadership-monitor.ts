@@ -317,7 +317,91 @@ function extractHeadingLeaders(html: string): ExtractedLeader[] {
   return out;
 }
 
-export function extractLeaders(html: string, institutionAliases: readonly string[] = []): ExtractedLeader[] {
+type LeadershipExtractionContract = NonNullable<CoverageSource["leadershipExtractionContract"]>;
+
+function classBlocks(html: string, className: string) {
+  const starts: number[] = [];
+  const re = /<[^>]+\bclass=["']([^"']*)["'][^>]*>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html))) {
+    if ((match[1] ?? "").split(/\s+/).includes(className)) starts.push(match.index);
+  }
+  return starts.map((start, index) => html.slice(start, starts[index + 1] ?? html.length));
+}
+
+function classText(html: string, className: string) {
+  const re = /<([a-z][a-z0-9]*)\b[^>]*\bclass=["']([^"']*)["'][^>]*>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html))) {
+    if (!(match[2] ?? "").split(/\s+/).includes(className)) continue;
+    const body = new RegExp(`([\\s\\S]*?)<\\/${match[1]}>`, "i").exec(html.slice(re.lastIndex))?.[1] ?? "";
+    return htmlToText(body);
+  }
+  return "";
+}
+
+function stripNameCredentials(value: string) {
+  return value.replace(/,.*$/, "").trim();
+}
+
+function mergeLeaders(rows: readonly (ExtractedLeader | undefined)[]) {
+  const merged = new Map<string, ExtractedLeader>();
+  for (const row of rows) {
+    if (row && !merged.has(row.normalizedName)) merged.set(row.normalizedName, row);
+  }
+  return [...merged.values()];
+}
+
+function extractContractLeaders(html: string, contract: LeadershipExtractionContract): ExtractedLeader[] {
+  const cleaned = stripNonContent(html);
+  if (contract === "tower-roster") {
+    return mergeLeaders(classBlocks(cleaned, "people-teaser").map((block) => {
+      const name = stripNameCredentials(classText(block, "people-teaser__name"));
+      const titles = [...block.matchAll(/<span\b[^>]*\bclass=["'][^"']*people-teaser__meta[^"']*["'][^>]*>([\s\S]*?)<\/span>/gi)]
+        .map((match) => htmlToText(match[1] ?? ""))
+        .filter(Boolean);
+      return asLeader(name, [...new Set(titles)].join(", "));
+    }));
+  }
+  if (contract === "st-lukes-roster") {
+    return mergeLeaders(classBlocks(cleaned, "card-text-overlay__item").map((block) => asLeader(
+      stripNameCredentials(classText(block, "card-text-overlay__text")),
+      classText(block, "tagline"),
+    )));
+  }
+  if (contract === "virtua-roster") {
+    return mergeLeaders(classBlocks(cleaned, "team-group__group-item").map((block) => asLeader(
+      stripNameCredentials(classText(block, "team-group__item-name")),
+      classText(block, "team-group__item-position"),
+    )));
+  }
+  if (contract === "christianacare-roster") {
+    return mergeLeaders(classBlocks(cleaned, "style-leadership").map((block) => asLeader(
+      stripNameCredentials(classText(block, "cmp-pagecard__title_text")),
+      classText(block, "cmp-pagecard__description"),
+    )));
+  }
+  if (contract === "christianacare-profile") {
+    const headings = [...cleaned.matchAll(/<h2\b[^>]*\bclass=["'][^"']*cmp-title__text[^"']*["'][^>]*>([\s\S]*?)<\/h2>/gi)];
+    const heading = headings.find((match) => /randall\s+gaboriault/i.test(htmlToText(match[1] ?? "")));
+    const following = heading ? cleaned.slice((heading.index ?? 0) + heading[0].length) : "";
+    const name = stripNameCredentials(htmlToText(heading?.[1] ?? ""));
+    const title = htmlToText(/<h6\b[^>]*\bclass=["'][^"']*cmp-title__text[^"']*["'][^>]*>([\s\S]*?)<\/h6>/i.exec(following)?.[1] ?? "");
+    return mergeLeaders([asLeader(name, title)]);
+  }
+  const heading = /<h1\b[^>]*>([\s\S]*?luke\s+olenoski[\s\S]*?)<\/h1>/i.exec(cleaned);
+  const following = heading ? cleaned.slice((heading.index ?? 0) + heading[0].length) : "";
+  const name = stripNameCredentials(htmlToText(heading?.[1] ?? ""));
+  const title = htmlToText(/<h2\b[^>]*>([\s\S]*?)<\/h2>/i.exec(following)?.[1] ?? "");
+  return mergeLeaders([asLeader(name, title)]);
+}
+
+export function extractLeaders(
+  html: string,
+  institutionAliases: readonly string[] = [],
+  contract?: LeadershipExtractionContract,
+): ExtractedLeader[] {
+  if (contract) return extractContractLeaders(html, contract);
   const jsonLd = extractJsonLdLeaders(html);
   const headings = extractHeadingLeaders(stripNonContent(html));
   const article = extractArticleLeaders(html, institutionAliases);
@@ -332,10 +416,35 @@ export function normalizeLeadershipText(html: string) {
   return clipText(htmlToText(stripNonContent(html)));
 }
 
-function extractionStatus(normalizedText: string, extracted: readonly ExtractedLeader[]): LeadershipExtractionStatus {
+function extractionStatus(
+  normalizedText: string,
+  extracted: readonly ExtractedLeader[],
+  html: string,
+  source: CoverageSource,
+  previous?: readonly ExtractedLeader[],
+): LeadershipExtractionStatus {
   if (!normalizedText) return "empty-unverified";
   if (!extracted.length && CHALLENGE_RE.test(normalizedText)) return "challenge";
   if (!extracted.length) return "unrecognized";
+  const contract = source.leadershipExtractionContract;
+  if (contract) {
+    const folded = decodeHtml(stripNonContent(html).replace(/<[^>]+>/g, " "))
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+    const complete = contract === "christianacare-roster"
+      ? extracted.length >= 5 && folded.includes("our leadership") && folded.includes("board of directors")
+      : contract === "christianacare-profile"
+        ? extracted.length === 1 && folded.includes("randall gaboriault")
+        : contract === "mainline-profile"
+          ? extracted.length === 1 && folded.includes("luke olenoski")
+          : contract === "tower-roster"
+            ? extracted.length >= 3 && folded.includes("tower health leadership")
+            : contract === "st-lukes-roster"
+              ? extracted.length >= 3 && folded.includes("executive leadership")
+              : extracted.length >= 3 && folded.includes("senior leadership");
+    if (!complete) return "partial";
+    if (previous && previous.length >= 4 && extracted.length < Math.ceil(previous.length / 2)) return "partial";
+  }
   return "complete";
 }
 
@@ -612,6 +721,7 @@ export async function monitorLeadershipSources(
             maxBytes: LEADERSHIP_MAX_BYTES,
             timeoutMs: LEADERSHIP_TIMEOUT_MS,
             maxRedirects: LEADERSHIP_MAX_REDIRECTS,
+            rangeSuffixBytes: source.rangeSuffixBytes,
           });
           if (!page.ok) {
             const httpStatus = httpStatusFromError(page.error);
@@ -637,10 +747,16 @@ export async function monitorLeadershipSources(
             continue;
           }
           const normalizedText = normalizeLeadershipText(page.body);
-          const contentHash = await sha256Hex(normalizedText);
           const institution = pack.institutions.find((row) => row.id === source.institutionId);
-          const extracted = extractLeaders(page.body, institution?.aliases ?? []);
-          const extraction = extractionStatus(normalizedText, extracted);
+          const extracted = extractLeaders(
+            page.body,
+            institution?.aliases ?? [],
+            source.leadershipExtractionContract,
+          );
+          const contentHash = await sha256Hex(source.leadershipExtractionContract
+            ? JSON.stringify(extracted.map((row) => [row.normalizedName, row.normalizedTitle]))
+            : normalizedText);
+          const extraction = extractionStatus(normalizedText, extracted, page.body, source, previous?.lastExtracted);
           const instructionLike = looksInstructionLike(
             page.body,
             normalizedText,

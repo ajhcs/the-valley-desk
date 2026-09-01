@@ -278,6 +278,102 @@ test("leadership source alternatives stay allowlisted and rescue incomplete prim
   assert.deepEqual(result.fetchedUrls, [alternateCanonicalUrl]);
 });
 
+test("official leadership extraction contracts parse only their scoped card structures", () => {
+  const cases = [
+    {
+      sourceId: "src-tower-leadership",
+      expected: "alex tower",
+      body: `<h1>Tower Health Leadership Team</h1>${["Alex Tower", "Blair Tower", "Casey Tower"].map((name) => (
+        `<div class="people-teaser"><span class="people-teaser__name">${name}, MBA</span><span class="people-teaser__meta">Executive Vice President</span><span class="people-teaser__meta">Chief Information Officer</span></div>`
+      )).join("")}`,
+    },
+    {
+      sourceId: "src-st-lukes-leadership",
+      expected: "alex luke",
+      body: `<h1>Executive Leadership</h1>${["Alex Luke", "Blair Luke", "Casey Luke"].map((name) => (
+        `<div class="card card-text-overlay__item"><div class="card-text-overlay__item-content"><p class="card-text-overlay__text">${name}</p><p class="card-text-overlay__text tagline">Vice President<br>Chief Information Officer</p></div></div>`
+      )).join("")}`,
+    },
+    {
+      sourceId: "src-virtua-leadership",
+      expected: "alex virtua",
+      body: `<h2>Senior Leadership</h2>${["Alex Virtua", "Blair Virtua", "Casey Virtua"].map((name) => (
+        `<div class="team-group__group-item"><p class="team-group__item-name">${name}, FACHE</p><p class="team-group__item-position">Executive VP and chief information officer</p></div>`
+      )).join("")}`,
+    },
+    {
+      sourceId: "src-main-line-luke-olenoski",
+      expected: "luke olenoski",
+      body: "<h2>Site Navigation</h2><h1>Luke Olenoski</h1><h2>Senior Vice President and Chief Information Officer</h2>",
+    },
+    {
+      sourceId: "src-christianacare-gaboriault",
+      expected: "randall gaboriault",
+      body: "<h2 class=\"cmp-title__text\">Login</h2><h2 class=\"cmp-title__text\">Randall Gaboriault, MS, MBA</h2><h6 class=\"cmp-title__text\">Senior Vice President, Chief Digital and Information Officer</h6>",
+    },
+  ] as const;
+
+  for (const row of cases) {
+    const source = sourceById(row.sourceId)!;
+    const extracted = extractLeaders(row.body, [], source.leadershipExtractionContract);
+    assert.equal(extracted[0]?.normalizedName, row.expected, row.sourceId);
+    assert.ok(extracted[0]?.normalizedTitle.includes("information officer"), row.sourceId);
+  }
+
+  const christiana = sourceById("src-christianacare-leadership")!;
+  const cards = ["Alex Care", "Blair Care", "Casey Care", "Devon Care", "Emery Care"].map((name) => (
+    `<div class="pagecard component style-leadership"><div class="cmp-pagecard__title_text"><a>${name}, MD</a></div><div class="cmp-pagecard__description">Chief Operating Officer</div></div>`
+  )).join("");
+  const extracted = extractLeaders(
+    `<h1>Our Leadership</h1>${cards}<h2>Board of Directors</h2>`,
+    [],
+    christiana.leadershipExtractionContract,
+  );
+  assert.equal(extracted.length, 5);
+  assert.equal(extracted[0]?.normalizedName, "alex care");
+});
+
+test("an incomplete contracted roster cannot infer departures", async () => {
+  const target = sourceById("src-tower-leadership")!;
+  const pack = CoveragePackDocument.parse({
+    ...coveragePack,
+    sources: coveragePack.sources.map((source) => (
+      source.id === target.id
+        ? source
+        : source.kind.startsWith("linkedin")
+          ? source
+          : { ...source, monitor: false, cadence: "inventory", status: "inventory-only" }
+    )),
+  });
+  const previousLeaders = ["Alex Tower", "Blair Tower", "Casey Tower", "Devon Tower"].map((name) => ({
+    name,
+    normalizedName: name.toLowerCase(),
+    title: "Chief Information Officer",
+    normalizedTitle: "chief information officer",
+  }));
+  const result = await monitorLeadershipSources({
+    pack,
+    now: new Date("2026-09-01T18:00:00.000Z"),
+    states: new Map([[target.id, {
+      sourceId: target.id,
+      state: "healthy" as const,
+      lastHash: "previous",
+      lastExtracted: previousLeaders,
+      nextAttemptAt: "2026-09-01T17:00:00.000Z",
+      consecutiveFailures: 0,
+    }]]),
+    candidateCap: 1,
+    concurrency: 1,
+    fetchImpl: async () => new Response(
+      "<h1>Tower Health Leadership Team</h1><div class=\"people-teaser\"><span class=\"people-teaser__name\">Alex Tower</span><span class=\"people-teaser__meta\">Chief Information Officer</span></div>",
+      { status: 200 },
+    ),
+  });
+  assert.equal(result.snapshots[0]?.state, "failed");
+  assert.equal(result.snapshots[0]?.extractionStatus, "partial");
+  assert.equal(result.observations.some((row) => row.kind === "person-departed"), false);
+});
+
 test("public leadership 403 is a blocked source with retry metadata", async () => {
   const source = monitorableSources()[0]!;
   const result = await monitorLeadershipSources({

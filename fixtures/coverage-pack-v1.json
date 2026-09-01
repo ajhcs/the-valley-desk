@@ -453,7 +453,9 @@
       "precedence": 100,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "christianacare-roster",
+      "rangeSuffixBytes": 512000
     },
     {
       "id": "src-temple-leadership",
@@ -473,7 +475,8 @@
       "precedence": 100,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "tower-roster"
     },
     {
       "id": "src-inspira-leadership",
@@ -503,7 +506,8 @@
       "precedence": 100,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "virtua-roster"
     },
     {
       "id": "src-main-line-luke-olenoski",
@@ -513,7 +517,8 @@
       "precedence": 60,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "mainline-profile"
     },
     {
       "id": "src-chop-salmasian",
@@ -553,7 +558,9 @@
       "precedence": 60,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "christianacare-profile",
+      "rangeSuffixBytes": 512000
     },
     {
       "id": "src-christianacare-anahi",
@@ -624,7 +631,8 @@
       "precedence": 100,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "st-lukes-roster"
     }
   ],
   "people": [

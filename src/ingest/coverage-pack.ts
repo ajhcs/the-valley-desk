@@ -53,6 +53,14 @@ const SourceKind = z.enum([
 const SourceCadence = z.enum(["hourly", "daily", "weekly", "inventory"]);
 const SourceStatus = z.enum(["enabled", "inventory-only", "disabled"]);
 const Region = z.enum(["PA", "NJ", "DE"]);
+const LeadershipExtractionContract = z.enum([
+  "christianacare-profile",
+  "christianacare-roster",
+  "mainline-profile",
+  "st-lukes-roster",
+  "tower-roster",
+  "virtua-roster",
+]);
 
 export const CoverageInstitution = z.object({
   id: z.string().regex(/^inst-[a-z0-9-]+$/),
@@ -80,6 +88,8 @@ const CoverageSourceBase = z.object({
   monitor: z.boolean(),
   cadence: SourceCadence,
   status: SourceStatus,
+  leadershipExtractionContract: LeadershipExtractionContract.optional(),
+  rangeSuffixBytes: z.number().int().min(1).max(LEADERSHIP_MAX_BYTES).optional(),
 });
 
 const LinkedInUrl = HttpsUrl.refine((value) => {
@@ -134,6 +144,13 @@ export const CoverageSource = CoverageSourceBase.superRefine((source, ctx) => {
   }
   if (source.monitor && source.kind.startsWith("linkedin")) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: "LinkedIn hosts are blocked", path: ["kind"] });
+  }
+  if (source.rangeSuffixBytes && !source.leadershipExtractionContract) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Suffix-range fetches require an explicit leadership extraction contract",
+      path: ["rangeSuffixBytes"],
+    });
   }
 });
 

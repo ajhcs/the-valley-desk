@@ -84,7 +84,7 @@ export type NewsArticleOverlayOptions = {
 };
 
 export type ArticlePageFetchResult =
-  | { ok: true; url: string; body: string }
+  | { ok: true; url: string; body: string; status: number; contentRange?: string | null }
   | { ok: false; error: string };
 
 function decodeHtml(value: string) {
@@ -354,6 +354,7 @@ export async function fetchAllowlistedArticlePage(options: {
   maxBytes?: number;
   timeoutMs?: number;
   maxRedirects?: number;
+  rangeSuffixBytes?: number;
 }): Promise<ArticlePageFetchResult> {
   let current = isEligibleNewsArticleUrl(options.url, options.allowedHosts);
   if (!current) return { ok: false, error: "URL is not an allowlisted article page" };
@@ -366,6 +367,9 @@ export async function fetchAllowlistedArticlePage(options: {
   const maxRedirects = Number.isFinite(options.maxRedirects)
     ? Math.max(0, Math.min(5, Math.trunc(options.maxRedirects!)))
     : NEWS_ARTICLE_MAX_REDIRECTS;
+  const rangeSuffixBytes = Number.isFinite(options.rangeSuffixBytes)
+    ? Math.max(1, Math.min(maxBytes, Math.trunc(options.rangeSuffixBytes!)))
+    : undefined;
   const seen = new Set<string>();
   for (let hop = 0; hop <= maxRedirects; hop += 1) {
     if (seen.has(current)) return { ok: false, error: "Too many redirects" };
@@ -376,6 +380,7 @@ export async function fetchAllowlistedArticlePage(options: {
         headers: {
           "user-agent": SOURCE_USER_AGENT,
           accept: "text/html,application/xhtml+xml;q=0.9,text/plain;q=0.1",
+          ...(rangeSuffixBytes ? { range: `bytes=-${rangeSuffixBytes}`, "accept-encoding": "identity" } : {}),
         },
         signal: AbortSignal.timeout(timeoutMs),
         redirect: "manual",
@@ -400,13 +405,42 @@ export async function fetchAllowlistedArticlePage(options: {
       await response.body?.cancel().catch(() => undefined);
       return { ok: false, error: `HTTP ${response.status}` };
     }
+    const contentRange = response.headers.get("content-range");
+    let expectedRangeLength: number | undefined;
+    if (rangeSuffixBytes) {
+      const parsed = /^bytes\s+(\d+)-(\d+)\/(\d+)$/i.exec(contentRange ?? "");
+      const start = Number(parsed?.[1]);
+      const end = Number(parsed?.[2]);
+      const total = Number(parsed?.[3]);
+      const length = end - start + 1;
+      if (
+        response.status !== 206
+        || !parsed
+        || !Number.isSafeInteger(start)
+        || !Number.isSafeInteger(end)
+        || !Number.isSafeInteger(total)
+        || start < 0
+        || end < start
+        || total <= end
+        || end !== total - 1
+        || length < 1
+        || length > rangeSuffixBytes
+      ) {
+        await response.body?.cancel().catch(() => undefined);
+        return { ok: false, error: "Invalid suffix range response" };
+      }
+      expectedRangeLength = length;
+    }
     if (!contentTypeLooksLikeHtml(response.headers.get("content-type"))) {
       await response.body?.cancel().catch(() => undefined);
       return { ok: false, error: "Unsupported content type" };
     }
     try {
       const body = await readBoundedText(response, maxBytes);
-      return { ok: true, url: current, body };
+      if (expectedRangeLength !== undefined && new TextEncoder().encode(body).byteLength !== expectedRangeLength) {
+        return { ok: false, error: "Invalid suffix range response" };
+      }
+      return { ok: true, url: current, body, status: response.status, contentRange };
     } catch (error) {
       return { ok: false, error: articleFetchError(error) };
     }
