@@ -35,6 +35,7 @@ export const publishedEventSlugs = [
 export const publishedVoiceSlugs = [
   "chop-bell-breaking-through-2026-08-14",
   "christianacare-santiago-home-care-cloud-2026-06-29",
+  "christianacare-schwartz-ceo-2026-09-01",
   "hsx-vuong-hitrust-r2-2026-06-02",
   "inspira-johnson-epic-day-6-2026-07-30",
   "inspira-mansue-epic-2026-07-27",
@@ -341,6 +342,12 @@ export const publishedHead = {
     "kind": "voice",
     "title": "Anahi Santiago: home-based care expands cloud security",
     "description": "ChristianaCare’s CISO said home-based care moves more patient data into the cloud, expanding the security surface her team has to protect."
+  },
+  "christianacare-schwartz-ceo-2026-09-01": {
+    "id": "voice-christianacare-schwartz-ceo-2026-09-01",
+    "kind": "voice",
+    "title": "Jenn Schwartz: ChristianaCare President and CEO as of Sept. 1",
+    "description": "Delaware’s largest system has a new CEO as of Sept. 1."
   },
   "ache-greater-philly-fall-symposium-2026-09-14": {
     "id": "evt-ache-greater-philly-fall-symposium-2026-09-14",

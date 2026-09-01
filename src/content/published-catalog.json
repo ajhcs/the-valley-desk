@@ -1992,6 +1992,56 @@
     "impactSentence": "ChristianaCare’s CISO said home-based care moves more patient data into the cloud, expanding the security surface her team has to protect."
   },
   {
+    "id": "voice-christianacare-schwartz-ceo-2026-09-01",
+    "slug": "christianacare-schwartz-ceo-2026-09-01",
+    "kind": "voice",
+    "title": "Jenn Schwartz: ChristianaCare President and CEO as of Sept. 1",
+    "dek": "Official newsroom: Schwartz began as president and CEO Sept. 1, succeeding Janice E. Nevin, who retired. Most recently EVP and chief strategy officer. Joined 2018.",
+    "body": "ChristianaCare’s Sept. 1, 2026 newsroom says Jenn Schwartz began serving as president and CEO that day, succeeding Janice E. Nevin, M.D., MPH, who retired. The same page says the board announced Schwartz’s selection in April, that she joined in 2018, and that she most recently was executive vice president and chief strategy officer. The official people page prints President and Chief Executive Officer and says she assumed the role on September 1, 2026. Official LinkedIn the same day named her first official day.\n\nThe Sept. 1 newsroom’s figure for Nevin is nearly 25 years with the organization, including 12 years as president and CEO.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-09-01T16:00:00.000Z",
+    "updatedAt": "2026-09-01T16:00:00.000Z",
+    "topics": [
+      "leadership"
+    ],
+    "orgs": [
+      "org-christianacare"
+    ],
+    "region": "DE",
+    "authors": [
+      {
+        "name": "Jenn Schwartz",
+        "org": "org-christianacare"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "christianacare",
+      "url": "https://news.christianacare.org/2026/09/jenn-schwartz-begins-tenure-as-president-and-ceo-of-christianacare/"
+    },
+    "person": "Jenn Schwartz",
+    "role": "President and CEO",
+    "org": "ChristianaCare",
+    "platform": "site",
+    "originalUrl": "https://news.christianacare.org/2026/09/jenn-schwartz-begins-tenure-as-president-and-ceo-of-christianacare/",
+    "impactSentence": "Delaware’s largest system has a new CEO as of Sept. 1.",
+    "citations": [
+      {
+        "name": "ChristianaCare newsroom Sept. 1, 2026",
+        "url": "https://news.christianacare.org/2026/09/jenn-schwartz-begins-tenure-as-president-and-ceo-of-christianacare/"
+      },
+      {
+        "name": "ChristianaCare people page",
+        "url": "https://christianacare.org/us/en/people/jennifer-schwartz-esq"
+      },
+      {
+        "name": "Official LI wall pair",
+        "url": "https://www.linkedin.com/posts/christianacare_please-join-us-in-welcoming-jenn-schwartz-activity-7500583614657523712-xgKL"
+      }
+    ]
+  },
+  {
     "dek": "All-day Greater Philadelphia healthcare leadership program at Penn’s Smilow Center, with panels on physician executives, data and analytics, ambulatory shift, and legislation.",
     "status": "published",
     "featured": false,

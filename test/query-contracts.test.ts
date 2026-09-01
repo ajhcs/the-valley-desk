@@ -50,6 +50,7 @@ import { toFeed } from "../src/ingest/feed-contract.ts";
 import { canonicalUrl, canonicalPath, DEFAULT_PUBLIC_ORIGIN, publicOrigin } from "../src/lib/canonical.ts";
 import { eventPlace, formatChipLabel, formatDate, formatLeadDate, itemFreshness, listDek, listSourceLine } from "../src/lib/format.ts";
 import { KIND_CHIP, chipKind, kindChip } from "../src/lib/kind.ts";
+import { routeHead } from "../src/lib/crawler-html.ts";
 import { primaryDisplayLabel, primaryEventLabel, primaryNewsLabel, primaryVoiceLabel } from "../src/lib/taxonomy.ts";
 import { Entity } from "../src/content/entity.ts";
 import {
@@ -1159,6 +1160,87 @@ test("Sloan QGenda QuickLinks 2026-08-31 is published, not featured, seed orgs o
   assert.equal(ld?.headline, item.title);
   assert.ok(!/\b(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]*)\d{3}[-.\s]\d{4}\b/.test(JSON.stringify(ld)));
   assert.ok(!/quicklink\.qgenda|qgenda\.com\/quicklink|schedule\.qgenda/i.test(JSON.stringify(ld)));
+});
+
+test("Sloan Schwartz CEO Voice 2026-09-01 is published, not featured, not a second LI Voice", () => {
+  const item = catalog.find((i) => i.slug === "christianacare-schwartz-ceo-2026-09-01");
+  const qgenda = catalog.find((i) => i.slug === "penn-chop-christianacare-qgenda-quicklinks-2026-08-31");
+  const honor = catalog.find((i) => i.slug === "temple-honor-roll-2026");
+  assert.ok(item && qgenda && honor);
+  assert.equal(item.id, "voice-christianacare-schwartz-ceo-2026-09-01");
+  assert.equal(item.kind, "voice");
+  assert.equal(item.status, "published");
+  assert.equal(item.featured, false);
+  assert.equal(item.publishedAt, "2026-09-01T16:00:00.000Z");
+  assert.deepEqual(item.orgs, ["org-christianacare"]);
+  assert.ok(seedIds.has("org-christianacare"));
+  assert.deepEqual(item.authors, [{ name: "Jenn Schwartz", org: "org-christianacare" }]);
+  assert.equal(item.kind === "voice" ? item.person : "", "Jenn Schwartz");
+  assert.equal(item.kind === "voice" ? item.role : "", "President and CEO");
+  assert.equal(item.kind === "voice" ? item.org : "", "ChristianaCare");
+  assert.equal(item.kind === "voice" ? item.platform : "", "site");
+  assert.equal(
+    item.kind === "voice" ? item.originalUrl : "",
+    "https://news.christianacare.org/2026/09/jenn-schwartz-begins-tenure-as-president-and-ceo-of-christianacare/",
+  );
+  assert.equal(item.source.url, item.citations?.[0]?.url);
+  assert.deepEqual(
+    item.citations?.map((c) => c.url),
+    [
+      "https://news.christianacare.org/2026/09/jenn-schwartz-begins-tenure-as-president-and-ceo-of-christianacare/",
+      "https://christianacare.org/us/en/people/jennifer-schwartz-esq",
+      "https://www.linkedin.com/posts/christianacare_please-join-us-in-welcoming-jenn-schwartz-activity-7500583614657523712-xgKL",
+    ],
+  );
+  assert.equal(
+    catalog.filter((i) => /7500583614657523712/.test(JSON.stringify(i))).length,
+    1,
+  );
+  assert.equal(
+    catalog.filter((i) => i.kind === "voice" && /schwartz/i.test(`${i.id} ${i.slug} ${i.kind === "voice" ? i.person : ""}`)).length,
+    1,
+  );
+  assert.ok(!entityRows.some((e) => /schwartz/i.test(`${e.id} ${e.name}`)));
+  assert.equal(entityRows.length, 96);
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+  assert.equal(qgenda.kind, "news");
+  assert.equal(qgenda.status, "published");
+  assert.equal(qgenda.featured, false);
+  assert.equal(honor.kind, "voice");
+  assert.equal(honor.status, "published");
+  assert.ok(latestVoices(catalog, Number.MAX_SAFE_INTEGER).some((i) => i.slug === item.slug));
+  assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.slug === item.slug));
+  assert.ok(!publishedNewsList(catalog).some((i) => i.slug === item.slug));
+  assert.equal(canonicalPath(item), "/voices/christianacare-schwartz-ceo-2026-09-01");
+  assert.notEqual(canonicalPath(item), "/news/christianacare-schwartz-ceo-2026-09-01");
+  assert.equal(itemJsonLd(item)?.["@type"], "SocialMediaPosting");
+  assert.notEqual(itemJsonLd(item)?.["@type"], "NewsArticle");
+  assert.equal(routeHead("/voices/christianacare-schwartz-ceo-2026-09-01", DEFAULT_PUBLIC_ORIGIN, item).type, "website");
+  assert.equal(routeHead("/news/christianacare-schwartz-ceo-2026-09-01", DEFAULT_PUBLIC_ORIGIN, item).type, "website");
+  assert.ok(!/more than 23 years/i.test(JSON.stringify(item)));
+  assert.ok(/nearly 25 years/.test(item.body));
+  assert.ok(!/linkedin\.com\/(in|posts)\/(?!christianacare)/i.test(item.source.url ?? ""));
+  assert.ok(!/tour/i.test(`${item.title} ${item.dek} ${item.body} ${item.impactSentence}`));
+  assert.equal(kindChip(item), "LEADERSHIP");
+  assert.equal(hasDefensiveEditorialAside(`${item.title} ${item.dek} ${item.body} ${item.impactSentence}`), false);
+
+  const sitemap = readFileSync(join(root, "public/sitemap.xml"), "utf8");
+  const workerPublished = readFileSync(join(root, "worker-published.js"), "utf8");
+  const newsSlugBlock = workerPublished.slice(
+    workerPublished.indexOf("export const publishedNewsSlugs"),
+    workerPublished.indexOf("export const publishedEventSlugs"),
+  );
+  const voiceSlugBlock = workerPublished.slice(
+    workerPublished.indexOf("export const publishedVoiceSlugs"),
+    workerPublished.indexOf("export const publishedBriefingSlugs"),
+  );
+  assert.ok(sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/voices/christianacare-schwartz-ceo-2026-09-01`));
+  assert.ok(!sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/news/christianacare-schwartz-ceo-2026-09-01`));
+  assert.ok(voiceSlugBlock.includes('"christianacare-schwartz-ceo-2026-09-01"'));
+  assert.ok(!newsSlugBlock.includes('"christianacare-schwartz-ceo-2026-09-01"'));
+  assert.ok(voiceSlugBlock.includes('"temple-honor-roll-2026"'));
+  assert.ok(newsSlugBlock.includes('"penn-chop-christianacare-qgenda-quicklinks-2026-08-31"'));
 });
 
 test("leadItem source does not call briefingSinceYesterday5pmET", () => {
