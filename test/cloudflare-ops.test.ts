@@ -1542,6 +1542,23 @@ test("fallback coverage recovers a legacy critical source alert after two observ
   database.close();
 });
 
+test("successful runs recover a durable automation lock-busy warning", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const env = { VALLEY_DESK_DB: db };
+  await sendAutomationAlerts(env, { skipped: true, reason: "automation-already-running" }, new Date("2026-08-28T00:00:00.000Z"));
+  await sendAutomationAlerts(env, { skipped: true, reason: "automation-already-running" }, new Date("2026-08-28T01:00:00.000Z"));
+  await sendAutomationAlerts(env, { skipped: true, reason: "automation-already-running" }, new Date("2026-08-28T02:00:00.000Z"));
+  await sendAutomationAlerts(env, { notes: { sources: [] } }, new Date("2026-08-28T03:00:00.000Z"));
+  await sendAutomationAlerts(env, { notes: { sources: [] } }, new Date("2026-08-28T04:00:00.000Z"));
+  const recovered = database.prepare(
+    "SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:automation-lock-busy'",
+  ).get() as { state: string; recovery_count: number };
+  assert.deepEqual({ ...recovered }, { state: "resolved", recovery_count: 2 });
+  database.close();
+});
+
 test("intentional source gaps and evidence-validation rejections do not generate failure mail", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);

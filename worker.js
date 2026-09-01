@@ -289,6 +289,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     });
     return;
   }
+  await recover("valley-desk:automation-lock-busy", 2);
   const sourceNotes = Array.isArray(result?.notes?.sources) ? result.notes.sources : [];
   const sourceCoverageLost = (source) => {
     const institutionIds = sourceInstitutionIds(source);
