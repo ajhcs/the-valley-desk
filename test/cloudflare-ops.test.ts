@@ -1497,6 +1497,51 @@ test("active source fallback is visible in the digest and recovers only after pr
   database.close();
 });
 
+test("fallback coverage recovers a legacy critical source alert after two observations", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const env = {
+    VALLEY_DESK_DB: db,
+    NOTIFY_OPS: {
+      async send() {
+        return { messageId: "legacy-fallback-recovery" };
+      },
+    },
+  };
+  const failedSources = [
+    { id: "cooper-newsroom", state: "upstream-failed", type: "rss", itemCount: 0, consecutiveFailures: 4, httpStatus: 502, institutionIds: ["inst-cooper"] },
+    { id: "cooper-newsroom-alt", state: "upstream-failed", type: "rss", itemCount: 0, consecutiveFailures: 4, httpStatus: 502, institutionIds: ["inst-cooper"] },
+  ];
+  await sendAutomationAlerts(env, { notes: { sources: failedSources } }, new Date("2026-08-28T00:00:00.000Z"));
+  const critical = database.prepare(
+    "SELECT severity, state FROM operational_alerts WHERE fingerprint = 'valley-desk:source:cooper-newsroom'",
+  ).get() as { severity: string; state: string };
+  assert.deepEqual({ ...critical }, { severity: "critical", state: "open" });
+
+  const fallback = {
+    id: "cooper-newsroom",
+    state: "backoff",
+    type: "rss",
+    itemCount: 14,
+    consecutiveFailures: 5,
+    nextAttemptAt: "2026-08-28T06:00:00.000Z",
+    fallbackUrl: "https://phillyvoice.com/tags/cooperuniversity-health-care",
+    institutionIds: ["inst-cooper"],
+  };
+  await sendAutomationAlerts(env, { notes: { sources: [fallback] } }, new Date("2026-08-28T01:00:00.000Z"));
+  await sendAutomationAlerts(env, { notes: { sources: [fallback] } }, new Date("2026-08-28T02:00:00.000Z"));
+  const recovered = database.prepare(
+    "SELECT severity, state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:source:cooper-newsroom'",
+  ).get() as { severity: string; state: string; recovery_count: number };
+  assert.deepEqual({ ...recovered }, { severity: "critical", state: "resolved", recovery_count: 2 });
+  const fallbackWarning = database.prepare(
+    "SELECT severity, state FROM operational_alerts WHERE fingerprint = 'valley-desk:source-fallback:cooper-newsroom'",
+  ).get() as { severity: string; state: string };
+  assert.deepEqual({ ...fallbackWarning }, { severity: "warning", state: "open" });
+  database.close();
+});
+
 test("intentional source gaps and evidence-validation rejections do not generate failure mail", async () => {
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);

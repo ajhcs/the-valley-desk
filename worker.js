@@ -344,6 +344,10 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
             affectedCoverage: "fallback-serving-during-backoff",
           },
         });
+        // A pre-0022 source alert may have been critical before the source
+        // was classified as public-blocked/backoff. Fallback coverage removes
+        // that critical condition, but the fallback warning remains active.
+        await recover(fingerprint, 2);
       }
       continue;
     }
@@ -371,6 +375,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
             affectedCoverage: "fallback-serving",
           },
         });
+        await recover(fingerprint, 2);
       } else {
         await recover(fallbackFingerprint, 2);
       }
