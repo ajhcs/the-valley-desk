@@ -455,7 +455,8 @@
       "cadence": "daily",
       "status": "enabled",
       "leadershipExtractionContract": "christianacare-roster",
-      "rangeSuffixBytes": 512000
+      "scanMaxBytes": 2000000,
+      "retainSuffixBytes": 512000
     },
     {
       "id": "src-temple-leadership",
@@ -560,7 +561,8 @@
       "cadence": "daily",
       "status": "enabled",
       "leadershipExtractionContract": "christianacare-profile",
-      "rangeSuffixBytes": 512000
+      "scanMaxBytes": 2000000,
+      "retainSuffixBytes": 512000
     },
     {
       "id": "src-christianacare-anahi",

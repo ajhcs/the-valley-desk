@@ -1,5 +1,6 @@
 /** Closed bounds for public leadership-page monitoring. LinkedIn is never fetched. */
 export const LEADERSHIP_MAX_BYTES = 512_000;
+export const LEADERSHIP_MAX_SCAN_BYTES = 2_000_000;
 export const LEADERSHIP_TIMEOUT_MS = 8_000;
 export const LEADERSHIP_CONCURRENCY = 2;
 export const LEADERSHIP_CANDIDATE_CAP = 16;

@@ -721,7 +721,8 @@ export async function monitorLeadershipSources(
             maxBytes: LEADERSHIP_MAX_BYTES,
             timeoutMs: LEADERSHIP_TIMEOUT_MS,
             maxRedirects: LEADERSHIP_MAX_REDIRECTS,
-            rangeSuffixBytes: source.rangeSuffixBytes,
+            scanMaxBytes: source.scanMaxBytes,
+            retainSuffixBytes: source.retainSuffixBytes,
           });
           if (!page.ok) {
             const httpStatus = httpStatusFromError(page.error);

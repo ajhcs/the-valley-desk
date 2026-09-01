@@ -152,49 +152,38 @@ test("news extraction caps stay bounded and closed", () => {
   assert.ok(!ALLOWED_HOSTS.has("example.com"));
 });
 
-test("bounded article fetch validates suffix-range semantics and exact bytes", async () => {
+test("bounded article fetch scans a capped body while retaining only its suffix", async () => {
   const requested: Array<{ url: string; range: string | null }> = [];
   const valid = await fetchAllowlistedArticlePage({
     url: ARTICLE_URL,
     allowedHosts: new Set(["news.christianacare.org"]),
     maxBytes: 10,
-    rangeSuffixBytes: 10,
+    scanMaxBytes: 20,
+    retainSuffixBytes: 10,
     fetchImpl: async (input, init) => {
       const headers = new Headers(init?.headers);
       requested.push({ url: String(input), range: headers.get("range") });
-      return new Response("0123456789", {
-        status: 206,
-        headers: { "content-type": "text/html", "content-range": "bytes 90-99/100" },
-      });
+      return new Response("prefix-0123456789", { status: 200, headers: { "content-type": "text/html" } });
     },
   });
-  assert.deepEqual(requested, [{ url: ARTICLE_URL, range: "bytes=-10" }]);
+  assert.deepEqual(requested, [{ url: ARTICLE_URL, range: null }]);
   assert.equal(valid.ok, true);
   if (valid.ok) {
-    assert.equal(valid.status, 206);
-    assert.equal(valid.contentRange, "bytes 90-99/100");
+    assert.equal(valid.body, "0123456789");
   }
 
-  for (const response of [
-    new Response("0123456789", { status: 200, headers: { "content-type": "text/html" } }),
-    new Response("0123456789", {
-      status: 206,
-      headers: { "content-type": "text/html", "content-range": "bytes 0-9/100" },
+  const exceeded = await fetchAllowlistedArticlePage({
+    url: ARTICLE_URL,
+    allowedHosts: new Set(["news.christianacare.org"]),
+    maxBytes: 10,
+    scanMaxBytes: 20,
+    retainSuffixBytes: 10,
+    fetchImpl: async () => new Response("012345678901234567890", {
+      status: 200,
+      headers: { "content-type": "text/html" },
     }),
-    new Response("short", {
-      status: 206,
-      headers: { "content-type": "text/html", "content-range": "bytes 90-99/100" },
-    }),
-  ]) {
-    const invalid = await fetchAllowlistedArticlePage({
-      url: ARTICLE_URL,
-      allowedHosts: new Set(["news.christianacare.org"]),
-      maxBytes: 10,
-      rangeSuffixBytes: 10,
-      fetchImpl: async () => response,
-    });
-    assert.deepEqual(invalid, { ok: false, error: "Invalid suffix range response" });
-  }
+  });
+  assert.deepEqual(exceeded, { ok: false, error: "Response exceeded 20 scanned bytes" });
 });
 
 test("JSON-LD articleBody wins over article and main fallbacks", () => {

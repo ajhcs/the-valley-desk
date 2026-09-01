@@ -7,6 +7,7 @@ import {
   LEADERSHIP_CANDIDATE_CAP,
   LEADERSHIP_CONCURRENCY,
   LEADERSHIP_MAX_BYTES,
+  LEADERSHIP_MAX_SCAN_BYTES,
   LEADERSHIP_MAX_REDIRECTS,
   LEADERSHIP_TIMEOUT_MS,
   SOURCE_KIND_PRECEDENCE,
@@ -89,7 +90,8 @@ const CoverageSourceBase = z.object({
   cadence: SourceCadence,
   status: SourceStatus,
   leadershipExtractionContract: LeadershipExtractionContract.optional(),
-  rangeSuffixBytes: z.number().int().min(1).max(LEADERSHIP_MAX_BYTES).optional(),
+  scanMaxBytes: z.number().int().min(LEADERSHIP_MAX_BYTES).max(LEADERSHIP_MAX_SCAN_BYTES).optional(),
+  retainSuffixBytes: z.number().int().min(1).max(LEADERSHIP_MAX_BYTES).optional(),
 });
 
 const LinkedInUrl = HttpsUrl.refine((value) => {
@@ -145,11 +147,20 @@ export const CoverageSource = CoverageSourceBase.superRefine((source, ctx) => {
   if (source.monitor && source.kind.startsWith("linkedin")) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: "LinkedIn hosts are blocked", path: ["kind"] });
   }
-  if (source.rangeSuffixBytes && !source.leadershipExtractionContract) {
+  if (source.scanMaxBytes || source.retainSuffixBytes) {
+    if (!source.scanMaxBytes || !source.retainSuffixBytes) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Bounded suffix scans require both scan and retention limits",
+        path: ["scanMaxBytes"],
+      });
+    }
+  }
+  if ((source.scanMaxBytes || source.retainSuffixBytes) && !source.leadershipExtractionContract) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Suffix-range fetches require an explicit leadership extraction contract",
-      path: ["rangeSuffixBytes"],
+      message: "Bounded suffix scans require an explicit leadership extraction contract",
+      path: ["scanMaxBytes"],
     });
   }
 });
