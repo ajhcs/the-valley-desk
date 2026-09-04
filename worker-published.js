@@ -34,6 +34,8 @@ export const publishedEventSlugs = [
 ];
 export const publishedVoiceSlugs = [
   "chop-bell-breaking-through-2026-08-14",
+  "chop-desai-mychart-equity-hospital-pediatrics-2026-09-03",
+  "chop-desai-nordic-designing-for-health-2026-09-03",
   "christianacare-santiago-home-care-cloud-2026-06-29",
   "christianacare-schwartz-ceo-2026-09-01",
   "hsx-vuong-hitrust-r2-2026-06-02",
@@ -348,6 +350,18 @@ export const publishedHead = {
     "kind": "voice",
     "title": "Jenn Schwartz: ChristianaCare President and CEO as of Sept. 1",
     "description": "Delaware’s largest system has a new CEO as of Sept. 1."
+  },
+  "chop-desai-mychart-equity-hospital-pediatrics-2026-09-03": {
+    "id": "voice-chop-desai-mychart-equity-hospital-pediatrics-2026-09-03",
+    "kind": "voice",
+    "title": "Bimal Desai: MyChart equity among hospitalized children",
+    "description": "CHOP’s CHIO put MyChart equity for hospitalized kids on the record."
+  },
+  "chop-desai-nordic-designing-for-health-2026-09-03": {
+    "id": "voice-chop-desai-nordic-designing-for-health-2026-09-03",
+    "kind": "voice",
+    "title": "Bimal Desai: Designing for Health on AI deskilling and never-skilling",
+    "description": "CHOP’s CHIO framed AI training risk for clinicians on an official post."
   },
   "ache-greater-philly-fall-symposium-2026-09-14": {
     "id": "evt-ache-greater-philly-fall-symposium-2026-09-14",

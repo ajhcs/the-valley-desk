@@ -1243,6 +1243,97 @@ test("Sloan Schwartz CEO Voice 2026-09-01 is published, not featured, not a seco
   assert.ok(newsSlugBlock.includes('"penn-chop-christianacare-qgenda-quicklinks-2026-08-31"'));
 });
 
+test("Sloan Desai Voices 2026-09-03 are published, not featured, not fused to ORCA", () => {
+  const equity = catalog.find((i) => i.slug === "chop-desai-mychart-equity-hospital-pediatrics-2026-09-03");
+  const nordic = catalog.find((i) => i.slug === "chop-desai-nordic-designing-for-health-2026-09-03");
+  const orca = catalog.find((i) => i.slug === "chop-orca-cds");
+  const qgenda = catalog.find((i) => i.slug === "penn-chop-christianacare-qgenda-quicklinks-2026-08-31");
+  const schwartz = catalog.find((i) => i.slug === "christianacare-schwartz-ceo-2026-09-01");
+  assert.ok(equity && nordic && orca && qgenda && schwartz);
+  const voices = [equity, nordic];
+  for (const item of voices) {
+    assert.equal(item.kind, "voice", item.slug);
+    assert.equal(item.status, "published", item.slug);
+    assert.equal(item.featured, false, item.slug);
+    assert.equal(item.publishedAt, "2026-09-03T16:00:00.000Z", item.slug);
+    assert.deepEqual(item.orgs, ["org-chop"], item.slug);
+    assert.ok(seedIds.has("org-chop"));
+    assert.deepEqual(item.authors, [{ name: "Bimal Desai", org: "org-chop" }], item.slug);
+    assert.equal(item.kind === "voice" ? item.person : "", "Bimal Desai");
+    assert.equal(item.kind === "voice" ? item.role : "", "CHIO");
+    assert.equal(item.kind === "voice" ? item.platform : "", "linkedin");
+    assert.equal(item.source.origin, "linkedin");
+    assert.equal(item.source.url, item.citations?.[0]?.url, item.slug);
+    assert.equal(item.kind === "voice" ? item.originalUrl : "", item.source.url);
+    assert.ok(!/ORCA/i.test(`${item.title} ${item.dek} ${item.body} ${item.impactSentence}`), item.slug);
+    assert.ok(!JSON.stringify(item).includes("chop-orca-cds"), item.slug);
+    assert.ok(!JSON.stringify(item).includes("orca-cds"), item.slug);
+    assert.ok(latestVoices(catalog, Number.MAX_SAFE_INTEGER).some((row) => row.slug === item.slug), item.slug);
+    assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((row) => row.slug === item.slug), item.slug);
+    assert.ok(!publishedNewsList(catalog).some((row) => row.slug === item.slug), item.slug);
+    assert.equal(canonicalPath(item), `/voices/${item.slug}`);
+    assert.notEqual(canonicalPath(item), `/news/${item.slug}`);
+    assert.equal(itemJsonLd(item)?.["@type"], "SocialMediaPosting");
+    assert.notEqual(itemJsonLd(item)?.["@type"], "NewsArticle");
+    assert.equal(routeHead(`/voices/${item.slug}`, DEFAULT_PUBLIC_ORIGIN, item).type, "website");
+    assert.equal(hasDefensiveEditorialAside(`${item.title} ${item.dek} ${item.body} ${item.impactSentence}`), false, item.slug);
+  }
+  assert.equal(equity.kind === "voice" ? equity.org : "", "Children's Hospital of Philadelphia");
+  assert.equal(kindChip(equity), "EHR");
+  assert.equal(kindChip(nordic), "AI");
+  assert.equal(equity.citations?.length, 1);
+  assert.equal(
+    equity.citations?.[0]?.url,
+    "https://www.linkedin.com/posts/bimaldesai_patient-portal-use-and-care-utilization-among-activity-7501294649068797953-_J-9",
+  );
+  assert.equal(nordic.citations?.length, 2);
+  assert.equal(
+    nordic.citations?.[1]?.url,
+    "https://nordicglobal.com/resources/designing-for-health-interview-with-bimal-desai-md/",
+  );
+  assert.equal(orca.kind, "news");
+  assert.equal(orca.kind === "news" ? orca.relatedVoiceIds.join() : "x", "");
+  assert.ok(!JSON.stringify(orca).includes("chop-desai-mychart-equity-hospital-pediatrics-2026-09-03"));
+  assert.ok(!JSON.stringify(orca).includes("chop-desai-nordic-designing-for-health-2026-09-03"));
+  assert.ok(!JSON.stringify(orca).includes("7501294649068797953"));
+  assert.ok(!JSON.stringify(orca).includes("7501301681016459266"));
+  assert.equal(qgenda.kind, "news");
+  assert.equal(qgenda.status, "published");
+  assert.equal(qgenda.featured, false);
+  assert.equal(schwartz.kind, "voice");
+  assert.equal(schwartz.status, "published");
+  assert.equal(schwartz.featured, false);
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+  assert.ok(entityRows.some((e) => e.id === "person-bimal-desai"));
+  assert.equal(entityRows.length, 96);
+  assert.ok(!entityRows.some((e) => /michael luke|chris bonafide|philip scribano|kate fuller|aditi vasan|ron keren|craig joseph|dan west/i.test(e.name)));
+  assert.ok(!entityRows.some((e) => /person-(michael-luke|chris-bonafide|philip-scribano|kate-fuller|aditi-vasan|ron-keren|craig-joseph|dan-west)/i.test(e.id)));
+
+  const sitemap = readFileSync(join(root, "public/sitemap.xml"), "utf8");
+  const workerPublished = readFileSync(join(root, "worker-published.js"), "utf8");
+  const newsSlugBlock = workerPublished.slice(
+    workerPublished.indexOf("export const publishedNewsSlugs"),
+    workerPublished.indexOf("export const publishedEventSlugs"),
+  );
+  const voiceSlugBlock = workerPublished.slice(
+    workerPublished.indexOf("export const publishedVoiceSlugs"),
+    workerPublished.indexOf("export const publishedBriefingSlugs"),
+  );
+  for (const slug of [
+    "chop-desai-mychart-equity-hospital-pediatrics-2026-09-03",
+    "chop-desai-nordic-designing-for-health-2026-09-03",
+  ]) {
+    assert.ok(sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/voices/${slug}`), slug);
+    assert.ok(!sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/news/${slug}`), slug);
+    assert.ok(voiceSlugBlock.includes(`"${slug}"`), slug);
+    assert.ok(!newsSlugBlock.includes(`"${slug}"`), slug);
+  }
+  assert.ok(voiceSlugBlock.includes('"christianacare-schwartz-ceo-2026-09-01"'));
+  assert.ok(newsSlugBlock.includes('"penn-chop-christianacare-qgenda-quicklinks-2026-08-31"'));
+  assert.ok(newsSlugBlock.includes('"chop-orca-cds"'));
+});
+
 test("leadItem source does not call briefingSinceYesterday5pmET", () => {
   const src = readFileSync(join(root, "src/content/queries.ts"), "utf8");
   const leadFn = src.slice(src.indexOf("export function leadItem"), src.indexOf("export const featuredLead"));

@@ -1,7 +1,7 @@
 {
   "product": "the-valley-desk",
   "version": "1",
-  "generatedAt": "2026-09-01T16:00:00.000Z",
+  "generatedAt": "2026-09-03T16:00:00.000Z",
   "items": [
     {
       "id": "news-jefferson-einstein-mychart-2026-09-26",
@@ -2042,6 +2042,94 @@
         {
           "name": "Official LI wall pair",
           "url": "https://www.linkedin.com/posts/christianacare_please-join-us-in-welcoming-jenn-schwartz-activity-7500583614657523712-xgKL"
+        }
+      ]
+    },
+    {
+      "id": "voice-chop-desai-mychart-equity-hospital-pediatrics-2026-09-03",
+      "slug": "chop-desai-mychart-equity-hospital-pediatrics-2026-09-03",
+      "kind": "voice",
+      "title": "Bimal Desai: MyChart equity among hospitalized children",
+      "dek": "Official LI share of Hospital Pediatrics work. Desai’s copy: more than 40,000 hospitalized children; 93% MyChart activation; disparities by race, insurance, language, and neighborhood opportunity.",
+      "body": "On Sept. 3, 2026, Bimal Desai, Vice President and Chief Health Informatics Officer at Children’s Hospital of Philadelphia, posted on his official LinkedIn that Hospital Pediatrics work from Michael Luke, Chris Bonafide, Philip Scribano, Kate Fuller, Aditi Vasan, and colleagues examined patient portal use among more than 40,000 hospitalized children. Desai wrote that even with 93% MyChart activation, children who were Black, publicly insured, from non-English households, or in lower-opportunity neighborhoods had lower odds of portal activation and use. Those figures are Desai’s copy on the post, not desk-audited.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-09-03T16:00:00.000Z",
+      "updatedAt": "2026-09-03T16:00:00.000Z",
+      "topics": [
+        "MyChart"
+      ],
+      "orgs": [
+        "org-chop"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Bimal Desai",
+          "org": "org-chop"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "linkedin",
+        "url": "https://www.linkedin.com/posts/bimaldesai_patient-portal-use-and-care-utilization-among-activity-7501294649068797953-_J-9"
+      },
+      "person": "Bimal Desai",
+      "role": "CHIO",
+      "org": "Children's Hospital of Philadelphia",
+      "platform": "linkedin",
+      "originalUrl": "https://www.linkedin.com/posts/bimaldesai_patient-portal-use-and-care-utilization-among-activity-7501294649068797953-_J-9",
+      "impactSentence": "CHOP’s CHIO put MyChart equity for hospitalized kids on the record.",
+      "citations": [
+        {
+          "name": "Desai LI",
+          "url": "https://www.linkedin.com/posts/bimaldesai_patient-portal-use-and-care-utilization-among-activity-7501294649068797953-_J-9"
+        }
+      ]
+    },
+    {
+      "id": "voice-chop-desai-nordic-designing-for-health-2026-09-03",
+      "slug": "chop-desai-nordic-designing-for-health-2026-09-03",
+      "kind": "voice",
+      "title": "Bimal Desai: Designing for Health on AI deskilling and never-skilling",
+      "dek": "Official LI share of Nordic Designing for Health interview with Craig Joseph on JAMA Viewpoint risks of deskilling and never-skilling.",
+      "body": "On Sept. 3, 2026, Desai posted that he spoke with Craig Joseph on Nordic’s Designing for Health podcast about how clinicians still learn to think if AI takes cognitive tasks. He pointed to the JAMA Viewpoint he authored with Ron Keren and Dan West on deskilling and never-skilling, and named commit-then-compare, AI as a clinical guardian angel, and AI-free learning environments. Destination episode: https://nordicglobal.com/resources/designing-for-health-interview-with-bimal-desai-md/",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-09-03T16:00:00.000Z",
+      "updatedAt": "2026-09-03T16:00:00.000Z",
+      "topics": [
+        "AI"
+      ],
+      "orgs": [
+        "org-chop"
+      ],
+      "region": "PA",
+      "authors": [
+        {
+          "name": "Bimal Desai",
+          "org": "org-chop"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "linkedin",
+        "url": "https://www.linkedin.com/posts/bimaldesai_designing-for-health-interview-with-bimal-activity-7501301681016459266-HJmR"
+      },
+      "person": "Bimal Desai",
+      "role": "CHIO",
+      "org": "Children's Hospital of Philadelphia",
+      "platform": "linkedin",
+      "originalUrl": "https://www.linkedin.com/posts/bimaldesai_designing-for-health-interview-with-bimal-activity-7501301681016459266-HJmR",
+      "impactSentence": "CHOP’s CHIO framed AI training risk for clinicians on an official post.",
+      "citations": [
+        {
+          "name": "Desai LI",
+          "url": "https://www.linkedin.com/posts/bimaldesai_designing-for-health-interview-with-bimal-activity-7501301681016459266-HJmR"
+        },
+        {
+          "name": "Nordic episode",
+          "url": "https://nordicglobal.com/resources/designing-for-health-interview-with-bimal-desai-md/"
         }
       ]
     },
