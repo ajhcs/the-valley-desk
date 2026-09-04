@@ -33,6 +33,7 @@ export const publishedEventSlugs = [
   "wistar-drug-discovery-forum-2026-09-09"
 ];
 export const publishedVoiceSlugs = [
+  "bayhealth-murphy-dha-board-chair-2026-09-04",
   "chop-bell-breaking-through-2026-08-14",
   "chop-desai-mychart-equity-hospital-pediatrics-2026-09-03",
   "chop-desai-nordic-designing-for-health-2026-09-03",
@@ -362,6 +363,12 @@ export const publishedHead = {
     "kind": "voice",
     "title": "Bimal Desai: Designing for Health on AI deskilling and never-skilling",
     "description": "CHOP’s CHIO framed AI training risk for clinicians on an official post."
+  },
+  "bayhealth-murphy-dha-board-chair-2026-09-04": {
+    "id": "voice-bayhealth-murphy-dha-board-chair-2026-09-04",
+    "kind": "voice",
+    "title": "Terry Murphy: Bayhealth CEO takes helm as DHA Board Chair",
+    "description": "Delaware’s hospital-association board chair is a Bayhealth CEO."
   },
   "ache-greater-philly-fall-symposium-2026-09-14": {
     "id": "evt-ache-greater-philly-fall-symposium-2026-09-14",

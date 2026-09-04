@@ -1201,7 +1201,7 @@ test("Sloan Schwartz CEO Voice 2026-09-01 is published, not featured, not a seco
     1,
   );
   assert.ok(!entityRows.some((e) => /schwartz/i.test(`${e.id} ${e.name}`)));
-  assert.equal(entityRows.length, 96);
+  assert.equal(entityRows.length, 97);
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
   assert.equal(qgenda.kind, "news");
@@ -1306,7 +1306,7 @@ test("Sloan Desai Voices 2026-09-03 are published, not featured, not fused to OR
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
   assert.ok(entityRows.some((e) => e.id === "person-bimal-desai"));
-  assert.equal(entityRows.length, 96);
+  assert.equal(entityRows.length, 97);
   assert.ok(!entityRows.some((e) => /michael luke|chris bonafide|philip scribano|kate fuller|aditi vasan|ron keren|craig joseph|dan west/i.test(e.name)));
   assert.ok(!entityRows.some((e) => /person-(michael-luke|chris-bonafide|philip-scribano|kate-fuller|aditi-vasan|ron-keren|craig-joseph|dan-west)/i.test(e.id)));
 
@@ -1332,6 +1332,102 @@ test("Sloan Desai Voices 2026-09-03 are published, not featured, not fused to OR
   assert.ok(voiceSlugBlock.includes('"christianacare-schwartz-ceo-2026-09-01"'));
   assert.ok(newsSlugBlock.includes('"penn-chop-christianacare-qgenda-quicklinks-2026-08-31"'));
   assert.ok(newsSlugBlock.includes('"chop-orca-cds"'));
+});
+
+test("Sloan Murphy DHA Board Chair Voice 2026-09-04 is published, not featured, not a second X Voice", () => {
+  const item = catalog.find((i) => i.slug === "bayhealth-murphy-dha-board-chair-2026-09-04");
+  const qgenda = catalog.find((i) => i.slug === "penn-chop-christianacare-qgenda-quicklinks-2026-08-31");
+  const schwartz = catalog.find((i) => i.slug === "christianacare-schwartz-ceo-2026-09-01");
+  const equity = catalog.find((i) => i.slug === "chop-desai-mychart-equity-hospital-pediatrics-2026-09-03");
+  const nordic = catalog.find((i) => i.slug === "chop-desai-nordic-designing-for-health-2026-09-03");
+  assert.ok(item && qgenda && schwartz && equity && nordic);
+  assert.equal(item.id, "voice-bayhealth-murphy-dha-board-chair-2026-09-04");
+  assert.equal(item.kind, "voice");
+  assert.equal(item.status, "published");
+  assert.equal(item.featured, false);
+  assert.equal(item.publishedAt, "2026-09-04T16:00:00.000Z");
+  assert.deepEqual(item.orgs, ["org-bayhealth"]);
+  assert.ok(seedIds.has("org-bayhealth"));
+  assert.ok(!item.orgs.includes("org-dha"));
+  assert.ok(entityRows.some((e) => e.id === "org-bayhealth"));
+  assert.ok(entityRows.some((e) => e.id === "org-dha"));
+  assert.equal(entityRows.filter((e) => e.id === "org-bayhealth").length, 1);
+  assert.ok(!entityRows.some((e) => e.id === "person-terry-murphy"));
+  assert.ok(!entityRows.some((e) => /terry murphy/i.test(e.name) && e.kind === "person"));
+  assert.equal(entityRows.length, 97);
+  assert.deepEqual(item.authors, [{ name: "Terry Murphy", org: "org-bayhealth" }]);
+  assert.equal(item.kind === "voice" ? item.person : "", "Terry Murphy");
+  assert.equal(item.kind === "voice" ? item.role : "", "President and CEO, Bayhealth; DHA Board Chair");
+  assert.equal(item.kind === "voice" ? item.org : "", "Bayhealth");
+  assert.equal(item.kind === "voice" ? item.platform : "", "linkedin");
+  assert.equal(item.source.origin, "linkedin");
+  assert.equal(
+    item.kind === "voice" ? item.originalUrl : "",
+    "https://www.linkedin.com/posts/delaware-healthcare-association_terry-murphy-president-ceo-of-bayhealth-activity-7501681847760834560-AYMX",
+  );
+  assert.equal(item.source.url, item.citations?.[0]?.url);
+  assert.deepEqual(
+    item.citations?.map((c) => c.url),
+    [
+      "https://www.linkedin.com/posts/delaware-healthcare-association_terry-murphy-president-ceo-of-bayhealth-activity-7501681847760834560-AYMX",
+      "https://x.com/DelawareHealth1/status/2095916068153758102",
+    ],
+  );
+  assert.equal(
+    catalog.filter((i) => /2095916068153758102/.test(JSON.stringify(i))).length,
+    1,
+  );
+  assert.equal(
+    catalog.filter((i) => i.kind === "voice" && /murphy/i.test(`${i.id} ${i.slug} ${i.kind === "voice" ? i.person : ""}`)).length,
+    1,
+  );
+  assert.ok(!/ceo of the year|delaware business times|\branking\b/i.test(`${item.title} ${item.dek} ${item.body} ${item.impactSentence}`));
+  assert.ok(!/HIT/.test(`${item.title} ${item.dek} ${item.body} ${item.impactSentence}`));
+  assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
+  assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
+  assert.equal(qgenda.kind, "news");
+  assert.equal(qgenda.status, "published");
+  assert.equal(qgenda.featured, false);
+  assert.equal(schwartz.kind, "voice");
+  assert.equal(schwartz.status, "published");
+  assert.equal(schwartz.featured, false);
+  assert.equal(equity.kind, "voice");
+  assert.equal(equity.status, "published");
+  assert.equal(equity.featured, false);
+  assert.equal(nordic.kind, "voice");
+  assert.equal(nordic.status, "published");
+  assert.equal(nordic.featured, false);
+  assert.ok(latestVoices(catalog, Number.MAX_SAFE_INTEGER).some((i) => i.slug === item.slug));
+  assert.ok(!latestNews(catalog, Number.MAX_SAFE_INTEGER, seedIds).some((i) => i.slug === item.slug));
+  assert.ok(!publishedNewsList(catalog).some((i) => i.slug === item.slug));
+  assert.equal(canonicalPath(item), "/voices/bayhealth-murphy-dha-board-chair-2026-09-04");
+  assert.notEqual(canonicalPath(item), "/news/bayhealth-murphy-dha-board-chair-2026-09-04");
+  assert.equal(itemJsonLd(item)?.["@type"], "SocialMediaPosting");
+  assert.notEqual(itemJsonLd(item)?.["@type"], "NewsArticle");
+  assert.equal(routeHead("/voices/bayhealth-murphy-dha-board-chair-2026-09-04", DEFAULT_PUBLIC_ORIGIN, item).type, "website");
+  assert.equal(routeHead("/news/bayhealth-murphy-dha-board-chair-2026-09-04", DEFAULT_PUBLIC_ORIGIN, item).type, "website");
+  assert.equal(kindChip(item), "WORKFORCE");
+  assert.notEqual(kindChip(item), "HIT");
+  assert.equal(hasDefensiveEditorialAside(`${item.title} ${item.dek} ${item.body} ${item.impactSentence}`), false);
+
+  const sitemap = readFileSync(join(root, "public/sitemap.xml"), "utf8");
+  const workerPublished = readFileSync(join(root, "worker-published.js"), "utf8");
+  const newsSlugBlock = workerPublished.slice(
+    workerPublished.indexOf("export const publishedNewsSlugs"),
+    workerPublished.indexOf("export const publishedEventSlugs"),
+  );
+  const voiceSlugBlock = workerPublished.slice(
+    workerPublished.indexOf("export const publishedVoiceSlugs"),
+    workerPublished.indexOf("export const publishedBriefingSlugs"),
+  );
+  assert.ok(sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/voices/bayhealth-murphy-dha-board-chair-2026-09-04`));
+  assert.ok(!sitemap.includes(`${DEFAULT_PUBLIC_ORIGIN}/news/bayhealth-murphy-dha-board-chair-2026-09-04`));
+  assert.ok(voiceSlugBlock.includes('"bayhealth-murphy-dha-board-chair-2026-09-04"'));
+  assert.ok(!newsSlugBlock.includes('"bayhealth-murphy-dha-board-chair-2026-09-04"'));
+  assert.ok(voiceSlugBlock.includes('"christianacare-schwartz-ceo-2026-09-01"'));
+  assert.ok(voiceSlugBlock.includes('"chop-desai-mychart-equity-hospital-pediatrics-2026-09-03"'));
+  assert.ok(voiceSlugBlock.includes('"chop-desai-nordic-designing-for-health-2026-09-03"'));
+  assert.ok(newsSlugBlock.includes('"penn-chop-christianacare-qgenda-quicklinks-2026-08-31"'));
 });
 
 test("leadItem source does not call briefingSinceYesterday5pmET", () => {
@@ -1802,7 +1898,7 @@ test("RSS link/guid are canonical; sitemap lists home news events feeds and perm
   };
   const router = readFileSync(join(root, "src/router.tsx"), "utf8");
   const entitySrc = readFileSync(join(root, "src/content/entity.ts"), "utf8");
-  assert.equal(entityRows.length, 96);
+  assert.equal(entityRows.length, 97);
   assert.ok(!/path:\s*["']\/org\//.test(router));
   assert.ok(!router.includes("/orgs"));
   assert.ok(!router.includes("EntityPage"));
@@ -2429,7 +2525,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
 });
 
 test("Reed/Sloan packet: signed facts, first-mention chips, chapter pin, four pay facts", () => {
-  assert.equal(entityRows.length, 96);
+  assert.equal(entityRows.length, 97);
   const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
   const labels = (id: string) => (byId[id]?.facts ?? []).map((f) => f.label);
 
@@ -2654,7 +2750,7 @@ test("signed school facts on existing people; pay and CC NPSR unchanged", () => 
   const edu = (id: string) => (byId[id]?.facts ?? []).filter((f) => f.kind === "education");
   const salary = (id: string) => (byId[id]?.facts ?? []).filter((f) => f.kind === "salary");
 
-  assert.equal(entityRows.length, 96);
+  assert.equal(entityRows.length, 97);
   assert.deepEqual(
     (byId["org-christianacare"]?.facts ?? []).map((f) => f.label),
     ["Net patient service revenue $3,140,501,000 · YE June 30, 2025"],
@@ -2766,7 +2862,7 @@ test("Sloan SIGN: Inspira Johnson day-6 voice; Honor Roll stays voice; pay facts
   assert.equal(canonicalPath(voice), "/voices/inspira-johnson-epic-day-6-2026-07-30");
   const byId = Object.fromEntries(entityRows.map((e) => [e.id, e]));
   assert.equal(byId["person-dave-johnson"]?.facts?.find((f) => f.kind === "salary")?.filerOrg, "Inspira Medical Centers, Inc.");
-  assert.equal(entityRows.length, 96);
+  assert.equal(entityRows.length, 97);
   assert.ok(!/Kevin/.test(JSON.stringify(byId["person-dave-johnson"])));
 });
 
@@ -3174,7 +3270,7 @@ test("Sloan SIGN Voices packet: published rows, Johnson off Mansue, chrome holds
   assert.ok(!entityRows.some((e) => /leaphart/i.test(`${e.id} ${e.name}`)));
   assert.equal(leadItem(catalog)?.slug, "christianacare-epic-go-live");
   assert.equal(catalog.filter((i) => i.kind === "news" && i.featured).map((i) => i.slug).join(), "christianacare-epic-go-live");
-  assert.equal(entityRows.length, 96);
+  assert.equal(entityRows.length, 97);
   assert.ok(!entityRows.some((e) => /mansue|jimenez|mahoney|cacchione|madeline-bell|pullin/i.test(e.id)));
   assert.ok(!entityRows.some((e) => e.id.startsWith("person-") && /Mansue|Jimenez|Mahoney|Cacchione|Madeline Bell|Dennis/.test(e.name)));
 
@@ -5744,7 +5840,7 @@ test("new HSX, Penn, and ChristianaCare voices are cited, labeled, and off the n
 });
 
 test("entity cards cover fact-bearing rows with local images, public roles, and text fallback", () => {
-  assert.equal(entityRows.length, 96);
+  assert.equal(entityRows.length, 97);
   const bearing = factBearingEntities(entityRows);
   assert.ok(bearing.some((e) => e.id === "org-hsx"));
   assert.ok(bearing.some((e) => e.id === "person-hojjat-salmasian"));

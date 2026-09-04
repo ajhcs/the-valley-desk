@@ -1,7 +1,7 @@
 {
   "product": "the-valley-desk",
   "version": "1",
-  "generatedAt": "2026-09-03T16:00:00.000Z",
+  "generatedAt": "2026-09-04T16:00:00.000Z",
   "items": [
     {
       "id": "news-jefferson-einstein-mychart-2026-09-26",
@@ -2130,6 +2130,52 @@
         {
           "name": "Nordic episode",
           "url": "https://nordicglobal.com/resources/designing-for-health-interview-with-bimal-desai-md/"
+        }
+      ]
+    },
+    {
+      "id": "voice-bayhealth-murphy-dha-board-chair-2026-09-04",
+      "slug": "bayhealth-murphy-dha-board-chair-2026-09-04",
+      "kind": "voice",
+      "title": "Terry Murphy: Bayhealth CEO takes helm as DHA Board Chair",
+      "dek": "Official Delaware Healthcare Association LinkedIn: Terry Murphy, President & CEO of Bayhealth, has taken the helm as DHA Board Chair.",
+      "body": "On Sept. 4, 2026, the Delaware Healthcare Association’s official LinkedIn said Terry Murphy, President & CEO of Bayhealth, has taken the helm as DHA Board Chair. The post says he is committed to strengthening Delaware’s healthcare workforce and advancing innovative, high-quality, and affordable care for Delawareans. Paired official X the same day tags @BayhealthDE.",
+      "status": "published",
+      "featured": false,
+      "publishedAt": "2026-09-04T16:00:00.000Z",
+      "updatedAt": "2026-09-04T16:00:00.000Z",
+      "topics": [
+        "leadership"
+      ],
+      "orgs": [
+        "org-bayhealth"
+      ],
+      "region": "DE",
+      "authors": [
+        {
+          "name": "Terry Murphy",
+          "org": "org-bayhealth"
+        }
+      ],
+      "source": {
+        "kind": "editorial",
+        "origin": "linkedin",
+        "url": "https://www.linkedin.com/posts/delaware-healthcare-association_terry-murphy-president-ceo-of-bayhealth-activity-7501681847760834560-AYMX"
+      },
+      "person": "Terry Murphy",
+      "role": "President and CEO, Bayhealth; DHA Board Chair",
+      "org": "Bayhealth",
+      "platform": "linkedin",
+      "originalUrl": "https://www.linkedin.com/posts/delaware-healthcare-association_terry-murphy-president-ceo-of-bayhealth-activity-7501681847760834560-AYMX",
+      "impactSentence": "Delaware’s hospital-association board chair is a Bayhealth CEO.",
+      "citations": [
+        {
+          "name": "DHA LI",
+          "url": "https://www.linkedin.com/posts/delaware-healthcare-association_terry-murphy-president-ceo-of-bayhealth-activity-7501681847760834560-AYMX"
+        },
+        {
+          "name": "DHA X",
+          "url": "https://x.com/DelawareHealth1/status/2095916068153758102"
         }
       ]
     },

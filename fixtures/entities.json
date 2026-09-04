@@ -1407,6 +1407,17 @@
     "role": "state hospital association"
   },
   {
+    "id": "org-bayhealth",
+    "kind": "system",
+    "name": "Bayhealth",
+    "aliases": [
+      "Bayhealth"
+    ],
+    "geo": "DE",
+    "role": "regional health system",
+    "outOfBox": true
+  },
+  {
     "id": "org-dha",
     "kind": "association",
     "name": "DHA",
