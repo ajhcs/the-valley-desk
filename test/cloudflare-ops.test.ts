@@ -38,6 +38,7 @@ import {
 import {
   persistOfficialSourceCandidates,
   persistOfficialSourceSnapshots,
+  readRetryOfficialSourceCandidates,
 } from "../src/ingest/official-source-automation.ts";
 import {
   cleanupNewsArticleExtractions,
@@ -693,6 +694,67 @@ test("legislative change flows from official HTML through review content into a 
     ["2023-2024", "2025-2026"],
   );
   assert.deepEqual(database.prepare("PRAGMA foreign_key_check").all(), []);
+  database.close();
+});
+
+test("hydrated bill retries survive a saturated queue and exhausted collection budget", async (t) => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const discoveredAt = "2026-09-06T21:45:25.738Z";
+  const now = new Date("2026-09-06T22:00:32.321Z");
+  const sources = ["hb1925", "sb1113", "hb1993"].map(bill => officialSourceRegistry.sources.find(s => s.id === `ofs-pa-legislature-${bill}`)!);
+  const first = await discoverOfficialSources({ sources, now: new Date(discoveredAt), detailCapPerRun: 0,
+    fetchImpl: async (input) => new Response(readFileSync(join(root, `test/fixtures/pa-legislation/captured-${String(input).split("/").at(-1)}-20260906.html`), "utf8"), { headers: { "content-type": "text/html" } }),
+  });
+  const deferred = first.candidates.map(c => ({ ...c, relevance: { decision: "review" as const, relevanceScore: 0, confidence: 0, reasons: ["Official source stage deadline reached"], evidenceSpans: [] } }));
+  await persistOfficialSourceCandidates(db, deferred, [], new Set());
+  const cms = officialSourceRegistry.sources.find(s => s.id === "ofs-cms-newsroom")!;
+  // More missing-detail rows than the deployed retry cap, plus one very busy
+  // critical source. Source round-robin must reserve the other bills too.
+  const noise = Array.from({ length: 300 }, (_, i) => ({ ...deferred[0]!, id: `noise-${i}`, sourceId: cms.id, url: `https://www.cms.gov/newsroom/news-${i}`, discoveredAt: "2026-08-01T00:00:00.000Z", detailState: undefined, detailText: undefined, publishedAt: undefined }));
+  const busy = Array.from({ length: 30 }, (_, i) => ({ ...deferred[0]!, id: `busy-${i}`, url: `${deferred[0]!.url}?historical=${i}`, discoveredAt: "2026-08-01T00:00:00.000Z" }));
+  await persistOfficialSourceCandidates(db, [...noise, ...busy], [], new Set());
+  const retries = await readRetryOfficialSourceCandidates(db, 24, now);
+  for (const bill of deferred.slice(1)) assert.ok(retries.some(c => c.id === bill.id), "busy source must not starve another critical source");
+  // Remove the synthetic same-source historical backlog before proving the
+  // three exact current records; no production database is used in this test.
+  database.exec("DELETE FROM official_source_candidates WHERE id LIKE 'busy-%'");
+  const selected = await readRetryOfficialSourceCandidates(db, 24, now);
+  for (const bill of deferred) assert.ok(selected.some(c => c.id === bill.id));
+  let clock = now.getTime();
+  t.mock.method(Date, "now", () => clock);
+  const calls: string[] = [];
+  const result = await discoverOfficialSources({ sources: [cms, ...sources], now, retryCandidates: selected,
+    states: new Map(first.schedule.map(s => [s.sourceId, s])), detailCapPerRun: 0,
+    fetchImpl: async () => { clock += 26_000; return new Response("<main>No new links.</main>", { headers: { "content-type": "text/html" } }); },
+    relevanceGate: async (input, timeout) => {
+      assert.ok((timeout ?? 0) >= 1_000, "relevance keeps its own allocation after collection expires");
+      calls.push(input.candidate.id);
+      return { decision: "accept", relevanceScore: 99, confidence: 0.99, reasons: ["local model stub; captured official evidence"], evidenceSpans: [] };
+    },
+  });
+  const bills = result.candidates.filter(c => deferred.some(d => d.id === c.id));
+  assert.equal(bills.length, 3);
+  assert.ok(bills.every(c => calls.includes(c.id)));
+  const items = contentItemsFromOfficialCandidates(bills);
+  assert.equal(items.length, 3);
+  await persistOfficialSourceCandidates(db, bills, [], new Set(items.map(i => i.id)));
+  await persistIngestRun(db, { fetchedAt: now.toISOString(), rss: items, events: [], social: [], notes: { rss: 3, events: 0, linkedin: { count: 0 }, x: { count: 0 } } }, items.map(item => ({ item, enrichment: null })));
+  await persistEditorialDecisions(db, items.map(item => ({ item, enrichment: null, decision: evaluateCandidate(item, null, now) })), "local-stub", "fixture", now);
+  const milestones = database.prepare("SELECT * FROM policy_review_milestones").all();
+  assert.equal(milestones.length, 3);
+  assert.ok(milestones.every(m => m.outcome === "blocker" && m.rule && m.recorded_at === now.toISOString()));
+  assert.equal(now.getTime() - Date.parse(discoveredAt), 906583);
+  const audit = readFileSync(join(root, "docs/evidence/pa-editorial-disposition-audit.sql"), "utf8").split(";").filter(sql => sql.trim());
+  const auditRows = database.prepare(audit[0]!).all();
+  assert.equal(auditRows.length, 3);
+  assert.ok(auditRows.every(row => row.discovery_to_disposition_seconds === 906.583 && row.editorial_disposition_at === now.toISOString()));
+  for (const sql of audit.slice(1)) database.prepare(sql).all();
+  await persistOfficialSourceCandidates(db, bills, [], new Set(items.map(i => i.id)));
+  assert.equal(database.prepare("SELECT COUNT(*) n FROM policy_versions").get()?.n, 3);
+  assert.equal(database.prepare("SELECT COUNT(*) n FROM published_content").get()?.n, 0);
+  assert.ok((await readRetryOfficialSourceCandidates(db, 24, now)).every(c => !items.some(i => i.id === c.id)));
   database.close();
 });
 

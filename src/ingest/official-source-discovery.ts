@@ -181,6 +181,8 @@ export const OFFICIAL_SOURCE_DETAIL_MAX_CHARS = 8_000;
 export const OFFICIAL_SOURCE_DETAIL_CONCURRENCY = 3;
 export const OFFICIAL_SOURCE_RELEVANCE_CAP = officialSourceRegistry.limits.relevanceCapPerRun;
 export const OFFICIAL_SOURCE_DEADLINE_MS = 25_000;
+/** Collection cannot spend the relevance allocation. Total default IO budget: 85s. */
+export const OFFICIAL_SOURCE_RELEVANCE_DEADLINE_MS = 60_000;
 
 export type OfficialSourceSnapshotState = "success" | "unchanged" | "failed" | "blocked" | "hostile";
 
@@ -302,8 +304,9 @@ export type OfficialDiscoveryOptions = {
   detailMaxChars?: number;
   /** Previously persisted candidates that still need detail or relevance work. */
   retryCandidates?: readonly OfficialDiscoveryCandidate[];
-  /** Absolute wall-clock deadline for this additive stage. */
+  /** Collection/detail wall-clock budget; relevance has a separate allocation. */
   deadlineMs?: number;
+  relevanceDeadlineMs?: number;
 };
 
 const GENERIC_LINK_TEXT = new Set([
@@ -1438,22 +1441,36 @@ export async function discoverOfficialSources(options: OfficialDiscoveryOptions 
   });
   let candidates = hydrated.candidates;
   if (options.relevanceGate && candidates.length) {
+    const relevanceDeadlineAt = Date.now() + Math.max(1_000, Math.min(
+      options.relevanceDeadlineMs ?? OFFICIAL_SOURCE_RELEVANCE_DEADLINE_MS, 60_000,
+    ));
     // Candidates without a successful detail fetch remain provenance-only. A
     // listing label alone is not enough evidence for a model or publication.
     const priorityBySource = new Map(sources.map((source) => [source.id, source.priority]));
+    // Round-robin within each priority tier. One busy source must not consume
+    // every model wave while a different source's hydrated record waits.
+    const sourceCounts = new Map<string, number>();
+    const rankById = new Map<string, number>();
+    for (const candidate of [...candidates].filter((row) => row.detailState === "success")
+      .sort((a, b) => Date.parse(a.discoveredAt) - Date.parse(b.discoveredAt) || a.id.localeCompare(b.id))) {
+      const rank = sourceCounts.get(candidate.sourceId) ?? 0;
+      rankById.set(candidate.id, rank);
+      sourceCounts.set(candidate.sourceId, rank + 1);
+    }
     const relevanceCandidates = candidates
       .filter((candidate) => candidate.detailState === "success")
       .sort((left, right) => {
         const priority = Number(priorityBySource.get(right.sourceId) === "policy-critical")
           - Number(priorityBySource.get(left.sourceId) === "policy-critical");
         return priority
-          || Date.parse(right.discoveredAt) - Date.parse(left.discoveredAt)
+          || rankById.get(left.id)! - rankById.get(right.id)!
+          || Date.parse(left.discoveredAt) - Date.parse(right.discoveredAt)
           || left.id.localeCompare(right.id);
       });
     const gated = await applyOfficialSourceRelevanceGate(relevanceCandidates.slice(0, OFFICIAL_SOURCE_RELEVANCE_CAP), options.relevanceGate, {
       concurrency: options.relevanceConcurrency ?? OFFICIAL_SOURCE_RELEVANCE_CONCURRENCY,
       timeoutMs: options.relevanceTimeoutMs,
-      deadlineAt,
+      deadlineAt: relevanceDeadlineAt,
     });
     const byId = new Map(gated.map((candidate) => [candidate.id, candidate]));
     candidates = candidates.map((candidate) => byId.get(candidate.id) ?? candidate);

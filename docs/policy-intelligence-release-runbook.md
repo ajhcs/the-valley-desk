@@ -1,5 +1,35 @@
 # Policy intelligence migration, verification, and rollback
 
+## Deferred-relevance follow-up (schema 0027, code-only candidate)
+
+Collection/detail retain their 25-second allocation. Relevance receives a
+separate bounded 60-second allocation after collection, with the existing
+20-candidate cap, concurrency 4, and maximum 30-second individual call. Default
+source-stage IO budget is therefore 85 seconds, plus bounded parsing/persistence
+overhead; it does not borrow the downstream editor's separate window. Worst-case
+slow providers can still defer later waves. Such deferrals remain blockers,
+not successful editorial dispositions.
+
+The 24-row database retry admission prioritizes successfully hydrated critical
+sources and rotates within source/state buckets. Relevance likewise rotates
+across sources within priority tiers, oldest discovery first. This fixes the
+observed 269–271 queue positions of the three bills without resetting source
+backoff or altering collection schedules. Existing review/provider-error retry
+semantics are otherwise unchanged; this is not a new global queue-SLO guarantee.
+Retry-only persistence must not move last-seen observation timestamps backwards.
+
+After an explicitly authorized code-only release, observe natural runs and use
+`docs/evidence/pa-editorial-disposition-audit.sql`. Require an individual current-
+fingerprint editorial milestone (brief or specific evidence blocker), citations,
+and measured discovery-to-disposition seconds for all three bills. A discovery
+row with `review` or a stage-deadline reason alone does not pass. Compare repeated
+official snapshot hashes and version identities to prove unchanged ingestion
+did not create another development. Keep model-stub fixture evidence separate.
+Schema remains 0027; do not apply a migration. Refresh the active Worker rollback
+target at preflight; current baseline is `be398528-fc7a-4877-b15a-62b5b481936a`
+(`002e2dd`). Rollback is code-only; no database restore, routing change, forced
+ingestion, credential change, or publication action is part of this follow-up.
+
 This is a release plan only. The implementation task did not deploy, apply migration 0027, alter production candidates, or run the policy baseline import.
 
 ## Stage 0: immutable-candidate preconditions

@@ -13,6 +13,7 @@ import {
   officialPolicyIdentity,
   officialCandidateUrlAllowed,
   officialSourceById,
+  officialSourceRegistry,
   contentItemsFromOfficialCandidates,
   discoverOfficialSources,
   parseOfficialSourceRelevanceResult,
@@ -93,6 +94,9 @@ function snapshotForCandidate(
 }
 
 export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limit = 24, now = new Date()) {
+  const criticalIds = officialSourceRegistry.sources
+    .filter((source) => source.status === "enabled" && source.priority === "policy-critical")
+    .map((source) => source.id);
   const rows = await db.prepare(`
     SELECT id, source_id, institution_id, category, region, title, url,
            source_page_url, source_name, trust, product_ids_json, discovered_at,
@@ -116,10 +120,12 @@ export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limi
           AND (relevance_decision IS NULL OR relevance_decision = 'review')
         )
       )
-    ORDER BY CASE WHEN detail_state IS NULL THEN 0 ELSE 1 END,
+    ORDER BY CASE WHEN detail_state = 'success' AND source_id IN (${criticalIds.map(() => "?").join(",") || "NULL"}) THEN 0 ELSE 1 END,
+             ROW_NUMBER() OVER (PARTITION BY source_id, detail_state ORDER BY COALESCE(detail_next_attempt_at, last_seen_at), id),
+             CASE WHEN detail_state IS NULL THEN 0 ELSE 1 END,
              COALESCE(detail_next_attempt_at, last_seen_at) ASC, id ASC
     LIMIT ?
-  `).bind(now.toISOString(), Math.max(1, Math.min(48, Math.trunc(limit) || 24))).all<RetryCandidateRow>();
+  `).bind(now.toISOString(), ...criticalIds, Math.max(1, Math.min(48, Math.trunc(limit) || 24))).all<RetryCandidateRow>();
   return (rows.results ?? []).flatMap((row) => {
     const source = officialSourceById(row.source_id);
     if (!source || !officialCandidateUrlAllowed(source, row.url)) return [];
@@ -279,7 +285,7 @@ export async function persistOfficialSourceCandidates(
         snapshot_id = COALESCE(excluded.snapshot_id, official_source_candidates.snapshot_id),
         title = excluded.title,
         source_page_url = excluded.source_page_url,
-        last_seen_at = excluded.last_seen_at,
+        last_seen_at = MAX(official_source_candidates.last_seen_at, excluded.last_seen_at),
         instruction_like = excluded.instruction_like,
         relevance_decision = excluded.relevance_decision,
         relevance_score = excluded.relevance_score,
