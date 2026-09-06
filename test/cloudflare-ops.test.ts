@@ -232,6 +232,23 @@ test("protected automation status/review require the bearer token and constant-t
     "newsletter@example.com", "example.com", "2026-08-27T17:05:00.000Z",
     "2026-08-27T17:00:00.000Z", "2026-08-27T17:00:00.000Z",
   );
+  const policyNow = new Date().toISOString();
+  database.prepare(`INSERT INTO official_source_schedule (
+    source_id, state, last_attempted_at, last_success_at, next_attempt_at, consecutive_failures
+  ) VALUES ('ofs-pa-legislature-hb1925', 'success', ?, ?, ?, 0)`).run(policyNow, policyNow, policyNow);
+  database.prepare(`INSERT INTO official_source_candidates (
+    id, source_id, category, region, title, url, source_page_url, source_name,
+    trust, discovered_at, last_seen_at, status, instruction_like, detail_fetched_at,
+    detail_state, detail_attempt_count, detail_disposition, published_at,
+    publication_date_source
+  ) VALUES
+    ('ops-policy-active', 'ofs-pa-legislature-hb1925', 'policy', 'PA', 'HB 1925 PN 101',
+      'https://palegis.us/legislation/bills/2025/hb1925', 'https://palegis.us/legislation/bills/2025/hb1925',
+      'Pennsylvania General Assembly HB 1925', 'regulatory', ?, ?, 'review', 0, ?, 'success', 0, 'active', ?, 'legislative-action'),
+    ('ops-policy-filtered', 'ofs-pa-legislature-hb1925', 'policy', 'PA', 'Navigation item',
+      'https://palegis.us/legislation/navigation', 'https://palegis.us/legislation/bills/2025/hb1925',
+      'Pennsylvania General Assembly HB 1925', 'regulatory', ?, ?, 'review', 0, ?, 'failed', 1, 'filtered', NULL, NULL)
+  `).run(policyNow, policyNow, policyNow, policyNow, policyNow, policyNow, policyNow);
   const missing = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status`), env);
   assert.equal(missing.status, 404);
   const wrong = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status`, {
@@ -253,6 +270,12 @@ test("protected automation status/review require the bearer token and constant-t
     alerts?: { available?: boolean; open?: unknown[] };
     signalVerification?: { emailAuthentication?: Array<{ auth_state?: string; count?: number; oldest_pending_at?: string }> };
     executiveIntelligence?: { runtimeCoverage?: Array<{ institutionId?: string; state?: string; coverageLost?: boolean }> };
+    officialSourceDiscovery?: {
+      policyMetrics?: {
+        sources?: Record<string, number>;
+        candidates?: Record<string, number>;
+      };
+    };
   };
   assert.equal(statusBody.schemaVersion, SCHEMA_VERSION);
   assert.equal(statusBody.buildSha, "deadbeef");
@@ -268,6 +291,30 @@ test("protected automation status/review require the bearer token and constant-t
     count: 1,
     oldest_pending_at: "2026-08-27T17:00:00.000Z",
     last_attempted_at: null,
+  });
+  const directPolicyCounts = database.prepare(`SELECT
+    COUNT(*) AS discovered,
+    SUM(CASE WHEN detail_disposition = 'active' THEN 1 ELSE 0 END) AS actionable,
+    SUM(CASE WHEN detail_disposition = 'filtered' THEN 1 ELSE 0 END) AS filtered,
+    SUM(CASE WHEN detail_disposition = 'active' AND published_at IS NOT NULL THEN 1 ELSE 0 END) AS dated,
+    SUM(CASE WHEN detail_disposition = 'active' AND detail_state = 'success' THEN 1 ELSE 0 END) AS detail_complete
+    FROM official_source_candidates WHERE category = 'policy'`).get() as Record<string, number>;
+  assert.deepEqual(statusBody.officialSourceDiscovery?.policyMetrics?.candidates, {
+    discovered: directPolicyCounts.discovered,
+    actionable: directPolicyCounts.actionable,
+    filtered: directPolicyCounts.filtered,
+    dated: directPolicyCounts.dated,
+    detailComplete: directPolicyCounts.detail_complete,
+    relevanceAccepted: 0,
+    converted: 0,
+    published: 0,
+    briefOrBlocker: 0,
+  });
+  assert.deepEqual(statusBody.officialSourceDiscovery?.policyMetrics?.sources, {
+    registered: officialSourceRegistry.sources.filter((source) => source.category === "policy" && source.status === "enabled").length,
+    monitored: 1,
+    attempted: 1,
+    healthy: 1,
   });
   const pennCoverage = statusBody.executiveIntelligence?.runtimeCoverage?.find((row) => row.institutionId === "inst-penn");
   assert.equal(pennCoverage?.state, "healthy");
@@ -539,18 +586,12 @@ test("legislative change flows from official HTML through review content into a 
   applyMigrations(database);
   const db = sqliteD1(database);
   const source = officialSourceRegistry.sources.find((row) => row.id === "ofs-pa-legislature-hb1925")!;
-  let printerNumber = "100";
-  let action = "Referred to the Health Committee September 1, 2026.";
+  let billHtml = readFileSync(join(root, "test/fixtures/pa-legislation/bill-hb1925-pn100.html"), "utf8");
   const run = async (now: Date) => {
     const result = await discoverOfficialSources({
       sources: [source],
       now,
-      fetchImpl: async () => new Response(`<!doctype html><main>
-        <h1>House Bill 1925 PN ${printerNumber}</h1>
-        <p>${action}</p>
-        <p>The bill applies to hospitals and health care providers operating in Pennsylvania.</p>
-        <a href="/legislation/bills/text/PDF/2025/0/HB1925/PN${printerNumber}">House Bill 1925 current printer PDF</a>
-      </main>`, { headers: { "content-type": "text/html; charset=utf-8" } }),
+      fetchImpl: async () => new Response(billHtml, { headers: { "content-type": "text/html; charset=utf-8" } }),
       relevanceGate: async () => ({
         decision: "accept",
         relevanceScore: 99,
@@ -567,21 +608,24 @@ test("legislative change flows from official HTML through review content into a 
   };
 
   const first = await run(new Date("2026-09-02T12:00:00.000Z"));
+  assert.equal(first.length, 1, "a monitored bill page must not enqueue its global navigation as policy candidates");
   assert.equal(first[0]?.publishedAt, "2026-09-01T00:00:00.000Z");
   assert.equal(first[0]?.kind, "policy");
   assert.equal(first[0]?.policyIdentity?.versionId, "PN 100");
   assert.equal(first[0]?.policyIdentity?.textUrl, "https://palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN100");
   assert.equal(first[0]?.applicability?.regulatedEntityTypes.includes("hospital"), true);
 
-  printerNumber = "101";
-  action = "Amended in the House September 5, 2026.";
+  billHtml = readFileSync(join(root, "test/fixtures/pa-legislation/amendment-hb1925-pn101.html"), "utf8");
   const second = await run(new Date("2026-09-06T12:00:00.000Z"));
   assert.equal(second[0]?.publishedAt, "2026-09-05T00:00:00.000Z");
   assert.equal(second[0]?.policyIdentity?.stage, "amended");
   assert.equal(second[0]?.status, "review");
   assert.equal(evaluateCandidate(second[0]!, null, new Date("2026-09-06T12:00:00.000Z")).rule === "publication-date-required", false);
 
-  action = "A Health Committee hearing was scheduled September 8, 2026.";
+  billHtml = `<!doctype html><main><h1>House Bill 1925 PN 101</h1>
+    <p>A Health Committee hearing was scheduled September 8, 2026.</p>
+    <p>The bill applies to hospitals and health care providers operating in Pennsylvania.</p>
+    <a href="/legislation/bills/text/PDF/2025/0/HB1925/PN101">House Bill 1925 current printer PDF</a></main>`;
   const hearing = await run(new Date("2026-09-09T12:00:00.000Z"));
   assert.equal(hearing[0]?.policyIdentity?.stage, "hearing");
   assert.equal(hearing[0]?.publishedAt, "2026-09-08T00:00:00.000Z");

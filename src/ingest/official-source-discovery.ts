@@ -567,6 +567,23 @@ function parseHtmlLinks(html: string, baseUrl: string, allowedHosts: ReadonlySet
   return out;
 }
 
+function parsePaAiTopicBillLinks(html: string, baseUrl: string, allowedHosts: ReadonlySet<string>) {
+  const out: DiscoveredLink[] = [];
+  const seen = new Set<string>();
+  for (const match of stripNonContent(html).matchAll(/<a\b([^>]*)>[\s\S]*?<\/a>/gi)) {
+    const attributes = match[1] ?? "";
+    const identity = /\bdata-billInfo\s*=\s*(?:"([^"]+)"|'([^']+)')/i.exec(attributes);
+    const bill = /^(?:20\d{2})\d?([HS]B)(\d{1,5})$/i.exec(identity?.[1] ?? identity?.[2] ?? "");
+    if (!bill) continue;
+    const url = canonicalCandidateUrl(hrefFromAttributes(attributes) ?? "", baseUrl, allowedHosts);
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    const title = `${bill[1]!.toUpperCase()} ${bill[2]} — Pennsylvania artificial intelligence topic`;
+    out.push({ title, url, instructionLike: looksInstructionLike(title, url) });
+  }
+  return out;
+}
+
 function parseRssLinks(xml: string, baseUrl: string, allowedHosts: ReadonlySet<string>) {
   const out: DiscoveredLink[] = [];
   const seen = new Set<string>();
@@ -593,6 +610,100 @@ function parseRssLinks(xml: string, baseUrl: string, allowedHosts: ReadonlySet<s
   return out;
 }
 
+function xmlTagValues(xml: string, tag: string) {
+  const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const expression = new RegExp(`<${escaped}\\b[^>]*>([\\s\\S]*?)<\\/${escaped}>`, "gi");
+  return [...xml.matchAll(expression)].map((match) => stripTags(match[1] ?? ""));
+}
+
+function paCommitteeNameMatches(source: OfficialSource, committees: readonly string[]) {
+  const expected = source.id === "ofs-pa-house-health-committee"
+    ? "HOUSE HEALTH"
+    : source.id === "ofs-pa-senate-health-committee"
+      ? "SENATE HEALTH & HUMAN SERVICES"
+      : undefined;
+  return Boolean(expected && committees.some((committee) => committee.toUpperCase() === expected));
+}
+
+function paCommitteeMeetingUrl(rawUrl: string, baseUrl: string, meetingDate: string, meetingTime: string) {
+  try {
+    const url = new URL(rawUrl, baseUrl);
+    const [month, day, year] = meetingDate.split("/");
+    if (year && month && day) url.searchParams.set("date", `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`);
+    if (meetingTime) url.searchParams.set("time", slugify(meetingTime));
+    return normalizeSourceUrl(url.toString());
+  } catch {
+    return undefined;
+  }
+}
+
+async function paCommitteeScheduleCandidates(
+  source: OfficialSource,
+  xml: string,
+  finalUrl: string,
+  fetchedAt: string,
+  cap: number,
+) {
+  if (source.id !== "ofs-pa-house-health-committee" && source.id !== "ofs-pa-senate-health-committee") {
+    return undefined;
+  }
+  const limit = Math.max(0, Math.trunc(cap) || 0);
+  if (limit === 0) return [];
+  const allowedHosts = officialSourceHostAllowlist(source);
+  const candidates: OfficialDiscoveryCandidate[] = [];
+  for (const match of xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)) {
+    const block = match[1] ?? "";
+    const committees = xmlTagValues(block, "parss:Committee");
+    if (!paCommitteeNameMatches(source, committees)) continue;
+    const title = normalizeTitle(xmlTagValues(block, "title")[0] ?? "");
+    const rawUrl = xmlTagValues(block, "link")[0] ?? "";
+    const meetingDate = xmlTagValues(block, "parss:MeetingDate")[0] ?? "";
+    const meetingTime = xmlTagValues(block, "parss:MeetingTime")[0] ?? "";
+    const url = paCommitteeMeetingUrl(rawUrl, finalUrl, meetingDate, meetingTime);
+    if (!title || !url || !officialCandidateUrlAllowed(source, url) || !hostAllowed(new URL(url).hostname, allowedHosts)) continue;
+    const description = xmlTagValues(block, "description")[0] ?? "";
+    const location = xmlTagValues(block, "parss:Location")[0] ?? "";
+    const bills = xmlTagValues(block, "parss:Bills")[0] ?? "";
+    const publicationRaw = xmlTagValues(block, "pubDate")[0] ?? "";
+    const publishedAt = normalizedPublishedAt(publicationRaw);
+    const detailText = [
+      `Committee: ${committees.join("; ")}`,
+      `Meeting: ${title}`,
+      description ? `Description: ${description}` : "",
+      bills ? `Bills: ${bills}` : "",
+      meetingDate ? `Meeting date: ${meetingDate}${meetingTime ? ` ${meetingTime}` : ""}` : "",
+      location ? `Location: ${location}` : "",
+    ].filter(Boolean).join("\n").slice(0, OFFICIAL_SOURCE_DETAIL_MAX_CHARS);
+    const instructionLike = looksInstructionLike(title, detailText, url);
+    candidates.push({
+      id: candidateId(source.id, url),
+      sourceId: source.id,
+      category: source.category,
+      region: source.region,
+      title,
+      url,
+      sourcePageUrl: normalizeSourceUrl(finalUrl) ?? source.url,
+      sourceName: source.name,
+      trust: source.trust,
+      discoveredAt: fetchedAt,
+      status: "review",
+      instructionLike,
+      detailTitle: title,
+      detailText,
+      detailFetchedAt: fetchedAt,
+      detailHash: await hashText(detailText),
+      detailState: instructionLike ? "hostile" : "success",
+      detailError: instructionLike ? "Committee feed item contains instruction-like text" : null,
+      detailFinalUrl: normalizeSourceUrl(finalUrl) ?? finalUrl,
+      detailAttemptCount: 0,
+      ...(publishedAt ? { publishedAt, publicationDateSource: "rss-pubDate" as const } : {}),
+      ...(location ? { venue: location } : {}),
+    });
+    if (candidates.length >= limit) break;
+  }
+  return candidates;
+}
+
 export function discoverOfficialLinks(
   source: OfficialSource,
   html: string,
@@ -600,7 +711,9 @@ export function discoverOfficialLinks(
   cap = OFFICIAL_SOURCE_CANDIDATE_CAP,
 ): DiscoveredLink[] {
   const allowedHosts = officialSourceHostAllowlist(source);
-  const links = source.format === "rss"
+  const links = source.id === "ofs-pa-legislature-ai-topic"
+    ? parsePaAiTopicBillLinks(html, finalUrl, allowedHosts)
+    : source.format === "rss"
     ? parseRssLinks(html, finalUrl, allowedHosts)
     : source.format === "html-or-rss" && /<item\b/i.test(html)
       ? parseRssLinks(html, finalUrl, allowedHosts)
@@ -1200,9 +1313,14 @@ async function discoverOne(
         fetchedUrl: response.url,
       };
     }
-    const links = discoverOfficialLinks(source, response.body, response.url, options.candidateCapPerSource);
     const sourcePageUrl = normalizeSourceUrl(response.url) ?? source.url;
-    const candidates = links.map((link) => ({
+    const isPaBillSource = source.category === "policy" && /^ofs-pa-legislature-(?:hb|sb)\d+$/.test(source.id);
+    // A monitored PA bill page is itself the evidence record. Its navigation
+    // and printer-PDF links are provenance fields, not independent candidates.
+    const links = isPaBillSource
+      ? []
+      : discoverOfficialLinks(source, response.body, response.url, options.candidateCapPerSource);
+    const genericCandidates = links.map((link) => ({
       id: candidateId(source.id, link.url),
       sourceId: source.id,
       ...(source.institutionId ? { institutionId: source.institutionId } : {}),
@@ -1220,7 +1338,14 @@ async function discoverOne(
       ...(link.publishedAt ? { publishedAt: link.publishedAt } : {}),
       ...(link.publicationDateSource ? { publicationDateSource: link.publicationDateSource } : {}),
     } satisfies OfficialDiscoveryCandidate));
-    if (source.category === "policy" && /^ofs-pa-legislature-(?:hb|sb)\d+$/.test(source.id)) {
+    const candidates = await paCommitteeScheduleCandidates(
+      source,
+      response.body,
+      response.url,
+      fetchedAt,
+      options.candidateCapPerSource,
+    ) ?? genericCandidates;
+    if (isPaBillSource) {
       const normalized = normalizeDetailPage(response.body, "policy");
       const publishedAt = latestLegislativeActionAt(normalized.text, fetchedAt);
       const policyTextUrl = paBillTextUrl(response.body, response.url);

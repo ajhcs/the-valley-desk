@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:parss="https://www.legis.state.pa.us/RSS">
+  <channel>
+    <title>PA House Committee Meeting Schedule</title>
+    <link>https://www.palegis.us/house/committees/meeting-schedule</link>
+    <item>
+      <title>09/08/2026 9:00 AM TRANSPORTATION (H)</title>
+      <link>https://www.palegis.us/house/committees/meeting-schedule</link>
+      <description>Voting meeting on transportation bills.</description>
+      <pubDate>Tue, 08 Sep 2026 04:00:00 GMT</pubDate>
+      <guid isPermaLink="false">transportation-2026-09-08-0900</guid>
+      <parss:MeetingDate>09/08/2026</parss:MeetingDate>
+      <parss:MeetingTime>9:00 AM</parss:MeetingTime>
+      <parss:Location>Room 140 Main Capitol</parss:Location>
+      <parss:Committee>HOUSE TRANSPORTATION</parss:Committee>
+      <parss:Bills><parss:Bill>HB 100</parss:Bill></parss:Bills>
+    </item>
+    <item>
+      <title>09/08/2026 10:00 AM HEALTH (H)</title>
+      <link>https://www.palegis.us/house/committees/meeting-schedule</link>
+      <description>Public hearing on HB 1925 and hospital cybersecurity requirements.</description>
+      <pubDate>Tue, 08 Sep 2026 04:00:00 GMT</pubDate>
+      <guid isPermaLink="false">health-2026-09-08-1000-hb1925</guid>
+      <parss:MeetingDate>09/08/2026</parss:MeetingDate>
+      <parss:MeetingTime>10:00 AM</parss:MeetingTime>
+      <parss:Location>Room 60 East Wing</parss:Location>
+      <parss:Committee>HOUSE HEALTH</parss:Committee>
+      <parss:Bills><parss:Bill>HB 1925</parss:Bill></parss:Bills>
+    </item>
+  </channel>
+</rss>

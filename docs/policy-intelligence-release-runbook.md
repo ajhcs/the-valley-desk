@@ -95,7 +95,7 @@ SELECT state, COUNT(*) FROM operational_alerts GROUP BY state;
 
 Acceptance requires no foreign-key errors, unchanged pre-existing email/verification counts, the former off-path navigation failures classified as filtered, and the existing open Cooper/leadership incidents still open unless production itself has supplied the required consecutive recovery observations. A healthy cron status alone is not a recovery signal. Cooper/LVHN HTTP blocks and unreadable Penn pages are tracked operational incidents, not Stage 1 deployment blockers and not recoveries this candidate can guarantee.
 
-Run `docs/evidence/policy-detail-failure-audit.sql` after migration. The 20 CMS rows should remain active and recover only through the registered apex/`www` redirect; the six off-path Delaware/NJ navigation rows should be `filtered` with no next attempt. Any remaining policy detail failure outside those expected classifications requires investigation before Stage 1 is accepted.
+Run `docs/evidence/policy-detail-failure-audit.sql` after migration. Treat its first result as the current actionable failure population and its second as the reconciliation population. Known off-path CMS/Delaware/New Jersey navigation rows should be `filtered` with no next attempt; in-path rows and any newly discovered failures stay `active` until real source evidence recovers or a separately reviewed disposition rule applies. Counts are intentionally not hard-coded because source runs can add or recover rows. Any unexpected active failure requires investigation before the relevant source is called healthy.
 
 Leadership history is a separate review-and-repair track, not a Stage 1
 deployment gate. The candidate's tests must establish that the preventive fix

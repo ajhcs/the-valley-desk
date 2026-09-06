@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   OFFICIAL_SOURCE_RELEVANCE_MODEL,
@@ -25,6 +28,7 @@ import { verifiedProductUsesForOfficialSource } from "../src/ingest/product-watc
 
 const pennNews = officialSourceRegistry.sources.find((source) => source.id === "ofs-penn-news")!;
 const pennEvents = officialSourceRegistry.sources.find((source) => source.id === "ofs-penn-events")!;
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("official source registry has explicit cadence, trust, and bounded discovery posture", () => {
   assert.equal(officialSourceRegistry.schemaVersion, 1);
@@ -254,6 +258,77 @@ test("RSS discovery parses official items without treating raw links as publisha
   const links = discoverOfficialLinks(source, xml, source.url, 8);
   assert.equal(links.length, 1);
   assert.equal(links[0]?.url, "https://news.example.org/policy-update");
+});
+
+test("Pennsylvania AI topic discovery admits only current-session bill details", () => {
+  const source = officialSourceRegistry.sources.find((candidate) => candidate.id === "ofs-pa-legislature-ai-topic")!;
+  const links = discoverOfficialLinks(source, `
+    <a href="/legislation/bills/topics?MajorId=1&SessInd=0&SessYr=2025">Related topic</a>
+    <a href="/senate/members">Senate members navigation</a>
+    <a href="/legislation/bills/2023/hb96" data-billInfo="20230HB96">Prior-session HB 96</a>
+    <a href="/legislation/bills/2025/hb96" data-billInfo="20250HB96"><span aria-hidden="true"></span></a>
+    <a href="/legislation/bills/2025/hb96" data-billInfo="20250HB96">Duplicate HB 96</a>
+  `, source.url, 8);
+  assert.deepEqual(links.map((link) => link.url), ["https://palegis.us/legislation/bills/2025/hb96"]);
+  assert.equal(links[0]?.title, "HB 96 — Pennsylvania artificial intelligence topic");
+});
+
+test("Pennsylvania committee RSS produces filtered, self-contained official review evidence", async () => {
+  const cases = [
+    {
+      sourceId: "ofs-pa-house-health-committee",
+      fixture: "house-health-committee.xml",
+      instrumentId: "HB 1925",
+      venue: "Room 60 East Wing",
+      evidenceUrl: "https://palegis.us/house/committees/meeting-schedule?date=2026-09-08&time=10-00-am",
+    },
+    {
+      sourceId: "ofs-pa-senate-health-committee",
+      fixture: "senate-health-committee.xml",
+      instrumentId: "SB 1113",
+      venue: "Senate Chamber",
+      evidenceUrl: "https://palegis.us/senate/committees/meeting-schedule?date=2026-09-09&time=11-30-am",
+    },
+  ];
+  for (const row of cases) {
+    const source = officialSourceRegistry.sources.find((candidate) => candidate.id === row.sourceId)!;
+    const xml = readFileSync(join(root, "test/fixtures/pa-legislation", row.fixture), "utf8");
+    let requestHeaders: Headers | undefined;
+    let redirect: RequestRedirect | undefined;
+    const result = await discoverOfficialSources({
+      sources: [source],
+      now: new Date("2026-09-06T21:00:00.000Z"),
+      detailCapPerRun: 0,
+      fetchImpl: async (_input, init) => {
+        requestHeaders = new Headers(init?.headers);
+        redirect = init?.redirect;
+        return new Response(xml, { headers: { "content-type": "application/rss+xml; charset=utf-8" } });
+      },
+      relevanceGate: async () => ({
+        decision: "accept",
+        relevanceScore: 99,
+        confidence: 0.99,
+        reasons: ["Official Health Committee action"],
+        evidenceSpans: [row.instrumentId],
+      }),
+    });
+    assert.equal(requestHeaders?.get("user-agent"), "TheValleyDesk/0.1 (+https://github.com/ajhcs/the-valley-desk)");
+    assert.equal(redirect, "manual");
+    assert.equal(result.snapshots[0]?.state, "success");
+    assert.equal(result.snapshots[0]?.candidateCount, 1, "unrelated committee items must be filtered");
+    assert.equal(result.candidates.length, 1);
+    const candidate = result.candidates[0]!;
+    assert.equal(candidate.url, row.evidenceUrl);
+    assert.equal(candidate.detailState, "success");
+    assert.equal(candidate.detailFinalUrl, source.url.replace("www.", ""));
+    assert.match(candidate.detailText ?? "", new RegExp(row.instrumentId.replace(" ", "\\s")));
+    assert.equal(candidate.venue, row.venue);
+    assert.equal(candidate.publicationDateSource, "rss-pubDate");
+    assert.equal(candidate.status, "review");
+    const item = contentItemsFromOfficialCandidates(result.candidates)[0];
+    assert.equal(item?.status, "review");
+    assert.equal(item?.policyIdentity?.instrumentId, row.instrumentId);
+  }
 });
 
 test("source discovery is bounded, partial snapshots stay review-only, and hostile text is flagged", async () => {
