@@ -1397,6 +1397,23 @@ export async function persistEditorialDecisions(
             EDITOR_POLICY_VERSION,
             metadata,
           ),
+          ...(publication.kind === "policy" ? [db.prepare(`
+            INSERT INTO policy_review_milestones (
+              candidate_id, fingerprint, outcome, rule, source_development_at,
+              citations_json, recorded_at
+            ) VALUES (?, ?, 'brief', ?, ?, ?, ?)
+            ON CONFLICT(candidate_id, fingerprint, outcome) DO UPDATE SET
+              rule = excluded.rule,
+              citations_json = excluded.citations_json,
+              recorded_at = MIN(policy_review_milestones.recorded_at, excluded.recorded_at)
+          `).bind(
+            candidateId,
+            fingerprint,
+            decision.rule,
+            publication.policyIdentity?.developmentAt ?? publication.publishedAt ?? null,
+            JSON.stringify(publication.citations ?? []),
+            decidedAt,
+          )] : []),
           ...slugAliasStatements(db, candidateId, publication, incomingSlug, decidedAt),
         ]);
         counts.published += 1;
@@ -1441,6 +1458,26 @@ export async function persistEditorialDecisions(
         counts.rejected += 1;
         persistedCandidateIds?.add(candidateId);
         continue;
+      }
+      if (item.kind === "policy") {
+        const fingerprint = await candidateFingerprint(item);
+        await db.prepare(`
+          INSERT INTO policy_review_milestones (
+            candidate_id, fingerprint, outcome, rule, source_development_at,
+            citations_json, recorded_at
+          ) VALUES (?, ?, 'blocker', ?, ?, ?, ?)
+          ON CONFLICT(candidate_id, fingerprint, outcome) DO UPDATE SET
+            rule = excluded.rule,
+            citations_json = excluded.citations_json,
+            recorded_at = MIN(policy_review_milestones.recorded_at, excluded.recorded_at)
+        `).bind(
+          candidateId,
+          fingerprint,
+          decision.rule,
+          item.policyIdentity?.developmentAt ?? item.publishedAt ?? null,
+          JSON.stringify(item.citations ?? []),
+          decidedAt,
+        ).run();
       }
       counts.review += 1;
       persistedCandidateIds?.add(candidateId);

@@ -4477,6 +4477,7 @@ function applyMigrations(database: DatabaseSync) {
     "0024_social_lifecycle.sql",
     "0025_operational_alert_context.sql",
     "0026_source_health_attribution.sql",
+    "0027_policy_intelligence_hardening.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 

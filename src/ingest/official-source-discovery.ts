@@ -43,11 +43,12 @@ const HttpsUrl = z.string().url().refine((value) => {
 }, "URL must be credential-free HTTPS");
 
 const SourceCategory = z.enum(["news", "policy", "finance", "filing", "product", "procurement", "events"]);
-const SourceCadence = z.enum(["hourly", "daily"]);
+const SourceCadence = z.enum(["half-hourly", "hourly", "daily"]);
 const SourceCompleteness = z.enum(["complete", "partial", "unknown"]);
 const SourceTrust = z.enum(["first-party", "regulatory", "association"]);
 const SourceStatus = z.enum(["enabled", "disabled"]);
 const SourceFormat = z.enum(["html", "rss", "html-or-rss"]);
+const SourcePriority = z.enum(["normal", "policy-critical"]);
 const Region = z.enum(["PA", "NJ", "DE", "regional", "federal"]);
 
 const OfficialSource = z.object({
@@ -60,11 +61,13 @@ const OfficialSource = z.object({
   region: Region,
   url: HttpsUrl,
   allowedLinkHosts: z.array(z.string().min(1)).default([]),
+  allowedLinkPathPrefixes: z.array(z.string().regex(/^\//)).default([]),
   cadence: SourceCadence,
   completeness: SourceCompleteness,
   trust: SourceTrust,
   format: SourceFormat.default("html"),
   status: SourceStatus,
+  priority: SourcePriority.default("normal"),
 });
 
 const OfficialSourceLimits = z.object({
@@ -74,6 +77,8 @@ const OfficialSourceLimits = z.object({
   concurrency: z.number().int().min(1).max(8),
   candidateCapPerSource: z.number().int().min(1).max(64),
   sourceCapPerRun: z.number().int().min(1).max(128),
+  detailCapPerRun: z.number().int().min(1).max(64),
+  relevanceCapPerRun: z.number().int().min(1).max(64),
   relevanceConcurrency: z.number().int().min(1).max(8),
 });
 
@@ -110,6 +115,11 @@ const OfficialSourceDocument = z.object({
     for (const linkHost of source.allowedLinkHosts) {
       if (!/^[a-z0-9.-]+$/i.test(linkHost) || linkHost.startsWith(".") || linkHost.endsWith(".")) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Invalid allowed link host ${linkHost}`, path: ["sources"] });
+      }
+    }
+    for (const prefix of source.allowedLinkPathPrefixes) {
+      if (prefix.includes("?") || prefix.includes("#") || prefix.includes("..")) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Invalid allowed link path prefix ${prefix}`, path: ["sources"] });
       }
     }
     if (source.category === "product") {
@@ -164,10 +174,10 @@ export const OFFICIAL_SOURCE_CANDIDATE_CAP = officialSourceRegistry.limits.candi
 export const OFFICIAL_SOURCE_RUN_CAP = officialSourceRegistry.limits.sourceCapPerRun;
 export const OFFICIAL_SOURCE_RELEVANCE_CONCURRENCY = officialSourceRegistry.limits.relevanceConcurrency;
 /** Detail pages are evidence, not a second unbounded crawler. */
-export const OFFICIAL_SOURCE_DETAIL_CAP = 12;
+export const OFFICIAL_SOURCE_DETAIL_CAP = officialSourceRegistry.limits.detailCapPerRun;
 export const OFFICIAL_SOURCE_DETAIL_MAX_CHARS = 8_000;
 export const OFFICIAL_SOURCE_DETAIL_CONCURRENCY = 3;
-export const OFFICIAL_SOURCE_RELEVANCE_CAP = 12;
+export const OFFICIAL_SOURCE_RELEVANCE_CAP = officialSourceRegistry.limits.relevanceCapPerRun;
 export const OFFICIAL_SOURCE_DEADLINE_MS = 25_000;
 
 export type OfficialSourceSnapshotState = "success" | "unchanged" | "failed" | "blocked" | "hostile";
@@ -223,6 +233,10 @@ export type OfficialDiscoveryCandidate = {
   detailFinalUrl?: string;
   detailAttemptCount?: number;
   detailNextAttemptAt?: string;
+  /** Source-authored publication time, distinct from crawler discovery/fetch time. */
+  publishedAt?: string;
+  publicationDateSource?: "json-ld-datePublished" | "meta-article-published-time" | "time-published" | "rss-pubDate" | "legislative-action";
+  policyTextUrl?: string;
   eventStartsAt?: string;
   eventEndsAt?: string;
   venue?: string;
@@ -237,7 +251,7 @@ export type OfficialSourceRelevanceInput = {
   /** Trusted registry data is separate from candidate fields, which remain untrusted source text. */
   verifiedProductUses: Array<Pick<ReturnType<typeof productUsesById>[number], "id" | "vendor" | "product" | "orgIds" | "evidenceUrl" | "lastVerifiedAt" | "confidence">>;
   candidate: Pick<OfficialDiscoveryCandidate, "id" | "category" | "region" | "title" | "url" | "sourcePageUrl" | "sourceName" | "trust" | "institutionId" | "productIds">
-    & Pick<OfficialDiscoveryCandidate, "detailTitle" | "detailText" | "detailFetchedAt" | "eventStartsAt" | "eventEndsAt" | "venue" | "city">;
+    & Pick<OfficialDiscoveryCandidate, "detailTitle" | "detailText" | "detailFetchedAt" | "publishedAt" | "publicationDateSource" | "eventStartsAt" | "eventEndsAt" | "venue" | "city">;
 };
 
 export type OfficialSourceRelevanceResult = {
@@ -351,6 +365,7 @@ export function isEligibleOfficialSource(source: OfficialSource) {
 }
 
 export function officialSourceCadenceMs(source: OfficialSource) {
+  if (source.cadence === "half-hourly") return 30 * 60 * 1000;
   return source.cadence === "hourly" ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
 }
 
@@ -376,13 +391,9 @@ export function isOfficialSourceDue(
 }
 
 /**
- * Select due sources with a dedicated News reservation and category rotation
- * for everything else. News is the frequent-pass contract for the site: all
- * due first-party News sources must be admitted before the remaining source
- * categories take their turn. The source cap remains a hard total cap, so a
- * large News lane cannot make the run unbounded; with the current registry
- * (14 News sources and a 32-source cap) every due News source fits and the
- * remaining 18 slots continue to rotate across the other categories.
+ * Reserve explicitly critical policy monitors and the frequent News lane,
+ * then rotate across every remaining category. The hard cap still bounds the
+ * run, while monitored bills cannot be starved by a growing source registry.
  */
 export function selectDueOfficialSources(
   sources: readonly OfficialSource[],
@@ -403,14 +414,17 @@ export function selectDueOfficialSources(
       const rightTime = Number.isFinite(rightDue) ? rightDue : 0;
       return leftTime - rightTime || left.id.localeCompare(right.id);
     });
+  const critical = due.filter((source) => source.priority === "policy-critical");
   const dueNews = due.filter((source) => source.category === "news");
-  const selected: OfficialSource[] = dueNews.slice(0, limit);
+  const selected: OfficialSource[] = [...critical, ...dueNews]
+    .filter((source, index, all) => all.findIndex((value) => value.id === source.id) === index)
+    .slice(0, limit);
   const remaining = limit - selected.length;
   if (remaining <= 0) return selected;
 
   const byCategory = new Map<OfficialSourceCategory, OfficialSource[]>();
   for (const source of due) {
-    if (source.category === "news") continue;
+    if (selected.some((value) => value.id === source.id)) continue;
     const bucket = byCategory.get(source.category) ?? [];
     bucket.push(source);
     byCategory.set(source.category, bucket);
@@ -527,7 +541,13 @@ function usableLinkTitle(title: string, url: string) {
   return normalized;
 }
 
-type DiscoveredLink = { title: string; url: string; instructionLike: boolean };
+type DiscoveredLink = {
+  title: string;
+  url: string;
+  instructionLike: boolean;
+  publishedAt?: string;
+  publicationDateSource?: OfficialDiscoveryCandidate["publicationDateSource"];
+};
 
 function parseHtmlLinks(html: string, baseUrl: string, allowedHosts: ReadonlySet<string>) {
   const out: DiscoveredLink[] = [];
@@ -560,8 +580,15 @@ function parseRssLinks(xml: string, baseUrl: string, allowedHosts: ReadonlySet<s
     if (!url || seen.has(url)) continue;
     const title = usableLinkTitle(titleMatch?.[1] ?? "", url);
     if (!title) continue;
+    const publicationMatch = /<(?:pubDate|published|dc:date)\b[^>]*>([\s\S]*?)<\/(?:pubDate|published|dc:date)>/i.exec(block);
+    const publishedAt = normalizedPublishedAt(stripTags(publicationMatch?.[1] ?? ""));
     seen.add(url);
-    out.push({ title, url, instructionLike: looksInstructionLike(title, url) });
+    out.push({
+      title,
+      url,
+      instructionLike: looksInstructionLike(title, url),
+      ...(publishedAt ? { publishedAt, publicationDateSource: "rss-pubDate" as const } : {}),
+    });
   }
   return out;
 }
@@ -578,14 +605,27 @@ export function discoverOfficialLinks(
     : source.format === "html-or-rss" && /<item\b/i.test(html)
       ? parseRssLinks(html, finalUrl, allowedHosts)
       : parseHtmlLinks(html, finalUrl, allowedHosts);
-  return links.slice(0, Math.max(0, Math.trunc(cap) || 0));
+  const pathScoped = source.allowedLinkPathPrefixes.length === 0
+    ? links
+    : links.filter((link) => {
+      try {
+        const path = new URL(link.url).pathname;
+        return source.allowedLinkPathPrefixes.some((prefix) => path.startsWith(prefix));
+      } catch {
+        return false;
+      }
+    });
+  return pathScoped.slice(0, Math.max(0, Math.trunc(cap) || 0));
 }
 
-function exactHostAllowlist(url: string) {
+export function officialCandidateUrlAllowed(source: OfficialSource, candidateUrl: string) {
   try {
-    return new Set([new URL(url).hostname.toLowerCase()]);
+    const url = new URL(candidateUrl);
+    if (url.protocol !== "https:" || !hostAllowed(url.hostname, officialSourceHostAllowlist(source))) return false;
+    return source.allowedLinkPathPrefixes.length === 0
+      || source.allowedLinkPathPrefixes.some((prefix) => url.pathname.startsWith(prefix));
   } catch {
-    return new Set<string>();
+    return false;
   }
 }
 
@@ -608,7 +648,73 @@ function dateFromText(value: string) {
   return named ? toIso(named.replace(/(\d+)(?:st|nd|rd|th)/i, "$1")) : undefined;
 }
 
-function normalizeDetailPage(html: string, maxChars = OFFICIAL_SOURCE_DETAIL_MAX_CHARS) {
+function normalizedPublishedAt(raw: string) {
+  const value = decodeHtml(raw).trim();
+  if (!value) return undefined;
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return undefined;
+  const year = new Date(timestamp).getUTCFullYear();
+  return year >= 1990 && year <= 2200 ? new Date(timestamp).toISOString() : undefined;
+}
+
+function publicationDateFromHtml(html: string) {
+  for (const script of html.matchAll(/<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try {
+      const root = JSON.parse(decodeHtml(script[1] ?? ""));
+      const nodes = Array.isArray(root) ? root : [root, ...(Array.isArray(root?.["@graph"]) ? root["@graph"] : [])];
+      for (const node of nodes) {
+        const publishedAt = normalizedPublishedAt(typeof node?.datePublished === "string" ? node.datePublished : "");
+        if (publishedAt) return { publishedAt, source: "json-ld-datePublished" as const };
+      }
+    } catch {
+      // Malformed JSON-LD is untrusted upstream data; continue to explicit HTML metadata.
+    }
+  }
+  const meta = /<meta\b[^>]*(?:property|name)\s*=\s*["']article:published_time["'][^>]*content\s*=\s*["']([^"']+)["'][^>]*>/i.exec(html)
+    ?? /<meta\b[^>]*content\s*=\s*["']([^"']+)["'][^>]*(?:property|name)\s*=\s*["']article:published_time["'][^>]*>/i.exec(html);
+  const metaDate = normalizedPublishedAt(meta?.[1] ?? "");
+  if (metaDate) return { publishedAt: metaDate, source: "meta-article-published-time" as const };
+  const time = /<time\b(?=[^>]*(?:itemprop\s*=\s*["']datePublished["']|class\s*=\s*["'][^"']*\bpublish(?:ed)?\b[^"']*["']))[^>]*datetime\s*=\s*["']([^"']+)["'][^>]*>/i.exec(html);
+  const timeDate = normalizedPublishedAt(time?.[1] ?? "");
+  return timeDate ? { publishedAt: timeDate, source: "time-published" as const } : undefined;
+}
+
+function latestLegislativeActionAt(text: string, observedAt: string) {
+  const dates: number[] = [];
+  const actionDate = /\b(?:referred|reported|consideration|laid on the table|removed from the table|hearing|vote|adopt(?:ed)?|passed|signed|approved|amended)\b[^\n]{0,220}?\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(20\d{2})\b/gi;
+  for (const match of text.matchAll(actionDate)) {
+    const timestamp = Date.parse(`${match[1]} ${match[2]}, ${match[3]} UTC`);
+    if (Number.isFinite(timestamp) && timestamp <= Date.parse(observedAt) + 86_400_000) dates.push(timestamp);
+  }
+  return dates.length ? new Date(Math.max(...dates)).toISOString() : undefined;
+}
+
+function paBillTextUrl(html: string, baseUrl: string) {
+  const links = html.matchAll(/<a\b[^>]*\bhref\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/gi);
+  for (const match of links) {
+    try {
+      const url = new URL(match[1] ?? match[2] ?? match[3] ?? "", baseUrl);
+      if (host(url.hostname) !== "palegis.us") continue;
+      if (!/^\/legislation\/bills\/text\/PDF\//i.test(url.pathname)) continue;
+      return normalizeSourceUrl(url.toString()) ?? url.toString();
+    } catch {
+      // Ignore malformed source-authored links.
+    }
+  }
+  return undefined;
+}
+
+type NormalizedDetailPage = {
+  title: string;
+  text: string;
+  startsAt?: string;
+  endsAt?: string;
+  venue?: string;
+  publishedAt?: string;
+  source?: OfficialDiscoveryCandidate["publicationDateSource"];
+};
+
+function normalizeDetailPage(html: string, category: OfficialSourceCategory, maxChars = OFFICIAL_SOURCE_DETAIL_MAX_CHARS): NormalizedDetailPage {
   const cleaned = stripNonContent(html);
   const mainMatch = /<(?:main|article)\b[^>]*>([\s\S]*?)<\/(?:main|article)>/i.exec(cleaned);
   const content = mainMatch?.[1] ?? cleaned;
@@ -625,45 +731,68 @@ function normalizeDetailPage(html: string, maxChars = OFFICIAL_SOURCE_DETAIL_MAX
     if (text.length >= 12) chunks.push(text);
   }
   const detailText = chunks.join("\n\n").slice(0, Math.max(200, maxChars)).trim();
-  const startValue = htmlAttribute(cleaned, "time", "datetime")
-    || htmlAttribute(cleaned, "meta", "content")
-    || htmlAttribute(cleaned, "div", "data-start-date")
-    || htmlAttribute(cleaned, "span", "data-start-date");
-  const startsAt = dateFromText(startValue) ?? dateFromText(detailText);
+  const startValue = category === "events"
+    ? htmlAttribute(cleaned, "time", "datetime")
+      || htmlAttribute(cleaned, "div", "data-start-date")
+      || htmlAttribute(cleaned, "span", "data-start-date")
+    : "";
+  const startsAt = category === "events" ? dateFromText(startValue) ?? dateFromText(detailText) : undefined;
   const endValue = htmlAttribute(cleaned, "div", "data-end-date")
     || htmlAttribute(cleaned, "span", "data-end-date");
   const endsAt = dateFromText(endValue);
   const address = htmlTagText(content, "address");
+  const publication = category === "events" ? undefined : publicationDateFromHtml(html);
   return {
     title: title.slice(0, 240),
     text: detailText,
     startsAt,
     endsAt,
     venue: address || undefined,
+    ...publication,
   };
 }
 
-function detailCandidateOrder(candidates: readonly OfficialDiscoveryCandidate[]) {
-  const buckets = new Map<string, OfficialDiscoveryCandidate[]>();
+function detailCandidateOrder(
+  candidates: readonly OfficialDiscoveryCandidate[],
+  cap: number,
+  sources: readonly OfficialSource[],
+) {
+  const priorityBySource = new Map(sources.map((source) => [source.id, source.priority]));
+  const tiers = new Map<number, Map<string, OfficialDiscoveryCandidate[]>>();
   for (const candidate of candidates) {
     if (candidate.instructionLike || candidate.detailState === "success" || candidate.detailState === "hostile") continue;
+    const tier = priorityBySource.get(candidate.sourceId) === "policy-critical"
+      ? 0
+      : candidate.category === "policy" ? 1 : 2;
+    const buckets = tiers.get(tier) ?? new Map<string, OfficialDiscoveryCandidate[]>();
     const bucket = buckets.get(candidate.sourceId) ?? [];
     bucket.push(candidate);
+    bucket.sort((left, right) =>
+      Date.parse(right.publishedAt ?? "") - Date.parse(left.publishedAt ?? "")
+      || (left.detailAttemptCount ?? 0) - (right.detailAttemptCount ?? 0)
+      || left.id.localeCompare(right.id));
     buckets.set(candidate.sourceId, bucket);
+    tiers.set(tier, buckets);
   }
-  const sourceIds = [...buckets.keys()].sort();
   const selected: OfficialDiscoveryCandidate[] = [];
-  while (sourceIds.length && selected.length < OFFICIAL_SOURCE_DETAIL_CAP) {
-    for (let index = sourceIds.length - 1; index >= 0 && selected.length < OFFICIAL_SOURCE_DETAIL_CAP; index -= 1) {
-      const sourceId = sourceIds[index]!;
-      const bucket = buckets.get(sourceId)!;
-      const candidate = bucket.shift();
-      if (candidate) selected.push(candidate);
-      if (bucket.length === 0) {
-        buckets.delete(sourceId);
-        sourceIds.splice(index, 1);
+  for (const tier of [...tiers.keys()].sort((left, right) => left - right)) {
+    const buckets = tiers.get(tier)!;
+    const sourceIds = [...buckets.keys()].sort();
+    while (sourceIds.length && selected.length < cap) {
+      for (let index = 0; index < sourceIds.length && selected.length < cap;) {
+        const sourceId = sourceIds[index]!;
+        const bucket = buckets.get(sourceId)!;
+        const candidate = bucket.shift();
+        if (candidate) selected.push(candidate);
+        if (bucket.length === 0) {
+          buckets.delete(sourceId);
+          sourceIds.splice(index, 1);
+        } else {
+          index += 1;
+        }
       }
     }
+    if (selected.length >= cap) break;
   }
   return selected;
 }
@@ -680,10 +809,10 @@ function detailRetryAt(candidate: OfficialDiscoveryCandidate, now: Date) {
 export function selectOfficialDetailCandidates(
   candidates: readonly OfficialDiscoveryCandidate[],
   cap = OFFICIAL_SOURCE_DETAIL_CAP,
+  sources: readonly OfficialSource[] = officialSourceRegistry.sources,
 ) {
-  // The helper above intentionally rotates by source. Apply the caller cap
-  // after selection so tests and emergency runs cannot exceed the hard bound.
-  return detailCandidateOrder(candidates).slice(0, Math.max(0, Math.trunc(cap) || 0));
+  const limit = Math.max(0, Math.trunc(cap) || 0);
+  return detailCandidateOrder(candidates, limit, sources);
 }
 
 type DetailHydrationResult = {
@@ -711,7 +840,7 @@ export async function hydrateOfficialCandidates(
   const selected = selectOfficialDetailCandidates(candidates.filter((candidate) => {
     const next = Date.parse(candidate.detailNextAttemptAt ?? "");
     return !Number.isFinite(next) || now.getTime() >= next;
-  }), cap);
+  }), cap, sources);
   const deadlineAt = options.deadlineAt ?? Number.POSITIVE_INFINITY;
   const maxChars = Math.min(
     OFFICIAL_SOURCE_DETAIL_MAX_CHARS,
@@ -733,15 +862,15 @@ export async function hydrateOfficialCandidates(
           "user-agent": SOURCE_USER_AGENT,
           accept: "text/html,application/xhtml+xml,application/rss+xml,application/atom+xml,text/xml;q=0.9,text/plain;q=0.1",
         },
-        // A detail page may be on an explicitly registered event host, but it
-        // may redirect only within that exact host. This prevents a source
-        // page from turning the allowlist into an open redirect fetcher.
-        allowedRedirectHosts: exactHostAllowlist(candidate.url),
+        // Detail redirects remain confined to the source's explicit registry
+        // allowlist. This permits common apex/www canonicalization while an
+        // arbitrary candidate can never expand the fetch boundary.
+        allowedRedirectHosts: officialSourceHostAllowlist(source),
         maxRedirects: OFFICIAL_SOURCE_MAX_REDIRECTS,
         attempts: 1,
         deadlineAt,
       });
-      if (host(response.url) !== host(candidate.url)) {
+      if (!hostAllowed(new URL(response.url).hostname, officialSourceHostAllowlist(source))) {
         throw new UpstreamError("upstream-failed", "Official detail redirect changed host");
       }
       // Linked detail pages are normally HTML even when their listing is RSS.
@@ -749,7 +878,7 @@ export async function hydrateOfficialCandidates(
       if (!sourceSupportsResponse({ ...source, format: "html-or-rss" }, response.headers.get("content-type"), response.body)) {
         throw new UpstreamError("upstream-failed", "Unsupported official detail content type");
       }
-      const normalized = normalizeDetailPage(response.body, maxChars);
+      const normalized = normalizeDetailPage(response.body, candidate.category, maxChars);
       const instructionLike = looksInstructionLike(
         candidate.title,
         normalized.title,
@@ -792,6 +921,8 @@ export async function hydrateOfficialCandidates(
         detailHash,
         detailState: "success",
         detailError: null,
+        ...(normalized.publishedAt ? { publishedAt: normalized.publishedAt } : {}),
+        ...(normalized.source ? { publicationDateSource: normalized.source } : {}),
         ...(normalized.startsAt ? { eventStartsAt: normalized.startsAt } : {}),
         ...(normalized.endsAt ? { eventEndsAt: normalized.endsAt } : {}),
         ...(normalized.venue ? { venue: normalized.venue } : {}),
@@ -912,6 +1043,8 @@ export function officialSourceRelevanceInput(candidate: OfficialDiscoveryCandida
       ...(candidate.detailTitle ? { detailTitle: candidate.detailTitle } : {}),
       ...(candidate.detailText ? { detailText: candidate.detailText.slice(0, OFFICIAL_SOURCE_DETAIL_MAX_CHARS) } : {}),
       ...(candidate.detailFetchedAt ? { detailFetchedAt: candidate.detailFetchedAt } : {}),
+      ...(candidate.publishedAt ? { publishedAt: candidate.publishedAt } : {}),
+      ...(candidate.publicationDateSource ? { publicationDateSource: candidate.publicationDateSource } : {}),
       ...(candidate.eventStartsAt ? { eventStartsAt: candidate.eventStartsAt } : {}),
       ...(candidate.eventEndsAt ? { eventEndsAt: candidate.eventEndsAt } : {}),
       ...(candidate.venue ? { venue: candidate.venue } : {}),
@@ -1084,7 +1217,41 @@ async function discoverOne(
       discoveredAt: fetchedAt,
       status: "review" as const,
       instructionLike: link.instructionLike,
+      ...(link.publishedAt ? { publishedAt: link.publishedAt } : {}),
+      ...(link.publicationDateSource ? { publicationDateSource: link.publicationDateSource } : {}),
     } satisfies OfficialDiscoveryCandidate));
+    if (source.category === "policy" && /^ofs-pa-legislature-(?:hb|sb)\d+$/.test(source.id)) {
+      const normalized = normalizeDetailPage(response.body, "policy");
+      const publishedAt = latestLegislativeActionAt(normalized.text, fetchedAt);
+      const policyTextUrl = paBillTextUrl(response.body, response.url);
+      if (normalized.text.length >= 24) {
+        const selfCandidate: OfficialDiscoveryCandidate = {
+          id: candidateId(source.id, sourcePageUrl),
+          sourceId: source.id,
+          category: "policy",
+          region: source.region,
+          title: normalized.title || source.name,
+          url: sourcePageUrl,
+          sourcePageUrl,
+          sourceName: source.name,
+          trust: source.trust,
+          discoveredAt: fetchedAt,
+          status: "review",
+          instructionLike: looksInstructionLike(normalized.title, normalized.text),
+          detailTitle: normalized.title || source.name,
+          detailText: normalized.text,
+          detailFetchedAt: fetchedAt,
+          detailHash: hash,
+          detailState: "success",
+          detailAttemptCount: 0,
+          ...(publishedAt ? { publishedAt, publicationDateSource: "legislative-action" } : {}),
+          ...(policyTextUrl ? { policyTextUrl } : {}),
+        };
+        const existing = candidates.findIndex((candidate) => candidate.url === sourcePageUrl);
+        if (existing >= 0) candidates[existing] = selfCandidate;
+        else candidates.unshift(selfCandidate);
+      }
+    }
     const snapshot = {
       id: `official-snapshot-${source.id}-${fetchedAt}`,
       sourceId: source.id,
@@ -1146,9 +1313,16 @@ export async function discoverOfficialSources(options: OfficialDiscoveryOptions 
   if (options.relevanceGate && candidates.length) {
     // Candidates without a successful detail fetch remain provenance-only. A
     // listing label alone is not enough evidence for a model or publication.
+    const priorityBySource = new Map(sources.map((source) => [source.id, source.priority]));
     const relevanceCandidates = candidates
       .filter((candidate) => candidate.detailState === "success")
-      .sort((left, right) => Date.parse(right.discoveredAt) - Date.parse(left.discoveredAt));
+      .sort((left, right) => {
+        const priority = Number(priorityBySource.get(right.sourceId) === "policy-critical")
+          - Number(priorityBySource.get(left.sourceId) === "policy-critical");
+        return priority
+          || Date.parse(right.discoveredAt) - Date.parse(left.discoveredAt)
+          || left.id.localeCompare(right.id);
+      });
     const gated = await applyOfficialSourceRelevanceGate(relevanceCandidates.slice(0, OFFICIAL_SOURCE_RELEVANCE_CAP), options.relevanceGate, {
       concurrency: options.relevanceConcurrency ?? OFFICIAL_SOURCE_RELEVANCE_CONCURRENCY,
       timeoutMs: options.relevanceTimeoutMs,
@@ -1222,6 +1396,71 @@ export function officialPolicyChangeType(candidate: OfficialDiscoveryCandidate):
   return "guidance";
 }
 
+function literalPolicySentence(candidate: OfficialDiscoveryCandidate, pattern: RegExp) {
+  return (candidate.detailText ?? "")
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((sentence) => sentence.trim())
+    .find((sentence) => sentence.length >= 12 && pattern.test(sentence));
+}
+
+function officialPolicyApplicability(candidate: OfficialDiscoveryCandidate): PolicyItem["applicability"] {
+  const evidence = literalPolicySentence(candidate, /\b(?:hospitals?|health systems?|health[ -]care facilities?|health[ -]care providers?)\b/i);
+  if (!evidence) return undefined;
+  const types: NonNullable<PolicyItem["applicability"]>["regulatedEntityTypes"] = [];
+  if (/\bhospitals?\b/i.test(evidence)) types.push("hospital");
+  if (/\bhealth systems?\b/i.test(evidence)) types.push("health-system");
+  if (/\bhealth[ -]care facilities?\b/i.test(evidence)) types.push("health-care-facility");
+  if (/\bhealth[ -]care providers?\b/i.test(evidence)) types.push("health-care-provider");
+  return types.length ? {
+    jurisdiction: candidate.region,
+    regulatedEntityTypes: [...new Set(types)],
+    evidenceSpans: [evidence],
+    sourceUrl: candidate.url,
+  } : undefined;
+}
+
+export function officialPolicyIdentity(candidate: OfficialDiscoveryCandidate): PolicyItem["policyIdentity"] {
+  if (!candidate.publishedAt) return undefined;
+  const hay = `${candidate.sourceName}\n${candidate.title}\n${candidate.detailText ?? ""}\n${candidate.url}`;
+  const bill = /\b(HB|SB)\s*-?\s*(\d{1,5})\b/i.exec(hay);
+  if (!bill) return undefined;
+  const version = /\bPN\s*-?\s*(\d{1,6})\b/i.exec(hay);
+  const sessionYear = Number(/\/legislation\/bills\/(20\d{2})\//i.exec(candidate.url)?.[1]);
+  const stage = /\benacted|signed into law\b/i.test(hay) ? "enacted"
+    : /\bpassed\b/i.test(hay) ? "passed"
+      : /\bamended|printer'?s number\b/i.test(hay) ? "amended"
+        : /\bhearing|testimony\b/i.test(hay) ? "hearing"
+          : /\bcommittee|referred\b/i.test(hay) ? "committee"
+            : "introduced";
+  return {
+    jurisdiction: candidate.region,
+    ...(Number.isFinite(sessionYear) ? { session: `${sessionYear}-${sessionYear + 1}` } : {}),
+    instrumentId: `${bill[1]!.toUpperCase()} ${bill[2]}`,
+    ...(version ? { versionId: `PN ${version[1]}` } : {}),
+    stage,
+    developmentAt: candidate.publishedAt,
+    historyUrl: candidate.url,
+    ...(candidate.policyTextUrl ? { textUrl: candidate.policyTextUrl } : {}),
+  };
+}
+
+function officialPolicyAdvocacy(candidate: OfficialDiscoveryCandidate): PolicyItem["advocacy"] {
+  if (!/\bhospital and healthsystem association of pennsylvania\b|\bHAP\b/i.test(`${candidate.sourceName} ${candidate.detailText ?? ""}`)) return undefined;
+  const positionEvidence = literalPolicySentence(candidate, /\b(?:opposes?|supports?|concerns?|urges?|recommends?)\b/i);
+  if (!positionEvidence) return undefined;
+  const position = /\bopposes?\b/i.test(positionEvidence) ? "oppose"
+    : /\bsupports?\b/i.test(positionEvidence) ? "support"
+      : /\bconcerns?\b/i.test(positionEvidence) ? "concerns"
+        : "neutral";
+  return {
+    organization: "The Hospital and Healthsystem Association of Pennsylvania",
+    position,
+    substantiveConcerns: [positionEvidence],
+    evidenceSpans: [positionEvidence],
+    sourceUrl: candidate.url,
+  };
+}
+
 export function officialContentKind(candidate: OfficialDiscoveryCandidate): ContentItem["kind"] | undefined {
   if (candidate.category === "events") return "event";
   if (candidate.category === "policy") return "policy";
@@ -1274,7 +1513,7 @@ export function contentItemFromOfficialCandidate(
     kind: "ingest" as const,
     origin: officialOrigin(candidate.sourceId),
     url: candidate.url,
-    fetchedAt: candidate.discoveredAt,
+    fetchedAt: candidate.detailFetchedAt ?? candidate.discoveredAt,
     externalId: candidate.id,
   };
   const citations = [{ name: candidate.sourceName, url: candidate.url }];
@@ -1290,6 +1529,7 @@ export function contentItemFromOfficialCandidate(
         body,
         kind: "event",
         status: "review",
+        ...(candidate.publishedAt ? { publishedAt: candidate.publishedAt } : {}),
         updatedAt: candidate.discoveredAt,
         topics,
         orgs,
@@ -1310,6 +1550,9 @@ export function contentItemFromOfficialCandidate(
       }));
     }
     if (kind === "policy") {
+      const applicability = officialPolicyApplicability(candidate);
+      const policyIdentity = officialPolicyIdentity(candidate);
+      const advocacy = officialPolicyAdvocacy(candidate);
       return withCanonicalSource(PolicyItem.parse({
         id: candidate.id,
         slug,
@@ -1318,6 +1561,7 @@ export function contentItemFromOfficialCandidate(
         body,
         kind: "policy",
         status: "review",
+        ...(candidate.publishedAt ? { publishedAt: candidate.publishedAt } : {}),
         updatedAt: candidate.discoveredAt,
         topics,
         orgs,
@@ -1328,6 +1572,9 @@ export function contentItemFromOfficialCandidate(
         jurisdiction: candidate.region,
         issuer: officialPolicyIssuer(candidate),
         changeType: officialPolicyChangeType(candidate),
+        ...(applicability ? { applicability } : {}),
+        ...(policyIdentity ? { policyIdentity } : {}),
+        ...(advocacy ? { advocacy } : {}),
         featured: false,
       }));
     }
@@ -1342,6 +1589,7 @@ export function contentItemFromOfficialCandidate(
         body,
         kind: "ai",
         status: "review",
+        ...(candidate.publishedAt ? { publishedAt: candidate.publishedAt } : {}),
         updatedAt: candidate.discoveredAt,
         topics,
         orgs,
@@ -1363,6 +1611,7 @@ export function contentItemFromOfficialCandidate(
       body,
       kind: "news",
       status: "review",
+      ...(candidate.publishedAt ? { publishedAt: candidate.publishedAt } : {}),
       updatedAt: candidate.discoveredAt,
       topics,
       orgs,

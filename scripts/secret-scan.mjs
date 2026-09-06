@@ -16,7 +16,7 @@ const PATTERNS = [
   { name: "live-social-ingest-token", re: /\bSOCIAL_INGEST_TOKEN\s*=\s*(?!replace-with-a-different-long-random-token\b)['\"]?[A-Za-z0-9_-]{16,}/ },
 ];
 
-const files = execFileSync("git", ["ls-files"], { encoding: "utf8" })
+const files = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], { encoding: "utf8" })
   .split("\n")
   .map((line) => line.trim())
   .filter(Boolean)
@@ -41,4 +41,4 @@ if (hits.length) {
   process.exit(1);
 }
 
-console.log(`secret-scan passed (${files.length} tracked files)`);
+console.log(`secret-scan passed (${files.length} tracked and untracked files)`);

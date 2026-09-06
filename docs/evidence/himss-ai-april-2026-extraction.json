@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "policy-pdf-extraction-receipt-v1",
+  "outcome": "complete",
+  "artifact": "himss-ai-april-2026.pdf",
+  "byteCount": 1620562,
+  "sha256": "8dd1fda127c2cb4e0f216585a18ac41fc6d7007ee046c6623b364f73bad57320",
+  "extractor": {
+    "command": "python3 scripts/extract-policy-pdf.py <actual-pdf> --attachment-id <stored-attachment-id> --persistence-payload --match 'Pennsylvania SB 1113' --match 'Medicaid and CHIP programs'",
+    "library": "pypdf",
+    "version": "6.9.0",
+    "acceptsInjectedPageText": false
+  },
+  "pageCount": 21,
+  "pageEvidence": [
+    {
+      "pageNumber": 15,
+      "characterCount": 854,
+      "textSha256": "9aedb802ff2cce3bc1ad4b6c9e8f7b9aad680dc8554eb71c006c83ea297b437b",
+      "evidenceSpans": [
+        "Pennsylvania SB 1113",
+        "Sets requirements for the use of AI in Medicaid and CHIP programs, including disclosure and responsible- use standards."
+      ],
+      "visualCrossCheck": "The page-15 raster places both spans in the same Pennsylvania SB 1113 card; adjacent Indiana and New York cards were not attributed to Pennsylvania."
+    }
+  ],
+  "allTermsMatched": true,
+  "persistence": {
+    "mode": "authenticated-manual-review-step",
+    "endpoint": "POST /api/email-pdf-attachments/:id/extraction",
+    "owner": "Knox (Engineering)",
+    "preconditions": [
+      "parent email has a trusted Cloudflare Analytics receipt",
+      "attachment checksum matches the retained incoming bytes",
+      "attachment extraction state is pending"
+    ],
+    "auditFields": [
+      "extraction_method",
+      "extraction_receipt_sha256",
+      "extracted_by",
+      "extracted_at"
+    ],
+    "automaticInWorkerExtraction": false
+  },
+  "reviewCandidate": {
+    "status": "review",
+    "artifactSha256": "8dd1fda127c2cb4e0f216585a18ac41fc6d7007ee046c6623b364f73bad57320",
+    "artifactByteCount": 1620562,
+    "pageEvidence": [
+      {
+        "pageNumber": 15,
+        "evidenceSpans": [
+          "Pennsylvania SB 1113",
+          "Sets requirements for the use of AI in Medicaid and CHIP programs"
+        ],
+        "visualCrossCheckRequired": true
+      }
+    ],
+    "automaticPublication": false
+  },
+  "productionMutation": false
+}

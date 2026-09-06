@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-09-06T00:00:00.000Z",
+  "source": "Read-only Scher correspondence inventory cross-checked against official public sources",
+  "instruments": [
+    {
+      "id": "policy-pa-2025-2026-hb-1925",
+      "instrumentId": "HB 1925",
+      "versionId": "PN 3349",
+      "stage": "amended",
+      "developmentAt": "2026-06-25T00:00:00.000Z",
+      "title": "Regulation of the Use of Artificial Intelligence in Healthcare",
+      "canonicalUrl": "https://www.palegis.us/legislation/bills/2025/hb1925",
+      "textUrl": "https://www.palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN3349",
+      "evidenceSpans": ["Reported as amended, May 5, 2026", "Removed from table, June 25, 2026"]
+    },
+    {
+      "id": "policy-pa-2025-2026-sb-1113",
+      "instrumentId": "SB 1113",
+      "versionId": "PN 1376",
+      "stage": "committee",
+      "developmentAt": "2026-01-09T00:00:00.000Z",
+      "title": "Artificial intelligence use in Medicaid and CHIP programs",
+      "canonicalUrl": "https://www.palegis.us/legislation/bills/2025/sb1113",
+      "textUrl": "https://www.palegis.us/legislation/bills/text/PDF/2025/0/SB1113/PN1376",
+      "evidenceSpans": ["Referred to committee, January 9, 2026"]
+    },
+    {
+      "id": "policy-pa-2025-2026-hb-1993",
+      "instrumentId": "HB 1993",
+      "versionId": "PN 2515",
+      "stage": "committee",
+      "developmentAt": "2025-10-24T00:00:00.000Z",
+      "title": "Artificial Intelligence in Mental Health Therapy Act",
+      "canonicalUrl": "https://www.palegis.us/legislation/bills/2025/hb1993",
+      "textUrl": "https://www.palegis.us/legislation/bills/text/PDF/2025/0/HB1993/PN2515",
+      "evidenceSpans": ["Referred to committee, October 24, 2025"]
+    }
+  ],
+  "advocacy": [
+    {
+      "id": "hap-hb1925-testimony-2025-12-15",
+      "instrumentId": "HB 1925",
+      "organization": "The Hospital and Healthsystem Association of Pennsylvania",
+      "position": "concerns",
+      "publishedAt": "2025-12-15T00:00:00.000Z",
+      "sourceUrl": "https://www.haponline.org/Resource-Center?resourceid=1459",
+      "evidenceSpans": [
+        "HAP is concerned about definitions unique to health care entities included in HB 1925.",
+        "HAP is concerned about an added mandated reporting requirement",
+        "HAP also has concerns about the bill’s provisions related to penalties and enforcement."
+      ],
+      "provenance": ["official HAP resource 1459"]
+    },
+    {
+      "id": "hap-hb1925-opposition-2026-05-05",
+      "instrumentId": "HB 1925",
+      "organization": "The Hospital and Healthsystem Association of Pennsylvania",
+      "position": "oppose",
+      "publishedAt": "2026-05-05T00:00:00.000Z",
+      "sourceUrl": "https://www.haponline.org/Resource-Center?resourceid=1531",
+      "evidenceSpans": [
+        "On behalf of more than 235 member hospitals and health systems",
+        "Oversight and Third-Party Vendors",
+        "Enforcement and Penalties"
+      ],
+      "provenance": ["official HAP resource 1531"]
+    }
+  ],
+  "supportingEvidence": [
+    {
+      "id": "ncsl-himss-ai-health-2026-04",
+      "title": "State Legislative Activity: Artificial Intelligence & Health",
+      "publishedAt": "2026-04-17T00:00:00.000Z",
+      "sourceUrl": "https://www.ncsl.org/financial-services/artificial-intelligence-legislation-database",
+      "artifactSha256": "8dd1fda127c2cb4e0f216585a18ac41fc6d7007ee046c6623b364f73bad57320",
+      "pageEvidence": [
+        {
+          "pageNumber": 15,
+          "evidenceSpans": ["Pennsylvania SB 1113", "Sets requirements for the use of AI in Medicaid and CHIP programs"]
+        }
+      ],
+      "provenance": [
+        "Scher email 19dfdd679aad938e received 2026-05-06T11:09:08-04:00",
+        "HIMSS_AI & Health_April 2026.pdf"
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "scher-sb1113-himss-2026-05-06",
+      "instrumentId": "SB 1113",
+      "firstPublicAt": "2026-01-09T00:00:00.000Z",
+      "correspondenceAt": "2026-05-06T15:09:08.000Z",
+      "detectedAt": null,
+      "briefOrBlockerAt": null,
+      "missReason": "The production policy collector had no targeted SB 1113 monitor and no authenticated policy attachment intake; the candidate funnel produced zero conversions at inspection.",
+      "sourceUrls": [
+        "https://www.palegis.us/legislation/bills/2025/sb1113",
+        "https://www.ncsl.org/financial-services/artificial-intelligence-legislation-database"
+      ]
+    }
+  ]
+}

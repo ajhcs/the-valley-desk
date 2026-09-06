@@ -138,6 +138,39 @@ export const PolicyItem = Base.extend({
   ]),
   effectiveDate: z.string().optional(),
   changeType: z.enum(["rule", "guidance", "legislation", "enforcement"]),
+  /** Durable legislative or regulatory identity; titles and URLs may change. */
+  policyIdentity: z.object({
+    jurisdiction: Region,
+    session: z.string().min(1).optional(),
+    instrumentId: z.string().min(1),
+    versionId: z.string().min(1).optional(),
+    stage: z.enum([
+      "introduced", "committee", "hearing", "amended", "passed", "enacted",
+      "proposed-rule", "final-rule", "guidance", "enforcement",
+    ]),
+    developmentAt: z.string().datetime(),
+    historyUrl: HttpsUrl.optional(),
+    textUrl: HttpsUrl.optional(),
+  }).optional(),
+  /** Literal source evidence that establishes who is governed in this region. */
+  applicability: z.object({
+    jurisdiction: Region,
+    regulatedEntityTypes: z.array(z.enum([
+      "hospital", "health-system", "health-care-facility", "health-care-provider",
+      "insurer", "technology-vendor", "state-agency", "other",
+    ])).min(1),
+    evidenceSpans: z.array(z.string().min(3)).min(1),
+    sourceUrl: HttpsUrl,
+  }).optional(),
+  /** Advocacy is retained as a position, never rewritten as bill text. */
+  advocacy: z.object({
+    organization: z.string().min(1),
+    position: z.enum(["support", "oppose", "concerns", "neutral"]),
+    substantiveConcerns: z.array(z.string().min(3)).min(1),
+    evidenceSpans: z.array(z.string().min(3)).min(1),
+    sourceUrl: HttpsUrl,
+  }).optional(),
+  background: z.boolean().optional(),
 });
 
 export const AiItem = Base.extend({

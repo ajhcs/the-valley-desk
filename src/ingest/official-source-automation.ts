@@ -9,6 +9,9 @@ import {
 import {
   OFFICIAL_SOURCE_RELEVANCE_MODEL,
   OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION,
+  officialPolicyIdentity,
+  officialCandidateUrlAllowed,
+  officialSourceById,
   contentItemsFromOfficialCandidates,
   discoverOfficialSources,
   parseOfficialSourceRelevanceResult,
@@ -65,6 +68,9 @@ type RetryCandidateRow = {
   detail_final_url: string | null;
   detail_attempt_count: number | null;
   detail_next_attempt_at: string | null;
+  published_at: string | null;
+  publication_date_source: OfficialDiscoveryCandidate["publicationDateSource"] | null;
+  policy_text_url: string | null;
   event_starts_at: string | null;
   event_ends_at: string | null;
   venue: string | null;
@@ -91,10 +97,12 @@ export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limi
            source_page_url, source_name, trust, product_ids_json, discovered_at,
            instruction_like, detail_title, detail_text, detail_fetched_at,
            detail_hash, detail_state, detail_error, detail_final_url,
-           detail_attempt_count, detail_next_attempt_at, event_starts_at,
+           detail_attempt_count, detail_next_attempt_at, published_at,
+           publication_date_source, policy_text_url, event_starts_at,
            event_ends_at, venue, city
     FROM official_source_candidates
     WHERE content_item_id IS NULL
+      AND detail_disposition = 'active'
       AND instruction_like = 0
       AND (
         detail_state IS NULL
@@ -111,7 +119,9 @@ export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limi
              COALESCE(detail_next_attempt_at, last_seen_at) ASC, id ASC
     LIMIT ?
   `).bind(now.toISOString(), Math.max(1, Math.min(48, Math.trunc(limit) || 24))).all<RetryCandidateRow>();
-  return (rows.results ?? []).map((row) => {
+  return (rows.results ?? []).flatMap((row) => {
+    const source = officialSourceById(row.source_id);
+    if (!source || !officialCandidateUrlAllowed(source, row.url)) return [];
     let productIds: string[] = [];
     try {
       const parsed = JSON.parse(row.product_ids_json);
@@ -119,7 +129,7 @@ export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limi
     } catch {
       productIds = [];
     }
-    return {
+    return [{
       id: row.id,
       sourceId: row.source_id,
       ...(row.institution_id ? { institutionId: row.institution_id } : {}),
@@ -143,11 +153,14 @@ export async function readRetryOfficialSourceCandidates(db: D1DatabaseLike, limi
       ...(row.detail_final_url ? { detailFinalUrl: row.detail_final_url } : {}),
       detailAttemptCount: Number(row.detail_attempt_count ?? 0),
       ...(row.detail_next_attempt_at ? { detailNextAttemptAt: row.detail_next_attempt_at } : {}),
+      ...(row.published_at ? { publishedAt: row.published_at } : {}),
+      ...(row.publication_date_source ? { publicationDateSource: row.publication_date_source } : {}),
+      ...(row.policy_text_url ? { policyTextUrl: row.policy_text_url } : {}),
       ...(row.event_starts_at ? { eventStartsAt: row.event_starts_at } : {}),
       ...(row.event_ends_at ? { eventEndsAt: row.event_ends_at } : {}),
       ...(row.venue ? { venue: row.venue } : {}),
       ...(row.city ? { city: row.city } : {}),
-    } satisfies OfficialDiscoveryCandidate;
+    } satisfies OfficialDiscoveryCandidate];
   });
 }
 
@@ -259,8 +272,8 @@ export async function persistOfficialSourceCandidates(
         content_item_id, detail_title, detail_text, detail_fetched_at, detail_hash,
         detail_state, detail_error, detail_final_url, detail_attempt_count,
         detail_next_attempt_at, relevance_model, relevance_prompt_version,
-        event_starts_at, event_ends_at, venue, city
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        published_at, publication_date_source, policy_text_url, event_starts_at, event_ends_at, venue, city
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(source_id, url) DO UPDATE SET
         snapshot_id = COALESCE(excluded.snapshot_id, official_source_candidates.snapshot_id),
         title = excluded.title,
@@ -283,6 +296,9 @@ export async function persistOfficialSourceCandidates(
         detail_next_attempt_at = excluded.detail_next_attempt_at,
         relevance_model = COALESCE(excluded.relevance_model, official_source_candidates.relevance_model),
         relevance_prompt_version = COALESCE(excluded.relevance_prompt_version, official_source_candidates.relevance_prompt_version),
+        published_at = COALESCE(excluded.published_at, official_source_candidates.published_at),
+        publication_date_source = COALESCE(excluded.publication_date_source, official_source_candidates.publication_date_source),
+        policy_text_url = COALESCE(excluded.policy_text_url, official_source_candidates.policy_text_url),
         event_starts_at = COALESCE(excluded.event_starts_at, official_source_candidates.event_starts_at),
         event_ends_at = COALESCE(excluded.event_ends_at, official_source_candidates.event_ends_at),
         venue = COALESCE(excluded.venue, official_source_candidates.venue),
@@ -322,6 +338,9 @@ export async function persistOfficialSourceCandidates(
       candidate.detailNextAttemptAt ?? null,
       candidate.relevance ? OFFICIAL_SOURCE_RELEVANCE_MODEL : null,
       candidate.relevance ? OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION : null,
+      candidate.publishedAt ?? null,
+      candidate.publicationDateSource ?? null,
+      candidate.policyTextUrl ?? null,
       candidate.eventStartsAt ?? null,
       candidate.eventEndsAt ?? null,
       candidate.venue ?? null,
@@ -330,6 +349,58 @@ export async function persistOfficialSourceCandidates(
   });
   for (let index = 0; index < statements.length; index += 40) {
     await db.batch(statements.slice(index, index + 40));
+  }
+  const policyStatements = candidates.flatMap((candidate) => {
+    if (candidate.category !== "policy") return [];
+    const identity = officialPolicyIdentity(candidate);
+    if (!identity) return [];
+    const normalizedInstrument = identity.instrumentId.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const instrumentRowId = `policy-${identity.jurisdiction.toLowerCase()}-${identity.session ?? "current"}-${normalizedInstrument}`;
+    const versionKey = (identity.versionId ?? "unversioned").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const versionRowId = `${instrumentRowId}-${versionKey}-${identity.stage}-${identity.developmentAt.slice(0, 10)}`;
+    const evidence = candidate.relevance?.evidenceSpans?.length
+      ? candidate.relevance.evidenceSpans
+      : [candidate.detailTitle ?? candidate.title];
+    return [
+      db.prepare(`
+        INSERT INTO policy_instruments (
+          id, jurisdiction, session, instrument_id, title, canonical_url,
+          current_version_id, current_stage, first_seen_at, last_seen_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(jurisdiction, session, instrument_id) DO UPDATE SET
+          title = excluded.title,
+          canonical_url = excluded.canonical_url,
+          current_version_id = excluded.current_version_id,
+          current_stage = excluded.current_stage,
+          last_seen_at = MAX(policy_instruments.last_seen_at, excluded.last_seen_at)
+      `).bind(
+        instrumentRowId, identity.jurisdiction, identity.session ?? null,
+        identity.instrumentId, candidate.detailTitle ?? candidate.title, candidate.url,
+        identity.versionId ?? null, identity.stage, candidate.discoveredAt, candidate.discoveredAt,
+      ),
+      db.prepare(`
+        INSERT INTO policy_versions (
+          id, instrument_row_id, version_id, stage, development_at, source_url,
+          text_url, detail_hash, evidence_json, first_seen_at, last_seen_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(instrument_row_id, version_id, stage, development_at) DO UPDATE SET
+          source_url = excluded.source_url,
+          text_url = COALESCE(excluded.text_url, policy_versions.text_url),
+          detail_hash = COALESCE(excluded.detail_hash, policy_versions.detail_hash),
+          evidence_json = excluded.evidence_json,
+          last_seen_at = MAX(policy_versions.last_seen_at, excluded.last_seen_at)
+      `).bind(
+        versionRowId, instrumentRowId, identity.versionId ?? null, identity.stage,
+        identity.developmentAt, candidate.url,
+        candidate.policyTextUrl ?? (/\.pdf(?:$|\?)/i.test(candidate.url) ? candidate.url : null),
+        candidate.detailHash ?? null,
+        json({ spans: evidence, historyUrl: candidate.url, textUrl: candidate.policyTextUrl ?? null }),
+        candidate.discoveredAt, candidate.discoveredAt,
+      ),
+    ];
+  });
+  for (let index = 0; index < policyStatements.length; index += 40) {
+    await db.batch(policyStatements.slice(index, index + 40));
   }
   return statements.length;
 }

@@ -13,3 +13,6 @@ EDITOR_MODEL_TIMEOUT_MS=45000
 EDITOR_MODEL_DEADLINE_MS=110000
 X_BEARER_TOKEN=optional-x-key
 LINKEDIN_TOKEN=optional-linkedin-key
+CF_EMAIL_ANALYTICS_TOKEN=replace-with-zone-scoped-analytics-read-token
+CF_EMAIL_ZONE_ID=replace-with-32-character-zone-id
+CF_EMAIL_ROUTING_RULE_ID=replace-with-exact-worker-route-rule-id

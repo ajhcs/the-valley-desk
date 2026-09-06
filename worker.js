@@ -6,7 +6,8 @@ import {
   publishedVoiceSlugs,
 } from "./worker-published.js";
 import { runAutomation } from "./src/ingest/automation.ts";
-import { cleanupEmailDiscoveries, handleInboundEmail } from "./src/ingest/email.ts";
+import { cleanupEmailDiscoveries } from "./src/ingest/email.ts";
+import { handleCloudflareInboundEmail, resolvePendingEmailAuthentication } from "./src/ingest/email-auth.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
 import { cleanupSocialEvidencePackets, handleSocialCollectorRuns, handleSocialEvidence, handleSocialManifest, isSocialCollectorRunsPath, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
@@ -254,13 +255,14 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       return undefined;
     }
   };
-  const recover = async (fingerprint, requiredSuccesses = 2) => {
+  const recover = async (fingerprint, requiredSuccesses = 2, details = {}) => {
     try {
       const recovery = await resolveOperationalAlertWithTransition(
         env.VALLEY_DESK_DB,
         fingerprint,
         now,
         requiredSuccesses,
+        { outcome: "healthy", observedAt: now.toISOString(), ...details },
       );
       if (recovery.resolved && recovery.row) {
         await dispatchOperationalRecovery(env.VALLEY_DESK_DB, env.NOTIFY_OPS, recovery.row);
@@ -429,7 +431,12 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       && Number(leadership.failed ?? 0) > 0
       && Number(leadership.failed) >= Number(leadership.coverage?.length ?? 1);
     if (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageLost.length === 0) {
-      await recover("valley-desk:leadership-monitor", 2);
+      await recover("valley-desk:leadership-monitor", 2, {
+        fetched: Number(leadership.fetched ?? 0),
+        failed: Number(leadership.failed ?? 0),
+        backoff: Number(leadership.backoff ?? 0),
+        coverageLost: 0,
+      });
     } else if (leadership.outcome !== "ok" || (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageLost.length > 0)) {
       const leadershipSeverity = stageFailed
         || legacyCoverageLost
@@ -504,7 +511,12 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       },
     });
   } else if (selected > 0) {
-    await recover("valley-desk:model-enrichment", 2);
+    await recover("valley-desk:model-enrichment", 2, {
+      selected,
+      succeeded: Number(result?.modelSucceededCount ?? 0),
+      failed: 0,
+      validationRejected,
+    });
   }
 
   const verifierAttempted = Number(result?.verifierAttemptedCount ?? 0);
@@ -522,7 +534,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       details: { attempted: verifierAttempted, failed: verifierFailed },
     });
   } else if (verifierAttempted > 0) {
-    await recover("valley-desk:model-verifier", 2);
+    await recover("valley-desk:model-verifier", 2, { attempted: verifierAttempted, failed: 0 });
   }
 
   await recover("valley-desk:automation-run-failed", 2);
@@ -576,6 +588,9 @@ async function handleFetch(request, env, origin, nonce, ctx) {
         ctx.waitUntil(resolveOperationalAlertWithTransition(
           env.VALLEY_DESK_DB,
           "valley-desk:social:vale",
+          new Date(),
+          2,
+          { outcome: "healthy", collector: "vale" },
         ).then((recovery) => (
           recovery.resolved && recovery.row
             ? dispatchOperationalRecovery(env.VALLEY_DESK_DB, env.NOTIFY_OPS, recovery.row)
@@ -708,7 +723,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
 
 export default {
   async email(message, env) {
-    const result = await handleInboundEmail(message, env);
+    const result = await handleCloudflareInboundEmail(message, env);
     if (result.outcome === "failed") {
       throw new Error(`Inbound email discovery failed: ${result.reason || "unknown error"}`);
     }
@@ -723,6 +738,12 @@ export default {
         }, "warn");
       }),
     );
+    const emailAuthentication = resolvePendingEmailAuthentication(env).catch((error) => {
+        logOps("email-auth", {
+          outcome: "failed",
+          message: error instanceof Error ? error.message : "Unknown email authentication failure",
+        }, "warn");
+      });
     ctx.waitUntil(
       cleanupNewsArticleExtractions(env.VALLEY_DESK_DB).catch((error) => {
         logOps("news-extraction-cleanup", {
@@ -740,7 +761,7 @@ export default {
       }),
     );
     ctx.waitUntil(
-      runAutomation(env, undefined, undefined, { mode: cadence }).then((result) => {
+      emailAuthentication.then(() => runAutomation(env, undefined, undefined, { mode: cadence })).then((result) => {
         logOps("cron", {
           outcome: result.skipped ? "skipped" : "succeeded",
           cadence,

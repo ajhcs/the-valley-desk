@@ -308,6 +308,7 @@ type LeadershipAutomationResult = {
   verifiedRoles: number;
   unresolved: number;
   conflicts: number;
+  identityFailures?: Array<{ personId: string; institutionId: string; reason: string }>;
   failed: number;
   failureDetails: Array<{
     sourceId: string;
@@ -399,7 +400,7 @@ async function runLeadershipStage(
     const failed = result.snapshots.filter((snapshot) => (
       snapshot.state !== "success" && snapshot.state !== "unchanged"
     )).length;
-    const outcome = failed > 0 ? "degraded" : "ok";
+    const outcome = failed > 0 || autonomous.identityFailures.length > 0 ? "degraded" : "ok";
     logOps("leadership", {
       outcome,
       cadence: mode,
@@ -411,6 +412,7 @@ async function runLeadershipStage(
       verifiedRoles: autonomous.verifiedRoles,
       unresolved: autonomous.unresolved,
       conflicts: autonomous.conflicts,
+      identityFailures: autonomous.identityFailures,
       editorialCandidates: autonomous.editorialCandidates.length,
       failed,
       coverage,
@@ -437,8 +439,17 @@ async function runLeadershipStage(
       verifiedRoles: autonomous.verifiedRoles,
       unresolved: autonomous.unresolved,
       conflicts: autonomous.conflicts,
+      identityFailures: autonomous.identityFailures,
       failed,
-      failureDetails: leadershipFailureDetails(result.snapshots, result.schedule),
+      failureDetails: [
+        ...leadershipFailureDetails(result.snapshots, result.schedule),
+        ...autonomous.identityFailures.map((failure) => ({
+          sourceId: "executive-identity",
+          institutionId: failure.institutionId,
+          errorClass: "identity-invalid",
+          reason: `${failure.personId}: ${failure.reason}`,
+        })),
+      ],
       editorialCandidates: autonomous.editorialCandidates,
       runtimeCoverage,
     };

@@ -15,9 +15,27 @@ import {
   cleanupEmailDiscoveries,
   handleInboundEmail,
   keepHttpsDiscoveryUrl,
+  markEmailPdfExtractionFailed,
   parseEmailDiscovery,
   persistEmailDiscovery,
+  persistEmailPdfPageEvidence,
+  trustedEmailAuthenticationProvenance,
+  type EmailAuthenticationProvenance,
 } from "../src/ingest/email.ts";
+import {
+  handleCloudflareInboundEmail,
+  resolveCloudflareEmailAuthentication,
+  resolvePendingEmailAuthentication,
+} from "../src/ingest/email-auth.ts";
+import {
+  contentItemsFromOfficialCandidates,
+  discoverOfficialSources,
+  officialSourceRegistry,
+} from "../src/ingest/official-source-discovery.ts";
+import {
+  persistOfficialSourceCandidates,
+  persistOfficialSourceSnapshots,
+} from "../src/ingest/official-source-automation.ts";
 import {
   cleanupNewsArticleExtractions,
   persistEditorialDecisions,
@@ -204,6 +222,16 @@ test("protected automation status/review require the bearer token and constant-t
         next_attempt_at = ?, consecutive_failures = 0, last_error = NULL
     WHERE source_id = 'src-penn-is-leadership'
   `).run(pennLastSuccess, pennLastSuccess, new Date(Date.now() + 30 * 60 * 1_000).toISOString());
+  database.prepare(`INSERT INTO email_discoveries (
+    id, message_id, envelope_to, from_address, from_domain, category, status,
+    trust_state, auth_state, auth_attempt_count, auth_next_attempt_at,
+    raw_size, wire_size, first_seen_at, last_seen_at
+  ) VALUES (?, ?, ?, ?, ?, 'newsletter', 'ignored', 'untrusted-pointer', 'pending', 1, ?, 100, 100, ?, ?)`
+  ).run(
+    "auth-pending-visible", "<auth-pending-visible@example.com>", "signals+newsletter@thevalleydesk.org",
+    "newsletter@example.com", "example.com", "2026-08-27T17:05:00.000Z",
+    "2026-08-27T17:00:00.000Z", "2026-08-27T17:00:00.000Z",
+  );
   const missing = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status`), env);
   assert.equal(missing.status, 404);
   const wrong = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status`, {
@@ -223,6 +251,7 @@ test("protected automation status/review require the bearer token and constant-t
     valeCollector?: { available?: boolean; lastSuccessful?: unknown };
     modelHealth?: { available?: boolean };
     alerts?: { available?: boolean; open?: unknown[] };
+    signalVerification?: { emailAuthentication?: Array<{ auth_state?: string; count?: number; oldest_pending_at?: string }> };
     executiveIntelligence?: { runtimeCoverage?: Array<{ institutionId?: string; state?: string; coverageLost?: boolean }> };
   };
   assert.equal(statusBody.schemaVersion, SCHEMA_VERSION);
@@ -234,15 +263,22 @@ test("protected automation status/review require the bearer token and constant-t
   assert.equal(statusBody.valeCollector?.lastSuccessful, null);
   assert.equal(statusBody.modelHealth?.available, true);
   assert.equal(statusBody.alerts?.available, true);
+  assert.deepEqual(statusBody.signalVerification?.emailAuthentication?.find((row) => row.auth_state === "pending"), {
+    auth_state: "pending",
+    count: 1,
+    oldest_pending_at: "2026-08-27T17:00:00.000Z",
+    last_attempted_at: null,
+  });
   const pennCoverage = statusBody.executiveIntelligence?.runtimeCoverage?.find((row) => row.institutionId === "inst-penn");
   assert.equal(pennCoverage?.state, "healthy");
   assert.equal(pennCoverage?.coverageLost, false);
   const review = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status/review`, {
     headers: { authorization: "Bearer ops-token" },
   }), env);
-  const reviewBody = await review.json() as { review?: { items: unknown[] }; decisions?: unknown[] };
+  const reviewBody = await review.json() as { review?: { items: unknown[] }; decisions?: unknown[]; emailReview?: { items: Array<{ id?: string; auth_state?: string }> } };
   assert.ok(Array.isArray(reviewBody.review?.items));
   assert.ok(Array.isArray(reviewBody.decisions));
+  assert.equal(reviewBody.emailReview?.items.some((row) => row.id === "auth-pending-visible" && row.auth_state === "pending"), true);
   const patch = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status`, {
     method: "PATCH",
     headers: { authorization: "Bearer ops-token" },
@@ -456,6 +492,162 @@ test("SCHEMA_VERSION matches the latest D1 migration and wrangler stays a single
   assert.ok(workflow.includes("npm audit"));
 });
 
+test("0027 additive migration preserves existing email pointers and their verification children", () => {
+  const database = new DatabaseSync(":memory:");
+  database.exec("PRAGMA foreign_keys = ON");
+  for (const name of readdirSync(join(root, "migrations")).filter((file) => file.endsWith(".sql") && file < "0027").sort()) {
+    database.exec(readFileSync(join(root, "migrations", name), "utf8"));
+  }
+  database.prepare(`INSERT INTO email_discoveries (
+    id, message_id, envelope_to, from_domain, category, status, trust_state,
+    raw_size, first_seen_at, last_seen_at
+  ) VALUES (?, ?, ?, ?, 'newsletter', 'review', 'authenticated-pointer', 1234, ?, ?)`).run(
+    "legacy-email", "<legacy@example.com>", "newsletter@thevalleydesk.org", "example.com",
+    "2026-08-01T00:00:00.000Z", "2026-08-01T00:00:00.000Z",
+  );
+  database.prepare(`INSERT INTO signal_pointer_verifications (
+    id, discovery_id, pointer_url, trust_state, state, attempted_at
+  ) VALUES (?, ?, ?, 'untrusted-pointer', 'verified', ?)`).run(
+    "legacy-verification", "legacy-email", "https://example.com/policy", "2026-08-01T00:01:00.000Z",
+  );
+  database.prepare(`INSERT INTO official_source_schedule (
+    source_id, state, next_attempt_at, consecutive_failures
+  ) VALUES (?, ?, ?, ?)`).run(
+    "ofs-pa-legislature-hb1925", "success", "2099-01-01T00:00:00.000Z", 0,
+  );
+  database.prepare(`INSERT INTO official_source_schedule (
+    source_id, state, next_attempt_at, consecutive_failures
+  ) VALUES (?, ?, ?, ?)`).run(
+    "ofs-ncsl-ai-legislation", "failed", "2099-01-01T00:00:00.000Z", 3,
+  );
+  database.exec(readFileSync(join(root, "migrations/0027_policy_intelligence_hardening.sql"), "utf8"));
+  assert.deepEqual(
+    { ...database.prepare("SELECT wire_size, status, trust_state, auth_state, auth_attempt_count FROM email_discoveries WHERE id = 'legacy-email'").get()! },
+    { wire_size: 1234, status: "ignored", trust_state: "untrusted-pointer", auth_state: "legacy", auth_attempt_count: 0 },
+  );
+  assert.equal(database.prepare("SELECT discovery_id FROM signal_pointer_verifications WHERE id = 'legacy-verification'").get()?.discovery_id, "legacy-email");
+  assert.notEqual(database.prepare("SELECT next_attempt_at FROM official_source_schedule WHERE source_id = 'ofs-pa-legislature-hb1925'").get()?.next_attempt_at, "2099-01-01T00:00:00.000Z");
+  assert.equal(database.prepare("SELECT next_attempt_at FROM official_source_schedule WHERE source_id = 'ofs-ncsl-ai-legislation'").get()?.next_attempt_at, "2099-01-01T00:00:00.000Z");
+  const attachmentColumns = new Set(database.prepare("PRAGMA table_info(email_pdf_attachments)").all().map((row) => row.name));
+  for (const name of ["extraction_method", "extraction_receipt_sha256", "extracted_by"]) assert.equal(attachmentColumns.has(name), true);
+  assert.deepEqual(database.prepare("PRAGMA foreign_key_check").all(), []);
+  database.close();
+});
+
+test("legislative change flows from official HTML through review content into a versioned ledger", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const source = officialSourceRegistry.sources.find((row) => row.id === "ofs-pa-legislature-hb1925")!;
+  let printerNumber = "100";
+  let action = "Referred to the Health Committee September 1, 2026.";
+  const run = async (now: Date) => {
+    const result = await discoverOfficialSources({
+      sources: [source],
+      now,
+      fetchImpl: async () => new Response(`<!doctype html><main>
+        <h1>House Bill 1925 PN ${printerNumber}</h1>
+        <p>${action}</p>
+        <p>The bill applies to hospitals and health care providers operating in Pennsylvania.</p>
+        <a href="/legislation/bills/text/PDF/2025/0/HB1925/PN${printerNumber}">House Bill 1925 current printer PDF</a>
+      </main>`, { headers: { "content-type": "text/html; charset=utf-8" } }),
+      relevanceGate: async () => ({
+        decision: "accept",
+        relevanceScore: 99,
+        confidence: 0.99,
+        reasons: ["Pennsylvania hospital policy"],
+        evidenceSpans: ["applies to hospitals and health care providers"],
+      }),
+      detailCapPerRun: 0,
+    });
+    const items = contentItemsFromOfficialCandidates(result.candidates);
+    await persistOfficialSourceSnapshots(db, result.snapshots);
+    await persistOfficialSourceCandidates(db, result.candidates, result.snapshots, new Set(items.map((item) => item.id)));
+    return items;
+  };
+
+  const first = await run(new Date("2026-09-02T12:00:00.000Z"));
+  assert.equal(first[0]?.publishedAt, "2026-09-01T00:00:00.000Z");
+  assert.equal(first[0]?.kind, "policy");
+  assert.equal(first[0]?.policyIdentity?.versionId, "PN 100");
+  assert.equal(first[0]?.policyIdentity?.textUrl, "https://palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN100");
+  assert.equal(first[0]?.applicability?.regulatedEntityTypes.includes("hospital"), true);
+
+  printerNumber = "101";
+  action = "Amended in the House September 5, 2026.";
+  const second = await run(new Date("2026-09-06T12:00:00.000Z"));
+  assert.equal(second[0]?.publishedAt, "2026-09-05T00:00:00.000Z");
+  assert.equal(second[0]?.policyIdentity?.stage, "amended");
+  assert.equal(second[0]?.status, "review");
+  assert.equal(evaluateCandidate(second[0]!, null, new Date("2026-09-06T12:00:00.000Z")).rule === "publication-date-required", false);
+
+  action = "A Health Committee hearing was scheduled September 8, 2026.";
+  const hearing = await run(new Date("2026-09-09T12:00:00.000Z"));
+  assert.equal(hearing[0]?.policyIdentity?.stage, "hearing");
+  assert.equal(hearing[0]?.publishedAt, "2026-09-08T00:00:00.000Z");
+  const reviewDecision = evaluateCandidate(hearing[0]!, null, new Date("2026-09-09T12:00:00.000Z"));
+  await persistIngestRun(db, {
+    fetchedAt: "2026-09-09T12:00:00.000Z",
+    rss: [hearing[0]!],
+    events: [],
+    social: [],
+    notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 } },
+  }, [{ item: hearing[0]!, enrichment: null }]);
+  await persistEditorialDecisions(db, [{ item: hearing[0]!, enrichment: null, decision: reviewDecision }], "test-model", "test-provider", new Date("2026-09-09T12:00:00.000Z"));
+  assert.deepEqual(
+    { ...database.prepare("SELECT outcome, rule, source_development_at, citations_json FROM policy_review_milestones").get()! },
+    {
+      outcome: "blocker",
+      rule: reviewDecision.rule,
+      source_development_at: "2026-09-08T00:00:00.000Z",
+      citations_json: JSON.stringify(hearing[0]!.citations),
+    },
+  );
+
+  assert.deepEqual(
+    database.prepare("SELECT version_id, stage, development_at FROM policy_versions ORDER BY development_at").all().map((row) => ({ ...row })),
+    [
+      { version_id: "PN 100", stage: "committee", development_at: "2026-09-01T00:00:00.000Z" },
+      { version_id: "PN 101", stage: "amended", development_at: "2026-09-05T00:00:00.000Z" },
+      { version_id: "PN 101", stage: "hearing", development_at: "2026-09-08T00:00:00.000Z" },
+    ],
+  );
+  assert.equal(
+    database.prepare("SELECT text_url FROM policy_versions WHERE version_id = 'PN 101' AND stage = 'amended'").get()?.text_url,
+    "https://palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN101",
+  );
+  assert.deepEqual(
+    { ...database.prepare("SELECT instrument_id, current_version_id, current_stage FROM policy_instruments").get()! },
+    { instrument_id: "HB 1925", current_version_id: "PN 101", current_stage: "hearing" },
+  );
+  await persistOfficialSourceCandidates(db, [{
+    id: "official-hb1925-prior-session",
+    sourceId: source.id,
+    category: "policy",
+    region: "PA",
+    title: "House Bill 1925 PN 2000",
+    url: "https://www.palegis.us/legislation/bills/2023/hb1925",
+    sourcePageUrl: "https://www.palegis.us/legislation/bills/2023/hb1925",
+    sourceName: source.name,
+    trust: "regulatory",
+    discoveredAt: "2024-01-10T12:00:00.000Z",
+    publishedAt: "2024-01-09T00:00:00.000Z",
+    publicationDateSource: "legislative-action",
+    status: "review",
+    instructionLike: false,
+    detailTitle: "House Bill 1925 PN 2000",
+    detailText: "HB 1925 PN 2000 was referred to committee January 9, 2024.",
+    detailFetchedAt: "2024-01-10T12:00:00.000Z",
+    detailState: "success",
+  }], [], new Set());
+  assert.deepEqual(
+    database.prepare("SELECT session FROM policy_instruments WHERE instrument_id = 'HB 1925' ORDER BY session").all().map((row) => row.session),
+    ["2023-2024", "2025-2026"],
+  );
+  assert.deepEqual(database.prepare("PRAGMA foreign_key_check").all(), []);
+  database.close();
+});
+
 test("structured ops logs are single JSON objects and homepage lead stays latest news", () => {
   const lines: string[] = [];
   const original = console.log;
@@ -517,6 +709,7 @@ function inboundEmail(raw: string, overrides: Partial<{
   from: string;
   to: string;
   rawSize: number;
+  authProvenance: EmailAuthenticationProvenance;
 }> = {}) {
   let rejected = "";
   const bytes = new TextEncoder().encode(raw);
@@ -539,12 +732,70 @@ function inboundEmail(raw: string, overrides: Partial<{
         },
       }),
       rawSize: overrides.rawSize ?? bytes.byteLength,
+      authProvenance: overrides.authProvenance,
       setReject(reason: string) {
         rejected = reason;
       },
     },
     rejected: () => rejected,
   };
+}
+
+function emailAuthProvenance(
+  messageId = "<linkedin-123@example.com>",
+  overrides: Partial<EmailAuthenticationProvenance> = {},
+): EmailAuthenticationProvenance {
+  return {
+    source: "cloudflare-email-routing-adaptive",
+    receiptId: "session:session-123",
+    sessionId: "session-123",
+    routeRuleId: "11111111-2222-3333-4444-555555555555",
+    observedAt: "2026-08-27T17:00:01.000Z",
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    messageId,
+    eventType: "incoming",
+    action: "worker",
+    spf: "pass",
+    dkim: "pass",
+    dmarc: "pass",
+    isSpam: false,
+    ...overrides,
+  };
+}
+
+const emailAuthEnv = {
+  CF_EMAIL_ANALYTICS_TOKEN: "test-analytics-token",
+  CF_EMAIL_ZONE_ID: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  CF_EMAIL_ROUTING_RULE_ID: "11111111-2222-3333-4444-555555555555",
+};
+
+function emailRoutingAnalyticsResponse(overrides: Record<string, unknown> = {}) {
+  return new Response(JSON.stringify({
+    data: {
+      viewer: {
+        zones: [{
+          emailRoutingAdaptive: [{
+            datetime: "2026-08-27T17:00:01.000Z",
+            from: "notifications-noreply@linkedin.com",
+            to: "signals+linkedin@thevalleydesk.org",
+            status: "delivered",
+            eventType: "incoming",
+            action: "worker",
+            ruleMatched: emailAuthEnv.CF_EMAIL_ROUTING_RULE_ID,
+            messageId: "<linkedin-123@example.com>",
+            sessionId: "session-123",
+            dkim: "pass",
+            dmarc: "pass",
+            spf: "pass",
+            isSpam: 0,
+            isLastEvent: 1,
+            ...overrides,
+          }],
+        }],
+      },
+    },
+  }), { status: 200, headers: { "content-type": "application/json" } });
 }
 
 test("email discovery accepts only scoped inboxes and public HTTPS URLs", () => {
@@ -559,6 +810,22 @@ test("email discovery accepts only scoped inboxes and public HTTPS URLs", () => 
   assert.equal(keepHttpsDiscoveryUrl("https://127.0.0.1/private"), undefined);
   assert.equal(keepHttpsDiscoveryUrl("https://user:pass@example.com/private"), undefined);
   assert.equal(keepHttpsDiscoveryUrl("https://example.com/story?token=secret&id=42&utm_source=email"), "https://example.com/story");
+  assert.equal(
+    keepHttpsDiscoveryUrl("https://www.haponline.org/Resource-Center?resourceid=1459&utm_source=email&token=secret"),
+    "https://haponline.org/Resource-Center?resourceid=1459",
+  );
+  assert.notEqual(
+    keepHttpsDiscoveryUrl("https://www.haponline.org/Resource-Center?resourceid=1459"),
+    keepHttpsDiscoveryUrl("https://www.haponline.org/Resource-Center?resourceid=1531"),
+  );
+  assert.equal(
+    keepHttpsDiscoveryUrl("https://www.haponline.org/Resource-Center?resourceid=1459&unsupported=keep-me-not"),
+    "https://haponline.org/Resource-Center?resourceid=1459",
+  );
+  assert.equal(
+    keepHttpsDiscoveryUrl("https://www.palegis.us/house/co-sponsorship/memo?memoID=47289&document=HB1993&utm_source=email"),
+    "https://palegis.us/house/co-sponsorship/memo?document=HB1993&memoID=47289",
+  );
 });
 
 test("email pointer policy never calls editorial/model machinery", () => {
@@ -711,11 +978,10 @@ test("inbound LinkedIn mail is bounded, review-only, untrusted, and stores no ra
   assert.equal(EMAIL_TRUSTED_AUTHSERV_ID, "");
 
   const first = inboundEmail(raw);
-  const accepted = await handleInboundEmail(first.message, { VALLEY_DESK_DB: db });
-  assert.equal(accepted.outcome, "accepted");
-  assert.equal(first.rejected(), "");
-  const stored = database.prepare("SELECT trust_state FROM email_discoveries").get() as { trust_state: string };
-  assert.equal(stored.trust_state, "untrusted-pointer");
+  const rejected = await handleInboundEmail(first.message, { VALLEY_DESK_DB: db });
+  assert.equal(rejected.outcome, "rejected");
+  assert.equal(first.rejected(), "Sender authentication required");
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get()?.count, 0);
   const columns = database.prepare("PRAGMA table_info(email_discoveries)").all() as Array<{ name: string }>;
   assert.equal(columns.some((column) => ["raw", "raw_mime", "mime", "body"].includes(column.name)), false);
   assert.ok(columns.some((column) => column.name === "raw_size"));
@@ -760,12 +1026,12 @@ test("spoofed Authentication-Results never authenticates an inbound pointer", as
   const db = sqliteD1(database);
   const inbound = inboundEmail(raw);
   const result = await handleInboundEmail(inbound.message, { VALLEY_DESK_DB: db });
-  assert.equal(result.outcome, "accepted");
-  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 1);
+  assert.equal(result.outcome, "rejected");
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get().count, 0);
   database.close();
 });
 
-test("email authentication accepts only an explicitly configured exact authserv-id", async () => {
+test("only aligned Cloudflare routing provenance authenticates an email pointer", async () => {
   const raw = "Content-Type: text/plain\r\n\r\nTemple Health posted https://example.com/story";
   const base = {
     envelopeFrom: "notifications-noreply@linkedin.com",
@@ -773,7 +1039,6 @@ test("email authentication accepts only an explicitly configured exact authserv-
     raw,
     rawSize: 80,
     receivedAt: "2026-08-27T17:00:00.000Z",
-    trustedAuthservId: "trusted.mx.cloudflare.net",
   };
   const accepted = await parseEmailDiscovery({
     ...base,
@@ -782,34 +1047,365 @@ test("email authentication accepts only an explicitly configured exact authserv-
       "message-id": "<trusted-1@example.com>",
       "authentication-results": "trusted.mx.cloudflare.net; dkim=pass header.d=linkedin.com",
     }),
+    authProvenance: emailAuthProvenance("<trusted-1@example.com>"),
   });
   assert.ok(!("error" in accepted));
   assert.equal(accepted.status, "review");
   assert.equal(accepted.trustState, "authenticated-pointer");
 
-  const lookalike = await parseEmailDiscovery({
+  const mismatchedMessage = await parseEmailDiscovery({
     ...base,
     headers: new Headers({
       subject: "Update",
       "message-id": "<trusted-2@example.com>",
-      "authentication-results": "trusted.mx.cloudflare.net.attacker.example; dkim=pass header.d=linkedin.com",
+      "authentication-results": "trusted.mx.cloudflare.net; dkim=pass header.d=linkedin.com",
     }),
+    authProvenance: emailAuthProvenance("<different@example.com>"),
   });
-  assert.ok(!("error" in lookalike));
-  assert.equal(lookalike.status, "review");
-  assert.equal(lookalike.trustState, "untrusted-pointer");
+  assert.ok(!("error" in mismatchedMessage));
+  assert.equal(mismatchedMessage.trustState, "untrusted-pointer");
 
-  const senderLookalike = await parseEmailDiscovery({
+  const failedDmarc = await parseEmailDiscovery({
     ...base,
     headers: new Headers({
       subject: "Update",
       "message-id": "<trusted-3@example.com>",
-      "authentication-results": "trusted.mx.cloudflare.net; dkim=pass header.d=linkedin.com.attacker.example",
+      "authentication-results": "trusted.mx.cloudflare.net; dkim=pass header.d=linkedin.com",
     }),
+    authProvenance: emailAuthProvenance("<trusted-3@example.com>", { dmarc: "fail" }),
   });
-  assert.ok(!("error" in senderLookalike));
-  assert.equal(senderLookalike.status, "review");
-  assert.equal(senderLookalike.trustState, "untrusted-pointer");
+  assert.ok(!("error" in failedDmarc));
+  assert.equal(failedDmarc.trustState, "untrusted-pointer");
+
+  assert.equal(trustedEmailAuthenticationProvenance({
+    provenance: emailAuthProvenance("<trusted-1@example.com>"),
+    envelopeFrom: base.envelopeFrom,
+    envelopeTo: base.envelopeTo,
+    messageId: "<trusted-1@example.com>",
+  }), true);
+
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const inbound = inboundEmail(raw, { authProvenance: emailAuthProvenance() });
+  const handled = await handleInboundEmail(inbound.message, { VALLEY_DESK_DB: sqliteD1(database) });
+  assert.equal(handled.outcome, "accepted");
+  assert.equal(inbound.rejected(), "");
+  const stored = database.prepare("SELECT trust_state, auth_provenance_json, auth_provenance_sha256 FROM email_discoveries").get() as Record<string, string>;
+  assert.equal(stored.trust_state, "authenticated-pointer");
+  assert.match(stored.auth_provenance_json, /cloudflare-email-routing-adaptive/);
+  assert.match(stored.auth_provenance_sha256, /^[a-f0-9]{64}$/);
+  database.close();
+});
+
+test("Cloudflare Analytics—not MIME authentication headers—creates the trusted receipt", async () => {
+  let requestUrl = "";
+  let authorization = "";
+  let queryBody: Record<string, unknown> = {};
+  const resolved = await resolveCloudflareEmailAuthentication({
+    env: { VALLEY_DESK_DB: {} as D1DatabaseLike, ...emailAuthEnv },
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    messageId: "<linkedin-123@example.com>",
+    observedAt: new Date("2026-08-27T17:00:02.000Z"),
+    fetchImpl: async (input, init) => {
+      requestUrl = String(input);
+      authorization = new Headers(init?.headers).get("authorization") ?? "";
+      queryBody = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return emailRoutingAnalyticsResponse();
+    },
+  });
+  assert.equal(resolved.outcome, "authenticated");
+  assert.equal(requestUrl, "https://api.cloudflare.com/client/v4/graphql");
+  assert.equal(authorization, "Bearer test-analytics-token");
+  assert.match(String(queryBody.query), /emailRoutingAdaptive/);
+  assert.equal((queryBody.variables as Record<string, string>).zoneTag, emailAuthEnv.CF_EMAIL_ZONE_ID);
+  if (resolved.outcome === "authenticated") {
+    assert.equal(resolved.provenance.sessionId, "session-123");
+    assert.equal(resolved.provenance.routeRuleId, emailAuthEnv.CF_EMAIL_ROUTING_RULE_ID);
+    assert.equal(resolved.provenance.dmarc, "pass");
+  }
+
+  const rejected = await resolveCloudflareEmailAuthentication({
+    env: { VALLEY_DESK_DB: {} as D1DatabaseLike, ...emailAuthEnv },
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    messageId: "<linkedin-123@example.com>",
+    observedAt: new Date("2026-08-27T17:00:02.000Z"),
+    fetchImpl: async () => emailRoutingAnalyticsResponse({ dmarc: "fail" }),
+  });
+  assert.equal(rejected.outcome, "rejected");
+
+  const staleReplay = await resolveCloudflareEmailAuthentication({
+    env: { VALLEY_DESK_DB: {} as D1DatabaseLike, ...emailAuthEnv },
+    envelopeFrom: "notifications-noreply@linkedin.com",
+    envelopeTo: "signals+linkedin@thevalleydesk.org",
+    messageId: "<linkedin-123@example.com>",
+    observedAt: new Date("2026-08-27T17:10:02.000Z"),
+    fetchImpl: async () => emailRoutingAnalyticsResponse(),
+  });
+  assert.deepEqual(staleReplay, {
+    outcome: "rejected",
+    reason: "Cloudflare email analytics returned invalid or stale receipt fields",
+  });
+});
+
+test("production email adapter accepts an authoritative receipt and quarantines analytics lag", async () => {
+  const acceptedDatabase = new DatabaseSync(":memory:");
+  applyMigrations(acceptedDatabase);
+  const acceptedInbound = inboundEmail("Content-Type: text/plain\r\n\r\nTemple Health posted https://example.com/story");
+  const accepted = await handleCloudflareInboundEmail(
+    acceptedInbound.message,
+    { VALLEY_DESK_DB: sqliteD1(acceptedDatabase), ...emailAuthEnv },
+    async () => emailRoutingAnalyticsResponse(),
+    new Date("2026-08-27T17:00:02.000Z"),
+  );
+  assert.equal(accepted.outcome, "accepted");
+  assert.equal(acceptedInbound.rejected(), "");
+  assert.deepEqual(
+    { ...acceptedDatabase.prepare("SELECT status, trust_state, auth_state FROM email_discoveries").get()! },
+    { status: "review", trust_state: "authenticated-pointer", auth_state: "authenticated" },
+  );
+  acceptedDatabase.close();
+
+  const pendingDatabase = new DatabaseSync(":memory:");
+  applyMigrations(pendingDatabase);
+  const pendingInbound = inboundEmail("Content-Type: text/plain\r\n\r\nTemple Health posted https://example.com/story");
+  const pending = await handleCloudflareInboundEmail(
+    pendingInbound.message,
+    { VALLEY_DESK_DB: sqliteD1(pendingDatabase), ...emailAuthEnv },
+    async () => new Response(JSON.stringify({ data: { viewer: { zones: [{ emailRoutingAdaptive: [] }] } } }), {
+      headers: { "content-type": "application/json" },
+    }),
+    new Date("2026-08-27T17:00:02.000Z"),
+  );
+  assert.equal(pending.outcome, "pending_auth");
+  assert.equal(pendingInbound.rejected(), "");
+  assert.deepEqual(
+    { ...pendingDatabase.prepare("SELECT status, trust_state, auth_state, auth_attempt_count FROM email_discoveries").get()! },
+    { status: "ignored", trust_state: "untrusted-pointer", auth_state: "pending", auth_attempt_count: 1 },
+  );
+
+  const promoted = await resolvePendingEmailAuthentication(
+    { VALLEY_DESK_DB: sqliteD1(pendingDatabase), ...emailAuthEnv },
+    async () => emailRoutingAnalyticsResponse(),
+    new Date("2026-08-27T17:06:00.000Z"),
+  );
+  assert.deepEqual(promoted, { outcome: "ok", attempted: 1, authenticated: 1, rejected: 0, failed: 0 });
+  assert.deepEqual(
+    { ...pendingDatabase.prepare("SELECT status, trust_state, auth_state, auth_attempt_count FROM email_discoveries").get()! },
+    { status: "review", trust_state: "authenticated-pointer", auth_state: "authenticated", auth_attempt_count: 2 },
+  );
+  pendingDatabase.close();
+});
+
+test("production email adapter fails closed when analytics credentials are absent", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const inbound = inboundEmail("Content-Type: text/plain\r\n\r\nTemple Health posted https://example.com/story");
+  let fetched = false;
+  const result = await handleCloudflareInboundEmail(inbound.message, { VALLEY_DESK_DB: sqliteD1(database) }, async () => {
+    fetched = true;
+    return emailRoutingAnalyticsResponse();
+  });
+  assert.equal(result.outcome, "rejected");
+  assert.equal(inbound.rejected(), "Sender authentication unavailable");
+  assert.equal(fetched, false);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM email_discoveries").get()?.count, 0);
+  database.close();
+});
+
+test("authoritative authentication failure leaves a quarantined message rejected from review", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const inbound = inboundEmail("Content-Type: text/plain\r\n\r\nTemple Health posted https://example.com/story");
+  const pending = await handleCloudflareInboundEmail(
+    inbound.message,
+    { VALLEY_DESK_DB: db, ...emailAuthEnv },
+    async () => new Response(JSON.stringify({ data: { viewer: { zones: [{ emailRoutingAdaptive: [] }] } } })),
+    new Date("2026-08-27T17:00:02.000Z"),
+  );
+  assert.equal(pending.outcome, "pending_auth");
+  const resolved = await resolvePendingEmailAuthentication(
+    { VALLEY_DESK_DB: db, ...emailAuthEnv },
+    async () => emailRoutingAnalyticsResponse({ dmarc: "fail" }),
+    new Date("2026-08-27T17:06:00.000Z"),
+  );
+  assert.deepEqual(resolved, { outcome: "ok", attempted: 1, authenticated: 0, rejected: 1, failed: 0 });
+  const stored = database.prepare(`SELECT status, trust_state, auth_state, auth_error,
+    auth_provenance_json, auth_provenance_sha256 FROM email_discoveries`).get() as Record<string, string>;
+  assert.equal(stored.status, "ignored");
+  assert.equal(stored.trust_state, "untrusted-pointer");
+  assert.equal(stored.auth_state, "rejected");
+  assert.match(stored.auth_error, /did not meet policy/);
+  assert.match(stored.auth_provenance_json, /\"dmarc\":\"fail\"/);
+  assert.match(stored.auth_provenance_sha256, /^[a-f0-9]{64}$/);
+  database.close();
+});
+
+test("authenticated policy email retains bounded PDF bytes and page-level evidence durably", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const pdf = new TextEncoder().encode("%PDF-1.4\n1 0 obj\n(HB 1925 hospital evidence)\nendobj\n%%EOF");
+  const encoded = Buffer.from(pdf).toString("base64");
+  const boundary = "tvd-policy-boundary";
+  const raw = [
+    `Content-Type: multipart/mixed; boundary="${boundary}"`,
+    "",
+    `--${boundary}`,
+    "Content-Type: text/plain; charset=utf-8",
+    "",
+    "Review-only policy evidence https://www.haponline.org/Resource-Center?resourceid=1459&utm_source=email",
+    `--${boundary}`,
+    "Content-Type: application/pdf; name=policy.pdf",
+    "Content-Disposition: attachment; filename=policy.pdf",
+    "Content-Transfer-Encoding: base64",
+    "",
+    encoded,
+    `--${boundary}--`,
+  ].join("\r\n");
+  const inbound = inboundEmail(raw, { authProvenance: emailAuthProvenance() });
+  const handled = await handleInboundEmail(inbound.message, { VALLEY_DESK_DB: db });
+  assert.equal(handled.outcome, "accepted");
+  const attachment = database.prepare("SELECT id, byte_count, extraction_state FROM email_pdf_attachments").get() as { id: string; byte_count: number; extraction_state: string };
+  assert.equal(attachment.byte_count, pdf.byteLength);
+  assert.equal(attachment.extraction_state, "pending");
+  const chunks = database.prepare("SELECT bytes FROM email_pdf_attachment_chunks ORDER BY chunk_index").all() as Array<{ bytes: Uint8Array }>;
+  assert.deepEqual(Buffer.concat(chunks.map((row) => Buffer.from(row.bytes))), Buffer.from(pdf));
+  await persistEmailPdfPageEvidence(db, attachment.id, [{
+    pageNumber: 1,
+    text: "HB 1925 applies to hospitals in Pennsylvania.",
+    evidenceSpans: ["applies to hospitals"],
+  }], new Date("2026-08-28T12:00:00.000Z"));
+  assert.deepEqual(
+    { ...database.prepare("SELECT extraction_state, page_count, extraction_error FROM email_pdf_attachments").get()! },
+    { extraction_state: "complete", page_count: 1, extraction_error: null },
+  );
+  assert.equal(database.prepare("SELECT evidence_json FROM email_pdf_pages").get()?.evidence_json, '["applies to hospitals"]');
+  for (const [id, reason] of [
+    ["image-only", "image-only PDF contained no extractable text"],
+    ["malformed", "malformed-or-unsupported-pdf"],
+  ] as const) {
+    database.prepare(`INSERT INTO email_pdf_attachments (
+      id, discovery_id, filename, mime_type, byte_count, sha256, extraction_state, created_at
+    ) VALUES (?, ?, ?, 'application/pdf', 1, ?, 'pending', ?)`
+    ).run(id, handled.id!, `${id}.pdf`, id.padEnd(64, "0"), "2026-08-28T12:00:00.000Z");
+    await markEmailPdfExtractionFailed(db, id, new Error(reason), new Date("2026-08-28T12:05:00.000Z"));
+  }
+  assert.deepEqual(
+    database.prepare("SELECT id, extraction_state, extraction_error FROM email_pdf_attachments WHERE id IN ('image-only', 'malformed') ORDER BY id").all().map((row) => ({ ...row })),
+    [
+      { id: "image-only", extraction_state: "failed", extraction_error: "image-only PDF contained no extractable text" },
+      { id: "malformed", extraction_state: "failed", extraction_error: "malformed-or-unsupported-pdf" },
+    ],
+  );
+  database.close();
+});
+
+test("authenticated incoming attachment reaches persistent review through the manual extraction endpoint", async () => {
+  configureReviewGuardsForTests();
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const pdf = new TextEncoder().encode("%PDF-1.4\n1 0 obj\n(SB 1113 Medicaid evidence)\nendobj\n%%EOF");
+  const boundary = "tvd-authenticated-pdf";
+  const raw = [
+    `Content-Type: multipart/mixed; boundary="${boundary}"`,
+    "",
+    `--${boundary}`,
+    "Content-Type: text/plain; charset=utf-8",
+    "",
+    "Review this supporting source https://www.ncsl.org/financial-services/artificial-intelligence-legislation-database",
+    `--${boundary}`,
+    "Content-Type: application/pdf; name=himss.pdf",
+    "Content-Disposition: attachment; filename=himss.pdf",
+    "Content-Transfer-Encoding: base64",
+    "",
+    Buffer.from(pdf).toString("base64"),
+    `--${boundary}--`,
+  ].join("\r\n");
+  const inbound = inboundEmail(raw, {
+    from: "newsletter@example.com",
+    to: "signals+newsletter@thevalleydesk.org",
+  });
+  const accepted = await handleCloudflareInboundEmail(
+    inbound.message,
+    { VALLEY_DESK_DB: db, ...emailAuthEnv },
+    async () => emailRoutingAnalyticsResponse({
+      from: "newsletter@example.com",
+      to: "signals+newsletter@thevalleydesk.org",
+    }),
+    new Date("2026-08-27T17:00:02.000Z"),
+  );
+  assert.equal(accepted.outcome, "accepted");
+  const attachment = database.prepare("SELECT id, sha256, extraction_state FROM email_pdf_attachments").get() as {
+    id: string;
+    sha256: string;
+    extraction_state: string;
+  };
+  assert.equal(attachment.extraction_state, "pending");
+
+  const retained = await handleReviewApi(new Request(
+    `${DEFAULT_PUBLIC_ORIGIN}/api/email-pdf-attachments/${encodeURIComponent(attachment.id)}/content`,
+    { headers: { authorization: "Bearer ops-token" } },
+  ), { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "ops-token" });
+  assert.equal(retained.status, 200);
+  assert.equal(retained.headers.get("etag"), `"sha256-${attachment.sha256}"`);
+  assert.deepEqual(new Uint8Array(await retained.arrayBuffer()), pdf);
+
+  const extraction = await handleReviewApi(new Request(
+    `${DEFAULT_PUBLIC_ORIGIN}/api/email-pdf-attachments/${encodeURIComponent(attachment.id)}/extraction`,
+    {
+      method: "POST",
+      headers: {
+        authorization: "Bearer ops-token",
+        "content-type": "application/json",
+        "idempotency-key": "manual-pdf-extraction-1",
+      },
+      body: JSON.stringify({
+        attachmentId: attachment.id,
+        artifactSha256: attachment.sha256,
+        extractor: "pypdf-manual-v1",
+        outcome: "complete",
+        pages: [{
+          pageNumber: 1,
+          text: "Pennsylvania SB 1113 sets requirements for AI use in Medicaid and CHIP programs.",
+          evidenceSpans: ["Pennsylvania SB 1113", "Medicaid and CHIP programs"],
+        }],
+      }),
+    },
+  ), { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "ops-token" });
+  assert.equal(extraction.status, 200);
+  const extractionBody = await extraction.json() as { extractionState?: string; receiptSha256?: string };
+  assert.equal(extractionBody.extractionState, "complete");
+  assert.match(extractionBody.receiptSha256 ?? "", /^[a-f0-9]{64}$/);
+  assert.deepEqual(
+    { ...database.prepare(`SELECT extraction_state, page_count, extraction_method,
+      extraction_receipt_sha256, extracted_by FROM email_pdf_attachments`).get()! },
+    {
+      extraction_state: "complete",
+      page_count: 1,
+      extraction_method: "pypdf-manual-v1",
+      extraction_receipt_sha256: extractionBody.receiptSha256,
+      extracted_by: "review-api-token",
+    },
+  );
+  assert.equal(database.prepare("SELECT evidence_json FROM email_pdf_pages").get()?.evidence_json,
+    '["Pennsylvania SB 1113","Medicaid and CHIP programs"]');
+  assert.deepEqual(
+    { ...database.prepare("SELECT status, trust_state, auth_state FROM email_discoveries").get()! },
+    { status: "review", trust_state: "authenticated-pointer", auth_state: "authenticated" },
+  );
+
+  const status = await handleReviewApi(new Request(`${DEFAULT_PUBLIC_ORIGIN}/api/automation/status/review`, {
+    headers: { authorization: "Bearer ops-token" },
+  }), { VALLEY_DESK_DB: db, REVIEW_API_TOKEN: "ops-token" });
+  const statusBody = await status.json() as { emailReview?: { pdfAttachments?: Array<{ id?: string; extraction_state?: string }> } };
+  assert.equal(statusBody.emailReview?.pdfAttachments?.some((row) => (
+    row.id === attachment.id && row.extraction_state === "complete"
+  )), true);
+  database.close();
 });
 
 test("exact duplicate email replays are idempotent without extra writes or cap refresh", async () => {
@@ -1065,12 +1661,22 @@ test("operational alerts require durable consecutive recovery and reopen cleanly
     now: first,
   });
   assert.equal(sent.length, 1);
-  const firstRecovery = await resolveOperationalAlert(db, fingerprint, new Date("2026-08-28T01:00:00.000Z"), 2);
+  const firstRecovery = await resolveOperationalAlert(db, fingerprint, new Date("2026-08-28T01:00:00.000Z"), 2, {
+    outcome: "healthy",
+    attempted: 4,
+    failed: 0,
+  });
   assert.equal(firstRecovery?.state, "open");
   assert.equal(firstRecovery?.recovery_count, 1);
-  const resolved = await resolveOperationalAlert(db, fingerprint, new Date("2026-08-28T02:00:00.000Z"), 2);
+  const resolved = await resolveOperationalAlert(db, fingerprint, new Date("2026-08-28T02:00:00.000Z"), 2, {
+    outcome: "healthy",
+    attempted: 4,
+    failed: 0,
+  });
   assert.equal(resolved?.state, "resolved");
   assert.equal(resolved?.recovery_count, 2);
+  assert.deepEqual(JSON.parse(resolved!.recovery_detail_json), { outcome: "healthy", attempted: 4, failed: 0 });
+  assert.deepEqual(JSON.parse(resolved!.detail_json), {}, "the incident-opening evidence is preserved separately");
 
   const reopened = await dispatchOperationalAlert(db, binding, {
     fingerprint,
@@ -1702,6 +2308,33 @@ test("daily operational digest groups related source alerts by subsystem and ins
   assert.match(sent[0], /rss\/inst-cooper/);
   assert.match(sent[0], /source-1/);
   assert.match(sent[0], /source-2/);
+  database.close();
+});
+
+test("daily digest includes an incident that remains open across midnight and snapshots its membership", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  await recordOperationalAlert(db, {
+    fingerprint: "valley-desk:overnight-leadership",
+    event: "leadership-monitor-failed",
+    severity: "critical",
+    conditionState: "blocked",
+    subsystem: "leadership",
+    groupKey: "valley-desk:leadership:monitor",
+    notify: false,
+    now: new Date("2026-08-28T23:00:00.000Z"),
+  });
+  const sent: string[] = [];
+  await dispatchOperationalDigest(db, {
+    async send(message: { text: string }) {
+      sent.push(message.text);
+      return { messageId: "overnight-digest" };
+    },
+  }, new Date("2026-08-29T08:00:00.000Z"));
+  assert.match(sent[0]!, /leadership-monitor-failed/);
+  const row = database.prepare("SELECT detail_json FROM operational_digests").get() as { detail_json: string };
+  assert.deepEqual(JSON.parse(row.detail_json).fingerprints, ["valley-desk:overnight-leadership"]);
   database.close();
 });
 

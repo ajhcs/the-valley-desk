@@ -773,8 +773,22 @@ test("conflicting titles retain an unknown identity without auto-enrollment", as
 test("autonomous departure requires two snapshots on two independent official sources", async () => {
   const database = migratedDatabase();
   const db = sqliteD1(database);
-  await seedCoveragePack(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
-  const roleSourceId = "src-chop-salmasian";
+  const testPack = CoveragePackDocument.parse({
+    ...coveragePack,
+    sources: [...coveragePack.sources, {
+      id: "src-chop-leadership-alt",
+      institutionId: "inst-chop",
+      kind: "leadership-page",
+      url: "https://news.chop.edu/about/executive-leadership",
+      host: "news.chop.edu",
+      precedence: 90,
+      monitor: true,
+      cadence: "daily",
+      status: "enabled",
+    }],
+  });
+  await seedCoveragePack(db, testPack, new Date("2026-08-27T12:00:00.000Z"));
+  const roleSourceId = "src-chop-leadership";
   await persistExecutiveRoleChange(db, {
     personId: "person-hojjat-salmasian",
     institutionId: "inst-chop",
@@ -788,20 +802,142 @@ test("autonomous departure requires two snapshots on two independent official so
   });
   const absent = [{ name: "Alicia Example", title: "Chief Executive Officer" }];
   await persistLeadershipSnapshots(db, [
-    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-27T12:00:00.000Z", absent),
-    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-28T12:00:00.000Z", absent),
-    storedLeadershipSnapshot("src-chop-desai", "2026-08-28T12:00:00.000Z", absent),
+    storedLeadershipSnapshot("src-chop-leadership", "2026-08-27T12:00:00.000Z", absent),
+    storedLeadershipSnapshot("src-chop-leadership", "2026-08-28T12:00:00.000Z", absent),
+    { ...storedLeadershipSnapshot("src-chop-leadership", "2026-08-28T12:00:00.000Z", absent),
+      id: "test-src-chop-leadership-alt-2026-08-28T12:00:00.000Z",
+      sourceId: "src-chop-leadership-alt",
+      finalUrl: "https://news.chop.edu/about/executive-leadership" },
   ]);
-  const pending = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-28T12:00:00.000Z"));
+  const pending = await autonomouslyVerifyLeadership(db, testPack, new Date("2026-08-28T12:00:00.000Z"));
   assert.equal(pending.editorialCandidates.some((item) => item.title.includes("Hojjat")), false);
   assert.equal((await readExecutiveRoles(db, "person-hojjat-salmasian", "inst-chop"))[0]!.effectiveTo, null);
 
   await persistLeadershipSnapshots(db, [
-    storedLeadershipSnapshot("src-chop-desai", "2026-08-29T12:00:00.000Z", absent),
+    { ...storedLeadershipSnapshot("src-chop-leadership", "2026-08-29T12:00:00.000Z", absent),
+      id: "test-src-chop-leadership-alt-2026-08-29T12:00:00.000Z",
+      sourceId: "src-chop-leadership-alt",
+      finalUrl: "https://news.chop.edu/about/executive-leadership" },
   ]);
-  const verified = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-29T12:00:00.000Z"));
+  const verified = await autonomouslyVerifyLeadership(db, testPack, new Date("2026-08-29T12:00:00.000Z"));
   const role = (await readExecutiveRoles(db, "person-hojjat-salmasian", "inst-chop"))[0]!;
-  assert.equal(role.effectiveTo, "2026-08-29T12:00:00.000Z");
+  assert.equal(role.effectiveTo, "2026-08-28T12:00:00.000Z");
   assert.equal(verified.editorialCandidates.some((item) => item.title.includes("Hojjat")), true);
+  database.close();
+});
+
+test("person-bio omissions cannot close an executive role as if they were complete rosters", async () => {
+  const database = migratedDatabase();
+  const db = sqliteD1(database);
+  await seedCoveragePack(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
+  await persistExecutiveRoleChange(db, {
+    personId: "person-hojjat-salmasian",
+    institutionId: "inst-chop",
+    title: "Vice President and Chief Data and Analytics Officer",
+    sourceId: "src-chop-salmasian",
+    evidenceUrl: sourceById("src-chop-salmasian")!.url,
+    effectiveFrom: "2026-08-01T12:00:00.000Z",
+    verificationStatus: "verified",
+    verifiedBy: "fixture",
+    verifiedAt: "2026-08-01T12:00:00.000Z",
+  });
+  const unrelatedBio = [{ name: "Bimal Desai", title: "Vice President and Chief Health Informatics Officer" }];
+  await persistLeadershipSnapshots(db, [
+    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-27T12:00:00.000Z", unrelatedBio),
+    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-28T12:00:00.000Z", unrelatedBio),
+    storedLeadershipSnapshot("src-chop-desai", "2026-08-27T12:00:00.000Z", unrelatedBio),
+    storedLeadershipSnapshot("src-chop-desai", "2026-08-28T12:00:00.000Z", unrelatedBio),
+  ]);
+  const result = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-28T12:00:00.000Z"));
+  assert.equal(result.editorialCandidates.some((item) => item.title.includes("Hojjat")), false);
+  assert.equal((await readExecutiveRoles(db, "person-hojjat-salmasian", "inst-chop"))[0]!.effectiveTo, null);
+  database.close();
+});
+
+test("a malformed dynamic identity is isolated while a valid departure completes without partial mutation", async () => {
+  const database = migratedDatabase();
+  const db = sqliteD1(database);
+  const testPack = CoveragePackDocument.parse({
+    ...coveragePack,
+    sources: [...coveragePack.sources, {
+      id: "src-chop-leadership-alt",
+      institutionId: "inst-chop",
+      kind: "leadership-page",
+      url: "https://news.chop.edu/about/executive-leadership",
+      host: "news.chop.edu",
+      precedence: 90,
+      monitor: true,
+      cadence: "daily",
+      status: "enabled",
+    }],
+  });
+  await seedCoveragePack(db, testPack, new Date("2026-08-27T12:00:00.000Z"));
+  database.prepare(`INSERT INTO covered_people
+    (id, display_name, normalized_name, aliases_json, created_at, known_title, source_ids_json)
+    VALUES (?, ?, ?, '[]', ?, ?, ?)`
+  ).run(
+    "person-inst-chop-dynamic-example",
+    "Jordan Dynamic",
+    "jordan dynamic",
+    "2026-08-01T12:00:00.000Z",
+    "Chief Analytics Officer",
+    JSON.stringify(["src-chop-leadership", "src-chop-leadership-alt"]),
+  );
+  database.prepare(`INSERT INTO covered_people
+    (id, display_name, normalized_name, aliases_json, created_at, known_title, source_ids_json)
+    VALUES (?, '', ?, '[]', ?, ?, ?)`
+  ).run(
+    "person-inst-chop-malformed",
+    "malformed identity fixture",
+    "2026-08-01T12:00:00.000Z",
+    "Chief Data Officer",
+    JSON.stringify(["src-chop-leadership", "src-chop-leadership-alt"]),
+  );
+  await persistExecutiveRoleChange(db, {
+    personId: "person-inst-chop-dynamic-example",
+    institutionId: "inst-chop",
+    title: "Chief Analytics Officer",
+    sourceId: "src-chop-leadership",
+    evidenceUrl: sourceById("src-chop-leadership")!.url,
+    effectiveFrom: "2026-08-01T12:00:00.000Z",
+    verificationStatus: "verified",
+    verifiedBy: "fixture",
+    verifiedAt: "2026-08-01T12:00:00.000Z",
+  });
+  await persistExecutiveRoleChange(db, {
+    personId: "person-inst-chop-malformed",
+    institutionId: "inst-chop",
+    title: "Chief Data Officer",
+    sourceId: "src-chop-leadership",
+    evidenceUrl: sourceById("src-chop-leadership")!.url,
+    effectiveFrom: "2026-08-01T12:00:00.000Z",
+    verificationStatus: "verified",
+    verifiedBy: "fixture",
+    verifiedAt: "2026-08-01T12:00:00.000Z",
+  });
+  const absent = [{ name: "Alicia Example", title: "Chief Executive Officer" }];
+  await persistLeadershipSnapshots(db, [
+    storedLeadershipSnapshot("src-chop-leadership", "2026-08-28T12:00:00.000Z", absent),
+    storedLeadershipSnapshot("src-chop-leadership", "2026-08-29T12:00:00.000Z", absent),
+    { ...storedLeadershipSnapshot("src-chop-leadership", "2026-08-28T12:00:00.000Z", absent),
+      id: "test-src-chop-leadership-alt-2026-08-28T12:00:00.000Z",
+      sourceId: "src-chop-leadership-alt",
+      finalUrl: "https://news.chop.edu/about/executive-leadership" },
+    { ...storedLeadershipSnapshot("src-chop-leadership", "2026-08-29T12:00:00.000Z", absent),
+      id: "test-src-chop-leadership-alt-2026-08-29T12:00:00.000Z",
+      sourceId: "src-chop-leadership-alt",
+      finalUrl: "https://news.chop.edu/about/executive-leadership" },
+  ]);
+  const result = await autonomouslyVerifyLeadership(db, testPack, new Date("2026-08-29T12:00:00.000Z"));
+  assert.deepEqual(result.identityFailures, [{
+    personId: "person-inst-chop-malformed",
+    institutionId: "inst-chop",
+    reason: "Stored executive identity has no display name",
+  }]);
+  assert.equal(result.editorialCandidates.some((item) => item.title.includes("Jordan Dynamic")), true);
+  const [role] = await readExecutiveRoles(db, "person-inst-chop-dynamic-example", "inst-chop");
+  assert.equal(role?.effectiveTo, "2026-08-29T12:00:00.000Z");
+  const [malformed] = await readExecutiveRoles(db, "person-inst-chop-malformed", "inst-chop");
+  assert.equal(malformed?.effectiveTo, null, "malformed identity must not partially close its role");
   database.close();
 });

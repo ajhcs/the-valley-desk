@@ -62,6 +62,7 @@ export type OperationalAlertRow = {
   notification_attempt_count: number;
   last_notification_error: string | null;
   detail_json: string;
+  recovery_detail_json: string;
   recovery_count: number;
   last_recovered_at: string | null;
   resolved_at: string | null;
@@ -183,6 +184,7 @@ function rowSelect() {
            first_seen_at, last_seen_at, next_notify_at,
            last_notification_attempt_at, last_notified_at,
            notification_attempt_count, last_notification_error, detail_json,
+           recovery_detail_json,
            recovery_count, last_recovered_at,
            resolved_at
     FROM operational_alerts WHERE fingerprint = ?
@@ -253,6 +255,7 @@ export async function recordOperationalAlert(
         ELSE operational_alerts.last_notification_error
       END,
       recovery_count = 0,
+      recovery_detail_json = '{}',
       resolved_at = NULL
   `).bind(
     fingerprint,
@@ -318,6 +321,7 @@ export async function resolveOperationalAlertWithTransition(
   fingerprint: string,
   now = new Date(),
   requiredSuccesses = 2,
+  recoveryDetails: Record<string, unknown> = {},
 ) {
   const safeFingerprint = stripControls(fingerprint).slice(0, 240);
   const required = Math.max(1, Math.min(20, Math.trunc(requiredSuccesses) || 1));
@@ -326,9 +330,10 @@ export async function resolveOperationalAlertWithTransition(
     UPDATE operational_alerts
     SET condition_state = 'healthy',
         recovery_count = MIN(?, recovery_count + 1),
-        last_recovered_at = ?
+        last_recovered_at = ?,
+        recovery_detail_json = ?
     WHERE fingerprint = ? AND state = 'open'
-  `).bind(required, nowIso, safeFingerprint).run();
+  `).bind(required, nowIso, safeDetailJson(recoveryDetails), safeFingerprint).run();
   const resolution = await db.prepare(`
     UPDATE operational_alerts
     SET state = 'resolved', condition_state = 'resolved', resolved_at = ?, last_notification_error = NULL
@@ -351,8 +356,9 @@ export async function resolveOperationalAlert(
   fingerprint: string,
   now = new Date(),
   requiredSuccesses = 2,
+  recoveryDetails: Record<string, unknown> = {},
 ) {
-  return (await resolveOperationalAlertWithTransition(db, fingerprint, now, requiredSuccesses)).row;
+  return (await resolveOperationalAlertWithTransition(db, fingerprint, now, requiredSuccesses, recoveryDetails)).row;
 }
 
 export async function markOperationalAlertFailed(
@@ -402,7 +408,8 @@ function recoveryText(row: OperationalAlertRow) {
     `institution: ${row.institution_id ?? "pack-wide"}`,
     `recovered_at: ${row.resolved_at ?? row.last_recovered_at ?? row.last_seen_at}`,
     `recovery_checks: ${row.recovery_count}`,
-    `details: ${row.detail_json}`,
+    `recovery_observation: ${row.recovery_detail_json}`,
+    `prior_failure: ${row.detail_json}`,
     "ops: /ops",
   ].join("\n");
 }
@@ -478,7 +485,7 @@ function digestSelect() {
            condition_state, institution_id, subsystem, group_key,
            first_seen_at, last_seen_at, detail_json
     FROM operational_alerts
-    WHERE pack_id = ? AND state = 'open' AND last_seen_at >= ?
+    WHERE pack_id = ? AND state = 'open'
     ORDER BY CASE severity WHEN 'critical' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END,
              last_seen_at DESC LIMIT ?
   `;
@@ -559,7 +566,6 @@ export async function dispatchOperationalDigest(
   const safePackId = stripControls(packId).slice(0, 120) || DEFAULT_ALERT_PACK_ID;
   const date = utcDate(now);
   const nowIso = now.toISOString();
-  const dayStart = `${date}T00:00:00.000Z`;
   const existing = await db.prepare(`SELECT digest_date, pack_id, status, generated_at, next_attempt_at,
       attempt_count, sent_at, message_id, error, detail_json
       FROM operational_digests WHERE digest_date = ? AND pack_id = ?`).bind(date, safePackId).first<DigestRecord>();
@@ -578,8 +584,14 @@ export async function dispatchOperationalDigest(
       WHERE digest_date = ? AND pack_id = ? AND status != 'sent' AND next_attempt_at <= ?`
   ).bind(nowIso, new Date(now.getTime() + backoffMs(existing?.attempt_count ?? 0)).toISOString(), date, safePackId, nowIso).run();
   if (changedRows(claimed) === 0) return { outcome: "deduped" as const, date };
-  const rows = await db.prepare(digestSelect()).bind(safePackId, dayStart, ALERT_MAX_DIGEST_ROWS).all<DigestRow>();
+  const rows = await db.prepare(digestSelect()).bind(safePackId, ALERT_MAX_DIGEST_ROWS).all<DigestRow>();
   const digestRows = rows.results ?? [];
+  const digestSnapshot = JSON.stringify({
+    generatedAt: nowIso,
+    fingerprints: digestRows.map((row) => row.fingerprint),
+  });
+  await db.prepare(`UPDATE operational_digests SET detail_json = ?
+    WHERE digest_date = ? AND pack_id = ?`).bind(digestSnapshot, date, safePackId).run();
   if (!binding) {
     await db.prepare("UPDATE operational_digests SET status = 'failed', error = ? WHERE digest_date = ? AND pack_id = ?")
       .bind("NOTIFY_OPS binding unavailable", date, safePackId).run();
