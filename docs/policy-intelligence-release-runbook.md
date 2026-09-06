@@ -4,6 +4,39 @@ This is a release plan only. The implementation task did not deploy, apply migra
 
 ## Stage 0: immutable-candidate preconditions
 
+### Mandatory Pennsylvania byte checks BEFORE the release gate/deployment
+
+Run `npm test`, including the checksum-bound captured HB1925/SB1113/HB1993
+regressions and their migrated-database persistence/idempotency/rejection tests.
+Preserve the committee malformed/empty/joint-meeting regressions. Commit the
+implementation to a clean immutable candidate, then run:
+
+```bash
+npm run verify:pa-official -- --receipt=/mnt/d/tmp/plumbob/RESTRICTED-RELEASE-DIR/pa-official-replay.json
+```
+
+This command performs bounded official HTTP GETs and locally replays the exact
+downloaded bytes, retaining originals, checksums, current-printer/text-date
+history and latest-action dates. It does not collect into production. A missing
+date, inconsistent bill/session/printer/PDF, source error, or failed replay
+blocks the gate and deployment. Historical fixture expectations apply only to
+those captures; live values must come from the designated official fields.
+Run the exact-tree release gate only after this replay passes; its HEAD/tree
+must match the replay receipt. Any implementation change invalidates both.
+
+Schema remains 0027: the bounded official bill record is retained in candidate
+detail evidence and policy-version evidence JSON. Its text-version dates are
+not development dates. `published_at` with `legislative-action` provenance is
+the designated latest action date; `detail_fetched_at` remains fetch time.
+Malformed refreshes retain a review blocker and cannot keep an old action date
+as current verified evidence. Older printer records are history, never selected
+by page-wide first-match logic.
+
+Deployment still requires explicit operational authorization. Public health
+alone does not accept the release: observe a naturally due cycle and verify
+individual persisted bill/version/action evidence, empty-vs-failed committee
+snapshots, and released lock. Never reset backoff or force ingestion for proof.
+
 1. Review an immutable candidate commit and the 19-item acceptance matrix. Run
    the repository release gate from a clean checkout of that exact commit and
    retain its JSON receipt; the receipt's candidate HEAD/tree must match what is

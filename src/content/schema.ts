@@ -145,7 +145,7 @@ export const PolicyItem = Base.extend({
     instrumentId: z.string().min(1),
     versionId: z.string().min(1).optional(),
     stage: z.enum([
-      "introduced", "committee", "hearing", "amended", "passed", "enacted",
+      "introduced", "committee", "hearing", "amended", "passed", "enacted", "floor-action",
       "proposed-rule", "final-rule", "guidance", "enforcement",
     ]),
     developmentAt: z.string().datetime(),

@@ -181,9 +181,9 @@ test("critical policy monitoring detects within 60 minutes under competing workl
       requested.push(url);
       if (url === hb1925.url) {
         return new Response(`<!doctype html><main><h1>House Bill 1925 PN 4000</h1>
-          <p>Amended in the House September 6, 2026.</p>
+          <div><strong>Last Action: </strong>Amended in the House September 6, 2026.</div>
           <p>The bill applies to hospitals and health care providers in Pennsylvania.</p>
-          <a href="/legislation/bills/text/PDF/2025/0/HB1925/PN4000">Current printer</a></main>`, {
+          <div class="card float-start"><span title="Most recent printers number">September 6, 2026</span><div class="mt-2">PN 4000</div><a title="PDF Bill Text" href="/legislation/bills/text/PDF/2025/0/HB1925/PN4000">Current printer</a></div></main>`, {
           headers: { "content-type": "text/html" },
         });
       }
@@ -656,7 +656,7 @@ test("missing policy dates remain explicit and invalid policy dates cannot conve
     relevance: { decision: "accept", relevanceScore: 99, confidence: 0.99, reasons: ["Policy evidence"], evidenceSpans: ["applies to hospitals"] },
   };
   const [missing] = contentItemsFromOfficialCandidates([baseCandidate]);
-  assert.equal(missing?.kind, "policy");
+  assert.equal(missing, undefined, "unverified watched-bill evidence cannot enter editorial conversion");
   assert.equal(missing?.publishedAt, undefined);
   assert.deepEqual(contentItemsFromOfficialCandidates([{ ...baseCandidate, publishedAt: "not-a-date" }]), []);
 });

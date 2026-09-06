@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { extractPaBillEvidence, paBillEvidenceText, readPaBillEvidence } from "../src/ingest/pa-bill-evidence.ts";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { DatabaseSync, type StatementSync } from "node:sqlite";
@@ -31,6 +33,7 @@ import {
   contentItemsFromOfficialCandidates,
   discoverOfficialSources,
   officialSourceRegistry,
+  officialPolicyIdentity,
 } from "../src/ingest/official-source-discovery.ts";
 import {
   persistOfficialSourceCandidates,
@@ -623,9 +626,9 @@ test("legislative change flows from official HTML through review content into a 
   assert.equal(evaluateCandidate(second[0]!, null, new Date("2026-09-06T12:00:00.000Z")).rule === "publication-date-required", false);
 
   billHtml = `<!doctype html><main><h1>House Bill 1925 PN 101</h1>
-    <p>A Health Committee hearing was scheduled September 8, 2026.</p>
+    <div><strong>Last Action: </strong>A Health Committee hearing was scheduled September 8, 2026.</div>
     <p>The bill applies to hospitals and health care providers operating in Pennsylvania.</p>
-    <a href="/legislation/bills/text/PDF/2025/0/HB1925/PN101">House Bill 1925 current printer PDF</a></main>`;
+    <div class="card float-start"><span title="Most recent printers number">September 5, 2026</span><div class="mt-2">PN 101</div><a title="PDF Bill Text" href="/legislation/bills/text/PDF/2025/0/HB1925/PN101">House Bill 1925 current printer PDF</a></div></main>`;
   const hearing = await run(new Date("2026-09-09T12:00:00.000Z"));
   assert.equal(hearing[0]?.policyIdentity?.stage, "hearing");
   assert.equal(hearing[0]?.publishedAt, "2026-09-08T00:00:00.000Z");
@@ -680,7 +683,8 @@ test("legislative change flows from official HTML through review content into a 
     status: "review",
     instructionLike: false,
     detailTitle: "House Bill 1925 PN 2000",
-    detailText: "HB 1925 PN 2000 was referred to committee January 9, 2024.",
+    detailText: paBillEvidenceText(extractPaBillEvidence(`<div><strong>Last Action: </strong>Referred to committee January 9, 2024.</div><div class="card float-start"><span title="Most recent printers number">January 9, 2024</span><div class="mt-2">PN 2000</div><a title="PDF Bill Text" href="/legislation/bills/text/PDF/2023/0/HB1925/PN2000">PDF</a></div>`, "https://palegis.us/legislation/bills/2023/hb1925")),
+    policyTextUrl: "https://palegis.us/legislation/bills/text/PDF/2023/0/HB1925/PN2000",
     detailFetchedAt: "2024-01-10T12:00:00.000Z",
     detailState: "success",
   }], [], new Set());
@@ -688,6 +692,73 @@ test("legislative change flows from official HTML through review content into a 
     database.prepare("SELECT session FROM policy_instruments WHERE instrument_id = 'HB 1925' ORDER BY session").all().map((row) => row.session),
     ["2023-2024", "2025-2026"],
   );
+  assert.deepEqual(database.prepare("PRAGMA foreign_key_check").all(), []);
+  database.close();
+});
+
+test("captured official PA bill bytes preserve current printer, action, history, and idempotent persistence", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const cases = [
+    ["hb1925", "PN 3349", "2026-06-25T00:00:00.000Z", "7a629c73148559cb45aea79be96a3c6a4249006f72738e5f446bdd65287f06b8"],
+    ["sb1113", "PN 1376", "2026-01-09T00:00:00.000Z", "00a6c6ff7079ee0b6d1dcad71daea74d08b4667ab0f65bb54f0e682332248f9f"],
+    ["hb1993", "PN 2515", "2025-10-24T00:00:00.000Z", "bc3d58f7ac8cdac9d47558a3786cf56c88c0d74507d2a1d78382283dc3ebb516"],
+  ];
+  for (const [bill, printer, actionAt, sha256] of cases) {
+    const source = officialSourceRegistry.sources.find((row) => row.id === `ofs-pa-legislature-${bill}`)!;
+    const html = readFileSync(join(root, `test/fixtures/pa-legislation/captured-${bill}-20260906.html`), "utf8");
+    assert.equal(createHash("sha256").update(html).digest("hex"), sha256, "captured official bytes must remain immutable");
+    const collect = async (body: string, time: string) => {
+      const result = await discoverOfficialSources({ sources: [source], now: new Date(time), detailCapPerRun: 0,
+        fetchImpl: async () => new Response(body, { headers: { "content-type": "text/html" } }),
+        relevanceGate: async () => ({ decision: "accept", relevanceScore: 99, confidence: 0.99, reasons: ["fixture"], evidenceSpans: [] }),
+      });
+      await persistOfficialSourceSnapshots(db, result.snapshots);
+      await persistOfficialSourceCandidates(db, result.candidates, result.snapshots, new Set());
+      return result.candidates[0]!;
+    };
+    const first = await collect(html, "2026-09-06T21:06:00.000Z");
+    const record = readPaBillEvidence(first.detailText)!;
+    assert.equal(record.blocker, null);
+    assert.equal(record.current?.printer, printer);
+    assert.equal(first.publishedAt, actionAt);
+    assert.equal(first.publicationDateSource, "legislative-action");
+    assert.equal(record.session, "2025-2026");
+    assert.equal(first.detailState, "success");
+    assert.ok(first.detailHash);
+    assert.equal(first.status, "review");
+    if (bill === "hb1925") {
+      assert.equal(record.current?.textDate, "2026-05-05T00:00:00.000Z");
+      assert.deepEqual(record.history.map(v => v.printer), ["PN 3349", "PN 2403"]);
+    }
+    await collect(html, "2026-09-06T21:07:00.000Z");
+    const versions = database.prepare("SELECT * FROM policy_versions WHERE version_id=?").all(printer!);
+    assert.equal(versions.length, 1, "unchanged material must not create a second development");
+    const version = versions[0]!;
+    assert.equal(version.development_at, actionAt);
+    assert.equal(version.text_url, first.policyTextUrl);
+    assert.equal(JSON.parse(String(version.evidence_json)).officialBillRecord.current.printer, printer);
+    const stored = database.prepare("SELECT * FROM official_source_candidates WHERE id=?").get(first.id)!;
+    assert.equal(stored.published_at, actionAt);
+    assert.equal(readPaBillEvidence(String(stored.detail_text))?.current?.printer, printer);
+    assert.equal(stored.status, "review");
+    assert.equal(officialPolicyIdentity({ ...first, detailText: String(stored.detail_text), publishedAt: String(stored.published_at), policyTextUrl: String(stored.policy_text_url) })?.versionId, printer);
+    assert.equal(officialPolicyIdentity({ ...first, policyTextUrl: first.policyTextUrl?.replace(/PN\d+$/, "PN99999") }), undefined);
+    const mismatch = html.replace(/(title="PDF Bill Text" href="[^"]*\/PN)\d+"/, '$199999"');
+    const rejected = await collect(mismatch, "2026-09-06T21:08:00.000Z");
+    assert.match(rejected.detailError ?? "", /inconsistent/);
+    assert.equal(rejected.publishedAt, undefined);
+    assert.equal(contentItemsFromOfficialCandidates([rejected]).length, 0);
+    assert.equal(database.prepare("SELECT COUNT(*) n FROM policy_versions WHERE version_id=?").get(printer!)?.n, 1);
+    const missing = await collect(html.replace("Last Action:", "Previous Action:"), "2026-09-06T21:09:00.000Z");
+    assert.match(missing.detailError ?? "", /latest action date missing/);
+    assert.equal(contentItemsFromOfficialCandidates([missing]).length, 0);
+    assert.equal(database.prepare("SELECT published_at FROM official_source_candidates WHERE id=?").get(first.id)?.published_at, null, "missing latest date must not retain stale success date");
+  }
+  assert.equal(database.prepare("SELECT COUNT(*) n FROM policy_instruments").get()?.n, 3);
+  assert.equal(database.prepare("SELECT COUNT(*) n FROM policy_versions").get()?.n, 3);
+  assert.equal(database.prepare("SELECT COUNT(*) n FROM published_content").get()?.n, 0);
   assert.deepEqual(database.prepare("PRAGMA foreign_key_check").all(), []);
   database.close();
 });

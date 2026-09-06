@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { XMLValidator } from "fast-xml-parser";
+import { extractPaBillEvidence, paBillEvidenceText, readPaBillEvidence } from "./pa-bill-evidence";
 import officialSourceDocument from "../../fixtures/official-source-registry-v1.json";
 import entityFixtures from "../../fixtures/entities.json";
 import { Entity } from "../content/entity";
@@ -808,31 +809,6 @@ function publicationDateFromHtml(html: string) {
   return timeDate ? { publishedAt: timeDate, source: "time-published" as const } : undefined;
 }
 
-function latestLegislativeActionAt(text: string, observedAt: string) {
-  const dates: number[] = [];
-  const actionDate = /\b(?:referred|reported|consideration|laid on the table|removed from the table|hearing|vote|adopt(?:ed)?|passed|signed|approved|amended)\b[^\n]{0,220}?\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(20\d{2})\b/gi;
-  for (const match of text.matchAll(actionDate)) {
-    const timestamp = Date.parse(`${match[1]} ${match[2]}, ${match[3]} UTC`);
-    if (Number.isFinite(timestamp) && timestamp <= Date.parse(observedAt) + 86_400_000) dates.push(timestamp);
-  }
-  return dates.length ? new Date(Math.max(...dates)).toISOString() : undefined;
-}
-
-function paBillTextUrl(html: string, baseUrl: string) {
-  const links = html.matchAll(/<a\b[^>]*\bhref\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/gi);
-  for (const match of links) {
-    try {
-      const url = new URL(match[1] ?? match[2] ?? match[3] ?? "", baseUrl);
-      if (host(url.hostname) !== "palegis.us") continue;
-      if (!/^\/legislation\/bills\/text\/PDF\//i.test(url.pathname)) continue;
-      return normalizeSourceUrl(url.toString()) ?? url.toString();
-    } catch {
-      // Ignore malformed source-authored links.
-    }
-  }
-  return undefined;
-}
-
 type NormalizedDetailPage = {
   title: string;
   text: string;
@@ -1038,20 +1014,27 @@ export async function hydrateOfficialCandidates(
         return;
       }
       const detailHash = await hashText(normalized.text);
+      const billEvidence = /^ofs-pa-legislature-(?:hb|sb)\d+$/.test(candidate.sourceId)
+        ? extractPaBillEvidence(response.body, response.url) : undefined;
       fetchedUrls.push(response.url);
       hydrated.set(candidate.id, {
         ...candidate,
         detailTitle: normalized.title || candidate.title,
-        detailText: normalized.text,
+        detailText: billEvidence ? (paBillEvidenceText(billEvidence) + normalized.text).slice(0, maxChars) : normalized.text,
         detailFetchedAt: startedAt,
         detailFinalUrl: response.url,
         detailAttemptCount: 0,
         detailNextAttemptAt: undefined,
         detailHash,
         detailState: "success",
-        detailError: null,
+        detailError: billEvidence?.blocker ?? null,
         ...(normalized.publishedAt ? { publishedAt: normalized.publishedAt } : {}),
         ...(normalized.source ? { publicationDateSource: normalized.source } : {}),
+        ...(billEvidence ? {
+          publishedAt: billEvidence.blocker ? undefined : billEvidence.actionAt ?? undefined,
+          publicationDateSource: billEvidence.blocker ? undefined : "legislative-action" as const,
+          policyTextUrl: billEvidence.blocker ? undefined : billEvidence.current?.url,
+        } : {}),
         ...(normalized.startsAt ? { eventStartsAt: normalized.startsAt } : {}),
         ...(normalized.endsAt ? { eventEndsAt: normalized.endsAt } : {}),
         ...(normalized.venue ? { venue: normalized.venue } : {}),
@@ -1364,8 +1347,9 @@ async function discoverOne(
     ) ?? genericCandidates;
     if (isPaBillSource) {
       const normalized = normalizeDetailPage(response.body, "policy");
-      const publishedAt = latestLegislativeActionAt(normalized.text, fetchedAt);
-      const policyTextUrl = paBillTextUrl(response.body, response.url);
+      const billEvidence = extractPaBillEvidence(response.body, response.url);
+      const publishedAt = billEvidence.blocker ? undefined : billEvidence.actionAt;
+      const policyTextUrl = billEvidence.blocker ? undefined : billEvidence.current?.url;
       if (normalized.text.length >= 24) {
         const selfCandidate: OfficialDiscoveryCandidate = {
           id: candidateId(source.id, sourcePageUrl),
@@ -1379,12 +1363,13 @@ async function discoverOne(
           trust: source.trust,
           discoveredAt: fetchedAt,
           status: "review",
-          instructionLike: looksInstructionLike(normalized.title, normalized.text),
+          instructionLike: looksInstructionLike(normalized.title, paBillEvidenceText(billEvidence), normalized.text),
           detailTitle: normalized.title || source.name,
-          detailText: normalized.text,
+          detailText: (paBillEvidenceText(billEvidence) + normalized.text).slice(0, OFFICIAL_SOURCE_DETAIL_MAX_CHARS),
           detailFetchedAt: fetchedAt,
           detailHash: hash,
           detailState: "success",
+          detailError: billEvidence.blocker,
           detailAttemptCount: 0,
           ...(publishedAt ? { publishedAt, publicationDateSource: "legislative-action" } : {}),
           ...(policyTextUrl ? { policyTextUrl } : {}),
@@ -1563,6 +1548,20 @@ function officialPolicyApplicability(candidate: OfficialDiscoveryCandidate): Pol
 
 export function officialPolicyIdentity(candidate: OfficialDiscoveryCandidate): PolicyItem["policyIdentity"] {
   if (!candidate.publishedAt) return undefined;
+  if (/^ofs-pa-legislature-(?:hb|sb)\d+$/.test(candidate.sourceId)) {
+    if (candidate.detailState !== "success" || candidate.detailError) return undefined;
+    const record = readPaBillEvidence(candidate.detailText);
+    if (!record || record.blocker || !record.current || record.actionAt !== candidate.publishedAt || record.current.url !== candidate.policyTextUrl) return undefined;
+    const path = new URL(candidate.url).pathname;
+    if (path !== `/legislation/bills/${record.session.slice(0, 4)}/${record.bill.replace(" ", "").toLowerCase()}`) return undefined;
+    const textPath = `/legislation/bills/text/PDF/${record.session.slice(0, 4)}/0/${record.bill.replace(" ", "")}/${record.current.printer.replace(" ", "")}`;
+    if (new URL(record.current.url).pathname !== textPath) return undefined;
+    const action = record.action;
+    const stage = /enacted|signed into law/i.test(action) ? "enacted" : /passed/i.test(action) ? "passed" : /removed from (?:the )?table|laid on (?:the )?table|consideration/i.test(action) ? "floor-action"
+      : /amended/i.test(action) ? "amended" : /hearing/i.test(action) ? "hearing" : /committee|referred/i.test(action) ? "committee" : "introduced";
+    return { jurisdiction: candidate.region, session: record.session, instrumentId: record.bill, versionId: record.current.printer,
+      stage, developmentAt: record.actionAt!, historyUrl: candidate.url, textUrl: record.current.url };
+  }
   const hay = `${candidate.sourceName}\n${candidate.title}\n${candidate.detailText ?? ""}\n${candidate.url}`;
   const bill = /\b(HB|SB)\s*-?\s*(\d{1,5})\b/i.exec(hay);
   if (!bill) return undefined;
@@ -1642,6 +1641,7 @@ export function contentItemFromOfficialCandidate(
   candidate: OfficialDiscoveryCandidate,
 ): ContentItem | undefined {
   if (!canProceedOfficialCandidate(candidate, { requireEvidence: true })) return undefined;
+  if (/^ofs-pa-legislature-(?:hb|sb)\d+$/.test(candidate.sourceId) && !officialPolicyIdentity(candidate)) return undefined;
   const kind = officialContentKind(candidate);
   if (!kind) return undefined;
   const orgs = officialCandidateOrgs(candidate);

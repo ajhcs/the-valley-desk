@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "verify:pa-official": "tsx scripts/verify-pa-official.mjs",
     "dev": "vite",
     "prebuild": "tsx scripts/build-feed.mjs",
     "build": "tsc -b && vite build",

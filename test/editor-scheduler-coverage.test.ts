@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { extractPaBillEvidence, paBillEvidenceText } from "../src/ingest/pa-bill-evidence.ts";
 import { test } from "node:test";
 import { DatabaseSync } from "node:sqlite";
 import { EditorEnrichment, DEFAULT_EDITOR_BASE_URL, DEFAULT_EDITOR_MODEL, EditorModelError } from "../src/ingest/editor-model.ts";
@@ -85,7 +86,8 @@ test("official candidate persistence executes against the production schema", as
     status: "review",
     instructionLike: false,
     detailTitle: "House Bill 1925",
-    detailText: "HB 1925 PN 3349 was reported as amended on May 5, 2026 and applies to hospitals in Pennsylvania.",
+    detailText: paBillEvidenceText(extractPaBillEvidence(`<div><strong>Last Action: </strong>Reported as amended May 5, 2026.</div><div class="card float-start"><span title="Most recent printers number">May 5, 2026</span><div class="mt-2">PN 3349</div><a title="PDF Bill Text" href="/legislation/bills/text/PDF/2025/0/HB1925/PN3349">PDF</a></div>`, "https://palegis.us/legislation/bills/2025/hb1925")),
+    policyTextUrl: "https://palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN3349",
     detailHash: "detail-hash",
     detailState: "success",
   }], [], new Set());

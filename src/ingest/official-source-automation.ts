@@ -1,4 +1,5 @@
 import type { ContentItem } from "../content/schema";
+import { readPaBillEvidence } from "./pa-bill-evidence";
 import { parseBoundedInt } from "./editor-work";
 import {
   completeEditorJson,
@@ -296,9 +297,9 @@ export async function persistOfficialSourceCandidates(
         detail_next_attempt_at = excluded.detail_next_attempt_at,
         relevance_model = COALESCE(excluded.relevance_model, official_source_candidates.relevance_model),
         relevance_prompt_version = COALESCE(excluded.relevance_prompt_version, official_source_candidates.relevance_prompt_version),
-        published_at = COALESCE(excluded.published_at, official_source_candidates.published_at),
+        published_at = CASE WHEN excluded.detail_text LIKE 'Pennsylvania official bill record: %' THEN excluded.published_at ELSE COALESCE(excluded.published_at, official_source_candidates.published_at) END,
         publication_date_source = COALESCE(excluded.publication_date_source, official_source_candidates.publication_date_source),
-        policy_text_url = COALESCE(excluded.policy_text_url, official_source_candidates.policy_text_url),
+        policy_text_url = CASE WHEN excluded.detail_text LIKE 'Pennsylvania official bill record: %' THEN excluded.policy_text_url ELSE COALESCE(excluded.policy_text_url, official_source_candidates.policy_text_url) END,
         event_starts_at = COALESCE(excluded.event_starts_at, official_source_candidates.event_starts_at),
         event_ends_at = COALESCE(excluded.event_ends_at, official_source_candidates.event_ends_at),
         venue = COALESCE(excluded.venue, official_source_candidates.venue),
@@ -394,7 +395,7 @@ export async function persistOfficialSourceCandidates(
         identity.developmentAt, candidate.url,
         candidate.policyTextUrl ?? (/\.pdf(?:$|\?)/i.test(candidate.url) ? candidate.url : null),
         candidate.detailHash ?? null,
-        json({ spans: evidence, historyUrl: candidate.url, textUrl: candidate.policyTextUrl ?? null }),
+        json({ spans: evidence, historyUrl: candidate.url, textUrl: candidate.policyTextUrl ?? null, ...(readPaBillEvidence(candidate.detailText) ? { officialBillRecord: readPaBillEvidence(candidate.detailText) } : {}) }),
         candidate.discoveredAt, candidate.discoveredAt,
       ),
     ];
