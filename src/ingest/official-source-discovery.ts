@@ -1229,6 +1229,9 @@ export async function applyOfficialSourceRelevanceGate(
         && (relevance.evidenceSpans.length === 0 || relevance.evidenceSpans.some(span => !evidenceText.includes(span) || looksInstructionLike(span)))) {
         relevance.decision = "review";
         relevance.reasons = ["Evidence-insufficiency hold: missing or unsupported literal bill evidence from relevance model", ...relevance.reasons];
+        // Model claims are not policy evidence. Never persist rejected spans
+        // into policy_versions.evidence_json even though admission is held.
+        relevance.evidenceSpans = [];
       }
       return { ...candidate, relevance,
         relevanceAttempt: { id, startedAt, endedAt: new Date().toISOString(), inputSha256, response, modelDecision,

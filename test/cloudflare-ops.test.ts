@@ -878,6 +878,13 @@ test("pre-editorial technical, contract and evidence outcomes persist without fa
   assert.equal(database.prepare("SELECT COUNT(*) n FROM policy_versions").get()?.n, 3);
   assert.equal(database.prepare("SELECT COUNT(*) n FROM policy_review_milestones").get()?.n, 0);
   assert.equal(database.prepare("SELECT COUNT(*) n FROM published_content").get()?.n, 0);
+  const unsupported = await applyOfficialSourceRelevanceGate(first.candidates, async () => ({
+    decision: "accept", relevanceScore: 99, confidence: 0.99,
+    reasons: ["Synthetic unsupported evidence"], evidenceSpans: ["Invented statutory provision not present in official bytes"],
+  }));
+  assert.ok(unsupported.every(c => c.relevance?.decision === "review" && c.relevance.evidenceSpans.length === 0));
+  await persistOfficialSourceCandidates(db, unsupported, first.snapshots, new Set());
+  assert.ok(database.prepare("SELECT evidence_json FROM policy_versions").all().every(row => !String(row.evidence_json).includes("Invented statutory provision")));
   database.close();
 });
 
