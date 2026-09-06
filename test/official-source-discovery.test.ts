@@ -331,6 +331,33 @@ test("Pennsylvania committee RSS produces filtered, self-contained official revi
   }
 });
 
+test("PA committee feeds distinguish valid empty, joint meetings, and malformed XML", async () => {
+  for (const sourceId of ["ofs-pa-house-health-committee", "ofs-pa-senate-health-committee"]) {
+    const source = officialSourceRegistry.sources.find((row) => row.id === sourceId)!;
+    const fixture = readFileSync(join(root, "test/fixtures/pa-legislation", sourceId.includes("house") ? "house-health-committee.xml" : "senate-health-committee.xml"), "utf8");
+    const run = (xml: string) => discoverOfficialSources({
+      sources: [source], now: new Date("2026-09-06T21:00:00Z"), detailCapPerRun: 0,
+      fetchImpl: async () => new Response(xml, { headers: { "content-type": "application/rss+xml" } }),
+    });
+    for (const xml of ["<rss><channel></rss>", "<error>Unavailable</error>", fixture.replace("</item>", ""), fixture.replace(/<parss:Committee>.*?<\/parss:Committee>/g, "")]) {
+      const result = await run(xml);
+      assert.equal(result.snapshots[0]?.state, "failed");
+      assert.match(result.snapshots[0]?.error ?? "", /committee RSS/i);
+      assert.equal(result.candidates.length, 0);
+    }
+    const empty = await run(fixture.replace(/<item\b[^>]*>[\s\S]*?<\/item>/g, ""));
+    assert.equal(empty.snapshots[0]?.state, "success");
+    assert.equal(empty.candidates.length, 0);
+    const unrelated = await run(fixture.replace(/HOUSE HEALTH|SENATE HEALTH &amp; HUMAN SERVICES/g, "TRANSPORTATION"));
+    assert.equal(unrelated.snapshots[0]?.state, "success");
+    assert.equal(unrelated.candidates.length, 0);
+    const joint = await run(fixture.replace(/(<parss:Committee>)/g, "<parss:Committee>HOUSE TRANSPORTATION</parss:Committee>$1"));
+    assert.equal(joint.snapshots[0]?.state, "success");
+    assert.equal(joint.candidates.length, 1);
+    assert.match(joint.candidates[0]?.detailText ?? "", /HOUSE TRANSPORTATION;/);
+  }
+});
+
 test("source discovery is bounded, partial snapshots stay review-only, and hostile text is flagged", async () => {
   const now = new Date("2026-08-28T12:00:00.000Z");
   const source: OfficialSource = {

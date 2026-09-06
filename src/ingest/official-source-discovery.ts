@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { XMLValidator } from "fast-xml-parser";
 import officialSourceDocument from "../../fixtures/official-source-registry-v1.json";
 import entityFixtures from "../../fixtures/entities.json";
 import { Entity } from "../content/entity";
@@ -614,6 +615,21 @@ function xmlTagValues(xml: string, tag: string) {
   const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const expression = new RegExp(`<${escaped}\\b[^>]*>([\\s\\S]*?)<\\/${escaped}>`, "gi");
   return [...xml.matchAll(expression)].map((match) => stripTags(match[1] ?? ""));
+}
+
+function validatePaCommitteeRss(source: OfficialSource, xml: string) {
+  if (source.id !== "ofs-pa-house-health-committee" && source.id !== "ofs-pa-senate-health-committee") return;
+  // Validate before the unchanged-hash shortcut: an old malformed snapshot
+  // must never establish a healthy empty schedule. No DTD/entity expansion.
+  if (/<!DOCTYPE|<!ENTITY/i.test(xml) || XMLValidator.validate(xml) !== true ||
+      !/^\s*(?:<\?xml[^?]*\?>\s*)?<rss\b[^>]*>\s*<channel\b[^>]*>[\s\S]*<\/channel>\s*<\/rss>\s*$/.test(xml)) {
+    throw new UpstreamError("parser-failed", "Invalid Pennsylvania committee RSS document");
+  }
+  for (const match of xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)) {
+    if (!xmlTagValues(match[1] ?? "", "parss:Committee").some(Boolean)) {
+      throw new UpstreamError("parser-failed", "Pennsylvania committee RSS item lacks committee identity");
+    }
+  }
 }
 
 function paCommitteeNameMatches(source: OfficialSource, committees: readonly string[]) {
@@ -1288,6 +1304,7 @@ async function discoverOne(
     if (CHALLENGE_RE.test(response.body.slice(0, 24_000))) {
       return empty("hostile", "Source returned an access challenge", response.url, hash, new TextEncoder().encode(response.body).byteLength, sourceTitle);
     }
+    validatePaCommitteeRss(source, response.body);
     if (previous?.lastHash && previous.lastHash === hash) {
       const snapshot = {
         id: `official-snapshot-${source.id}-${fetchedAt}`,
