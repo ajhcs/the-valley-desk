@@ -17,6 +17,8 @@ import {
   officialSourceBackoffMs,
   officialSourceHostAllowlist,
   officialSourceRegistry,
+  parseOfficialSourceRelevanceResult,
+  officialSourceRelevanceInput,
   selectDueOfficialSources,
   selectOfficialDetailCandidates,
   officialSourcesForCategory,
@@ -25,6 +27,43 @@ import {
   type OfficialSource,
 } from "../src/ingest/official-source-discovery.ts";
 import { verifiedProductUsesForOfficialSource } from "../src/ingest/product-watch.ts";
+import { officialSourceRelevanceGateFromEditor } from "../src/ingest/official-source-automation.ts";
+import { paBillSynopsis } from "../src/ingest/pa-bill-evidence.ts";
+
+test("official relevance rejects empty, wrapped, incomplete and invalid response contracts", () => {
+  const valid = { decision: "review", relevanceScore: 0, confidence: 0, reasons: ["Evidence insufficient"], evidenceSpans: [] };
+  for (const value of [{}, { result: valid }, { decision: "review" }, { ...valid, reasons: [] }, { ...valid, confidence: "0" }, { ...valid, relevanceScore: 101 }, { ...valid, unexpected: true }, [], null]) {
+    assert.throws(() => parseOfficialSourceRelevanceResult(value), /response-contract failure/);
+  }
+  for (const key of Object.keys(valid)) {
+    const partial = { ...valid } as Record<string, unknown>;
+    delete partial[key];
+    assert.throws(() => parseOfficialSourceRelevanceResult(partial), /response-contract failure/);
+  }
+  assert.deepEqual(parseOfficialSourceRelevanceResult(valid), valid);
+});
+
+test("captured HB1993 synopsis reaches the exact model request without claiming PDF extraction", async () => {
+  const source = officialSourceRegistry.sources.find(s => s.id === "ofs-pa-legislature-hb1993")!;
+  const html = readFileSync(join(root, "test/fixtures/pa-legislation/captured-hb1993-20260906.html"), "utf8");
+  const synopsis = "An Act providing for the use of artificial intelligence in mental health therapy and for enforcement.";
+  assert.equal(paBillSynopsis(html), synopsis);
+  let delivered = "";
+  const gate = officialSourceRelevanceGateFromEditor({ apiKey: "local-test" }, async (_url, init) => {
+    delivered = JSON.parse(String(init?.body)).messages[1].content;
+    return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ decision: "review", relevanceScore: 60, confidence: 0.8, reasons: ["Synopsis supplied; full PDF provisions remain unextracted"], evidenceSpans: [synopsis] }) } }] }));
+  })!;
+  const result = await discoverOfficialSources({ sources: [source], now: new Date("2026-09-06T23:30:00Z"), fetchImpl: async () => new Response(html), relevanceGate: gate });
+  const candidate = result.candidates[0]!;
+  assert.ok(candidate.detailText?.includes(synopsis));
+  assert.ok(officialSourceRelevanceInput(candidate).candidate.detailText?.includes(synopsis));
+  assert.ok(JSON.parse(delivered).candidate.detailText.includes(synopsis));
+  assert.equal(candidate.relevanceAttempt?.outcome, "relevance_hold");
+  assert.equal(contentItemsFromOfficialCandidates([candidate]).length, 0);
+  const hb1925 = readFileSync(join(root, "test/fixtures/pa-legislation/captured-hb1925-20260906.html"), "utf8");
+  assert.ok(paBillSynopsis(hb1925).includes("artificial intelligence use by insurers"), "inline expansion must not split words");
+  assert.equal(paBillSynopsis(html.replace('id="shortTitle-wrapper"', 'id="missing-field"')), "");
+});
 
 const pennNews = officialSourceRegistry.sources.find((source) => source.id === "ofs-penn-news")!;
 const pennEvents = officialSourceRegistry.sources.find((source) => source.id === "ofs-penn-events")!;

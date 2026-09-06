@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { diagnosticId, diagnosticShape, diagnosticUsage, readBoundedModelBody, ModelResponseSizeError, type ModelResponseDiagnostic } from "./model-response-diagnostics";
 import { ContentCatalog, type ContentItem } from "../content/schema";
 import publishedCatalog from "../content/published-catalog.json";
 import { publicOrigin } from "../lib/canonical";
@@ -114,6 +115,7 @@ export type EditorCompletionMessage = {
 };
 
 export type EditorCompletionOptions = {
+  onDiagnostic?: (diagnostic: ModelResponseDiagnostic) => void;
   temperature?: number;
   maxTokens?: number;
   responseFormat?: Record<string, unknown>;
@@ -320,6 +322,24 @@ export async function completeEditorJson(
   fetchImpl: typeof fetch = fetch,
   options: EditorCompletionOptions = {},
 ): Promise<unknown> {
+  const format = options.responseFormat?.type ?? "json_object";
+  const diagnostic: ModelResponseDiagnostic = { startedAt: new Date().toISOString(), phase: "transport", maxTokens: options.maxTokens ?? EDITOR_OUTPUT_MAX_TOKENS,
+    responseFormat: format === "json_object" || format === "json_schema" ? format : "other" };
+  try {
+    return await completeEditorJsonRequest(messages, config, fetchImpl, options, diagnostic);
+  } catch (error) {
+    diagnostic.failure ??= error instanceof EditorModelError ? error.code : "transport_or_body_failure";
+    throw error;
+  } finally {
+    diagnostic.endedAt = new Date().toISOString();
+    try { options.onDiagnostic?.(diagnostic); } catch { /* Observability cannot change the outcome. */ }
+  }
+}
+
+async function completeEditorJsonRequest(
+  messages: readonly EditorCompletionMessage[], config: EditorModelConfig,
+  fetchImpl: typeof fetch, options: EditorCompletionOptions, diagnostic: ModelResponseDiagnostic,
+): Promise<unknown> {
   if (!config.apiKey) throw new EditorModelError("no_content", "Editor model is not configured");
   const model = config.model || DEFAULT_EDITOR_MODEL;
   const baseUrl = (config.baseUrl || DEFAULT_EDITOR_BASE_URL).replace(/\/$/, "");
@@ -353,23 +373,41 @@ export async function completeEditorJson(
     }
     throw error;
   }
+  diagnostic.status = response.status;
+  diagnostic.requestId = diagnosticId(response.headers.get("x-request-id"));
   if (!response.ok) throw new EditorModelError("http", `Editor model failed (${response.status})`);
   let payload: {
+    id?: unknown; usage?: unknown;
     choices?: { message?: { content?: unknown }; finish_reason?: string }[];
   };
+  diagnostic.phase = "outer_json";
   try {
-    payload = await response.json() as typeof payload;
+    const text = await readBoundedModelBody(response);
+    diagnostic.shape = await diagnosticShape(text);
+    payload = JSON.parse(text) as typeof payload;
   } catch (error) {
+    if (error instanceof ModelResponseSizeError) {
+      diagnostic.failure = "response_byte_limit";
+      throw new EditorModelError("malformed", "Editor model response exceeds byte limit");
+    }
+    if (isTimeoutError(error)) throw new EditorModelError("timeout", "Editor model timed out");
     throw new EditorModelError("malformed", "Editor model returned malformed JSON", { cause: error });
   }
-  const choice = payload.choices?.[0];
+  diagnostic.responseId = diagnosticId(payload?.id);
+  diagnostic.usage = diagnosticUsage(payload?.usage);
+  const choice = payload?.choices?.[0];
+  diagnostic.finishReason = ["stop", "length", "content_filter", "tool_calls", "error"].includes(choice?.finish_reason ?? "") ? choice!.finish_reason : "unknown";
+  diagnostic.phase = "content_json";
   const raw = messageContent(choice?.message?.content);
+  if (raw) diagnostic.shape = await diagnosticShape(raw);
   if (!raw?.trim()) {
-    const finishReason = choice?.finish_reason ? ` (finish_reason: ${choice.finish_reason})` : "";
+    const finishReason = ` (finish_reason: ${diagnostic.finishReason})`;
     throw new EditorModelError("no_content", `Editor model returned no content${finishReason}`);
   }
   try {
-    return extractEditorJson(raw);
+    const parsed = extractEditorJson(raw);
+    diagnostic.phase = "parsed";
+    return parsed;
   } catch (error) {
     if (error instanceof EditorModelError) throw error;
     throw new EditorModelError("malformed", "Editor model returned malformed JSON", { cause: error });

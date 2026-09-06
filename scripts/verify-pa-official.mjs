@@ -5,8 +5,8 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { discoverOfficialSources, officialSourceRegistry, officialPolicyIdentity } from '../src/ingest/official-source-discovery.ts';
-import { readPaBillEvidence } from '../src/ingest/pa-bill-evidence.ts';
+import { discoverOfficialSources, officialSourceRegistry, officialPolicyIdentity, officialSourceRelevanceInput } from '../src/ingest/official-source-discovery.ts';
+import { readPaBillEvidence, paBillSynopsis } from '../src/ingest/pa-bill-evidence.ts';
 import { fetchUpstream } from '../src/ingest/upstream.ts';
 
 const receiptArg = process.argv.find(arg => arg.startsWith('--receipt='));
@@ -33,8 +33,11 @@ try {
     const candidate = result.candidates[0];
     const record = readPaBillEvidence(candidate?.detailText);
     const identity = candidate && officialPolicyIdentity(candidate);
+    const synopsis = paBillSynopsis(response.body);
+    const delivered = candidate && officialSourceRelevanceInput(candidate).candidate.detailText;
     receipt.results.push({ sourceId: source.id, startedAt, finishedAt: new Date().toISOString(), milliseconds: Math.round(performance.now() - start),
       sourceUrl: source.url, finalUrl: response.url, rawPath, rawSha256, record, identity, detailHash: candidate?.detailHash,
+      synopsis, synopsisDelivered: Boolean(synopsis && delivered?.includes(synopsis)), pdfContentsExtracted: false,
       error: candidate?.detailError ?? result.snapshots[0]?.error });
     assert.equal(result.snapshots[0]?.state, 'success');
     assert.equal(result.candidates.length, 1);
@@ -42,6 +45,7 @@ try {
     assert.ok(record?.actionAt && record.current?.printer && record.current.url);
     assert.ok(identity && identity.versionId === record.current.printer && identity.textUrl === record.current.url);
     assert.equal(identity.developmentAt, record.actionAt);
+    assert.ok(synopsis && delivered?.includes(synopsis), 'Official synopsis must reach the relevance input');
   }
   assert.equal(receipt.results.length, 3);
   assert.equal(git('rev-parse', 'HEAD'), receipt.commit);

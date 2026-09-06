@@ -32,6 +32,7 @@ import {
 import {
   contentItemsFromOfficialCandidates,
   discoverOfficialSources,
+  applyOfficialSourceRelevanceGate,
   officialSourceRegistry,
   officialPolicyIdentity,
 } from "../src/ingest/official-source-discovery.ts";
@@ -39,6 +40,7 @@ import {
   persistOfficialSourceCandidates,
   persistOfficialSourceSnapshots,
   readRetryOfficialSourceCandidates,
+  officialSourceRelevanceGateFromEditor,
 } from "../src/ingest/official-source-automation.ts";
 import {
   cleanupNewsArticleExtractions,
@@ -731,7 +733,7 @@ test("hydrated bill retries survive a saturated queue and exhausted collection b
     relevanceGate: async (input, timeout) => {
       assert.ok((timeout ?? 0) >= 1_000, "relevance keeps its own allocation after collection expires");
       calls.push(input.candidate.id);
-      return { decision: "accept", relevanceScore: 99, confidence: 0.99, reasons: ["local model stub; captured official evidence"], evidenceSpans: [] };
+      return { decision: "accept", relevanceScore: 99, confidence: 0.99, reasons: ["local model stub; captured official evidence"], evidenceSpans: [readPaBillEvidence(input.candidate.detailText)!.action] };
     },
   });
   const bills = result.candidates.filter(c => deferred.some(d => d.id === c.id));
@@ -822,6 +824,60 @@ test("captured official PA bill bytes preserve current printer, action, history,
   assert.equal(database.prepare("SELECT COUNT(*) n FROM policy_versions").get()?.n, 3);
   assert.equal(database.prepare("SELECT COUNT(*) n FROM published_content").get()?.n, 0);
   assert.deepEqual(database.prepare("PRAGMA foreign_key_check").all(), []);
+  database.close();
+});
+
+test("pre-editorial technical, contract and evidence outcomes persist without fabricated milestones", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const sources = officialSourceRegistry.sources.filter(s => /^ofs-pa-legislature-(?:hb|sb)\d+$/.test(s.id));
+  const first = await discoverOfficialSources({ sources, detailCapPerRun: 0,
+    fetchImpl: async url => new Response(readFileSync(join(root, `test/fixtures/pa-legislation/captured-${String(url).split("/").at(-1)}-20260906.html`), "utf8")),
+  });
+  const gate = officialSourceRelevanceGateFromEditor({ apiKey: "test" }, async (_url, init) => {
+    const input = JSON.parse(JSON.parse(String(init?.body)).messages[1].content).candidate;
+    const content = input.id.includes("hb1925") ? '{"decision":'
+      : input.id.includes("sb1113") ? '{}'
+      : JSON.stringify({ decision: "reject", relevanceScore: 2, confidence: 0.88, reasons: ["Full provisions not supplied"], evidenceSpans: [] });
+    return new Response(JSON.stringify({ id: "gen-1788735624-TestRequest123", choices: [{ finish_reason: "stop", message: { content } }] }));
+  })!;
+  const bills = await applyOfficialSourceRelevanceGate(first.candidates, gate);
+  const lines: string[] = [];
+  const original = console.log;
+  try {
+    console.log = line => { lines.push(String(line)); };
+    await persistOfficialSourceSnapshots(db, first.snapshots);
+    await persistOfficialSourceCandidates(db, bills, first.snapshots, new Set());
+    await persistOfficialSourceCandidates(db, bills, first.snapshots, new Set());
+  } finally { console.log = original; }
+  assert.equal(contentItemsFromOfficialCandidates(bills).length, 0);
+  for (const candidate of bills) {
+    const row = database.prepare("SELECT * FROM official_source_candidates WHERE id=?").get(candidate.id)!;
+    assert.equal(row.status, "review");
+    assert.equal(row.content_item_id, null);
+    assert.equal(row.relevance_reasons_json, JSON.stringify(candidate.relevance?.reasons));
+    const log = lines.map(line => JSON.parse(line)).find(l => l.discoveryId === candidate.id)!;
+    assert.ok(log.startedAt && log.endedAt && log.inputSha256);
+    assert.equal(log.detailHash, candidate.detailHash);
+    assert.equal(log.editorialDisposition, null);
+    assert.equal(log.fingerprint, undefined);
+    assert.equal(log.admittedThisPass, false);
+    if (candidate.sourceId.endsWith("hb1993")) {
+      assert.equal(log.outcome, "relevance_hold");
+      assert.equal(log.modelDecision, "reject");
+      assert.match(String(row.relevance_reasons_json), /Evidence-insufficiency hold/);
+      assert.ok(String(row.detail_text).includes("artificial intelligence in mental health therapy"));
+    } else {
+      assert.equal(log.outcome, "technical_failure");
+      assert.match(String(row.relevance_reasons_json), candidate.sourceId.endsWith("sb1113") ? /response-contract failure/ : /malformed JSON/);
+    }
+  }
+  const deferred = await applyOfficialSourceRelevanceGate(first.candidates, gate, { deadlineAt: 0 });
+  assert.ok(deferred.every(c => c.relevanceAttempt?.outcome === "deferred" && c.relevanceAttempt.startedAt === null));
+  assert.equal(database.prepare("SELECT COUNT(*) n FROM policy_versions").get()?.n, 3);
+  assert.equal(database.prepare("SELECT COUNT(*) n FROM policy_review_milestones").get()?.n, 0);
+  assert.equal(database.prepare("SELECT COUNT(*) n FROM published_content").get()?.n, 0);
   database.close();
 });
 

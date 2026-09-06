@@ -1,6 +1,7 @@
 import { z } from "zod";
+import type { ModelResponseDiagnostic } from "./model-response-diagnostics";
 import { XMLValidator } from "fast-xml-parser";
-import { extractPaBillEvidence, paBillEvidenceText, readPaBillEvidence } from "./pa-bill-evidence";
+import { extractPaBillEvidence, paBillEvidenceText, paBillSynopsis, readPaBillEvidence } from "./pa-bill-evidence";
 import officialSourceDocument from "../../fixtures/official-source-registry-v1.json";
 import entityFixtures from "../../fixtures/entities.json";
 import { Entity } from "../content/entity";
@@ -12,7 +13,7 @@ import {
   type ContentItem,
 } from "../content/schema";
 import { coveragePack } from "./coverage-pack";
-import { DEFAULT_EDITOR_MODEL } from "./editor-model";
+import { DEFAULT_EDITOR_MODEL, EditorModelError } from "./editor-model";
 import { EVENT_TIMEZONE, slugify, toIso } from "./event-parser";
 import { normalizeSourceUrl, withCanonicalSource } from "./identity";
 import { mapSeedOrgIds } from "./org-map";
@@ -32,7 +33,7 @@ import {
 const seedEntities = Entity.array().parse(entityFixtures);
 
 export const OFFICIAL_SOURCE_SCHEMA_VERSION = 1;
-export const OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION = "tvd-official-source-relevance-v3";
+export const OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION = "tvd-official-source-relevance-v4";
 export const OFFICIAL_SOURCE_RELEVANCE_MODEL = DEFAULT_EDITOR_MODEL;
 
 const HttpsUrl = z.string().url().refine((value) => {
@@ -246,6 +247,12 @@ export type OfficialDiscoveryCandidate = {
   venue?: string;
   city?: string;
   relevance?: OfficialSourceRelevanceResult;
+  relevanceAttempt?: {
+    id: string; startedAt: string | null; endedAt: string;
+    outcome: "technical_failure" | "relevance_hold" | "relevance_rejection" | "relevance_acceptance" | "deferred";
+    inputSha256?: string; response?: ModelResponseDiagnostic;
+    modelDecision?: OfficialSourceRelevanceResult["decision"];
+  };
 };
 
 export type OfficialSourceRelevanceInput = {
@@ -269,6 +276,7 @@ export type OfficialSourceRelevanceResult = {
 export type OfficialSourceRelevanceGate = (
   input: OfficialSourceRelevanceInput,
   timeoutMs?: number,
+  onDiagnostic?: (diagnostic: ModelResponseDiagnostic) => void,
 ) => Promise<OfficialSourceRelevanceResult>;
 
 export type OfficialDiscoveryResult = {
@@ -828,6 +836,10 @@ function normalizeDetailPage(html: string, category: OfficialSourceCategory, max
   const content = mainMatch?.[1] ?? cleaned;
   const title = htmlTagText(content, "h1") || documentTitle(cleaned);
   const chunks: string[] = [];
+  // The PA synopsis is a div, which the generic paragraph extractor omits.
+  // Reserve it before page chrome and keep it literal for evidence validation.
+  const synopsis = category === "policy" ? paBillSynopsis(html) : "";
+  if (synopsis) chunks.push(synopsis);
   const blockRe = /<(?:h1|h2|h3|p|li|dt|dd|td|th|time)\b[^>]*>([\s\S]*?)<\/(?:h1|h2|h3|p|li|dt|dd|td|th|time)>/gi;
   let block: RegExpExecArray | null;
   while ((block = blockRe.exec(content))) {
@@ -1108,27 +1120,15 @@ function scheduleAfter(
 }
 
 export function parseOfficialSourceRelevanceResult(value: unknown): OfficialSourceRelevanceResult {
-  const record = value && typeof value === "object" ? value as Record<string, unknown> : {};
-  const decision = record.decision === "accept" || record.decision === "reject" ? record.decision : "review";
-  const relevanceScore = typeof record.relevanceScore === "number" && Number.isFinite(record.relevanceScore)
-    ? Math.max(0, Math.min(100, Math.trunc(record.relevanceScore)))
-    : 0;
-  const confidence = typeof record.confidence === "number" && Number.isFinite(record.confidence)
-    ? Math.max(0, Math.min(1, record.confidence))
-    : 0;
-  const reasons = Array.isArray(record.reasons)
-    ? record.reasons.filter((row): row is string => typeof row === "string").slice(0, 3)
-    : [];
-  const evidenceSpans = Array.isArray(record.evidenceSpans)
-    ? record.evidenceSpans.filter((row): row is string => typeof row === "string").slice(0, 4)
-    : [];
-  return {
-    decision,
-    relevanceScore,
-    confidence,
-    reasons,
-    evidenceSpans,
-  };
+  const contract = z.object({
+    decision: z.enum(["accept", "review", "reject"]),
+    relevanceScore: z.number().int().min(0).max(100),
+    confidence: z.number().min(0).max(1),
+    reasons: z.array(z.string().trim().min(1).max(1000)).min(1).max(3),
+    evidenceSpans: z.array(z.string().trim().min(1).max(2000)).max(4),
+  }).strict().safeParse(value);
+  if (!contract.success) throw new EditorModelError("validation", "Official relevance response-contract failure: required decision fields invalid or missing");
+  return contract.data;
 }
 
 export function officialSourceRelevanceInput(candidate: OfficialDiscoveryCandidate): OfficialSourceRelevanceInput {
@@ -1191,9 +1191,11 @@ export async function applyOfficialSourceRelevanceGate(
   options: { concurrency?: number; timeoutMs?: number; deadlineAt?: number } = {},
 ) {
   return mapWithConcurrency(candidates, options.concurrency ?? OFFICIAL_SOURCE_RELEVANCE_CONCURRENCY, async (candidate) => {
+    const id = crypto.randomUUID();
     if (options.deadlineAt !== undefined && options.deadlineAt - Date.now() < 1_000) {
       return {
         ...candidate,
+        relevanceAttempt: { id, startedAt: null, endedAt: new Date().toISOString(), outcome: "deferred" },
         relevance: {
           decision: "review",
           relevanceScore: 0,
@@ -1209,22 +1211,38 @@ export async function applyOfficialSourceRelevanceGate(
       options.deadlineAt === undefined ? Number.POSITIVE_INFINITY : options.deadlineAt - Date.now(),
     ));
     let timer: ReturnType<typeof setTimeout> | undefined;
+    const startedAt = new Date().toISOString();
+    const input = officialSourceRelevanceInput(candidate);
+    const inputSha256 = await hashText(JSON.stringify(input));
+    let response: ModelResponseDiagnostic | undefined;
     try {
       const result = await Promise.race([
-        gate(officialSourceRelevanceInput(candidate), timeoutMs),
+        gate(input, timeoutMs, diagnostic => { response = diagnostic; }),
         new Promise<OfficialSourceRelevanceResult>((_, reject) => {
           timer = setTimeout(() => reject(new Error("Relevance gate timed out")), timeoutMs);
         }),
       ]);
-      return { ...candidate, relevance: parseOfficialSourceRelevanceResult(result) } satisfies OfficialDiscoveryCandidate;
+      const relevance = parseOfficialSourceRelevanceResult(result);
+      const modelDecision = relevance.decision;
+      const evidenceText = [input.candidate.detailTitle, input.candidate.detailText].filter(Boolean).join("\n");
+      if (/^ofs-pa-legislature-(?:hb|sb)\d+$/.test(candidate.sourceId)
+        && (relevance.evidenceSpans.length === 0 || relevance.evidenceSpans.some(span => !evidenceText.includes(span) || looksInstructionLike(span)))) {
+        relevance.decision = "review";
+        relevance.reasons = ["Evidence-insufficiency hold: missing or unsupported literal bill evidence from relevance model", ...relevance.reasons];
+      }
+      return { ...candidate, relevance,
+        relevanceAttempt: { id, startedAt, endedAt: new Date().toISOString(), inputSha256, response, modelDecision,
+          outcome: relevance.decision === "accept" ? "relevance_acceptance" : relevance.decision === "reject" ? "relevance_rejection" : "relevance_hold" },
+      } satisfies OfficialDiscoveryCandidate;
     } catch (error) {
       return {
         ...candidate,
+        relevanceAttempt: { id, startedAt, endedAt: new Date().toISOString(), inputSha256, response, outcome: "technical_failure" },
         relevance: {
           decision: "review",
           relevanceScore: 0,
           confidence: 0,
-          reasons: [clipError(error) || "Relevance gate failed"],
+          reasons: [error instanceof EditorModelError ? error.message : error instanceof Error && error.message === "Relevance gate timed out" ? error.message : "Relevance gate failed (technical failure)"],
           evidenceSpans: [],
         },
       } satisfies OfficialDiscoveryCandidate;

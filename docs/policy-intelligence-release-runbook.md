@@ -1,5 +1,45 @@
 # Policy intelligence migration, verification, and rollback
 
+## Model-response/evidence follow-up (local candidate; schema 0027)
+
+See `docs/evidence/model-response-evidence-review.md`. This code-only candidate
+adds bounded diagnostics, strict relevance response validation, and extraction
+of the captured official bill synopsis. It does not fix an established cause
+of HB1925's malformed JSON: the original bytes are unavailable. Model identity,
+1024-token relevance limit, capacity allocation, committee parsing, credentials,
+routing, and newsletter intake remain unchanged.
+
+Before qualification, run captured-page/model/persistence regressions, commit,
+replay fresh official bytes, then run the declared exact-tree release gate once.
+Deployment is a separate authorization. Refresh preflight and verify rollback
+against the then-current Worker (last verified baseline `1ea34af9-3b4d-4f56-ae93-5a8c151c576c`,
+commit `f802b24`). Do not apply a migration or restore the database.
+
+After an authorized release, capture a natural relevance cycle's
+`official_relevance_persisted` structured logs in restricted evidence. Join
+`discoveryId` to `official_source_candidates.id`, verify `detailHash`, and hash
+the stored `relevance_reasons_json` to match `reasonsSha256`. `inputSha256` is
+the relevance-input hash, NOT a downstream editorial fingerprint. `startedAt`
+and `endedAt` are actual processing times; deferred rows have NULL start.
+Pair logs with read-only D1 results promptly: schema 0027 retains latest reasons
+but has no pre-admission attempt-history table. Logs are retention-limited,
+not permanent D1 history; preserve the restricted receipt before expiration.
+If persistence fails, absence of the persisted event is not proof of no attempt.
+
+For HB1925 require diagnostic classification and a reproduction before changing
+parser behavior or output limits. Missing/unsafe request identifiers stay absent.
+For SB1113 require a complete response or explicit response-contract failure.
+For HB1993 compare delivered synopsis to official bytes; PDF links are provenance,
+not extracted PDF contents. Empty evidence spans force a PA relevance hold,
+retaining the original model decision in the processing receipt. Neither a
+relevance hold nor rejection is an editorial disposition. Use the existing
+current-fingerprint milestone audit only after admission. Preserve the already
+accepted legislative-material idempotency item and check committees separately.
+
+If authorized release checks fail, use the documented code-only rollback to
+the refreshed preflight version. No schedule reset, forced ingestion, baseline
+import, credential/routing change, or historical repair belongs to this scope.
+
 ## Deferred-relevance follow-up (schema 0027, code-only candidate)
 
 Collection/detail retain their 25-second allocation. Relevance receives a

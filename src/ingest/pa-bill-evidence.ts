@@ -66,6 +66,16 @@ export function paBillEvidenceText(evidence: PaBillEvidence) {
   return PREFIX + JSON.stringify(evidence) + "\n";
 }
 
+/** Official synopsis, not PDF contents. Keep it outside the version identity
+ * record so improved extraction cannot create a new legislative development. */
+export function paBillSynopsis(html: string) {
+  const field = /<div\b[^>]*id=["']shortTitle-wrapper["'][^>]*>([\s\S]*?)<\/div>/i.exec(html)?.[1];
+  if (!field) return "";
+  const text = clean(field.replace(/<button\b[\s\S]*?<\/button>/gi, "").replace(/<span\b[^>]*id=["']shortTitle-dots["'][^>]*>[\s\S]*?<\/span>/gi, "").replace(/<[^>]*>/g, ""));
+  // Never silently deliver a partial synopsis as the complete designated field.
+  return text.length >= 12 && text.length <= 4000 ? text : "";
+}
+
 /** The bounded evidence prefix survives schema-0027 detail persistence/readback. */
 export function readPaBillEvidence(text: string | undefined) {
   if (!text?.startsWith(PREFIX)) return undefined;
