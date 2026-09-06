@@ -2,7 +2,7 @@
 
 This is a release plan only. The implementation task did not deploy, apply migration 0027, alter production candidates, or run the policy baseline import.
 
-## Preconditions
+## Stage 0: immutable-candidate preconditions
 
 1. Review an immutable candidate commit and the 19-item acceptance matrix. Run
    the repository release gate from a clean checkout of that exact commit and
@@ -10,14 +10,14 @@ This is a release plan only. The implementation task did not deploy, apply migra
    deployed. A dirty working tree or validation from another SHA is not
    acceptable.
 2. Keep the existing `the-valley-desk` Worker and `the-valley-desk` D1 database. Do not create a parallel production Worker.
-3. Create a token restricted to the `thevalleydesk.org` zone with Analytics Read only. Provision it as `CF_EMAIL_ANALYTICS_TOKEN`, plus `CF_EMAIL_ZONE_ID` and the exact Worker routing-rule UUID as `CF_EMAIL_ROUTING_RULE_ID`. The in-repository adapter fails closed when any value is absent.
-4. Record the deployed Worker version/SHA, current D1 schema, open-alert rows, source-health rows, and current policy candidate aggregates in a restricted off-repository release artifact.
+3. Keep ordinary newsletter intake disabled at the Cloudflare Email Routing
+   rule while migration 0027 and the Worker candidate are deployed. The Worker
+   fails closed if its Analytics correlation settings are absent, but that is
+   not a substitute for disabling the route during this stage.
+4. Record the deployed Worker version/SHA, current D1 schema, Email Routing rule
+   enabled/disabled state, open-alert rows, source-health rows, and current
+   policy candidate aggregates in a restricted off-repository release artifact.
 5. Capture both a D1 Time Travel bookmark and a full SQL export. Cloudflare documents that migrations are transactional and capture a backup, but the independent bookmark/export makes the rollback target explicit.
-6. Obtain Cole Lyons's signed leadership-history manifest described in
-   `docs/evidence/leadership-history-review-plan.md`. Counts must reconcile to
-   205 dynamic roles/204 closed and include individual dispositions for the two
-   CHOP rows. Do not reopen any row as part of this gate. Missing sign-off blocks
-   deployment approval.
 
 Suggested preflight commands, to be run only in an explicitly authorized production release task:
 
@@ -32,7 +32,9 @@ npm run secret-scan
 npm run backfill:policy:dry-run
 ```
 
-Email authentication provisioning is likewise release-only and was not run here:
+Email authentication provisioning is release-only and was not run here. It may
+be completed before or immediately after Stage 1, but ordinary newsletter
+intake must remain disabled until Stage 2 passes:
 
 ```bash
 npm exec -- wrangler secret put CF_EMAIL_ANALYTICS_TOKEN
@@ -42,7 +44,7 @@ npm exec -- wrangler secret put CF_EMAIL_ROUTING_RULE_ID
 
 The API token must be limited to Analytics Read for the selected zone. The zone and rule values are correlation constraints, not editorial credentials. Cloudflare documents the routing event fields in [Email Service metrics and analytics](https://developers.cloudflare.com/email-service/observability/metrics-analytics/) and the Email Worker runtime fields in the [route-email handler reference](https://developers.cloudflare.com/email-service/api/route-emails/email-handler/).
 
-## Migration and deployment order
+## Stage 1: migration and candidate deployment
 
 Migration 0027 is additive: it adds candidate provenance/disposition columns, policy/version/review-milestone tables, exact email wire-size/provenance columns, PDF tables/extraction audit fields, and recovery detail. It does not rebuild or drop `email_discoveries`, so existing `signal_pointer_verifications` children are preserved. Existing email rows are retained but fail closed as `legacy`/`untrusted-pointer` because pre-0027 MIME-header trust cannot substitute for a Cloudflare Analytics receipt. Other bounded updates mark known out-of-scope policy navigation links `filtered` and pull healthy/pending policy-critical schedules forward so preexisting daily timestamps cannot delay the first 30-minute check. Failed/blocked/hostile backoffs are preserved.
 
@@ -53,10 +55,16 @@ Migration 0027 is additive: it adds candidate provenance/disposition columns, po
    ```
 
 2. Run the read-only migration checks below.
-3. Deploy the reviewed commit through the normal release path. Do not run `applyPolicyBaseline` as part of deployment.
-4. Run authenticated read-only status and a controlled synthetic legislative fixture in the non-production/local harness. Production verification should observe natural scheduled activity; no live backfill is required.
-5. Before enabling the newsletter route for ordinary traffic, run the real
-   Email Routing acceptance below. A mocked adapter test is not a substitute.
+3. Confirm the ordinary newsletter Email Routing rule is still disabled, then
+   deploy the reviewed commit through the normal release path. Do not run
+   `applyPolicyBaseline` as part of deployment.
+4. Verify `/api/health` reports schema `0027` and the intended build SHA. Run
+   authenticated read-only status and the controlled synthetic legislative
+   fixture in the non-production/local harness. Production verification should
+   observe natural scheduled activity; no live backfill is required.
+5. The deployment may advance to Stage 2 without a production email receipt.
+   Newsletter intake remains disabled, so this is not acceptance of that input
+   channel.
 
 ## Post-migration read-only checks
 
@@ -85,31 +93,41 @@ ORDER BY created_at DESC LIMIT 20;
 SELECT state, COUNT(*) FROM operational_alerts GROUP BY state;
 ```
 
-Acceptance requires no foreign-key errors, unchanged pre-existing email/verification counts, the former off-path navigation failures classified as filtered, and the existing open Cooper/leadership incidents still open unless production itself has supplied the required consecutive recovery observations. A healthy cron status alone is not a recovery signal.
+Acceptance requires no foreign-key errors, unchanged pre-existing email/verification counts, the former off-path navigation failures classified as filtered, and the existing open Cooper/leadership incidents still open unless production itself has supplied the required consecutive recovery observations. A healthy cron status alone is not a recovery signal. Cooper/LVHN HTTP blocks and unreadable Penn pages are tracked operational incidents, not Stage 1 deployment blockers and not recoveries this candidate can guarantee.
 
-Run `docs/evidence/policy-detail-failure-audit.sql` after migration. The 20 CMS rows should remain active and recover only through the registered apex/`www` redirect; the six off-path Delaware/NJ navigation rows should be `filtered` with no next attempt. Any remaining row outside those classifications blocks release.
+Run `docs/evidence/policy-detail-failure-audit.sql` after migration. The 20 CMS rows should remain active and recover only through the registered apex/`www` redirect; the six off-path Delaware/NJ navigation rows should be `filtered` with no next attempt. Any remaining policy detail failure outside those expected classifications requires investigation before Stage 1 is accepted.
 
-Leadership history is a separate deployment-approval gate and a separate repair
-workflow. Export the read-only query in
+Leadership history is a separate review-and-repair track, not a Stage 1
+deployment gate. The candidate's tests must establish that the preventive fix
+stops new unsupported closures before Stage 1; historical correctness remains
+unclaimed. In a separately authorized task, export the read-only query in
 `docs/evidence/leadership-role-audit.sql`, compare every closed dynamic role
 with two complete independent leadership rosters, and prepare the signed
 manifest defined in `docs/evidence/leadership-history-review-plan.md`. Do not
 reopen the 204-row audit population wholesale, and do not couple a historical
-repair to migration 0027 or the policy baseline. A completed review may leave
-rows `indeterminate`; it must not claim correctness without evidence.
+repair to migration 0027, newsletter enablement, or the policy baseline. A
+completed review may leave rows `indeterminate`; it must not claim correctness
+without evidence.
 
-After deployment, verify `/api/health` reports schema `0027` and the intended build SHA; verify the authenticated ops payload exposes policy metrics/per-source timing and email authentication states; verify unknown redirect hosts still fail; and verify a forged MIME `Authentication-Results` message cannot reach review.
+After deployment, verify the authenticated ops payload exposes policy
+metrics/per-source timing and email authentication states and verify unknown
+redirect hosts still fail. The real forged-header check belongs to Stage 2;
+local candidate tests remain required before deployment but are not production
+route evidence.
 
-## Real Email Routing acceptance (mandatory)
+## Stage 2: controlled Email Routing qualification
 
 This check changes production configuration and sends controlled mail, so it
-was not executed in the read-only implementation task. It is a hard release
-acceptance check, not evidence supplied by unit tests.
+was not executed in the read-only implementation task. It is a hard gate for
+ordinary newsletter intake, not a prerequisite for deploying the fail-closed
+Worker candidate. A mocked adapter test is not a substitute.
 
-1. With the least-privilege Analytics Read token and exact zone/rule IDs
-   provisioned, send one uniquely identified controlled message to
-   `signals+newsletter@thevalleydesk.org` through the configured route. Include
-   a benign small PDF if validating the attachment path.
+1. Provision the least-privilege Analytics Read token and exact zone/rule IDs.
+   In a bounded maintenance window, enable only the exact ordinary newsletter
+   rule long enough to send one uniquely identified controlled message to
+   `signals+newsletter@thevalleydesk.org`. Include a benign small PDF if
+   validating the attachment path. If any unrelated message arrives during the
+   window, keep it in review/quarantine and include it in the evidence record.
 2. Query the actual `emailRoutingAdaptive` dataset read-only and retain the
    canonical event showing the exact envelope from/to, Message-ID, session ID,
    rule UUID, `action=worker`, final-event flag, event timestamp, spam result,
@@ -123,9 +141,21 @@ acceptance check, not evidence supplied by unit tests.
 4. Send a separate spoof fixture whose MIME `Authentication-Results` claims a
    pass but whose platform event fails or does not correlate. Require rejection
    and no review admission.
-5. Attach the redacted Analytics/D1 evidence and reviewer/time to the release
-   receipt. Missing fields, mismatches, route ambiguity, or absent credentials
-   block newsletter-route enablement and deployment approval.
+5. Disable the ordinary newsletter rule again after the controlled messages,
+   while the evidence is reviewed. Attach the redacted Analytics/D1 evidence
+   and reviewer/time to a Stage 2
+   acceptance artifact bound to the deployed SHA and Worker version. Missing
+   fields, mismatches, route ambiguity, or absent credentials block Stage 3;
+   they do not invalidate an otherwise healthy Stage 1 deployment.
+
+## Stage 3: ordinary newsletter enablement
+
+Enable the ordinary newsletter route only after Stage 2 passes. Record the
+exact rule UUID, enabled timestamp, deployed SHA/Worker version, approver, and
+Stage 2 artifact checksum. Observe the first natural messages through
+authentication, quarantine/promotion where applicable, and review admission.
+If provenance correlation regresses, disable this route without rolling back
+unrelated policy collection; retain the failed receipt and D1 rows for review.
 
 ## Manual PDF review acceptance
 
@@ -141,9 +171,9 @@ must remain `review`; no content may publish. If the step is not staffed, the
 attachment stays visibly `pending` and newsletter attachment processing is not
 accepted.
 
-## Baseline import gate
+## Separately controlled baseline import
 
-`npm run backfill:policy:dry-run` is the only CLI command in this change. It reports record sources/dates, within-manifest duplicates, unresolved attribution limits, and `productionMutation: false`. Applying the exported `applyPolicyBaseline` function is a separate operational action requiring an reviewed caller, a fresh production duplicate query, and explicit authorization. Older advocacy/deck material remains background.
+`npm run backfill:policy:dry-run` is the only CLI command in this change. It reports record sources/dates, within-manifest duplicates, unresolved attribution limits, and `productionMutation: false`. Applying the exported `applyPolicyBaseline` function is a separate operational action requiring a reviewed caller, a fresh production duplicate query, and explicit authorization. Older advocacy/deck material remains background.
 
 ## Rollback
 
