@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PolicyBaseline } from "./PolicyBaselinePage";
 
 type OpsPayload = {
   schemaVersion?: string;
@@ -243,6 +244,7 @@ function OpsPage() {
           </ul>
         </>
       ) : null}
+      <PolicyBaseline review />
     </article>
   );
 }

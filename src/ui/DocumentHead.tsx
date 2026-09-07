@@ -71,6 +71,9 @@ export function DocumentHead() {
     } else if (path === "/news") {
       title = list?.indexable && list.page > 1 ? `News · Page ${list.page} · ${SITE}` : `News · ${SITE}`;
       desc = DEFAULT_DESC;
+    } else if (path === "/policy") {
+      title = `Healthcare policy watchlist · ${SITE}`;
+      desc = "Observed Pennsylvania healthcare legislation, version-bound evidence and reviewed background—not new reporting.";
     } else if (path === "/events") {
       title = `Events · ${SITE}`;
       desc = "Upcoming Delaware Valley health-tech events";

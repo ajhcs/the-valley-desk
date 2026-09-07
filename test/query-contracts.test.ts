@@ -1484,7 +1484,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(router.includes('"/voices"'));
   assert.ok(!router.includes('"/briefing"'));
   assert.ok(!router.includes("BriefingPage"));
-  assert.ok(!router.includes('"/policy"'));
+  assert.ok(router.includes('path: "/policy", component: PolicyBaselinePage'));
+  assert.ok(!router.includes('section("/policy"'), "policy background is not another article section");
   assert.ok(!router.includes('"/ai"'));
   assert.ok(!/path:\s*["']\/org\//.test(router));
   assert.ok(!router.includes('to="/org'));
@@ -4478,6 +4479,7 @@ function applyMigrations(database: DatabaseSync) {
     "0025_operational_alert_context.sql",
     "0026_source_health_attribution.sql",
     "0027_policy_intelligence_hardening.sql",
+    "0028_policy_pdf_review.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 

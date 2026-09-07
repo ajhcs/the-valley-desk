@@ -53,12 +53,13 @@ def extract(raw, manifest, terms):
     if (url.scheme != "https" or url.netloc not in ("palegis.us", "www.palegis.us")
             or url.path != expected or url.query or url.fragment
             or manifest.get("pdfUrl") != current.get("url")
-            or not re.fullmatch(r"[a-f0-9]{64}", manifest.get("officialPageSha256", ""))):
+            or not re.fullmatch(r"[a-f0-9]{64}", manifest.get("officialPageSha256", manifest.get("officialRecordSha256", "")))):
         return fail("inconsistent-printer-pdf-association")
     receipt["binding"] = {
         "bill": record["bill"], "session": record["session"],
         "printer": current["printer"], "pdfUrl": current["url"],
-        "officialPageSha256": manifest["officialPageSha256"],
+        **({"officialPageSha256": manifest["officialPageSha256"]} if "officialPageSha256" in manifest
+           else {"officialRecordSha256": manifest["officialRecordSha256"]}),
         "recordSha256": sha(json.dumps(record, sort_keys=True, separators=(",", ":")).encode()),
     }
     try:

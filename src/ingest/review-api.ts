@@ -15,6 +15,7 @@ import { SCHEMA_VERSION, buildShaFromEnv, logOps } from "../lib/ops";
 import { buildRuntimeLeadershipCoverage } from "../lib/operational-status";
 import { officialSourceRegistry } from "./official-source-discovery";
 import { markEmailPdfExtractionFailed, persistEmailPdfPageEvidence } from "./email";
+import { handlePolicyPdfApi } from "./policy-pdf";
 
 type ReviewEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
@@ -295,7 +296,8 @@ function readIdempotent(token: string, key: string) {
 }
 
 export function isReviewApiPath(pathname: string) {
-  return pathname === "/api/automation/status"
+  return /^\/api\/(?:policy-background|policy-pdf|policy-versions|policy-provisions)(?:\/|$)/.test(pathname)
+    || pathname === "/api/automation/status"
     || pathname === "/api/automation/status/review"
     || pathname.startsWith("/api/executive-observations")
     || pathname.startsWith("/api/email-pdf-attachments")
@@ -812,6 +814,15 @@ export async function handleReviewApi(request: Request, env: ReviewEnv, options:
   const pathname = options.routePrefix && (url.pathname === options.routePrefix || url.pathname.startsWith(`${options.routePrefix}/`))
     ? `/api${url.pathname.slice(options.routePrefix.length)}`
     : url.pathname;
+
+  if (/^\/api\/(?:policy-background|policy-pdf|policy-versions|policy-provisions)(?:\/|$)/.test(pathname)) {
+    // Page uploads have their own byte/page/artifact bounds. Capture and review
+    // retain the existing mutation rate guard; a 79-page document isn't 79 captures.
+    if (method === "POST" && /\/(?:capture|review)$/.test(pathname) && !rateLimitPost(request, env.REVIEW_API_TOKEN ?? "")) {
+      return json({ error: "rate_limited" }, 429);
+    }
+    return handlePolicyPdfApi(request, env.VALLEY_DESK_DB, pathname, options.trustedAccessEmail ?? "review-api-token");
+  }
 
   if (pathname === "/api/automation/status" || pathname === "/api/automation/status/review") {
     if (method !== "GET" && method !== "HEAD") {

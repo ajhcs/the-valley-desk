@@ -1,6 +1,9 @@
 # Version-bound policy background — local review workflow
 
-This candidate adds local tools, not a new production collector or public route.
+Historical scope: candidate 29507b0 added local tools, not a production collector
+or public route. The next integrated local candidate is documented in
+[policy-pdf-review-workflow.md](policy-pdf-review-workflow.md); that document
+supersedes the unfinished integration inventory below, not the timing contract.
 Keep the accepted e0d03be Worker running. No migration, baseline import, routing,
 credential change, schedule reset, or publication is part of this workflow.
 
@@ -76,7 +79,7 @@ Date-only action dates cannot prove precise public availability; the tool does
 not claim the one-hour detection target from those dates. An empty cohort or one
 successful observation does not establish sustained two-hour timeliness.
 
-## Still unfinished; no deployment requested for this local tool candidate
+## Historical unfinished inventory at candidate 29507b0
 
 - Durable production PDF artifact/page storage bound to policy_versions and an
   authenticated extraction receipt; feeding these pages into relevance/editorial

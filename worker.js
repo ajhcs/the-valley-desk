@@ -9,6 +9,7 @@ import { runAutomation } from "./src/ingest/automation.ts";
 import { cleanupEmailDiscoveries } from "./src/ingest/email.ts";
 import { handleCloudflareInboundEmail, resolvePendingEmailAuthentication } from "./src/ingest/email-auth.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
+import { policyBaselineView } from "./src/ingest/policy-pdf.ts";
 import { cleanupSocialEvidencePackets, handleSocialCollectorRuns, handleSocialEvidence, handleSocialManifest, isSocialCollectorRunsPath, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
@@ -68,7 +69,7 @@ async function notFound(env, request, path, origin, nonce) {
 const newsSlugs = new Set(publishedNewsSlugs);
 const eventSlugs = new Set(publishedEventSlugs);
 const voiceSlugs = new Set(publishedVoiceSlugs);
-const SPA_PATH = /^\/(?:(?:news|events|voices)(?:\/[^/]+)?|lab(?:\/(?:briefing|systems|horizon|calendar))?)?\/?$/;
+const SPA_PATH = /^\/(?:(?:news|events|voices)(?:\/[^/]+)?|policy|lab(?:\/(?:briefing|systems|horizon|calendar))?)?\/?$/;
 
 function stripSlash(path) {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
@@ -558,6 +559,11 @@ async function handleFetch(request, env, origin, nonce, ctx) {
 
   if (path === "/api/health") {
     return handlePublicHealth(request, env);
+  }
+  if (path === "/api/policy-watchlist") {
+    if (method !== "GET" && method !== "HEAD") return new Response(null, {status:405,headers:{allow:"GET, HEAD"}});
+    try { return new Response(JSON.stringify(await policyBaselineView(env.VALLEY_DESK_DB)), {headers:{"content-type":"application/json","cache-control":"no-store"}}); }
+    catch { return new Response(JSON.stringify({error:"policy-background-unavailable"}), {status:503,headers:{"content-type":"application/json","cache-control":"no-store"}}); }
   }
   if (isSocialManifestPath(path)) {
     return handleSocialManifest(request, env);

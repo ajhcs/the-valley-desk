@@ -69,6 +69,9 @@ export function routeHead(
   else if (p === "/voices") {
     title = `Voices · ${SITE}`;
     desc = "Voices";
+  } else if (p === "/policy") {
+    title = `Healthcare policy watchlist · ${SITE}`;
+    desc = "Observed Pennsylvania healthcare legislation, version-bound evidence and reviewed background—not new reporting.";
   }
   if (list?.window.indexable && list.window.page > 1) {
     title = `${list.name} · Page ${list.window.page} · ${SITE}`;
@@ -161,6 +164,10 @@ export function routeJsonLd(
     graph.push(collectionJsonLd("/events", origin, "Events"));
     return graph;
   }
+  if (p === "/policy") {
+    graph.push(collectionJsonLd("/policy", origin, "Policy background"));
+    return graph;
+  }
   if (dynamicItem) {
     const ld = itemJsonLd(dynamicItem, entities, origin) ?? webPageJsonLd(dynamicItem, origin);
     graph.push(ld);
@@ -182,6 +189,7 @@ export function primaryNoscript(
   ensureQueriesBound();
   const p = stripSlash(path) || "/";
   const feeds = `<p><a href="${esc(publicUrl("/feed.json", origin))}">JSON feed</a> · <a href="${esc(publicUrl("/feed.xml", origin))}">XML feed</a></p>`;
+  if (p === "/policy") return `<h1>Healthcare policy watchlist</h1><p>Observed legislative background, not new reporting. Enable JavaScript for the evidence view, or read the <a href="/api/policy-watchlist">public baseline JSON</a>.</p>`;
   if (p === "/") {
     const rankedNews = latestNews(items, 7);
     const lead = rankedNews[0] ?? leadItem(items);

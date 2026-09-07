@@ -30,11 +30,13 @@ Public URL generation uses `PUBLIC_ORIGIN=https://thevalleydesk.org`. The same W
 
 ### Local verification
 
-Version-bound legislative PDF extraction and the local policy-background dossier
-are documented in `docs/policy-background-workflow.md`. Run
+Version-bound legislative PDF extraction, persistent review and the background
+watchlist are documented in `docs/policy-pdf-review-workflow.md`. Run
 `npm run policy:pdf:bootstrap` followed by `npm run test:policy-pdf` for mandatory
-official PDF-byte regressions. These tools do not import a baseline, feed PDF
-pages into production processing, or enable a public watchlist.
+official PDF-byte regressions. The integrated candidate adds schema 0028 and
+`/policy`, but production migration, deployment and operator PDF processing
+require separate authorization. It does not feed PDF text automatically to the
+news editor, import a baseline, or alter freshness/publication gates.
 
 ```bash
 cp .dev.vars.example .dev.vars
@@ -55,10 +57,15 @@ Trigger the local cron at `/cdn-cgi/handler/scheduled?format=json`. Public healt
 - `POST /api/executive-observations/:id/decision` for diagnostics or an explicit `verified`/`ignored` override; routine verification is autonomous
 - `GET /api/email-pdf-attachments/:id/content` to retrieve checksum-validated retained PDF bytes
 - `POST /api/email-pdf-attachments/:id/extraction` for a checksum-bound manual PDF extraction receipt
+- `GET /api/policy-background` for protected legislative artifact/provision review
+- `POST /api/policy-versions/:id/capture` to retain the exact official PDF selected by a durable version
+- `GET /api/policy-pdf/:id/content` and `/pages/:n/render` for retained review evidence
+- `POST /api/policy-pdf/:id/pages/:n`, `/complete`, or `/failure` for bounded operator extraction
+- `POST /api/policy-provisions/:id/review` for a hash-specific background summary or interpretation hold (never a news publication)
 - `GET /api/signals/social/manifest` with `Authorization: Bearer $SOCIAL_INGEST_TOKEN`
 - `GET`/`POST /api/signals/social/runs` with the same token for the Vale collector receipt
 
-Machine review/status routes require `Authorization: Bearer $REVIEW_API_TOKEN`; social routes require the separate `SOCIAL_INGEST_TOKEN`; `/ops` and `/ops/api/*` use Cloudflare Access context instead. A valid approval publishes immediately through the same dynamic content layer. `HEAD` is supported on public machine routes and private GET APIs. GitHub Actions runs locked install, tests, typecheck/build, local D1/scheduled smoke, `npm audit`, and a secret scan without production secrets.
+Machine review/status routes require `Authorization: Bearer $REVIEW_API_TOKEN`; social routes require the separate `SOCIAL_INGEST_TOKEN`; `/ops` and `/ops/api/*` use Cloudflare Access context instead. A valid review-queue approval publishes immediately through the same dynamic content layer. A policy-provision review is different: it admits only a background summary or hold, never a news article. `HEAD` is supported on public machine routes and private GET APIs. GitHub Actions runs locked install, tests, typecheck/build, local D1/scheduled smoke, `npm audit`, and a secret scan without production secrets.
 
 ### Cloudflare provisioning
 

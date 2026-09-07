@@ -10,6 +10,7 @@ import { EventsPage } from "./ui/EventsPage";
 import { ItemPage } from "./ui/ItemPage";
 import { NotFound } from "./ui/NotFound";
 import { OpsPage } from "./ui/OpsPage";
+import { PolicyBaselinePage } from "./ui/PolicyBaselinePage";
 import { LabIndexPage } from "./ui/lab/LabIndexPage";
 import { LabChronoPage } from "./ui/lab/LabChronoPage";
 import { LabSystemsPage } from "./ui/lab/LabSystemsPage";
@@ -31,6 +32,7 @@ const opsRoute = createRoute({
   path: "/ops",
   component: OpsPage,
 });
+const policyRoute = createRoute({ getParentRoute: () => rootRoute, path: "/policy", component: PolicyBaselinePage });
 
 const labIndexRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -84,6 +86,7 @@ function section<TPath extends string>(path: TPath, kind: "news" | "event" | "vo
 const routeTree = rootRoute.addChildren([
   indexRoute,
   opsRoute,
+  policyRoute,
   ...section("/news", "news"),
   ...section("/events", "event"),
   ...section("/voices", "voice"),
