@@ -25,6 +25,22 @@ export class UpstreamError extends Error {
   }
 }
 
+export type FetchDiagnostic = {
+  fetchId: string;
+  startedAt: string;
+  phase: "request" | "headers" | "body" | "complete" | "failure";
+  failedPhase?: string;
+  elapsedMs: number;
+  attempt: number;
+  hop: number;
+  timeoutMs: number;
+  effectiveTimeoutMs: number;
+  budgetRemainingMs: number | null;
+  status?: number;
+  errorCode?: SourceRunState;
+  bytesReceived: number;
+};
+
 const RETRYABLE_STATUS = new Set([408, 429, 502, 503, 504]);
 
 function concat(chunks: Uint8Array[]) {
@@ -59,7 +75,7 @@ export function sleep(ms: number) {
   });
 }
 
-export async function readBoundedText(res: Response, maxBytes: number) {
+export async function readBoundedText(res: Response, maxBytes: number, onBytes?: (received: number) => void) {
   const declared = Number(res.headers.get("content-length"));
   if (Number.isFinite(declared) && declared > maxBytes) {
     await res.body?.cancel().catch(() => undefined);
@@ -73,6 +89,7 @@ export async function readBoundedText(res: Response, maxBytes: number) {
     const { done, value } = await reader.read();
     if (done) break;
     received += value.byteLength;
+    onBytes?.(received);
     if (received > maxBytes) {
       await reader.cancel().catch(() => undefined);
       throw new UpstreamError("upstream-failed", `Response exceeded ${maxBytes} bytes`, 413);
@@ -109,25 +126,46 @@ export async function fetchUpstream(options: {
   maxRedirects?: number;
   /** Absolute wall-clock deadline shared across attempts and redirect hops. */
   deadlineAt?: number;
+  onDiagnostic?: (diagnostic: FetchDiagnostic) => void;
 }): Promise<{ status: number; body: string; url: string; headers: Headers }> {
   const attempts = Math.max(1, options.attempts ?? MAX_UPSTREAM_ATTEMPTS);
   const timeoutMs = options.timeoutMs ?? SOURCE_TIMEOUT_MS;
   let lastError: UpstreamError | undefined;
+  const fetchId = options.onDiagnostic ? crypto.randomUUID() : "";
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     let res: Response | undefined;
+    const started = Date.now();
+    let phase: FetchDiagnostic["phase"] = "request";
+    let redirectHop = 0;
+    let effectiveTimeoutMs = 0;
+    let bytesReceived = 0;
+    const emit = (next: FetchDiagnostic["phase"], errorCode?: SourceRunState) => {
+      try { options.onDiagnostic?.({ fetchId, startedAt: new Date(started).toISOString(), bytesReceived,
+        phase: next, ...(next === "failure" ? { failedPhase: phase } : {}),
+        elapsedMs: Date.now() - started, attempt: attempt + 1, hop: redirectHop,
+        timeoutMs, effectiveTimeoutMs,
+        budgetRemainingMs: options.deadlineAt === undefined ? null : options.deadlineAt - Date.now(),
+        status: res?.status, errorCode }); } catch { /* Diagnostics cannot change collection outcomes. */ }
+      if (next !== "failure") phase = next;
+    };
     try {
       let currentUrl = options.url;
       const redirectLimit = Math.max(0, Math.min(options.maxRedirects ?? 3, 5));
       for (let hop = 0; ; hop += 1) {
+        redirectHop = hop;
+        res = undefined;
         const remaining = options.deadlineAt === undefined
           ? timeoutMs
           : Math.min(timeoutMs, options.deadlineAt - Date.now());
+        effectiveTimeoutMs = Math.max(0, remaining);
+        emit("request");
         if (remaining <= 0) throw new UpstreamError("timed-out", "Upstream deadline exceeded");
         res = await options.fetchImpl(currentUrl, {
           headers: options.headers,
           signal: AbortSignal.timeout(Math.max(1, remaining)),
           redirect: options.allowedRedirectHosts ? "manual" : "follow",
         });
+        emit("headers");
         if (!options.allowedRedirectHosts || res.status < 300 || res.status >= 400) break;
         const location = res.headers.get("location");
         await res.body?.cancel().catch(() => undefined);
@@ -146,7 +184,9 @@ export async function fetchUpstream(options: {
         currentUrl = next.toString();
       }
       if (res.ok) {
-        const body = await readBoundedText(res, options.maxBytes);
+        emit("body");
+        const body = await readBoundedText(res, options.maxBytes, received => { bytesReceived = received; });
+        emit("complete");
         return { status: res.status, body, url: res.url || currentUrl, headers: res.headers };
       }
       await res.body?.cancel().catch(() => undefined);
@@ -167,6 +207,7 @@ export async function fetchUpstream(options: {
           error instanceof Error ? error.message : String(error),
         );
       }
+      emit("failure", lastError.code);
       if (!isFailureSourceState(lastError.code) || !isRetryableError(lastError) || attempt === attempts - 1) {
         throw lastError;
       }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { logOps } from "../lib/ops";
 import type { ModelResponseDiagnostic } from "./model-response-diagnostics";
 import { XMLValidator } from "fast-xml-parser";
 import { extractPaBillEvidence, paBillEvidenceText, paBillSynopsis, readPaBillEvidence } from "./pa-bill-evidence";
@@ -974,10 +975,11 @@ export async function hydrateOfficialCandidates(
     const startedAt = new Date(Math.min(now.getTime(), Date.now())).toISOString();
     try {
       const response = await fetchUpstream({
+        onDiagnostic: (diagnostic) => logOps("official-fetch", { sourceId: source.id, operation: "detail", ...diagnostic }, diagnostic.phase === "failure" ? "warn" : "info"),
         url: candidate.url,
         fetchImpl,
         maxBytes: OFFICIAL_SOURCE_MAX_BYTES,
-        timeoutMs: Math.max(1_000, Math.min(OFFICIAL_SOURCE_TIMEOUT_MS, deadlineAt - Date.now())),
+        timeoutMs: OFFICIAL_SOURCE_TIMEOUT_MS,
         headers: {
           "user-agent": SOURCE_USER_AGENT,
           accept: "text/html,application/xhtml+xml,application/rss+xml,application/atom+xml,text/xml;q=0.9,text/plain;q=0.1",
@@ -1287,13 +1289,11 @@ async function discoverOne(
   try {
     if (options.deadlineAt !== undefined && options.deadlineAt - Date.now() < 1_000) return undefined;
     const response = await fetchUpstream({
+      onDiagnostic: (diagnostic) => logOps("official-fetch", { sourceId: source.id, operation: "listing", ...diagnostic }, diagnostic.phase === "failure" ? "warn" : "info"),
       url: source.url,
       fetchImpl: options.fetchImpl,
       maxBytes: officialSourceRegistry.limits.maxBytes,
-      timeoutMs: Math.max(1_000, Math.min(
-        officialSourceRegistry.limits.timeoutMs || SOURCE_TIMEOUT_MS,
-        options.deadlineAt === undefined ? Number.POSITIVE_INFINITY : options.deadlineAt - Date.now(),
-      )),
+      timeoutMs: officialSourceRegistry.limits.timeoutMs || SOURCE_TIMEOUT_MS,
       headers: {
         "user-agent": SOURCE_USER_AGENT,
         accept: "text/html,application/xhtml+xml,application/rss+xml,application/atom+xml,text/xml;q=0.9,text/plain;q=0.1",

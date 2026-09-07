@@ -1,4 +1,33 @@
 import assert from "node:assert/strict";
+import { fetchUpstream, type FetchDiagnostic } from "../src/ingest/upstream.ts";
+
+test("fetch phase diagnostics distinguish header/body failure and exhausted shared budget without leaking input", async () => {
+  for (const bodyFailure of [false, true]) {
+    const diagnostics: FetchDiagnostic[] = [];
+    await assert.rejects(fetchUpstream({ url: "https://example.com/private?token=secret", maxBytes: 100, attempts: 1,
+      headers: { authorization: "secret" }, onDiagnostic: d => diagnostics.push(d),
+      fetchImpl: async () => {
+        if (!bodyFailure) throw new DOMException("secret upstream text", "TimeoutError");
+        return new Response(new ReadableStream({ start(controller) { controller.error(new DOMException("secret body", "TimeoutError")); } }));
+      },
+    }));
+    assert.equal(diagnostics.at(-1)?.phase, "failure");
+    assert.equal(diagnostics.at(-1)?.failedPhase, bodyFailure ? "body" : "request");
+    assert.equal(JSON.stringify(diagnostics).includes("secret"), false);
+  }
+  const diagnostics: FetchDiagnostic[] = [];
+  let called = false;
+  await assert.rejects(fetchUpstream({ url: "https://example.com", maxBytes: 10, attempts: 1,
+    deadlineAt: Date.now() - 1, onDiagnostic: d => diagnostics.push(d),
+    fetchImpl: async () => { called = true; return new Response("ok"); },
+  }));
+  assert.equal(called, false);
+  assert.equal(diagnostics.at(-1)?.effectiveTimeoutMs, 0);
+  assert.ok((diagnostics.at(-1)?.budgetRemainingMs ?? 1) < 0);
+  const result = await fetchUpstream({ url: "https://example.com", maxBytes: 10, attempts: 1,
+    onDiagnostic: () => { throw new Error("sink down"); }, fetchImpl: async () => new Response("ok") });
+  assert.equal(result.body, "ok");
+});
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { test } from "node:test";

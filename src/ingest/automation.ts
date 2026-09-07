@@ -1,5 +1,6 @@
 import { ContentCatalog, type ContentItem } from "../content/schema";
 import publishedCatalog from "../content/published-catalog.json";
+import { normalizeReviewSlugs } from "./review-slugs";
 import {
   DEFAULT_EDITOR_BASE_URL,
   DEFAULT_EDITOR_MODEL,
@@ -621,7 +622,12 @@ export async function runAutomation(
       : ingestedRun;
     const currentItems = allCandidates(run);
     const backlog = await readReviewBacklog(env.VALLEY_DESK_DB);
-    const items = mergeCurrentAndBacklog(currentItems, backlog);
+    const slugReview = await normalizeReviewSlugs(env.VALLEY_DESK_DB,
+      mergeCurrentAndBacklog(currentItems, backlog), ContentCatalog.parse(publishedCatalog));
+    const items = slugReview.items;
+    if (slugReview.collisions.length) logOps("run", {
+      outcome: "slug-collision-held", candidateIds: slugReview.collisions,
+    }, "warn");
     stage = "persist-news-extractions";
     const newsExtractionCount = await persistNewsArticleExtractions(
       env.VALLEY_DESK_DB,
@@ -634,7 +640,7 @@ export async function runAutomation(
     const persisted = await persistIngestRun(
       env.VALLEY_DESK_DB,
       run,
-      currentItems.map((item) => ({ item, enrichment: null })),
+      mergeCurrentAndBacklog(slugReview.changed, currentItems).map((item) => ({ item, enrichment: null })),
     );
     persistedRunId = persisted.runId;
     stage = "persist-source-health";

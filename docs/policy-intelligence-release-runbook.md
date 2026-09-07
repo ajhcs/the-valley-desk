@@ -293,3 +293,33 @@ Worker rollback and database rollback are separate decisions:
 4. Re-run `/api/health`, `PRAGMA foreign_key_check`, pre-existing email/verification counts, open-alert inventory, and source-health inventory. Resume schedules only after those checks match the recorded preflight state.
 
 Cloudflare reference: [D1 migrations and automatic backup](https://developers.cloudflare.com/d1/wrangler-commands/), [Time Travel restore semantics](https://developers.cloudflare.com/d1/reference/time-travel/), and [D1 export/import](https://developers.cloudflare.com/d1/best-practices/import-export-data/).
+
+## Slug backlog and fetch-diagnostic acceptance
+
+The slug follow-up requires no migration, manual row repair, routing change,
+or credential change. Ordinary automation considers at most 24 malformed
+review paths per run, preserves candidate/source identity and discovery dates,
+holds published paths and existing/proposed collisions, and reevaluates changed
+fingerprints through the normal editorial gates. Verify new fingerprint-specific
+milestones for both House items (freshness hold) and CMS (evidence requirement),
+while retaining all historical milestones. A failed or unchanged listing must
+not prevent this backlog processing. Slug repair does not make old actions fresh.
+
+Before the natural cycle, start a bounded unfiltered tail in a restricted
+directory; an optional filtered tail is supplementary. After deployment verify
+actual invocation payload delivery, not merely socket connection/ping/pong.
+If payloads remain absent, report the log-evidence gap explicitly. Do not change
+credentials or observability permissions to work around it without authorization.
+Stop task-owned captures after the bounded observation. Preserve D1 readback
+alongside logs and distinguish deployment-interval attribution from exact-version
+invocation proof. Never force ingestion or reset schedules to produce evidence.
+
+`official-fetch` events expose listing/detail source ID, phase, elapsed time,
+attempt/hop, configured/effective timeout, remaining shared budget, status and
+typed failure, consumed body-byte count, and a local fetch correlation ID. The
+fetch ID is not a provider request ID or proof of Worker location/version. They
+exclude URLs, headers, raw bodies and exception messages.
+A header wait, body-read abort and exhausted shared budget are distinct evidence;
+none alone proves the origin's deeper cause. Timeout allocations are unchanged.
+Zero new discoveries still means sustained timeliness is unproven; retain the
+historical 2h17m20s miss. Full-PDF evidence and baseline presentation remain separate.

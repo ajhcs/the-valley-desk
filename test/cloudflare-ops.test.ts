@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { normalizeReviewSlugs } from "../src/ingest/review-slugs.ts";
+import { readReviewBacklog } from "../src/ingest/persistence.ts";
 import { createHash } from "node:crypto";
 import { extractPaBillEvidence, paBillEvidenceText, readPaBillEvidence } from "../src/ingest/pa-bill-evidence.ts";
 import { readdirSync, readFileSync } from "node:fs";
@@ -102,6 +104,56 @@ import { sendAutomationAlerts } from "../worker.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = ContentCatalog.parse(JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8")));
+
+test("ordinary backlog slug correction preserves identity and dates, holds collisions, and is idempotent", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const item = { ...catalog[0], id: "official-ofs-slug-test", slug: "retained-path-" };
+  const run = { fetchedAt: "2026-09-01T00:00:00.000Z", rss: [item], events: [], social: [], notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 } } };
+  await persistIngestRun(db, run, [{ item, enrichment: null }]);
+  const original = database.prepare("SELECT first_seen_at, fingerprint FROM content_candidates WHERE id = ?").get(item.id)!;
+  const backlog = await readReviewBacklog(db);
+  const collision = await normalizeReviewSlugs(db, backlog, [{ ...item, id: "other", slug: "retained-path" }]);
+  assert.deepEqual(collision.collisions, [item.id]);
+  assert.equal(collision.changed.length, 0);
+  assert.deepEqual((await normalizeReviewSlugs(db, backlog, [
+    { ...item, id: "cross-kind", kind: "policy", slug: "retained-path" },
+  ])).collisions, [item.id], "policy and news share the same public path namespace");
+  const other = { ...item, id: "official-ofs-collision", slug: "retained-path",
+    source: { ...item.source, url: "https://example.com/distinct-collision" } };
+  await persistIngestRun(db, run, [{ item: other, enrichment: null }]);
+  assert.deepEqual((await normalizeReviewSlugs(db, backlog, [])).collisions, [item.id]);
+  database.prepare(`INSERT INTO published_content (candidate_id, id, kind, slug, content_json, policy_version, decision_json, first_published_at, updated_at)
+    VALUES (?, ?, 'news', 'different-live-path', ?, 'fixture', '{}', ?, ?)`)
+    .run(other.id, other.id, JSON.stringify({ ...other, slug: "different-live-path" }), run.fetchedAt, run.fetchedAt);
+  database.prepare("UPDATE content_candidates SET content_json = ? WHERE id = ?")
+    .run(JSON.stringify({ ...other, slug: "different-live-path" }), other.id);
+  database.prepare(`INSERT INTO content_slug_aliases (alias_slug, kind, content_id, candidate_id, created_at)
+    VALUES ('retained-path', 'news', ?, ?, ?)` ).run(other.id, other.id, run.fetchedAt);
+  assert.deepEqual((await normalizeReviewSlugs(db, backlog, [])).collisions, [item.id]);
+  assert.equal((await normalizeReviewSlugs(db, [{ ...other, slug: "published-" }], [])).changed.length, 0);
+  database.prepare("DELETE FROM content_slug_aliases WHERE candidate_id = ?").run(other.id);
+  database.prepare("DELETE FROM published_content WHERE candidate_id = ?").run(other.id);
+  database.prepare("DELETE FROM candidate_discoveries WHERE candidate_id = ?").run(other.id);
+  database.prepare("DELETE FROM content_candidates WHERE id = ?").run(other.id);
+  database.prepare("UPDATE content_candidates SET queue_status = 'approved' WHERE id = ?").run(item.id);
+  assert.equal((await normalizeReviewSlugs(db, backlog, [])).changed.length, 0);
+  database.prepare("UPDATE content_candidates SET queue_status = 'review' WHERE id = ?").run(item.id);
+  const repaired = await normalizeReviewSlugs(db, backlog, []);
+  assert.equal(repaired.changed.length, 1);
+  assert.deepEqual(repaired.items[0], { ...backlog[0], slug: "retained-path" });
+  // No current candidates: failed/unchanged collection must not strand an admitted row.
+  await runAutomation({ VALLEY_DESK_DB: db }, async () => new Response("", { status: 404 }), async () => ({
+    ...run, fetchedAt: "2026-09-07T00:00:00.000Z", rss: [],
+  }));
+  const stored = database.prepare("SELECT first_seen_at, fingerprint FROM content_candidates WHERE id = ?").get(item.id)!;
+  assert.equal(stored.first_seen_at, original.first_seen_at);
+  assert.notEqual(stored.fingerprint, original.fingerprint);
+  assert.equal((await normalizeReviewSlugs(db, await readReviewBacklog(db), [])).changed.length, 0);
+  assert.equal(database.prepare("SELECT COUNT(*) AS n FROM content_candidates").get()?.n, 1);
+  database.close();
+});
 
 const base = {
   dek: "Dek",
@@ -805,6 +857,26 @@ test("captured official PA bill bytes preserve current printer, action, history,
     if (bill.startsWith("hb")) {
       assert.notEqual(await candidateFingerprint(item), await candidateFingerprint({ ...item, slug: `${item.slug}-` }),
         "a changed presentation path requires a new editorial fingerprint, not a copied milestone");
+      const legacy = { ...item, slug: `${item.slug}-` };
+      const legacyRun = { fetchedAt: "2026-09-06T21:06:00.000Z", rss: [legacy], events: [], social: [],
+        notes: { rss: 1, events: 0, linkedin: { count: 0 }, x: { count: 0 } } };
+      await persistOfficialSourceCandidates(db, [admitted], [], new Set([item.id]));
+      await persistIngestRun(db, legacyRun, [{ item: legacy, enrichment: null }]);
+      await persistEditorialDecisions(db, [{ item: legacy, enrichment: null,
+        decision: evaluateCandidate(legacy, null, new Date("2026-09-07T00:02:45.667Z")) }], "fixture", "fixture", new Date("2026-09-07T00:02:45.667Z"));
+      const history = database.prepare("SELECT * FROM policy_review_milestones WHERE candidate_id = ?").all(item.id);
+      assert.equal(history.length, 1);
+      assert.equal(history[0]?.rule, "identity-slug");
+      await runAutomation({ VALLEY_DESK_DB: db }, async () => new Response("", { status: 404 }), async () => ({
+        ...legacyRun, fetchedAt: "2026-09-07T01:00:00.000Z", rss: [],
+      }));
+      const current = database.prepare("SELECT fingerprint, first_seen_at, content_json FROM content_candidates WHERE id = ?").get(item.id)!;
+      assert.equal(JSON.parse(String(current.content_json)).slug, item.slug);
+      assert.equal(current.fingerprint, await candidateFingerprint(item));
+      assert.equal(current.first_seen_at, legacyRun.fetchedAt);
+      const milestones = database.prepare("SELECT * FROM policy_review_milestones WHERE candidate_id = ?").all(item.id);
+      assert.ok(milestones.some(m => m.fingerprint === current.fingerprint && m.rule === "stale-source-publication"));
+      assert.deepEqual(milestones.filter(m => m.fingerprint === history[0]?.fingerprint), history);
     }
     assert.equal(await candidateFingerprint(item), await candidateFingerprint(contentItemsFromOfficialCandidates([admitted])[0]!));
     if (bill === "hb1925") {
