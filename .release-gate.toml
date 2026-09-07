@@ -10,9 +10,21 @@ command = ["npm", "ci"]
 failure_class = "environment_blocked"
 
 [[stages]]
+name = "pdf-bootstrap"
+kind = "bootstrap"
+command = ["npm", "run", "policy:pdf:bootstrap"]
+failure_class = "environment_blocked"
+
+[[stages]]
 name = "tests"
 kind = "unit_tests"
 command = ["npm", "run", "test"]
+failure_class = "product_test_failed"
+
+[[stages]]
+name = "pdf-byte-regressions"
+kind = "unit_tests"
+command = ["npm", "run", "test:policy-pdf"]
 failure_class = "product_test_failed"
 
 [[stages]]

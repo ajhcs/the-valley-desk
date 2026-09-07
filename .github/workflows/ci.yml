@@ -15,8 +15,15 @@ jobs:
           cache: npm
       - name: Locked install
         run: npm ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Hash-locked PDF extraction tools
+        run: npm run policy:pdf:bootstrap
       - name: Tests
         run: npm test
+      - name: Mandatory official PDF byte regressions
+        run: npm run test:policy-pdf
       - name: Typecheck and production build
         run: npm run build
       - name: Local D1 migrations and scheduled smoke

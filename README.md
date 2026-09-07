@@ -30,6 +30,12 @@ Public URL generation uses `PUBLIC_ORIGIN=https://thevalleydesk.org`. The same W
 
 ### Local verification
 
+Version-bound legislative PDF extraction and the local policy-background dossier
+are documented in `docs/policy-background-workflow.md`. Run
+`npm run policy:pdf:bootstrap` followed by `npm run test:policy-pdf` for mandatory
+official PDF-byte regressions. These tools do not import a baseline, feed PDF
+pages into production processing, or enable a public watchlist.
+
 ```bash
 cp .dev.vars.example .dev.vars
 npm test
