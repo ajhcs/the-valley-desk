@@ -44,6 +44,7 @@ import {
 } from "../src/ingest/official-source-automation.ts";
 import {
   cleanupNewsArticleExtractions,
+  candidateFingerprint,
   persistEditorialDecisions,
   persistIngestRun,
   persistNewsArticleExtractions,
@@ -792,6 +793,20 @@ test("captured official PA bill bytes preserve current printer, action, history,
     assert.equal(first.detailState, "success");
     assert.ok(first.detailHash);
     assert.equal(first.status, "review");
+    const admitted = { ...first, relevance: { decision: "accept" as const, relevanceScore: 99, confidence: 0.99,
+      reasons: ["Literal captured official evidence"], evidenceSpans: [first.detailText!.slice(0, 100)] } };
+    const [item] = contentItemsFromOfficialCandidates([admitted]);
+    assert.ok(item, "captured bill must convert into review content");
+    assert.equal(item.id, first.id, "slug correction must preserve discovery identity");
+    assert.ok(item.slug.length <= 72);
+    assert.match(item.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+    assert.equal(evaluateCandidate(item, null, new Date("2026-09-07T00:02:45.667Z")).rule, "stale-source-publication");
+    assert.equal(item.publishedAt, actionAt);
+    if (bill.startsWith("hb")) {
+      assert.notEqual(await candidateFingerprint(item), await candidateFingerprint({ ...item, slug: `${item.slug}-` }),
+        "a changed presentation path requires a new editorial fingerprint, not a copied milestone");
+    }
+    assert.equal(await candidateFingerprint(item), await candidateFingerprint(contentItemsFromOfficialCandidates([admitted])[0]!));
     if (bill === "hb1925") {
       assert.equal(record.current?.textDate, "2026-05-05T00:00:00.000Z");
       assert.deepEqual(record.history.map(v => v.printer), ["PN 3349", "PN 2403"]);

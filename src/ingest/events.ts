@@ -17,7 +17,7 @@ import {
   parseNjdvhimssPage,
   parseTribeEventsResponse,
   perPageFromUrl,
-  slugify,
+  publicationSlug,
   stripHtml,
   toIso,
   tribeFallbackId,
@@ -274,7 +274,7 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
       rows.push(
         eventRow({
           id: `evt-dvhimss-${externalId}`,
-          slug: slugify(title),
+          slug: publicationSlug(title),
           title,
           dek: "Official DVHIMSS chapter calendar.",
           body: officialEventBody(title, venue, city, textField(e.description ?? e.excerpt)),
@@ -405,7 +405,7 @@ function njEventFields(event: ParsedListingEvent, fetchedAt: string, used: strin
   const identity = genericNjEventIdentity(event);
   return {
     id: `evt-njdvhimss-${identity}`,
-    slug: slugify(identity),
+    slug: publicationSlug(identity),
     title: event.title,
     dek: "Official NJ/DVHIMSS chapter event.",
     body: officialEventBody(event.title, event.venue, event.city, event.description),

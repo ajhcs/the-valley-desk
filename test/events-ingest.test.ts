@@ -16,6 +16,8 @@ import {
   parseNjdvhimssPage,
   parseTribeEventsResponse,
   parseVisibleEventCards,
+  publicationSlug,
+  slugify,
   toIso,
   tribeFallbackId,
   tribeNextPageUrl,
@@ -26,6 +28,26 @@ import { fetchDvhimssCalendar, ingestEventsWithHealth, scrapeNjdvhimss } from ".
 import { sourceAuthorizesDisappearance } from "../src/ingest/source-health.ts";
 
 const FETCHED_AT = "2026-08-26T12:00:00.000Z";
+
+test("publication slug trims truncation separators without changing identity keys", () => {
+  const prefix = "a".repeat(71);
+  const title = `${prefix} - longer title`;
+  assert.equal(slugify(title), `${prefix}-`);
+  assert.equal(publicationSlug(title), prefix);
+  assert.equal(publicationSlug("a".repeat(90)), "a".repeat(72));
+  assert.equal(publicationSlug(" -- Normal Title -- "), "normal-title");
+  assert.equal(publicationSlug("---"), "event");
+  assert.equal(publicationSlug(publicationSlug(title)), publicationSlug(title));
+  assert.equal(classifyNjEventKey(title), `generic:${prefix}-`);
+  // Truncation is not a uniqueness mechanism: audit these before any repair.
+  assert.equal(publicationSlug(title), publicationSlug(prefix));
+  for (const bill of ["hb1925", "hb1993"]) {
+    const value = `ofs-pa-legislature-${bill}-House Bill ${bill.slice(2)} Information 2025-2026 Regular Session`;
+    assert.ok(slugify(value).endsWith("-"));
+    assert.match(publicationSlug(value), /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+    assert.ok(publicationSlug(value).length <= 72);
+  }
+});
 const TRIBE_ARCHIVE = "https://dvhimss.org/wp-json/tribe/events/v1/events?per_page=100";
 
 function recognizedNj(body: string) {

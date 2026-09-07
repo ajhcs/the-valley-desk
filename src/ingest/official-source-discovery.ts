@@ -14,7 +14,7 @@ import {
 } from "../content/schema";
 import { coveragePack } from "./coverage-pack";
 import { DEFAULT_EDITOR_MODEL, EditorModelError } from "./editor-model";
-import { EVENT_TIMEZONE, slugify, toIso } from "./event-parser";
+import { EVENT_TIMEZONE, publicationSlug, slugify, toIso } from "./event-parser";
 import { normalizeSourceUrl, withCanonicalSource } from "./identity";
 import { mapSeedOrgIds } from "./org-map";
 import {
@@ -1685,7 +1685,7 @@ export function contentItemFromOfficialCandidate(
   const orgs = officialCandidateOrgs(candidate);
   const topics = officialCandidateTopics(candidate);
   const title = (candidate.detailTitle || candidate.title).slice(0, 240);
-  const slug = slugify(`${candidate.sourceId}-${title}`);
+  const slug = publicationSlug(`${candidate.sourceId}-${title}`);
   const detailText = candidate.detailText!.trim();
   const dek = detailText.slice(0, 240);
   const body = detailText;
