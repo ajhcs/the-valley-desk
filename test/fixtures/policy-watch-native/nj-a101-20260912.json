@@ -1,0 +1,54 @@
+{
+  "source": {
+    "sourceId": "nj-legislative-native",
+    "sourceUrl": "https://pub.njleg.state.nj.us/leg-databases/2026data/DB2026_TEXT.zip",
+    "sourceLabel": "New Jersey Legislature native text archive",
+    "retrievedAt": "2026-09-12T16:37:10.791Z"
+  },
+  "sessionKey": "2026",
+  "native": {
+    "archiveSha256": "1b2bcd4951593db0e89594a315d9dfc4bacb021a6abca9f9d954b423e8a7f548",
+    "bill": {
+      "BillType": "A  ",
+      "BillNumber": "101",
+      "CurrentStatus": "ATR",
+      "LDOA": "1/13/2026 0:00:00",
+      "IntroDate": "1/13/2026 0:00:00",
+      "ActualBillNumber": "A101",
+      "BillParty1": "R",
+      "BillParty2": "",
+      "BillParty3": "",
+      "GovernorAction": "",
+      "GovernorDateOfAction": "",
+      "PamphletLaw": "",
+      "ChapterLaw": "",
+      "EffectOnStatutes": "",
+      "EffectiveDate": "",
+      "Codification": "",
+      "FirstPrime": "Barlas, Al ",
+      "SecondPrime": "",
+      "ThirdPrime": "",
+      "Synopsis": "Requires NJT to equip trains with defibrillators.",
+      "EfDateNote": "",
+      "IdenticalBillNumber": "S2431",
+      "LastSessionFullBillNumber": "A274 S883",
+      "OldBillNumber": "A2845 S3808",
+      "ProposedDate": "11/20/2025 0:00:00",
+      "Abstract": "Defibrillators-NJT required to equip trains",
+      "ModDate": "1/29/2026 0:00:00",
+      "FNCertified": "Y"
+    },
+    "history": [
+      {
+        "BillType": "A  ",
+        "BillNumber": "101",
+        "Sequence": "1",
+        "DateAction": "1/13/2026 0:00:00",
+        "Action": "INT 1RA REF ATR",
+        "Comment": "",
+        "House": "A",
+        "ModDate": "11/20/2025 0:00:00"
+      }
+    ]
+  }
+}

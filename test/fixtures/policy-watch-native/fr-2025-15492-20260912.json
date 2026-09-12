@@ -1,0 +1,182 @@
+{
+  "source": {
+    "sourceId": "federal-register-native",
+    "sourceUrl": "https://www.federalregister.gov/api/v1/documents/2025-15492.json",
+    "sourceLabel": "Federal Register API",
+    "retrievedAt": "2026-09-12T16:45:16.403Z"
+  },
+  "native": {
+    "abstract": "This document corrects typographical and technical errors in the proposed rule that appeared in the July 16, 2025 Federal Register (90 FR 32352) titled \"Medicare and Medicaid Programs; CY 2026 Payment Policies Under the Physician Fee Schedule and Other Changes to Part B Payment and Coverage Policies; Medicare Shared Savings Program Requirements; and Medicare Prescription Drug Inflation Rebate Program\" (hereinafter referred to as the CY 2026 PFS proposed rule), specifying proposed changes to the Medicare physician fee schedule (PFS) that is applicable for calendar year (CY) 2026, and other changes to Medicare Part B payment policies, as well as proposals regarding other Medicare payment policies.",
+    "action": "Proposed rule; correction.",
+    "agencies": [
+      {
+        "raw_name": "DEPARTMENT OF HEALTH AND HUMAN SERVICES",
+        "name": "Health and Human Services Department",
+        "id": 221,
+        "url": "https://www.federalregister.gov/agencies/health-and-human-services-department",
+        "json_url": "https://www.federalregister.gov/api/v1/agencies/221",
+        "parent_id": null,
+        "slug": "health-and-human-services-department"
+      },
+      {
+        "raw_name": "Centers for Medicare & Medicaid Services",
+        "name": "Centers for Medicare & Medicaid Services",
+        "id": 45,
+        "url": "https://www.federalregister.gov/agencies/centers-for-medicare-medicaid-services",
+        "json_url": "https://www.federalregister.gov/api/v1/agencies/45",
+        "parent_id": 221,
+        "slug": "centers-for-medicare-medicaid-services"
+      }
+    ],
+    "body_html_url": "https://www.federalregister.gov/documents/full_text/html/2025/08/14/2025-15492.html",
+    "cfr_references": [
+      {
+        "chapter": null,
+        "citation_url": null,
+        "part": "405",
+        "title": 42
+      },
+      {
+        "chapter": null,
+        "citation_url": null,
+        "part": "410",
+        "title": 42
+      },
+      {
+        "chapter": null,
+        "citation_url": null,
+        "part": "414",
+        "title": 42
+      },
+      {
+        "chapter": null,
+        "citation_url": null,
+        "part": "424",
+        "title": 42
+      },
+      {
+        "chapter": null,
+        "citation_url": null,
+        "part": "425",
+        "title": 42
+      },
+      {
+        "chapter": null,
+        "citation_url": null,
+        "part": "427",
+        "title": 42
+      },
+      {
+        "chapter": null,
+        "citation_url": null,
+        "part": "428",
+        "title": 42
+      },
+      {
+        "chapter": null,
+        "citation_url": null,
+        "part": "495",
+        "title": 42
+      },
+      {
+        "chapter": null,
+        "citation_url": null,
+        "part": "512",
+        "title": 42
+      }
+    ],
+    "citation": "90 FR 39155",
+    "comment_url": null,
+    "comments_close_on": "2025-09-12",
+    "correction_of": null,
+    "corrections": [],
+    "dates": "To be assured consideration, comments must be received at one of the addresses provided below, no later than 5 p.m. on September 12, 2025.",
+    "disposition_notes": null,
+    "docket_ids": [
+      "CMS-1832-CN"
+    ],
+    "dockets": [
+      {
+        "supporting_documents": [],
+        "agency_name": "CMS",
+        "documents": [
+          {
+            "comment_count": 616,
+            "comment_start_date": "2025-08-14",
+            "updated_at": "2025-09-16T01:56:06.733-04:00",
+            "comment_url": "https://www.regulations.gov/commenton/CMS-2025-0304-1544",
+            "allow_late_comments": false,
+            "id": "CMS-2025-0304-1544",
+            "comment_end_date": "2025-09-13",
+            "regulations_dot_gov_open_for_comment": false
+          }
+        ],
+        "supporting_documents_count": 0,
+        "id": "CMS-2025-0304",
+        "title": "CY 2026 Payment Policies under the Physician Fee Schedule and Other Changes to Part B Payment and Coverage Policies (CMS-1832-P)"
+      }
+    ],
+    "document_number": "2025-15492",
+    "effective_on": null,
+    "end_page": 39161,
+    "executive_order_notes": null,
+    "executive_order_number": null,
+    "full_text_xml_url": "https://www.federalregister.gov/documents/full_text/xml/2025/08/14/2025-15492.xml",
+    "html_url": "https://www.federalregister.gov/documents/2025/08/14/2025-15492/medicare-and-medicaid-programs-cy-2026-payment-policies-under-the-physician-fee-schedule-and-other",
+    "images": {},
+    "images_metadata": {},
+    "json_url": "https://www.federalregister.gov/api/v1/documents/2025-15492?publication_date=2025-08-14",
+    "mods_url": "https://www.govinfo.gov/metadata/granule/FR-2025-08-14/2025-15492/mods.xml",
+    "not_received_for_publication": null,
+    "page_length": 7,
+    "page_views": {
+      "count": 2438,
+      "last_updated": "2026-09-12 12:15:03 -0400"
+    },
+    "pdf_url": "https://www.govinfo.gov/content/pkg/FR-2025-08-14/pdf/2025-15492.pdf",
+    "presidential_document_number": null,
+    "proclamation_number": null,
+    "public_inspection_pdf_url": "https://public-inspection.federalregister.gov/2025-15492.pdf?1755089135",
+    "publication_date": "2025-08-14",
+    "raw_text_url": "https://www.federalregister.gov/documents/full_text/text/2025/08/14/2025-15492.txt",
+    "regulation_id_number_info": {
+      "0938-AV50": {
+        "issue": "202504",
+        "html_url": "https://www.federalregister.gov/regulations/0938-AV50/cy-2026-revisions-to-payment-policies-under-the-physician-fee-schedule-and-other-revisions-to-medica",
+        "title": "CY 2026 Revisions to Payment Policies Under the Physician Fee Schedule and Other Revisions to Medicare Part B (CMS-1832)",
+        "xml_url": "http://www.reginfo.gov/public/do/eAgendaViewRule?pubId=202504&RIN=0938-AV50&operation=OPERATION_EXPORT_XML",
+        "priority_category": "Economically Significant"
+      }
+    },
+    "regulation_id_numbers": [
+      "0938-AV50"
+    ],
+    "regulations_dot_gov_info": {
+      "supporting_documents": [],
+      "regulatory_plan": {
+        "html_url": "https://www.federalregister.gov/regulations/0938-AV50/cy-2026-revisions-to-payment-policies-under-the-physician-fee-schedule-and-other-revisions-to-medica",
+        "title": "CY 2026 Revisions to Payment Policies Under the Physician Fee Schedule and Other Revisions to Medicare Part B (CMS-1832)"
+      },
+      "comments_count": 616,
+      "agency_id": "CMS",
+      "comments_url": "https://www.regulations.gov/docketBrowser?rpp=50&so=DESC&sb=postedDate&po=0&dct=PS&D=CMS-2025-0304",
+      "supporting_documents_count": 0,
+      "docket_id": "CMS-2025-0304",
+      "document_id": "CMS-2025-0304-1544",
+      "regulation_id_number": "0938-AV50",
+      "title": "CY 2026 Payment Policies under the Physician Fee Schedule and Other Changes to Part B Payment and Coverage Policies (CMS-1832-P)",
+      "checked_regulationsdotgov_at": "2025-09-17T08:55:04Z"
+    },
+    "regulations_dot_gov_url": null,
+    "significant": true,
+    "signing_date": null,
+    "start_page": 39155,
+    "subtype": null,
+    "title": "Medicare and Medicaid Programs; CY 2026 Payment Policies Under the Physician Fee Schedule and Other Changes to Part B Payment and Coverage Policies; Medicare Shared Savings Program Requirements; and Medicare Prescription Drug Inflation Rebate Program; Correction",
+    "toc_doc": "Calendar Year 2026 Payment Policies under the Physician Fee Schedule and Other Changes to Part B Payment and Coverage Policies; Medicare Shared Savings Program Requirements; and Medicare Prescription Drug Inflation Rebate Program; Correction",
+    "toc_subject": "Medicare and Medicaid Programs",
+    "topics": [],
+    "type": "Proposed Rule",
+    "volume": 90
+  }
+}

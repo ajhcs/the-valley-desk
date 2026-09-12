@@ -1,0 +1,17 @@
+{
+  "source": {
+    "sourceId": "de-introduced-native",
+    "sourceUrl": "https://legis.delaware.gov/json/JsonFeed/IntroducedLegislation",
+    "sourceLabel": "Delaware General Assembly introduced legislation",
+    "retrievedAt": "2026-09-12T16:44:33.220Z"
+  },
+  "native": {
+    "GeneralAssemblySession": 153,
+    "Title": "SB 360",
+    "IsBudgetBill": false,
+    "LongTitle": "AN ACT TO AMEND TITLE 19 OF THE DELAWARE CODE RELATING TO THE FAMILY AND MEDICAL LEAVE INSURANCE PROGRAM.",
+    "Synopsis": "This Act changes the eligibility for Delaware's Family and Medical Leave Insurance Program (\"Program\") by removing the requirement that an individual be employed for at least 12 months by an employer with respect to whom leave is requested. This change would make eligible for the Program individuals who meet the hours-of-service requirement in less than 12 months.",
+    "Link": "https://legis.delaware.gov/BillDetail?legislationId=143688",
+    "IntroducedDate": "2026-06-30T19:41:10"
+  }
+}
