@@ -24,7 +24,9 @@ import {
 } from "./src/ingest/persistence.ts";
 import { loadEntities } from "./src/content/store.ts";
 import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts";
-import { decorateHtml } from "./src/lib/crawler-html.ts";
+import { decorateHtml, decorateWatchHtml, watchPrimaryNoscript } from "./src/lib/crawler-html.ts";
+import { isWatchPagePath, readWatchPage } from "./src/lib/watch-page.ts";
+import { publicFeaturesFromEnv } from "./src/lib/public-features.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
 import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
 import { conditionStateForSourceState, SOURCE_FRESHNESS_SLO_MS } from "./src/lib/operational-status.ts";
@@ -60,6 +62,7 @@ async function notFound(env, request, path, origin, nonce) {
     origin,
     nonce,
     notFound: true,
+    publicFeatures: publicFeaturesFromEnv(env),
   });
   return new Response(html, {
     status: 404,
@@ -562,10 +565,35 @@ async function handleFetch(request, env, origin, nonce, ctx) {
     return handlePublicHealth(request, env);
   }
   if (isWatchReadPath(path)) return handleWatchRead(request, env);
+  if (isWatchPagePath(path)) {
+    let result = await readWatchPage(request, env.WATCH_PUBLIC_ENABLED === "true", input => handleWatchRead(input, env));
+    let html;
+    try {
+      const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
+      if (asset.ok) html = await asset.text();
+    } catch { /* A shell failure must not turn hidden pages into successful responses. */ }
+    if (!html) {
+      if (result.status === 200) result = { route: result.route, status: 503, error: "unavailable" };
+      html = `<!doctype html><html lang="en"><head><title>The Valley Desk</title></head><body><main>${watchPrimaryNoscript(result, origin)}</main></body></html>`;
+    }
+    const headers = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store",
+      "cdn-cache-control": "no-store", "x-robots-tag": "noindex" };
+    if (result.status === 405) headers.allow = "GET, HEAD";
+    if (result.data) headers["x-watch-data-state"] = result.data.stale ? "stale" : "unknown";
+    if (result.deliveryAsOf) headers["x-watch-delivery-as-of"] = result.deliveryAsOf;
+    return new Response(decorateWatchHtml({ html, result, origin, nonce, publicFeatures: publicFeaturesFromEnv(env) }), { status: result.status, headers });
+  }
+  if (stripSlash(path) === "/policy" && !publicFeaturesFromEnv(env).policyBackground) {
+    const response = await notFound(env, request, path, origin, nonce);
+    response.headers.set("cdn-cache-control", "no-store");
+    return response;
+  }
   if (path === "/api/policy-watchlist") {
-    if (method !== "GET" && method !== "HEAD") return new Response(null, {status:405,headers:{allow:"GET, HEAD"}});
-    try { return new Response(JSON.stringify(await policyBaselineView(env.VALLEY_DESK_DB)), {headers:{"content-type":"application/json","cache-control":"no-store"}}); }
-    catch { return new Response(JSON.stringify({error:"policy-background-unavailable"}), {status:503,headers:{"content-type":"application/json","cache-control":"no-store"}}); }
+    const headers = { "content-type": "application/json", "cache-control": "no-store", "cdn-cache-control": "no-store", "x-robots-tag": "noindex" };
+    if (!publicFeaturesFromEnv(env).policyBackground) return new Response(JSON.stringify({error:"policy-background-not-enabled"}), {status:503,headers});
+    if (method !== "GET" && method !== "HEAD") return new Response(null, {status:405,headers:{...headers,allow:"GET, HEAD"}});
+    try { return new Response(JSON.stringify(await policyBaselineView(env.VALLEY_DESK_DB)), {headers}); }
+    catch { return new Response(JSON.stringify({error:"policy-background-unavailable"}), {status:503,headers}); }
   }
   if (isSocialManifestPath(path)) {
     return handleSocialManifest(request, env);
@@ -624,6 +652,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
         return decorateHtml({
           html: await asset.text(),
           path: "/ops",
+          publicFeatures: publicFeaturesFromEnv(env),
           origin,
           nonce,
         });
@@ -714,6 +743,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
       items: published,
       withdrawnIds: overlay.withdrawnIds,
       entities: loadEntities(),
+      publicFeatures: publicFeaturesFromEnv(env),
     });
     return new Response(html, {
       status: 200,

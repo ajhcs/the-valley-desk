@@ -138,11 +138,11 @@ test("official PDF fetch confinement and checksum revisions never reuse another 
   } finally {sqlite.close();}
 });
 
-test("Worker baseline is a public read-only background surface; protected evidence and HEAD contracts remain intact", async () => {
+test("Explicitly enabled Worker baseline is read-only background; protected evidence and HEAD contracts remain intact", async () => {
   const {db,sqlite}=pdfDatabase();
   try {
     await seedPdfBills(db);
-    const env={VALLEY_DESK_DB:db,REVIEW_API_TOKEN:"fixture-worker-only",PUBLIC_ORIGIN:"https://thevalleydesk.org"};
+    const env={VALLEY_DESK_DB:db,REVIEW_API_TOKEN:"fixture-worker-only",PUBLIC_ORIGIN:"https://thevalleydesk.org",POLICY_BACKGROUND_PUBLIC_ENABLED:"true"};
     const get=await worker.fetch(new Request("https://thevalleydesk.org/api/policy-watchlist"),env,{});
     assert.equal(get.status,200);
     assert.equal((await get.json()).kind,"policy-background");

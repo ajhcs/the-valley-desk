@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { policyBaselineView } from "../ingest/policy-pdf";
 import { provisionContext, type EvidencePage, type Provision } from "../ingest/policy-provisions";
+import { publicFeatures } from "../lib/public-features";
+import { NotFound } from "./NotFound";
 import "./policy-baseline.css";
 
 type Baseline = Awaited<ReturnType<typeof policyBaselineView>>;
@@ -150,4 +152,4 @@ export function PolicyBaseline({ review = false }: { review?: boolean }) {
   </section>;
 }
 
-export function PolicyBaselinePage() { return <PolicyBaseline />; }
+export function PolicyBaselinePage() { return publicFeatures().policyBackground ? <PolicyBaseline /> : <NotFound />; }
