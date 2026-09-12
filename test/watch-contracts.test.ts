@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AcceptedFactRecord, CanonicalInstant, EvidenceReference, InterpretationDependencies, PolicyDossierDraft, PolicyIdentity,
+import { AcceptedFactRecord, CanonicalInstant, EvidenceReference, HttpsUrl, InterpretationDependencies, PolicyDossierDraft, PolicyIdentity,
   SourceDate, TechnologyArtifact, TechnologyLicense, TechnologyProfileDraft, TechnologyRelationship, WatchPublicRecord,
   acceptedFactDigest, canonicalJson, developmentIdentityKey, evidenceReferenceDigest, githubRepositoryKey, isCalendarDay,
   policyIdentityKey, sha256, tupleKey } from "../src/content/watch-schema";
@@ -35,6 +35,13 @@ test("instant precision requires real canonical UTC milliseconds", () => {
   assert.equal(CanonicalInstant.parse(NOW), NOW);
   for (const value of ["2026-09-12T13:00:00Z", "2026-09-12T13:00:00.000+00:00", "2026-02-29T00:00:00.000Z", "2026-09-12T24:00:00.000Z"]) {
     assert.equal(CanonicalInstant.safeParse(value).success, false, value);
+  }
+});
+
+test("malformed, credentialed and non-HTTPS links return typed validation failures", () => {
+  assert.equal(HttpsUrl.safeParse("https://example.test/source").success, true);
+  for (const url of ["not a URL", "", "/relative", "http://example.test/source", "https://user:secret@example.test/source", "https://example.test:8443/source"]) {
+    assert.equal(HttpsUrl.safeParse(url).success, false, url);
   }
 });
 

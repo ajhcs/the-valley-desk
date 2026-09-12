@@ -6,8 +6,10 @@ export const MAX_PUBLIC_WATCH_BYTES = 150_000;
 const Text = z.string().min(1).max(6000).refine(value => value.trim() === value, "Text must be trimmed");
 const Label = Text.pipe(z.string().max(240));
 export const HttpsUrl = z.string().max(2048).url().refine(value => {
-  const url = new URL(value);
-  return url.protocol === "https:" && !url.username && !url.password && (!url.port || url.port === "443");
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && !url.username && !url.password && (!url.port || url.port === "443");
+  } catch { return false; }
 }, "Public links must use credential-free HTTPS");
 export const CanonicalInstant = z.string().datetime().refine(value => {
   const date = new Date(value);
