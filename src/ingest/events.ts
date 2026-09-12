@@ -1,5 +1,6 @@
 import type { ContentItem, EventItem } from "../content/schema";
 import { eventCopyMarksCancelled } from "../lib/calendar";
+import { cleanEventSourceMarkup } from "../lib/sourceMarkup";
 import { hasInternalProcessLanguage } from "../lib/editorialCopy";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
@@ -107,16 +108,16 @@ function isRecognizedNjdvhimssPage(html: string) {
 }
 
 function textField(value: unknown): string {
-  if (typeof value === "string") return stripHtml(value);
+  if (typeof value === "string") return stripHtml(cleanEventSourceMarkup(value));
   if (value && typeof value === "object" && "rendered" in value) {
     const rendered = (value as { rendered?: unknown }).rendered;
-    if (typeof rendered === "string") return stripHtml(rendered);
+    if (typeof rendered === "string") return stripHtml(cleanEventSourceMarkup(rendered));
   }
   return "";
 }
 
 function readerSafeText(value: string) {
-  const text = value.trim();
+  const text = cleanEventSourceMarkup(value);
   if (!text || hasInternalProcessLanguage(text)) return "";
   return text;
 }
