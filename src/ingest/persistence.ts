@@ -1549,7 +1549,10 @@ async function readPagedRows<T>(
   const out: T[] = [];
   for (let page = 0; page < PUBLIC_READ_MAX_PAGES; page += 1) {
     const rows = await db.prepare(sql).bind(pageSize, page * pageSize).all<T>();
-    const batch = rows.results ?? [];
+    if (!Array.isArray(rows.results) || ("success" in rows && rows.success === false)) {
+      throw new Error("published-content-storage-unavailable");
+    }
+    const batch = rows.results;
     if (!batch.length) break;
     out.push(...batch);
     if (batch.length < pageSize) break;

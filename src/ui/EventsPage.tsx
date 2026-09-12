@@ -13,6 +13,7 @@ import { MentionText } from "./MentionText";
 import { RegisterLink } from "./RegisterLink";
 import { DateChip } from "./home/DateChip";
 import { NewsEventEmpty, NewsEventFilters, NewsEventPagination } from "./NewsEventFilters";
+import { CalendarSubscription } from "./CalendarSubscription";
 
 function timingSignal(item: EventItem, now: Date) {
   const days = Math.ceil((Date.parse(item.startsAt) - now.getTime()) / 86_400_000);
@@ -72,6 +73,7 @@ export function EventsPage() {
         <h1>Events worth leaving your desk for.</h1>
         <p>What’s next, why it matters, and the registration link before you hear about it afterward.</p>
       </header>
+      <CalendarSubscription />
       <NewsEventFilters key={searchStr} section="events" request={request} busy={busy}
         organizations={filterOptions(choices.map((item) => item.hostOrg), (id) => entityLookup.match(id)?.name ?? id)}
         topics={filterOptions(choices.flatMap((item) => item.topics))} />

@@ -13,6 +13,9 @@ import { policyBaselineView } from "./src/ingest/policy-pdf.ts";
 import { handleWatchRead, isWatchReadPath } from "./src/ingest/watch-api.ts";
 import { handleRepresentativeRead } from "./src/ingest/representative-api.ts";
 import { resolveRepresentativeSourcePolicy } from "./src/ingest/representative-runtime.ts";
+import { handleEventCalendar } from "./src/ingest/event-calendar.ts";
+import { runWatchCollection } from "./src/ingest/watch/collector.ts";
+import { handleWatchUpdatesRead } from "./src/ingest/watch-updates-api.ts";
 import { cleanupSocialEvidencePackets, handleSocialCollectorRuns, handleSocialEvidence, handleSocialManifest, isSocialCollectorRunsPath, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
@@ -566,6 +569,8 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   if (path === "/api/health") {
     return handlePublicHealth(request, env);
   }
+  if (path === "/events.ics") return handleEventCalendar(request, env);
+  if (/^\/api\/v2\/watch\/(policy|technology)\/updates\/?$/.test(path)) return handleWatchUpdatesRead(request, env);
   if (path === "/api/v2/watch/representatives") {
     try {
       const policy = env.WATCH_PUBLIC_ENABLED === "true" && env.VALLEY_DESK_DB
@@ -780,6 +785,11 @@ export default {
     }
   },
   async scheduled(event, env, ctx) {
+    if (env.WATCH_COLLECTION_ENABLED === "true" && env.VALLEY_DESK_DB) ctx.waitUntil(
+      runWatchCollection(env.VALLEY_DESK_DB, { enabled: true }).then(result => {
+        logOps("watch-collection", { outcome: result.outcome, sources: result.sources });
+      }).catch(() => logOps("watch-collection", { outcome: "failed" }, "error")),
+    );
     const cadence = event?.cron === DAILY_DEEP_SCAN_CRON ? "daily" : "hourly";
     ctx.waitUntil(
       cleanupEmailDiscoveries(env.VALLEY_DESK_DB).catch((error) => {

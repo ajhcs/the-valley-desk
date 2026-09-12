@@ -205,6 +205,45 @@ test("artifact dates are optional and do not alter existing undated canonical re
   assert.equal(canonicalJson(TechnologyArtifact.parse(artifact)), canonicalJson(artifact));
 });
 
+test("a first artifact approval racing after source pre-scan is retracted in the capture transaction", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const source = await input(), staged = await persistTechnologyDossierDraft(db, source, 0);
+  const subjectId = staged.draft.subjectId, citation = source.evidence[0]!;
+  const capture = { url: citation.url, checkedAt: NOW, body: citation.retainedText };
+  await persistTechnologySourceRepresentation(db, subjectId, "synthetic-source", capture);
+  const key = await deliveryDependencyKey("artifact", [subjectId + ":repository"]);
+  let injected = false;
+  const racing: D1DatabaseLike = { prepare: sql => db.prepare(sql), async batch(statements) {
+    if (!injected) {
+      injected = true;
+      await recordWatchDependencyHead(db, { key, kind: "artifact", revision: 1, digest: await sha256("synthetic-first-approval"),
+        immutableRecordId: "synthetic-racing-first-approval", changedAt: NOW });
+    }
+    return db.batch(statements);
+  } };
+  await persistTechnologySourceRepresentation(racing, subjectId, "synthetic-source",
+    { ...capture, body: capture.body + " Source revision.", checkedAt: "2026-09-13T12:00:00.000Z" });
+  const head = await db.prepare("SELECT digest,revision FROM watch_dependency_heads WHERE dependency_key=?").bind(key)
+    .first<{ digest: string | null; revision: number }>();
+  assert.equal(head?.digest, null); assert.equal(head?.revision, 2);
+});
+
+test("a changing artifact inventory aborts source refresh until its retractions can be replanned", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const source = await input(), staged = await persistTechnologyDossierDraft(db, source, 0);
+  const subjectId = staged.draft.subjectId, citation = source.evidence[0]!;
+  const capture = { url: citation.url, checkedAt: NOW, body: citation.retainedText };
+  await persistTechnologySourceRepresentation(db, subjectId, "synthetic-source", capture);
+  const racing: D1DatabaseLike = { prepare: sql => db.prepare(sql), async batch(statements) {
+    await persistTechnologyDossierDraft(db, { ...source, title: "Revised synthetic draft" }, 1);
+    return db.batch(statements);
+  } };
+  await assert.rejects(persistTechnologySourceRepresentation(racing, subjectId, "synthetic-source",
+    { ...capture, body: capture.body + " Source revision.", checkedAt: "2026-09-13T12:00:00.000Z" }), /CHECK constraint/);
+  const row = await db.prepare("SELECT revision FROM technology_source_heads WHERE subject_id=?").bind(subjectId).first<{ revision: number }>();
+  assert.equal(row?.revision, 1);
+});
+
 test("editorial release dates come only from matching dated developments and retain date evidence", async t => {
   const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
   const source = await input(), subjectId = await githubRepositoryKey("123");

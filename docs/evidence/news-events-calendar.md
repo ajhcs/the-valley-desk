@@ -32,7 +32,7 @@ return handleEventCalendar(request, {
 });
 ```
 
-The maintenance signature is `(db, items, withdrawnIds, now?, origin?)`, returning
+The maintenance signature is `(db, items, withdrawnIds, now?, origin?, restoredIds?, guards?)`, returning
 `{changed, considered, withdrawals}`. Run inside the existing ingestion lock after
 publication persistence, with the complete trusted published overlay and durable
 explicit withdrawal IDs. Never derive withdrawals from a missing source page/item.
@@ -47,7 +47,12 @@ history. Refresh-only `updatedAt`/`fetchedAt` changes do not alter the feed or E
 DTSTART comes from the published source schedule; DTSTAMP and LAST-MODIFIED record
 the durable calendar object's material revision, not each fetch or HTTP request.
 Explicit withdrawal retains UID, title, location and dates, blanks description,
-and permanently marks the object CANCELLED. It cannot resurrect from a stale catalog.
+and marks the object CANCELLED. Independent durable withdrawal timestamps also
+cover events not yet present in the calendar. Transactional CHECK guards stop a
+first stale capture or restoration when a withdrawal arrives during its write.
+Restoration requires an explicitly current approved republication ID and a clock
+strictly newer than the latest confirmed withdrawal; stale catalog discovery is
+insufficient. Withdrawal markers and event audit history are never deleted.
 Source cancellation can later be corrected with another material revision.
 
 Calendar text is serialized with pinned `ical.js` 2.2.1, not handwritten escaping.
@@ -60,13 +65,26 @@ Timed events use UTC instants. Date-only events preserve civil dates with exclus
 end dates through DST. Unknown clocks are explicit Time TBD, TENTATIVE and TRANSPARENT,
 not fabricated midnight appointments. Unknown timed end dates are omitted.
 
-GET/HEAD support strong ETag and Last-Modified conditional requests. Flag absence,
+GET/HEAD support strong ETag conditional requests and expose material-event
+Last-Modified. IMS-only requests return 200: rolling feed membership can change
+without a new event revision, so that clock cannot safely prove a 304. Flag absence,
 missing storage, invalid persisted payload or exceeded bounds returns uncached 503.
-Bounds: 500 published inputs, 1,000 withdrawal IDs, 500 delivered records and 2 MB
+Bounds: 5,000 published inputs/restoration IDs, 1,000 withdrawal IDs, 500 delivered records and 2 MB
 serialized output. Maintenance is atomic per event, not across the entire catalog.
-There is deliberately no automatic history/tombstone pruning. An explicit retention
-horizon and capacity monitoring are required before the retained feed approaches 500
-objects; overflow fails closed rather than silently dropping cancellations.
+Delivery selects event intervals overlapping the past 90 days through the next
+365 days; recent cancellations remain for 90 days after their calendar revision
+even when their event date is older. Timed bounds use UTC instants; civil dates
+remain civil dates. Selection precedes the 500-record cap; retained historical
+entries do not consume current-feed capacity. More than 500 selected records still
+fails closed. History/tombstones remain retained independently of this feed window.
+Serializer and HTTP handler accept an optional injected Date for deterministic
+boundary testing. Failed or malformed D1 result envelopes return uncached 503,
+never a successful empty calendar.
+
+Additional local qualification: all 15 calendar tests pass, including a withdrawal
+before first capture, a concurrent stale first write, a later withdrawal during
+restoration, 501 historical entries plus active boundary events, inclusive temporal
+boundaries, rolling ETag changes, and more than 500 active events failing closed.
 
 ## Verifier Instrumentation
 
@@ -85,16 +103,26 @@ schema rejection and response-size failures; none is labeled a production reprod
 
 ## Remaining Original-Plan Work
 
-Local verification: 221 relevant calendar/events/news/editor tests passed, plus three
-verifier instrumentation tests; TypeScript/Vite build passed. The full `npm test`
-attempt is not green in this isolated branch: the root-owned runtime minimum migration
-still names 0030 instead of the new maximum 0036, and the separate PDF Python runtime
-is not bootstrapped (`node_modules/.policy-pdf/bin/python` missing). Root integration
-must reconcile the runtime manifest and run the complete release gate with its PDF
-runtime. No rendered browser verification is claimed for this isolated slice.
+Root integration supersedes the earlier isolated-branch test blockers: the runtime
+stamp now names 0036, the PDF runtime is bootstrapped, and full `npm test` passes,
+including 93 additional launch tests. TypeScript/Vite build also passes.
+The publication snapshot clock in 0036 advances on candidate, publication and
+reconciliation changes. Every calendar write checks that captured clock in its
+transaction; a withdrawal after snapshot reading cannot be undone by stale approval
+data. Failed publication reads now throw instead of becoming an empty snapshot.
+Three SQLite runtime tests cover overlays, withdrawal/republication, snapshot races
+and failed reads, in addition to the 15 calendar tests.
 
-- Root runtime/flag integration and desktop/mobile QA of the activated subscription UI.
-- Calendar client interoperability checks and a deliberate cancellation-retention policy.
+Local Playwright checks pass for News/Events at 320, 390, 768 and 1440 pixels,
+including availability-gated calendar links, wrong content type, keyboard focus
+and 200% zoom. Eleven checks and eight screenshots are retained in
+`/mnt/d/tmp/plumbob/tvd-launch-calendar-browser-20260912/`. Calendar availability
+responses are intercepted test inputs, not proof of a live endpoint. Both calendar
+flags remain disabled by absence. No production activation is claimed.
+
+- Activate collection before calendar delivery only after migration, initial sync,
+  production backup/rollback qualification and exact-candidate release checks.
+- Calendar client interoperability checks and monitoring of the selected 500-event window.
 - Optional source-backed registration/price states and a versioned explicit event-time
   contract remain separate enhancements; current legacy date interpretation is preserved.
 - Assess verifier reliability from the next natural diagnostic-bearing cycle before

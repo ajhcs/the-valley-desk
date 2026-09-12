@@ -40,22 +40,25 @@ export async function persistTechnologySourceRepresentation(db: D1DatabaseLike, 
     .bind(subjectId).first();
   if (knownSubject) {
     // Raw changes may retract existing authority, but never create/repopulate it.
-    const artifacts = await db.prepare("SELECT DISTINCT artifact_id FROM technology_artifact_observations WHERE subject_id=?")
+    const inventory = await db.prepare("SELECT revision FROM technology_dossier_heads WHERE subject_id=?")
+      .bind(subjectId).first<{ revision: number }>();
+    const artifacts = await db.prepare("SELECT DISTINCT artifact_id FROM technology_artifact_observations WHERE subject_id=? LIMIT 401")
       .bind(subjectId).all<{ artifact_id: string }>();
-    const artifactIds = new Set([subjectId + ":repository", ...(artifacts.results ?? []).map(row => row.artifact_id)]);
+    if (!Array.isArray(artifacts.results) || ("success" in artifacts && artifacts.success === false) || artifacts.results.length > 400)
+      throw new Error("technology-artifact-inventory-unavailable");
+    statements.push(db.prepare("INSERT INTO technology_review_guards SELECT ?,CASE WHEN COALESCE((SELECT revision FROM technology_dossier_heads WHERE subject_id=?),0)=? THEN 1 ELSE 0 END")
+      .bind(await tupleKey("technology-inventory-guard-v1", [observationId]), subjectId, inventory?.revision ?? 0));
+    const artifactIds = new Set([subjectId + ":repository", ...artifacts.results.map(row => row.artifact_id)]);
     for (const artifactId of artifactIds) for (const scope of [null, "code", "data", "weights"] as const) {
       const kind = scope === null ? "artifact" : "artifact-license";
       const key = await deliveryDependencyKey(kind, scope === null ? [artifactId] : [artifactId, scope]);
-      const head = await db.prepare("SELECT kind,revision,digest,changed_at FROM watch_dependency_heads WHERE dependency_key=?")
-        .bind(key).first<{ kind: string; revision: number; digest: string | null; changed_at: string }>();
-      if (!head || head.digest === null) continue;
-      if (head.kind !== kind) throw new Error("technology-dependency-kind-conflict");
-      const changedAt = capture.checkedAt < head.changed_at ? head.changed_at : capture.checkedAt;
-      const id = await tupleKey("technology-retraction-v1", [observationId, key, String(head.revision + 1)]);
-      statements.push(db.prepare("INSERT INTO watch_dependency_records VALUES(?,?,?,?,?,?)")
-        .bind(id, key, kind, head.revision + 1, null, changedAt));
-      statements.push(db.prepare("UPDATE watch_dependency_heads SET revision=?,digest=NULL,immutable_record_id=?,changed_at=? WHERE dependency_key=?")
-        .bind(head.revision + 1, id, changedAt, key));
+      const id = await tupleKey("technology-retraction-v1", [observationId, key]);
+      // Read heads inside the write transaction, including a first approval
+      // that committed after source resolution but before this capture batch.
+      statements.push(db.prepare("INSERT INTO watch_dependency_records SELECT ?,dependency_key,kind,revision+1,NULL,MAX(changed_at,?) FROM watch_dependency_heads WHERE dependency_key=? AND kind=? AND digest IS NOT NULL")
+        .bind(id, capture.checkedAt, key, kind));
+      statements.push(db.prepare("UPDATE watch_dependency_heads SET revision=(SELECT revision FROM watch_dependency_records WHERE immutable_record_id=?),digest=NULL,immutable_record_id=?,changed_at=(SELECT changed_at FROM watch_dependency_records WHERE immutable_record_id=?) WHERE dependency_key=? AND EXISTS(SELECT 1 FROM watch_dependency_records WHERE immutable_record_id=?)")
+        .bind(id, id, id, key, id));
     }
   }
   await db.batch(statements);

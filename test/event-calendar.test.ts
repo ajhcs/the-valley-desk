@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import ICAL from "ical.js";
 import { EventItem } from "../src/content/schema";
-import { handleEventCalendar, maintainEventCalendar, serializeEventCalendar } from "../src/ingest/event-calendar";
+import { handleEventCalendar as handleCalendar, maintainEventCalendar, serializeEventCalendar as serializeCalendar } from "../src/ingest/event-calendar";
 import { cleanEventSourceMarkup } from "../src/lib/sourceMarkup";
 import { calendarSubscriptionUrls } from "../src/lib/calendarSubscription";
 import { pdfDatabase } from "./helpers/policy-pdf";
@@ -10,6 +10,8 @@ import type { D1DatabaseLike } from "../src/ingest/persistence";
 
 const at = new Date("2026-09-12T17:00:00.000Z");
 const later = new Date("2026-09-12T18:00:00.000Z");
+const serializeEventCalendar=(db:D1DatabaseLike)=>serializeCalendar(db,later);
+const handleEventCalendar=(request:Request,env:Parameters<typeof handleCalendar>[1])=>handleCalendar(request,env,later);
 const item = (extra: Record<string, unknown> = {}) => EventItem.parse({
   id: "calendar-test", slug: "calendar-test", kind: "event", title: "Regional forum", dek: "Public event",
   body: "Healthcare technology discussion", status: "published", updatedAt: at.toISOString(),
@@ -53,6 +55,11 @@ test("absence never cancels; explicit withdrawal retains cancellation and cannot
     assert.equal(parsed.getFirstPropertyValue("uid"), event(original.body).getFirstPropertyValue("uid"));
     await maintainEventCalendar(db, [item()], [], later);
     assert.deepEqual(await serializeEventCalendar(db), cancelled);
+    await maintainEventCalendar(db, [item()], [], new Date(later.getTime()+1), "https://thevalleydesk.org", [item().id]);
+    const restored = event((await serializeCalendar(db,new Date(later.getTime()+1))).body);
+    assert.equal(restored.getFirstPropertyValue("status"), "CONFIRMED");
+    assert.equal(restored.getFirstPropertyValue("sequence"), 2);
+    assert.equal(restored.getFirstPropertyValue("uid"), event(original.body).getFirstPropertyValue("uid"));
   } finally { sqlite.close(); }
 });
 
@@ -111,7 +118,7 @@ test("calendar HTTP supports conditional GET, HEAD and fail-closed availability"
     const conditional = await handleEventCalendar(req({headers:{"if-none-match":"W/"+response.headers.get("etag")}}), env);
     assert.equal(conditional.status, 304);
     assert.equal(await conditional.text(), "");
-    assert.equal((await handleEventCalendar(req({headers:{"if-modified-since":at.toUTCString()}}), env)).status, 304);
+    assert.equal((await handleEventCalendar(req({headers:{"if-modified-since":at.toUTCString()}}), env)).status, 200);
     const head = await handleEventCalendar(req({method:"HEAD"}), env);
     assert.equal(head.status, 200); assert.equal(await head.text(), "");
     assert.equal((await handleEventCalendar(req({method:"POST"}), env)).status, 405);
@@ -125,7 +132,7 @@ test("calendar rejects invalid or oversized maintenance and preserves previous r
     const before = await serializeEventCalendar(db);
     await assert.rejects(maintainEventCalendar(db, [item({endsAt:"2026-10-01T00:00:00.000Z"})], [], later), /invalid-interval/);
     await assert.rejects(maintainEventCalendar(db, [item(), item()], [], later), /duplicate-input/);
-    await assert.rejects(maintainEventCalendar(db, Array.from({length:501},(_,i)=>item({id:String(i)})), [], later), /maintenance-limit/);
+    await assert.rejects(maintainEventCalendar(db, Array.from({length:5001},(_,i)=>item({id:String(i)})), [], later), /maintenance-limit/);
     await assert.rejects(maintainEventCalendar(db, [item({title:"Changed"})], [], new Date("2026-09-11T00:00:00.000Z")), /time-conflict/);
     assert.deepEqual(await serializeEventCalendar(db), before);
   } finally { sqlite.close(); }
@@ -175,4 +182,76 @@ test("subscription URLs retain HTTPS download and native calendar protocol", () 
   const urls = calendarSubscriptionUrls("https://thevalleydesk.org");
   assert.equal(urls.download, "https://thevalleydesk.org/events.ics");
   assert.equal(urls.subscribe, "webcal://thevalleydesk.org/events.ics");
+});
+
+test("withdrawals before first capture persist and concurrent stale first writes roll back", async () => {
+  const {db,sqlite}=pdfDatabase();
+  try {
+    await maintainEventCalendar(db,[],[item().id],later);
+    assert.equal((await maintainEventCalendar(db,[item()],[],at)).changed,0);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM event_calendar_entries").get()?.n,0);
+    assert.equal((await maintainEventCalendar(db,[item()],[],later,"https://thevalleydesk.org",[item().id])).changed,0);
+    const restoredAt=new Date(later.getTime()+1);
+    assert.equal((await maintainEventCalendar(db,[item()],[],restoredAt,"https://thevalleydesk.org",[item().id])).changed,1);
+    const racing=item({id:"calendar-racing",slug:"calendar-racing"});
+    const interleaved:D1DatabaseLike={...db,async batch(statements) {
+      await maintainEventCalendar(db,[],[racing.id],later);
+      return db.batch(statements);
+    }};
+    await assert.rejects(maintainEventCalendar(interleaved,[racing],[],at),/CHECK constraint/);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM event_calendar_entries WHERE event_id=?").get(racing.id)?.n,0);
+  } finally {sqlite.close();}
+});
+
+test("new withdrawal during explicit restoration prevents stale restoration",async()=>{
+  const {db,sqlite}=pdfDatabase();
+  try{
+    await maintainEventCalendar(db,[item()],[],at);
+    await maintainEventCalendar(db,[],[item().id],new Date(at.getTime()+1));
+    const interleaved:D1DatabaseLike={...db,async batch(statements){
+      await maintainEventCalendar(db,[],[item().id],new Date(later.getTime()+1));
+      return db.batch(statements);
+    }};
+    await assert.rejects(maintainEventCalendar(interleaved,[item()],[],later,"https://thevalleydesk.org",[item().id]),/CHECK constraint/);
+    assert.equal(sqlite.prepare("SELECT withdrawn FROM event_calendar_entries").get()?.withdrawn,1);
+  }finally{sqlite.close();}
+});
+
+test("calendar horizon preserves history, includes boundaries and recent old-event cancellations",async()=>{
+  const {db,sqlite}=pdfDatabase();
+  try{
+    const beforePast=new Date(at.getTime()-90*86400000-1).toISOString();
+    const past=new Date(at.getTime()-90*86400000).toISOString();
+    const future=new Date(at.getTime()+365*86400000).toISOString();
+    const afterFuture=new Date(at.getTime()+365*86400000+1).toISOString();
+    const events=[
+      ...Array.from({length:501},(_,i)=>item({id:"historic-"+i,slug:"historic-"+i,startsAt:beforePast})),
+      item({id:"past-boundary",slug:"past-boundary",startsAt:past}),
+      item({id:"future-boundary",slug:"future-boundary",startsAt:future}),
+      item({id:"future-outside",slug:"future-outside",startsAt:afterFuture}),
+    ];
+    await maintainEventCalendar(db,events,[],at);
+    await maintainEventCalendar(db,[],["historic-0"],at);
+    const body=(await serializeCalendar(db,at)).body;
+    const summaries=new ICAL.Component(ICAL.parse(body)).getAllSubcomponents("vevent");
+    assert.equal(summaries.length,3);
+    assert.equal(summaries.filter(value=>value.getFirstPropertyValue("status")==="CANCELLED").length,1);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM event_calendar_entries").get()?.n,504);
+    assert.equal((await handleCalendar(new Request("https://thevalleydesk.org/events.ics"),{VALLEY_DESK_DB:db,EVENT_CALENDAR_PUBLIC_ENABLED:"true"},at)).status,200);
+    assert.notEqual((await serializeCalendar(db,new Date(at.getTime()+1))).etag,(await serializeCalendar(db,at)).etag);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM event_calendar_revisions").get()?.n,505);
+  }finally{sqlite.close();}
+});
+
+test("more than 500 in-window events and failed D1 reads fail closed",async()=>{
+  const {db,sqlite}=pdfDatabase();
+  try{
+    await maintainEventCalendar(db,Array.from({length:501},(_,i)=>item({id:"active-"+i,slug:"active-"+i})),[],at);
+    await assert.rejects(serializeCalendar(db,at),/feed-limit/);
+    for(const result of [{success:false,error:"synthetic"}, {results:null}, {results:[],success:false}]){
+      const failed={prepare:()=>({bind(){return this;},async all(){return result;}})} as unknown as D1DatabaseLike;
+      const response=await handleCalendar(new Request("https://thevalleydesk.org/events.ics"),{VALLEY_DESK_DB:failed,EVENT_CALENDAR_PUBLIC_ENABLED:"true"},at);
+      assert.equal(response.status,503);assert.equal(response.headers.get("cache-control"),"no-store");
+    }
+  }finally{sqlite.close();}
 });

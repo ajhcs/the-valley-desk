@@ -21,8 +21,10 @@ import { createWatchEditorialRuntime } from "./watch-editorial-runtime";
 import { handleRepresentativeReview } from "./representative-api";
 import { resolveRepresentativeSourcePolicy } from "./representative-runtime";
 import { tupleKey } from "../content/watch-schema";
+import { syncPublishedEventCalendar } from "./event-calendar-runtime";
 
 type ReviewEnv = {
+  EVENT_CALENDAR_COLLECTION_ENABLED?: string;
   VALLEY_DESK_DB: D1DatabaseLike;
   REVIEW_API_TOKEN?: string;
   BUILD_SHA?: string;
@@ -1378,6 +1380,10 @@ export async function handleReviewApi(request: Request, env: ReviewEnv, options:
       ).bind(id));
     }
     const [result] = await env.VALLEY_DESK_DB.batch(statements);
+    if (env.EVENT_CALENDAR_COLLECTION_ENABLED === "true" && (approvedContent?.kind === "event" || rejectedContent?.kind === "event")) {
+      try { await syncPublishedEventCalendar(env.VALLEY_DESK_DB, new Date(), env.PUBLIC_ORIGIN); }
+      catch { logOps("event-calendar", { outcome: "synchronization-pending", candidateId: id }, "warn"); }
+    }
     const payload = {
       id,
       decision: body.decision,

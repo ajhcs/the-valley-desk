@@ -47,6 +47,7 @@ import {
   type D1DatabaseLike,
 } from "./persistence";
 import { logOps } from "../lib/ops";
+import { syncPublishedEventCalendar } from "./event-calendar-runtime";
 import { matchingProductUses } from "./product-watch";
 import { sourceIdentityKey } from "./identity";
 import { runScheduledIngest, type IngestRun, type IngestRunOptions } from "./run-all";
@@ -78,6 +79,8 @@ import {
 } from "./official-source-automation";
 
 export type AutomationEnv = {
+  EVENT_CALENDAR_COLLECTION_ENABLED?: string;
+  PUBLIC_ORIGIN?: string;
   VALLEY_DESK_DB: D1DatabaseLike;
   OPENROUTER_API_KEY?: string;
   /** Legacy provider-neutral secret name. Prefer OPENROUTER_API_KEY. */
@@ -799,6 +802,12 @@ export async function runAutomation(
       editoriallyPersistedSocialEvidence,
       new Date(),
     );
+    if (env.EVENT_CALENDAR_COLLECTION_ENABLED === "true") {
+      stage = "event-calendar";
+      await ensureLock();
+      const calendar = await syncPublishedEventCalendar(env.VALLEY_DESK_DB, new Date(), env.PUBLIC_ORIGIN);
+      logOps("event-calendar", { outcome: "synchronized", ...calendar });
+    }
     stage = "complete-run";
     const finishedAt = await markIngestRunSucceeded(env.VALLEY_DESK_DB, persisted.runId);
     const modelAttemptedCount = modeled.filter((row) => row.attempt).length;
