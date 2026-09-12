@@ -504,6 +504,38 @@ test("relevance gate receives the exact Muse model hook and cannot change review
   assert.equal(gated[0]?.relevance?.decision, "accept");
 });
 
+test("configured Spark model reaches official transport, quoted payload and input hash", async () => {
+  const candidate: OfficialDiscoveryCandidate = {
+    id: "official-configured-model", sourceId: pennNews.id, institutionId: "inst-penn",
+    category: "news", region: "PA", title: "Penn opens an outpatient service",
+    url: "https://pennmedicine.org/news/outpatient-service", sourcePageUrl: pennNews.url,
+    sourceName: pennNews.name, trust: pennNews.trust, discoveredAt: "2026-09-12T12:00:00.000Z",
+    status: "review", instructionLike: false,
+  };
+  const hashes = new Set<string>();
+  for (const model of ["meta/muse-spark-1.2-contributor", "meta/muse-spark-1.3-contributor"]) {
+    let calls = 0;
+    const gate = officialSourceRelevanceGateFromEditor({ apiKey: "test-only", model }, async (_url, init) => {
+      calls += 1;
+      const request = JSON.parse(String(init?.body));
+      assert.equal(request.model, model);
+      assert.equal(JSON.parse(request.messages[1].content).model, model);
+      assert.ok(request.messages[0].content.includes(`Use model ${model}`));
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({
+        decision: "review", relevanceScore: 60, confidence: 0.8,
+        reasons: ["Listing is insufficient evidence"], evidenceSpans: [],
+      }) } }] }));
+    })!;
+    const [result] = await applyOfficialSourceRelevanceGate([candidate], gate, { model });
+    assert.equal(calls, 1);
+    assert.equal(result.status, "review");
+    assert.equal(result.relevance?.decision, "review");
+    assert.ok(result.relevanceAttempt?.inputSha256);
+    hashes.add(result.relevanceAttempt!.inputSha256!);
+  }
+  assert.equal(hashes.size, 2, "model-only changes must change the recorded input identity");
+});
+
 test("ordinary material official developments can enter the downstream editor", () => {
   const candidate: OfficialDiscoveryCandidate = {
     id: "official-routine-material-change",

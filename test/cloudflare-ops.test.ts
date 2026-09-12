@@ -210,6 +210,29 @@ function applyMigrations(database: DatabaseSync) {
   }
 }
 
+test("official relevance persistence records the configured model without changing review status", async () => {
+  const database = new DatabaseSync(":memory:");
+  try {
+    applyMigrations(database);
+    const db = sqliteD1(database);
+    const source = officialSourceRegistry.sources.find(row => row.id === "ofs-pa-legislature-hb1993")!;
+    const model = "meta/muse-spark-1.3-contributor";
+    const [candidate] = (await discoverOfficialSources({ sources: [source],
+      now: new Date("2026-09-06T23:30:00Z"),
+      fetchImpl: async () => new Response(readFileSync(join(root, "test/fixtures/pa-legislation/captured-hb1993-20260906.html"), "utf8")),
+      relevanceGate: async () => ({ decision: "review", relevanceScore: 60, confidence: 0.8,
+        reasons: ["Full provisions remain unreviewed"], evidenceSpans: [] }),
+      relevanceModel: model,
+    })).candidates;
+    assert.ok(candidate.relevance);
+    await persistOfficialSourceCandidates(db, [candidate], [], new Set(), { relevanceModel: model });
+    const stored = database.prepare("SELECT relevance_model, status, content_item_id FROM official_source_candidates WHERE id = ?").get(candidate.id);
+    assert.equal(stored?.relevance_model, model);
+    assert.equal(stored?.status, "review");
+    assert.equal(stored?.content_item_id, null);
+  } finally { database.close(); }
+});
+
 test("PUBLIC_ORIGIN defaults to the live domain and rejects non-https values", () => {
   assert.equal(DEFAULT_PUBLIC_ORIGIN, PRODUCTION_ORIGIN);
   assert.equal(resolvePublicOrigin(undefined), DEFAULT_PUBLIC_ORIGIN);
