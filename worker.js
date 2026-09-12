@@ -10,6 +10,7 @@ import { cleanupEmailDiscoveries } from "./src/ingest/email.ts";
 import { handleCloudflareInboundEmail, resolvePendingEmailAuthentication } from "./src/ingest/email-auth.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
 import { policyBaselineView } from "./src/ingest/policy-pdf.ts";
+import { handleWatchRead, isWatchReadPath } from "./src/ingest/watch-api.ts";
 import { cleanupSocialEvidencePackets, handleSocialCollectorRuns, handleSocialEvidence, handleSocialManifest, isSocialCollectorRunsPath, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
@@ -560,6 +561,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   if (path === "/api/health") {
     return handlePublicHealth(request, env);
   }
+  if (isWatchReadPath(path)) return handleWatchRead(request, env);
   if (path === "/api/policy-watchlist") {
     if (method !== "GET" && method !== "HEAD") return new Response(null, {status:405,headers:{allow:"GET, HEAD"}});
     try { return new Response(JSON.stringify(await policyBaselineView(env.VALLEY_DESK_DB)), {headers:{"content-type":"application/json","cache-control":"no-store"}}); }
