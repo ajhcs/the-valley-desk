@@ -4291,10 +4291,10 @@ test("dynamic publication overlay updates matching ingest rows but cannot shadow
   assert.ok(workerSource.includes("decorateHtml"));
 });
 
-test("one-worker configuration has Muse defaults, one D1 binding, and no staging environment", () => {
+test("one-worker configuration selects Spark 1.3 with unchanged budgets and one D1 binding", () => {
   const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
   const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
-  assert.ok(wrangler.includes('"EDITOR_MODEL": "meta/muse-spark-1.2-contributor"'));
+  assert.ok(wrangler.includes('"EDITOR_MODEL": "meta/muse-spark-1.3-contributor"'));
   assert.ok(!wrangler.includes("standard Muse"));
   assert.ok(wrangler.includes("https://openrouter.ai/api/v1"));
   assert.ok(wrangler.includes('"EDITOR_MODEL_BUDGET": "32"'));
@@ -5038,6 +5038,7 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(model.includes("Every affectedOrgId and productId must come verbatim"));
   assert.ok(wrangler.includes('"crons": ["*/15 * * * *", "17 3 * * *"]'));
   assert.ok(example.includes("EDITOR_MODEL_BUDGET=32"));
+  assert.ok(example.includes("EDITOR_MODEL=meta/muse-spark-1.3-contributor"));
   assert.ok(example.includes("SOCIAL_INGEST_TOKEN=replace-with-a-different-long-random-token"));
   assert.ok(example.includes("EDITOR_MODEL_TIMEOUT_MS=45000"));
   assert.ok(example.includes("EDITOR_MODEL_DEADLINE_MS=110000"));

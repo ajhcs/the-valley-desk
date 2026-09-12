@@ -8,7 +8,7 @@ Vite + React + TypeScript + TanStack Router + Tailwind on Cloudflare Workers. Hu
 
 ## Automation
 
-One production Worker runs a 15-minute freshness lane and a daily catch-up lane. Every scheduled pass checks newsroom RSS, current chapter events, and configured social sources; the daily pass provides a second bounded reconciliation window. Both write every raw candidate to D1 before any model call. Muse Spark 1.2 Contributor (`meta/muse-spark-1.2-contributor`) classifies and grounds relevant candidates through OpenRouter's OpenAI-compatible API. Deterministic rules—not the model—make the final publication decision.
+One production Worker runs a 15-minute freshness lane and a daily catch-up lane. Every scheduled pass checks newsroom RSS, current chapter events, and configured social sources; the daily pass provides a second bounded reconciliation window. Both write every raw candidate to D1 before any model call. The production configuration selects Muse Spark 1.3 Contributor (`meta/muse-spark-1.3-contributor`) to classify and ground relevant candidates through OpenRouter's OpenAI-compatible API. Deterministic rules—not the model—make the final publication decision.
 
 The same locked hourly run seeds the 16-system executive coverage registry and performs bounded checks against enabled first-party leadership sources. Every canonical system has an explicit active or degraded official-source posture; each monitorable source may declare up to four explicit HTTPS alternate URLs, which are tried only after a blocked or incomplete primary and remain within the source host allowlist. Transitional, partial, and PDF evidence is retained as metadata without being used to infer departures. LinkedIn inventory is reusable for identity context but is never fetched. Complete, non-hostile snapshots produce protected observations. Additions and title changes are applied automatically only after two consecutive daily snapshots or two independent registered official sources; departures additionally require two consecutive complete snapshots from independent official sources. Conflicts and incomplete evidence remain unresolved. Verified changes emit review-status editorial candidates; they never publish directly. The observation endpoint is for diagnostics and explicit override only.
 
@@ -42,9 +42,12 @@ GET/HEAD APIs under `/api/v2/watch/`. They do not change the v1 feed envelope.
 its public background API. Both are explicitly false in the foundation candidate.
 Protected operator review remains independently authenticated.
 
-The source adapters and Muse 1.3 evaluation harness are offline contracts, not
-active collectors or provider calls. Runtime Muse remains 1.2 until real paired
-evaluation, data-policy, and editorial gates pass. Public Watch activation also
+The source adapters and standalone Watch evaluation harness remain offline
+contracts, not active collectors. The existing news-pipeline model upgrade is
+qualified separately in [the Spark upgrade record](docs/evidence/spark-upgrade-2026-09-12.md).
+Its explicit runtime setting selects 1.3; omitted model configuration retains the
+1.2 baseline default, and rollback restores the previous Worker's 1.2 settings.
+Public Watch activation still
 requires qualified federal/PA/NJ/DE/local sources, official representative data,
 artifact-specific regional evidence, authorized review/current-head writers,
 and operational load acceptance. Do not seed production from synthetic fixtures.
