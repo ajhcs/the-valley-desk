@@ -11,6 +11,8 @@ import { handleCloudflareInboundEmail, resolvePendingEmailAuthentication } from 
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
 import { policyBaselineView } from "./src/ingest/policy-pdf.ts";
 import { handleWatchRead, isWatchReadPath } from "./src/ingest/watch-api.ts";
+import { handleRepresentativeRead } from "./src/ingest/representative-api.ts";
+import { resolveRepresentativeSourcePolicy } from "./src/ingest/representative-runtime.ts";
 import { cleanupSocialEvidencePackets, handleSocialCollectorRuns, handleSocialEvidence, handleSocialManifest, isSocialCollectorRunsPath, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
@@ -563,6 +565,17 @@ async function handleFetch(request, env, origin, nonce, ctx) {
 
   if (path === "/api/health") {
     return handlePublicHealth(request, env);
+  }
+  if (path === "/api/v2/watch/representatives") {
+    try {
+      const policy = env.WATCH_PUBLIC_ENABLED === "true" && env.VALLEY_DESK_DB
+        ? await resolveRepresentativeSourcePolicy(env.VALLEY_DESK_DB)
+        : { officialSources: new Map(), sourceUrlAllowed: () => false, officialPublicUrlAllowed: () => false, maxRosterAgeHours: 168 };
+      return handleRepresentativeRead(request, env, policy);
+    } catch {
+      return new Response(request.method === "HEAD" ? null : JSON.stringify({ error: { code: "representative-unavailable" } }),
+        { status: 503, headers: { "content-type": "application/json", "cache-control": "no-store" } });
+    }
   }
   if (isWatchReadPath(path)) return handleWatchRead(request, env);
   if (isWatchPagePath(path)) {

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { WatchId } from "../content/watch-schema";
 import { RepresentativeContractError } from "../content/watch-representatives";
 import { readBoundedText } from "./upstream";
 import { readRepresentatives, readRepresentativeDraft, decideRepresentativeDraft, RepresentativeStorageError } from "./representative-persistence";
@@ -36,19 +37,20 @@ export async function handleRepresentativeReview(request: Request, env: Environm
   authorize: (request: Request) => Promise<string | null>) {
   const reviewerId = await authorize(request);
   if (!reviewerId) return json(request, 404, { error: { code: "not-found" } });
-  const match = /^\/api\/representative-drafts\/([a-zA-Z0-9_-]+)(\/decision)?$/.exec(new URL(request.url).pathname);
+  const match = /^\/api\/representative-drafts\/([^/]+)(\/decision)?$/.exec(new URL(request.url).pathname);
   if (!match) return json(request, 404, { error: { code: "not-found" } });
   if (!env.VALLEY_DESK_DB) return json(request, 503, { error: { code: "representative-unavailable" } });
   try {
+    const id = WatchId.parse(decodeURIComponent(match[1]));
     if (!match[2] && ["GET", "HEAD"].includes(request.method)) {
-      const { row, draft } = await readRepresentativeDraft(env.VALLEY_DESK_DB, match[1]);
+      const { row, draft } = await readRepresentativeDraft(env.VALLEY_DESK_DB, id);
       return json(request, 200, { draft, sha256: row.payload_sha256, createdAt: row.created_at });
     }
     if (match[2] && request.method === "POST") {
       if (!request.headers.get("content-type")?.startsWith("application/json")) return json(request, 415, { error: { code: "json-required" } });
       const body = JSON.parse(await readBoundedText(new Response(request.body), 4096));
       const decision = z.object({ sha256: z.string(), decision: z.enum(["accepted", "rejected"]) }).strict().parse(body);
-      return json(request, 200, await decideRepresentativeDraft(env.VALLEY_DESK_DB, { id: match[1], ...decision }, reviewerId, policy));
+      return json(request, 200, await decideRepresentativeDraft(env.VALLEY_DESK_DB, { id, ...decision }, reviewerId, policy));
     }
     return json(request, 405, { error: { code: "method-not-allowed" } });
   } catch (error) { return failed(request, error); }

@@ -44,6 +44,17 @@ async function updateHead(db: D1DatabaseLike, delivery: Delivery, kind: string, 
 }
 const validity = (delivery: Delivery, invalidField?: string) => new Map(delivery.manifest.groups.map(group => [group.key, group.field !== invalidField]));
 
+test("source qualification expiry removes public delivery at the boundary without a collector write", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const delivery = await fixture();
+  await applyReviewedWatchProjection(db, await stage(db, delivery), at());
+  const permission = delivery.manifest.groups.flatMap(group => group.dependencies).find(item => item.kind === "source-permission")!;
+  await db.prepare("INSERT INTO watch_dependency_expirations VALUES(?,?)").bind(permission.key, "2026-09-13T00:00:00.000Z").run();
+  assert.equal((await readWatchDirectory(db, { kind: "policy" }, at())).items.length, 1);
+  assert.deepEqual((await readWatchDirectory(db, { kind: "policy" }, at("2026-09-13T00:00:00.000Z"))).items, []);
+  await assert.rejects(readWatchSubject(db, "policy", delivery.record.id, "id", at("2026-09-13T00:00:00.000Z")), /watch-evidence-changed/);
+});
+
 test("delivery compiler accepts only its own opaque capability and qualified source/regional context", async () => {
   const delivery = await fixture("technology");
   assert.throws(() => compiledWatchDeliveryValue({} as never), /server-compiled-delivery-required/);

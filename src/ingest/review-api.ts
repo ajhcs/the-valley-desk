@@ -16,6 +16,11 @@ import { buildRuntimeLeadershipCoverage } from "../lib/operational-status";
 import { officialSourceRegistry } from "./official-source-discovery";
 import { markEmailPdfExtractionFailed, persistEmailPdfPageEvidence } from "./email";
 import { handlePolicyPdfApi } from "./policy-pdf";
+import { handleWatchEditorialApi } from "./watch-editorial-api";
+import { createWatchEditorialRuntime } from "./watch-editorial-runtime";
+import { handleRepresentativeReview } from "./representative-api";
+import { resolveRepresentativeSourcePolicy } from "./representative-runtime";
+import { tupleKey } from "../content/watch-schema";
 
 type ReviewEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
@@ -297,6 +302,7 @@ function readIdempotent(token: string, key: string) {
 
 export function isReviewApiPath(pathname: string) {
   return /^\/api\/(?:policy-background|policy-pdf|policy-versions|policy-provisions)(?:\/|$)/.test(pathname)
+    || /^\/api\/(?:watch-drafts|representative-drafts)(?:\/|$)/.test(pathname)
     || pathname === "/api/automation/status"
     || pathname === "/api/automation/status/review"
     || pathname.startsWith("/api/executive-observations")
@@ -814,6 +820,21 @@ export async function handleReviewApi(request: Request, env: ReviewEnv, options:
   const pathname = options.routePrefix && (url.pathname === options.routePrefix || url.pathname.startsWith(`${options.routePrefix}/`))
     ? `/api${url.pathname.slice(options.routePrefix.length)}`
     : url.pathname;
+
+  if (/^\/api\/(?:watch-drafts|representative-drafts)(?:\/|$)/.test(pathname)) {
+    if (method === "POST" && !rateLimitPost(request, env.REVIEW_API_TOKEN ?? options.trustedAccessEmail ?? ""))
+      return json({ error: "rate_limited" }, 429);
+    const namedOperator = options.trustedAccessEmail === "clyons@ajhcs.org" ? options.trustedAccessEmail : null;
+    if (pathname.startsWith("/api/watch-drafts")) return handleWatchEditorialApi(request, env.VALLEY_DESK_DB,
+      pathname, namedOperator, createWatchEditorialRuntime(env.VALLEY_DESK_DB));
+    if (method === "POST" && !namedOperator) return json({ error: "named-operator-required" }, 403);
+    try {
+      const canonicalUrl = new URL(request.url); canonicalUrl.pathname = pathname;
+      const policy = await resolveRepresentativeSourcePolicy(env.VALLEY_DESK_DB);
+      const reviewer = await tupleKey("watch-reviewer-v1", [namedOperator ?? "review-api-token"]);
+      return handleRepresentativeReview(new Request(canonicalUrl, request), env, policy, async () => reviewer);
+    } catch { return json({ error: "representative-unavailable" }, 503); }
+  }
 
   if (/^\/api\/(?:policy-background|policy-pdf|policy-versions|policy-provisions)(?:\/|$)/.test(pathname)) {
     // Page uploads have their own byte/page/artifact bounds. Capture and review

@@ -181,12 +181,29 @@ export async function resolveWatchCollectionEvidence(db: D1DatabaseLike, observa
     observations.set(id,{id,sourceId:row.source_id,sourceUrl:row.endpoint,parserVersion:row.parser_version,
       representation:bytes,normalizedText:row.normalized_text,normalizerVersion:row.normalizer_version});
   }
+  return { ...await collectionPermissionContext(db, enrolled, now), observations };
+}
+
+// Native dossier adapters retain their own observations but share the same
+// enrolled-source authority and transactional qualification checks.
+export async function resolveWatchSourcePermissions(db: D1DatabaseLike, sourceIds: readonly string[], now: string) {
+  CanonicalInstant.parse(now);
+  if (sourceIds.length > 100) throw Error("watch-source-permission-limit");
+  const enrolled = new Map<string, EnrolledCollectionSource>();
+  for (const id of new Set(sourceIds)) {
+    const source = await resolveEnrolledCollectionSource(db, id, now);
+    if (source) enrolled.set(id, source);
+  }
+  return collectionPermissionContext(db, enrolled, now);
+}
+
+async function collectionPermissionContext(db: D1DatabaseLike, enrolled: ReadonlyMap<string, EnrolledCollectionSource>, now: string) {
   const permissionKeys=new Map<string,string>(),qualificationDigests=new Map<string,string>();
   for(const [id,value] of enrolled){
     permissionKeys.set(id,await deliveryDependencyKey("source-permission",[id]));
     qualificationDigests.set(id,await sha256(canonicalJson(value.qualification)));
   }
-  return { observations,enrolledSourceIds:new Set(enrolled.keys()),
+  return { enrolledSourceIds:new Set(enrolled.keys()),
     sourcePermissionDigests:new Map([...enrolled].map(([id,value])=>[id,value.permissionDigest])),
     sourceRevisions:new Map([...enrolled].map(([id,value])=>[id,value.revision])),
     sourceUrlAllowed:(id:string,url:string)=>{const value=enrolled.get(id);return !!value && sourceEndpointAllowed(value.source,url);},

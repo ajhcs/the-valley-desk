@@ -4,6 +4,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "posttest": "npm run test:watch-launch",
+    "test:watch-launch": "node --import tsx/esm --test --test-concurrency=1 test/watch-collection.test.ts test/representative-persistence.test.ts test/technology-dossiers.test.ts test/policy-watch-workflow.test.ts test/watch-editorial.test.ts test/watch-editorial-api.test.ts test/watch-editorial-runtime.test.ts test/watch-views.test.ts",
     "policy:background:capture": "tsx scripts/capture-policy-background.mjs",
     "policy:pdf:bootstrap": "node scripts/policy-pdf-runtime.mjs bootstrap",
     "policy:pdf:process": "node scripts/process-policy-pdf.mjs",

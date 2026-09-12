@@ -68,7 +68,9 @@ export function deliveryGroupCurrentSql(group = "g", instant = "clock.instant", 
     AND NOT EXISTS (SELECT 1 FROM json_each(${group}.value,'$.dependencies') dep
       LEFT JOIN watch_dependency_heads head ON head.dependency_key=json_extract(dep.value,'$.key')
       WHERE head.dependency_key IS NULL OR head.kind<>json_extract(dep.value,'$.kind') OR head.digest IS NULL
-        OR head.digest<>json_extract(dep.value,'$.expectedDigest') OR head.changed_at>${instant})
+        OR head.digest<>json_extract(dep.value,'$.expectedDigest') OR head.changed_at>${instant}
+        OR EXISTS (SELECT 1 FROM watch_dependency_expirations expiry
+          WHERE expiry.dependency_key=head.dependency_key AND expiry.valid_until<=${instant}))
     AND (json_extract(${group}.value,'$.groupType')<>'local' OR (
       json_extract(${group}.value,'$.local.checkedAt')<=${instant}
       AND (json_extract(${group}.value,'$.local.validFrom') IS NULL OR json_extract(${group}.value,'$.local.validFrom')<=${day})
