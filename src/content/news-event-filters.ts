@@ -40,19 +40,20 @@ export function parseNewsEventFilters(search: string, section: NewsEventSection)
   const params = new URLSearchParams(search);
   const values: NewsEventFilterValues = {};
   const errors: string[] = [];
-  if (params.has("invalid_search_field")) errors.push("The URL contains an unsupported search field.");
+  if (["invalid_search_field", "__proto__", "constructor", "prototype"].some(key => params.has(key))) {
+    errors.push("The URL contains an unsupported search field.");
+  }
   for (const key of KEYS[section]) {
     const entries = params.getAll(key);
     if (entries.length > 1) errors.push(`${LABELS[key]} must appear only once.`);
     const raw = entries[0];
     if (raw == null || raw === "") continue;
+    if (/[\u0000-\u001f\u007f]/.test(raw)) errors.push(`${LABELS[key]} contains unsupported characters.`);
     const value = raw.trim();
     if (!value) continue;
     values[key] = value.slice(0, FILTER_TEXT_LIMIT);
     if (value.length > FILTER_TEXT_LIMIT) {
       errors.push(`${LABELS[key]} must be ${FILTER_TEXT_LIMIT} characters or fewer.`);
-    } else if (/[\u0000-\u001f\u007f]/.test(value)) {
-      errors.push(`${LABELS[key]} contains unsupported characters.`);
     } else if ((key === "from" || key === "to") && !isCivilDay(value)) {
       errors.push(`${LABELS[key]} must be a valid calendar date.`);
     } else if (key === "format" && !EVENT_FORMAT_OPTIONS.some((option) => option.value === value)) {

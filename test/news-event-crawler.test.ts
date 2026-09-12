@@ -51,7 +51,7 @@ test("unfiltered News pages retain indexable canonical pagination and published 
 });
 
 test("invalid filters fail closed in initial HTML, with an error instead of all stories", () => {
-  for (const search of ["?q=one&q=two", "?from=2026-02-29", "?to=2026-04-31"]) {
+  for (const search of ["?q=one&q=two", "?from=2026-02-29", "?to=2026-04-31", "?__proto__=value", "?constructor=value", "?prototype=value", "?invalid_search_field=", "?q=%0A"]) {
     const result = html("/news", [news("hidden", "Must not be broadened")], search);
     assert.match(noscript(result), /role="alert"/);
     assert.ok(!noscript(result).includes("Must not be broadened"));
