@@ -20,6 +20,7 @@ function error(request: Request, status: number, code: string, message: string) 
 /** Public reads only. Release qualification must precede enabling this flag;
  * it never converts observations or model output into accepted revisions. */
 export async function handleWatchRead(request: Request, env: WatchReadEnvironment): Promise<Response> {
+  const deliveryNow = new Date();
   if (request.method !== "GET" && request.method !== "HEAD") {
     return response(request, 405, { error: { code: "watch-method-not-allowed", message: "Read-only endpoint." } }, { allow: "GET, HEAD" });
   }
@@ -30,24 +31,25 @@ export async function handleWatchRead(request: Request, env: WatchReadEnvironmen
   if (!env.VALLEY_DESK_DB) return error(request, 503, "watch-unavailable", "Watch data is temporarily unavailable.");
   const kind = match[1] as "policy" | "technology";
   try {
+    if (url.searchParams.toString().length > 16_384) return error(request, 400, "watch-invalid-query", "Filter URL is too long.");
     const values: Record<string, string> = Object.create(null);
     for (const [key, value] of url.searchParams) {
-      if (Object.hasOwn(values, key) || ["kind", "__proto__", "constructor", "prototype"].includes(key)) {
+      if (Object.hasOwn(values, key) || ["kind", "__proto__", "constructor", "prototype"].includes(key) || /[\u0000-\u001f\u007f]/.test(value)) {
         return error(request, 400, "watch-invalid-query", "Each supported filter may appear only once.");
       }
       values[key] = value;
     }
     if (!match[2]) {
-      const result = await readWatchDirectory(env.VALLEY_DESK_DB, { kind, ...values });
-      return response(request, 200, result, { "x-watch-data-state": "unknown" });
+      const result = await readWatchDirectory(env.VALLEY_DESK_DB, { kind, ...values }, deliveryNow);
+      return response(request, 200, result, { "x-watch-data-state": "unknown", "x-watch-delivery-as-of": deliveryNow.toISOString() });
     }
     const query = z.object({ lookup: z.enum(["id", "slug"]).default("id") }).strict().parse(values);
     let identity: string;
     try { identity = decodeURIComponent(match[2]); }
     catch { return error(request, 400, "watch-invalid-query", "Invalid subject identifier."); }
-    const detail = await readWatchSubjectRevision(env.VALLEY_DESK_DB, kind, identity, query.lookup);
+    const detail = await readWatchSubjectRevision(env.VALLEY_DESK_DB, kind, identity, query.lookup, deliveryNow);
     if (!detail) return error(request, 404, "watch-not-found", "Accepted Watch subject not found.");
-    return response(request, 200, detail, { "x-watch-data-state": "unknown" });
+    return response(request, 200, detail, { "x-watch-data-state": "unknown", "x-watch-delivery-as-of": deliveryNow.toISOString() });
   } catch (failure) {
     if (failure instanceof z.ZodError) return error(request, 400, "watch-invalid-query", "Choose supported filters and bounded values.");
     if (failure instanceof WatchStorageError) return error(request, failure.status, failure.code,

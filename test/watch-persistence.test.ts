@@ -9,6 +9,7 @@ import { pdfDatabase } from "./helpers/policy-pdf";
 import { NOW, syntheticFixture } from "./fixtures/watch-contracts/synthetic";
 import { handleWatchRead } from "../src/ingest/watch-api";
 import worker from "../worker.js";
+import { stageSyntheticDelivery, syntheticDeliveryForRecord } from "./fixtures/watch-delivery/synthetic";
 
 const at = () => new Date(NOW);
 const policyFixture = await syntheticFixture("policy");
@@ -22,19 +23,26 @@ const errorCode = (code: string) => (error: unknown) => error instanceof WatchSt
 // SQL-layer fixtures intentionally manufacture reviewed records. This is not
 // an editorial approval path; the projection suite tests accepted fact binding.
 function record(id: string, title = id, kind: "policy" | "technology" = "policy") {
-  return WatchPublicRecord.parse({ ...structuredClone(kind === "policy" ? policy : technology), id,
+  const value = WatchPublicRecord.parse({ ...structuredClone(kind === "policy" ? policy : technology), id,
     slug: `synthetic-${id}`, title });
+  if (value.kind === "technology") {
+    value.artifacts.forEach(fact => { fact.value.resourceId = id; });
+    value.localRelationships.forEach(fact => { fact.value.resourceId = id; });
+  }
+  return value;
 }
 async function review(db: D1DatabaseLike, value: WatchPublicRecord, decisionId = `review-${value.id}`,
   inputRevision = 1, publicRevision = 0, inputHash = fingerprint, payload: unknown = value) {
   await db.prepare(`INSERT OR IGNORE INTO watch_subjects
     (id,kind,external_key,slug,input_revision,input_sha256,first_seen_at) VALUES(?,?,?,?,?,?,?)`)
     .bind(value.id, value.kind, `synthetic:${value.id}`, value.slug, inputRevision, inputHash, NOW).run();
-  const json = canonicalJson(payload);
+  const delivery = payload === value ? await syntheticDeliveryForRecord(value, inputRevision) : null;
+  const json = canonicalJson(delivery?.record ?? payload);
   await db.prepare(`INSERT INTO watch_reviewed_projections
     (id,subject_id,input_revision,input_sha256,expected_public_revision,payload_sha256,payload_json,reviewer_id,gate_version,reviewed_at)
     VALUES(?,?,?,?,?,?,?,?,?,?)`).bind(decisionId, value.id, inputRevision, inputHash, publicRevision,
       await sha256(json), json, "synthetic-editor", "synthetic-qualified-gates-v1", NOW).run();
+  if (delivery) await stageSyntheticDelivery(db, decisionId, delivery.handle);
   return decisionId;
 }
 async function publish(db: D1DatabaseLike, id: string, title = id, kind: "policy" | "technology" = "policy") {
