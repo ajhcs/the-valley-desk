@@ -1,14 +1,17 @@
 import { MAX_WATCH_UPDATES_BYTES, parseWatchUpdates } from "../../content/watch-updates";
 import { watchQuerySearch, type WatchKind, type WatchQueryValues } from "../../content/watch-query";
 import { WatchReadError } from "./watch-api";
+import { latestQuerySupported } from "./watch-views";
 export function watchUpdatesApiPath(kind: WatchKind, values: WatchQueryValues) {
+  if (!latestQuerySupported(values)) throw new WatchReadError("invalid-query");
   const params = new URLSearchParams(watchQuerySearch(values, kind, values.cursor));
   return "/api/v2/watch/" + kind + "/updates" + (params.size ? "?" + params.toString() : "");
 }
 export async function readWatchUpdates(kind: WatchKind, values: WatchQueryValues, signal: AbortSignal,
   fetcher: typeof fetch = fetch) {
+  const url = watchUpdatesApiPath(kind, values);
   let response: Response;
-  try { response = await fetcher(watchUpdatesApiPath(kind, values), { signal, method: "GET", credentials: "omit",
+  try { response = await fetcher(url, { signal, method: "GET", credentials: "omit",
     cache: "no-store", redirect: "error", headers: { Accept: "application/json" } }); }
   catch { throw new WatchReadError("network"); }
   if (!response.ok) {
@@ -37,4 +40,3 @@ export async function readWatchUpdates(kind: WatchKind, values: WatchQueryValues
   } catch { await reader.cancel().catch(() => undefined); throw new WatchReadError("invalid-response"); }
   finally { reader.releaseLock(); }
 }
-

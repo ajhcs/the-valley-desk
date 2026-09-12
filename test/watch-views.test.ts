@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { parseWatchUpdates } from "../src/content/watch-updates";
-import { watchView, watchViewSearch } from "../src/ui/watch/watch-views";
+import { latestQuerySupported, watchView, watchViewSearch } from "../src/ui/watch/watch-views";
 import { readWatchUpdates, watchUpdatesApiPath } from "../src/ui/watch/watch-updates-api";
 import { WatchReadError } from "../src/ui/watch/watch-api";
 const NOW = "2026-09-12T12:00:00.000Z";
@@ -21,7 +21,9 @@ test("Watch views preserve actual resource typing and separate hash navigation f
   assert.equal(watchView("technology", "#representatives", {}), "directory");
   assert.deepEqual(watchViewSearch("technology", "papers", { cursor: "old-directory", organization: "chop", type: "software" }),
     { type: "paper", organization: "chop" });
-  assert.deepEqual(watchViewSearch("technology", "latest", { cursor: "old", type: "paper", q: "tool" }), { q: "tool" });
+  assert.deepEqual(watchViewSearch("technology", "latest", { cursor: "old", type: "paper", q: "tool", limit: "10" }), { limit: "10" });
+  assert.equal(latestQuerySupported({ q: "tool" }), false);
+  assert.equal(latestQuerySupported({ cursor: "opaque", limit: "10" }), true);
   assert.deepEqual(watchViewSearch("policy", "representatives", { jurisdiction: "PA", cursor: "old" }), {});
 });
 test("accepted updates preserve source date precision and reject invented or unbound dates", () => {
@@ -44,8 +46,9 @@ test("updates reject wrong desk, duplicate identities, extra fields and unestabl
   assert.deepEqual(parseWatchUpdates({ ...envelope([]), generation: 0, asOf: null }, "technology").items, []);
 });
 test("update transport uses bounded same-origin credential-free requests and exact pagination", async () => {
-  assert.equal(watchUpdatesApiPath("technology", { cursor: "opaque+value", type: "paper" }),
-    "/api/v2/watch/technology/updates?type=paper&cursor=opaque%2Bvalue");
+  assert.equal(watchUpdatesApiPath("technology", { cursor: "opaque+value", limit: "10" }),
+    "/api/v2/watch/technology/updates?limit=10&cursor=opaque%2Bvalue");
+  assert.throws(() => watchUpdatesApiPath("technology", { type: "paper" }), error("invalid-query"));
   let seen: RequestInit | undefined;
   const result = await readWatchUpdates("technology", {}, new AbortController().signal, async (url, init) => {
     assert.equal(url, "/api/v2/watch/technology/updates"); seen = init;
@@ -65,4 +68,3 @@ test("missing updates service is unavailable, not an empty result; malformed and
     new Response(" ".repeat(1000001), { headers: { "content-type": "application/json" } }),
   ]) await assert.rejects(readWatchUpdates("technology", {}, new AbortController().signal, async () => response), error("invalid-response"));
 });
-

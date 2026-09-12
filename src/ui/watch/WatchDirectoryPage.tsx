@@ -8,7 +8,7 @@ import { WatchFilters } from "./WatchFilters";
 import { WatchDataStatus, WatchError, WatchSave, WatchSaveNotice, WatchSources } from "./WatchShared";
 import { RepresentativeLookup } from "./RepresentativeLookup";
 import { WatchUpdates } from "./WatchUpdates";
-import { watchView, watchViewSearch, type WatchView } from "./watch-views";
+import { latestQuerySupported, watchView, watchViewSearch, type WatchView } from "./watch-views";
 import "./watch.css";
 
 export function WatchDirectoryRecord({ item, query }: { item: WatchPublicRecord; query: WatchQuery }) {
@@ -44,8 +44,10 @@ export function WatchDirectoryRecord({ item, query }: { item: WatchPublicRecord;
 export function WatchDirectoryPage({ kind }: { kind: WatchKind }) {
   const search = useRouterState({ select: state => state.location.searchStr });
   const hash = useRouterState({ select: state => state.location.hash });
-  const query = parseWatchQuery(search, kind);
-  const view = watchView(kind, hash, query.values);
+  const parsedQuery = parseWatchQuery(search, kind);
+  const view = watchView(kind, hash, parsedQuery.values);
+  const query = view === "latest" && !latestQuerySupported(parsedQuery.values) ? {
+    ...parsedQuery, errors: [...parsedQuery.errors, "These filters are not available for Latest updates."] } : parsedQuery;
   const directoryView = view === "directory" || view === "papers";
   const path = kind === "policy" ? "/policy-watch" : "/technology-watch";
   const { state, retry } = useWatchRequest(query.errors.length || !directoryView ? null : watchDirectoryApiPath(kind, query.values), kind);
@@ -65,8 +67,7 @@ export function WatchDirectoryPage({ kind }: { kind: WatchKind }) {
         hash={item.id === "latest" || item.id === "representatives" ? item.id : ""} aria-current={view === item.id ? "page" : undefined}
         activeOptions={{ exact: true, includeHash: true }} resetScroll={false}>{item.label}</Link>)}
     </nav>
-    {view !== "representatives" ? <WatchFilters key={`${kind}:${search}:${view}`} kind={kind} query={query} items={data?.items ?? []}
-      hash={view === "latest" ? "latest" : ""} /> : null}
+    {directoryView ? <WatchFilters key={`${kind}:${search}:${view}`} kind={kind} query={query} items={data?.items ?? []} /> : null}
     {directoryView ? <WatchSaveNotice /> : null}
     <div className="WatchResults" aria-busy={loading}>
       {query.errors.length ? <section className="WatchState" role="alert"><h2>Check your filters</h2>

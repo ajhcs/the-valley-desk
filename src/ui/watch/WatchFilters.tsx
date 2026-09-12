@@ -14,13 +14,13 @@ function FilterSelect({ name, label, value, choices }: { name: WatchQueryKey; la
 
 export function WatchFilters({ kind, query, items, hash = "" }: { kind: WatchKind; query: WatchQuery; items: WatchPublicRecord[]; hash?: string }) {
   const navigate = useNavigate();
-  const suggestionId = useId();
   const errorId = useId();
   const [errors, setErrors] = useState<string[]>([]);
   const path = kind === "policy" ? "/policy-watch" : "/technology-watch";
   const { values } = query;
   const organizations = new Map(items.flatMap(item => item.kind === "technology" ? item.localRelationships.map(relation =>
     [relation.value.entityId, relation.value.entityName] as const) : []));
+  if (values.organization && !organizations.has(values.organization)) organizations.set(values.organization, "Selected organization");
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const params = new URLSearchParams();
@@ -44,10 +44,8 @@ export function WatchFilters({ kind, query, items, hash = "" }: { kind: WatchKin
         <FilterSelect name="stage" label="Lifecycle" value={values.stage} choices={LIFECYCLE_LABELS} />
       </> : <>
         <FilterSelect name="type" label="Resource type" value={values.type} choices={RESOURCE_LABELS} />
-        <label className="WatchField"><span>Organization ID</span>
-          <input name="organization" type="text" maxLength={240} defaultValue={values.organization ?? ""} list={suggestionId} autoCapitalize="none" spellCheck={false} />
-          <datalist id={suggestionId}>{[...organizations].sort((a, b) => a[1].localeCompare(b[1])).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</datalist>
-        </label>
+        <FilterSelect name="organization" label="Organization" value={values.organization}
+          choices={Object.fromEntries([...organizations].sort((a, b) => a[1].localeCompare(b[1])))} />
         <FilterSelect name="license" label="License classification" value={values.license} choices={LICENSE_LABELS} />
       </>}
       <FilterSelect name="limit" label="Records per page" value={values.limit} choices={{ "10": "10", "20": "20", "50": "50" }} />
