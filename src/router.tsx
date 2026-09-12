@@ -16,6 +16,7 @@ import { LabChronoPage } from "./ui/lab/LabChronoPage";
 import { LabSystemsPage } from "./ui/lab/LabSystemsPage";
 import { LabHorizonPage } from "./ui/lab/LabHorizonPage";
 import { LabCalendarPage } from "./ui/lab/LabCalendarPage";
+import { parsePlainSearch, stringifyPlainSearch } from "./lib/plain-search";
 
 const rootRoute = createRootRoute({
   component: Layout,
@@ -99,6 +100,9 @@ const routeTree = rootRoute.addChildren([
 
 export const router = createRouter({
   routeTree,
+  // Existing consumers use scalar list fields; object-valued query state is unsupported.
+  parseSearch: parsePlainSearch,
+  stringifySearch: stringifyPlainSearch,
   defaultNotFoundComponent: NotFound,
 });
 

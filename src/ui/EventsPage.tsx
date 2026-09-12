@@ -1,22 +1,19 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import type { EventItem } from "../content/schema";
 import { nextChapterEvent, upcomingEvents } from "../content/queries";
+import { filterOptions, filteredUpcomingEvents, parseNewsEventFilters } from "../content/news-event-filters";
+import { pageFromSearch, paginate } from "../content/pagination";
 import { formatEventWhen, googleCalendarUrl } from "../lib/calendar";
 import { eventHostLine, eventLocationLine, eventWhyLine } from "../lib/eventCopy";
 import { eventFormatLabel } from "../lib/format";
 import { catalog } from "../lib/catalog";
+import { entityLookup } from "../lib/entities";
 import { itemHref } from "../lib/kind";
 import { eventRegisterUrl } from "../lib/register";
 import { MentionText } from "./MentionText";
 import { RegisterLink } from "./RegisterLink";
 import { DateChip } from "./home/DateChip";
-
-function inferredFormat(item: EventItem) {
-  if (item.format && item.format !== "unknown") return item.format;
-  const text = `${item.title} ${item.venue ?? ""} ${item.body ?? ""}`.toLocaleLowerCase("en-US");
-  if (text.includes("virtual")) return "virtual";
-  return item.venue || item.city || item.geo ? "in-person" : "unknown";
-}
+import { NewsEventEmpty, NewsEventFilters, NewsEventPagination } from "./NewsEventFilters";
 
 function timingSignal(item: EventItem, now: Date) {
   const days = Math.ceil((Date.parse(item.startsAt) - now.getTime()) / 86_400_000);
@@ -28,7 +25,7 @@ function timingSignal(item: EventItem, now: Date) {
 
 function EventCard({ item, now, radar = false }: { item: EventItem; now: Date; radar?: boolean }) {
   const signal = radar ? "DON’T MISS" : timingSignal(item, now);
-  const format = eventFormatLabel({ ...item, format: inferredFormat(item) }) ?? inferredFormat(item);
+  const format = eventFormatLabel(item) ?? "Format not confirmed";
   const register = eventRegisterUrl(item);
   const place = eventLocationLine(item);
   const why = eventWhyLine(item);
@@ -38,7 +35,7 @@ function EventCard({ item, now, radar = false }: { item: EventItem; now: Date; r
       <div className="EventCard-copy">
         <div className="EventCard-signals">
           {signal ? <span>{signal}</span> : null}
-          {format && format !== "unknown" ? <span>{format}</span> : null}
+          <span>{format}</span>
           <span>{eventHostLine(item)}</span>
         </div>
         <h3><Link to={itemHref(item)}><MentionText text={item.title} item={item} /></Link></h3>
@@ -57,9 +54,22 @@ function EventCard({ item, now, radar = false }: { item: EventItem; now: Date; r
 }
 
 export function EventsPage() {
+  const searchStr = useRouterState({ select: (s) => s.location.searchStr });
+  const busy = useRouterState({ select: (s) => s.isLoading });
+  const request = parseNewsEventFilters(searchStr, "events");
   const now = new Date();
-  const chapter = nextChapterEvent(catalog, now);
-  const next = upcomingEvents(catalog, now, 50).filter((item) => item.id !== chapter?.id);
+  const choices = upcomingEvents(catalog, now, Number.MAX_SAFE_INTEGER);
+  const matches = filteredUpcomingEvents(catalog, request, now);
+  const chapter = nextChapterEvent(matches, now);
+  const ordered = chapter ? [chapter, ...matches.filter((item) => item.id !== chapter.id)] : matches;
+  const page = paginate(ordered, pageFromSearch(searchStr), 50);
+  const visibleChapter = page.items.find((item) => item.id === chapter?.id);
+  const next = page.items.filter((item) => item.id !== visibleChapter?.id);
+  const matchText = page.total === 1 ? " matches these filters" : " match these filters";
+  const resultStatus = busy ? "Updating events..."
+    : request.errors.length ? "Filters need attention."
+    : !page.indexable ? "Page unavailable."
+    : `${page.total} upcoming ${page.total === 1 ? "event" : "events"}${request.active ? matchText : " listed"}.`;
   return (
     <article className="EventsPage">
       <header className="EventsPage-head">
@@ -67,21 +77,31 @@ export function EventsPage() {
         <h1>Events worth leaving your desk for.</h1>
         <p>What’s next, why it matters, and the registration link before you hear about it afterward.</p>
       </header>
-      {chapter ? (
-        <section className="EventsSection is-radar">
-          <h2>CHAPTER RADAR</h2>
-          <EventCard item={chapter} now={now} radar />
-        </section>
-      ) : null}
-      <section className="EventsSection">
-        <div className="EventsSection-head">
-          <h2>NEXT UP</h2>
-          <span>{next.length} on the radar</span>
-        </div>
-        <div className="EventList">
-          {next.map((item) => <EventCard key={item.id} item={item} now={now} />)}
-        </div>
-      </section>
+      <NewsEventFilters key={searchStr} section="events" request={request} busy={busy}
+        organizations={filterOptions(choices.map((item) => item.hostOrg), (id) => entityLookup.match(id)?.name ?? id)}
+        topics={filterOptions(choices.flatMap((item) => item.topics))} />
+      <div className="NewsEventResults" aria-busy={busy}>
+        <p className="NewsEventResults-count" role="status">
+          {resultStatus}
+        </p>
+        {visibleChapter ? (
+          <section className="EventsSection is-radar">
+            <h2>CHAPTER RADAR</h2>
+            <EventCard item={visibleChapter} now={now} radar />
+          </section>
+        ) : null}
+        {next.length ? <section className="EventsSection">
+          <div className="EventsSection-head">
+            <h2>NEXT UP</h2>
+            <span>{next.length} on the radar</span>
+          </div>
+          <div className="EventList">
+            {next.map((item) => <EventCard key={item.id} item={item} now={now} />)}
+          </div>
+        </section> : null}
+        {!page.items.length ? <NewsEventEmpty path="/events" request={request} invalidPage={!page.indexable} /> : null}
+        <NewsEventPagination path="/events" request={request} pageWindow={page} />
+      </div>
     </article>
   );
 }
