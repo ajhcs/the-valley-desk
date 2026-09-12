@@ -23,6 +23,21 @@ after(() => rendered.unregister());
 async function policy() { const fixture = await syntheticFixture("policy"); return projectPolicyDossier(fixture.draft, fixture.context); }
 async function technology() { const fixture = await syntheticFixture("technology"); return projectTechnologyProfile(fixture.draft, fixture.context); }
 const directory = (items: unknown[] = [], nextCursor: string | null = null) => ({ version: "watch-directory-1", generation: 1, asOf: NOW, items, nextCursor });
+
+test("artifact source dates must bind to their accepted artifact fact in projection and transport", async () => {
+  const fixture = await syntheticFixture("technology");
+  const artifact = fixture.facts.get("f-artifact")!;
+  artifact.value = { ...(artifact.value as object), sourceOccurredAt: { precision: "instant", value: "2026-09-10T00:00:00.000Z", evidenceIds: ["evidence-f-artifact"] } };
+  await fixture.refresh();
+  const projected = await projectTechnologyProfile(fixture.draft, fixture.context);
+  assert.doesNotThrow(() => parseWatchResponse(directory([projected]), "technology"));
+  const invalid = structuredClone(projected);
+  invalid.artifacts[0]!.value.sourceOccurredAt = { precision: "instant", value: "2026-09-10T00:00:00.000Z", evidenceIds: ["evidence-f-title"] };
+  assert.throws(() => parseWatchResponse(directory([invalid]), "technology"));
+  artifact.value = { ...(artifact.value as object), sourceOccurredAt: invalid.artifacts[0]!.value.sourceOccurredAt };
+  await fixture.refresh();
+  await assert.rejects(projectTechnologyProfile(fixture.draft, fixture.context), /date-evidence-not-bound/);
+});
 const detail = (item: unknown) => ({ version: "watch-detail-1", item, asOf: NOW });
 const json = (value: unknown, headers: Record<string, string> = {}) => new Response(JSON.stringify(value), { headers: { "content-type": "application/json", ...headers } });
 const fetchReturning = (response: Response): typeof fetch => async () => response;

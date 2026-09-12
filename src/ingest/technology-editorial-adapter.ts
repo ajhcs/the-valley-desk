@@ -110,9 +110,20 @@ export async function prepareTechnologyEditorialProposal(db: D1DatabaseLike, sub
   const readmeIds = input.purpose.evidenceIds;
   const titleFactId = fact("title", input.title, readmeIds);
   const resourceTypeFactId = fact("resource-type", input.resourceType, readmeIds);
-  const artifactFactIds = record.artifacts.map((artifact, index) => fact("artifact", artifact,
-    index === 0 ? [input.evidence.find(item => item.id.endsWith("-repository"))?.id ?? readmeIds[0]!]
-      : record.developments.find(item => item.artifact.id === artifact.id)!.evidenceIds, "artifact-" + index));
+  const artifactFactIds = record.artifacts.map((artifact, index) => {
+    const development = record.developments.find(item => item.artifact.id === artifact.id);
+    const ids = index === 0 ? [input.evidence.find(item => item.id.endsWith("-repository"))?.id ?? readmeIds[0]!]
+      : development!.evidenceIds;
+    const expectedType = { "software-release": "release", "paper-publication": "paper",
+      "dataset-release": "dataset", "product-release": "product" };
+    const sourceDate = development?.sourceOccurredAt;
+    // Only the matching retained development can supply a release/publication date.
+    const dated = development && !development.draft && !development.prerelease && sourceDate?.precision !== "unknown" &&
+      expectedType[development.type as keyof typeof expectedType] === artifact.artifactType;
+    const { sourceOccurredAt: _untrustedDate, ...value } = artifact;
+    return fact("artifact", dated ? { ...value, sourceOccurredAt: sourceDate } : value,
+      [...new Set([...ids, ...(dated && sourceDate ? sourceDate.evidenceIds : [])])], "artifact-" + index);
+  });
   const relationshipFactIds = [fact("local-relationship", input.relationship.value, input.relationship.evidenceIds)];
   const licenseFactIds = input.licenses.map((item, index) => fact("license", item.value, item.evidenceIds, "license-" + index));
   const draft = TechnologyProfileDraft.parse({ id: subjectId, slug: input.slug, kind: "technology", subjectRevision: revision,

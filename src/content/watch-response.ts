@@ -38,7 +38,9 @@ function evidenceComplete(item: WatchPublicRecord): boolean {
   return artifacts.size === item.artifacts.length &&
     new Set(item.localRelationships.map(relation => relation.value.id)).size === item.localRelationships.length &&
     [item.purpose, item.intendedUsers, item.workflow, item.setup, item.limitations, ...item.artifacts, ...item.localRelationships, ...item.licenses].every(bound) &&
-    item.artifacts.every(artifact => artifact.value.resourceId === item.id) &&
+    item.artifacts.every(artifact => artifact.value.resourceId === item.id &&
+      (!artifact.value.sourceOccurredAt || artifact.value.sourceOccurredAt.precision === "unknown" ||
+        artifact.value.sourceOccurredAt.evidenceIds.every(id => artifact.evidenceIds.includes(id)))) &&
     item.localRelationships.every(relation => relation.value.resourceId === item.id && artifacts.has(relation.value.artifactId) && item.organizationIds.includes(relation.value.entityId)) &&
     item.organizationIds.every(id => item.localRelationships.some(relation => relation.value.entityId === id)) &&
     item.licenses.every(license => artifacts.get(license.value.artifactId)?.version === license.value.artifactVersion);

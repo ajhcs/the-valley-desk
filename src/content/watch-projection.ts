@@ -247,6 +247,10 @@ export async function projectTechnologyProfile(input: unknown, context: WatchPro
   const artifacts: Array<ProjectedFact<TechnologyArtifact>> = [];
   for (const id of draft.artifactFactIds) {
     const artifact = await projection.required(id, "artifact", TechnologyArtifact);
+    const sourceDate = artifact.value.sourceOccurredAt;
+    if (sourceDate && sourceDate.precision !== "unknown" && sourceDate.evidenceIds.some(id => !artifact.evidenceIds.includes(id))) {
+      return hold("date-evidence-not-bound");
+    }
     const current = context.currentArtifacts.get(artifact.value.id);
     if (artifact.value.resourceId !== draft.id || !current || current.resourceId !== draft.id || current.version !== artifact.value.version ||
         new URL(artifact.value.url).hostname !== artifact.value.host) return hold("artifact-binding-conflict");

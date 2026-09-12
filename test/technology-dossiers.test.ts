@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { githubRepositoryKey, sha256 } from "../src/content/watch-schema";
+import { githubRepositoryKey, sha256, TechnologyArtifact, canonicalJson } from "../src/content/watch-schema";
 import { buildTechnologyDossierDraft, persistTechnologyDossierDraft, readTechnologyDossierDraft,
   type TechnologyDossierInput } from "../src/ingest/technology-dossiers";
 import { prepareTechnologySourceDraft, technologySourcePlans } from "../src/ingest/technology-source-plans";
@@ -197,4 +197,42 @@ test("a source refresh after resolution aborts the acceptance transaction, inclu
   await assert.rejects(db.batch([db.prepare("INSERT INTO synthetic_acceptance VALUES(1)"), ...guards]));
   assert.equal(sqlite.prepare("SELECT count(*) AS n FROM synthetic_acceptance").get()!.n, 0);
   await assert.rejects(persistTechnologySourceRepresentation(db, subjectId, "synthetic-enrolled-source", capture), /out-of-order/);
+});
+
+test("artifact dates are optional and do not alter existing undated canonical records", async () => {
+  const artifact = (await buildTechnologyDossierDraft(await input())).artifacts[0]!;
+  assert.equal("sourceOccurredAt" in TechnologyArtifact.parse(artifact), false);
+  assert.equal(canonicalJson(TechnologyArtifact.parse(artifact)), canonicalJson(artifact));
+});
+
+test("editorial release dates come only from matching dated developments and retain date evidence", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const source = await input(), subjectId = await githubRepositoryKey("123");
+  const dateEvidence = { ...source.evidence[0]!, id: "date-evidence" };
+  source.evidence.push(dateEvidence);
+  const date = { precision: "instant" as const, value: "2020-01-01T00:00:00.000Z", evidenceIds: [dateEvidence.id] };
+  source.developments = [{ nativeId: "55", type: "software-release", title: "v1",
+    artifact: { id: "release-55", resourceId: subjectId, artifactType: "release", host: "github.com", nativeId: "55",
+      version: "v1", url: "https://github.com/synthetic/tool/releases/tag/v1", availability: "public",
+      sourceOccurredAt: { ...date, value: NOW } },
+    sourceOccurredAt: date, evidenceIds: ["synthetic-evidence"], draft: false, prerelease: false }];
+  await persistTechnologySourceRepresentation(db, subjectId, "synthetic-enrolled-source",
+    { url: dateEvidence.url, checkedAt: NOW, body: dateEvidence.retainedText });
+  let revision = 0;
+  async function prepare() {
+    revision = (await persistTechnologyDossierDraft(db, source, revision)).revision;
+    return (await prepareTechnologyEditorialProposal(db, subjectId)).proposal.facts.filter(fact => fact.field === "artifact");
+  }
+  const facts = await prepare();
+  assert.equal("sourceOccurredAt" in (facts[0]!.value as object), false);
+  assert.deepEqual((facts[1]!.value as TechnologyArtifact).sourceOccurredAt, date);
+  assert.ok(facts[1]!.evidenceIds.includes("date-evidence"));
+  source.developments[0]!.prerelease = true;
+  assert.equal("sourceOccurredAt" in ((await prepare())[1]!.value as object), false);
+  source.developments[0]!.prerelease = false;
+  source.developments[0]!.artifact.artifactType = "repository";
+  await assert.rejects(prepare(), /technology-release-artifact-required/);
+  source.developments[0]!.type = "baseline";
+  source.developments[0]!.sourceOccurredAt = { precision: "unknown", reason: "Discovery only." };
+  assert.equal("sourceOccurredAt" in ((await prepare())[1]!.value as object), false);
 });

@@ -179,7 +179,8 @@ export const TechnologySetup = z.object({ verification: z.enum(["maintainer-docu
 export const TechnologyArtifact = z.object({ id: WatchId, resourceId: WatchId,
   artifactType: z.enum(["repository", "release", "paper", "dataset", "documentation", "product"]),
   host: Label, nativeId: Label, version: Label, url: HttpsUrl,
-  availability: z.enum(["public", "restricted", "private-link", "unknown"]) }).strict();
+  availability: z.enum(["public", "restricted", "private-link", "unknown"]),
+  sourceOccurredAt: SourceDate.optional() }).strict();
 export type TechnologyArtifact = z.infer<typeof TechnologyArtifact>;
 export const TechnologyRelationship = z.object({ id: WatchId, resourceId: WatchId, artifactId: WatchId,
   entityId: WatchId, entityName: Label, type: z.enum(["created-by", "maintained-by", "research-affiliation", "piloted-at", "used-at"]),
