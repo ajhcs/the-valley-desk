@@ -674,7 +674,8 @@ test("collector failure streak signals pause after three new failed runs and ign
   sqlite.close();
 });
 
-test("scheduled automation passes D1 to the social consumer and persists its review candidate", async () => {
+test("scheduled automation passes D1 to the social consumer and persists its review candidate", async (context) => {
+  context.mock.timers.enable({ apis: ["Date"], now: new Date("2026-08-28T13:00:00.000Z") });
   const { sqlite, db } = database();
   const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
     method: "POST",
@@ -728,7 +729,8 @@ test("scheduled automation passes D1 to the social consumer and persists its rev
   assert.equal((await ingestSocialEvidence(db, new Date())).items.length, 0);
 });
 
-test("Worker scheduled entrypoint consumes a social packet through the default automation wiring", async () => {
+test("Worker scheduled entrypoint consumes a social packet through the default automation wiring", async (testContext) => {
+  testContext.mock.timers.enable({ apis: ["Date"], now: new Date("2026-08-28T13:00:00.000Z") });
   const { sqlite, db } = database();
   const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
     method: "POST",
