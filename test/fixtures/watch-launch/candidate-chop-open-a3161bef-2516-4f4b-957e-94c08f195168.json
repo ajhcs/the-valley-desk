@@ -1,0 +1,12 @@
+{
+  "sourceId": "candidate-chop-open",
+  "outcome": "access-held",
+  "access": {
+    "mode": "robots-check",
+    "robotsSha256": "48b4459420270be66eee7268c9f016a6013c2b295203fd57ee17c5d22284200a",
+    "robotsStatus": 200,
+    "disposition": "robots-review-required"
+  },
+  "packet": null,
+  "bodyFile": null
+}

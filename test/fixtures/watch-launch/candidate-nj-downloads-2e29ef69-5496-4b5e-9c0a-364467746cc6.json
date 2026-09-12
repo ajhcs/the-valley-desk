@@ -1,0 +1,12 @@
+{
+  "sourceId": "candidate-nj-downloads",
+  "outcome": "access-held",
+  "access": {
+    "mode": "robots-check",
+    "robotsSha256": "dc595e66648611314f4a3c511c2c95bc2690ef4c90f77671de83734da8b649be",
+    "robotsStatus": 200,
+    "disposition": "robots-unrecognized"
+  },
+  "packet": null,
+  "bodyFile": null
+}

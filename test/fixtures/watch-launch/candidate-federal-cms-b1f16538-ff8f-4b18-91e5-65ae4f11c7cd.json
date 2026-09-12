@@ -1,0 +1,12 @@
+{
+  "sourceId": "candidate-federal-cms",
+  "outcome": "access-held",
+  "access": {
+    "mode": "robots-check",
+    "robotsSha256": "6c180c52aac5e205b870c129f0edc466413fe32eeefea40fefcde42464e8ba62",
+    "robotsStatus": 200,
+    "disposition": "robots-review-required"
+  },
+  "packet": null,
+  "bodyFile": null
+}

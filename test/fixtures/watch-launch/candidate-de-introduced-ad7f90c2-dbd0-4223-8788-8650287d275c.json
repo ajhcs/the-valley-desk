@@ -1,0 +1,12 @@
+{
+  "sourceId": "candidate-de-introduced",
+  "outcome": "access-held",
+  "access": {
+    "mode": "robots-check",
+    "robotsSha256": null,
+    "robotsStatus": null,
+    "disposition": "robots-unavailable"
+  },
+  "packet": null,
+  "bodyFile": null
+}

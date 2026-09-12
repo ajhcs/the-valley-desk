@@ -1,0 +1,14 @@
+{
+  "sourceId": "candidate-pa-memos",
+  "outcome": "access-held",
+  "access": {
+    "mode": "robots-check",
+    "robotsSha256": null,
+    "robotsStatus": 406,
+    "disposition": "robots-unavailable",
+    "failureCode": "upstream-failed"
+  },
+  "packet": null,
+  "preparedAt": "2026-09-12T17:22:26.358Z",
+  "bodyFile": null
+}

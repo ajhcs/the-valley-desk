@@ -1,0 +1,2 @@
+# Retained HTTP representations must survive Git without newline normalization.
+*.body -text -diff

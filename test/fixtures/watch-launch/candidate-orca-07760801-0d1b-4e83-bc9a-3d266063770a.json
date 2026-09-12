@@ -1,0 +1,137 @@
+{
+  "sourceId": "candidate-orca",
+  "outcome": "healthy",
+  "access": {
+    "mode": "documented-api",
+    "robotsSha256": null,
+    "robotsStatus": null,
+    "disposition": "documented-public-repository-api"
+  },
+  "packet": {
+    "schemaVersion": "source-preparation-1",
+    "sourceId": "candidate-orca",
+    "configurationSha256": "2bbaf012aa17da13cc3ff47379a5bbe964e0dc8ab4a10d84051116cc9ff03f0b",
+    "endpoint": "https://api.github.com/repos/Stephonomon/orca-cds",
+    "capturedAt": "2026-09-12T17:20:00.494Z",
+    "representationSha256": "01997e8be3249b56118afe0ca5645cfb345379ad1f971be9f16478c928b2f497",
+    "representationBytes": 5394,
+    "parserId": "watch-github",
+    "parserVersion": "1",
+    "parsed": {
+      "observations": [
+        {
+          "id": "watch-observation-v1:99ddc5bfe2ed31df2c1ffc53d8d7720bb9983b9ff0ecc8010d7af1f95543bdd5",
+          "sourceId": "candidate-orca",
+          "externalKey": "github:repository:1308325438",
+          "parserId": "watch-github",
+          "parserVersion": "1",
+          "sourceUrl": "https://api.github.com/repos/Stephonomon/orca-cds",
+          "fetchedAt": "2026-09-12T17:20:00.494Z",
+          "representationSha256": "01997e8be3249b56118afe0ca5645cfb345379ad1f971be9f16478c928b2f497",
+          "payloadSha256": "c9c492d7b62fdbf167ce1e0bee3786d0fb6a0cc4479772e8dbaff494bbd68841",
+          "payload": {
+            "candidate": {
+              "id": "watch-candidate-v1:89b07aa27e30414ca9a10f1fa4ec34e69010d8113fea0937f1d709a7905ea984",
+              "observationId": "watch-observation-v1:99ddc5bfe2ed31df2c1ffc53d8d7720bb9983b9ff0ecc8010d7af1f95543bdd5",
+              "sourceId": "candidate-orca",
+              "externalKey": "github:repository:1308325438",
+              "title": "Stephonomon/orca-cds",
+              "url": "https://github.com/Stephonomon/orca-cds",
+              "description": "ORCA-CDS: Offsite Repository of Clinical Assets for Epic Order Sets -- a resilient, offline-capable tool for accessing order sets during EHR downtimes",
+              "sourceOccurredAt": {
+                "precision": "unknown",
+                "reason": "Repository inventory is not a newly published release."
+              },
+              "discoveryClass": "repository-baseline",
+              "holds": [
+                "source-date-unknown"
+              ],
+              "publicationAuthorized": false,
+              "regionalEligibility": "unverified",
+              "licenseAuthority": "unreviewed"
+            },
+            "metadata": {
+              "repositoryId": "1308325438",
+              "repositoryKey": "repository-v1:133ce301c037869d03460ad62b34d0a8c39b05616585bbfbb2691bd9f0254912",
+              "repositoryAlias": "Stephonomon/orca-cds",
+              "createdAt": "2026-07-22T03:06:59Z",
+              "updatedAt": "2026-08-26T20:50:45Z",
+              "pushedAt": "2026-08-03T20:30:44Z",
+              "archived": false,
+              "fork": false,
+              "licenseHint": "NOASSERTION",
+              "developmentKey": "development-v1:b7019a1b29e1e2da9db1f269c6d05d8810e0bdab4d31cc5bb54aaf7a12c2e2ab"
+            },
+            "rawPublished": null,
+            "dateField": null,
+            "dateEvidenceId": "watch-observation-v1:99ddc5bfe2ed31df2c1ffc53d8d7720bb9983b9ff0ecc8010d7af1f95543bdd5:date"
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "id": "watch-candidate-v1:89b07aa27e30414ca9a10f1fa4ec34e69010d8113fea0937f1d709a7905ea984",
+          "observationId": "watch-observation-v1:99ddc5bfe2ed31df2c1ffc53d8d7720bb9983b9ff0ecc8010d7af1f95543bdd5",
+          "sourceId": "candidate-orca",
+          "externalKey": "github:repository:1308325438",
+          "title": "Stephonomon/orca-cds",
+          "url": "https://github.com/Stephonomon/orca-cds",
+          "description": "ORCA-CDS: Offsite Repository of Clinical Assets for Epic Order Sets -- a resilient, offline-capable tool for accessing order sets during EHR downtimes",
+          "sourceOccurredAt": {
+            "precision": "unknown",
+            "reason": "Repository inventory is not a newly published release."
+          },
+          "discoveryClass": "repository-baseline",
+          "holds": [
+            "source-date-unknown"
+          ],
+          "publicationAuthorized": false,
+          "regionalEligibility": "unverified",
+          "licenseAuthority": "unreviewed"
+        }
+      ],
+      "representationSha256": "01997e8be3249b56118afe0ca5645cfb345379ad1f971be9f16478c928b2f497",
+      "repository": {
+        "repositoryId": "1308325438",
+        "fullName": "Stephonomon/orca-cds"
+      },
+      "truncated": false,
+      "rejectedItems": 0,
+      "health": {
+        "id": "candidate-orca",
+        "origin": "ORCA-CDS repository metadata",
+        "state": "healthy",
+        "checkedAt": "2026-09-12T17:20:00.494Z",
+        "itemCount": 1,
+        "complete": false,
+        "completeness": "partial",
+        "url": "https://api.github.com/repos/Stephonomon/orca-cds",
+        "httpStatus": 200,
+        "requiresAuth": false
+      },
+      "pagination": {
+        "pageKey": "1",
+        "nextPageKey": null,
+        "terminal": true
+      }
+    },
+    "parserOutputSha256": "e1698332a2beae4911490b9091b91f693f5bdc68069588bad681feb1081b7286",
+    "qualificationStatus": "candidate-only",
+    "publicationAuthorized": false,
+    "activationAuthorized": false,
+    "review": {
+      "engineeringOwnerId": null,
+      "editorialOwnerId": null,
+      "rightsDecision": null,
+      "accessDecision": null
+    },
+    "blockers": [
+      "named-reviewers-unassigned",
+      "rights-review-pending",
+      "two-time-separated-samples-required",
+      "regional-evidence-review-pending",
+      "license-bytes-review-pending"
+    ]
+  },
+  "bodyFile": "candidate-orca-07760801-0d1b-4e83-bc9a-3d266063770a.body"
+}

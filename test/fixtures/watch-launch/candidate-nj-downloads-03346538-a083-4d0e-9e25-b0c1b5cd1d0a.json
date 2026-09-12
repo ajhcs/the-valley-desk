@@ -1,0 +1,14 @@
+{
+  "sourceId": "candidate-nj-downloads",
+  "outcome": "access-held",
+  "access": {
+    "mode": "robots-check",
+    "robotsSha256": "dc595e66648611314f4a3c511c2c95bc2690ef4c90f77671de83734da8b649be",
+    "robotsStatus": 200,
+    "robotsText": "# *\r\nUser-agent: *\r\nAllow: /\r\n\r\n# Host\r\nHost: https://www.njleg.state.nj.us\r\n\r\n# Sitemaps\r\nSitemap: https://www.njleg.state.nj.us/sitemaps/sitemap.xml\r\nSitemap: https://www.njleg.state.nj.us/sitemaps/bills-sitemap.xml\r\n",
+    "disposition": "robots-unrecognized"
+  },
+  "packet": null,
+  "preparedAt": "2026-09-12T17:22:37.366Z",
+  "bodyFile": null
+}
