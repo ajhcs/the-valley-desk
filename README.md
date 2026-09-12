@@ -28,6 +28,27 @@ Product news is admitted to model review only when `fixtures/product-watch.json`
 
 Public URL generation uses `PUBLIC_ORIGIN=https://thevalleydesk.org`. The same Worker remains available on its workers.dev hostname for operational fallback; `www.thevalleydesk.org` redirects to the apex. See `docs/OPERATIONS.md`.
 
+### Watch foundation
+
+The implementation blueprint is in [docs/watch-v1-blueprint/README.md](docs/watch-v1-blueprint/README.md).
+The [implementation checkpoint](docs/evidence/watch-implementation-checkpoint-2026-09-12.md)
+records completed code, dated verification, and remaining qualification work;
+the original blueprint and reference mockups are not a launch receipt.
+
+Policy Watch and Technology Watch use separate accepted read models and bounded
+GET/HEAD APIs under `/api/v2/watch/`. They do not change the v1 feed envelope.
+`WATCH_PUBLIC_ENABLED` must be exactly `true` for public Watch reads; the separate
+`POLICY_BACKGROUND_PUBLIC_ENABLED` gate controls the inherited `/policy` page and
+its public background API. Both are explicitly false in the foundation candidate.
+Protected operator review remains independently authenticated.
+
+The source adapters and Muse 1.3 evaluation harness are offline contracts, not
+active collectors or provider calls. Runtime Muse remains 1.2 until real paired
+evaluation, data-policy, and editorial gates pass. Public Watch activation also
+requires qualified federal/PA/NJ/DE/local sources, official representative data,
+artifact-specific regional evidence, authorized review/current-head writers,
+and operational load acceptance. Do not seed production from synthetic fixtures.
+
 ### Local verification
 
 Version-bound legislative PDF extraction, persistent review and the background
@@ -75,5 +96,5 @@ Machine review/status routes require `Authorization: Bearer $REVIEW_API_TOKEN`; 
 4. Add secrets with `wrangler secret put REVIEW_API_TOKEN`, `wrangler secret put SOCIAL_INGEST_TOKEN`, and `wrangler secret put OPENROUTER_API_KEY`. For email intake, also add `CF_EMAIL_ANALYTICS_TOKEN` (zone-scoped Analytics Read only), `CF_EMAIL_ZONE_ID`, and the exact `CF_EMAIL_ROUTING_RULE_ID`; the handler rejects mail if any correlation setting is absent. These credentials have separate purposes: `REVIEW_API_TOKEN` authorizes machine review operations, `SOCIAL_INGEST_TOKEN` authorizes only Vale manifest/evidence/receipt routes, `OPENROUTER_API_KEY` authorizes model spending, and the Cloudflare token can only read analytics for the selected zone. No token belongs in Git, browser code, or `wrangler.jsonc`; provision the same social token only in the one approved Vale routine.
 5. `EDITOR_MODEL` is pinned to `meta/muse-spark-1.2-contributor`; `EDITOR_MODEL_BASE_URL` defaults to `https://openrouter.ai/api/v1`. There is no automatic fallback to standard Muse. Contributor requires OpenRouter Settings → Privacy to allow routing to providers that may train on prompts; any account or guardrail Zero Data Retention enforcement for non-frontier models must also be disabled for this key. If those policies block the endpoint, OpenRouter returns HTTP 404 and the item cools down in review while deterministic official-event publication continues. Muse is a reasoning model: calls request low reasoning effort, keep a 4,096-token shared reasoning/output budget, request `json_object`, and extract JSON from fences/whitespace without loosening Zod or evidence checks. Each scheduled invocation selects at most `EDITOR_MODEL_BUDGET` (default 32) eligible items across specialist lanes with `EDITOR_MODEL_CONCURRENCY` (default 4). Calls time out after `EDITOR_MODEL_TIMEOUT_MS` (default 45s); enrichment and high-risk verification each receive a bounded `EDITOR_MODEL_DEADLINE_MS` window (default 110s) inside the scheduled handler's `waitUntil` work. Set `EDITOR_MODEL_BUDGET=0` to disable model calls without stopping official-event publication.
 6. Keep the machine review/status routes undiscoverable and bearer-token protected. Configure Cloudflare Access for `thevalleydesk.org/ops*` with only `clyons@ajhcs.org`; the Worker also requires `ctx.access`, so direct `workers.dev/ops` requests remain denied. The browser operations surface uses `/ops/api/*` and never receives `REVIEW_API_TOKEN`.
-7. Run `npm run deploy` to update the one existing `the-valley-desk` Worker with the current git SHA as `BUILD_SHA`. The configured apex and `www` Custom Domains are attached to that same Worker; no second Worker is created.
+7. Qualify the exact candidate using the repository release gate, then deploy its verified source and retained assets with the locked Wrangler CLI and exact `BUILD_SHA`, following `docs/OPERATIONS.md`. Do not run `npm run deploy` after qualification because that convenience script rebuilds. The configured apex and `www` Custom Domains remain attached to the same Worker; no second Worker is created.
 8. Operations, rollback, D1 Time Travel, alert thresholds, and the Cloudflare Bot skip-rule requirement are in `docs/OPERATIONS.md`.

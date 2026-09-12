@@ -1,0 +1,323 @@
+{
+  "version": "planning-1",
+  "productionAuthorized": false,
+  "workPackages": [
+    {
+      "id": "W00",
+      "readyAfter": [],
+      "acceptAfter": [],
+      "ownerRole": "engineering-lead",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W01",
+      "readyAfter": [
+        "W00"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "full-stack-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W02",
+      "readyAfter": [
+        "W01"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "model-integration-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W03",
+      "readyAfter": [
+        "W02"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "model-integration-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W04",
+      "readyAfter": [
+        "W01"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "backend-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W05",
+      "readyAfter": [
+        "W04"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "ingestion-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W06",
+      "readyAfter": [
+        "W04",
+        "W05"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "policy-backend-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W07",
+      "readyAfter": [
+        "W04",
+        "W05"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "policy-data-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W08",
+      "readyAfter": [
+        "W04",
+        "W05"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "technology-ingestion-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W09",
+      "readyAfter": [
+        "W04"
+      ],
+      "acceptAfter": [
+        "W06",
+        "W07",
+        "W08"
+      ],
+      "ownerRole": "frontend-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W10",
+      "readyAfter": [
+        "W01"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "full-stack-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W11",
+      "readyAfter": [
+        "W03",
+        "W06",
+        "W07",
+        "W08",
+        "W09",
+        "W10"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "integration-engineer",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W12",
+      "readyAfter": [
+        "W11"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "release-owner",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    },
+    {
+      "id": "W13",
+      "readyAfter": [
+        "W12"
+      ],
+      "acceptAfter": [],
+      "ownerRole": "operations-owner",
+      "assignedPerson": null,
+      "status": "not-started",
+      "receipt": null
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R01",
+      "packages": [
+        "W06",
+        "W07"
+      ],
+      "tests": [
+        "T06",
+        "T07",
+        "T31"
+      ]
+    },
+    {
+      "id": "R02",
+      "packages": [
+        "W07"
+      ],
+      "tests": [
+        "T31"
+      ]
+    },
+    {
+      "id": "R03",
+      "packages": [
+        "W08"
+      ],
+      "tests": [
+        "T11",
+        "T12",
+        "T14"
+      ]
+    },
+    {
+      "id": "R04",
+      "packages": [
+        "W08",
+        "W09"
+      ],
+      "tests": [
+        "T13",
+        "T15",
+        "T30"
+      ]
+    },
+    {
+      "id": "R05",
+      "packages": [
+        "W07",
+        "W09"
+      ],
+      "tests": [
+        "T08",
+        "T09",
+        "T10"
+      ]
+    },
+    {
+      "id": "R06",
+      "packages": [
+        "W02",
+        "W03"
+      ],
+      "tests": [
+        "T17",
+        "T18",
+        "T19"
+      ]
+    },
+    {
+      "id": "R07",
+      "packages": [
+        "W04",
+        "W05"
+      ],
+      "tests": [
+        "T01",
+        "T02",
+        "T03",
+        "T20",
+        "T21",
+        "T22",
+        "T32"
+      ]
+    },
+    {
+      "id": "R08",
+      "packages": [
+        "W10",
+        "W11"
+      ],
+      "tests": [
+        "T16",
+        "T28",
+        "T29",
+        "T33"
+      ]
+    },
+    {
+      "id": "R09",
+      "packages": [
+        "W01",
+        "W11"
+      ],
+      "tests": [
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T34"
+      ]
+    },
+    {
+      "id": "R10",
+      "packages": [
+        "W06"
+      ],
+      "tests": [
+        "T05"
+      ]
+    },
+    {
+      "id": "R11",
+      "packages": [
+        "W04",
+        "W06",
+        "W08"
+      ],
+      "tests": [
+        "T04",
+        "T05",
+        "T07",
+        "T11",
+        "T13",
+        "T18",
+        "T26"
+      ]
+    },
+    {
+      "id": "R12",
+      "packages": [
+        "W12",
+        "W13"
+      ],
+      "tests": [
+        "T30",
+        "T31",
+        "T33",
+        "T34"
+      ]
+    }
+  ]
+}

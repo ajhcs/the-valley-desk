@@ -79,7 +79,7 @@ Before changing a production routine or source behavior, preserve a rollback sna
 
 The release is split into two bounded gates: Release A validates correctness (manifest identity, packet evidence preservation, review-only flow, delayed/idempotent acknowledgement, and no direct publish); Release B validates resilience (retry windows, alert transitions, fallback coverage, `/ops` metrics, and 72-hour stability). Do not enable the recurring collector based only on a local smoke test.
 
-`schemaVersion` is the latest D1 migration prefix (currently `0027`). `0014_editor_review_verification.sql` adds content-change freshness plus durable claim-ledger and verification results, `0015_signals_alerts.sql` adds signal trust state and durable operational alerts, `0016_operational_alert_recovery.sql` adds durable consecutive recovery state, `0017_executive_enrollment.sql` adds the institution-scoped pending executive identity ledger, `0018_signal_pointer_verification.sql` adds bounded post-inbox pointer verification provenance, `0019_official_source_discovery.sql` adds official-source schedules, snapshots, normalized detail evidence, and review-only candidate provenance, `0020_official_source_retry_provenance.sql` adds bounded detail-retry backoff plus exact evidence/model provenance, `0021_social_evidence_packets.sql` adds authenticated rich LinkedIn/X evidence packets, `0022_source_health_backoff.sql` adds public-block classification and durable retry windows, `0023_social_collector_runs.sql` adds persisted source fallback URLs plus manifest-bound Vale run receipts, `0024_social_lifecycle.sql` adds durable social quarantine reasons plus collector failure streak/pause signals, `0025_operational_alert_context.sql` adds normalized condition state plus institution/subsystem/group dimensions, `0026_source_health_attribution.sql` persists canonical institution associations for source-health rows, and `0027_policy_intelligence_hardening.sql` adds policy/version/review milestones, publication provenance, filtered-detail disposition, authenticated email receipt provenance, bounded PDF storage, and recovery observations. Apply every pending migration before deploying code that reads these tables. `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker but does not apply D1 migrations.
+`schemaVersion` is the code's expected D1 migration prefix (`0030` for this candidate), not a live database probe. Verify the remote `d1_migrations` ledger independently; production can still be on an earlier version before rollout. `0014_editor_review_verification.sql` adds content-change freshness plus durable claim-ledger and verification results, `0015_signals_alerts.sql` adds signal trust state and durable operational alerts, `0016_operational_alert_recovery.sql` adds durable consecutive recovery state, `0017_executive_enrollment.sql` adds the institution-scoped pending executive identity ledger, `0018_signal_pointer_verification.sql` adds bounded post-inbox pointer verification provenance, `0019_official_source_discovery.sql` adds official-source schedules, snapshots, normalized detail evidence, and review-only candidate provenance, `0020_official_source_retry_provenance.sql` adds bounded detail-retry backoff plus exact evidence/model provenance, `0021_social_evidence_packets.sql` adds authenticated rich LinkedIn/X evidence packets, `0022_source_health_backoff.sql` adds public-block classification and durable retry windows, `0023_social_collector_runs.sql` adds persisted source fallback URLs plus manifest-bound Vale run receipts, `0024_social_lifecycle.sql` adds durable social quarantine reasons plus collector failure streak/pause signals, `0025_operational_alert_context.sql` adds normalized condition state plus institution/subsystem/group dimensions, `0026_source_health_attribution.sql` persists canonical institution associations for source-health rows, and `0027_policy_intelligence_hardening.sql` adds policy/version/review milestones, publication provenance, filtered-detail disposition, authenticated email receipt provenance, bounded PDF storage, and recovery observations. Migrations `0028_policy_pdf_review.sql`, `0029_watch_public_revisions.sql`, and `0030_watch_delivery_dependencies.sql` add policy background review, immutable Watch read models, and live dependency guards. Apply only the exact reviewed pending migrations before deploying code that reads these tables. `buildSha` prefers the `BUILD_SHA` var, then `CF_VERSION_METADATA.id`. `npm run deploy` injects `BUILD_SHA=$(git rev-parse HEAD)` onto the existing Worker but does not apply D1 migrations.
 
 Source health is explicit: public `401`/`403` is `upstream-blocked` and is normally a warning, while a credentialed `401`/`403` is `auth-failed`. A public block can become critical only when the complete required peer set has lost coverage and no usable fallback remains; a recent successful observation inside the two-hour source freshness SLO keeps a transient failure non-critical while the retry proceeds. Failures retry at 15 minutes, 1 hour, 6 hours, then daily; a source in durable `backoff` is skipped and does not increment its failure streak. Cooper’s RSS is checked first, an empty or blocked feed falls through to its official newsroom HTML adapter, then to the explicitly allowlisted independent PhillyVoice tag page. The independent adapter emits discovery-only, non-authoritative candidates with a required first-party corroboration marker and never expands the article-fetch allowlist. Any fallback use is a durable warning in the daily digest (never auth-critical solely because a public source returned `401`/`403`); the fallback URL and authority citation remain visible to operators and editors.
 
@@ -151,12 +151,26 @@ Create the Access application for `thevalleydesk.org/ops*` with a deny-by-defaul
 
 ## Rollback
 
+For an exact-candidate release, deploy the receipt-verified source and retained
+`dist` artifacts with the locked Wrangler CLI and the exact final `BUILD_SHA`.
+Do not run `npm run deploy` after that gate: its convenience script builds again.
+Confirm candidate-tree and asset hashes before the deployment command, and
+retain the resulting Worker version and post-deployment readback receipt.
+
 ```bash
 npm exec -- wrangler deployments list
 npm exec -- wrangler rollback
 ```
 
-Rollback restores the previous Worker bundle for `the-valley-desk`. It does not create another Worker and does not touch DNS. After rollback, hit `/api/health` and confirm `buildSha` matches the intended deployment. If the rollback predates a D1 migration, restore D1 first (below) or the live code and schema will disagree.
+Rollback restores the selected previous Worker bundle for `the-valley-desk`. It does not create another Worker and does not touch DNS. Record the actual current version before deployment, select the intended version explicitly, and confirm its `buildSha` through `/api/health` afterward. A code rollback does not automatically require a D1 restore: determine schema compatibility from the exact migration changes and a local previous-Worker/current-schema smoke test.
+
+### Additive policy and Watch migrations
+
+For migrations `0028` through `0030`, the intended foundation-release rollback is the verified previous Worker with the additive tables retained. These migrations add policy PDF review and Watch revision/dependency storage without replacing existing publication tables. Qualify the previous Worker against the new schema before deployment. Do not delete retained evidence, undo later unrelated News/Event writes, clear tombstones, or restore the entire database merely to roll code back.
+
+Keep `WATCH_PUBLIC_ENABLED` and `POLICY_BACKGROUND_PUBLIC_ENABLED` absent or false until their separate public qualification gates pass. The latter independently controls the inherited `/policy` background page; disabling Watch alone is insufficient. The model, collector, source activation, and protected review permissions have separate contracts and are not enabled by either flag.
+
+A destructive Time Travel restore is a separately authorized data-recovery operation for actual corruption or an incompatible migration. Preserve a current backup and account for writes after the old bookmark before considering it. Older migration-specific recovery receipts retain their own compatibility requirements; this additive rollback procedure does not retrospectively qualify them.
 
 ## D1 Time Travel, export, restore
 
@@ -169,9 +183,10 @@ npm exec -- wrangler d1 time-travel info the-valley-desk
 # Restore to a bookmark (destructive; copies the chosen time over current)
 npm exec -- wrangler d1 time-travel restore the-valley-desk --bookmark BOOKMARK
 
-# Logical export / restore drill
-npm exec -- wrangler d1 export the-valley-desk --remote --output /tmp/the-valley-desk.sql
-npm exec -- wrangler d1 execute the-valley-desk --remote --file /tmp/the-valley-desk.sql
+# Logical export; use a restricted task-owned directory on mounted storage
+npm exec -- wrangler d1 export the-valley-desk --remote --output "$RELEASE_DIR/the-valley-desk.sql"
+# Restore drill is local only, with a fresh disposable persistence directory
+npm exec -- wrangler d1 execute the-valley-desk --local --persist-to "$RELEASE_DIR/restore-drill" --file "$RELEASE_DIR/the-valley-desk.sql"
 
 # Pre-release state export (store output in the restricted release artifact)
 npm exec -- wrangler d1 execute the-valley-desk --remote --command "SELECT source_id,state,consecutive_failures,last_checked_at,last_success_at,next_attempt_at,last_http_status,requires_auth,last_fallback_url FROM source_health ORDER BY source_id"
@@ -210,7 +225,9 @@ Watch Cloudflare Worker logs / `/api/automation/status` (token-protected):
 - [ ] `/`, `/news`, `/events`, `/voices`, `/feed.json`, `/feed.xml` return 200
 - [ ] HTML canonical/OG/JSON-LD/noscript use `https://thevalleydesk.org`
 - [ ] `HEAD /feed.json` and `HEAD /api/health` return 200 with empty bodies
-- [ ] Homepage lead remains latest News (`rankedNews[0]`)
+- [ ] Homepage lead preserves the existing authored/featured `leadItem` contract; no automatic list fallback
+- [ ] Unqualified Watch and policy-background pages remain 404/noindex; their public APIs remain disabled and do not read D1
+- [ ] Model, source activation, collector state, credentials, and schedules match the approved release scope
 - [ ] Public copy does not mention collection machinery
 - [ ] After deploy, token `GET /api/automation/status` shows the last cron outcome
 

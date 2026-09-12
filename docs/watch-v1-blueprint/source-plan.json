@@ -1,0 +1,330 @@
+{
+  "schemaVersion": "planning-1",
+  "preparedAt": "2026-09-12",
+  "status": "proposal-not-runtime-registry",
+  "liveCollectionAuthorized": false,
+  "technologyScope": "verified-delaware-valley-only",
+  "policyFamilies": [
+    {
+      "id": "federal-legislation",
+      "jurisdiction": "federal",
+      "family": "legislation",
+      "discoveryUrl": "https://github.com/LibraryOfCongress/api.congress.gov",
+      "fetchUrl": null,
+      "transport": "api",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "federal-regulation",
+      "jurisdiction": "federal",
+      "family": "regulation",
+      "discoveryUrl": "https://www.federalregister.gov/developers/documentation/api/v1",
+      "fetchUrl": null,
+      "transport": "api",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "federal-dockets",
+      "jurisdiction": "federal",
+      "family": "dockets",
+      "discoveryUrl": "https://open.gsa.gov/api/regulationsgov/",
+      "fetchUrl": null,
+      "transport": "api",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "federal-members",
+      "jurisdiction": "federal",
+      "family": "members",
+      "discoveryUrl": "https://github.com/LibraryOfCongress/api.congress.gov",
+      "fetchUrl": null,
+      "transport": "api",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "pa-legislation",
+      "jurisdiction": "PA",
+      "family": "legislation",
+      "discoveryUrl": "https://www.palegis.us/data",
+      "fetchUrl": null,
+      "transport": "api-and-batch",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "pa-regulation",
+      "jurisdiction": "PA",
+      "family": "regulation",
+      "discoveryUrl": null,
+      "fetchUrl": null,
+      "transport": "qualification-required",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "pa-members",
+      "jurisdiction": "PA",
+      "family": "members",
+      "discoveryUrl": "https://www.palegis.us/data",
+      "fetchUrl": null,
+      "transport": "qualification-required",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "nj-legislation",
+      "jurisdiction": "NJ",
+      "family": "legislation",
+      "discoveryUrl": "https://www.njleg.state.nj.us/downloads",
+      "fetchUrl": null,
+      "transport": "html-and-batch",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "nj-regulation",
+      "jurisdiction": "NJ",
+      "family": "regulation",
+      "discoveryUrl": "https://www.nj.gov/oal/rules/portal/",
+      "fetchUrl": null,
+      "transport": "html",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "nj-members",
+      "jurisdiction": "NJ",
+      "family": "members",
+      "discoveryUrl": "https://njleg.state.nj.us/",
+      "fetchUrl": null,
+      "transport": "qualification-required",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "de-legislation",
+      "jurisdiction": "DE",
+      "family": "legislation",
+      "discoveryUrl": "https://legis.delaware.gov/JsonFeed",
+      "fetchUrl": null,
+      "transport": "json",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "de-regulation",
+      "jurisdiction": "DE",
+      "family": "regulation",
+      "discoveryUrl": "https://regulations.delaware.gov/",
+      "fetchUrl": null,
+      "transport": "qualification-required",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    },
+    {
+      "id": "de-members",
+      "jurisdiction": "DE",
+      "family": "members",
+      "discoveryUrl": "https://legis.delaware.gov/",
+      "fetchUrl": null,
+      "transport": "qualification-required",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "policy-source-owner",
+      "receipt": null
+    }
+  ],
+  "counties": [
+    {
+      "id": "pa-philadelphia",
+      "state": "PA",
+      "county": "Philadelphia",
+      "targetBody": "City Council and city policy notices",
+      "discoveryUrl": "https://phila.legistar.com/Legislation.aspx",
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "pa-bucks",
+      "state": "PA",
+      "county": "Bucks",
+      "targetBody": "County commissioners and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "pa-montgomery",
+      "state": "PA",
+      "county": "Montgomery",
+      "targetBody": "County commissioners and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "pa-chester",
+      "state": "PA",
+      "county": "Chester",
+      "targetBody": "County commissioners and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "pa-delaware",
+      "state": "PA",
+      "county": "Delaware",
+      "targetBody": "County council and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "nj-camden",
+      "state": "NJ",
+      "county": "Camden",
+      "targetBody": "County commissioners and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "nj-burlington",
+      "state": "NJ",
+      "county": "Burlington",
+      "targetBody": "County commissioners and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "nj-gloucester",
+      "state": "NJ",
+      "county": "Gloucester",
+      "targetBody": "County commissioners and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "nj-salem",
+      "state": "NJ",
+      "county": "Salem",
+      "targetBody": "County commissioners and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "nj-atlantic",
+      "state": "NJ",
+      "county": "Atlantic",
+      "targetBody": "County commissioners and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    },
+    {
+      "id": "de-new-castle",
+      "state": "DE",
+      "county": "New Castle",
+      "targetBody": "County council and relevant public bodies",
+      "discoveryUrl": null,
+      "requiredAtLaunch": true,
+      "qualification": "target",
+      "ownerRole": "regional-policy-editor",
+      "monitoringAssignment": null,
+      "municipalCoverage": "not-yet-enumerated",
+      "receipt": null
+    }
+  ],
+  "expansionTargets": {
+    "technologyInstitutionChannels": {
+      "min": 25,
+      "max": 40
+    },
+    "technologyArtifacts": {
+      "min": 50,
+      "max": 100
+    },
+    "additionalEventCalendars": {
+      "min": 8,
+      "max": 12
+    }
+  },
+  "notes": [
+    "Targets are not active coverage or measured health.",
+    "County alternatives require an actual named editor, backup, cadence, evidence log, and public scope; ownerRole is not an assignment.",
+    "All mandatory federal and PA/NJ/DE legislation, regulation, and member families require qualification.",
+    "Existing runtime registries remain unchanged."
+  ]
+}
