@@ -58,7 +58,8 @@ async function update(record: WatchPublicRecord, row: Row): Promise<WatchUpdate>
 }
 
 /** Latest is a read of accepted projections, never a raw collection ledger.
- * Day precision sorts before instants on that day without inventing a clock. */
+ * Day-only values sort after instants on the same date as a stable display
+ * convention, not a claim of within-day chronological precision. */
 export async function readWatchUpdates(db: D1DatabaseLike, input: unknown, now = new Date()): Promise<WatchUpdatesResponse> {
   const query = Query.parse(input), at = CanonicalInstant.parse(now.toISOString()), current = await state(db);
   const cursor = query.cursor ? decode(query.cursor) : null;
