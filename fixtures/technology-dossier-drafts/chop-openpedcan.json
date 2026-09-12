@@ -1,0 +1,534 @@
+{
+  "schemaVersion": "technology-dossier-input-1",
+  "repository": {
+    "numericId": "358689512",
+    "fullName": "d3b-center/OpenPedCan-analysis",
+    "commitSha": "f8a806ba3b54e7029f0a9600617acc7107939011"
+  },
+  "slug": "chop-openpedcan",
+  "title": "Open Pediatric Cancer analysis",
+  "resourceType": "software",
+  "discoveredAt": "2026-09-12T16:29:18.916Z",
+  "evidence": [
+    {
+      "id": "tech-358689512-repository",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis",
+      "checkedAt": "2026-09-12T16:29:18.456Z",
+      "representationSha256": "f3df20500aa414a5ef84b776f1801f257cedb9e6e5ae765701eae5837cbeebf5",
+      "quote": "{\"id\":358689512,\"node_id\":\"MDEwOlJlcG9zaXRvcnkzNTg2ODk1MTI=\",\"name\":\"OpenPedCan-analysis\",\"full_name\":\"d3b-center/OpenPedCan-analysis\",\"private\":false,\"owner\":{\"login\":\"d3b-center\",\"id\":25509062,\"node",
+      "retainedText": "{\"id\":358689512,\"node_id\":\"MDEwOlJlcG9zaXRvcnkzNTg2ODk1MTI=\",\"name\":\"OpenPedCan-analysis\",\"full_name\":\"d3b-center/OpenPedCan-analysis\",\"private\":false,\"owner\":{\"login\":\"d3b-center\",\"id\":25509062,\"node"
+    },
+    {
+      "id": "tech-358689512-commit",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/commits/dev",
+      "checkedAt": "2026-09-12T16:29:18.613Z",
+      "representationSha256": "40af0cea9375f9b2e31eeaf650859cc2cb035077c1171ce9214ce949303e8ca5",
+      "quote": "{\"sha\":\"f8a806ba3b54e7029f0a9600617acc7107939011\",\"node_id\":\"C_kwDOFWEq6NoAKGY4YTgwNmJhM2I1NGU3MDI5ZjBhOTYwMDYxN2FjYzcxMDc5MzkwMTE\",\"commit\":{\"author\":{\"name\":\"Jo Lynne Rokita\",\"email\":\"jharenza@gmail",
+      "retainedText": "{\"sha\":\"f8a806ba3b54e7029f0a9600617acc7107939011\",\"node_id\":\"C_kwDOFWEq6NoAKGY4YTgwNmJhM2I1NGU3MDI5ZjBhOTYwMDYxN2FjYzcxMDc5MzkwMTE\",\"commit\":{\"author\":{\"name\":\"Jo Lynne Rokita\",\"email\":\"jharenza@gmail"
+    },
+    {
+      "id": "tech-358689512-readme",
+      "url": "https://raw.githubusercontent.com/d3b-center/OpenPedCan-analysis/f8a806ba3b54e7029f0a9600617acc7107939011/README.md",
+      "checkedAt": "2026-09-12T16:29:18.636Z",
+      "representationSha256": "6ed648555824c90de79d5898103be855f300534c405dd326144e6104da493663",
+      "quote": "Children’s Hospital of Philadelphia Division of Neurosurgery",
+      "retainedText": "Children’s Hospital of Philadelphia Division of Neurosurgery"
+    },
+    {
+      "id": "tech-358689512-license",
+      "url": "https://raw.githubusercontent.com/d3b-center/OpenPedCan-analysis/f8a806ba3b54e7029f0a9600617acc7107939011/LICENSE.md",
+      "checkedAt": "2026-09-12T16:29:18.701Z",
+      "representationSha256": "8067620f3ea6c48329c77af92ecc9992af92691fd9323d904dca67848df14ea4",
+      "quote": "The Open Pediatric Cancer (OpenPedCan) Project by OpenPedCan Maintainers & Contributors\n\nTo the extent possible under law, the person who associated CC0 with \nThe OpenPedCan Project has waived all cop",
+      "retainedText": "The Open Pediatric Cancer (OpenPedCan) Project by OpenPedCan Maintainers & Contributors\n\nTo the extent possible under law, the person who associated CC0 with \nThe OpenPedCan Project has waived all cop"
+    },
+    {
+      "id": "tech-358689512-releases",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "[{\"url\":\"https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases/231142323\",\"assets_url\":\"https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases/231142323/assets\",\"upload_ur",
+      "retainedText": "[{\"url\":\"https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases/231142323\",\"assets_url\":\"https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases/231142323/assets\",\"upload_ur"
+    },
+    {
+      "id": "tech-358689512-release-231142323",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2025-07-09T12:37:00Z\"",
+      "retainedText": "\"2025-07-09T12:37:00Z\""
+    },
+    {
+      "id": "tech-358689512-release-228118148",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2025-06-26T19:47:43Z\"",
+      "retainedText": "\"2025-06-26T19:47:43Z\""
+    },
+    {
+      "id": "tech-358689512-release-206837174",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2025-03-19T12:46:24Z\"",
+      "retainedText": "\"2025-03-19T12:46:24Z\""
+    },
+    {
+      "id": "tech-358689512-release-176744542",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2024-09-25T00:43:47Z\"",
+      "retainedText": "\"2024-09-25T00:43:47Z\""
+    },
+    {
+      "id": "tech-358689512-release-144472694",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2024-03-01T23:52:44Z\"",
+      "retainedText": "\"2024-03-01T23:52:44Z\""
+    },
+    {
+      "id": "tech-358689512-release-139005095",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2024-01-29T20:19:34Z\"",
+      "retainedText": "\"2024-01-29T20:19:34Z\""
+    },
+    {
+      "id": "tech-358689512-release-135738257",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2024-01-03T20:39:02Z\"",
+      "retainedText": "\"2024-01-03T20:39:02Z\""
+    },
+    {
+      "id": "tech-358689512-release-101760882",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2023-05-03T17:34:54Z\"",
+      "retainedText": "\"2023-05-03T17:34:54Z\""
+    },
+    {
+      "id": "tech-358689512-release-84609540",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2022-11-30T18:03:43Z\"",
+      "retainedText": "\"2022-11-30T18:03:43Z\""
+    },
+    {
+      "id": "tech-358689512-release-64889803",
+      "url": "https://api.github.com/repos/d3b-center/OpenPedCan-analysis/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "representationSha256": "3203cb9aaa4d1ceee35b8f442e4033b72c43d2d275b0727e50be527df6413b3c",
+      "quote": "\"2022-04-20T20:28:57Z\"",
+      "retainedText": "\"2022-04-20T20:28:57Z\""
+    }
+  ],
+  "purpose": {
+    "value": "Reproducible analysis of harmonized pediatric cancer data, with versioned outputs for downstream research.",
+    "evidenceIds": [
+      "tech-358689512-readme"
+    ]
+  },
+  "intendedUsers": {
+    "value": [
+      "Cancer genomics researchers",
+      "Bioinformatics analysts"
+    ],
+    "evidenceIds": [
+      "tech-358689512-readme"
+    ]
+  },
+  "workflow": {
+    "value": {
+      "inputs": [
+        "Versioned OpenPedCan research data"
+      ],
+      "steps": [
+        "Review data formats and the release notes.",
+        "Use the documented project container for a selected analysis module."
+      ],
+      "outputs": [
+        "Research analyses and versioned result tables"
+      ]
+    },
+    "evidenceIds": [
+      "tech-358689512-readme"
+    ]
+  },
+  "setup": {
+    "value": {
+      "verification": "maintainer-documented",
+      "version": "f8a806ba3b54e7029f0a9600617acc7107939011",
+      "prerequisites": [
+        "Docker",
+        "Module-specific research data"
+      ],
+      "guideUrl": "https://github.com/d3b-center/OpenPedCan-analysis/blob/f8a806ba3b54e7029f0a9600617acc7107939011/README.md"
+    },
+    "evidenceIds": [
+      "tech-358689512-readme"
+    ]
+  },
+  "limitations": {
+    "value": [
+      "Code releases and data releases have separate version histories.",
+      "Repository license does not automatically establish rights to every upstream dataset."
+    ],
+    "evidenceIds": [
+      "tech-358689512-readme"
+    ]
+  },
+  "relationship": {
+    "value": {
+      "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:local",
+      "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+      "artifactId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:repository",
+      "entityId": "chop",
+      "entityName": "Children's Hospital of Philadelphia",
+      "type": "research-affiliation",
+      "temporalStatus": "historical",
+      "validFrom": null,
+      "validTo": null,
+      "checkedAt": "2026-09-12T16:29:18.916Z",
+      "validThrough": null
+    },
+    "evidenceIds": [
+      "tech-358689512-readme"
+    ]
+  },
+  "licenses": [
+    {
+      "value": {
+        "artifactId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:repository",
+        "artifactVersion": "f8a806ba3b54e7029f0a9600617acc7107939011",
+        "scope": "code",
+        "classification": "unknown",
+        "spdxId": null,
+        "licenseSha256": "8067620f3ea6c48329c77af92ecc9992af92691fd9323d904dca67848df14ea4",
+        "sourceUrl": "https://raw.githubusercontent.com/d3b-center/OpenPedCan-analysis/f8a806ba3b54e7029f0a9600617acc7107939011/LICENSE.md",
+        "conditions": [
+          "Repository license contains CC0 and BSD 3-Clause sections; confirm scope for the specific artifact.",
+          "Data and weights licensing is not inferred from code licensing."
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-license"
+      ]
+    },
+    {
+      "value": {
+        "artifactId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:repository",
+        "artifactVersion": "f8a806ba3b54e7029f0a9600617acc7107939011",
+        "scope": "data",
+        "classification": "unknown",
+        "spdxId": null,
+        "licenseSha256": null,
+        "sourceUrl": null,
+        "conditions": [
+          "Scope not independently qualified."
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-license"
+      ]
+    },
+    {
+      "value": {
+        "artifactId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:repository",
+        "artifactVersion": "f8a806ba3b54e7029f0a9600617acc7107939011",
+        "scope": "weights",
+        "classification": "unknown",
+        "spdxId": null,
+        "licenseSha256": null,
+        "sourceUrl": null,
+        "conditions": [
+          "Scope not independently qualified."
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-license"
+      ]
+    }
+  ],
+  "developments": [
+    {
+      "nativeId": "231142323",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:231142323",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "231142323",
+        "version": "v2.5.1",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v2.5.1",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2025-07-09T12:37:00.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-231142323"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-231142323"
+      ],
+      "title": "v2.5.1 - OpenPedCan Manuscript Release",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "228118148",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:228118148",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "228118148",
+        "version": "v2.5.0",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v2.5.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2025-06-26T19:47:43.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-228118148"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-228118148"
+      ],
+      "title": "v2.5.0 - resubmission release",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "206837174",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:206837174",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "206837174",
+        "version": "v2.4.1",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v2.4.1",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2025-03-19T12:46:24.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-206837174"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-206837174"
+      ],
+      "title": "🔧Bug Fixes and Doc Updates",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "176744542",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:176744542",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "176744542",
+        "version": "v2.4.0",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v2.4.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2024-09-25T00:43:47.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-176744542"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-176744542"
+      ],
+      "title": "v2.4.0 - Interim module and code updates",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "144472694",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:144472694",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "144472694",
+        "version": "v2.3.0",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v2.3.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2024-03-01T23:52:44.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-144472694"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-144472694"
+      ],
+      "title": "Release v2.3.0",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "139005095",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:139005095",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "139005095",
+        "version": "v2.2.0",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v2.2.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2024-01-29T20:19:34.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-139005095"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-139005095"
+      ],
+      "title": "v2.2.0",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "135738257",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:135738257",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "135738257",
+        "version": "v2.1.0",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v2.1.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2024-01-03T20:39:02.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-135738257"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-135738257"
+      ],
+      "title": "v2.1.0",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "101760882",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:101760882",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "101760882",
+        "version": "v2.0.0",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v2.0.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2023-05-03T17:34:54.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-101760882"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-101760882"
+      ],
+      "title": "v2.0.0",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "84609540",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:84609540",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "84609540",
+        "version": "v1.1.0",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v1.1.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2022-11-30T18:03:43.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-84609540"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-84609540"
+      ],
+      "title": "Release v1.1.0",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "64889803",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13:release:64889803",
+        "resourceId": "repository-v1:747845f740f05fdb0011186becf17c48f4278d5524ac0ad1ed0f6c0beb56be13",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "64889803",
+        "version": "v1.0.0",
+        "url": "https://github.com/d3b-center/OpenPedCan-analysis/releases/tag/v1.0.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2022-04-20T20:28:57.000Z",
+        "evidenceIds": [
+          "tech-358689512-release-64889803"
+        ]
+      },
+      "evidenceIds": [
+        "tech-358689512-release-64889803"
+      ],
+      "title": "Release v1.0.0",
+      "prerelease": false,
+      "draft": false
+    }
+  ],
+  "aliasProposal": null
+}

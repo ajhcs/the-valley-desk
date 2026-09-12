@@ -1,0 +1,533 @@
+{
+  "schemaVersion": "technology-dossier-input-1",
+  "repository": {
+    "numericId": "128938343",
+    "fullName": "CBICA/CaPTk",
+    "commitSha": "cce88180d3159546a057b32ca9b4172d3ee2624d"
+  },
+  "slug": "penn-captk",
+  "title": "Cancer Imaging Phenomics Toolkit",
+  "resourceType": "software",
+  "discoveredAt": "2026-09-12T16:29:18.265Z",
+  "evidence": [
+    {
+      "id": "tech-128938343-repository",
+      "url": "https://api.github.com/repos/CBICA/CaPTk",
+      "checkedAt": "2026-09-12T16:29:17.874Z",
+      "representationSha256": "ae61f8ff1a8458922d0417e81d4b6431128c6a0871f1ea0262d0cd09b30f3ea2",
+      "quote": "{\"id\":128938343,\"node_id\":\"MDEwOlJlcG9zaXRvcnkxMjg5MzgzNDM=\",\"name\":\"CaPTk\",\"full_name\":\"CBICA/CaPTk\",\"private\":false,\"owner\":{\"login\":\"CBICA\",\"id\":35823615,\"node_id\":\"MDEyOk9yZ2FuaXphdGlvbjM1ODIzNjE1",
+      "retainedText": "{\"id\":128938343,\"node_id\":\"MDEwOlJlcG9zaXRvcnkxMjg5MzgzNDM=\",\"name\":\"CaPTk\",\"full_name\":\"CBICA/CaPTk\",\"private\":false,\"owner\":{\"login\":\"CBICA\",\"id\":35823615,\"node_id\":\"MDEyOk9yZ2FuaXphdGlvbjM1ODIzNjE1"
+    },
+    {
+      "id": "tech-128938343-commit",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/commits/master",
+      "checkedAt": "2026-09-12T16:29:18.004Z",
+      "representationSha256": "0ce93834ac36e52d4228947962cbc01c7116ecefc5e236c4d457fd9096ad8a69",
+      "quote": "{\"sha\":\"cce88180d3159546a057b32ca9b4172d3ee2624d\",\"node_id\":\"C_kwDOB69xZ9oAKGNjZTg4MTgwZDMxNTk1NDZhMDU3YjMyY2E5YjQxNzJkM2VlMjYyNGQ\",\"commit\":{\"author\":{\"name\":\"Alexander Getka\",\"email\":\"59709326+Alexa",
+      "retainedText": "{\"sha\":\"cce88180d3159546a057b32ca9b4172d3ee2624d\",\"node_id\":\"C_kwDOB69xZ9oAKGNjZTg4MTgwZDMxNTk1NDZhMDU3YjMyY2E5YjQxNzJkM2VlMjYyNGQ\",\"commit\":{\"author\":{\"name\":\"Alexander Getka\",\"email\":\"59709326+Alexa"
+    },
+    {
+      "id": "tech-128938343-readme",
+      "url": "https://raw.githubusercontent.com/CBICA/CaPTk/cce88180d3159546a057b32ca9b4172d3ee2624d/Readme.md",
+      "checkedAt": "2026-09-12T16:29:18.025Z",
+      "representationSha256": "2416c23316704d10b8fbab4692972ebea52111dd971b8e9652a7c1da001c54b6",
+      "quote": "at the University of Pennsylvania.",
+      "retainedText": "at the University of Pennsylvania."
+    },
+    {
+      "id": "tech-128938343-license",
+      "url": "https://raw.githubusercontent.com/CBICA/CaPTk/cce88180d3159546a057b32ca9b4172d3ee2624d/LICENSE",
+      "checkedAt": "2026-09-12T16:29:18.090Z",
+      "representationSha256": "d083663de73485c6b0b8a014a2cd530d25f89ad4e54d0a3414c2e8d6ab931ba4",
+      "quote": "By installing the Cancer and Phenomics Toolkit (CaPTk), the user agrees to the following licenses, which pertain to the code and its different constituents:\n\n1. CBICA Software License - https://www.me",
+      "retainedText": "By installing the Cancer and Phenomics Toolkit (CaPTk), the user agrees to the following licenses, which pertain to the code and its different constituents:\n\n1. CBICA Software License - https://www.me"
+    },
+    {
+      "id": "tech-128938343-releases",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "[{\"url\":\"https://api.github.com/repos/CBICA/CaPTk/releases/68202976\",\"assets_url\":\"https://api.github.com/repos/CBICA/CaPTk/releases/68202976/assets\",\"upload_url\":\"https://uploads.github.com/repos/CBI",
+      "retainedText": "[{\"url\":\"https://api.github.com/repos/CBICA/CaPTk/releases/68202976\",\"assets_url\":\"https://api.github.com/repos/CBICA/CaPTk/releases/68202976/assets\",\"upload_url\":\"https://uploads.github.com/repos/CBI"
+    },
+    {
+      "id": "tech-128938343-release-68202976",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2022-05-31T05:48:04Z\"",
+      "retainedText": "\"2022-05-31T05:48:04Z\""
+    },
+    {
+      "id": "tech-128938343-release-62066510",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2022-03-17T03:50:34Z\"",
+      "retainedText": "\"2022-03-17T03:50:34Z\""
+    },
+    {
+      "id": "tech-128938343-release-61834445",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2022-03-15T01:54:37Z\"",
+      "retainedText": "\"2022-03-15T01:54:37Z\""
+    },
+    {
+      "id": "tech-128938343-release-56465570",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2022-01-05T14:57:48Z\"",
+      "retainedText": "\"2022-01-05T14:57:48Z\""
+    },
+    {
+      "id": "tech-128938343-release-52548744",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2021-11-02T19:49:31Z\"",
+      "retainedText": "\"2021-11-02T19:49:31Z\""
+    },
+    {
+      "id": "tech-128938343-release-32229414",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2020-10-06T17:03:12Z\"",
+      "retainedText": "\"2020-10-06T17:03:12Z\""
+    },
+    {
+      "id": "tech-128938343-release-32109948",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2020-10-02T20:06:31Z\"",
+      "retainedText": "\"2020-10-02T20:06:31Z\""
+    },
+    {
+      "id": "tech-128938343-release-28989554",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2020-07-27T14:16:49Z\"",
+      "retainedText": "\"2020-07-27T14:16:49Z\""
+    },
+    {
+      "id": "tech-128938343-release-28803343",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2020-07-21T22:05:24Z\"",
+      "retainedText": "\"2020-07-21T22:05:24Z\""
+    },
+    {
+      "id": "tech-128938343-release-28139938",
+      "url": "https://api.github.com/repos/CBICA/CaPTk/releases?per_page=10",
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "representationSha256": "0002d2c1f6ff49dbe6f293a428be1cc744ea52b65ca5c0d893678b1fdff39ab7",
+      "quote": "\"2020-07-02T02:49:15Z\"",
+      "retainedText": "\"2020-07-02T02:49:15Z\""
+    }
+  ],
+  "purpose": {
+    "value": "Cancer-image analysis and predictive modeling, with brain, breast and lung imaging applications.",
+    "evidenceIds": [
+      "tech-128938343-readme"
+    ]
+  },
+  "intendedUsers": {
+    "value": [
+      "Medical imaging researchers"
+    ],
+    "evidenceIds": [
+      "tech-128938343-readme"
+    ]
+  },
+  "workflow": {
+    "value": {
+      "inputs": [
+        "Radiographic cancer images"
+      ],
+      "steps": [
+        "Choose a documented application and its required image inputs.",
+        "Follow the matching application guide for image analysis."
+      ],
+      "outputs": [
+        "Quantitative imaging features and analysis outputs"
+      ]
+    },
+    "evidenceIds": [
+      "tech-128938343-readme"
+    ]
+  },
+  "setup": {
+    "value": {
+      "verification": "maintainer-documented",
+      "version": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+      "prerequisites": [
+        "Platform-compatible CaPTk distribution",
+        "Application-specific imaging inputs"
+      ],
+      "guideUrl": "https://github.com/CBICA/CaPTk/blob/cce88180d3159546a057b32ca9b4172d3ee2624d/Readme.md"
+    },
+    "evidenceIds": [
+      "tech-128938343-readme"
+    ]
+  },
+  "limitations": {
+    "value": [
+      "Research use; not FDA-approved for clinical use.",
+      "Individual components have different license terms."
+    ],
+    "evidenceIds": [
+      "tech-128938343-readme"
+    ]
+  },
+  "relationship": {
+    "value": {
+      "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:local",
+      "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+      "artifactId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:repository",
+      "entityId": "penn-medicine",
+      "entityName": "University of Pennsylvania",
+      "type": "maintained-by",
+      "temporalStatus": "historical",
+      "validFrom": null,
+      "validTo": null,
+      "checkedAt": "2026-09-12T16:29:18.265Z",
+      "validThrough": null
+    },
+    "evidenceIds": [
+      "tech-128938343-readme"
+    ]
+  },
+  "licenses": [
+    {
+      "value": {
+        "artifactId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:repository",
+        "artifactVersion": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+        "scope": "code",
+        "classification": "unknown",
+        "spdxId": null,
+        "licenseSha256": "d083663de73485c6b0b8a014a2cd530d25f89ad4e54d0a3414c2e8d6ab931ba4",
+        "sourceUrl": "https://raw.githubusercontent.com/CBICA/CaPTk/cce88180d3159546a057b32ca9b4172d3ee2624d/LICENSE",
+        "conditions": [
+          "Custom CBICA terms and multiple dependency licenses.",
+          "PHI Estimator is separately non-commercial; do not label the whole distribution OSI open source."
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-license"
+      ]
+    },
+    {
+      "value": {
+        "artifactId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:repository",
+        "artifactVersion": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+        "scope": "data",
+        "classification": "unknown",
+        "spdxId": null,
+        "licenseSha256": null,
+        "sourceUrl": null,
+        "conditions": [
+          "Scope not independently qualified."
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-license"
+      ]
+    },
+    {
+      "value": {
+        "artifactId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:repository",
+        "artifactVersion": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+        "scope": "weights",
+        "classification": "unknown",
+        "spdxId": null,
+        "licenseSha256": null,
+        "sourceUrl": null,
+        "conditions": [
+          "Scope not independently qualified."
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-license"
+      ]
+    }
+  ],
+  "developments": [
+    {
+      "nativeId": "68202976",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:68202976",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "68202976",
+        "version": "1.9.0",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.9.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2022-05-31T05:48:04.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-68202976"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-68202976"
+      ],
+      "title": "1.9.0",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "62066510",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:62066510",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "62066510",
+        "version": "1.9.0.RC",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.9.0.RC",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2022-03-17T03:50:34.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-62066510"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-62066510"
+      ],
+      "title": "1.9.0 Release Candidate 1",
+      "prerelease": true,
+      "draft": false
+    },
+    {
+      "nativeId": "61834445",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:61834445",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "61834445",
+        "version": "1.9.0.Beta",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.9.0.Beta",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2022-03-15T01:54:37.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-61834445"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-61834445"
+      ],
+      "title": "1.9.0.Beta",
+      "prerelease": true,
+      "draft": false
+    },
+    {
+      "nativeId": "56465570",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:56465570",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "56465570",
+        "version": "1.9.0.Alpha",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.9.0.Alpha",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2022-01-05T14:57:48.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-56465570"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-56465570"
+      ],
+      "title": "1.9.0.Alpha",
+      "prerelease": true,
+      "draft": false
+    },
+    {
+      "nativeId": "52548744",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:52548744",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "52548744",
+        "version": "1.8.2.Alpha",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.8.2.Alpha",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2021-11-02T19:49:31.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-52548744"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-52548744"
+      ],
+      "title": "Alpha Release for showcase at RSNA 2021",
+      "prerelease": true,
+      "draft": false
+    },
+    {
+      "nativeId": "32229414",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:32229414",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "32229414",
+        "version": "1.8.1",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.8.1",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2020-10-06T17:03:12.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-32229414"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-32229414"
+      ],
+      "title": "Release for showcase at MICCAI 2020",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "32109948",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:32109948",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "32109948",
+        "version": "1.8.0",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.8.0",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2020-10-02T20:06:31.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-32109948"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-32109948"
+      ],
+      "title": "Release for showcase at MICCAI 2020 with Molecular Subtype",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "nativeId": "28989554",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:28989554",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "28989554",
+        "version": "1.8.0.Beta",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.8.0.Beta",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2020-07-27T14:16:49.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-28989554"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-28989554"
+      ],
+      "title": "Testing version - Beta",
+      "prerelease": true,
+      "draft": false
+    },
+    {
+      "nativeId": "28803343",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:28803343",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "28803343",
+        "version": "1.8.0.Alpha3",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.8.0.Alpha3",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2020-07-21T22:05:24.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-28803343"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-28803343"
+      ],
+      "title": "Testing version [3]",
+      "prerelease": true,
+      "draft": false
+    },
+    {
+      "nativeId": "28139938",
+      "type": "software-release",
+      "artifact": {
+        "id": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57:release:28139938",
+        "resourceId": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+        "artifactType": "release",
+        "host": "github.com",
+        "nativeId": "28139938",
+        "version": "1.8.0.Alpha2",
+        "url": "https://github.com/CBICA/CaPTk/releases/tag/1.8.0.Alpha2",
+        "availability": "public"
+      },
+      "sourceOccurredAt": {
+        "precision": "instant",
+        "value": "2020-07-02T02:49:15.000Z",
+        "evidenceIds": [
+          "tech-128938343-release-28139938"
+        ]
+      },
+      "evidenceIds": [
+        "tech-128938343-release-28139938"
+      ],
+      "title": "Testing version [2]",
+      "prerelease": true,
+      "draft": false
+    }
+  ],
+  "aliasProposal": null
+}
