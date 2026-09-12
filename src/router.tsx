@@ -3,6 +3,7 @@ import {
   createRoute,
   createRouter,
   lazyRouteComponent,
+  redirect,
 } from "@tanstack/react-router";
 import { Layout } from "./ui/Layout";
 import { HomePage } from "./ui/HomePage";
@@ -18,12 +19,23 @@ import { LabSystemsPage } from "./ui/lab/LabSystemsPage";
 import { LabHorizonPage } from "./ui/lab/LabHorizonPage";
 import { LabCalendarPage } from "./ui/lab/LabCalendarPage";
 import { parsePlainSearch, stringifyPlainSearch } from "./lib/plain-search";
+import { createCatalogNavigationBoundary, reloadActiveCatalogDocument, sameOriginDocumentHref } from "./lib/catalog-navigation";
 
 const WatchDirectoryPage = lazyRouteComponent(() => import("./ui/watch/WatchDirectoryPage"), "WatchDirectoryPage");
 const WatchDetailPage = lazyRouteComponent(() => import("./ui/watch/WatchDetailPage"), "WatchDetailPage");
+const catalogNavigation = createCatalogNavigationBoundary(typeof window === "undefined" ? "/" : window.location.pathname);
 
 const rootRoute = createRootRoute({
   component: Layout,
+  beforeLoad({ location, preload }) {
+    if (typeof window !== "undefined" && catalogNavigation.shouldReload(location.pathname, preload)) {
+      const href = sameOriginDocumentHref(location.href, window.location.origin);
+      if (reloadActiveCatalogDocument(href, window)) {
+        return new Promise<never>(() => {});
+      }
+      throw redirect({ href, reloadDocument: true, replace: true });
+    }
+  },
 });
 
 const indexRoute = createRoute({

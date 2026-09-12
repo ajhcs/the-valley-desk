@@ -10,6 +10,7 @@ import { recordWatchDependencyHead } from "../src/ingest/watch-delivery";
 import type { D1DatabaseLike } from "../src/ingest/persistence";
 import { decorateHtml, decorateWatchHtml, watchPrimaryNoscript } from "../src/lib/crawler-html";
 import { normalizePublicFeatures, publicFeatures, publicFeaturesFromEnv } from "../src/lib/public-features";
+import { catalogDependentPath, createCatalogNavigationBoundary, reloadActiveCatalogDocument, sameOriginDocumentHref } from "../src/lib/catalog-navigation";
 import { isWatchPagePath, parseWatchPageRoute, readWatchPage, watchPageHead, type WatchPageResult } from "../src/lib/watch-page";
 import { createWatchHeadStore } from "../src/ui/watch/watch-head-state";
 import { pdfDatabase } from "./helpers/policy-pdf";
@@ -515,4 +516,57 @@ test("public feature signals are boolean allowlists and hidden policy HTML is de
   const watch = decorateWatchHtml({ html: template, result: { route: parseWatchPageRoute("/policy-watch")!, status: 404 }, origin,
     nonce: "fixture", publicFeatures: { policyBackground: true } });
   assert.match(watch, /__VALLEY_DESK_PUBLIC_FEATURES__=\{"policyBackground":true\}/);
+});
+
+test("Watch and legacy background documents reload before catalog views, without reload loops", () => {
+  for (const initial of ["/policy-watch", "/technology-watch/a-profile", "/policy", "/policy/"]) {
+    const boundary = createCatalogNavigationBoundary(initial);
+    assert.equal(boundary.shouldReload(initial), false);
+    assert.equal(boundary.shouldReload("/policy-watch/another-record"), false);
+    for (const target of ["/", "/news", "/news/a-story", "/events", "/events/an-event", "/voices", "/lab/calendar"]) {
+      assert.equal(boundary.shouldReload(target), true, `${initial} -> ${target}`);
+      assert.equal(createCatalogNavigationBoundary(target).shouldReload(target), false, "fresh legacy document must not loop");
+    }
+    assert.equal(boundary.shouldReload("/unpublished"), false);
+    assert.equal(boundary.shouldReload("/"), true, "an error link still requires a complete legacy document");
+  }
+  const legacy = createCatalogNavigationBoundary("/news");
+  assert.equal(legacy.shouldReload("/events"), false);
+  assert.equal(legacy.shouldReload("/policy-watch"), false);
+  assert.equal(legacy.shouldReload("/news"), true, "back/popstate after entering Watch must reload the catalog");
+  assert.equal(catalogDependentPath("/newsletters"), false);
+  assert.equal(createCatalogNavigationBoundary("/policy-watchlist").shouldReload("/news"), false);
+});
+
+test("catalog preloads are inert and document reloads preserve same-origin paths, queries and hashes", () => {
+  const legacy = createCatalogNavigationBoundary("/news");
+  assert.equal(legacy.shouldReload("/technology-watch", true), false);
+  assert.equal(legacy.shouldReload("/events"), false);
+  const watch = createCatalogNavigationBoundary("/policy-watch");
+  assert.equal(watch.shouldReload("/news", true), false);
+  assert.equal(watch.shouldReload("/news"), true);
+  for (const href of ["/news?q=C%2B%2B&organization=inst-chop#main-content", "/events?from=2026-09-12&page=2#agenda"]) {
+    assert.equal(sameOriginDocumentHref(href, origin), href);
+    assert.equal(sameOriginDocumentHref(`${origin}${href}`, origin), href);
+  }
+  for (const href of ["https://other.example.test/news", "//other.example.test/news", "https://name:pass@thevalleydesk.org/news"]) {
+    assert.throws(() => sameOriginDocumentHref(href, origin), TypeError);
+  }
+});
+
+test("already-committed catalog URLs force a document reload and retain history state across hash changes", () => {
+  for (const oldHash of ["#main-content", "#previous"]) {
+    let reloads = 0;
+    const replacements: Array<{ state: unknown; href: string | URL | null | undefined }> = [];
+    const state = { key: "router-key", __TSR_index: 4, retained: "reader-state" };
+    const browser = { location: { origin, pathname: "/news", search: "?q=literal%2Bquery", hash: oldHash, reload() { reloads++; } },
+      history: { state, replaceState(value: unknown, _unused: string, href?: string | URL | null) { replacements.push({ state: value, href }); } } };
+    const href = "/news?q=literal%2Bquery#main-content";
+    assert.equal(reloadActiveCatalogDocument(href, browser), true);
+    assert.equal(reloads, 1);
+    assert.equal(replacements.length, oldHash === "#main-content" ? 0 : 1);
+    if (replacements.length) { assert.equal(replacements[0]!.state, state); assert.equal(replacements[0]!.href, href); }
+    assert.equal(reloadActiveCatalogDocument("/events#main-content", browser), false);
+    assert.equal(reloads, 1);
+  }
 });

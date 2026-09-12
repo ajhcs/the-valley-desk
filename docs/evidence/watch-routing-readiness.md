@@ -169,6 +169,43 @@ intercepted synthetic empty-baseline responses, and blocked external requests:
 - These intercepted browser results supplement, not replace, real Worker
   gate/no-read/status tests. They do not establish real PDF/source qualification.
 
+## Cross-Desk Navigation Follow-Up
+
+Independent review and the root's actual Worker/local D1 browser fixture found
+that direct Watch entry omitted the v1 runtime overlay by design, but subsequent
+SPA navigation reused the catalog initialized for that document. A D1-only news
+publication could disappear and a withdrawn bundled ingest event could return.
+
+The root route now applies a per-document navigation boundary after visiting
+Watch or the separate `/policy` background surface. Entering Home, News, Events,
+Voices, or Lab then loads a full same-origin document before rendering the legacy
+view. Watch-to-Watch navigation stays client-side. Preloads neither activate nor
+execute the boundary, and a fresh legacy document resets it, avoiding a reload
+loop. No Watch DTO enters the v1 catalog, and no extra catalog API is introduced.
+
+An installed-router fragment edge case was caught in the browser run: replacing
+an already-committed path/query URL with a fragment can remain in the same
+document. This case explicitly reloads. A changed fragment updates the existing
+history entry while preserving its state; the route load remains pending until
+the new document arrives. Exact same-origin path, query and hash survive.
+
+Follow-up verification on 2026-09-12:
+
+- Focused routing and UI contract suites: 48 passed at 14:11 UTC, no skips.
+- Typecheck/build passed at 14:07 UTC; main bundle 583.22 KB (170.35 KB gzip),
+  with the same existing size advisory and no threshold/dependency changes.
+- Script: `/mnt/d/tmp/plumbob/tvd-catalog-boundary-qa.mjs`.
+- Receipt: `/mnt/d/tmp/plumbob/tvd-catalog-boundary-qa-20260912/report.json`.
+- Nine browser checks at 320px/1440px passed at 14:10 UTC, two screenshots,
+  zero browser errors. Direct Watch-to-News retains a synthetic dynamic
+  publication; Watch-to-Events preserves a real bundled event ID's synthetic
+  withdrawal. Hidden `/policy`-to-News, the Home logo, legacy-to-Watch then
+  back/forward and News, and encoded query/hash preservation also passed.
+- The browser fixture injects synthetic v1 overlays only into legacy document
+  responses and blocks external requests. It supplements the root's separate
+  actual Worker/local D1 integration revalidation; it is not that revalidation.
+- The browser and task preview on port 4189 were stopped after verification.
+
 ## Remaining Release Work
 
 Real source qualification, production D1 migration/rollout, Watch baseline
