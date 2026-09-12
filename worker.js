@@ -43,7 +43,7 @@ const PUBLIC_MACHINE_PATHS = new Set([
 // One Worker handles both lanes. The daily trigger is intentionally a
 // separate cron expression so the catch-up pass has its own scheduled
 // invocation and never depends on an in-memory timer.
-export const DAILY_DEEP_SCAN_CRON = "17 3 * * *";
+const DAILY_DEEP_SCAN_CRON = "17 3 * * *";
 
 function notFoundHeaders() {
   return {

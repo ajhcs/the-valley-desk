@@ -252,6 +252,16 @@ test("www redirects permanently to the canonical apex without losing the request
   assert.equal(canonicalHostRedirect(new Request("https://the-valley-desk.clyons.workers.dev/"), PRODUCTION_ORIGIN), undefined);
 });
 
+test("Worker entrypoint keeps non-handler constants private for workerd startup", async () => {
+  const entrypoint = await import("../worker.js");
+  assert.equal(Object.hasOwn(entrypoint, "DAILY_DEEP_SCAN_CRON"), false);
+  for (const [name, value] of Object.entries(entrypoint)) {
+    if (name === "default") {
+      for (const handler of ["fetch", "scheduled", "email"] as const) assert.equal(typeof entrypoint.default[handler], "function");
+    } else assert.equal(typeof value, "function", `Unexpected Worker entrypoint export: ${name}`);
+  }
+});
+
 test("public health is unauthenticated and exposes only build/schema stamps", async () => {
   const env = { BUILD_SHA: "abc123def", PUBLIC_ORIGIN: DEFAULT_PUBLIC_ORIGIN };
   const get = await handlePublicHealth(new Request("https://preview.example/api/health"), env);

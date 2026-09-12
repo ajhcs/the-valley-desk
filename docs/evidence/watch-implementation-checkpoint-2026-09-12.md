@@ -1,8 +1,8 @@
 # Watch Implementation Checkpoint
 
-Working checkpoint resumed on 2026-09-12 at 13:14 UTC. Implementation is ongoing, not a
-completed launch or deployment receipt. See the final checkpoint update below
-before resuming work.
+Working checkpoint resumed on 2026-09-12 at 13:14 UTC; candidate freeze prepared
+after local integration at 14:20 UTC. This is not a completed launch or deployment
+receipt. Read the final checkpoint and external release receipts before resuming.
 
 ## Workspace and Stop Boundary
 
@@ -46,7 +46,7 @@ Voices URLs/navigation and the paused social collector remain unchanged.
 
 | Package | Local implementation | Not yet satisfied |
 | --- | --- | --- |
-| W00 | Exact linear-ancestry base selected; isolated bootstrap; baseline tests/build/local smoke and source/operational holds recorded | Fresh production readback and human release acceptance are not claimed |
+| W00 | Exact linear-ancestry base selected; isolated bootstrap; baseline tests/build/local smoke; dated production version/ledger readback and operational holds | Final release qualification and deployment readback |
 | W01 | Legacy enum/URL/feed/attribution/tombstone/lead/fallback fixtures; explicit CI test additions | Real editor-labeled 100-case corpus and independently accepted labels |
 | W02 | Offline manifest validation, paired wrapper replay, stratification, hashes and simulated cost ledger | Authorized real provider comparison, blind editorial scoring, actual usage/cost evidence |
 | W03 | Exact target model ID is encoded in evaluation contracts | Runtime/default switch remains blocked on W02; current defaults stay 1.2 |
@@ -57,7 +57,7 @@ Voices URLs/navigation and the paused social collector remain unchanged.
 | W08 | Artifact identity/local/license contracts and GitHub snapshot parsers | ORCA alias migration; qualified local paper/database/product sources and profiles; durable release/development ledger |
 | W09 | Separate responsive Policy/Technology directory and dossier routes; URL filters, evidence disclosures, truthful states, local ID-only saves | Real-data task testing; representative/agenda/Latest views; final editorial/accessibility acceptance |
 | W10 | News/Event search and focused filters, literal query grammar, filtered pagination and matching crawler/metadata behavior | Versioned all-day/price/registration facts, stable ICS UID/sequence/cancellation history, subscriptions, related developments |
-| W11 | v1 compatibility frozen; current-evidence Watch Worker pages/API integrated; separate background public gate; filtered News/Event HTML and matching metadata | Cross-desk document-navigation fix under verification; final primary-nav/Voices archive transition remains gated |
+| W11 | v1 compatibility frozen; current-evidence Watch Worker pages/API integrated; separate background public gate; matching filtered HTML/metadata; verified cross-desk document navigation | Final primary-nav/Voices archive transition remains gated |
 | W12 | Local incremental test/build/smoke/audit/browser receipts, including Node 22 and Node 24 | Final exact candidate gate and hosted CI, real source/model/coverage qualification, qualified public exposure |
 | W13 | Not started | Authorized natural-cycle observation, actual eligible samples and final acceptance |
 
@@ -152,9 +152,14 @@ runs to inflate coverage.
 8. Fixed: inherited `/policy` and its public baseline API have their own exact
    `POLICY_BACKGROUND_PUBLIC_ENABLED` gate, explicitly false in configuration.
    Worker404/API503 without D1 reads and hidden browser/footer behavior are tested.
-9. In progress: independent review found Watch-to-v1 SPA navigation can omit
-   live publications and resurrect withdrawn bundled items. The actual local
-   D1/browser run reproduced this; a document-navigation boundary is under test.
+9. Fixed: independent review and the actual local D1/browser run reproduced
+   missing live publications and resurrected withdrawn items after Watch-to-v1
+   SPA navigation. The verified document boundary now preserves overlays,
+   tombstones, history, query/hash and preload neutrality without reload loops.
+10. Fixed: the installed workerd runtime rejected the exported cron string as an
+    invalid entrypoint. Making that constant module-private preserves its value
+    and scheduled behavior. A namespace regression and actual workerd startup
+    plus HTTP/HEAD checks pass. Earlier Node imports/builds did not prove this.
 
 ## Safe Resumption
 
@@ -176,9 +181,8 @@ runs to inflate coverage.
 
 ## Resumed Release Work
 
-Delivery and routing changes are integrated; the cross-desk navigation regression
-is being fixed in the routing worktree. An independent audit verified production
-at 13:17-13:18 UTC as build
+Delivery, routing and cross-desk navigation changes are integrated. An independent
+audit verified production at 13:17-13:18 UTC as build
 `e0d03be90497cab70f1f35edb3e938bf4e587025`, schema stamp `0027`; `/policy` and both
 Watch pages still returned 404. A separate read-only D1 query verified the actual
 27-entry migration ledger through `0027`; health alone is not a database probe.
@@ -212,14 +216,30 @@ Additional local evidence during resumption:
   `da434a34aa1a1ccd278066c071376a99e83c941f3d3824da475cef83fefb7ffe`.
 - Actual Worker handlers plus local D1 and built React UI passed eight dossier,
   policy meaning, license and local-edge invalidation checks at 1440/390px.
-  The same run reproduced the cross-desk navigation defect, so the overall
-  browser run is not yet a pass. Initial harness diagnostics corrected a
-  fetch-reserved port and an assertion that included inert noscript text.
+  That initial run reproduced the cross-desk navigation defect. After source fix
+  `75089ff` (integrated `f42035e`), all 10 checks and eight screenshots passed,
+  including actual live publication/tombstone browser transitions. Receipt:
+  `/mnt/d/tmp/plumbob/tvd-watch-d1-browser-20260912/report.json`.
+  Initial harness diagnostics corrected a fetch-reserved port and an assertion
+  that included inert noscript text. Agent navigation QA separately passed
+  nine history/hash/mobile/desktop scenarios; these counts are not additive.
 - Locked Wrangler 4.131.1 dry-run bundle passed with 36 assets, 1,252.42 KiB
   Worker source bundle (272.35 KiB gzip); no deployment. Frontend build passed
   with the existing >500 KB main-chunk warning retained, not suppressed.
 - The unchanged blueprint's 41 executable contract, SQLite and traceability
   tests passed again. Its dated original receipt remains a planning receipt.
+- Final runtime-export/navigation focused regression: 87/87 passed. The export
+  change received independent read-only review; no schedule/model/source change.
+- Actual local workerd with isolated D1, all 30 migrations, built assets,
+  zero model budget and no credential/cron/email bindings passed 42 GET/HEAD
+  checks. Pre-gate receipt: `workerd-smoke/report.json` under the restricted
+  release directory. The initial startup failure and the raw-log retention gap
+  are recorded in `workerd-smoke/runtime-startup-failure-note.md`; the succeeding
+  test does not erase that observed failure. No remote runtime is claimed.
 
 Exact-candidate qualification, hosted CI, production backup/migration, push/merge
-and deployment receipts are not yet complete. No deployment is claimed here.
+and deployment receipts are not yet complete at this source freeze. Subsequent
+gate and readback evidence is written outside the candidate tree under
+`/mnt/d/tmp/plumbob/tvd-watch-release-vg1rTv1Z`; check `release-gate.json` and the
+final handoff there before trusting this historical status. Do not rebuild or
+change the exact candidate after a passing gate. No deployment is claimed here.
