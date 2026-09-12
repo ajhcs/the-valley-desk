@@ -12,7 +12,7 @@ function FilterSelect({ name, label, value, choices }: { name: WatchQueryKey; la
   </select></label>;
 }
 
-export function WatchFilters({ kind, query, items }: { kind: WatchKind; query: WatchQuery; items: WatchPublicRecord[] }) {
+export function WatchFilters({ kind, query, items, hash = "" }: { kind: WatchKind; query: WatchQuery; items: WatchPublicRecord[]; hash?: string }) {
   const navigate = useNavigate();
   const suggestionId = useId();
   const errorId = useId();
@@ -30,10 +30,10 @@ export function WatchFilters({ kind, query, items }: { kind: WatchKind; query: W
     const next = parseWatchQuery(params, kind);
     setErrors(next.errors);
     if (next.errors.length) return;
-    void navigate({ to: path, search: watchQuerySearch(next.values, kind), resetScroll: false });
+    void navigate({ to: path, search: watchQuerySearch(next.values, kind), hash, resetScroll: false });
   };
   return <form className="WatchFilters" method="get" action={path} onSubmit={submit}
-    onReset={() => { setErrors([]); void navigate({ to: path, search: {}, resetScroll: false }); }}
+    onReset={() => { setErrors([]); void navigate({ to: path, search: {}, hash, resetScroll: false }); }}
     aria-label={`${kind === "policy" ? "Policy" : "Technology"} Watch filters`} aria-describedby={errors.length ? errorId : undefined}>
     <label className="WatchField is-search"><span>Search</span>
       <input type="search" name="q" maxLength={WATCH_QUERY_TEXT_LIMIT} defaultValue={values.q ?? ""} />

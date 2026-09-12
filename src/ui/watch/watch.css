@@ -24,6 +24,19 @@
 .WatchPage .WatchEyebrow { color: var(--mute); font-size: 12px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
 .WatchPage .WatchScope { margin-top: 12px; color: var(--mute); font-size: 14px; }
 .WatchHeading > button, .WatchHeading > .WatchSave { flex-shrink: 0; }
+.WatchViews { display: flex; flex-wrap: wrap; gap: 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 20px; }
+.WatchViews a { display: inline-flex; align-items: center; min-height: 48px; padding: 10px 0; border-bottom: 2px solid transparent; color: var(--mute); text-decoration: none; font-size: 14px; }
+.WatchViews a[aria-current="page"] { border-bottom-color: var(--admiral); color: var(--ink); font-weight: 600; }
+.WatchViewHeading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; padding-top: 24px; }
+.WatchViewHeading h2 { font-size: 22px; }
+.WatchPage .WatchUpdateDate { color: var(--ink); font-size: 14px; font-weight: 600; margin-top: 8px; }
+.WatchUpdates .WatchState { border-top: 1px solid var(--rule); }
+.WatchRepresentatives { padding-top: 4px; }
+.WatchRepresentativeFilters { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding-block: 20px 24px; border-bottom: 1px solid var(--rule); margin-bottom: 20px; }
+.WatchRepresentativeFilters > .WatchActions { grid-column: 1 / -1; }
+.WatchRepresentativeOffice { border-bottom: 1px solid var(--rule); padding-block: 24px; }
+.WatchRepresentativeMember { padding-top: 12px; }
+.WatchRepresentativeMember > a { display: inline-block; padding-block: 8px; font-size: 14px; }
 .WatchFilters { border-block: 1px solid var(--rule); padding: 20px 0; display: grid; gap: 16px; }
 .WatchField { display: grid; gap: 6px; min-width: 0; font-size: 13px; font-weight: 600; }
 .WatchField :is(input, select) { width: 100%; min-width: 0; max-width: 100%; height: 44px; padding: 8px 10px; border: 1px solid #98a2b3; border-radius: 4px; background: var(--paper); color: var(--text); font-size: 16px; font-weight: 400; }
@@ -97,6 +110,9 @@
 }
 
 @media (max-width: 540px) {
+  .WatchViews { gap: 0 20px; }
+  .WatchViews a { max-width: 100%; }
+  .WatchRepresentativeFilters { grid-template-columns: minmax(0, 1fr); }
   .WatchPage h1 { font-size: 30px; }
   .WatchRow h2 { font-size: 22px; }
   .WatchHeading { flex-wrap: wrap; gap: 8px; }
