@@ -26,6 +26,9 @@ CREATE TABLE policy_watch_acceptance_guards (
 CREATE TABLE policy_watch_capture_scan_guards (
  capture_id TEXT PRIMARY KEY REFERENCES policy_watch_captures(id), valid INTEGER NOT NULL CHECK(valid=1)
 );
+CREATE TABLE policy_watch_capture_head_guards (
+ capture_id TEXT PRIMARY KEY, valid INTEGER NOT NULL CHECK(valid=1)
+);
 CREATE TRIGGER policy_watch_capture_immutable BEFORE UPDATE ON policy_watch_captures
  BEGIN SELECT RAISE(ABORT,'policy-watch-immutable'); END;
 CREATE TRIGGER policy_watch_action_immutable BEFORE UPDATE ON policy_watch_action_revisions

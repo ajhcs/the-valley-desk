@@ -93,12 +93,15 @@ test("real local D1 review-only policy ledger preserves corrections, no new deve
   await recordWatchDependencyHead(db, { key: "synthetic-permission", digest: "2".repeat(64), kind: "source-permission",
     revision: 1, immutableRecordId: "synthetic-permission-record", changedAt: nj.source.retrievedAt });
   const corrected = structuredClone(nj.native); corrected.history[0].Comment = "Source correction";
+  const nextSource = { ...nj.source, retrievedAt: "2026-09-12T16:50:00.000Z" };
+  const laterSource = { ...nj.source, retrievedAt: "2026-09-12T16:51:00.000Z" };
+  const scanCount = (await db.prepare("SELECT count(*) AS count FROM policy_watch_capture_scan_guards").first<{ count: number }>())!.count;
   let raced = false;
   const lateApproval: D1DatabaseLike = { prepare: sql => db.prepare(sql), batch: async statements => {
     if (!raced) { raced = true; await recordWatchDependencyHead(db, headValues[1]); }
     return db.batch(statements);
   } };
-  const next = await persistPolicyWatchCapture(lateApproval, parseNewJerseyPolicy(corrected, nj.sessionKey, nj.source));
+  const next = await persistPolicyWatchCapture(lateApproval, parseNewJerseyPolicy(corrected, nj.sessionKey, nextSource));
   assert.notEqual(next.id, stored.id);
   for (const head of headValues) {
     const retracted = await db.prepare("SELECT revision,digest FROM watch_dependency_heads WHERE dependency_key=?")
@@ -106,21 +109,31 @@ test("real local D1 review-only policy ledger preserves corrections, no new deve
     assert.equal(retracted?.digest, null); assert.equal(retracted?.revision, 2);
   }
   assert.equal((await db.prepare("SELECT digest FROM watch_dependency_heads WHERE dependency_key='synthetic-permission'").first<{ digest: string }>())?.digest, "2".repeat(64));
-  assert.equal((await db.prepare("SELECT count(*) AS count FROM policy_watch_capture_scan_guards").first<{ count: number }>())?.count, 1);
+  assert.equal((await db.prepare("SELECT count(*) AS count FROM policy_watch_capture_scan_guards").first<{ count: number }>())?.count, scanCount + 1);
   const another = structuredClone(corrected); another.history[0].Comment = "Second correction";
+  await assert.rejects(persistPolicyWatchCapture(db, parseNewJerseyPolicy(another, nj.sessionKey, nj.source)), /not-newer/);
+  await assert.rejects(persistPolicyWatchCapture(db, parseNewJerseyPolicy(another, nj.sessionKey, nextSource)), /not-newer/);
+  assert.equal((await persistPolicyWatchCapture(db, capture)).outcome, "unchanged");
   const newDraftRace: D1DatabaseLike = { prepare: sql => db.prepare(sql), batch: async statements => {
     await db.prepare("INSERT INTO watch_editorial_drafts VALUES('synthetic-racing-draft',?,2,?,?,?)")
       .bind(built.proposal.draft.id, "3".repeat(64), canonicalJson(built.proposal), now.toISOString()).run();
     return db.batch(statements);
   } };
   const captureCount = (await listPolicyWatchCaptures(db)).length;
-  await assert.rejects(persistPolicyWatchCapture(newDraftRace, parseNewJerseyPolicy(another, nj.sessionKey, nj.source)), /CHECK constraint/);
+  await assert.rejects(persistPolicyWatchCapture(newDraftRace, parseNewJerseyPolicy(another, nj.sessionKey, laterSource)), /CHECK constraint/);
   assert.equal((await listPolicyWatchCaptures(db)).length, captureCount);
   await assert.rejects(db.batch(built.acceptanceGuards("synthetic-stale-decision")), /CHECK constraint/);
   await assert.rejects(buildPolicyEditorialProposal(db, stored.id, "nj-a101", now), /not-current/);
   await assert.rejects(resolvePolicyWatchEvidence(db, built.proposal.draft.id, [built.observations[0].id]), /not-current/);
   const ids = (await db.prepare("SELECT DISTINCT development_id FROM policy_watch_action_revisions").all()).results;
   assert.equal(ids?.length, 1);
+  const competing = structuredClone(corrected); competing.history[0].Comment = "Concurrent newer correction";
+  const headRace: D1DatabaseLike = { prepare: sql => db.prepare(sql), batch: async statements => {
+    await persistPolicyWatchCapture(db, parseNewJerseyPolicy(competing, nj.sessionKey, { ...nj.source, retrievedAt: "2026-09-12T16:52:00.000Z" }));
+    return db.batch(statements);
+  } };
+  await assert.rejects(persistPolicyWatchCapture(headRace, parseNewJerseyPolicy(another, nj.sessionKey, laterSource)), /CHECK constraint/);
+  assert.equal((await listPolicyWatchCaptures(db)).length, captureCount + 1);
   await assert.rejects(db.prepare("UPDATE policy_watch_captures SET payload_json='{}'").run(), /immutable/);
   const stagedDe = await persistPolicyWatchCapture(db, parseDelawareIntroducedPolicy(de.native, de.source));
   assert.equal("unavailableReason" in (await buildPolicyEditorialProposal(db, stagedDe.id, "de-sb360", now)).proposal.draft.latestAction, true);

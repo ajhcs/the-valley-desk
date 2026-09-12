@@ -45,7 +45,14 @@ export async function persistPolicyWatchCapture(db: D1DatabaseLike, input: unkno
   const prior = await db.prepare("SELECT sequence,id,subject_id,payload_sha256,payload_json FROM policy_watch_captures WHERE id=?")
     .bind(id).first<CaptureRow>();
   if (prior) return { id, revision: prior.sequence, outcome: "unchanged" as const };
+  const head = await db.prepare("SELECT id,retrieved_at FROM policy_watch_captures WHERE subject_id=? ORDER BY sequence DESC LIMIT 1")
+    .bind(subjectId).first<{ id: string; retrieved_at: string }>();
+  if (head && parsed.source.retrievedAt <= head.retrieved_at) throw new Error("policy-watch-capture-not-newer");
   const statements = [
+    // Bind the pre-read head and clock before inserting; a competing capture
+    // rolls this transaction back instead of letting an old response win.
+    db.prepare("INSERT INTO policy_watch_capture_head_guards SELECT ?,CASE WHEN (SELECT id FROM policy_watch_captures WHERE subject_id=? ORDER BY sequence DESC LIMIT 1) IS ? AND NOT EXISTS(SELECT 1 FROM policy_watch_captures WHERE subject_id=? AND retrieved_at>=?) THEN 1 ELSE 0 END")
+      .bind(id, subjectId, head?.id ?? null, subjectId, parsed.source.retrievedAt),
     db.prepare("INSERT OR IGNORE INTO policy_watch_instruments VALUES(?,?,?)").bind(subjectId, canonicalJson(parsed.identity), parsed.source.retrievedAt),
     db.prepare("INSERT INTO policy_watch_captures(id,subject_id,observation_id,payload_sha256,payload_json,retrieved_at,source_url) VALUES(?,?,?,?,?,?,?)")
       .bind(id, subjectId, material.observation.id, digest, payload, parsed.source.retrievedAt, parsed.source.sourceUrl),
