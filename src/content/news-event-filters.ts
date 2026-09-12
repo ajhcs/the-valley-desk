@@ -1,5 +1,6 @@
 import type { ContentItem, EventItem } from "./schema";
-import { publishedNewsList, upcomingEvents } from "./queries";
+import { nextChapterEvent, publishedNewsList, upcomingEvents } from "./queries";
+import { listCanonicalPath, pageFromSearch, paginate, type PageWindow } from "./pagination";
 
 export type NewsEventSection = "news" | "events";
 export type NewsEventFilterKey = "q" | "organization" | "host" | "topic" | "format" | "from" | "to";
@@ -141,4 +142,27 @@ export function filterOptions(values: Iterable<string>, label: (value: string) =
   return [...new Set(values)].filter(Boolean)
     .map((value) => ({ value, label: label(value) }))
     .sort((a, b) => a.label.localeCompare(b.label) || a.value.localeCompare(b.value));
+}
+
+/** The browser, initial HTML, and document metadata use the same filtered window. */
+export function filteredNewsPage(items: ContentItem[], search: string) {
+  const request = parseNewsEventFilters(search, "news");
+  return { request, page: paginate(filteredNews(items, request), pageFromSearch(search)) };
+}
+
+export function filteredEventsPage(items: ContentItem[], search: string, now = new Date()) {
+  const request = parseNewsEventFilters(search, "events");
+  const matches = filteredUpcomingEvents(items, request, now);
+  const chapter = nextChapterEvent(matches, now);
+  const ordered = chapter ? [chapter, ...matches.filter(item => item.id !== chapter.id)] : matches;
+  return { request, chapter, page: paginate(ordered, pageFromSearch(search), 50) };
+}
+
+export function newsEventIndexState(path: "/news" | "/events", request: NewsEventFilterRequest, page: PageWindow<unknown>) {
+  return {
+    canonicalPath: request.active ? path : listCanonicalPath(path, page),
+    noindex: request.active || !page.indexable,
+    prevPath: page.prevPage == null ? undefined : newsEventListPath(path, request.values, page.prevPage),
+    nextPath: page.nextPage == null ? undefined : newsEventListPath(path, request.values, page.nextPage),
+  };
 }

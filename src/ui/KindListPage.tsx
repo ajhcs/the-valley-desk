@@ -2,7 +2,7 @@ import { useRouterState } from "@tanstack/react-router";
 import type { ContentItem } from "../content/schema";
 import { listPagePath, pageFromSearch, paginate } from "../content/pagination";
 import { latestVoices, publishedNewsList } from "../content/queries";
-import { filterOptions, filteredNews, parseNewsEventFilters } from "../content/news-event-filters";
+import { filterOptions, filteredNewsPage } from "../content/news-event-filters";
 import { catalog } from "../lib/catalog";
 import { entityLookup } from "../lib/entities";
 import { KIND_LABEL } from "../lib/kind";
@@ -38,12 +38,11 @@ function Pagination({
 export function KindListPage({ kind }: { kind: ContentItem["kind"] }) {
   const searchStr = useRouterState({ select: (s) => s.location.searchStr });
   const busy = useRouterState({ select: (s) => s.isLoading });
-  const request = parseNewsEventFilters(searchStr, "news");
-  const items =
-    kind === "voice"
-        ? latestVoices(catalog, Number.MAX_SAFE_INTEGER)
-        : filteredNews(catalog, request);
-  const page = paginate(items, pageFromSearch(searchStr));
+  const news = filteredNewsPage(catalog, searchStr);
+  const request = news.request;
+  const page = kind === "voice"
+    ? paginate(latestVoices(catalog, Number.MAX_SAFE_INTEGER), pageFromSearch(searchStr))
+    : news.page;
   const choices = kind === "voice" ? [] : publishedNewsList(catalog);
   const path = kind === "voice" ? "/voices" : "/news";
   const rail = kind === "voice" ? "voices" : "news";

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { listCanonicalPath, listPagePath, pageFromSearch, paginate } from "../content/pagination";
-import { byPreviousSlug, bySlug, latestVoices, newsIndexItems } from "../content/queries";
+import { byPreviousSlug, bySlug, latestVoices } from "../content/queries";
+import { filteredEventsPage, filteredNewsPage, newsEventIndexState } from "../content/news-event-filters";
 import { catalog } from "../lib/catalog";
 import { canonicalUrl, publicOrigin, publicUrl } from "../lib/canonical";
 
@@ -57,12 +58,20 @@ export function DocumentHead() {
         (section === "news" && (raw.kind === "news" || raw.kind === "policy" || raw.kind === "ai" || raw.kind === "interview")))
         ? raw
         : undefined;
-    const list = !item && (path === "/news" || path === "/voices")
-      ? paginate(
-        path === "/voices" ? latestVoices(catalog, Number.MAX_SAFE_INTEGER) : newsIndexItems(catalog),
-        pageFromSearch(searchStr),
-      )
-      : undefined;
+    const filtered = path === "/news" ? filteredNewsPage(catalog, searchStr)
+      : path === "/events" ? filteredEventsPage(catalog, searchStr) : undefined;
+    const index = filtered && (path === "/news" || path === "/events")
+      ? newsEventIndexState(path, filtered.request, filtered.page) : undefined;
+    const list = filtered?.page ?? (!item && path === "/voices"
+      ? paginate(latestVoices(catalog, Number.MAX_SAFE_INTEGER), pageFromSearch(searchStr))
+      : undefined);
+    const isWatch = /^\/(policy-watch|technology-watch)(\/|$)/.test(path);
+    const watchName = path.startsWith("/policy-watch") ? "Policy Watch" : "Technology Watch";
+    const adjacent = (direction: "prev" | "next") => {
+      if (index) return direction === "prev" ? index.prevPath : index.nextPath;
+      const page = direction === "prev" ? list?.prevPage : list?.nextPage;
+      return page == null ? undefined : listPagePath(path, page);
+    };
     let title = SITE;
     let desc = DEFAULT_DESC;
     if (item) {
@@ -75,8 +84,11 @@ export function DocumentHead() {
       title = `Healthcare policy watchlist · ${SITE}`;
       desc = "Observed Pennsylvania healthcare legislation, version-bound evidence and reviewed background—not new reporting.";
     } else if (path === "/events") {
-      title = `Events · ${SITE}`;
+      title = list?.indexable && list.page > 1 ? `Events · Page ${list.page} · ${SITE}` : `Events · ${SITE}`;
       desc = "Upcoming Delaware Valley health-tech events";
+    } else if (isWatch) {
+      title = `${watchName} · ${SITE}`;
+      desc = watchName === "Policy Watch" ? "Source-backed regional policy records" : "Technology with verified Delaware Valley connections";
     } else if (path === "/voices") {
       title = list?.indexable && list.page > 1 ? `Voices · Page ${list.page} · ${SITE}` : `Voices · ${SITE}`;
       desc = "Named local health-tech voices and institutional notes";
@@ -88,7 +100,7 @@ export function DocumentHead() {
     const url = item
       ? canonicalUrl(item, origin)
       : list
-        ? publicUrl(listCanonicalPath(path, list), origin)
+        ? publicUrl(index?.canonicalPath ?? listCanonicalPath(path, list), origin)
         : publicUrl(path, origin);
     const articleKinds = new Set(["news", "policy", "ai", "interview"]);
     const ogType = item && articleKinds.has(item.kind) ? "article" : "website";
@@ -112,14 +124,15 @@ export function DocumentHead() {
     }
     if (path === "/lab" || path.startsWith("/lab/")) {
       upsertMeta("name", "robots", "noindex, nofollow");
-    } else if (list && !list.indexable) {
+    } else if (isWatch || index?.noindex || (list && !list.indexable)) {
       upsertMeta("name", "robots", "noindex");
     } else {
       document.head.querySelector('meta[name="robots"]')?.remove();
     }
     upsertLink("canonical", url);
-    upsertOrRemoveLink("prev", list?.prevPage != null ? publicUrl(listPagePath(path, list.prevPage), origin) : undefined);
-    upsertOrRemoveLink("next", list?.nextPage != null ? publicUrl(listPagePath(path, list.nextPage), origin) : undefined);
+    const prevPath = adjacent("prev"), nextPath = adjacent("next");
+    upsertOrRemoveLink("prev", prevPath ? publicUrl(prevPath, origin) : undefined);
+    upsertOrRemoveLink("next", nextPath ? publicUrl(nextPath, origin) : undefined);
     upsertLink("alternate", publicUrl("/feed.xml", origin), "application/rss+xml");
     upsertLink("alternate", publicUrl("/feed.json", origin), "application/json");
   }, [pathname, searchStr]);

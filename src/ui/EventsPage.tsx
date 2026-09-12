@@ -1,8 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { EventItem } from "../content/schema";
-import { nextChapterEvent, upcomingEvents } from "../content/queries";
-import { filterOptions, filteredUpcomingEvents, parseNewsEventFilters } from "../content/news-event-filters";
-import { pageFromSearch, paginate } from "../content/pagination";
+import { upcomingEvents } from "../content/queries";
+import { filterOptions, filteredEventsPage } from "../content/news-event-filters";
 import { formatEventWhen, googleCalendarUrl } from "../lib/calendar";
 import { eventHostLine, eventLocationLine, eventWhyLine } from "../lib/eventCopy";
 import { eventFormatLabel } from "../lib/format";
@@ -56,13 +55,9 @@ function EventCard({ item, now, radar = false }: { item: EventItem; now: Date; r
 export function EventsPage() {
   const searchStr = useRouterState({ select: (s) => s.location.searchStr });
   const busy = useRouterState({ select: (s) => s.isLoading });
-  const request = parseNewsEventFilters(searchStr, "events");
   const now = new Date();
   const choices = upcomingEvents(catalog, now, Number.MAX_SAFE_INTEGER);
-  const matches = filteredUpcomingEvents(catalog, request, now);
-  const chapter = nextChapterEvent(matches, now);
-  const ordered = chapter ? [chapter, ...matches.filter((item) => item.id !== chapter.id)] : matches;
-  const page = paginate(ordered, pageFromSearch(searchStr), 50);
+  const { request, chapter, page } = filteredEventsPage(catalog, searchStr, now);
   const visibleChapter = page.items.find((item) => item.id === chapter?.id);
   const next = page.items.filter((item) => item.id !== visibleChapter?.id);
   const matchText = page.total === 1 ? " matches these filters" : " match these filters";

@@ -8,7 +8,8 @@ import {
   paginate,
   type PageWindow,
 } from "../content/pagination";
-import { bindSeedOrgIds, latestNews, latestVoices, leadItem, newsIndexItems, upcomingEvents } from "../content/queries";
+import { bindSeedOrgIds, latestNews, latestVoices, leadItem, upcomingEvents } from "../content/queries";
+import { filteredEventsPage, filteredNewsPage, newsEventIndexState } from "../content/news-event-filters";
 import { liveSeedOrgIds } from "../content/seed";
 import { loadEntities } from "../content/store";
 import { canonicalPath, canonicalUrl, publicUrl } from "./canonical";
@@ -37,10 +38,18 @@ function stripSlash(path: string) {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
 }
 
-function listWindow(path: string, items: ContentItem[], search?: string) {
+type RouteList = { path: string; name: string; window: PageWindow<unknown>;
+  index?: ReturnType<typeof newsEventIndexState>; errors?: string[] };
+type ContentRouteList = Omit<RouteList, "window"> & { window: PageWindow<ContentItem> };
+
+function listWindow(path: string, items: ContentItem[], search?: string): ContentRouteList | undefined {
   ensureQueriesBound();
   const p = stripSlash(path) || "/";
-  if (p === "/news") return { path: p, name: "News", window: paginate(newsIndexItems(items), pageFromSearch(search)) };
+  if (p === "/news" || p === "/events") {
+    const result = p === "/news" ? filteredNewsPage(items, search ?? "") : filteredEventsPage(items, search ?? "");
+    return { path: p, name: p === "/news" ? "News" : "Events", window: result.page,
+      index: newsEventIndexState(p, result.request, result.page), errors: result.request.errors };
+  }
   if (p === "/voices") {
     return {
       path: p,
@@ -51,11 +60,20 @@ function listWindow(path: string, items: ContentItem[], search?: string) {
   return undefined;
 }
 
+function canonicalListPath(list: RouteList) {
+  return list.index?.canonicalPath ?? listCanonicalPath(list.path, list.window);
+}
+function adjacentListPath(list: RouteList, direction: "prev" | "next") {
+  if (list.index) return direction === "prev" ? list.index.prevPath : list.index.nextPath;
+  const page = direction === "prev" ? list.window.prevPage : list.window.nextPage;
+  return page == null ? undefined : listPagePath(list.path, page);
+}
+
 export function routeHead(
   path: string,
   origin: string,
   dynamicItem?: Pick<ContentItem, "kind" | "slug" | "title" | "impactSentence" | "dek" | "body">,
-  list?: { path: string; name: string; window: PageWindow<unknown> },
+  list?: RouteList,
 ) {
   const p = stripSlash(path) || "/";
   const item = dynamicItem;
@@ -77,7 +95,7 @@ export function routeHead(
     title = `${list.name} · Page ${list.window.page} · ${SITE}`;
   }
   const url = list
-    ? publicUrl(listCanonicalPath(list.path, list.window), origin)
+    ? publicUrl(canonicalListPath(list), origin)
     : publicUrl(p, origin);
   const articleKinds = new Set(["news", "policy", "ai", "interview"]);
   const type = item && articleKinds.has(item.kind) ? "article" : "website";
@@ -105,13 +123,15 @@ function collectionJsonLd(path: string, origin: string, name: string) {
   };
 }
 
-function paginationNav(path: string, origin: string, window: PageWindow<unknown>, label: string) {
+function paginationNav(list: RouteList, origin: string) {
+  const { window, name: label } = list;
   if (window.totalPages <= 1 && window.indexable) return "";
-  const prev = window.prevPage != null
-    ? `<a rel="prev" href="${esc(publicUrl(listPagePath(path, window.prevPage), origin))}">Previous</a>`
+  const prevPath = adjacentListPath(list, "prev"), nextPath = adjacentListPath(list, "next");
+  const prev = prevPath
+    ? `<a rel="prev" href="${esc(publicUrl(prevPath, origin))}">Previous</a>`
     : "";
-  const next = window.nextPage != null
-    ? `<a rel="next" href="${esc(publicUrl(listPagePath(path, window.nextPage), origin))}">Next</a>`
+  const next = nextPath
+    ? `<a rel="next" href="${esc(publicUrl(nextPath, origin))}">Next</a>`
     : "";
   const status = window.indexable
     ? `Page ${window.page} of ${window.totalPages}`
@@ -153,15 +173,11 @@ export function routeJsonLd(
   }
   const list = listWindow(p, items, search);
   if (list) {
-    const loc = listCanonicalPath(list.path, list.window);
+    const loc = canonicalListPath(list);
     const name = list.window.indexable && list.window.page > 1
       ? `${list.name} · Page ${list.window.page}`
       : list.name;
     graph.push(collectionJsonLd(loc, origin, name));
-    return graph;
-  }
-  if (p === "/events") {
-    graph.push(collectionJsonLd("/events", origin, "Events"));
     return graph;
   }
   if (p === "/policy") {
@@ -231,14 +247,12 @@ export function primaryNoscript(
       : `${list.name} · ${esc(SITE)}`;
     return [
       `<h1>${heading}</h1>`,
+      list.errors?.length ? `<p role="alert">${esc(list.errors.join(" "))}</p>` : "",
       rows.length ? `<ul>${rows.map((item) => linkItem(item, origin)).join("")}</ul>` : "",
-      paginationNav(list.path, origin, list.window, list.name),
+      !rows.length && !list.errors?.length && list.window.indexable ? "<p>No published items match this view.</p>" : "",
+      paginationNav(list, origin),
       feeds,
     ].filter(Boolean).join("");
-  }
-  if (p === "/events") {
-    const rows = upcomingEvents(items, new Date(), 12);
-    return [`<h1>Events · ${esc(SITE)}</h1>`, `<ul>${rows.map((item) => linkItem(item, origin)).join("")}</ul>`, feeds].join("");
   }
   return [`<h1>${esc(SITE)}</h1>`, `<p>${esc(DEFAULT_DESC)}</p>`, feeds].join("");
 }
@@ -276,13 +290,11 @@ export function decorateHtml(options: {
   const noscript = options.notFound
     ? `<h1>Not found</h1><p>This page is not published.</p><p><a href="${esc(publicUrl("/", options.origin))}">Back to the desk</a></p>`
     : primaryNoscript(options.path, options.origin, items, options.item, options.search);
-  const noindex = options.notFound || isLab || (list != null && !list.window.indexable);
-  const prevHref = list?.window.prevPage != null
-    ? publicUrl(listPagePath(list.path, list.window.prevPage), options.origin)
-    : undefined;
-  const nextHref = list?.window.nextPage != null
-    ? publicUrl(listPagePath(list.path, list.window.nextPage), options.origin)
-    : undefined;
+  const noindex = options.notFound || isLab || (list != null && (!list.window.indexable || list.index?.noindex));
+  const prevPath = list ? adjacentListPath(list, "prev") : undefined;
+  const nextPath = list ? adjacentListPath(list, "next") : undefined;
+  const prevHref = prevPath ? publicUrl(prevPath, options.origin) : undefined;
+  const nextHref = nextPath ? publicUrl(nextPath, options.origin) : undefined;
   const tags = [
     `<title>${esc(title)}</title>`,
     `<meta name="description" content="${esc(desc)}" />`,
