@@ -113,3 +113,63 @@ and dates, public development delivery and reader journeys, current-region
 registry binding, operational qualification, and launch approval. The recorded
 historical relationships do not claim current clinical adoption or current
 maintenance beyond the captured documentation.
+
+## Editorial Bridge Follow-Up
+
+The same additive migration now also includes immutable full source
+representations, mutable current source heads, and CHECK-based review guards.
+technology-editorial-adapter.ts converts stored drafts to the root
+EditorialProposal structure without introducing accepted/verified flags.
+
+The internal integration order is:
+
+1. Resolve the source ID from server-owned enrollment; retain each bounded
+   representation with persistTechnologySourceRepresentation. Do this before
+   attempting a new pinned-source plan so changed bytes invalidate existing
+   artifact/license heads even when the new source requires additional review.
+2. Stage the qualified dossier draft. Retractions never approve a replacement.
+3. Call prepareTechnologyEditorialProposal to obtain proposal, observations,
+   currentArtifacts, and sourceHeadAssertions. Merge observations into the root
+   resolver; continue independently checking enrolled source permissions,
+   public URL policy, dated regional provenance and authorized reviewer identity.
+4. Capture sourceHeadAssertions during resolution. Use
+   technologyAcceptanceGuards(db, assertions, decisionId) in the same D1 batch,
+   before decision/fact/projection writes. A mismatched head fails CHECK(valid=1)
+   and rolls the entire transaction back. Do not re-resolve assertions after
+   review to make a stale proposal appear current.
+5. Existing retracted dependency heads require the root's explicit reviewed
+   repair path. This adapter never creates or repopulates approval heads.
+
+Changed captures transactionally retain new bytes and null-invalidate existing
+artifact and code/data/weights license heads. Source refresh replay is
+idempotent; out-of-order captures and racing head revisions fail closed.
+The root must also retain its independent source-enrollment acceptance guards.
+
+An offline integration proof loaded all 3 full captures into local SQLite,
+converted all proposals through the actual root EditorialProposal schema,
+checked all literal evidence references, and executed current-head guards.
+ORCA produced 12 facts/4 evidence references; CaPTk and OpenPedCan each produced
+22 facts/15 references. There were zero accepted facts or public writes.
+Receipt: /mnt/d/tmp/plumbob/tvd-technology-dossiers-20260912/editorial-adapter-proof.json.
+
+The new follow-up tests exercise literal retained observations, retract-only
+license/artifact changes and a source refresh after resolution that rolls back
+even earlier statements in an acceptance batch.
+The final combined focused suite passes 107 tests (11 technology tests);
+build/typecheck and the 369-file secret scan pass. Retraction is deliberately
+representation-level: nonmaterial GitHub metadata changes can also require
+review. Field-specific materiality may reduce those holds only with a separate
+qualified normalization rule, not by silently ignoring changed source bytes.
+
+## Dated Research Leads
+
+[ORCA's publication record](https://pubmed.ncbi.nlm.nih.gov/40419254/) identifies
+electronic publication on 2025-05-26 and CHOP/Penn Philadelphia author
+affiliations, with DOI 10.1055/a-2620-6221. This supports review of a paper
+research-affiliation at that date, not a claim that the GitHub repository was
+created on that date. The dated paper artifact should be reviewed separately.
+
+[Penn's official CaPTk page](https://www.med.upenn.edu/cbica/captk/) identifies
+the exact toolkit and its Penn team, citing the 2018 paper
+10.1117/1.JMI.5.1.011018 and earlier conference work. Do not turn publication
+years or conference ranges into invented single-day repository start dates.

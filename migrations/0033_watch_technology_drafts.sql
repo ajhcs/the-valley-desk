@@ -32,3 +32,30 @@ CREATE TABLE technology_development_observations (
   FOREIGN KEY(subject_id, revision) REFERENCES technology_dossier_drafts(subject_id, revision)
 );
 CREATE INDEX technology_development_chronology ON technology_development_observations(development_type, source_occurred_at);
+CREATE TABLE technology_source_representations (
+  id TEXT PRIMARY KEY,
+  subject_id TEXT NOT NULL,
+  source_id TEXT NOT NULL,
+  source_url TEXT NOT NULL,
+  representation_sha256 TEXT NOT NULL CHECK(length(representation_sha256)=64),
+  representation TEXT NOT NULL CHECK(length(CAST(representation AS BLOB))<=1000000),
+  checked_at TEXT NOT NULL
+);
+CREATE TRIGGER technology_source_representation_immutable BEFORE UPDATE ON technology_source_representations
+BEGIN SELECT RAISE(ABORT,'technology-source-immutable'); END;
+CREATE TRIGGER technology_source_representation_no_delete BEFORE DELETE ON technology_source_representations
+BEGIN SELECT RAISE(ABORT,'technology-source-immutable'); END;
+CREATE TABLE technology_source_heads (
+  subject_id TEXT NOT NULL,
+  source_url TEXT NOT NULL,
+  source_id TEXT NOT NULL,
+  revision INTEGER NOT NULL CHECK(revision>0),
+  observation_id TEXT NOT NULL REFERENCES technology_source_representations(id),
+  representation_sha256 TEXT NOT NULL,
+  checked_at TEXT NOT NULL,
+  PRIMARY KEY(subject_id,source_url)
+);
+CREATE TABLE technology_review_guards (
+  id TEXT PRIMARY KEY,
+  valid INTEGER NOT NULL CHECK(valid=1)
+);

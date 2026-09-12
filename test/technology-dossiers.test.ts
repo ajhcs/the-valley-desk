@@ -5,6 +5,10 @@ import { githubRepositoryKey, sha256 } from "../src/content/watch-schema";
 import { buildTechnologyDossierDraft, persistTechnologyDossierDraft, readTechnologyDossierDraft,
   type TechnologyDossierInput } from "../src/ingest/technology-dossiers";
 import { prepareTechnologySourceDraft, technologySourcePlans } from "../src/ingest/technology-source-plans";
+import { persistTechnologySourceRepresentation, prepareTechnologyEditorialProposal, technologyAcceptanceGuards } from "../src/ingest/technology-editorial-adapter";
+import { deliveryDependencyKey } from "../src/content/watch-delivery";
+import { recordWatchDependencyHead } from "../src/ingest/watch-delivery";
+import { evidenceMatches } from "../src/content/watch-projection";
 import { pdfDatabase } from "./helpers/policy-pdf";
 import type { D1DatabaseLike } from "../src/ingest/persistence";
 
@@ -140,4 +144,57 @@ test("captured ORCA, CaPTk and OpenPedCan drafts persist offline with exact lice
   assert.equal(sqlite.prepare("SELECT count(*) AS n FROM technology_artifact_observations").get()!.n, 23);
   assert.equal(sqlite.prepare("SELECT count(*) AS n FROM technology_development_observations").get()!.n, 20);
   assert.equal(sqlite.prepare("SELECT count(*) AS n FROM watch_public_revisions").get()!.n, 0);
+});
+
+test("editorial adapter binds literal references to retained bytes and source-head assertions", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const source = await input(), staged = await persistTechnologyDossierDraft(db, source, 0);
+  const citation = source.evidence[0]!;
+  await persistTechnologySourceRepresentation(db, staged.draft.subjectId, "synthetic-enrolled-source",
+    { url: citation.url, checkedAt: NOW, body: citation.retainedText });
+  const prepared = await prepareTechnologyEditorialProposal(db, staged.draft.subjectId);
+  assert.equal(prepared.proposal.draft.kind, "technology");
+  assert.ok(prepared.proposal.facts.every(fact => !("verification" in fact)));
+  for (const item of prepared.proposal.evidence) assert.equal(await evidenceMatches(item, prepared.observations.get(item.observationId)!), true);
+  const guards = await technologyAcceptanceGuards(db, prepared.sourceHeadAssertions, "synthetic-review");
+  await db.batch(guards);
+  assert.equal(sqlite.prepare("SELECT count(*) AS n FROM watch_dependency_heads").get()!.n, 0);
+});
+
+test("changed source bytes retract existing artifacts and scoped licenses without approving replacements", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const source = await input(), staged = await persistTechnologyDossierDraft(db, source, 0);
+  const citation = source.evidence[0]!, subjectId = staged.draft.subjectId;
+  const capture = { url: citation.url, checkedAt: NOW, body: citation.retainedText };
+  await persistTechnologySourceRepresentation(db, subjectId, "synthetic-enrolled-source", capture);
+  const artifactId = subjectId + ":repository";
+  for (const scope of [null, "code", "data", "weights"] as const) {
+    const kind = scope === null ? "artifact" : "artifact-license";
+    const key = await deliveryDependencyKey(kind, scope === null ? [artifactId] : [artifactId, scope]);
+    await recordWatchDependencyHead(db, { key, kind, revision: 1, digest: await sha256("synthetic-accepted"),
+      immutableRecordId: "synthetic-accepted-" + (scope ?? "artifact"), changedAt: NOW });
+  }
+  assert.equal((await persistTechnologySourceRepresentation(db, subjectId, "synthetic-enrolled-source", capture)).outcome, "unchanged");
+  assert.equal(sqlite.prepare("SELECT count(*) AS n FROM watch_dependency_heads WHERE digest IS NOT NULL").get()!.n, 4);
+  await persistTechnologySourceRepresentation(db, subjectId, "synthetic-enrolled-source",
+    { ...capture, checkedAt: "2026-09-13T12:00:00.000Z", body: capture.body + " Changed license." });
+  assert.equal(sqlite.prepare("SELECT count(*) AS n FROM watch_dependency_heads WHERE digest IS NULL").get()!.n, 4);
+  await assert.rejects(prepareTechnologyEditorialProposal(db, subjectId), /current-source-conflict/);
+  assert.equal(sqlite.prepare("SELECT count(*) AS n FROM watch_public_revisions").get()!.n, 0);
+});
+
+test("a source refresh after resolution aborts the acceptance transaction, including earlier writes", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const source = await input(), staged = await persistTechnologyDossierDraft(db, source, 0);
+  const citation = source.evidence[0]!, subjectId = staged.draft.subjectId;
+  const capture = { url: citation.url, checkedAt: NOW, body: citation.retainedText };
+  await persistTechnologySourceRepresentation(db, subjectId, "synthetic-enrolled-source", capture);
+  const prepared = await prepareTechnologyEditorialProposal(db, subjectId);
+  const guards = await technologyAcceptanceGuards(db, prepared.sourceHeadAssertions, "synthetic-racing-review");
+  await persistTechnologySourceRepresentation(db, subjectId, "synthetic-enrolled-source",
+    { ...capture, checkedAt: "2026-09-13T12:00:00.000Z", body: capture.body + " Changed." });
+  sqlite.exec("CREATE TABLE synthetic_acceptance(value INTEGER)");
+  await assert.rejects(db.batch([db.prepare("INSERT INTO synthetic_acceptance VALUES(1)"), ...guards]));
+  assert.equal(sqlite.prepare("SELECT count(*) AS n FROM synthetic_acceptance").get()!.n, 0);
+  await assert.rejects(persistTechnologySourceRepresentation(db, subjectId, "synthetic-enrolled-source", capture), /out-of-order/);
 });
