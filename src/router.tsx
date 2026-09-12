@@ -2,6 +2,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
 } from "@tanstack/react-router";
 import { Layout } from "./ui/Layout";
 import { HomePage } from "./ui/HomePage";
@@ -17,6 +18,9 @@ import { LabSystemsPage } from "./ui/lab/LabSystemsPage";
 import { LabHorizonPage } from "./ui/lab/LabHorizonPage";
 import { LabCalendarPage } from "./ui/lab/LabCalendarPage";
 import { parsePlainSearch, stringifyPlainSearch } from "./lib/plain-search";
+
+const WatchDirectoryPage = lazyRouteComponent(() => import("./ui/watch/WatchDirectoryPage"), "WatchDirectoryPage");
+const WatchDetailPage = lazyRouteComponent(() => import("./ui/watch/WatchDetailPage"), "WatchDetailPage");
 
 const rootRoute = createRootRoute({
   component: Layout,
@@ -82,6 +86,19 @@ function section<TPath extends string>(path: TPath, kind: "news" | "event" | "vo
   return [list, detail];
 }
 
+function watchSection<TPath extends string>(path: TPath, kind: "policy" | "technology") {
+  const pendingComponent = () => <p role="status">Loading Watch...</p>;
+  const directory = createRoute({ getParentRoute: () => rootRoute, path, wrapInSuspense: true, pendingComponent,
+    component: () => <WatchDirectoryPage kind={kind} /> });
+  const detail = createRoute({ getParentRoute: () => rootRoute, path: `${path}/$slug` as `${TPath}/$slug`, wrapInSuspense: true, pendingComponent,
+    component: function WatchDetail() {
+      const { slug } = detail.useParams() as { slug: string };
+      return <WatchDetailPage kind={kind} slug={slug} />;
+    },
+  });
+  return [directory, detail];
+}
+
 // Reed v1 lock: do not mint org-id routes or generate entity pages from the seed.
 // Briefing stays unpublished. Worker 404s unpublished, /org, and unknown as HTML shell.
 const routeTree = rootRoute.addChildren([
@@ -91,6 +108,8 @@ const routeTree = rootRoute.addChildren([
   ...section("/news", "news"),
   ...section("/events", "event"),
   ...section("/voices", "voice"),
+  ...watchSection("/policy-watch", "policy"),
+  ...watchSection("/technology-watch", "technology"),
   labIndexRoute,
   labBriefingRoute,
   labSystemsRoute,

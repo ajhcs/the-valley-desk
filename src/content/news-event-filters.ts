@@ -40,6 +40,7 @@ export function parseNewsEventFilters(search: string, section: NewsEventSection)
   const params = new URLSearchParams(search);
   const values: NewsEventFilterValues = {};
   const errors: string[] = [];
+  if (params.has("invalid_search_field")) errors.push("The URL contains an unsupported search field.");
   for (const key of KEYS[section]) {
     const entries = params.getAll(key);
     if (entries.length > 1) errors.push(`${LABELS[key]} must appear only once.`);

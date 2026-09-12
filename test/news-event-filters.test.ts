@@ -108,12 +108,33 @@ test("router keeps duplicate keys visible to filter validation", () => {
 test("plain search rejects nested serialization and does not expose prototype keys", () => {
   const parsed = parsePlainSearch("?__proto__=value&constructor=value&prototype=value&q=hello");
   assert.equal(Object.getPrototypeOf(parsed), null);
-  assert.deepEqual(Object.keys(parsed), ["q"]);
+  assert.deepEqual(Object.keys(parsed), ["q", "invalid_search_field"]);
+  assert.equal(parsed.invalid_search_field, "reserved-field");
   for (const value of [{ topic: "policy" }, [["nested"]], null, NaN, Infinity]) {
     assert.throws(() => stringifyPlainSearch({ q: value }), TypeError);
   }
   assert.throws(() => stringifyPlainSearch(JSON.parse('{"__proto__":"unsafe"}')), TypeError);
   assert.equal(stringifyPlainSearch({ saved: true, page: 2 }), "?saved=true&page=2");
+});
+
+test("reserved query keys retain a noncancellable invalid sentinel without their values", () => {
+  for (const key of ["__proto__", "constructor", "prototype"]) {
+    for (const search of [`?${key}=discard-me`, `?invalid_search_field=&${key}=discard-me`, `?${key}=discard-me&invalid_search_field=`]) {
+      const parsed = parsePlainSearch(search);
+      assert.equal(Object.getPrototypeOf(parsed), null);
+      assert.equal(parsed.invalid_search_field, "reserved-field");
+      assert.equal(Object.hasOwn(parsed, key), false);
+      const normalized = stringifyPlainSearch(parsed);
+      assert.equal(normalized.includes("discard-me"), false);
+      for (const section of ["news", "events"] as const) {
+        const request = parseNewsEventFilters(normalized, section);
+        assert.ok(request.errors.length);
+        assert.equal(request.active, true);
+      }
+    }
+  }
+  assert.ok(parseNewsEventFilters("?invalid_search_field=", "news").errors.length);
+  assert.deepEqual(parseNewsEventFilters("?utm_source=feed", "news").errors, []);
 });
 
 test("empty News filter preserves all legacy family, ordering and featured rules", () => {
