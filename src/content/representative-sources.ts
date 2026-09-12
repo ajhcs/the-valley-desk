@@ -12,3 +12,11 @@ export const REPRESENTATIVE_LOOKUPS = [
   { jurisdiction: "DE", jurisdictionId: "de", bodyId: "de-house", label: "Delaware House", lookupUrl: "https://legis.delaware.gov/FindMyLegislator" },
   { jurisdiction: "DE", jurisdictionId: "de", bodyId: "de-senate", label: "Delaware Senate", lookupUrl: "https://legis.delaware.gov/FindMyLegislator" },
 ] as const;
+
+// Source permission is chamber-specific, not inferred from jurisdiction alone.
+export const REPRESENTATIVE_ROSTER_ENDPOINTS = [
+  { url: "https://www.senate.gov/general/contact_information/senators_cfm.xml", bodyIds: ["us-senate"] },
+  { url: "https://pub.njleg.state.nj.us/leg-databases/2026data/DB2026_TEXT.zip", bodyIds: ["nj-senate", "nj-assembly"] },
+  { url: "https://www.palegis.us/senate/members", bodyIds: ["pa-senate"] },
+  { url: "https://www.palegis.us/house/members", bodyIds: ["pa-house"] },
+] as const;

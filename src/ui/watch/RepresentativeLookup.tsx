@@ -62,7 +62,8 @@ export function RepresentativeLookup({ initialBodyId = "pa-house" }: { initialBo
       {state === "loading" && <p className="WatchLoading" role="status">Loading representatives...</p>}
       {state === "error" && <div className="WatchState" role="alert"><h3>Representative data is temporarily unavailable.</h3>
         <p><button type="button" onClick={retry}>Retry representative lookup</button></p></div>}
-      {result?.dataState === "unavailable" && <div className="WatchState"><h3>No accepted directory is available for this chamber.</h3>
+      {result?.dataState === "unavailable" && <div className="WatchState"><h3>{result.unavailableReason === "historical-coverage-unavailable"
+        ? "Historical membership is not established for this date." : "No accepted directory is available for this chamber."}</h3>
         <p><a href={scope.lookupUrl} rel="noreferrer">Open the official chamber directory</a></p></div>}
       {result && result.dataState !== "unavailable" ? <p className="WatchNote">Selected districts on {result.selectedAsOf}</p> : null}
       {result?.dataAsOf && <p className="WatchNote">Roster as of {new Date(result.dataAsOf).toLocaleDateString("en-US", { timeZone: "America/New_York" })}
@@ -72,7 +73,9 @@ export function RepresentativeLookup({ initialBodyId = "pa-house" }: { initialBo
         <h3>{office.bodyName}: {office.district.label}</h3>
         {office.members.map(member => <div key={member.membershipId} className="WatchRepresentativeMember">
           <p className="WatchFactValue">{member.displayName}{member.party ? " (" + member.party + ")" : ""}</p>
-          <p className="WatchNote">{member.state.replaceAll("-", " ")}; {member.validFrom} to {member.validTo ?? "end not recorded"}</p>
+          <p className="WatchNote">{member.datePrecision === "observation"
+            ? `${member.state === "last-known" ? "Last known roster" : "Official roster"} observed ${member.observedAt?.slice(0, 10)}. Term dates not established.`
+            : `${member.state.replaceAll("-", " ")}; ${member.validFrom} to ${member.validTo ?? "end not recorded"}`}</p>
           {member.officialProfileUrl && <a href={member.officialProfileUrl} rel="noreferrer">Official profile and contact</a>}
           {member.committeeRoles.map(role => <p key={role.id}>{role.bodyName}: {role.role.replaceAll("-", " ")}</p>)}
         </div>)}

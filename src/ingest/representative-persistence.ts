@@ -3,16 +3,19 @@ import { AcceptedFactRecord, EvidenceReference, CanonicalInstant, WatchId, Sha25
 import { RepresentativeQuery, RepresentativeSnapshotAcceptance, resolveRepresentativeDirectory, queryRepresentatives,
   representativeDirectoryUnavailable } from "../content/watch-representatives";
 import type { RepresentativeResolutionContext } from "../content/watch-representatives";
-import type { D1DatabaseLike } from "./persistence";
+import type { D1DatabaseLike, D1StatementLike } from "./persistence";
 
 const Snapshot = RepresentativeSnapshotAcceptance.innerType();
 const Observation = z.object({ id: WatchId, sourceId: WatchId, sourceUrl: z.string().url(), parserVersion: z.string().min(1).max(200),
   representation: z.string().max(500_000) }).strict();
+const ProposedFact = AcceptedFactRecord.innerType().omit({ verification: true }).strict();
 export const RepresentativeDraft = z.object({ id: WatchId, expectedRevision: z.number().int().nonnegative().safe(),
-  scope: Snapshot.shape.scope, rosterFactId: WatchId, facts: z.array(AcceptedFactRecord).min(2).max(4000),
+  scope: Snapshot.shape.scope, rosterFactId: WatchId, facts: z.array(z.union([ProposedFact, AcceptedFactRecord])).min(2).max(4000),
   evidence: z.array(EvidenceReference).min(1).max(4000), observations: z.array(Observation).min(1).max(4000) }).strict();
 export type RepresentativeSourcePolicy = Pick<RepresentativeResolutionContext,
-  "officialSources" | "sourceUrlAllowed" | "officialPublicUrlAllowed" | "maxRosterAgeHours">;
+  "officialSources" | "sourceUrlAllowed" | "officialPublicUrlAllowed" | "maxRosterAgeHours"> & {
+    acceptanceGuards?: (decisionId: string) => D1StatementLike[];
+  };
 export class RepresentativeStorageError extends Error {
   constructor(readonly code: string, readonly status = 409) { super(code); }
 }
@@ -53,6 +56,11 @@ async function resolve(draft: z.infer<typeof RepresentativeDraft>, snapshot: z.i
     acceptedSnapshots: new Map([[snapshot.id, snapshot]]), currentRevisions: new Map([[snapshot.id, snapshot.revision]]),
     facts: unique(draft.facts), evidence: unique(draft.evidence), observations: unique(draft.observations) });
 }
+function reviewedDraft(draft: z.infer<typeof RepresentativeDraft>, reviewerId: string, verifiedAt: string) {
+  return { ...draft, facts: draft.facts.map(fact => AcceptedFactRecord.parse({ ...fact,
+    verification: { kind: "human-review", ruleId: "representative-roster-review", ruleVersion: "authenticated-review-1",
+      verifierId: reviewerId, verifiedAt } })) };
+}
 /** Internal boundary: authenticate reviewer first. Approval refers to one stored
  * draft/hash, never a client supplied accepted snapshot. */
 export async function decideRepresentativeDraft(db: D1DatabaseLike, input: unknown, reviewerId: string,
@@ -69,14 +77,18 @@ export async function decideRepresentativeDraft(db: D1DatabaseLike, input: unkno
     return { outcome: "unchanged" as const };
   }
   let snapshot = null;
+  let guards: D1StatementLike[] = [];
   if (decision.decision === "accepted") {
+    const reviewed = reviewedDraft(draft, reviewerId, decidedAt);
     const digests = [];
-    for (const fact of draft.facts) digests.push({ id: fact.id, sha256: await acceptedFactDigest(fact) });
+    for (const fact of reviewed.facts) digests.push({ id: fact.id, sha256: await acceptedFactDigest(fact) });
     snapshot = RepresentativeSnapshotAcceptance.parse({ id: draft.id, revision: draft.expectedRevision + 1, scope: draft.scope,
-      rosterFactId: draft.rosterFactId, acceptedAt: decidedAt, factDigests: digests });
-    await resolve(draft, snapshot, policy, now);
+      rosterFactId: draft.rosterFactId, acceptedAt: decidedAt, reviewBindingVersion: "authenticated-review-1", factDigests: digests });
+    await resolve(reviewed, snapshot, policy, now);
+    guards = policy.acceptanceGuards?.(draft.id) ?? [];
+    if (!guards.length) return fail("representative-source-guards-required");
   }
-  const writes = [db.prepare("INSERT INTO representative_decisions VALUES(?,?,?,?,?)")
+  const writes = [...guards, db.prepare("INSERT INTO representative_decisions VALUES(?,?,?,?,?)")
     .bind(draft.id, decision.decision, reviewerId, decidedAt, snapshot ? canonicalJson(snapshot) : null)];
   if (snapshot) writes.push(db.prepare("INSERT INTO representative_heads VALUES(?,?,?) ON CONFLICT(scope_key) DO UPDATE SET revision=excluded.revision,draft_id=excluded.draft_id")
     .bind(scopeKey(draft.scope), snapshot.revision, draft.id));
@@ -86,14 +98,16 @@ export async function decideRepresentativeDraft(db: D1DatabaseLike, input: unkno
 export async function readRepresentatives(db: D1DatabaseLike, input: unknown, policy: RepresentativeSourcePolicy, now = new Date()) {
   const query = RepresentativeQuery.parse(input);
   const key = scopeKey({ jurisdiction: query.jurisdiction, jurisdictionId: query.jurisdictionId, bodyId: query.bodyId });
-  const head = await db.prepare("SELECT h.revision,h.draft_id,d.snapshot_json FROM representative_heads h JOIN representative_decisions d ON d.draft_id=h.draft_id WHERE h.scope_key=? AND d.decision='accepted'")
-    .bind(key).first<{ revision: number; draft_id: string; snapshot_json: string }>();
+  const head = await db.prepare("SELECT h.revision,h.draft_id,d.snapshot_json,d.reviewer_id,d.decided_at FROM representative_heads h JOIN representative_decisions d ON d.draft_id=h.draft_id WHERE h.scope_key=? AND d.decision='accepted'")
+    .bind(key).first<{ revision: number; draft_id: string; snapshot_json: string; reviewer_id: string; decided_at: string }>();
   if (!head) return representativeDirectoryUnavailable(query, now.toISOString());
   const { draft } = await readRepresentativeDraft(db, head.draft_id);
   const snapshot = RepresentativeSnapshotAcceptance.parse(JSON.parse(head.snapshot_json));
   if (snapshot.revision !== head.revision || snapshot.id !== head.draft_id || scopeKey(snapshot.scope) !== key)
     return fail("representative-storage-invalid", 503);
-  const result = queryRepresentatives(await resolve(draft, snapshot, policy, now), query);
+  const resolvedDraft = snapshot.reviewBindingVersion ? reviewedDraft(draft, head.reviewer_id, head.decided_at) : draft;
+  if (snapshot.reviewBindingVersion && snapshot.acceptedAt !== head.decided_at) return fail("representative-storage-invalid", 503);
+  const result = queryRepresentatives(await resolve(resolvedDraft, snapshot, policy, now), query);
   const current = await db.prepare("SELECT draft_id,revision FROM representative_heads WHERE scope_key=?").bind(key)
     .first<{ draft_id: string; revision: number }>();
   if (current?.draft_id !== head.draft_id || current.revision !== head.revision) return fail("representative-head-changed");

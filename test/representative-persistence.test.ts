@@ -15,7 +15,9 @@ test("persistent representative acceptance, stale review, turnover and public AP
   t.after(() => proxy.dispose());
   const db = proxy.env.WATCH_TEST_DB;
   await db.batch(unstable_splitSqlQuery(readFileSync(new URL("../migrations/0032_watch_representatives.sql", import.meta.url), "utf8")).map(sql => db.prepare(sql)));
-  const fixture = await makeRepresentativeFixture(), now = new Date(FIXTURE_NOW), policy = fixture.context;
+  await db.prepare("CREATE TABLE synthetic_source_guards(id TEXT PRIMARY KEY,valid INTEGER CHECK(valid=1))").run();
+  const fixture = await makeRepresentativeFixture(), now = new Date(FIXTURE_NOW), policy = { ...fixture.context,
+    acceptanceGuards: (id: string) => [db.prepare("INSERT INTO synthetic_source_guards VALUES(?,1)").bind(id)] };
   const draft = { id: "stored-directory", expectedRevision: 0, scope: fixture.snapshot.scope, rosterFactId: fixture.snapshot.rosterFactId,
     facts: [...fixture.facts.values()], evidence: [...fixture.evidence.values()], observations: [...fixture.observations.values()] };
   const staged = await stageRepresentativeDraft(db, draft, now);

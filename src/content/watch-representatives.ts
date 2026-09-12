@@ -8,6 +8,16 @@ const Label = z.string().min(1).max(240).refine(value => value.trim() === value)
 const UniqueIds = z.array(WatchId).max(100).refine(ids => new Set(ids).size === ids.length);
 export const RepresentativeJurisdiction = z.enum(["federal", "PA", "NJ", "DE"]);
 const PeriodFields = { validFrom: CalendarDay, validTo: CalendarDay.nullable(), datePrecision: z.literal("day") };
+const ObservedPeriodFields = { validFrom: CalendarDay.nullable(), validTo: CalendarDay.nullable(),
+  datePrecision: z.enum(["day", "observation"]), observedAt: CanonicalInstant.optional() };
+function observedPeriod(value: { validFrom: string | null; validTo: string | null; datePrecision: string; observedAt?: string }, context: z.RefinementCtx) {
+  if (value.datePrecision === "observation") {
+    if (value.validFrom !== null || value.validTo !== null || !value.observedAt)
+      context.addIssue({ code: z.ZodIssueCode.custom, message: "Observation mode requires an observation instant and unknown term boundaries" });
+  } else if (!value.validFrom || value.observedAt !== undefined) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: "Term mode requires a known start and no observation substitution" });
+  } else increasingPeriod({ validFrom: value.validFrom, validTo: value.validTo }, context);
+}
 function increasingPeriod(value: { validFrom: string; validTo: string | null }, context: z.RefinementCtx) {
   if (value.validTo !== null && value.validTo <= value.validFrom) context.addIssue({ code: z.ZodIssueCode.custom,
     path: ["validTo"], message: "Membership periods are nonempty and half-open [from, to)" });
@@ -19,12 +29,12 @@ export const RepresentativePerson = z.object({ id: WatchId, displayName: Label,
 export const RepresentativeOffice = z.object({ id: WatchId, jurisdiction: RepresentativeJurisdiction,
   jurisdictionId: WatchId, bodyId: WatchId, bodyName: Label, officeType: z.enum(["legislative", "executive"]),
   district: z.object({ type: z.enum(["district", "at-large"]), id: WatchId, label: Label }).strict(),
-  seatCapacity: z.number().int().min(1).max(50), officialLookupUrl: HttpsUrl, ...PeriodFields,
-}).strict().superRefine(increasingPeriod);
+  seatCapacity: z.number().int().min(1).max(50), officialLookupUrl: HttpsUrl, ...ObservedPeriodFields,
+}).strict().superRefine(observedPeriod);
 export const RepresentativeMembership = z.object({ id: WatchId, personId: WatchId, officeId: WatchId,
-  role: z.enum(["elected-member", "appointed-member"]), displayNameAtTerm: Label,
-  party: Label.nullable(), officialProfileUrl: HttpsUrl.nullable(), ...PeriodFields,
-}).strict().superRefine(increasingPeriod);
+  role: z.enum(["member", "elected-member", "appointed-member"]), displayNameAtTerm: Label,
+  party: Label.nullable(), officialProfileUrl: HttpsUrl.nullable(), ...ObservedPeriodFields,
+}).strict().superRefine(observedPeriod);
 export const RepresentativeCommitteeRole = z.object({ id: WatchId, membershipId: WatchId, bodyId: WatchId,
   bodyName: Label, role: z.enum(["committee-member", "committee-chair", "committee-vice-chair", "leadership"]),
   ...PeriodFields,
@@ -44,6 +54,7 @@ export const RepresentativeRoster = z.object({ id: WatchId, scope: Scope, asOf: 
   "Duplicate roster office");
 export const RepresentativeSnapshotAcceptance = z.object({ id: WatchId, revision: z.number().int().positive().safe(),
   scope: Scope, rosterFactId: WatchId, acceptedAt: CanonicalInstant,
+  reviewBindingVersion: z.literal("authenticated-review-1").optional(),
   factDigests: z.array(z.object({ id: WatchId, sha256: Sha256 }).strict()).min(2).max(4000),
 }).strict().refine(value => new Set(value.factDigests.map(fact => fact.id)).size === value.factDigests.length,
   "Duplicate accepted fact binding");
@@ -78,8 +89,10 @@ export class RepresentativeContractError extends Error {
   constructor(readonly code: string) { super(code); this.name = "RepresentativeContractError"; }
 }
 const fail = (code: string): never => { throw new RepresentativeContractError(code); };
-const dateContains = (period: { validFrom: string; validTo: string | null }, day: string) =>
-  period.validFrom <= day && (period.validTo === null || day < period.validTo);
+const dateContains = (period: { validFrom: string | null; validTo: string | null }, day: string) =>
+  period.validFrom !== null && period.validFrom <= day && (period.validTo === null || day < period.validTo);
+const rosterContains = (period: { validFrom: string | null; validTo: string | null; observedAt?: string }, asOf: string) =>
+  period.observedAt ? period.observedAt === asOf : dateContains(period, easternDay(asOf));
 function easternDay(instant: string): string {
   const parts = new Intl.DateTimeFormat("en", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" })
     .formatToParts(new Date(instant));
@@ -140,6 +153,8 @@ export async function resolveRepresentativeDirectory(snapshotId: string, context
         fact.verification.verifiedAt > snapshot.acceptedAt || fact.interpretationDependencies !== null ||
         await acceptedFactDigest(fact) !== binding.sha256) return fail("accepted-fact-binding-conflict");
     const value = schemas[purpose.data].parse(fact.value);
+    if ("observedAt" in value && value.observedAt && value.observedAt > fact.verification.verifiedAt)
+      return fail("observation-after-verification");
     if (fact.subjectId !== value.id || allIds.has(value.id)) return fail("duplicate-or-conflicting-identity");
     allIds.add(value.id);
     for (const digest of fact.evidenceDigests) {
@@ -186,29 +201,31 @@ export async function resolveRepresentativeDirectory(snapshotId: string, context
   }
   for (const { value: membership } of data.memberships.values()) {
     const office = data.offices.get(membership.officeId)?.value;
-    if (!data.people.has(membership.personId) || !office || membership.validFrom < office.validFrom ||
+    if (!data.people.has(membership.personId) || !office ||
+        (membership.observedAt ? !rosterContains(office, membership.observedAt) :
+          membership.validFrom === null || office.validFrom === null || membership.validFrom < office.validFrom) ||
         (office.validTo !== null && (membership.validTo === null || membership.validTo > office.validTo)) ||
         (membership.officialProfileUrl !== null && !context.officialPublicUrlAllowed(membership.officialProfileUrl)))
       return fail("membership-identity-or-link-conflict");
   }
   for (const { value: role } of data.roles.values()) {
     const membership = data.memberships.get(role.membershipId)?.value;
-    if (!membership || role.validFrom < membership.validFrom ||
+    if (!membership || membership.validFrom === null || role.validFrom < membership.validFrom ||
         (membership.validTo !== null && (role.validTo === null || role.validTo > membership.validTo))) return fail("committee-term-conflict");
   }
   for (const { value: vacancy } of data.vacancies.values()) {
     const office = data.offices.get(vacancy.officeId)?.value;
-    if (!office || vacancy.vacantSeats > office.seatCapacity || vacancy.validFrom < office.validFrom ||
+    if (!office || office.validFrom === null || vacancy.vacantSeats > office.seatCapacity || vacancy.validFrom < office.validFrom ||
         (office.validTo !== null && (vacancy.validTo === null || vacancy.validTo > office.validTo))) return fail("vacancy-office-conflict");
   }
   const rosterDay = easternDay(data.roster.value.asOf);
   for (const entry of data.roster.value.offices) {
     const office = data.offices.get(entry.officeId)?.value;
-    if (!office || !dateContains(office, rosterDay)) return fail("roster-office-conflict");
+    if (!office || !rosterContains(office, data.roster.value.asOf)) return fail("roster-office-conflict");
     const people = new Set<string>();
     for (const id of entry.membershipIds) {
       const membership = data.memberships.get(id)?.value;
-      if (!membership || membership.officeId !== office.id || !dateContains(membership, rosterDay) || people.has(membership.personId))
+      if (!membership || membership.officeId !== office.id || !rosterContains(membership, data.roster.value.asOf) || people.has(membership.personId))
         return fail("roster-membership-conflict");
       people.add(membership.personId);
     }
@@ -238,14 +255,14 @@ export const RepresentativeQuery = z.object({ jurisdiction: RepresentativeJurisd
   jurisdictionId: WatchId, bodyId: WatchId, districtId: WatchId.optional(), asOf: CalendarDay,
   limit: z.number().int().min(1).max(50).default(20), cursor: z.string().min(1).max(2048).optional(),
 }).strict();
-const MembershipState = z.enum(["verified-current", "verified-historical", "last-known"]);
+const MembershipState = z.enum(["verified-current", "verified-historical", "observed-current", "last-known"]);
 const PublicRole = z.object({ id: WatchId, bodyId: WatchId, bodyName: Label,
   role: RepresentativeCommitteeRole.innerType().shape.role, state: MembershipState,
   validFrom: CalendarDay, validTo: CalendarDay.nullable(), evidenceIds: UniqueIds }).strict();
 const PublicMember = z.object({ personId: WatchId, membershipId: WatchId, displayName: Label,
   role: RepresentativeMembership.innerType().shape.role, party: Label.nullable(), officialProfileUrl: HttpsUrl.nullable(),
-  state: MembershipState, validFrom: CalendarDay, validTo: CalendarDay.nullable(), datePrecision: z.literal("day"),
-  committeeRoles: z.array(PublicRole).max(100), evidenceIds: UniqueIds }).strict();
+  state: MembershipState, ...ObservedPeriodFields,
+  committeeRoles: z.array(PublicRole).max(100), evidenceIds: UniqueIds }).strict().superRefine(observedPeriod);
 export const PublicRepresentativeOffice = z.object({ id: WatchId, jurisdiction: RepresentativeJurisdiction,
   jurisdictionId: WatchId, bodyId: WatchId, bodyName: Label, officeType: RepresentativeOffice.innerType().shape.officeType,
   district: RepresentativeOffice.innerType().shape.district, officialLookupUrl: HttpsUrl,
@@ -262,7 +279,7 @@ export type PublicRepresentativeOffice = z.infer<typeof PublicRepresentativeOffi
 export const PublicRepresentativeResult = z.object({ schemaVersion: z.literal(1), mode: z.enum(["current", "historical"]),
   dataState: z.enum(["current", "stale", "unavailable"]), dataAsOf: CanonicalInstant.nullable(),
   selectedAsOf: CalendarDay, selectionMeaning: z.literal("selected-district-not-verified-residency"),
-  unavailableReason: z.enum(["accepted-directory-unavailable", "scope-not-enrolled"]).nullable(),
+  unavailableReason: z.enum(["accepted-directory-unavailable", "scope-not-enrolled", "historical-coverage-unavailable"]).nullable(),
   offices: z.array(PublicRepresentativeOffice).max(50), nextCursor: z.string().max(2048).nullable(),
 }).strict();
 export type PublicRepresentativeResult = z.infer<typeof PublicRepresentativeResult>;
@@ -276,8 +293,10 @@ function sourcesFor(data: DirectoryData, bindings: Array<{ evidenceIds: string[]
     return { id: source.id, sourceId: source.sourceId, label: source.label, url: source.url, quote: source.quote, locator: source.locator };
   });
 }
-function selectedState(period: { validFrom: string; validTo: string | null }, listed: boolean,
+function selectedState(period: { validFrom: string | null; validTo: string | null; observedAt?: string }, listed: boolean,
   day: string, data: DirectoryData): z.infer<typeof MembershipState> | null {
+  if (period.observedAt) return day === data.today && listed && period.observedAt === data.roster.value.asOf
+    ? data.fresh ? "observed-current" : "last-known" : null;
   if (!dateContains(period, day)) return null;
   if (day === data.today) return listed ? data.fresh ? "verified-current" : "last-known" : null;
   const rosterDay = easternDay(data.roster.value.asOf);
@@ -311,7 +330,8 @@ function projectOffice(boundOffice: Bound<Office>, day: string, data: DirectoryD
     members.push({ personId: membership.personId, membershipId: membership.id,
       displayName: state === "verified-historical" ? membership.displayNameAtTerm : person.value.displayName,
       role: membership.role, party: membership.party, officialProfileUrl: membership.officialProfileUrl,
-      state, validFrom: membership.validFrom, validTo: membership.validTo, datePrecision: "day", committeeRoles,
+      state, validFrom: membership.validFrom, validTo: membership.validTo, datePrecision: membership.datePrecision,
+      ...(membership.observedAt ? { observedAt: membership.observedAt } : {}), committeeRoles,
       evidenceIds: [...bound.evidenceIds] });
   }
   members.sort((a, b) => a.displayName.localeCompare(b.displayName, "en") || a.personId.localeCompare(b.personId, "en"));
@@ -365,7 +385,11 @@ export function queryRepresentatives(directory: ResolvedRepresentativeDirectory,
     selectedAsOf: query.asOf, selectionMeaning: "selected-district-not-verified-residency" as const };
   if (!sameScope(query, data.snapshot.scope)) return boundedResult({ ...base, dataState: "unavailable", dataAsOf: null,
     unavailableReason: "scope-not-enrolled", offices: [], nextCursor: null });
-  const offices = [...data.offices.values()].filter(({ value }) => dateContains(value, query.asOf) &&
+  if (query.asOf !== data.today && [...data.offices.values()].every(({ value }) => value.datePrecision === "observation"))
+    return boundedResult({ ...base, dataState: "unavailable", dataAsOf: data.roster.value.asOf,
+      unavailableReason: "historical-coverage-unavailable", offices: [], nextCursor: null });
+  const offices = [...data.offices.values()].filter(({ value }) =>
+    (value.datePrecision === "observation" ? query.asOf === data.today : dateContains(value, query.asOf)) &&
     (query.districtId === undefined || value.district.id === query.districtId)).sort((a, b) => a.value.id < b.value.id ? -1 : a.value.id > b.value.id ? 1 : 0);
   let after = -1;
   if (query.cursor) {
