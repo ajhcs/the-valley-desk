@@ -28,6 +28,7 @@ import { isHighRiskNews, verifyWithSecondModel, type VerificationResult } from "
 import {
   acquireAutomationLock,
   candidateFingerprint,
+  editorAttemptFingerprint,
   renewAutomationLock,
   markIngestRunFailed,
   markIngestRunSucceeded,
@@ -165,7 +166,7 @@ async function enrichCandidate(
 ): Promise<CandidateEnrichment> {
   if (reusable) return { item, enrichment: reusable };
   const apiKey = env.OPENROUTER_API_KEY || env.EDITOR_MODEL_API_KEY;
-  const fingerprint = await candidateFingerprint(item);
+  const fingerprint = await editorAttemptFingerprint(item, { model: env.EDITOR_MODEL, baseUrl: env.EDITOR_MODEL_BASE_URL });
   const attemptedAt = new Date().toISOString();
   if (!shouldEnrichCandidate(item) || !apiKey) return { item, enrichment: null };
   try {
@@ -635,7 +636,8 @@ export async function runAutomation(
     );
     const newsMetrics = run.newsExtraction?.metrics;
     stage = "load-enrichment-cache";
-    const { reusable, states: modelStates, verifications } = await readEditorModelCache(env.VALLEY_DESK_DB, items);
+    const modelCacheConfig = { model: env.EDITOR_MODEL, baseUrl: env.EDITOR_MODEL_BASE_URL };
+    const { reusable, states: modelStates, verifications } = await readEditorModelCache(env.VALLEY_DESK_DB, items, modelCacheConfig);
     stage = "persist-raw-candidates";
     const persisted = await persistIngestRun(
       env.VALLEY_DESK_DB,
@@ -772,7 +774,7 @@ export async function runAutomation(
       };
     });
     stage = "persist-enrichments";
-    const enrichedCount = await persistEnrichments(env.VALLEY_DESK_DB, candidates);
+    const enrichedCount = await persistEnrichments(env.VALLEY_DESK_DB, candidates, modelCacheConfig);
     stage = "editor-policy";
     const decisions = candidates.map((candidate) => ({
       ...candidate,

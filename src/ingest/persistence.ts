@@ -3,7 +3,7 @@ import { retainPublishedIdentity } from "../content/merge";
 import { isDeliverySafe } from "../content/publication";
 import type { IngestRun } from "./run-all";
 import type { EditorDecision } from "./editor";
-import { EditorEnrichment, EDITOR_PROMPT_VERSION } from "./editor-model";
+import { EditorEnrichment, EDITOR_PROMPT_VERSION, DEFAULT_EDITOR_MODEL, DEFAULT_EDITOR_BASE_URL } from "./editor-model";
 import { EDITOR_POLICY_VERSION } from "./editor";
 import type { EditorModelState } from "./editor-work";
 import { VerificationResult, type VerificationResult as VerificationResultType } from "./verification";
@@ -125,6 +125,46 @@ export async function candidateFingerprint(item: ContentItem) {
       externalId: item.source.externalId,
     },
   }));
+}
+
+export type EditorCacheConfiguration = { model?: string; baseUrl?: string };
+
+function editorModelProvenance(config: EditorCacheConfiguration) {
+  return {
+    version: "editor-model-cache-1",
+    model: config.model || DEFAULT_EDITOR_MODEL,
+    baseUrl: (config.baseUrl || DEFAULT_EDITOR_BASE_URL).replace(/\/$/, ""),
+    editorPromptVersion: EDITOR_PROMPT_VERSION,
+  };
+}
+
+function acceptsLegacyEditorCache(config: EditorCacheConfiguration) {
+  const provenance = editorModelProvenance(config);
+  return provenance.model === "meta/muse-spark-1.2-contributor"
+    && provenance.baseUrl === "https://openrouter.ai/api/v1";
+}
+
+/** Keep publication identity stable while scoping model attempts to their producer. */
+export async function editorAttemptFingerprint(item: ContentItem, config: EditorCacheConfiguration = {}) {
+  const fingerprint = await candidateFingerprint(item);
+  if (acceptsLegacyEditorCache(config)) return fingerprint;
+  return sha256(JSON.stringify({ fingerprint, modelProvenance: editorModelProvenance(config) }));
+}
+
+function cacheProvenanceMatches(json: string | null, config: EditorCacheConfiguration) {
+  if (!json) return false;
+  try {
+    const value = JSON.parse(json)?.modelProvenance;
+    if (value === undefined) return acceptsLegacyEditorCache(config);
+    const expected = editorModelProvenance(config);
+    return value !== null && typeof value === "object" && !Array.isArray(value)
+      && Object.keys(value).length === Object.keys(expected).length
+      && Object.entries(expected).every(([key, entry]) => value[key] === entry);
+  } catch { return false; }
+}
+
+function modelCacheJson(value: EditorEnrichment | VerificationResultType, config: EditorCacheConfiguration) {
+  return JSON.stringify({ ...value, modelProvenance: editorModelProvenance(config) });
 }
 
 type CandidateModelRow = {
@@ -374,6 +414,7 @@ export async function readReviewBacklog(db: D1DatabaseLike, limit = 1000) {
 export async function readEditorModelCache(
   db: D1DatabaseLike,
   items: ContentItem[],
+  config: EditorCacheConfiguration = {},
 ) {
   const rows = await loadCandidateModelRows(db, items);
   const states = new Map<string, EditorModelState>();
@@ -383,27 +424,32 @@ export async function readEditorModelCache(
     const row = rows.byId.get(item.id) ?? rows.byIdentity.get(sourceIdentityKey(item));
     if (!row) continue;
     const cached = parseCachedEnrichment(row.enrichment_json);
+    const itemFingerprint = await candidateFingerprint(item);
+    const expectedAttempt = await editorAttemptFingerprint(item, config);
+    const attemptMatches = (row.enrichment_fingerprint || row.fingerprint) === expectedAttempt;
+    const enrichmentMatches = attemptMatches && cacheProvenanceMatches(row.enrichment_json, config);
+    const stateMatches = attemptMatches && (row.enrichment_outcome === "failure" || enrichmentMatches);
     states.set(item.id, {
       id: row.id,
       fingerprint: row.fingerprint,
-      enrichmentFingerprint: row.enrichment_fingerprint,
-      outcome: row.enrichment_outcome,
-      attemptedAt: row.enrichment_attempted_at,
-      attemptCount: Number(row.enrichment_attempt_count ?? 0),
+      // The selector compares content identities; cache producer checks happen above.
+      enrichmentFingerprint: stateMatches ? itemFingerprint : row.fingerprint,
+      outcome: stateMatches ? row.enrichment_outcome : null,
+      attemptedAt: stateMatches ? row.enrichment_attempted_at : null,
+      attemptCount: stateMatches ? Number(row.enrichment_attempt_count ?? 0) : 0,
       firstSeenAt: row.first_seen_at,
       contentChangedAt: row.content_changed_at,
       lastSeenAt: row.last_seen_at,
       queueStatus: row.queue_status,
-      hasSuccessfulEnrichment: Boolean(cached),
+      hasSuccessfulEnrichment: Boolean(cached) && enrichmentMatches,
     });
     const verification = parseCachedVerification(row.verification_json);
-    if (verification && row.enrichment_fingerprint === (await candidateFingerprint(item))) {
+    if (verification && row.enrichment_fingerprint === expectedAttempt
+      && cacheProvenanceMatches(row.verification_json, config)) {
       verifications.set(item.id, verification);
     }
     if (row.enrichment_outcome === "failure" || !cached) continue;
-    const itemFingerprint = await candidateFingerprint(item);
-    const cachedFingerprint = row.enrichment_fingerprint || row.fingerprint;
-    if (cachedFingerprint === itemFingerprint) reusable.set(item.id, cached);
+    if (enrichmentMatches) reusable.set(item.id, cached);
   }
   return { reusable, states, verifications };
 }
@@ -433,13 +479,14 @@ export async function readEditorVerifications(
 export async function persistEnrichments(
   db: D1DatabaseLike,
   candidates: CandidateEnrichment[],
+  config: EditorCacheConfiguration = {},
 ) {
   const existing = await loadExistingCandidates(db, candidates.map((row) => row.item));
   const statements = candidates.flatMap(({ item, enrichment, attempt, verification }) => {
     const candidateId = existingForItem(item, existing)?.id ?? item.id;
     if (attempt) {
       const successful = attempt.outcome === "success" && enrichment;
-      const json = successful ? JSON.stringify(enrichment) : null;
+      const json = successful ? modelCacheJson(enrichment, config) : null;
       const ledger = successful ? JSON.stringify(enrichment.claimLedger ?? { claims: [] }) : null;
       const score = successful ? enrichment.relevanceScore : null;
       return [db.prepare(`
@@ -468,7 +515,7 @@ export async function persistEnrichments(
         attempt.error ? attempt.error.slice(0, 1000) : null,
         attempt.fingerprint,
         ledger,
-        verification ? JSON.stringify(verification) : null,
+        verification ? modelCacheJson(verification, config) : null,
         verification ? verification.verifiedAt : null,
         candidateId,
       )];
@@ -479,7 +526,7 @@ export async function persistEnrichments(
         SET verification_json = ?, verification_at = ?
         WHERE id = ? AND queue_status = 'review'
       `).bind(
-        verification ? JSON.stringify(verification) : null,
+        verification ? modelCacheJson(verification, config) : null,
         verification?.verifiedAt ?? null,
         candidateId,
       )];
@@ -1343,7 +1390,7 @@ export async function persistEditorialDecisions(
             WHERE id = ? AND queue_status != 'rejected'
           `).bind(
             JSON.stringify(publication),
-            enrichment ? JSON.stringify(enrichment) : null,
+            enrichment ? modelCacheJson(enrichment, { model, baseUrl: provider }) : null,
             enrichment?.relevanceScore ?? Math.round(decision.confidence * 100),
             decidedAt,
             candidateId,
