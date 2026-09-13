@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { PolicyBaseline } from "./PolicyBaselinePage";
+import { WatchEditorialReview } from "./WatchEditorialReview";
 
 type OpsPayload = {
   schemaVersion?: string;
@@ -142,6 +143,7 @@ function OpsPage() {
     <article aria-labelledby="ops-title" className="OpsPage">
       <p className="OpsPage-kicker">Private operations</p>
       <h1 id="ops-title">The Valley Desk operations</h1>
+      <WatchEditorialReview />
       {error ? <p role="alert">{error}</p> : null}
       {!payload && !error ? <p>Loading operational status…</p> : null}
       {payload ? (
