@@ -3,6 +3,20 @@ import test from "node:test";
 import { handleReviewApi, configureReviewGuardsForTests, isReviewApiPath } from "../src/ingest/review-api";
 import { pdfDatabase } from "./helpers/policy-pdf";
 import { syntheticFixture } from "./fixtures/watch-contracts/synthetic";
+import { handleWatchEditorialApi } from "../src/ingest/watch-editorial-api";
+import type { D1DatabaseLike } from "../src/ingest/persistence";
+
+test("Watch review queue cannot disguise failed D1 reads as an empty queue", async () => {
+  for (const result of [{success:false,results:[]}, {}, {results:null}, {results:{}}]) {
+    const statement = {bind(){return statement;},async first(){return null;},async run(){return {};},async all(){return result;}};
+    const db = {prepare(){return statement;},async batch(){return [];}} as unknown as D1DatabaseLike;
+    const response = await handleWatchEditorialApi(new Request("https://example.test/api/watch-drafts"),db,
+      "/api/watch-drafts",null,{} as never);
+    assert.equal(response.status,503);
+    assert.deepEqual(await response.json(),{error:"watch-review-unavailable"});
+    assert.equal(response.headers.get("cache-control"),"no-store");
+  }
+});
 
 test("Watch review routes reuse authentication, bounded staging, and named operator decisions", async t => {
   const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());

@@ -29,11 +29,14 @@ export async function handleWatchEditorialApi(request: Request, db: D1DatabaseLi
         return json(request, { error: "watch-invalid-query" }, 400);
       const after = url.searchParams.get("after");
       if (after !== null) WatchId.parse(after);
-      const rows = (await db.prepare(`SELECT d.id,d.subject_id AS subjectId,d.subject_revision AS subjectRevision,
+      const result = await db.prepare(`SELECT d.id,d.subject_id AS subjectId,d.subject_revision AS subjectRevision,
         d.input_sha256 AS sha256,d.created_at AS createdAt,json_extract(d.payload_json,'$.draft.kind') AS kind
         FROM watch_editorial_drafts d LEFT JOIN watch_editorial_decisions r ON r.draft_id=d.id
         JOIN watch_subjects s ON s.id=d.subject_id AND s.input_revision=d.subject_revision AND s.input_sha256=d.input_sha256
-        WHERE r.id IS NULL AND d.id>? ORDER BY d.id LIMIT 51`).bind(after ?? "").all<{ id: string }>()).results ?? [];
+        WHERE r.id IS NULL AND d.id>? ORDER BY d.id LIMIT 51`).bind(after ?? "").all<{ id: string }>();
+      if (!Array.isArray(result.results) || ("success" in result && result.success === false))
+        throw new Error("watch-queue-storage-unavailable");
+      const rows = result.results;
       return json(request, { items: rows.slice(0, 50), nextCursor: rows.length > 50 ? rows[49]!.id : null });
     }
     if (request.method !== "POST" || (match[1] && !match[2])) return json(request, { error: "method_not_allowed" }, 405);
