@@ -2,12 +2,35 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { DatabaseSync } from "node:sqlite";
 import { getPlatformProxy, unstable_splitSqlQuery } from "wrangler";
 import { stageRepresentativeDraft, decideRepresentativeDraft, readRepresentatives } from "../src/ingest/representative-persistence";
 import { handleRepresentativeRead, handleRepresentativeReview } from "../src/ingest/representative-api";
 import { parseSenateRoster, collectSenateRoster, persistSenateRosterObservation } from "../src/ingest/representative-collection";
 import { makeRepresentativeFixture, FIXTURE_NOW } from "./fixtures/watch-representatives/synthetic";
 import type { D1DatabaseLike } from "../src/ingest/persistence";
+
+test("representative CAS trigger preserves revision and foreign-key guards", () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    db.exec("PRAGMA foreign_keys=ON");
+    db.exec(readFileSync(new URL("../migrations/0032_watch_representatives.sql", import.meta.url), "utf8"));
+    const draft = db.prepare("INSERT INTO representative_drafts VALUES(?,?,?,'{}','hash','2026-09-13')");
+    const decide = db.prepare("INSERT INTO representative_decisions VALUES(?,?,'reviewer','2026-09-13',NULL)");
+    draft.run("initial", "scope", 0);
+    decide.run("initial", "accepted");
+    db.exec("INSERT INTO representative_heads VALUES('scope',1,'initial')");
+    draft.run("matching", "scope", 1);
+    decide.run("matching", "accepted");
+    draft.run("stale", "scope", 0);
+    assert.throws(() => decide.run("stale", "accepted"), /representative-stale-review/);
+    assert.equal(db.prepare("SELECT count(*) AS n FROM representative_decisions WHERE draft_id='stale'").get()!.n, 0);
+    decide.run("stale", "rejected");
+    assert.throws(() => decide.run("missing", "accepted"), /FOREIGN KEY/);
+    assert.throws(() => decide.run("missing", "rejected"), /FOREIGN KEY/);
+    assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
+  } finally { db.close(); }
+});
 
 test("persistent representative acceptance, stale review, turnover and public API", { timeout: 120_000 }, async t => {
   const proxy = await getPlatformProxy<{ WATCH_TEST_DB: D1DatabaseLike }>({

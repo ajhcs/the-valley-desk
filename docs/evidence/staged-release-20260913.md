@@ -45,7 +45,16 @@ scheduling or cross-provider disaster recovery. Retain this object; no lifecycle
 deletion rule was added.
 
 Evidence: /mnt/d/tmp/plumbob/tvd-watch-go-live-EhZRfI/.
-The earlier exact gate belongs toa4836fb; the new candidate needs its own gate.
+Candidate0f43d6b passed its exact gate and retained-asset review UI checks.
+Remote0031 applied, but0032 failed with D1 incomplete input before Worker deploy.
+Remote ledger31 and absence of representative tables confirmed rollback of0032.
+The installed client SQL splitter retained all eight statements; the precise
+remote parser cause is unproven. Move the nested CASE predicate into trigger WHEN
+without changing accepted-only revision checks. Regression tests cover initial
+and matching acceptance, stale acceptance rejection, stale rejection and missing
+draft foreign keys. A fresh disposable D1 restore with the corrected0031-0036
+retains the same publication hash,22 rows,1657 runs and zero FK violations.
+This migration correction requires a new exact gate before retry or deployment.
 
 ## Rollback And Public Exposure
 
