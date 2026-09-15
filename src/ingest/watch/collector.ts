@@ -4,6 +4,7 @@ import { classifyFetchError, classifyHttpStatus, type SourceRunState } from "../
 import { SOURCE_TIMEOUT_MS, SOURCE_USER_AGENT, UpstreamError, sleep } from "../upstream";
 import { parseWatchFeedSnapshot } from "./feed-adapter";
 import { parseFederalRegisterSnapshot, stageCollectedPolicyObservations } from "./policy-adapter";
+import { parseRepresentativeRosterSnapshot, publishCollectedRepresentativeRoster } from "./representative-adapter";
 import { parseGitHubRepositorySnapshot, parseGitHubReleasesSnapshot, parseGitHubTagsSnapshot, parseGitHubCommitsSnapshot,
   type GitHubRepositoryBinding } from "./github-adapter";
 import { checkpointAfterPersistence, sourceEndpointAllowed, type SnapshotInput, type WatchSnapshotResult,
@@ -80,7 +81,7 @@ function githubNext(headers:Headers,enrolled:EnrolledCollectionSource):string|nu
   const match=links[0]!.match(/<([^>]+)>/);if(!match||!sourceEndpointAllowed(enrolled.source,match[1]!))throw new UpstreamError("parser-failed","pagination-not-enrolled");
   return match[1]!;
 }
-async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,fetchImpl:typeof fetch,deadline:number,clock:()=>Date,leaseOwner:string) {
+async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,fetchImpl:typeof fetch,deadline:number,clock:()=>Date,leaseOwner:string,publishVerified:boolean) {
   const snapshotId=crypto.randomUUID(),source=enrolled.source,pages:SnapshotPageReceipt[]=[],
     persisted=new Map<string,PersistenceAcknowledgment>(),persistedPages=new Map<string,PagePersistenceAcknowledgment>();
   let url=source.endpoints[0]!,pageKey="1",binding:GitHubRepositoryBinding|null=null,itemCount=0;
@@ -91,6 +92,7 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
     let result:WatchSnapshotResult;
     if(source.transport==="rss"||source.transport==="atom") result=await parseWatchFeedSnapshot(input);
     else if(source.transport==="official-json") result=await parseFederalRegisterSnapshot(input);
+    else if(source.transport==="official-xml") result=await parseRepresentativeRosterSnapshot(input);
     else if(source.transport==="github-json"){
       const mode=new URL(url).pathname.split("/")[4];
       if(!mode){
@@ -109,7 +111,7 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
     // A repository snapshot is retained before its binding can authorize a list.
     const stored=await persistWatchCollectionPage(db,enrolled,{snapshotId,endpoint:fetched.url,bytes:fetched.bytes,
       body:fetched.body,headers:fetched.headers,result,now:clock().toISOString(),leaseOwner});
-    if(source.transport==="official-json" && !result.rejectedItems && !result.truncated && result.health.state==="healthy") {
+    if(["official-json","official-xml"].includes(source.transport) && !result.rejectedItems && !result.truncated && result.health.state==="healthy") {
       const permission=await resolveEnrolledCollectionSource(db,source.id,clock().toISOString());
       if(permission?.permissionDigest!==enrolled.permissionDigest)throw new UpstreamError("disabled","watch-source-permission-changed");
       // Native persistence can retract stale evidence, so every write transaction
@@ -124,7 +126,8 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
             SELECT 1 FROM watch_collection_leases WHERE id='watch-collector' AND owner=? AND expires_at>?
           ) THEN 1 ELSE 0 END)`).bind(crypto.randomUUID(),decisionId,source.id,at,leaseOwner,at),...statements]);
       }};
-      await stageCollectedPolicyObservations(guardedDb,result.observations,clock());
+      if(source.transport==="official-xml") await publishCollectedRepresentativeRoster(guardedDb,input,clock(),publishVerified);
+      else await stageCollectedPolicyObservations(guardedDb,result.observations,clock(),publishVerified);
     }
     pages.push(stored.page);for(const [id,ack] of stored.persisted)persisted.set(id,ack);persistedPages.set(pageKey,stored.acknowledgment);
     itemCount+=result.observations.length;lastResult=result;
@@ -147,10 +150,10 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
   return {itemCount,state:lastResult?.health.state??"parser-failed",detail:lastResult?.health.error??(checkpoint?"durable-discovery-checkpoint":"partial-snapshot-retained"),checkpoint};
 }
 
-// Invocation is ingestion-only. No model, public writer, secret lookup, or source
-// activation happens here. The global durable lease bounds concurrent dispatch.
+// No model, secret lookup or source activation happens here. Qualified complete
+// official rosters may advance through the exact-source rule, under the same lease.
 export async function runWatchCollection(db:D1DatabaseLike,options:{
-  enabled:boolean;fetchImpl?:typeof fetch;clock?:()=>Date;maxSources?:number;deadlineMs?:number;
+  enabled:boolean;publishVerified?:boolean;fetchImpl?:typeof fetch;clock?:()=>Date;maxSources?:number;deadlineMs?:number;
 }) {
   if(!options.enabled)return {outcome:"disabled" as const,sources:[]};
   const clock=options.clock??(()=>new Date()),started=clock().toISOString();CanonicalInstant.parse(started);
@@ -170,10 +173,10 @@ export async function runWatchCollection(db:D1DatabaseLike,options:{
       let state:SourceRunState="disabled",detail="qualification-or-activation-held",itemCount=0,checkpoint:unknown=null,retryMs=0;
       if(enrolled)try{
         if(enrolled.source.requiresAuth)throw new UpstreamError("misconfigured","watch-credential-resolver-not-provisioned");
-        if(!["rss","atom","github-json","official-json"].includes(enrolled.source.transport))throw new UpstreamError("misconfigured","watch-transport-not-implemented");
-        if(enrolled.source.parserVersion!=="1" || enrolled.source.parserId!==(enrolled.source.transport==="github-json"?"watch-github":enrolled.source.transport==="official-json"?"watch-federal-register":"watch-rss"))
+        if(!["rss","atom","github-json","official-json","official-xml"].includes(enrolled.source.transport))throw new UpstreamError("misconfigured","watch-transport-not-implemented");
+        if(enrolled.source.parserVersion!=="1" || enrolled.source.parserId!==(enrolled.source.transport==="github-json"?"watch-github":enrolled.source.transport==="official-json"?"watch-federal-register":enrolled.source.transport==="official-xml"?"watch-federal-roster":"watch-rss"))
           throw new UpstreamError("misconfigured","watch-parser-not-installed");
-        const result=await collectSource(db,enrolled,options.fetchImpl??fetch,deadline,clock,owner);
+        const result=await collectSource(db,enrolled,options.fetchImpl??fetch,deadline,clock,owner,options.publishVerified??false);
         ({state,detail,itemCount,checkpoint}=result);
       }catch(error){
         state=error instanceof UpstreamError?error.code:classifyFetchError(error);detail=error instanceof Error?error.message:"collection-failed";

@@ -54,7 +54,7 @@ export const RepresentativeRoster = z.object({ id: WatchId, scope: Scope, asOf: 
   "Duplicate roster office");
 export const RepresentativeSnapshotAcceptance = z.object({ id: WatchId, revision: z.number().int().positive().safe(),
   scope: Scope, rosterFactId: WatchId, acceptedAt: CanonicalInstant,
-  reviewBindingVersion: z.literal("authenticated-review-1").optional(),
+  reviewBindingVersion: z.enum(["authenticated-review-1", "source-rule-roster-1"]).optional(),
   factDigests: z.array(z.object({ id: WatchId, sha256: Sha256 }).strict()).min(2).max(4000),
 }).strict().refine(value => new Set(value.factDigests.map(fact => fact.id)).size === value.factDigests.length,
   "Duplicate accepted fact binding");
