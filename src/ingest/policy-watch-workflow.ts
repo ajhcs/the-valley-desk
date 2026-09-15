@@ -123,6 +123,8 @@ export async function buildPolicyEditorialProposal(db: D1DatabaseLike, captureId
   const fact = (field: string, value: unknown, evidenceIds: string[], suffix = field) => ({
     id: subjectId + ":" + suffix, subjectId, field, value, evidenceIds, interpretationDependencies: null });
   const facts = [fact("title", parsed.title, [material.titleEvidenceId]), fact("policy-identity", parsed.identity, [material.identityEvidenceId])];
+  const summary = material.summary ? fact("summary", material.summary.value, [material.summary.evidenceId]) : null;
+  if (summary) facts.push(summary);
   // Native action ordering is not universally chronological. All unknown/future
   // dates remain in the ledger; no guessed latest action enters the public draft.
   const day = deliveryEasternDay(now.toISOString());
@@ -149,7 +151,7 @@ export async function buildPolicyEditorialProposal(db: D1DatabaseLike, captureId
   const draft = PolicyDossierDraft.parse({ id: subjectId, slug, subjectRevision: row.sequence, kind: "policy",
     titleFactId: facts[0].id, identityFactId: facts[1].id, lifecycle: unavailable, legalEffect: unavailable,
     latestAction: latest ? { factId: latest.id } : { unavailableReason: "Complete unambiguous native action ordering is not established." },
-    topics: unavailable, summary: unavailable, interpretation: { readiness: "review-pending",
+    topics: unavailable, summary: summary ? { factId: summary.id } : unavailable, interpretation: { readiness: "review-pending",
       reason: "Native metadata awaits source and applicability review." }, timelineFactIds });
   const used = new Set(facts.flatMap(item => item.evidenceIds));
   const proposal = { externalKey: "policy-native:" + subjectId, draft, facts,

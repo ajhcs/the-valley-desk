@@ -280,7 +280,10 @@ export async function projectTechnologyProfile(input: unknown, context: WatchPro
       projection.unknowns.push({ field: `license:${license.artifactId}:${license.scope}`, reason: "License evidence changed; classification awaits review." });
       continue;
     }
-    if (license.classification !== "unknown" && license.classification !== "not-applicable" && fact.verification.kind !== "human-review") return hold("license-review-required");
+    const pinnedNativeLicenseRule = fact.verification.kind === "source-rule" &&
+      fact.verification.ruleId === "watch-native-source-rule-v1" && fact.verification.ruleVersion === "1";
+    if (license.classification !== "unknown" && license.classification !== "not-applicable" &&
+      fact.verification.kind !== "human-review" && !pinnedNativeLicenseRule) return hold("license-review-required");
     projection.checkUrl(license.sourceUrl); licenses.push(projection.present(fact, license));
   }
   const oss = licenses.some(license => {

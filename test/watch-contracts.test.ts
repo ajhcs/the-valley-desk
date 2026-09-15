@@ -300,11 +300,16 @@ test("changed license bytes invalidate classification while preserving accepted 
   assert.equal(result.licenses.length, 0); assert.ok(result.purpose!.value.includes("order-set"));
 });
 
-test("license knowledge requires actual reviewed bytes and human acceptance", async () => {
+test("license knowledge requires reviewed bytes and human or exact installed native-rule acceptance", async () => {
   const fixture = await syntheticFixture("technology"), license = record(fixture.facts.get("f-license")!.value);
   assert.equal(TechnologyLicense.safeParse({ ...license, classification: "osi-open-source", spdxId: "MIT", licenseSha256: null }).success, false);
   assert.equal(TechnologyLicense.safeParse({ ...license, licenseSha256: null }).success, false);
   fixture.facts.get("f-license")!.verification.kind = "source-rule"; await fixture.refresh();
+  await rejects(projectTechnologyProfile(fixture.draft, fixture.context), "license-review-required");
+  Object.assign(fixture.facts.get("f-license")!.verification, { ruleId: "watch-native-source-rule-v1", ruleVersion: "1" });
+  await fixture.refresh();
+  assert.equal((await projectTechnologyProfile(fixture.draft, fixture.context)).licenses.length, 1);
+  fixture.facts.get("f-license")!.verification.ruleVersion = "uninstalled"; await fixture.refresh();
   await rejects(projectTechnologyProfile(fixture.draft, fixture.context), "license-review-required");
 });
 

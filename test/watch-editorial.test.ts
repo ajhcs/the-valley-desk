@@ -2,13 +2,21 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { EditorialProposal, decideEditorialProposal, decideSourceRulePolicyProposal, readEditorialProposal, stageEditorialProposal } from "../src/ingest/watch-editorial";
 import { readFileSync } from "node:fs";
-import { parseNewJerseyPolicy } from "../src/ingest/policy-watch-native";
+import { parseFederalRegisterPolicy } from "../src/ingest/policy-watch-native";
 import { persistPolicyWatchCapture, buildPolicyEditorialProposal } from "../src/ingest/policy-watch-workflow";
+import { readPolicyWatchCapture } from "../src/ingest/policy-watch-workflow";
+import { createWatchEditorialRuntime } from "../src/ingest/watch-editorial-runtime";
+import { rssSource } from "./fixtures/watch-adapters/synthetic";
+import { sourceConfigurationDigest } from "../src/ingest/watch/source-enrollment";
+import { configureWatchCollectionSource } from "../src/ingest/watch/collection-storage";
+import { runWatchCollection } from "../src/ingest/watch/collector";
+import { canonicalJson } from "../src/content/watch-schema";
 import type { EditorialRuntime } from "../src/ingest/watch-editorial";
 import { deliveryDependencyKey, verificationRuleDigest } from "../src/content/watch-delivery";
 import { recordWatchDependencyHead } from "../src/ingest/watch-delivery";
 import { readWatchDirectory } from "../src/ingest/watch-persistence";
-import { sha256 } from "../src/content/watch-schema";
+import { sha256, tupleKey } from "../src/content/watch-schema";
+import { sourceRuleMayRenewTechnologyDependency } from "../src/ingest/watch-source-rule-renewal";
 import { pdfDatabase } from "./helpers/policy-pdf";
 import { NOW, syntheticFixture } from "./fixtures/watch-contracts/synthetic";
 import { syntheticDeliveryForRecord } from "./fixtures/watch-delivery/synthetic";
@@ -36,23 +44,36 @@ async function setup(t: { after: (fn: () => void) => void }) {
 }
 const now = () => new Date(NOW);
 
-async function nativeSetup(t: { after: (fn: () => void) => void }, tamperCapture = false) {
+async function nativeSetup(t: { after: (fn: () => void) => void }, tamperCapture = false, authority: "official" | "discovery-only" = "official") {
   const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
-  const captured = JSON.parse(readFileSync(new URL("./fixtures/policy-watch-native/nj-a101-20260912.json", import.meta.url), "utf8"));
   const at = new Date("2026-09-12T17:00:00.000Z");
-  const native = parseNewJerseyPolicy(captured.native, captured.sessionKey, captured.source);
-  if (tamperCapture) native.title = "Invented title with a real evidence pointer";
-  const capture = await persistPolicyWatchCapture(db, native);
-  const built = await buildPolicyEditorialProposal(db, capture.id, "nj-a101", at);
-  const permission = await sha256("synthetic-native-permission");
-  await recordWatchDependencyHead(db, { key: await deliveryDependencyKey("source-permission", [captured.source.sourceId]),
-    kind: "source-permission", revision: 1, digest: permission, immutableRecordId: "test-native-permission", changedAt: at.toISOString() });
-  const runtime: EditorialRuntime = { resolveContext: async () => ({
-    observations: new Map(built.observations.map(item => [item.id, item])),
-    enrolledSourceIds: new Set([captured.source.sourceId]), sourceUrlAllowed: () => true, publicUrlAllowed: () => true,
-    sourcePermissionDigests: new Map([[captured.source.sourceId, permission]]), currentInterpretations: new Map(),
-    currentArtifacts: new Map(), regionalEntityIds: new Set(), regionalFactIds: new Map(), acceptanceGuards: built.acceptanceGuards,
-  }) };
+  const source = rssSource({ id: "native-test-fr", state: "qualified", qualificationReceiptId: "native-test-qualified",
+    authority, desk: "policy", jurisdiction: "federal", family: "regulation", transport: "official-json",
+    parserId: "watch-federal-register", parserVersion: "1", endpoints: ["https://www.federalregister.gov/api/v1/documents.json?per_page=5"],
+    linkScopes: [{ host: "www.federalregister.gov", pathPrefix: "/" }] });
+  const qualification = { id: "native-test-qualified", sourceId: source.id, configurationSha256: await sourceConfigurationDigest(source),
+    reviewedAt: at.toISOString(), expiresAt: "2026-10-01T00:00:00.000Z", engineeringOwnerId: "synthetic-engineer", editorialOwnerId: "synthetic-editor",
+    reviewEvidenceId: "native-test-review", rightsDecision: "accepted", accessDecision: "public-or-authorized-read",
+    negativeFixtureSha256: await sha256("negative"), replayFixtureSha256: await sha256("replay"),
+    samples: ["2026-09-11T00:00:00.000Z", "2026-09-12T00:00:00.000Z"].map(capturedAt => ({ endpoint: source.endpoints[0],
+      representationSha256: "1".repeat(64), capturedAt, parserVersion: "1", itemCount: 1, outcome: "parsed" })) };
+  await db.prepare("INSERT INTO watch_collection_reviews VALUES(?,?,?,?,?,?,NULL)")
+    .bind(qualification.reviewEvidenceId, "synthetic-engineer", "synthetic-editor", await sha256("review"), await sha256(canonicalJson(qualification)), at.toISOString()).run();
+  await configureWatchCollectionSource(db, { source, qualification, activationId: "native-test-activation", cadenceSeconds: 60, expectedRevision: 0 }, at.toISOString());
+  await runWatchCollection(db, { enabled: true, clock: () => at, fetchImpl: async () => new Response(JSON.stringify({ results: [{
+    document_number: "2026-12345", type: "Proposed Rule", title: "Synthetic healthcare proposal", publication_date: "2026-09-10", action: "Proposed rule",
+    abstract: "The agency proposes this synthetic test regulation.",
+  }] })) });
+  const row = sqlite.prepare("SELECT id FROM policy_watch_captures").get()!;
+  let captureId = String(row.id);
+  if (tamperCapture) {
+    const { material: { parsed } } = await readPolicyWatchCapture(db, captureId);
+    at.setTime(at.getTime() + 1000); parsed.title = "Invented title with a real evidence pointer"; parsed.source.retrievedAt = at.toISOString();
+    captureId = (await persistPolicyWatchCapture(db, parsed)).id;
+  }
+  const slug = String(sqlite.prepare("SELECT slug FROM watch_subjects").get()!.slug);
+  const built = await buildPolicyEditorialProposal(db, captureId, slug, at);
+  const runtime = createWatchEditorialRuntime(db);
   return { db, sqlite, at, built, runtime };
 }
 
@@ -63,6 +84,7 @@ test("native source rule publishes only rebuilt source facts and records no huma
   assert.equal((await decideSourceRulePolicyProposal(db, request, runtime, at)).outcome, "applied");
   assert.equal((await decideSourceRulePolicyProposal(db, request, runtime, at)).outcome, "unchanged");
   assert.equal((await readWatchDirectory(db, { kind: "policy" }, at)).items.length, 1);
+  assert.equal(built.proposal.facts.find(fact => fact.field === "summary")?.value, "The agency proposes this synthetic test regulation.");
   for (const row of sqlite.prepare("SELECT payload_json FROM watch_editorial_facts").all()) {
     const fact = JSON.parse(String(row.payload_json));
     assert.equal(fact.verification.kind, "source-rule");
@@ -77,6 +99,7 @@ test("source rule refuses invented title, interpretation, and a hash mismatch", 
   const { db, sqlite, at, built, runtime } = await nativeSetup(t);
   const proposal = structuredClone(built.proposal);
   proposal.facts[0].value = "Invented title not in the source";
+  proposal.draft.subjectRevision++;
   const staged = await stageEditorialProposal(db, proposal, at);
   await assert.rejects(decideSourceRulePolicyProposal(db, { id: staged.id, sha256: staged.sha256 }, runtime, at), /proposal-conflict/);
   await assert.rejects(decideSourceRulePolicyProposal(db, { id: staged.id, sha256: "f".repeat(64) }, runtime, at), /hash-conflict/);
@@ -95,11 +118,55 @@ test("source rule retains current-capture transaction fence", async t => {
   assert.equal((await readWatchDirectory(db, { kind: "policy" }, at)).items.length, 0);
 });
 
+test("source-rule provenance and acceptance must bind the same source permission", async t => {
+  const { db, sqlite, at, built, runtime } = await nativeSetup(t);
+  const staged = await stageEditorialProposal(db, built.proposal, at);
+  const changed: EditorialRuntime = { resolveContext: async (proposal, time) => {
+    const resolved = await runtime.resolveContext(proposal, time);
+    return { ...resolved, sourcePermissionDigests: new Map([...resolved.sourcePermissionDigests.keys()].map(id => [id, "f".repeat(64)])) };
+  } };
+  await assert.rejects(decideSourceRulePolicyProposal(db, { id: staged.id, sha256: staged.sha256 }, changed, at), /permission-conflict/);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()?.n, 0);
+});
+
 test("source rule reparses the capture instead of trusting its derived title", async t => {
   const { db, sqlite, at, built, runtime } = await nativeSetup(t, true);
   const staged = await stageEditorialProposal(db, built.proposal, at);
   await assert.rejects(decideSourceRulePolicyProposal(db, { id: staged.id, sha256: staged.sha256 }, runtime, at), /native-parser-conflict/);
   assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()?.n, 0);
+});
+
+test("source rule refuses ledger-only records and discovery-only source authority", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const captured = JSON.parse(readFileSync(new URL("./fixtures/policy-watch-native/fr-2025-15492-20260912.json", import.meta.url), "utf8"));
+  const at = new Date("2026-09-12T17:00:00.000Z");
+  const capture = await persistPolicyWatchCapture(db, parseFederalRegisterPolicy(captured.native, captured.source));
+  const built = await buildPolicyEditorialProposal(db, capture.id, "uncollected-rule", at);
+  const staged = await stageEditorialProposal(db, built.proposal, at);
+  await assert.rejects(decideSourceRulePolicyProposal(db, { id: staged.id, sha256: staged.sha256 }, createWatchEditorialRuntime(db), at), /collector-required/);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()?.n, 0);
+  const discovery = await nativeSetup(t, false, "discovery-only");
+  const other = await stageEditorialProposal(discovery.db, discovery.built.proposal, discovery.at);
+  await assert.rejects(decideSourceRulePolicyProposal(discovery.db, { id: other.id, sha256: other.sha256 }, discovery.runtime, discovery.at), /collector-required/);
+  assert.equal(discovery.sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()?.n, 0);
+});
+
+test("source-rule refresh distinguishes a routine capture invalidation from explicit revocation", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  await db.prepare("INSERT INTO technology_source_representations VALUES(?,?,?,?,?,?,?)")
+    .bind("raw-new-capture", "tech-subject", "tech-source", "https://example.test/repo", await sha256("raw"), "raw", NOW).run();
+  const dependency = { kind: "artifact", key: "artifact-key" };
+  const machine = { digest: null, changed_at: NOW,
+    immutable_record_id: await tupleKey("technology-retraction-v1", ["raw-new-capture", dependency.key]) };
+  assert.equal(await sourceRuleMayRenewTechnologyDependency(db, "tech-subject", dependency, machine), true);
+  assert.equal(await sourceRuleMayRenewTechnologyDependency(db, "other-subject", dependency, machine), false);
+  assert.equal(await sourceRuleMayRenewTechnologyDependency(db, "tech-subject", dependency,
+    { ...machine, immutable_record_id: "explicit-operator-revocation" }), false);
+  assert.equal(await sourceRuleMayRenewTechnologyDependency(db, "tech-subject", { ...dependency, kind: "source-permission" },
+    { ...machine, digest: "1".repeat(64) }), false);
+  assert.equal(await sourceRuleMayRenewTechnologyDependency(db, "tech-subject", { ...dependency, kind: "regional-historical" },
+    { ...machine, digest: "1".repeat(64) }), false);
+  assert.equal(await sourceRuleMayRenewTechnologyDependency(db, "tech-subject", { ...dependency, kind: "regional-current" }, machine), false);
 });
 
 test("only a fresh named review can renew a retracted artifact head", async t => {
