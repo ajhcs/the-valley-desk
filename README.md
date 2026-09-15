@@ -4,7 +4,7 @@ Product source. Human news + agent feed. Delaware Valley / Greater Philadelphia 
 
 Owner: Cole Lyons (co-founder). Engineering: Knox. Product: Reed. Brand: Mira. CEO: Vale.
 
-Vite + React + TypeScript + TanStack Router + Tailwind on Cloudflare Workers. Humans get News, Events, Voices, a local-product watch, and an anti-FOMO event calendar. Agents GET `/feed.json` using the same `ContentItem` envelope. Signed editorial source: `fixtures/catalog.json`.
+Vite + React + TypeScript + TanStack Router + Tailwind on Cloudflare Workers. News and Events sit alongside separate Policy Watch and Technology Watch pages and an event calendar. Voices URLs remain available without promotion. Agents GET `/feed.json` using the same `ContentItem` envelope; Watch has separate v2 APIs. Signed editorial source: `fixtures/catalog.json`.
 
 ## Automation
 
