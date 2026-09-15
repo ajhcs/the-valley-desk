@@ -4,7 +4,8 @@ import { readFileSync, readdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { launchCandidates } from "../fixtures/watch-launch-candidates";
 import { launchCoverage } from "../fixtures/watch-launch-coverage";
-import { captureLaunchCandidate, conservativeRobotsDisposition, prepareCapturedSource } from "../scripts/lib/watch-source-preparation";
+import { captureLaunchCandidate, endpointRobotsPolicy, prepareCapturedSource } from "../scripts/lib/watch-source-preparation";
+import { SOURCE_USER_AGENT } from "../src/ingest/upstream";
 import { collectionReadiness, sourceConfigurationDigest } from "../src/ingest/watch/source-enrollment";
 import { canonicalJson, sha256 } from "../src/content/watch-schema";
 
@@ -58,16 +59,80 @@ test("malformed, oversized, invalid-date and private repository samples do not b
   assert.equal(privateResult.parsed?.observations.length,0);
 });
 
-test("conservative access holds never issue an endpoint request or imply publisher prohibition",async()=>{
+test("endpoint access holds never issue an endpoint request",async()=>{
   const calls:string[]=[];
   const result=await captureLaunchCandidate("candidate-de-news",async(input)=>{
-    calls.push(String(input));return new Response("User-agent: *\nDisallow: /wp-admin");
+    calls.push(String(input));return new Response("User-agent: *\nDisallow: /feed/");
   });
   assert.equal(result.outcome,"access-held");
-  assert.equal(result.access.disposition,"robots-review-required");
+  assert.equal(result.access.disposition,"robots-endpoint-disallowed");
   assert.deepEqual(calls,["https://news.delaware.gov/robots.txt"]);
   assert.equal(result.packet,null);
-  assert.equal(conservativeRobotsDisposition("<html>Access challenge</html>"),"robots-unrecognized");
+  assert.equal(endpointRobotsPolicy("<html>Access challenge</html>","https://news.delaware.gov/feed/").disposition,"robots-unrecognized");
+});
+
+test("robots matching uses the actual agent, endpoint, longest path, Allow ties and wildcard/query anchors",()=>{
+  const endpoint="https://news.delaware.gov/feed/";
+  const policy=(body:string,url=endpoint)=>endpointRobotsPolicy(body,url);
+  assert.equal(policy("User-agent: *\nDisallow: /wp-admin\nHost: news.delaware.gov\nSitemap: https://news.delaware.gov/sitemap.xml").disposition,"robots-endpoint-allowed");
+  assert.equal(policy("User-agent: OtherBot\nDisallow: /\nCrawl-delay: 60\nUser-agent: *\nAllow: /").disposition,"robots-endpoint-allowed");
+  assert.equal(policy("User-agent: *\nDisallow: /\nUser-agent: TheValleyDesk\nAllow: /feed/").disposition,"robots-endpoint-allowed");
+  assert.equal(policy("User-agent: *\nAllow: /\nUser-agent: TheValleyDesk\nDisallow: /feed/").disposition,"robots-endpoint-disallowed");
+  const specific=policy("User-agent: *\nDisallow: /\nDisallow: /feed/\nAllow: /feed/");
+  assert.equal(specific.disposition,"robots-endpoint-allowed");
+  assert.equal(specific.matchingLine,4);
+  assert.equal(specific.userAgent,SOURCE_USER_AGENT);
+  assert.equal(specific.endpoint,endpoint);
+  assert.equal(policy("User-agent: *\nDisallow: /*?private=1$",endpoint+"?private=1").disposition,"robots-endpoint-disallowed");
+  assert.equal(policy("User-agent: *\nDisallow: /*?private=1$",endpoint+"?private=10").disposition,"robots-endpoint-allowed");
+});
+
+test("malformed responses and unsupported directives are held while empty valid robots is allowed",()=>{
+  const endpoint="https://news.delaware.gov/feed/";
+  for(const body of ["Access denied","User-agent: *\nDisallow /","Disallow: /", "User-agent:\nAllow: /",
+    "User-agent: *\nCrawl-delay: -1","User-agent: *\nCrawl-delay: 1s","User-agent: *\nUnknown-rule: /"]){
+    assert.equal(endpointRobotsPolicy(body,endpoint).disposition,"robots-unrecognized",body);
+  }
+  assert.equal(endpointRobotsPolicy("# empty public policy\n",endpoint).disposition,"robots-endpoint-allowed");
+});
+
+test("permitted feeds wait for applicable crawl delay and retain no publication authority",async()=>{
+  const calls:string[]=[],waits:number[]=[];
+  const result=await captureLaunchCandidate("candidate-de-news",async(input,init)=>{
+    calls.push(String(input));
+    assert.equal(new Headers(init?.headers).get("user-agent"),SOURCE_USER_AGENT);
+    return new Response(calls.length===1?"User-agent: *\nDisallow: /wp-admin\nCrawl-delay: 2.5":
+      '<rss version="2.0"><channel><title>Public news</title></channel></rss>');
+  },async ms=>{waits.push(ms);});
+  assert.deepEqual(calls,["https://news.delaware.gov/robots.txt","https://news.delaware.gov/feed/"]);
+  assert.deepEqual(waits,[2500]);
+  assert.equal(result.access.disposition,"robots-endpoint-allowed");
+  assert.equal(result.packet?.activationAuthorized,false);
+  assert.equal(result.packet?.publicationAuthorized,false);
+});
+
+test("delay beyond capture budget and unavailable robots hold without retrying or fetching content",async()=>{
+  for(const response of [()=>new Response("User-agent: *\nCrawl-delay: 60"),
+    ()=>new Response(null,{status:403}),()=>new Response(null,{status:429}),()=>new Response(null,{status:503})]){
+    const calls:string[]=[];
+    const result=await captureLaunchCandidate("candidate-de-news",async input=>{
+      calls.push(String(input));return response();
+    },async()=>{throw Error("must not wait");});
+    assert.equal(result.outcome,"access-held");
+    assert.deepEqual(calls,["https://news.delaware.gov/robots.txt"]);
+    assert.equal(result.packet,null);
+  }
+  assert.equal(endpointRobotsPolicy("User-agent: *\nCrawl-delay: 2","https://news.delaware.gov/feed/",1500).disposition,"robots-delay-exceeds-budget");
+});
+
+test("robots 404 retains the approved public endpoint fallback",async()=>{
+  let calls=0;
+  const waits:number[]=[];
+  const result=await captureLaunchCandidate("candidate-de-news",async()=>++calls===1?new Response(null,{status:404}):
+    new Response('<rss version="2.0"><channel><title>Public news</title></channel></rss>'),async ms=>{waits.push(ms);});
+  assert.equal(calls,2);
+  assert.equal(result.access.disposition,"robots-not-found");
+  assert.deepEqual(waits,[1000]);
 });
 
 test("public API capture is GET-only, bounded, no-auth and never follows redirect or retries",async()=>{
