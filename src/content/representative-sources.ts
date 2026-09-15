@@ -13,6 +13,12 @@ export const REPRESENTATIVE_LOOKUPS = [
   { jurisdiction: "DE", jurisdictionId: "de", bodyId: "de-senate", label: "Delaware Senate", lookupUrl: "https://legis.delaware.gov/FindMyLegislator" },
 ] as const;
 
+export type RepresentativeLookupScope = (typeof REPRESENTATIVE_LOOKUPS)[number];
+
+export function policyRepresentativeScopes(identity: { jurisdiction: string; bodyId: string }): readonly RepresentativeLookupScope[] {
+  return REPRESENTATIVE_LOOKUPS.filter(scope => scope.jurisdiction === identity.jurisdiction && scope.bodyId === identity.bodyId);
+}
+
 // Source permission is chamber-specific, not inferred from jurisdiction alone.
 export const REPRESENTATIVE_ROSTER_ENDPOINTS = [
   { url: "https://www.senate.gov/general/contact_information/senators_cfm.xml", bodyIds: ["us-senate"] },

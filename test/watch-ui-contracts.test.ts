@@ -12,16 +12,64 @@ import { parseWatchResponse, readWatch, WatchReadError, watchDetailApiPath, watc
 import { instantLabel, sourceDateLabel } from "../src/ui/watch/watch-labels.ts";
 import { createWatchSaveStore, parseWatchSaves, WATCH_SAVE_LIMIT, WATCH_SAVES_KEY } from "../src/ui/watch/watch-saves.ts";
 import { NOW, OTHER_HASH, syntheticFixture } from "./fixtures/watch-contracts/synthetic.ts";
+import { policyRepresentativeScopes, REPRESENTATIVE_LOOKUPS } from "../src/content/representative-sources";
 
 // The root config contains project references; rendered components need the app's JSX transform.
 const rendered = register({ namespace: "watch-ui-render-contracts", tsconfig: fileURLToPath(new URL("../tsconfig.app.json", import.meta.url)) });
 const { PolicyDossier } = await rendered.import("../src/ui/watch/PolicyDossier.tsx", import.meta.url);
+const { PolicyRepresentatives } = await rendered.import("../src/ui/watch/PolicyRepresentatives.tsx", import.meta.url);
 const { TechnologyDossier } = await rendered.import("../src/ui/watch/TechnologyDossier.tsx", import.meta.url);
 const { WatchDataStatus, WatchSources } = await rendered.import("../src/ui/watch/WatchShared.tsx", import.meta.url);
 after(() => rendered.unregister());
 
 async function policy() { const fixture = await syntheticFixture("policy"); return projectPolicyDossier(fixture.draft, fixture.context); }
 async function technology() { const fixture = await syntheticFixture("technology"); return projectTechnologyProfile(fixture.draft, fixture.context); }
+
+test("policy representative lookup binds exactly to the accepted state chamber", async () => {
+  const base = (await policy()).identity.value;
+  for (const scope of REPRESENTATIVE_LOOKUPS.filter(scope => scope.jurisdiction !== "federal")) {
+    const identity = { ...base, jurisdiction: scope.jurisdiction, jurisdictionId: scope.jurisdictionId, bodyId: scope.bodyId };
+    assert.deepEqual(policyRepresentativeScopes(identity), [scope]);
+    const html = renderToStaticMarkup(createElement(PolicyRepresentatives, { identity }));
+    assert.match(html, /Chamber representatives/);
+    assert.ok(html.includes(scope.label));
+    assert.ok(html.includes(scope.lookupUrl));
+    assert.match(html, /<option value="0" selected="">/);
+    assert.doesNotMatch(html, /Select state delegation|disabled=""/);
+    for (const other of REPRESENTATIVE_LOOKUPS.filter(other => other.bodyId !== scope.bodyId)) {
+      assert.ok(!html.includes(other.label), `Does not offer ${other.label} for ${scope.bodyId}`);
+    }
+    assert.match(html, /does not establish bill sponsorship/);
+  }
+});
+
+test("federal policy chamber lookup requires a delegation choice rather than assuming PA residency", async () => {
+  const base = (await policy()).identity.value;
+  for (const bodyId of ["us-house", "us-senate"]) {
+    const identity = { ...base, jurisdiction: "federal", jurisdictionId: "us", bodyId };
+    assert.equal(policyRepresentativeScopes(identity).length, 3);
+    const html = renderToStaticMarkup(createElement(PolicyRepresentatives, { identity }));
+    assert.match(html, /<option value="-1" selected="">Select state delegation<\/option>/);
+    assert.match(html, /<button type="submit" disabled="">Find representatives<\/button>/);
+    assert.doesNotMatch(html, /Official district lookup/);
+    for (const scope of REPRESENTATIVE_LOOKUPS.filter(scope => scope.bodyId === bodyId)) assert.ok(html.includes(scope.label));
+    const otherChamber = bodyId === "us-house" ? "U.S. Senate" : "U.S. House";
+    assert.ok(!html.includes(otherChamber));
+    assert.match(html, /does not establish bill sponsorship or that a member represents your address/);
+  }
+});
+
+test("regulatory, local and mismatched policy bodies never fall back to a guessed chamber", async () => {
+  const base = (await policy()).identity.value;
+  for (const [jurisdiction, bodyId] of [["federal", "federal-register"], ["regional", "philadelphia-city-council"],
+    ["PA", "pa-legislature"], ["NJ", "pa-house"], ["federal", "pa-house"]]) {
+    const identity = { ...base, jurisdiction, bodyId };
+    assert.deepEqual(policyRepresentativeScopes(identity), []);
+    const html = renderToStaticMarkup(createElement(PolicyRepresentatives, { identity }));
+    assert.match(html, /No representative association is established for this source body/);
+    assert.doesNotMatch(html, /<form|<select|Official district lookup|Pennsylvania/);
+  }
+});
 const directory = (items: unknown[] = [], nextCursor: string | null = null) => ({ version: "watch-directory-1", generation: 1, asOf: NOW, items, nextCursor });
 
 test("artifact source dates must bind to their accepted artifact fact in projection and transport", async () => {

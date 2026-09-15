@@ -1,6 +1,7 @@
 import type { PublicPolicyDossier } from "../../content/watch-schema";
 import { JURISDICTION_LABELS, LEGAL_EFFECT_LABELS, LIFECYCLE_LABELS, READINESS_LABELS, sourceDateLabel, watchLabel } from "./watch-labels";
 import { WatchSources } from "./WatchShared";
+import { PolicyRepresentatives } from "./PolicyRepresentatives";
 
 export function PolicyDossier({ item }: { item: PublicPolicyDossier }) {
   const identity = item.identity.value;
@@ -41,6 +42,7 @@ export function PolicyDossier({ item }: { item: PublicPolicyDossier }) {
         <WatchSources item={item} fact={item.latestAction} />
       </> : <p>No latest action has been established.</p>}
     </section>
+    <PolicyRepresentatives identity={identity} />
     <section className="WatchSection"><h2>Action Timeline</h2>
       {item.timeline.length ? <ol className="WatchTimeline">{item.timeline.map(action => <li key={action.value.id}>
         <p className="WatchNote">{sourceDateLabel(action.value.sourceOccurredAt)}</p><h3>{action.value.nativeCode}</h3><p>{action.value.text}</p>
