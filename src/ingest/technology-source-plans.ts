@@ -191,5 +191,7 @@ export async function prepareTechnologySourceDraft(plan: typeof technologySource
         : { precision: "unknown", reason: "No authoritative public release timestamp." },
       evidenceIds: releaseEvidenceIds, prerelease: release.prerelease, draft: release.draft });
   }
+  // Concurrent digest completion must not determine the signed evidence order.
+  input.evidence.sort((left, right) => left.id < right.id ? -1 : left.id > right.id ? 1 : 0);
   return buildTechnologyDossierDraft(input);
 }
