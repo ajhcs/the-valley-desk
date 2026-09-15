@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { execFileSync } from "node:child_process";
 import { test } from "node:test";
 import worker from "../worker.js";
@@ -11,7 +12,7 @@ import { pdfDatabase, seedPdfBills, pdfCases, officialPdfFixtureFetch } from "./
 
 test("actual 79 PDF pages persist through authenticated review, with immutable retries and no publication", async () => {
   const {db,sqlite}=pdfDatabase();
-  const scratch=mkdtempSync(join(process.env.TMPDIR??"/mnt/d/tmp/plumbob","tvd-pdf-regression-"));
+  const scratch=mkdtempSync(join(tmpdir(),"tvd-pdf-regression-"));
   const originalFetch=globalThis.fetch;
   const token="local-fixture-operator-only";
   configureReviewGuardsForTests({postLimit:100});
