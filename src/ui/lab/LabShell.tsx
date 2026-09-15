@@ -3,6 +3,7 @@ import { useEffect, type ReactNode } from "react";
 import { LAB_VIEWS, type LabPath } from "./lab";
 import { LabLockup } from "./LabMark";
 import { SkipLink } from "../SkipLink";
+import { publicFeatures } from "../../lib/public-features";
 import "./lab.css";
 
 const TITLES: Record<LabPath, string> = {
@@ -39,7 +40,10 @@ export function LabShell({
         <nav className="LabPublicNav" aria-label="Public sections">
           <Link to="/news">News</Link>
           <Link to="/events">Events</Link>
-          <Link to="/voices">Voices</Link>
+          {publicFeatures().watch ? <>
+            <Link to="/policy-watch" search={{}}>Policy Watch</Link>
+            <Link to="/technology-watch" search={{}}>Technology Watch</Link>
+          </> : null}
         </nav>
         <p className="LabMast-note">Design lab</p>
       </header>

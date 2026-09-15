@@ -10,6 +10,8 @@ import { recordWatchDependencyHead } from "../src/ingest/watch-delivery";
 import type { D1DatabaseLike } from "../src/ingest/persistence";
 import { decorateHtml, decorateWatchHtml, watchPrimaryNoscript } from "../src/lib/crawler-html";
 import { normalizePublicFeatures, publicFeatures, publicFeaturesFromEnv } from "../src/lib/public-features";
+import { navSection } from "../src/lib/nav";
+import { llmsTxt } from "../src/lib/canonical";
 import { catalogDependentPath, createCatalogNavigationBoundary, reloadActiveCatalogDocument, sameOriginDocumentHref } from "../src/lib/catalog-navigation";
 import { isWatchPagePath, parseWatchPageRoute, readWatchPage, watchPageHead, type WatchPageResult } from "../src/lib/watch-page";
 import { createWatchHeadStore } from "../src/ui/watch/watch-head-state";
@@ -468,7 +470,7 @@ test("public policy background uses an exact-true independent gate before every 
         if (method === "HEAD") assert.equal(html, "");
         else {
           assert.match(body(html), /This page is not published/);
-          assert.match(html, /__VALLEY_DESK_PUBLIC_FEATURES__=\{"policyBackground":false\}/);
+          assert.match(html, /__VALLEY_DESK_PUBLIC_FEATURES__=\{"policyBackground":false,"watch":true\}/);
           assert.doesNotMatch(html, /Healthcare policy watchlist|public baseline JSON|application\/ld\+json/);
         }
       }
@@ -491,7 +493,7 @@ test("explicit public background opt-in preserves baseline reads and off-state l
   const page = await worker.fetch(new Request(`${origin}/policy`), env, {});
   assert.equal(page.status, 200);
   const html = await page.text(); assert.match(body(html), /Healthcare policy watchlist/);
-  assert.match(html, /__VALLEY_DESK_PUBLIC_FEATURES__=\{"policyBackground":true\}/);
+  assert.match(html, /__VALLEY_DESK_PUBLIC_FEATURES__=\{"policyBackground":true,"watch":false\}/);
   const off = { ...env, POLICY_BACKGROUND_PUBLIC_ENABLED: "false" };
   const privateRead = await worker.fetch(new Request(`${origin}/api/policy-background`, {
     headers: { authorization: "Bearer synthetic-review-only" },
@@ -503,19 +505,51 @@ test("explicit public background opt-in preserves baseline reads and off-state l
 
 test("public feature signals are boolean allowlists and hidden policy HTML is defensive by default", () => {
   for (const value of [undefined, true, "true", {}, { policyBackground: "true" }, { policyBackground: false }, Object.create({ policyBackground: true })]) {
-    assert.deepEqual(normalizePublicFeatures(value), { policyBackground: false });
+    assert.deepEqual(normalizePublicFeatures(value), { policyBackground: false, watch: false });
   }
-  assert.deepEqual(normalizePublicFeatures({ policyBackground: true, privateReviewToken: "discard" }), { policyBackground: true });
-  assert.deepEqual(publicFeaturesFromEnv({ POLICY_BACKGROUND_PUBLIC_ENABLED: true }), { policyBackground: false });
-  assert.deepEqual(publicFeaturesFromEnv({ POLICY_BACKGROUND_PUBLIC_ENABLED: "true" }), { policyBackground: true });
-  assert.deepEqual(publicFeatures(), { policyBackground: false });
+  assert.deepEqual(normalizePublicFeatures({ policyBackground: true, privateReviewToken: "discard" }), { policyBackground: true, watch: false });
+  assert.deepEqual(publicFeaturesFromEnv({ POLICY_BACKGROUND_PUBLIC_ENABLED: true }), { policyBackground: false, watch: false });
+  assert.deepEqual(publicFeaturesFromEnv({ POLICY_BACKGROUND_PUBLIC_ENABLED: "true" }), { policyBackground: true, watch: false });
+  assert.deepEqual(publicFeatures(), { policyBackground: false, watch: false });
   const hidden = decorateHtml({ html: template, path: "/policy", origin, nonce: "fixture" });
   assert.match(body(hidden), /This page is not published/); assert.doesNotMatch(hidden, /Healthcare policy watchlist|application\/ld\+json/);
-  const accepted = decorateHtml({ html: template, path: "/policy", origin, nonce: "fixture", publicFeatures: { policyBackground: true } });
+  const accepted = decorateHtml({ html: template, path: "/policy", origin, nonce: "fixture", publicFeatures: { policyBackground: true, watch: false } });
   assert.match(body(accepted), /Healthcare policy watchlist/);
   const watch = decorateWatchHtml({ html: template, result: { route: parseWatchPageRoute("/policy-watch")!, status: 404 }, origin,
-    nonce: "fixture", publicFeatures: { policyBackground: true } });
-  assert.match(watch, /__VALLEY_DESK_PUBLIC_FEATURES__=\{"policyBackground":true\}/);
+    nonce: "fixture", publicFeatures: { policyBackground: true, watch: false } });
+  assert.match(watch, /__VALLEY_DESK_PUBLIC_FEATURES__=\{"policyBackground":true,"watch":false\}/);
+});
+
+test("Watch promotion follows the exact server opt-in and does not revive Voices promotion", async () => {
+  for (const flag of [undefined, false, true, "false", "TRUE", " true", "true ", "true"]) {
+    const features = publicFeaturesFromEnv({ WATCH_PUBLIC_ENABLED: flag });
+    assert.equal(features.watch, flag === "true");
+    const html = decorateHtml({ html: template, path: "/", origin, nonce: "fixture", publicFeatures: features });
+    for (const path of ["/policy-watch", "/technology-watch"]) {
+      assert.equal(body(html).includes(`${origin}${path}`), flag === "true");
+      assert.equal(llmsTxt(origin, features.watch).includes(`${origin}${path}`), flag === "true");
+    }
+    assert.doesNotMatch(body(html), /<h2>Voices<\/h2>/);
+    assert.doesNotMatch(llmsTxt(origin, features.watch), /\[Voices\]/);
+    const { env } = environment({ WATCH_PUBLIC_ENABLED: flag });
+    const response = await worker.fetch(new Request(`${origin}/llms.txt`), env, {});
+    assert.equal((await response.text()).includes("[Policy Watch]"), flag === "true");
+  }
+  for (const value of [{ watch: "true" }, Object.create({ watch: true }), { watch: 1 }]) {
+    assert.equal(normalizePublicFeatures(value).watch, false);
+  }
+  assert.deepEqual(normalizePublicFeatures({ watch: true, privateReviewToken: "discard" }), { policyBackground: false, watch: true });
+});
+
+test("Watch directory and dossier navigation do not alias legacy Voices URLs", () => {
+  for (const section of ["policy-watch", "technology-watch"] as const) {
+    for (const suffix of ["", "/", "/accepted-dossier"]) assert.equal(navSection(`/${section}${suffix}`), section);
+    assert.equal(navSection(`/${section}-other`), null);
+  }
+  assert.equal(navSection("/voices/legacy-statement"), "voices");
+  const html = decorateHtml({ html: template, path: "/voices", origin, nonce: "fixture", publicFeatures: { policyBackground: false, watch: true } });
+  assert.match(body(html), /Voices/);
+  assert.match(html, /rel="canonical" href="https:\/\/thevalleydesk.org\/voices"/);
 });
 
 test("Watch and legacy background documents reload before catalog views, without reload loops", () => {

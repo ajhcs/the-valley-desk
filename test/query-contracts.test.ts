@@ -1411,7 +1411,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(home.includes("rankedNews[0]"));
   assert.ok(home.includes("item.id !== lead?.id"));
   assert.ok(!home.includes("<Desk"));
-  assert.ok(home.includes("latestVoices"));
+  assert.ok(!home.includes("latestVoices"));
+  assert.ok(home.includes("publicFeatures().watch"));
   assert.ok(home.includes("pinnedUpcomingEvents"));
   assert.ok(eventsPage.includes("upcomingEvents"));
   assert.ok(eventsPage.includes("CHAPTER RADAR"));
@@ -1427,7 +1428,9 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(!home.toLowerCase().includes("himss seal"));
   assert.ok(home.includes("NEWS · LATEST"));
   assert.ok(home.includes("EVENTS · NEXT"));
-  assert.ok(home.includes("VOICES · LATEST"));
+  assert.ok(!home.includes("VOICES · LATEST"));
+  assert.ok(home.includes("Policy Watch"));
+  assert.ok(home.includes("Technology Watch"));
   assert.ok(lead.includes("LATEST NEWS"));
   assert.ok(!lead.includes("item.publishedAt"));
   assert.ok(!lead.includes("chipInstant"));
@@ -1459,7 +1462,9 @@ test("homepage binds store queries and kit class names", () => {
   }
   assert.ok(footer.includes("News"));
   assert.ok(footer.includes("Events"));
-  assert.ok(footer.includes("Voices"));
+  assert.ok(!footer.includes("Voices"));
+  assert.ok(footer.includes("Policy Watch"));
+  assert.ok(footer.includes("Technology Watch"));
   assert.ok(footer.includes("feed.json"));
   assert.ok(footer.includes("feed.xml"));
   assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
@@ -1475,10 +1480,12 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(layout.includes("NavLink"));
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
-  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(!layout.includes('to="/voices"'));
   assert.ok(layout.includes("is-news"));
   assert.ok(layout.includes("is-events"));
-  assert.ok(layout.includes("is-voices"));
+  assert.ok(!layout.includes("is-voices"));
+  assert.ok(layout.includes("is-policy-watch"));
+  assert.ok(layout.includes("is-technology-watch"));
   assert.ok(css.includes(".NavLink.is-voices"));
   assert.ok(css.includes("border-bottom-color: var(--ink)"));
   assert.ok(router.includes('"/voices"'));
@@ -2450,9 +2457,11 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(!itemPage.includes("Valley Desk"));
   assert.ok(layout.includes("is-news"));
   assert.ok(layout.includes("is-events"));
-  assert.ok(layout.includes("is-voices"));
+  assert.ok(!layout.includes("is-voices"));
   assert.ok(layout.includes("navSection"));
-  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(!layout.includes('to="/voices"'));
+  assert.ok(layout.includes('to="/policy-watch"'));
+  assert.ok(layout.includes('to="/technology-watch"'));
   assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
   assert.ok(footer.includes("© thedeskgroup -"));
   assert.ok(footer.includes(">USHSO.org<"));
@@ -2464,7 +2473,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(indexCss.includes(".SiteNav a.NavLink:focus-visible"));
   assert.ok(indexCss.includes(".SiteHeader-brand:focus-visible"));
   assert.ok(indexCss.includes(".SiteFooter a:focus-visible"));
-  assert.ok(css.includes("grid-template-columns: 1fr 1fr 1fr"));
+  assert.ok(css.includes("grid-template-columns: repeat(2, minmax(0, 1fr))"));
   assert.ok(!css.includes("grid-template-columns: 1fr 1fr;"));
   assert.ok(css.includes(".GroupChip[data-kind=\"voice\"]"));
   const voiceChip = css.slice(css.indexOf('.GroupChip[data-kind="voice"]'), css.indexOf(".StatusChip[data-status=\"review\"]"));
@@ -3292,7 +3301,9 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.ok(layout.includes("SiteNav"));
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
-  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(!layout.includes('to="/voices"'));
+  assert.ok(layout.includes('to="/policy-watch"'));
+  assert.ok(layout.includes('to="/technology-watch"'));
   assert.ok(layout.includes("SiteFooter"));
   assert.ok(!/path:\s*["']\/org\//.test(router));
 
@@ -4338,7 +4349,9 @@ test("lab prototypes bind live catalog, the real mark asset, and unpublished-saf
   assert.ok(!systems.includes('to="/org'));
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
-  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(!layout.includes('to="/voices"'));
+  assert.ok(layout.includes('to="/policy-watch"'));
+  assert.ok(layout.includes('to="/technology-watch"'));
   assert.ok(!layout.includes('to="/lab"'));
   assert.ok(layout.includes('pathname.startsWith("/lab/")'));
 

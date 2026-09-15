@@ -687,7 +687,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
       });
     }
     if (path === "/llms.txt") {
-      return new Response(llmsTxt(origin), {
+      return new Response(llmsTxt(origin, publicFeaturesFromEnv(env).watch), {
         headers: { ...PUBLIC_HEADERS, "content-type": "text/plain; charset=utf-8" },
       });
     }

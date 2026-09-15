@@ -205,6 +205,7 @@ export function primaryNoscript(
   items: ContentItem[],
   dynamicItem?: ContentItem,
   search?: string,
+  publicFeatures?: PublicFeatures,
 ) {
   ensureQueriesBound();
   const p = stripSlash(path) || "/";
@@ -215,7 +216,6 @@ export function primaryNoscript(
     const lead = rankedNews[0] ?? leadItem(items);
     const rest = rankedNews.filter((item) => item.id !== lead?.id).slice(0, 6);
     const events = upcomingEvents(items).slice(0, 4);
-    const voices = latestVoices(items, 4);
     return [
       `<h1>${esc(SITE)}</h1>`,
       `<p>${esc(DEFAULT_DESC)}</p>`,
@@ -224,7 +224,7 @@ export function primaryNoscript(
         : "",
       rest.length ? `<h2>News</h2><ul>${rest.map((item) => linkItem(item, origin)).join("")}</ul>` : "",
       events.length ? `<h2>Events</h2><ul>${events.map((item) => linkItem(item, origin)).join("")}</ul>` : "",
-      voices.length ? `<h2>Voices</h2><ul>${voices.map((item) => linkItem(item, origin)).join("")}</ul>` : "",
+      normalizePublicFeatures(publicFeatures).watch ? `<nav aria-label="Watch sections"><h2><a href="${esc(publicUrl("/policy-watch", origin))}">Policy Watch</a></h2><h2><a href="${esc(publicUrl("/technology-watch", origin))}">Technology Watch</a></h2></nav>` : "",
       feeds,
     ].filter(Boolean).join("");
   }
@@ -381,7 +381,7 @@ export function decorateHtml(options: {
     : routeJsonLd(options.path, options.origin, items, options.item, options.entities, options.search);
   const noscript = notFound
     ? `<h1>Not found</h1><p>This page is not published.</p><p><a href="${esc(publicUrl("/", options.origin))}">Back to the desk</a></p>`
-    : primaryNoscript(options.path, options.origin, items, options.item, options.search);
+    : primaryNoscript(options.path, options.origin, items, options.item, options.search, features);
   const noindex = notFound || isLab || (list != null && (!list.window.indexable || list.index?.noindex));
   const prevPath = list ? adjacentListPath(list, "prev") : undefined;
   const nextPath = list ? adjacentListPath(list, "next") : undefined;

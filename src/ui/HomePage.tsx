@@ -1,7 +1,8 @@
+import { Link } from "@tanstack/react-router";
 import { catalog } from "../lib/catalog";
+import { publicFeatures } from "../lib/public-features";
 import {
   latestNews,
-  latestVoices,
   leadItem,
   nextChapterEvent,
   pinnedUpcomingEvents,
@@ -15,7 +16,6 @@ export function HomePage() {
   const lead = rankedNews[0] ?? leadItem(catalog);
   const news = rankedNews.filter((item) => item.id !== lead?.id).slice(0, 6);
   const events = pinnedUpcomingEvents(catalog);
-  const voices = latestVoices(catalog);
   const pinId = nextChapterEvent(catalog)?.id;
   const sessionFirst = useSessionFirstHome();
   return (
@@ -24,8 +24,11 @@ export function HomePage() {
       <div className="rails">
         <Rail label="NEWS · LATEST" rail="news" items={news} />
         <Rail label="EVENTS · NEXT" rail="events" items={events} pinId={pinId} />
-        <Rail label="VOICES · LATEST" rail="voices" items={voices} />
       </div>
+      {publicFeatures().watch ? <nav className="HomeWatch" aria-label="Watch sections">
+        <Link to="/policy-watch" search={{}}><span>Policy Watch</span><small>Federal / PA / NJ / DE / Delaware Valley</small></Link>
+        <Link to="/technology-watch" search={{}}><span>Technology Watch</span><small>Verified Delaware Valley connections</small></Link>
+      </nav> : null}
     </div>
   );
 }

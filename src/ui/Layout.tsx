@@ -1,5 +1,6 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { navSection } from "../lib/nav";
+import { publicFeatures } from "../lib/public-features";
 import { DocumentHead } from "./DocumentHead";
 import { FoldMark } from "./FoldMark";
 import { MentionScope } from "./MentionScope";
@@ -23,7 +24,7 @@ export function Layout() {
               <span className="Wordmark-name">Valley Desk</span>
             </span>
           </Link>
-          <nav className="SiteNav">
+          <nav className="SiteNav" aria-label="Primary">
             <Link
               to="/news"
               className="NavLink is-news"
@@ -54,21 +55,12 @@ export function Layout() {
             >
               Events
             </Link>
-            <Link
-              to="/voices"
-              className="NavLink is-voices"
-              activeOptions={{ exact: true }}
-              activeProps={{
-                className: "NavLink is-voices",
-                "aria-current": current === "voices" ? "page" : undefined,
-              }}
-              inactiveProps={{
-                className: "NavLink is-voices",
-                "aria-current": current === "voices" ? "page" : undefined,
-              }}
-            >
-              Voices
-            </Link>
+            {publicFeatures().watch ? <>
+              <Link to="/policy-watch" search={{}} className="NavLink is-policy-watch"
+                aria-current={current === "policy-watch" ? "page" : undefined}>Policy Watch</Link>
+              <Link to="/technology-watch" search={{}} className="NavLink is-technology-watch"
+                aria-current={current === "technology-watch" ? "page" : undefined}>Technology Watch</Link>
+            </> : null}
           </nav>
         </div>
       </header> : null}

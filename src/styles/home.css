@@ -105,6 +105,41 @@
   display: flex;
   gap: 28px;
   font-size: 14px;
+  align-items: center;
+}
+
+.SiteNav .NavLink {
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .SiteHeader-inner {
+    flex-wrap: wrap;
+    row-gap: 18px;
+  }
+
+  .SiteNav {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    column-gap: 24px;
+    row-gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .SiteNav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 16px;
+  }
+
+  .SiteNav .NavLink {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    white-space: normal;
+  }
 }
 
 .MarkFold {
@@ -193,6 +228,18 @@
 
 .NavLink.is-voices {
   border-bottom-color: var(--ink);
+}
+
+.NavLink.is-policy-watch {
+  border-bottom-color: #28745e;
+}
+
+.NavLink.is-technology-watch {
+  border-bottom-color: #a74365;
+}
+
+.NavLink[aria-current="page"] {
+  font-weight: 700;
 }
 
 .NavLink:focus-visible {
@@ -610,8 +657,48 @@ ul.desk {
 
 @media (min-width: 768px) {
   .rails {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 48px;
+  }
+}
+
+.HomeWatch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  margin-top: 40px;
+  padding: 24px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.HomeWatch a {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.HomeWatch a > span {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.HomeWatch small {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.HomeWatch a:hover > span {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .HomeWatch {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
   }
 }
 
