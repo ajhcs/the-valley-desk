@@ -23,7 +23,60 @@ async function enroll(db:D1DatabaseLike,overrides:Partial<SourceEnrollment>={}) 
 }
 function clock(at=SEEN_AT){return ()=>new Date(at);}
 const success:typeof fetch=async()=>new Response(rssBody(),{headers:{"content-type":"application/rss+xml; charset=utf-8",etag:'"one"'}});
+const federalSource:Partial<SourceEnrollment>={id:"synthetic-federal",desk:"policy",jurisdiction:"federal",family:"regulation",
+  transport:"official-json",parserId:"watch-federal-register",parserVersion:"1",
+  endpoints:["https://www.federalregister.gov/api/v1/documents.json?per_page=5"],
+  linkScopes:[{host:"www.federalregister.gov",pathPrefix:"/"}]};
+const federalRecord={document_number:"2026-12345",type:"Proposed Rule",title:"Synthetic healthcare proposal",
+  publication_date:"2026-09-10",action:"Proposed rule",pdf_url:"https://www.govinfo.gov/content/pkg/FR-2026-09-10/pdf/2026-12345.pdf"};
 async function due(db:D1DatabaseLike){await db.prepare("UPDATE watch_collection_state SET next_due_at=?").bind(SEEN_AT).run();}
+
+test("Federal Register inventory persists raw evidence then stages unreviewed policy, including304 replay",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,federalSource);
+  const first=await runWatchCollection(db,{enabled:true,clock:clock(),fetchImpl:async(_url,init)=>{
+    assert.equal(new Headers(init?.headers).get("accept"),"application/json");
+    return new Response(JSON.stringify({results:[federalRecord]}),{headers:{etag:'"fr-one"'}});
+  }});
+  assert.equal(first.sources[0]?.state,"healthy",JSON.stringify(first));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_raw_representations").get()!.n,1);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,1);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,1);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()!.n,0);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM published_content").get()!.n,0);
+  const proposal=JSON.parse(String(sqlite.prepare("SELECT payload_json FROM watch_editorial_drafts").get()!.payload_json));
+  assert.equal(proposal.draft.interpretation.readiness,"review-pending");
+  await due(db);
+  const second=await runWatchCollection(db,{enabled:true,clock:clock("2026-09-12T12:02:00.000Z"),fetchImpl:async()=>new Response(null,{status:304})});
+  assert.equal(second.sources[0]?.state,"healthy",JSON.stringify(second));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,1);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,1);
+});
+
+test("native policy failure, partial items and revoked permissions cannot stage reviewed facts",async t=>{
+  for(const results of [[{...federalRecord,type:"unexpected"}],[federalRecord,{...federalRecord,document_number:"2026-12346"}]]){
+    const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{...federalSource,maxItems:1});
+    const result=await runWatchCollection(db,{enabled:true,clock:clock(),fetchImpl:async()=>new Response(JSON.stringify({results}))});
+    assert.equal(result.sources[0]?.checkpointAdvanced,false);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,0);
+  }
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,federalSource);
+  const result=await runWatchCollection(db,{enabled:true,clock:clock(),fetchImpl:async()=>{
+    sqlite.exec("UPDATE watch_collection_reviews SET revoked_at='2026-09-12T12:00:00.000Z'");
+    return new Response(JSON.stringify({results:[federalRecord]}));
+  }});
+  assert.equal(result.sources[0]?.checkpointAdvanced,false);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,0);
+});
+
+test("Federal Register notices are filtered and unregistered continuation is never fetched",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,federalSource);let calls=0;
+  const result=await runWatchCollection(db,{enabled:true,clock:clock(),fetchImpl:async()=>{
+    calls++;return new Response(JSON.stringify({results:[{type:"Notice"}],next_page_url:"https://outside.example/page2"}));
+  }});
+  assert.equal(calls,1);assert.equal(result.sources[0]?.state,"parser-failed");
+  assert.equal(result.sources[0]?.checkpointAdvanced,false);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,0);
+});
 
 test("collector persists raw bytes before observations; replay and304 preserve first-seen and never publish",async t=>{
   const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db);
