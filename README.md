@@ -28,29 +28,47 @@ Product news is admitted to model review only when `fixtures/product-watch.json`
 
 Public URL generation uses `PUBLIC_ORIGIN=https://thevalleydesk.org`. The same Worker remains available on its workers.dev hostname for operational fallback; `www.thevalleydesk.org` redirects to the apex. See `docs/OPERATIONS.md`.
 
-### Watch foundation
+### Policy And Technology Watch
 
 The implementation blueprint is in [docs/watch-v1-blueprint/README.md](docs/watch-v1-blueprint/README.md).
 The [implementation checkpoint](docs/evidence/watch-implementation-checkpoint-2026-09-12.md)
-records completed code, dated verification, and remaining qualification work;
-the original blueprint and reference mockups are not a launch receipt.
+is a historical implementation checkpoint, not a current deployment receipt.
+The original blueprint and reference mockups describe the broader roadmap.
 
 Policy Watch and Technology Watch use separate accepted read models and bounded
 GET/HEAD APIs under `/api/v2/watch/`. They do not change the v1 feed envelope.
 `WATCH_PUBLIC_ENABLED` must be exactly `true` for public Watch reads; the separate
 `POLICY_BACKGROUND_PUBLIC_ENABLED` gate controls the inherited `/policy` page and
-its public background API. Both are explicitly false in the foundation candidate.
-Protected operator review remains independently authenticated.
+its public background API. Collection and deterministic publication are separate:
+`WATCH_COLLECTION_ENABLED=true` runs the bounded collector, and
+`WATCH_SOURCE_RULE_ENABLED=true` permits its supported source-rule workflows.
+Protected operator review remains independently authenticated. Enabling a public
+page does not qualify its sources or approve unsupported claims.
 
-The source adapters and standalone Watch evaluation harness remain offline
-contracts, not active collectors. The existing news-pipeline model upgrade is
-qualified separately in [the Spark upgrade record](docs/evidence/spark-upgrade-2026-09-12.md).
-Its explicit runtime setting selects 1.3; omitted model configuration retains the
-1.2 baseline default, and rollback restores the previous Worker's 1.2 settings.
-Public Watch activation still
-requires qualified federal/PA/NJ/DE/local sources, official representative data,
-artifact-specific regional evidence, authorized review/current-head writers,
-and operational load acceptance. Do not seed production from synthetic fixtures.
+The collector retains raw source evidence before staging records. Supported
+native workflows verify official Federal Register metadata, federal House/Senate
+rosters, and exact registered technology captures. Source-rule publication
+requires current source qualifications, parser/provenance checks, and transactional
+dependency guards. Model output cannot authorize it; unsupported interpretation,
+legal effect, and historical membership remain unavailable or in review.
+News and Events retain their existing editorial pipeline. The configured model is
+`meta/muse-spark-1.3-contributor`; keep the explicit setting during deployment
+and record the actual previous Worker configuration for rollback.
+
+The September 15 launch candidate targets **22 CMS federal proposals, three
+documented regional technology projects, and 36 federal representatives**
+(30 House members and six senators across PA/NJ/DE). These are intended candidate
+contents, not production-verified counts. Technology coverage is limited to
+verified Delaware Valley connections. The candidate is **not** comprehensive
+PA/NJ/DE state-legislative or county/local policy coverage, nor a complete
+technology inventory. Federal delegations are not substitutes for state or local
+representatives. Missing records do not establish absence of policy activity.
+
+See [Watch launch operations](docs/OPERATIONS.md#watch-launch-scope) and the
+[representative workflow evidence](docs/evidence/representative-launch-workflow-20260915.md).
+Complete the exact-candidate release gate, source enrollment, migration, scheduled
+refresh, and public readback before describing this candidate as live. Never seed
+production from synthetic fixtures.
 
 ### Local verification
 
