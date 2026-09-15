@@ -210,7 +210,7 @@ export const PublicCitation = z.object({ id: WatchId, sourceId: WatchId, label: 
   quote: z.string().min(3).max(2000).nullable(), locator: Label.nullable() }).strict();
 const UnknownField = z.object({ field: Label, reason: Label }).strict();
 const PublicBase = { id: WatchId, slug: Slug, title: Label, verifiedAt: CanonicalInstant,
-  sources: z.array(PublicCitation).min(1).max(20), unknowns: z.array(UnknownField).max(20) };
+  sources: z.array(PublicCitation).min(1).max(50), unknowns: z.array(UnknownField).max(20) };
 export const PublicPolicyDossier = z.object({ ...PublicBase, kind: z.literal("policy"), jurisdiction: WatchJurisdiction,
   lifecycle: PolicyLifecycle, legalEffect: PolicyLegalEffect, topics: z.array(Label).max(12).nullable(),
   identity: PublicFact(PolicyIdentity), summary: PublicFact(Text).nullable(), latestAction: PublicFact(PolicyAction).nullable(),

@@ -174,7 +174,7 @@ class Projection {
         quote: evidence.kind === "structured" ? null : evidence.quote,
         locator: evidence.kind === "structured" ? evidence.pointer : evidence.kind === "pdf" ? `Page ${evidence.pageNumber}` : null });
     }
-    if (this.sources.size > 20) return hold("public-citation-limit");
+    if (this.sources.size > 50) return hold("public-citation-limit");
     return { value, evidenceIds: [...fact.evidenceIds], verifiedAt: fact.verification.verifiedAt };
   }
 

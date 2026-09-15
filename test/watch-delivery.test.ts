@@ -13,6 +13,17 @@ import { HASH, NOW, OTHER_HASH, syntheticFixture, VERIFIED } from "./fixtures/wa
 import { stageSyntheticDelivery, syntheticDeliveryForRecord } from "./fixtures/watch-delivery/synthetic";
 
 const at = (instant = NOW) => new Date(instant);
+test("public citation budget permits detailed evidence and rejects the fifty-first citation", async () => {
+  const source = await syntheticFixture("technology");
+  const value = await projectTechnologyProfile(source.draft, source.context);
+  const citation = value.sources[0]!;
+  for (const count of [35, 50]) {
+    const sources = Array.from({ length: count }, (_, index) => ({ ...citation, id: `citation-${index}` }));
+    assert.equal(WatchPublicRecord.safeParse({ ...value, sources }).success, true);
+  }
+  const sources = Array.from({ length: 51 }, (_, index) => ({ ...citation, id: `citation-${index}` }));
+  assert.equal(WatchPublicRecord.safeParse({ ...value, sources }).success, false);
+});
 type Delivery = Awaited<ReturnType<typeof syntheticDeliveryForRecord>>;
 async function fixture(kind: "policy" | "technology" = "policy", id = `${kind}-delivery`, current = false): Promise<Delivery> {
   const source = await syntheticFixture(kind);
