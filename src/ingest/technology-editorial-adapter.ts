@@ -23,6 +23,8 @@ export async function persistTechnologySourceRepresentation(db: D1DatabaseLike, 
     .bind(subjectId, capture.url).first<Head>();
   if (previous && capture.checkedAt < previous.checked_at) throw new Error("technology-out-of-order-capture");
   if (previous?.representation_sha256 === digest && previous.source_id === sourceId) {
+    await db.prepare("UPDATE technology_source_heads SET checked_at=? WHERE subject_id=? AND source_url=? AND observation_id=? AND checked_at<=?")
+      .bind(capture.checkedAt, subjectId, capture.url, previous.observation_id, capture.checkedAt).run();
     return { observationId: previous.observation_id, outcome: "unchanged" as const };
   }
   const observationId = await tupleKey("technology-observation-v1", [subjectId, sourceId,
@@ -130,6 +132,15 @@ export async function prepareTechnologyEditorialProposal(db: D1DatabaseLike, sub
       [...new Set([...ids, ...(dated && sourceDate ? sourceDate.evidenceIds : [])])], "artifact-" + index);
   });
   const relationshipFactIds = [fact("local-relationship", input.relationship.value, input.relationship.evidenceIds)];
+  if (input.regionalEligibility) {
+    const regional = input.regionalEligibility;
+    if (regional.value.relationshipId !== input.relationship.value.id ||
+        regional.value.entityId !== input.relationship.value.entityId ||
+        regional.value.temporalStatus !== input.relationship.value.temporalStatus ||
+        regional.evidenceIds.some(id => !input.relationship.evidenceIds.includes(id)))
+      throw new Error("technology-regional-evidence-conflict");
+    fact("regional-eligibility", regional.value, regional.evidenceIds);
+  }
   const licenseFactIds = input.licenses.map((item, index) => fact("license", item.value, item.evidenceIds, "license-" + index));
   const optional = (field: string, value: typeof input.purpose) => value
     ? { factId: fact(field, value.value, value.evidenceIds) }

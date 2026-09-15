@@ -3,6 +3,7 @@ import { CanonicalInstant, DevelopmentType, HttpsUrl, SourceDate, TechnologyArti
   TechnologyRelationship, TechnologyResourceType, TechnologySetup, TechnologyWorkflow, WatchId, canonicalJson,
   developmentIdentityKey, githubRepositoryKey, sha256 } from "../content/watch-schema";
 import type { D1DatabaseLike } from "./persistence";
+import { RegionalEligibility } from "../content/watch-delivery";
 
 const Label = z.string().trim().min(1).max(240);
 const Text = z.string().trim().min(1).max(6000);
@@ -23,6 +24,7 @@ export const TechnologyDossierInput = z.object({
   purpose: ProposedFact.nullable(), intendedUsers: ProposedFact.nullable(), workflow: ProposedFact.nullable(),
   setup: ProposedFact.nullable(), limitations: ProposedFact.nullable(),
   relationship: z.object({ value: TechnologyRelationship, evidenceIds: z.array(WatchId).min(1).max(20) }).strict(),
+  regionalEligibility: z.object({ value: RegionalEligibility, evidenceIds: z.array(WatchId).min(1).max(20) }).strict().optional(),
   licenses: z.array(z.object({ value: TechnologyLicense, evidenceIds: z.array(WatchId).min(1).max(20) }).strict()).max(24),
   developments: z.array(z.object({ nativeId: Label, type: DevelopmentType.exclude(["policy-action"]),
     artifact: TechnologyArtifact, sourceOccurredAt: SourceDate, evidenceIds: z.array(WatchId).min(1).max(20),
@@ -39,7 +41,7 @@ export async function buildTechnologyDossierDraft(raw: unknown) {
   const ids = new Set(input.evidence.map(item => item.id));
   if (ids.size !== input.evidence.length) throw new Error("technology-duplicate-evidence");
   const facts = [input.purpose, input.intendedUsers, input.workflow, input.setup, input.limitations,
-    input.relationship, ...input.licenses, ...input.developments];
+    input.relationship, input.regionalEligibility, ...input.licenses, ...input.developments];
   if (facts.some(fact => fact?.evidenceIds.some(id => !ids.has(id))) ||
       Object.values(input.metadataEvidence ?? {}).flat().some(id => !ids.has(id))) throw new Error("technology-missing-evidence");
   if (input.purpose) Text.parse(input.purpose.value);

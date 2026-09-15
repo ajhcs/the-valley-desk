@@ -32,7 +32,7 @@ export function WatchDirectoryRecord({ item, query }: { item: WatchPublicRecord;
         <p>{item.purpose?.value ?? "Purpose not yet established."}</p>
         <ul className="WatchLocalList" aria-label="Verified local connections">{item.localRelationships.map(relation => <li key={relation.value.id}>
           {RELATIONSHIP_LABELS[relation.value.type]}{" "}<Link to="/technology-watch" search={watchQuerySearch({ ...query.values, organization: relation.value.entityId }, "technology")}>
-            {relation.value.entityName}</Link>{" "}<span className="WatchNote">({relation.value.temporalStatus === "historical" ? "historical connection" : "current at verification"})</span>
+            {relation.value.entityName}</Link>{" "}<span className="WatchNote">({relation.value.temporalStatus === "historical" ? "historical connection" : relation.value.temporalStatus === "observed" ? "documented connection" : "current at verification"})</span>
         </li>)}</ul>
         <p className="WatchNote">Artifact license assessments: {item.licenseClassifications.length ? item.licenseClassifications.map(value => LICENSE_LABELS[value]).join(", ") : "not established"}.</p>
       </>}

@@ -13,7 +13,7 @@ const Field = z.enum(["title", "identity", "lifecycle", "legal-effect", "topics"
   "resource-type", "purpose", "intended-users", "workflow", "setup", "limitations", "artifact", "local-relationship", "license"]);
 const Dependency = z.object({ key: WatchId, kind: DeliveryDependencyKind, expectedDigest: Sha256 }).strict();
 const Local = z.object({ artifactId: WatchId, entityId: WatchId, relationshipId: WatchId,
-  temporalStatus: z.enum(["current", "historical"]), checkedAt: CanonicalInstant, validFrom: CalendarDay.nullable(),
+  temporalStatus: z.enum(["current", "historical", "observed"]), checkedAt: CanonicalInstant, validFrom: CalendarDay.nullable(),
   validThrough: CanonicalInstant.nullable() }).strict();
 const License = z.object({ artifactId: WatchId, artifactVersion: z.string().min(1).max(240),
   scope: z.enum(["code", "data", "weights"]), classification: z.enum(["osi-open-source", "restricted-source", "proprietary", "unknown", "not-applicable"]),
@@ -53,9 +53,11 @@ export const WatchDeliveryManifest = z.object({ version: z.literal("watch-delive
 });
 export type WatchDeliveryManifest = z.infer<typeof WatchDeliveryManifest>;
 export const RegionalEligibility = z.object({ relationshipId: WatchId, entityId: WatchId,
-  geography: z.literal("delaware-valley"), temporalStatus: z.enum(["current", "historical"]),
+  geography: z.literal("delaware-valley"), temporalStatus: z.enum(["current", "historical", "observed"]),
   asOfDay: CalendarDay, validFrom: CalendarDay, validTo: CalendarDay.nullable() }).strict().refine(
-  value => value.validFrom <= value.asOfDay && (value.validTo === null || value.asOfDay < value.validTo), "Region-at-time evidence must cover its asserted day");
+  value => value.validFrom <= value.asOfDay && (value.validTo === null || value.asOfDay < value.validTo) &&
+    (value.temporalStatus !== "observed" || (value.validFrom === value.asOfDay && value.validTo !== null)),
+  "Region-at-time evidence must cover its asserted day; observation requires a bounded observation window");
 function regionalHeadValue(value: z.infer<typeof RegionalEligibility>) {
   const { relationshipId: _relationship, asOfDay, ...membership } = value;
   // Current membership is shared across resources with different check dates.
@@ -171,10 +173,13 @@ export async function compileWatchDelivery(input: unknown, context: WatchDeliver
       const regionalId = context.regionalFactIds.get(relation.id);
       if (!regionalId) return hold("delivery-regional-provenance-required");
       const regional = await fact(regionalId), eligibility = RegionalEligibility.parse(regional.value);
-      if (regional.field !== "regional-eligibility" || regional.verification.kind !== "human-review" ||
+      const approvedRule = regional.verification.kind === "source-rule" &&
+        regional.verification.ruleId === "watch-native-source-rule-v1" && regional.verification.ruleVersion === "1" &&
+        eligibility.temporalStatus === "observed";
+      if (regional.field !== "regional-eligibility" || (regional.verification.kind !== "human-review" && !approvedRule) ||
           eligibility.relationshipId !== relation.id || eligibility.entityId !== relation.entityId || eligibility.temporalStatus !== relation.temporalStatus ||
           (relation.temporalStatus === "historical" && (!relation.validFrom || eligibility.asOfDay !== relation.validFrom)) ||
-          (relation.temporalStatus === "current" && eligibility.asOfDay !== deliveryEasternDay(relation.checkedAt)) ||
+          (relation.temporalStatus !== "historical" && eligibility.asOfDay !== deliveryEasternDay(relation.checkedAt)) ||
           regional.evidenceIds.some(id => !publicFact.evidenceIds.includes(id))) return hold("delivery-regional-provenance-conflict");
       const regionalDigest = await acceptedFactDigest(regional);
       item.regionalTerm = { factId: regional.id, factDigest: regionalDigest, validFrom: eligibility.validFrom, validTo: eligibility.validTo };
@@ -266,7 +271,7 @@ export async function validateDeliveryBinding(record: WatchPublicRecord, manifes
       const local = group.local, term = group.regionalTerm;
       const regionalDigest = await sha256(canonicalJson(regionalHeadValue(RegionalEligibility.parse({ relationshipId: local.relationshipId,
         entityId: local.entityId, geography: "delaware-valley", temporalStatus: local.temporalStatus,
-        asOfDay: local.temporalStatus === "current" ? deliveryEasternDay(local.checkedAt) : local.validFrom, validFrom: term.validFrom, validTo: term.validTo }))));
+        asOfDay: local.temporalStatus !== "historical" ? deliveryEasternDay(local.checkedAt) : local.validFrom, validFrom: term.validFrom, validTo: term.validTo }))));
       const regionalKind = local.temporalStatus === "current" ? "regional-current" : "regional-historical";
       const regionalKey = await deliveryDependencyKey(regionalKind,
         local.temporalStatus === "current" ? [local.entityId] : [local.entityId, term.factId, term.factDigest]);

@@ -184,11 +184,12 @@ export const TechnologyArtifact = z.object({ id: WatchId, resourceId: WatchId,
 export type TechnologyArtifact = z.infer<typeof TechnologyArtifact>;
 export const TechnologyRelationship = z.object({ id: WatchId, resourceId: WatchId, artifactId: WatchId,
   entityId: WatchId, entityName: Label, type: z.enum(["created-by", "maintained-by", "research-affiliation", "piloted-at", "used-at"]),
-  temporalStatus: z.enum(["historical", "current"]), validFrom: CalendarDay.nullable(), validTo: CalendarDay.nullable(),
+  temporalStatus: z.enum(["historical", "current", "observed"]), validFrom: CalendarDay.nullable(), validTo: CalendarDay.nullable(),
   checkedAt: CanonicalInstant, validThrough: CanonicalInstant.nullable(),
 }).strict().superRefine((value, context) => {
   if (value.validFrom && value.validTo && value.validTo <= value.validFrom) context.addIssue({ code: z.ZodIssueCode.custom, path: ["validTo"], message: "Relationship period is half-open and must be increasing" });
-  if (value.temporalStatus === "current" && (!value.validThrough || value.validThrough <= value.checkedAt || value.validTo)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["validThrough"], message: "Current relationship requires bounded fresh verification, not an unknown end alone" });
+  if (value.temporalStatus !== "historical" && (!value.validThrough || value.validThrough <= value.checkedAt || value.validTo)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["validThrough"], message: "Current relationship requires bounded fresh verification, not an unknown end alone" });
+  if (value.temporalStatus === "observed" && (value.validFrom !== null || value.validTo !== null)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["validFrom"], message: "Observation does not establish a historical relationship period" });
 });
 export type TechnologyRelationship = z.infer<typeof TechnologyRelationship>;
 export const TechnologyLicense = z.object({ artifactId: WatchId, artifactVersion: Label, scope: z.enum(["code", "data", "weights"]),

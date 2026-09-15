@@ -16,7 +16,7 @@ export function TechnologyDossier({ item }: { item: PublicTechnologyProfile }) {
       <ul className="WatchDetailList">{item.localRelationships.map(fact => {
         const relation = fact.value;
         const artifact = item.artifacts.find(artifact => artifact.value.id === relation.artifactId)!.value;
-        return <li key={relation.id}><h3>{relation.entityName}</h3><p>{RELATIONSHIP_LABELS[relation.type]} | {relation.temporalStatus === "historical" ? "Historical connection" : "Current at verification"}</p>
+        return <li key={relation.id}><h3>{relation.entityName}</h3><p>{RELATIONSHIP_LABELS[relation.type]} | {relation.temporalStatus === "historical" ? "Historical connection" : relation.temporalStatus === "observed" ? "Connection documented at verification" : "Current at verification"}</p>
           <p className="WatchNote">Artifact: {artifact.nativeId}, {artifact.version}</p>
           <p className="WatchNote">From {relation.validFrom ?? "date not established"}; {relation.validTo ? `before ${relation.validTo}` : "end date not established"}.</p>
           <p className="WatchNote">Checked <time dateTime={relation.checkedAt}>{instantLabel(relation.checkedAt)}</time>
