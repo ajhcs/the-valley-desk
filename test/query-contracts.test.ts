@@ -5049,7 +5049,7 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(model.includes("muse-spark-1.2-contributor"));
   assert.ok(model.includes('"relevanceScore":0'));
   assert.ok(model.includes("Every affectedOrgId and productId must come verbatim"));
-  assert.ok(wrangler.includes('"crons": ["*/15 * * * *", "17 3 * * *"]'));
+  assert.deepEqual(JSON.parse(wrangler).triggers.crons, ["*/15 * * * *", "17 3 * * *", "2-57/5 * * * *"]);
   assert.ok(example.includes("EDITOR_MODEL_BUDGET=32"));
   assert.ok(example.includes("EDITOR_MODEL=meta/muse-spark-1.3-contributor"));
   assert.ok(example.includes("SOCIAL_INGEST_TOKEN=replace-with-a-different-long-random-token"));
