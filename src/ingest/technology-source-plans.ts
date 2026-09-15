@@ -61,7 +61,10 @@ export async function prepareTechnologySourceDraft(plan: typeof technologySource
     throw new Error("technology-reviewed-source-changed");
   }
   const subjectId = await githubRepositoryKey(plan.numericId), artifactId = subjectId + ":repository";
-  const entries = Object.entries(capture);
+  // SQL head ordering and object insertion order cannot change dossier identity.
+  const entries = Object.entries({ repository: capture.repository, commit: capture.commit,
+    readme: capture.readme, license: capture.license, releases: capture.releases,
+    ...(capture.regional ? { regional: capture.regional } : {}) });
   const checkedAt = entries.map(([, item]) => item.checkedAt).sort().at(-1)!;
   if (capture.regional && (capture.regional.url !== technologyRegionalSources[plan.entityId].url ||
       !capture.regional.body.includes(technologyRegionalSources[plan.entityId].quote)))

@@ -146,6 +146,8 @@ test("source preparation binds each field instead of borrowing the regional quot
     readme: captured(raw + plan.readme, readme), license: captured(raw + plan.license, license),
     releases: captured(api + "/releases?per_page=10", "[]") };
   const { input: draft } = await prepareTechnologySourceDraft(plan, captures);
+  const reordered = Object.fromEntries(Object.entries(captures).reverse()) as typeof captures;
+  assert.deepEqual((await prepareTechnologySourceDraft(plan, reordered)).input, draft);
   const quote = (id: string) => draft.evidence.find(item => item.id === id)!.quote;
   assert.match(quote(draft.purpose!.evidenceIds[0]!), /offline-capable viewer/);
   assert.match(quote(draft.workflow!.evidenceIds[0]!), /adjust SQL/);
