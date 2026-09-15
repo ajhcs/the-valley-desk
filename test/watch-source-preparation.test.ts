@@ -8,6 +8,28 @@ import { captureLaunchCandidate, endpointRobotsPolicy, prepareCapturedSource } f
 import { SOURCE_USER_AGENT } from "../src/ingest/upstream";
 import { collectionReadiness, sourceConfigurationDigest } from "../src/ingest/watch/source-enrollment";
 import { canonicalJson, sha256 } from "../src/content/watch-schema";
+import { qualifyCapturedWatchSource } from "../scripts/lib/watch-source-qualification";
+
+test("operator qualification replays real repository evidence and requires distinct healthy samples", async () => {
+  const candidate = launchCandidates.find(item => item.source.id === "candidate-orca")!;
+  const entry = receipts().find(item => item.receipt.sourceId === "candidate-orca")!;
+  const bytes = new Uint8Array(readFileSync(new URL(entry.receipt.bodyFile, directory)));
+  const samples = ["2026-09-12T18:00:00.000Z", "2026-09-12T19:00:00.000Z"].map(capturedAt => ({
+    endpoint: candidate.source.endpoints[0]!, capturedAt, bytes }));
+  const approval = { engineeringOwnerId: "synthetic-engineer", editorialOwnerId: "synthetic-owner",
+    statement: "Synthetic source access approval for qualification tests only; not a production decision.",
+    reviewedAt: "2026-09-12T20:00:00.000Z", expiresAt: "2026-10-12T20:00:00.000Z",
+    rightsDecision: "accepted", accessDecision: "public-or-authorized-read" };
+  const result = await qualifyCapturedWatchSource(candidate.source, samples, approval);
+  assert.equal(result.publicationAuthorized, false);
+  assert.equal(result.source.state, "qualified");
+  assert.equal(result.qualification.configurationSha256, await sourceConfigurationDigest(candidate.source));
+  assert.equal(result.review.qualificationSha256, await sha256(canonicalJson(result.qualification)));
+  await assert.rejects(qualifyCapturedWatchSource(candidate.source, [samples[0]!, samples[0]!], approval));
+  await assert.rejects(qualifyCapturedWatchSource(candidate.source, samples.map(sample => ({ ...sample, bytes: new TextEncoder().encode("{") })), approval), /replay-not-healthy/);
+  await assert.rejects(qualifyCapturedWatchSource(candidate.source, samples, { ...approval, rightsDecision: "pending" }));
+  await assert.rejects(qualifyCapturedWatchSource({ ...candidate.source, parserId: "uninstalled-parser" }, samples, approval), /parser-unsupported/);
+});
 
 const directory=new URL("./fixtures/watch-launch/",import.meta.url);
 const receipts=()=>readdirSync(directory).filter(file=>file.endsWith(".json")).map(file=>({
