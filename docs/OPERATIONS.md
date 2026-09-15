@@ -118,10 +118,19 @@ Honor applicable denials, authentication and rate limits; use publisher-supporte
 alternatives when access fails. Do not silently replace blocked sources with
 unverified scrapers or broaden a source's authority.
 
-Apply reviewed migration `0037_representative_raw_retention.sql` after preserving
+Watch uses the separate `2-57/5 * * * *` cron: minutes ending in 2 collect one
+due source; minutes ending in 7 attempt one queued publication. Each phase has a
+750-statement allowance, with reserved lease/state cleanup. Partial native staging
+resumes on a later source check; held publication candidates cannot monopolize the
+queue. Complete official rosters may publish during collection only when the
+source-rule flag is enabled. News schedules and model budgets remain independent.
+
+Apply reviewed migrations `0037_representative_raw_retention.sql` and
+`0038_watch_source_rule_dispatch.sql` after preserving
 a production backup and confirming the pending migration ledger. It preserves
 existing roster rows while raising the raw XML cap from 500000 to 1000000 bytes;
-runtime bounds and immutability remain enforced. Record the actual Worker version,
+runtime bounds and immutability remain enforced. Migration 0038 adds only the
+bounded publication dispatch cursor and lease. Record the actual Worker version,
 build SHA, migration ledger, runtime flags, source activations, and rollback
 candidate. Deploy the release gate's retained frontend artifacts without a second
 frontend build.

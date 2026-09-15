@@ -45,14 +45,14 @@ const rosterXml="<contact_information>"+["PA","NJ","DE"].flatMap((state,i)=>[0,1
 
 test("scheduled qualified XML roster retains raw first and only explicit source-rule mode advances public directories",async t=>{
   const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,rosterSource);
-  const first=await runWatchCollection(db,{enabled:true,clock:clock(),fetchImpl:async()=>new Response(rosterXml,{headers:{etag:'"roster"'}})});
+  const first=await runScheduledWatchCollection(db,{enabled:true,publishRepresentatives:false,clock:clock(),fetchImpl:async()=>new Response(rosterXml,{headers:{etag:'"roster"'}})});
   assert.equal(first.sources[0]?.state,"healthy",JSON.stringify(first));
   assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_roster_observations").get()!.n,1);
   assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_drafts").get()!.n,3);
   assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_heads").get()!.n,0);
   await due(db);
   const at="2026-09-12T12:02:00.000Z";
-  const second=await runWatchCollection(db,{enabled:true,publishVerified:true,clock:clock(at),fetchImpl:async()=>new Response(null,{status:304})});
+  const second=await runScheduledWatchCollection(db,{enabled:true,publishRepresentatives:true,clock:clock(at),fetchImpl:async()=>new Response(null,{status:304})});
   assert.equal(second.sources[0]?.state,"healthy",JSON.stringify(second));
   assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_heads").get()!.n,3);
   const result=await readRepresentatives(db,{jurisdiction:"federal",jurisdictionId:"us-pa",bodyId:"us-senate",asOf:"2026-09-12"},
@@ -100,6 +100,21 @@ test("scheduled Federal Register22-item raw collection and replay fit their inde
   assert.ok(replay.operations<750,JSON.stringify(replay));
   assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,22);
   t.diagnostic(JSON.stringify({firstCaptureStatements:first.operations,replayStatements:replay.operations}));
+});
+
+test("growing Federal Register inventories resume native staging after a bounded partial run",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{...federalSource,maxItems:30});
+  const results=Array.from({length:26},(_,index)=>({...federalRecord,document_number:"2026-"+String(30000+index)}));
+  const fetchImpl:typeof fetch=async()=>new Response(JSON.stringify({results}));
+  const first=await runScheduledWatchCollection(db,{enabled:true,clock:clock(),fetchImpl});
+  assert.equal(first.sources[0]?.state,"backoff",JSON.stringify(first));
+  assert.equal(first.sources[0]?.checkpointAdvanced,false);
+  assert.ok(first.operations<=750);
+  const resumed=await runScheduledWatchCollection(db,{enabled:true,clock:clock("2026-09-12T12:20:00.000Z"),fetchImpl});
+  assert.equal(resumed.sources[0]?.state,"healthy",JSON.stringify(resumed));
+  assert.equal(resumed.sources[0]?.checkpointAdvanced,true);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,26);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()!.n,0);
 });
 
 test("source budget exhaustion records backoff and releases its lease without starving another due source",async t=>{

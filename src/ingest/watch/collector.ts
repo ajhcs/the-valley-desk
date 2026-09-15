@@ -36,7 +36,11 @@ class CollectionFetchError extends UpstreamError { constructor(code:SourceRunSta
 async function fetchPage(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,url:string,fetchImpl:typeof fetch,deadline:number,clock:()=>Date) {
   if (!sourceEndpointAllowed(enrolled.source,url)) throw new UpstreamError("misconfigured","endpoint-not-enrolled");
   const previous=await retainedGoodRepresentation(db,enrolled,url);
-  const headers:Record<string,string>={"user-agent":SOURCE_USER_AGENT,accept:enrolled.source.transport==="github-json"?"application/vnd.github+json":enrolled.source.transport==="official-json"?"application/json":"application/xml,text/xml"};
+  const accept = enrolled.source.transport==="github-json" ? "application/vnd.github+json"
+    : enrolled.source.transport==="official-json" ? "application/json"
+    : enrolled.source.transport==="html" ? "text/html,application/xhtml+xml"
+    : enrolled.source.transport==="batch" ? "text/plain,application/octet-stream" : "application/xml,text/xml";
+  const headers:Record<string,string>={"user-agent":SOURCE_USER_AGENT,accept};
   const conditionalAllowed=enrolled.source.transport!=="github-json" || !new URL(url).pathname.split("/")[4];
   if(conditionalAllowed && previous?.etag)headers["if-none-match"]=previous.etag;
   if(conditionalAllowed && previous?.last_modified)headers["if-modified-since"]=previous.last_modified;
@@ -82,7 +86,7 @@ function githubNext(headers:Headers,enrolled:EnrolledCollectionSource):string|nu
   const match=links[0]!.match(/<([^>]+)>/);if(!match||!sourceEndpointAllowed(enrolled.source,match[1]!))throw new UpstreamError("parser-failed","pagination-not-enrolled");
   return match[1]!;
 }
-async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,fetchImpl:typeof fetch,deadline:number,clock:()=>Date,leaseOwner:string,publishVerified:boolean) {
+async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,fetchImpl:typeof fetch,deadline:number,clock:()=>Date,leaseOwner:string,publishVerified:boolean,publishRepresentatives:boolean) {
   const snapshotId=crypto.randomUUID(),source=enrolled.source,pages:SnapshotPageReceipt[]=[],
     persisted=new Map<string,PersistenceAcknowledgment>(),persistedPages=new Map<string,PagePersistenceAcknowledgment>();
   let url=source.endpoints[0]!,pageKey="1",binding:GitHubRepositoryBinding|null=null,itemCount=0;
@@ -129,7 +133,7 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
           ) THEN 1 ELSE 0 END)`).bind(crypto.randomUUID(),decisionId,source.id,at,leaseOwner,at),...statements]);
       }};
       if(source.parserId==="technology-capture-v1") await stageCollectedTechnologyCapture(guardedDb,input,clock(),publishVerified);
-      else if(source.transport==="official-xml") await publishCollectedRepresentativeRoster(guardedDb,input,clock(),publishVerified);
+      else if(source.transport==="official-xml") await publishCollectedRepresentativeRoster(guardedDb,input,clock(),publishRepresentatives);
       else await stageCollectedPolicyObservations(guardedDb,result.observations,clock(),publishVerified);
     }
     pages.push(stored.page);for(const [id,ack] of stored.persisted)persisted.set(id,ack);persistedPages.set(pageKey,stored.acknowledgment);
@@ -157,6 +161,7 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
 // official rosters may advance through the exact-source rule, under the same lease.
 export async function runWatchCollection(db:D1DatabaseLike,options:{
   enabled:boolean;publishVerified?:boolean;fetchImpl?:typeof fetch;clock?:()=>Date;maxSources?:number;deadlineMs?:number;
+  publishRepresentatives?:boolean;
   sourceDatabase?:D1DatabaseLike;
 }) {
   if(!options.enabled)return {outcome:"disabled" as const,sources:[]};
@@ -181,7 +186,7 @@ export async function runWatchCollection(db:D1DatabaseLike,options:{
         if(!technology && !["rss","atom","github-json","official-json","official-xml"].includes(enrolled.source.transport))throw new UpstreamError("misconfigured","watch-transport-not-implemented");
         if(enrolled.source.parserVersion!=="1" || (!technology && enrolled.source.parserId!==(enrolled.source.transport==="github-json"?"watch-github":enrolled.source.transport==="official-json"?"watch-federal-register":enrolled.source.transport==="official-xml"?"watch-federal-roster":"watch-rss")))
           throw new UpstreamError("misconfigured","watch-parser-not-installed");
-        const result=await collectSource(options.sourceDatabase??db,enrolled,options.fetchImpl??fetch,deadline,clock,owner,options.publishVerified??false);
+        const result=await collectSource(options.sourceDatabase??db,enrolled,options.fetchImpl??fetch,deadline,clock,owner,options.publishVerified??false,options.publishRepresentatives??options.publishVerified??false);
         ({state,detail,itemCount,checkpoint}=result);
       }catch(error){
         state=error instanceof UpstreamError?error.code:classifyFetchError(error);detail=error instanceof Error?error.message:"collection-failed";

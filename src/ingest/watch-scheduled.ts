@@ -20,7 +20,7 @@ export function watchSchedulePhase(scheduledTime: number): "collection" | "publi
 /** The collector's bounded lease/state writes use the unwrapped database so a
  * source exhausting its allowance still gets a failure/backoff and releases its lease. */
 export async function runScheduledWatchCollection(db: D1DatabaseLike, options: {
-  enabled: boolean; clock?: () => Date; fetchImpl?: typeof fetch;
+  enabled: boolean; publishRepresentatives?: boolean; clock?: () => Date; fetchImpl?: typeof fetch;
 }) {
   const budget = watchOperationBudget(db);
   const result = await runWatchCollection(db, { ...options, maxSources: 1, sourceDatabase: budget.db });

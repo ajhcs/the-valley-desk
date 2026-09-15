@@ -789,7 +789,7 @@ export default {
       if (!env.VALLEY_DESK_DB) return;
       const phase = watchSchedulePhase(event.scheduledTime);
       const work = phase === "collection"
-        ? runScheduledWatchCollection(env.VALLEY_DESK_DB, { enabled: env.WATCH_COLLECTION_ENABLED === "true" })
+        ? runScheduledWatchCollection(env.VALLEY_DESK_DB, { enabled: env.WATCH_COLLECTION_ENABLED === "true", publishRepresentatives: env.WATCH_SOURCE_RULE_ENABLED === "true" })
         : runScheduledWatchPublication(env.VALLEY_DESK_DB, { enabled: env.WATCH_SOURCE_RULE_ENABLED === "true" });
       ctx.waitUntil(work.then(result => logOps("watch-" + phase, result))
         .catch(error => logOps("watch-" + phase, { outcome: "failed", message: error instanceof Error ? error.message : "Watch dispatch failed" }, "error")));

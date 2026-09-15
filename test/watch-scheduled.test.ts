@@ -60,6 +60,7 @@ test("Watch phases have separate invocations and disabled phases perform no D1 w
   const watch = worker.slice(worker.indexOf("if (event?.cron === WATCH_CRON)"), worker.indexOf("const cadence = event?.cron"));
   assert.match(watch, /return;/);
   assert.doesNotMatch(watch, /runEditor|cleanupEmail|emailAuthentication/);
+  assert.match(watch, /publishRepresentatives: env\.WATCH_SOURCE_RULE_ENABLED === "true"/);
   const config = JSON.parse(readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8"));
   assert.deepEqual(config.triggers.crons, ["*/15 * * * *", "17 3 * * *", WATCH_CRON]);
 });
