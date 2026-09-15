@@ -3,6 +3,7 @@ import { CanonicalInstant, Sha256, WatchId, HttpsUrl, EvidenceReference, canonic
 import { RepresentativeDraft, stageRepresentativeDraft } from "./representative-persistence";
 import { REPRESENTATIVE_LOOKUPS } from "../content/representative-sources";
 import { parseSenateRoster, SENATE_ROSTER_URL } from "./representative-collection";
+import { parseHouseRoster, HOUSE_ROSTER_URL } from "./house-representative-collection";
 import type { D1DatabaseLike } from "./persistence";
 
 const Label = z.string().trim().min(1).max(240);
@@ -62,6 +63,20 @@ export async function prepareSenateRosterCaptures(xml: string, sourceId: string,
   });
 }
 
+export async function prepareHouseRosterCaptures(xml: string, sourceId: string, observedAt: string) {
+  const parsed = await parseHouseRoster(xml, observedAt);
+  const representation = canonicalJson({ rawSha256: parsed.rawSha256, congress: parsed.congress,
+    sourceLastUpdated: parsed.sourceLastUpdated, members: parsed.members });
+  return ["PA", "NJ", "DE"].flatMap(state => {
+    const rows = parsed.members.flatMap((member, index) => member.state !== state ? [] : [{ nativeId: member.nativeId,
+      displayName: member.displayName, party: member.party, districtId: "us-" + state.toLowerCase() + "-" + member.districtCode,
+      districtLabel: member.districtLabel, profileUrl: null, sourcePointer: "/members/" + index }]);
+    return rows.length ? [Capture.parse({ sourceId, sourceUrl: HOUSE_ROSTER_URL, observedAt,
+      parserVersion: parsed.parserVersion, rawSha256: parsed.rawSha256, bodyId: "us-house",
+      jurisdictionId: "us-" + state.toLowerCase(), representation, rows })] : [];
+  });
+}
+
 /** Produces proposed facts only. Review authenticates the actor and binds source
  * qualification; this function never produces accepted facts or a public head. */
 export async function buildRepresentativeRosterDraft(input: unknown, expectedRevision: number) {
@@ -99,7 +114,8 @@ export async function buildRepresentativeRosterDraft(input: unknown, expectedRev
     if (!offices.has(officeId)) {
       await fact("office", { id: officeId, jurisdiction: scope.jurisdiction, jurisdictionId: scope.jurisdictionId,
         bodyId: scope.bodyId, bodyName: scope.label, officeType: "legislative",
-        district: { type: scope.bodyId === "us-senate" ? "at-large" : "district", id: row.districtId, label: row.districtLabel },
+        district: { type: scope.bodyId === "us-senate" || (scope.bodyId === "us-house" && row.districtId.endsWith("-00"))
+          ? "at-large" : "district", id: row.districtId, label: row.districtLabel },
         seatCapacity: scope.bodyId === "us-senate" || scope.bodyId === "nj-assembly" ? 2 : 1, officialLookupUrl: scope.lookupUrl, ...term } as { id: string }, row.sourcePointer);
       offices.set(officeId, { officeId, membershipIds: [], committeeRoleIds: [], vacancyIds: [] });
     }

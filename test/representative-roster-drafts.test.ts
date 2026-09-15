@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import { pdfDatabase } from "./helpers/policy-pdf";
-import { buildRepresentativeRosterDraft, preparePaRosterCapture, prepareNjRosterCaptures } from "../src/ingest/representative-roster-drafts";
+import { buildRepresentativeRosterDraft, preparePaRosterCapture, prepareNjRosterCaptures, prepareHouseRosterCaptures } from "../src/ingest/representative-roster-drafts";
+import { collectHouseRoster, parseHouseRoster, HOUSE_ROSTER_URL } from "../src/ingest/house-representative-collection";
+import { REPRESENTATIVE_ROSTER_ENDPOINTS } from "../src/content/representative-sources";
 import { stageRepresentativeDraft, decideRepresentativeDraft, readRepresentatives } from "../src/ingest/representative-persistence";
 import { resolveRepresentativeSourcePolicy } from "../src/ingest/representative-runtime";
 import { RepresentativeMembership, RepresentativeOffice } from "../src/content/watch-representatives";
@@ -11,6 +14,59 @@ import { sourceConfigurationDigest } from "../src/ingest/watch/source-enrollment
 import { configureWatchCollectionSource } from "../src/ingest/watch/collection-storage";
 import type { D1DatabaseLike } from "../src/ingest/persistence";
 const NOW = "2026-09-12T12:00:00.000Z";
+const houseExcerpt = readFileSync(new URL("./fixtures/watch-representatives/house-clerk-excerpt-20260915.xml", import.meta.url), "utf8");
+
+test("actual Clerk excerpts stage regional House members with observation-only terms", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const observedAt = "2026-09-15T14:48:55.686Z";
+  const parsed = await parseHouseRoster(houseExcerpt, observedAt);
+  assert.deepEqual(parsed.members.map(row => row.nativeId), ["M001238", "N000188", "F000466"]);
+  assert.equal(parsed.sourceLastUpdated, "September 2, 2026");
+  assert.equal(parsed.congress, "119");
+  assert.equal(parsed.rawSha256, await sha256(houseExcerpt));
+  assert.deepEqual(REPRESENTATIVE_ROSTER_ENDPOINTS.find(row => row.url === HOUSE_ROSTER_URL)?.bodyIds, ["us-house"]);
+  const captures = await prepareHouseRosterCaptures(houseExcerpt, "unqualified-house-source", observedAt);
+  assert.deepEqual(captures.map(row => row.jurisdictionId), ["us-pa", "us-nj", "us-de"]);
+  for (const capture of captures) {
+    const draft = await buildRepresentativeRosterDraft(capture, 0);
+    const office = draft.facts.find(fact => fact.field === "representative-office")!.value as { district: { type: string } };
+    assert.equal(office.district.type, capture.jurisdictionId === "us-de" ? "at-large" : "district");
+    for (const fact of draft.facts.filter(fact => fact.field === "representative-membership")) {
+      assert.equal((fact.value as Record<string, unknown>).validFrom, null);
+      assert.equal((fact.value as Record<string, unknown>).validTo, null);
+      assert.equal((fact.value as Record<string, unknown>).observedAt, observedAt);
+      assert.ok(!("verification" in fact));
+    }
+    await stageRepresentativeDraft(db, draft, new Date(observedAt));
+  }
+  assert.equal(sqlite.prepare("SELECT count(*) AS n FROM representative_decisions").get()!.n, 0);
+  assert.equal(sqlite.prepare("SELECT count(*) AS n FROM representative_heads").get()!.n, 0);
+});
+
+test("House parsing rejects duplicates, conflicting districts, malicious XML and oversized inputs", async () => {
+  await assert.rejects(parseHouseRoster(houseExcerpt.replace("PA01", "NJ01"), NOW), /seat-conflict/);
+  await assert.rejects(parseHouseRoster(houseExcerpt.replace("F000466", "N000188"), NOW), /duplicate-member/);
+  await assert.rejects(parseHouseRoster(houseExcerpt.replace('postal-code="PA"', 'postal-code="NJ"'), NOW), /district-conflict/);
+  await assert.rejects(parseHouseRoster(houseExcerpt.replace("At Large", "1st"), NOW), /district-conflict/);
+  await assert.rejects(parseHouseRoster("<!DOCTYPE x [<!ENTITY e SYSTEM 'file:///x'>]>" + houseExcerpt, NOW), /roster-invalid/);
+  await assert.rejects(parseHouseRoster("x".repeat(1_000_001), NOW), /roster-invalid/);
+  const outside = houseExcerpt.replaceAll("PA01", "CA01").replaceAll('postal-code="PA"', 'postal-code="CA"');
+  assert.equal((await parseHouseRoster(outside, NOW)).members.length, 2);
+});
+
+test("House collection is one fixed unauthenticated request and stops on upstream denial", async () => {
+  let calls = 0;
+  const fetcher = (async (url, init) => {
+    calls++; assert.equal(url, HOUSE_ROSTER_URL); assert.equal(init?.redirect, "error");
+    assert.equal(init?.credentials, "omit");
+    assert.equal(new Headers(init?.headers).has("authorization"), false);
+    return new Response(houseExcerpt);
+  }) as typeof fetch;
+  const result = await collectHouseRoster(fetcher, new Date(NOW));
+  assert.equal(result.xml, houseExcerpt); assert.equal(calls, 1);
+  await assert.rejects(collectHouseRoster((async () => { calls++; return new Response("Denied", { status: 403 }); }) as typeof fetch), /upstream-403/);
+  assert.equal(calls, 2);
+});
 function capture() {
   return preparePaRosterCapture({ rawSha256: "a".repeat(64), rows: [{ district: "001", party: "D",
     displayName: "Synthetic Roster Member", profile: "/senate/members/bio/123/sen-fixture" }] }, "synthetic-roster", NOW, "senate");
