@@ -84,6 +84,9 @@ export async function prepareTechnologyEditorialProposal(db: D1DatabaseLike, sub
   const stored = await readTechnologyDossierDraft(db, subjectId);
   if (!stored) throw new Error("technology-draft-not-found");
   const { draft: record, revision } = stored, input = record.input;
+  // Legacy captures remain readable, but affiliation-only citations cannot be
+  // promoted into title, artifact identity or practical-use evidence.
+  if (!input.metadataEvidence) throw new Error("technology-field-evidence-review-required");
   const evidence: EvidenceReference[] = [], observations = new Map<string, StoredObservation>();
   const sourceHeadAssertions: TechnologySourceHeadAssertion[] = [];
   for (const citation of input.evidence) {
@@ -110,12 +113,11 @@ export async function prepareTechnologyEditorialProposal(db: D1DatabaseLike, sub
     facts.push({ id, subjectId, field, value, evidenceIds: ids, interpretationDependencies: null });
     return id;
   }
-  const readmeIds = input.purpose.evidenceIds;
-  const titleFactId = fact("title", input.title, readmeIds);
-  const resourceTypeFactId = fact("resource-type", input.resourceType, readmeIds);
+  const titleFactId = fact("title", input.title, input.metadataEvidence.title);
+  const resourceTypeFactId = fact("resource-type", input.resourceType, input.metadataEvidence.resourceType);
   const artifactFactIds = record.artifacts.map((artifact, index) => {
     const development = record.developments.find(item => item.artifact.id === artifact.id);
-    const ids = index === 0 ? [input.evidence.find(item => item.id.endsWith("-repository"))?.id ?? readmeIds[0]!]
+    const ids = index === 0 ? input.metadataEvidence!.repository
       : development!.evidenceIds;
     const expectedType = { "software-release": "release", "paper-publication": "paper",
       "dataset-release": "dataset", "product-release": "product" };
@@ -129,13 +131,14 @@ export async function prepareTechnologyEditorialProposal(db: D1DatabaseLike, sub
   });
   const relationshipFactIds = [fact("local-relationship", input.relationship.value, input.relationship.evidenceIds)];
   const licenseFactIds = input.licenses.map((item, index) => fact("license", item.value, item.evidenceIds, "license-" + index));
+  const optional = (field: string, value: typeof input.purpose) => value
+    ? { factId: fact(field, value.value, value.evidenceIds) }
+    : { unavailableReason: "Field-specific source evidence has not been established." };
   const draft = TechnologyProfileDraft.parse({ id: subjectId, slug: input.slug, kind: "technology", subjectRevision: revision,
     titleFactId, resourceTypeFactId, artifactFactIds, relationshipFactIds, licenseFactIds,
-    purpose: { factId: fact("purpose", input.purpose.value, input.purpose.evidenceIds) },
-    intendedUsers: { factId: fact("intended-users", input.intendedUsers.value, input.intendedUsers.evidenceIds) },
-    workflow: { factId: fact("workflow", input.workflow.value, input.workflow.evidenceIds) },
-    setup: { factId: fact("setup", input.setup.value, input.setup.evidenceIds) },
-    limitations: { factId: fact("limitations", input.limitations.value, input.limitations.evidenceIds) } });
+    purpose: optional("purpose", input.purpose), intendedUsers: optional("intended-users", input.intendedUsers),
+    workflow: optional("workflow", input.workflow), setup: optional("setup", input.setup),
+    limitations: optional("limitations", input.limitations) });
   const currentArtifacts = new Map<string, CurrentArtifact>(record.artifacts.map(artifact => [artifact.id, {
     resourceId: subjectId, version: artifact.version, licenseSha256s: {
       code: input.licenses.find(item => item.value.artifactId === artifact.id && item.value.scope === "code")?.value.licenseSha256 ?? null,

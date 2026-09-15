@@ -17,8 +17,11 @@ export const TechnologyDossierInput = z.object({
     fullName: z.string().regex(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/), commitSha: z.string().regex(/^[a-f0-9]{40}$/) }).strict(),
   slug: z.string().max(100).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   title: Label, resourceType: TechnologyResourceType,
-  discoveredAt: CanonicalInstant, evidence: z.array(Citation).min(1).max(30),
-  purpose: ProposedFact, intendedUsers: ProposedFact, workflow: ProposedFact, setup: ProposedFact, limitations: ProposedFact,
+  metadataEvidence: z.object({ title: z.array(WatchId).min(1).max(20), resourceType: z.array(WatchId).min(1).max(20),
+    repository: z.array(WatchId).min(1).max(20) }).strict().optional(),
+  discoveredAt: CanonicalInstant, evidence: z.array(Citation).min(1).max(100),
+  purpose: ProposedFact.nullable(), intendedUsers: ProposedFact.nullable(), workflow: ProposedFact.nullable(),
+  setup: ProposedFact.nullable(), limitations: ProposedFact.nullable(),
   relationship: z.object({ value: TechnologyRelationship, evidenceIds: z.array(WatchId).min(1).max(20) }).strict(),
   licenses: z.array(z.object({ value: TechnologyLicense, evidenceIds: z.array(WatchId).min(1).max(20) }).strict()).max(24),
   developments: z.array(z.object({ nativeId: Label, type: DevelopmentType.exclude(["policy-action"]),
@@ -37,12 +40,13 @@ export async function buildTechnologyDossierDraft(raw: unknown) {
   if (ids.size !== input.evidence.length) throw new Error("technology-duplicate-evidence");
   const facts = [input.purpose, input.intendedUsers, input.workflow, input.setup, input.limitations,
     input.relationship, ...input.licenses, ...input.developments];
-  if (facts.some(fact => fact.evidenceIds.some(id => !ids.has(id)))) throw new Error("technology-missing-evidence");
-  Text.parse(input.purpose.value);
-  z.array(Label).max(20).parse(input.intendedUsers.value);
-  TechnologyWorkflow.parse(input.workflow.value);
-  TechnologySetup.parse(input.setup.value);
-  z.array(Text).max(20).parse(input.limitations.value);
+  if (facts.some(fact => fact?.evidenceIds.some(id => !ids.has(id))) ||
+      Object.values(input.metadataEvidence ?? {}).flat().some(id => !ids.has(id))) throw new Error("technology-missing-evidence");
+  if (input.purpose) Text.parse(input.purpose.value);
+  if (input.intendedUsers) z.array(Label).max(20).parse(input.intendedUsers.value);
+  if (input.workflow) TechnologyWorkflow.parse(input.workflow.value);
+  if (input.setup) TechnologySetup.parse(input.setup.value);
+  if (input.limitations) z.array(Text).max(20).parse(input.limitations.value);
   if (input.relationship.value.resourceId !== subjectId || input.relationship.value.artifactId !== artifactId) {
     throw new Error("technology-artifact-relationship-conflict");
   }

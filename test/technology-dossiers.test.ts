@@ -20,6 +20,7 @@ async function input(): Promise<TechnologyDossierInput> {
   return {
     schemaVersion: "technology-dossier-input-1", repository: { numericId: "123", fullName: "synthetic/tool", commitSha: "a".repeat(40) },
     slug: "synthetic-tool", title: "Synthetic tool", resourceType: "software", discoveredAt: NOW,
+    metadataEvidence: { title: ["synthetic-evidence"], resourceType: ["synthetic-evidence"], repository: ["synthetic-evidence"] },
     evidence: [{ id: "synthetic-evidence", url: "https://example.org/tool", checkedAt: NOW, representationSha256: await sha256(quote),
       quote, retainedText: quote }],
     purpose: fact("Synthetic purpose."), intendedUsers: fact(["Researchers"]),
@@ -75,7 +76,7 @@ test("unbound local evidence, license versions, duplicate scopes and nonliteral 
   const source = await input();
   const unrelated = structuredClone(source); unrelated.relationship.value.artifactId = "another-artifact";
   await assert.rejects(buildTechnologyDossierDraft(unrelated), /relationship-conflict/);
-  const missing = structuredClone(source); missing.purpose.evidenceIds = ["missing"];
+  const missing = structuredClone(source); missing.purpose!.evidenceIds = ["missing"];
   await assert.rejects(buildTechnologyDossierDraft(missing), /missing-evidence/);
   const version = structuredClone(source); version.licenses[0]!.value.artifactVersion = "different-version";
   await assert.rejects(buildTechnologyDossierDraft(version), /license-version-conflict/);
@@ -123,6 +124,60 @@ test("researched source plans bind exact GitHub identities and never generalize 
   const capture = { url: "https://example.org", checkedAt: NOW, body: "{}" };
   await assert.rejects(prepareTechnologySourceDraft(plan, { repository: capture, commit: capture,
     readme: capture, license: capture, releases: capture }), /identity-conflict/);
+});
+
+test("source preparation binds each field instead of borrowing the regional quote", async () => {
+  // Synthetic transport fixture: these bytes exercise binding mechanics, not
+  // source qualification, maintainer identity or an editorial acceptance.
+  const original = technologySourcePlans[0], commitSha = "a".repeat(40);
+  const readme = ["# ORCA-CDS: Offsite Repository of Clinical Assets", original.quote,
+    "ORCA-CDS is a resilient, offline-capable viewer for Epic order sets during downtime.",
+    "Order sets are specific to each institution: adjust SQL, run and schedule the pipeline, then deploy.",
+    "ORCA-CDS is **not** a live connection to the EHR and cannot place orders."].join("\n\n");
+  const license = ["Permission is hereby granted for internal non-commercial research.",
+    "1.2. The software may not be transferred without permission.",
+    "1.6. The software is provided for research only; clinical use needs separate authorization."].join("\n\n");
+  const plan = { ...original, readmeSha256: await sha256(readme), licenseSha256: await sha256(license) } as typeof original;
+  const captured = (url: string, body: string) => ({ url, body, checkedAt: NOW });
+  const api = "https://api.github.com/repos/" + plan.fullName;
+  const raw = "https://raw.githubusercontent.com/" + plan.fullName + "/" + commitSha + "/";
+  const captures = { repository: captured(api, JSON.stringify({ id: Number(plan.numericId), full_name: plan.fullName, private: false })),
+    commit: captured(api + "/commits/main", JSON.stringify({ sha: commitSha })),
+    readme: captured(raw + plan.readme, readme), license: captured(raw + plan.license, license),
+    releases: captured(api + "/releases?per_page=10", "[]") };
+  const { input: draft } = await prepareTechnologySourceDraft(plan, captures);
+  const quote = (id: string) => draft.evidence.find(item => item.id === id)!.quote;
+  assert.match(quote(draft.purpose!.evidenceIds[0]!), /offline-capable viewer/);
+  assert.match(quote(draft.workflow!.evidenceIds[0]!), /adjust SQL/);
+  assert.match(quote(draft.limitations!.evidenceIds[0]!), /cannot place orders/);
+  assert.match(quote(draft.metadataEvidence!.title[0]!), /^# ORCA-CDS/);
+  assert.ok(draft.metadataEvidence!.repository.some(id => quote(id).includes('"sha"')));
+  assert.ok([draft.purpose!, draft.workflow!, draft.limitations!].every(field =>
+    !field.evidenceIds.includes(draft.relationship.evidenceIds[0]!)));
+  assert.equal(draft.intendedUsers, null);
+  assert.equal(draft.setup, null);
+  assert.deepEqual(draft.licenses.map(item => item.value.scope), ["code"]);
+  const changed = { ...captures, readme: { ...captures.readme, body: original.quote } };
+  await assert.rejects(prepareTechnologySourceDraft(plan, changed), /reviewed-source-changed/);
+});
+
+test("legacy drafts require field evidence review and unsupported fields never become facts", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const source = await input();
+  delete source.metadataEvidence;
+  const staged = await persistTechnologyDossierDraft(db, source, 0);
+  await assert.rejects(prepareTechnologyEditorialProposal(db, staged.draft.subjectId), /field-evidence-review-required/);
+  source.metadataEvidence = { title: ["synthetic-evidence"], resourceType: ["synthetic-evidence"], repository: ["synthetic-evidence"] };
+  source.setup = null; source.intendedUsers = null;
+  await persistTechnologyDossierDraft(db, source, 1);
+  const citation = source.evidence[0]!;
+  await persistTechnologySourceRepresentation(db, staged.draft.subjectId, "synthetic-enrolled-source",
+    { url: citation.url, checkedAt: NOW, body: citation.retainedText });
+  const { proposal } = await prepareTechnologyEditorialProposal(db, staged.draft.subjectId);
+  assert.ok("unavailableReason" in proposal.draft.setup);
+  assert.ok("unavailableReason" in proposal.draft.intendedUsers);
+  assert.ok(!proposal.facts.some(fact => ["setup", "intended-users", "regional-eligibility"].includes(fact.field)));
+  assert.equal(sqlite.prepare("SELECT count(*) AS n FROM watch_public_revisions").get()!.n, 0);
 });
 
 test("captured ORCA, CaPTk and OpenPedCan drafts persist offline with exact licenses and release chronology", async t => {

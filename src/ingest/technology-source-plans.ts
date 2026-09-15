@@ -7,11 +7,8 @@ export const technologySourcePlans = [
     licenseSha256: "5470b7d5b1aed9de70596043a23b00c4340f7e039c21bb8f6e38546c8c74049c",
     slug: "chop-orca", title: "ORCA-CDS", entityId: "chop", entityName: "Children's Hospital of Philadelphia",
     relationshipType: "created-by", quote: "It was developed and evaluated at Children's Hospital of Philadelphia (CHOP)",
-    purpose: "Offline, read-only access to Epic order-set reference content during downtime.",
-    users: ["Clinical informatics teams", "Downtime preparedness teams"],
-    inputs: ["Institution-specific order-set extract"], steps: ["Adapt the documented warehouse extract.", "Transform CSV into hierarchical JSON.", "Deploy the static viewer and refresh its reference content."],
-    outputs: ["Searchable offline order-set reference"],
-    prerequisites: ["Node.js", "Python", "Institution-specific warehouse access"],
+    purpose: "Offline-capable viewer for Epic order sets during EHR and network downtime.",
+    steps: ["Adjust the SQL extract.", "Run and schedule the pipeline.", "Configure and deploy the app."],
     limitations: ["Cannot place orders or provide live decision support.", "Research software; clinical use requires separate authorization under the license."],
     classification: "restricted-source", conditions: ["Academic/nonprofit internal non-commercial research and education only.", "Commercial use and transfer require separate permission.", "Clinical use is not granted by the public research license."],
   },
@@ -21,11 +18,8 @@ export const technologySourcePlans = [
     slug: "penn-captk", title: "Cancer Imaging Phenomics Toolkit", entityId: "penn-medicine", entityName: "University of Pennsylvania",
     relationshipType: "maintained-by", quote: "at the University of Pennsylvania.",
     purpose: "Cancer-image analysis and predictive modeling, with brain, breast and lung imaging applications.",
-    users: ["Medical imaging researchers"],
-    inputs: ["Radiographic cancer images"], steps: ["Choose a documented application and its required image inputs.", "Follow the matching application guide for image analysis."],
-    outputs: ["Quantitative imaging features and analysis outputs"],
-    prerequisites: ["Platform-compatible CaPTk distribution", "Application-specific imaging inputs"],
-    limitations: ["Research use; not FDA-approved for clinical use.", "Individual components have different license terms."],
+    steps: ["Consult the linked application and functionality guides."],
+    limitations: ["Research use only; not reviewed or approved for clinical use by the FDA or other federal/state agencies."],
     classification: "unknown", conditions: ["Custom CBICA terms and multiple dependency licenses.", "PHI Estimator is separately non-commercial; do not label the whole distribution OSI open source."],
   },
   { numericId: "358689512", fullName: "d3b-center/OpenPedCan-analysis", branch: "dev", readme: "README.md", license: "LICENSE.md",
@@ -33,12 +27,9 @@ export const technologySourcePlans = [
     licenseSha256: "8067620f3ea6c48329c77af92ecc9992af92691fd9323d904dca67848df14ea4",
     slug: "chop-openpedcan", title: "Open Pediatric Cancer analysis", entityId: "chop", entityName: "Children's Hospital of Philadelphia",
     relationshipType: "research-affiliation", quote: "Children’s Hospital of Philadelphia Division of Neurosurgery",
-    purpose: "Reproducible analysis of harmonized pediatric cancer data, with versioned outputs for downstream research.",
-    users: ["Cancer genomics researchers", "Bioinformatics analysts"],
-    inputs: ["Versioned OpenPedCan research data"], steps: ["Review data formats and the release notes.", "Use the documented project container for a selected analysis module."],
-    outputs: ["Research analyses and versioned result tables"],
-    prerequisites: ["Docker", "Module-specific research data"],
-    limitations: ["Code releases and data releases have separate version histories.", "Repository license does not automatically establish rights to every upstream dataset."],
+    purpose: "Harmonizes pediatric cancer data and performs downstream cancer analyses.",
+    steps: ["Review the data-format documentation, data-release notes, and analysis documentation."],
+    limitations: ["Citations must identify the data release used."],
     classification: "unknown", conditions: ["Repository license contains CC0 and BSD 3-Clause sections; confirm scope for the specific artifact.", "Data and weights licensing is not inferred from code licensing."],
   },
 ] as const;
@@ -73,20 +64,67 @@ export async function prepareTechnologySourceDraft(plan: typeof technologySource
   })));
   // A successful empty releases response is retained but cannot supply a fact span.
   const usableEvidence = evidence.filter(item => item.quote.length >= 3);
-  const readmeIds = ["tech-" + plan.numericId + "-readme"], licenseIds = ["tech-" + plan.numericId + "-license"];
-  const proposed = (value: unknown) => ({ value, evidenceIds: readmeIds });
+  const readmeIds = ["tech-" + plan.numericId + "-readme"];
+  const cite = async (name: string, source: TechnologyCapture, quote: string) => {
+    if (!source.body.includes(quote) || quote.length < 3 || quote.length > 2000)
+      throw new Error("technology-field-evidence-changed:" + name);
+    const id = "tech-" + plan.numericId + "-field-" + name;
+    usableEvidence.push({ id, url: source.url, checkedAt: source.checkedAt,
+      representationSha256: await sha256(source.body), quote, retainedText: quote });
+    return id;
+  };
+  const paragraph = (source: TechnologyCapture, starts: string) => {
+    const start = source.body.indexOf(starts);
+    if (start < 0) throw new Error("technology-field-evidence-changed:" + starts);
+    const end = source.body.indexOf("\n\n", start);
+    return source.body.slice(start, end < 0 ? undefined : end);
+  };
+  const jsonField = (source: TechnologyCapture, key: string, value: unknown) => {
+    const literal = JSON.stringify(value);
+    const pattern = new RegExp(JSON.stringify(key) + "\\s*:\\s*" + literal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?=\\s*[,}\\]])");
+    const match = pattern.exec(source.body);
+    if (!match) throw new Error("technology-field-evidence-changed:" + key);
+    return match[0];
+  };
+  const titleIds = [await cite("title", capture.readme, capture.readme.body.split("\n").find(line => line.startsWith("# "))!)];
+  const repositoryIds = await Promise.all([
+    ["repository-name", jsonField(capture.repository, "full_name", repository.full_name)],
+    ["repository-id", jsonField(capture.repository, "id", repository.id)],
+    ["repository-public", jsonField(capture.repository, "private", false)],
+  ].map(([name, quote]) => cite(name!, capture.repository, quote!)));
+  repositoryIds.push(await cite("repository-version", capture.commit, jsonField(capture.commit, "sha", commit.sha)));
+  const purposeStart = plan.slug === "chop-orca" ? "ORCA-CDS is a resilient" : plan.slug === "penn-captk"
+    ? "CaPTk is a software platform" : "The Open Pediatric Cancer (OpenPedCan) project is an open analysis effort";
+  const purposeIds = [await cite("purpose", capture.readme, paragraph(capture.readme, purposeStart))];
+  const workflowStart = plan.slug === "chop-orca" ? "Order sets are specific to each institution"
+    : plan.slug === "penn-captk" ? "For a full list of applications and functionalities" : "1. Learn about the fundamental data";
+  const workflowIds = [await cite("workflow", capture.readme, paragraph(capture.readme, workflowStart))];
+  const limitationStart = plan.slug === "chop-orca" ? "ORCA-CDS is **not** a live connection"
+    : plan.slug === "penn-captk" ? "- The software has been designed for research purposes only"
+    : "To cite this work, please note the data release used";
+  const limitationIds = [await cite("limitations", capture.readme, paragraph(capture.readme, limitationStart))];
+  const licenseIds = [await cite("license-terms", capture.license, plan.slug === "chop-orca"
+    ? paragraph(capture.license, "1.6. The software is provided")
+    : plan.slug === "penn-captk" ? capture.license.body.slice(0, Math.min(2000, capture.license.body.length))
+    : paragraph(capture.license, "# BSD 3-Clause License"))];
+  if (plan.slug === "chop-orca") licenseIds.push(await cite("license-use", capture.license,
+    paragraph(capture.license, "Permission is hereby granted")), await cite("license-transfer", capture.license,
+    paragraph(capture.license, "1.2. The software may not")));
+  if (plan.slug === "chop-openpedcan") licenseIds.push(await cite("license-cc0", capture.license,
+    paragraph(capture.license, "To the extent possible under law")));
+  const proposed = (value: unknown, evidenceIds: string[]) => ({ value, evidenceIds });
   const input: TechnologyDossierInput = {
     schemaVersion: "technology-dossier-input-1", repository: { numericId: plan.numericId, fullName: plan.fullName, commitSha: commit.sha },
     slug: plan.slug, title: plan.title, resourceType: "software", discoveredAt: checkedAt, evidence: usableEvidence,
-    purpose: proposed(plan.purpose), intendedUsers: proposed([...plan.users]),
-    workflow: proposed({ inputs: [...plan.inputs], steps: [...plan.steps], outputs: [...plan.outputs] }),
-    setup: proposed({ verification: "maintainer-documented", version: commit.sha, prerequisites: [...plan.prerequisites],
-      guideUrl: "https://github.com/" + plan.fullName + "/blob/" + commit.sha + "/" + plan.readme }),
-    limitations: proposed([...plan.limitations]),
+    metadataEvidence: { title: titleIds, resourceType: purposeIds, repository: repositoryIds },
+    purpose: proposed(plan.purpose, purposeIds), intendedUsers: null,
+    workflow: proposed({ inputs: [], steps: [...plan.steps], outputs: [] }, workflowIds),
+    setup: null,
+    limitations: proposed([...plan.limitations], [...limitationIds, ...licenseIds]),
     relationship: { evidenceIds: readmeIds, value: { id: subjectId + ":local", resourceId: subjectId, artifactId,
       entityId: plan.entityId, entityName: plan.entityName, type: plan.relationshipType, temporalStatus: "historical",
       validFrom: null, validTo: null, checkedAt, validThrough: null } },
-    licenses: (["code", "data", "weights"] as const).map(scope => ({ evidenceIds: licenseIds, value: {
+    licenses: (["code"] as const).map(scope => ({ evidenceIds: licenseIds, value: {
       artifactId, artifactVersion: commit.sha, scope, classification: scope === "code" ? plan.classification : "unknown",
       spdxId: null, licenseSha256: scope === "code" ? evidence.find(item => item.id.endsWith("-license"))!.representationSha256 : null,
       sourceUrl: scope === "code" ? capture.license.url : null, conditions: scope === "code" ? [...plan.conditions] : ["Scope not independently qualified."] } })),
@@ -104,10 +142,14 @@ export async function prepareTechnologySourceDraft(plan: typeof technologySource
     const releaseUrl = "https://github.com/" + plan.fullName + "/releases/tag/" + encodeURIComponent(release.tag_name);
     if (release.html_url !== releaseUrl) throw new Error("technology-release-repository-conflict");
     const releaseEvidenceId = "tech-" + plan.numericId + "-release-" + nativeId;
-    const retainedText = JSON.stringify(release.published_at ?? release.tag_name);
+    const retainedText = jsonField(capture.releases, "published_at", release.published_at ?? null);
     if (!capture.releases.body.includes(retainedText)) throw new Error("technology-nonliteral-release-evidence");
     input.evidence.push({ id: releaseEvidenceId, url: capture.releases.url, checkedAt: capture.releases.checkedAt,
       representationSha256: await sha256(capture.releases.body), quote: retainedText, retainedText });
+    const releaseEvidenceIds = [releaseEvidenceId];
+    for (const key of ["id", "tag_name", "html_url", "draft", "prerelease"])
+      releaseEvidenceIds.push(await cite("release-" + nativeId + "-" + key, capture.releases,
+        jsonField(capture.releases, key, release[key])));
     const date = typeof release.published_at === "string" ? new Date(release.published_at) : null;
     input.developments.push({ nativeId, type: "software-release", title: release.name || release.tag_name,
       artifact: { id: subjectId + ":release:" + nativeId, resourceId: subjectId, artifactType: "release",
@@ -115,7 +157,7 @@ export async function prepareTechnologySourceDraft(plan: typeof technologySource
       sourceOccurredAt: !release.draft && date && Number.isFinite(date.getTime())
         ? { precision: "instant", value: date.toISOString(), evidenceIds: [releaseEvidenceId] }
         : { precision: "unknown", reason: "No authoritative public release timestamp." },
-      evidenceIds: [releaseEvidenceId], prerelease: release.prerelease, draft: release.draft });
+      evidenceIds: releaseEvidenceIds, prerelease: release.prerelease, draft: release.draft });
   }
   return buildTechnologyDossierDraft(input);
 }
