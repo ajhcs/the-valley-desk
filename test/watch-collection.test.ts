@@ -26,7 +26,7 @@ async function enroll(db:D1DatabaseLike,overrides:Partial<SourceEnrollment>={}) 
 }
 function clock(at=SEEN_AT){return ()=>new Date(at);}
 const success:typeof fetch=async()=>new Response(rssBody(),{headers:{"content-type":"application/rss+xml; charset=utf-8",etag:'"one"'}});
-const federalSource:Partial<SourceEnrollment>={id:"synthetic-federal",desk:"policy",jurisdiction:"federal",family:"regulation",
+const federalSource:Partial<SourceEnrollment>={id:"synthetic-federal",desk:"policy",jurisdiction:"federal",family:"regulation",authority:"official",
   transport:"official-json",parserId:"watch-federal-register",parserVersion:"1",
   endpoints:["https://www.federalregister.gov/api/v1/documents.json?per_page=5"],
   linkScopes:[{host:"www.federalregister.gov",pathPrefix:"/"}]};

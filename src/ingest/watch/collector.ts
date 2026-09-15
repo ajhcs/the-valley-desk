@@ -5,6 +5,7 @@ import { SOURCE_TIMEOUT_MS, SOURCE_USER_AGENT, UpstreamError, sleep } from "../u
 import { parseWatchFeedSnapshot } from "./feed-adapter";
 import { parseFederalRegisterSnapshot, stageCollectedPolicyObservations } from "./policy-adapter";
 import { parseRepresentativeRosterSnapshot, publishCollectedRepresentativeRoster } from "./representative-adapter";
+import { parseTechnologyCaptureSnapshot, stageCollectedTechnologyCapture } from "./technology-adapter";
 import { parseGitHubRepositorySnapshot, parseGitHubReleasesSnapshot, parseGitHubTagsSnapshot, parseGitHubCommitsSnapshot,
   type GitHubRepositoryBinding } from "./github-adapter";
 import { checkpointAfterPersistence, sourceEndpointAllowed, type SnapshotInput, type WatchSnapshotResult,
@@ -90,7 +91,8 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
     const fetched=await fetchPage(db,enrolled,url,fetchImpl,deadline,clock);
     const input:SnapshotInput={source,body:fetched.body,representationBytes:fetched.bytes,finalUrl:fetched.url,fetchedAt:clock().toISOString(),status:200,pageKey};
     let result:WatchSnapshotResult;
-    if(source.transport==="rss"||source.transport==="atom") result=await parseWatchFeedSnapshot(input);
+    if(source.parserId==="technology-capture-v1") result=await parseTechnologyCaptureSnapshot(input);
+    else if(source.transport==="rss"||source.transport==="atom") result=await parseWatchFeedSnapshot(input);
     else if(source.transport==="official-json") result=await parseFederalRegisterSnapshot(input);
     else if(source.transport==="official-xml") result=await parseRepresentativeRosterSnapshot(input);
     else if(source.transport==="github-json"){
@@ -111,7 +113,7 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
     // A repository snapshot is retained before its binding can authorize a list.
     const stored=await persistWatchCollectionPage(db,enrolled,{snapshotId,endpoint:fetched.url,bytes:fetched.bytes,
       body:fetched.body,headers:fetched.headers,result,now:clock().toISOString(),leaseOwner});
-    if(["official-json","official-xml"].includes(source.transport) && !result.rejectedItems && !result.truncated && result.health.state==="healthy") {
+    if((["official-json","official-xml"].includes(source.transport) || source.parserId==="technology-capture-v1") && !result.rejectedItems && !result.truncated && result.health.state==="healthy") {
       const permission=await resolveEnrolledCollectionSource(db,source.id,clock().toISOString());
       if(permission?.permissionDigest!==enrolled.permissionDigest)throw new UpstreamError("disabled","watch-source-permission-changed");
       // Native persistence can retract stale evidence, so every write transaction
@@ -126,7 +128,8 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
             SELECT 1 FROM watch_collection_leases WHERE id='watch-collector' AND owner=? AND expires_at>?
           ) THEN 1 ELSE 0 END)`).bind(crypto.randomUUID(),decisionId,source.id,at,leaseOwner,at),...statements]);
       }};
-      if(source.transport==="official-xml") await publishCollectedRepresentativeRoster(guardedDb,input,clock(),publishVerified);
+      if(source.parserId==="technology-capture-v1") await stageCollectedTechnologyCapture(guardedDb,input,clock(),publishVerified);
+      else if(source.transport==="official-xml") await publishCollectedRepresentativeRoster(guardedDb,input,clock(),publishVerified);
       else await stageCollectedPolicyObservations(guardedDb,result.observations,clock(),publishVerified);
     }
     pages.push(stored.page);for(const [id,ack] of stored.persisted)persisted.set(id,ack);persistedPages.set(pageKey,stored.acknowledgment);
@@ -173,8 +176,9 @@ export async function runWatchCollection(db:D1DatabaseLike,options:{
       let state:SourceRunState="disabled",detail="qualification-or-activation-held",itemCount=0,checkpoint:unknown=null,retryMs=0;
       if(enrolled)try{
         if(enrolled.source.requiresAuth)throw new UpstreamError("misconfigured","watch-credential-resolver-not-provisioned");
-        if(!["rss","atom","github-json","official-json","official-xml"].includes(enrolled.source.transport))throw new UpstreamError("misconfigured","watch-transport-not-implemented");
-        if(enrolled.source.parserVersion!=="1" || enrolled.source.parserId!==(enrolled.source.transport==="github-json"?"watch-github":enrolled.source.transport==="official-json"?"watch-federal-register":enrolled.source.transport==="official-xml"?"watch-federal-roster":"watch-rss"))
+        const technology=enrolled.source.parserId==="technology-capture-v1" && ["github-json","html","batch"].includes(enrolled.source.transport);
+        if(!technology && !["rss","atom","github-json","official-json","official-xml"].includes(enrolled.source.transport))throw new UpstreamError("misconfigured","watch-transport-not-implemented");
+        if(enrolled.source.parserVersion!=="1" || (!technology && enrolled.source.parserId!==(enrolled.source.transport==="github-json"?"watch-github":enrolled.source.transport==="official-json"?"watch-federal-register":enrolled.source.transport==="official-xml"?"watch-federal-roster":"watch-rss")))
           throw new UpstreamError("misconfigured","watch-parser-not-installed");
         const result=await collectSource(db,enrolled,options.fetchImpl??fetch,deadline,clock,owner,options.publishVerified??false);
         ({state,detail,itemCount,checkpoint}=result);

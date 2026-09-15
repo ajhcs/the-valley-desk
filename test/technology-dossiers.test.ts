@@ -207,7 +207,13 @@ test("editorial adapter binds literal references to retained bytes and source-he
   const citation = source.evidence[0]!;
   await persistTechnologySourceRepresentation(db, staged.draft.subjectId, "synthetic-enrolled-source",
     { url: citation.url, checkedAt: NOW, body: citation.retainedText });
-  const prepared = await prepareTechnologyEditorialProposal(db, staged.draft.subjectId);
+  let sourceReads = 0;
+  const countedDb = { ...db, prepare(sql: string) {
+    if (sql.includes("SELECT r.*,h.observation_id AS current_id")) sourceReads++;
+    return db.prepare(sql);
+  } };
+  const prepared = await prepareTechnologyEditorialProposal(countedDb, staged.draft.subjectId);
+  assert.equal(sourceReads, new Set(source.evidence.map(item => item.url)).size);
   assert.equal(prepared.proposal.draft.kind, "technology");
   assert.ok(prepared.proposal.facts.every(fact => !("verification" in fact)));
   for (const item of prepared.proposal.evidence) assert.equal(await evidenceMatches(item, prepared.observations.get(item.observationId)!), true);

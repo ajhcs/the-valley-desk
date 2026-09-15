@@ -4,6 +4,8 @@ import { QualificationReceipt, SourceEnrollment, sourceConfigurationDigest, type
 import { parseFederalRegisterSnapshot } from "../../src/ingest/watch/policy-adapter";
 import { parseWatchFeedSnapshot } from "../../src/ingest/watch/feed-adapter";
 import { parseGitHubRepositorySnapshot } from "../../src/ingest/watch/github-adapter";
+import { parseRepresentativeRosterSnapshot } from "../../src/ingest/watch/representative-adapter";
+import { parseTechnologyCaptureSnapshot } from "../../src/ingest/watch/technology-adapter";
 
 const Approval = z.object({ engineeringOwnerId: WatchId, editorialOwnerId: WatchId,
   statement: z.string().trim().min(40).max(4000), reviewedAt: CanonicalInstant, expiresAt: CanonicalInstant,
@@ -13,11 +15,13 @@ export type QualificationSample = { endpoint: string; capturedAt: string; bytes:
 /** Operator-only evidence preparation. No fetch, database write, or publication. */
 export async function qualifyCapturedWatchSource(input: unknown, samples: QualificationSample[], approvalInput: unknown) {
   const candidate = SourceEnrollment.parse(input), approval = Approval.parse(approvalInput);
-  if (samples.length < 2 || samples.length > 10 || candidate.authority === "unqualified" || candidate.requiresAuth)
+  if (samples.length < 2 || samples.length > 10 || candidate.authority === "unqualified" || candidate.requiresAuth || candidate.parserVersion !== "1")
     throw Error("qualification-samples-or-authority-invalid");
-  const parse = candidate.parserId === "watch-federal-register" ? parseFederalRegisterSnapshot :
+  const parse = candidate.parserId === "technology-capture-v1" ? parseTechnologyCaptureSnapshot :
+    candidate.parserId === "watch-federal-roster" ? parseRepresentativeRosterSnapshot :
+    candidate.parserId === "watch-federal-register" ? parseFederalRegisterSnapshot :
     candidate.parserId === "watch-github" ? parseGitHubRepositorySnapshot :
-    ["watch-rss", "watch-atom"].includes(candidate.parserId) ? parseWatchFeedSnapshot : null;
+    candidate.parserId === "watch-rss" ? parseWatchFeedSnapshot : null;
   if (!parse) throw Error("qualification-parser-unsupported");
   const configurationSha256 = await sourceConfigurationDigest(candidate);
   const id = "qualified-" + (await sha256(canonicalJson({ configurationSha256, approval }))).slice(0, 40);

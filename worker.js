@@ -786,7 +786,7 @@ export default {
   },
   async scheduled(event, env, ctx) {
     if (env.WATCH_COLLECTION_ENABLED === "true" && env.VALLEY_DESK_DB) ctx.waitUntil(
-      runWatchCollection(env.VALLEY_DESK_DB, { enabled: true }).then(result => {
+      runWatchCollection(env.VALLEY_DESK_DB, { enabled: true, publishVerified: env.WATCH_SOURCE_RULE_ENABLED === "true" }).then(result => {
         logOps("watch-collection", { outcome: result.outcome, sources: result.sources });
       }).catch(() => logOps("watch-collection", { outcome: "failed" }, "error")),
     );

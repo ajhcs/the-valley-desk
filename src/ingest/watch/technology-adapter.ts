@@ -2,7 +2,11 @@ import { githubRepositoryKey } from "../../content/watch-schema";
 import { technologyRegionalSources, technologySourcePlans, prepareTechnologySourceDraft, type TechnologyCapture } from "../technology-source-plans";
 import { persistTechnologySourceRepresentation, prepareTechnologyEditorialProposal } from "../technology-editorial-adapter";
 import { persistTechnologyDossierDraft, readTechnologyDossierDraft } from "../technology-dossiers";
-import { stageEditorialProposal } from "../watch-editorial";
+import { stageEditorialProposal, decideSourceRuleProposal } from "../watch-editorial";
+import { createWatchEditorialRuntime } from "../watch-editorial-runtime";
+import { WatchStorageError } from "../watch-persistence";
+import { WatchProjectionError } from "../../content/watch-projection";
+import { WatchDeliveryError } from "../../content/watch-delivery";
 import type { D1DatabaseLike } from "../persistence";
 import { checkedSnapshot, snapshotRepresentationDigest, snapshotHealth, failedSnapshot, makeObservation,
   type SnapshotInput, type WatchSnapshotResult } from "./source-enrollment";
@@ -57,7 +61,7 @@ export async function parseTechnologyCaptureSnapshot(input: SnapshotInput): Prom
 }
 
 /** Use the caller's permission/lease-guarded D1 wrapper after raw-page retention. */
-export async function stageCollectedTechnologyCapture(db: D1DatabaseLike, input: SnapshotInput, now: Date) {
+export async function stageCollectedTechnologyCapture(db: D1DatabaseLike, input: SnapshotInput, now: Date, publishVerified = false) {
   const source = checkedSnapshot(input, ["github-json", "html", "batch"]);
   const parsed = await parseTechnologyCaptureSnapshot(input);
   if (parsed.observations.length !== 1 || parsed.rejectedItems || parsed.truncated)
@@ -84,7 +88,14 @@ export async function stageCollectedTechnologyCapture(db: D1DatabaseLike, input:
     const previous = await readTechnologyDossierDraft(db, subjectId);
     await persistTechnologyDossierDraft(db, draft.input, previous?.revision ?? 0);
     const { proposal } = await prepareTechnologyEditorialProposal(db, subjectId);
-    await stageEditorialProposal(db, proposal, now);
+    const editorial = await stageEditorialProposal(db, proposal, now);
+    if (publishVerified) {
+      try { await decideSourceRuleProposal(db, { id: editorial.id, sha256: editorial.sha256 }, createWatchEditorialRuntime(db), now); }
+      catch (error) {
+        if (!(error instanceof WatchStorageError || error instanceof WatchProjectionError || error instanceof WatchDeliveryError)) throw error;
+        console.warn(JSON.stringify({ event: "watch-source-rule-held", subjectId, reason: error.message }));
+      }
+    }
     staged.push(subjectId);
   }
   return staged;
