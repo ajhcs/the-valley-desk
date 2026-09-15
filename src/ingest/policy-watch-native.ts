@@ -152,6 +152,9 @@ export async function materializePolicyCapture(input: unknown) {
     return id;
   }
   const titleEvidenceId = await cite(parsed.titlePointer), identityEvidenceId = await cite(parsed.identityPointer);
+  const abstract = parsed.parserVersion === "federal-register-policy-json-1" ? object(parsed.native).abstract : null;
+  const summary = typeof abstract === "string" && abstract.trim().length > 0 && abstract.length <= 6000 && !/<[^>]*>/.test(abstract)
+    ? { value: abstract, evidenceId: await cite("/native/abstract") } : null;
   const actions = [];
   for (const action of parsed.actions) {
     const evidenceId = await cite(action.pointer);
@@ -166,7 +169,7 @@ export async function materializePolicyCapture(input: unknown) {
     actions.push({ eventKey: action.eventKey, evidenceId, value: PolicyAction.parse({ id, nativeCode: action.nativeCode, text: action.text,
       bodyId: action.bodyId, sourceOccurredAt: date, sourceOrder: action.sourceOrder }) });
   }
-  return { parsed, subjectId, observation, evidence, titleEvidenceId, identityEvidenceId, actions };
+  return { parsed, subjectId, observation, evidence, titleEvidenceId, identityEvidenceId, actions, summary };
 }
 
 /** Reuses the qualified PA bill-page extractor; retains exact HTML in the native

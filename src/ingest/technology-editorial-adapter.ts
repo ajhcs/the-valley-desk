@@ -23,6 +23,8 @@ export async function persistTechnologySourceRepresentation(db: D1DatabaseLike, 
     .bind(subjectId, capture.url).first<Head>();
   if (previous && capture.checkedAt < previous.checked_at) throw new Error("technology-out-of-order-capture");
   if (previous?.representation_sha256 === digest && previous.source_id === sourceId) {
+    await db.batch([db.prepare("UPDATE technology_source_heads SET checked_at=? WHERE subject_id=? AND source_url=? AND observation_id=? AND checked_at<=?")
+      .bind(capture.checkedAt, subjectId, capture.url, previous.observation_id, capture.checkedAt)]);
     return { observationId: previous.observation_id, outcome: "unchanged" as const };
   }
   const observationId = await tupleKey("technology-observation-v1", [subjectId, sourceId,
@@ -89,12 +91,19 @@ export async function prepareTechnologyEditorialProposal(db: D1DatabaseLike, sub
   if (!input.metadataEvidence) throw new Error("technology-field-evidence-review-required");
   const evidence: EvidenceReference[] = [], observations = new Map<string, StoredObservation>();
   const sourceHeadAssertions: TechnologySourceHeadAssertion[] = [];
+  type SourceRow = { id: string; source_id: string; source_url: string; representation_sha256: string;
+    representation: string; current_id: string; current_sha: string };
+  const resolvedSources = new Map<string, SourceRow>();
   for (const citation of input.evidence) {
-    const row = await db.prepare("SELECT r.*,h.observation_id AS current_id,h.representation_sha256 AS current_sha FROM technology_source_heads h JOIN technology_source_representations r ON r.id=h.observation_id WHERE h.subject_id=? AND h.source_url=?")
-      .bind(subjectId, citation.url).first<{ id: string; source_id: string; source_url: string;
-        representation_sha256: string; representation: string; current_id: string; current_sha: string }>();
-    if (!row || row.current_sha !== citation.representationSha256 ||
-        await sha256(row.representation) !== row.representation_sha256) throw new Error("technology-current-source-conflict");
+    let row = resolvedSources.get(citation.url);
+    if (!row) {
+      const current = await db.prepare("SELECT r.*,h.observation_id AS current_id,h.representation_sha256 AS current_sha FROM technology_source_heads h JOIN technology_source_representations r ON r.id=h.observation_id WHERE h.subject_id=? AND h.source_url=?")
+        .bind(subjectId, citation.url).first<SourceRow>();
+      if (!current || current.current_sha !== current.representation_sha256 ||
+          await sha256(current.representation) !== current.representation_sha256) throw new Error("technology-current-source-conflict");
+      resolvedSources.set(citation.url, current); row = current;
+    }
+    if (row.current_sha !== citation.representationSha256) throw new Error("technology-current-source-conflict");
     const start = row.representation.indexOf(citation.quote);
     if (start < 0) throw new Error("technology-literal-evidence-conflict");
     observations.set(row.id, { id: row.id, sourceId: row.source_id, sourceUrl: row.source_url,
@@ -130,6 +139,15 @@ export async function prepareTechnologyEditorialProposal(db: D1DatabaseLike, sub
       [...new Set([...ids, ...(dated && sourceDate ? sourceDate.evidenceIds : [])])], "artifact-" + index);
   });
   const relationshipFactIds = [fact("local-relationship", input.relationship.value, input.relationship.evidenceIds)];
+  if (input.regionalEligibility) {
+    const regional = input.regionalEligibility;
+    if (regional.value.relationshipId !== input.relationship.value.id ||
+        regional.value.entityId !== input.relationship.value.entityId ||
+        regional.value.temporalStatus !== input.relationship.value.temporalStatus ||
+        regional.evidenceIds.some(id => !input.relationship.evidenceIds.includes(id)))
+      throw new Error("technology-regional-evidence-conflict");
+    fact("regional-eligibility", regional.value, regional.evidenceIds);
+  }
   const licenseFactIds = input.licenses.map((item, index) => fact("license", item.value, item.evidenceIds, "license-" + index));
   const optional = (field: string, value: typeof input.purpose) => value
     ? { factId: fact(field, value.value, value.evidenceIds) }

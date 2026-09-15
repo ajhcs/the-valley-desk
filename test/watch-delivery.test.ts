@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AcceptedFactRecord, SubjectAcceptance, WatchPublicRecord, acceptedFactDigest, canonicalJson, sha256 } from "../src/content/watch-schema";
+import { AcceptedFactRecord, SubjectAcceptance, TechnologyRelationship, WatchPublicRecord, acceptedFactDigest, canonicalJson, sha256 } from "../src/content/watch-schema";
 import { compileWatchDelivery, compiledWatchDeliveryValue, deliveryDependencyKey, deliveryEasternDay,
   shapeWatchDelivery, validateDeliveryBinding, WatchDeliveryManifest, WATCH_DELIVERY_MANIFEST_BYTES } from "../src/content/watch-delivery";
 import { projectPolicyDossier, projectTechnologyProfile } from "../src/content/watch-projection";
@@ -13,6 +13,17 @@ import { HASH, NOW, OTHER_HASH, syntheticFixture, VERIFIED } from "./fixtures/wa
 import { stageSyntheticDelivery, syntheticDeliveryForRecord } from "./fixtures/watch-delivery/synthetic";
 
 const at = (instant = NOW) => new Date(instant);
+test("public citation budget permits detailed evidence and rejects the fifty-first citation", async () => {
+  const source = await syntheticFixture("technology");
+  const value = await projectTechnologyProfile(source.draft, source.context);
+  const citation = value.sources[0]!;
+  for (const count of [35, 50]) {
+    const sources = Array.from({ length: count }, (_, index) => ({ ...citation, id: `citation-${index}` }));
+    assert.equal(WatchPublicRecord.safeParse({ ...value, sources }).success, true);
+  }
+  const sources = Array.from({ length: 51 }, (_, index) => ({ ...citation, id: `citation-${index}` }));
+  assert.equal(WatchPublicRecord.safeParse({ ...value, sources }).success, false);
+});
 type Delivery = Awaited<ReturnType<typeof syntheticDeliveryForRecord>>;
 async function fixture(kind: "policy" | "technology" = "policy", id = `${kind}-delivery`, current = false): Promise<Delivery> {
   const source = await syntheticFixture(kind);
@@ -65,6 +76,32 @@ test("delivery compiler accepts only its own opaque capability and qualified sou
   const regional = AcceptedFactRecord.parse({ ...original, verification: { ...original.verification, kind: "source-rule" } });
   delivery.fixture.facts.set(regionalId, regional);
   const acceptance = SubjectAcceptance.parse(delivery.context.acceptance);
+  acceptance.factDigests.find(binding => binding.id === regionalId)!.sha256 = await acceptedFactDigest(regional);
+  await assert.rejects(compileWatchDelivery(delivery.fixture.draft, { ...delivery.context, acceptance }), /delivery-regional-provenance-conflict/);
+});
+
+test("observed affiliation has no invented start date and expires with its regional evidence", async () => {
+  const original = await fixture("technology", "observed-connection", true);
+  assert.equal(original.record.kind, "technology");
+  if (original.record.kind !== "technology") return;
+  Object.assign(original.record.localRelationships[0]!.value, { temporalStatus: "observed", validFrom: null });
+  const delivery = await syntheticDeliveryForRecord(original.record);
+  const relation = original.record.localRelationships[0]!.value;
+  assert.equal(TechnologyRelationship.safeParse({ ...relation, validFrom: "2026-01-01" }).success, false);
+  assert.equal(TechnologyRelationship.safeParse({ ...relation, validThrough: null }).success, false);
+  const regionalId = [...delivery.context.regionalFactIds.values()][0]!;
+  const regional = AcceptedFactRecord.parse({ ...delivery.fixture.facts.get(regionalId)!,
+    verification: { ...delivery.fixture.facts.get(regionalId)!.verification,
+      kind: "source-rule", ruleId: "watch-native-source-rule-v1", ruleVersion: "1" } });
+  delivery.fixture.facts.set(regionalId, regional);
+  const acceptance = SubjectAcceptance.parse(delivery.context.acceptance);
+  acceptance.factDigests.find(binding => binding.id === regionalId)!.sha256 = await acceptedFactDigest(regional);
+  const output = compiledWatchDeliveryValue(await compileWatchDelivery(delivery.fixture.draft, { ...delivery.context, acceptance }));
+  await validateDeliveryBinding(output.record, output.manifest);
+  const valid = new Map(output.manifest.groups.map(group => [group.key, true]));
+  assert.ok(await shapeWatchDelivery(output.record, output.manifest, valid, NOW));
+  assert.equal(await shapeWatchDelivery(output.record, output.manifest, valid, relation.validThrough!), null);
+  regional.verification.ruleVersion = "unapproved";
   acceptance.factDigests.find(binding => binding.id === regionalId)!.sha256 = await acceptedFactDigest(regional);
   await assert.rejects(compileWatchDelivery(delivery.fixture.draft, { ...delivery.context, acceptance }), /delivery-regional-provenance-conflict/);
 });

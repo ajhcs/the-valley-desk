@@ -3,6 +3,9 @@ import { z } from "zod";
 import { CanonicalInstant, canonicalJson, sha256 } from "../content/watch-schema";
 import { readBoundedText } from "./upstream";
 import type { D1DatabaseLike } from "./persistence";
+import { parseHouseRoster } from "./house-representative-collection";
+
+export const REPRESENTATIVE_RAW_MAX_BYTES = 1_000_000;
 
 export const SENATE_ROSTER_URL = "https://www.senate.gov/general/contact_information/senators_cfm.xml";
 const Member = z.object({ first_name: z.string().min(1).max(160), last_name: z.string().min(1).max(160),
@@ -52,8 +55,20 @@ export async function collectSenateRoster(fetcher: typeof fetch = fetch, now = n
 /** Durable evidence only; no accepted facts, head changes or model calls. */
 export async function persistSenateRosterObservation(db: D1DatabaseLike, xml: string, retrievedAt: string) {
   const observation = await parseSenateRoster(xml, retrievedAt);
+  return persistRosterObservation(db, xml, observation);
+}
+
+export async function persistHouseRosterObservation(db: D1DatabaseLike, xml: string, retrievedAt: string) {
+  return persistRosterObservation(db, xml, await parseHouseRoster(xml, retrievedAt));
+}
+
+async function persistRosterObservation(db: D1DatabaseLike, xml: string,
+  observation: Awaited<ReturnType<typeof parseSenateRoster>> | Awaited<ReturnType<typeof parseHouseRoster>>) {
+  const retrievedAt = observation.retrievedAt;
   const id = await sha256(canonicalJson([observation.sourceUrl, observation.rawSha256, retrievedAt]));
   const payload = canonicalJson(observation);
+  if (new TextEncoder().encode(xml).length > REPRESENTATIVE_RAW_MAX_BYTES || new TextEncoder().encode(payload).length > 1_000_000)
+    throw new Error("representative-observation-size");
   await db.prepare("INSERT OR IGNORE INTO representative_roster_observations VALUES(?,?,?,?,?,?)")
     .bind(id, observation.sourceUrl, retrievedAt, observation.rawSha256, xml, payload).run();
   const stored = await db.prepare("SELECT raw_sha256,payload_json FROM representative_roster_observations WHERE id=?")

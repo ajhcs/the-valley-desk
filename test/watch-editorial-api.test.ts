@@ -44,6 +44,12 @@ test("Watch review routes reuse authentication, bounded staging, and named opera
   const head = await handleReviewApi(request("/api/watch-drafts/" + encodeURIComponent(staged.id), "HEAD"), env);
   assert.equal(head.status, 200); assert.equal(await head.text(), "");
   const decision = { sha256: staged.sha256, action: "accepted" };
+  const sourceRulePath = `/api/watch-drafts/${staged.id}/source-rule`;
+  assert.equal((await handleReviewApi(request(sourceRulePath, "POST", { sha256: staged.sha256 }, { authorization: "" }), env)).status, 404);
+  assert.equal((await handleReviewApi(request(sourceRulePath, "POST", decision), env)).status, 400);
+  const sourceRule = await handleReviewApi(request(sourceRulePath, "POST", { sha256: staged.sha256 }), env);
+  assert.equal(sourceRule.status, 409);
+  assert.deepEqual(await sourceRule.json(), { error: "watch-source-rule-native-capture-required" });
   assert.equal((await handleReviewApi(request(`/api/watch-drafts/${staged.id}/decision`, "POST", decision), env)).status, 403);
   assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM watch_editorial_decisions").get()?.n, 0);
   // A real named operator still cannot approve evidence absent from retained source storage.

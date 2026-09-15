@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Sha256, WatchId } from "../content/watch-schema";
 import { readBoundedText } from "./upstream";
-import { decideEditorialProposal, readEditorialProposal, stageEditorialProposal } from "./watch-editorial";
+import { decideEditorialProposal, decideSourceRulePolicyProposal, readEditorialProposal, stageEditorialProposal } from "./watch-editorial";
 import type { EditorialRuntime } from "./watch-editorial";
 import type { D1DatabaseLike } from "./persistence";
 import { WatchStorageError } from "./watch-persistence";
@@ -15,7 +15,7 @@ function json(request: Request, body: unknown, status = 200) {
  * Only validated Access identity authorizes a human-review decision. */
 export async function handleWatchEditorialApi(request: Request, db: D1DatabaseLike, pathname: string,
   namedOperator: string | null, runtime: EditorialRuntime) {
-  const match = /^\/api\/watch-drafts(?:\/([^/]+)(\/decision)?)?$/.exec(pathname);
+  const match = /^\/api\/watch-drafts(?:\/([^/]+)(\/(?:decision|source-rule))?)?$/.exec(pathname);
   if (!match) return json(request, { error: "not_found" }, 404);
   try {
     const id = match[1] ? WatchId.parse(decodeURIComponent(match[1])) : null;
@@ -40,7 +40,7 @@ export async function handleWatchEditorialApi(request: Request, db: D1DatabaseLi
       return json(request, { items: rows.slice(0, 50), nextCursor: rows.length > 50 ? rows[49]!.id : null });
     }
     if (request.method !== "POST" || (match[1] && !match[2])) return json(request, { error: "method_not_allowed" }, 405);
-    if (match[2] && !namedOperator) return json(request, { error: "named-operator-required" }, 403);
+    if (match[2] === "/decision" && !namedOperator) return json(request, { error: "named-operator-required" }, 403);
     if (!/^application\/json\s*(;|$)/i.test(request.headers.get("content-type") ?? ""))
       return json(request, { error: "json-required" }, 415);
     const maximum = match[2] ? 4096 : 500_000;
@@ -50,6 +50,10 @@ export async function handleWatchEditorialApi(request: Request, db: D1DatabaseLi
     catch { return json(request, { error: "payload_too_large" }, 413); }
     const body: unknown = JSON.parse(raw);
     if (!match[1]) return json(request, await stageEditorialProposal(db, body), 201);
+    if (match[2] === "/source-rule") {
+      const sourceRule = z.object({ sha256: Sha256 }).strict().parse(body);
+      return json(request, await decideSourceRulePolicyProposal(db, { id: id!, ...sourceRule }, runtime));
+    }
     const decision = z.object({ sha256: Sha256, action: z.enum(["accepted", "rejected"]) }).strict().parse(body);
     return json(request, await decideEditorialProposal(db, { id: id!, ...decision }, namedOperator!, runtime));
   } catch (error) {

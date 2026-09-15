@@ -14,7 +14,7 @@ import { handleWatchRead, isWatchReadPath } from "./src/ingest/watch-api.ts";
 import { handleRepresentativeRead } from "./src/ingest/representative-api.ts";
 import { resolveRepresentativeSourcePolicy } from "./src/ingest/representative-runtime.ts";
 import { handleEventCalendar } from "./src/ingest/event-calendar.ts";
-import { runWatchCollection } from "./src/ingest/watch/collector.ts";
+import { WATCH_CRON, watchSchedulePhase, runScheduledWatchCollection, runScheduledWatchPublication } from "./src/ingest/watch-scheduled.ts";
 import { handleWatchUpdatesRead } from "./src/ingest/watch-updates-api.ts";
 import { cleanupSocialEvidencePackets, handleSocialCollectorRuns, handleSocialEvidence, handleSocialManifest, isSocialCollectorRunsPath, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
@@ -785,11 +785,16 @@ export default {
     }
   },
   async scheduled(event, env, ctx) {
-    if (env.WATCH_COLLECTION_ENABLED === "true" && env.VALLEY_DESK_DB) ctx.waitUntil(
-      runWatchCollection(env.VALLEY_DESK_DB, { enabled: true }).then(result => {
-        logOps("watch-collection", { outcome: result.outcome, sources: result.sources });
-      }).catch(() => logOps("watch-collection", { outcome: "failed" }, "error")),
-    );
+    if (event?.cron === WATCH_CRON) {
+      if (!env.VALLEY_DESK_DB) return;
+      const phase = watchSchedulePhase(event.scheduledTime);
+      const work = phase === "collection"
+        ? runScheduledWatchCollection(env.VALLEY_DESK_DB, { enabled: env.WATCH_COLLECTION_ENABLED === "true", publishRepresentatives: env.WATCH_SOURCE_RULE_ENABLED === "true" })
+        : runScheduledWatchPublication(env.VALLEY_DESK_DB, { enabled: env.WATCH_SOURCE_RULE_ENABLED === "true" });
+      ctx.waitUntil(work.then(result => logOps("watch-" + phase, result))
+        .catch(error => logOps("watch-" + phase, { outcome: "failed", message: error instanceof Error ? error.message : "Watch dispatch failed" }, "error")));
+      return;
+    }
     const cadence = event?.cron === DAILY_DEEP_SCAN_CRON ? "daily" : "hourly";
     ctx.waitUntil(
       cleanupEmailDiscoveries(env.VALLEY_DESK_DB).catch((error) => {

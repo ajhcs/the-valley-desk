@@ -1,19 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { PublicRepresentativeResult } from "../../content/watch-representatives";
-import { REPRESENTATIVE_LOOKUPS } from "../../content/representative-sources";
+import { REPRESENTATIVE_LOOKUPS, type RepresentativeLookupScope } from "../../content/representative-sources";
 
 function today() {
   const parts = new Intl.DateTimeFormat("en", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
   return ["year", "month", "day"].map(type => parts.find(part => part.type === type)!.value).join("-");
 }
-export function RepresentativeLookup({ initialBodyId = "pa-house" }: { initialBodyId?: string }) {
-  const [scopeIndex, setScopeIndex] = useState(Math.max(0, REPRESENTATIVE_LOOKUPS.findIndex(scope => scope.bodyId === initialBodyId)));
+export function RepresentativeLookup({ initialBodyId = "pa-house", scopes = REPRESENTATIVE_LOOKUPS,
+  requireScopeSelection = false, heading = "Representatives", context }: {
+  initialBodyId?: string; scopes?: readonly RepresentativeLookupScope[]; requireScopeSelection?: boolean;
+  heading?: string; context?: string;
+}) {
+  const headingId = useId();
+  const [scopeIndex, setScopeIndex] = useState(() => requireScopeSelection ? -1 : Math.max(0, scopes.findIndex(scope => scope.bodyId === initialBodyId)));
   const [district, setDistrict] = useState(""), [asOf, setAsOf] = useState(today);
   const [districts, setDistricts] = useState<Array<{ id: string; label: string }>>([]);
   const [query, setQuery] = useState(""), [result, setResult] = useState<PublicRepresentativeResult | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<"idle" | "loading" | "error" | "ready">("idle");
-  const scope = REPRESENTATIVE_LOOKUPS[scopeIndex];
+  const scope = scopes[scopeIndex];
   useEffect(() => {
     if (!query) return;
     const controller = new AbortController();
@@ -32,6 +37,7 @@ export function RepresentativeLookup({ initialBodyId = "pa-house" }: { initialBo
     return () => { active = false; controller.abort(); clearTimeout(timeout); };
   }, [query, attempt]);
   function search(cursor?: string) {
+    if (!scope) return;
     const values = cursor && query ? new URLSearchParams(query) : new URLSearchParams({ jurisdiction: scope.jurisdiction, jurisdictionId: scope.jurisdictionId,
       bodyId: scope.bodyId, asOf, limit: "20" });
     if (!cursor && district.trim()) values.set("districtId", district.trim());
@@ -42,21 +48,23 @@ export function RepresentativeLookup({ initialBodyId = "pa-house" }: { initialBo
     setAttempt(value => value + 1);
   }
   function retry() { setResult(null); setState("loading"); setAttempt(value => value + 1); }
-  return <section aria-labelledby="representatives-heading" className="WatchRepresentatives">
-    <h2 id="representatives-heading">Representatives</h2>
+  return <section aria-labelledby={headingId} className="WatchRepresentatives">
+    <h2 id={headingId}>{heading}</h2>
+    {context ? <p className="WatchNote">{context}</p> : null}
     <form onSubmit={event => { event.preventDefault(); search(); }} className="WatchRepresentativeFilters">
-      <label className="WatchField">Chamber<select value={scopeIndex} onChange={event => {
+      <label className="WatchField">{requireScopeSelection ? "State delegation" : "Chamber"}<select value={scopeIndex} onChange={event => {
         setScopeIndex(Number(event.target.value)); setDistrict(""); setDistricts([]); setQuery(""); setResult(null); setState("idle");
       }}>
-        {REPRESENTATIVE_LOOKUPS.map((value, index) => <option key={index} value={index}>{value.label}</option>)}
+        {requireScopeSelection ? <option value={-1}>Select state delegation</option> : null}
+        {scopes.map((value, index) => <option key={`${value.bodyId}:${value.jurisdictionId}`} value={index}>{value.label}</option>)}
       </select></label>
       <label className="WatchField">Selected district<select value={district} onChange={event => setDistrict(event.target.value)}>
         <option value="">All districts</option>
         {districts.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
       </select></label>
       <label className="WatchField">As of<input type="date" value={asOf} max={today()} required onChange={event => setAsOf(event.target.value)} /></label>
-      <div className="WatchActions"><button type="submit" disabled={state === "loading"}>Find representatives</button>
-        <a href={scope.lookupUrl} rel="noreferrer">Official district lookup</a></div>
+      <div className="WatchActions"><button type="submit" disabled={!scope || state === "loading"}>Find representatives</button>
+        {scope ? <a href={scope.lookupUrl} rel="noreferrer">Official district lookup</a> : null}</div>
     </form>
     <div aria-live="polite" aria-busy={state === "loading"}>
       {state === "loading" && <p className="WatchLoading" role="status">Loading representatives...</p>}
@@ -64,7 +72,7 @@ export function RepresentativeLookup({ initialBodyId = "pa-house" }: { initialBo
         <p><button type="button" onClick={retry}>Retry representative lookup</button></p></div>}
       {result?.dataState === "unavailable" && <div className="WatchState"><h3>{result.unavailableReason === "historical-coverage-unavailable"
         ? "Historical membership is not established for this date." : "No accepted directory is available for this chamber."}</h3>
-        <p><a href={scope.lookupUrl} rel="noreferrer">Open the official chamber directory</a></p></div>}
+        {scope ? <p><a href={scope.lookupUrl} rel="noreferrer">Open the official chamber directory</a></p> : null}</div>}
       {result && result.dataState !== "unavailable" ? <p className="WatchNote">Selected districts on {result.selectedAsOf}</p> : null}
       {result?.dataAsOf && <p className="WatchNote">Roster as of {new Date(result.dataAsOf).toLocaleDateString("en-US", { timeZone: "America/New_York" })}
         {result.dataState === "stale" ? " (stale)" : ""}</p>}

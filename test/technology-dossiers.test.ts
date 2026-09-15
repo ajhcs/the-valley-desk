@@ -146,6 +146,34 @@ test("source preparation binds each field instead of borrowing the regional quot
     readme: captured(raw + plan.readme, readme), license: captured(raw + plan.license, license),
     releases: captured(api + "/releases?per_page=10", "[]") };
   const { input: draft } = await prepareTechnologySourceDraft(plan, captures);
+  const reordered = Object.fromEntries(Object.entries(captures).reverse()) as typeof captures;
+  assert.deepEqual((await prepareTechnologySourceDraft(plan, reordered)).input, draft);
+  for (let replay = 0; replay < 20; replay++)
+    assert.deepEqual((await prepareTechnologySourceDraft(plan, captures)).input, draft);
+  const originalDigest = crypto.subtle.digest;
+  let digestCall = 0;
+  crypto.subtle.digest = async (algorithm, bytes) => {
+    const order = digestCall++;
+    const result = await originalDigest.call(crypto.subtle, algorithm, bytes);
+    await new Promise(resolve => setTimeout(resolve, (3 - order % 3) * 2));
+    return result;
+  };
+  try { assert.deepEqual((await prepareTechnologySourceDraft(plan, reordered)).input, draft); }
+  finally { crypto.subtle.digest = originalDigest; }
+  const releases = Array.from({ length: 5 }, (_, index) => ({ id: index + 1, tag_name: "v" + (index + 1),
+    html_url: "https://github.com/" + plan.fullName + "/releases/tag/v" + (index + 1),
+    draft: false, prerelease: false, published_at: "2026-09-0" + (index + 1) + "T00:00:00Z" }));
+  const prepared = await prepareTechnologySourceDraft(plan, { ...captures,
+    releases: { ...captures.releases, body: JSON.stringify(releases) } });
+  assert.deepEqual(prepared.input.developments.map(release => release.nativeId), ["5", "4", "3"]);
+  assert.ok(prepared.input.evidence.length < 50);
+  releases[4]!.prerelease = true;
+  const stableOnly = await prepareTechnologySourceDraft(plan, { ...captures,
+    releases: { ...captures.releases, body: JSON.stringify(releases) } });
+  assert.deepEqual(stableOnly.input.developments.map(release => release.nativeId), ["4", "3", "2"]);
+  releases[0]!.html_url = "https://github.com/other/project/releases/tag/v1";
+  await assert.rejects(prepareTechnologySourceDraft(plan, { ...captures,
+    releases: { ...captures.releases, body: JSON.stringify(releases) } }), /release-repository-conflict/);
   const quote = (id: string) => draft.evidence.find(item => item.id === id)!.quote;
   assert.match(quote(draft.purpose!.evidenceIds[0]!), /offline-capable viewer/);
   assert.match(quote(draft.workflow!.evidenceIds[0]!), /adjust SQL/);
@@ -207,7 +235,13 @@ test("editorial adapter binds literal references to retained bytes and source-he
   const citation = source.evidence[0]!;
   await persistTechnologySourceRepresentation(db, staged.draft.subjectId, "synthetic-enrolled-source",
     { url: citation.url, checkedAt: NOW, body: citation.retainedText });
-  const prepared = await prepareTechnologyEditorialProposal(db, staged.draft.subjectId);
+  let sourceReads = 0;
+  const countedDb = { ...db, prepare(sql: string) {
+    if (sql.includes("SELECT r.*,h.observation_id AS current_id")) sourceReads++;
+    return db.prepare(sql);
+  } };
+  const prepared = await prepareTechnologyEditorialProposal(countedDb, staged.draft.subjectId);
+  assert.equal(sourceReads, new Set(source.evidence.map(item => item.url)).size);
   assert.equal(prepared.proposal.draft.kind, "technology");
   assert.ok(prepared.proposal.facts.every(fact => !("verification" in fact)));
   for (const item of prepared.proposal.evidence) assert.equal(await evidenceMatches(item, prepared.observations.get(item.observationId)!), true);

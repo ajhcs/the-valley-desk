@@ -32,7 +32,7 @@ export function WatchDirectoryRecord({ item, query }: { item: WatchPublicRecord;
         <p>{item.purpose?.value ?? "Purpose not yet established."}</p>
         <ul className="WatchLocalList" aria-label="Verified local connections">{item.localRelationships.map(relation => <li key={relation.value.id}>
           {RELATIONSHIP_LABELS[relation.value.type]}{" "}<Link to="/technology-watch" search={watchQuerySearch({ ...query.values, organization: relation.value.entityId }, "technology")}>
-            {relation.value.entityName}</Link>{" "}<span className="WatchNote">({relation.value.temporalStatus === "historical" ? "historical connection" : "current at verification"})</span>
+            {relation.value.entityName}</Link>{" "}<span className="WatchNote">({relation.value.temporalStatus === "historical" ? "historical connection" : relation.value.temporalStatus === "observed" ? "documented connection" : "current at verification"})</span>
         </li>)}</ul>
         <p className="WatchNote">Artifact license assessments: {item.licenseClassifications.length ? item.licenseClassifications.map(value => LICENSE_LABELS[value]).join(", ") : "not established"}.</p>
       </>}
@@ -60,7 +60,7 @@ export function WatchDirectoryPage({ kind }: { kind: WatchKind }) {
   ];
   return <article className={`WatchPage is-${kind}`}>
     <header className="WatchHeading"><div><p className="WatchEyebrow">{views.find(item => item.id === view)?.label}</p><h1>{kind === "policy" ? "Policy Watch" : "Technology Watch"}</h1>
-      <p className="WatchScope">{kind === "policy" ? "Federal | Pennsylvania | New Jersey | Delaware | Local / regional" : "Verified Delaware Valley connections"}</p>
+      <p className="WatchScope">{kind === "policy" ? "CMS federal proposals. State and local legislative coverage is not yet complete." : "Selected technologies with verified Delaware Valley connections"}</p>
     </div>{directoryView ? <button type="button" className="WatchRefresh" onClick={retry} disabled={loading || query.errors.length > 0}>Refresh</button> : null}</header>
     <nav className="WatchViews" aria-label={`${kind === "policy" ? "Policy" : "Technology"} Watch views`}>
       {views.map(item => <Link key={item.id} to={path} search={watchViewSearch(kind, item.id, query.errors.length ? {} : query.values)}

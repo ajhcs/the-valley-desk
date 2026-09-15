@@ -611,7 +611,9 @@ test("SCHEMA_VERSION matches the latest D1 migration and wrangler stays a single
   const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
   assert.ok(wrangler.includes(`"PUBLIC_ORIGIN": "${DEFAULT_PUBLIC_ORIGIN}"`));
   assert.ok(wrangler.includes("CF_VERSION_METADATA"));
-  assert.ok(wrangler.includes('"WATCH_PUBLIC_ENABLED": "false"'), "Watch exposure requires a separately qualified release");
+  assert.ok(wrangler.includes('"WATCH_PUBLIC_ENABLED": "true"'), "Qualified Watch launch exposes accepted read models");
+  assert.ok(wrangler.includes('"WATCH_COLLECTION_ENABLED": "true"'), "Watch sources continue to refresh");
+  assert.ok(wrangler.includes('"WATCH_SOURCE_RULE_ENABLED": "true"'), "Verified native records continue through bounded publication");
   assert.ok(wrangler.includes('"POLICY_BACKGROUND_PUBLIC_ENABLED": "false"'), "Inherited policy background stays independently gated");
   assert.ok(!wrangler.includes("env.staging") && !wrangler.includes('"staging"'));
   assert.ok(!wrangler.includes("the-valley-desk-staging"));

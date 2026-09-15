@@ -53,11 +53,12 @@ export async function syntheticDeliveryForRecord(input: WatchPublicRecord, input
   const context: WatchDeliveryCompileContext = { ...fixture.context,
     sourcePermissionDigests: new Map([["synthetic-source", await sha256("SYNTHETIC accepted public source permission; not a real qualification")]]), regionalFactIds: new Map() };
   if (fixture.draft.kind === "technology") for (const relationId of fixture.draft.relationshipFactIds) {
-    const relationFact = fixture.facts.get(relationId)!, relation = relationFact.value as { id: string; entityId: string; temporalStatus: "historical" | "current"; validFrom: string | null; checkedAt: string };
+    const relationFact = fixture.facts.get(relationId)!, relation = relationFact.value as { id: string; entityId: string; temporalStatus: "historical" | "current" | "observed"; validFrom: string | null; checkedAt: string; validThrough: string | null };
     const day = relation.temporalStatus === "historical" ? relation.validFrom! : deliveryEasternDay(relation.checkedAt);
     const regional = AcceptedFactRecord.parse({ ...relationFact, id: `${relationId}-regional`, field: "regional-eligibility",
       value: { relationshipId: relation.id, entityId: relation.entityId, geography: "delaware-valley", temporalStatus: relation.temporalStatus,
-        asOfDay: day, validFrom: relation.temporalStatus === "current" ? "2020-01-01" : day, validTo: null },
+        asOfDay: day, validFrom: relation.temporalStatus === "current" ? "2020-01-01" : day,
+        validTo: relation.temporalStatus === "observed" ? deliveryEasternDay(relation.validThrough!) : null },
       verification: { ...relationFact.verification, kind: "human-review" } });
     fixture.facts.set(regional.id, regional); acceptance.factDigests.push({ id: regional.id, sha256: await acceptedFactDigest(regional) });
     (context.regionalFactIds as Map<string, string>).set(relation.id, regional.id);

@@ -24,7 +24,7 @@
     }
   ],
   "triggers": {
-    "crons": ["*/15 * * * *", "17 3 * * *"]
+    "crons": ["*/15 * * * *", "17 3 * * *", "2-57/5 * * * *"]
   },
   "assets": {
     "directory": "./dist",
@@ -35,7 +35,9 @@
   "vars": {
     "PUBLIC_ORIGIN": "https://thevalleydesk.org",
     "BUILD_SHA": "dev",
-    "WATCH_PUBLIC_ENABLED": "false",
+    "WATCH_PUBLIC_ENABLED": "true",
+    "WATCH_COLLECTION_ENABLED": "true",
+    "WATCH_SOURCE_RULE_ENABLED": "true",
     "POLICY_BACKGROUND_PUBLIC_ENABLED": "false",
     "EVENT_CALENDAR_COLLECTION_ENABLED": "true",
     "EVENT_CALENDAR_PUBLIC_ENABLED": "true",

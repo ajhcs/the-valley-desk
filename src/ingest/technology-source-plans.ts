@@ -1,5 +1,12 @@
 import { githubRepositoryKey, sha256 } from "../content/watch-schema";
 import { buildTechnologyDossierDraft, type TechnologyDossierInput } from "./technology-dossiers";
+import { deliveryEasternDay } from "../content/watch-delivery";
+
+export const technologyRegionalSources = {
+  chop: { url: "https://www.chop.edu/philadelphia-campus/driving-directions",
+    quote: "3401 Civic Center Blvd., Philadelphia, PA 19104" },
+  "penn-medicine": { url: "https://www.upenn.edu/about/contact", quote: "Philadelphia, PA 19104" },
+} as const;
 
 export const technologySourcePlans = [
   { numericId: "1308325438", fullName: "Stephonomon/orca-cds", branch: "main", readme: "README.md", license: "LICENSE.md",
@@ -37,7 +44,7 @@ export const technologySourcePlans = [
 export type TechnologyCapture = { url: string; checkedAt: string; body: string };
 export async function prepareTechnologySourceDraft(plan: typeof technologySourcePlans[number],
   capture: { repository: TechnologyCapture; commit: TechnologyCapture; readme: TechnologyCapture;
-    license: TechnologyCapture; releases: TechnologyCapture }) {
+    license: TechnologyCapture; releases: TechnologyCapture; regional?: TechnologyCapture }) {
   const repository = JSON.parse(capture.repository.body);
   const commit = JSON.parse(capture.commit.body);
   if (String(repository.id) !== plan.numericId || repository.full_name !== plan.fullName || repository.private !== false ||
@@ -54,8 +61,14 @@ export async function prepareTechnologySourceDraft(plan: typeof technologySource
     throw new Error("technology-reviewed-source-changed");
   }
   const subjectId = await githubRepositoryKey(plan.numericId), artifactId = subjectId + ":repository";
-  const entries = Object.entries(capture);
+  // SQL head ordering and object insertion order cannot change dossier identity.
+  const entries = Object.entries({ repository: capture.repository, commit: capture.commit,
+    readme: capture.readme, license: capture.license, releases: capture.releases,
+    ...(capture.regional ? { regional: capture.regional } : {}) });
   const checkedAt = entries.map(([, item]) => item.checkedAt).sort().at(-1)!;
+  if (capture.regional && (capture.regional.url !== technologyRegionalSources[plan.entityId].url ||
+      !capture.regional.body.includes(technologyRegionalSources[plan.entityId].quote)))
+    throw new Error("technology-regional-source-conflict");
   const evidence = await Promise.all(entries.map(async ([id, item]) => ({
     id: "tech-" + plan.numericId + "-" + id, url: item.url, checkedAt: item.checkedAt,
     representationSha256: await sha256(item.body),
@@ -133,14 +146,33 @@ export async function prepareTechnologySourceDraft(plan: typeof technologySource
       existingUrl: "https://thevalleydesk.org/news/chop-orca-cds", status: "review-required",
       reason: "Preserve the existing product identity and news permalink. Epic is the supporting EHR platform, not the creator or rights holder of ORCA." } : null,
   };
+  if (capture.regional) {
+    const regionalId = await cite("regional-location", capture.regional, technologyRegionalSources[plan.entityId].quote);
+    const day = deliveryEasternDay(checkedAt);
+    // This is a freshness window for observed evidence, never a creation or relocation date.
+    const oldestCheck = entries.map(([, item]) => item.checkedAt).sort()[0]!;
+    const validThrough = new Date(Date.parse(oldestCheck) + 30 * 86400000).toISOString();
+    input.relationship.value = { ...input.relationship.value, temporalStatus: "observed", validThrough };
+    input.relationship.evidenceIds = [...readmeIds, regionalId];
+    input.regionalEligibility = { evidenceIds: [regionalId], value: {
+      relationshipId: input.relationship.value.id, entityId: plan.entityId, geography: "delaware-valley",
+      temporalStatus: "observed", asOfDay: day, validFrom: day,
+      validTo: deliveryEasternDay(validThrough) } };
+  }
   const releases = JSON.parse(capture.releases.body);
   if (!Array.isArray(releases) || releases.length > 10) throw new Error("technology-release-cap");
-  for (const release of releases) {
+  // A profile presents three recent stable release examples, not a complete
+  // release history. Retain and validate the entire bounded API response.
+  const ordered = [...releases].sort((a, b) => (Date.parse(b?.published_at) || 0) - (Date.parse(a?.published_at) || 0));
+  const displayed = new Set(ordered.filter(release => release?.draft === false && release?.prerelease === false &&
+    typeof release.published_at === "string" && Number.isFinite(Date.parse(release.published_at))).slice(0, 3).map(release => release.id));
+  for (const release of ordered) {
     if (!Number.isSafeInteger(release.id) || release.id <= 0 || typeof release.tag_name !== "string" ||
         typeof release.draft !== "boolean" || typeof release.prerelease !== "boolean") throw new Error("technology-release-shape");
     const nativeId = String(release.id);
     const releaseUrl = "https://github.com/" + plan.fullName + "/releases/tag/" + encodeURIComponent(release.tag_name);
     if (release.html_url !== releaseUrl) throw new Error("technology-release-repository-conflict");
+    if (!displayed.has(release.id)) continue;
     const releaseEvidenceId = "tech-" + plan.numericId + "-release-" + nativeId;
     const retainedText = jsonField(capture.releases, "published_at", release.published_at ?? null);
     if (!capture.releases.body.includes(retainedText)) throw new Error("technology-nonliteral-release-evidence");
@@ -159,5 +191,7 @@ export async function prepareTechnologySourceDraft(plan: typeof technologySource
         : { precision: "unknown", reason: "No authoritative public release timestamp." },
       evidenceIds: releaseEvidenceIds, prerelease: release.prerelease, draft: release.draft });
   }
+  // Concurrent digest completion must not determine the signed evidence order.
+  input.evidence.sort((left, right) => left.id < right.id ? -1 : left.id > right.id ? 1 : 0);
   return buildTechnologyDossierDraft(input);
 }

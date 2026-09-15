@@ -56,15 +56,48 @@ async function resolve(draft: z.infer<typeof RepresentativeDraft>, snapshot: z.i
     acceptedSnapshots: new Map([[snapshot.id, snapshot]]), currentRevisions: new Map([[snapshot.id, snapshot.revision]]),
     facts: unique(draft.facts), evidence: unique(draft.evidence), observations: unique(draft.observations) });
 }
-function reviewedDraft(draft: z.infer<typeof RepresentativeDraft>, reviewerId: string, verifiedAt: string) {
+function reviewedDraft(draft: z.infer<typeof RepresentativeDraft>, reviewerId: string, verifiedAt: string, sourceRule = false) {
   return { ...draft, facts: draft.facts.map(fact => AcceptedFactRecord.parse({ ...fact,
-    verification: { kind: "human-review", ruleId: "representative-roster-review", ruleVersion: "authenticated-review-1",
+    verification: { kind: sourceRule ? "source-rule" : "human-review",
+      ruleId: sourceRule ? "official-federal-roster" : "representative-roster-review",
+      ruleVersion: sourceRule ? "source-rule-roster-1" : "authenticated-review-1",
       verifierId: reviewerId, verifiedAt } })) };
+}
+
+/** Deterministic native-snapshot acceptance. Rebuild every proposed fact from
+ * retained complete official XML; a caller cannot approve arbitrary draft values. */
+export async function acceptFederalRosterSourceRule(db: D1DatabaseLike, input: {
+  draftId: string; observationId: string; sourceId: string;
+}, policy: RepresentativeSourcePolicy, now = new Date()) {
+  WatchId.parse(input.draftId); WatchId.parse(input.observationId); WatchId.parse(input.sourceId);
+  const { row, draft } = await readRepresentativeDraft(db, input.draftId);
+  const raw = await db.prepare("SELECT source_url,retrieved_at,raw_sha256,raw_text FROM representative_roster_observations WHERE id=?")
+    .bind(input.observationId).first<{ source_url: string; retrieved_at: string; raw_sha256: string; raw_text: string }>();
+  if (!raw || await sha256(raw.raw_text) !== raw.raw_sha256) return fail("representative-raw-evidence-invalid");
+  const { HOUSE_ROSTER_URL, parseHouseRoster } = await import("./house-representative-collection");
+  const { SENATE_ROSTER_URL, parseSenateRoster } = await import("./representative-collection");
+  const { prepareHouseRosterCaptures, prepareSenateRosterCaptures, buildRepresentativeRosterDraft } = await import("./representative-roster-drafts");
+  if (![HOUSE_ROSTER_URL, SENATE_ROSTER_URL].includes(raw.source_url)) return fail("representative-endpoint-unsupported");
+  const house = raw.source_url === HOUSE_ROSTER_URL;
+  const parsed = await (house ? parseHouseRoster : parseSenateRoster)(raw.raw_text, raw.retrieved_at);
+  const expected = house ? { PA: 17, NJ: 12, DE: 1 } : { PA: 2, NJ: 2, DE: 2 };
+  if (Object.entries(expected).some(([state, count]) => parsed.members.filter(member => member.state === state).length !== count))
+    return fail("representative-roster-incomplete");
+  const captures = await (house ? prepareHouseRosterCaptures : prepareSenateRosterCaptures)(raw.raw_text, input.sourceId, raw.retrieved_at);
+  const capture = captures.find(value => value.bodyId === draft.scope.bodyId && value.jurisdictionId === draft.scope.jurisdictionId);
+  if (!capture || canonicalJson(await buildRepresentativeRosterDraft(capture, draft.expectedRevision)) !== row.payload_json)
+    return fail("representative-source-rule-mismatch");
+  return persistRepresentativeDecision(db, { id: draft.id, sha256: row.payload_sha256, decision: "accepted" },
+    "source-rule:official-roster", policy, now, true);
 }
 /** Internal boundary: authenticate reviewer first. Approval refers to one stored
  * draft/hash, never a client supplied accepted snapshot. */
 export async function decideRepresentativeDraft(db: D1DatabaseLike, input: unknown, reviewerId: string,
   policy: RepresentativeSourcePolicy, now = new Date()) {
+  return persistRepresentativeDecision(db, input, reviewerId, policy, now, false);
+}
+async function persistRepresentativeDecision(db: D1DatabaseLike, input: unknown, reviewerId: string,
+  policy: RepresentativeSourcePolicy, now: Date, sourceRule: boolean) {
   const decision = z.object({ id: WatchId, sha256: Sha256, decision: z.enum(["accepted", "rejected"]) }).strict().parse(input);
   WatchId.parse(reviewerId);
   const { row, draft } = await readRepresentativeDraft(db, decision.id);
@@ -79,11 +112,12 @@ export async function decideRepresentativeDraft(db: D1DatabaseLike, input: unkno
   let snapshot = null;
   let guards: D1StatementLike[] = [];
   if (decision.decision === "accepted") {
-    const reviewed = reviewedDraft(draft, reviewerId, decidedAt);
+    const reviewed = reviewedDraft(draft, reviewerId, decidedAt, sourceRule);
     const digests = [];
     for (const fact of reviewed.facts) digests.push({ id: fact.id, sha256: await acceptedFactDigest(fact) });
     snapshot = RepresentativeSnapshotAcceptance.parse({ id: draft.id, revision: draft.expectedRevision + 1, scope: draft.scope,
-      rosterFactId: draft.rosterFactId, acceptedAt: decidedAt, reviewBindingVersion: "authenticated-review-1", factDigests: digests });
+      rosterFactId: draft.rosterFactId, acceptedAt: decidedAt,
+      reviewBindingVersion: sourceRule ? "source-rule-roster-1" : "authenticated-review-1", factDigests: digests });
     await resolve(reviewed, snapshot, policy, now);
     guards = policy.acceptanceGuards?.(draft.id) ?? [];
     if (!guards.length) return fail("representative-source-guards-required");
@@ -105,7 +139,9 @@ export async function readRepresentatives(db: D1DatabaseLike, input: unknown, po
   const snapshot = RepresentativeSnapshotAcceptance.parse(JSON.parse(head.snapshot_json));
   if (snapshot.revision !== head.revision || snapshot.id !== head.draft_id || scopeKey(snapshot.scope) !== key)
     return fail("representative-storage-invalid", 503);
-  const resolvedDraft = snapshot.reviewBindingVersion ? reviewedDraft(draft, head.reviewer_id, head.decided_at) : draft;
+  const sourceRule = snapshot.reviewBindingVersion === "source-rule-roster-1";
+  if (sourceRule && head.reviewer_id !== "source-rule:official-roster") return fail("representative-storage-invalid", 503);
+  const resolvedDraft = snapshot.reviewBindingVersion ? reviewedDraft(draft, head.reviewer_id, head.decided_at, sourceRule) : draft;
   if (snapshot.reviewBindingVersion && snapshot.acceptedAt !== head.decided_at) return fail("representative-storage-invalid", 503);
   const result = queryRepresentatives(await resolve(resolvedDraft, snapshot, policy, now), query);
   const current = await db.prepare("SELECT draft_id,revision FROM representative_heads WHERE scope_key=?").bind(key)

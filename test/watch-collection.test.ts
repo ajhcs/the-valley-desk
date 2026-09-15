@@ -7,6 +7,11 @@ import { sourceConfigurationDigest, type SourceEnrollment } from "../src/ingest/
 import { configureWatchCollectionSource,resolveEnrolledCollectionSource,resolveWatchCollectionEvidence,revokeWatchCollectionReview } from "../src/ingest/watch/collection-storage";
 import { runWatchCollection } from "../src/ingest/watch/collector";
 import type { D1DatabaseLike } from "../src/ingest/persistence";
+import { SENATE_ROSTER_URL } from "../src/ingest/representative-collection";
+import { readRepresentatives } from "../src/ingest/representative-persistence";
+import { resolveRepresentativeSourcePolicy } from "../src/ingest/representative-runtime";
+import { runScheduledWatchCollection, runScheduledWatchPublication } from "../src/ingest/watch-scheduled";
+import { watchOperationBudget, WatchOperationBudgetError } from "../src/ingest/watch-operation-budget";
 
 async function enroll(db:D1DatabaseLike,overrides:Partial<SourceEnrollment>={}) {
   const source=rssSource({...overrides,state:"qualified",qualificationReceiptId:"synthetic-qualified"});
@@ -23,13 +28,121 @@ async function enroll(db:D1DatabaseLike,overrides:Partial<SourceEnrollment>={}) 
 }
 function clock(at=SEEN_AT){return ()=>new Date(at);}
 const success:typeof fetch=async()=>new Response(rssBody(),{headers:{"content-type":"application/rss+xml; charset=utf-8",etag:'"one"'}});
-const federalSource:Partial<SourceEnrollment>={id:"synthetic-federal",desk:"policy",jurisdiction:"federal",family:"regulation",
+const federalSource:Partial<SourceEnrollment>={id:"synthetic-federal",desk:"policy",jurisdiction:"federal",family:"regulation",authority:"official",
   transport:"official-json",parserId:"watch-federal-register",parserVersion:"1",
   endpoints:["https://www.federalregister.gov/api/v1/documents.json?per_page=5"],
   linkScopes:[{host:"www.federalregister.gov",pathPrefix:"/"}]};
 const federalRecord={document_number:"2026-12345",type:"Proposed Rule",title:"Synthetic healthcare proposal",
   publication_date:"2026-09-10",action:"Proposed rule",pdf_url:"https://www.govinfo.gov/content/pkg/FR-2026-09-10/pdf/2026-12345.pdf"};
 async function due(db:D1DatabaseLike){await db.prepare("UPDATE watch_collection_state SET next_due_at=?").bind(SEEN_AT).run();}
+
+const rosterSource:Partial<SourceEnrollment>={id:"synthetic-senate-roster",desk:"policy",jurisdiction:"federal",family:"members",
+  authority:"official",transport:"official-xml",parserId:"watch-federal-roster",parserVersion:"1",
+  endpoints:[SENATE_ROSTER_URL],linkScopes:[{host:"www.senate.gov",pathPrefix:"/"}],maxItems:30};
+const rosterXml="<contact_information>"+["PA","NJ","DE"].flatMap((state,i)=>[0,1].map(j=>
+  `<member><first_name>Synthetic</first_name><last_name>Member${i}${j}</last_name><state>${state}</state><party>I</party><bioguide_id>S0000${i}${j}</bioguide_id><website>https://www.senate.gov/</website><class>${j+1}</class></member>`
+)).join("")+"</contact_information>";
+
+test("scheduled qualified XML roster retains raw first and only explicit source-rule mode advances public directories",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,rosterSource);
+  const first=await runScheduledWatchCollection(db,{enabled:true,publishRepresentatives:false,clock:clock(),fetchImpl:async()=>new Response(rosterXml,{headers:{etag:'"roster"'}})});
+  assert.equal(first.sources[0]?.state,"healthy",JSON.stringify(first));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_roster_observations").get()!.n,1);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_drafts").get()!.n,3);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_heads").get()!.n,0);
+  await due(db);
+  const at="2026-09-12T12:02:00.000Z";
+  const second=await runScheduledWatchCollection(db,{enabled:true,publishRepresentatives:true,clock:clock(at),fetchImpl:async()=>new Response(null,{status:304})});
+  assert.equal(second.sources[0]?.state,"healthy",JSON.stringify(second));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_heads").get()!.n,3);
+  const result=await readRepresentatives(db,{jurisdiction:"federal",jurisdictionId:"us-pa",bodyId:"us-senate",asOf:"2026-09-12"},
+    await resolveRepresentativeSourcePolicy(db,new Date(at)),new Date(at));
+  assert.equal(result.offices[0].members.length,2);
+  assert.equal(result.offices[0].members[0].validFrom,null);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_raw_observations").get()!.n,6);
+});
+
+test("incomplete and item-capped official rosters never create accepted memberships",async t=>{
+  for(const [body,maxItems] of [[rosterXml.replace(/<member>.*?<\/member>/,""),30],[rosterXml,1]] as const){
+    const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{...rosterSource,maxItems});
+    const result=await runWatchCollection(db,{enabled:true,publishVerified:true,clock:clock(),fetchImpl:async()=>new Response(body)});
+    assert.equal(result.sources[0]?.checkpointAdvanced,false);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_heads").get()!.n,0);
+  }
+});
+
+test("roster source-rule transaction fences source revocation and lost collector lease",async t=>{
+  for(const mutation of ["UPDATE watch_collection_reviews SET revoked_at='2026-09-12T12:00:00.000Z'",
+    "UPDATE watch_collection_leases SET owner='replacement'"]){
+    const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,rosterSource);let batches=0;
+    const racing:D1DatabaseLike={prepare:sql=>db.prepare(sql),async batch(statements){
+      if(++batches===2)sqlite.exec(mutation);
+      return db.batch(statements);
+    }};
+    const run=runWatchCollection(racing,{enabled:true,publishVerified:true,clock:clock(),fetchImpl:async()=>new Response(rosterXml)});
+    if(mutation.includes("leases"))await assert.rejects(run,/lease-lost/);
+    else assert.equal((await run).sources[0]?.checkpointAdvanced,false);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_heads").get()!.n,0);
+  }
+});
+
+test("scheduled Federal Register22-item raw collection and replay fit their independent statement budget",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{...federalSource,maxItems:25});
+  const results=Array.from({length:22},(_,index)=>({...federalRecord,document_number:String(2026)+"-"+String(20000+index)}));
+  const first=await runScheduledWatchCollection(db,{enabled:true,clock:clock(),fetchImpl:async()=>new Response(JSON.stringify({results}),{headers:{etag:'"budget-fr"'}})});
+  assert.equal(first.sources[0]?.state,"healthy",JSON.stringify(first));
+  assert.ok(first.operations<750,JSON.stringify(first));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,22);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,22);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()!.n,0);
+  const replay=await runScheduledWatchCollection(db,{enabled:true,clock:clock("2026-09-12T12:02:00.000Z"),fetchImpl:async()=>new Response(null,{status:304})});
+  assert.equal(replay.sources[0]?.state,"healthy",JSON.stringify(replay));
+  assert.ok(replay.operations<750,JSON.stringify(replay));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,22);
+  t.diagnostic(JSON.stringify({firstCaptureStatements:first.operations,replayStatements:replay.operations}));
+});
+
+test("growing Federal Register inventories resume native staging after a bounded partial run",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{...federalSource,maxItems:30});
+  const results=Array.from({length:26},(_,index)=>({...federalRecord,document_number:"2026-"+String(30000+index)}));
+  const fetchImpl:typeof fetch=async()=>new Response(JSON.stringify({results}));
+  const first=await runScheduledWatchCollection(db,{enabled:true,clock:clock(),fetchImpl});
+  assert.equal(first.sources[0]?.state,"backoff",JSON.stringify(first));
+  assert.equal(first.sources[0]?.checkpointAdvanced,false);
+  assert.ok(first.operations<=750);
+  const resumed=await runScheduledWatchCollection(db,{enabled:true,clock:clock("2026-09-12T12:20:00.000Z"),fetchImpl});
+  assert.equal(resumed.sources[0]?.state,"healthy",JSON.stringify(resumed));
+  assert.equal(resumed.sources[0]?.checkpointAdvanced,true);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,26);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()!.n,0);
+});
+
+test("source budget exhaustion records backoff and releases its lease without starving another due source",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{id:"a-budget-source"});await enroll(db,{id:"b-next-source"});
+  const budget=watchOperationBudget(db,1);
+  const first=await runWatchCollection(db,{enabled:true,maxSources:1,sourceDatabase:budget.db,clock:clock(),fetchImpl:success});
+  assert.equal(first.sources[0]?.state,"backoff",JSON.stringify(first));
+  assert.equal(first.sources[0]?.checkpointAdvanced,false);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_collection_leases").get()!.n,0);
+  const next=await runWatchCollection(db,{enabled:true,maxSources:1,clock:clock(),fetchImpl:success});
+  assert.equal(next.sources[0]?.sourceId,"b-next-source");
+});
+
+test("publication queue resumes a committed source-rule acceptance after interrupted public application",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{...federalSource,authority:"official"});
+  await runScheduledWatchCollection(db,{enabled:true,clock:clock(),fetchImpl:async()=>new Response(JSON.stringify({results:[federalRecord]}))});
+  const interrupted:D1DatabaseLike={prepare:sql=>db.prepare(sql),async batch(statements){
+    if(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()!.n>0)throw new WatchOperationBudgetError();
+    return db.batch(statements);
+  }};
+  const held=await runScheduledWatchPublication(interrupted,{enabled:true,now:new Date(SEEN_AT)});
+  assert.equal(held.outcome,"held",JSON.stringify(held));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()!.n,1);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_publication_decisions").get()!.n,0);
+  const resumed=await runScheduledWatchPublication(db,{enabled:true,now:new Date(SEEN_AT)});
+  assert.equal(resumed.outcome,"applied",JSON.stringify(resumed));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_publication_decisions").get()!.n,1);
+});
 
 test("Federal Register inventory persists raw evidence then stages unreviewed policy, including304 replay",async t=>{
   const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,federalSource);
@@ -60,6 +173,17 @@ test("Federal Register inventory persists raw evidence then stages unreviewed po
   assert.equal(bindings.length,2);
   for(const binding of bindings)assert.equal(JSON.parse(String(binding.observation_json)).representationSha256,binding.representation_sha256);
   assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,1);
+});
+
+test("explicit collector source-rule mode publishes directly sourced Federal Register facts",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,federalSource);
+  const result=await runWatchCollection(db,{enabled:true,publishVerified:true,clock:clock(),
+    fetchImpl:async()=>new Response(JSON.stringify({results:[federalRecord]}))});
+  assert.equal(result.sources[0]?.state,"healthy",JSON.stringify(result));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_publication_decisions").get()!.n,1);
+  const facts=sqlite.prepare("SELECT payload_json FROM watch_editorial_facts").all();
+  assert.ok(facts.length>0);
+  for(const row of facts)assert.equal(JSON.parse(String(row.payload_json)).verification.kind,"source-rule");
 });
 
 test("native staging transactions fence revocation and lease replacement after raw persistence",async t=>{

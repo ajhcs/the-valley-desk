@@ -174,7 +174,7 @@ class Projection {
         quote: evidence.kind === "structured" ? null : evidence.quote,
         locator: evidence.kind === "structured" ? evidence.pointer : evidence.kind === "pdf" ? `Page ${evidence.pageNumber}` : null });
     }
-    if (this.sources.size > 20) return hold("public-citation-limit");
+    if (this.sources.size > 50) return hold("public-citation-limit");
     return { value, evidenceIds: [...fact.evidenceIds], verifiedAt: fact.verification.verifiedAt };
   }
 
@@ -280,7 +280,10 @@ export async function projectTechnologyProfile(input: unknown, context: WatchPro
       projection.unknowns.push({ field: `license:${license.artifactId}:${license.scope}`, reason: "License evidence changed; classification awaits review." });
       continue;
     }
-    if (license.classification !== "unknown" && license.classification !== "not-applicable" && fact.verification.kind !== "human-review") return hold("license-review-required");
+    const pinnedNativeLicenseRule = fact.verification.kind === "source-rule" &&
+      fact.verification.ruleId === "watch-native-source-rule-v1" && fact.verification.ruleVersion === "1";
+    if (license.classification !== "unknown" && license.classification !== "not-applicable" &&
+      fact.verification.kind !== "human-review" && !pinnedNativeLicenseRule) return hold("license-review-required");
     projection.checkUrl(license.sourceUrl); licenses.push(projection.present(fact, license));
   }
   const oss = licenses.some(license => {

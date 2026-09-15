@@ -11,7 +11,7 @@ const LinkScope = z.object({ host: Host, pathPrefix: z.string().min(1).max(1000)
 export const SourceEnrollment = z.object({ id: WatchId, name: Label, state: z.enum(["pending", "qualified", "disabled"]),
   desk: z.enum(["news", "events", "policy", "technology"]), jurisdiction: WatchJurisdiction,
   family: z.enum(["legislation", "regulation", "dockets", "members", "news", "events", "technology"]),
-  transport: z.enum(["rss", "atom", "github-json", "official-json", "html", "batch"]),
+  transport: z.enum(["rss", "atom", "github-json", "official-json", "official-xml", "html", "batch"]),
   parserId: WatchId, parserVersion: Label, endpoints: z.array(Endpoint).min(1).max(20),
   linkScopes: z.array(LinkScope).min(1).max(20), authority: z.enum(["official", "first-party", "secondary", "discovery-only", "unqualified"]),
   dateTimezone: Label.nullable(), requiresAuth: z.boolean(),
