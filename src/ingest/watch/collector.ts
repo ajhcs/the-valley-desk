@@ -157,6 +157,7 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
 // official rosters may advance through the exact-source rule, under the same lease.
 export async function runWatchCollection(db:D1DatabaseLike,options:{
   enabled:boolean;publishVerified?:boolean;fetchImpl?:typeof fetch;clock?:()=>Date;maxSources?:number;deadlineMs?:number;
+  sourceDatabase?:D1DatabaseLike;
 }) {
   if(!options.enabled)return {outcome:"disabled" as const,sources:[]};
   const clock=options.clock??(()=>new Date()),started=clock().toISOString();CanonicalInstant.parse(started);
@@ -180,7 +181,7 @@ export async function runWatchCollection(db:D1DatabaseLike,options:{
         if(!technology && !["rss","atom","github-json","official-json","official-xml"].includes(enrolled.source.transport))throw new UpstreamError("misconfigured","watch-transport-not-implemented");
         if(enrolled.source.parserVersion!=="1" || (!technology && enrolled.source.parserId!==(enrolled.source.transport==="github-json"?"watch-github":enrolled.source.transport==="official-json"?"watch-federal-register":enrolled.source.transport==="official-xml"?"watch-federal-roster":"watch-rss")))
           throw new UpstreamError("misconfigured","watch-parser-not-installed");
-        const result=await collectSource(db,enrolled,options.fetchImpl??fetch,deadline,clock,owner,options.publishVerified??false);
+        const result=await collectSource(options.sourceDatabase??db,enrolled,options.fetchImpl??fetch,deadline,clock,owner,options.publishVerified??false);
         ({state,detail,itemCount,checkpoint}=result);
       }catch(error){
         state=error instanceof UpstreamError?error.code:classifyFetchError(error);detail=error instanceof Error?error.message:"collection-failed";

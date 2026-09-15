@@ -10,6 +10,8 @@ import type { D1DatabaseLike } from "../src/ingest/persistence";
 import { SENATE_ROSTER_URL } from "../src/ingest/representative-collection";
 import { readRepresentatives } from "../src/ingest/representative-persistence";
 import { resolveRepresentativeSourcePolicy } from "../src/ingest/representative-runtime";
+import { runScheduledWatchCollection, runScheduledWatchPublication } from "../src/ingest/watch-scheduled";
+import { watchOperationBudget, WatchOperationBudgetError } from "../src/ingest/watch-operation-budget";
 
 async function enroll(db:D1DatabaseLike,overrides:Partial<SourceEnrollment>={}) {
   const source=rssSource({...overrides,state:"qualified",qualificationReceiptId:"synthetic-qualified"});
@@ -82,6 +84,49 @@ test("roster source-rule transaction fences source revocation and lost collector
     else assert.equal((await run).sources[0]?.checkpointAdvanced,false);
     assert.equal(sqlite.prepare("SELECT count(*) n FROM representative_heads").get()!.n,0);
   }
+});
+
+test("scheduled Federal Register22-item raw collection and replay fit their independent statement budget",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{...federalSource,maxItems:25});
+  const results=Array.from({length:22},(_,index)=>({...federalRecord,document_number:String(2026)+"-"+String(20000+index)}));
+  const first=await runScheduledWatchCollection(db,{enabled:true,clock:clock(),fetchImpl:async()=>new Response(JSON.stringify({results}),{headers:{etag:'"budget-fr"'}})});
+  assert.equal(first.sources[0]?.state,"healthy",JSON.stringify(first));
+  assert.ok(first.operations<750,JSON.stringify(first));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,22);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,22);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()!.n,0);
+  const replay=await runScheduledWatchCollection(db,{enabled:true,clock:clock("2026-09-12T12:02:00.000Z"),fetchImpl:async()=>new Response(null,{status:304})});
+  assert.equal(replay.sources[0]?.state,"healthy",JSON.stringify(replay));
+  assert.ok(replay.operations<750,JSON.stringify(replay));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,22);
+  t.diagnostic(JSON.stringify({firstCaptureStatements:first.operations,replayStatements:replay.operations}));
+});
+
+test("source budget exhaustion records backoff and releases its lease without starving another due source",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{id:"a-budget-source"});await enroll(db,{id:"b-next-source"});
+  const budget=watchOperationBudget(db,1);
+  const first=await runWatchCollection(db,{enabled:true,maxSources:1,sourceDatabase:budget.db,clock:clock(),fetchImpl:success});
+  assert.equal(first.sources[0]?.state,"backoff",JSON.stringify(first));
+  assert.equal(first.sources[0]?.checkpointAdvanced,false);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_collection_leases").get()!.n,0);
+  const next=await runWatchCollection(db,{enabled:true,maxSources:1,clock:clock(),fetchImpl:success});
+  assert.equal(next.sources[0]?.sourceId,"b-next-source");
+});
+
+test("publication queue resumes a committed source-rule acceptance after interrupted public application",async t=>{
+  const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,{...federalSource,authority:"official"});
+  await runScheduledWatchCollection(db,{enabled:true,clock:clock(),fetchImpl:async()=>new Response(JSON.stringify({results:[federalRecord]}))});
+  const interrupted:D1DatabaseLike={prepare:sql=>db.prepare(sql),async batch(statements){
+    if(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()!.n>0)throw new WatchOperationBudgetError();
+    return db.batch(statements);
+  }};
+  const held=await runScheduledWatchPublication(interrupted,{enabled:true,now:new Date(SEEN_AT)});
+  assert.equal(held.outcome,"held",JSON.stringify(held));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()!.n,1);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_publication_decisions").get()!.n,0);
+  const resumed=await runScheduledWatchPublication(db,{enabled:true,now:new Date(SEEN_AT)});
+  assert.equal(resumed.outcome,"applied",JSON.stringify(resumed));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_publication_decisions").get()!.n,1);
 });
 
 test("Federal Register inventory persists raw evidence then stages unreviewed policy, including304 replay",async t=>{
