@@ -161,12 +161,18 @@ export async function prepareTechnologySourceDraft(plan: typeof technologySource
   }
   const releases = JSON.parse(capture.releases.body);
   if (!Array.isArray(releases) || releases.length > 10) throw new Error("technology-release-cap");
-  for (const release of releases) {
+  // A profile presents three recent stable release examples, not a complete
+  // release history. Retain and validate the entire bounded API response.
+  const ordered = [...releases].sort((a, b) => (Date.parse(b?.published_at) || 0) - (Date.parse(a?.published_at) || 0));
+  const displayed = new Set(ordered.filter(release => release?.draft === false && release?.prerelease === false &&
+    typeof release.published_at === "string" && Number.isFinite(Date.parse(release.published_at))).slice(0, 3).map(release => release.id));
+  for (const release of ordered) {
     if (!Number.isSafeInteger(release.id) || release.id <= 0 || typeof release.tag_name !== "string" ||
         typeof release.draft !== "boolean" || typeof release.prerelease !== "boolean") throw new Error("technology-release-shape");
     const nativeId = String(release.id);
     const releaseUrl = "https://github.com/" + plan.fullName + "/releases/tag/" + encodeURIComponent(release.tag_name);
     if (release.html_url !== releaseUrl) throw new Error("technology-release-repository-conflict");
+    if (!displayed.has(release.id)) continue;
     const releaseEvidenceId = "tech-" + plan.numericId + "-release-" + nativeId;
     const retainedText = jsonField(capture.releases, "published_at", release.published_at ?? null);
     if (!capture.releases.body.includes(retainedText)) throw new Error("technology-nonliteral-release-evidence");

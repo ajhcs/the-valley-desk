@@ -148,6 +148,20 @@ test("source preparation binds each field instead of borrowing the regional quot
   const { input: draft } = await prepareTechnologySourceDraft(plan, captures);
   const reordered = Object.fromEntries(Object.entries(captures).reverse()) as typeof captures;
   assert.deepEqual((await prepareTechnologySourceDraft(plan, reordered)).input, draft);
+  const releases = Array.from({ length: 5 }, (_, index) => ({ id: index + 1, tag_name: "v" + (index + 1),
+    html_url: "https://github.com/" + plan.fullName + "/releases/tag/v" + (index + 1),
+    draft: false, prerelease: false, published_at: "2026-09-0" + (index + 1) + "T00:00:00Z" }));
+  const prepared = await prepareTechnologySourceDraft(plan, { ...captures,
+    releases: { ...captures.releases, body: JSON.stringify(releases) } });
+  assert.deepEqual(prepared.input.developments.map(release => release.nativeId), ["5", "4", "3"]);
+  assert.ok(prepared.input.evidence.length < 50);
+  releases[4]!.prerelease = true;
+  const stableOnly = await prepareTechnologySourceDraft(plan, { ...captures,
+    releases: { ...captures.releases, body: JSON.stringify(releases) } });
+  assert.deepEqual(stableOnly.input.developments.map(release => release.nativeId), ["4", "3", "2"]);
+  releases[0]!.html_url = "https://github.com/other/project/releases/tag/v1";
+  await assert.rejects(prepareTechnologySourceDraft(plan, { ...captures,
+    releases: { ...captures.releases, body: JSON.stringify(releases) } }), /release-repository-conflict/);
   const quote = (id: string) => draft.evidence.find(item => item.id === id)!.quote;
   assert.match(quote(draft.purpose!.evidenceIds[0]!), /offline-capable viewer/);
   assert.match(quote(draft.workflow!.evidenceIds[0]!), /adjust SQL/);
