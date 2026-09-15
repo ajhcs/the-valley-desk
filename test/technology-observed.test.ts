@@ -4,6 +4,8 @@ import { parseTechnologyCaptureSnapshot, technologyCaptureRole } from "../src/in
 import { SourceEnrollment } from "../src/ingest/watch/source-enrollment";
 import { technologyRegionalSources } from "../src/ingest/technology-source-plans";
 import { RegionalEligibility } from "../src/content/watch-delivery";
+import { pdfDatabase } from "./helpers/policy-pdf";
+import { persistTechnologySourceRepresentation } from "../src/ingest/technology-editorial-adapter";
 
 test("technology regional capture parser is installed-endpoint and literal-location scoped", async () => {
   const endpoint = technologyRegionalSources.chop.url;
@@ -26,4 +28,18 @@ test("observed regional eligibility cannot masquerade as an unbounded historical
   assert.equal(RegionalEligibility.safeParse(value).success, true);
   assert.equal(RegionalEligibility.safeParse({ ...value, validFrom: "2000-01-01" }).success, false);
   assert.equal(RegionalEligibility.safeParse({ ...value, validTo: null }).success, false);
+});
+
+test("unchanged bytes refresh monotonic head time without rewriting the original observation", async t => {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const capture = { url: technologyRegionalSources.chop.url, checkedAt: "2026-09-15T10:00:00.000Z", body: "Synthetic retained location" };
+  const first = await persistTechnologySourceRepresentation(db, "test-resource", "test-source", capture);
+  const later = { ...capture, checkedAt: "2026-09-15T11:00:00.000Z" };
+  const repeated = await persistTechnologySourceRepresentation(db, "test-resource", "test-source", later);
+  assert.equal(repeated.observationId, first.observationId);
+  const head = await db.prepare("SELECT checked_at FROM technology_source_heads WHERE subject_id=?").bind("test-resource").first<{ checked_at: string }>();
+  const raw = await db.prepare("SELECT checked_at FROM technology_source_representations WHERE id=?").bind(first.observationId).first<{ checked_at: string }>();
+  assert.equal(head?.checked_at, later.checkedAt);
+  assert.equal(raw?.checked_at, capture.checkedAt);
+  await assert.rejects(persistTechnologySourceRepresentation(db, "test-resource", "test-source", capture), /out-of-order/);
 });

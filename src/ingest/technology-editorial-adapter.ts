@@ -23,8 +23,8 @@ export async function persistTechnologySourceRepresentation(db: D1DatabaseLike, 
     .bind(subjectId, capture.url).first<Head>();
   if (previous && capture.checkedAt < previous.checked_at) throw new Error("technology-out-of-order-capture");
   if (previous?.representation_sha256 === digest && previous.source_id === sourceId) {
-    await db.prepare("UPDATE technology_source_heads SET checked_at=? WHERE subject_id=? AND source_url=? AND observation_id=? AND checked_at<=?")
-      .bind(capture.checkedAt, subjectId, capture.url, previous.observation_id, capture.checkedAt).run();
+    await db.batch([db.prepare("UPDATE technology_source_heads SET checked_at=? WHERE subject_id=? AND source_url=? AND observation_id=? AND checked_at<=?")
+      .bind(capture.checkedAt, subjectId, capture.url, previous.observation_id, capture.checkedAt)]);
     return { observationId: previous.observation_id, outcome: "unchanged" as const };
   }
   const observationId = await tupleKey("technology-observation-v1", [subjectId, sourceId,
