@@ -7,6 +7,9 @@ import type { WatchDeliveryCompileContext } from "../content/watch-delivery";
 import { evidenceMatches } from "../content/watch-projection";
 import type { D1DatabaseLike, D1StatementLike } from "./persistence";
 import { applyReviewedWatchProjection, WatchStorageError } from "./watch-persistence";
+import { buildPolicyEditorialProposal, readPolicyWatchCapture } from "./policy-watch-workflow";
+import { parseCongressPolicy, parseDelawareIntroducedPolicy, parseFederalRegisterPolicy, parseNewJerseyPolicy,
+  parsePennsylvaniaPolicy, parsePhiladelphiaPolicy } from "./policy-watch-native";
 
 const Draft = z.union([PolicyDossierDraft, TechnologyProfileDraft]);
 const ProposedFact = z.object({
@@ -42,6 +45,38 @@ export type EditorialRuntime = {
     }>;
 };
 const RULE = "watch-editorial-review-v1";
+const SOURCE_RULE = "watch-native-source-rule-v1";
+
+/** Deterministic native metadata only. A stored proposal is not its own proof:
+ * reconstruct it from the current retained capture before granting authority. */
+export async function decideSourceRulePolicyProposal(db: D1DatabaseLike,
+  input: { id: string; sha256: string }, runtime: EditorialRuntime, now = new Date()) {
+  const request = z.object({ id: WatchId, sha256: Sha256 }).strict().parse(input);
+  const stored = await readEditorialProposal(db, request.id);
+  if (!stored) throw new WatchStorageError("watch-draft-not-found", 404);
+  if (stored.sha256 !== request.sha256) throw new WatchStorageError("watch-draft-hash-conflict");
+  if (stored.proposal.draft.kind !== "policy") throw new WatchStorageError("watch-source-rule-unsupported");
+  const head = await db.prepare("SELECT id FROM policy_watch_captures WHERE subject_id=? ORDER BY sequence DESC LIMIT 1")
+    .bind(stored.proposal.draft.id).first<{ id: string }>();
+  if (!head) throw new WatchStorageError("watch-source-rule-native-capture-required");
+  const { material: { parsed } } = await readPolicyWatchCapture(db, head.id);
+  const reparsed = parsed.parserVersion === "congress-policy-json-1" ? parseCongressPolicy(parsed.native, parsed.source)
+    : parsed.parserVersion === "delaware-introduced-json-1" ? parseDelawareIntroducedPolicy(parsed.native, parsed.source)
+    : parsed.parserVersion === "federal-register-policy-json-1" ? parseFederalRegisterPolicy(parsed.native, parsed.source)
+    : parsed.parserVersion === "nj-legislative-text-csv-1" ? parseNewJerseyPolicy(parsed.native, parsed.identity.sessionKey, parsed.source)
+    : parsed.parserVersion === "philadelphia-legistar-json-1" ? parsePhiladelphiaPolicy(parsed.native, parsed.identity.sessionKey, parsed.source)
+    : parsed.parserVersion === "pa-bill-history-html-1" ? parsePennsylvaniaPolicy(z.object({ html: z.string() }).parse(parsed.native).html, parsed.source)
+    : null;
+  if (!reparsed || canonicalJson(reparsed) !== canonicalJson(parsed))
+    throw new WatchStorageError("watch-source-rule-native-parser-conflict");
+  // Use staging time so date filtering is reproducible across retries.
+  const rebuilt = await buildPolicyEditorialProposal(db, head.id, stored.proposal.draft.slug, new Date(stored.createdAt));
+  if (canonicalJson(EditorialProposal.parse(rebuilt.proposal)) !== canonicalJson(stored.proposal) ||
+    stored.proposal.facts.some(fact => fact.interpretationDependencies !== null ||
+      !["title", "policy-identity", "timeline-action", "latest-action"].includes(fact.field)))
+    throw new WatchStorageError("watch-source-rule-proposal-conflict");
+  return decideProposal(db, { ...request, action: "accepted" }, "source-rule:" + SOURCE_RULE, runtime, now, "source-rule");
+}
 
 export async function stageEditorialProposal(db: D1DatabaseLike, input: unknown, now = new Date()) {
   const proposal = EditorialProposal.parse(input);
@@ -97,6 +132,13 @@ export async function readEditorialProposal(db: D1DatabaseLike, id: string) {
 export async function decideEditorialProposal(db: D1DatabaseLike, input: {
   id: string; sha256: string; action: "accepted" | "rejected";
 }, reviewerPrincipal: string, runtime: EditorialRuntime, now = new Date()) {
+  return decideProposal(db, input, reviewerPrincipal, runtime, now, "human-review");
+}
+
+async function decideProposal(db: D1DatabaseLike, input: {
+  id: string; sha256: string; action: "accepted" | "rejected";
+}, reviewerPrincipal: string, runtime: EditorialRuntime, now: Date, verificationKind: "human-review" | "source-rule") {
+  const rule = verificationKind === "source-rule" ? SOURCE_RULE : RULE;
   const request = z.object({ id: WatchId, sha256: Sha256, action: z.enum(["accepted", "rejected"]) }).strict().parse(input);
   const principal = z.string().trim().min(1).max(320).parse(reviewerPrincipal);
   const stored = await readEditorialProposal(db, request.id);
@@ -145,13 +187,13 @@ export async function decideEditorialProposal(db: D1DatabaseLike, input: {
     const bindings = [];
     for (const id of fact.evidenceIds) bindings.push({ id, sha256: await evidenceReferenceDigest(evidence.get(id)) });
     facts.set(fact.id, AcceptedFactRecord.parse({ ...fact, evidenceDigests: bindings,
-      verification: { kind: "human-review", ruleId: RULE, ruleVersion: "1", verifierId: reviewerId, verifiedAt: at } }));
+      verification: { kind: verificationKind, ruleId: rule, ruleVersion: "1", verifierId: reviewerId, verifiedAt: at } }));
   }
   const factDigests = [];
   for (const fact of facts.values()) factDigests.push({ id: fact.id, sha256: await acceptedFactDigest(fact) });
   const acceptance = SubjectAcceptance.parse({ id: decisionId, subjectId: draft.id, kind: draft.kind,
     subjectRevision: draft.subjectRevision, draftSha256: await watchDraftDigest(draft),
-    acceptedAt: at, gateVersion: RULE, factDigests });
+    acceptedAt: at, gateVersion: rule, factDigests });
   const compiled = await compileWatchDelivery(draft, { ...resolved, acceptance, facts, evidence,
     currentSubjectRevision: subject.input_revision, asOf: at });
   const { manifest, record } = compiledWatchDeliveryValue(compiled);
@@ -166,7 +208,7 @@ export async function decideEditorialProposal(db: D1DatabaseLike, input: {
       .bind(dependency.key).first<{ kind: string; digest: string | null; revision: number; changed_at: string; immutable_record_id: string }>();
     if (head) {
       const renewed = head.digest !== dependency.expectedDigest;
-      const reviewable = ["artifact", "artifact-license", "local-relationship", "regional-current", "regional-historical"].includes(dependency.kind);
+      const reviewable = verificationKind === "human-review" && ["artifact", "artifact-license", "local-relationship", "regional-current", "regional-historical"].includes(dependency.kind);
       if (head.kind !== dependency.kind || (renewed && !reviewable) || head.changed_at > at)
         throw new WatchStorageError("watch-review-current-evidence-conflict");
       statements.push(db.prepare(`INSERT INTO watch_editorial_dependency_guards
@@ -198,9 +240,9 @@ export async function decideEditorialProposal(db: D1DatabaseLike, input: {
   const payload = canonicalJson(record), manifestJson = canonicalJson(manifest);
   statements.push(db.prepare("INSERT INTO watch_reviewed_projections VALUES(?,?,?,?,?,?,?,?,?,?)")
     .bind(decisionId, draft.id, draft.subjectRevision, stored.sha256, subject.public_revision,
-      await sha256(payload), payload, reviewerId, RULE, at));
+      await sha256(payload), payload, reviewerId, rule, at));
   statements.push(db.prepare("INSERT INTO watch_delivery_manifests VALUES(?,?,?,?,?,?,?)")
-    .bind(decisionId, draft.id, draft.kind, manifest.payloadSha256, RULE, await sha256(manifestJson), manifestJson));
+    .bind(decisionId, draft.id, draft.kind, manifest.payloadSha256, rule, await sha256(manifestJson), manifestJson));
   try { await db.batch(statements); } catch (error) { return recoverDecision(error); }
   return { decisionId, ...await applyReviewedWatchProjection(db, decisionId, now) };
 }

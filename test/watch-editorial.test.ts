@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { EditorialProposal, decideEditorialProposal, readEditorialProposal, stageEditorialProposal } from "../src/ingest/watch-editorial";
+import { EditorialProposal, decideEditorialProposal, decideSourceRulePolicyProposal, readEditorialProposal, stageEditorialProposal } from "../src/ingest/watch-editorial";
+import { readFileSync } from "node:fs";
+import { parseNewJerseyPolicy } from "../src/ingest/policy-watch-native";
+import { persistPolicyWatchCapture, buildPolicyEditorialProposal } from "../src/ingest/policy-watch-workflow";
 import type { EditorialRuntime } from "../src/ingest/watch-editorial";
 import { deliveryDependencyKey, verificationRuleDigest } from "../src/content/watch-delivery";
 import { recordWatchDependencyHead } from "../src/ingest/watch-delivery";
@@ -32,6 +35,72 @@ async function setup(t: { after: (fn: () => void) => void }) {
   return { db, sqlite, fixture, proposal, runtime };
 }
 const now = () => new Date(NOW);
+
+async function nativeSetup(t: { after: (fn: () => void) => void }, tamperCapture = false) {
+  const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
+  const captured = JSON.parse(readFileSync(new URL("./fixtures/policy-watch-native/nj-a101-20260912.json", import.meta.url), "utf8"));
+  const at = new Date("2026-09-12T17:00:00.000Z");
+  const native = parseNewJerseyPolicy(captured.native, captured.sessionKey, captured.source);
+  if (tamperCapture) native.title = "Invented title with a real evidence pointer";
+  const capture = await persistPolicyWatchCapture(db, native);
+  const built = await buildPolicyEditorialProposal(db, capture.id, "nj-a101", at);
+  const permission = await sha256("synthetic-native-permission");
+  await recordWatchDependencyHead(db, { key: await deliveryDependencyKey("source-permission", [captured.source.sourceId]),
+    kind: "source-permission", revision: 1, digest: permission, immutableRecordId: "test-native-permission", changedAt: at.toISOString() });
+  const runtime: EditorialRuntime = { resolveContext: async () => ({
+    observations: new Map(built.observations.map(item => [item.id, item])),
+    enrolledSourceIds: new Set([captured.source.sourceId]), sourceUrlAllowed: () => true, publicUrlAllowed: () => true,
+    sourcePermissionDigests: new Map([[captured.source.sourceId, permission]]), currentInterpretations: new Map(),
+    currentArtifacts: new Map(), regionalEntityIds: new Set(), regionalFactIds: new Map(), acceptanceGuards: built.acceptanceGuards,
+  }) };
+  return { db, sqlite, at, built, runtime };
+}
+
+test("native source rule publishes only rebuilt source facts and records no human approval", async t => {
+  const { db, sqlite, at, built, runtime } = await nativeSetup(t);
+  const staged = await stageEditorialProposal(db, built.proposal, at);
+  const request = { id: staged.id, sha256: staged.sha256 };
+  assert.equal((await decideSourceRulePolicyProposal(db, request, runtime, at)).outcome, "applied");
+  assert.equal((await decideSourceRulePolicyProposal(db, request, runtime, at)).outcome, "unchanged");
+  assert.equal((await readWatchDirectory(db, { kind: "policy" }, at)).items.length, 1);
+  for (const row of sqlite.prepare("SELECT payload_json FROM watch_editorial_facts").all()) {
+    const fact = JSON.parse(String(row.payload_json));
+    assert.equal(fact.verification.kind, "source-rule");
+    assert.equal(fact.verification.ruleId, "watch-native-source-rule-v1");
+    assert.equal(fact.interpretationDependencies, null);
+  }
+  assert.equal(sqlite.prepare("SELECT reviewer_principal FROM watch_editorial_decisions").get()?.reviewer_principal,
+    "source-rule:watch-native-source-rule-v1");
+});
+
+test("source rule refuses invented title, interpretation, and a hash mismatch", async t => {
+  const { db, sqlite, at, built, runtime } = await nativeSetup(t);
+  const proposal = structuredClone(built.proposal);
+  proposal.facts[0].value = "Invented title not in the source";
+  const staged = await stageEditorialProposal(db, proposal, at);
+  await assert.rejects(decideSourceRulePolicyProposal(db, { id: staged.id, sha256: staged.sha256 }, runtime, at), /proposal-conflict/);
+  await assert.rejects(decideSourceRulePolicyProposal(db, { id: staged.id, sha256: "f".repeat(64) }, runtime, at), /hash-conflict/);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()?.n, 0);
+});
+
+test("source rule retains current-capture transaction fence", async t => {
+  const { db, sqlite, at, built, runtime } = await nativeSetup(t);
+  const staged = await stageEditorialProposal(db, built.proposal, at);
+  sqlite.exec("CREATE TEMP TABLE source_rule_fail_guard(valid INTEGER CHECK(valid=1))");
+  const guarded: EditorialRuntime = { resolveContext: async (proposal, time) => ({
+    ...await runtime.resolveContext(proposal, time), acceptanceGuards: () => [db.prepare("INSERT INTO source_rule_fail_guard VALUES(0)")],
+  }) };
+  await assert.rejects(decideSourceRulePolicyProposal(db, { id: staged.id, sha256: staged.sha256 }, guarded, at));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()?.n, 0);
+  assert.equal((await readWatchDirectory(db, { kind: "policy" }, at)).items.length, 0);
+});
+
+test("source rule reparses the capture instead of trusting its derived title", async t => {
+  const { db, sqlite, at, built, runtime } = await nativeSetup(t, true);
+  const staged = await stageEditorialProposal(db, built.proposal, at);
+  await assert.rejects(decideSourceRulePolicyProposal(db, { id: staged.id, sha256: staged.sha256 }, runtime, at), /native-parser-conflict/);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_decisions").get()?.n, 0);
+});
 
 test("only a fresh named review can renew a retracted artifact head", async t => {
   const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
