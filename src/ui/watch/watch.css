@@ -1,0 +1,125 @@
+.WatchPage {
+  color: var(--text);
+  letter-spacing: 0;
+  line-height: 1.6;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.WatchPage *, .WatchPage *::before, .WatchPage *::after { box-sizing: border-box; }
+.WatchPage :is(h1, h2, h3, p, ul, ol, dl, blockquote) { margin: 0; }
+.WatchPage :is(h1, h2, h3) { letter-spacing: 0; text-wrap: pretty; }
+.WatchPage h1 { font-family: var(--font-serif); font-size: 36px; line-height: 1.2; font-weight: 600; }
+.WatchPage h2 { font-size: 22px; font-weight: 600; line-height: 1.4; }
+.WatchPage h3 { font-size: 16px; font-weight: 600; line-height: 1.5; }
+.WatchPage a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.WatchPage a:hover { color: var(--admiral); }
+.WatchPage :is(a, button, input, select, summary):focus-visible { outline: 2px solid var(--admiral); outline-offset: 3px; }
+.WatchPage :is(input, select, button) { font: inherit; letter-spacing: 0; }
+.WatchPage button { min-height: 44px; padding: 8px 16px; border: 1px solid var(--ink); border-radius: 4px; background: var(--ink); color: var(--paper); font-size: 14px; font-weight: 600; cursor: pointer; }
+.WatchPage button:disabled { opacity: .65; cursor: wait; }
+.WatchPage button.is-quiet, .WatchPage button.WatchRefresh { border-color: transparent; background: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.WatchHeading { display: flex; align-items: start; justify-content: space-between; gap: 24px; padding-bottom: 24px; }
+.WatchHeading > div { min-width: 0; }
+.WatchPage .WatchEyebrow { color: var(--mute); font-size: 12px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
+.WatchPage .WatchScope { margin-top: 12px; color: var(--mute); font-size: 14px; }
+.WatchHeading > button, .WatchHeading > .WatchSave { flex-shrink: 0; }
+.WatchViews { display: flex; flex-wrap: wrap; gap: 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 20px; }
+.WatchViews a { display: inline-flex; align-items: center; min-height: 48px; padding: 10px 0; border-bottom: 2px solid transparent; color: var(--mute); text-decoration: none; font-size: 14px; }
+.WatchViews a[aria-current="page"] { border-bottom-color: var(--admiral); color: var(--ink); font-weight: 600; }
+.WatchViewHeading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; padding-top: 24px; }
+.WatchViewHeading h2 { font-size: 22px; }
+.WatchPage .WatchUpdateDate { color: var(--ink); font-size: 14px; font-weight: 600; margin-top: 8px; }
+.WatchUpdates .WatchState { border-top: 1px solid var(--rule); }
+.WatchRepresentatives { padding-top: 4px; }
+.WatchRepresentativeFilters { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding-block: 20px 24px; border-bottom: 1px solid var(--rule); margin-bottom: 20px; }
+.WatchRepresentativeFilters > .WatchActions { grid-column: 1 / -1; }
+.WatchRepresentativeOffice { border-bottom: 1px solid var(--rule); padding-block: 24px; }
+.WatchRepresentativeMember { padding-top: 12px; }
+.WatchRepresentativeMember > a { display: inline-block; padding-block: 8px; font-size: 14px; }
+.WatchFilters { border-block: 1px solid var(--rule); padding: 20px 0; display: grid; gap: 16px; }
+.WatchField { display: grid; gap: 6px; min-width: 0; font-size: 13px; font-weight: 600; }
+.WatchField :is(input, select) { width: 100%; min-width: 0; max-width: 100%; height: 44px; padding: 8px 10px; border: 1px solid #98a2b3; border-radius: 4px; background: var(--paper); color: var(--text); font-size: 16px; font-weight: 400; }
+.WatchFilterOptions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.WatchPage.is-policy .WatchFilterOptions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.WatchActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.WatchPage .WatchFilterErrors { list-style: disc; padding-left: 22px; color: #9b1c1c; font-size: 14px; }
+.WatchResults { min-height: 240px; }
+.WatchResultBar { display: flex; justify-content: space-between; align-items: start; gap: 16px 32px; padding-block: 18px; color: var(--mute); font-size: 13px; }
+.WatchResultBar > p { flex-shrink: 0; }
+.WatchDataStatus { font-size: 13px; color: var(--mute); }
+.WatchDataStatus.is-stale { color: #854d0e; }
+.WatchDataStatus p + p { margin-top: 6px; }
+.WatchPage .WatchRecordList { list-style: none; padding: 0; }
+.WatchRow { border-top: 1px solid var(--rule); padding: 28px 0; }
+.WatchRowHeading { display: flex; justify-content: space-between; align-items: start; gap: 20px; }
+.WatchRowHeading > div { min-width: 0; }
+.WatchRow h2 { font-family: var(--font-serif); font-size: 25px; line-height: 1.3; }
+.WatchRow h2 a { text-decoration: none; }
+.WatchRow h2 a:hover { text-decoration: underline; }
+.WatchRow article > p, .WatchLatest { margin-top: 14px; }
+.WatchStatusFacts { display: flex; gap: 12px 32px; flex-wrap: wrap; padding-top: 16px; }
+.WatchPage dt { font-size: 12px; color: var(--mute); font-weight: 500; }
+.WatchPage dd { margin: 0; font-size: 14px; }
+.WatchSave { display: inline-flex; gap: 8px; align-items: center; flex-shrink: 0; min-height: 44px; max-width: 100%; color: var(--mute); font-size: 14px; cursor: pointer; }
+.WatchSave input { width: 18px; height: 18px; margin: 0; accent-color: var(--ink); }
+.WatchPage .WatchNote { color: var(--mute); font-size: 13px; line-height: 1.6; }
+.WatchPage > .WatchNote { margin-block: 16px; }
+.WatchPage .WatchLocalList { list-style: none; padding: 0; margin-top: 14px; font-size: 14px; }
+.WatchLocalList li + li { margin-top: 6px; }
+.WatchSources { margin-top: 12px; font-size: 14px; }
+.WatchSources summary { width: fit-content; min-height: 32px; padding-block: 4px; font-weight: 500; cursor: pointer; }
+.WatchSources > ul { padding: 0; list-style: none; }
+.WatchSources li { margin-top: 10px; border-left: 2px solid var(--rule); padding-left: 14px; }
+.WatchSources blockquote { max-width: 78ch; white-space: pre-wrap; font-family: var(--font-serif); font-size: 15px; margin-top: 8px; }
+.WatchState { padding-block: 32px; }
+.WatchState > p, .WatchState > ul { max-width: 75ch; margin-block: 12px 20px; }
+.WatchState > ul { padding-left: 22px; list-style: disc; }
+.WatchLoading { min-height: 160px; padding-block: 36px; color: var(--mute); }
+.WatchPagination { display: flex; justify-content: space-between; align-items: center; gap: 20px; border-top: 1px solid var(--rule); margin-top: 12px; padding-block: 16px; font-size: 14px; }
+.WatchPagination a { display: inline-flex; align-items: center; min-height: 44px; }
+.WatchBreadcrumb { display: flex; gap: 12px; flex-wrap: wrap; font-size: 14px; margin-bottom: 24px; }
+.WatchDossier { max-width: 980px; }
+.WatchDossierMeta { padding-block: 4px 24px; font-size: 13px; color: var(--mute); }
+.WatchDossierMeta .WatchRefresh { margin-top: 8px; padding-left: 0; }
+.WatchSection { padding-block: 24px; border-top: 1px solid var(--rule); }
+.WatchSection > h2 { margin-bottom: 16px; }
+.WatchSection > h3 { margin-top: 20px; margin-bottom: 8px; }
+.WatchSection > p + p { margin-top: 10px; }
+.WatchSection.is-held { border-left: 3px solid #a16207; padding-left: 18px; }
+.WatchFacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 32px; }
+.WatchFacts > div { min-width: 0; }
+.WatchSplit { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 32px; }
+.WatchSplit h3 { margin-bottom: 8px; }
+.WatchPage .WatchFactValue { font-weight: 600; font-size: 16px; }
+.WatchPage .WatchTimeline, .WatchPage .WatchDetailList { list-style: none; padding: 0; }
+.WatchTimeline > li, .WatchDetailList > li { padding-block: 16px; }
+.WatchTimeline > li + li, .WatchDetailList > li + li { border-top: 1px solid var(--rule); }
+.WatchTimeline > li > p, .WatchDetailList > li > p { margin-top: 6px; }
+.WatchDetailList .WatchFacts { margin-top: 12px; }
+.WatchPage .WatchTextList, .WatchPage .WatchSteps { padding-left: 24px; margin-top: 8px; }
+.WatchTextList { list-style: disc; }
+.WatchSteps { list-style: decimal; }
+.WatchTextList > li + li, .WatchSteps > li + li { margin-top: 8px; }
+.WatchLicenseScope + .WatchLicenseScope { border-top: 1px solid var(--rule); padding-top: 20px; margin-top: 20px; }
+.WatchLicenseScope > h3 { margin-bottom: 8px; }
+
+@media (max-width: 900px) {
+  .WatchFilterOptions, .WatchPage.is-policy .WatchFilterOptions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .WatchResultBar { display: grid; gap: 8px; }
+}
+
+@media (max-width: 540px) {
+  .WatchViews { gap: 0 20px; }
+  .WatchViews a { max-width: 100%; }
+  .WatchRepresentativeFilters { grid-template-columns: minmax(0, 1fr); }
+  .WatchPage h1 { font-size: 30px; }
+  .WatchRow h2 { font-size: 22px; }
+  .WatchHeading { flex-wrap: wrap; gap: 8px; }
+  .WatchHeading > button { padding-left: 0; }
+  .WatchFilterOptions, .WatchPage.is-policy .WatchFilterOptions, .WatchFacts, .WatchSplit { grid-template-columns: minmax(0, 1fr); }
+  .WatchRowHeading { flex-direction: column; gap: 4px; }
+  .WatchRow { padding-block: 22px; }
+  .WatchStatusFacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .WatchStatusFacts > div { min-width: 0; }
+}

@@ -2,6 +2,8 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
+  redirect,
 } from "@tanstack/react-router";
 import { Layout } from "./ui/Layout";
 import { HomePage } from "./ui/HomePage";
@@ -10,14 +12,30 @@ import { EventsPage } from "./ui/EventsPage";
 import { ItemPage } from "./ui/ItemPage";
 import { NotFound } from "./ui/NotFound";
 import { OpsPage } from "./ui/OpsPage";
+import { PolicyBaselinePage } from "./ui/PolicyBaselinePage";
 import { LabIndexPage } from "./ui/lab/LabIndexPage";
 import { LabChronoPage } from "./ui/lab/LabChronoPage";
 import { LabSystemsPage } from "./ui/lab/LabSystemsPage";
 import { LabHorizonPage } from "./ui/lab/LabHorizonPage";
 import { LabCalendarPage } from "./ui/lab/LabCalendarPage";
+import { parsePlainSearch, stringifyPlainSearch } from "./lib/plain-search";
+import { createCatalogNavigationBoundary, reloadActiveCatalogDocument, sameOriginDocumentHref } from "./lib/catalog-navigation";
+
+const WatchDirectoryPage = lazyRouteComponent(() => import("./ui/watch/WatchDirectoryPage"), "WatchDirectoryPage");
+const WatchDetailPage = lazyRouteComponent(() => import("./ui/watch/WatchDetailPage"), "WatchDetailPage");
+const catalogNavigation = createCatalogNavigationBoundary(typeof window === "undefined" ? "/" : window.location.pathname);
 
 const rootRoute = createRootRoute({
   component: Layout,
+  beforeLoad({ location, preload }) {
+    if (typeof window !== "undefined" && catalogNavigation.shouldReload(location.pathname, preload)) {
+      const href = sameOriginDocumentHref(location.href, window.location.origin);
+      if (reloadActiveCatalogDocument(href, window)) {
+        return new Promise<never>(() => {});
+      }
+      throw redirect({ href, reloadDocument: true, replace: true });
+    }
+  },
 });
 
 const indexRoute = createRoute({
@@ -31,6 +49,7 @@ const opsRoute = createRoute({
   path: "/ops",
   component: OpsPage,
 });
+const policyRoute = createRoute({ getParentRoute: () => rootRoute, path: "/policy", component: PolicyBaselinePage });
 
 const labIndexRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -79,14 +98,30 @@ function section<TPath extends string>(path: TPath, kind: "news" | "event" | "vo
   return [list, detail];
 }
 
+function watchSection<TPath extends string>(path: TPath, kind: "policy" | "technology") {
+  const pendingComponent = () => <p role="status">Loading Watch...</p>;
+  const directory = createRoute({ getParentRoute: () => rootRoute, path, wrapInSuspense: true, pendingComponent,
+    component: () => <WatchDirectoryPage kind={kind} /> });
+  const detail = createRoute({ getParentRoute: () => rootRoute, path: `${path}/$slug` as `${TPath}/$slug`, wrapInSuspense: true, pendingComponent,
+    component: function WatchDetail() {
+      const { slug } = detail.useParams() as { slug: string };
+      return <WatchDetailPage kind={kind} slug={slug} />;
+    },
+  });
+  return [directory, detail];
+}
+
 // Reed v1 lock: do not mint org-id routes or generate entity pages from the seed.
 // Briefing stays unpublished. Worker 404s unpublished, /org, and unknown as HTML shell.
 const routeTree = rootRoute.addChildren([
   indexRoute,
   opsRoute,
+  policyRoute,
   ...section("/news", "news"),
   ...section("/events", "event"),
   ...section("/voices", "voice"),
+  ...watchSection("/policy-watch", "policy"),
+  ...watchSection("/technology-watch", "technology"),
   labIndexRoute,
   labBriefingRoute,
   labSystemsRoute,
@@ -96,6 +131,9 @@ const routeTree = rootRoute.addChildren([
 
 export const router = createRouter({
   routeTree,
+  // Existing consumers use scalar list fields; object-valued query state is unsupported.
+  parseSearch: parsePlainSearch,
+  stringifySearch: stringifyPlainSearch,
   defaultNotFoundComponent: NotFound,
 });
 

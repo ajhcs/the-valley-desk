@@ -1,0 +1,40 @@
+{
+  "sourceId": "candidate-philadelphia",
+  "outcome": "unsupported-parser",
+  "access": {
+    "mode": "robots-check",
+    "robotsSha256": null,
+    "robotsStatus": 404,
+    "disposition": "robots-not-found"
+  },
+  "packet": {
+    "schemaVersion": "source-preparation-1",
+    "sourceId": "candidate-philadelphia",
+    "configurationSha256": "5433ca224b888687da2c86b54b233776631c67ed26220e87361eedc09d6fa02f",
+    "endpoint": "https://phila.legistar.com/Legislation.aspx",
+    "capturedAt": "2026-09-12T17:20:55.367Z",
+    "representationSha256": "0d4b78f54d053c52a5e0550abe9536c119f477a63b9e54665ad138d50cae6bad",
+    "representationBytes": 79156,
+    "parserId": "candidate-parser-unavailable",
+    "parserVersion": "1",
+    "parsed": null,
+    "parserOutputSha256": null,
+    "qualificationStatus": "candidate-only",
+    "publicationAuthorized": false,
+    "activationAuthorized": false,
+    "review": {
+      "engineeringOwnerId": null,
+      "editorialOwnerId": null,
+      "rightsDecision": null,
+      "accessDecision": null
+    },
+    "blockers": [
+      "named-reviewers-unassigned",
+      "rights-review-pending",
+      "two-time-separated-samples-required",
+      "watch-parser-not-implemented",
+      "unsupported-parser"
+    ]
+  },
+  "bodyFile": "candidate-philadelphia-de1c9666-f5a9-47f4-a324-e2eddf521ea7.body"
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:parss="https://www.legis.state.pa.us/RSS">
+  <channel>
+    <title>PA Senate Committee Meeting Schedule</title>
+    <link>https://www.palegis.us/senate/committees/meeting-schedule</link>
+    <item>
+      <title>09/09/2026 11:30 AM HEALTH &amp; HUMAN SERVICES (S)</title>
+      <link>https://www.palegis.us/senate/committees/meeting-schedule</link>
+      <description>Voting meeting on SB 1113 and any other business before the committee.</description>
+      <pubDate>Wed, 09 Sep 2026 04:00:00 GMT</pubDate>
+      <guid isPermaLink="false">health-human-services-2026-09-09-1130-sb1113</guid>
+      <parss:MeetingDate>09/09/2026</parss:MeetingDate>
+      <parss:MeetingTime>11:30 AM</parss:MeetingTime>
+      <parss:Location>Senate Chamber</parss:Location>
+      <parss:Committee>SENATE HEALTH &amp; HUMAN SERVICES</parss:Committee>
+      <parss:Bills><parss:Bill>SB 1113</parss:Bill></parss:Bills>
+    </item>
+  </channel>
+</rss>

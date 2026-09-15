@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "technology-dossier-input-1",
+  "repository": {
+    "numericId": "1308325438",
+    "fullName": "Stephonomon/orca-cds",
+    "commitSha": "a6a1771bffcc6660dd0dfe02d4bd12cf561480a3"
+  },
+  "slug": "chop-orca",
+  "title": "ORCA-CDS",
+  "resourceType": "software",
+  "discoveredAt": "2026-09-12T16:29:17.713Z",
+  "evidence": [
+    {
+      "id": "tech-1308325438-repository",
+      "url": "https://api.github.com/repos/Stephonomon/orca-cds",
+      "checkedAt": "2026-09-12T16:29:17.351Z",
+      "representationSha256": "01997e8be3249b56118afe0ca5645cfb345379ad1f971be9f16478c928b2f497",
+      "quote": "{\"id\":1308325438,\"node_id\":\"R_kgDOTft2Pg\",\"name\":\"orca-cds\",\"full_name\":\"Stephonomon/orca-cds\",\"private\":false,\"owner\":{\"login\":\"Stephonomon\",\"id\":9829881,\"node_id\":\"MDQ6VXNlcjk4Mjk4ODE=\",\"avatar_url\"",
+      "retainedText": "{\"id\":1308325438,\"node_id\":\"R_kgDOTft2Pg\",\"name\":\"orca-cds\",\"full_name\":\"Stephonomon/orca-cds\",\"private\":false,\"owner\":{\"login\":\"Stephonomon\",\"id\":9829881,\"node_id\":\"MDQ6VXNlcjk4Mjk4ODE=\",\"avatar_url\""
+    },
+    {
+      "id": "tech-1308325438-commit",
+      "url": "https://api.github.com/repos/Stephonomon/orca-cds/commits/main",
+      "checkedAt": "2026-09-12T16:29:17.476Z",
+      "representationSha256": "8892a6bcf5066b64358a6f3088625569610204a78250020e7852e2604ac24695",
+      "quote": "{\"sha\":\"a6a1771bffcc6660dd0dfe02d4bd12cf561480a3\",\"node_id\":\"C_kwDOTft2PtoAKGE2YTE3NzFiZmZjYzY2NjBkZDBkZmUwMmQ0YmQxMmNmNTYxNDgwYTM\",\"commit\":{\"author\":{\"name\":\"Stephon Proctor\",\"email\":\"stephon.procto",
+      "retainedText": "{\"sha\":\"a6a1771bffcc6660dd0dfe02d4bd12cf561480a3\",\"node_id\":\"C_kwDOTft2PtoAKGE2YTE3NzFiZmZjYzY2NjBkZDBkZmUwMmQ0YmQxMmNmNTYxNDgwYTM\",\"commit\":{\"author\":{\"name\":\"Stephon Proctor\",\"email\":\"stephon.procto"
+    },
+    {
+      "id": "tech-1308325438-readme",
+      "url": "https://raw.githubusercontent.com/Stephonomon/orca-cds/a6a1771bffcc6660dd0dfe02d4bd12cf561480a3/README.md",
+      "checkedAt": "2026-09-12T16:29:17.546Z",
+      "representationSha256": "328b988a64f25777e17718f73f97371a040b821992cc59d693ee8cbd6d79fb6e",
+      "quote": "It was developed and evaluated at Children's Hospital of Philadelphia (CHOP)",
+      "retainedText": "It was developed and evaluated at Children's Hospital of Philadelphia (CHOP)"
+    },
+    {
+      "id": "tech-1308325438-license",
+      "url": "https://raw.githubusercontent.com/Stephonomon/orca-cds/a6a1771bffcc6660dd0dfe02d4bd12cf561480a3/LICENSE.md",
+      "checkedAt": "2026-09-12T16:29:17.610Z",
+      "representationSha256": "5470b7d5b1aed9de70596043a23b00c4340f7e039c21bb8f6e38546c8c74049c",
+      "quote": "# License\n\nCopyright (©) 2026 The Children's Hospital of Philadelphia.\n\nAll rights reserved.\n\nThis software is made available under a dual-license model:\n\n## 1. Academic and Non-Profit Research Use\n\nA",
+      "retainedText": "# License\n\nCopyright (©) 2026 The Children's Hospital of Philadelphia.\n\nAll rights reserved.\n\nThis software is made available under a dual-license model:\n\n## 1. Academic and Non-Profit Research Use\n\nA"
+    }
+  ],
+  "purpose": {
+    "value": "Offline, read-only access to Epic order-set reference content during downtime.",
+    "evidenceIds": [
+      "tech-1308325438-readme"
+    ]
+  },
+  "intendedUsers": {
+    "value": [
+      "Clinical informatics teams",
+      "Downtime preparedness teams"
+    ],
+    "evidenceIds": [
+      "tech-1308325438-readme"
+    ]
+  },
+  "workflow": {
+    "value": {
+      "inputs": [
+        "Institution-specific order-set extract"
+      ],
+      "steps": [
+        "Adapt the documented warehouse extract.",
+        "Transform CSV into hierarchical JSON.",
+        "Deploy the static viewer and refresh its reference content."
+      ],
+      "outputs": [
+        "Searchable offline order-set reference"
+      ]
+    },
+    "evidenceIds": [
+      "tech-1308325438-readme"
+    ]
+  },
+  "setup": {
+    "value": {
+      "verification": "maintainer-documented",
+      "version": "a6a1771bffcc6660dd0dfe02d4bd12cf561480a3",
+      "prerequisites": [
+        "Node.js",
+        "Python",
+        "Institution-specific warehouse access"
+      ],
+      "guideUrl": "https://github.com/Stephonomon/orca-cds/blob/a6a1771bffcc6660dd0dfe02d4bd12cf561480a3/README.md"
+    },
+    "evidenceIds": [
+      "tech-1308325438-readme"
+    ]
+  },
+  "limitations": {
+    "value": [
+      "Cannot place orders or provide live decision support.",
+      "Research software; clinical use requires separate authorization under the license."
+    ],
+    "evidenceIds": [
+      "tech-1308325438-readme"
+    ]
+  },
+  "relationship": {
+    "value": {
+      "id": "repository-v1:133ce301c037869d03460ad62b34d0a8c39b05616585bbfbb2691bd9f0254912:local",
+      "resourceId": "repository-v1:133ce301c037869d03460ad62b34d0a8c39b05616585bbfbb2691bd9f0254912",
+      "artifactId": "repository-v1:133ce301c037869d03460ad62b34d0a8c39b05616585bbfbb2691bd9f0254912:repository",
+      "entityId": "chop",
+      "entityName": "Children's Hospital of Philadelphia",
+      "type": "created-by",
+      "temporalStatus": "historical",
+      "validFrom": null,
+      "validTo": null,
+      "checkedAt": "2026-09-12T16:29:17.713Z",
+      "validThrough": null
+    },
+    "evidenceIds": [
+      "tech-1308325438-readme"
+    ]
+  },
+  "licenses": [
+    {
+      "value": {
+        "artifactId": "repository-v1:133ce301c037869d03460ad62b34d0a8c39b05616585bbfbb2691bd9f0254912:repository",
+        "artifactVersion": "a6a1771bffcc6660dd0dfe02d4bd12cf561480a3",
+        "scope": "code",
+        "classification": "restricted-source",
+        "spdxId": null,
+        "licenseSha256": "5470b7d5b1aed9de70596043a23b00c4340f7e039c21bb8f6e38546c8c74049c",
+        "sourceUrl": "https://raw.githubusercontent.com/Stephonomon/orca-cds/a6a1771bffcc6660dd0dfe02d4bd12cf561480a3/LICENSE.md",
+        "conditions": [
+          "Academic/nonprofit internal non-commercial research and education only.",
+          "Commercial use and transfer require separate permission.",
+          "Clinical use is not granted by the public research license."
+        ]
+      },
+      "evidenceIds": [
+        "tech-1308325438-license"
+      ]
+    },
+    {
+      "value": {
+        "artifactId": "repository-v1:133ce301c037869d03460ad62b34d0a8c39b05616585bbfbb2691bd9f0254912:repository",
+        "artifactVersion": "a6a1771bffcc6660dd0dfe02d4bd12cf561480a3",
+        "scope": "data",
+        "classification": "unknown",
+        "spdxId": null,
+        "licenseSha256": null,
+        "sourceUrl": null,
+        "conditions": [
+          "Scope not independently qualified."
+        ]
+      },
+      "evidenceIds": [
+        "tech-1308325438-license"
+      ]
+    },
+    {
+      "value": {
+        "artifactId": "repository-v1:133ce301c037869d03460ad62b34d0a8c39b05616585bbfbb2691bd9f0254912:repository",
+        "artifactVersion": "a6a1771bffcc6660dd0dfe02d4bd12cf561480a3",
+        "scope": "weights",
+        "classification": "unknown",
+        "spdxId": null,
+        "licenseSha256": null,
+        "sourceUrl": null,
+        "conditions": [
+          "Scope not independently qualified."
+        ]
+      },
+      "evidenceIds": [
+        "tech-1308325438-license"
+      ]
+    }
+  ],
+  "developments": [],
+  "aliasProposal": {
+    "existingId": "epic-orca-chop",
+    "existingUrl": "https://thevalleydesk.org/news/chop-orca-cds",
+    "reason": "Preserve the existing product identity and news permalink. Epic is the supporting EHR platform, not the creator or rights holder of ORCA.",
+    "status": "review-required"
+  }
+}

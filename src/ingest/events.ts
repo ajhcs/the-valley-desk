@@ -1,5 +1,6 @@
 import type { ContentItem, EventItem } from "../content/schema";
 import { eventCopyMarksCancelled } from "../lib/calendar";
+import { cleanEventSourceMarkup } from "../lib/sourceMarkup";
 import { hasInternalProcessLanguage } from "../lib/editorialCopy";
 import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
@@ -17,7 +18,7 @@ import {
   parseNjdvhimssPage,
   parseTribeEventsResponse,
   perPageFromUrl,
-  slugify,
+  publicationSlug,
   stripHtml,
   toIso,
   tribeFallbackId,
@@ -30,6 +31,8 @@ import {
 import { eventSourceById } from "./origins";
 import {
   classifyFetchError,
+  sourceBackoffNote,
+  sourceIsInBackoff,
   sourceNote,
   sourceStateForItemCount,
   type IngestSourceResult,
@@ -105,16 +108,16 @@ function isRecognizedNjdvhimssPage(html: string) {
 }
 
 function textField(value: unknown): string {
-  if (typeof value === "string") return stripHtml(value);
+  if (typeof value === "string") return stripHtml(cleanEventSourceMarkup(value));
   if (value && typeof value === "object" && "rendered" in value) {
     const rendered = (value as { rendered?: unknown }).rendered;
-    if (typeof rendered === "string") return stripHtml(rendered);
+    if (typeof rendered === "string") return stripHtml(cleanEventSourceMarkup(rendered));
   }
   return "";
 }
 
 function readerSafeText(value: string) {
-  const text = value.trim();
+  const text = cleanEventSourceMarkup(value);
   if (!text || hasInternalProcessLanguage(text)) return "";
   return text;
 }
@@ -272,7 +275,7 @@ async function fetchDvhimssCalendarBatch(fetchImpl: typeof fetch, fetchedAt: str
       rows.push(
         eventRow({
           id: `evt-dvhimss-${externalId}`,
-          slug: slugify(title),
+          slug: publicationSlug(title),
           title,
           dek: "Official DVHIMSS chapter calendar.",
           body: officialEventBody(title, venue, city, textField(e.description ?? e.excerpt)),
@@ -403,7 +406,7 @@ function njEventFields(event: ParsedListingEvent, fetchedAt: string, used: strin
   const identity = genericNjEventIdentity(event);
   return {
     id: `evt-njdvhimss-${identity}`,
-    slug: slugify(identity),
+    slug: publicationSlug(identity),
     title: event.title,
     dek: "Official NJ/DVHIMSS chapter event.",
     body: officialEventBody(event.title, event.venue, event.city, event.description),
@@ -493,31 +496,41 @@ export async function scrapeNjdvhimss(fetchImpl: typeof fetch = fetch, fetchedAt
 export async function ingestEventsWithHealth(
   now = new Date(),
   fetchImpl: typeof fetch = fetch,
+  sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>,
 ): Promise<IngestSourceResult<ContentItem>> {
   const fetchedAt = now.toISOString();
+  const officialBackoff = sourceIsInBackoff(sourceHealth?.get("dvhimss-events"), now);
+  const scrapedBackoff = sourceIsInBackoff(sourceHealth?.get("njhimss-events"), now);
   const [officialResult, scrapedResult] = await Promise.allSettled([
-    fetchDvhimssCalendarBatch(fetchImpl, fetchedAt),
-    scrapeNjdvhimssBatch(fetchImpl, fetchedAt),
+    officialBackoff ? Promise.resolve(undefined) : fetchDvhimssCalendarBatch(fetchImpl, fetchedAt),
+    scrapedBackoff ? Promise.resolve(undefined) : scrapeNjdvhimssBatch(fetchImpl, fetchedAt),
   ]);
-  const official = officialResult.status === "fulfilled" ? officialResult.value.items : [];
-  const scraped = scrapedResult.status === "fulfilled" ? scrapedResult.value.items : [];
+  const official = officialResult.status === "fulfilled" && officialResult.value ? officialResult.value.items : [];
+  const scraped = scrapedResult.status === "fulfilled" && scrapedResult.value ? scrapedResult.value.items : [];
   const toNote = (
     id: string,
     origin: string,
     url: string,
-    result: PromiseSettledResult<EventSnapshot>,
+    result: PromiseSettledResult<EventSnapshot | undefined>,
+    prior?: import("./source-health").PersistedSourceHealth,
   ): SourceRunNote => {
+    // `undefined` is the explicit result of a durable backoff skip. A rejected
+    // fetch must still be classified as a real failure so the next retry and
+    // alert state are advanced instead of being silently mislabeled as a
+    // second backoff.
     if (result.status === "fulfilled") {
+      const snapshot = result.value;
+      if (!snapshot) return sourceBackoffNote(id, origin, "events", fetchedAt, prior, url);
       return sourceNote({
         id,
         origin,
         type: "events",
-        state: sourceStateForItemCount(result.value.items.length),
+        state: sourceStateForItemCount(snapshot.items.length),
         checkedAt: fetchedAt,
-        itemCount: result.value.items.length,
-        completeness: result.value.completeness,
-        complete: result.value.completeness === "complete",
-        url: result.value.url,
+        itemCount: snapshot.items.length,
+        completeness: snapshot.completeness,
+        complete: snapshot.completeness === "complete",
+        url: snapshot.url,
       });
     }
     const reason = result.reason;
@@ -530,6 +543,9 @@ export async function ingestEventsWithHealth(
       checkedAt: fetchedAt,
       url,
       error: reason instanceof Error ? reason.message : String(reason),
+      ...(reason instanceof UpstreamError && reason.httpStatus !== undefined ? { httpStatus: reason.httpStatus } : {}),
+      consecutiveFailures: (prior?.consecutiveFailures ?? 0) + 1,
+      lastSuccessAt: prior?.lastSuccessAt ?? null,
     });
   };
   const batch: IngestBatch = {
@@ -540,8 +556,8 @@ export async function ingestEventsWithHealth(
   return {
     items: toReviewQueue(batch),
     sources: [
-      toNote("dvhimss-events", "dvhimss-events", DVHIMSS_SOURCE?.url ?? "https://dvhimss.org/events-calendar", officialResult),
-      toNote("njhimss-events", "njhimss-events", NJHIMSS_SOURCE?.url ?? "https://njdvhimssevent.com/", scrapedResult),
+      toNote("dvhimss-events", "dvhimss-events", DVHIMSS_SOURCE?.url ?? "https://dvhimss.org/events-calendar", officialResult, sourceHealth?.get("dvhimss-events")),
+      toNote("njhimss-events", "njhimss-events", NJHIMSS_SOURCE?.url ?? "https://njdvhimssevent.com/", scrapedResult, sourceHealth?.get("njhimss-events")),
     ],
   };
 }

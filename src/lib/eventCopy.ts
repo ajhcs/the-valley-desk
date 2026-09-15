@@ -1,6 +1,7 @@
 import type { EventItem } from "../content/schema";
 import { hasInternalProcessLanguage } from "./editorialCopy";
 import { eventPlace } from "./format";
+import { cleanEventSourceMarkup } from "./sourceMarkup";
 
 function normalize(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -48,7 +49,7 @@ export function eventWhyCopy(item: EventItem) {
       }).format(new Date(item.registrationDeadline))}.`
     : undefined;
   for (const text of [item.whyAttend, item.healthSystemRelevance, deadline, item.body]) {
-    const value = text?.trim();
+    const value = text ? cleanEventSourceMarkup(text) : undefined;
     if (!value) continue;
     if (isBoilerplateEventCopy(value) || isTrivialRestatement(value, item)) continue;
     return value;

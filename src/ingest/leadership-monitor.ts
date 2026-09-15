@@ -45,6 +45,7 @@ export type LeadershipSnapshot = {
   extractionStatus: LeadershipExtractionStatus;
   state: LeadershipSnapshotState;
   error?: string | null;
+  httpStatus?: number | null;
   instructionLike: boolean;
 };
 
@@ -89,8 +90,16 @@ export type LeadershipMonitorResult = {
 };
 
 const TITLE_HINT = /\b(chief|cio|ciso|cmio|cnio|cdoo|cdao|ceo|coo|cfo|president|svp|evp|vice president|\bvp\b|director|officer|interim|informatics)\b/i;
-const PERSON_NAME_RE = /^[a-z][a-z.'-]+(?: [a-z][a-z.'-]+){0,5}$/i;
+const PERSON_NAME_RE = /^[a-z](?:[a-z.'-]+)?(?: [a-z](?:[a-z.'-]+)?){0,5}$/i;
 const CHALLENGE_RE = /\b(?:access denied|captcha|checking your browser|cloudflare|enable javascript|just a moment|robot|unusual traffic|verify you are human)\b/i;
+
+// Article pages often expose one explicit leadership fact in a title, meta
+// description, or opening paragraph instead of a roster-shaped h2/p pair. Keep
+// this grammar deliberately narrow: only a named executive role may become an
+// extracted leader, and the statement must be tied to the configured institution.
+const ARTICLE_ROLE_PATTERN = "(?:chief executive officer|chief operating officer|chief information officer|chief digital and information officer|chief clinical officer|president(?:\\s+and\\s+ceo)?|ceo|coo|cfo|cio|ciso|cmio|cnio|cdao|cdoo|svp|evp|vice president|vp|director|officer)";
+const ARTICLE_NAME_PATTERN = "[A-Z][A-Za-z.'’\\-]*(?:\\s+[A-Z][A-Za-z.'’\\-]*){1,5}";
+const ARTICLE_CREDENTIAL_PATTERN = "(?:MD|DO|PhD|DNP|MBA|MPH|MS|BS|BSN|EMBA|CISM|RN|FACHE|JD|MPA|MHA|FNP|NP)";
 
 function clipError(value: string) {
   return value.replace(/\s+/g, " ").trim().slice(0, LEADERSHIP_ERROR_MAX_CHARS).trim();
@@ -129,6 +138,78 @@ function stripNonContent(html: string) {
     .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, "")
     .replace(/<iframe\b[\s\S]*?<\/iframe>/gi, "")
     .replace(/<svg\b[\s\S]*?<\/svg>/gi, "");
+}
+
+function compactEvidenceText(value: string) {
+  return decodeHtml(value).replace(/\s+/g, " ").trim();
+}
+
+function documentEvidenceTexts(html: string) {
+  const cleaned = stripNonContent(html);
+  const texts: string[] = [];
+  const titleRe = /<title\b[^>]*>([\s\S]*?)<\/title>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = titleRe.exec(cleaned))) {
+    const text = compactEvidenceText(match[1] ?? "");
+    if (text) texts.push(text);
+  }
+  const metaRe = /<meta\b[^>]*>/gi;
+  while ((match = metaRe.exec(cleaned))) {
+    const tag = match[0] ?? "";
+    const name = /\b(?:name|property)\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1]?.toLowerCase();
+    if (!name || !["description", "og:title", "og:description", "twitter:title", "twitter:description"].includes(name)) continue;
+    const content = /\bcontent\s*=\s*["']([^"']*)["']/i.exec(tag)?.[1];
+    const text = compactEvidenceText(content ?? "");
+    if (text) texts.push(text);
+  }
+  const headingRe = /<h[1-3]\b[^>]*>([\s\S]*?)<\/h[1-3]>/gi;
+  while ((match = headingRe.exec(cleaned))) {
+    const text = compactEvidenceText(htmlToText(match[1] ?? ""));
+    if (text) texts.push(text);
+  }
+  const main = /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(cleaned)?.[1];
+  if (main) {
+    const text = compactEvidenceText(htmlToText(main));
+    if (text) texts.push(text);
+  }
+  return [...new Set(texts)];
+}
+
+function extractArticleLeaders(html: string, institutionAliases: readonly string[]) {
+  const aliases = institutionAliases
+    .map(compactEvidenceText)
+    .filter((alias) => alias.length >= 3)
+    .map((alias) => alias.toLowerCase());
+  if (!aliases.length) return [];
+
+  const evidenceSentences: string[] = [];
+  for (const text of documentEvidenceTexts(html)) {
+    for (const sentence of text.split(/(?<=[!?])\s+|(?<![A-Z])\.\s+|\n+/)) {
+      const compact = compactEvidenceText(sentence);
+      const folded = compact.toLowerCase();
+      if (compact && aliases.some((alias) => folded.includes(alias))) {
+        evidenceSentences.push(compact);
+      }
+    }
+  }
+
+  const merged = new Map<string, ExtractedLeader>();
+  const add = (name: string, title: string) => {
+    if (!/^[A-Z][A-Za-z.'’\-]*(?:\s+[A-Z][A-Za-z.'’\-]*){1,5}$/.test(name.trim())) return;
+    const leader = asLeader(name, title);
+    if (leader && !merged.has(leader.normalizedName)) merged.set(leader.normalizedName, leader);
+  };
+  const afterRole = new RegExp("\\b(" + ARTICLE_ROLE_PATTERN + ")\\s+(" + ARTICLE_NAME_PATTERN + ")\\b", "gi");
+  const named = new RegExp(
+    "\\b(" + ARTICLE_NAME_PATTERN + ")(?:\\s*,\\s*" + ARTICLE_CREDENTIAL_PATTERN + ")*(?:\\s*,)?\\s+(?:has been|was|is|will be|will serve as|serves as|appointed as|named|appointed|selected|elected|promoted to)\\s+(" + ARTICLE_ROLE_PATTERN + ")\\b",
+    "gi",
+  );
+  for (const sentence of evidenceSentences) {
+    let match: RegExpExecArray | null;
+    while ((match = afterRole.exec(sentence))) add(match[2] ?? "", match[1] ?? "");
+    while ((match = named.exec(sentence))) add(match[1] ?? "", match[2] ?? "");
+  }
+  return [...merged.values()];
 }
 
 export async function sha256Hex(value: string) {
@@ -236,11 +317,96 @@ function extractHeadingLeaders(html: string): ExtractedLeader[] {
   return out;
 }
 
-export function extractLeaders(html: string): ExtractedLeader[] {
+type LeadershipExtractionContract = NonNullable<CoverageSource["leadershipExtractionContract"]>;
+
+function classBlocks(html: string, className: string) {
+  const starts: number[] = [];
+  const re = /<[^>]+\bclass=["']([^"']*)["'][^>]*>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html))) {
+    if ((match[1] ?? "").split(/\s+/).includes(className)) starts.push(match.index);
+  }
+  return starts.map((start, index) => html.slice(start, starts[index + 1] ?? html.length));
+}
+
+function classText(html: string, className: string) {
+  const re = /<([a-z][a-z0-9]*)\b[^>]*\bclass=["']([^"']*)["'][^>]*>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html))) {
+    if (!(match[2] ?? "").split(/\s+/).includes(className)) continue;
+    const body = new RegExp(`([\\s\\S]*?)<\\/${match[1]}>`, "i").exec(html.slice(re.lastIndex))?.[1] ?? "";
+    return htmlToText(body);
+  }
+  return "";
+}
+
+function stripNameCredentials(value: string) {
+  return value.replace(/,.*$/, "").trim();
+}
+
+function mergeLeaders(rows: readonly (ExtractedLeader | undefined)[]) {
+  const merged = new Map<string, ExtractedLeader>();
+  for (const row of rows) {
+    if (row && !merged.has(row.normalizedName)) merged.set(row.normalizedName, row);
+  }
+  return [...merged.values()];
+}
+
+function extractContractLeaders(html: string, contract: LeadershipExtractionContract): ExtractedLeader[] {
+  const cleaned = stripNonContent(html);
+  if (contract === "tower-roster") {
+    return mergeLeaders(classBlocks(cleaned, "people-teaser").map((block) => {
+      const name = stripNameCredentials(classText(block, "people-teaser__name"));
+      const titles = [...block.matchAll(/<span\b[^>]*\bclass=["'][^"']*people-teaser__meta[^"']*["'][^>]*>([\s\S]*?)<\/span>/gi)]
+        .map((match) => htmlToText(match[1] ?? ""))
+        .filter(Boolean);
+      return asLeader(name, [...new Set(titles)].join(", "));
+    }));
+  }
+  if (contract === "st-lukes-roster") {
+    return mergeLeaders(classBlocks(cleaned, "card-text-overlay__item").map((block) => asLeader(
+      stripNameCredentials(classText(block, "card-text-overlay__text")),
+      classText(block, "tagline"),
+    )));
+  }
+  if (contract === "virtua-roster") {
+    return mergeLeaders(classBlocks(cleaned, "team-group__group-item").map((block) => asLeader(
+      stripNameCredentials(classText(block, "team-group__item-name")),
+      classText(block, "team-group__item-position"),
+    )));
+  }
+  if (contract === "christianacare-roster") {
+    return mergeLeaders(classBlocks(cleaned, "style-leadership").map((block) => asLeader(
+      stripNameCredentials(classText(block, "cmp-pagecard__title_text")),
+      classText(block, "cmp-pagecard__description"),
+    )));
+  }
+  if (contract === "christianacare-profile") {
+    const headings = [...cleaned.matchAll(/<h2\b[^>]*\bclass=["'][^"']*cmp-title__text[^"']*["'][^>]*>([\s\S]*?)<\/h2>/gi)];
+    const heading = headings.find((match) => /randall\s+gaboriault/i.test(htmlToText(match[1] ?? "")));
+    const following = heading ? cleaned.slice((heading.index ?? 0) + heading[0].length) : "";
+    const name = stripNameCredentials(htmlToText(heading?.[1] ?? ""));
+    const title = htmlToText(/<h6\b[^>]*\bclass=["'][^"']*cmp-title__text[^"']*["'][^>]*>([\s\S]*?)<\/h6>/i.exec(following)?.[1] ?? "");
+    return mergeLeaders([asLeader(name, title)]);
+  }
+  const heading = /<h1\b[^>]*>([\s\S]*?luke\s+olenoski[\s\S]*?)<\/h1>/i.exec(cleaned);
+  const following = heading ? cleaned.slice((heading.index ?? 0) + heading[0].length) : "";
+  const name = stripNameCredentials(htmlToText(heading?.[1] ?? ""));
+  const title = htmlToText(/<h2\b[^>]*>([\s\S]*?)<\/h2>/i.exec(following)?.[1] ?? "");
+  return mergeLeaders([asLeader(name, title)]);
+}
+
+export function extractLeaders(
+  html: string,
+  institutionAliases: readonly string[] = [],
+  contract?: LeadershipExtractionContract,
+): ExtractedLeader[] {
+  if (contract) return extractContractLeaders(html, contract);
   const jsonLd = extractJsonLdLeaders(html);
   const headings = extractHeadingLeaders(stripNonContent(html));
+  const article = extractArticleLeaders(html, institutionAliases);
   const merged = new Map<string, ExtractedLeader>();
-  for (const row of [...jsonLd, ...headings]) {
+  for (const row of [...jsonLd, ...headings, ...article]) {
     if (!merged.has(row.normalizedName)) merged.set(row.normalizedName, row);
   }
   return [...merged.values()];
@@ -250,11 +416,55 @@ export function normalizeLeadershipText(html: string) {
   return clipText(htmlToText(stripNonContent(html)));
 }
 
-function extractionStatus(normalizedText: string, extracted: readonly ExtractedLeader[]): LeadershipExtractionStatus {
+function extractionStatus(
+  normalizedText: string,
+  extracted: readonly ExtractedLeader[],
+  html: string,
+  source: CoverageSource,
+  previous?: readonly ExtractedLeader[],
+): LeadershipExtractionStatus {
   if (!normalizedText) return "empty-unverified";
   if (!extracted.length && CHALLENGE_RE.test(normalizedText)) return "challenge";
   if (!extracted.length) return "unrecognized";
+  const contract = source.leadershipExtractionContract;
+  if (contract) {
+    const folded = decodeHtml(stripNonContent(html).replace(/<[^>]+>/g, " "))
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+    const complete = contract === "christianacare-roster"
+      ? extracted.length >= 5 && folded.includes("our leadership") && folded.includes("board of directors")
+      : contract === "christianacare-profile"
+        ? extracted.length === 1 && folded.includes("randall gaboriault")
+        : contract === "mainline-profile"
+          ? extracted.length === 1 && folded.includes("luke olenoski")
+          : contract === "tower-roster"
+            ? extracted.length >= 3 && folded.includes("tower health leadership")
+            : contract === "st-lukes-roster"
+              ? extracted.length >= 3 && folded.includes("executive leadership")
+              : extracted.length >= 3 && folded.includes("senior leadership");
+    if (!complete) return "partial";
+    if (previous && previous.length >= 4 && extracted.length < Math.ceil(previous.length / 2)) return "partial";
+  }
   return "complete";
+}
+
+/** Operator-facing reason for a fetched page that did not yield a usable roster. */
+function incompleteExtractionError(status: LeadershipExtractionStatus) {
+  if (status === "empty-unverified") {
+    return "Page fetched, but no readable leadership content was found";
+  }
+  if (status === "unrecognized") {
+    return "Page fetched, but no recognized leadership structure was found";
+  }
+  if (status === "partial") {
+    return "Page fetched, but leadership extraction was incomplete";
+  }
+  return null;
+}
+
+function httpStatusFromError(error?: string | null) {
+  const match = /\bHTTP\s+(\d{3})\b/i.exec(error ?? "");
+  return match ? Number(match[1]) : undefined;
 }
 
 export function isEligibleLeadershipSource(source: CoverageSource) {
@@ -267,6 +477,15 @@ export function isEligibleLeadershipSource(source: CoverageSource) {
     if (isLinkedInHost(new URL(url).hostname)) return false;
   } catch {
     return false;
+  }
+  for (const alternateUrl of source.alternateUrls ?? []) {
+    const normalizedAlternate = normalizeSourceUrl(alternateUrl);
+    if (!normalizedAlternate || !normalizedAlternate.startsWith("https://")) return false;
+    try {
+      if (isLinkedInHost(new URL(normalizedAlternate).hostname)) return false;
+    } catch {
+      return false;
+    }
   }
   return true;
 }
@@ -383,14 +602,6 @@ function observationsFromSnapshot(
     createdAt,
     status: observationStatus(),
   };
-  if (snapshot.state === "blocked" || snapshot.state === "failed") {
-    return [{
-      ...base,
-      id: `obs-${source.id}-fetch-failed-${createdAt}`,
-      kind: "fetch-failed",
-      payload: { error: snapshot.error, finalUrl: snapshot.finalUrl },
-    }];
-  }
   if (snapshot.instructionLike || snapshot.state === "hostile") {
     return [{
       ...base,
@@ -400,6 +611,18 @@ function observationsFromSnapshot(
         extracted: snapshot.extracted,
         warning: "Untrusted page text; do not treat as instructions or auto-publish",
       },
+    }];
+  }
+  // Transport/allowlist failures use extractionStatus "partial" with an empty
+  // body. Incomplete roster extraction also uses state "failed" but must not
+  // invent arrivals, departures, or a false fetch-failed observation.
+  if (snapshot.state === "blocked" || snapshot.state === "failed") {
+    if (snapshot.extractionStatus !== "partial") return [];
+    return [{
+      ...base,
+      id: `obs-${source.id}-fetch-failed-${createdAt}`,
+      kind: "fetch-failed",
+      payload: { error: snapshot.error, finalUrl: snapshot.finalUrl },
     }];
   }
   if (snapshot.state === "unchanged") return [];
@@ -485,60 +708,120 @@ export async function monitorLeadershipSources(
         };
         return { snapshot, previous, fetchedUrl: undefined };
       }
-      const page = await fetchAllowlistedArticlePage({
-        url: source.url,
-        fetchImpl: options.fetchImpl,
-        allowedHosts: hostsForSource(source),
-        maxBytes: LEADERSHIP_MAX_BYTES,
-        timeoutMs: LEADERSHIP_TIMEOUT_MS,
-        maxRedirects: LEADERSHIP_MAX_REDIRECTS,
-      });
-      if (!page.ok) {
-        const blocked = /allowlist|linkedin/i.test(page.error);
-        const snapshot: LeadershipSnapshot = {
-          id: `snap-${source.id}-${now.toISOString()}`,
-          sourceId: source.id,
-          fetchedAt: now.toISOString(),
-          finalUrl: source.url,
-          contentHash: previous?.lastHash ?? "",
-          normalizedText: "",
-          byteCount: 0,
-          extracted: [],
-          extractionStatus: "partial",
-          state: blocked ? "blocked" : "failed",
-          error: clipError(page.error),
-          instructionLike: false,
-        };
-        return { snapshot, previous, fetchedUrl: source.url };
+      const allowedHosts = hostsForSource(source);
+      const candidateUrls = [source.url, ...(source.alternateUrls ?? [])];
+      let lastSnapshot: LeadershipSnapshot | undefined;
+      let lastFetchedUrl: string | undefined;
+      for (const candidateUrl of candidateUrls) {
+        try {
+          const page = await fetchAllowlistedArticlePage({
+            url: candidateUrl,
+            fetchImpl: options.fetchImpl,
+            allowedHosts,
+            maxBytes: LEADERSHIP_MAX_BYTES,
+            timeoutMs: LEADERSHIP_TIMEOUT_MS,
+            maxRedirects: LEADERSHIP_MAX_REDIRECTS,
+            scanMaxBytes: source.scanMaxBytes,
+            retainSuffixBytes: source.retainSuffixBytes,
+          });
+          if (!page.ok) {
+            const httpStatus = httpStatusFromError(page.error);
+            const blocked = /allowlist|linkedin/i.test(page.error)
+              || httpStatus === 401
+              || httpStatus === 403;
+            lastSnapshot = {
+              id: `snap-${source.id}-${now.toISOString()}`,
+              sourceId: source.id,
+              fetchedAt: now.toISOString(),
+              finalUrl: candidateUrl,
+              contentHash: previous?.lastHash ?? "",
+              normalizedText: "",
+              byteCount: 0,
+              extracted: [],
+              extractionStatus: "partial",
+              state: blocked ? "blocked" : "failed",
+              error: clipError(page.error),
+              httpStatus,
+              instructionLike: false,
+            };
+            lastFetchedUrl = candidateUrl;
+            continue;
+          }
+          const normalizedText = normalizeLeadershipText(page.body);
+          const institution = pack.institutions.find((row) => row.id === source.institutionId);
+          const extracted = extractLeaders(
+            page.body,
+            institution?.aliases ?? [],
+            source.leadershipExtractionContract,
+          );
+          const contentHash = await sha256Hex(source.leadershipExtractionContract
+            ? JSON.stringify(extracted.map((row) => [row.normalizedName, row.normalizedTitle]))
+            : normalizedText);
+          const extraction = extractionStatus(normalizedText, extracted, page.body, source, previous?.lastExtracted);
+          const instructionLike = looksInstructionLike(
+            page.body,
+            normalizedText,
+            extracted.map((row) => `${row.name} ${row.title}`).join("\n"),
+          );
+          // A repeated incomplete page is still degraded. Treating it as merely
+          // unchanged would let a persistent empty/unrecognized page recover the
+          // source without ever proving a usable roster. Continue to an explicit
+          // alternate only when this page is incomplete.
+          const unchanged = extraction === "complete"
+            && Boolean(previous?.lastHash && previous.lastHash === contentHash);
+          const hostile = instructionLike || extraction === "challenge";
+          const incompleteError = incompleteExtractionError(extraction);
+          const snapshot: LeadershipSnapshot = {
+            id: `snap-${source.id}-${now.toISOString()}`,
+            sourceId: source.id,
+            fetchedAt: now.toISOString(),
+            finalUrl: page.url,
+            contentHash,
+            normalizedText,
+            byteCount: new TextEncoder().encode(page.body).byteLength,
+            extracted,
+            extractionStatus: extraction,
+            // Fetch succeeded, but an incomplete roster is still a degraded source
+            // for scheduling and operator alerts—never a healthy success.
+            state: hostile
+              ? "hostile"
+              : unchanged
+                ? "unchanged"
+                : extraction === "complete"
+                  ? "success"
+                  : "failed",
+            error: instructionLike
+              ? "Instruction-like text in untrusted page"
+              : extraction === "challenge"
+                ? "Challenge-like page in untrusted source"
+                : incompleteError,
+            instructionLike: instructionLike || extraction === "challenge",
+          };
+          lastSnapshot = snapshot;
+          lastFetchedUrl = page.url;
+          if (snapshot.state !== "failed") {
+            return { snapshot, previous, fetchedUrl: page.url };
+          }
+        } catch (error) {
+          lastSnapshot = {
+            id: `snap-${source.id}-${now.toISOString()}`,
+            sourceId: source.id,
+            fetchedAt: now.toISOString(),
+            finalUrl: candidateUrl,
+            contentHash: previous?.lastHash ?? "",
+            normalizedText: "",
+            byteCount: 0,
+            extracted: [],
+            extractionStatus: "partial",
+            state: "failed",
+            error: clipError(error instanceof Error ? error.message : "Leadership source failed"),
+            instructionLike: false,
+          };
+          lastFetchedUrl = candidateUrl;
+        }
       }
-      const normalizedText = normalizeLeadershipText(page.body);
-      const contentHash = await sha256Hex(normalizedText);
-      const extracted = extractLeaders(page.body);
-      const extraction = extractionStatus(normalizedText, extracted);
-      const instructionLike = looksInstructionLike(
-        page.body,
-        normalizedText,
-        extracted.map((row) => `${row.name} ${row.title}`).join("\n"),
-      );
-      const unchanged = Boolean(previous?.lastHash && previous.lastHash === contentHash);
-      const hostile = instructionLike || extraction === "challenge";
-      const snapshot: LeadershipSnapshot = {
-        id: `snap-${source.id}-${now.toISOString()}`,
-        sourceId: source.id,
-        fetchedAt: now.toISOString(),
-        finalUrl: page.url,
-        contentHash,
-        normalizedText,
-        byteCount: new TextEncoder().encode(page.body).byteLength,
-        extracted,
-        extractionStatus: extraction,
-        state: hostile ? "hostile" : unchanged ? "unchanged" : "success",
-        error: instructionLike
-          ? "Instruction-like text in untrusted page"
-          : extraction === "challenge" ? "Challenge-like page in untrusted source" : null,
-        instructionLike: instructionLike || extraction === "challenge",
-      };
-      return { snapshot, previous, fetchedUrl: page.url };
+      if (lastSnapshot) return { snapshot: lastSnapshot, previous, fetchedUrl: lastFetchedUrl };
+      throw new Error("Leadership source failed");
     } catch (error) {
       const snapshot: LeadershipSnapshot = {
         id: `snap-${source.id}-${now.toISOString()}`,

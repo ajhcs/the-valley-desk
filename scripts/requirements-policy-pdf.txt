@@ -1,0 +1,3 @@
+pypdf==6.9.0 --hash=sha256:85805ad7457ca878c4cfd1bc026c4b3dcae359b4a80f889fa7e8c5a1c1a83e51
+# Offline renderer only; Linux x86_64 Python 3.10+ ABI3 wheel. AGPL/commercial license.
+PyMuPDF==1.27.2 --hash=sha256:917f4dd52daea504d5c60e1430c17d637b5014a43e66d068b4b356effe087dba

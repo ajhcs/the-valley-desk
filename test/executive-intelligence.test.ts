@@ -29,10 +29,11 @@ import {
   seedCoveragePack,
   autonomouslyVerifyLeadership,
 } from "../src/ingest/executive-persistence.ts";
-import { monitorLeadershipSources, type LeadershipSnapshot } from "../src/ingest/leadership-monitor.ts";
+import { extractLeaders, monitorLeadershipSources, type LeadershipSnapshot } from "../src/ingest/leadership-monitor.ts";
 import type { D1DatabaseLike, D1StatementLike } from "../src/ingest/persistence.ts";
 import { normalizeSourceUrl } from "../src/ingest/identity.ts";
 import { Entity } from "../src/content/entity.ts";
+import { buildRuntimeLeadershipCoverage } from "../src/lib/operational-status.ts";
 
 class SqliteD1Statement implements D1StatementLike {
   private values: unknown[] = [];
@@ -120,10 +121,10 @@ test("coverage registry has closed geography, bounded fetches, and explicit 16-s
   assert.equal(geographyMatchesEntityBoundary(), true);
   assert.equal(coverageBoundsAreClosed(), true);
   const statuses = new Map(officialSourceCoverage().map((row) => [row.shortName, row.status]));
-  assert.equal(statuses.get("Jefferson"), "degraded");
+  assert.equal(statuses.get("Jefferson"), "active");
   assert.equal(statuses.get("LVHN"), "active");
-  assert.equal(statuses.get("Penn Princeton"), "degraded");
-  assert.equal(statuses.get("Penn Doylestown"), "degraded");
+  assert.equal(statuses.get("Penn Princeton"), "active");
+  assert.equal(statuses.get("Penn Doylestown"), "active");
   assert.equal(statuses.get("Cooper"), "active");
   assert.equal(statuses.get("Nemours"), "active");
   assert.equal(statuses.get("RWJBarnabas"), "active");
@@ -132,17 +133,305 @@ test("coverage registry has closed geography, bounded fetches, and explicit 16-s
   assert.equal(new Set(sourceUrls).size, sourceUrls.length);
   assert.equal(
     sourceById("src-jefferson-enterprise-leadership")?.url,
-    "https://magazine.jefferson.edu/content/dam/oia/2026/jim-spring-2026/Jefferson_Innovator_Magazine_Spring_2026.pdf",
+    "https://www.jeffersonhealth.org/about-us/news/2025/05/jefferson-extends-contract-with-ceo-joseph-g-cacchione-md",
   );
   assert.equal(
     sourceById("src-st-lukes-leadership")?.url,
     "https://www.slhn.org/about/leadership/executive-leadership",
   );
   assert.equal(
+    sourceById("src-penn-princeton-leadership")?.url,
+    "https://www.pennmedicine.org/news/penn-medicine-to-break-ground-on-cancer-center-at-princeton-health",
+  );
+  assert.deepEqual(
+    sourceById("src-penn-princeton-leadership")?.alternateUrls,
+    ["https://www.pennmedicine.org/locations/entity/princeton-health/financial-reporting"],
+  );
+  assert.equal(
+    sourceById("src-penn-doylestown-ceo")?.url,
+    "https://www.pennmedicine.org/news/craig-gronczewski-named-ceo-of-penn-medicine-doylestown-health",
+  );
+  assert.equal(
     sourceById("src-lvhn-leadership-committees")?.url,
     "https://www.lvhn.org/medical-staff-services/leadership-and-committees",
   );
+  assert.equal(
+    sourceById("src-christianacare-leadership")?.url,
+    "https://christianacare.org/us/en/about-us/who-we-are/our-leadership",
+  );
+  assert.equal(
+    sourceById("src-tower-leadership")?.url,
+    "https://towerhealth.org/about/tower-health-leadership-team",
+  );
   assert.equal(coveragePack.sources.some((source) => source.kind.startsWith("linkedin") && source.monitor), false);
+});
+
+test("runtime leadership coverage separates configured posture from fresh source health", () => {
+  const configured = officialSourceCoverage().map((row) => ({ ...row, configuredStatus: row.status }));
+  const now = new Date("2026-08-28T12:00:00.000Z");
+  const pennSource = configured.find((row) => row.shortName === "Penn")!.sourceIds[0]!;
+  const mainLineSources = configured.find((row) => row.shortName === "Main Line")!.sourceIds;
+  const cooperSource = configured.find((row) => row.shortName === "Cooper")!.sourceIds[0]!;
+  const templeSource = configured.find((row) => row.shortName === "Temple")!.sourceIds[0]!;
+  const coverage = buildRuntimeLeadershipCoverage(configured, [
+    {
+      sourceId: pennSource,
+      institutionId: "inst-penn",
+      state: "healthy",
+      lastSuccessAt: "2026-08-28T11:30:00.000Z",
+      lastAttemptedAt: "2026-08-28T11:30:00.000Z",
+      nextAttemptAt: "2026-08-28T12:30:00.000Z",
+    },
+    {
+      sourceId: mainLineSources[0]!,
+      institutionId: "inst-main-line",
+      state: "upstream-failed",
+      lastSuccessAt: "2026-08-28T09:00:00.000Z",
+      lastAttemptedAt: "2026-08-28T11:00:00.000Z",
+      nextAttemptAt: "2026-08-28T12:15:00.000Z",
+      consecutiveFailures: 2,
+      lastError: "HTTP 503",
+    },
+    {
+      sourceId: mainLineSources[1]!,
+      institutionId: "inst-main-line",
+      state: "healthy",
+      lastSuccessAt: "2026-08-28T11:45:00.000Z",
+      lastAttemptedAt: "2026-08-28T11:45:00.000Z",
+      nextAttemptAt: "2026-08-28T12:45:00.000Z",
+    },
+    {
+      sourceId: cooperSource,
+      institutionId: "inst-cooper",
+      state: "blocked",
+      lastAttemptedAt: "2026-08-28T11:30:00.000Z",
+      nextAttemptAt: "2026-08-28T12:30:00.000Z",
+      consecutiveFailures: 1,
+      lastError: "HTTP 403",
+    },
+    {
+      sourceId: templeSource,
+      institutionId: "inst-temple",
+      state: "healthy",
+      lastSuccessAt: "2026-08-28T08:00:00.000Z",
+      lastAttemptedAt: "2026-08-28T08:00:00.000Z",
+      nextAttemptAt: "2026-08-28T13:00:00.000Z",
+    },
+  ], now);
+  const byName = new Map(coverage.map((row) => [row.shortName, row]));
+  assert.equal(byName.get("Penn")?.state, "healthy");
+  assert.equal(byName.get("Main Line")?.state, "degraded");
+  assert.equal(byName.get("Main Line")?.coverageLost, false);
+  assert.equal(byName.get("Cooper")?.state, "blocked");
+  assert.equal(byName.get("Cooper")?.coverageLost, true);
+  assert.equal(byName.get("Temple")?.state, "failed", "stale success is not current coverage");
+  assert.equal(byName.get("Jefferson")?.configuredStatus, "active");
+  assert.equal(byName.get("Jefferson")?.state, "failed", "configured sources still need a fresh runtime observation");
+  assert.equal(byName.get("Main Line")?.sourceStates[0]?.state, "backoff");
+
+  const transient = buildRuntimeLeadershipCoverage([
+    { institutionId: "inst-transient", shortName: "Transient", configuredStatus: "active", sourceIds: ["src-transient"] },
+  ], [{
+    sourceId: "src-transient",
+    institutionId: "inst-transient",
+    state: "blocked",
+    lastSuccessAt: "2026-08-28T11:30:00.000Z",
+    lastAttemptedAt: "2026-08-28T11:45:00.000Z",
+    nextAttemptAt: "2026-08-28T12:30:00.000Z",
+    consecutiveFailures: 1,
+    lastError: "HTTP 403",
+  }], now)[0]!;
+  assert.equal(transient.state, "blocked");
+  assert.equal(transient.coverageLost, false, "recent blocked sources retain coverage within the freshness SLO");
+});
+
+test("leadership source alternatives stay allowlisted and rescue incomplete primaries", async () => {
+  const source = monitorableSources()[0]!;
+  const alternateUrl = "https://www.pennmedicine.org/information-services/leadership/alternate";
+  const pack = CoveragePackDocument.parse({
+    ...coveragePack,
+    sources: coveragePack.sources.map((row) => (
+      row.id === source.id ? { ...row, alternateUrls: [alternateUrl] } : row
+    )),
+  });
+  const sourceUrl = normalizeSourceUrl(source.url)!;
+  const alternateCanonicalUrl = normalizeSourceUrl(alternateUrl)!;
+  const requested: string[] = [];
+  const result = await monitorLeadershipSources({
+    pack,
+    now: new Date("2026-08-28T12:00:00.000Z"),
+    candidateCap: 1,
+    concurrency: 1,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      if (url === sourceUrl) return new Response("<html><body>No roster here</body></html>", { status: 200 });
+      if (url === alternateCanonicalUrl) return new Response("<h2>Julian Mihai</h2><p>CISO</p>", { status: 200 });
+      return new Response("", { status: 503 });
+    },
+  });
+  assert.deepEqual(requested, [sourceUrl, alternateCanonicalUrl]);
+  assert.equal(result.snapshots[0]?.sourceId, source.id);
+  assert.equal(result.snapshots[0]?.finalUrl, alternateCanonicalUrl);
+  assert.equal(result.snapshots[0]?.state, "success");
+  assert.equal(result.snapshots[0]?.extractionStatus, "complete");
+  assert.deepEqual(result.fetchedUrls, [alternateCanonicalUrl]);
+});
+
+test("official leadership extraction contracts parse only their scoped card structures", () => {
+  const cases = [
+    {
+      sourceId: "src-tower-leadership",
+      expected: "alex tower",
+      body: `<h1>Tower Health Leadership Team</h1>${["Alex Tower", "Blair Tower", "Casey Tower"].map((name) => (
+        `<div class="people-teaser"><span class="people-teaser__name">${name}, MBA</span><span class="people-teaser__meta">Executive Vice President</span><span class="people-teaser__meta">Chief Information Officer</span></div>`
+      )).join("")}`,
+    },
+    {
+      sourceId: "src-st-lukes-leadership",
+      expected: "alex luke",
+      body: `<h1>Executive Leadership</h1>${["Alex Luke", "Blair Luke", "Casey Luke"].map((name) => (
+        `<div class="card card-text-overlay__item"><div class="card-text-overlay__item-content"><p class="card-text-overlay__text">${name}</p><p class="card-text-overlay__text tagline">Vice President<br>Chief Information Officer</p></div></div>`
+      )).join("")}`,
+    },
+    {
+      sourceId: "src-virtua-leadership",
+      expected: "alex virtua",
+      body: `<h2>Senior Leadership</h2>${["Alex Virtua", "Blair Virtua", "Casey Virtua"].map((name) => (
+        `<div class="team-group__group-item"><p class="team-group__item-name">${name}, FACHE</p><p class="team-group__item-position">Executive VP and chief information officer</p></div>`
+      )).join("")}`,
+    },
+    {
+      sourceId: "src-main-line-luke-olenoski",
+      expected: "luke olenoski",
+      body: "<h2>Site Navigation</h2><h1>Luke Olenoski</h1><h2>Senior Vice President and Chief Information Officer</h2>",
+    },
+    {
+      sourceId: "src-christianacare-gaboriault",
+      expected: "randall gaboriault",
+      body: "<h2 class=\"cmp-title__text\">Login</h2><h2 class=\"cmp-title__text\">Randall Gaboriault, MS, MBA</h2><h6 class=\"cmp-title__text\">Senior Vice President, Chief Digital and Information Officer</h6>",
+    },
+  ] as const;
+
+  for (const row of cases) {
+    const source = sourceById(row.sourceId)!;
+    const extracted = extractLeaders(row.body, [], source.leadershipExtractionContract);
+    assert.equal(extracted[0]?.normalizedName, row.expected, row.sourceId);
+    assert.ok(extracted[0]?.normalizedTitle.includes("information officer"), row.sourceId);
+  }
+
+  const christiana = sourceById("src-christianacare-leadership")!;
+  const cards = ["Alex Care", "Blair Care", "Casey Care", "Devon Care", "Emery Care"].map((name) => (
+    `<div class="pagecard component style-leadership"><div class="cmp-pagecard__title_text"><a>${name}, MD</a></div><div class="cmp-pagecard__description">Chief Operating Officer</div></div>`
+  )).join("");
+  const extracted = extractLeaders(
+    `<h1>Our Leadership</h1>${cards}<h2>Board of Directors</h2>`,
+    [],
+    christiana.leadershipExtractionContract,
+  );
+  assert.equal(extracted.length, 5);
+  assert.equal(extracted[0]?.normalizedName, "alex care");
+});
+
+test("an incomplete contracted roster cannot infer departures", async () => {
+  const target = sourceById("src-tower-leadership")!;
+  const pack = CoveragePackDocument.parse({
+    ...coveragePack,
+    sources: coveragePack.sources.map((source) => (
+      source.id === target.id
+        ? source
+        : source.kind.startsWith("linkedin")
+          ? source
+          : { ...source, monitor: false, cadence: "inventory", status: "inventory-only" }
+    )),
+  });
+  const previousLeaders = ["Alex Tower", "Blair Tower", "Casey Tower", "Devon Tower"].map((name) => ({
+    name,
+    normalizedName: name.toLowerCase(),
+    title: "Chief Information Officer",
+    normalizedTitle: "chief information officer",
+  }));
+  const result = await monitorLeadershipSources({
+    pack,
+    now: new Date("2026-09-01T18:00:00.000Z"),
+    states: new Map([[target.id, {
+      sourceId: target.id,
+      state: "healthy" as const,
+      lastHash: "previous",
+      lastExtracted: previousLeaders,
+      nextAttemptAt: "2026-09-01T17:00:00.000Z",
+      consecutiveFailures: 0,
+    }]]),
+    candidateCap: 1,
+    concurrency: 1,
+    fetchImpl: async () => new Response(
+      "<h1>Tower Health Leadership Team</h1><div class=\"people-teaser\"><span class=\"people-teaser__name\">Alex Tower</span><span class=\"people-teaser__meta\">Chief Information Officer</span></div>",
+      { status: 200 },
+    ),
+  });
+  assert.equal(result.snapshots[0]?.state, "failed");
+  assert.equal(result.snapshots[0]?.extractionStatus, "partial");
+  assert.equal(result.observations.some((row) => row.kind === "person-departed"), false);
+});
+
+test("public leadership 403 is a blocked source with retry metadata", async () => {
+  const source = monitorableSources()[0]!;
+  const result = await monitorLeadershipSources({
+    pack: coveragePack,
+    now: new Date("2026-08-28T12:00:00.000Z"),
+    candidateCap: 1,
+    concurrency: 1,
+    fetchImpl: async () => new Response("access denied", { status: 403 }),
+  });
+  assert.equal(result.snapshots[0]?.sourceId, source.id);
+  assert.equal(result.snapshots[0]?.state, "blocked");
+  assert.equal(result.snapshots[0]?.httpStatus, 403);
+  assert.equal(result.schedule[0]?.state, "blocked");
+  assert.ok(result.schedule[0]?.nextAttemptAt);
+});
+
+test("leadership monitor recognizes institution-bound executive facts in official article pages", async () => {
+  const cases = [
+    {
+      sourceId: "src-jefferson-enterprise-leadership",
+      expectedName: "joseph g cacchione",
+      body: "<html><head><title>Jefferson Extends Contract with CEO Joseph G. Cacchione, MD | Jefferson Health</title></head><body></body></html>",
+    },
+    {
+      sourceId: "src-penn-princeton-leadership",
+      expectedName: "james demetriades",
+      body: "<main><h1>Penn Medicine breaks ground on cancer center at Princeton Health</h1><p>\"This is a significant first step,\" said Princeton Health CEO James Demetriades.</p></main>",
+    },
+    {
+      sourceId: "src-penn-doylestown-ceo",
+      expectedName: "craig gronczewski",
+      body: "<main><h1>Craig Gronczewski, MD, MBA, FACHE, named Chief Executive Officer of Penn Medicine Doylestown Health</h1></main>",
+    },
+  ] as const;
+
+  for (const row of cases) {
+    const source = sourceById(row.sourceId)!;
+    const pack = CoveragePackDocument.parse({
+      ...coveragePack,
+      sources: coveragePack.sources.map((candidate) => (
+        candidate.id === row.sourceId
+          ? candidate
+          : { ...candidate, monitor: false, cadence: "inventory", status: "inventory-only" }
+      )),
+    });
+    const institution = pack.institutions.find((candidate) => candidate.id === source.institutionId)!;
+    const direct = extractLeaders(row.body, institution.aliases);
+    assert.equal(direct[0]?.normalizedName, row.expectedName);
+    const result = await monitorLeadershipSources({
+      pack,
+      now: new Date("2026-08-31T12:00:00.000Z"),
+      candidateCap: 1,
+      concurrency: 1,
+      fetchImpl: async () => new Response(row.body, { status: 200 }),
+    });
+    assert.equal(result.snapshots[0]?.state, "success");
+    assert.equal(result.snapshots[0]?.extracted[0]?.normalizedName, row.expectedName);
+  }
 });
 
 test("covered health-system identities and LinkedIn mappings stay canonical", () => {
@@ -200,11 +489,36 @@ test("leadership monitor persists exact bytes and never infers departures from i
     states: new Map([[source.id, { ...previous, nextAttemptAt: "2026-08-29T00:00:00.000Z" }]]),
     fetchImpl: async () => new Response("<html><body>Just a normal page</body></html>", { status: 200 }),
   });
-  assert.equal(incomplete.snapshots[0]?.state, "success");
+  assert.equal(incomplete.snapshots[0]?.state, "failed");
   assert.equal(incomplete.snapshots[0]?.extractionStatus, "unrecognized");
+  assert.equal(
+    incomplete.snapshots[0]?.error,
+    "Page fetched, but no recognized leadership structure was found",
+  );
   assert.equal(incomplete.observations.length, 0);
   assert.equal(incomplete.schedule[0]?.state, "upstream-failed");
   assert.equal(incomplete.schedule[0]?.lastHash, previous.lastHash);
+  assert.equal(
+    incomplete.schedule[0]?.lastError,
+    "Page fetched, but no recognized leadership structure was found",
+  );
+
+  const repeatedIncomplete = await monitorLeadershipSources({
+    now: new Date("2026-08-30T00:00:00.000Z"),
+    candidateCap: 1,
+    concurrency: 1,
+    states: new Map([[
+      source.id,
+      {
+        ...incomplete.schedule[0]!,
+        lastHash: incomplete.snapshots[0]!.contentHash,
+        nextAttemptAt: "2026-08-29T00:00:00.000Z",
+      },
+    ]]),
+    fetchImpl: async () => new Response("<html><body>Just a normal page</body></html>", { status: 200 }),
+  });
+  assert.equal(repeatedIncomplete.snapshots[0]?.state, "failed");
+  assert.equal(repeatedIncomplete.snapshots[0]?.extractionStatus, "unrecognized");
 
   const challenge = await monitorLeadershipSources({
     now: new Date("2026-08-30T12:00:00.000Z"),
@@ -254,7 +568,7 @@ test("coverage seed and reviewer verification persist identity, evidence, and ro
   const degraded = database.prepare(
     "SELECT official_source_status FROM covered_institutions WHERE id = 'inst-jefferson'",
   ).get() as { official_source_status: string };
-  assert.equal(degraded.official_source_status, "degraded");
+  assert.equal(degraded.official_source_status, "active");
 
   const body = "<h2>Julian Mihai</h2><p>CISO</p>";
   const monitored = await monitorLeadershipSources({
@@ -459,8 +773,22 @@ test("conflicting titles retain an unknown identity without auto-enrollment", as
 test("autonomous departure requires two snapshots on two independent official sources", async () => {
   const database = migratedDatabase();
   const db = sqliteD1(database);
-  await seedCoveragePack(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
-  const roleSourceId = "src-chop-salmasian";
+  const testPack = CoveragePackDocument.parse({
+    ...coveragePack,
+    sources: [...coveragePack.sources, {
+      id: "src-chop-leadership-alt",
+      institutionId: "inst-chop",
+      kind: "leadership-page",
+      url: "https://news.chop.edu/about/executive-leadership",
+      host: "news.chop.edu",
+      precedence: 90,
+      monitor: true,
+      cadence: "daily",
+      status: "enabled",
+    }],
+  });
+  await seedCoveragePack(db, testPack, new Date("2026-08-27T12:00:00.000Z"));
+  const roleSourceId = "src-chop-leadership";
   await persistExecutiveRoleChange(db, {
     personId: "person-hojjat-salmasian",
     institutionId: "inst-chop",
@@ -474,20 +802,142 @@ test("autonomous departure requires two snapshots on two independent official so
   });
   const absent = [{ name: "Alicia Example", title: "Chief Executive Officer" }];
   await persistLeadershipSnapshots(db, [
-    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-27T12:00:00.000Z", absent),
-    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-28T12:00:00.000Z", absent),
-    storedLeadershipSnapshot("src-chop-desai", "2026-08-28T12:00:00.000Z", absent),
+    storedLeadershipSnapshot("src-chop-leadership", "2026-08-27T12:00:00.000Z", absent),
+    storedLeadershipSnapshot("src-chop-leadership", "2026-08-28T12:00:00.000Z", absent),
+    { ...storedLeadershipSnapshot("src-chop-leadership", "2026-08-28T12:00:00.000Z", absent),
+      id: "test-src-chop-leadership-alt-2026-08-28T12:00:00.000Z",
+      sourceId: "src-chop-leadership-alt",
+      finalUrl: "https://news.chop.edu/about/executive-leadership" },
   ]);
-  const pending = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-28T12:00:00.000Z"));
+  const pending = await autonomouslyVerifyLeadership(db, testPack, new Date("2026-08-28T12:00:00.000Z"));
   assert.equal(pending.editorialCandidates.some((item) => item.title.includes("Hojjat")), false);
   assert.equal((await readExecutiveRoles(db, "person-hojjat-salmasian", "inst-chop"))[0]!.effectiveTo, null);
 
   await persistLeadershipSnapshots(db, [
-    storedLeadershipSnapshot("src-chop-desai", "2026-08-29T12:00:00.000Z", absent),
+    { ...storedLeadershipSnapshot("src-chop-leadership", "2026-08-29T12:00:00.000Z", absent),
+      id: "test-src-chop-leadership-alt-2026-08-29T12:00:00.000Z",
+      sourceId: "src-chop-leadership-alt",
+      finalUrl: "https://news.chop.edu/about/executive-leadership" },
   ]);
-  const verified = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-29T12:00:00.000Z"));
+  const verified = await autonomouslyVerifyLeadership(db, testPack, new Date("2026-08-29T12:00:00.000Z"));
   const role = (await readExecutiveRoles(db, "person-hojjat-salmasian", "inst-chop"))[0]!;
-  assert.equal(role.effectiveTo, "2026-08-29T12:00:00.000Z");
+  assert.equal(role.effectiveTo, "2026-08-28T12:00:00.000Z");
   assert.equal(verified.editorialCandidates.some((item) => item.title.includes("Hojjat")), true);
+  database.close();
+});
+
+test("person-bio omissions cannot close an executive role as if they were complete rosters", async () => {
+  const database = migratedDatabase();
+  const db = sqliteD1(database);
+  await seedCoveragePack(db, coveragePack, new Date("2026-08-27T12:00:00.000Z"));
+  await persistExecutiveRoleChange(db, {
+    personId: "person-hojjat-salmasian",
+    institutionId: "inst-chop",
+    title: "Vice President and Chief Data and Analytics Officer",
+    sourceId: "src-chop-salmasian",
+    evidenceUrl: sourceById("src-chop-salmasian")!.url,
+    effectiveFrom: "2026-08-01T12:00:00.000Z",
+    verificationStatus: "verified",
+    verifiedBy: "fixture",
+    verifiedAt: "2026-08-01T12:00:00.000Z",
+  });
+  const unrelatedBio = [{ name: "Bimal Desai", title: "Vice President and Chief Health Informatics Officer" }];
+  await persistLeadershipSnapshots(db, [
+    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-27T12:00:00.000Z", unrelatedBio),
+    storedLeadershipSnapshot("src-chop-salmasian", "2026-08-28T12:00:00.000Z", unrelatedBio),
+    storedLeadershipSnapshot("src-chop-desai", "2026-08-27T12:00:00.000Z", unrelatedBio),
+    storedLeadershipSnapshot("src-chop-desai", "2026-08-28T12:00:00.000Z", unrelatedBio),
+  ]);
+  const result = await autonomouslyVerifyLeadership(db, coveragePack, new Date("2026-08-28T12:00:00.000Z"));
+  assert.equal(result.editorialCandidates.some((item) => item.title.includes("Hojjat")), false);
+  assert.equal((await readExecutiveRoles(db, "person-hojjat-salmasian", "inst-chop"))[0]!.effectiveTo, null);
+  database.close();
+});
+
+test("a malformed dynamic identity is isolated while a valid departure completes without partial mutation", async () => {
+  const database = migratedDatabase();
+  const db = sqliteD1(database);
+  const testPack = CoveragePackDocument.parse({
+    ...coveragePack,
+    sources: [...coveragePack.sources, {
+      id: "src-chop-leadership-alt",
+      institutionId: "inst-chop",
+      kind: "leadership-page",
+      url: "https://news.chop.edu/about/executive-leadership",
+      host: "news.chop.edu",
+      precedence: 90,
+      monitor: true,
+      cadence: "daily",
+      status: "enabled",
+    }],
+  });
+  await seedCoveragePack(db, testPack, new Date("2026-08-27T12:00:00.000Z"));
+  database.prepare(`INSERT INTO covered_people
+    (id, display_name, normalized_name, aliases_json, created_at, known_title, source_ids_json)
+    VALUES (?, ?, ?, '[]', ?, ?, ?)`
+  ).run(
+    "person-inst-chop-dynamic-example",
+    "Jordan Dynamic",
+    "jordan dynamic",
+    "2026-08-01T12:00:00.000Z",
+    "Chief Analytics Officer",
+    JSON.stringify(["src-chop-leadership", "src-chop-leadership-alt"]),
+  );
+  database.prepare(`INSERT INTO covered_people
+    (id, display_name, normalized_name, aliases_json, created_at, known_title, source_ids_json)
+    VALUES (?, '', ?, '[]', ?, ?, ?)`
+  ).run(
+    "person-inst-chop-malformed",
+    "malformed identity fixture",
+    "2026-08-01T12:00:00.000Z",
+    "Chief Data Officer",
+    JSON.stringify(["src-chop-leadership", "src-chop-leadership-alt"]),
+  );
+  await persistExecutiveRoleChange(db, {
+    personId: "person-inst-chop-dynamic-example",
+    institutionId: "inst-chop",
+    title: "Chief Analytics Officer",
+    sourceId: "src-chop-leadership",
+    evidenceUrl: sourceById("src-chop-leadership")!.url,
+    effectiveFrom: "2026-08-01T12:00:00.000Z",
+    verificationStatus: "verified",
+    verifiedBy: "fixture",
+    verifiedAt: "2026-08-01T12:00:00.000Z",
+  });
+  await persistExecutiveRoleChange(db, {
+    personId: "person-inst-chop-malformed",
+    institutionId: "inst-chop",
+    title: "Chief Data Officer",
+    sourceId: "src-chop-leadership",
+    evidenceUrl: sourceById("src-chop-leadership")!.url,
+    effectiveFrom: "2026-08-01T12:00:00.000Z",
+    verificationStatus: "verified",
+    verifiedBy: "fixture",
+    verifiedAt: "2026-08-01T12:00:00.000Z",
+  });
+  const absent = [{ name: "Alicia Example", title: "Chief Executive Officer" }];
+  await persistLeadershipSnapshots(db, [
+    storedLeadershipSnapshot("src-chop-leadership", "2026-08-28T12:00:00.000Z", absent),
+    storedLeadershipSnapshot("src-chop-leadership", "2026-08-29T12:00:00.000Z", absent),
+    { ...storedLeadershipSnapshot("src-chop-leadership", "2026-08-28T12:00:00.000Z", absent),
+      id: "test-src-chop-leadership-alt-2026-08-28T12:00:00.000Z",
+      sourceId: "src-chop-leadership-alt",
+      finalUrl: "https://news.chop.edu/about/executive-leadership" },
+    { ...storedLeadershipSnapshot("src-chop-leadership", "2026-08-29T12:00:00.000Z", absent),
+      id: "test-src-chop-leadership-alt-2026-08-29T12:00:00.000Z",
+      sourceId: "src-chop-leadership-alt",
+      finalUrl: "https://news.chop.edu/about/executive-leadership" },
+  ]);
+  const result = await autonomouslyVerifyLeadership(db, testPack, new Date("2026-08-29T12:00:00.000Z"));
+  assert.deepEqual(result.identityFailures, [{
+    personId: "person-inst-chop-malformed",
+    institutionId: "inst-chop",
+    reason: "Stored executive identity has no display name",
+  }]);
+  assert.equal(result.editorialCandidates.some((item) => item.title.includes("Jordan Dynamic")), true);
+  const [role] = await readExecutiveRoles(db, "person-inst-chop-dynamic-example", "inst-chop");
+  assert.equal(role?.effectiveTo, "2026-08-29T12:00:00.000Z");
+  const [malformed] = await readExecutiveRoles(db, "person-inst-chop-malformed", "inst-chop");
+  assert.equal(malformed?.effectiveTo, null, "malformed identity must not partially close its role");
   database.close();
 });

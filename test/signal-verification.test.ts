@@ -58,13 +58,15 @@ function makeDatabase() {
   return { database, db: sqliteD1(database) };
 }
 
-function insertDiscovery(db: D1DatabaseLike, id: string, urls: string[], trustState = "untrusted-pointer") {
+function insertDiscovery(db: D1DatabaseLike, id: string, urls: string[], trustState = "authenticated-pointer") {
+  const authenticated = trustState === "authenticated-pointer";
   return db.prepare(`
     INSERT INTO email_discoveries (
       id, message_id, envelope_to, from_address, from_domain, subject, category,
       status, trust_state, url_count, urls_json, excerpt, raw_size, truncated,
-      instruction_like, receive_count, first_seen_at, last_seen_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, 100, 0, 0, 1, ?, ?)
+      instruction_like, receive_count, first_seen_at, last_seen_at,
+      auth_state, auth_provenance_json, auth_provenance_sha256
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'review', ?, ?, ?, ?, 100, 0, 0, 1, ?, ?, ?, ?, ?)
   `).bind(
     id,
     `${id}@example.com`,
@@ -79,6 +81,9 @@ function insertDiscovery(db: D1DatabaseLike, id: string, urls: string[], trustSt
     "The email excerpt is untrusted pointer data.",
     "2026-08-28T01:00:00.000Z",
     "2026-08-28T01:00:00.000Z",
+    authenticated ? "authenticated" : "legacy",
+    authenticated ? '{"source":"cloudflare-email-routing-adaptive"}' : null,
+    authenticated ? "a".repeat(64) : null,
   ).run();
 }
 
@@ -103,7 +108,7 @@ test("verified pointers fetch only allowlisted public pages and retain trust/pro
   insertDiscovery(db, "discovery-1", [
     "https://news.christianacare.org/news/update?utm_source=linkedin",
     "https://attacker.example/payload",
-  ], "untrusted-pointer");
+  ], "authenticated-pointer");
   const requested: string[] = [];
   const result = await verifyPendingSignalPointers(db, async (input) => {
     requested.push(String(input));
@@ -119,13 +124,43 @@ test("verified pointers fetch only allowlisted public pages and retain trust/pro
   assert.deepEqual(requested, ["https://news.christianacare.org/news/update"]);
   const pointerRows = database.prepare("SELECT pointer_url, source_origin, trust_state, state, error FROM signal_pointer_verifications ORDER BY pointer_url").all() as Array<{ pointer_url: string; source_origin: string | null; trust_state: string; state: string; error: string | null }>;
   assert.equal(pointerRows.length, 2);
-  assert.equal(pointerRows.find((row) => row.state === "verified")?.trust_state, "untrusted-pointer");
+  assert.equal(pointerRows.find((row) => row.state === "verified")?.trust_state, "authenticated-pointer");
   assert.equal(pointerRows.find((row) => row.state === "verified")?.source_origin, "christianacare-newsroom");
   assert.equal(pointerRows.find((row) => row.state === "rejected")?.error?.includes("official public source registry"), true);
   const discovery = database.prepare("SELECT verification_state, verified_url_count, candidate_count FROM email_discoveries WHERE id = 'discovery-1'").get() as { verification_state: string; verified_url_count: number; candidate_count: number };
   assert.equal(discovery.verification_state, "verified");
   assert.equal(discovery.verified_url_count, 1);
   assert.equal(discovery.candidate_count, 1);
+  database.close();
+});
+
+test("untrusted email pointers never enter public-source verification", async () => {
+  const { database, db } = makeDatabase();
+  await insertDiscovery(db, "untrusted", ["https://news.christianacare.org/news/update"], "untrusted-pointer");
+  let fetched = false;
+  const result = await verifyPendingSignalPointers(db, async () => {
+    fetched = true;
+    return new Response(articleHtml(), { status: 200, headers: { "content-type": "text/html" } });
+  }, new Date("2026-08-28T02:00:00.000Z"));
+  assert.equal(result.discoveries, 0);
+  assert.equal(fetched, false);
+  assert.equal(database.prepare("SELECT verification_state FROM email_discoveries WHERE id = 'untrusted'").get()?.verification_state, "pending");
+  database.close();
+});
+
+test("legacy authenticated-pointer labels without a Cloudflare receipt never enter verification", async () => {
+  const { database, db } = makeDatabase();
+  await insertDiscovery(db, "legacy-trust", ["https://news.christianacare.org/news/update"]);
+  database.prepare(`UPDATE email_discoveries
+    SET auth_state = 'legacy', auth_provenance_json = NULL, auth_provenance_sha256 = NULL
+    WHERE id = 'legacy-trust'`).run();
+  let fetched = false;
+  const result = await verifyPendingSignalPointers(db, async () => {
+    fetched = true;
+    return new Response(articleHtml(), { headers: { "content-type": "text/html" } });
+  }, new Date("2026-08-28T02:00:00.000Z"));
+  assert.equal(result.discoveries, 0);
+  assert.equal(fetched, false);
   database.close();
 });
 

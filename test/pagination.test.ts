@@ -141,7 +141,8 @@ test("home rails stay newest-bounded and do not paginate", () => {
 
   const home = readFileSync(join(root, "src/ui/HomePage.tsx"), "utf8");
   assert.ok(home.includes("latestNews(catalog, 7)"));
-  assert.ok(home.includes("latestVoices(catalog)"));
+  assert.ok(!home.includes("latestVoices(catalog)"));
+  assert.ok(home.includes("publicFeatures().watch"));
   assert.ok(!home.includes("paginate("));
   assert.ok(!home.includes("pageFromSearch"));
   assert.ok(!home.includes("?page="));

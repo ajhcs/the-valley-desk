@@ -42,6 +42,7 @@ export function parsePageQuery(raw: string | null | undefined): PageRequest {
 export function pageFromSearch(search: string | null | undefined): PageRequest {
   const trimmed = String(search ?? "");
   const query = new URLSearchParams(trimmed.startsWith("?") ? trimmed.slice(1) : trimmed);
+  if (query.getAll("page").length > 1) return { raw: query.get("page"), page: 1, invalid: true };
   return parsePageQuery(query.get("page"));
 }
 

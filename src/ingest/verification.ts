@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { looksInstructionLike } from "./untrusted-text";
 import { containsExact, validateClaimLedger, type ClaimLedger } from "./claim-ledger";
+import { diagnosticShape, diagnosticUsage, ModelResponseSizeError, readBoundedModelBody, type ModelResponseDiagnostic } from "./model-response-diagnostics";
 
 export const HIGH_RISK_KINDS = new Set(["news", "policy", "ai"]);
 
@@ -142,14 +143,13 @@ export function verifyHighRisk(input: VerificationInput): VerificationResult {
 }
 
 /**
- * Totally independent second model call placeholder: verifies via Muse Spark 1.2 Contributor
- * without adding facts. For now, deterministic second pass satisfies “two-pass” without extra model call
- * when not configured; when config.apiKey present, call second model with same guards.
- * This function is pure verification (no mutation).
+ * Independent second model call after deterministic evidence validation.
+ * Missing configuration and any model failure remain held. Diagnostics describe
+ * response structure only; they never authorize publication.
  */
 export async function verifyWithSecondModel(
   input: VerificationInput,
-  config: { apiKey?: string; baseUrl?: string; model?: string; timeoutMs?: number },
+  config: { apiKey?: string; baseUrl?: string; model?: string; timeoutMs?: number; onDiagnostic?: (diagnostic: ModelResponseDiagnostic) => void },
   fetchImpl: typeof fetch = fetch,
 ): Promise<VerificationResult> {
   const local = verifyHighRisk(input);
@@ -162,6 +162,7 @@ export async function verifyWithSecondModel(
   const timeoutMs = Math.max(1_000, config.timeoutMs ?? 45_000);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const diagnostic: ModelResponseDiagnostic = {startedAt:new Date().toISOString(),phase:"transport",maxTokens:2048,responseFormat:"json_object"};
   try {
     const res = await fetchImpl(`${baseUrl}/chat/completions`, {
       method: "POST",
@@ -193,17 +194,27 @@ export async function verifyWithSecondModel(
         response_format: { type: "json_object" },
       }),
     });
+    diagnostic.status = res.status;
     if (!res.ok) {
+      diagnostic.failure = "http_failure";
       // fail-closed: model failure => not approved
       return { approved: false, objections: [{ code: "verifier-model-failed", reason: `Verifier model failed (${res.status})` }], verifiedAt: new Date().toISOString() };
     }
-    const payload = (await res.json()) as { choices?: { message?: { content?: unknown } }[] };
+    diagnostic.phase = "outer_json";
+    const responseText = await readBoundedModelBody(res);
+    diagnostic.shape = await diagnosticShape(responseText);
+    const payload = JSON.parse(responseText) as { usage?: unknown; choices?: { finish_reason?: string; message?: { content?: unknown } }[] };
+    diagnostic.usage = diagnosticUsage(payload?.usage);
+    const finish = payload?.choices?.[0]?.finish_reason;
+    diagnostic.finishReason = ["stop","length","content_filter","tool_calls","error"].includes(finish ?? "") ? finish : "unknown";
+    diagnostic.phase = "content_json";
     const raw = payload.choices?.[0]?.message?.content;
     const text = typeof raw === "string"
       ? raw
       : Array.isArray(raw)
         ? raw.map((part) => typeof part === "string" ? part : typeof part === "object" && part && "text" in (part as Record<string, unknown>) ? String((part as Record<string, unknown>).text) : "").join("")
         : typeof raw === "object" && raw && "text" in (raw as Record<string, unknown>) ? String((raw as Record<string, unknown>).text) : "";
+    diagnostic.shape = await diagnosticShape(text);
     const jsonStr = (() => {
       const t = text.trim();
       const m = /```(?:json)?\s*([\s\S]*?)```/i.exec(t);
@@ -215,16 +226,23 @@ export async function verifyWithSecondModel(
     })();
     try {
       const parsed = VerificationResult.parse(JSON.parse(jsonStr));
+      diagnostic.phase = "parsed";
       const objections = [...local.objections, ...parsed.objections].slice(0, 12);
       return { approved: parsed.approved && objections.length === 0, objections, verifiedAt: new Date().toISOString() };
-    } catch {
+    } catch (error) {
+      diagnostic.failure = error instanceof z.ZodError ? "schema_invalid" : "malformed";
       return { approved: false, objections: [{ code: "verifier-malformed", reason: "Verifier returned malformed JSON" }], verifiedAt: new Date().toISOString() };
     }
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Verifier error";
+    diagnostic.failure = e instanceof ModelResponseSizeError ? "response_byte_limit" : diagnostic.phase === "outer_json" ? "outer_json_or_body_failure" : "transport_or_body_failure";
     // model failure isolation => do not publish
-    return { approved: false, objections: [{ code: "verifier-error", reason: msg.slice(0, 300) }], verifiedAt: new Date().toISOString() };
+    return { approved: false, objections: [{ code: "verifier-error", reason: "Verifier response could not be processed" }], verifiedAt: new Date().toISOString() };
   } finally {
     clearTimeout(timer);
+    diagnostic.endedAt = new Date().toISOString();
+    try {
+      if (config.onDiagnostic) config.onDiagnostic(diagnostic);
+      else if (diagnostic.failure) console.warn(JSON.stringify({event:"verifier-response-diagnostic",...diagnostic}));
+    } catch { /* Diagnostic sinks cannot change publication decisions. */ }
   }
 }

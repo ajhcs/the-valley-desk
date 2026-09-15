@@ -1,0 +1,31 @@
+{
+  "scope": "Local captured-snapshot interpretation examples, not a production approval or import manifest",
+  "bill": "HB 1993",
+  "session": "2025-2026",
+  "printer": "PN 2515",
+  "pdfSha256": "058e1a7f3e8f436af3f205be22e86cddd3e88cb946541fa53a0e0b996bca9f69",
+  "visuallyInspectedPages": [1, 2, 3, 4, 5, 6, 7],
+  "method": "Codex inspected all seven complete 96-dpi PNG page renders against their extracted text on 2026-09-07. This example is not an authorized operator's production disposition.",
+  "summaries": [
+    {
+      "heading": "Section 3.  Permitted use of artificial intelligence.",
+      "summary": "As proposed, a mental health professional could not use AI for supplementary support when a client's therapeutic session is recorded or transcribed unless the patient or legally authorized representative receives written notice of the AI use and its specific purpose, and consents. The printed consent definition requires an express, informed, voluntary, specific written agreement that can be revoked; broad terms of use, passive interaction and deceptive agreement do not qualify. Supplementary support excludes therapeutic communication and includes tasks such as maintaining therapy notes and analyzing anonymized progress data subject to professional review. The professional retains responsibility for the system's interactions, outputs and data use. Section 6 excludes religious counseling, peer support and qualifying public self-help or educational resources. This describes the printed proposal, not current law, and is not a complete account of the bill's separate restrictions on therapeutic uses.",
+      "supportPatterns": ["client's therapeutic session is recorded", "specific purpose", "provides consent", "revocable", "does not involve therapeutic", "full", "This act does not apply"]
+    },
+    {
+      "heading": "Section 4.  Prohibition on unauthorized therapy services.",
+      "summary": "The proposal would bar an AI provider from representing that a system can provide therapy, that conversational features can be used to obtain therapy, or that the system is a mental health professional or another listed therapy provider. It would also prohibit making available in Pennsylvania a system specifically programmed to provide an experience that would constitute a mental health professional's practice if supplied by a person. A mental health professional's AI use would remain subject to section 3: AI could not make independent therapeutic decisions, communicate therapeutically with clients, generate therapeutic recommendations or treatment plans without professional review and approval, or detect emotions or mental states. The printed definitions and section 6 exceptions for religious counseling, peer support and qualifying public self-help or educational resources limit this account. Enforcement under the referenced professional statutes remains a separate interpretation question; this is not a claim that these restrictions are enacted.",
+      "supportPatterns": ["Prohibition on unauthorized", "Certain system prohibited", "make independent therapeutic decisions", "review and approval", "detect emotions or mental states", "This act does not apply"]
+    },
+    {
+      "heading": "Section 6.  Exceptions.",
+      "summary": "The proposal expressly excludes religious counseling, peer support, and publicly available self-help materials or educational resources that do not purport to offer therapy or psychotherapy. Its definitions describe religious counseling as explicitly faith-based and not represented as clinical mental health services, and peer support as lived-experience encouragement and guidance without clinical intervention. These are limits in the printed proposal, not a determination that a particular service qualifies.",
+      "supportPatterns": ["This act does not apply", "religious counseling", "peer support", "do not purport", "without clinical intervention", "explicitly faith-based"]
+    }
+  ],
+  "holds": [
+    "HB1993 section 5: referenced professional-licensing enforcement provisions have not been independently retained and checked; do not infer an applicable penalty or authority.",
+    "HB1925 PN3349: deleted/replacement compliance language and renumbered sections require a complete amendment reconciliation; no automated operative-text interpretation is approved.",
+    "SB1113 PN1376: cross-referenced definitions, including 35 Pa.C.S. 8103 and Insurance Company Law section 2102, have not been retained and interpreted; no substantive summary is approved."
+  ]
+}

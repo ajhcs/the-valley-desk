@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { publicFeatures } from "../../lib/public-features";
 
 export function SiteFooter() {
   return (
@@ -6,7 +7,11 @@ export function SiteFooter() {
       <nav className="SiteFooter-links">
         <Link to="/news">News</Link>
         <Link to="/events">Events</Link>
-        <Link to="/voices">Voices</Link>
+        {publicFeatures().watch ? <>
+          <Link to="/policy-watch" search={{}}>Policy Watch</Link>
+          <Link to="/technology-watch" search={{}}>Technology Watch</Link>
+        </> : null}
+        {publicFeatures().policyBackground ? <Link to="/policy">Policy background</Link> : null}
         <a href="mailto:leads@thevalleydesk.org">Leads</a>
         <a href="/feed.json">feed.json</a>
         <a href="/feed.xml">feed.xml</a>

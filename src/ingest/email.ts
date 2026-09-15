@@ -5,7 +5,10 @@ import { looksInstructionLike } from "./untrusted-text";
 
 export const EMAIL_DOMAIN = "thevalleydesk.org";
 export const EMAIL_DISCOVERY_VERSION = "email-discovery-v1";
-export const EMAIL_MAX_RAW_BYTES = 512_000;
+export const EMAIL_MAX_RAW_BYTES = 5_000_000;
+export const EMAIL_MAX_PDF_BYTES = 3_000_000;
+export const EMAIL_MAX_PDF_ATTACHMENTS = 3;
+export const EMAIL_PDF_CHUNK_BYTES = 48_000;
 export const EMAIL_MAX_SUBJECT = 300;
 export const EMAIL_MAX_EXCERPT = 1_500;
 export const EMAIL_MAX_URLS = 20;
@@ -19,13 +22,8 @@ export const EMAIL_MAX_HEADER_CHARS = 16_384;
 export const EMAIL_RETENTION_DAYS = 90;
 export const EMAIL_MAX_DOMAIN_PER_DAY = 250;
 export const EMAIL_MAX_TOTAL_PER_DAY = 2_000;
-/**
- * Cloudflare Email Workers expose ordinary MIME headers. This repository does
- * not prove that inbound Authentication-Results / ARC-Authentication-Results
- * are stripped and restamped with a Worker-visible Cloudflare authserv-id.
- * Until that operational prerequisite exists, no header regex authenticates
- * mail and nothing is admitted as review.
- */
+/** Deprecated compatibility constant. Raw MIME authentication headers are
+ * never an authority, regardless of an authserv-id string in configuration. */
 export const EMAIL_TRUSTED_AUTHSERV_ID = "";
 
 export const EMAIL_LOCAL_PARTS = [
@@ -44,6 +42,7 @@ export type EmailTrustState = "untrusted-pointer" | "authenticated-pointer";
 export type EmailHandlerOutcome =
   | "accepted"
   | "duplicate"
+  | "pending_auth"
   | "rejected"
   | "too_large"
   | "unsupported_recipient"
@@ -55,13 +54,38 @@ export type InboundEmailMessage = {
   headers: Headers;
   raw: ReadableStream<Uint8Array>;
   rawSize: number;
+  /** Set only by a trusted runtime adapter, never parsed from MIME headers. */
+  authProvenance?: EmailAuthenticationProvenance;
+  /** Set only by the runtime adapter when Analytics has not indexed the
+   * matching route event yet. The row is quarantined and cannot be verified. */
+  authenticationPending?: boolean;
+  authenticationError?: string;
+  authenticationAttemptedAt?: string;
   setReject(reason: string): void;
 };
 
 export type EmailEnv = {
   VALLEY_DESK_DB: D1DatabaseLike;
-  EMAIL_TRUSTED_AUTHSERV_ID?: string;
 };
+
+export type EmailAuthenticationProvenance = {
+  source: "cloudflare-email-routing-adaptive";
+  receiptId: string;
+  sessionId: string;
+  routeRuleId: string;
+  observedAt: string;
+  envelopeFrom: string;
+  envelopeTo: string;
+  messageId: string;
+  eventType: "incoming";
+  action: string;
+  spf: "pass" | "fail" | "neutral" | "none" | "temperror" | "permerror";
+  dkim: "pass" | "fail" | "neutral" | "none" | "temperror" | "permerror";
+  dmarc: "pass" | "fail" | "bestguesspass" | "none";
+  isSpam: boolean;
+};
+
+export type EmailAuthenticationState = "legacy" | "pending" | "authenticated" | "rejected" | "failed" | "exhausted";
 
 export type AcceptedRecipient = {
   address: string;
@@ -86,6 +110,23 @@ export type EmailDiscoveryRecord = {
   truncated: boolean;
   instructionLike: boolean;
   receivedAt: string;
+  pdfAttachments: EmailPdfAttachment[];
+  authProvenance: EmailAuthenticationProvenance | null;
+  authProvenanceSha256: string | null;
+  authState: EmailAuthenticationState;
+  authAttemptCount: number;
+  authAttemptedAt: string | null;
+  authNextAttemptAt: string | null;
+  authError: string | null;
+};
+
+export type EmailPdfAttachment = {
+  id: string;
+  filename: string;
+  mimeType: "application/pdf";
+  byteCount: number;
+  sha256: string;
+  bytes: Uint8Array;
 };
 
 export type EmailHandlerResult = {
@@ -159,8 +200,9 @@ function concatBytes(chunks: Uint8Array[]) {
   return out;
 }
 
-async function sha256Hex(value: string) {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+async function sha256Hex(value: string | Uint8Array) {
+  const bytes = typeof value === "string" ? new TextEncoder().encode(value) : value;
+  const digest = await crypto.subtle.digest("SHA-256", bytes as BufferSource);
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
@@ -241,15 +283,15 @@ function decodeQuotedPrintable(input: string) {
   return new Uint8Array(bytes);
 }
 
-function decodeBase64Bounded(input: string) {
+function decodeBase64Bounded(input: string, maxBytes = EMAIL_MAX_DECODED_PART) {
   const cleaned = input.replace(/\s+/g, "");
   if (!cleaned) return new Uint8Array();
-  if (cleaned.length > EMAIL_MAX_DECODED_PART * 2) {
-    return decodeBase64Bounded(cleaned.slice(0, EMAIL_MAX_DECODED_PART * 2));
+  if (cleaned.length > maxBytes * 2) {
+    return decodeBase64Bounded(cleaned.slice(0, maxBytes * 2), maxBytes);
   }
   try {
     const binary = atob(cleaned);
-    const max = Math.min(binary.length, EMAIL_MAX_DECODED_PART);
+    const max = Math.min(binary.length, maxBytes);
     const bytes = new Uint8Array(max);
     for (let index = 0; index < max; index += 1) bytes[index] = binary.charCodeAt(index) & 0xff;
     return bytes;
@@ -358,10 +400,25 @@ export function keepHttpsDiscoveryUrl(raw: string) {
   if (parsed.protocol !== "https:") return undefined;
   if (parsed.username || parsed.password) return undefined;
   if (!isPublicHostname(parsed.hostname)) return undefined;
-  // Email links commonly carry bearer-like click, unsubscribe, and tracking
-  // secrets under arbitrary parameter names. The path is the only safe
-  // canonical discovery identity, so discard the entire query string.
+  // Preserve only identifiers with a documented public meaning on exact
+  // official paths. Every other query may contain tracking, unsubscribe, or
+  // bearer-like secrets and is discarded in full.
+  const safeQuery = new URLSearchParams();
+  const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+  if (host === "haponline.org" && parsed.pathname.toLowerCase() === "/resource-center") {
+    const resourceId = parsed.searchParams.get("resourceid");
+    if (resourceId && /^\d{1,10}$/.test(resourceId)) safeQuery.set("resourceid", resourceId);
+  } else if (host === "palegis.us" && parsed.pathname.toLowerCase() === "/house/co-sponsorship/memo") {
+    const memoId = parsed.searchParams.get("memoID") ?? parsed.searchParams.get("memoid");
+    const document = parsed.searchParams.get("document");
+    if (memoId && /^\d{1,10}$/.test(memoId)) safeQuery.set("memoID", memoId);
+    if (document && /^(?:HB|SB)\d{1,5}$/i.test(document)) safeQuery.set("document", document.toUpperCase());
+  } else if (host === "palegis.us" && parsed.pathname.toLowerCase() === "/house/committees/committee-archives/archive-file") {
+    const file = parsed.searchParams.get("file");
+    if (file && /^[A-Za-z0-9][A-Za-z0-9_.-]{0,120}\.pdf$/i.test(file)) safeQuery.set("file", file);
+  }
   parsed.search = "";
+  for (const [key, value] of safeQuery) parsed.searchParams.set(key, value);
   const normalized = normalizeSourceUrl(parsed.toString());
   if (!normalized || !normalized.startsWith("https://") || normalized.length > EMAIL_MAX_URL_LENGTH) return undefined;
   return normalized;
@@ -387,7 +444,20 @@ type MimeExtract = {
   html: string;
   parts: number;
   truncated: boolean;
+  pdfAttachments: Array<{ filename: string; bytes: Uint8Array }>;
 };
+
+function safeAttachmentFilename(value: string) {
+  const name = decodeRfc2047(value).split(/[\\/]/).at(-1)?.replace(/[\u0000-\u001F\u007F]/g, "").trim() ?? "";
+  return (name || "attachment.pdf").slice(0, 180);
+}
+
+function decodeBinaryPart(body: string, encoding: string) {
+  const transfer = encoding.trim().toLowerCase();
+  if (transfer === "base64") return decodeBase64Bounded(body, EMAIL_MAX_PDF_BYTES + 1);
+  if (transfer === "quoted-printable") return decodeQuotedPrintable(body).slice(0, EMAIL_MAX_PDF_BYTES + 1);
+  return new TextEncoder().encode(body).slice(0, EMAIL_MAX_PDF_BYTES + 1);
+}
 
 function parseMimeParts(raw: string, contentType: string, encoding: string, depth: number, state: MimeExtract) {
   if (state.truncated || state.parts >= EMAIL_MAX_MIME_PARTS || depth > EMAIL_MAX_MIME_DEPTH) {
@@ -417,14 +487,32 @@ function parseMimeParts(raw: string, contentType: string, encoding: string, dept
       if (!chunk.trim() || chunk.startsWith("--")) continue;
       const split = chunk.search(/\r?\n\r?\n/);
       const partHeaders = parseHeaderBlock((split >= 0 ? chunk.slice(0, split) : chunk).slice(0, EMAIL_MAX_HEADER_CHARS));
-      const disposition = headerGet(partHeaders, "content-disposition").toLowerCase();
-      if (/\battachment\b/.test(disposition)) {
+      const disposition = headerGet(partHeaders, "content-disposition");
+      const partContentType = headerGet(partHeaders, "content-type") || "text/plain";
+      const partType = mediaType(partContentType);
+      if (/\battachment\b/i.test(disposition) || partType === "application/pdf") {
         state.parts += 1;
+        if (partType === "application/pdf" && state.pdfAttachments.length < EMAIL_MAX_PDF_ATTACHMENTS) {
+          const bytes = decodeBinaryPart(
+            split >= 0 ? chunk.slice(split).replace(/^\r?\n\r?\n/, "") : "",
+            headerGet(partHeaders, "content-transfer-encoding"),
+          );
+          if (bytes.byteLength > 0 && bytes.byteLength <= EMAIL_MAX_PDF_BYTES) {
+            state.pdfAttachments.push({
+              filename: safeAttachmentFilename(headerParam(disposition, "filename") || headerParam(partContentType, "name")),
+              bytes,
+            });
+          } else {
+            state.truncated = true;
+          }
+        } else if (partType === "application/pdf") {
+          state.truncated = true;
+        }
         continue;
       }
       parseMimeParts(
         split >= 0 ? chunk.slice(split).replace(/^\r?\n\r?\n/, "") : "",
-        headerGet(partHeaders, "content-type") || "text/plain",
+        partContentType,
         headerGet(partHeaders, "content-transfer-encoding"),
         depth + 1,
         state,
@@ -454,7 +542,7 @@ function parseMimeMessage(raw: string, fallbackHeaders: Headers): MimeExtract {
   const parsedHeaders = parseHeaderBlock(headerText);
   const contentType = headerGet(parsedHeaders, "content-type") || headerGet(fallbackHeaders, "content-type") || "text/plain";
   const encoding = headerGet(parsedHeaders, "content-transfer-encoding") || headerGet(fallbackHeaders, "content-transfer-encoding");
-  const state: MimeExtract = { text: "", html: "", parts: 0, truncated: headerText.length >= EMAIL_MAX_HEADER_CHARS };
+  const state: MimeExtract = { text: "", html: "", parts: 0, truncated: headerText.length >= EMAIL_MAX_HEADER_CHARS, pdfAttachments: [] };
   parseMimeParts(body, contentType, encoding, 0, state);
   return state;
 }
@@ -486,31 +574,48 @@ function classifyEmail(input: {
   return "unknown";
 }
 
-function trustedAuthservId(value: string): string | undefined {
-  const match = /^\s*([A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*)\b/.exec(value);
-  return match?.[1]?.toLowerCase();
+export function canonicalEmailAuthenticationProvenance(value: EmailAuthenticationProvenance) {
+  return JSON.stringify({
+    source: value.source,
+    receiptId: value.receiptId,
+    sessionId: value.sessionId,
+    routeRuleId: value.routeRuleId.toLowerCase(),
+    observedAt: value.observedAt,
+    envelopeFrom: value.envelopeFrom.toLowerCase(),
+    envelopeTo: value.envelopeTo.toLowerCase(),
+    messageId: value.messageId,
+    eventType: value.eventType,
+    action: value.action,
+    spf: value.spf,
+    dkim: value.dkim,
+    dmarc: value.dmarc,
+    isSpam: value.isSpam,
+  });
 }
 
-function headerHasTrustedCloudflareAuthserv(value: string, expectedAuthservId: string): boolean {
-  return trustedAuthservId(value) === expectedAuthservId.toLowerCase();
+export function emailAuthenticationProvenanceSha256(value: EmailAuthenticationProvenance) {
+  return sha256Hex(canonicalEmailAuthenticationProvenance(value));
 }
 
-function authenticatedEnvelopeSender(headers: Headers, fromDomain: string, expectedAuthservId: string) {
-  if (!expectedAuthservId || !fromDomain || fromDomain === "unknown") return false;
-  const results = [
-    ...headerGet(headers, "authentication-results").split(/\n+/),
-    ...headerGet(headers, "arc-authentication-results").split(/\n+/),
-  ].map((row) => row.trim()).filter(Boolean);
-  const trusted = results.filter((value) => headerHasTrustedCloudflareAuthserv(value, expectedAuthservId));
-  if (trusted.length === 0) return false;
-  const joined = trusted.join(" ").toLowerCase();
-  const escapedDomain = fromDomain.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const exactDomain = `\\s*=?\\s*\"?${escapedDomain}\"?(?=[;,\\s]|$)`;
-  return [
-    new RegExp(`\\bdkim\\s*=\\s*pass\\b[^;,]*(?:header\\.d|d)${exactDomain}`, "i"),
-    new RegExp(`\\bspf\\s*=\\s*pass\\b[^;,]*(?:smtp\\.mailfrom|mailfrom)${exactDomain}`, "i"),
-    new RegExp(`\\bdmarc\\s*=\\s*pass\\b[^;,]*(?:header\\.from|from)${exactDomain}`, "i"),
-  ].some((pattern) => pattern.test(joined));
+export function trustedEmailAuthenticationProvenance(input: {
+  provenance?: EmailAuthenticationProvenance;
+  envelopeFrom: string;
+  envelopeTo: string;
+  messageId: string | null;
+}) {
+  const value = input.provenance;
+  if (!value || value.source !== "cloudflare-email-routing-adaptive") return false;
+  if (!/^[^\s\u0000-\u001F\u007F]{8,200}$/.test(value.receiptId)) return false;
+  if (!/^[^\s\u0000-\u001F\u007F]{4,200}$/.test(value.sessionId)) return false;
+  if (!/^[A-Fa-f0-9-]{16,64}$/.test(value.routeRuleId)) return false;
+  if (!Number.isFinite(Date.parse(value.observedAt)) || !input.messageId) return false;
+  if (extractEmailAddress(value.envelopeFrom) !== extractEmailAddress(input.envelopeFrom)) return false;
+  if (acceptedEmailRecipient(value.envelopeTo)?.address !== acceptedEmailRecipient(input.envelopeTo)?.address) return false;
+  if (value.messageId.trim() !== input.messageId.trim()) return false;
+  if (value.eventType !== "incoming" || !value.action.trim() || value.isSpam) return false;
+  // Cloudflare Email Routing admission requires SPF or DKIM. For editorial
+  // intake we impose the stronger DMARC-pass requirement as well.
+  return value.dmarc === "pass" && (value.spf === "pass" || value.dkim === "pass");
 }
 
 function excerptFrom(text: string, html: string) {
@@ -532,7 +637,7 @@ export async function parseEmailDiscovery(input: {
   raw: string;
   rawSize: number;
   receivedAt?: string;
-  trustedAuthservId?: string;
+  authProvenance?: EmailAuthenticationProvenance;
 }): Promise<EmailDiscoveryRecord | { error: "unsupported_recipient" }> {
   // The platform-provided envelope recipient is the routing authority. A
   // MIME To header is sender-controlled and must never turn an invalid route
@@ -564,15 +669,28 @@ export async function parseEmailDiscovery(input: {
   const instructionLike = looksInstructionLike(subject, excerpt);
   const receivedAt = input.receivedAt || new Date().toISOString();
   const rawDigest = await sha256Hex(input.raw);
-  const senderAuthenticated = authenticatedEnvelopeSender(
-    input.headers,
-    fromDomain,
-    input.trustedAuthservId?.trim() || EMAIL_TRUSTED_AUTHSERV_ID,
-  );
+  const pdfAttachments = await Promise.all(mime.pdfAttachments.map(async (attachment, index) => {
+    const sha256 = await sha256Hex(attachment.bytes);
+    return {
+      id: `${await sha256Hex(`${recipient.address}:${messageId ?? rawDigest}:${sha256}`)}-${index}`,
+      filename: attachment.filename,
+      mimeType: "application/pdf" as const,
+      byteCount: attachment.bytes.byteLength,
+      sha256,
+      bytes: attachment.bytes,
+    };
+  }));
+  const senderAuthenticated = trustedEmailAuthenticationProvenance({
+    provenance: input.authProvenance,
+    envelopeFrom: input.envelopeFrom,
+    envelopeTo: input.envelopeTo,
+    messageId,
+  });
   const trustState: EmailTrustState = senderAuthenticated ? "authenticated-pointer" : "untrusted-pointer";
   const status: EmailDiscoveryStatus = instructionLike || (urls.length === 0 && category === "unknown")
     ? "ignored"
     : "review";
+  const authProvenance = senderAuthenticated ? input.authProvenance! : null;
   return {
     id: await discoveryId(recipient.address, messageId, rawDigest),
     messageId,
@@ -589,6 +707,14 @@ export async function parseEmailDiscovery(input: {
     truncated,
     instructionLike,
     receivedAt,
+    pdfAttachments,
+    authProvenance,
+    authProvenanceSha256: authProvenance ? await emailAuthenticationProvenanceSha256(authProvenance) : null,
+    authState: senderAuthenticated ? "authenticated" : "pending",
+    authAttemptCount: senderAuthenticated ? 1 : 0,
+    authAttemptedAt: senderAuthenticated ? receivedAt : null,
+    authNextAttemptAt: null,
+    authError: null,
   };
 }
 
@@ -616,10 +742,12 @@ export async function persistEmailDiscovery(
     const inserted = await db.prepare(`
       INSERT INTO email_discoveries (
         id, message_id, envelope_to, from_address, from_domain, subject, category, status,
-        trust_state, url_count, urls_json, excerpt, raw_size, truncated, instruction_like, receive_count,
+        trust_state, url_count, urls_json, excerpt, raw_size, wire_size,
+        auth_provenance_json, auth_provenance_sha256, auth_state, auth_attempt_count,
+        auth_attempted_at, auth_next_attempt_at, auth_error, truncated, instruction_like, receive_count,
         first_seen_at, last_seen_at
       )
-      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?
+      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?
       WHERE (SELECT COUNT(*) FROM email_discoveries WHERE first_seen_at >= ?) < ?
         AND (SELECT COUNT(*) FROM email_discoveries WHERE from_domain = ? AND first_seen_at >= ?) < ?
     `).bind(
@@ -635,7 +763,15 @@ export async function persistEmailDiscovery(
       record.urls.length,
       JSON.stringify(record.urls),
       record.excerpt,
+      Math.min(record.rawSize, 512_000),
       record.rawSize,
+      record.authProvenance ? canonicalEmailAuthenticationProvenance(record.authProvenance) : null,
+      record.authProvenanceSha256,
+      record.authState,
+      record.authAttemptCount,
+      record.authAttemptedAt,
+      record.authNextAttemptAt,
+      record.authError,
       record.truncated ? 1 : 0,
       record.instructionLike ? 1 : 0,
       record.receivedAt,
@@ -651,6 +787,137 @@ export async function persistEmailDiscovery(
     if (!isConstraintError(error)) throw error;
     return "duplicate";
   }
+}
+
+export async function persistEmailAuthenticationOutcome(
+  db: D1DatabaseLike,
+  discoveryId: string,
+  outcome: {
+    state: Exclude<EmailAuthenticationState, "legacy" | "pending">;
+    attemptedAt: string;
+    attemptCount: number;
+    nextAttemptAt?: string | null;
+    error?: string;
+    provenance?: EmailAuthenticationProvenance;
+    correlation: { envelopeFrom: string; envelopeTo: string; messageId: string };
+  },
+) {
+  const authenticated = outcome.state === "authenticated" && outcome.provenance
+    && trustedEmailAuthenticationProvenance({
+      provenance: outcome.provenance,
+      envelopeFrom: outcome.correlation.envelopeFrom,
+      envelopeTo: outcome.correlation.envelopeTo,
+      messageId: outcome.correlation.messageId,
+    });
+  if (outcome.state === "authenticated" && !authenticated) {
+    throw new Error("Cannot persist an invalid email authentication receipt");
+  }
+  const provenanceJson = authenticated
+    ? canonicalEmailAuthenticationProvenance(outcome.provenance!)
+    : outcome.provenance ? canonicalEmailAuthenticationProvenance(outcome.provenance) : null;
+  const provenanceSha256 = outcome.provenance
+    ? await emailAuthenticationProvenanceSha256(outcome.provenance)
+    : null;
+  const result = await db.prepare(`
+    UPDATE email_discoveries
+    SET status = ?, trust_state = ?, auth_state = ?, auth_attempt_count = ?,
+        auth_attempted_at = ?, auth_next_attempt_at = ?, auth_error = ?,
+        auth_provenance_json = ?, auth_provenance_sha256 = ?
+    WHERE id = ? AND auth_state IN ('pending', 'failed')
+      AND LOWER(COALESCE(from_address, '')) = LOWER(?)
+      AND LOWER(envelope_to) = LOWER(?)
+      AND COALESCE(message_id, '') = ?
+  `).bind(
+    authenticated ? "review" : "ignored",
+    authenticated ? "authenticated-pointer" : "untrusted-pointer",
+    outcome.state,
+    Math.max(1, Math.trunc(outcome.attemptCount)),
+    outcome.attemptedAt,
+    outcome.nextAttemptAt ?? null,
+    outcome.error?.replace(/[\u0000-\u001F\u007F]/g, " ").slice(0, 500) ?? null,
+    provenanceJson,
+    provenanceSha256,
+    discoveryId,
+    extractEmailAddress(outcome.correlation.envelopeFrom),
+    acceptedEmailRecipient(outcome.correlation.envelopeTo)?.address ?? "",
+    outcome.correlation.messageId,
+  ).run();
+  return changedRows(result);
+}
+
+export async function persistEmailPdfAttachments(db: D1DatabaseLike, record: EmailDiscoveryRecord) {
+  let persisted = 0;
+  for (const attachment of record.pdfAttachments) {
+    const chunks: Uint8Array[] = [];
+    for (let offset = 0; offset < attachment.bytes.byteLength; offset += EMAIL_PDF_CHUNK_BYTES) {
+      chunks.push(attachment.bytes.slice(offset, offset + EMAIL_PDF_CHUNK_BYTES));
+    }
+    const statements = [
+      db.prepare(`INSERT INTO email_pdf_attachments (
+        id, discovery_id, filename, mime_type, byte_count, sha256, extraction_state, created_at
+      ) VALUES (?, ?, ?, 'application/pdf', ?, ?, 'pending', ?)
+      ON CONFLICT(discovery_id, sha256) DO NOTHING`).bind(
+        attachment.id, record.id, attachment.filename, attachment.byteCount, attachment.sha256, record.receivedAt,
+      ),
+      ...chunks.map((chunk, index) => db.prepare(`INSERT INTO email_pdf_attachment_chunks
+        (attachment_id, chunk_index, bytes) VALUES (?, ?, ?)
+        ON CONFLICT(attachment_id, chunk_index) DO NOTHING`).bind(attachment.id, index, chunk)),
+    ];
+    await db.batch(statements);
+    persisted += 1;
+  }
+  return persisted;
+}
+
+export async function persistEmailPdfPageEvidence(
+  db: D1DatabaseLike,
+  attachmentId: string,
+  pages: Array<{ pageNumber: number; text: string; evidenceSpans?: string[] }>,
+  now = new Date(),
+  audit?: { method: string; receiptSha256: string; extractedBy: string },
+) {
+  if (pages.length === 0 || pages.length > 500) throw new Error("PDF extraction must contain 1-500 pages");
+  const normalized = pages.map((page, index) => {
+    if (page.pageNumber !== index + 1 || !page.text.trim() || page.text.length > 32_000) {
+      throw new Error("PDF pages must be contiguous, non-empty, and bounded");
+    }
+    const evidenceSpans = (page.evidenceSpans ?? []).filter((span) => span.length >= 3 && page.text.includes(span)).slice(0, 20);
+    return { ...page, text: page.text.trim(), evidenceSpans };
+  });
+  await db.batch(normalized.map((page) => db.prepare(`INSERT INTO email_pdf_pages
+    (attachment_id, page_number, text, evidence_json) VALUES (?, ?, ?, ?)
+    ON CONFLICT(attachment_id, page_number) DO UPDATE SET text = excluded.text, evidence_json = excluded.evidence_json`
+  ).bind(attachmentId, page.pageNumber, page.text, JSON.stringify(page.evidenceSpans))));
+  await db.prepare(`UPDATE email_pdf_attachments SET extraction_state = 'complete', extraction_error = NULL,
+    page_count = ?, extraction_method = ?, extraction_receipt_sha256 = ?, extracted_by = ?, extracted_at = ?
+    WHERE id = ? AND extraction_state = 'pending'`).bind(
+    normalized.length,
+    audit?.method ?? null,
+    audit?.receiptSha256 ?? null,
+    audit?.extractedBy ?? null,
+    now.toISOString(),
+    attachmentId,
+  ).run();
+}
+
+export async function markEmailPdfExtractionFailed(
+  db: D1DatabaseLike,
+  attachmentId: string,
+  error: unknown,
+  now = new Date(),
+  audit?: { method: string; receiptSha256: string; extractedBy: string },
+) {
+  const message = (error instanceof Error ? error.message : String(error)).replace(/[\u0000-\u001F\u007F]/g, " ").slice(0, 500);
+  await db.prepare(`UPDATE email_pdf_attachments SET extraction_state = 'failed', extraction_error = ?,
+    extraction_method = ?, extraction_receipt_sha256 = ?, extracted_by = ?, extracted_at = ?
+    WHERE id = ? AND extraction_state = 'pending'`).bind(
+    message || "PDF extraction failed",
+    audit?.method ?? null,
+    audit?.receiptSha256 ?? null,
+    audit?.extractedBy ?? null,
+    now.toISOString(),
+    attachmentId,
+  ).run();
 }
 
 export async function cleanupEmailDiscoveries(db: D1DatabaseLike, now = new Date()) {
@@ -751,7 +1018,8 @@ export async function handleInboundEmail(message: InboundEmailMessage, env: Emai
       headers: message.headers,
       raw,
       rawSize: message.rawSize,
-      trustedAuthservId: env.EMAIL_TRUSTED_AUTHSERV_ID,
+      receivedAt: message.authenticationAttemptedAt,
+      authProvenance: message.authProvenance,
     });
     if ("error" in parsed) {
       message.setReject("Mailbox unavailable");
@@ -765,19 +1033,39 @@ export async function handleInboundEmail(message: InboundEmailMessage, env: Emai
       logEmail(result, { recipient: parsed.envelopeTo, fromDomain: parsed.fromDomain });
       return result;
     }
-    const persisted = await persistEmailDiscovery(env.VALLEY_DESK_DB, parsed);
+    if (parsed.trustState !== "authenticated-pointer" && !message.authenticationPending) {
+      message.setReject("Sender authentication required");
+      const result: EmailHandlerResult = { outcome: "rejected", reason: "Sender authentication required" };
+      logEmail(result, { recipient: parsed.envelopeTo, fromDomain: parsed.fromDomain });
+      return result;
+    }
+    const pendingAuthentication = parsed.trustState !== "authenticated-pointer";
+    const attemptedAt = message.authenticationAttemptedAt || new Date().toISOString();
+    const record = pendingAuthentication ? {
+      ...parsed,
+      status: "ignored" as const,
+      authState: "pending" as const,
+      authAttemptCount: 1,
+      authAttemptedAt: attemptedAt,
+      authNextAttemptAt: new Date(Date.parse(attemptedAt) + 5 * 60_000).toISOString(),
+      authError: (message.authenticationError || "Cloudflare authentication event pending").slice(0, 500),
+    } : parsed;
+    const persisted = await persistEmailDiscovery(env.VALLEY_DESK_DB, record);
     if (persisted === "quota_exceeded") {
       message.setReject("Mailbox unavailable");
       const result: EmailHandlerResult = { outcome: "rejected", reason: "Discovery quota exceeded" };
       logEmail(result, { recipient: parsed.envelopeTo, fromDomain: parsed.fromDomain });
       return result;
     }
-    const outcome = persisted;
+    if (persisted === "accepted" && record.pdfAttachments.length > 0) {
+      await persistEmailPdfAttachments(env.VALLEY_DESK_DB, record);
+    }
+    const outcome = pendingAuthentication && persisted === "accepted" ? "pending_auth" : persisted;
     const result: EmailHandlerResult = {
       outcome,
       id: parsed.id,
       category: parsed.category,
-      status: parsed.status,
+      status: record.status,
       urlCount: parsed.urls.length,
       truncated: parsed.truncated,
       instructionLike: parsed.instructionLike,

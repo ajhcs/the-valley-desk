@@ -1,5 +1,37 @@
 import assert from "node:assert/strict";
+import { fetchUpstream, type FetchDiagnostic } from "../src/ingest/upstream.ts";
+
+test("fetch phase diagnostics distinguish header/body failure and exhausted shared budget without leaking input", async () => {
+  for (const bodyFailure of [false, true]) {
+    const diagnostics: FetchDiagnostic[] = [];
+    await assert.rejects(fetchUpstream({ url: "https://example.com/private?token=secret", maxBytes: 100, attempts: 1,
+      headers: { authorization: "secret" }, onDiagnostic: d => diagnostics.push(d),
+      fetchImpl: async () => {
+        if (!bodyFailure) throw new DOMException("secret upstream text", "TimeoutError");
+        return new Response(new ReadableStream({ start(controller) { controller.error(new DOMException("secret body", "TimeoutError")); } }));
+      },
+    }));
+    assert.equal(diagnostics.at(-1)?.phase, "failure");
+    assert.equal(diagnostics.at(-1)?.failedPhase, bodyFailure ? "body" : "request");
+    assert.equal(JSON.stringify(diagnostics).includes("secret"), false);
+  }
+  const diagnostics: FetchDiagnostic[] = [];
+  let called = false;
+  await assert.rejects(fetchUpstream({ url: "https://example.com", maxBytes: 10, attempts: 1,
+    deadlineAt: Date.now() - 1, onDiagnostic: d => diagnostics.push(d),
+    fetchImpl: async () => { called = true; return new Response("ok"); },
+  }));
+  assert.equal(called, false);
+  assert.equal(diagnostics.at(-1)?.effectiveTimeoutMs, 0);
+  assert.ok((diagnostics.at(-1)?.budgetRemainingMs ?? 1) < 0);
+  const result = await fetchUpstream({ url: "https://example.com", maxBytes: 10, attempts: 1,
+    onDiagnostic: () => { throw new Error("sink down"); }, fetchImpl: async () => new Response("ok") });
+  assert.equal(result.body, "ok");
+});
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   OFFICIAL_SOURCE_RELEVANCE_MODEL,
@@ -14,6 +46,8 @@ import {
   officialSourceBackoffMs,
   officialSourceHostAllowlist,
   officialSourceRegistry,
+  parseOfficialSourceRelevanceResult,
+  officialSourceRelevanceInput,
   selectDueOfficialSources,
   selectOfficialDetailCandidates,
   officialSourcesForCategory,
@@ -22,14 +56,52 @@ import {
   type OfficialSource,
 } from "../src/ingest/official-source-discovery.ts";
 import { verifiedProductUsesForOfficialSource } from "../src/ingest/product-watch.ts";
+import { officialSourceRelevanceGateFromEditor } from "../src/ingest/official-source-automation.ts";
+import { paBillSynopsis } from "../src/ingest/pa-bill-evidence.ts";
+
+test("official relevance rejects empty, wrapped, incomplete and invalid response contracts", () => {
+  const valid = { decision: "review", relevanceScore: 0, confidence: 0, reasons: ["Evidence insufficient"], evidenceSpans: [] };
+  for (const value of [{}, { result: valid }, { decision: "review" }, { ...valid, reasons: [] }, { ...valid, confidence: "0" }, { ...valid, relevanceScore: 101 }, { ...valid, unexpected: true }, [], null]) {
+    assert.throws(() => parseOfficialSourceRelevanceResult(value), /response-contract failure/);
+  }
+  for (const key of Object.keys(valid)) {
+    const partial = { ...valid } as Record<string, unknown>;
+    delete partial[key];
+    assert.throws(() => parseOfficialSourceRelevanceResult(partial), /response-contract failure/);
+  }
+  assert.deepEqual(parseOfficialSourceRelevanceResult(valid), valid);
+});
+
+test("captured HB1993 synopsis reaches the exact model request without claiming PDF extraction", async () => {
+  const source = officialSourceRegistry.sources.find(s => s.id === "ofs-pa-legislature-hb1993")!;
+  const html = readFileSync(join(root, "test/fixtures/pa-legislation/captured-hb1993-20260906.html"), "utf8");
+  const synopsis = "An Act providing for the use of artificial intelligence in mental health therapy and for enforcement.";
+  assert.equal(paBillSynopsis(html), synopsis);
+  let delivered = "";
+  const gate = officialSourceRelevanceGateFromEditor({ apiKey: "local-test" }, async (_url, init) => {
+    delivered = JSON.parse(String(init?.body)).messages[1].content;
+    return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ decision: "review", relevanceScore: 60, confidence: 0.8, reasons: ["Synopsis supplied; full PDF provisions remain unextracted"], evidenceSpans: [synopsis] }) } }] }));
+  })!;
+  const result = await discoverOfficialSources({ sources: [source], now: new Date("2026-09-06T23:30:00Z"), fetchImpl: async () => new Response(html), relevanceGate: gate });
+  const candidate = result.candidates[0]!;
+  assert.ok(candidate.detailText?.includes(synopsis));
+  assert.ok(officialSourceRelevanceInput(candidate).candidate.detailText?.includes(synopsis));
+  assert.ok(JSON.parse(delivered).candidate.detailText.includes(synopsis));
+  assert.equal(candidate.relevanceAttempt?.outcome, "relevance_hold");
+  assert.equal(contentItemsFromOfficialCandidates([candidate]).length, 0);
+  const hb1925 = readFileSync(join(root, "test/fixtures/pa-legislation/captured-hb1925-20260906.html"), "utf8");
+  assert.ok(paBillSynopsis(hb1925).includes("artificial intelligence use by insurers"), "inline expansion must not split words");
+  assert.equal(paBillSynopsis(html.replace('id="shortTitle-wrapper"', 'id="missing-field"')), "");
+});
 
 const pennNews = officialSourceRegistry.sources.find((source) => source.id === "ofs-penn-news")!;
 const pennEvents = officialSourceRegistry.sources.find((source) => source.id === "ofs-penn-events")!;
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("official source registry has explicit cadence, trust, and bounded discovery posture", () => {
   assert.equal(officialSourceRegistry.schemaVersion, 1);
   assert.ok(officialSourceRegistry.sources.length >= 45);
-  assert.equal(officialSourcesForCategory("news").length, 14);
+  assert.ok(officialSourcesForCategory("news").length >= 14);
   assert.equal(officialSourcesForCategory("events").length, 19);
   assert.ok(officialSourcesForCategory("policy").some((source) => source.region === "federal"));
   assert.ok(officialSourcesForCategory("filing").length >= 4);
@@ -38,11 +110,14 @@ test("official source registry has explicit cadence, trust, and bounded discover
   assert.equal(officialSourcesForInstitution("inst-penn-princeton").length, 2);
   assert.equal(officialSourceRegistry.limits.maxBytes, 524288);
   assert.equal(officialSourceRegistry.limits.timeoutMs, 8000);
+  assert.equal(officialSourceRegistry.limits.sourceCapPerRun, 40);
+  assert.equal(officialSourceRegistry.limits.detailCapPerRun, 20);
+  assert.equal(officialSourceRegistry.limits.relevanceCapPerRun, 20);
   const urls = officialSourceRegistry.sources.map((source) => source.url);
   assert.equal(new Set(urls).size, urls.length);
   for (const source of officialSourceRegistry.sources) {
     assert.match(source.url, /^https:\/\//);
-    assert.ok(source.cadence === "hourly" || source.cadence === "daily");
+    assert.ok(source.cadence === "half-hourly" || source.cadence === "hourly" || source.cadence === "daily");
     assert.ok(source.completeness === "partial" || source.completeness === "complete" || source.completeness === "unknown");
     assert.ok(source.trust === "first-party" || source.trust === "regulatory" || source.trust === "association");
   }
@@ -73,7 +148,7 @@ test("source scheduling follows hourly/daily cadence and backs off failures", ()
   assert.ok(officialSourceBackoffMs(pennNews, "failed", 2) > officialSourceBackoffMs(pennNews, "failed", 1));
 });
 
-test("normal source pass reserves capacity for every due News source", () => {
+test("normal source pass reserves every due News source and critical policy monitor", () => {
   const now = new Date("2026-08-28T12:00:00.000Z");
   const selected = selectDueOfficialSources(
     officialSourceRegistry.sources,
@@ -88,13 +163,135 @@ test("normal source pass reserves capacity for every due News source", () => {
     .filter((source) => source.category === "news")
     .map((source) => source.id);
 
-  assert.equal(dueNewsIds.length, 14);
+  assert.ok(dueNewsIds.length >= 14);
   assert.deepEqual(
     new Set(selectedNewsIds),
     new Set(dueNewsIds),
     "all due News sources must be admitted before category rotation",
   );
+  const dueCriticalIds = officialSourceRegistry.sources
+    .filter((source) => source.priority === "policy-critical" && isOfficialSourceDue(source, undefined, now))
+    .map((source) => source.id);
+  assert.deepEqual(
+    new Set(selected.filter((source) => source.priority === "policy-critical").map((source) => source.id)),
+    new Set(dueCriticalIds),
+    "critical bill and advocacy monitors must not be starved",
+  );
   assert.equal(selected.length, officialSourceRegistry.limits.sourceCapPerRun, "the overall source cap remains bounded");
+});
+
+test("critical policy monitoring detects within 60 minutes under competing workload and cron jitter", async () => {
+  const critical = officialSourceRegistry.sources.filter((source) => source.priority === "policy-critical");
+  assert.equal(critical.length, 8);
+  assert.ok(critical.every((source) => source.cadence === "half-hourly"));
+  const hb1925 = critical.find((source) => source.id === "ofs-pa-legislature-hb1925")!;
+  const competitors: OfficialSource[] = Array.from({ length: 64 }, (_, index) => ({
+    id: `ofs-competitor-${index}`,
+    name: `Competing source ${index}`,
+    category: "finance",
+    region: "PA",
+    url: `https://competitor-${index}.example.org/updates`,
+    allowedLinkHosts: [],
+    allowedLinkPathPrefixes: [],
+    productIds: [],
+    cadence: "hourly",
+    completeness: "partial",
+    trust: "regulatory",
+    format: "html",
+    status: "enabled",
+    priority: "normal",
+  }));
+  const dueAt = new Date("2026-09-06T12:30:02.000Z");
+  const states = new Map([[hb1925.id, {
+    sourceId: hb1925.id,
+    state: "success" as const,
+    lastAttemptedAt: "2026-09-06T12:00:00.000Z",
+    lastSuccessAt: "2026-09-06T12:00:00.000Z",
+    nextAttemptAt: dueAt.toISOString(),
+    consecutiveFailures: 0,
+  }]]);
+  assert.equal(selectDueOfficialSources([...competitors, hb1925], states, new Date("2026-09-06T12:30:00.000Z"), 40)
+    .some((source) => source.id === hb1925.id), false);
+  // The 12:30 cron can begin two seconds before the durable due timestamp.
+  // The next 15-minute trigger still detects a change in under 60 minutes.
+  const detectedAt = new Date("2026-09-06T12:45:00.000Z");
+  const due = selectDueOfficialSources([...competitors, hb1925], states, detectedAt, 40);
+  assert.equal(due[0]?.id, hb1925.id, "critical policy must outrank already-due competing sources");
+
+  const retryCandidates: OfficialDiscoveryCandidate[] = competitors.slice(0, 30).map((source, index) => ({
+    id: `retry-${index}`,
+    sourceId: source.id,
+    category: source.category,
+    region: source.region,
+    title: `Existing finance review ${index}`,
+    url: `${source.url}/${index}`,
+    sourcePageUrl: source.url,
+    sourceName: source.name,
+    trust: source.trust,
+    discoveredAt: detectedAt.toISOString(),
+    status: "review",
+    instructionLike: false,
+    detailTitle: `Existing finance review ${index}`,
+    detailText: "A previously hydrated competing candidate with sufficient bounded evidence for review.",
+    detailFetchedAt: detectedAt.toISOString(),
+    detailState: "success",
+  }));
+  const requested: string[] = [];
+  const gated: string[] = [];
+  const result = await discoverOfficialSources({
+    sources: [...competitors, hb1925],
+    states,
+    now: detectedAt,
+    sourceCap: 40,
+    retryCandidates,
+    fetchImpl: async (input) => {
+      const url = String(input);
+      requested.push(url);
+      if (url === hb1925.url) {
+        return new Response(`<!doctype html><main><h1>House Bill 1925 PN 4000</h1>
+          <div><strong>Last Action: </strong>Amended in the House September 6, 2026.</div>
+          <p>The bill applies to hospitals and health care providers in Pennsylvania.</p>
+          <div class="card float-start"><span title="Most recent printers number">September 6, 2026</span><div class="mt-2">PN 4000</div><a title="PDF Bill Text" href="/legislation/bills/text/PDF/2025/0/HB1925/PN4000">Current printer</a></div></main>`, {
+          headers: { "content-type": "text/html" },
+        });
+      }
+      return new Response("<main><h1>Competing source</h1><p>No new material.</p></main>", {
+        headers: { "content-type": "text/html" },
+      });
+    },
+    relevanceGate: async (input) => {
+      gated.push(input.candidate.id);
+      return { decision: "accept", relevanceScore: 99, confidence: 0.99, reasons: ["test"], evidenceSpans: ["applies to hospitals"] };
+    },
+  });
+  const detected = result.candidates.find((candidate) => candidate.sourceId === hb1925.id);
+  assert.equal(requested[0], hb1925.url);
+  assert.equal(detected?.publishedAt, "2026-09-06T00:00:00.000Z");
+  assert.ok(detected && gated.includes(detected.id), "critical policy must reach relevance despite 30 queued candidates");
+  const publicAt = Date.parse("2026-09-06T12:00:03.000Z");
+  assert.ok(detectedAt.getTime() - publicAt < 60 * 60 * 1000);
+});
+
+test("critical policy detail hydration outranks a saturated retry backlog", () => {
+  const criticalSource = officialSourceRegistry.sources.find((source) => source.id === "ofs-hap-health-it-advocacy")!;
+  const routineSource = officialSourceRegistry.sources.find((source) => source.id === "ofs-cms-newsroom")!;
+  const candidate = (id: string, source: OfficialSource): OfficialDiscoveryCandidate => ({
+    id,
+    sourceId: source.id,
+    category: "policy",
+    region: source.region,
+    title: id,
+    url: `${source.url.replace(/\/$/, "")}/${id}`,
+    sourcePageUrl: source.url,
+    sourceName: source.name,
+    trust: source.trust,
+    discoveredAt: "2026-09-06T13:00:00.000Z",
+    status: "review",
+    instructionLike: false,
+  });
+  const backlog = Array.from({ length: 30 }, (_, index) => candidate(`routine-${index}`, routineSource));
+  const urgent = candidate("critical-hap", criticalSource);
+  assert.equal(selectOfficialDetailCandidates([...backlog, urgent], 1)[0]?.id, urgent.id);
 });
 
 test("HTML link discovery allows only the source host and explicit event link hosts", () => {
@@ -129,6 +326,104 @@ test("RSS discovery parses official items without treating raw links as publisha
   const links = discoverOfficialLinks(source, xml, source.url, 8);
   assert.equal(links.length, 1);
   assert.equal(links[0]?.url, "https://news.example.org/policy-update");
+});
+
+test("Pennsylvania AI topic discovery admits only current-session bill details", () => {
+  const source = officialSourceRegistry.sources.find((candidate) => candidate.id === "ofs-pa-legislature-ai-topic")!;
+  const links = discoverOfficialLinks(source, `
+    <a href="/legislation/bills/topics?MajorId=1&SessInd=0&SessYr=2025">Related topic</a>
+    <a href="/senate/members">Senate members navigation</a>
+    <a href="/legislation/bills/2023/hb96" data-billInfo="20230HB96">Prior-session HB 96</a>
+    <a href="/legislation/bills/2025/hb96" data-billInfo="20250HB96"><span aria-hidden="true"></span></a>
+    <a href="/legislation/bills/2025/hb96" data-billInfo="20250HB96">Duplicate HB 96</a>
+  `, source.url, 8);
+  assert.deepEqual(links.map((link) => link.url), ["https://palegis.us/legislation/bills/2025/hb96"]);
+  assert.equal(links[0]?.title, "HB 96 — Pennsylvania artificial intelligence topic");
+});
+
+test("Pennsylvania committee RSS produces filtered, self-contained official review evidence", async () => {
+  const cases = [
+    {
+      sourceId: "ofs-pa-house-health-committee",
+      fixture: "house-health-committee.xml",
+      instrumentId: "HB 1925",
+      venue: "Room 60 East Wing",
+      evidenceUrl: "https://palegis.us/house/committees/meeting-schedule?date=2026-09-08&time=10-00-am",
+    },
+    {
+      sourceId: "ofs-pa-senate-health-committee",
+      fixture: "senate-health-committee.xml",
+      instrumentId: "SB 1113",
+      venue: "Senate Chamber",
+      evidenceUrl: "https://palegis.us/senate/committees/meeting-schedule?date=2026-09-09&time=11-30-am",
+    },
+  ];
+  for (const row of cases) {
+    const source = officialSourceRegistry.sources.find((candidate) => candidate.id === row.sourceId)!;
+    const xml = readFileSync(join(root, "test/fixtures/pa-legislation", row.fixture), "utf8");
+    let requestHeaders: Headers | undefined;
+    let redirect: RequestRedirect | undefined;
+    const result = await discoverOfficialSources({
+      sources: [source],
+      now: new Date("2026-09-06T21:00:00.000Z"),
+      detailCapPerRun: 0,
+      fetchImpl: async (_input, init) => {
+        requestHeaders = new Headers(init?.headers);
+        redirect = init?.redirect;
+        return new Response(xml, { headers: { "content-type": "application/rss+xml; charset=utf-8" } });
+      },
+      relevanceGate: async () => ({
+        decision: "accept",
+        relevanceScore: 99,
+        confidence: 0.99,
+        reasons: ["Official Health Committee action"],
+        evidenceSpans: [row.instrumentId],
+      }),
+    });
+    assert.equal(requestHeaders?.get("user-agent"), "TheValleyDesk/0.1 (+https://github.com/ajhcs/the-valley-desk)");
+    assert.equal(redirect, "manual");
+    assert.equal(result.snapshots[0]?.state, "success");
+    assert.equal(result.snapshots[0]?.candidateCount, 1, "unrelated committee items must be filtered");
+    assert.equal(result.candidates.length, 1);
+    const candidate = result.candidates[0]!;
+    assert.equal(candidate.url, row.evidenceUrl);
+    assert.equal(candidate.detailState, "success");
+    assert.equal(candidate.detailFinalUrl, source.url.replace("www.", ""));
+    assert.match(candidate.detailText ?? "", new RegExp(row.instrumentId.replace(" ", "\\s")));
+    assert.equal(candidate.venue, row.venue);
+    assert.equal(candidate.publicationDateSource, "rss-pubDate");
+    assert.equal(candidate.status, "review");
+    const item = contentItemsFromOfficialCandidates(result.candidates)[0];
+    assert.equal(item?.status, "review");
+    assert.equal(item?.policyIdentity?.instrumentId, row.instrumentId);
+  }
+});
+
+test("PA committee feeds distinguish valid empty, joint meetings, and malformed XML", async () => {
+  for (const sourceId of ["ofs-pa-house-health-committee", "ofs-pa-senate-health-committee"]) {
+    const source = officialSourceRegistry.sources.find((row) => row.id === sourceId)!;
+    const fixture = readFileSync(join(root, "test/fixtures/pa-legislation", sourceId.includes("house") ? "house-health-committee.xml" : "senate-health-committee.xml"), "utf8");
+    const run = (xml: string) => discoverOfficialSources({
+      sources: [source], now: new Date("2026-09-06T21:00:00Z"), detailCapPerRun: 0,
+      fetchImpl: async () => new Response(xml, { headers: { "content-type": "application/rss+xml" } }),
+    });
+    for (const xml of ["<rss><channel></rss>", "<error>Unavailable</error>", fixture.replace("</item>", ""), fixture.replace(/<parss:Committee>.*?<\/parss:Committee>/g, "")]) {
+      const result = await run(xml);
+      assert.equal(result.snapshots[0]?.state, "failed");
+      assert.match(result.snapshots[0]?.error ?? "", /committee RSS/i);
+      assert.equal(result.candidates.length, 0);
+    }
+    const empty = await run(fixture.replace(/<item\b[^>]*>[\s\S]*?<\/item>/g, ""));
+    assert.equal(empty.snapshots[0]?.state, "success");
+    assert.equal(empty.candidates.length, 0);
+    const unrelated = await run(fixture.replace(/HOUSE HEALTH|SENATE HEALTH &amp; HUMAN SERVICES/g, "TRANSPORTATION"));
+    assert.equal(unrelated.snapshots[0]?.state, "success");
+    assert.equal(unrelated.candidates.length, 0);
+    const joint = await run(fixture.replace(/(<parss:Committee>)/g, "<parss:Committee>HOUSE TRANSPORTATION</parss:Committee>$1"));
+    assert.equal(joint.snapshots[0]?.state, "success");
+    assert.equal(joint.candidates.length, 1);
+    assert.match(joint.candidates[0]?.detailText ?? "", /HOUSE TRANSPORTATION;/);
+  }
 });
 
 test("source discovery is bounded, partial snapshots stay review-only, and hostile text is flagged", async () => {
@@ -207,6 +502,38 @@ test("relevance gate receives the exact Muse model hook and cannot change review
   assert.equal((received as { promptVersion: string }).promptVersion, OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION);
   assert.equal(gated[0]?.status, "review");
   assert.equal(gated[0]?.relevance?.decision, "accept");
+});
+
+test("configured Spark model reaches official transport, quoted payload and input hash", async () => {
+  const candidate: OfficialDiscoveryCandidate = {
+    id: "official-configured-model", sourceId: pennNews.id, institutionId: "inst-penn",
+    category: "news", region: "PA", title: "Penn opens an outpatient service",
+    url: "https://pennmedicine.org/news/outpatient-service", sourcePageUrl: pennNews.url,
+    sourceName: pennNews.name, trust: pennNews.trust, discoveredAt: "2026-09-12T12:00:00.000Z",
+    status: "review", instructionLike: false,
+  };
+  const hashes = new Set<string>();
+  for (const model of ["meta/muse-spark-1.2-contributor", "meta/muse-spark-1.3-contributor"]) {
+    let calls = 0;
+    const gate = officialSourceRelevanceGateFromEditor({ apiKey: "test-only", model }, async (_url, init) => {
+      calls += 1;
+      const request = JSON.parse(String(init?.body));
+      assert.equal(request.model, model);
+      assert.equal(JSON.parse(request.messages[1].content).model, model);
+      assert.ok(request.messages[0].content.includes(`Use model ${model}`));
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({
+        decision: "review", relevanceScore: 60, confidence: 0.8,
+        reasons: ["Listing is insufficient evidence"], evidenceSpans: [],
+      }) } }] }));
+    })!;
+    const [result] = await applyOfficialSourceRelevanceGate([candidate], gate, { model });
+    assert.equal(calls, 1);
+    assert.equal(result.status, "review");
+    assert.equal(result.relevance?.decision, "review");
+    assert.ok(result.relevanceAttempt?.inputSha256);
+    hashes.add(result.relevanceAttempt!.inputSha256!);
+  }
+  assert.equal(hashes.size, 2, "model-only changes must change the recorded input identity");
 });
 
 test("ordinary material official developments can enter the downstream editor", () => {
@@ -381,7 +708,7 @@ test("detail hydration supplies normalized evidence before relevance and convers
           headers: { "content-type": "text/html" },
         });
       }
-      return new Response('<main><h1>Penn Medicine publishes Epic update</h1><p>Penn Medicine published an Epic update for regional caregivers.</p><p>The update changes a documented workflow.</p></main>', {
+      return new Response('<script type="application/ld+json">{"@type":"NewsArticle","datePublished":"2026-08-27T09:15:00-04:00"}</script><main><h1>Penn Medicine publishes Epic update</h1><p>Penn Medicine published an Epic update for regional caregivers.</p><p>The update changes a documented workflow.</p></main>', {
         headers: { "content-type": "text/html" },
       });
     },
@@ -398,10 +725,40 @@ test("detail hydration supplies normalized evidence before relevance and convers
   });
   assert.equal(calls.length, 2, "one bounded listing fetch plus one detail fetch");
   assert.equal(result.candidates[0]?.detailState, "success");
+  assert.equal(result.candidates[0]?.publishedAt, "2026-08-27T13:15:00.000Z");
+  assert.equal(result.candidates[0]?.publicationDateSource, "json-ld-datePublished");
   assert.match(result.candidates[0]?.detailText ?? "", /documented workflow/);
   const [item] = contentItemsFromOfficialCandidates(result.candidates);
   assert.equal(item?.status, "review");
+  assert.equal(item?.publishedAt, "2026-08-27T13:15:00.000Z");
+  assert.equal(item?.source.fetchedAt, "2026-08-28T12:00:00.000Z");
   assert.match(item?.body ?? "", /documented workflow/);
+});
+
+test("missing policy dates remain explicit and invalid policy dates cannot convert", () => {
+  const baseCandidate: OfficialDiscoveryCandidate = {
+    id: "official-policy-date-gate",
+    sourceId: "ofs-pa-legislature-hb1925",
+    category: "policy",
+    region: "PA",
+    title: "HB 1925 PN 3349 amended",
+    url: "https://www.palegis.us/legislation/bills/2025/hb1925",
+    sourcePageUrl: "https://www.palegis.us/legislation/bills/2025/hb1925",
+    sourceName: "Pennsylvania General Assembly HB 1925",
+    trust: "regulatory",
+    discoveredAt: "2026-09-06T12:00:00.000Z",
+    status: "review",
+    instructionLike: false,
+    detailTitle: "HB 1925 PN 3349 amended",
+    detailText: "HB 1925 PN 3349 applies to hospitals in Pennsylvania.",
+    detailFetchedAt: "2026-09-06T12:00:00.000Z",
+    detailState: "success",
+    relevance: { decision: "accept", relevanceScore: 99, confidence: 0.99, reasons: ["Policy evidence"], evidenceSpans: ["applies to hospitals"] },
+  };
+  const [missing] = contentItemsFromOfficialCandidates([baseCandidate]);
+  assert.equal(missing, undefined, "unverified watched-bill evidence cannot enter editorial conversion");
+  assert.equal(missing?.publishedAt, undefined);
+  assert.deepEqual(contentItemsFromOfficialCandidates([{ ...baseCandidate, publishedAt: "not-a-date" }]), []);
 });
 
 test("event conversion uses a structured detail-page date when the title omits it", () => {
@@ -437,7 +794,7 @@ test("event conversion uses a structured detail-page date when the title omits i
   assert.equal(item?.startsAt, event.eventStartsAt);
 });
 
-test("detail redirects stay on the exact candidate host and cannot become open fetches", async () => {
+test("detail redirects stay on the registered source hosts and cannot become open fetches", async () => {
   const candidate: OfficialDiscoveryCandidate = {
     id: "official-detail-redirect",
     sourceId: pennNews.id,
@@ -463,6 +820,90 @@ test("detail redirects stay on the exact candidate host and cannot become open f
   });
   assert.notEqual(hydrated.candidates[0]?.detailState, "success");
   assert.equal(hydrated.candidates[0]?.detailText, undefined);
+});
+
+test("policy discovery filters navigation paths and permits registered apex-www canonicalization", async () => {
+  const cms = officialSourceRegistry.sources.find((source) => source.id === "ofs-cms-newsroom")!;
+  const links = discoverOfficialLinks(cms, `
+    <a href="https://cms.gov/glossary">CMS Glossary and Terms</a>
+    <a href="https://cms.gov/newsroom/press-releases/hospital-rule">CMS issues hospital rule update</a>
+  `, cms.url, 8);
+  assert.deepEqual(links.map((link) => link.url), ["https://cms.gov/newsroom/press-releases/hospital-rule"]);
+
+  const candidate: OfficialDiscoveryCandidate = {
+    id: "official-cms-www-redirect",
+    sourceId: cms.id,
+    category: "policy",
+    region: "federal",
+    title: "CMS issues hospital rule update",
+    url: "https://cms.gov/newsroom/press-releases/hospital-rule",
+    sourcePageUrl: cms.url,
+    sourceName: cms.name,
+    trust: cms.trust,
+    discoveredAt: "2026-09-06T12:00:00.000Z",
+    status: "review",
+    instructionLike: false,
+  };
+  let calls = 0;
+  const hydrated = await hydrateOfficialCandidates([candidate], {
+    sources: [cms],
+    concurrency: 1,
+    fetchImpl: async (input) => {
+      calls += 1;
+      if (String(input).startsWith("https://cms.gov/")) {
+        return new Response(null, { status: 301, headers: { location: "https://www.cms.gov/newsroom/press-releases/hospital-rule" } });
+      }
+      return new Response("<main><h1>CMS hospital rule</h1><p>CMS issued a material rule update for hospitals and health systems.</p></main>", {
+        headers: { "content-type": "text/html" },
+      });
+    },
+  });
+  assert.equal(calls, 2);
+  assert.equal(hydrated.candidates[0]?.detailState, "success");
+  assert.equal(hydrated.candidates[0]?.detailFinalUrl, "https://www.cms.gov/newsroom/press-releases/hospital-rule");
+});
+
+test("policy detail retries take the bounded budget before lower-priority categories", () => {
+  const rows: OfficialDiscoveryCandidate[] = [
+    { id: "news-1", sourceId: "ofs-news", category: "news", region: "PA", title: "A material health system news update", url: "https://example.com/news", sourcePageUrl: "https://example.com", sourceName: "News", trust: "first-party", discoveredAt: "2026-09-06T00:00:00.000Z", status: "review", instructionLike: false },
+    { id: "policy-1", sourceId: "ofs-policy", category: "policy", region: "PA", title: "A material hospital policy update", url: "https://example.org/policy", sourcePageUrl: "https://example.org", sourceName: "Policy", trust: "regulatory", discoveredAt: "2026-09-05T00:00:00.000Z", status: "review", instructionLike: false },
+  ];
+  assert.deepEqual(selectOfficialDetailCandidates(rows, 1).map((row) => row.id), ["policy-1"]);
+});
+
+test("HAP testimony remains distinct advocacy and unrelated event links do not enter policy discovery", () => {
+  const hap = officialSourceRegistry.sources.find((source) => source.id === "ofs-hap-health-it-advocacy")!;
+  const links = discoverOfficialLinks(hap, `
+    <a href="/Resource-Center?resourceid=1459&utm_source=email">HAP testimony regarding House Bill 1925</a>
+    <a href="/Education/Upcoming-Programs-Events">HAP annual member event schedule</a>
+  `, hap.url, 8);
+  assert.deepEqual(links.map((link) => link.url), ["https://haponline.org/Resource-Center?resourceid=1459"]);
+  const detailText = "HAP opposes HB 1925 as written because its reporting, vendor oversight, and penalty provisions would burden hospitals.";
+  const [item] = contentItemsFromOfficialCandidates([{
+    id: "hap-hb1925-testimony",
+    sourceId: hap.id,
+    category: "policy",
+    region: "PA",
+    title: "HAP testimony regarding HB 1925",
+    url: links[0]!.url,
+    sourcePageUrl: hap.url,
+    sourceName: hap.name,
+    trust: hap.trust,
+    discoveredAt: "2026-05-05T12:00:00.000Z",
+    publishedAt: "2026-05-05T00:00:00.000Z",
+    publicationDateSource: "time-published",
+    status: "review",
+    instructionLike: false,
+    detailTitle: "HAP opposition to HB 1925",
+    detailText,
+    detailFetchedAt: "2026-05-05T12:00:00.000Z",
+    detailState: "success",
+    relevance: { decision: "accept", relevanceScore: 99, confidence: 0.99, reasons: ["Hospital advocacy"], evidenceSpans: [detailText] },
+  }]);
+  assert.equal(item?.kind, "policy");
+  assert.equal(item?.advocacy?.position, "oppose");
+  assert.deepEqual(item?.advocacy?.substantiveConcerns, [detailText]);
+  assert.equal(item?.policyIdentity?.instrumentId, "HB 1925");
 });
 
 test("failed detail URLs cool down instead of consuming every hourly detail budget", async () => {

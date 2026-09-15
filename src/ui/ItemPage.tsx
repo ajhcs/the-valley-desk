@@ -11,6 +11,7 @@ import { eventFormatLabel, formatDate, itemFreshness } from "../lib/format";
 import { chipKind, itemHref, kindChip } from "../lib/kind";
 import { relatedItems } from "../lib/related";
 import { voiceRegisterLabel } from "../lib/voiceCopy";
+import { cleanEventSourceMarkup } from "../lib/sourceMarkup";
 import { ItemJsonLd } from "./ItemJsonLd";
 import { ItemEntityLinks, ItemFactScope, itemAllowedOrgIds, itemFactHits } from "./ItemFacts";
 import { RegisterLink } from "./RegisterLink";
@@ -116,7 +117,7 @@ export function ItemPage({
           </section>
         ) : null}
         <p className="mt-6 whitespace-pre-wrap ItemPage-body">
-          {item.body}
+          {event ? cleanEventSourceMarkup(item.body) : item.body}
         </p>
         {cites.length > 0 ? (
           <section className="mt-6 ItemPage-sources">

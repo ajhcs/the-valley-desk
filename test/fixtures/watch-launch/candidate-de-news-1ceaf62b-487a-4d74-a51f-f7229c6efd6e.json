@@ -1,0 +1,14 @@
+{
+  "sourceId": "candidate-de-news",
+  "outcome": "access-held",
+  "access": {
+    "mode": "robots-check",
+    "robotsSha256": "787e096e3483e68c9c30d6e0506074f5cd23d7c8436374cc66710dcdcd95fd34",
+    "robotsStatus": 200,
+    "robotsText": "User-agent: *\nDisallow: /wp-admin",
+    "disposition": "robots-review-required"
+  },
+  "packet": null,
+  "preparedAt": "2026-09-12T17:22:41.074Z",
+  "bodyFile": null
+}

@@ -271,11 +271,26 @@ export function evaluateCandidate(
   ) {
     return review("stale-source-publication", ["Source item is older than the 45-day automatic-publication window"]);
   }
-  if (item.orgs.length === 0) return review("local-org-required", ["No verified regional health-system relationship"]);
+  const sourceEvidence = `${item.title}\n${item.dek}\n${item.body}`;
+  const policyApplicability = item.kind === "policy" ? item.applicability : undefined;
+  const policyJurisdiction = item.kind === "policy" ? item.jurisdiction : undefined;
+  const policyAppliesRegionally = Boolean(
+    policyApplicability
+    && policyApplicability.jurisdiction === policyJurisdiction
+    && policyApplicability.sourceUrl === item.source.url
+    && policyApplicability.regulatedEntityTypes.some((entity) => (
+      entity === "hospital" || entity === "health-system" || entity === "health-care-facility" || entity === "health-care-provider"
+    ))
+    && policyApplicability.evidenceSpans.every((span) => sourceEvidence.includes(span)),
+  );
+  if (item.orgs.length === 0 && !policyAppliesRegionally) {
+    return review("local-org-required", ["No verified regional health-system relationship or literal policy applicability evidence"]);
+  }
   if (!enrichment) return review("model-evidence-required", ["Model evidence was unavailable"]);
   if (
-    enrichment.affectedOrgIds.length === 0
-    || !enrichment.affectedOrgIds.some((id) => item.orgs.includes(id))
+    !policyAppliesRegionally
+    && (enrichment.affectedOrgIds.length === 0
+      || !enrichment.affectedOrgIds.some((id) => item.orgs.includes(id)))
   ) {
     return review("affected-org-evidence-required", ["Model evidence did not match a verified organization on the item"]);
   }

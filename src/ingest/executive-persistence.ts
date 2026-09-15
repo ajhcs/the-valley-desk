@@ -443,6 +443,13 @@ function sourceCanEnrollExecutive(source: CoverageSource) {
   return source.kind === "leadership-page" || source.kind === "about-page";
 }
 
+/** Only an institution-wide leadership roster can prove that a person is
+ * absent. A person bio, newsroom bio, or generic about page can corroborate a
+ * presence but its omission of another executive has no evidentiary meaning. */
+function sourceCanEstablishRosterAbsence(source: CoverageSource) {
+  return source.kind === "leadership-page";
+}
+
 function parseStringArray(raw: string | null | undefined) {
   if (!raw) return [];
   try {
@@ -676,12 +683,14 @@ async function enrollExecutiveDiscovery(
 function isOfficialEvidenceUrl(source: CoverageSource, finalUrl: string) {
   try {
     const evidence = new URL(finalUrl);
-    const sourceHost = source.host.replace(/^www\./, "").replace(/\.$/, "").toLowerCase();
     const evidenceHost = evidence.hostname.replace(/^www\./, "").replace(/\.$/, "").toLowerCase();
+    const sourceHosts = new Set([source.url, ...(source.alternateUrls ?? [])].map((url) => (
+      new URL(url).hostname.replace(/^www\./, "").replace(/\.$/, "").toLowerCase()
+    )));
     return evidence.protocol === "https:"
       && !evidence.username
       && !evidence.password
-      && evidenceHost === sourceHost;
+      && sourceHosts.has(evidenceHost);
   } catch {
     return false;
   }
@@ -762,6 +771,7 @@ export type AutonomousLeadershipVerificationResult = {
   verifiedRoles: number;
   unresolved: number;
   conflicts: number;
+  identityFailures: Array<{ personId: string; institutionId: string; reason: string }>;
   editorialCandidates: ContentItem[];
 };
 
@@ -869,6 +879,7 @@ export async function autonomouslyVerifyLeadership(
   let verifiedRoles = 0;
   let unresolved = 0;
   let conflicts = 0;
+  const identityFailures: AutonomousLeadershipVerificationResult["identityFailures"] = [];
   const verifiedPeople = new Set<string>();
   for (const candidate of candidates.values()) {
     const discovered = !candidate.personId;
@@ -1022,11 +1033,12 @@ export async function autonomouslyVerifyLeadership(
   // registered official sources. A source must have been the role's source
   // when known; this avoids auto-closing a role from an unrelated roster.
   const roleIdentityRows = await db.prepare(`
-    SELECT DISTINCT r.person_id, p.normalized_name
+    SELECT DISTINCT r.person_id, p.normalized_name, p.display_name
     FROM executive_roles r
     JOIN covered_people p ON p.id = r.person_id
-  `).all<{ person_id: string; normalized_name: string }>();
+  `).all<{ person_id: string; normalized_name: string; display_name: string }>();
   const storedNames = new Map((roleIdentityRows.results ?? []).map((row) => [row.person_id, row.normalized_name]));
+  const storedDisplayNames = new Map((roleIdentityRows.results ?? []).map((row) => [row.person_id, row.display_name]));
   const currentRoles = await readExecutiveRoles(db);
   for (const role of currentRoles) {
     if (
@@ -1037,7 +1049,8 @@ export async function autonomouslyVerifyLeadership(
     const absences: VerifiedLeadershipEvidence[] = [];
     for (const [sourceId, history] of bySource) {
       const source = sourceById(sourceId, pack);
-      if (!source || history.length < 2 || !sourceIsOfficialAndMonitorable(source)) continue;
+      if (!source || history.length < 2 || !sourceIsOfficialAndMonitorable(source)
+        || !sourceCanEstablishRosterAbsence(source)) continue;
       if (!history.slice(0, 2).every((snapshot) => completeSnapshotLeaders(snapshot).length > 0)) continue;
       if (history.slice(0, 2).some((snapshot) => leaderForPerson(snapshot, role.personId, pack, storedNames)?.normalizedTitle === role.normalizedTitle)) continue;
       if (role.sourceId && role.sourceId !== sourceId && !source.monitor) continue;
@@ -1057,6 +1070,34 @@ export async function autonomouslyVerifyLeadership(
     if (!selected) continue;
     const effectiveTo = selected.latest.fetched_at;
     if (Date.parse(effectiveTo) <= Date.parse(role.effectiveFrom)) continue;
+    const displayName = storedDisplayNames.get(role.personId);
+    if (!displayName) {
+      unresolved += 1;
+      identityFailures.push({
+        personId: role.personId,
+        institutionId: role.institutionId,
+        reason: "Stored executive identity has no display name",
+      });
+      continue;
+    }
+    let editorialCandidate: ContentItem;
+    try {
+      // Build all identity-dependent reader copy before closing the durable
+      // role. A malformed identity can no longer leave a partially applied
+      // departure behind.
+      editorialCandidate = executiveEditorialCandidate(
+        "departure", role.personId, role.institutionId, role.title,
+        selected, pack, now, displayName,
+      );
+    } catch (error) {
+      unresolved += 1;
+      identityFailures.push({
+        personId: role.personId,
+        institutionId: role.institutionId,
+        reason: error instanceof Error ? error.message.slice(0, 240) : "Executive identity could not be rendered",
+      });
+      continue;
+    }
     const closed = await db.prepare(`
       UPDATE executive_roles
       SET effective_to = ?
@@ -1079,18 +1120,10 @@ export async function autonomouslyVerifyLeadership(
       "Autonomously verified after two consecutive complete snapshots with independent official corroboration.",
       undefined,
     );
-    editorialCandidates.push(executiveEditorialCandidate(
-      "departure",
-      role.personId,
-      role.institutionId,
-      role.title,
-      selected,
-      pack,
-      now,
-    ));
+    editorialCandidates.push(editorialCandidate);
   }
 
-  return { verifiedRoles, unresolved, conflicts, editorialCandidates };
+  return { verifiedRoles, unresolved, conflicts, identityFailures, editorialCandidates };
 }
 
 /**

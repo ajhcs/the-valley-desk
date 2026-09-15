@@ -4,8 +4,51 @@ import {
   DEFAULT_EDITOR_MODEL,
   EditorModelError,
   enrichWithEditorModel,
+  completeEditorJson,
 } from "../src/ingest/editor-model.ts";
+import type { ModelResponseDiagnostic } from "../src/ingest/model-response-diagnostics.ts";
 import { NewsItem } from "../src/content/schema.ts";
+
+test("bounded response diagnostics classify synthetic malformed paths without claiming production reproduction", async () => {
+  for (const [body, phase, finishReason] of [
+    ['{"private":"DO-NOT-RECORD",', "outer_json", undefined],
+    [JSON.stringify({ id: "gen-1788735624-Example123", usage: { prompt_tokens: 42, completion_tokens: 1024, total_tokens: 1066 }, choices: [{ finish_reason: "length", message: { content: '{"private":"DO-NOT-RECORD",' } }] }), "content_json", "length"],
+    [JSON.stringify({ choices: [{ finish_reason: "stop", message: { content: '{"decision": invalid}' } }] }), "content_json", "stop"],
+  ] as const) {
+    let diagnostic: ModelResponseDiagnostic | undefined;
+    await assert.rejects(completeEditorJson([], { apiKey: "DO-NOT-RECORD" }, async () => new Response(body), { maxTokens: 1024, onDiagnostic: d => { diagnostic = d; } }), /malformed JSON/);
+    assert.equal(diagnostic?.phase, phase);
+    assert.equal(diagnostic?.finishReason, finishReason);
+    assert.equal(diagnostic?.failure, "malformed");
+    assert.ok(diagnostic?.shape?.parserCategory);
+    assert.ok(diagnostic?.startedAt && diagnostic.endedAt);
+    assert.ok(JSON.stringify(diagnostic).length < 2048);
+    assert.ok(!JSON.stringify(diagnostic).includes("DO-NOT-RECORD"));
+    if (finishReason === "length") {
+      assert.equal(diagnostic?.usage?.completionTokens, 1024);
+      assert.equal(diagnostic?.responseId, "gen-1788735624-Example123");
+    }
+  }
+});
+
+test("response diagnostics retain safe correlation and redact provider-controlled metadata", async () => {
+  let diagnostic: ModelResponseDiagnostic | undefined;
+  await completeEditorJson([], { apiKey: "test" }, async () => new Response(JSON.stringify({
+    id: "Bearer DO-NOT-RECORD", usage: { prompt_tokens: "DO-NOT-RECORD", total_tokens: -1 },
+    choices: [{ finish_reason: "DO-NOT-RECORD", message: { content: '{}' } }],
+  }), { headers: { "x-request-id": "11111111-1111-4111-8111-111111111111" } }), { onDiagnostic: d => { diagnostic = d; } });
+  assert.equal(diagnostic?.requestId, "11111111-1111-4111-8111-111111111111");
+  assert.equal(diagnostic?.responseId, undefined);
+  assert.equal(diagnostic?.finishReason, "unknown");
+  assert.ok(!JSON.stringify(diagnostic).includes("DO-NOT-RECORD"));
+});
+
+test("diagnostics preserve fenced and trailing-prose parsing and cannot change outcomes", async () => {
+  for (const content of ['```json\n{"ok":true}\n```', 'Result: {"ok":true} trailing prose']) {
+    assert.deepEqual(await completeEditorJson([], { apiKey: "test" }, async () => new Response(JSON.stringify({ choices: [{ message: { content } }] })), { onDiagnostic: () => { throw Error("sink failed"); } }), { ok: true });
+  }
+  await assert.rejects(completeEditorJson([], { apiKey: "test" }, async () => new Response("x".repeat(262145))), /exceeds byte limit/);
+});
 
 function item() {
   return NewsItem.parse({

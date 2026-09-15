@@ -15,6 +15,7 @@ import {
 } from "../src/ingest/news-extraction-config.ts";
 import {
   extractArticleText,
+  fetchAllowlistedArticlePage,
   isEligibleNewsArticleUrl,
   newsArticleBackoffMs,
   overlayNewsArticles,
@@ -149,6 +150,40 @@ test("news extraction caps stay bounded and closed", () => {
   assert.ok(ALLOWED_HOSTS.has("news.christianacare.org"));
   assert.ok(ALLOWED_HOSTS.has("inquirer.com"));
   assert.ok(!ALLOWED_HOSTS.has("example.com"));
+});
+
+test("bounded article fetch scans a capped body while retaining only its suffix", async () => {
+  const requested: Array<{ url: string; range: string | null }> = [];
+  const valid = await fetchAllowlistedArticlePage({
+    url: ARTICLE_URL,
+    allowedHosts: new Set(["news.christianacare.org"]),
+    maxBytes: 10,
+    scanMaxBytes: 20,
+    retainSuffixBytes: 10,
+    fetchImpl: async (input, init) => {
+      const headers = new Headers(init?.headers);
+      requested.push({ url: String(input), range: headers.get("range") });
+      return new Response("prefix-0123456789", { status: 200, headers: { "content-type": "text/html" } });
+    },
+  });
+  assert.deepEqual(requested, [{ url: ARTICLE_URL, range: null }]);
+  assert.equal(valid.ok, true);
+  if (valid.ok) {
+    assert.equal(valid.body, "0123456789");
+  }
+
+  const exceeded = await fetchAllowlistedArticlePage({
+    url: ARTICLE_URL,
+    allowedHosts: new Set(["news.christianacare.org"]),
+    maxBytes: 10,
+    scanMaxBytes: 20,
+    retainSuffixBytes: 10,
+    fetchImpl: async () => new Response("012345678901234567890", {
+      status: 200,
+      headers: { "content-type": "text/html" },
+    }),
+  });
+  assert.deepEqual(exceeded, { ok: false, error: "Response exceeded 20 scanned bytes" });
 });
 
 test("JSON-LD articleBody wins over article and main fallbacks", () => {

@@ -12,8 +12,19 @@ import { EDITOR_POLICY_VERSION } from "./editor";
 import { reviewLeadershipObservation } from "./executive-persistence";
 import { resolvePublicOrigin } from "../lib/canonical";
 import { SCHEMA_VERSION, buildShaFromEnv, logOps } from "../lib/ops";
+import { buildRuntimeLeadershipCoverage } from "../lib/operational-status";
+import { officialSourceRegistry } from "./official-source-discovery";
+import { markEmailPdfExtractionFailed, persistEmailPdfPageEvidence } from "./email";
+import { handlePolicyPdfApi } from "./policy-pdf";
+import { handleWatchEditorialApi } from "./watch-editorial-api";
+import { createWatchEditorialRuntime } from "./watch-editorial-runtime";
+import { handleRepresentativeReview } from "./representative-api";
+import { resolveRepresentativeSourcePolicy } from "./representative-runtime";
+import { tupleKey } from "../content/watch-schema";
+import { syncPublishedEventCalendar } from "./event-calendar-runtime";
 
 type ReviewEnv = {
+  EVENT_CALENDAR_COLLECTION_ENABLED?: string;
   VALLEY_DESK_DB: D1DatabaseLike;
   REVIEW_API_TOKEN?: string;
   BUILD_SHA?: string;
@@ -37,6 +48,120 @@ const POST_RATE_LIMIT = 20;
 const POST_RATE_WINDOW_MS = 10 * 60 * 1000;
 const IDEMPOTENCY_TTL_MS = 10 * 60 * 1000;
 const MAX_JSON_BYTES = 8_192;
+const MAX_PDF_EXTRACTION_JSON_BYTES = 512_000;
+
+type SourceHealthStatusRow = {
+  source_id: string;
+  origin: string;
+  source_type: string;
+  source_url: string | null;
+  state: string;
+  complete: number;
+  item_count: number;
+  consecutive_failures: number;
+  last_checked_at: string;
+  last_success_at: string | null;
+  last_error: string | null;
+  next_attempt_at: string | null;
+  last_http_status: number | null;
+  requires_auth: number;
+  last_fallback_url: string | null;
+  institution_ids_json: string | null;
+};
+
+type CoverageStatusRow = {
+  id: string;
+  short_name: string;
+  official_source_status: string;
+};
+
+type RuntimeLeadershipSourceRow = {
+  source_id: string;
+  institution_id: string;
+  state: string | null;
+  last_attempted_at: string | null;
+  last_success_at: string | null;
+  next_attempt_at: string | null;
+  consecutive_failures: number | null;
+  last_error: string | null;
+};
+
+function boundedText(value: unknown, max = 240) {
+  if (typeof value !== "string") return null;
+  return value.replace(/[\u0000-\u001F\u007F]/g, " ").replace(/\s+/g, " ").trim().slice(0, max) || null;
+}
+
+function boundedStringArray(value: unknown, max = 8) {
+  if (typeof value !== "string") return [];
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0).slice(0, max)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function boundedCount(value: unknown) {
+  const count = Number(value);
+  return Number.isInteger(count) && count >= 0 ? Math.min(count, 50_000) : 0;
+}
+
+function boundedCollectorPlatforms(value: unknown) {
+  let parsed: unknown = value;
+  if (typeof value === "string") {
+    try { parsed = JSON.parse(value); } catch { parsed = undefined; }
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+  const record = parsed as Record<string, unknown>;
+  return Object.fromEntries(["linkedin", "x"].flatMap((platform) => {
+    const candidate = record[platform];
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return [];
+    const row = candidate as Record<string, unknown>;
+    const reason = boundedText(row.reason, 500);
+    return [[platform, {
+      state: boundedText(row.state, 32) ?? "unknown",
+      accessVerified: row.accessVerified === true,
+      targetsChecked: boundedCount(row.targetsChecked),
+      postsSeen: boundedCount(row.postsSeen),
+      accepted: boundedCount(row.accepted),
+      duplicates: boundedCount(row.duplicates),
+      failures: boundedCount(row.failures),
+      ...(reason ? { reason } : {}),
+    }]];
+  }));
+}
+
+function boundedCollectorFailureReasons(value: unknown) {
+  let parsed: unknown = value;
+  if (typeof value === "string") {
+    try { parsed = JSON.parse(value); } catch { parsed = undefined; }
+  }
+  return Array.isArray(parsed)
+    ? parsed
+      .filter((entry): entry is string => typeof entry === "string")
+      .map((entry) => boundedText(entry, 500))
+      .filter((entry): entry is string => Boolean(entry))
+      .slice(0, 20)
+    : [];
+}
+
+function normalizedCollectorRow(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const row = value as Record<string, unknown>;
+  return {
+    ...row,
+    platforms: boundedCollectorPlatforms(row.platforms_json),
+    failureReasons: boundedCollectorFailureReasons(row.failure_reasons_json),
+  };
+}
+
+function sourceFailureAgeMs(row: SourceHealthStatusRow, nowMs: number) {
+  if (["healthy", "healthy-empty", "disabled", "misconfigured"].includes(row.state)) return null;
+  const lastSuccessMs = row.last_success_at ? Date.parse(row.last_success_at) : NaN;
+  return Number.isFinite(lastSuccessMs) ? Math.max(0, nowMs - lastSuccessMs) : null;
+}
 
 type GuardState = {
   posts: Map<string, number[]>;
@@ -79,6 +204,48 @@ async function tokenMatches(expected: string, actual: string) {
     mismatch |= (a[index] ?? 0) ^ (b[index] ?? 0);
   }
   return mismatch === 0;
+}
+
+async function sha256Hex(value: string) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha256Bytes(value: Uint8Array) {
+  const copy = new Uint8Array(value.byteLength);
+  copy.set(value);
+  const digest = await crypto.subtle.digest("SHA-256", copy.buffer);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function readRequestTextBounded(request: Request, maxBytes: number) {
+  const declared = Number(request.headers.get("content-length") ?? "0");
+  if (Number.isFinite(declared) && declared > maxBytes) return null;
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      received += value.byteLength;
+      if (received > maxBytes) {
+        await reader.cancel().catch(() => undefined);
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    try { reader.releaseLock(); } catch { /* stream may have been cancelled */ }
+  }
+  const bytes = new Uint8Array(received);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
 }
 
 async function isAuthorized(request: Request, env: ReviewEnv, trustedAccessEmail?: string) {
@@ -136,13 +303,17 @@ function readIdempotent(token: string, key: string) {
 }
 
 export function isReviewApiPath(pathname: string) {
-  return pathname === "/api/automation/status"
+  return /^\/api\/(?:policy-background|policy-pdf|policy-versions|policy-provisions)(?:\/|$)/.test(pathname)
+    || /^\/api\/(?:watch-drafts|representative-drafts)(?:\/|$)/.test(pathname)
+    || pathname === "/api/automation/status"
     || pathname === "/api/automation/status/review"
     || pathname.startsWith("/api/executive-observations")
+    || pathname.startsWith("/api/email-pdf-attachments")
     || pathname.startsWith("/api/review-queue");
 }
 
 async function statusPayload(env: ReviewEnv, detailed: boolean) {
+  const nowMs = Date.now();
   const run = await env.VALLEY_DESK_DB.prepare(`
       SELECT id, started_at, finished_at, state, item_count, notes_json, error
       FROM ingest_runs ORDER BY started_at DESC LIMIT 1
@@ -156,9 +327,30 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   ).first();
   const sources = await env.VALLEY_DESK_DB.prepare(`
       SELECT source_id, origin, source_type, source_url, state, complete, item_count,
-             consecutive_failures, last_checked_at, last_success_at, last_error
+             consecutive_failures, last_checked_at, last_success_at, last_error,
+             next_attempt_at, last_http_status, requires_auth, last_fallback_url,
+             institution_ids_json
       FROM source_health ORDER BY source_type, source_id
-    `).all();
+    `).all<SourceHealthStatusRow>();
+  const sourceHealth = (sources.results ?? []).map((row) => ({
+    source_id: row.source_id,
+    origin: row.origin,
+    source_type: row.source_type,
+    source_url: row.source_url,
+    state: row.state,
+    complete: row.complete,
+    item_count: row.item_count,
+    consecutive_failures: row.consecutive_failures,
+    last_checked_at: row.last_checked_at,
+    last_success_at: row.last_success_at,
+    last_error: boundedText(row.last_error),
+    next_attempt_at: row.next_attempt_at,
+    last_http_status: row.last_http_status,
+    requires_auth: row.requires_auth,
+    last_fallback_url: row.last_fallback_url,
+    institution_ids: boundedStringArray(row.institution_ids_json),
+    failure_age_ms: sourceFailureAgeMs(row, nowMs),
+  }));
   const reconciliation = await env.VALLEY_DESK_DB.prepare(`
       SELECT action, COUNT(*) AS count, MAX(reconciled_at) AS reconciled_at
       FROM publication_reconciliations GROUP BY action
@@ -177,10 +369,17 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       SELECT state, COUNT(*) AS count
       FROM signal_pointer_verifications GROUP BY state ORDER BY state
     `).all();
+    const authentication = await env.VALLEY_DESK_DB.prepare(`
+      SELECT auth_state, COUNT(*) AS count,
+             MIN(CASE WHEN auth_state IN ('pending', 'failed') THEN first_seen_at END) AS oldest_pending_at,
+             MAX(auth_attempted_at) AS last_attempted_at
+      FROM email_discoveries GROUP BY auth_state ORDER BY auth_state
+    `).all();
     signalVerification = {
       available: true,
       discoveries: states.results ?? [],
       pointers: pointers.results ?? [],
+      emailAuthentication: authentication.results ?? [],
     };
   } catch (error) {
     signalVerification = {
@@ -190,6 +389,12 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   }
   let officialSourceDiscovery: Record<string, unknown> = { available: false };
   try {
+    const policySourceIds = officialSourceRegistry.sources
+      .filter((source) => source.category === "policy" && source.status === "enabled")
+      .map((source) => source.id);
+    const policyPlaceholders = policySourceIds.map(() => "?").join(",");
+    const windowEnd = new Date(nowMs).toISOString();
+    const windowStart = new Date(nowMs - 30 * 86_400_000).toISOString();
     const schedules = await env.VALLEY_DESK_DB.prepare(`
       SELECT state, COUNT(*) AS count
       FROM official_source_schedule GROUP BY state ORDER BY state
@@ -204,11 +409,132 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       GROUP BY status, relevance_decision
       ORDER BY status, relevance_decision
     `).all();
+    const policySources = await env.VALLEY_DESK_DB.prepare(`
+      SELECT COUNT(*) AS monitored,
+        SUM(CASE WHEN state NOT IN ('pending', 'disabled') THEN 1 ELSE 0 END) AS attempted,
+        SUM(CASE WHEN state IN ('success', 'unchanged') THEN 1 ELSE 0 END) AS healthy
+      FROM official_source_schedule WHERE source_id IN (${policyPlaceholders})
+    `).bind(...policySourceIds).first<{ monitored: number; attempted: number; healthy: number }>();
+    const policyCandidates = await env.VALLEY_DESK_DB.prepare(`
+      SELECT COUNT(*) AS discovered,
+        SUM(CASE WHEN detail_disposition = 'active' THEN 1 ELSE 0 END) AS actionable,
+        SUM(CASE WHEN detail_disposition = 'filtered' THEN 1 ELSE 0 END) AS filtered,
+        SUM(CASE WHEN detail_disposition = 'active' AND published_at IS NOT NULL THEN 1 ELSE 0 END) AS dated,
+        SUM(CASE WHEN detail_disposition = 'active' AND detail_state = 'success' THEN 1 ELSE 0 END) AS detail_complete,
+        SUM(CASE WHEN detail_disposition = 'active' AND relevance_decision = 'accept' THEN 1 ELSE 0 END) AS relevance_accepted,
+        SUM(CASE WHEN detail_disposition = 'active' AND content_item_id IS NOT NULL THEN 1 ELSE 0 END) AS converted,
+        SUM(CASE WHEN detail_disposition = 'active' AND p.candidate_id IS NOT NULL THEN 1 ELSE 0 END) AS published,
+        SUM(CASE WHEN detail_disposition = 'active' AND m.candidate_id IS NOT NULL THEN 1 ELSE 0 END) AS brief_or_blocker,
+        AVG(CASE WHEN p.first_published_at IS NOT NULL AND c.published_at IS NOT NULL
+          THEN MAX(0, (julianday(p.first_published_at) - julianday(c.published_at)) * 24) END) AS average_publication_hours
+      FROM official_source_candidates c
+      LEFT JOIN published_content p ON p.candidate_id = c.content_item_id
+      LEFT JOIN (
+        SELECT candidate_id, MIN(recorded_at) AS first_milestone_at
+        FROM policy_review_milestones GROUP BY candidate_id
+      ) m ON m.candidate_id = c.content_item_id
+      WHERE c.category = 'policy' AND c.discovered_at >= ? AND c.discovered_at < ?
+    `).bind(windowStart, windowEnd).first<Record<string, number | null>>();
+    const policySourcePerformance = await env.VALLEY_DESK_DB.prepare(`
+      SELECT s.source_id, s.state, s.last_success_at, s.next_attempt_at, s.last_error,
+        MAX(c.discovered_at) AS last_discovery_at,
+        MAX(CASE WHEN c.relevance_decision = 'accept' THEN c.discovered_at END) AS last_substantive_discovery_at,
+        SUM(CASE WHEN c.detail_disposition = 'active' AND c.detail_state IN ('failed', 'blocked') THEN 1 ELSE 0 END) AS actionable_detail_failures,
+        SUM(CASE WHEN c.detail_disposition = 'filtered' THEN 1 ELSE 0 END) AS filtered_candidates,
+        SUM(CASE WHEN c.relevance_decision IN ('reject', 'review') THEN 1 ELSE 0 END) AS relevance_holds,
+        AVG(CASE WHEN c.published_at IS NOT NULL
+          THEN MAX(0, (julianday(c.discovered_at) - julianday(c.published_at)) * 24) END) AS average_detection_hours,
+        MIN(CASE WHEN c.content_item_id IS NOT NULL AND m.first_milestone_at IS NULL
+          THEN c.discovered_at END) AS oldest_unresolved_review_at,
+        AVG(CASE WHEN m.first_milestone_at IS NOT NULL AND c.published_at IS NOT NULL
+          THEN MAX(0, (julianday(m.first_milestone_at) - julianday(c.published_at)) * 24) END) AS average_brief_or_blocker_hours
+      FROM official_source_schedule s
+      LEFT JOIN official_source_candidates c ON c.source_id = s.source_id AND c.category = 'policy'
+      LEFT JOIN (
+        SELECT candidate_id, MIN(recorded_at) AS first_milestone_at
+        FROM policy_review_milestones GROUP BY candidate_id
+      ) m ON m.candidate_id = c.content_item_id
+      WHERE s.source_id IN (${policyPlaceholders})
+      GROUP BY s.source_id, s.state, s.last_success_at, s.next_attempt_at, s.last_error
+      ORDER BY s.source_id
+    `).bind(...policySourceIds).all();
+    const policyBenchmarks = await env.VALLEY_DESK_DB.prepare(`
+      SELECT id, instrument_id, first_public_at, correspondence_at, detected_at,
+             brief_or_blocker_at, miss_reason, source_urls_json,
+             CASE WHEN detected_at IS NOT NULL
+               THEN MAX(0, (julianday(detected_at) - julianday(first_public_at)) * 24) END AS detection_hours,
+             CASE WHEN brief_or_blocker_at IS NOT NULL
+               THEN MAX(0, (julianday(brief_or_blocker_at) - julianday(first_public_at)) * 24) END AS brief_or_blocker_hours
+      FROM policy_benchmark_leads ORDER BY correspondence_at DESC LIMIT 20
+    `).all();
+    const metric = (numerator: number, denominator: number) => ({
+      numerator,
+      denominator,
+      value: denominator > 0 ? numerator / denominator : null,
+    });
+    const discovered = Number(policyCandidates?.discovered ?? 0);
+    const actionable = Number(policyCandidates?.actionable ?? 0);
+    const dated = Number(policyCandidates?.dated ?? 0);
+    const detailComplete = Number(policyCandidates?.detail_complete ?? 0);
+    const relevanceAccepted = Number(policyCandidates?.relevance_accepted ?? 0);
+    const converted = Number(policyCandidates?.converted ?? 0);
+    const published = Number(policyCandidates?.published ?? 0);
+    const attempted = Number(policySources?.attempted ?? 0);
+    const healthy = Number(policySources?.healthy ?? 0);
+    const zeroOutputReason = published > 0 ? null
+      : actionable === 0 ? (discovered === 0 ? "no-policy-discoveries" : "all-policy-discoveries-filtered")
+        : dated === 0 ? "no-source-publication-dates"
+          : detailComplete === 0 ? "no-complete-detail-evidence"
+            : relevanceAccepted === 0 ? "no-relevance-accepted-candidates"
+              : converted === 0 ? "no-editorial-conversions"
+                : "no-policy-publications";
     officialSourceDiscovery = {
       available: true,
       schedules: schedules.results ?? [],
       snapshots: snapshots.results ?? [],
       candidates: candidates.results ?? [],
+      policyMetrics: {
+        windowStart,
+        windowEnd,
+        definitions: {
+          sourceCoverage: "healthy-or-unchanged policy schedules / attempted policy schedules",
+          publicationDateCoverage: "policy candidates with source-authored published_at / policy candidates discovered in window",
+          detailCoverage: "policy candidates with successful bounded detail evidence / policy candidates discovered in window",
+          conversionRate: "converted policy candidates / relevance-accepted policy candidates",
+          publicationRate: "published policy candidates / converted policy candidates",
+          publicationTimelinessHours: "average non-negative hours from source-authored publication/development time to first publication",
+          detectionTarget: "source-authored publication/development to discovery: <= 1 hour",
+          briefOrBlockerTarget: "source-authored publication/development to a cited brief or persisted explicit blocker: <= 2 hours",
+        },
+        sources: {
+          registered: policySourceIds.length,
+          monitored: Number(policySources?.monitored ?? 0),
+          attempted,
+          healthy,
+        },
+        candidates: {
+          discovered,
+          actionable,
+          filtered: Number(policyCandidates?.filtered ?? 0),
+          dated,
+          detailComplete,
+          relevanceAccepted,
+          converted,
+          published,
+          briefOrBlocker: Number(policyCandidates?.brief_or_blocker ?? 0),
+        },
+        rates: {
+          sourceCoverage: metric(healthy, attempted),
+          publicationDateCoverage: metric(dated, actionable),
+          detailCoverage: metric(detailComplete, actionable),
+          conversionRate: metric(converted, relevanceAccepted),
+          publicationRate: metric(published, converted),
+        },
+        averagePublicationHours: policyCandidates?.average_publication_hours ?? null,
+        perSource: policySourcePerformance.results ?? [],
+        missedLeadBenchmarks: policyBenchmarks.results ?? [],
+        zeroOutputReason,
+      },
     };
   } catch (error) {
     officialSourceDiscovery = {
@@ -223,25 +549,166 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       FROM covered_institutions
       WHERE covered = 1
       ORDER BY short_name
-    `).all();
+    `).all<CoverageStatusRow & { name: string; covered: number; official_source_note: string | null }>();
     const sourceStates = await env.VALLEY_DESK_DB.prepare(`
       SELECT state, COUNT(*) AS count
       FROM scheduled_source_state GROUP BY state ORDER BY state
     `).all();
+    const runtimeSources = await env.VALLEY_DESK_DB.prepare(`
+      SELECT c.id AS source_id, c.institution_id, s.state,
+             s.last_attempted_at, s.last_success_at, s.next_attempt_at,
+             s.consecutive_failures, s.last_error
+      FROM coverage_sources c
+      LEFT JOIN scheduled_source_state s ON s.source_id = c.id
+      WHERE c.monitor = 1 AND c.status = 'enabled'
+      ORDER BY c.institution_id, c.id
+    `).all<RuntimeLeadershipSourceRow>();
     const observations = await env.VALLEY_DESK_DB.prepare(`
       SELECT verification_status, COUNT(*) AS count
       FROM source_observations GROUP BY verification_status ORDER BY verification_status
     `).all();
+    const configured = (coverage.results ?? []).map((row) => ({
+      institutionId: row.id,
+      shortName: row.short_name,
+      configuredStatus: row.official_source_status === "active" ? "active" as const : "degraded" as const,
+      sourceIds: (runtimeSources.results ?? [])
+        .filter((source) => source.institution_id === row.id)
+        .map((source) => source.source_id),
+    }));
+    const runtimeCoverage = buildRuntimeLeadershipCoverage(
+      configured,
+      (runtimeSources.results ?? []).map((source) => ({
+        sourceId: source.source_id,
+        institutionId: source.institution_id,
+        state: source.state,
+        lastAttemptedAt: source.last_attempted_at,
+        lastSuccessAt: source.last_success_at,
+        nextAttemptAt: source.next_attempt_at,
+        consecutiveFailures: source.consecutive_failures ?? 0,
+        lastError: boundedText(source.last_error),
+      })),
+      new Date(nowMs),
+    ).map((row) => ({
+      ...row,
+      sourceStates: row.sourceStates.map((source) => ({
+        sourceId: source.sourceId,
+        state: source.state,
+        rawState: source.rawState,
+        lastSuccessAt: source.lastSuccessAt,
+        lastAttemptedAt: source.lastAttemptedAt,
+        nextRetryAt: source.nextRetryAt,
+        failureAgeMs: source.failureAgeMs,
+        consecutiveFailures: source.consecutiveFailures,
+        reason: boundedText(source.reason),
+      })),
+    }));
     executiveIntelligence = {
       available: true,
       coverage: coverage.results ?? [],
       sourceStates: sourceStates.results ?? [],
       observations: observations.results ?? [],
+      runtimeCoverage,
     };
   } catch (error) {
     executiveIntelligence = {
       available: false,
       error: error instanceof Error ? error.message : "Executive intelligence schema unavailable",
+    };
+  }
+  let socialEvidence: Record<string, unknown> = { available: false };
+  try {
+    const packets = await env.VALLEY_DESK_DB.prepare(`
+      SELECT status, COUNT(*) AS count, MAX(last_seen_at) AS last_seen_at,
+             MAX(processed_at) AS last_processed_at
+      FROM social_evidence_packets
+      GROUP BY status ORDER BY status
+    `).all();
+    socialEvidence = { available: true, packets: packets.results ?? [] };
+  } catch (error) {
+    socialEvidence = {
+      available: false,
+      error: error instanceof Error ? error.message : "Social evidence schema unavailable",
+    };
+  }
+  let valeCollector: Record<string, unknown> = {
+    available: false,
+    collector: "vale",
+    latest: null,
+    lastSuccessful: null,
+  };
+  try {
+    const [latest, lastSuccessful] = await Promise.all([
+      env.VALLEY_DESK_DB.prepare(`
+        SELECT id, manifest_version, manifest_hash, started_at, finished_at, outcome,
+               accounts_checked, posts_seen, accepted, duplicates, failures,
+               platforms_json, failure_reasons_json, consecutive_failures, paused_at
+        FROM social_collector_runs
+        WHERE collector = 'vale'
+        ORDER BY finished_at DESC, id DESC LIMIT 1
+      `).first(),
+      env.VALLEY_DESK_DB.prepare(`
+        SELECT id, manifest_version, manifest_hash, started_at, finished_at, outcome,
+               accounts_checked, posts_seen, accepted, duplicates, failures,
+               platforms_json, failure_reasons_json, consecutive_failures, paused_at
+        FROM social_collector_runs
+        WHERE collector = 'vale' AND outcome = 'success'
+        ORDER BY finished_at DESC, id DESC LIMIT 1
+      `).first(),
+    ]);
+    valeCollector = {
+      available: true,
+      collector: "vale",
+      latest: normalizedCollectorRow(latest),
+      lastSuccessful: normalizedCollectorRow(lastSuccessful),
+    };
+  } catch (error) {
+    valeCollector = {
+      available: false,
+      collector: "vale",
+      latest: null,
+      lastSuccessful: null,
+      error: error instanceof Error ? error.message : "Social collector schema unavailable",
+    };
+  }
+  let modelHealth: Record<string, unknown> = { available: false };
+  try {
+    const attempts = await env.VALLEY_DESK_DB.prepare(`
+      SELECT enrichment_outcome AS outcome, COUNT(*) AS count,
+             MAX(enrichment_attempted_at) AS last_attempted_at
+      FROM content_candidates
+      WHERE enrichment_attempted_at IS NOT NULL
+      GROUP BY enrichment_outcome ORDER BY enrichment_outcome
+    `).all();
+    modelHealth = { available: true, attempts: attempts.results ?? [] };
+  } catch (error) {
+    modelHealth = {
+      available: false,
+      error: error instanceof Error ? error.message : "Editor model health unavailable",
+    };
+  }
+  let alerts: Record<string, unknown> = { available: false, open: [] };
+  try {
+    const open = await env.VALLEY_DESK_DB.prepare(`
+      SELECT fingerprint, event, severity, state, condition_state,
+             institution_id, subsystem, group_key, occurrence_count,
+             first_seen_at, last_seen_at, next_notify_at,
+             last_notification_attempt_at, last_notified_at,
+             notification_attempt_count, last_notification_error,
+             recovery_count, last_recovered_at, resolved_at, detail_json,
+             recovery_detail_json
+      FROM operational_alerts
+      WHERE state = 'open'
+      ORDER BY group_key,
+               CASE severity WHEN 'critical' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END,
+               last_seen_at DESC
+      LIMIT 50
+    `).all();
+    alerts = { available: true, open: open.results ?? [] };
+  } catch (error) {
+    alerts = {
+      available: false,
+      open: [],
+      error: error instanceof Error ? error.message : "Operational alert schema unavailable",
     };
   }
   const payload: Record<string, unknown> = {
@@ -251,12 +718,16 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
     run,
     queue: counts.results ?? [],
     publications,
-    sources: sources.results ?? [],
+      sources: sourceHealth,
     reconciliation: reconciliation.results ?? [],
     emailDiscoveries: emailDiscoveries.results ?? [],
     signalVerification,
     officialSourceDiscovery,
     executiveIntelligence,
+    socialEvidence,
+    valeCollector,
+    modelHealth,
+    alerts,
   };
   if (!detailed) return payload;
   const review = await env.VALLEY_DESK_DB.prepare(`
@@ -276,13 +747,25 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   const emailQueue = await env.VALLEY_DESK_DB.prepare(`
       SELECT id, message_id, envelope_to, from_address, from_domain, subject, category, status, trust_state,
              url_count, urls_json, excerpt, truncated, instruction_like, receive_count,
+             auth_state, auth_attempt_count, auth_attempted_at, auth_next_attempt_at, auth_error,
+             auth_provenance_sha256,
              first_seen_at, last_seen_at, verification_state,
              verification_attempt_count, verification_attempted_at,
              verification_next_attempt_at, verification_error,
              verified_url_count, candidate_count, verified_at
       FROM email_discoveries
-      WHERE status = 'review'
+      WHERE status = 'review' OR auth_state IN ('pending', 'failed', 'exhausted', 'rejected')
       ORDER BY last_seen_at DESC
+      LIMIT 50
+    `).all();
+  const emailPdfAttachments = await env.VALLEY_DESK_DB.prepare(`
+      SELECT a.id, a.discovery_id, a.filename, a.mime_type, a.byte_count, a.sha256,
+             a.extraction_state, a.extraction_error, a.page_count, a.extraction_method,
+             a.extraction_receipt_sha256, a.extracted_by, a.created_at, a.extracted_at
+      FROM email_pdf_attachments a
+      JOIN email_discoveries e ON e.id = a.discovery_id
+      WHERE e.status = 'review' OR a.extraction_state IN ('pending', 'failed')
+      ORDER BY a.created_at DESC, a.id DESC
       LIMIT 50
     `).all();
   let signalQueue: Record<string, unknown> = { items: [] };
@@ -305,7 +788,10 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
   }
   payload.review = { items: review.results ?? [] };
   payload.decisions = decisions.results ?? [];
-  payload.emailReview = { items: emailQueue.results ?? [] };
+  payload.emailReview = {
+    items: emailQueue.results ?? [],
+    pdfAttachments: emailPdfAttachments.results ?? [],
+  };
   payload.signalReview = signalQueue;
   try {
     const pendingObservations = await env.VALLEY_DESK_DB.prepare(`
@@ -337,12 +823,233 @@ export async function handleReviewApi(request: Request, env: ReviewEnv, options:
     ? `/api${url.pathname.slice(options.routePrefix.length)}`
     : url.pathname;
 
+  if (/^\/api\/(?:watch-drafts|representative-drafts)(?:\/|$)/.test(pathname)) {
+    if (method === "POST" && !rateLimitPost(request, env.REVIEW_API_TOKEN ?? options.trustedAccessEmail ?? ""))
+      return json({ error: "rate_limited" }, 429);
+    const namedOperator = options.trustedAccessEmail === "clyons@ajhcs.org" ? options.trustedAccessEmail : null;
+    if (pathname.startsWith("/api/watch-drafts")) return handleWatchEditorialApi(request, env.VALLEY_DESK_DB,
+      pathname, namedOperator, createWatchEditorialRuntime(env.VALLEY_DESK_DB));
+    if (method === "POST" && !namedOperator) return json({ error: "named-operator-required" }, 403);
+    try {
+      const canonicalUrl = new URL(request.url); canonicalUrl.pathname = pathname;
+      const policy = await resolveRepresentativeSourcePolicy(env.VALLEY_DESK_DB);
+      const reviewer = await tupleKey("watch-reviewer-v1", [namedOperator ?? "review-api-token"]);
+      return handleRepresentativeReview(new Request(canonicalUrl, request), env, policy, async () => reviewer);
+    } catch { return json({ error: "representative-unavailable" }, 503); }
+  }
+
+  if (/^\/api\/(?:policy-background|policy-pdf|policy-versions|policy-provisions)(?:\/|$)/.test(pathname)) {
+    // Page uploads have their own byte/page/artifact bounds. Capture and review
+    // retain the existing mutation rate guard; a 79-page document isn't 79 captures.
+    if (method === "POST" && /\/(?:capture|review)$/.test(pathname) && !rateLimitPost(request, env.REVIEW_API_TOKEN ?? "")) {
+      return json({ error: "rate_limited" }, 429);
+    }
+    return handlePolicyPdfApi(request, env.VALLEY_DESK_DB, pathname, options.trustedAccessEmail ?? "review-api-token");
+  }
+
   if (pathname === "/api/automation/status" || pathname === "/api/automation/status/review") {
     if (method !== "GET" && method !== "HEAD") {
       return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
     }
     const detailed = pathname === "/api/automation/status/review";
     return json(await statusPayload(env, detailed));
+  }
+
+  const pdfContentMatch = /^\/api\/email-pdf-attachments\/([^/]+)\/content$/.exec(pathname);
+  if (pdfContentMatch) {
+    if (method !== "GET" && method !== "HEAD") {
+      return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
+    }
+    let attachmentId = "";
+    try {
+      attachmentId = decodeURIComponent(pdfContentMatch[1]);
+    } catch {
+      return json({ error: "invalid_attachment_id" }, 400);
+    }
+    if (!/^[A-Za-z0-9][A-Za-z0-9._:-]{7,199}$/.test(attachmentId)) {
+      return json({ error: "invalid_attachment_id" }, 400);
+    }
+    const attachment = await env.VALLEY_DESK_DB.prepare(`
+      SELECT a.byte_count, a.sha256, e.status, e.trust_state, e.auth_state,
+             e.auth_provenance_json, e.auth_provenance_sha256
+      FROM email_pdf_attachments a
+      JOIN email_discoveries e ON e.id = a.discovery_id
+      WHERE a.id = ?
+    `).bind(attachmentId).first<{
+      byte_count: number;
+      sha256: string;
+      status: string;
+      trust_state: string;
+      auth_state: string;
+      auth_provenance_json: string | null;
+      auth_provenance_sha256: string | null;
+    }>();
+    if (!attachment) return json({ error: "attachment_not_found" }, 404);
+    if (attachment.status !== "review"
+      || attachment.trust_state !== "authenticated-pointer"
+      || attachment.auth_state !== "authenticated"
+      || !attachment.auth_provenance_json
+      || !/^[a-f0-9]{64}$/.test(attachment.auth_provenance_sha256 ?? "")) {
+      return json({ error: "attachment_not_authenticated" }, 409);
+    }
+    if (!Number.isInteger(attachment.byte_count) || attachment.byte_count <= 0 || attachment.byte_count > 3_000_000) {
+      return json({ error: "attachment_corrupt" }, 409);
+    }
+    const baseHeaders = {
+      "content-type": "application/pdf",
+      "content-length": String(attachment.byte_count),
+      "content-disposition": `attachment; filename="${attachmentId}.pdf"`,
+      "cache-control": "no-store",
+      "x-content-type-options": "nosniff",
+      etag: `"sha256-${attachment.sha256}"`,
+    };
+    if (method === "HEAD") return new Response(null, { status: 200, headers: baseHeaders });
+    const chunks = await env.VALLEY_DESK_DB.prepare(`
+      SELECT chunk_index, bytes
+      FROM email_pdf_attachment_chunks
+      WHERE attachment_id = ?
+      ORDER BY chunk_index
+    `).bind(attachmentId).all<{ chunk_index: number; bytes: ArrayBuffer | Uint8Array | number[] }>();
+    const rows = chunks.results ?? [];
+    const normalized: Uint8Array[] = [];
+    for (let index = 0; index < rows.length; index += 1) {
+      const row = rows[index];
+      if (row.chunk_index !== index) return json({ error: "attachment_corrupt" }, 409);
+      const value = row.bytes as unknown;
+      if (value instanceof ArrayBuffer) {
+        normalized.push(new Uint8Array(value));
+        continue;
+      }
+      if (ArrayBuffer.isView(value)) {
+        normalized.push(new Uint8Array(value.buffer, value.byteOffset, value.byteLength));
+        continue;
+      }
+      if (Array.isArray(value) && value.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+        normalized.push(Uint8Array.from(value));
+        continue;
+      }
+      return json({ error: "attachment_corrupt" }, 409);
+    }
+    const received = normalized.reduce((total, chunk) => total + chunk.byteLength, 0);
+    if (received !== attachment.byte_count) return json({ error: "attachment_corrupt" }, 409);
+    const bytes = new Uint8Array(received);
+    let offset = 0;
+    for (const chunk of normalized) {
+      bytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    if (await sha256Bytes(bytes) !== attachment.sha256) return json({ error: "attachment_corrupt" }, 409);
+    const body = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+    return new Response(body, { status: 200, headers: baseHeaders });
+  }
+
+  const pdfExtractionMatch = /^\/api\/email-pdf-attachments\/([^/]+)\/extraction$/.exec(pathname);
+  if (pdfExtractionMatch) {
+    if (method !== "POST") return json({ error: "method_not_allowed" }, 405, { allow: "POST" });
+    if (!isJsonContentType(request)) return json({ error: "unsupported_media_type" }, 415);
+    const token = env.REVIEW_API_TOKEN ?? "";
+    if (!rateLimitPost(request, token)) return json({ error: "rate_limited" }, 429, { "retry-after": "60" });
+    let attachmentId = "";
+    try {
+      attachmentId = decodeURIComponent(pdfExtractionMatch[1]);
+    } catch {
+      return json({ error: "invalid_attachment_id" }, 400);
+    }
+    if (!/^[A-Za-z0-9][A-Za-z0-9._:-]{7,199}$/.test(attachmentId)) {
+      return json({ error: "invalid_attachment_id" }, 400);
+    }
+    const raw = await readRequestTextBounded(request, MAX_PDF_EXTRACTION_JSON_BYTES);
+    if (raw === null) return json({ error: "payload_too_large" }, 413);
+    let body: Record<string, unknown>;
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("invalid");
+      body = parsed as Record<string, unknown>;
+    } catch {
+      return json({ error: "invalid_json" }, 400);
+    }
+    if (body.attachmentId !== attachmentId
+      || typeof body.artifactSha256 !== "string" || !/^[a-f0-9]{64}$/.test(body.artifactSha256)
+      || body.extractor !== "pypdf-manual-v1"
+      || (body.outcome !== "complete" && body.outcome !== "failed")) {
+      return json({ error: "invalid_extraction_receipt" }, 400);
+    }
+    const attachment = await env.VALLEY_DESK_DB.prepare(`
+      SELECT a.sha256, a.extraction_state, e.status, e.trust_state, e.auth_state,
+             e.auth_provenance_json, e.auth_provenance_sha256
+      FROM email_pdf_attachments a
+      JOIN email_discoveries e ON e.id = a.discovery_id
+      WHERE a.id = ?
+    `).bind(attachmentId).first<{
+      sha256: string;
+      extraction_state: string;
+      status: string;
+      trust_state: string;
+      auth_state: string;
+      auth_provenance_json: string | null;
+      auth_provenance_sha256: string | null;
+    }>();
+    if (!attachment) return json({ error: "attachment_not_found" }, 404);
+    if (attachment.status !== "review"
+      || attachment.trust_state !== "authenticated-pointer"
+      || attachment.auth_state !== "authenticated"
+      || !attachment.auth_provenance_json
+      || !/^[a-f0-9]{64}$/.test(attachment.auth_provenance_sha256 ?? "")) {
+      return json({ error: "attachment_not_authenticated" }, 409);
+    }
+    if (attachment.sha256 !== body.artifactSha256) return json({ error: "artifact_checksum_mismatch" }, 409);
+    if (attachment.extraction_state !== "pending") {
+      return json({ id: attachmentId, extractionState: attachment.extraction_state, idempotent: true });
+    }
+    const receiptSha256 = await sha256Hex(raw);
+    const extractedBy = options.trustedAccessEmail ?? "review-api-token";
+    const audit = { method: "pypdf-manual-v1", receiptSha256, extractedBy };
+    try {
+      if (body.outcome === "complete") {
+        if (!Array.isArray(body.pages) || body.pages.length === 0 || body.pages.length > 500) {
+          return json({ error: "invalid_extraction_pages" }, 400);
+        }
+        const pages = body.pages.map((value) => {
+          if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("invalid page");
+          const page = value as Record<string, unknown>;
+          const pageText = typeof page.text === "string" ? page.text : "";
+          if (!Number.isInteger(page.pageNumber)
+            || pageText.length === 0 || pageText.length > 32_000
+            || !Array.isArray(page.evidenceSpans)
+            || page.evidenceSpans.length > 20
+            || page.evidenceSpans.some((span) => typeof span !== "string" || span.length < 3
+              || span.length > 1_000 || !pageText.includes(span))) {
+            throw new Error("invalid page");
+          }
+          return {
+            pageNumber: page.pageNumber as number,
+            text: pageText,
+            evidenceSpans: page.evidenceSpans as string[],
+          };
+        });
+        await persistEmailPdfPageEvidence(env.VALLEY_DESK_DB, attachmentId, pages, new Date(), audit);
+      } else {
+        const errorCode = boundedText(body.errorCode, 100);
+        if (!errorCode || !new Set(["image-only", "malformed-or-unsupported-pdf", "evidence-not-found"]).has(errorCode)) {
+          return json({ error: "invalid_extraction_error" }, 400);
+        }
+        await markEmailPdfExtractionFailed(env.VALLEY_DESK_DB, attachmentId, errorCode, new Date(), audit);
+      }
+    } catch {
+      return json({ error: "invalid_extraction_pages" }, 400);
+    }
+    logOps("email-pdf-extraction", {
+      outcome: body.outcome,
+      attachmentId,
+      extractedBy,
+      receiptSha256,
+    });
+    return json({
+      id: attachmentId,
+      extractionState: body.outcome === "complete" ? "complete" : "failed",
+      receiptSha256,
+      idempotent: false,
+    });
   }
 
   if (pathname === "/api/executive-observations") {
@@ -673,6 +1380,10 @@ export async function handleReviewApi(request: Request, env: ReviewEnv, options:
       ).bind(id));
     }
     const [result] = await env.VALLEY_DESK_DB.batch(statements);
+    if (env.EVENT_CALENDAR_COLLECTION_ENABLED === "true" && (approvedContent?.kind === "event" || rejectedContent?.kind === "event")) {
+      try { await syncPublishedEventCalendar(env.VALLEY_DESK_DB, new Date(), env.PUBLIC_ORIGIN); }
+      catch { logOps("event-calendar", { outcome: "synchronization-pending", candidateId: id }, "warn"); }
+    }
     const payload = {
       id,
       decision: body.decision,

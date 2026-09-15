@@ -1,5 +1,6 @@
 import { ContentCatalog, type ContentItem } from "../content/schema";
 import publishedCatalog from "../content/published-catalog.json";
+import { normalizeReviewSlugs } from "./review-slugs";
 import {
   DEFAULT_EDITOR_BASE_URL,
   DEFAULT_EDITOR_MODEL,
@@ -15,16 +16,19 @@ import {
   DEFAULT_EDITOR_MODEL_CONCURRENCY,
   DEFAULT_EDITOR_MODEL_DEADLINE_MS,
   MAX_EDITOR_LANE_TOTAL_BUDGET,
+  DEFAULT_EDITOR_WORK_PRIORITY_RESERVATIONS,
   MAX_EDITOR_MODEL_CONCURRENCY,
   parseBoundedInt,
   selectEditorModelWorkWithLanes,
   shouldEnrichCandidate,
+  type EditorWorkPriority,
 } from "./editor-work";
 import { evaluateCandidate, verificationInputForCandidate } from "./editor";
 import { isHighRiskNews, verifyWithSecondModel, type VerificationResult } from "./verification";
 import {
   acquireAutomationLock,
   candidateFingerprint,
+  editorAttemptFingerprint,
   renewAutomationLock,
   markIngestRunFailed,
   markIngestRunSucceeded,
@@ -33,6 +37,7 @@ import {
   persistIngestRun,
   persistNewsArticleExtractions,
   persistSourceHealth,
+  readSourceHealth,
   readEditorModelCache,
   readReviewBacklog,
   readNewsArticleExtractions,
@@ -42,14 +47,22 @@ import {
   type D1DatabaseLike,
 } from "./persistence";
 import { logOps } from "../lib/ops";
+import { syncPublishedEventCalendar } from "./event-calendar-runtime";
 import { matchingProductUses } from "./product-watch";
 import { sourceIdentityKey } from "./identity";
 import { runScheduledIngest, type IngestRun, type IngestRunOptions } from "./run-all";
 import { isSuccessfulSourceState } from "./source-health";
+import { markSocialEvidenceProcessed } from "./social-evidence";
 import {
   officialSourceCoverage,
   coveragePack,
+  monitorableSources,
+  sourceById,
 } from "./coverage-pack";
+import {
+  buildRuntimeLeadershipCoverage,
+  type RuntimeLeadershipCoverage,
+} from "../lib/operational-status";
 import {
   persistLeadershipObservations,
   persistLeadershipSnapshots,
@@ -66,6 +79,8 @@ import {
 } from "./official-source-automation";
 
 export type AutomationEnv = {
+  EVENT_CALENDAR_COLLECTION_ENABLED?: string;
+  PUBLIC_ORIGIN?: string;
   VALLEY_DESK_DB: D1DatabaseLike;
   OPENROUTER_API_KEY?: string;
   /** Legacy provider-neutral secret name. Prefer OPENROUTER_API_KEY. */
@@ -82,7 +97,12 @@ export type AutomationEnv = {
 };
 
 export type AutomationIngest = (
-  env: { X_BEARER_TOKEN?: string; LINKEDIN_TOKEN?: string; VALLEY_DESK_DB?: D1DatabaseLike },
+  env: {
+    X_BEARER_TOKEN?: string;
+    LINKEDIN_TOKEN?: string;
+    VALLEY_DESK_DB?: D1DatabaseLike;
+    sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>;
+  },
   fetchImpl: typeof fetch,
   options?: IngestRunOptions,
 ) => Promise<IngestRun>;
@@ -90,7 +110,7 @@ export type AutomationIngest = (
 export type AutomationMode = "hourly" | "daily";
 
 export type AutomationOptions = {
-  /** Hourly keeps the freshness lane hot; daily enables the deep event scan. */
+  /** Hourly keeps the freshness lane hot; daily retains the broader scan cadence. */
   mode?: AutomationMode;
 };
 
@@ -126,9 +146,17 @@ function mergeCurrentAndBacklog(current: ContentItem[], backlog: ContentItem[]) 
   return [...byIdentity.values()];
 }
 
+function currentWorkPriority(item: ContentItem): Exclude<EditorWorkPriority, "backlog"> {
+  if (item.kind === "event") return "time-sensitive-events";
+  if (item.kind === "voice" || item.source.origin.startsWith("grok-social-") || item.source.origin === "executive-leadership-monitor") {
+    return "current-social";
+  }
+  return "current-news";
+}
+
 function attemptError(error: unknown) {
   if (error instanceof EditorModelError) return `${error.code}: ${error.message}`;
-  return error instanceof Error ? error.message : "Unknown editor-model error";
+  return error instanceof Error ? error.message : String(error);
 }
 
 async function enrichCandidate(
@@ -137,10 +165,11 @@ async function enrichCandidate(
   fetchImpl: typeof fetch,
   timeoutMs: number,
   reusable?: CandidateEnrichment["enrichment"],
+  untrustedSourceEvidence?: Record<string, unknown>,
 ): Promise<CandidateEnrichment> {
   if (reusable) return { item, enrichment: reusable };
   const apiKey = env.OPENROUTER_API_KEY || env.EDITOR_MODEL_API_KEY;
-  const fingerprint = await candidateFingerprint(item);
+  const fingerprint = await editorAttemptFingerprint(item, { model: env.EDITOR_MODEL, baseUrl: env.EDITOR_MODEL_BASE_URL });
   const attemptedAt = new Date().toISOString();
   if (!shouldEnrichCandidate(item) || !apiKey) return { item, enrichment: null };
   try {
@@ -152,6 +181,7 @@ async function enrichCandidate(
         baseUrl: env.EDITOR_MODEL_BASE_URL,
         model: env.EDITOR_MODEL,
         timeoutMs,
+        untrustedSourceEvidence,
       },
       fetchImpl,
     );
@@ -183,6 +213,7 @@ async function enrichBounded(
   fetchImpl: typeof fetch,
   reusable: Map<string, NonNullable<CandidateEnrichment["enrichment"]>>,
   options: { concurrency: number; timeoutMs: number; deadlineAt: number; heartbeat?: () => Promise<void> },
+  editorEvidence: ReadonlyMap<string, Record<string, unknown>> = new Map(),
 ) {
   const out: CandidateEnrichment[] = [];
   const concurrency = Math.max(1, Math.min(options.concurrency, items.length || 1));
@@ -197,7 +228,14 @@ async function enrichBounded(
       const remaining = options.deadlineAt - Date.now();
       if (remaining < 1_000) return;
       const timeoutMs = Math.max(1_000, Math.min(options.timeoutMs, remaining));
-      out[index] = await enrichCandidate(item, env, fetchImpl, timeoutMs, reusable.get(item.id));
+      out[index] = await enrichCandidate(
+        item,
+        env,
+        fetchImpl,
+        timeoutMs,
+        reusable.get(item.id),
+        editorEvidence.get(item.id),
+      );
     }
   }));
   return out.filter((row): row is CandidateEnrichment => Boolean(row));
@@ -268,15 +306,66 @@ type LeadershipAutomationResult = {
   coverage: ReturnType<typeof officialSourceCoverage>;
   seeded: boolean;
   fetched: number;
+  backoff: number;
   snapshots: number;
   observations: number;
   schedules: number;
   verifiedRoles: number;
   unresolved: number;
   conflicts: number;
+  identityFailures?: Array<{ personId: string; institutionId: string; reason: string }>;
+  failed: number;
+  failureDetails: Array<{
+    sourceId: string;
+    institutionId?: string;
+    errorClass: string;
+    httpStatus?: number;
+    nextRetryAt?: string;
+    reason: string;
+  }>;
   editorialCandidates: ContentItem[];
+  runtimeCoverage: RuntimeLeadershipCoverage[];
   error?: string;
 };
+
+function leadershipFailureDetails(
+  snapshots: Awaited<ReturnType<typeof monitorLeadershipSources>>["snapshots"],
+  schedules: Awaited<ReturnType<typeof monitorLeadershipSources>>["schedule"],
+) {
+  return snapshots
+    .filter((snapshot) => snapshot.state !== "success" && snapshot.state !== "unchanged")
+    .slice(0, 16)
+    .map((snapshot) => {
+      const schedule = schedules.find((row) => row.sourceId === snapshot.sourceId);
+      const source = sourceById(snapshot.sourceId);
+      const errorClass = snapshot.httpStatus
+        ? "http"
+        : snapshot.state === "blocked"
+          ? "blocked"
+          : snapshot.state === "hostile"
+            ? "hostile-content"
+            : /timed out/i.test(snapshot.error ?? "")
+              ? "timeout"
+              : snapshot.extractionStatus === "unrecognized"
+                ? "unrecognized"
+                : snapshot.extractionStatus;
+      return {
+        sourceId: snapshot.sourceId,
+        ...(source?.institutionId
+          ? { institutionId: source.institutionId }
+          : {}),
+        errorClass,
+        ...(snapshot.httpStatus === undefined || snapshot.httpStatus === null
+          ? {}
+          : { httpStatus: snapshot.httpStatus }),
+        ...(schedule?.nextAttemptAt ? { nextRetryAt: schedule.nextAttemptAt } : {}),
+        reason: (snapshot.error || `Leadership source ${snapshot.sourceId} failed`)
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 240),
+      };
+    });
+}
 
 async function runLeadershipStage(
   env: AutomationEnv,
@@ -288,41 +377,86 @@ async function runLeadershipStage(
   try {
     await seedCoveragePack(env.VALLEY_DESK_DB, coveragePack, now);
     const states = await readScheduledSourceStates(env.VALLEY_DESK_DB);
+    const backoff = [...states.values()].filter((state) => {
+      const next = Date.parse(state.nextAttemptAt);
+      return state.consecutiveFailures > 0 && Number.isFinite(next) && next > now.getTime();
+    }).length;
     const result = await monitorLeadershipSources({ fetchImpl, pack: coveragePack, states, now });
     const snapshots = await persistLeadershipSnapshots(env.VALLEY_DESK_DB, result.snapshots);
     const observations = await persistLeadershipObservations(env.VALLEY_DESK_DB, result.observations);
     const schedules = await persistScheduledSourceState(env.VALLEY_DESK_DB, result.schedule);
+    const currentSchedule = new Map([
+      ...states.entries(),
+      ...result.schedule.map((row) => [row.sourceId, row] as const),
+    ]);
+    const runtimeCoverage = buildRuntimeLeadershipCoverage(
+      coverage.map((row) => ({ ...row, configuredStatus: row.status })),
+      monitorableSources(coveragePack).map((source) => {
+        const state = currentSchedule.get(source.id);
+        return {
+          sourceId: source.id,
+          institutionId: source.institutionId,
+          ...(state ?? { state: "pending", consecutiveFailures: 0 }),
+        };
+      }),
+      now,
+    );
     const autonomous = await autonomouslyVerifyLeadership(env.VALLEY_DESK_DB, coveragePack, now);
     const failed = result.snapshots.filter((snapshot) => (
       snapshot.state !== "success" && snapshot.state !== "unchanged"
     )).length;
-    const outcome = failed > 0 ? "degraded" : "ok";
+    const outcome = failed > 0 || autonomous.identityFailures.length > 0 ? "degraded" : "ok";
     logOps("leadership", {
       outcome,
       cadence: mode,
       fetched: result.fetchedUrls.length,
+      backoff,
       snapshots,
       observations,
       schedules,
       verifiedRoles: autonomous.verifiedRoles,
       unresolved: autonomous.unresolved,
       conflicts: autonomous.conflicts,
+      identityFailures: autonomous.identityFailures,
       editorialCandidates: autonomous.editorialCandidates.length,
       failed,
       coverage,
+      runtimeCoverage: runtimeCoverage.map((row) => ({
+        institutionId: row.institutionId,
+        state: row.state,
+        coverageLost: row.coverageLost,
+        sourceCount: row.sourceIds.length,
+        healthySourceCount: row.healthySourceIds.length,
+        lastSuccessAt: row.lastSuccessAt,
+        failureAgeMs: row.failureAgeMs,
+        nextRetryAt: row.nextRetryAt,
+      })),
     }, outcome === "ok" ? "info" : "warn");
     return {
       outcome,
       coverage,
       seeded: true,
       fetched: result.fetchedUrls.length,
+      backoff,
       snapshots,
       observations,
       schedules,
       verifiedRoles: autonomous.verifiedRoles,
       unresolved: autonomous.unresolved,
       conflicts: autonomous.conflicts,
+      identityFailures: autonomous.identityFailures,
+      failed,
+      failureDetails: [
+        ...leadershipFailureDetails(result.snapshots, result.schedule),
+        ...autonomous.identityFailures.map((failure) => ({
+          sourceId: "executive-identity",
+          institutionId: failure.institutionId,
+          errorClass: "identity-invalid",
+          reason: `${failure.personId}: ${failure.reason}`,
+        })),
+      ],
       editorialCandidates: autonomous.editorialCandidates,
+      runtimeCoverage,
     };
   } catch (error) {
     const message = attemptError(error);
@@ -335,13 +469,21 @@ async function runLeadershipStage(
       coverage,
       seeded: false,
       fetched: 0,
+      backoff: 0,
       snapshots: 0,
       observations: 0,
       schedules: 0,
       verifiedRoles: 0,
       unresolved: 0,
       conflicts: 0,
+      failed: 0,
+      failureDetails: [],
       editorialCandidates: [],
+      runtimeCoverage: buildRuntimeLeadershipCoverage(
+        coverage.map((row) => ({ ...row, configuredStatus: row.status })),
+        [],
+        now,
+      ),
       error: message,
     };
   }
@@ -454,14 +596,17 @@ export async function runAutomation(
     }
     stage = "load-news-extractions";
     const newsExtractions = await readNewsArticleExtractions(env.VALLEY_DESK_DB);
+    const sourceHealth = await readSourceHealth(env.VALLEY_DESK_DB);
     stage = "fetch-sources";
     const ingestedRun = await ingest({
       X_BEARER_TOKEN: env.X_BEARER_TOKEN,
       LINKEDIN_TOKEN: env.LINKEDIN_TOKEN,
+      VALLEY_DESK_DB: env.VALLEY_DESK_DB,
+      sourceHealth,
     }, fetchImpl, {
       newsExtractions,
       mode,
-      includeEvents: mode === "daily",
+      includeEvents: true,
     });
     const signalCandidates = signalVerification.candidates;
     const officialNews = officialDiscovery.editorialCandidates.filter((item) => item.kind !== "event");
@@ -481,7 +626,12 @@ export async function runAutomation(
       : ingestedRun;
     const currentItems = allCandidates(run);
     const backlog = await readReviewBacklog(env.VALLEY_DESK_DB);
-    const items = mergeCurrentAndBacklog(currentItems, backlog);
+    const slugReview = await normalizeReviewSlugs(env.VALLEY_DESK_DB,
+      mergeCurrentAndBacklog(currentItems, backlog), ContentCatalog.parse(publishedCatalog));
+    const items = slugReview.items;
+    if (slugReview.collisions.length) logOps("run", {
+      outcome: "slug-collision-held", candidateIds: slugReview.collisions,
+    }, "warn");
     stage = "persist-news-extractions";
     const newsExtractionCount = await persistNewsArticleExtractions(
       env.VALLEY_DESK_DB,
@@ -489,12 +639,13 @@ export async function runAutomation(
     );
     const newsMetrics = run.newsExtraction?.metrics;
     stage = "load-enrichment-cache";
-    const { reusable, states: modelStates, verifications } = await readEditorModelCache(env.VALLEY_DESK_DB, items);
+    const modelCacheConfig = { model: env.EDITOR_MODEL, baseUrl: env.EDITOR_MODEL_BASE_URL };
+    const { reusable, states: modelStates, verifications } = await readEditorModelCache(env.VALLEY_DESK_DB, items, modelCacheConfig);
     stage = "persist-raw-candidates";
     const persisted = await persistIngestRun(
       env.VALLEY_DESK_DB,
       run,
-      currentItems.map((item) => ({ item, enrichment: null })),
+      mergeCurrentAndBacklog(slugReview.changed, currentItems).map((item) => ({ item, enrichment: null })),
     );
     persistedRunId = persisted.runId;
     stage = "persist-source-health";
@@ -540,14 +691,22 @@ export async function runAutomation(
       item,
       fingerprint: await candidateFingerprint(item),
     })));
+    const currentIdentities = new Set(currentItems.map((item) => sourceIdentityKey(item)));
+    const workItems = fingerprinted.map((row) => ({
+      ...row,
+      priority: currentIdentities.has(sourceIdentityKey(row.item))
+        ? currentWorkPriority(row.item)
+        : "backlog" as const,
+    }));
     await ensureLock();
     const selectedWork = selectEditorModelWorkWithLanes(
-      fingerprinted,
+      workItems,
       modelStates,
       {
         totalBudget: budget,
         now: new Date(),
         reusableIds: new Set(reusable.keys()),
+        priorityReservations: DEFAULT_EDITOR_WORK_PRIORITY_RESERVATIONS,
       },
     );
     const selected = selectedWork.items;
@@ -558,7 +717,7 @@ export async function runAutomation(
       timeoutMs,
       deadlineAt: modelDeadlineAt,
       heartbeat: ensureLock,
-    });
+    }, run.editorEvidence);
     const modeledById = new Map(modeled.map((row) => [row.item.id, row]));
     const verificationCandidates = items.flatMap((item) => {
       const enrichment = modeledById.get(item.id)?.enrichment ?? reusable.get(item.id);
@@ -618,19 +777,37 @@ export async function runAutomation(
       };
     });
     stage = "persist-enrichments";
-    const enrichedCount = await persistEnrichments(env.VALLEY_DESK_DB, candidates);
+    const enrichedCount = await persistEnrichments(env.VALLEY_DESK_DB, candidates, modelCacheConfig);
     stage = "editor-policy";
     const decisions = candidates.map((candidate) => ({
       ...candidate,
       decision: evaluateCandidate(candidate.item, candidate.enrichment, new Date(), candidate.verification),
     }));
     stage = "persist-editorial-decisions";
+    const editorialPersistedCandidateIds = new Set<string>();
     const editorial = await persistEditorialDecisions(
       env.VALLEY_DESK_DB,
       decisions,
       env.EDITOR_MODEL || DEFAULT_EDITOR_MODEL,
       env.EDITOR_MODEL_BASE_URL || DEFAULT_EDITOR_BASE_URL,
+      new Date(),
+      editorialPersistedCandidateIds,
     );
+    stage = "ack-social-evidence";
+    const editoriallyPersistedSocialEvidence = (run.socialEvidenceProcessed ?? []).filter(({ candidateId }) => (
+      editorialPersistedCandidateIds.has(candidateId)
+    ));
+    const socialEvidenceProcessedCount = await markSocialEvidenceProcessed(
+      env.VALLEY_DESK_DB,
+      editoriallyPersistedSocialEvidence,
+      new Date(),
+    );
+    if (env.EVENT_CALENDAR_COLLECTION_ENABLED === "true") {
+      stage = "event-calendar";
+      await ensureLock();
+      const calendar = await syncPublishedEventCalendar(env.VALLEY_DESK_DB, new Date(), env.PUBLIC_ORIGIN);
+      logOps("event-calendar", { outcome: "synchronized", ...calendar });
+    }
     stage = "complete-run";
     const finishedAt = await markIngestRunSucceeded(env.VALLEY_DESK_DB, persisted.runId);
     const modelAttemptedCount = modeled.filter((row) => row.attempt).length;
@@ -647,6 +824,14 @@ export async function runAutomation(
       state: source.state,
       itemCount: source.itemCount,
       complete: source.complete,
+      ...(source.completeness ? { completeness: source.completeness } : {}),
+      ...(source.error ? { error: source.error.replace(/\s+/g, " ").trim().slice(0, 240) } : {}),
+      ...(source.httpStatus === undefined ? {} : { httpStatus: source.httpStatus }),
+      ...(source.nextAttemptAt ? { nextAttemptAt: source.nextAttemptAt } : {}),
+      ...(source.fallbackUrl ? { fallbackUrl: source.fallbackUrl } : {}),
+      ...(source.consecutiveFailures === undefined ? {} : { consecutiveFailures: source.consecutiveFailures }),
+      ...(source.lastSuccessAt === undefined ? {} : { lastSuccessAt: source.lastSuccessAt }),
+      ...(source.requiresAuth === undefined ? {} : { requiresAuth: source.requiresAuth }),
     }));
     const sourceErrorCount = sources.filter(
       (source) => !["disabled", "misconfigured"].includes(source.state) && !isSuccessfulSourceState(source.state),
@@ -698,6 +883,10 @@ export async function runAutomation(
         lane,
         rows.length,
       ])),
+      priorities: Object.fromEntries(Object.entries(selectedWork.selectedByPriority).map(([priority, rows]) => [
+        priority,
+        rows.length,
+      ])),
       lanes: Object.fromEntries(Object.entries(selectedWork.metricsByLane).map(([lane, metrics]) => [lane, {
         eligible: metrics.eligibleCount,
         selected: metrics.selectedCount,
@@ -710,6 +899,12 @@ export async function runAutomation(
       outcome: "applied",
       runId: persisted.runId,
       ...editorial,
+    });
+    logOps("social-evidence", {
+      outcome: "acknowledged",
+      runId: persisted.runId,
+      processed: socialEvidenceProcessedCount,
+      quarantined: run.notes.grok?.quarantined ?? 0,
     });
     logOps("reconciliation", {
       outcome: reconciliation.withdrawn ? "withdrawn" : "ok",
@@ -729,6 +924,10 @@ export async function runAutomation(
         lane,
         rows.length,
       ])),
+      selectedByPriority: Object.fromEntries(Object.entries(selectedWork.selectedByPriority).map(([priority, rows]) => [
+        priority,
+        rows.length,
+      ])),
       modelAttemptedCount,
       modelSucceededCount,
       modelFailedCount,
@@ -739,6 +938,7 @@ export async function runAutomation(
       verifierApprovedCount: verificationRun.approved,
       verifierRejectedCount: verificationRun.rejected,
       sourceHealthCount,
+      socialEvidenceProcessedCount,
       newsExtractionCount,
       signalVerification,
       officialDiscovery,
@@ -748,7 +948,7 @@ export async function runAutomation(
       notes: run.notes,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown automation error";
+    const message = error instanceof Error ? error.message : String(error);
     logOps("run", { outcome: "failed", stage, runId: persistedRunId, message }, "error");
     if (persistedRunId) {
       try {

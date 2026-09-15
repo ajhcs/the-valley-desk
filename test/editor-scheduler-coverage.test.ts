@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { extractPaBillEvidence, paBillEvidenceText } from "../src/ingest/pa-bill-evidence.ts";
 import { test } from "node:test";
 import { DatabaseSync } from "node:sqlite";
 import { EditorEnrichment, DEFAULT_EDITOR_BASE_URL, DEFAULT_EDITOR_MODEL, EditorModelError } from "../src/ingest/editor-model.ts";
@@ -9,9 +10,10 @@ import { evaluateCandidate } from "../src/ingest/editor.ts";
 import { validateClaimLedger } from "../src/ingest/claim-ledger.ts";
 import { isHighRiskNews, verifyHighRisk, verifyWithSecondModel } from "../src/ingest/verification.ts";
 import { looksInstructionLike } from "../src/ingest/untrusted-text.ts";
-import { EventItem, NewsItem } from "../src/content/schema.ts";
+import { EventItem, NewsItem, PolicyItem } from "../src/content/schema.ts";
 import { runAutomation } from "../src/ingest/automation.ts";
 import { persistOfficialSourceCandidates } from "../src/ingest/official-source-automation.ts";
+import { applyPolicyBaseline, policyBaselinePlan } from "../src/ingest/policy-baseline.ts";
 import { candidateFingerprint, persistEnrichments, persistIngestRun, persistIngestRun as _persist, readReviewBacklog, type D1DatabaseLike, type D1StatementLike } from "../src/ingest/persistence.ts";
 import { readdirSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -68,6 +70,49 @@ test("official candidate persistence executes against the production schema", as
   }], [], new Set());
   assert.equal(persisted, 1);
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM official_source_candidates").get()?.count, 1);
+  await persistOfficialSourceCandidates(db, [{
+    id: "official-policy-hb1925",
+    sourceId: "ofs-pa-legislature-hb1925",
+    category: "policy",
+    region: "PA",
+    title: "House Bill 1925 Information",
+    url: "https://www.palegis.us/legislation/bills/2025/hb1925",
+    sourcePageUrl: "https://www.palegis.us/legislation/bills/2025/hb1925",
+    sourceName: "Pennsylvania General Assembly HB 1925",
+    trust: "regulatory",
+    discoveredAt: "2026-08-28T04:00:00.000Z",
+    publishedAt: "2026-05-05T00:00:00.000Z",
+    publicationDateSource: "legislative-action",
+    status: "review",
+    instructionLike: false,
+    detailTitle: "House Bill 1925",
+    detailText: paBillEvidenceText(extractPaBillEvidence(`<div><strong>Last Action: </strong>Reported as amended May 5, 2026.</div><div class="card float-start"><span title="Most recent printers number">May 5, 2026</span><div class="mt-2">PN 3349</div><a title="PDF Bill Text" href="/legislation/bills/text/PDF/2025/0/HB1925/PN3349">PDF</a></div>`, "https://palegis.us/legislation/bills/2025/hb1925")),
+    policyTextUrl: "https://palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN3349",
+    detailHash: "detail-hash",
+    detailState: "success",
+  }], [], new Set());
+  const instrument = database.prepare("SELECT instrument_id, session, current_version_id, current_stage FROM policy_instruments").get();
+  assert.deepEqual({ ...instrument! }, { instrument_id: "HB 1925", session: "2025-2026", current_version_id: "PN 3349", current_stage: "amended" });
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM policy_versions").get()?.count, 1);
+});
+
+test("policy correspondence baseline is deterministic and idempotent", async () => {
+  const database = new DatabaseSync(":memory:");
+  coverageMigrations(database);
+  const db = coverageD1(database);
+  const plan = policyBaselinePlan();
+  assert.equal(plan.mode, "dry-run");
+  assert.deepEqual(plan.counts, { instruments: 3, versions: 3, advocacy: 2, supportingEvidence: 1, benchmarks: 1 });
+  assert.equal(plan.productionMutation, false);
+  assert.deepEqual(plan.duplicates.withinManifest, []);
+  await applyPolicyBaseline(db);
+  await applyPolicyBaseline(db, "2026-09-06T01:00:00.000Z");
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM policy_instruments").get()?.count, 3);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM policy_versions").get()?.count, 3);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM policy_advocacy_records").get()?.count, 2);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM policy_supporting_evidence").get()?.count, 1);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM policy_benchmark_leads").get()?.count, 1);
+  database.close();
 });
 
 const base = {
@@ -121,6 +166,91 @@ test("automatic news publication requires curated body copy and rejects source-p
     })).rule,
     "curated-body-source-chrome",
   );
+});
+
+test("literal statewide hospital applicability can qualify policy without a named health system", () => {
+  const evidence = "The bill applies to hospitals and health care providers operating in Pennsylvania.";
+  const item = PolicyItem.parse({
+    ...base,
+    id: "policy-hb-1925",
+    slug: "policy-hb-1925",
+    title: "HB 1925 advances from committee",
+    dek: "Pennsylvania lawmakers advanced a health care artificial intelligence bill.",
+    body: `${evidence} The proposal would establish disclosure and governance requirements for certain uses.`,
+    kind: "policy",
+    status: "review",
+    publishedAt: "2026-08-27T14:00:00.000Z",
+    topics: ["policy", "ai"],
+    orgs: [],
+    region: "PA",
+    source: { kind: "ingest", origin: "official-ofs-pa-legislature-hb1925", url: "https://www.palegis.us/legislation/bills/2025/hb1925" },
+    citations: [{ name: "Pennsylvania General Assembly", url: "https://www.palegis.us/legislation/bills/2025/hb1925" }],
+    jurisdiction: "PA",
+    issuer: "legislature",
+    changeType: "legislation",
+    applicability: {
+      jurisdiction: "PA",
+      regulatedEntityTypes: ["hospital", "health-care-provider"],
+      evidenceSpans: [evidence],
+      sourceUrl: "https://www.palegis.us/legislation/bills/2025/hb1925",
+    },
+  });
+  const enrichment = EditorEnrichment.parse({
+    relevanceScore: 98,
+    confidence: 0.98,
+    decision: "priority_review",
+    reasons: ["Statewide hospital applicability is literal"],
+    affectedOrgIds: [],
+    productIds: [],
+    changeType: "regulatory",
+    materialityDimensions: ["risk"],
+    impactSentence: "Hospitals across Pennsylvania would need to assess covered AI workflows.",
+    body: item.body,
+    bodyEvidenceSpans: [evidence],
+    whyAttend: null,
+    whoYoullMeet: [],
+    evidenceSpans: [evidence],
+  });
+  const decision = evaluateCandidate(item, enrichment, new Date("2026-08-28T12:00:00.000Z"), { approved: true, objections: [] });
+  assert.notEqual(decision.rule, "local-org-required");
+  assert.notEqual(decision.rule, "affected-org-evidence-required");
+  const wrongJurisdiction = PolicyItem.parse({
+    ...item,
+    id: "policy-hb-1925-wrong-jurisdiction",
+    slug: "policy-hb-1925-wrong-jurisdiction",
+    applicability: { ...item.applicability!, jurisdiction: "NJ" },
+  });
+  assert.equal(
+    evaluateCandidate(wrongJurisdiction, enrichment, new Date("2026-08-28T12:00:00.000Z"), { approved: true, objections: [] }).rule,
+    "local-org-required",
+  );
+});
+
+test("vendor relevance cannot replace literal regional policy applicability", () => {
+  const item = PolicyItem.parse({
+    ...base,
+    id: "policy-vendor",
+    slug: "policy-vendor",
+    title: "Vendor publishes an AI policy guide",
+    body: "A technology vendor published general guidance for customers.",
+    kind: "policy",
+    status: "review",
+    publishedAt: "2026-08-27T14:00:00.000Z",
+    topics: ["policy"],
+    orgs: [],
+    region: "PA",
+    source: { kind: "ingest", origin: "official-ofs-vendor-policy", url: "https://vendor.example/policy" },
+    jurisdiction: "PA",
+    issuer: "other",
+    changeType: "guidance",
+  });
+  const enrichment = EditorEnrichment.parse({
+    relevanceScore: 99, confidence: 0.99, decision: "priority_review", reasons: ["Vendor claims relevance"],
+    affectedOrgIds: [], productIds: [], changeType: "regulatory", materialityDimensions: ["risk"],
+    impactSentence: "The vendor says customers should review its guidance.", body: item.body,
+    bodyEvidenceSpans: [item.body], whyAttend: null, whoYoullMeet: [], evidenceSpans: [item.body],
+  });
+  assert.equal(evaluateCandidate(item, enrichment, new Date("2026-08-28T12:00:00.000Z")).rule, "local-org-required");
 });
 
 // 1) fresh-over-stale selection
@@ -318,7 +448,7 @@ test("model failure isolation: automation publishes official events even when mo
   // Instead exercise real automation with failing model fetch
   const { DatabaseSync : DS } = await import("node:sqlite");
   const dbImpl=new DS(":memory:");
-  for (const name of ["0001_automation.sql","0002_review_audit.sql","0003_editor_publication.sql","0004_source_reconciliation.sql","0005_publication_invariants.sql","0006_editor_model_attempts.sql","0007_publication_identity.sql","0008_source_reliability.sql","0009_snapshot_completeness.sql","0010_email_discoveries.sql","0011_news_article_extractions.sql","0012_executive_intelligence.sql","0013_executive_verification.sql","0014_editor_review_verification.sql","0015_signals_alerts.sql","0016_operational_alert_recovery.sql","0017_executive_enrollment.sql","0018_signal_pointer_verification.sql","0019_official_source_discovery.sql","0020_official_source_retry_provenance.sql","0021_social_evidence_packets.sql"]) {
+  for (const name of ["0001_automation.sql","0002_review_audit.sql","0003_editor_publication.sql","0004_source_reconciliation.sql","0005_publication_invariants.sql","0006_editor_model_attempts.sql","0007_publication_identity.sql","0008_source_reliability.sql","0009_snapshot_completeness.sql","0010_email_discoveries.sql","0011_news_article_extractions.sql","0012_executive_intelligence.sql","0013_executive_verification.sql","0014_editor_review_verification.sql","0015_signals_alerts.sql","0016_operational_alert_recovery.sql","0017_executive_enrollment.sql","0018_signal_pointer_verification.sql","0019_official_source_discovery.sql","0020_official_source_retry_provenance.sql","0021_social_evidence_packets.sql","0022_source_health_backoff.sql","0023_social_collector_runs.sql","0024_social_lifecycle.sql","0025_operational_alert_context.sql","0026_source_health_attribution.sql","0027_policy_intelligence_hardening.sql"]) {
     dbImpl.exec(readFileSync(join(root,"migrations",name),"utf8"));
   }
   class SqliteD1Statement implements D1StatementLike { private values:unknown[]=[]; constructor(private st: import("node:sqlite").StatementSync){} bind(...vals:unknown[]){const b=new SqliteD1Statement(this.st); b.values=vals; return b;} async first<T>(){return (this.st.get(...this.values as never[]) as T | undefined) ?? null;} async run(){return this.st.run(...this.values as never[]);} async all<T>(){return {results:this.st.all(...this.values as never[]) as T[]};}

@@ -1,0 +1,15 @@
+.WatchEditorialReview { border-block: 1px solid #c6ccce; padding-block: 1.25rem; margin-block: 1.5rem; min-width: 0; overflow-wrap: anywhere; }
+.WatchEditorialReview header, .WatchEditorialReview-actions, .WatchEditorialReview nav { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; }
+.WatchEditorialReview header { justify-content: space-between; }
+.WatchEditorialReview button { min-height: 44px; padding: .5rem .75rem; white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.WatchEditorialReview button[aria-pressed="true"] { border: 2px solid #16765c; }
+.WatchEditorialReview button:disabled { opacity: .55; cursor: not-allowed; }
+.WatchEditorialReview pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .8125rem; max-width: 100%; }
+.WatchEditorialReview-queue { list-style: none; padding: 0; display: grid; gap: .5rem; }
+.WatchEditorialReview-detail { margin-top: 1.5rem; }
+.WatchEditorialReview-detail dd { margin: .25rem 0 1rem; }
+.WatchEditorialReview-fact, .WatchEditorialReview-evidence { border-top: 1px solid #dce0e0; padding-block: .75rem; }
+.WatchEditorialReview h5 { font-size: .9375rem; margin: .25rem 0; }
+.WatchEditorialReview-confirm { display: flex; gap: .65rem; align-items: center; padding-block: 1rem; min-height: 44px; }
+.WatchEditorialReview input[type="checkbox"] { width: 20px; height: 20px; flex: 0 0 20px; }
+.WatchEditorialReview details { margin-block: .75rem; }

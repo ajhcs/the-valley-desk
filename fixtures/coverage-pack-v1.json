@@ -185,7 +185,7 @@
       "covered": true,
       "inBox": false,
       "edge": false,
-      "aliases": ["Penn Medicine Princeton Health", "Princeton Medical Center"],
+      "aliases": ["Penn Medicine Princeton Health", "Princeton Health", "Princeton Medical Center"],
       "linkedinNames": ["Penn Medicine Princeton Health"]
     },
     {
@@ -408,12 +408,12 @@
     {
       "id": "src-jefferson-enterprise-leadership",
       "institutionId": "inst-jefferson",
-      "kind": "leadership-page",
-      "url": "https://magazine.jefferson.edu/content/dam/oia/2026/jim-spring-2026/Jefferson_Innovator_Magazine_Spring_2026.pdf",
+      "kind": "newsroom-bio",
+      "url": "https://www.jeffersonhealth.org/about-us/news/2025/05/jefferson-extends-contract-with-ceo-joseph-g-cacchione-md",
       "precedence": 90,
-      "monitor": false,
-      "cadence": "weekly",
-      "status": "disabled"
+      "monitor": true,
+      "cadence": "daily",
+      "status": "enabled"
     },
     {
       "id": "src-main-line-leadership",
@@ -449,11 +449,14 @@
       "id": "src-christianacare-leadership",
       "institutionId": "inst-christianacare",
       "kind": "leadership-page",
-      "url": "https://christianacare.org/us/en/about-us/who-we-are/our-leadership.html",
+      "url": "https://christianacare.org/us/en/about-us/who-we-are/our-leadership",
       "precedence": 100,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "christianacare-roster",
+      "scanMaxBytes": 2000000,
+      "retainSuffixBytes": 512000
     },
     {
       "id": "src-temple-leadership",
@@ -469,11 +472,12 @@
       "id": "src-tower-leadership",
       "institutionId": "inst-tower",
       "kind": "leadership-page",
-      "url": "https://towerhealth.org/about-tower-health/tower-health-leadership-team",
+      "url": "https://towerhealth.org/about/tower-health-leadership-team",
       "precedence": 100,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "tower-roster"
     },
     {
       "id": "src-inspira-leadership",
@@ -503,7 +507,8 @@
       "precedence": 100,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "virtua-roster"
     },
     {
       "id": "src-main-line-luke-olenoski",
@@ -513,7 +518,8 @@
       "precedence": 60,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "mainline-profile"
     },
     {
       "id": "src-chop-salmasian",
@@ -553,7 +559,10 @@
       "precedence": 60,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "christianacare-profile",
+      "scanMaxBytes": 2000000,
+      "retainSuffixBytes": 512000
     },
     {
       "id": "src-christianacare-anahi",
@@ -568,12 +577,13 @@
     {
       "id": "src-penn-princeton-leadership",
       "institutionId": "inst-penn-princeton",
-      "kind": "leadership-page",
-      "url": "https://www.pennmedicine.org/locations/entity/princeton-health/financial-reporting",
+      "kind": "newsroom-bio",
+      "url": "https://www.pennmedicine.org/news/penn-medicine-to-break-ground-on-cancer-center-at-princeton-health",
+      "alternateUrls": ["https://www.pennmedicine.org/locations/entity/princeton-health/financial-reporting"],
       "precedence": 90,
-      "monitor": false,
-      "cadence": "weekly",
-      "status": "disabled"
+      "monitor": true,
+      "cadence": "daily",
+      "status": "enabled"
     },
     {
       "id": "src-penn-doylestown-ceo",
@@ -581,9 +591,9 @@
       "kind": "newsroom-bio",
       "url": "https://www.pennmedicine.org/news/craig-gronczewski-named-ceo-of-penn-medicine-doylestown-health",
       "precedence": 90,
-      "monitor": false,
-      "cadence": "weekly",
-      "status": "disabled"
+      "monitor": true,
+      "cadence": "daily",
+      "status": "enabled"
     },
     {
       "id": "src-lvhn-leadership-committees",
@@ -623,7 +633,8 @@
       "precedence": 100,
       "monitor": true,
       "cadence": "daily",
-      "status": "enabled"
+      "status": "enabled",
+      "leadershipExtractionContract": "st-lukes-roster"
     }
   ],
   "people": [
@@ -755,6 +766,30 @@
       "institutionIds": ["inst-inspira"],
       "knownTitle": "SVP and Chief Innovations and Information Officer (CIIO)",
       "sourceIds": ["src-inspira-leadership"]
+    },
+    {
+      "id": "person-joseph-cacchione",
+      "displayName": "Joseph G. Cacchione, MD",
+      "aliases": ["Joseph G. Cacchione", "Joseph Cacchione"],
+      "institutionIds": ["inst-jefferson"],
+      "knownTitle": "Chief Executive Officer",
+      "sourceIds": ["src-jefferson-enterprise-leadership"]
+    },
+    {
+      "id": "person-james-demetriades",
+      "displayName": "James Demetriades",
+      "aliases": ["James Demetriades"],
+      "institutionIds": ["inst-penn-princeton"],
+      "knownTitle": "President and CEO",
+      "sourceIds": ["src-penn-princeton-leadership"]
+    },
+    {
+      "id": "person-craig-gronczewski",
+      "displayName": "Craig Gronczewski, MD, MBA, FACHE",
+      "aliases": ["Craig Gronczewski"],
+      "institutionIds": ["inst-penn-doylestown"],
+      "knownTitle": "Chief Executive Officer",
+      "sourceIds": ["src-penn-doylestown-ceo"]
     }
   ]
 }

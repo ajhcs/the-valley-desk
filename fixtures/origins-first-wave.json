@@ -22,6 +22,14 @@
       "name": "Cooper University Health Care News",
       "origin": "cooper-newsroom",
       "url": "https://blogs.cooperhealth.org/news/feed/",
+      "htmlFallbacks": [{
+        "url": "https://www.cooperhealth.org/about-us/newsroom",
+        "adapter": "cooper-newsroom"
+      }],
+      "independentFallbacks": [{
+        "url": "https://www.phillyvoice.com/tags/cooperuniversity-health-care/",
+        "adapter": "cooper-independent"
+      }],
       "orgIds": ["org-cooper"],
       "kind": "news"
     },
@@ -52,6 +60,13 @@
       "kind": "news",
       "status": "misconfigured",
       "reason": "Configured feed URLs do not currently return a usable RSS or Atom document"
+    },
+    {
+      "id": "delaware-government-news",
+      "name": "Delaware Government News",
+      "url": "https://news.delaware.gov/feed/",
+      "kind": "news",
+      "status": "enabled"
     }
   ],
   "events": [

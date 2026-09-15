@@ -358,6 +358,10 @@ async function readPending(db: D1DatabaseLike, now: Date, limit: number): Promis
            verification_attempt_count
     FROM email_discoveries
     WHERE status = 'review'
+      AND trust_state = 'authenticated-pointer'
+      AND auth_state = 'authenticated'
+      AND auth_provenance_json IS NOT NULL
+      AND LENGTH(auth_provenance_sha256) = 64
       AND verification_state IN ('pending', 'failed')
       AND (verification_next_attempt_at IS NULL OR verification_next_attempt_at <= ?)
     ORDER BY first_seen_at ASC, id ASC

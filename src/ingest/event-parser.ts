@@ -89,6 +89,14 @@ export function slugify(title: string) {
     .slice(0, 72) || "event";
 }
 
+/** Publication paths must not end in a separator after truncation.
+ * Keep slugify's legacy identity-key behavior stable; persisted identities
+ * must not be renamed by a presentation-path correction.
+ */
+export function publicationSlug(title: string) {
+  return slugify(title).replace(/-+$/g, "") || "event";
+}
+
 function wallParts(date: Date, timeZone: string) {
   const map: Record<string, string> = {};
   for (const part of new Intl.DateTimeFormat("en-CA", {

@@ -38,7 +38,7 @@ import {
 } from "../src/content/schema.ts";
 import { toReviewQueue } from "../src/ingest/envelope.ts";
 import { fetchDvhimssCalendar, ingestEventsWithHealth, scrapeNjdvhimss } from "../src/ingest/events.ts";
-import { RSS_SOURCES, ingestRssWithHealth, parseAtomItems, parseFeedItems, parseRssItems, rssItemToContent } from "../src/ingest/rss.ts";
+import { RSS_SOURCES, ingestRssWithHealth, parseAtomItems, parseCooperIndependentItems, parseCooperNewsroomItems, parseFeedItems, parseRssItems, rssItemToContent } from "../src/ingest/rss.ts";
 import { ingestLinkedIn } from "../src/ingest/linkedin.ts";
 import { ingestX } from "../src/ingest/x.ts";
 import { mergeReviewQueue, selectPriorityWork, contentPriorityFields, QUEUE_SLA_OVERDUE_MS } from "../src/ingest/queue.ts";
@@ -84,6 +84,7 @@ import {
   persistEnrichments,
   persistIngestRun,
   persistSourceHealth,
+  readSourceHealth,
   readPublicationTombstones,
   readPublishedContent,
   readReusableEnrichments,
@@ -99,7 +100,7 @@ import {
   sourceIdentityKey,
 } from "../src/ingest/identity.ts";
 import { RSS_SOURCES, ingestRssWithHealth, rssItemToContent } from "../src/ingest/rss.ts";
-import { snapshotCompleteness, sourceAuthorizesDisappearance } from "../src/ingest/source-health.ts";
+import { classifyHttpStatus, snapshotCompleteness, sourceAuthorizesDisappearance } from "../src/ingest/source-health.ts";
 import { evaluateCandidate, EDITOR_POLICY_VERSION } from "../src/ingest/editor.ts";
 import {
   PUBLICATION_POLICY_VERSION,
@@ -257,7 +258,7 @@ test("one event-source outage does not discard successful RSS ingestion", async 
   assert.equal(result.events.length, 0);
 });
 
-test("scheduled cadence keeps hourly freshness separate from the daily event deep scan", async () => {
+test("scheduled cadence keeps current event checks in the hourly freshness lane", async () => {
   const requested: string[] = [];
   const fetchImpl = async (input: RequestInfo | URL) => {
     const url = String(input);
@@ -265,7 +266,8 @@ test("scheduled cadence keeps hourly freshness separate from the daily event dee
     return new Response("", { status: 503 });
   };
   await runIngestAll({}, new Date("2026-08-28T02:00:00.000Z"), fetchImpl, { mode: "hourly" });
-  assert.equal(requested.some((url) => url.includes("dvhimss.org") || url.includes("njdvhimssevent.com")), false);
+  assert.equal(requested.some((url) => url.includes("dvhimss.org")), true);
+  assert.equal(requested.some((url) => url.includes("njdvhimssevent.com")), true);
 
   requested.length = 0;
   await runIngestAll({}, new Date("2026-08-28T03:15:00.000Z"), fetchImpl, { mode: "daily" });
@@ -323,6 +325,124 @@ test("Atom entries are parsed instead of claiming empty RSS success", () => {
   assert.equal(items[1]?.title, "Second atom");
 });
 
+test("Cooper official newsroom fallback only accepts linked Cooper release pages", () => {
+  const html = `
+    <html><body><header>Cooper University Health Care</header>
+      <section><h2>Cooper University Health Care announces a new regional program</h2>
+        <span>August 26, 2026</span>
+        <a href="https://blogs.cooperhealth.org/news/regional-program/">Cooper University Health Care announces a new regional program</a>
+      </section>
+      <a href="https://www.cooperhealth.org/about-us">About Cooper</a>
+    </body></html>`;
+  const items = parseCooperNewsroomItems(html);
+  assert.equal(items.length, 1);
+  assert.equal(items[0]?.link, "https://blogs.cooperhealth.org/news/regional-program");
+  assert.equal(items[0]?.pubDate, "August 26, 2026");
+  assert.deepEqual(parseCooperNewsroomItems("<html>holding page</html>"), []);
+});
+
+test("Cooper independent fallback is bounded discovery and never an authority source", () => {
+  const html = `
+    <html><body><header>Cooper University Health Care</header>
+      <article><a href="https://www.phillyvoice.com/cooper-new-campus/">Cooper University Health Care plans a new campus</a>
+        <time>August 27, 2026</time><span>by cooperhealth.org</span></article>
+      <article><a href="https://www.phillyvoice.com/tags/health/">Health tag</a></article>
+    </body></html>`;
+  const items = parseCooperIndependentItems(html);
+  assert.equal(items.length, 1);
+  assert.equal(items[0]?.link, "https://phillyvoice.com/cooper-new-campus");
+  assert.equal(items[0]?.pubDate, "August 27, 2026");
+  assert.deepEqual(parseCooperIndependentItems(html, "https://evil.example/cooper"), []);
+  assert.deepEqual(parseCooperIndependentItems(html, "https://www.phillyvoice.com/tags/other"), []);
+});
+
+test("Cooper public RSS blocks fall back to the official newsroom and retain authority", async () => {
+  const requested: string[] = [];
+  const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    requested.push(url);
+    if (url === "https://blogs.cooperhealth.org/news/feed/") return new Response("", { status: 403 });
+    if (url === "https://www.cooperhealth.org/about-us/newsroom") {
+      return new Response(`
+        <html><body><header>Cooper University Health Care</header>
+          <h2>Cooper launches a regional program</h2><span>August 26, 2026</span>
+          <a href="https://blogs.cooperhealth.org/news/regional-program/">Cooper launches a regional program</a>
+        </body></html>`, { status: 200 });
+    }
+    return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+  });
+  const cooper = result.sources.find((source) => source.id === "cooper-newsroom");
+  assert.equal(cooper?.state, "healthy");
+  assert.equal(cooper?.fallbackUrl, "https://www.cooperhealth.org/about-us/newsroom");
+  const cooperFeedIndex = requested.indexOf("https://blogs.cooperhealth.org/news/feed/");
+  assert.ok(cooperFeedIndex >= 0);
+  assert.equal(requested[cooperFeedIndex + 1], "https://www.cooperhealth.org/about-us/newsroom");
+  const item = result.items.find((candidate) => candidate.title === "Cooper launches a regional program");
+  assert.ok(item);
+  assert.deepEqual(item.orgs, ["org-cooper"]);
+  assert.ok(item.citations?.some((citation) => citation.name.includes("official newsroom")));
+});
+
+test("Cooper empty RSS falls back instead of claiming healthy-empty coverage", async () => {
+  const requested: string[] = [];
+  const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    requested.push(url);
+    if (url === "https://blogs.cooperhealth.org/news/feed/") {
+      return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+    }
+    if (url === "https://www.cooperhealth.org/about-us/newsroom") {
+      return new Response(`
+        <html><body><header>Cooper University Health Care</header>
+          <h2>Cooper publishes an operational update</h2><span>August 26, 2026</span>
+          <a href="https://blogs.cooperhealth.org/news/operational-update/">Cooper publishes an operational update</a>
+        </body></html>`, { status: 200 });
+    }
+    return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+  });
+  const cooper = result.sources.find((source) => source.id === "cooper-newsroom");
+  assert.equal(cooper?.state, "healthy");
+  assert.equal(cooper?.fallbackUrl, "https://www.cooperhealth.org/about-us/newsroom");
+  const feedIndex = requested.indexOf("https://blogs.cooperhealth.org/news/feed/");
+  assert.equal(requested[feedIndex + 1], "https://www.cooperhealth.org/about-us/newsroom");
+  assert.ok(result.items.some((item) => item.title === "Cooper publishes an operational update"));
+});
+
+test("Cooper independent fallback keeps third-party discovery held for first-party corroboration", async () => {
+  const requested: string[] = [];
+  const independent = "https://www.phillyvoice.com/tags/cooperuniversity-health-care/";
+  const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
+    const url = String(input);
+    requested.push(url);
+    if (url === "https://blogs.cooperhealth.org/news/feed/" || url === "https://www.cooperhealth.org/about-us/newsroom") {
+      return new Response("", { status: 403 });
+    }
+    if (url === independent) {
+      return new Response(`
+        <html><body><header>Cooper University Health Care</header>
+          <article><a href="https://www.phillyvoice.com/cooper-new-campus/">Cooper University Health Care plans a new campus</a>
+            <time>August 27, 2026</time><span>by cooperhealth.org</span></article>
+        </body></html>`, { status: 200 });
+    }
+    return new Response(EMPTY_RSS, { status: 200 });
+  });
+  const cooper = result.sources.find((source) => source.id === "cooper-newsroom");
+  assert.equal(cooper?.state, "healthy");
+  assert.equal(cooper?.fallbackUrl, independent);
+  const feedIndex = requested.indexOf("https://blogs.cooperhealth.org/news/feed/");
+  assert.ok(feedIndex >= 0);
+  assert.deepEqual(requested.slice(feedIndex, feedIndex + 3), [
+    "https://blogs.cooperhealth.org/news/feed/",
+    "https://www.cooperhealth.org/about-us/newsroom",
+    independent,
+  ]);
+  const item = result.items.find((candidate) => candidate.title.includes("new campus"));
+  assert.ok(item);
+  assert.equal(item.source.origin, "cooper-independent-discovery");
+  assert.deepEqual(item.orgs, ["org-cooper"]);
+  assert.ok(item.citations?.some((citation) => citation.name.includes("corroboration required")));
+});
+
 test("Technical.ly is misconfigured and never reported as empty success", async () => {
   const result = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async () => {
     throw new Error("Technical.ly must not be fetched while misconfigured");
@@ -357,7 +477,7 @@ test("missing social tokens and LinkedIn person origins are misconfigured, not e
   assert.equal(x.sources[0]?.state, "misconfigured");
 });
 
-test("upstream RSS and social failures classify timeout, auth, rate-limit, and parser outcomes", async () => {
+test("upstream RSS and social failures distinguish public blocks from auth, rate-limit, and parser outcomes", async () => {
   const timed = await ingestRssWithHealth(new Date("2026-08-26T12:00:00.000Z"), async (input) => {
     const url = String(input);
     if (url.includes("christianacare.org")) {
@@ -365,6 +485,7 @@ test("upstream RSS and social failures classify timeout, auth, rate-limit, and p
       throw error;
     }
     if (url.includes("cooperhealth.org")) return new Response("<html>not a feed</html>", { status: 200 });
+    if (url.includes("phillyvoice.com/tags/cooperuniversity-health-care")) return new Response("<html>not a Cooper page</html>", { status: 200 });
     if (url.includes("inquirer.com/arc/outboundfeeds/rss/category/health")) {
       return new Response("", { status: 401 });
     }
@@ -379,7 +500,7 @@ test("upstream RSS and social failures classify timeout, auth, rate-limit, and p
   const byId = Object.fromEntries(timed.sources.map((source) => [source.id, source.state]));
   assert.equal(byId["christianacare-information-technology"], "timed-out");
   assert.equal(byId["cooper-newsroom"], "parser-failed");
-  assert.equal(byId["inquirer-health"], "auth-failed");
+  assert.equal(byId["inquirer-health"], "upstream-blocked");
   assert.equal(byId["inquirer-business"], "rate-limited");
   assert.equal(byId.whyy, "healthy-empty");
   assert.equal(byId.technically, "misconfigured");
@@ -388,6 +509,152 @@ test("upstream RSS and social failures classify timeout, auth, rate-limit, and p
     new Response("", { status: 401 })
   ));
   assert.ok(auth.sources.some((source) => source.id.startsWith("linkedin-") && source.id !== "linkedin-benjaminslovis" && source.state === "auth-failed"));
+  assert.equal(classifyHttpStatus(403), "upstream-blocked");
+  assert.equal(classifyHttpStatus(403, { requiresAuth: true }), "auth-failed");
+});
+
+test("source retry backoff is durable and skips upstream calls until due", async () => {
+  const checkedAt = "2026-08-26T12:00:00.000Z";
+  const nextAttemptAt = "2026-08-26T12:30:00.000Z";
+  const prior = (sourceId: string, state: "upstream-blocked" | "upstream-failed") => ({
+    sourceId,
+    state,
+    itemCount: 0,
+    complete: false,
+    completeness: "partial" as const,
+    consecutiveFailures: 2,
+    lastCheckedAt: checkedAt,
+    lastSuccessAt: null,
+    lastError: "HTTP 403",
+    nextAttemptAt,
+    lastHttpStatus: 403,
+    requiresAuth: false,
+  });
+  let primaryCalls = 0;
+  const rss = await ingestRssWithHealth(new Date(checkedAt), async (input) => {
+    if (String(input) === "https://www.inquirer.com/arc/outboundfeeds/rss/category/health/?outputType=xml") {
+      primaryCalls += 1;
+      throw new Error("Inquirer should remain in backoff");
+    }
+    return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+  }, { sourceHealth: new Map([["inquirer-health", prior("inquirer-health", "upstream-blocked")]]) });
+  assert.equal(primaryCalls, 0);
+  const inquirer = rss.sources.find((source) => source.id === "inquirer-health");
+  assert.equal(inquirer?.state, "backoff");
+  assert.equal(inquirer?.nextAttemptAt, nextAttemptAt);
+  assert.equal(inquirer?.consecutiveFailures, 2);
+
+  let eventCalls = 0;
+  const events = await ingestEventsWithHealth(new Date(checkedAt), async () => {
+    eventCalls += 1;
+    throw new Error("Events should remain in backoff");
+  }, new Map([
+    ["dvhimss-events", prior("dvhimss-events", "upstream-failed")],
+    ["njhimss-events", prior("njhimss-events", "upstream-failed")],
+  ]));
+  assert.equal(eventCalls, 0);
+  assert.ok(events.sources.every((source) => source.state === "backoff"));
+});
+
+test("a configured Cooper fallback keeps serving while the primary is in backoff", async () => {
+  const checkedAt = "2026-08-26T12:00:00.000Z";
+  const primaryUrl = "https://blogs.cooperhealth.org/news/feed/";
+  const fallbackUrl = "https://www.cooperhealth.org/about-us/newsroom";
+  const prior = {
+    sourceId: "cooper-newsroom",
+    state: "upstream-blocked" as const,
+    itemCount: 0,
+    complete: false,
+    completeness: "partial" as const,
+    consecutiveFailures: 2,
+    lastCheckedAt: checkedAt,
+    lastSuccessAt: null,
+    lastError: "HTTP 403",
+    nextAttemptAt: "2026-08-26T12:30:00.000Z",
+    lastHttpStatus: 403,
+    requiresAuth: false,
+  };
+  const requested: string[] = [];
+  const result = await ingestRssWithHealth(new Date(checkedAt), async (input) => {
+    const url = String(input);
+    requested.push(url);
+    if (url === fallbackUrl) {
+      return new Response(`<html><body><header>Cooper University Health Care</header>
+        <h2>Cooper publishes a current update</h2><span>August 26, 2026</span>
+        <a href="https://blogs.cooperhealth.org/news/current-update/">Cooper publishes a current update</a>
+      </body></html>`, { status: 200 });
+    }
+    if (url === primaryUrl) throw new Error("primary must remain in backoff");
+    return new Response("<?xml version=\"1.0\"?><rss><channel></channel></rss>", { status: 200 });
+  }, { sourceHealth: new Map([["cooper-newsroom", prior]]) });
+
+  assert.equal(requested.includes(primaryUrl), false);
+  assert.equal(requested.includes(fallbackUrl), true);
+  const cooper = result.sources.find((source) => source.id === "cooper-newsroom");
+  assert.equal(cooper?.state, "backoff");
+  assert.equal(cooper?.fallbackUrl, fallbackUrl);
+  assert.equal(cooper?.itemCount, 1);
+  assert.equal(cooper?.nextAttemptAt, prior.nextAttemptAt);
+  assert.equal(cooper?.consecutiveFailures, prior.consecutiveFailures);
+  assert.ok(result.items.some((item) => item.title === "Cooper publishes a current update"));
+});
+
+test("source-health persistence follows 15-minute, hourly, and recovery transitions", async () => {
+  const database = new DatabaseSync(":memory:");
+  applyMigrations(database);
+  const db = sqliteD1(database);
+  const source = (checkedAt: string, state: "upstream-failed" | "backoff" | "healthy", nextAttemptAt?: string, fallbackUrl?: string) => ({
+    id: "retry-source",
+    origin: "retry-source",
+    type: "rss" as const,
+    state,
+    checkedAt,
+    itemCount: state === "healthy" ? 1 : 0,
+    complete: state === "healthy",
+    completeness: state === "healthy" ? "complete" as const : "partial" as const,
+    url: "https://example.com/feed",
+    institutionIds: ["inst-cooper"],
+    ...(state === "healthy" ? {} : { error: "HTTP 503", httpStatus: 503 }),
+    ...(nextAttemptAt ? { nextAttemptAt } : {}),
+    ...(fallbackUrl ? { fallbackUrl } : {}),
+  });
+  const run = async (fetchedAt: string) => persistIngestRun(db, {
+    fetchedAt,
+    rss: [], events: [], social: [],
+    notes: { rss: 0, events: 0, linkedin: { count: 0 }, x: { count: 0 } },
+  }, []);
+  const firstAt = "2026-08-26T12:00:00.000Z";
+  const firstRun = await run(firstAt);
+  await persistSourceHealth(db, firstRun.runId, [source(firstAt, "upstream-failed")]);
+  let row = await readSourceHealth(db);
+  assert.equal(row.get("retry-source")?.consecutiveFailures, 1);
+  assert.deepEqual(row.get("retry-source")?.institutionIds, ["inst-cooper"]);
+  assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T12:15:00.000Z");
+
+  const secondAt = "2026-08-26T12:15:00.000Z";
+  const secondRun = await run(secondAt);
+  await persistSourceHealth(db, secondRun.runId, [source(secondAt, "upstream-failed")]);
+  row = await readSourceHealth(db);
+  assert.equal(row.get("retry-source")?.consecutiveFailures, 2);
+  assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T13:15:00.000Z");
+
+  const backoffAt = "2026-08-26T12:30:00.000Z";
+  const backoffRun = await run(backoffAt);
+  await persistSourceHealth(db, backoffRun.runId, [source(backoffAt, "backoff", "2026-08-26T13:15:00.000Z", "https://example.com/official")]);
+  row = await readSourceHealth(db);
+  assert.equal(row.get("retry-source")?.consecutiveFailures, 2);
+  assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T13:15:00.000Z");
+  assert.equal(row.get("retry-source")?.lastFallbackUrl, "https://example.com/official");
+
+  const healthyAt = "2026-08-26T13:15:00.000Z";
+  const healthyRun = await run(healthyAt);
+  await persistSourceHealth(db, healthyRun.runId, [source(healthyAt, "healthy", undefined, "https://example.com/official")]);
+  row = await readSourceHealth(db);
+  assert.equal(row.get("retry-source")?.consecutiveFailures, 0);
+  assert.equal(row.get("retry-source")?.lastSuccessAt, healthyAt);
+  assert.equal(row.get("retry-source")?.nextAttemptAt, "2026-08-26T13:30:00.000Z");
+  assert.equal(row.get("retry-source")?.lastFallbackUrl, "https://example.com/official");
+  database.close();
 });
 
 test("an unrecognized NJ event page cannot trigger disappearance reconciliation", async () => {
@@ -1144,7 +1411,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(home.includes("rankedNews[0]"));
   assert.ok(home.includes("item.id !== lead?.id"));
   assert.ok(!home.includes("<Desk"));
-  assert.ok(home.includes("latestVoices"));
+  assert.ok(!home.includes("latestVoices"));
+  assert.ok(home.includes("publicFeatures().watch"));
   assert.ok(home.includes("pinnedUpcomingEvents"));
   assert.ok(eventsPage.includes("upcomingEvents"));
   assert.ok(eventsPage.includes("CHAPTER RADAR"));
@@ -1160,7 +1428,9 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(!home.toLowerCase().includes("himss seal"));
   assert.ok(home.includes("NEWS · LATEST"));
   assert.ok(home.includes("EVENTS · NEXT"));
-  assert.ok(home.includes("VOICES · LATEST"));
+  assert.ok(!home.includes("VOICES · LATEST"));
+  assert.ok(home.includes("Policy Watch"));
+  assert.ok(home.includes("Technology Watch"));
   assert.ok(lead.includes("LATEST NEWS"));
   assert.ok(!lead.includes("item.publishedAt"));
   assert.ok(!lead.includes("chipInstant"));
@@ -1192,7 +1462,9 @@ test("homepage binds store queries and kit class names", () => {
   }
   assert.ok(footer.includes("News"));
   assert.ok(footer.includes("Events"));
-  assert.ok(footer.includes("Voices"));
+  assert.ok(!footer.includes("Voices"));
+  assert.ok(footer.includes("Policy Watch"));
+  assert.ok(footer.includes("Technology Watch"));
   assert.ok(footer.includes("feed.json"));
   assert.ok(footer.includes("feed.xml"));
   assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
@@ -1208,16 +1480,19 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(layout.includes("NavLink"));
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
-  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(!layout.includes('to="/voices"'));
   assert.ok(layout.includes("is-news"));
   assert.ok(layout.includes("is-events"));
-  assert.ok(layout.includes("is-voices"));
+  assert.ok(!layout.includes("is-voices"));
+  assert.ok(layout.includes("is-policy-watch"));
+  assert.ok(layout.includes("is-technology-watch"));
   assert.ok(css.includes(".NavLink.is-voices"));
   assert.ok(css.includes("border-bottom-color: var(--ink)"));
   assert.ok(router.includes('"/voices"'));
   assert.ok(!router.includes('"/briefing"'));
   assert.ok(!router.includes("BriefingPage"));
-  assert.ok(!router.includes('"/policy"'));
+  assert.ok(router.includes('path: "/policy", component: PolicyBaselinePage'));
+  assert.ok(!router.includes('section("/policy"'), "policy background is not another article section");
   assert.ok(!router.includes('"/ai"'));
   assert.ok(!/path:\s*["']\/org\//.test(router));
   assert.ok(!router.includes('to="/org'));
@@ -2098,8 +2373,10 @@ test("firehose: stable RSS ids, seed org map, HOLD denylist, social no-op, queue
   assert.ok(store.includes("published-catalog.json"));
   assert.ok(worker.includes("async scheduled"));
   assert.ok(worker.includes("runAutomation"));
+  assert.ok(worker.includes("event?.cron === DAILY_DEEP_SCAN_CRON"));
   assert.ok(wrangler.includes("VALLEY_DESK_DB"));
   assert.ok(wrangler.includes("*/15 * * * *"));
+  assert.ok(wrangler.includes("17 3 * * *"));
   assert.ok(wrangler.includes('"custom_domain": true'));
   assert.ok(!rssSrc.includes("linkedin.com"));
   assert.ok(!rssSrc.includes("api.twitter.com"));
@@ -2180,9 +2457,11 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(!itemPage.includes("Valley Desk"));
   assert.ok(layout.includes("is-news"));
   assert.ok(layout.includes("is-events"));
-  assert.ok(layout.includes("is-voices"));
+  assert.ok(!layout.includes("is-voices"));
   assert.ok(layout.includes("navSection"));
-  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(!layout.includes('to="/voices"'));
+  assert.ok(layout.includes('to="/policy-watch"'));
+  assert.ok(layout.includes('to="/technology-watch"'));
   assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
   assert.ok(footer.includes("© thedeskgroup -"));
   assert.ok(footer.includes(">USHSO.org<"));
@@ -2194,7 +2473,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(indexCss.includes(".SiteNav a.NavLink:focus-visible"));
   assert.ok(indexCss.includes(".SiteHeader-brand:focus-visible"));
   assert.ok(indexCss.includes(".SiteFooter a:focus-visible"));
-  assert.ok(css.includes("grid-template-columns: 1fr 1fr 1fr"));
+  assert.ok(css.includes("grid-template-columns: repeat(2, minmax(0, 1fr))"));
   assert.ok(!css.includes("grid-template-columns: 1fr 1fr;"));
   assert.ok(css.includes(".GroupChip[data-kind=\"voice\"]"));
   const voiceChip = css.slice(css.indexOf('.GroupChip[data-kind="voice"]'), css.indexOf(".StatusChip[data-status=\"review\"]"));
@@ -3022,7 +3301,9 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.ok(layout.includes("SiteNav"));
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
-  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(!layout.includes('to="/voices"'));
+  assert.ok(layout.includes('to="/policy-watch"'));
+  assert.ok(layout.includes('to="/technology-watch"'));
   assert.ok(layout.includes("SiteFooter"));
   assert.ok(!/path:\s*["']\/org\//.test(router));
 
@@ -3312,14 +3593,33 @@ test("automatic publication SQL executes atomically and deduplicates its audit",
     enrichment: null,
     decision: evaluateCandidate(item, null, now),
   }));
+  const persistedCandidateIds = new Set<string>();
   const counts = await persistEditorialDecisions(
     db,
     decisions,
     DEFAULT_EDITOR_MODEL,
     DEFAULT_EDITOR_BASE_URL,
     now,
+    persistedCandidateIds,
   );
   assert.deepEqual(counts, { published: 1, review: 1, rejected: 0, quarantined: 0 });
+  assert.deepEqual([...persistedCandidateIds].sort(), [future.id, past.id].sort());
+  const invalidPersistedIds = new Set<string>();
+  const invalidDecision = {
+    ...evaluateCandidate(future, null, now),
+    action: "publish" as const,
+    content: undefined,
+  } as unknown as typeof decisions[number]["decision"];
+  const invalidCounts = await persistEditorialDecisions(
+    db,
+    [{ item: future, enrichment: null, decision: invalidDecision }],
+    DEFAULT_EDITOR_MODEL,
+    DEFAULT_EDITOR_BASE_URL,
+    now,
+    invalidPersistedIds,
+  );
+  assert.equal(invalidCounts.quarantined, 1);
+  assert.deepEqual([...invalidPersistedIds], []);
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM published_content").get().count, 1);
   assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(future.id).queue_status, "approved");
   assert.equal(database.prepare("SELECT queue_status FROM content_candidates WHERE id = ?").get(past.id).queue_status, "review");
@@ -4002,10 +4302,10 @@ test("dynamic publication overlay updates matching ingest rows but cannot shadow
   assert.ok(workerSource.includes("decorateHtml"));
 });
 
-test("one-worker configuration has Muse defaults, one D1 binding, and no staging environment", () => {
+test("one-worker configuration selects Spark 1.3 with unchanged budgets and one D1 binding", () => {
   const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
   const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
-  assert.ok(wrangler.includes('"EDITOR_MODEL": "meta/muse-spark-1.2-contributor"'));
+  assert.ok(wrangler.includes('"EDITOR_MODEL": "meta/muse-spark-1.3-contributor"'));
   assert.ok(!wrangler.includes("standard Muse"));
   assert.ok(wrangler.includes("https://openrouter.ai/api/v1"));
   assert.ok(wrangler.includes('"EDITOR_MODEL_BUDGET": "32"'));
@@ -4049,7 +4349,9 @@ test("lab prototypes bind live catalog, the real mark asset, and unpublished-saf
   assert.ok(!systems.includes('to="/org'));
   assert.ok(layout.includes('to="/news"'));
   assert.ok(layout.includes('to="/events"'));
-  assert.ok(layout.includes('to="/voices"'));
+  assert.ok(!layout.includes('to="/voices"'));
+  assert.ok(layout.includes('to="/policy-watch"'));
+  assert.ok(layout.includes('to="/technology-watch"'));
   assert.ok(!layout.includes('to="/lab"'));
   assert.ok(layout.includes('pathname.startsWith("/lab/")'));
 
@@ -4181,6 +4483,16 @@ function applyMigrations(database: DatabaseSync) {
     "0016_operational_alert_recovery.sql",
     "0017_executive_enrollment.sql",
     "0018_signal_pointer_verification.sql",
+    "0019_official_source_discovery.sql",
+    "0020_official_source_retry_provenance.sql",
+    "0021_social_evidence_packets.sql",
+    "0022_source_health_backoff.sql",
+    "0023_social_collector_runs.sql",
+    "0024_social_lifecycle.sql",
+    "0025_operational_alert_context.sql",
+    "0026_source_health_attribution.sql",
+    "0027_policy_intelligence_hardening.sql",
+    "0028_policy_pdf_review.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 
@@ -4727,6 +5039,7 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   const readme = readFileSync(join(root, "README.md"), "utf8");
   const model = readFileSync(join(root, "src/ingest/editor-model.ts"), "utf8");
   const automation = readFileSync(join(root, "src/ingest/automation.ts"), "utf8");
+  const secretScan = readFileSync(join(root, "scripts/secret-scan.mjs"), "utf8");
   assert.ok(migration.includes("enrichment_fingerprint"));
   assert.ok(migration.includes("enrichment_attempted_at"));
   assert.ok(migration.includes("enrichment_outcome"));
@@ -4738,6 +5051,8 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(model.includes("Every affectedOrgId and productId must come verbatim"));
   assert.ok(wrangler.includes('"crons": ["*/15 * * * *", "17 3 * * *"]'));
   assert.ok(example.includes("EDITOR_MODEL_BUDGET=32"));
+  assert.ok(example.includes("EDITOR_MODEL=meta/muse-spark-1.3-contributor"));
+  assert.ok(example.includes("SOCIAL_INGEST_TOKEN=replace-with-a-different-long-random-token"));
   assert.ok(example.includes("EDITOR_MODEL_TIMEOUT_MS=45000"));
   assert.ok(example.includes("EDITOR_MODEL_DEADLINE_MS=110000"));
   assert.equal(MAX_EDITOR_TIMEOUT_MS, 120_000);
@@ -4746,6 +5061,8 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(readme.includes("EDITOR_MODEL_BUDGET"));
   assert.ok(readme.includes("waitUntil"));
   assert.ok(readme.includes("There is no automatic fallback to standard Muse"));
+  assert.ok(readme.includes("SOCIAL_INGEST_TOKEN"));
+  assert.ok(secretScan.includes("live-social-ingest-token"));
   assert.ok(automation.includes("selectEditorModelWork"));
   assert.ok(automation.includes("markIngestRunSucceeded"));
   assert.ok(automation.includes("releaseAutomationLock"));

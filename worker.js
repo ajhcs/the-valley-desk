@@ -6,9 +6,17 @@ import {
   publishedVoiceSlugs,
 } from "./worker-published.js";
 import { runAutomation } from "./src/ingest/automation.ts";
-import { cleanupEmailDiscoveries, handleInboundEmail } from "./src/ingest/email.ts";
+import { cleanupEmailDiscoveries } from "./src/ingest/email.ts";
+import { handleCloudflareInboundEmail, resolvePendingEmailAuthentication } from "./src/ingest/email-auth.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
-import { cleanupSocialEvidencePackets, handleSocialEvidence, isSocialEvidencePath } from "./src/ingest/social-evidence.ts";
+import { policyBaselineView } from "./src/ingest/policy-pdf.ts";
+import { handleWatchRead, isWatchReadPath } from "./src/ingest/watch-api.ts";
+import { handleRepresentativeRead } from "./src/ingest/representative-api.ts";
+import { resolveRepresentativeSourcePolicy } from "./src/ingest/representative-runtime.ts";
+import { handleEventCalendar } from "./src/ingest/event-calendar.ts";
+import { runWatchCollection } from "./src/ingest/watch/collector.ts";
+import { handleWatchUpdatesRead } from "./src/ingest/watch-updates-api.ts";
+import { cleanupSocialEvidencePackets, handleSocialCollectorRuns, handleSocialEvidence, handleSocialManifest, isSocialCollectorRunsPath, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
 import { feedXml, mergePublishedContent, mergedFeed, sitemapXml } from "./src/ingest/public-feed.ts";
@@ -21,9 +29,12 @@ import {
 } from "./src/ingest/persistence.ts";
 import { loadEntities } from "./src/content/store.ts";
 import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts";
-import { decorateHtml } from "./src/lib/crawler-html.ts";
+import { decorateHtml, decorateWatchHtml, watchPrimaryNoscript } from "./src/lib/crawler-html.ts";
+import { isWatchPagePath, readWatchPage } from "./src/lib/watch-page.ts";
+import { publicFeaturesFromEnv } from "./src/lib/public-features.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
-import { dispatchOperationalAlert, dispatchOperationalDigest, resolveOperationalAlert } from "./src/lib/alerts.ts";
+import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
+import { conditionStateForSourceState, SOURCE_FRESHNESS_SLO_MS } from "./src/lib/operational-status.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -35,9 +46,9 @@ const PUBLIC_MACHINE_PATHS = new Set([
 ]);
 
 // One Worker handles both lanes. The daily trigger is intentionally a
-// separate cron expression so event/deep scans do not consume the hourly
-// freshness budget or depend on an in-memory timer.
-export const DAILY_DEEP_SCAN_CRON = "15 3 * * *";
+// separate cron expression so the catch-up pass has its own scheduled
+// invocation and never depends on an in-memory timer.
+const DAILY_DEEP_SCAN_CRON = "17 3 * * *";
 
 function notFoundHeaders() {
   return {
@@ -56,6 +67,7 @@ async function notFound(env, request, path, origin, nonce) {
     origin,
     nonce,
     notFound: true,
+    publicFeatures: publicFeaturesFromEnv(env),
   });
   return new Response(html, {
     status: 404,
@@ -66,7 +78,7 @@ async function notFound(env, request, path, origin, nonce) {
 const newsSlugs = new Set(publishedNewsSlugs);
 const eventSlugs = new Set(publishedEventSlugs);
 const voiceSlugs = new Set(publishedVoiceSlugs);
-const SPA_PATH = /^\/(?:(?:news|events|voices)(?:\/[^/]+)?|lab(?:\/(?:briefing|systems|horizon|calendar))?)?\/?$/;
+const SPA_PATH = /^\/(?:(?:news|events|voices)(?:\/[^/]+)?|policy|lab(?:\/(?:briefing|systems|horizon|calendar))?)?\/?$/;
 
 function stripSlash(path) {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
@@ -167,7 +179,13 @@ function compactAutomation(result) {
 }
 
 function safeAlertError(error) {
-  const raw = error instanceof Error ? error.message : "Unknown automation failure";
+  const raw = typeof error === "string"
+    ? error
+    : error instanceof Error
+      ? error.message
+      : error && typeof error === "object" && typeof error.message === "string"
+        ? error.message
+        : "Unknown automation failure";
   return raw
     .replace(/[\u0000-\u001F\u007F]/g, " ")
     .replace(/\bauthorization\b\s*[:=]\s*bearer\s+\S+/gi, "authorization=[redacted]")
@@ -175,6 +193,47 @@ function safeAlertError(error) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 240) || "Unknown automation failure";
+}
+
+function safeAlertDetails(error, context = {}) {
+  const candidate = error && typeof error === "object" ? error : {};
+  const errorClass = typeof context.errorClass === "string"
+    ? context.errorClass
+    : typeof candidate.name === "string"
+      ? candidate.name
+      : typeof error === "string" ? "string" : "unknown";
+  const httpStatus = Number.isInteger(context.httpStatus)
+    ? context.httpStatus
+    : Number.isInteger(candidate.httpStatus) ? candidate.httpStatus : undefined;
+  const nextRetryAt = typeof context.nextRetryAt === "string"
+    ? context.nextRetryAt
+    : typeof candidate.nextAttemptAt === "string" ? candidate.nextAttemptAt : undefined;
+  return {
+    ...(typeof context.stage === "string" ? { stage: context.stage } : {}),
+    ...(typeof context.sourceId === "string" ? { sourceId: context.sourceId } : {}),
+    errorClass,
+    ...(httpStatus === undefined ? {} : { httpStatus }),
+    ...(nextRetryAt ? { nextRetryAt } : {}),
+    reason: safeAlertError(error),
+  };
+}
+
+function sourceInstitutionIds(source) {
+  const values = [];
+  if (typeof source?.institutionId === "string") values.push(source.institutionId);
+  if (Array.isArray(source?.institutionIds)) values.push(...source.institutionIds);
+  return [...new Set(values.filter((value) => typeof value === "string" && value.trim()).map((value) => value.slice(0, 120)))].slice(0, 8);
+}
+
+function sourceAlertScope(source, sourceId) {
+  const institutionIds = sourceInstitutionIds(source);
+  const subsystem = typeof source?.type === "string" && source.type.trim() ? source.type : "automation";
+  const institutionId = institutionIds.length === 1 ? institutionIds[0] : undefined;
+  return {
+    ...(institutionId ? { institutionId } : {}),
+    subsystem,
+    groupKey: `valley-desk:${subsystem}:${institutionId ?? sourceId}`.slice(0, 240),
+  };
 }
 
 export async function sendAutomationAlerts(env, result, now = new Date()) {
@@ -194,9 +253,31 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       return undefined;
     }
   };
-  const recover = async (fingerprint, requiredSuccesses = 2) => {
+  const recordWarning = async (input) => {
     try {
-      return await resolveOperationalAlert(env.VALLEY_DESK_DB, fingerprint, now, requiredSuccesses);
+      return await recordOperationalAlert(env.VALLEY_DESK_DB, { ...input, notify: false });
+    } catch (error) {
+      logOps("ops-alert", {
+        outcome: "record-failed",
+        fingerprint: input.fingerprint,
+        message: safeAlertError(error),
+      }, "warn");
+      return undefined;
+    }
+  };
+  const recover = async (fingerprint, requiredSuccesses = 2, details = {}) => {
+    try {
+      const recovery = await resolveOperationalAlertWithTransition(
+        env.VALLEY_DESK_DB,
+        fingerprint,
+        now,
+        requiredSuccesses,
+        { outcome: "healthy", observedAt: now.toISOString(), ...details },
+      );
+      if (recovery.resolved && recovery.row) {
+        await dispatchOperationalRecovery(env.VALLEY_DESK_DB, env.NOTIFY_OPS, recovery.row);
+      }
+      return recovery.row;
     } catch (error) {
       logOps("ops-alert", {
         outcome: "recovery-record-failed",
@@ -211,13 +292,36 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       fingerprint: "valley-desk:automation-lock-busy",
       event: "automation-lock-busy",
       severity: "warning",
+      conditionState: "degraded",
+      subsystem: "automation",
+      groupKey: "valley-desk:automation:lock",
       threshold: 3,
       now,
       details: { reason: "automation-already-running" },
     });
     return;
   }
+  await recover("valley-desk:automation-lock-busy", 2);
   const sourceNotes = Array.isArray(result?.notes?.sources) ? result.notes.sources : [];
+  const sourceCoverageLost = (source) => {
+    const institutionIds = sourceInstitutionIds(source);
+    if (institutionIds.length === 0) return false;
+    const peers = sourceNotes.filter((candidate) => (
+      candidate && candidate.type === source.type
+      && candidate.state !== "disabled"
+      && candidate.state !== "misconfigured"
+      && sourceInstitutionIds(candidate).some((institutionId) => institutionIds.includes(institutionId))
+    ));
+    const hasFreshCoverage = (candidate) => {
+      if (candidate.state === "healthy" || candidate.state === "healthy-empty") return true;
+      const lastSuccess = Date.parse(candidate.lastSuccessAt ?? "");
+      const age = now.getTime() - lastSuccess;
+      return Number.isFinite(lastSuccess) && age >= 0 && age <= SOURCE_FRESHNESS_SLO_MS;
+    };
+    return peers.length > 0 && peers.every((candidate) => (
+      !hasFreshCoverage(candidate)
+    ));
+  };
   for (const source of sourceNotes) {
     if (!source) continue;
     const sourceId = typeof source.id === "string" ? source.id.slice(0, 100) : "unknown";
@@ -226,37 +330,173 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       await recover(fingerprint, 1);
       continue;
     }
+    if (source.state === "backoff") {
+      logOps("source-backoff", {
+        sourceId,
+        nextRetryAt: source.nextAttemptAt,
+        failures: source.consecutiveFailures,
+      });
+      if (source.fallbackUrl) {
+        const fallbackFingerprint = `valley-desk:source-fallback:${sourceId}`;
+        await recordWarning({
+          fingerprint: fallbackFingerprint,
+          event: "source-fallback-active",
+          severity: "warning",
+          conditionState: "degraded",
+          threshold: 1,
+          now,
+          ...sourceAlertScope(source, sourceId),
+          details: {
+            sourceId,
+            state: source.state,
+            fallbackActive: true,
+            primaryBackoff: true,
+            itemCount: source.itemCount,
+            lastSuccessAt: source.lastSuccessAt ?? null,
+            nextRetryAt: source.nextAttemptAt ?? null,
+            affectedCoverage: "fallback-serving-during-backoff",
+          },
+        });
+        // A pre-0022 source alert may have been critical before the source
+        // was classified as public-blocked/backoff. Fallback coverage removes
+        // that critical condition, but the fallback warning remains active.
+        await recover(fingerprint, 2);
+      }
+      continue;
+    }
     if (source.state === "healthy" || source.state === "healthy-empty") {
+      const fallbackFingerprint = `valley-desk:source-fallback:${sourceId}`;
+      if (source.fallbackUrl) {
+        const lastSuccessMs = Date.parse(source.lastSuccessAt ?? "");
+        await recordWarning({
+          fingerprint: fallbackFingerprint,
+          event: "source-fallback-active",
+          severity: "warning",
+          conditionState: "degraded",
+          threshold: 1,
+          now,
+          ...sourceAlertScope(source, sourceId),
+          details: {
+            sourceId,
+            state: source.state,
+            fallbackActive: true,
+            itemCount: source.itemCount,
+            lastSuccessAt: source.lastSuccessAt ?? null,
+            failureAgeMs: Number.isFinite(lastSuccessMs) ? Math.max(0, now.getTime() - lastSuccessMs) : null,
+            currentFallback: true,
+            nextRetryAt: source.nextAttemptAt ?? null,
+            affectedCoverage: "fallback-serving",
+          },
+        });
+        await recover(fingerprint, 2);
+      } else {
+        await recover(fallbackFingerprint, 2);
+      }
       await recover(fingerprint, 2);
       continue;
     }
-    await dispatch({
+    const lastSuccessMs = Date.parse(source.lastSuccessAt ?? "");
+    const coverageLost = sourceCoverageLost(source);
+    const alert = {
       fingerprint,
       event: "source-degraded",
-      severity: source.state === "auth-failed" ? "critical" : "warning",
-      threshold: 3,
+      severity: coverageLost && !source.fallbackUrl ? "critical" : "warning",
+      conditionState: conditionStateForSourceState(source.state, Boolean(source.fallbackUrl)),
+      threshold: coverageLost && !source.fallbackUrl ? 1 : 3,
       now,
-      details: { sourceId, state: source.state, failures: source.consecutiveFailures },
-    });
+      ...sourceAlertScope(source, sourceId),
+      details: {
+        sourceId,
+        state: source.state,
+        failures: source.consecutiveFailures,
+        coverageLost,
+        affectedCoverage: coverageLost ? "all-source-peers" : "remaining-source-peers",
+        lastSuccessAt: source.lastSuccessAt ?? null,
+        failureAgeMs: Number.isFinite(lastSuccessMs) ? Math.max(0, now.getTime() - lastSuccessMs) : null,
+        currentFallback: Boolean(source.fallbackUrl),
+        nextRetryAt: source.nextAttemptAt ?? null,
+        // URLs are stripped from alert details; keep a non-sensitive fallback signal.
+        hasFallback: Boolean(source.fallbackUrl),
+        ...safeAlertDetails(source.error ?? source.state, {
+          stage: "source-health",
+          sourceId,
+          httpStatus: source.httpStatus,
+          nextRetryAt: source.nextAttemptAt,
+        }),
+      },
+    };
+    if (alert.severity === "critical") await dispatch(alert);
+    else await recordWarning(alert);
   }
 
   const leadership = result?.leadership;
   if (leadership) {
-    if (leadership.outcome === "ok") {
-      await recover("valley-desk:leadership-monitor", 2);
-    } else {
-      await dispatch({
+    const runtimeCoverage = Array.isArray(leadership.runtimeCoverage) ? leadership.runtimeCoverage : [];
+    const runtimeCoverageAvailable = runtimeCoverage.length > 0;
+    const runtimeCoverageLost = runtimeCoverage.filter((row) => (
+      row && row.configuredStatus === "active" && row.coverageLost
+    ));
+    const stageFailed = leadership.outcome === "failed";
+    const legacyCoverageLost = !runtimeCoverageAvailable
+      && Number(leadership.failed ?? 0) > 0
+      && Number(leadership.failed) >= Number(leadership.coverage?.length ?? 1);
+    if (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageLost.length === 0) {
+      await recover("valley-desk:leadership-monitor", 2, {
+        fetched: Number(leadership.fetched ?? 0),
+        failed: Number(leadership.failed ?? 0),
+        backoff: Number(leadership.backoff ?? 0),
+        coverageLost: 0,
+      });
+    } else if (leadership.outcome !== "ok" || (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageLost.length > 0)) {
+      const leadershipSeverity = stageFailed
+        || legacyCoverageLost
+        || runtimeCoverageLost.length > 0
+        ? "critical"
+        : "warning";
+      const failureDetails = Array.isArray(leadership.failureDetails) ? leadership.failureDetails : [];
+      const failureSummary = failureDetails
+        .slice(0, 4)
+        .map((detail) => `${detail.sourceId ?? "source"}: ${detail.reason ?? detail.errorClass ?? "failed"}`)
+        .join(" | ")
+        .slice(0, 240);
+      const affectedInstitutions = runtimeCoverageLost.map((row) => row.shortName ?? row.institutionId).filter(Boolean).join(", ");
+      const firstFailure = failureDetails[0];
+      const institutionId = runtimeCoverageLost.length === 1
+        ? runtimeCoverageLost[0].institutionId
+        : firstFailure?.institutionId;
+      const leadershipAlert = {
         fingerprint: "valley-desk:leadership-monitor",
         event: "leadership-monitor-failed",
-        severity: leadership.outcome === "failed" ? "critical" : "warning",
-        threshold: 2,
+        severity: leadershipSeverity,
+        conditionState: leadershipSeverity === "critical"
+          ? runtimeCoverageLost.some((row) => row.state === "blocked") ? "blocked" : "failed"
+          : "degraded",
+        threshold: leadershipSeverity === "critical" ? 1 : 2,
         now,
+        ...(institutionId ? { institutionId } : {}),
+        subsystem: "leadership",
+        groupKey: institutionId ? `valley-desk:leadership:${institutionId}` : "valley-desk:leadership:monitor",
         details: {
           outcome: leadership.outcome,
           fetched: leadership.fetched,
-          failed: leadership.error ? safeAlertError(leadership.error) : undefined,
+          failed: Number(leadership.failed ?? 0),
+          failureCount: failureDetails.length,
+          ...(failureSummary ? { failureSummary } : {}),
+          ...(affectedInstitutions ? { affectedInstitutions } : {}),
+          ...(runtimeCoverageLost.length ? { affectedCoverage: "institution-coverage-lost" } : {}),
+          ...(firstFailure
+            ? safeAlertDetails(firstFailure.reason, {
+              stage: "leadership-monitor",
+              sourceId: firstFailure.sourceId,
+              errorClass: firstFailure.errorClass,
+              httpStatus: firstFailure.httpStatus,
+              nextRetryAt: firstFailure.nextRetryAt,
+            })
+            : safeAlertDetails(leadership.error ?? leadership.outcome, { stage: "leadership-monitor" })),
         },
-      });
+      };
+      if (leadershipSeverity === "critical") await dispatch(leadershipAlert);
+      else await recordWarning(leadershipAlert);
     }
   }
 
@@ -264,10 +504,13 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   const modelFailed = Number(result?.modelOperationalFailedCount ?? result?.modelFailedCount ?? 0);
   const validationRejected = Number(result?.modelValidationRejectedCount ?? 0);
   if (selected > 0 && modelFailed > 0) {
-    await dispatch({
+    await recordWarning({
       fingerprint: "valley-desk:model-enrichment",
       event: "model-enrichment-failed",
-      severity: modelFailed === selected ? "critical" : "warning",
+      severity: "warning",
+      conditionState: "degraded",
+      subsystem: "model",
+      groupKey: "valley-desk:model:enrichment",
       threshold: 2,
       now,
       details: {
@@ -278,22 +521,30 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       },
     });
   } else if (selected > 0) {
-    await recover("valley-desk:model-enrichment", 2);
+    await recover("valley-desk:model-enrichment", 2, {
+      selected,
+      succeeded: Number(result?.modelSucceededCount ?? 0),
+      failed: 0,
+      validationRejected,
+    });
   }
 
   const verifierAttempted = Number(result?.verifierAttemptedCount ?? 0);
   const verifierFailed = Number(result?.verifierFailedCount ?? 0);
   if (verifierAttempted > 0 && verifierFailed > 0) {
-    await dispatch({
+    await recordWarning({
       fingerprint: "valley-desk:model-verifier",
       event: "model-verifier-failed",
-      severity: verifierFailed === verifierAttempted ? "critical" : "warning",
+      severity: "warning",
+      conditionState: "degraded",
+      subsystem: "model",
+      groupKey: "valley-desk:model:verifier",
       threshold: 2,
       now,
       details: { attempted: verifierAttempted, failed: verifierFailed },
     });
   } else if (verifierAttempted > 0) {
-    await recover("valley-desk:model-verifier", 2);
+    await recover("valley-desk:model-verifier", 2, { attempted: verifierAttempted, failed: 0 });
   }
 
   await recover("valley-desk:automation-run-failed", 2);
@@ -318,6 +569,93 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   if (path === "/api/health") {
     return handlePublicHealth(request, env);
   }
+  if (path === "/events.ics") return handleEventCalendar(request, env);
+  if (/^\/api\/v2\/watch\/(policy|technology)\/updates\/?$/.test(path)) return handleWatchUpdatesRead(request, env);
+  if (path === "/api/v2/watch/representatives") {
+    try {
+      const policy = env.WATCH_PUBLIC_ENABLED === "true" && env.VALLEY_DESK_DB
+        ? await resolveRepresentativeSourcePolicy(env.VALLEY_DESK_DB)
+        : { officialSources: new Map(), sourceUrlAllowed: () => false, officialPublicUrlAllowed: () => false, maxRosterAgeHours: 168 };
+      return handleRepresentativeRead(request, env, policy);
+    } catch {
+      return new Response(request.method === "HEAD" ? null : JSON.stringify({ error: { code: "representative-unavailable" } }),
+        { status: 503, headers: { "content-type": "application/json", "cache-control": "no-store" } });
+    }
+  }
+  if (isWatchReadPath(path)) return handleWatchRead(request, env);
+  if (isWatchPagePath(path)) {
+    let result = await readWatchPage(request, env.WATCH_PUBLIC_ENABLED === "true", input => handleWatchRead(input, env));
+    let html;
+    try {
+      const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
+      if (asset.ok) html = await asset.text();
+    } catch { /* A shell failure must not turn hidden pages into successful responses. */ }
+    if (!html) {
+      if (result.status === 200) result = { route: result.route, status: 503, error: "unavailable" };
+      html = `<!doctype html><html lang="en"><head><title>The Valley Desk</title></head><body><main>${watchPrimaryNoscript(result, origin)}</main></body></html>`;
+    }
+    const headers = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store",
+      "cdn-cache-control": "no-store", "x-robots-tag": "noindex" };
+    if (result.status === 405) headers.allow = "GET, HEAD";
+    if (result.data) headers["x-watch-data-state"] = result.data.stale ? "stale" : "unknown";
+    if (result.deliveryAsOf) headers["x-watch-delivery-as-of"] = result.deliveryAsOf;
+    return new Response(decorateWatchHtml({ html, result, origin, nonce, publicFeatures: publicFeaturesFromEnv(env) }), { status: result.status, headers });
+  }
+  if (stripSlash(path) === "/policy" && !publicFeaturesFromEnv(env).policyBackground) {
+    const response = await notFound(env, request, path, origin, nonce);
+    response.headers.set("cdn-cache-control", "no-store");
+    return response;
+  }
+  if (path === "/api/policy-watchlist") {
+    const headers = { "content-type": "application/json", "cache-control": "no-store", "cdn-cache-control": "no-store", "x-robots-tag": "noindex" };
+    if (!publicFeaturesFromEnv(env).policyBackground) return new Response(JSON.stringify({error:"policy-background-not-enabled"}), {status:503,headers});
+    if (method !== "GET" && method !== "HEAD") return new Response(null, {status:405,headers:{...headers,allow:"GET, HEAD"}});
+    try { return new Response(JSON.stringify(await policyBaselineView(env.VALLEY_DESK_DB)), {headers}); }
+    catch { return new Response(JSON.stringify({error:"policy-background-unavailable"}), {status:503,headers}); }
+  }
+  if (isSocialManifestPath(path)) {
+    return handleSocialManifest(request, env);
+  }
+  if (isSocialCollectorRunsPath(path)) {
+    const response = await handleSocialCollectorRuns(request, env);
+    if (method === "POST" && response.status === 202 && ctx && typeof ctx.waitUntil === "function") {
+      const report = await response.clone().json().catch(() => ({}));
+      if (report.pauseRequired) {
+        ctx.waitUntil(dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, {
+          fingerprint: "valley-desk:social:vale",
+          event: "social-collector-paused",
+          severity: "warning",
+          conditionState: "failed",
+          threshold: 1,
+          subsystem: "social",
+          groupKey: "valley-desk:social:vale",
+          details: {
+            runId: report.runId,
+            outcome: report.outcome,
+            consecutiveFailures: report.consecutiveFailures,
+            pauseRequired: true,
+          },
+        }).catch((error) => {
+          logOps("ops-alert", { outcome: "dispatch-failed", fingerprint: "valley-desk:social:vale", message: safeAlertError(error) }, "warn");
+        }));
+      } else if (report.recoveryObserved) {
+        ctx.waitUntil(resolveOperationalAlertWithTransition(
+          env.VALLEY_DESK_DB,
+          "valley-desk:social:vale",
+          new Date(),
+          2,
+          { outcome: "healthy", collector: "vale" },
+        ).then((recovery) => (
+          recovery.resolved && recovery.row
+            ? dispatchOperationalRecovery(env.VALLEY_DESK_DB, env.NOTIFY_OPS, recovery.row)
+            : undefined
+        )).catch((error) => {
+          logOps("ops-alert", { outcome: "recovery-failed", fingerprint: "valley-desk:social:vale", message: safeAlertError(error) }, "warn");
+        }));
+      }
+    }
+    return response;
+  }
   if (isSocialEvidencePath(path)) {
     return handleSocialEvidence(request, env);
   }
@@ -332,6 +670,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
         return decorateHtml({
           html: await asset.text(),
           path: "/ops",
+          publicFeatures: publicFeaturesFromEnv(env),
           origin,
           nonce,
         });
@@ -348,7 +687,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
       });
     }
     if (path === "/llms.txt") {
-      return new Response(llmsTxt(origin), {
+      return new Response(llmsTxt(origin, publicFeaturesFromEnv(env).watch), {
         headers: { ...PUBLIC_HEADERS, "content-type": "text/plain; charset=utf-8" },
       });
     }
@@ -422,6 +761,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
       items: published,
       withdrawnIds: overlay.withdrawnIds,
       entities: loadEntities(),
+      publicFeatures: publicFeaturesFromEnv(env),
     });
     return new Response(html, {
       status: 200,
@@ -439,12 +779,17 @@ async function handleFetch(request, env, origin, nonce, ctx) {
 
 export default {
   async email(message, env) {
-    const result = await handleInboundEmail(message, env);
+    const result = await handleCloudflareInboundEmail(message, env);
     if (result.outcome === "failed") {
       throw new Error(`Inbound email discovery failed: ${result.reason || "unknown error"}`);
     }
   },
   async scheduled(event, env, ctx) {
+    if (env.WATCH_COLLECTION_ENABLED === "true" && env.VALLEY_DESK_DB) ctx.waitUntil(
+      runWatchCollection(env.VALLEY_DESK_DB, { enabled: true }).then(result => {
+        logOps("watch-collection", { outcome: result.outcome, sources: result.sources });
+      }).catch(() => logOps("watch-collection", { outcome: "failed" }, "error")),
+    );
     const cadence = event?.cron === DAILY_DEEP_SCAN_CRON ? "daily" : "hourly";
     ctx.waitUntil(
       cleanupEmailDiscoveries(env.VALLEY_DESK_DB).catch((error) => {
@@ -454,6 +799,12 @@ export default {
         }, "warn");
       }),
     );
+    const emailAuthentication = resolvePendingEmailAuthentication(env).catch((error) => {
+        logOps("email-auth", {
+          outcome: "failed",
+          message: error instanceof Error ? error.message : "Unknown email authentication failure",
+        }, "warn");
+      });
     ctx.waitUntil(
       cleanupNewsArticleExtractions(env.VALLEY_DESK_DB).catch((error) => {
         logOps("news-extraction-cleanup", {
@@ -471,7 +822,7 @@ export default {
       }),
     );
     ctx.waitUntil(
-      runAutomation(env, undefined, undefined, { mode: cadence }).then((result) => {
+      emailAuthentication.then(() => runAutomation(env, undefined, undefined, { mode: cadence })).then((result) => {
         logOps("cron", {
           outcome: result.skipped ? "skipped" : "succeeded",
           cadence,
@@ -487,7 +838,7 @@ export default {
           event: "automation-run-failed",
           severity: "critical",
           threshold: 2,
-          details: { stage: "scheduled", reason: safeAlertError(error) },
+          details: safeAlertDetails(error, { stage: "scheduled" }),
         }).catch((alertError) => {
           logOps("ops-alert", { outcome: "dispatch-failed", message: safeAlertError(alertError) }, "warn");
         });

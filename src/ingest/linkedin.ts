@@ -3,10 +3,13 @@ import type { IngestBatch } from "./envelope";
 import { toReviewQueue } from "./envelope";
 import { isHeldHandle, liveLinkedInOrigins, type LinkedInOrigin } from "./origins";
 import {
+  sourceBackoffNote,
+  sourceIsInBackoff,
   sourceNote,
   sourceStateForItemCount,
   type SourceRunNote,
 } from "./source-health";
+import { institutionIdsForOrgIds } from "./coverage-pack";
 import {
   SOCIAL_MAX_BYTES,
   SOURCE_TIMEOUT_MS,
@@ -88,6 +91,7 @@ async function fetchOriginPosts(
       "linkedin-version": "202608",
       "x-restli-protocol-version": "2.0.0",
     },
+    requiresAuth: true,
   });
   let data: { elements?: Record<string, unknown>[] };
   try {
@@ -114,13 +118,17 @@ function originNote(
     state,
     checkedAt,
     url: origin.url,
+    institutionIds: institutionIdsForOrgIds(origin.orgs),
     ...extra,
   });
 }
 
 /** Official LinkedIn read. No-op without LINKEDIN_TOKEN. Person origins are unsupported. */
 export async function ingestLinkedIn(
-  env: { LINKEDIN_TOKEN?: string } = {},
+  env: {
+    LINKEDIN_TOKEN?: string;
+    sourceHealth?: ReadonlyMap<string, import("./source-health").PersistedSourceHealth>;
+  } = {},
   now = new Date(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<SocialIngestResult> {
@@ -142,6 +150,12 @@ export async function ingestLinkedIn(
   const items: ContentItem[] = [];
   const sources: SourceRunNote[] = [];
   for (const origin of origins) {
+    const sourceId = `linkedin-${origin.slug}`;
+    const prior = env.sourceHealth?.get(sourceId);
+    if (sourceIsInBackoff(prior, now)) {
+      sources.push(sourceBackoffNote(sourceId, origin.slug, "social", fetchedAt, prior, origin.url));
+      continue;
+    }
     if (origin.kind !== "organization") {
       sources.push(originNote(origin, fetchedAt, "misconfigured", {
         error: "LinkedIn person origins are not supported by the official organization posts API",
@@ -165,7 +179,13 @@ export async function ingestLinkedIn(
       const failed = error instanceof UpstreamError
         ? error
         : new UpstreamError("upstream-failed", error instanceof Error ? error.message : String(error));
-      sources.push(originNote(origin, fetchedAt, failed.code, { error: failed.message }));
+      sources.push(originNote(origin, fetchedAt, failed.code, {
+        error: failed.message,
+        requiresAuth: true,
+        httpStatus: failed.httpStatus,
+        consecutiveFailures: (prior?.consecutiveFailures ?? 0) + 1,
+        lastSuccessAt: prior?.lastSuccessAt ?? null,
+      }));
     }
   }
   const batch: IngestBatch = { adapter: "linkedin", fetchedAt, items };

@@ -1,0 +1,137 @@
+{
+  "sourceId": "candidate-captk",
+  "outcome": "healthy",
+  "access": {
+    "mode": "documented-api",
+    "robotsSha256": null,
+    "robotsStatus": null,
+    "disposition": "documented-public-repository-api"
+  },
+  "packet": {
+    "schemaVersion": "source-preparation-1",
+    "sourceId": "candidate-captk",
+    "configurationSha256": "dbcd7b577dea984cdff88b79e25070e6cc7d56096d42dc7b9cced0ac621d55e0",
+    "endpoint": "https://api.github.com/repos/CBICA/CaPTk",
+    "capturedAt": "2026-09-12T17:20:14.117Z",
+    "representationSha256": "ae61f8ff1a8458922d0417e81d4b6431128c6a0871f1ea0262d0cd09b30f3ea2",
+    "representationBytes": 6227,
+    "parserId": "watch-github",
+    "parserVersion": "1",
+    "parsed": {
+      "observations": [
+        {
+          "id": "watch-observation-v1:5f07f37f37caea4d3cd04299de4188ea53135b4c3edfecd419999e000657dc96",
+          "sourceId": "candidate-captk",
+          "externalKey": "github:repository:128938343",
+          "parserId": "watch-github",
+          "parserVersion": "1",
+          "sourceUrl": "https://api.github.com/repos/CBICA/CaPTk",
+          "fetchedAt": "2026-09-12T17:20:14.117Z",
+          "representationSha256": "ae61f8ff1a8458922d0417e81d4b6431128c6a0871f1ea0262d0cd09b30f3ea2",
+          "payloadSha256": "ef826766f2c8d2b789cade77eb66fa7be4e24dedd5b0bba745fff1e3ac3e56f4",
+          "payload": {
+            "candidate": {
+              "id": "watch-candidate-v1:d15076f607bae2ad64ac204abde6e08478d831244287ba71c21f424cc71612bd",
+              "observationId": "watch-observation-v1:5f07f37f37caea4d3cd04299de4188ea53135b4c3edfecd419999e000657dc96",
+              "sourceId": "candidate-captk",
+              "externalKey": "github:repository:128938343",
+              "title": "CBICA/CaPTk",
+              "url": "https://github.com/CBICA/CaPTk",
+              "description": "Cancer Imaging Phenomics Toolkit (CaPTk) is a software platform to perform image analysis and predictive modeling tasks. Documentation: https://cbica.github.io/CaPTk",
+              "sourceOccurredAt": {
+                "precision": "unknown",
+                "reason": "Repository inventory is not a newly published release."
+              },
+              "discoveryClass": "repository-baseline",
+              "holds": [
+                "source-date-unknown"
+              ],
+              "publicationAuthorized": false,
+              "regionalEligibility": "unverified",
+              "licenseAuthority": "unreviewed"
+            },
+            "metadata": {
+              "repositoryId": "128938343",
+              "repositoryKey": "repository-v1:a8826b208908013e1ee2910a4286ab42b50c39ab85386537f493d9551b588c57",
+              "repositoryAlias": "CBICA/CaPTk",
+              "createdAt": "2018-04-10T13:36:31Z",
+              "updatedAt": "2026-07-15T05:22:02Z",
+              "pushedAt": "2023-12-09T00:42:42Z",
+              "archived": false,
+              "fork": false,
+              "licenseHint": "NOASSERTION",
+              "developmentKey": "development-v1:c3f0eb5e44abedc238f7fae87cce09b01539b51041a40c0ad898ed5f7d0a7d83"
+            },
+            "rawPublished": null,
+            "dateField": null,
+            "dateEvidenceId": "watch-observation-v1:5f07f37f37caea4d3cd04299de4188ea53135b4c3edfecd419999e000657dc96:date"
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "id": "watch-candidate-v1:d15076f607bae2ad64ac204abde6e08478d831244287ba71c21f424cc71612bd",
+          "observationId": "watch-observation-v1:5f07f37f37caea4d3cd04299de4188ea53135b4c3edfecd419999e000657dc96",
+          "sourceId": "candidate-captk",
+          "externalKey": "github:repository:128938343",
+          "title": "CBICA/CaPTk",
+          "url": "https://github.com/CBICA/CaPTk",
+          "description": "Cancer Imaging Phenomics Toolkit (CaPTk) is a software platform to perform image analysis and predictive modeling tasks. Documentation: https://cbica.github.io/CaPTk",
+          "sourceOccurredAt": {
+            "precision": "unknown",
+            "reason": "Repository inventory is not a newly published release."
+          },
+          "discoveryClass": "repository-baseline",
+          "holds": [
+            "source-date-unknown"
+          ],
+          "publicationAuthorized": false,
+          "regionalEligibility": "unverified",
+          "licenseAuthority": "unreviewed"
+        }
+      ],
+      "representationSha256": "ae61f8ff1a8458922d0417e81d4b6431128c6a0871f1ea0262d0cd09b30f3ea2",
+      "repository": {
+        "repositoryId": "128938343",
+        "fullName": "CBICA/CaPTk"
+      },
+      "truncated": false,
+      "rejectedItems": 0,
+      "health": {
+        "id": "candidate-captk",
+        "origin": "Penn CBICA CaPTk repository metadata",
+        "state": "healthy",
+        "checkedAt": "2026-09-12T17:20:14.117Z",
+        "itemCount": 1,
+        "complete": false,
+        "completeness": "partial",
+        "url": "https://api.github.com/repos/CBICA/CaPTk",
+        "httpStatus": 200,
+        "requiresAuth": false
+      },
+      "pagination": {
+        "pageKey": "1",
+        "nextPageKey": null,
+        "terminal": true
+      }
+    },
+    "parserOutputSha256": "ac05dcc1b7640b1d5c77e1c532e5333323b6dc1151053ea997319a006790c644",
+    "qualificationStatus": "candidate-only",
+    "publicationAuthorized": false,
+    "activationAuthorized": false,
+    "review": {
+      "engineeringOwnerId": null,
+      "editorialOwnerId": null,
+      "rightsDecision": null,
+      "accessDecision": null
+    },
+    "blockers": [
+      "named-reviewers-unassigned",
+      "rights-review-pending",
+      "two-time-separated-samples-required",
+      "regional-evidence-review-pending",
+      "license-bytes-review-pending"
+    ]
+  },
+  "bodyFile": "candidate-captk-1f20e515-75e0-4ca7-b849-2ed498074668.body"
+}

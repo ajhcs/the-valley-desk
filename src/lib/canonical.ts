@@ -85,7 +85,7 @@ export function robotsTxt(origin = publicOrigin()): string {
   ].join("\n");
 }
 
-export function llmsTxt(origin = publicOrigin()): string {
+export function llmsTxt(origin = publicOrigin(), watchEnabled = false): string {
   return `# The Valley Desk
 
 > A concise, cited record of how healthcare technology, AI, health policy, interoperability, EHR changes, cybersecurity, and related developments affect Delaware Valley health systems.
@@ -96,7 +96,8 @@ The site is an aggregator with context, not a magazine. Each published item link
 
 - [News](${origin}/news): health-system technology, policy, finance, AI, EHR, interoperability, workforce, and cybersecurity briefs.
 - [Events](${origin}/events): confirmed Delaware Valley chapter events, webinars, and regionally relevant programs with registration links.
-- [Voices](${origin}/voices): attributed statements from regional health-system leaders and official institutional accounts.
+${watchEnabled ? `- [Policy Watch](${origin}/policy-watch): source-backed federal, PA, NJ, DE, and Delaware Valley policy records.
+- [Technology Watch](${origin}/technology-watch): technology with verified Delaware Valley connections.\n` : ""}
 
 ## Machine-readable feeds
 

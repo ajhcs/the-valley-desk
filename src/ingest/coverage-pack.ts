@@ -7,6 +7,7 @@ import {
   LEADERSHIP_CANDIDATE_CAP,
   LEADERSHIP_CONCURRENCY,
   LEADERSHIP_MAX_BYTES,
+  LEADERSHIP_MAX_SCAN_BYTES,
   LEADERSHIP_MAX_REDIRECTS,
   LEADERSHIP_TIMEOUT_MS,
   SOURCE_KIND_PRECEDENCE,
@@ -53,6 +54,14 @@ const SourceKind = z.enum([
 const SourceCadence = z.enum(["hourly", "daily", "weekly", "inventory"]);
 const SourceStatus = z.enum(["enabled", "inventory-only", "disabled"]);
 const Region = z.enum(["PA", "NJ", "DE"]);
+const LeadershipExtractionContract = z.enum([
+  "christianacare-profile",
+  "christianacare-roster",
+  "mainline-profile",
+  "st-lukes-roster",
+  "tower-roster",
+  "virtua-roster",
+]);
 
 export const CoverageInstitution = z.object({
   id: z.string().regex(/^inst-[a-z0-9-]+$/),
@@ -74,11 +83,15 @@ const CoverageSourceBase = z.object({
   institutionId: z.string().regex(/^inst-[a-z0-9-]+$/),
   kind: SourceKind,
   url: HttpsUrl,
+  alternateUrls: z.array(HttpsUrl).max(4).optional(),
   host: z.string().min(1),
   precedence: z.number().int().min(0).max(100),
   monitor: z.boolean(),
   cadence: SourceCadence,
   status: SourceStatus,
+  leadershipExtractionContract: LeadershipExtractionContract.optional(),
+  scanMaxBytes: z.number().int().min(LEADERSHIP_MAX_BYTES).max(LEADERSHIP_MAX_SCAN_BYTES).optional(),
+  retainSuffixBytes: z.number().int().min(1).max(LEADERSHIP_MAX_BYTES).optional(),
 });
 
 const LinkedInUrl = HttpsUrl.refine((value) => {
@@ -119,11 +132,36 @@ export const CoverageSource = CoverageSourceBase.superRefine((source, ctx) => {
       });
     }
   }
+  for (const alternateUrl of source.alternateUrls ?? []) {
+    try {
+      if (isLinkedInHost(new URL(alternateUrl).hostname)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Leadership alternatives cannot use LinkedIn", path: ["alternateUrls"] });
+      }
+    } catch {
+      // HttpsUrl already reports malformed URLs.
+    }
+  }
   if (source.monitor && source.status !== "enabled") {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Monitored sources must be enabled", path: ["status"] });
   }
   if (source.monitor && source.kind.startsWith("linkedin")) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: "LinkedIn hosts are blocked", path: ["kind"] });
+  }
+  if (source.scanMaxBytes || source.retainSuffixBytes) {
+    if (!source.scanMaxBytes || !source.retainSuffixBytes) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Bounded suffix scans require both scan and retention limits",
+        path: ["scanMaxBytes"],
+      });
+    }
+  }
+  if ((source.scanMaxBytes || source.retainSuffixBytes) && !source.leadershipExtractionContract) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Bounded suffix scans require an explicit leadership extraction contract",
+      path: ["scanMaxBytes"],
+    });
   }
 });
 
@@ -189,12 +227,14 @@ export const CoveragePackDocument = z.object({
   }
   const sourceUrls = new Set<string>();
   for (const source of pack.sources) {
-    const normalized = normalizeSourceUrl(source.url);
-    if (!normalized) continue;
-    if (sourceUrls.has(normalized)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Duplicate normalized source URL ${normalized}`, path: ["sources"] });
+    for (const url of [source.url, ...(source.alternateUrls ?? [])]) {
+      const normalized = normalizeSourceUrl(url);
+      if (!normalized) continue;
+      if (sourceUrls.has(normalized)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Duplicate normalized source URL ${normalized}`, path: ["sources"] });
+      }
+      sourceUrls.add(normalized);
     }
-    sourceUrls.add(normalized);
   }
   const personIds = new Set<string>();
   for (const person of pack.people) {
@@ -410,10 +450,11 @@ export function inventorySources(pack: CoveragePackDocument = coveragePack) {
 export function leadershipHostAllowlist(pack: CoveragePackDocument = coveragePack): ReadonlySet<string> {
   const hosts = new Set<string>();
   for (const source of monitorableSources(pack)) {
-    const host = source.host.replace(/^www\./, "").toLowerCase();
-    hosts.add(host);
-    hosts.add(`www.${host}`);
-    hosts.add(source.host.toLowerCase());
+    for (const candidate of [source.url, ...(source.alternateUrls ?? [])]) {
+      const host = hostFromUrl(candidate).replace(/^www\./, "").toLowerCase();
+      hosts.add(host);
+      hosts.add(`www.${host}`);
+    }
   }
   for (const blocked of pack.blockedHosts) {
     hosts.delete(blocked.toLowerCase());
@@ -422,12 +463,27 @@ export function leadershipHostAllowlist(pack: CoveragePackDocument = coveragePac
 }
 
 export function hostsForSource(source: CoverageSource): ReadonlySet<string> {
-  const host = source.host.replace(/^www\./, "").toLowerCase();
-  return new Set([host, `www.${host}`, source.host.toLowerCase()]);
+  const hosts = new Set<string>();
+  for (const candidate of [source.url, ...(source.alternateUrls ?? [])]) {
+    const host = hostFromUrl(candidate).replace(/^www\./, "").toLowerCase();
+    hosts.add(host);
+    hosts.add(`www.${host}`);
+  }
+  return hosts;
 }
 
 export function sourceById(id: string, pack: CoveragePackDocument = coveragePack) {
   return pack.sources.find((source) => source.id === id);
+}
+
+export function institutionIdsForOrgIds(
+  orgIds: readonly string[],
+  pack: CoveragePackDocument = coveragePack,
+) {
+  const allowed = new Set(orgIds);
+  return pack.institutions
+    .filter((institution) => institution.covered && institution.orgIds.some((orgId) => allowed.has(orgId)))
+    .map((institution) => institution.id);
 }
 
 export function preferSource<T extends { sourceId: string }>(

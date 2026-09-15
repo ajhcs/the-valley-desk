@@ -3,7 +3,7 @@ import { retainPublishedIdentity } from "../content/merge";
 import { isDeliverySafe } from "../content/publication";
 import type { IngestRun } from "./run-all";
 import type { EditorDecision } from "./editor";
-import { EditorEnrichment, EDITOR_PROMPT_VERSION } from "./editor-model";
+import { EditorEnrichment, EDITOR_PROMPT_VERSION, DEFAULT_EDITOR_MODEL, DEFAULT_EDITOR_BASE_URL } from "./editor-model";
 import { EDITOR_POLICY_VERSION } from "./editor";
 import type { EditorModelState } from "./editor-work";
 import { VerificationResult, type VerificationResult as VerificationResultType } from "./verification";
@@ -23,10 +23,13 @@ import {
   NEWS_ARTICLE_RETENTION_DAYS,
 } from "./news-extraction-config";
 import {
+  SOURCE_RUN_STATES,
   isFailureSourceState,
   isSuccessfulSourceState,
   snapshotCompleteness,
+  sourceNextAttemptAt,
   sourceAuthorizesDisappearance,
+  type PersistedSourceHealth,
   type SourceRunNote,
 } from "./source-health";
 
@@ -122,6 +125,46 @@ export async function candidateFingerprint(item: ContentItem) {
       externalId: item.source.externalId,
     },
   }));
+}
+
+export type EditorCacheConfiguration = { model?: string; baseUrl?: string };
+
+function editorModelProvenance(config: EditorCacheConfiguration) {
+  return {
+    version: "editor-model-cache-1",
+    model: config.model || DEFAULT_EDITOR_MODEL,
+    baseUrl: (config.baseUrl || DEFAULT_EDITOR_BASE_URL).replace(/\/$/, ""),
+    editorPromptVersion: EDITOR_PROMPT_VERSION,
+  };
+}
+
+function acceptsLegacyEditorCache(config: EditorCacheConfiguration) {
+  const provenance = editorModelProvenance(config);
+  return provenance.model === "meta/muse-spark-1.2-contributor"
+    && provenance.baseUrl === "https://openrouter.ai/api/v1";
+}
+
+/** Keep publication identity stable while scoping model attempts to their producer. */
+export async function editorAttemptFingerprint(item: ContentItem, config: EditorCacheConfiguration = {}) {
+  const fingerprint = await candidateFingerprint(item);
+  if (acceptsLegacyEditorCache(config)) return fingerprint;
+  return sha256(JSON.stringify({ fingerprint, modelProvenance: editorModelProvenance(config) }));
+}
+
+function cacheProvenanceMatches(json: string | null, config: EditorCacheConfiguration) {
+  if (!json) return false;
+  try {
+    const value = JSON.parse(json)?.modelProvenance;
+    if (value === undefined) return acceptsLegacyEditorCache(config);
+    const expected = editorModelProvenance(config);
+    return value !== null && typeof value === "object" && !Array.isArray(value)
+      && Object.keys(value).length === Object.keys(expected).length
+      && Object.entries(expected).every(([key, entry]) => value[key] === entry);
+  } catch { return false; }
+}
+
+function modelCacheJson(value: EditorEnrichment | VerificationResultType, config: EditorCacheConfiguration) {
+  return JSON.stringify({ ...value, modelProvenance: editorModelProvenance(config) });
 }
 
 type CandidateModelRow = {
@@ -371,6 +414,7 @@ export async function readReviewBacklog(db: D1DatabaseLike, limit = 1000) {
 export async function readEditorModelCache(
   db: D1DatabaseLike,
   items: ContentItem[],
+  config: EditorCacheConfiguration = {},
 ) {
   const rows = await loadCandidateModelRows(db, items);
   const states = new Map<string, EditorModelState>();
@@ -380,27 +424,32 @@ export async function readEditorModelCache(
     const row = rows.byId.get(item.id) ?? rows.byIdentity.get(sourceIdentityKey(item));
     if (!row) continue;
     const cached = parseCachedEnrichment(row.enrichment_json);
+    const itemFingerprint = await candidateFingerprint(item);
+    const expectedAttempt = await editorAttemptFingerprint(item, config);
+    const attemptMatches = (row.enrichment_fingerprint || row.fingerprint) === expectedAttempt;
+    const enrichmentMatches = attemptMatches && cacheProvenanceMatches(row.enrichment_json, config);
+    const stateMatches = attemptMatches && (row.enrichment_outcome === "failure" || enrichmentMatches);
     states.set(item.id, {
       id: row.id,
       fingerprint: row.fingerprint,
-      enrichmentFingerprint: row.enrichment_fingerprint,
-      outcome: row.enrichment_outcome,
-      attemptedAt: row.enrichment_attempted_at,
-      attemptCount: Number(row.enrichment_attempt_count ?? 0),
+      // The selector compares content identities; cache producer checks happen above.
+      enrichmentFingerprint: stateMatches ? itemFingerprint : row.fingerprint,
+      outcome: stateMatches ? row.enrichment_outcome : null,
+      attemptedAt: stateMatches ? row.enrichment_attempted_at : null,
+      attemptCount: stateMatches ? Number(row.enrichment_attempt_count ?? 0) : 0,
       firstSeenAt: row.first_seen_at,
       contentChangedAt: row.content_changed_at,
       lastSeenAt: row.last_seen_at,
       queueStatus: row.queue_status,
-      hasSuccessfulEnrichment: Boolean(cached),
+      hasSuccessfulEnrichment: Boolean(cached) && enrichmentMatches,
     });
     const verification = parseCachedVerification(row.verification_json);
-    if (verification && row.enrichment_fingerprint === (await candidateFingerprint(item))) {
+    if (verification && row.enrichment_fingerprint === expectedAttempt
+      && cacheProvenanceMatches(row.verification_json, config)) {
       verifications.set(item.id, verification);
     }
     if (row.enrichment_outcome === "failure" || !cached) continue;
-    const itemFingerprint = await candidateFingerprint(item);
-    const cachedFingerprint = row.enrichment_fingerprint || row.fingerprint;
-    if (cachedFingerprint === itemFingerprint) reusable.set(item.id, cached);
+    if (enrichmentMatches) reusable.set(item.id, cached);
   }
   return { reusable, states, verifications };
 }
@@ -430,13 +479,14 @@ export async function readEditorVerifications(
 export async function persistEnrichments(
   db: D1DatabaseLike,
   candidates: CandidateEnrichment[],
+  config: EditorCacheConfiguration = {},
 ) {
   const existing = await loadExistingCandidates(db, candidates.map((row) => row.item));
   const statements = candidates.flatMap(({ item, enrichment, attempt, verification }) => {
     const candidateId = existingForItem(item, existing)?.id ?? item.id;
     if (attempt) {
       const successful = attempt.outcome === "success" && enrichment;
-      const json = successful ? JSON.stringify(enrichment) : null;
+      const json = successful ? modelCacheJson(enrichment, config) : null;
       const ledger = successful ? JSON.stringify(enrichment.claimLedger ?? { claims: [] }) : null;
       const score = successful ? enrichment.relevanceScore : null;
       return [db.prepare(`
@@ -465,7 +515,7 @@ export async function persistEnrichments(
         attempt.error ? attempt.error.slice(0, 1000) : null,
         attempt.fingerprint,
         ledger,
-        verification ? JSON.stringify(verification) : null,
+        verification ? modelCacheJson(verification, config) : null,
         verification ? verification.verifiedAt : null,
         candidateId,
       )];
@@ -476,7 +526,7 @@ export async function persistEnrichments(
         SET verification_json = ?, verification_at = ?
         WHERE id = ? AND queue_status = 'review'
       `).bind(
-        verification ? JSON.stringify(verification) : null,
+        verification ? modelCacheJson(verification, config) : null,
         verification?.verifiedAt ?? null,
         candidateId,
       )];
@@ -698,11 +748,14 @@ export async function persistSourceHealth(
   runId: string,
   sources: SourceRunNote[],
 ) {
+  const previous = await readSourceHealth(db);
   const statements = sources.map((source) => db.prepare(`
     INSERT INTO source_health (
       source_id, origin, source_type, source_url, state, complete, completeness, item_count,
-      consecutive_failures, last_checked_at, last_success_at, last_error, last_run_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      consecutive_failures, last_checked_at, last_success_at, last_error, last_run_id,
+      next_attempt_at, last_http_status, requires_auth, last_fallback_url,
+      institution_ids_json
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(source_id) DO UPDATE SET
       origin = excluded.origin,
       source_type = excluded.source_type,
@@ -711,11 +764,7 @@ export async function persistSourceHealth(
       complete = excluded.complete,
       completeness = excluded.completeness,
       item_count = excluded.item_count,
-      consecutive_failures = CASE
-        WHEN excluded.state IN ('healthy', 'healthy-empty') THEN 0
-        WHEN excluded.state IN ('disabled', 'misconfigured') THEN source_health.consecutive_failures
-        ELSE source_health.consecutive_failures + 1
-      END,
+      consecutive_failures = excluded.consecutive_failures,
       last_checked_at = excluded.last_checked_at,
       last_success_at = CASE
         WHEN excluded.state IN ('healthy', 'healthy-empty') THEN excluded.last_checked_at
@@ -725,26 +774,113 @@ export async function persistSourceHealth(
         WHEN excluded.state IN ('healthy', 'healthy-empty') THEN NULL
         ELSE excluded.last_error
       END,
-      last_run_id = excluded.last_run_id
+      last_run_id = excluded.last_run_id,
+      next_attempt_at = excluded.next_attempt_at,
+      last_http_status = excluded.last_http_status,
+      requires_auth = excluded.requires_auth,
+      institution_ids_json = excluded.institution_ids_json,
+      last_fallback_url = CASE
+        WHEN excluded.state IN ('healthy', 'healthy-empty', 'backoff') THEN excluded.last_fallback_url
+        ELSE source_health.last_fallback_url
+      END
   `).bind(
-    source.id,
-    source.origin,
-    source.type,
-    source.url ?? null,
-    source.state,
-    snapshotCompleteness(source) === "complete" ? 1 : 0,
-    snapshotCompleteness(source),
-    source.itemCount,
-    isFailureSourceState(source.state) ? 1 : 0,
-    source.checkedAt,
-    isSuccessfulSourceState(source.state) ? source.checkedAt : null,
-    source.error ?? null,
-    runId,
+    ...(() => {
+      const prior = previous.get(source.id);
+      const deliberateBackoff = source.state === "backoff";
+      const consecutiveFailures = isSuccessfulSourceState(source.state)
+        ? 0
+        : isFailureSourceState(source.state)
+          ? (prior?.consecutiveFailures ?? 0) + 1
+          : prior?.consecutiveFailures ?? 0;
+      const nextAttemptAt = source.nextAttemptAt
+        ?? (source.state === "disabled" || source.state === "misconfigured"
+          ? source.checkedAt
+          : sourceNextAttemptAt(source.state, source.checkedAt, consecutiveFailures, prior?.nextAttemptAt && deliberateBackoff ? prior.nextAttemptAt : undefined));
+      return [
+        source.id,
+        source.origin,
+        source.type,
+        source.url ?? null,
+        source.state,
+        snapshotCompleteness(source) === "complete" ? 1 : 0,
+        snapshotCompleteness(source),
+        source.itemCount,
+        consecutiveFailures,
+        source.checkedAt,
+        isSuccessfulSourceState(source.state) ? source.checkedAt : null,
+        source.error ?? (deliberateBackoff ? prior?.lastError ?? "Source is in retry backoff" : null),
+        runId,
+        nextAttemptAt,
+        source.httpStatus ?? (deliberateBackoff ? prior?.lastHttpStatus ?? null : null),
+        source.requiresAuth ? 1 : (deliberateBackoff && prior?.requiresAuth ? 1 : 0),
+        source.fallbackUrl ?? (deliberateBackoff ? prior?.lastFallbackUrl ?? null : null),
+        JSON.stringify(source.institutionIds ?? prior?.institutionIds ?? []),
+      ];
+    })(),
   ));
   for (let index = 0; index < statements.length; index += 50) {
     await db.batch(statements.slice(index, index + 50));
   }
   return statements.length;
+}
+
+type SourceHealthRow = {
+  source_id: string;
+  state: string;
+  item_count: number;
+  complete: number;
+  completeness: string | null;
+  consecutive_failures: number;
+  last_checked_at: string;
+  last_success_at: string | null;
+  last_error: string | null;
+  next_attempt_at: string;
+  last_http_status: number | null;
+  requires_auth: number;
+  last_fallback_url: string | null;
+  institution_ids_json: string | null;
+};
+
+export async function readSourceHealth(db: D1DatabaseLike): Promise<Map<string, PersistedSourceHealth>> {
+  try {
+    const result = await db.prepare(`SELECT source_id, state, item_count, complete, completeness,
+        consecutive_failures, last_checked_at, last_success_at, last_error, next_attempt_at,
+        last_http_status, requires_auth, last_fallback_url, institution_ids_json
+      FROM source_health`).all<SourceHealthRow>();
+    return new Map((result.results ?? []).flatMap((row) => {
+      if (!(SOURCE_RUN_STATES as readonly string[]).includes(row.state)) return [];
+      const completeness = row.completeness === "complete" || row.completeness === "partial" || row.completeness === "empty-unverified"
+        ? row.completeness
+        : undefined;
+      return [[row.source_id, {
+        sourceId: row.source_id,
+        state: row.state as PersistedSourceHealth["state"],
+        itemCount: Number(row.item_count) || 0,
+        complete: Boolean(row.complete),
+        ...(completeness ? { completeness } : {}),
+        consecutiveFailures: Number(row.consecutive_failures) || 0,
+        lastCheckedAt: row.last_checked_at,
+        lastSuccessAt: row.last_success_at,
+        lastError: row.last_error,
+        nextAttemptAt: row.next_attempt_at,
+        lastHttpStatus: row.last_http_status == null ? null : Number(row.last_http_status),
+        requiresAuth: Boolean(row.requires_auth),
+        lastFallbackUrl: row.last_fallback_url,
+        ...(() => {
+          try {
+            const parsed = JSON.parse(row.institution_ids_json ?? "[]");
+            return Array.isArray(parsed) && parsed.every((value) => typeof value === "string") && parsed.length > 0
+              ? { institutionIds: parsed.slice(0, 8) }
+              : {};
+          } catch {
+            return {};
+          }
+        })(),
+      } satisfies PersistedSourceHealth]] as const;
+    }));
+  } catch {
+    return new Map();
+  }
 }
 
 type NewsExtractionRow = {
@@ -1158,6 +1294,7 @@ export async function persistEditorialDecisions(
   model: string,
   provider: string,
   now = new Date(),
+  persistedCandidateIds?: Set<string>,
 ) {
   const counts: EditorialCounts = { published: 0, review: 0, rejected: 0, quarantined: 0 };
   const existingCandidates = await loadExistingCandidates(db, candidates.map((row) => row.item));
@@ -1169,6 +1306,7 @@ export async function persistEditorialDecisions(
       const fingerprint = await candidateFingerprint(withCanonicalSource({ ...item, id: candidateId }));
       if (fingerprint === existingRow.fingerprint) {
         counts.rejected += 1;
+        persistedCandidateIds?.add(candidateId);
         continue;
       }
     }
@@ -1179,6 +1317,7 @@ export async function persistEditorialDecisions(
         ).bind(candidateId).first<{ content_json: string }>();
         if (!existing) {
           counts.review += 1;
+          persistedCandidateIds?.add(candidateId);
           continue;
         }
         let publication = decision.content;
@@ -1207,7 +1346,6 @@ export async function persistEditorialDecisions(
             featured: false,
           });
         }
-        counts.published += 1;
         await db.batch([
           db.prepare(`
             UPDATE content_candidates
@@ -1220,6 +1358,8 @@ export async function persistEditorialDecisions(
             WHERE candidate_id = ?
           `).bind(JSON.stringify(publication), decidedAt, candidateId),
         ]);
+        counts.published += 1;
+        persistedCandidateIds?.add(candidateId);
         continue;
       }
       if (decision.action === "publish") {
@@ -1250,7 +1390,7 @@ export async function persistEditorialDecisions(
             WHERE id = ? AND queue_status != 'rejected'
           `).bind(
             JSON.stringify(publication),
-            enrichment ? JSON.stringify(enrichment) : null,
+            enrichment ? modelCacheJson(enrichment, { model, baseUrl: provider }) : null,
             enrichment?.relevanceScore ?? Math.round(decision.confidence * 100),
             decidedAt,
             candidateId,
@@ -1304,9 +1444,27 @@ export async function persistEditorialDecisions(
             EDITOR_POLICY_VERSION,
             metadata,
           ),
+          ...(publication.kind === "policy" ? [db.prepare(`
+            INSERT INTO policy_review_milestones (
+              candidate_id, fingerprint, outcome, rule, source_development_at,
+              citations_json, recorded_at
+            ) VALUES (?, ?, 'brief', ?, ?, ?, ?)
+            ON CONFLICT(candidate_id, fingerprint, outcome) DO UPDATE SET
+              rule = excluded.rule,
+              citations_json = excluded.citations_json,
+              recorded_at = MIN(policy_review_milestones.recorded_at, excluded.recorded_at)
+          `).bind(
+            candidateId,
+            fingerprint,
+            decision.rule,
+            publication.policyIdentity?.developmentAt ?? publication.publishedAt ?? null,
+            JSON.stringify(publication.citations ?? []),
+            decidedAt,
+          )] : []),
           ...slugAliasStatements(db, candidateId, publication, incomingSlug, decidedAt),
         ]);
         counts.published += 1;
+        persistedCandidateIds?.add(candidateId);
         continue;
       }
       if (decision.action === "reject") {
@@ -1345,9 +1503,31 @@ export async function persistEditorialDecisions(
           ),
         ]);
         counts.rejected += 1;
+        persistedCandidateIds?.add(candidateId);
         continue;
       }
+      if (item.kind === "policy") {
+        const fingerprint = await candidateFingerprint(item);
+        await db.prepare(`
+          INSERT INTO policy_review_milestones (
+            candidate_id, fingerprint, outcome, rule, source_development_at,
+            citations_json, recorded_at
+          ) VALUES (?, ?, 'blocker', ?, ?, ?, ?)
+          ON CONFLICT(candidate_id, fingerprint, outcome) DO UPDATE SET
+            rule = excluded.rule,
+            citations_json = excluded.citations_json,
+            recorded_at = MIN(policy_review_milestones.recorded_at, excluded.recorded_at)
+        `).bind(
+          candidateId,
+          fingerprint,
+          decision.rule,
+          item.policyIdentity?.developmentAt ?? item.publishedAt ?? null,
+          JSON.stringify(item.citations ?? []),
+          decidedAt,
+        ).run();
+      }
       counts.review += 1;
+      persistedCandidateIds?.add(candidateId);
     } catch (error) {
       counts.quarantined += 1;
       await quarantineIdentity(db, {
@@ -1369,7 +1549,10 @@ async function readPagedRows<T>(
   const out: T[] = [];
   for (let page = 0; page < PUBLIC_READ_MAX_PAGES; page += 1) {
     const rows = await db.prepare(sql).bind(pageSize, page * pageSize).all<T>();
-    const batch = rows.results ?? [];
+    if (!Array.isArray(rows.results) || ("success" in rows && rows.success === false)) {
+      throw new Error("published-content-storage-unavailable");
+    }
+    const batch = rows.results;
     if (!batch.length) break;
     out.push(...batch);
     if (batch.length < pageSize) break;
