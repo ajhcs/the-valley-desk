@@ -9,7 +9,7 @@ import { parseGitHubRepositorySnapshot, parseGitHubReleasesSnapshot, parseGitHub
 import { checkpointAfterPersistence, sourceEndpointAllowed, type SnapshotInput, type WatchSnapshotResult,
   type SnapshotPageReceipt, type PersistenceAcknowledgment, type PagePersistenceAcknowledgment } from "./source-enrollment";
 import { resolveEnrolledCollectionSource, retainedGoodRepresentation, retainedBytes, persistWatchCollectionPage,
-  type EnrolledCollectionSource } from "./collection-storage";
+  resolveWatchSourcePermissions, type EnrolledCollectionSource } from "./collection-storage";
 
 const MAX_SOURCES=8, MAX_PAGES=4, RUN_MS=90_000, HOST_GAP_MS=1000, MAX_BACKOFF_MS=7*86400_000;
 type StateRow={source_id:string;next_due_at:string;failures:number};
@@ -112,7 +112,19 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
     if(source.transport==="official-json" && !result.rejectedItems && !result.truncated && result.health.state==="healthy") {
       const permission=await resolveEnrolledCollectionSource(db,source.id,clock().toISOString());
       if(permission?.permissionDigest!==enrolled.permissionDigest)throw new UpstreamError("disabled","watch-source-permission-changed");
-      await stageCollectedPolicyObservations(db,result.observations,clock());
+      // Native persistence can retract stale evidence, so every write transaction
+      // must retain the same enrollment and live lease, not just the pre-read.
+      const guardedDb:D1DatabaseLike={prepare:sql=>db.prepare(sql),async batch(statements){
+        const at=clock().toISOString(),context=await resolveWatchSourcePermissions(db,[source.id],at);
+        if(context.sourcePermissionDigests.get(source.id)!==enrolled.permissionDigest)
+          throw new UpstreamError("disabled","watch-source-permission-changed");
+        const decisionId=crypto.randomUUID();
+        return db.batch([...context.acceptanceGuards(decisionId),
+          db.prepare(`INSERT INTO watch_collection_acceptance_guards VALUES(?,?,?,?,CASE WHEN EXISTS(
+            SELECT 1 FROM watch_collection_leases WHERE id='watch-collector' AND owner=? AND expires_at>?
+          ) THEN 1 ELSE 0 END)`).bind(crypto.randomUUID(),decisionId,source.id,at,leaseOwner,at),...statements]);
+      }};
+      await stageCollectedPolicyObservations(guardedDb,result.observations,clock());
     }
     pages.push(stored.page);for(const [id,ack] of stored.persisted)persisted.set(id,ack);persistedPages.set(pageKey,stored.acknowledgment);
     itemCount+=result.observations.length;lastResult=result;

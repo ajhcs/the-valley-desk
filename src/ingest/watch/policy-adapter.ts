@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { canonicalJson, sha256, tupleKey, policyIdentityKey } from "../../content/watch-schema";
+import { sha256, policyIdentityKey } from "../../content/watch-schema";
 import { parseFederalRegisterPolicy, NativePolicyCapture } from "../policy-watch-native";
 import { persistPolicyWatchCapture, buildPolicyEditorialProposal } from "../policy-watch-workflow";
 import { stageEditorialProposal } from "../watch-editorial";
 import type { D1DatabaseLike } from "../persistence";
-import { checkedSnapshot, snapshotRepresentationDigest, snapshotHealth, failedSnapshot, WatchObservation,
+import { checkedSnapshot, snapshotRepresentationDigest, snapshotHealth, failedSnapshot, makeObservation, WatchObservation,
   type SnapshotInput, type WatchSnapshotResult } from "./source-enrollment";
 
 /** A rolling API inventory is discovery, not a complete regulatory history. */
@@ -31,10 +31,10 @@ export async function parseFederalRegisterSnapshot(input: SnapshotInput): Promis
         const externalKey = await policyIdentityKey(capture.identity);
         if (seen.has(externalKey)) throw Error("duplicate-native-policy");
         seen.add(externalKey);
-        const payload = { nativeCapture: capture }, payloadSha256 = await sha256(canonicalJson(payload));
-        observations.push(WatchObservation.parse({ id: await tupleKey("watch-native-policy-v1", [source.id, externalKey, payloadSha256]),
-          sourceId: source.id, externalKey, parserId: source.parserId, parserVersion: source.parserVersion,
-          sourceUrl: input.finalUrl, fetchedAt: input.fetchedAt, representationSha256: digest, payloadSha256, payload }));
+        const { retrievedAt: _retrievedAt, ...sourceMetadata } = capture.source;
+        const payload = { nativeCapture: { ...capture, source: sourceMetadata } };
+        observations.push(await makeObservation(source, { externalKey,
+          sourceUrl: input.finalUrl, fetchedAt: input.fetchedAt, representationSha256: digest, payload }));
       } catch { rejectedItems++; }
     }
     return { observations, candidates: [], representationSha256: digest, truncated, rejectedItems,
@@ -49,8 +49,9 @@ export async function parseFederalRegisterSnapshot(input: SnapshotInput): Promis
 /** Called only after durable raw-page acknowledgment. Never creates acceptance. */
 export async function stageCollectedPolicyObservations(db: D1DatabaseLike, observations: WatchObservation[], now: Date) {
   for (const observation of observations) {
-    const payload = z.object({ nativeCapture: NativePolicyCapture }).strict().parse(observation.payload);
-    const capture = payload.nativeCapture;
+    const payload = z.object({ nativeCapture: z.record(z.unknown()) }).strict().parse(observation.payload);
+    const capture = NativePolicyCapture.parse({ ...payload.nativeCapture,
+      source: { ...z.record(z.unknown()).parse(payload.nativeCapture.source), retrievedAt: observation.fetchedAt } });
     if (capture.source.sourceId !== observation.sourceId || capture.source.sourceUrl !== observation.sourceUrl ||
       capture.source.retrievedAt !== observation.fetchedAt ||
       await policyIdentityKey(capture.identity) !== observation.externalKey) throw Error("native-policy-observation-conflict");

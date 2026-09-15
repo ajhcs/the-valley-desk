@@ -14,19 +14,19 @@ const definitions = [
 ] as const;
 
 export const launchCandidates = definitions.map(([id,name,desk,jurisdiction,family,transport,endpoint,discoveryUrl,accessMode]) => {
-  const url = new URL(endpoint), github = transport === "github-json";
+  const url = new URL(endpoint), github = transport === "github-json", federal = id === "candidate-federal-cms";
   const source = SourceEnrollment.parse({id,name,desk,jurisdiction,family,transport,
-    state:"pending",parserId:github?"watch-github":transport==="rss"?"watch-rss":"candidate-parser-unavailable",
+    state:"pending",parserId:github?"watch-github":transport==="rss"?"watch-rss":federal?"watch-federal-register":"candidate-parser-unavailable",
     parserVersion:"1",endpoints:[endpoint],linkScopes:[{host:github?"github.com":url.hostname,
       pathPrefix:github?url.pathname.replace(/^\/repos/,""):"/"}],
     authority:github?"first-party":"official",dateTimezone:"America/New_York",requiresAuth:false,
     collectionMode:"rolling",maxBytes:500_000,maxItems:50,qualificationReceiptId:null});
   return {source,discoveryUrl,accessMode,accessDocumentation:github?"https://docs.github.com/en/rest/repos/repos#get-a-repository":null,
     enrollmentStatus:"candidate" as const,engineeringOwnerId:null,editorialOwnerId:null,rightsDecision:null,
-    captureClaim:transport==="html"||transport==="official-json"?"inventory-only-parser-unavailable":"parser-preparation",
+    captureClaim:transport==="html"?"inventory-only-parser-unavailable":"parser-preparation",
     blockers:["named-reviewers-unassigned","rights-review-pending","two-time-separated-samples-required",
       ...(github?["regional-evidence-review-pending","license-bytes-review-pending"]:[]),
-      ...(transport==="html"||transport==="official-json"?["watch-parser-not-implemented"]:[])]};
+      ...(transport==="html"?["watch-parser-not-implemented"]:[])]};
 });
 
 export function launchCandidate(id: string) {

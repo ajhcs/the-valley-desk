@@ -48,8 +48,35 @@ test("Federal Register inventory persists raw evidence then stages unreviewed po
   await due(db);
   const second=await runWatchCollection(db,{enabled:true,clock:clock("2026-09-12T12:02:00.000Z"),fetchImpl:async()=>new Response(null,{status:304})});
   assert.equal(second.sources[0]?.state,"healthy",JSON.stringify(second));
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_raw_observations").get()!.n,1);
+  assert.equal(sqlite.prepare("SELECT first_seen_at FROM watch_raw_observations").get()!.first_seen_at,SEEN_AT);
   assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,1);
   assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,1);
+  await due(db);
+  const changedEnvelope=await runWatchCollection(db,{enabled:true,clock:clock("2026-09-12T12:04:00.000Z"),
+    fetchImpl:async()=>new Response(JSON.stringify({results:[federalRecord],count:99}))});
+  assert.equal(changedEnvelope.sources[0]?.state,"healthy",JSON.stringify(changedEnvelope));
+  const bindings=sqlite.prepare("SELECT o.observation_json,r.representation_sha256 FROM watch_raw_observations o JOIN watch_raw_representations r ON r.id=o.representation_id").all();
+  assert.equal(bindings.length,2);
+  for(const binding of bindings)assert.equal(JSON.parse(String(binding.observation_json)).representationSha256,binding.representation_sha256);
+  assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,1);
+});
+
+test("native staging transactions fence revocation and lease replacement after raw persistence",async t=>{
+  for(const mutation of ["UPDATE watch_collection_reviews SET revoked_at='2026-09-12T12:00:00.000Z'",
+    "UPDATE watch_collection_leases SET owner='replacement'"]){
+    const {db,sqlite}=pdfDatabase();t.after(()=>sqlite.close());await enroll(db,federalSource);let batches=0;
+    const racing:D1DatabaseLike={prepare:sql=>db.prepare(sql),async batch(statements){
+      batches++;if(batches===2)sqlite.exec(mutation);
+      return db.batch(statements);
+    }};
+    const run=runWatchCollection(racing,{enabled:true,clock:clock(),fetchImpl:async()=>new Response(JSON.stringify({results:[federalRecord]}))});
+    if(mutation.includes("leases"))await assert.rejects(run,/lease-lost/);
+    else assert.equal((await run).sources[0]?.checkpointAdvanced,false);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_raw_representations").get()!.n,1);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM policy_watch_captures").get()!.n,0);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM watch_editorial_drafts").get()!.n,0);
+  }
 });
 
 test("native policy failure, partial items and revoked permissions cannot stage reviewed facts",async t=>{

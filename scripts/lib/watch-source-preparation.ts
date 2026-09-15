@@ -1,6 +1,7 @@
 import { SourceEnrollment, sourceConfigurationDigest, type SnapshotInput } from "../../src/ingest/watch/source-enrollment";
 import { parseWatchFeedSnapshot } from "../../src/ingest/watch/feed-adapter";
 import { parseGitHubRepositorySnapshot } from "../../src/ingest/watch/github-adapter";
+import { parseFederalRegisterSnapshot } from "../../src/ingest/watch/policy-adapter";
 import { CanonicalInstant, canonicalJson, sha256 } from "../../src/content/watch-schema";
 import { fetchUpstream, SOURCE_USER_AGENT, UpstreamError, sleep } from "../../src/ingest/upstream";
 import { launchCandidate } from "../../fixtures/watch-launch-candidates";
@@ -13,7 +14,8 @@ export async function prepareCapturedSource(id:string, bytes:Uint8Array, capture
   const body=new TextDecoder("utf-8",{fatal:true}).decode(bytes);
   const input:SnapshotInput={source,body,representationBytes:bytes,finalUrl:source.endpoints[0]!,fetchedAt:capturedAt};
   const parsed=source.transport==="rss"||source.transport==="atom"?await parseWatchFeedSnapshot(input):
-    source.transport==="github-json"?await parseGitHubRepositorySnapshot(input):null;
+    source.transport==="github-json"?await parseGitHubRepositorySnapshot(input):
+    source.parserId==="watch-federal-register"?await parseFederalRegisterSnapshot(input):null;
   return {schemaVersion:"source-preparation-1",sourceId:id,configurationSha256:await sourceConfigurationDigest(source),
     endpoint:input.finalUrl,capturedAt,representationSha256:await sha256(bytes),representationBytes:bytes.byteLength,
     parserId:source.parserId,parserVersion:source.parserVersion,parsed,

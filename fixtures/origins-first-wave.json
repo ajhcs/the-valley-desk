@@ -60,6 +60,13 @@
       "kind": "news",
       "status": "misconfigured",
       "reason": "Configured feed URLs do not currently return a usable RSS or Atom document"
+    },
+    {
+      "id": "delaware-government-news",
+      "name": "Delaware Government News",
+      "url": "https://news.delaware.gov/feed/",
+      "kind": "news",
+      "status": "enabled"
     }
   ],
   "events": [
