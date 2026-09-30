@@ -1456,9 +1456,30 @@ test("homepage binds store queries and kit class names", () => {
     assert.ok(!registerCss.includes("var(--ink)"));
     const dateChip = css.slice(css.indexOf(".DateChip"), css.indexOf(".StatusChip"));
     assert.ok(dateChip.includes("background: var(--event)"));
-    assert.ok(dateChip.includes("color: var(--text)"));
+    // Filled event chips need a stable dark foreground in both page themes.
+    assert.ok(dateChip.includes("color: var(--on-event)"));
+    assert.ok(!dateChip.includes("color: var(--text)"));
+    assert.ok(!dateChip.includes("color: var(--event-text)"));
     const tokens = readFileSync(join(root, "src/styles/tokens.css"), "utf8");
     assert.ok(tokens.includes("--event-text: #9A6500"));
+    assert.ok(tokens.includes("--on-event: #101828"));
+    const palettes = tokens.split(':root[data-theme="dark"]');
+    const colors = (block: string) => Object.fromEntries(
+      [...block.matchAll(/--([\w-]+):\s*(#[\da-f]{6})/gi)].map(match => [match[1], match[2]]),
+    );
+    const light = colors(palettes[0]);
+    const dark = { ...light, ...colors(palettes[1]) };
+    const luminance = (hex: string) => {
+      const channels = [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255)
+        .map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+      return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+    };
+    for (const [theme, palette] of [["light", light], ["dark", dark]] as const) {
+      const foreground = luminance(palette["on-event"]);
+      const background = luminance(palette.event);
+      const contrast = (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+      assert.ok(contrast >= 4.5, `DateChip text contrast in ${theme} theme`);
+    }
   }
   assert.ok(footer.includes("News"));
   assert.ok(footer.includes("Events"));
@@ -4819,7 +4840,8 @@ test("D1 attempt persistence reuses successes, cools failures, and retries finge
   database.close();
 });
 
-test("scheduled editor pipeline publishes official events when the model fails and stays inside budget", async () => {
+test("scheduled editor pipeline publishes official events when the model fails and stays inside budget", async (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-08-26T12:00:00.000Z") });
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
   const db = sqliteD1(database);
@@ -4868,7 +4890,8 @@ test("scheduled editor pipeline publishes official events when the model fails a
   database.close();
 });
 
-test("cached enrichments are not re-called and skipped candidates still get editor policy", async () => {
+test("cached enrichments are not re-called and skipped candidates still get editor policy", async (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-08-26T12:00:00.000Z") });
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
   const db = sqliteD1(database);

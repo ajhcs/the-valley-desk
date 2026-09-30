@@ -1,34 +1,36 @@
 .PolicyBaseline { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; overflow-wrap: anywhere; }
-.PolicyKicker { text-transform: uppercase; font-size: .75rem; letter-spacing: .09em; color: #52645e; }
+.PolicyKicker { text-transform: uppercase; font-size: .75rem; letter-spacing: .09em; color: var(--policy-muted); }
 .PolicyBaseline h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; margin: .6rem 0 1rem; }
 .PolicyIntro { max-width: 70ch; font-size: 1.1rem; line-height: 1.7; }
 .PolicyJump { display: flex; flex-wrap: wrap; gap: .8rem 1.5rem; padding: 1rem 0; }
 .PolicySectionIndex > summary { cursor: pointer; padding: .8rem 0; font-weight: 600; }
-.PolicyBill { margin-top: 2.5rem; border-top: 3px solid #34584a; padding-top: 1.3rem; }
+.PolicyBill { margin-top: 2.5rem; border-top: 3px solid var(--policy-accent); padding-top: 1.3rem; }
 .PolicyBill header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 .PolicyBill h2 { font-size: 1.75rem; margin: 0; }
 .PolicyBill p, .PolicyBill li { line-height: 1.6; }
 .PolicyFacts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem 2rem; margin: 1.5rem 0; }
-.PolicyFacts dt { color: #52645e; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+.PolicyFacts dt { color: var(--policy-muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
 .PolicyFacts dd { margin: .3rem 0 0; }
 .PolicyCitations a, .PolicyBaseline a { text-decoration: underline; text-underline-offset: 3px; }
-.PolicyProvision { border: 1px solid #cad2cb; margin: .8rem 0; padding: 1rem; border-radius: 3px; }
+.PolicyProvision { border: 1px solid var(--policy-rule); margin: .8rem 0; padding: 1rem; border-radius: 3px; }
 .PolicyProvision summary { cursor: pointer; line-height: 1.5; }
-.PolicyProvision summary small { display: block; margin-top: .4rem; color: #52645e; font-weight: normal; }
+.PolicyProvision summary small { display: block; margin-top: .4rem; color: var(--policy-muted); font-weight: normal; }
 .PolicySummary { max-width: 74ch; font-size: 1.05rem; }
-.PolicyReview { margin-top: 1rem; background: #f2f4ef; color: #1d2c24; padding: 1rem; }
+.PolicyReview { margin-top: 1rem; background: var(--policy-surface); color: var(--policy-text); padding: 1rem; }
 .PolicyReview details { margin: 1rem 0; }
 .PolicyLines { padding: 0; list-style: none; }
 .PolicyLines li { margin-bottom: .6rem; }
-.PolicyLines small { display: block; color: #52645e; }
+.PolicyLines small { display: block; color: var(--policy-muted); }
 .PolicyReview figure { margin: 1rem 0; }
-.PolicyReview img { max-width: 100%; height: auto; border: 1px solid #cad2cb; }
+.PolicyReview img { max-width: 100%; height: auto; border: 1px solid var(--policy-rule); }
 .PolicyReview form { display: grid; gap: 1rem; }
 .PolicyReview label { display: grid; gap: .4rem; }
-.PolicyReview textarea, .PolicyReview select { width: 100%; box-sizing: border-box; padding: .6rem; border: 1px solid #74867d; background: white; color: #1d2c24; font: inherit; }
+.PolicyReview textarea, .PolicyReview select { width: 100%; box-sizing: border-box; padding: .6rem; border: 1px solid var(--policy-border); background: var(--paper); color: var(--policy-text); font: inherit; }
 .PolicyReview textarea { min-height: 6rem; }
 .PolicyReview .PolicyCheckbox { display: flex; align-items: flex-start; }
-.PolicyBaseline button { cursor: pointer; padding: .55rem .8rem; border: 1px solid #34584a; background: #fff; color: #244434; border-radius: 3px; font: inherit; }
+.PolicyBaseline button { cursor: pointer; padding: .55rem .8rem; border: 1px solid var(--policy-accent); background: var(--paper); color: var(--policy-button-text); border-radius: 3px; font: inherit; }
 .PolicyBaseline button:disabled { cursor: not-allowed; opacity: .55; }
-.PolicyTiming { border-top: 1px solid #cad2cb; margin-top: 2rem; padding-top: 1rem; color: #52645e; font-size: .9rem; }
+.PolicyTiming { border-top: 1px solid var(--policy-rule); margin-top: 2rem; padding-top: 1rem; color: var(--policy-muted); font-size: .9rem; }
 @media (max-width: 600px) { .PolicyFacts { grid-template-columns: 1fr; } .PolicyBaseline { padding: 1.5rem .25rem 3rem; } .PolicyProvision, .PolicyReview { padding: .8rem; } }
+
+.PolicyBaseline :is(a, button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }

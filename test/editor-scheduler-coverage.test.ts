@@ -439,7 +439,9 @@ test("prompt-injection handling: instructional source held", () => {
   assert.ok(v.objections.some(o=>o.code==="prompt-injection"));
 });
 
-test("model failure isolation: automation publishes official events even when model fails, and does not block", async () => {
+test("model failure isolation: automation publishes official events even when model fails, and does not block", async (t) => {
+  // Keep the official event future relative to the fixture, independent of run date.
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-08-26T12:00:00.000Z") });
   class Mem {
     m=new Map<string,string>();
     prepare(q:string){ return {bind:(...vals:unknown[])=>({first:async<T>()=>null, run:async()=>{}, all:async()=>( {results:[] as T[]})}), first:async<T>()=>null, run:async()=>{}, all:async()=>( {results:[] as T[]})}}
