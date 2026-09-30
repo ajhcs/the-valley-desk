@@ -3,6 +3,19 @@
    Never introduce spa/hospital teal. Admiral is cousin — use sparingly. */
 
 :root {
+  color-scheme: light;
+  --surface: #F2F4F7;
+  --field-border: #667085;
+  --error-text: #9B1C1C;
+  --warning-text: #854D0E;
+  --on-event: #101828;
+  --policy-muted: #52645E;
+  --policy-accent: #34584A;
+  --policy-rule: #CAD2CB;
+  --policy-surface: #F2F4EF;
+  --policy-text: #1D2C24;
+  --policy-border: #74867D;
+  --policy-button-text: #244434;
   --ink: #21145F;
   --admiral: #1E22AA;
   --sky: #54C0E8;
@@ -33,4 +46,29 @@
 
   --font-sans: "IBM Plex Sans", "IBMPlexSans", Helvetica, Arial, sans-serif;
   --font-serif: "IBM Plex Serif", "IBMPlexSerif", Georgia, "Times New Roman", serif;
+}
+
+/* Brand hues retain their roles, with readable equivalents on dark paper. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #111322;
+  --paper-bright: #1B1E32;
+  --surface: #20243A;
+  --text: #F2F4F7;
+  --mute: #B8C1D1;
+  --rule: #4B526A;
+  --field-border: #8994AF;
+  --ink: #C7BCFF;
+  --admiral: #ADB4FF;
+  --navy: #C7BCFF;
+  --event-text: #F6CE72;
+  --error-text: #FFA5A5;
+  --warning-text: #F6CE72;
+  --policy-muted: var(--mute);
+  --policy-accent: var(--ink);
+  --policy-rule: var(--rule);
+  --policy-surface: var(--surface);
+  --policy-text: var(--text);
+  --policy-border: var(--field-border);
+  --policy-button-text: var(--ink);
 }

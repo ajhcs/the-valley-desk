@@ -593,7 +593,7 @@ ul.desk {
   letter-spacing: 0.08em;
   line-height: 1.8;
   text-transform: uppercase;
-  color: var(--text);
+  color: var(--on-event);
   background: var(--event);
   animation: none;
   transition: none;

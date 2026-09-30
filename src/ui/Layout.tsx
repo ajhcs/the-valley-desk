@@ -6,6 +6,7 @@ import { FoldMark } from "./FoldMark";
 import { MentionScope } from "./MentionScope";
 import { SiteFooter } from "./home/SiteFooter";
 import { SkipLink } from "./SkipLink";
+import { ThemeControl } from "./ThemeControl";
 
 export function Layout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -62,6 +63,7 @@ export function Layout() {
                 aria-current={current === "technology-watch" ? "page" : undefined}>Technology Watch</Link>
             </> : null}
           </nav>
+          <ThemeControl />
         </div>
       </header> : null}
       <main id="main-content" tabIndex={-1} className={isLab ? "SiteMain is-lab" : "SiteMain"}>
