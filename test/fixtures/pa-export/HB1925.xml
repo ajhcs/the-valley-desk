@@ -1,0 +1,129 @@
+<bill id="20250HB1925" lastUpdate="September 30, 2026 3:05:00 PM EDT">
+			<sessionYear>2025</sessionYear>
+			<session>0</session>
+			<body>H</body>
+			<type description="House Bill">B</type>
+			<subType>B</subType>
+			<number>1925</number>
+			<shortTitle>An Act amending Titles 35 &#x28;Health and Safety&#x29;, 40 &#x28;Insurance&#x29; and 67 &#x28;Public Welfare&#x29; of the Pennsylvania Consolidated Statutes, providing for artificial intelligence in facilities, for artificial intelligence use by insurers and for artificial intelligence use by MA or CHIP managed care plans&#x3b; imposing duties on the Department of Health, the Insurance Department and the Department of Human Services&#x3b; and imposing penalties.</shortTitle>
+			<cosponsorshipMemo memoUrl="https://www.palegis.us/house/co-sponsorship/memo?memoID=47155&amp;document=HB1925">Regulation of the Use of Artificial Intelligence in Healthcare</cosponsorshipMemo>
+			<sponsors>
+				<sponsor sequenceNumber="01" fillSequence="0" party="D" body="H" districtNumber="30">VENKAT</sponsor>
+				<sponsor sequenceNumber="02" fillSequence="0" party="R" body="H" districtNumber="142">HOGAN</sponsor>
+				<sponsor sequenceNumber="03" fillSequence="0" party="D" body="H" districtNumber="194">KHAN</sponsor>
+				<sponsor sequenceNumber="04" fillSequence="0" party="D" body="H" districtNumber="114">KOSIEROWSKI</sponsor>
+				<sponsor sequenceNumber="05" fillSequence="0" party="D" body="H" districtNumber="54">SCOTT</sponsor>
+				<sponsor sequenceNumber="06" fillSequence="0" party="D" body="H" districtNumber="95">HILL-EVANS</sponsor>
+				<sponsor sequenceNumber="07" fillSequence="0" party="D" body="H" districtNumber="136">FREEMAN</sponsor>
+				<sponsor sequenceNumber="08" fillSequence="0" party="D" body="H" districtNumber="96">RIVERA</sponsor>
+				<sponsor sequenceNumber="09" fillSequence="0" party="D" body="H" districtNumber="61">HANBIDGE</sponsor>
+				<sponsor sequenceNumber="10" fillSequence="0" party="D" body="H" districtNumber="118">HADDOCK</sponsor>
+				<sponsor sequenceNumber="11" fillSequence="0" party="D" body="H" districtNumber="153">SANCHEZ</sponsor>
+				<sponsor sequenceNumber="12" fillSequence="0" party="D" body="H" districtNumber="24">MAYES</sponsor>
+				<sponsor sequenceNumber="13" fillSequence="0" party="D" body="H" districtNumber="167">HOWARD</sponsor>
+				<sponsor sequenceNumber="14" fillSequence="0" party="D" body="H" districtNumber="127">GUZMAN</sponsor>
+				<sponsor sequenceNumber="15" fillSequence="0" party="D" body="H" districtNumber="113">DONAHUE</sponsor>
+				<sponsor sequenceNumber="16" fillSequence="0" party="R" body="H" districtNumber="128">GILLEN</sponsor>
+				<sponsor sequenceNumber="17" fillSequence="0" party="D" body="H" districtNumber="190">GREEN</sponsor>
+				<sponsor sequenceNumber="18" fillSequence="0" party="D" body="H" districtNumber="182">WAXMAN</sponsor>
+				<sponsor sequenceNumber="19" fillSequence="0" party="D" body="H" districtNumber="189">PROBST</sponsor>
+				<sponsor sequenceNumber="20" fillSequence="0" party="D" body="H" districtNumber="156">PIELLI</sponsor>
+				<sponsor sequenceNumber="21" fillSequence="0" party="D" body="H" districtNumber="133">McNEILL</sponsor>
+				<sponsor sequenceNumber="22" fillSequence="0" party="D" body="H" districtNumber="168">BOROWSKI</sponsor>
+				<sponsor sequenceNumber="23" fillSequence="0" party="D" body="H" districtNumber="157">SHUSTERMAN</sponsor>
+				<sponsor sequenceNumber="24" fillSequence="0" party="D" body="H" districtNumber="198">PARKER</sponsor>
+				<sponsor sequenceNumber="25" fillSequence="0" party="D" body="H" districtNumber="129">CEPEDA-FREYTIZ</sponsor>
+				<sponsor sequenceNumber="26" fillSequence="0" party="D" body="H" districtNumber="53">MALAGARI</sponsor>
+				<sponsor sequenceNumber="27" fillSequence="0" party="R" body="H" districtNumber="14">KOZAK</sponsor>
+				<sponsor sequenceNumber="28" fillSequence="0" party="D" body="H" districtNumber="172">DOUGHERTY</sponsor>
+				<sponsor sequenceNumber="29" fillSequence="0" party="D" body="H" districtNumber="144">MUNROE</sponsor>
+			</sponsors>
+			<printersNumberHistory>
+				<number sequence="01" billTextPdfUrl="https://www.palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN3963">3963</number>
+				<number sequence="02" billTextPdfUrl="https://www.palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN3349">3349</number>
+				<number sequence="03" billTextPdfUrl="https://www.palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN2403">2403</number>
+			</printersNumberHistory>
+			<actionHistory>
+				<action sequence="01" actionChamber="H">
+					<verb>Referred to</verb>
+					<committee>COMMUNICATIONS AND TECHNOLOGY</committee>
+					<date>10/06/25</date>
+					<printersNumber>2403</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Referred to COMMUNICATIONS AND TECHNOLOGY,  Oct. 6, 2025</fullAction>
+				</action>
+				<action sequence="02" actionChamber="H">
+					<verb>Reported as amended,</verb>
+					<committee>COMMUNICATIONS AND TECHNOLOGY</committee>
+					<date>05/05/26</date>
+					<printersNumber>3349</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Reported as amended, May 5, 2026</fullAction>
+				</action>
+				<action sequence="03" actionChamber="H">
+					<verb>First consideration,</verb>
+					<committee></committee>
+					<date>05/05/26</date>
+					<printersNumber>3349</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>First consideration, May 5, 2026 </fullAction>
+				</action>
+				<action sequence="04" actionChamber="H">
+					<verb>Laid on the table,</verb>
+					<committee></committee>
+					<date>05/05/26</date>
+					<printersNumber>3349</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Laid on the table, May 5, 2026 </fullAction>
+				</action>
+				<action sequence="05" actionChamber="H">
+					<verb>Removed from table,</verb>
+					<committee></committee>
+					<date>06/25/26</date>
+					<printersNumber>3349</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Removed from table, June 25, 2026</fullAction>
+				</action>
+				<action sequence="06" actionChamber="H">
+					<verb>Second consideration, with amendments,</verb>
+					<committee></committee>
+					<date>09/29/26</date>
+					<printersNumber>3963</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Second consideration, with amendments, Sept. 29, 2026 </fullAction>
+				</action>
+				<action sequence="07" actionChamber="H">
+					<verb>Re-committed to</verb>
+					<committee>APPROPRIATIONS</committee>
+					<date>09/29/26</date>
+					<printersNumber>3963</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Re-committed to APPROPRIATIONS,  Sept. 29, 2026</fullAction>
+				</action>
+				<action sequence="08" actionChamber="H">
+					<verb>(Remarks see House Journal Page</verb>
+					<committee></committee>
+					<date>09/29/26</date>
+					<printersNumber>3963</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>(Remarks see House Journal Page ), Sept. 29, 2026</fullAction>
+				</action>
+				<action sequence="09" actionChamber="H">
+					<verb>Re-reported as committed,</verb>
+					<committee>APPROPRIATIONS</committee>
+					<date>09/30/26</date>
+					<printersNumber>3963</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Re-reported as committed, Sept. 30, 2026</fullAction>
+				</action>
+			</actionHistory>
+			<amendments>
+				<amendment chamber="H" date="05/05/26" number="03160" amendsPN="2403" amendmentUrl="https://www.palegis.us/legislation/amendments/text/2025/0/A03160" aicUrl="https://www.palegis.us/legislation/amendments/text/2025/0/A03160?amendType=AIC&amp;txtType=HTM">A03160</amendment>
+				<amendment chamber="H" date="09/29/26" number="04011" amendsPN="3349" amendmentUrl="https://www.palegis.us/legislation/amendments/text/2025/0/A04011" aicUrl="https://www.palegis.us/legislation/amendments/text/2025/0/A04011?amendType=AIC&amp;txtType=HTM">A04011</amendment>
+			</amendments>
+			<supportingDocuments>
+				<pnSupportingDocuments relatedPN="3963">
+					<document documentUrl="https://www.palegis.us/WU01/LI/BI/FN/2025/0/HB1925P3963.pdf">House Fiscal Note</document>
+				</pnSupportingDocuments>
+			</supportingDocuments>
+		</bill>

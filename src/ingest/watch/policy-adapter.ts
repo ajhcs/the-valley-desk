@@ -61,23 +61,35 @@ export async function stageCollectedPolicyObservations(db: D1DatabaseLike, obser
     if (capture.source.sourceId !== observation.sourceId || capture.source.sourceUrl !== observation.sourceUrl ||
       capture.source.retrievedAt !== observation.fetchedAt ||
       await policyIdentityKey(capture.identity) !== observation.externalKey) throw Error("native-policy-observation-conflict");
-    const stored = await persistPolicyWatchCapture(db, capture);
-    const subjectId = await policyIdentityKey(capture.identity);
-    const existing = await db.prepare("SELECT slug,input_revision,input_sha256 FROM watch_subjects WHERE id=?").bind(subjectId)
-      .first<{ slug: string; input_revision: number; input_sha256: string }>();
-    if (!publishVerified && stored.outcome === "unchanged" && existing?.input_revision === stored.revision &&
-        await db.prepare("SELECT id FROM watch_editorial_drafts WHERE subject_id=? AND subject_revision=? AND input_sha256=?")
-          .bind(subjectId, stored.revision, existing.input_sha256).first()) continue;
-    const slug = existing?.slug ?? `federal-register-${capture.identity.sourceInstrumentId.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${(await sha256(subjectId)).slice(0, 12)}`;
-    const { proposal } = await buildPolicyEditorialProposal(db, stored.id, slug, now);
-    const staged = await stageEditorialProposal(db, proposal, now);
-    if (publishVerified) {
-      try {
-        await decideSourceRulePolicyProposal(db, { id: staged.id, sha256: staged.sha256 }, createWatchEditorialRuntime(db), now);
-      } catch (error) {
-        if (!(error instanceof WatchStorageError || error instanceof WatchProjectionError || error instanceof WatchDeliveryError)) throw error;
-        console.warn(JSON.stringify({ event: "watch-source-rule-held", subjectId, reason: error.message }));
-      }
+    await stageNativePolicyCapture(db, capture, now, publishVerified);
+  }
+}
+
+/** Shared review staging; source-rule acceptance still performs its own strict collector proof. */
+export async function stageNativePolicyCapture(db: D1DatabaseLike, capture: NativePolicyCapture, now: Date,
+  publishVerified = false) {
+  const stored = await persistPolicyWatchCapture(db, capture);
+  const subjectId = await policyIdentityKey(capture.identity);
+  const existing = await db.prepare("SELECT slug,input_revision,input_sha256 FROM watch_subjects WHERE id=?").bind(subjectId)
+    .first<{ slug: string; input_revision: number; input_sha256: string }>();
+  const previous = stored.outcome === "unchanged" && existing?.input_revision === stored.revision
+    ? await db.prepare("SELECT id,input_sha256 FROM watch_editorial_drafts WHERE subject_id=? AND subject_revision=? AND input_sha256=?")
+      .bind(subjectId, stored.revision, existing.input_sha256).first<{ id: string; input_sha256: string }>() : null;
+  if (previous && !publishVerified) return;
+  const prefix = capture.identity.jurisdiction === "PA"
+    ? `pa-${capture.identity.sessionKey}-${capture.identity.sourceInstrumentId.toLowerCase().replace(/\s+/g, "")}`
+    : `federal-register-${capture.identity.sourceInstrumentId.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+  const slug = existing?.slug ?? `${prefix}-${(await sha256(subjectId)).slice(0, 12)}`;
+  // Recheck the existing immutable proposal at its original staging time; a
+  // successful unchanged check cannot create a different draft/development.
+  const staged = previous ? { id: previous.id, sha256: previous.input_sha256 } :
+    await stageEditorialProposal(db, (await buildPolicyEditorialProposal(db, stored.id, slug, now)).proposal, now);
+  if (publishVerified) {
+    try {
+      await decideSourceRulePolicyProposal(db, { id: staged.id, sha256: staged.sha256 }, createWatchEditorialRuntime(db), now);
+    } catch (error) {
+      if (!(error instanceof WatchStorageError || error instanceof WatchProjectionError || error instanceof WatchDeliveryError)) throw error;
+      console.warn(JSON.stringify({ event: "watch-source-rule-held", subjectId, reason: error.message }));
     }
   }
 }

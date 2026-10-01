@@ -1,3 +1,4 @@
+import { parsePennsylvaniaExportPolicy } from "./watch/pennsylvania-export";
 import { z } from "zod";
 import { AcceptedFactRecord, CanonicalInstant, EvidenceIds, EvidenceReference, InterpretationDependencies,
   PolicyDossierDraft, Sha256, SubjectAcceptance, TechnologyProfileDraft, WatchId, acceptedFactDigest,
@@ -102,18 +103,20 @@ export async function decideSourceRuleProposal(db: D1DatabaseLike,
     : parsed.parserVersion === "federal-register-policy-json-1" ? parseFederalRegisterPolicy(parsed.native, parsed.source)
     : parsed.parserVersion === "nj-legislative-text-csv-1" ? parseNewJerseyPolicy(parsed.native, parsed.identity.sessionKey, parsed.source)
     : parsed.parserVersion === "philadelphia-legistar-json-1" ? parsePhiladelphiaPolicy(parsed.native, parsed.identity.sessionKey, parsed.source)
-    : parsed.parserVersion === "pa-bill-history-html-1" ? parsePennsylvaniaPolicy(z.object({ html: z.string() }).parse(parsed.native).html, parsed.source)
+    : parsed.parserVersion === "pa-bill-history-xml-1" ? parsePennsylvaniaExportPolicy(z.object({document:z.unknown()}).parse(parsed.native).document, parsed.source)
+    : parsed.parserVersion === "pa-bill-history-html-2" ? parsePennsylvaniaPolicy(z.object({ html: z.string() }).parse(parsed.native).html, parsed.source)
     : null;
   if (!reparsed || canonicalJson(reparsed) !== canonicalJson(parsed))
     throw new WatchStorageError("watch-source-rule-native-parser-conflict");
-  const permissions = await assertCollectedPolicySourceRule(db, parsed, now);
+  const proof = await assertCollectedPolicySourceRule(db, parsed, now);
   // Use staging time so date filtering is reproducible across retries.
   const rebuilt = await buildPolicyEditorialProposal(db, head.id, stored.proposal.draft.slug, new Date(stored.createdAt));
   if (canonicalJson(EditorialProposal.parse(rebuilt.proposal)) !== canonicalJson(stored.proposal) ||
     stored.proposal.facts.some(fact => fact.interpretationDependencies !== null ||
       !["title", "policy-identity", "timeline-action", "latest-action", "summary"].includes(fact.field)))
     throw new WatchStorageError("watch-source-rule-proposal-conflict");
-  return decideProposal(db, { ...request, action: "accepted" }, "source-rule:" + SOURCE_RULE, sourceRuleRuntime(db, runtime, permissions), now, "source-rule");
+  return decideProposal(db, { ...request, action: "accepted" }, "source-rule:" + SOURCE_RULE,
+    sourceRuleRuntime(db, runtime, proof.permissions, async decisionId => proof.acceptanceGuards(decisionId)), now, "source-rule");
 }
 
 export async function stageEditorialProposal(db: D1DatabaseLike, input: unknown, now = new Date()) {

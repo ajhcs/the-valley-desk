@@ -36,9 +36,9 @@ const receipts=()=>readdirSync(directory).filter(file=>file.endsWith(".json")).m
   file,receipt:JSON.parse(readFileSync(new URL(file,directory),"utf8")),
 }));
 
-test("nine executable candidates cannot qualify or activate themselves; all eleven county gaps stay visible",async()=>{
-  assert.equal(launchCandidates.length,9);
-  assert.equal(new Set(launchCandidates.map(row=>row.source.id)).size,9);
+test("fourteen executable candidates cannot qualify or activate themselves; all eleven county gaps stay visible",async()=>{
+  assert.equal(launchCandidates.length,14);
+  assert.equal(new Set(launchCandidates.map(row=>row.source.id)).size,14);
   for(const candidate of launchCandidates){
     assert.equal(candidate.source.state,"pending");
     assert.equal(candidate.source.qualificationReceiptId,null);

@@ -1,9 +1,12 @@
+import { assertPaExportProgress, normalizeWatchRepresentation, PA_EXPORT_PARSER_ID } from "./pennsylvania-export";
+import { parsePennsylvaniaExportSnapshot, stageCollectedPennsylvaniaExport } from "./pennsylvania-export-adapter";
 import { canonicalJson, CanonicalInstant, sha256, tupleKey } from "../../content/watch-schema";
 import type { D1DatabaseLike } from "../persistence";
-import { classifyFetchError, classifyHttpStatus, type SourceRunState } from "../source-health";
+import { classifyFetchError, classifyHttpStatus, type SourceRunState, type SourceRunNote } from "../source-health";
 import { SOURCE_TIMEOUT_MS, SOURCE_USER_AGENT, UpstreamError, sleep } from "../upstream";
 import { parseWatchFeedSnapshot } from "./feed-adapter";
 import { parseFederalRegisterSnapshot, stageCollectedPolicyObservations } from "./policy-adapter";
+import { PENNSYLVANIA_PARSER_ID, parsePennsylvaniaSnapshot, stageCollectedPennsylvaniaPolicy } from "./pennsylvania-adapter";
 import { parseRepresentativeRosterSnapshot, publishCollectedRepresentativeRoster } from "./representative-adapter";
 import { parseTechnologyCaptureSnapshot, stageCollectedTechnologyCapture } from "./technology-adapter";
 import { parseGitHubRepositorySnapshot, parseGitHubReleasesSnapshot, parseGitHubTagsSnapshot, parseGitHubCommitsSnapshot,
@@ -15,7 +18,8 @@ import { resolveEnrolledCollectionSource, retainedGoodRepresentation, retainedBy
 
 const MAX_SOURCES=8, MAX_PAGES=4, RUN_MS=90_000, HOST_GAP_MS=1000, MAX_BACKOFF_MS=7*86400_000;
 type StateRow={source_id:string;next_due_at:string;failures:number};
-export type CollectionOutcome={sourceId:string;state:SourceRunState;itemCount:number;detail:string;checkpointAdvanced:boolean};
+export type CollectionOutcome={sourceId:string;state:SourceRunState;itemCount:number;detail:string;checkpointAdvanced:boolean;
+  health: Omit<SourceRunNote, "type">};
 const instant=(ms:number)=>new Date(ms).toISOString();
 async function bytesFromResponse(response:Response,maximum:number) {
   const length=Number(response.headers.get("content-length"));
@@ -38,6 +42,7 @@ async function fetchPage(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,url
   const previous=await retainedGoodRepresentation(db,enrolled,url);
   const accept = enrolled.source.transport==="github-json" ? "application/vnd.github+json"
     : enrolled.source.transport==="official-json" ? "application/json"
+    : enrolled.source.transport==="official-zip-xml" ? "application/zip,application/octet-stream"
     : enrolled.source.transport==="html" ? "text/html,application/xhtml+xml"
     : enrolled.source.transport==="batch" ? "text/plain,application/octet-stream" : "application/xml,text/xml";
   const headers:Record<string,string>={"user-agent":SOURCE_USER_AGENT,accept};
@@ -60,9 +65,15 @@ async function fetchPage(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,url
     if(response.status===304){
       await response.body?.cancel();
       if(!conditionalAllowed || !previous || previous.endpoint!==url)throw new UpstreamError("upstream-failed","not-modified-without-retained-good-representation");
-      const bytes=retainedBytes(previous);
-      if(await sha256(bytes)!==previous.representation_sha256)throw new UpstreamError("parser-failed","retained-representation-corrupt");
-      return {bytes,body:new TextDecoder("utf-8",{fatal:true}).decode(bytes),headers:new Headers({etag:previous.etag??"", "last-modified":previous.last_modified??""}),url,notModified:true};
+      try {
+        const bytes=retainedBytes(previous);
+        if(await sha256(bytes)!==previous.representation_sha256)throw Error("retained-representation-corrupt");
+        const body=await normalizeWatchRepresentation(enrolled.source,bytes);
+        if(enrolled.source.transport === "official-zip-xml") assertPaExportProgress(previous.normalized_text,body);
+        return {bytes,body,headers:new Headers({etag:previous.etag??"", "last-modified":previous.last_modified??""}),url,notModified:true,httpStatus:response.status};
+      } catch(error) {
+        throw new UpstreamError("parser-failed",error instanceof Error?error.message:"retained-representation-invalid",response.status);
+      }
     }
     if(response.status>=300 && response.status<400){
       const location=response.headers.get("location");await response.body?.cancel();
@@ -76,7 +87,13 @@ async function fetchPage(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,url
     const type=response.headers.get("content-type")??"";
     if(/charset\s*=\s*(?!["']?utf-?8(?:["';\s]|$))/i.test(type)) {await response.body?.cancel();throw new UpstreamError("parser-failed","unqualified-charset");}
     const bytes=await bytesFromResponse(response,enrolled.source.maxBytes);
-    return {bytes,body:new TextDecoder("utf-8",{fatal:true}).decode(bytes),headers:response.headers,url,notModified:false};
+    try {
+      const body = await normalizeWatchRepresentation(enrolled.source,bytes);
+      if (enrolled.source.transport === "official-zip-xml" && previous) assertPaExportProgress(previous.normalized_text,body);
+      return {bytes,body,headers:response.headers,url,notModified:false,httpStatus:response.status};
+    } catch(error) {
+      throw new UpstreamError("parser-failed",error instanceof Error?error.message:"representation-invalid",response.status);
+    }
   }
   throw new UpstreamError("upstream-failed","redirect-limit");
 }
@@ -90,12 +107,17 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
   const snapshotId=crypto.randomUUID(),source=enrolled.source,pages:SnapshotPageReceipt[]=[],
     persisted=new Map<string,PersistenceAcknowledgment>(),persistedPages=new Map<string,PagePersistenceAcknowledgment>();
   let url=source.endpoints[0]!,pageKey="1",binding:GitHubRepositoryBinding|null=null,itemCount=0;
-  let lastResult:WatchSnapshotResult|null=null;
+  let lastResult:WatchSnapshotResult|null=null,httpStatus:number|undefined;
   for(let pageNumber=0;pageNumber<MAX_PAGES;pageNumber++){
     const fetched=await fetchPage(db,enrolled,url,fetchImpl,deadline,clock);
-    const input:SnapshotInput={source,body:fetched.body,representationBytes:fetched.bytes,finalUrl:fetched.url,fetchedAt:clock().toISOString(),status:200,pageKey};
+    httpStatus=fetched.httpStatus;
+    // Adapters validate the retained representation as a 200; collection health
+    // separately reports the actual conditional response (including 304).
+    const input:SnapshotInput={source,body:fetched.body,representationBytes:fetched.bytes,...(source.transport==="official-zip-xml"?{representationKind:"pa-zip-xml" as const}:{}),finalUrl:fetched.url,fetchedAt:clock().toISOString(),status:200,pageKey};
     let result:WatchSnapshotResult;
-    if(source.parserId==="technology-capture-v1") result=await parseTechnologyCaptureSnapshot(input);
+    if(source.parserId===PA_EXPORT_PARSER_ID) result=await parsePennsylvaniaExportSnapshot(input);
+    else if(source.parserId===PENNSYLVANIA_PARSER_ID) result=await parsePennsylvaniaSnapshot(input);
+    else if(source.parserId==="technology-capture-v1") result=await parseTechnologyCaptureSnapshot(input);
     else if(source.transport==="rss"||source.transport==="atom") result=await parseWatchFeedSnapshot(input);
     else if(source.transport==="official-json") result=await parseFederalRegisterSnapshot(input);
     else if(source.transport==="official-xml") result=await parseRepresentativeRosterSnapshot(input);
@@ -117,7 +139,7 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
     // A repository snapshot is retained before its binding can authorize a list.
     const stored=await persistWatchCollectionPage(db,enrolled,{snapshotId,endpoint:fetched.url,bytes:fetched.bytes,
       body:fetched.body,headers:fetched.headers,result,now:clock().toISOString(),leaseOwner});
-    if((["official-json","official-xml"].includes(source.transport) || source.parserId==="technology-capture-v1") && !result.rejectedItems && !result.truncated && result.health.state==="healthy") {
+    if((["official-json","official-xml","official-zip-xml"].includes(source.transport) || source.parserId==="technology-capture-v1" || source.parserId===PENNSYLVANIA_PARSER_ID) && !result.rejectedItems && !result.truncated && result.health.state==="healthy") {
       const permission=await resolveEnrolledCollectionSource(db,source.id,clock().toISOString());
       if(permission?.permissionDigest!==enrolled.permissionDigest)throw new UpstreamError("disabled","watch-source-permission-changed");
       // Native persistence can retract stale evidence, so every write transaction
@@ -132,7 +154,9 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
             SELECT 1 FROM watch_collection_leases WHERE id='watch-collector' AND owner=? AND expires_at>?
           ) THEN 1 ELSE 0 END)`).bind(crypto.randomUUID(),decisionId,source.id,at,leaseOwner,at),...statements]);
       }};
-      if(source.parserId==="technology-capture-v1") await stageCollectedTechnologyCapture(guardedDb,input,clock(),publishVerified);
+      if(source.parserId===PA_EXPORT_PARSER_ID) await stageCollectedPennsylvaniaExport(guardedDb,input,result,stored.persisted,clock(),publishVerified);
+      else if(source.parserId===PENNSYLVANIA_PARSER_ID) await stageCollectedPennsylvaniaPolicy(guardedDb,input,result,stored.persisted,clock(),publishVerified);
+      else if(source.parserId==="technology-capture-v1") await stageCollectedTechnologyCapture(guardedDb,input,clock(),publishVerified);
       else if(source.transport==="official-xml") await publishCollectedRepresentativeRoster(guardedDb,input,clock(),publishRepresentatives);
       else await stageCollectedPolicyObservations(guardedDb,result.observations,clock(),publishVerified);
     }
@@ -154,7 +178,7 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
   let checkpoint:unknown=null;
   try { checkpoint=await checkpointAfterPersistence({sourceId:source.id,snapshotId,parserVersion:source.parserVersion,
     firstPageKey:pages[0]?.pageKey??"1",pages,persisted,persistedPages}); } catch { /* Partial writes remain durable for bounded replay. */ }
-  return {itemCount,state:lastResult?.health.state??"parser-failed",detail:lastResult?.health.error??(checkpoint?"durable-discovery-checkpoint":"partial-snapshot-retained"),checkpoint};
+  return {itemCount,state:lastResult?.health.state??"parser-failed",detail:lastResult?.health.error??(checkpoint?"durable-discovery-checkpoint":"partial-snapshot-retained"),checkpoint,health:lastResult?.health,httpStatus};
 }
 
 // No model, secret lookup or source activation happens here. Qualified complete
@@ -180,17 +204,21 @@ export async function runWatchCollection(db:D1DatabaseLike,options:{
       if(clock().getTime()>=deadline)break;
       const checked=clock().toISOString(),enrolled=await resolveEnrolledCollectionSource(db,row.source_id,checked);
       let state:SourceRunState="disabled",detail="qualification-or-activation-held",itemCount=0,checkpoint:unknown=null,retryMs=0;
+      let adapterHealth: WatchSnapshotResult["health"] | undefined, httpStatus: number | undefined;
       if(enrolled)try{
         if(enrolled.source.requiresAuth)throw new UpstreamError("misconfigured","watch-credential-resolver-not-provisioned");
         const technology=enrolled.source.parserId==="technology-capture-v1" && ["github-json","html","batch"].includes(enrolled.source.transport);
-        if(!technology && !["rss","atom","github-json","official-json","official-xml"].includes(enrolled.source.transport))throw new UpstreamError("misconfigured","watch-transport-not-implemented");
-        if(enrolled.source.parserVersion!=="1" || (!technology && enrolled.source.parserId!==(enrolled.source.transport==="github-json"?"watch-github":enrolled.source.transport==="official-json"?"watch-federal-register":enrolled.source.transport==="official-xml"?"watch-federal-roster":"watch-rss")))
+        const pennsylvania=(enrolled.source.parserId===PENNSYLVANIA_PARSER_ID && enrolled.source.transport==="html") || (enrolled.source.parserId===PA_EXPORT_PARSER_ID && enrolled.source.transport==="official-zip-xml");
+        if(!technology && !pennsylvania && !["rss","atom","github-json","official-json","official-xml"].includes(enrolled.source.transport))throw new UpstreamError("misconfigured","watch-transport-not-implemented");
+        if(enrolled.source.parserVersion!=="1" || (!technology && !pennsylvania && enrolled.source.parserId!==(enrolled.source.transport==="github-json"?"watch-github":enrolled.source.transport==="official-json"?"watch-federal-register":enrolled.source.transport==="official-xml"?"watch-federal-roster":"watch-rss")))
           throw new UpstreamError("misconfigured","watch-parser-not-installed");
         const result=await collectSource(options.sourceDatabase??db,enrolled,options.fetchImpl??fetch,deadline,clock,owner,options.publishVerified??false,options.publishRepresentatives??options.publishVerified??false);
         ({state,detail,itemCount,checkpoint}=result);
+        adapterHealth=result.health; httpStatus=result.httpStatus;
       }catch(error){
         state=error instanceof UpstreamError?error.code:classifyFetchError(error);detail=error instanceof Error?error.message:"collection-failed";
         retryMs=error instanceof CollectionFetchError?error.retryMs:0;
+        httpStatus=error instanceof UpstreamError?error.httpStatus:undefined;
       }
       const now=clock().toISOString(),healthy=["healthy","healthy-empty"].includes(state),
         failures=healthy?0:Math.min(30,row.failures+1),cadence=(enrolled?.cadenceSeconds??3600)*1000,
@@ -204,7 +232,14 @@ export async function runWatchCollection(db:D1DatabaseLike,options:{
           last_success_at=CASE WHEN ? THEN ? ELSE last_success_at END,checkpoint_json=COALESCE(?,checkpoint_json) WHERE source_id=?`)
           .bind(next,failures,now,state,healthy?1:0,now,checkpoint?canonicalJson(checkpoint):null,row.source_id),
       ]);
-      sources.push({sourceId:row.source_id,state,itemCount,detail,checkpointAdvanced:!!checkpoint});
+      const success = await db.prepare("SELECT last_success_at FROM watch_collection_state WHERE source_id=?")
+        .bind(row.source_id).first<{ last_success_at: string | null }>();
+      sources.push({sourceId:row.source_id,state,itemCount,detail,checkpointAdvanced:!!checkpoint,
+        health: { id: row.source_id, origin: "watch-collection", state, checkedAt: now, itemCount,
+          complete: adapterHealth?.complete ?? false, completeness: adapterHealth?.completeness ?? "partial",
+          url: adapterHealth?.url ?? enrolled?.source.endpoints[0], requiresAuth: enrolled?.source.requiresAuth, httpStatus,
+          error: healthy ? undefined : detail, nextAttemptAt: next, consecutiveFailures: failures,
+          lastSuccessAt: success?.last_success_at ?? null } });
     }
     return {outcome:"completed" as const,sources};
   } finally {await db.prepare("DELETE FROM watch_collection_leases WHERE id='watch-collector' AND owner=?").bind(owner).run();}

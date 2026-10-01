@@ -11,13 +11,21 @@ const LinkScope = z.object({ host: Host, pathPrefix: z.string().min(1).max(1000)
 export const SourceEnrollment = z.object({ id: WatchId, name: Label, state: z.enum(["pending", "qualified", "disabled"]),
   desk: z.enum(["news", "events", "policy", "technology"]), jurisdiction: WatchJurisdiction,
   family: z.enum(["legislation", "regulation", "dockets", "members", "news", "events", "technology"]),
-  transport: z.enum(["rss", "atom", "github-json", "official-json", "official-xml", "html", "batch"]),
+  transport: z.enum(["rss", "atom", "github-json", "official-json", "official-xml", "official-zip-xml", "html", "batch"]),
   parserId: WatchId, parserVersion: Label, endpoints: z.array(Endpoint).min(1).max(20),
   linkScopes: z.array(LinkScope).min(1).max(20), authority: z.enum(["official", "first-party", "secondary", "discovery-only", "unqualified"]),
   dateTimezone: Label.nullable(), requiresAuth: z.boolean(),
   collectionMode: z.enum(["rolling", "paged-inventory"]), maxBytes: z.number().int().min(1024).max(2_000_000),
   maxItems: z.number().int().min(1).max(100), qualificationReceiptId: WatchId.nullable(),
+  paExport: z.object({ sessionYear: z.literal(2025), session: z.literal(0),
+    selectedBills: z.array(z.enum(["HB1925", "HB1993", "SB1113", "HB2787"])).min(1).max(4),
+    memberName: z.literal("PA-Bill-History-2025-RegularSession.xml"),
+    maxExpandedBytes: z.literal(67108864), maxEntries: z.literal(100),
+    normalizerVersion: z.literal("watch-pa-zip-xml-v1") }).strict().optional(),
 }).strict().superRefine((value, context) => {
+  if ((value.transport === "official-zip-xml") !== !!value.paExport ||
+      (value.paExport && (new Set(value.paExport.selectedBills).size !== value.paExport.selectedBills.length || value.maxItems < value.paExport.selectedBills.length)))
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["paExport"], message: "Explicit bounded binary profile required" });
   if (new Set(value.endpoints).size !== value.endpoints.length) context.addIssue({ code: z.ZodIssueCode.custom, path: ["endpoints"], message: "Duplicate endpoint" });
   if (value.state === "qualified" && !value.qualificationReceiptId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["qualificationReceiptId"], message: "Qualification receipt required" });
   if (value.dateTimezone) try { new Intl.DateTimeFormat("en", { timeZone: value.dateTimezone }).format(); } catch {
@@ -45,7 +53,8 @@ export async function sourceConfigurationDigest(input: unknown): Promise<string>
     family: source.family, transport: source.transport, parserId: source.parserId, parserVersion: source.parserVersion,
     endpoints: [...source.endpoints].sort(), linkScopes: [...source.linkScopes].sort((a, b) => canonicalJson(a).localeCompare(canonicalJson(b))),
     authority: source.authority, dateTimezone: source.dateTimezone, requiresAuth: source.requiresAuth,
-    collectionMode: source.collectionMode, maxBytes: source.maxBytes, maxItems: source.maxItems }));
+    collectionMode: source.collectionMode, maxBytes: source.maxBytes, maxItems: source.maxItems,
+    ...(source.paExport ? { paExport: source.paExport } : {}) }));
 }
 
 // Both collections are server-owned operational state, never config/model flags.
@@ -123,7 +132,7 @@ export type WatchSnapshotResult = {
   representationSha256: string | null; truncated: boolean; rejectedItems: number;
   pagination: { pageKey: string; nextPageKey: string | null; terminal: boolean };
 };
-export type SnapshotInput = { source: unknown; body: string; representationBytes?: Uint8Array; finalUrl: string; fetchedAt: string; status?: number;
+export type SnapshotInput = { source: unknown; body: string; representationBytes?: Uint8Array; representationKind?: "pa-zip-xml"; finalUrl: string; fetchedAt: string; status?: number;
   pageKey?: string; nextPageKey?: string | null; terminal?: boolean };
 export function snapshotHealth(source: SourceEnrollment, input: SnapshotInput, count: number, options: {
   error?: string; complete?: boolean; completeness?: SnapshotCompleteness; parserFailed?: boolean;
@@ -140,7 +149,9 @@ export function checkedSnapshot(input: SnapshotInput, transport: SourceEnrollmen
   CanonicalInstant.parse(input.fetchedAt);
   if (!transport.includes(source.transport) || !sourceEndpointAllowed(source, input.finalUrl)) throw new Error("snapshot-source-scope-conflict");
   if ((input.representationBytes?.byteLength ?? new TextEncoder().encode(input.body).byteLength) > source.maxBytes) throw new Error("snapshot-byte-limit");
-  if (input.representationBytes && new TextDecoder("utf-8", { fatal: true }).decode(input.representationBytes) !== input.body) throw new Error("snapshot-bytes-text-conflict");
+  if (source.transport === "official-zip-xml") {
+    if (input.representationKind !== "pa-zip-xml" || !input.representationBytes) throw new Error("snapshot-binary-contract-required");
+  } else if (input.representationKind || (input.representationBytes && new TextDecoder("utf-8", { fatal: true }).decode(input.representationBytes) !== input.body)) throw new Error("snapshot-bytes-text-conflict");
   if (!input.body.trim() && (input.status ?? 200) === 200) throw new Error("empty-response-body");
   return source;
 }

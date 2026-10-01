@@ -1,3 +1,4 @@
+import { normalizeWatchRepresentation, PA_EXPORT_NORMALIZER } from "./pennsylvania-export";
 import { ZodError } from "zod";
 import { canonicalJson, CanonicalInstant, sha256, WatchId } from "../../content/watch-schema";
 import { deliveryDependencyKey } from "../../content/watch-delivery";
@@ -125,7 +126,7 @@ export async function persistWatchCollectionPage(db: D1DatabaseLike, enrolled: E
   snapshotId: string; endpoint: string; bytes: Uint8Array; body: string; headers: Headers; result: WatchSnapshotResult; now: string; leaseOwner: string;
 }) {
   const { result, now } = input, hash = await sha256(input.bytes), source = enrolled.source;
-  if (hash !== result.representationSha256 || new TextDecoder("utf-8",{fatal:true}).decode(input.bytes) !== input.body ||
+  if (hash !== result.representationSha256 || await normalizeWatchRepresentation(source,input.bytes) !== input.body ||
       !sourceEndpointAllowed(source,input.endpoint) || input.bytes.byteLength > source.maxBytes) throw Error("watch-representation-conflict");
   const representationId = await sha256(canonicalJson([source.id,input.endpoint,hash,enrolled.configurationSha256]));
   const page: SnapshotPageReceipt = { sourceId: source.id,snapshotId:input.snapshotId,parserVersion:source.parserVersion,
@@ -142,7 +143,7 @@ export async function persistWatchCollectionPage(db: D1DatabaseLike, enrolled: E
   await db.batch([
     db.prepare(`INSERT OR IGNORE INTO watch_raw_representations VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`)
       .bind(representationId,source.id,input.endpoint,hash,input.bytes.buffer.slice(input.bytes.byteOffset,input.bytes.byteOffset+input.bytes.byteLength),
-        input.body,"watch-utf8-v1",source.parserVersion,enrolled.configurationSha256,input.headers.get("content-type"),
+        input.body,source.transport === "official-zip-xml" ? PA_EXPORT_NORMALIZER : "watch-utf8-v1",source.parserVersion,enrolled.configurationSha256,input.headers.get("content-type"),
         input.headers.get("etag"),input.headers.get("last-modified"),result.health.checkedAt),
     ...result.observations.map(item=>db.prepare("INSERT OR IGNORE INTO watch_raw_observations VALUES(?,?,?,?,?,?)")
       .bind(item.id,source.id,representationId,item.payloadSha256,canonicalJson(item),item.fetchedAt)),
@@ -176,7 +177,7 @@ export async function resolveWatchCollectionEvidence(db: D1DatabaseLike, observa
     const observation = WatchObservation.parse(JSON.parse(row.observation_json)), bytes = retainedBytes(row);
     if (observation.id!==id || observation.sourceId!==row.source_id || observation.representationSha256!==row.representation_sha256 ||
         await sha256(bytes)!==row.representation_sha256 || await sha256(canonicalJson(observation.payload))!==row.payload_sha256 ||
-        new TextDecoder("utf-8",{fatal:true}).decode(bytes)!==row.normalized_text) throw Error("watch-evidence-integrity");
+        (await normalizeWatchRepresentation(source.source,bytes))!==row.normalized_text || row.normalizer_version!==(source.source.transport === "official-zip-xml" ? PA_EXPORT_NORMALIZER : "watch-utf8-v1")) throw Error("watch-evidence-integrity");
     enrolled.set(row.source_id,source);
     observations.set(id,{id,sourceId:row.source_id,sourceUrl:row.endpoint,parserVersion:row.parser_version,
       representation:bytes,normalizedText:row.normalized_text,normalizerVersion:row.normalizer_version});

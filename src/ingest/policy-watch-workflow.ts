@@ -150,7 +150,8 @@ export async function buildPolicyEditorialProposal(db: D1DatabaseLike, captureId
   const unavailable = { unavailableReason: "No reviewed source-bound fact is available." };
   const draft = PolicyDossierDraft.parse({ id: subjectId, slug, subjectRevision: row.sequence, kind: "policy",
     titleFactId: facts[0].id, identityFactId: facts[1].id, lifecycle: unavailable, legalEffect: unavailable,
-    latestAction: latest ? { factId: latest.id } : { unavailableReason: "Complete unambiguous native action ordering is not established." },
+    latestAction: latest ? { factId: latest.id } : { unavailableReason:
+      parsed.gaps.find(gap => gap.startsWith("Latest action cites a different PN") || gap.startsWith("Official latest action")) ?? "Complete unambiguous native action ordering is not established." },
     topics: unavailable, summary: summary ? { factId: summary.id } : unavailable, interpretation: { readiness: "review-pending",
       reason: "Native metadata awaits source and applicability review." }, timelineFactIds });
   const used = new Set(facts.flatMap(item => item.evidenceIds));
