@@ -1,0 +1,137 @@
+{
+  "kind": "historical-library-research-derived-records",
+  "originalZipPath": "pa-2025-0-20260930-1531.zip",
+  "originalZipSha256": "f1f5484439dd2f2d22ef9e956169aa296fe1893b97b1625b8d917fed7c13a003",
+  "memberName": "PA-Bill-History-2025-RegularSession.xml",
+  "memberSha256": "93f88817a99deeb398fb201926eca027fe8c91ad836b58b472c0edd453aa3692",
+  "exportDate": "September 30, 2026 3:30:06 PM EDT",
+  "inventoryCount": 5118,
+  "records": [
+    {
+      "bill": "HB1925",
+      "path": "HB1925.xml",
+      "sha256": "cb90e27bf1561c0ec708a1388e1c74a6805627a5513e10f6e15fc01569a1f571",
+      "derivation": "unaltered lexical bill element from original XML member; not original ZIP",
+      "bytes": 8247
+    },
+    {
+      "bill": "HB1993",
+      "path": "HB1993.xml",
+      "sha256": "a6e3bcb4c830abee7326f433538171290cdf0fe6b0e1d86181702334a4e1ec80",
+      "derivation": "unaltered lexical bill element from original XML member; not original ZIP",
+      "bytes": 2689
+    },
+    {
+      "bill": "SB1113",
+      "path": "SB1113.xml",
+      "sha256": "6098064db9607966d1e9ef66cfdc1182c4533d04a59ff9e54d2627fbe4812b11",
+      "derivation": "unaltered lexical bill element from original XML member; not original ZIP",
+      "bytes": 2863
+    },
+    {
+      "bill": "HB2787",
+      "path": "HB2787.xml",
+      "sha256": "c34a2185e0b824e98bc03fa08bbd4cfb7739f4860c743c24758f393d05db9338",
+      "derivation": "unaltered lexical bill element from original XML member; not original ZIP",
+      "bytes": 2512
+    }
+  ],
+  "captureManifest": {
+    "purpose": "Privacy-minimized historical research metadata; no live source qualification, accepted Watch ingestion or publication authority.",
+    "source_page": "https://www.palegis.us/data",
+    "robots_evidence": "Canonical robots response contents not successfully obtained; no robots disallow established",
+    "http_metadata": "Research acquisition HTTP status, response headers and redirect chains were not retained; no upstream HTTP success is established.",
+    "files": [
+      {
+        "path": "pa-2025-0-20260930-1531.zip",
+        "source_url": "https://www.palegis.us/data/file?documentType=BillHistoryData&session=2025_0",
+        "bytes": 1649358,
+        "sha256": "f1f5484439dd2f2d22ef9e956169aa296fe1893b97b1625b8d917fed7c13a003",
+        "download_observation_window_utc": [
+          "2026-09-30T20:15:13Z",
+          "2026-09-30T20:15:24Z"
+        ],
+        "evidenceRetention": "Unchanged historical raw ZIP reconstructible from generated lossless text transport; logical path is not a tracked binary"
+      },
+      {
+        "path": "hb1925-pn3963-20260930.pdf",
+        "source_url": "https://www.palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN3963",
+        "bytes": 167925,
+        "sha256": "bb2f05c06f4c45f73d317456c677525663020e85df7992b7fbb5d06ed649c18a",
+        "download_observation_window_utc": [
+          "2026-09-30T20:17:19Z",
+          "2026-09-30T20:17:35Z"
+        ],
+        "evidenceRetention": "Research checksum observation only; response bytes not retained in this fixture"
+      },
+      {
+        "path": "house-floor-votes-20260930.xml",
+        "source_url": "https://www.palegis.us/house/rss/session/votes",
+        "bytes": 86537,
+        "sha256": "7e767b3793f25bfc4188ea1cb9c15224f59fc433789f7d1b03608f7e00893d0d",
+        "download_observation_window_utc": [
+          "2026-09-30T20:18:03Z",
+          "2026-09-30T20:18:22Z"
+        ],
+        "evidenceRetention": "Research checksum observation only; response bytes not retained in this fixture"
+      }
+    ],
+    "xml_export": {
+      "exportDate": "September 30, 2026 3:30:06 PM EDT",
+      "totalDocuments": "5118",
+      "xml_sha256": "93f88817a99deeb398fb201926eca027fe8c91ad836b58b472c0edd453aa3692",
+      "hb1925_lastUpdate": "September 30, 2026 3:05:00 PM EDT",
+      "exportAtUtc": "2026-09-30T19:30:06.000Z",
+      "hb1925_lastUpdateAtUtc": "2026-09-30T19:05:00.000Z",
+      "memberBytes": 18875097
+    },
+    "live_vote_observation": {
+      "url": "https://www.palegis.us/house/roll-calls/summary?sessYr=2025&sessInd=0&rcNum=1415",
+      "observed_between_utc": [
+        "2026-09-30T20:17:19Z",
+        "2026-09-30T20:17:35Z"
+      ],
+      "bill": "HB1925",
+      "pn": "3963",
+      "action": "FINAL PASSAGE",
+      "vote_date_display": "Wednesday Sep 30, 2026 3:45 PM",
+      "yea": 144,
+      "nay": 59,
+      "no_vote": 0,
+      "leave": 0,
+      "evidence_kind": "Separate research observation; canonical vote response bytes not retained; not source-reviewed or accepted Watch evidence",
+      "voteAtUtc": "2026-09-30T19:45:00.000Z"
+    },
+    "freshness_caveats": [
+      "XML export snapshot at Sept 30 3:30:06 PM EDT predates House final passage at 3:45 PM.",
+      "Floor-vote RSS channel pubDate was Tue, 29 Sep 2026 22:00:06 GMT; latest HB1925 entry was amendment vote; final passage absent.",
+      "Web search result for official bill page showed generated Sept29 08:42AM, PN3349 and June25 last action, unlike live browser page."
+    ],
+    "metadataVersion": "pa-research-public-metadata-1",
+    "metadataDerivation": "Derived by minimizing private capture metadata; this manifest is not an original publisher response.",
+    "sourceAccess": {
+      "zip": "held: independently observed BuilderBob HTTP403 at 2026-09-30T20:28Z; research transfer is not upstream success",
+      "htmlRobots": "unknown: independently observed HTTP406 on 2026-09-30; canonical robots response unavailable"
+    },
+    "qualificationEstablished": false,
+    "publicationAuthorized": false,
+    "latestStatusVerified": false
+  },
+  "captureManifestSha256": "5fe8464d55873b93b9fd83419e62a95979866e3ad9519f36c6275b3f35209dc7",
+  "sourceAccess": "held: BuilderBob publisher ZIP HTTP403 at 20:28 UTC; Library transfer not upstream success",
+  "publicationAuthorized": false,
+  "originalZipBytes": 1649358,
+  "originalZipFileMode": "100644",
+  "fixturePurpose": "Generated lossless transport reconstructs unchanged historical raw publisher ZIP; text parts are not publisher responses. Lexical XML derivations and privacy-minimized historical metadata grant no upstream success, rights/access approval, qualification or production seed.",
+  "captureManifestPath": "research-capture-manifest.json",
+  "metadataVersion": "pa-research-public-metadata-1",
+  "captureManifestHashScope": "SHA256 of the derived privacy-minimized repository manifest bytes, not the original private capture manifest or a publisher response",
+  "memberBytes": 18875097,
+  "exportAtUtc": "2026-09-30T19:30:06.000Z",
+  "qualificationEstablished": false,
+  "latestStatusVerified": false,
+  "originalZipPathScope": "Logical historical archive basename, reconstructed in memory; no standalone binary tracked at this path",
+  "originalZipFileModeScope": "Historical raw binary mode; generated text transport files use mode 100644",
+  "transportManifestPath": "pa-original-transport.json",
+  "transportManifestSha256": "7bef3473d6aa1b9d12668fea1df397997a331a49bae96d54ff484c78d11ebef0"
+}

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PaFreshnessPolicy, paSnapshotFreshness } from "../../content/pa-source-freshness";
 import { CanonicalInstant, HttpsUrl, Sha256, SourceDate, WatchId, WatchJurisdiction, canonicalJson, sha256, tupleKey } from "../../content/watch-schema";
 import { normalizeSourceUrl } from "../identity";
 import { SOURCE_RUN_STATES, classifyHttpStatus, sourceStateForItemCount, type SnapshotCompleteness, type SourceRunNote } from "../source-health";
@@ -11,13 +12,21 @@ const LinkScope = z.object({ host: Host, pathPrefix: z.string().min(1).max(1000)
 export const SourceEnrollment = z.object({ id: WatchId, name: Label, state: z.enum(["pending", "qualified", "disabled"]),
   desk: z.enum(["news", "events", "policy", "technology"]), jurisdiction: WatchJurisdiction,
   family: z.enum(["legislation", "regulation", "dockets", "members", "news", "events", "technology"]),
-  transport: z.enum(["rss", "atom", "github-json", "official-json", "official-xml", "html", "batch"]),
+  transport: z.enum(["rss", "atom", "github-json", "official-json", "official-xml", "official-zip-xml", "html", "batch"]),
   parserId: WatchId, parserVersion: Label, endpoints: z.array(Endpoint).min(1).max(20),
   linkScopes: z.array(LinkScope).min(1).max(20), authority: z.enum(["official", "first-party", "secondary", "discovery-only", "unqualified"]),
   dateTimezone: Label.nullable(), requiresAuth: z.boolean(),
   collectionMode: z.enum(["rolling", "paged-inventory"]), maxBytes: z.number().int().min(1024).max(2_000_000),
   maxItems: z.number().int().min(1).max(100), qualificationReceiptId: WatchId.nullable(),
+  paExport: z.object({ sessionYear: z.literal(2025), session: z.literal(0),
+    selectedBills: z.array(z.enum(["HB1925", "HB1993", "SB1113", "HB2787"])).min(1).max(4),
+    memberName: z.literal("PA-Bill-History-2025-RegularSession.xml"),
+    maxExpandedBytes: z.literal(67108864), maxEntries: z.literal(100),
+    freshnessPolicy: PaFreshnessPolicy.optional(), normalizerVersion: z.literal("watch-pa-zip-xml-v1") }).strict().optional(),
 }).strict().superRefine((value, context) => {
+  if ((value.transport === "official-zip-xml") !== !!value.paExport ||
+      (value.paExport && (new Set(value.paExport.selectedBills).size !== value.paExport.selectedBills.length || value.maxItems < value.paExport.selectedBills.length)))
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["paExport"], message: "Explicit bounded binary profile required" });
   if (new Set(value.endpoints).size !== value.endpoints.length) context.addIssue({ code: z.ZodIssueCode.custom, path: ["endpoints"], message: "Duplicate endpoint" });
   if (value.state === "qualified" && !value.qualificationReceiptId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["qualificationReceiptId"], message: "Qualification receipt required" });
   if (value.dateTimezone) try { new Intl.DateTimeFormat("en", { timeZone: value.dateTimezone }).format(); } catch {
@@ -29,6 +38,7 @@ export const QualificationReceipt = z.object({ id: WatchId, sourceId: WatchId, c
   reviewedAt: CanonicalInstant, expiresAt: CanonicalInstant, engineeringOwnerId: WatchId, editorialOwnerId: WatchId,
   reviewEvidenceId: WatchId, rightsDecision: z.literal("accepted"), accessDecision: z.literal("public-or-authorized-read"),
   negativeFixtureSha256: Sha256, replayFixtureSha256: Sha256,
+  paExportReview: z.object({exportAt:CanonicalInstant,policyReceiptId:WatchId}).strict().optional(),
   samples: z.array(z.object({ endpoint: Endpoint, representationSha256: Sha256, capturedAt: CanonicalInstant,
     parserVersion: Label, itemCount: z.number().int().nonnegative().max(100), outcome: z.literal("parsed") }).strict()).min(2).max(10),
 }).strict().superRefine((value, context) => {
@@ -45,7 +55,8 @@ export async function sourceConfigurationDigest(input: unknown): Promise<string>
     family: source.family, transport: source.transport, parserId: source.parserId, parserVersion: source.parserVersion,
     endpoints: [...source.endpoints].sort(), linkScopes: [...source.linkScopes].sort((a, b) => canonicalJson(a).localeCompare(canonicalJson(b))),
     authority: source.authority, dateTimezone: source.dateTimezone, requiresAuth: source.requiresAuth,
-    collectionMode: source.collectionMode, maxBytes: source.maxBytes, maxItems: source.maxItems }));
+    collectionMode: source.collectionMode, maxBytes: source.maxBytes, maxItems: source.maxItems,
+    ...(source.paExport ? { paExport: source.paExport } : {}) }));
 }
 
 // Both collections are server-owned operational state, never config/model flags.
@@ -63,6 +74,13 @@ export async function collectionReadiness(input: unknown, context: {
       receipt.data.configurationSha256 !== await sourceConfigurationDigest(source) || receipt.data.reviewedAt > context.now ||
       context.now >= receipt.data.expiresAt || receipt.data.samples.some(sample => !source.endpoints.includes(sample.endpoint) || sample.parserVersion !== source.parserVersion)) {
     return { ready: false, reason: "qualification-receipt-missing-stale-or-conflicting" };
+  }
+  if (source.transport === "official-zip-xml") {
+    const policy = source.paExport?.freshnessPolicy, reviewed = receipt.data.paExportReview;
+    if (!policy || !reviewed || reviewed.policyReceiptId !== policy.evidenceReceiptId ||
+        paSnapshotFreshness({exportAt:reviewed.exportAt,lastCheckedAt:null,lastSuccessfulUpstreamCheckAt:null,currentFailure:null,origin:"unknown"},receipt.data.reviewedAt,policy).freshness !== "fresh" ||
+        Date.parse(receipt.data.reviewedAt)-Date.parse(reviewed.exportAt) >= policy.reviewMaxAgeMs)
+      return {ready:false,reason:"pa-qualification-export-age-review-required"};
   }
   return { ready: true, reason: "qualified-and-separately-authorized" };
 }
@@ -123,7 +141,7 @@ export type WatchSnapshotResult = {
   representationSha256: string | null; truncated: boolean; rejectedItems: number;
   pagination: { pageKey: string; nextPageKey: string | null; terminal: boolean };
 };
-export type SnapshotInput = { source: unknown; body: string; representationBytes?: Uint8Array; finalUrl: string; fetchedAt: string; status?: number;
+export type SnapshotInput = { source: unknown; body: string; representationBytes?: Uint8Array; representationKind?: "pa-zip-xml"; finalUrl: string; fetchedAt: string; status?: number;
   pageKey?: string; nextPageKey?: string | null; terminal?: boolean };
 export function snapshotHealth(source: SourceEnrollment, input: SnapshotInput, count: number, options: {
   error?: string; complete?: boolean; completeness?: SnapshotCompleteness; parserFailed?: boolean;
@@ -140,7 +158,9 @@ export function checkedSnapshot(input: SnapshotInput, transport: SourceEnrollmen
   CanonicalInstant.parse(input.fetchedAt);
   if (!transport.includes(source.transport) || !sourceEndpointAllowed(source, input.finalUrl)) throw new Error("snapshot-source-scope-conflict");
   if ((input.representationBytes?.byteLength ?? new TextEncoder().encode(input.body).byteLength) > source.maxBytes) throw new Error("snapshot-byte-limit");
-  if (input.representationBytes && new TextDecoder("utf-8", { fatal: true }).decode(input.representationBytes) !== input.body) throw new Error("snapshot-bytes-text-conflict");
+  if (source.transport === "official-zip-xml") {
+    if (input.representationKind !== "pa-zip-xml" || !input.representationBytes) throw new Error("snapshot-binary-contract-required");
+  } else if (input.representationKind || (input.representationBytes && new TextDecoder("utf-8", { fatal: true }).decode(input.representationBytes) !== input.body)) throw new Error("snapshot-bytes-text-conflict");
   if (!input.body.trim() && (input.status ?? 200) === 200) throw new Error("empty-response-body");
   return source;
 }
@@ -186,6 +206,8 @@ export const SnapshotPageReceipt = z.object({ sourceId: WatchId, snapshotId: Wat
   pageKey: Label, nextPageKey: Label.nullable(), terminal: z.boolean(), completeness: z.enum(["complete", "partial", "empty-unverified"]),
   state: z.enum(SOURCE_RUN_STATES), truncated: z.boolean(), rejectedItems: z.number().int().nonnegative(),
   observationIds: z.array(WatchId).max(100), representationSha256: Sha256,
+  browserOriginal: z.object({origin:z.literal("browser-original"),packetSha256:Sha256,
+    acquisitionBase64:z.string().min(4).max(85336),receiptBase64:z.string().min(4).max(85336)}).strict().optional(),
 }).strict();
 export type SnapshotPageReceipt = z.infer<typeof SnapshotPageReceipt>;
 export async function snapshotPageDigest(input: unknown): Promise<string> {

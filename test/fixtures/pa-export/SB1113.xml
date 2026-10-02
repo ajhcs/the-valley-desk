@@ -1,0 +1,39 @@
+<bill id="20250SB1113" lastUpdate="June 10, 2026 11:05:01 AM EDT">
+			<sessionYear>2025</sessionYear>
+			<session>0</session>
+			<body>S</body>
+			<type description="Senate Bill">B</type>
+			<subType>B</subType>
+			<number>1113</number>
+			<shortTitle>An Act amending Titles 35 &#x28;Health and Safety&#x29; and 40 &#x28;Insurance&#x29; of the Pennsylvania Consolidated Statutes, providing for artificial intelligence in facilities, for artificial intelligence use by insurers and for artificial intelligence use by MA or CHIP managed care plans&#x3b; imposing duties on the Department of Health, the Insurance Department and the Department of Human Services&#x3b; and imposing penalties.</shortTitle>
+			<cosponsorshipMemo memoUrl="https://www.palegis.us/senate/co-sponsorship/memo?memoID=47665&amp;document=SB1113">Regulation of the Use of Artificial Intelligence in Healthcare</cosponsorshipMemo>
+			<sponsors>
+				<sponsor sequenceNumber="01" fillSequence="0" party="D" body="S" districtNumber="45">PISCIOTTANO</sponsor>
+				<sponsor sequenceNumber="02" fillSequence="0" party="D" body="S" districtNumber="12">COLLETT</sponsor>
+				<sponsor sequenceNumber="03" fillSequence="0" party="D" body="S" districtNumber="4">HAYWOOD</sponsor>
+				<sponsor sequenceNumber="04" fillSequence="0" party="D" body="S" districtNumber="42">FONTANA</sponsor>
+				<sponsor sequenceNumber="05" fillSequence="0" party="D" body="S" districtNumber="7">HUGHES</sponsor>
+				<sponsor sequenceNumber="06" fillSequence="0" party="D" body="S" districtNumber="2">TARTAGLIONE</sponsor>
+				<sponsor sequenceNumber="07" fillSequence="0" party="D" body="S" districtNumber="43">COSTA</sponsor>
+				<sponsor sequenceNumber="08" fillSequence="0" party="R" body="S" districtNumber="47">VOGEL</sponsor>
+				<sponsor sequenceNumber="09" fillSequence="0" party="D" body="S" districtNumber="10">SANTARSIERO</sponsor>
+				<sponsor sequenceNumber="10" fillSequence="0" party="D" body="S" districtNumber="17">CAPPELLETTI</sponsor>
+				<sponsor sequenceNumber="11" fillSequence="0" party="D" body="S" districtNumber="1">SAVAL</sponsor>
+				<sponsor sequenceNumber="12" fillSequence="0" party="D" body="S" districtNumber="38">L. WILLIAMS</sponsor>
+			</sponsors>
+			<printersNumberHistory>
+				<number sequence="01" billTextPdfUrl="https://www.palegis.us/legislation/bills/text/PDF/2025/0/SB1113/PN1376">1376</number>
+			</printersNumberHistory>
+			<actionHistory>
+				<action sequence="01" actionChamber="S">
+					<verb>Referred to</verb>
+					<committee>INSTITUTIONAL SUSTAINABILITY AND INNOVATION</committee>
+					<date>01/09/26</date>
+					<printersNumber>1376</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Referred to INSTITUTIONAL SUSTAINABILITY AND INNOVATION,  Jan. 9, 2026</fullAction>
+				</action>
+			</actionHistory>
+			<amendments/>
+			<supportingDocuments/>
+		</bill>

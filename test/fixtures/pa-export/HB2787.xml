@@ -1,0 +1,38 @@
+<bill id="20250HB2787" lastUpdate="September 24, 2026 4:05:01 PM EDT">
+			<sessionYear>2025</sessionYear>
+			<session>0</session>
+			<body>H</body>
+			<type description="House Bill">B</type>
+			<subType>B</subType>
+			<number>2787</number>
+			<shortTitle>An Act amending the act of March 10, 1949 &#x28;P.L.30, No.14&#x29;, known as the Public School Code of 1949, in school safety and security, providing for prohibition of artificial intelligence for school-based mental health and counseling.</shortTitle>
+			<cosponsorshipMemo memoUrl="https://www.palegis.us/house/co-sponsorship/memo?memoID=49182&amp;document=HB2787">Prohibiting Artificial Intelligence for Student Mental Health Services</cosponsorshipMemo>
+			<sponsors>
+				<sponsor sequenceNumber="01" fillSequence="0" party="D" body="H" districtNumber="157">SHUSTERMAN</sponsor>
+				<sponsor sequenceNumber="02" fillSequence="0" party="D" body="H" districtNumber="156">PIELLI</sponsor>
+				<sponsor sequenceNumber="03" fillSequence="0" party="D" body="H" districtNumber="150">WEBSTER</sponsor>
+				<sponsor sequenceNumber="04" fillSequence="0" party="D" body="H" districtNumber="168">BOROWSKI</sponsor>
+				<sponsor sequenceNumber="05" fillSequence="0" party="D" body="H" districtNumber="38">INGLIS</sponsor>
+				<sponsor sequenceNumber="06" fillSequence="0" party="D" body="H" districtNumber="61">HANBIDGE</sponsor>
+				<sponsor sequenceNumber="07" fillSequence="0" party="D" body="H" districtNumber="95">HILL-EVANS</sponsor>
+				<sponsor sequenceNumber="08" fillSequence="0" party="D" body="H" districtNumber="153">SANCHEZ</sponsor>
+				<sponsor sequenceNumber="09" fillSequence="0" party="D" body="H" districtNumber="134">SCHWEYER</sponsor>
+				<sponsor sequenceNumber="10" fillSequence="0" party="D" body="H" districtNumber="182">WAXMAN</sponsor>
+				<sponsor sequenceNumber="11" fillSequence="0" party="D" body="H" districtNumber="74">D. WILLIAMS</sponsor>
+			</sponsors>
+			<printersNumberHistory>
+				<number sequence="01" billTextPdfUrl="https://www.palegis.us/legislation/bills/text/PDF/2025/0/HB2787/PN3918">3918</number>
+			</printersNumberHistory>
+			<actionHistory>
+				<action sequence="01" actionChamber="H">
+					<verb>Referred to</verb>
+					<committee>EDUCATION</committee>
+					<date>09/24/26</date>
+					<printersNumber>3918</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Referred to EDUCATION,  Sept. 24, 2026</fullAction>
+				</action>
+			</actionHistory>
+			<amendments/>
+			<supportingDocuments/>
+		</bill>

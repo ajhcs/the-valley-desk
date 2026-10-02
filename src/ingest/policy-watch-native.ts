@@ -152,9 +152,11 @@ export async function materializePolicyCapture(input: unknown) {
     return id;
   }
   const titleEvidenceId = await cite(parsed.titlePointer), identityEvidenceId = await cite(parsed.identityPointer);
-  const abstract = parsed.parserVersion === "federal-register-policy-json-1" ? object(parsed.native).abstract : null;
+  const summaryPointer = ["pa-bill-history-html-2", "pa-bill-history-xml-1"].includes(parsed.parserVersion) ? "/native/synopsis" : "/native/abstract";
+  const abstract = parsed.parserVersion === "federal-register-policy-json-1" ? object(parsed.native).abstract :
+    ["pa-bill-history-html-2", "pa-bill-history-xml-1"].includes(parsed.parserVersion) ? object(parsed.native).synopsis : null;
   const summary = typeof abstract === "string" && abstract.trim().length > 0 && abstract.length <= 6000 && !/<[^>]*>/.test(abstract)
-    ? { value: abstract, evidenceId: await cite("/native/abstract") } : null;
+    ? { value: abstract, evidenceId: await cite(summaryPointer) } : null;
   const actions = [];
   for (const action of parsed.actions) {
     const evidenceId = await cite(action.pointer);
@@ -180,15 +182,26 @@ export function parsePennsylvaniaPolicy(html: string, source: PolicyCaptureInput
   const background = policyBackground(html, source.sourceUrl, source.retrievedAt);
   const record = background.record;
   const bodyId = record.bill.startsWith("HB ") ? "pa-house" : "pa-senate";
-  const native = { html, record, actions: background.actions };
-  return capture({ parserVersion: "pa-bill-history-html-1", source, native, title: record.bill,
-    titlePointer: "/native/record/bill", identityPointer: "/native/record", historyComplete: background.historyOutcome === "complete",
+  const native = { html, record, actions: background.actions, synopsis: background.synopsis };
+  const actionPrinters = [...record.action.matchAll(/\b(?:PN|P\.?\s*N\.?|Printer'?s?\s+(?:No\.?|Number))\s*(\d+)\b/gi)]
+    .map(match => `PN ${match[1]}`);
+  const printerConflict = actionPrinters.some(printer => printer !== record.current?.printer);
+  const latestInHistory = background.actions.some(action => action.wording === record.action);
+  const actions = background.actions.map((action, index) => ({ eventKey: action.wording, nativeCode: "history-text",
+    text: action.wording, bodyId, rawDate: action.actionAt?.slice(0, 10) ?? null, dateFormat: "iso" as const, sourceOrder: null,
+    pointer: "/native/actions/" + index }));
+  if (!latestInHistory && record.action) actions.push({ eventKey: record.action, nativeCode: "latest-action-text",
+    text: record.action, bodyId, rawDate: record.actionAt?.slice(0, 10) ?? null, dateFormat: "iso", sourceOrder: null,
+    pointer: "/native/record" });
+  return capture({ parserVersion: "pa-bill-history-html-2", source, native, title: record.bill,
+    titlePointer: "/native/record/bill", identityPointer: "/native/record", historyComplete: background.historyOutcome === "complete" && !printerConflict && latestInHistory,
     identity: { jurisdiction: "PA", jurisdictionId: "pa", bodyId, sessionKey: record.session,
       instrumentType: "bill", sourceInstrumentId: record.bill },
-    actions: background.actions.map((action, index) => ({ eventKey: action.wording, nativeCode: "history-text",
-      text: action.wording, bodyId, rawDate: action.actionAt?.slice(0, 10) ?? null, dateFormat: "iso", sourceOrder: null,
-      pointer: "/native/actions/" + index })),
+    actions,
     version: { nativeId: record.current?.printer ?? null, textUrl: record.current?.url ?? null,
       sourceDate: record.current?.textDate?.slice(0, 10) ?? null },
-    gaps: [gap, ...background.blockers.map(String)] });
+    gaps: [gap, "Native committee/vote wording does not establish enactment or a reviewed lifecycle.",
+      ...(printerConflict ? ["Latest action cites a different PN from the selected text version; association remains unresolved."] : []),
+      ...(!latestInHistory ? ["Official latest action is not reconciled with the captured history; chronology remains incomplete."] : []),
+      ...background.blockers.map(String)] });
 }

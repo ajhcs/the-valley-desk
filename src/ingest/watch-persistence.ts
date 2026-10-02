@@ -177,7 +177,15 @@ export async function readWatchDirectory(db: D1DatabaseLike, input: unknown, now
     "length(r.title_key) BETWEEN 1 AND 500", "length(CAST(r.title_key AS BLOB))<=2000", "length(CAST(r.subject_id AS BLOB))<=240",
     "NOT EXISTS (SELECT 1 FROM watch_delivery_tombstones t WHERE t.subject_id=r.subject_id)", deliveryEligibleSql()];
   const values: unknown[] = [deliveryAsOf, deliveryEasternDay(deliveryAsOf), query.kind, generation, generation];
-  if (query.q) { clauses.push("r.title_key LIKE ? ESCAPE '\\'"); values.push(`%${escapeLike(query.q.toLowerCase())}%`); }
+  if (query.q) {
+    // Only accepted, currently deliverable fields are searchable. Optional
+    // synopsis evidence may be retracted without leaving stale search matches.
+    clauses.push(`(r.title_key LIKE ? ESCAPE '\\' OR
+      (r.kind='policy' AND replace(lower(json_extract(r.payload_json,'$.identity.value.sourceInstrumentId')),' ','') LIKE ? ESCAPE '\\') OR
+      (${deliveryFieldCurrentSql("summary")} AND lower(json_extract(r.payload_json,'$.summary.value')) LIKE ? ESCAPE '\\'))`);
+    values.push(`%${escapeLike(query.q.toLowerCase())}%`, `%${escapeLike(query.q.toLowerCase().replace(/\s+/g, ""))}%`,
+      `%${escapeLike(query.q.toLowerCase())}%`);
+  }
   if (query.jurisdiction) { clauses.push("json_extract(r.payload_json,'$.jurisdiction')=?"); values.push(query.jurisdiction); }
   if (query.stage) { clauses.push(`(CASE WHEN ${deliveryFieldCurrentSql("lifecycle")} THEN json_extract(r.payload_json,'$.lifecycle') ELSE 'unknown' END)=?`); values.push(query.stage); }
   if (query.type) { clauses.push("json_extract(r.payload_json,'$.resourceType')=?"); values.push(query.type); }
@@ -227,7 +235,7 @@ export async function readWatchDirectory(db: D1DatabaseLike, input: unknown, now
     nextCursor: rows.length > page.length && last ? encodeCursor({ version: 1, generation, filter: fingerprint, title: last.title_key, id: last.subject_id }) : null };
 }
 
-export type WatchDetail = { version: "watch-detail-1"; item: WatchPublicRecord; asOf: string };
+export type WatchDetail = { version: "watch-detail-1"; item: WatchPublicRecord; asOf: string; };
 
 export async function readWatchSubjectRevision(db: D1DatabaseLike, kind: "policy" | "technology", idOrSlug: string,
   lookup: "id" | "slug" = "id", now = new Date()): Promise<WatchDetail | null> {
@@ -245,7 +253,8 @@ export async function readWatchSubjectRevision(db: D1DatabaseLike, kind: "policy
     .bind(deliveryAsOf, deliveryEasternDay(deliveryAsOf), kind, idOrSlug).first<PublicRow & { applied_at: string }>();
   if (!row) return null;
   if (!CanonicalInstant.safeParse(row.applied_at).success) throw new WatchStorageError("watch-projection-invalid", 503);
-  return { version: "watch-detail-1", item: await parseDeliveryRow(row, deliveryAsOf), asOf: row.applied_at };
+  const item = await parseDeliveryRow(row, deliveryAsOf);
+  return { version: "watch-detail-1", item, asOf: row.applied_at };
 }
 
 export async function readWatchSubject(db: D1DatabaseLike, kind: "policy" | "technology", idOrSlug: string,

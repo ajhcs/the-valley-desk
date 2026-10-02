@@ -1,0 +1,41 @@
+<bill id="20250HB1993" lastUpdate="March 4, 2026 9:26:14 AM EST">
+			<sessionYear>2025</sessionYear>
+			<session>0</session>
+			<body>H</body>
+			<type description="House Bill">B</type>
+			<subType>B</subType>
+			<number>1993</number>
+			<shortTitle>An Act providing for the use of artificial intelligence in mental health therapy and for enforcement.</shortTitle>
+			<cosponsorshipMemo memoUrl="https://www.palegis.us/house/co-sponsorship/memo?memoID=47289&amp;document=HB1993">Regulating the Use of AI in Mental Health Care</cosponsorshipMemo>
+			<sponsors>
+				<sponsor sequenceNumber="01" fillSequence="0" party="D" body="H" districtNumber="157">SHUSTERMAN</sponsor>
+				<sponsor sequenceNumber="02" fillSequence="0" party="D" body="H" districtNumber="189">PROBST</sponsor>
+				<sponsor sequenceNumber="03" fillSequence="0" party="D" body="H" districtNumber="156">PIELLI</sponsor>
+				<sponsor sequenceNumber="04" fillSequence="0" party="D" body="H" districtNumber="95">HILL-EVANS</sponsor>
+				<sponsor sequenceNumber="05" fillSequence="0" party="D" body="H" districtNumber="96">RIVERA</sponsor>
+				<sponsor sequenceNumber="06" fillSequence="0" party="D" body="H" districtNumber="177">HOHENSTEIN</sponsor>
+				<sponsor sequenceNumber="07" fillSequence="0" party="D" body="H" districtNumber="23">FRANKEL</sponsor>
+				<sponsor sequenceNumber="08" fillSequence="0" party="D" body="H" districtNumber="153">SANCHEZ</sponsor>
+				<sponsor sequenceNumber="09" fillSequence="0" party="D" body="H" districtNumber="118">HADDOCK</sponsor>
+				<sponsor sequenceNumber="10" fillSequence="0" party="D" body="H" districtNumber="190">GREEN</sponsor>
+				<sponsor sequenceNumber="11" fillSequence="0" party="D" body="H" districtNumber="54">SCOTT</sponsor>
+				<sponsor sequenceNumber="12" fillSequence="0" party="D" body="H" districtNumber="49">SMITH-WADE-EL</sponsor>
+				<sponsor sequenceNumber="13" fillSequence="0" party="D" body="H" districtNumber="182">WAXMAN</sponsor>
+				<sponsor sequenceNumber="14" fillSequence="0" party="D" body="H" districtNumber="61">HANBIDGE</sponsor>
+			</sponsors>
+			<printersNumberHistory>
+				<number sequence="01" billTextPdfUrl="https://www.palegis.us/legislation/bills/text/PDF/2025/0/HB1993/PN2515">2515</number>
+			</printersNumberHistory>
+			<actionHistory>
+				<action sequence="01" actionChamber="H">
+					<verb>Referred to</verb>
+					<committee>PROFESSIONAL LICENSURE</committee>
+					<date>10/24/25</date>
+					<printersNumber>2515</printersNumber>
+					<rollCallVote></rollCallVote>
+					<fullAction>Referred to PROFESSIONAL LICENSURE,  Oct. 24, 2025</fullAction>
+				</action>
+			</actionHistory>
+			<amendments/>
+			<supportingDocuments/>
+		</bill>

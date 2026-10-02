@@ -1,7 +1,10 @@
+import { normalizeWatchRepresentation, PA_EXPORT_PARSER_ID } from "../../src/ingest/watch/pennsylvania-export";
+import { parsePennsylvaniaExportSnapshot } from "../../src/ingest/watch/pennsylvania-export-adapter";
 import { SourceEnrollment, sourceConfigurationDigest, type SnapshotInput } from "../../src/ingest/watch/source-enrollment";
 import { parseWatchFeedSnapshot } from "../../src/ingest/watch/feed-adapter";
 import { parseGitHubRepositorySnapshot } from "../../src/ingest/watch/github-adapter";
 import { parseFederalRegisterSnapshot } from "../../src/ingest/watch/policy-adapter";
+import { parsePennsylvaniaSnapshot, PENNSYLVANIA_PARSER_ID } from "../../src/ingest/watch/pennsylvania-adapter";
 import { CanonicalInstant, canonicalJson, sha256 } from "../../src/content/watch-schema";
 import { fetchUpstream, SOURCE_USER_AGENT, UpstreamError, sleep } from "../../src/ingest/upstream";
 import { launchCandidate } from "../../fixtures/watch-launch-candidates";
@@ -11,9 +14,10 @@ export async function prepareCapturedSource(id:string, bytes:Uint8Array, capture
   const candidate=launchCandidate(id),source=SourceEnrollment.parse(candidate.source);
   CanonicalInstant.parse(capturedAt);
   if(bytes.byteLength>source.maxBytes)throw Error("capture-byte-limit");
-  const body=new TextDecoder("utf-8",{fatal:true}).decode(bytes);
-  const input:SnapshotInput={source,body,representationBytes:bytes,finalUrl:source.endpoints[0]!,fetchedAt:capturedAt};
-  const parsed=source.transport==="rss"||source.transport==="atom"?await parseWatchFeedSnapshot(input):
+  const body=await normalizeWatchRepresentation(source,bytes);
+  const input:SnapshotInput={source,body,representationBytes:bytes,...(source.transport==="official-zip-xml"?{representationKind:"pa-zip-xml" as const}:{}),finalUrl:source.endpoints[0]!,fetchedAt:capturedAt};
+  const parsed=source.parserId===PA_EXPORT_PARSER_ID?await parsePennsylvaniaExportSnapshot(input):source.parserId===PENNSYLVANIA_PARSER_ID?await parsePennsylvaniaSnapshot(input):
+    source.transport==="rss"||source.transport==="atom"?await parseWatchFeedSnapshot(input):
     source.transport==="github-json"?await parseGitHubRepositorySnapshot(input):
     source.parserId==="watch-federal-register"?await parseFederalRegisterSnapshot(input):null;
   return {schemaVersion:"source-preparation-1",sourceId:id,configurationSha256:await sourceConfigurationDigest(source),
@@ -61,6 +65,7 @@ export function endpointRobotsPolicy(body:string, endpoint:string, maxDelayMs=10
 
 export async function captureLaunchCandidate(id:string, fetchImpl:typeof fetch=fetch, wait:typeof sleep=sleep) {
   const candidate=launchCandidate(id),source=candidate.source,endpoint=source.endpoints[0]!;
+  if(source.transport === "official-zip-xml") throw Error("pa-export-original-offline-capture-required");
   const deadlineAt=Date.now()+25_000;
   const options={fetchImpl,maxBytes:source.maxBytes,timeoutMs:10_000,deadlineAt,attempts:1,
     allowedRedirectHosts:new Set<string>(),maxRedirects:0,requiresAuth:false,

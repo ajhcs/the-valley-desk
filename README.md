@@ -53,6 +53,19 @@ rosters, and exact registered technology captures. Source-rule publication
 requires current source qualifications, parser/provenance checks, and transactional
 dependency guards. Model output cannot authorize it; unsupported interpretation,
 legal effect, and historical membership remain unavailable or in review.
+The PA HTML adapter retains exact enrolled 2025–2026 bill pages, literal short
+titles/actions and independent printer/text dates. Explicit `publishVerified`
+requires acknowledged raw-byte/configuration hashes, exact bill/session/chamber
+and text associations, deterministic replay, current source qualification and
+transactional guards. Lifecycle/legal effect and conflicting or incomplete
+history remain unknown. Source checks renew separate typed collection health;
+public verification/snapshot dates do not become successful-check timestamps.
+Four exact-bill configurations are candidates only, without access approval,
+qualification or activation. Topic discovery is still separate from Watch
+enrollment. See [local PA native acceptance evidence](docs/evidence/pa-watch-native-acceptance-slice-20260930.md).
+The historical PA ZIP fixture uses generated lossless text transport; its logical
+`originalZipPath` is not a tracked standalone binary. Default CI reconstructs the
+full original capture for Node/workerd parity. See the [fixture contract](test/fixtures/pa-export/README.md).
 News and Events retain their existing editorial pipeline. The configured model is
 `meta/muse-spark-1.3-contributor`; keep the explicit setting during deployment
 and record the actual previous Worker configuration for rollback.

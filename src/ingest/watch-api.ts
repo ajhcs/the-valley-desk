@@ -1,3 +1,5 @@
+import { readPaSourceHealth } from "./watch/pa-source-health";
+import { WatchId } from "../content/watch-schema";
 import { z } from "zod";
 import type { D1DatabaseLike } from "./persistence";
 import { readWatchDirectory, readWatchSubjectRevision, WatchStorageError } from "./watch-persistence";
@@ -25,6 +27,18 @@ export async function handleWatchRead(request: Request, env: WatchReadEnvironmen
     return response(request, 405, { error: { code: "watch-method-not-allowed", message: "Read-only endpoint." } }, { allow: "GET, HEAD" });
   }
   const url = new URL(request.url);
+  if(url.pathname==='/api/v2/watch/source-health'){
+    if(env.WATCH_PUBLIC_ENABLED!=='true'||!env.VALLEY_DESK_DB)return response(request,503,{error:{code:'watch-unavailable'}});
+    try{
+      const ids=url.searchParams.getAll('subject');
+      if(url.search.length>16384||[...url.searchParams.keys()].some(key=>key!=='subject')||ids.length<1||ids.length>50||new Set(ids).size!==ids.length||ids.some(id=>!WatchId.safeParse(id).success))return response(request,400,{error:{code:'watch-invalid-query'}});
+      const items=[];
+      for(const id of ids){
+        try{const detail=await readWatchSubjectRevision(env.VALLEY_DESK_DB,'policy',id,'id',deliveryNow);if(detail)items.push(detail.item);}catch{/* Held/unavailable accepted proof supplies no public health association. */}
+      }
+      return response(request,200,{version:'pa-source-health-1',entries:await readPaSourceHealth(env.VALLEY_DESK_DB,items,deliveryNow.toISOString())});
+    }catch{return response(request,200,{version:'pa-source-health-1',entries:[]});}
+  }
   const match = /^\/api\/v2\/watch\/(policy|technology)(?:\/([^/]+))?\/?$/.exec(url.pathname);
   if (!match) return error(request, 404, "watch-not-found", "Watch resource not found.");
   if (env.WATCH_PUBLIC_ENABLED !== "true") return error(request, 503, "watch-not-enabled", "Watch data is not yet available.");
