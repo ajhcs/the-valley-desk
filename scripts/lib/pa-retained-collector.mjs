@@ -2,7 +2,7 @@ import { lstatSync, mkdirSync } from 'node:fs';
 import { resolve, join, basename, parse, sep } from 'node:path';
 import { z } from 'zod';
 import { boundedWatchFile } from './watch-local-files.mjs';
-import { publishPaPacketFile } from './pa-browser-packet-storage.mjs';
+import { publishPaPacketFile, syncPaDirectory } from './pa-browser-packet-storage.mjs';
 import { importPaOriginal } from './pa-original-import.ts';
 import { launchCandidate } from '../../fixtures/watch-launch-candidates.ts';
 import { canonicalJson, sha256 } from '../../src/content/watch-schema.ts';
@@ -46,6 +46,7 @@ export async function retainPaLocalOriginal({candidateId,zip,receipt,acquisition
   try{mkdirSync(directory,{mode:0o700});}catch(error){if(error.code!=='EEXIST')throw error;}
   privateDirectory(directory);
   for(let i=0;i<names.length;i++)publishPaPacketFile(join(directory,names[i]),parts[i],limits[i]);
+  syncPaDirectory(root); // Persist the newly created packet directory before its marker.
   // Manifest is the completion marker; no original or prior manifest is replaced.
   publishPaPacketFile(join(directory,'manifest.json'),new TextEncoder().encode(canonicalJson(manifest)),16_000);
   return verifyPaRetainedPacket(directory);
