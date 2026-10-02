@@ -1,3 +1,4 @@
+import { paSnapshotFreshness } from "../../content/pa-source-freshness";
 import { assertPaExportProgress, normalizeWatchRepresentation, PA_EXPORT_PARSER_ID } from "./pennsylvania-export";
 import { parsePennsylvaniaExportSnapshot, stageCollectedPennsylvaniaExport } from "./pennsylvania-export-adapter";
 import { canonicalJson, CanonicalInstant, sha256, tupleKey } from "../../content/watch-schema";
@@ -12,7 +13,7 @@ import { parseTechnologyCaptureSnapshot, stageCollectedTechnologyCapture } from 
 import { parseGitHubRepositorySnapshot, parseGitHubReleasesSnapshot, parseGitHubTagsSnapshot, parseGitHubCommitsSnapshot,
   type GitHubRepositoryBinding } from "./github-adapter";
 import { checkpointAfterPersistence, sourceEndpointAllowed, type SnapshotInput, type WatchSnapshotResult,
-  type SnapshotPageReceipt, type PersistenceAcknowledgment, type PagePersistenceAcknowledgment } from "./source-enrollment";
+  type SnapshotPageReceipt, type PersistenceAcknowledgment, type PagePersistenceAcknowledgment, failedSnapshot } from "./source-enrollment";
 import { resolveEnrolledCollectionSource, retainedGoodRepresentation, retainedBytes, persistWatchCollectionPage,
   resolveWatchSourcePermissions, type EnrolledCollectionSource } from "./collection-storage";
 
@@ -136,6 +137,12 @@ async function collectSource(db:D1DatabaseLike,enrolled:EnrolledCollectionSource
           mode==="commits"?await parseGitHubCommitsSnapshot(input,binding):(()=>{throw new UpstreamError("misconfigured","github-mode-unsupported");})();
       }
     } else throw new UpstreamError("misconfigured","watch-transport-not-implemented");
+    if(source.parserId===PA_EXPORT_PARSER_ID && result.health.state==='healthy'){
+      const freshness=paSnapshotFreshness({exportAt:JSON.parse(input.body).exportDate.instant,lastCheckedAt:null,
+        lastSuccessfulUpstreamCheckAt:null,currentFailure:null,origin:'unknown'},input.fetchedAt,source.paExport?.freshnessPolicy);
+      if(freshness.freshness!=='fresh')result=failedSnapshot(source,input,result.representationSha256,
+        `pa-export-age-policy-${freshness.freshness}`);
+    }
     // A repository snapshot is retained before its binding can authorize a list.
     const stored=await persistWatchCollectionPage(db,enrolled,{snapshotId,endpoint:fetched.url,bytes:fetched.bytes,
       body:fetched.body,headers:fetched.headers,result,now:clock().toISOString(),leaseOwner});

@@ -1,3 +1,4 @@
+import { preservePaStatusForRefresh } from "./watch/pa-status-refresh";
 import { parsePennsylvaniaExportPolicy } from "./watch/pennsylvania-export";
 import { z } from "zod";
 import { AcceptedFactRecord, CanonicalInstant, EvidenceIds, EvidenceReference, InterpretationDependencies,
@@ -116,7 +117,7 @@ export async function decideSourceRuleProposal(db: D1DatabaseLike,
       !["title", "policy-identity", "timeline-action", "latest-action", "summary"].includes(fact.field)))
     throw new WatchStorageError("watch-source-rule-proposal-conflict");
   return decideProposal(db, { ...request, action: "accepted" }, "source-rule:" + SOURCE_RULE,
-    sourceRuleRuntime(db, runtime, proof.permissions, async decisionId => proof.acceptanceGuards(decisionId)), now, "source-rule");
+    sourceRuleRuntime(db, runtime, proof.permissions, async decisionId => proof.acceptanceGuards(decisionId)), now, "source-rule", parsed.parserVersion === "pa-bill-history-xml-1" ? parsed.source.sourceId : undefined);
 }
 
 export async function stageEditorialProposal(db: D1DatabaseLike, input: unknown, now = new Date()) {
@@ -178,7 +179,7 @@ export async function decideEditorialProposal(db: D1DatabaseLike, input: {
 
 async function decideProposal(db: D1DatabaseLike, input: {
   id: string; sha256: string; action: "accepted" | "rejected";
-}, reviewerPrincipal: string, runtime: EditorialRuntime, now: Date, verificationKind: "human-review" | "source-rule") {
+}, reviewerPrincipal: string, runtime: EditorialRuntime, now: Date, verificationKind: "human-review" | "source-rule", paRefreshSourceId?:string) {
   const rule = verificationKind === "source-rule" ? SOURCE_RULE : RULE;
   const request = z.object({ id: WatchId, sha256: Sha256, action: z.enum(["accepted", "rejected"]) }).strict().parse(input);
   const principal = z.string().trim().min(1).max(320).parse(reviewerPrincipal);
@@ -237,7 +238,8 @@ async function decideProposal(db: D1DatabaseLike, input: {
     acceptedAt: at, gateVersion: rule, factDigests });
   const compiled = await compileWatchDelivery(draft, { ...resolved, acceptance, facts, evidence,
     currentSubjectRevision: subject.input_revision, asOf: at });
-  const { manifest, record } = compiledWatchDeliveryValue(compiled);
+  let { manifest, record } = compiledWatchDeliveryValue(compiled);
+  if(paRefreshSourceId)({manifest,record}=await preservePaStatusForRefresh(db,record,manifest,paRefreshSourceId,at));
   const dependencies = new Map(manifest.groups.flatMap(group => group.dependencies).map(item => [item.key, item]));
   const guards = await resolved.acceptanceGuards(decisionId);
   if (!guards.length) throw new WatchStorageError("watch-review-current-evidence-guard-required");

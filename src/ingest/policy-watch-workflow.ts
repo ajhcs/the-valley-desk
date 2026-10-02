@@ -4,8 +4,21 @@ import { materializePolicyCapture } from "./policy-watch-native";
 import { deliveryDependencyKey, deliveryEasternDay } from "../content/watch-delivery";
 import type { D1DatabaseLike, D1StatementLike } from "./persistence";
 
+/** PA exports contain dated history, not an authoritative latest-status/legal-effect
+ * replacement. Keep later durable native versions and accepted status evidence. */
+function assertPaCaptureOrder(previous: Awaited<ReturnType<typeof materializePolicyCapture>>, next: Awaited<ReturnType<typeof materializePolicyCapture>>) {
+  if (next.parsed.identity.jurisdiction !== "PA" || !["pa-bill-history-xml-1","pa-bill-history-html-2"].includes(next.parsed.parserVersion)) return;
+  const priorPn = /^PN ([1-9]\d*)$/.exec(previous.parsed.version.nativeId ?? ""), nextPn = /^PN ([1-9]\d*)$/.exec(next.parsed.version.nativeId ?? "");
+  const latestDay = (material: typeof next) => material.actions.flatMap(action => {
+    const date = action.value.sourceOccurredAt;
+    return date.precision === "unknown" ? [] : [date.value.slice(0,10)];
+  }).sort().at(-1) ?? "";
+  if ((priorPn && (!nextPn || Number(nextPn[1]) < Number(priorPn[1]))) || latestDay(next) < latestDay(previous))
+    throw Error("pa-native-version-or-action-regression");
+}
+
 type CaptureRow = { sequence: number; id: string; subject_id: string; payload_sha256: string; payload_json: string };
-async function evidenceRetractions(db: D1DatabaseLike, subjectId: string, captureId: string, current: EvidenceReference[], at: string) {
+async function evidenceRetractions(db: D1DatabaseLike, subjectId: string, captureId: string, current: EvidenceReference[], at: string, sourceId: string) {
   const table = await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='watch_editorial_drafts'").first();
   if (!table) return [];
   const count = await db.prepare("SELECT count(*) AS count FROM watch_editorial_drafts WHERE subject_id=?").bind(subjectId).first<{ count: number }>();
@@ -22,6 +35,9 @@ async function evidenceRetractions(db: D1DatabaseLike, subjectId: string, captur
   const seen = new Set<string>();
   for (const row of rows.results) {
     const evidence = EvidenceReference.parse(JSON.parse(row.evidence_json));
+    // A PA export cannot revoke separately retained vote/status/PDF source proof.
+    // Same-source changed evidence retains the existing invalidation semantics.
+    if (sourceId && evidence.sourceId !== sourceId) continue;
     const key = await deliveryDependencyKey("evidence", [evidence.id, await evidenceReferenceDigest(evidence)]);
     if (seen.has(key) || currentKeys.has(key)) continue;
     seen.add(key);
@@ -48,16 +64,19 @@ export async function persistPolicyWatchCapture(db: D1DatabaseLike, input: unkno
   const head = await db.prepare("SELECT id,retrieved_at FROM policy_watch_captures WHERE subject_id=? ORDER BY sequence DESC LIMIT 1")
     .bind(subjectId).first<{ id: string; retrieved_at: string }>();
   if (head && parsed.source.retrievedAt <= head.retrieved_at) throw new Error("policy-watch-capture-not-newer");
+  if (head && parsed.identity.jurisdiction === "PA") {
+    assertPaCaptureOrder((await readPolicyWatchCapture(db, head.id)).material, material);
+  }
   const statements = [
     // Bind the pre-read head and clock before inserting; a competing capture
     // rolls this transaction back instead of letting an old response win.
-    db.prepare("INSERT INTO policy_watch_capture_head_guards SELECT ?,CASE WHEN (SELECT id FROM policy_watch_captures WHERE subject_id=? ORDER BY sequence DESC LIMIT 1) IS ? AND NOT EXISTS(SELECT 1 FROM policy_watch_captures WHERE subject_id=? AND retrieved_at>=?) THEN 1 ELSE 0 END")
+    db.prepare(`INSERT INTO policy_watch_capture_head_guards SELECT ?,CASE WHEN (SELECT id FROM policy_watch_captures WHERE subject_id=? ORDER BY sequence DESC LIMIT 1) IS ? AND NOT EXISTS(SELECT 1 FROM policy_watch_captures WHERE subject_id=? AND retrieved_at>=?) THEN 1 ELSE 0 END`)
       .bind(id, subjectId, head?.id ?? null, subjectId, parsed.source.retrievedAt),
     db.prepare("INSERT OR IGNORE INTO policy_watch_instruments VALUES(?,?,?)").bind(subjectId, canonicalJson(parsed.identity), parsed.source.retrievedAt),
     db.prepare("INSERT INTO policy_watch_captures(id,subject_id,observation_id,payload_sha256,payload_json,retrieved_at,source_url) VALUES(?,?,?,?,?,?,?)")
       .bind(id, subjectId, material.observation.id, digest, payload, parsed.source.retrievedAt, parsed.source.sourceUrl),
   ];
-  statements.push(...await evidenceRetractions(db, subjectId, id, material.evidence, parsed.source.retrievedAt));
+  statements.push(...await evidenceRetractions(db, subjectId, id, material.evidence, parsed.source.retrievedAt, parsed.parserVersion === "pa-bill-history-xml-1" ? parsed.source.sourceId : ""));
   for (const action of material.actions) statements.push(db.prepare("INSERT INTO policy_watch_action_revisions VALUES(?,?,?,?)")
     .bind(action.value.id, id, await developmentIdentityKey(subjectId, "policy-action", await sha256(action.eventKey)), canonicalJson(action.value)));
   try { await db.batch(statements); }

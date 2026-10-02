@@ -5,7 +5,7 @@ import { watchDirectoryApiPath } from "./watch-api";
 import { JURISDICTION_LABELS, LEGAL_EFFECT_LABELS, LICENSE_LABELS, LIFECYCLE_LABELS, READINESS_LABELS, RELATIONSHIP_LABELS, RESOURCE_LABELS, sourceDateLabel } from "./watch-labels";
 import { useWatchRequest } from "./use-watch-request";
 import { WatchFilters } from "./WatchFilters";
-import { WatchDataStatus, WatchError, WatchSave, WatchSaveNotice, WatchSources } from "./WatchShared";
+import { PaSourceHealth, WatchDataStatus, WatchError, WatchSave, WatchSaveNotice, WatchSources } from "./WatchShared";
 import { RepresentativeLookup } from "./RepresentativeLookup";
 import { WatchUpdates } from "./WatchUpdates";
 import { latestQuerySupported, watchView, watchViewSearch, type WatchView } from "./watch-views";
@@ -50,7 +50,7 @@ export function WatchDirectoryPage({ kind }: { kind: WatchKind }) {
     ...parsedQuery, errors: [...parsedQuery.errors, "These filters are not available for Latest updates."] } : parsedQuery;
   const directoryView = view === "directory" || view === "papers";
   const path = kind === "policy" ? "/policy-watch" : "/technology-watch";
-  const { state, retry } = useWatchRequest(query.errors.length || !directoryView ? null : watchDirectoryApiPath(kind, query.values), kind);
+  const { state, retry, health } = useWatchRequest(query.errors.length || !directoryView ? null : watchDirectoryApiPath(kind, query.values), kind);
   const data = state.phase === "ready" && state.data.response.version === "watch-directory-1" ? state.data.response : null;
   const loading = directoryView && !query.errors.length && state.phase === "loading";
   const views: Array<{ id: WatchView; label: string }> = [
@@ -79,6 +79,7 @@ export function WatchDirectoryPage({ kind }: { kind: WatchKind }) {
       data ? <>
         <div className="WatchResultBar"><p role="status">{data.items.length} {data.items.length === 1 ? "record" : "records"} on this page</p>
           <WatchDataStatus asOf={data.asOf} stale={state.phase === "ready" && state.data.stale} /></div>
+        <PaSourceHealth entries={health} items={data.items} />
         {data.items.length ? <ul className="WatchRecordList">{data.items.map(item => <WatchDirectoryRecord key={item.id} item={item} query={query} />)}</ul> :
           <section className="WatchState"><h2>{view === "papers" ? "No accepted papers match these filters." : query.active ? "No records match these filters." : "No accepted records are listed yet."}</h2>
             {query.active ? <Link to={path} search={{}}>Reset filters</Link> : null}

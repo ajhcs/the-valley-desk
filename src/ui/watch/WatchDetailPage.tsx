@@ -5,12 +5,12 @@ import { instantLabel, RESOURCE_LABELS } from "./watch-labels";
 import { useWatchRequest } from "./use-watch-request";
 import { PolicyDossier } from "./PolicyDossier";
 import { TechnologyDossier } from "./TechnologyDossier";
-import { WatchDataStatus, WatchError, WatchSave, WatchSaveNotice, WatchSources, WatchUnknowns } from "./WatchShared";
+import { PaSourceHealth, WatchDataStatus, WatchError, WatchSave, WatchSaveNotice, WatchSources, WatchUnknowns } from "./WatchShared";
 import "./watch.css";
 
 export function WatchDetailPage({ kind, slug }: { kind: WatchKind; slug: string }) {
   const valid = isWatchSlug(slug);
-  const { state, retry } = useWatchRequest(valid ? watchDetailApiPath(kind, slug) : null, kind, slug);
+  const { state, retry, health } = useWatchRequest(valid ? watchDetailApiPath(kind, slug) : null, kind, slug);
   const data = state.phase === "ready" && state.data.response.version === "watch-detail-1" ? state.data.response : null;
   const item = data?.item;
   const error = !valid ? new WatchReadError("not-found") : state.phase === "error" ? state.error : null;
@@ -24,6 +24,7 @@ export function WatchDetailPage({ kind, slug }: { kind: WatchKind; slug: string 
           <WatchDataStatus asOf={data.asOf} stale={state.phase === "ready" && state.data.stale} />
           <button type="button" className="WatchRefresh" onClick={retry}>Refresh record</button>
         </div>
+        <PaSourceHealth entries={health} items={[item]} />
         <WatchSaveNotice />
         {item.kind === "policy" ? <PolicyDossier item={item} /> : <TechnologyDossier item={item} />}
         <WatchUnknowns item={item} />

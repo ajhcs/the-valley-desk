@@ -61,7 +61,7 @@ export function parseWatchResponse(value: unknown, kind: WatchKind, slug?: strin
   return response;
 }
 
-async function boundedJson(response: Response, maximum: number): Promise<unknown> {
+export async function boundedJson(response: Response, maximum: number): Promise<unknown> {
   const length = Number(response.headers.get("content-length"));
   if (!/^application\/json(?:\s*;|$)/i.test(response.headers.get("content-type") ?? "") ||
       (Number.isFinite(length) && length > maximum)) {

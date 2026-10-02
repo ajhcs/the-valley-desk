@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PaFreshnessPolicy, paSnapshotFreshness } from "../../content/pa-source-freshness";
 import { CanonicalInstant, HttpsUrl, Sha256, SourceDate, WatchId, WatchJurisdiction, canonicalJson, sha256, tupleKey } from "../../content/watch-schema";
 import { normalizeSourceUrl } from "../identity";
 import { SOURCE_RUN_STATES, classifyHttpStatus, sourceStateForItemCount, type SnapshotCompleteness, type SourceRunNote } from "../source-health";
@@ -21,7 +22,7 @@ export const SourceEnrollment = z.object({ id: WatchId, name: Label, state: z.en
     selectedBills: z.array(z.enum(["HB1925", "HB1993", "SB1113", "HB2787"])).min(1).max(4),
     memberName: z.literal("PA-Bill-History-2025-RegularSession.xml"),
     maxExpandedBytes: z.literal(67108864), maxEntries: z.literal(100),
-    normalizerVersion: z.literal("watch-pa-zip-xml-v1") }).strict().optional(),
+    freshnessPolicy: PaFreshnessPolicy.optional(), normalizerVersion: z.literal("watch-pa-zip-xml-v1") }).strict().optional(),
 }).strict().superRefine((value, context) => {
   if ((value.transport === "official-zip-xml") !== !!value.paExport ||
       (value.paExport && (new Set(value.paExport.selectedBills).size !== value.paExport.selectedBills.length || value.maxItems < value.paExport.selectedBills.length)))
@@ -37,6 +38,7 @@ export const QualificationReceipt = z.object({ id: WatchId, sourceId: WatchId, c
   reviewedAt: CanonicalInstant, expiresAt: CanonicalInstant, engineeringOwnerId: WatchId, editorialOwnerId: WatchId,
   reviewEvidenceId: WatchId, rightsDecision: z.literal("accepted"), accessDecision: z.literal("public-or-authorized-read"),
   negativeFixtureSha256: Sha256, replayFixtureSha256: Sha256,
+  paExportReview: z.object({exportAt:CanonicalInstant,policyReceiptId:WatchId}).strict().optional(),
   samples: z.array(z.object({ endpoint: Endpoint, representationSha256: Sha256, capturedAt: CanonicalInstant,
     parserVersion: Label, itemCount: z.number().int().nonnegative().max(100), outcome: z.literal("parsed") }).strict()).min(2).max(10),
 }).strict().superRefine((value, context) => {
@@ -72,6 +74,13 @@ export async function collectionReadiness(input: unknown, context: {
       receipt.data.configurationSha256 !== await sourceConfigurationDigest(source) || receipt.data.reviewedAt > context.now ||
       context.now >= receipt.data.expiresAt || receipt.data.samples.some(sample => !source.endpoints.includes(sample.endpoint) || sample.parserVersion !== source.parserVersion)) {
     return { ready: false, reason: "qualification-receipt-missing-stale-or-conflicting" };
+  }
+  if (source.transport === "official-zip-xml") {
+    const policy = source.paExport?.freshnessPolicy, reviewed = receipt.data.paExportReview;
+    if (!policy || !reviewed || reviewed.policyReceiptId !== policy.evidenceReceiptId ||
+        paSnapshotFreshness({exportAt:reviewed.exportAt,lastCheckedAt:null,lastSuccessfulUpstreamCheckAt:null,currentFailure:null,origin:"unknown"},receipt.data.reviewedAt,policy).freshness !== "fresh" ||
+        Date.parse(receipt.data.reviewedAt)-Date.parse(reviewed.exportAt) >= policy.reviewMaxAgeMs)
+      return {ready:false,reason:"pa-qualification-export-age-review-required"};
   }
   return { ready: true, reason: "qualified-and-separately-authorized" };
 }

@@ -153,9 +153,4 @@ export function assertPaExportProgress(previousText: string, currentText: string
   }
 }
 
-export function paSnapshotFreshness(input: { exportAt: string; lastCheckedAt: string; lastSuccessfulUpstreamCheckAt: string | null;
-  currentFailure: string | null; origin: "library-research" | "upstream" }, now: string) {
-  return { ...input, exportAgeMs: Math.max(0, Date.parse(now) - Date.parse(input.exportAt)),
-    lastSuccessfulUpstreamCheckAt: input.origin === "library-research" ? null : input.lastSuccessfulUpstreamCheckAt,
-    latestStatusVerified: false as const };
-}
+export { paSnapshotFreshness } from "../../content/pa-source-freshness";

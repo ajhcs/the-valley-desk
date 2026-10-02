@@ -235,7 +235,7 @@ export async function readWatchDirectory(db: D1DatabaseLike, input: unknown, now
     nextCursor: rows.length > page.length && last ? encodeCursor({ version: 1, generation, filter: fingerprint, title: last.title_key, id: last.subject_id }) : null };
 }
 
-export type WatchDetail = { version: "watch-detail-1"; item: WatchPublicRecord; asOf: string };
+export type WatchDetail = { version: "watch-detail-1"; item: WatchPublicRecord; asOf: string; };
 
 export async function readWatchSubjectRevision(db: D1DatabaseLike, kind: "policy" | "technology", idOrSlug: string,
   lookup: "id" | "slug" = "id", now = new Date()): Promise<WatchDetail | null> {
@@ -253,7 +253,8 @@ export async function readWatchSubjectRevision(db: D1DatabaseLike, kind: "policy
     .bind(deliveryAsOf, deliveryEasternDay(deliveryAsOf), kind, idOrSlug).first<PublicRow & { applied_at: string }>();
   if (!row) return null;
   if (!CanonicalInstant.safeParse(row.applied_at).success) throw new WatchStorageError("watch-projection-invalid", 503);
-  return { version: "watch-detail-1", item: await parseDeliveryRow(row, deliveryAsOf), asOf: row.applied_at };
+  const item = await parseDeliveryRow(row, deliveryAsOf);
+  return { version: "watch-detail-1", item, asOf: row.applied_at };
 }
 
 export async function readWatchSubject(db: D1DatabaseLike, kind: "policy" | "technology", idOrSlug: string,

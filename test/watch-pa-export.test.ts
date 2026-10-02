@@ -130,6 +130,7 @@ test('legitimate type/PN attributes and escaped literal scalar text retain compl
   assert.equal(hb.document.versions[0].textUrl,'https://www.palegis.us/legislation/bills/text/PDF/2025/0/HB1925/PN3963');
 });
 
+const qualifiedSource={...source,paExport:{...source.paExport!,freshnessPolicy:{weekdayMaxAgeMs:7200000,weekendMaxAgeMs:259200000,reviewMaxAgeMs:7200000,evidenceReceiptId:'synthetic-cadence-review'}}};
 const syntheticApproval={engineeringOwnerId:'synthetic-engineer',editorialOwnerId:'synthetic-editor',statement:'Fabricated original-capture and named approval receipts for offline tests only; not actual rights or source authenticity.',reviewedAt:'2026-09-30T21:00:00.000Z',expiresAt:'2026-10-01T00:00:00.000Z',rightsDecision:'accepted',accessDecision:'public-or-authorized-read',receipts:{engineering:'synthetic-eng',editorial:'synthetic-ed',rights:'synthetic-rights',access:'synthetic-access'}};
 async function qualificationPair(secondXml:string){
   return Promise.all([syntheticZip(),syntheticZip(secondXml)].map(async(bytes,index)=>{
@@ -143,12 +144,12 @@ for(const [name,xml,error] of [
   ['regressed export clock',syntheticXml(records.join('\n'),'September 30, 2026 3:29:06 PM EDT'),/clock-regression/],
   ['relabelled identical snapshot',syntheticXml(),/distinct-coherent-original-captures-required/],
 ] as const) test(`qualification rejects ${name} before granting source qualification`,async()=>{
-  await assert.rejects(qualifyCapturedWatchSource(source,await qualificationPair(xml),syntheticApproval),error);
+  await assert.rejects(qualifyCapturedWatchSource(qualifiedSource,await qualificationPair(xml),syntheticApproval),error);
 });
 
 test('qualification accepts coherent unchanged content or evolving bill content with monotonic source clocks',async()=>{
   for(const body of [records.join('\n'),records.join('\n').replace('An Act amending Titles','A changed Act amending Titles').replace('3:05:00 PM EDT','3:10:00 PM EDT')]){
-    const result=await qualifyCapturedWatchSource(source,await qualificationPair(syntheticXml(body,'September 30, 2026 3:35:06 PM EDT')),syntheticApproval);
+    const result=await qualifyCapturedWatchSource(qualifiedSource,await qualificationPair(syntheticXml(body,'September 30, 2026 3:35:06 PM EDT')),syntheticApproval);
     assert.equal(result.source.state,'qualified');assert.equal(result.publicationAuthorized,false);
     assert.equal(result.evidence.captureReceipts?.length,2);
   }

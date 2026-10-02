@@ -1,3 +1,4 @@
+import type { PaHealthEntry } from "../../content/pa-source-freshness";
 import { Link } from "@tanstack/react-router";
 import type { WatchKind } from "../../content/watch-query";
 import type { WatchPublicRecord } from "../../content/watch-schema";
@@ -45,7 +46,7 @@ export function WatchUnknowns({ item }: { item: WatchPublicRecord }) {
 export function WatchDataStatus({ asOf, stale }: { asOf: string | null; stale: boolean }) {
   return <div className={`WatchDataStatus${stale ? " is-stale" : ""}`}>
     {stale ? <p role="status"><strong>Retained snapshot.</strong> Live data is unavailable; this accepted snapshot may be out of date.</p> : null}
-    <p>Data as of {asOf ? <time dateTime={asOf}>{instantLabel(asOf)}</time> : "not established"}.
+    <p>Accepted publication snapshot as of {asOf ? <time dateTime={asOf}>{instantLabel(asOf)}</time> : "not established"}.
       {" "}Source-check freshness is not established.</p>
   </div>;
 }
@@ -70,4 +71,23 @@ export function WatchError({ error, retry, kind, firstPage }: {
         <Link to={kind === "policy" ? "/policy-watch" : "/technology-watch"} search={{}}>Return to directory</Link>}
     </div>
   </section>;
+}
+
+export function PaSourceHealth({ entries, items = [] }: { entries: PaHealthEntry[]; items?: WatchPublicRecord[] }) {
+  if (!entries.length) return null;
+  const clock = (value:string|null) => value ? <time dateTime={value}>{instantLabel(value)}</time> : "unknown";
+  return <section className="WatchSection"><h2>PA source freshness</h2>{entries.map(entry => <div key={`${entry.subjectId}:${entry.sourceId}`}>
+    <p>{items.find(item=>item.id===entry.subjectId) ? <a href={`/policy-watch/${items.find(item=>item.id===entry.subjectId)!.slug}`}>{items.find(item=>item.id===entry.subjectId)!.title}</a> : 'PA bill'}{' | '}
+      {items.find(item=>item.id===entry.subjectId)?.sources.find(source=>source.sourceId===entry.sourceId)?.label ?? entry.sourceId}</p>
+    <p>Export freshness: {entry.health.freshness}. Latest bill status remains unverified.</p>
+    <dl className="WatchFacts">
+      <div><dt>Export timestamp</dt><dd>{clock(entry.health.exportAt)}</dd></div>
+      <div><dt>Export age</dt><dd>{entry.health.exportAgeMs === null ? "unknown" : `${Math.floor(entry.health.exportAgeMs / 60_000)} minutes`}</dd></div>
+      <div><dt>Bill last update</dt><dd>{clock(entry.health.billLastUpdateAt)}</dd></div>
+      <div><dt>Last attempted source check</dt><dd>{clock(entry.health.lastCheckedAt)}</dd></div>
+      <div><dt>Last successful upstream check</dt><dd>{clock(entry.health.lastSuccessfulUpstreamCheckAt)}</dd></div>
+      <div><dt>Evidence origin</dt><dd>{watchLabel(entry.health.origin)}</dd></div>
+    </dl>
+    {entry.health.currentFailure ? <p role="status">Current source failure: {entry.health.currentFailure}. Prior dated evidence is retained.</p> : null}
+  </div>)}</section>;
 }

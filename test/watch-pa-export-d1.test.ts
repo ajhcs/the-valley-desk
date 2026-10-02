@@ -1,3 +1,4 @@
+import { readPaSourceHealth } from "../src/ingest/watch/pa-source-health";
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync,readdirSync } from 'node:fs';
@@ -18,7 +19,7 @@ test('synthetic qualified binary source traverses local D1 raw ack/native replay
  const proxy=await getPlatformProxy<{WATCH_TEST_DB:D1DatabaseLike}>({configPath:fileURLToPath(new URL('./fixtures/watch-d1/wrangler.jsonc',import.meta.url)),envFiles:[],persist:false,remoteBindings:false});
  t.after(()=>proxy.dispose());const db=proxy.env.WATCH_TEST_DB,migrations=new URL('../migrations/',import.meta.url);
  for(const name of readdirSync(migrations).filter(n=>n.endsWith('.sql')).sort())await db.batch(unstable_splitSqlQuery(readFileSync(new URL(name,migrations),'utf8')).map(sql=>db.prepare(sql)));
- const candidate={...launchCandidate('candidate-pa-export').source,id:'synthetic-pa-export-d1',name:'Synthetic PA binary test only'};
+ const candidate={...launchCandidate('candidate-pa-export').source,id:'synthetic-pa-export-d1',name:'Synthetic PA binary test only',paExport:{...launchCandidate('candidate-pa-export').source.paExport!,freshnessPolicy:{weekdayMaxAgeMs:7200000,weekendMaxAgeMs:259200000,reviewMaxAgeMs:7200000,evidenceReceiptId:'synthetic-cadence-review'}}};
  const bytes=syntheticZip(),at='2026-09-30T20:30:00.000Z';
  // All original-capture and rights/access receipts below are fabricated test state only.
  const samples=await Promise.all(['2026-09-30T20:00:00.000Z','2026-09-30T20:05:00.000Z'].map(async(capturedAt,index)=>({endpoint:candidate.endpoints[0],capturedAt,bytes:index ? syntheticZip(syntheticXml(records.join('\n'),'September 30, 2026 3:35:06 PM EDT')) : bytes,upstreamReceipt:{id:`synthetic-capture-${index}`,origin:'upstream-original',endpoint:candidate.endpoints[0],capturedAt,representationSha256:await sha256(index ? syntheticZip(syntheticXml(records.join('\n'),'September 30, 2026 3:35:06 PM EDT')) : bytes),httpStatus:200,accessReceiptId:'synthetic-access'}})));
@@ -31,6 +32,9 @@ test('synthetic qualified binary source traverses local D1 raw ack/native replay
  assert.equal(result.sources[0].health.httpStatus,200);
  let page=await readWatchDirectory(db,{kind:'policy',jurisdiction:'PA'},new Date(at));
  assert.equal(page.items.length,4,JSON.stringify(page));
+ const sourceHealth=await readPaSourceHealth(db,page.items,at);assert.equal(sourceHealth.length,4);assert.ok(sourceHealth.every(entry=>entry.health.freshness==='fresh'&&entry.health.lastSuccessfulUpstreamCheckAt===at));
+ for(const q of ['HB1925','HB 1925']){const search=await readWatchDirectory(db,{kind:'policy',jurisdiction:'PA',q},new Date(at));assert.equal(search.items.length,1);assert.equal(search.items[0].title,'HB 1925');}
+ assert.equal((await readWatchDirectory(db,{kind:'policy',jurisdiction:'NJ'},new Date(at))).items.length,0);
  for(const item of page.items){assert.equal(item.kind,'policy');if(item.kind==='policy'){assert.equal(item.legalEffect,'unknown');assert.equal(item.lifecycle,'unknown');}}
  const base=await db.prepare('SELECT count(*) n FROM watch_public_revisions').first<{n:number}>();
  const ids=(await db.prepare('SELECT id FROM watch_raw_observations').all<{id:string}>()).results.map(r=>r.id);
@@ -44,8 +48,10 @@ test('synthetic qualified binary source traverses local D1 raw ack/native replay
  result=await run('2026-09-30T21:02:00.000Z',async()=>new Response(null,{status:304}));assert.equal(result.sources[0].state,'healthy');
  assert.equal(result.sources[0].health.httpStatus,304);
  const lastSuccess=result.sources[0].health.lastSuccessAt;
+ const after304=await readWatchDirectory(db,{kind:'policy',jurisdiction:'PA'},new Date('2026-09-30T21:02:00.000Z'));assert.ok((await readPaSourceHealth(db,after304.items,'2026-09-30T21:02:00.000Z')).every(entry=>entry.health.exportAt==='2026-09-30T20:30:06.000Z'&&entry.health.lastSuccessfulUpstreamCheckAt===lastSuccess));
  result=await run('2026-09-30T21:04:00.000Z',async()=>new Response(null,{status:403}));
  assert.equal(result.sources[0].state,'upstream-blocked');assert.equal(result.sources[0].health.httpStatus,403);assert.equal(result.sources[0].health.lastSuccessAt,lastSuccess);
+ const deniedPage=await readWatchDirectory(db,{kind:'policy',jurisdiction:'PA'},new Date('2026-09-30T21:04:00.000Z'));assert.ok((await readPaSourceHealth(db,deniedPage.items,'2026-09-30T21:04:00.000Z')).every(entry=>entry.health.currentFailure==='upstream-blocked'&&entry.health.lastSuccessfulUpstreamCheckAt===lastSuccess));
  // Every rejected check must preserve acknowledged evidence and the last success.
  const counts=async()=>Promise.all(['watch_raw_representations','watch_collection_pages','watch_raw_observations',
    'policy_watch_captures','watch_editorial_drafts','watch_editorial_decisions','watch_public_revisions'].map(async table=>
@@ -105,6 +111,7 @@ test('synthetic qualified binary source traverses local D1 raw ack/native replay
  await t.test('network failure remains upstream-failed without inventing HTTP status',async()=>{
    await failedCheck('2026-09-30T21:20:00.000Z',async()=>{throw new TypeError('synthetic network failure');},'upstream-failed',undefined,/synthetic network failure/);
  });
+ assert.equal((await readWatchDirectory(db,{kind:'policy'},new Date('2026-10-01T00:00:00.000Z'))).items.length,0,'expired qualification fails delivery');
  page=await readWatchDirectory(db,{kind:'policy',jurisdiction:'PA'},new Date('2026-09-30T21:06:00.000Z'));assert.equal(page.items.length,4);assert.equal(page.asOf,at);
  const head=await db.prepare('SELECT id FROM policy_watch_captures LIMIT 1').first<{id:string}>();
  const capture=(await readPolicyWatchCapture(db,head!.id)).material.parsed;
