@@ -25,18 +25,23 @@ export async function readPaSourceHealth(db:D1DatabaseLike,items:WatchPublicReco
           (SELECT CASE WHEN length(CAST(r.normalized_text AS BLOB))<=64000 THEN r.normalized_text END FROM watch_raw_representations r JOIN watch_collection_pages p ON p.representation_id=r.id
            WHERE r.source_id=s.id AND r.configuration_sha256=s.configuration_sha256 AND json_extract(p.page_json,'$.state')='healthy'
              AND json_extract(p.page_json,'$.truncated')=0 AND json_extract(p.page_json,'$.rejectedItems')=0
-           ORDER BY p.persisted_at DESC,p.id DESC LIMIT 1) normalized_text
+           ORDER BY json_extract(r.normalized_text,'$.exportDate.instant') DESC,p.persisted_at DESC,p.id DESC LIMIT 1) normalized_text,
+          (SELECT json_extract(p.page_json,'$.browserOriginal.origin') FROM watch_raw_representations r JOIN watch_collection_pages p ON p.representation_id=r.id
+           WHERE r.source_id=s.id AND r.configuration_sha256=s.configuration_sha256 AND json_extract(p.page_json,'$.state')='healthy'
+             AND json_extract(p.page_json,'$.truncated')=0 AND json_extract(p.page_json,'$.rejectedItems')=0
+           ORDER BY json_extract(r.normalized_text,'$.exportDate.instant') DESC,p.persisted_at DESC,p.id DESC LIMIT 1) representation_origin
           FROM watch_collection_sources s LEFT JOIN watch_collection_state t ON t.source_id=s.id WHERE s.id=?`)
-          .bind(sourceId).first<{configuration_json:string;normalized_text:string|null;last_checked_at:string|null;last_success_at:string|null;last_state:string|null}>();
+          .bind(sourceId).first<{representation_origin?:string|null;configuration_json:string;normalized_text:string|null;last_checked_at:string|null;last_success_at:string|null;last_state:string|null}>();
         if(!row||new TextEncoder().encode(row.configuration_json).length>16000||!row.normalized_text||new TextEncoder().encode(row.normalized_text).length>64000)throw Error('health-unavailable');
         const source=SourceEnrollment.parse(JSON.parse(row.configuration_json)),state=State.parse(row),derived=Derivation.parse(JSON.parse(row.normalized_text));
         const bill=item.identity.value.sourceInstrumentId.replace(/\s+/g,''),record=derived.records.find(record=>record.bill===bill);
         if(source.id!==sourceId||source.transport!=='official-zip-xml'||!record||derived.selectedCount!==derived.records.length||
           new Set(derived.records.map(record=>record.bill)).size!==derived.records.length||
           source.paExport!.selectedBills.length!==derived.records.length||derived.records.some(record=>!source.paExport!.selectedBills.includes(record.bill)))throw Error('health-association');
+        if(row.representation_origin!=null&&row.representation_origin!=='browser-original')throw Error('health-origin-invalid');
         const decoded=paSnapshotFreshness({exportAt:derived.exportDate.instant,billLastUpdateAt:record.lastUpdate.instant,
           lastCheckedAt:state.last_checked_at,lastSuccessfulUpstreamCheckAt:state.last_success_at,
-          currentFailure:state.last_state&&!['healthy','healthy-empty'].includes(state.last_state)?state.last_state:null,origin:'upstream'},now,source.paExport?.freshnessPolicy);
+          currentFailure:state.last_state&&!['healthy','healthy-empty'].includes(state.last_state)?state.last_state:null,origin:row.representation_origin==='browser-original'?'browser-original':'upstream'},now,source.paExport?.freshnessPolicy);
         if(decoded.freshness==='invalid')throw Error('health-invalid-clocks');
         health=decoded;
       }catch{/* Private query/parser diagnostics are never public response data. */}

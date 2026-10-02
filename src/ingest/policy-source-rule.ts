@@ -1,3 +1,4 @@
+import { decodeBrowserOriginalBytes, validateBrowserOriginal } from "./watch/pa-browser-original";
 import { normalizeWatchRepresentation, PA_EXPORT_PARSER_ID, PA_EXPORT_NORMALIZER } from "./watch/pennsylvania-export";
 import { parsePennsylvaniaExportSnapshot, validatedPennsylvaniaExport } from "./watch/pennsylvania-export-adapter";
 import { canonicalJson, policyIdentityKey, sha256 } from "../content/watch-schema";
@@ -19,6 +20,10 @@ export async function assertCollectedPolicySourceRule(db: D1DatabaseLike, captur
   if (pa && typeof html !== "string") throw new WatchStorageError("watch-source-rule-collector-required");
   const rawSha256 = typeof html === "string" ? await sha256(html) : null;
   const subjectId = await policyIdentityKey(capture.identity);
+  // PA export observations are immutable and deduplicated by representation. Their first
+  // acknowledged page belongs to the original acquisition; a later identical-byte
+  // packet must not replace that proof or its fetchedAt. Insertion order also
+  // handles identical persisted_at clocks without choosing a random packet ID.
   const rows = await db.prepare(`SELECT o.id AS observation_id,o.observation_json,o.payload_sha256,r.id AS representation_id,
       r.representation,r.normalized_text AS body,r.normalizer_version,
       r.endpoint,r.representation_sha256,r.configuration_sha256,s.configuration_json,
@@ -27,7 +32,9 @@ export async function assertCollectedPolicySourceRule(db: D1DatabaseLike, captur
     JOIN watch_collection_sources s ON s.id=o.source_id AND s.configuration_sha256=r.configuration_sha256
     JOIN watch_collection_pages p ON p.representation_id=r.id AND p.source_id=o.source_id
       AND p.id=(SELECT latest.id FROM watch_collection_pages latest WHERE latest.representation_id=r.id
-        AND latest.source_id=o.source_id AND latest.persisted_at<=? ORDER BY latest.persisted_at DESC,latest.id LIMIT 1)
+        AND latest.source_id=o.source_id AND latest.persisted_at<=?
+        AND EXISTS(SELECT 1 FROM json_each(latest.page_json,'$.observationIds') acknowledged WHERE acknowledged.value=o.id)
+        ORDER BY ${binary ? "latest.rowid ASC" : "latest.persisted_at DESC,latest.id"} LIMIT 1)
     WHERE o.source_id=? AND json_extract(o.observation_json,'$.externalKey')=?
       AND o.first_seen_at<=? AND (? IS NULL OR r.representation_sha256=?)
     ORDER BY o.first_seen_at DESC,o.id LIMIT 32`).bind(now.toISOString(),capture.source.sourceId,subjectId,now.toISOString(),rawSha256,rawSha256)
@@ -52,8 +59,19 @@ export async function assertCollectedPolicySourceRule(db: D1DatabaseLike, captur
         page.sourceId !== source.id || page.parserVersion !== source.parserVersion || page.state !== "healthy" ||
         page.truncated || page.rejectedItems || page.representationSha256 !== row.representation_sha256 ||
         !page.observationIds.includes(observation.id) || await snapshotPageDigest(page) !== row.page_sha256) continue;
+    let browserOriginal;
+    if(page.browserOriginal){
+      if(!binary)continue;
+      try{
+        const acquisitionBytes=decodeBrowserOriginalBytes(page.browserOriginal.acquisitionBase64),receiptBytes=decodeBrowserOriginalBytes(page.browserOriginal.receiptBase64);
+        const acquisition=await validateBrowserOriginal(source,bytes,JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(acquisitionBytes)),receiptBytes);
+        const packetSha256=await sha256(canonicalJson([source.id,row.configuration_sha256,await sha256(bytes),await sha256(receiptBytes),await sha256(acquisitionBytes)]));
+        if(packetSha256!==page.browserOriginal.packetSha256||page.snapshotId!==packetSha256||acquisition.completedAt!==observation.fetchedAt||acquisition.completedAt>now.toISOString())continue;
+        browserOriginal={acquisition,receiptBytes};
+      }catch{continue;}
+    }
     const input = { source, body: row.body, representationBytes: bytes, ...(binary ? {representationKind:"pa-zip-xml" as const} : {}), finalUrl: row.endpoint,
-      fetchedAt: observation.fetchedAt, pageKey: page.pageKey };
+      fetchedAt: observation.fetchedAt, pageKey: page.pageKey, ...(browserOriginal ? {browserOriginal} : {}) };
     const parsed = await (binary ? parsePennsylvaniaExportSnapshot(input) : pa ? parsePennsylvaniaSnapshot(input) : parseFederalRegisterSnapshot(input));
     if (parsed.truncated || parsed.rejectedItems || parsed.health.state !== "healthy") continue;
     const matching = parsed.observations.find(item => item.id === observation.id);

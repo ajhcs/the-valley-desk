@@ -116,14 +116,23 @@ export function retainedBytes(row: RetainedRepresentation): Uint8Array {
   return row.representation instanceof Uint8Array ? row.representation : new Uint8Array(row.representation);
 }
 export async function retainedGoodRepresentation(db: D1DatabaseLike, enrolled: EnrolledCollectionSource, endpoint: string) {
+  return eligibleRepresentation(db,enrolled,endpoint,true);
+}
+/** Ordering includes browser originals; conditional HTTP reuse does not. */
+export async function retainedProgressRepresentation(db: D1DatabaseLike, enrolled: EnrolledCollectionSource, endpoint: string) {
+  return eligibleRepresentation(db,enrolled,endpoint,false);
+}
+async function eligibleRepresentation(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,endpoint:string,httpOnly:boolean) {
   return db.prepare(`SELECT r.* FROM watch_raw_representations r JOIN watch_collection_pages p ON p.representation_id=r.id
     WHERE r.source_id=? AND r.endpoint=? AND r.configuration_sha256=?
     AND json_extract(p.page_json,'$.state') IN ('healthy','healthy-empty')
     AND json_extract(p.page_json,'$.truncated')=0 AND json_extract(p.page_json,'$.rejectedItems')=0
-    ORDER BY p.persisted_at DESC LIMIT 1`).bind(enrolled.source.id,endpoint,enrolled.configurationSha256).first<RetainedRepresentation>();
+    AND (?=0 OR json_extract(p.page_json,'$.browserOriginal') IS NULL)
+    ORDER BY CASE WHEN ?=0 THEN json_extract(r.normalized_text,'$.exportDate.instant') END DESC,p.persisted_at DESC,p.id DESC LIMIT 1`).bind(enrolled.source.id,endpoint,enrolled.configurationSha256,httpOnly?1:0,httpOnly?1:0).first<RetainedRepresentation>();
 }
 export async function persistWatchCollectionPage(db: D1DatabaseLike, enrolled: EnrolledCollectionSource, input: {
   snapshotId: string; endpoint: string; bytes: Uint8Array; body: string; headers: Headers; result: WatchSnapshotResult; now: string; leaseOwner: string;
+  browserOriginal?: { origin: "browser-original"; packetSha256: string; acquisitionBase64: string; receiptBase64: string };
 }) {
   const { result, now } = input, hash = await sha256(input.bytes), source = enrolled.source;
   if (hash !== result.representationSha256 || await normalizeWatchRepresentation(source,input.bytes) !== input.body ||
@@ -131,6 +140,7 @@ export async function persistWatchCollectionPage(db: D1DatabaseLike, enrolled: E
   const representationId = await sha256(canonicalJson([source.id,input.endpoint,hash,enrolled.configurationSha256]));
   const page: SnapshotPageReceipt = { sourceId: source.id,snapshotId:input.snapshotId,parserVersion:source.parserVersion,
     ...result.pagination,completeness:result.health.completeness ?? "partial",state:result.health.state,truncated:result.truncated,
+    ...(input.browserOriginal ? {browserOriginal:input.browserOriginal} : {}),
     rejectedItems:result.rejectedItems,observationIds:result.observations.map(item=>item.id),representationSha256:hash };
   const pageHash = await snapshotPageDigest(page), pageId = await sha256(canonicalJson([input.snapshotId,page.pageKey]));
   for (const item of result.observations) {
@@ -147,9 +157,13 @@ export async function persistWatchCollectionPage(db: D1DatabaseLike, enrolled: E
         input.headers.get("etag"),input.headers.get("last-modified"),result.health.checkedAt),
     ...result.observations.map(item=>db.prepare("INSERT OR IGNORE INTO watch_raw_observations VALUES(?,?,?,?,?,?)")
       .bind(item.id,source.id,representationId,item.payloadSha256,canonicalJson(item),item.fetchedAt)),
-    db.prepare("INSERT INTO watch_collection_pages VALUES(?,?,?,?,?,?,?,?,?)")
+    db.prepare(`${input.browserOriginal ? "INSERT OR IGNORE" : "INSERT"} INTO watch_collection_pages VALUES(?,?,?,?,?,?,?,?,?)`)
       .bind(pageId,source.id,input.snapshotId,page.pageKey,representationId,pageHash,canonicalJson(page),now,input.leaseOwner),
   ]);
+  if (input.browserOriginal) {
+    const retained = await db.prepare("SELECT page_json FROM watch_collection_pages WHERE id=?").bind(pageId).first<{page_json:string}>();
+    if (retained?.page_json !== canonicalJson(page)) throw Error("watch-browser-page-conflict");
+  }
   const persisted = new Map<string,PersistenceAcknowledgment>();
   for (const item of result.observations) {
     const row = await db.prepare("SELECT payload_sha256,first_seen_at FROM watch_raw_observations WHERE id=?").bind(item.id)

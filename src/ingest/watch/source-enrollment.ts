@@ -206,6 +206,8 @@ export const SnapshotPageReceipt = z.object({ sourceId: WatchId, snapshotId: Wat
   pageKey: Label, nextPageKey: Label.nullable(), terminal: z.boolean(), completeness: z.enum(["complete", "partial", "empty-unverified"]),
   state: z.enum(SOURCE_RUN_STATES), truncated: z.boolean(), rejectedItems: z.number().int().nonnegative(),
   observationIds: z.array(WatchId).max(100), representationSha256: Sha256,
+  browserOriginal: z.object({origin:z.literal("browser-original"),packetSha256:Sha256,
+    acquisitionBase64:z.string().min(4).max(85336),receiptBase64:z.string().min(4).max(85336)}).strict().optional(),
 }).strict();
 export type SnapshotPageReceipt = z.infer<typeof SnapshotPageReceipt>;
 export async function snapshotPageDigest(input: unknown): Promise<string> {

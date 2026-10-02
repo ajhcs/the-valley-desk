@@ -14,7 +14,7 @@ import { parseGitHubRepositorySnapshot, parseGitHubReleasesSnapshot, parseGitHub
   type GitHubRepositoryBinding } from "./github-adapter";
 import { checkpointAfterPersistence, sourceEndpointAllowed, type SnapshotInput, type WatchSnapshotResult,
   type SnapshotPageReceipt, type PersistenceAcknowledgment, type PagePersistenceAcknowledgment, failedSnapshot } from "./source-enrollment";
-import { resolveEnrolledCollectionSource, retainedGoodRepresentation, retainedBytes, persistWatchCollectionPage,
+import { resolveEnrolledCollectionSource, retainedProgressRepresentation, retainedGoodRepresentation, retainedBytes, persistWatchCollectionPage,
   resolveWatchSourcePermissions, type EnrolledCollectionSource } from "./collection-storage";
 
 const MAX_SOURCES=8, MAX_PAGES=4, RUN_MS=90_000, HOST_GAP_MS=1000, MAX_BACKOFF_MS=7*86400_000;
@@ -41,6 +41,7 @@ class CollectionFetchError extends UpstreamError { constructor(code:SourceRunSta
 async function fetchPage(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,url:string,fetchImpl:typeof fetch,deadline:number,clock:()=>Date) {
   if (!sourceEndpointAllowed(enrolled.source,url)) throw new UpstreamError("misconfigured","endpoint-not-enrolled");
   const previous=await retainedGoodRepresentation(db,enrolled,url);
+  const progression=enrolled.source.transport=== "official-zip-xml" ? await retainedProgressRepresentation(db,enrolled,url) : null;
   const accept = enrolled.source.transport==="github-json" ? "application/vnd.github+json"
     : enrolled.source.transport==="official-json" ? "application/json"
     : enrolled.source.transport==="official-zip-xml" ? "application/zip,application/octet-stream"
@@ -70,7 +71,7 @@ async function fetchPage(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,url
         const bytes=retainedBytes(previous);
         if(await sha256(bytes)!==previous.representation_sha256)throw Error("retained-representation-corrupt");
         const body=await normalizeWatchRepresentation(enrolled.source,bytes);
-        if(enrolled.source.transport === "official-zip-xml") assertPaExportProgress(previous.normalized_text,body);
+        if(enrolled.source.transport === "official-zip-xml") assertPaExportProgress((progression??previous).normalized_text,body);
         return {bytes,body,headers:new Headers({etag:previous.etag??"", "last-modified":previous.last_modified??""}),url,notModified:true,httpStatus:response.status};
       } catch(error) {
         throw new UpstreamError("parser-failed",error instanceof Error?error.message:"retained-representation-invalid",response.status);
@@ -90,7 +91,7 @@ async function fetchPage(db:D1DatabaseLike,enrolled:EnrolledCollectionSource,url
     const bytes=await bytesFromResponse(response,enrolled.source.maxBytes);
     try {
       const body = await normalizeWatchRepresentation(enrolled.source,bytes);
-      if (enrolled.source.transport === "official-zip-xml" && previous) assertPaExportProgress(previous.normalized_text,body);
+      if (enrolled.source.transport === "official-zip-xml" && progression) assertPaExportProgress(progression.normalized_text,body);
       return {bytes,body,headers:response.headers,url,notModified:false,httpStatus:response.status};
     } catch(error) {
       throw new UpstreamError("parser-failed",error instanceof Error?error.message:"representation-invalid",response.status);
