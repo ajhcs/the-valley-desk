@@ -15,15 +15,15 @@ import time
 from unittest import mock
 import zipfile
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'scripts'))
-from pa_browser.controller import Controller, PAGE, HREF, URL, LABEL, select_link
+from pa_browser.controller import BrowserFailure, Controller, PAGE, HREF, URL, LABEL, select_link
 from pa_browser import storage
 from pa_browser.storage import completed_file, retain_capture, private_directory
-from pa_browser.live import attempt, CLICK, SNAPSHOT, preflight, discover_version
+from pa_browser.live import attempt, CLICK, SNAPSHOT, preflight, discover_version, CDP, wait_for_page, evaluate_exception, retain_failure
 
 BUILD = pathlib.Path(tempfile.gettempdir())  # Self-contained private children on Builder and clean CI.
 START, END = '2026-09-30T20:00:00.000Z', '2026-09-30T20:00:01.123Z'
 LINK = {'index': 7, 'label': LABEL, 'href': HREF, 'resolved': URL}
-PAGE_STATE = {'url': PAGE, 'denied': False, 'ready': 'complete', 'links': [LINK], 'literalLabels': ['Last Updated: September 30, 2026 3:30 PM']}
+PAGE_STATE = {'url': PAGE, 'denied': False, 'interstitial': False, 'bodyPresent': True, 'ready': 'complete', 'links': [LINK], 'literalLabels': ['Last Updated: September 30, 2026 3:30 PM']}
 
 
 def controller():
@@ -304,6 +304,164 @@ class DurabilityTests(unittest.TestCase):
                 return real_link(source,destination,**kwargs)
             with mock.patch.object(storage.os,'fsync',side_effect=sync_parent),mock.patch.object(storage.os,'link',side_effect=link_after_barrier):retain_capture(folder,parts)
             self.assertTrue((folder/'capture-complete.json').exists());self.assertEqual((folder/'original.zip').read_bytes(),raw)
+
+
+
+VM_LINK = {'label': LABEL, 'href': HREF, 'resolved': URL}
+VM_READY = {'url': PAGE, 'body': 'ordinary data page', 'ready': 'complete', 'links': [VM_LINK]}
+
+
+def actual_dom(expression, state):
+    raw = subprocess.run(['node', 'test/fixtures/pa-browser-dom-vm.mjs'],
+                         input=json.dumps({'expression': expression, 'state': state}),
+                         capture_output=True, text=True, check=True)
+    return json.loads(raw.stdout)
+
+
+class VMCDP(FakeCDP):
+    def __init__(self, task, states, download=True, status=None):
+        super().__init__(task, 'vm')
+        self.states = list(states)
+        self.current = None
+        self.download = download
+        self.status = status
+        self.snapshots = 0
+        self.clicks = 0
+    async def call(self, method, params=None, session=None, cleanup=False):
+        if method == 'Runtime.evaluate':
+            expression = params['expression']
+            if expression == SNAPSHOT:
+                self.snapshots += 1
+                self.current = self.states.pop(0) if self.states else self.current
+            result = actual_dom(expression, self.current)
+            self.clicks += len(result.pop('clicks'))
+            if expression == CLICK and 'exceptionDetails' not in result:
+                self.assert_gesture = params['userGesture']
+                begin(self.controller)
+                if self.download:
+                    raw = zip_bytes(); (self.task/'downloads'/'synthetic-guid').write_bytes(raw)
+                    complete(self.controller, raw)
+            return result
+        result = await super().call(method, params, session, cleanup)
+        if method == 'Page.navigate' and self.status is not None:
+            self.controller.event({'sessionId': self.controller.session, 'method': 'Network.responseReceived',
+                                   'params': {'frameId': self.controller.frame, 'type': 'Document',
+                                              'response': {'url': PAGE, 'status': self.status}}}, START)
+        return result
+    async def evaluate(self, expression, session, gesture=False):
+        return await CDP.evaluate(self, expression, session, gesture)
+
+
+class ReadinessIntegrationTests(unittest.IsolatedAsyncioTestCase):
+    async def test_real_js_initial_blank_delayed_body_and_readystate_then_single_click(self):
+        with tempfile.TemporaryDirectory(dir=BUILD) as name:
+            task=pathlib.Path(name)
+            cdp=VMCDP(task,[{'url':'about:blank','body':None,'ready':'complete'},
+                            {'url':PAGE,'body':None,'ready':'loading'},
+                            {'url':PAGE,'body':'construction','ready':'interactive'},VM_READY])
+            result=await attempt(cdp,task,'SYNTHETIC Chrome')
+            self.assertEqual(result['outcome'],'retained');self.assertEqual(cdp.clicks,1)
+            self.assertTrue(cdp.assert_gesture);self.assertEqual(cdp.snapshots,5)
+            self.assertFalse((task/'failure.json').exists())
+            self.assertTrue((task/'capture-complete.json').exists())
+            self.assertEqual([c[0] for c in cdp.calls].count('Target.disposeBrowserContext'),1)
+
+    async def test_actual_js_denial_redirect_interstitial_and_missing_link_stop_with_sanitized_receipt(self):
+        secret='SYNTHETIC_PRIVATE_QUERY_DO_NOT_RETAIN'
+        cases=[({'url':PAGE,'body':None,'ready':'loading','title':'Just a moment'},'denial-or-challenge'),
+               ({'url':PAGE,'body':None,'ready':'loading','challengeWidget':True},'denial-or-challenge'),
+               ({'url':PAGE,'body':'Access denied '+secret},'denial-or-challenge'),
+               ({'url':PAGE,'body':None,'interstitial':True},'interstitial'),
+               ({'url':'https://other.invalid/data?credential='+secret,'body':secret},'redirect-or-unexpected-url'),
+               ({'url':'chrome-error://chromewebdata/','body':None},'interstitial'),
+               ({'url':PAGE,'body':'complete without anchor'},'missing-or-ambiguous-exact-link')]
+        for state,category in cases:
+            with self.subTest(category=category),tempfile.TemporaryDirectory(dir=BUILD) as name:
+                task=pathlib.Path(name);cdp=VMCDP(task,[state])
+                with self.assertRaises(ValueError):await attempt(cdp,task,'SYNTHETIC Chrome')
+                self.assertEqual(cdp.snapshots,1);self.assertEqual(cdp.clicks,0)
+                text=(task/'failure.json').read_text();receipt=json.loads(text)
+                self.assertEqual(receipt['category'],category);self.assertNotIn(secret,text)
+                self.assertEqual(receipt['documentObservation'],None)
+                self.assertFalse((task/'capture-complete.json').exists())
+                self.assertTrue(json.loads((task/'cleanup.json').read_text())['ownedContextDisposed'])
+
+    async def test_challenge_after_click_halts_and_cancels_only_owned_download(self):
+        with tempfile.TemporaryDirectory(dir=BUILD) as name:
+            task=pathlib.Path(name);cdp=VMCDP(task,[VM_READY,{'url':PAGE,'body':None,'title':'Access denied'}],download=False)
+            with self.assertRaises(ValueError):await attempt(cdp,task,'SYNTHETIC Chrome')
+            self.assertEqual(cdp.clicks,1);self.assertEqual(cdp.snapshots,2)
+            self.assertEqual(json.loads((task/'failure.json').read_text())['category'],'denial-or-challenge')
+            cancellations=[c[1] for c in cdp.calls if c[0]=='Browser.cancelDownload']
+            self.assertEqual(cancellations,[{'guid':'synthetic-guid','browserContextId':'synthetic-context'}])
+            self.assertFalse((task/'capture-complete.json').exists())
+
+    async def test_real_js_exception_sanitization_and_no_retry(self):
+        secret='SYNTHETIC_PRIVATE_EXCEPTION_TOKEN https://host.invalid/?key=do-not-retain'
+        with tempfile.TemporaryDirectory(dir=BUILD) as name:
+            task=pathlib.Path(name);cdp=VMCDP(task,[{'url':PAGE,'body':None,'exception':secret}])
+            with self.assertRaises(BrowserFailure):await attempt(cdp,task,'SYNTHETIC Chrome')
+            text=(task/'failure.json').read_text();receipt=json.loads(text)
+            self.assertEqual(receipt['category'],'evaluate-exception')
+            self.assertEqual(receipt['exceptionType'],'TypeError')
+            self.assertEqual(receipt['exceptionDetail'],'unclassified-exception')
+            self.assertEqual(receipt['pageState'],None);self.assertNotIn(secret,text)
+            self.assertEqual(cdp.snapshots,1);self.assertEqual(cdp.clicks,0)
+            self.assertFalse((task/'capture-complete.json').exists())
+            old=(task/'failure.json').read_bytes();retain_failure(task,TimeoutError(secret))
+            self.assertEqual((task/'failure.json').read_bytes(),old)
+        observed=actual_dom('document.body.innerText',{'body':None})
+        error=evaluate_exception(observed['exceptionDetails'])
+        self.assertEqual(error.exception_type,'TypeError');self.assertEqual(error.exception_detail,'null-property-access')
+
+    async def test_readiness_timeout_persists_last_state_and_cleanup_without_click(self):
+        from pa_browser import live as live_module
+        original=wait_for_page
+        async def short_wait(cdp,session,controller):return await original(cdp,session,controller,budget=.15)
+        with tempfile.TemporaryDirectory(dir=BUILD) as name,mock.patch.object(live_module,'wait_for_page',side_effect=short_wait):
+            task=pathlib.Path(name);cdp=VMCDP(task,[{'url':PAGE,'body':None,'ready':'loading'}])
+            with self.assertRaisesRegex(BrowserFailure,'page-readiness-timeout'):await attempt(cdp,task,'SYNTHETIC Chrome')
+            receipt=json.loads((task/'failure.json').read_text())
+            self.assertEqual(receipt['category'],'readiness-timeout')
+            self.assertEqual(receipt['pageState']['readyState'],'loading')
+            self.assertFalse(receipt['pageState']['bodyPresent']);self.assertEqual(cdp.clicks,0)
+            self.assertEqual(receipt['documentObservation'],None)
+            self.assertTrue(json.loads((task/'cleanup.json').read_text())['ownedContextDisposed'])
+            self.assertFalse((task/'capture-complete.json').exists())
+
+    async def test_about_blank_after_expected_page_commit_is_redirect_and_does_not_wait(self):
+        with tempfile.TemporaryDirectory(dir=BUILD) as name:
+            task=pathlib.Path(name);cdp=VMCDP(task,[{'url':PAGE,'body':None,'ready':'loading'},{'url':'about:blank','body':None}])
+            with self.assertRaisesRegex(ValueError,'redirect'):await attempt(cdp,task,'SYNTHETIC Chrome')
+            self.assertEqual(cdp.snapshots,2);self.assertEqual(cdp.clicks,0)
+            self.assertEqual(json.loads((task/'failure.json').read_text())['category'],'redirect-or-unexpected-url')
+
+    async def test_owned_document_protocol_status_is_observed_without_guessing_download_metadata(self):
+        with tempfile.TemporaryDirectory(dir=BUILD) as name:
+            task=pathlib.Path(name);cdp=VMCDP(task,[VM_READY],status=403)
+            with self.assertRaises(ValueError):await attempt(cdp,task,'SYNTHETIC Chrome')
+            receipt=json.loads((task/'failure.json').read_text())
+            self.assertEqual(receipt['category'],'protocol-status-refusal')
+            self.assertEqual(receipt['documentObservation'],{'httpStatus':403,'urlClassification':'expected-page'})
+            self.assertEqual(cdp.clicks,0);self.assertEqual(cdp.snapshots,0)
+
+    async def test_cdp_protocol_error_detail_is_not_page_or_exception_text(self):
+        class Wire:
+            def __init__(self):self.rows=asyncio.Queue()
+            def __aiter__(self):return self
+            async def __anext__(self):return await self.rows.get()
+            async def send(self,text):
+                row=json.loads(text)
+                await self.rows.put(json.dumps({'id':row['id'],'error':{'code':-32000,'message':'SYNTHETIC_SECRET_COOKIE query credential'}}))
+        cdp=CDP(Wire())
+        try:
+            with self.assertRaises(BrowserFailure) as failure:await cdp.evaluate(SNAPSHOT,'synthetic-session')
+            with tempfile.TemporaryDirectory(dir=BUILD) as name:
+                task=pathlib.Path(name);retain_failure(task,failure.exception)
+                text=(task/'failure.json').read_text();receipt=json.loads(text)
+                self.assertEqual(receipt['category'],'protocol-error');self.assertEqual(receipt['protocolCode'],-32000)
+                self.assertNotIn('SYNTHETIC_SECRET',text)
+        finally:await cdp.stop()
 
 
 

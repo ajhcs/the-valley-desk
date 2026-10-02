@@ -12,6 +12,40 @@ LABEL = '2025-2026 Regular Session'
 MAX_BYTES = 2_000_000
 
 
+class BrowserFailure(ValueError):
+    """Fixed diagnostic codes only; page/exception text is never the message."""
+    def __init__(self, reason, category, exception_type=None, exception_detail=None, protocol_code=None):
+        super().__init__(reason)
+        self.category = category
+        self.exception_type = exception_type
+        self.exception_detail = exception_detail
+        self.protocol_code = protocol_code
+
+
+def url_classification(url):
+    if url == PAGE:
+        return 'expected-page'
+    if url == 'about:blank':
+        return 'initial-blank'
+    if url == URL:
+        return 'offered-download'
+    if isinstance(url, str) and url.startswith('chrome-error:'):
+        return 'browser-interstitial'
+    return 'unexpected'
+
+
+def page_state(snapshot):
+    """Bounded allowlisted observations; never persist URLs or DOM/link text."""
+    links = snapshot.get('links', [])
+    count = sum(isinstance(a, dict) and (a.get('label') == LABEL or a.get('href') == HREF or a.get('resolved') == URL) for a in links) if isinstance(links, list) else None
+    return {'readyState': snapshot.get('ready') if snapshot.get('ready') in ('loading', 'interactive', 'complete') else 'unknown',
+            'bodyPresent': snapshot.get('bodyPresent') if type(snapshot.get('bodyPresent')) is bool else None,
+            'urlClassification': url_classification(snapshot.get('url')),
+            'denialIndicator': snapshot.get('denied') if type(snapshot.get('denied')) is bool else None,
+            'interstitialIndicator': snapshot.get('interstitial') if type(snapshot.get('interstitial')) is bool else None,
+            'expectedLinkCount': min(count, 1000) if count is not None else None}
+
+
 def instant():
     return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
 
@@ -25,6 +59,8 @@ def select_link(snapshot):
         raise ValueError('page-url-or-redirect-refused')
     if snapshot.get('denied'):
         raise ValueError('page-denial-or-challenge')
+    if snapshot.get('interstitial'):
+        raise ValueError('page-interstitial-refused')
     candidates = [a for a in snapshot['links'] if a.get('label') == LABEL or a.get('href') == HREF or a.get('resolved') == URL]
     if len(candidates) != 1:
         raise ValueError('session-link-missing-or-ambiguous')
@@ -46,14 +82,28 @@ class Controller:
         self.finished = False
         self.failed = None
         self.literal_labels = []
+        self.last_page_state = None
+        self.document_observation = None
+        self.page_committed = False
 
     def refuse(self, reason):
         self.failed = reason
         raise ValueError(reason)
 
     def observe_page(self, snapshot):
+        self.last_page_state = page_state(snapshot)
+        if snapshot.get('url') == PAGE:
+            self.page_committed = True
         if self.failed:
             self.refuse(self.failed)
+        if snapshot.get('denied'):
+            self.refuse('page-denial-or-challenge')
+        if snapshot.get('interstitial'):
+            self.refuse('page-interstitial-refused')
+        if snapshot.get('url') != PAGE:
+            self.refuse('page-url-or-redirect-refused')
+        if snapshot.get('bodyPresent') is not True or snapshot.get('ready') != 'complete':
+            self.refuse('page-state-refused')
         try:
             selected = select_link(snapshot)
         except ValueError as error:
@@ -73,6 +123,10 @@ class Controller:
         method, p = row.get('method'), row.get('params', {})
         if row.get('sessionId') == self.session:
             if method == 'Page.frameNavigated' and p['frame'].get('id') == self.frame:
+                if p['frame']['url'] == PAGE:
+                    self.page_committed = True
+                elif p['frame']['url'] == 'about:blank' and not self.page_committed and not self.started:
+                    return
                 if p['frame']['url'] != PAGE:
                     self.refuse('owned-frame-redirect-refused')
             if method == 'Network.requestWillBeSent' and p.get('frameId') == self.frame and p.get('type') == 'Document':
@@ -80,6 +134,9 @@ class Controller:
                     self.refuse('owned-document-redirect-refused')
             if method == 'Network.responseReceived' and p.get('frameId') == self.frame and p.get('type') == 'Document':
                 response = p['response']
+                status = response.get('status')
+                self.document_observation = {'urlClassification': url_classification(response.get('url')),
+                                             'httpStatus': int(status) if type(status) in (int, float) and math.isfinite(status) and status == int(status) and 100 <= status <= 599 else None}
                 if response['url'] not in (PAGE, URL) or response['status'] != 200:
                     self.refuse('owned-document-status-or-url-refused')
         if method == 'Browser.downloadWillBegin' and p.get('frameId') == self.frame:

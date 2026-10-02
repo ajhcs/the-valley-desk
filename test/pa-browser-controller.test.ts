@@ -126,3 +126,27 @@ test('parent fsync failure holds intake completion, preserving originals for imm
  const retry=privatePaPacketRetainer(root,{...fixtureStorage,syncDirectory(path:string){assert.equal(existsSync(join(directory,'intake-complete.json')),false);syncPaDirectory(path);}});
  assert.deepEqual(await retry(packet),{packetSha256:packet.packetSha256});assert.ok(existsSync(join(directory,'intake-complete.json')));assert.deepEqual(readFileSync(join(directory,'original.zip')),f.bytes);
 });
+
+// Execute the controller's exported JS, rather than asserting canned CDP values.
+// @ts-expect-error socket-free MJS fixture
+import {evaluateDom} from './fixtures/pa-browser-dom-vm.mjs';
+const expressions=JSON.parse(execFileSync('python3',['-c',"import sys,json;sys.path.insert(0,'scripts');from pa_browser.live import SNAPSHOT,CLICK;print(json.dumps({'snapshot':SNAPSHOT,'click':CLICK}))"],{encoding:'utf8',env:{...process.env,PYTHONDONTWRITEBYTECODE:'1'}}));
+const observedLink={label:'2025-2026 Regular Session',href:'/data/file?documentType=BillHistoryData&session=2025_0',resolved:'https://www.palegis.us/data/file?documentType=BillHistoryData&session=2025_0'};
+test('real SNAPSHOT is null-safe; original body access reproduces TypeError without proving prior live cause',()=>{
+ assert.equal(evaluateDom('document.body.innerText',{body:null}).exceptionDetails.exception.className,'TypeError');
+ for(const state of [{url:'about:blank',body:null,ready:'loading'},{body:null,ready:'loading'},{body:'',ready:'interactive'},{body:'Last Updated: literal unzoned label',links:[observedLink]}]){
+  const result=evaluateDom(expressions.snapshot,state);assert.equal(result.exceptionDetails,undefined);assert.equal(result.result.value.bodyPresent,state.body!==null);assert.equal(result.result.value.ready,state.ready??'complete');
+ }
+});
+test('real expressions deny title/widget challenges without body, redirects and interstitial clicks',()=>{
+ for(const state of [{body:null,title:'Just a moment'},{body:null,challengeWidget:true},{body:'Access denied'},{body:null,interstitial:true},{url:'chrome-error://chromewebdata/',body:null},{url:'https://other.invalid/data',links:[observedLink]},{url:observedLink.resolved,links:[observedLink]}]){
+  const result=evaluateDom(expressions.click,state);assert.ok(result.exceptionDetails);assert.deepEqual(result.clicks,[]);
+  const snapshot=evaluateDom(expressions.snapshot,state);assert.equal(snapshot.exceptionDetails,undefined);
+ }
+});
+test('real CLICK requires complete body and unique exact observed anchor, issuing one ordinary click',()=>{
+ for(const state of [{body:null},{ready:'loading',links:[observedLink]},{ready:'interactive',links:[observedLink]},{links:[]},{links:[observedLink,observedLink]},{links:[{...observedLink,href:observedLink.resolved}]},{links:[{...observedLink,resolved:'https://other.invalid/file'}]}]){
+  const result=evaluateDom(expressions.click,state);assert.ok(result.exceptionDetails);assert.deepEqual(result.clicks,[]);
+ }
+ const result=evaluateDom(expressions.click,{body:'ordinary page',links:[observedLink]});assert.equal(result.exceptionDetails,undefined);assert.equal(result.result.value.clicked,true);assert.deepEqual(result.clicks,[observedLink.href]);
+});

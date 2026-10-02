@@ -10,15 +10,116 @@ import platform
 import re
 import tempfile
 import time
-from .controller import Controller, PAGE, HREF, URL, LABEL, MAX_BYTES, instant
+from .controller import Controller, BrowserFailure, page_state, PAGE, HREF, URL, LABEL, MAX_BYTES, instant
 from .storage import private_directory, bounded_file, completed_file, publish, retain_capture, sync_directory
 
 ROOT = pathlib.Path('/mnt/d/tmp/plumbob')
 # Observe the actual DOM, including wrong/ambiguous candidates; never create a link.
-DOM = r"""const denied = () => /captcha|access denied|request blocked|verify (?:that )?you are human|checking your browser|just a moment|forbidden|unusual traffic/i.test(document.title+'\n'+document.body.innerText) || !!document.querySelector('iframe[src*="captcha"],iframe[src*="challenge"],.g-recaptcha,[data-sitekey]');
-const snapshot = () => ({url:location.href,denied:denied(),ready:document.readyState,links:Array.from(document.querySelectorAll('a[href]')).map((a,index)=>({index,label:a.innerText.trim().replace(/\s+/g,' '),href:a.getAttribute('href'),resolved:a.href})),literalLabels:document.body.innerText.split('\n').map(s=>s.trim()).filter(s=>/updated|exported|last update/i.test(s)).slice(0,10).map(s=>s.slice(0,500))});"""
+DOM = r"""const bodyText = () => document.body?.innerText ?? '';
+const denied = () => /captcha|access denied|request blocked|verify (?:that )?you are human|checking your browser|just a moment|forbidden|unusual traffic/i.test((document.title ?? '')+'\n'+bodyText()) || !!document.querySelector('iframe[src*="captcha"],iframe[src*="challenge"],.g-recaptcha,[data-sitekey]');
+const interstitial = () => /^chrome-error:/.test(location.href) || /^(?:Privacy error|Your connection is not private|This site can.t be reached)$/i.test(document.title ?? '') || !!document.querySelector('#main-frame-error,.interstitial-wrapper,#privacy-error,#ssl-error-assistant-container');
+const snapshot = () => ({url:location.href,denied:denied(),interstitial:interstitial(),ready:document.readyState,bodyPresent:document.body !== null,links:Array.from(document.querySelectorAll('a[href]')).map((a,index)=>({index,label:(a.innerText ?? '').trim().replace(/\s+/g,' '),href:a.getAttribute('href'),resolved:a.href})),literalLabels:bodyText().split('\n').map(s=>s.trim()).filter(s=>/updated|exported|last update/i.test(s)).slice(0,10).map(s=>s.slice(0,500))});"""
 SNAPSHOT = '(()=>{' + DOM + 'return snapshot();})()'
-CLICK = '(()=>{' + DOM + 'const s=snapshot();if(s.url!==' + json.dumps(PAGE) + '||s.denied)throw Error("page-refused");const matches=s.links.filter(a=>a.label===' + json.dumps(LABEL) + '||a.href===' + json.dumps(HREF) + '||a.resolved===' + json.dumps(URL) + ');if(matches.length!==1)throw Error("link-count-refused");const a=matches[0];if(a.label!==' + json.dumps(LABEL) + '||a.href!==' + json.dumps(HREF) + '||a.resolved!==' + json.dumps(URL) + ')throw Error("link-binding-refused");document.querySelectorAll("a[href]")[a.index].click();return {clicked:true};})()'
+CLICK = '(()=>{' + DOM + 'const s=snapshot();if(s.url!==' + json.dumps(PAGE) + '||s.denied||s.interstitial)throw Error("page-refused");if(!s.bodyPresent||s.ready!=="complete")throw Error("page-not-ready");const matches=s.links.filter(a=>a.label===' + json.dumps(LABEL) + '||a.href===' + json.dumps(HREF) + '||a.resolved===' + json.dumps(URL) + ');if(matches.length!==1)throw Error("link-count-refused");const a=matches[0];if(a.label!==' + json.dumps(LABEL) + '||a.href!==' + json.dumps(HREF) + '||a.resolved!==' + json.dumps(URL) + ')throw Error("link-binding-refused");document.querySelectorAll("a[href]")[a.index].click();return {clicked:true};})()'
+
+_EXCEPTION_TYPES = {'Error', 'TypeError', 'ReferenceError', 'RangeError', 'SyntaxError', 'EvalError', 'URIError', 'SecurityError'}
+_EXCEPTION_DETAILS = {'null-property-access', 'undefined-property-access', 'undefined-reference', 'security-error', 'unclassified-exception', 'page-refused', 'page-not-ready', 'link-count-refused', 'link-binding-refused', 'missing-result-value'}
+_REASON_CATEGORIES = {
+    'ordinary-page-evaluation-refused': 'evaluate-exception',
+    'cdp-protocol-error': 'protocol-error', 'page-state-refused': 'protocol-error',
+    'cdp-command-timeout': 'protocol-error',
+    'page-readiness-timeout': 'readiness-timeout',
+    'page-denial-or-challenge': 'denial-or-challenge',
+    'page-interstitial-refused': 'interstitial',
+    'page-url-or-redirect-refused': 'redirect-or-unexpected-url',
+    'owned-frame-redirect-refused': 'redirect-or-unexpected-url',
+    'owned-document-redirect-refused': 'redirect-or-unexpected-url',
+    'owned-document-status-or-url-refused': 'protocol-status-refusal',
+    'session-link-missing-or-ambiguous': 'missing-or-ambiguous-exact-link',
+    'session-link-label-href-host-refused': 'exact-link-binding-refusal',
+    'session-link-changed': 'exact-link-binding-refusal',
+    'page-navigation-refused': 'protocol-error',
+    'ordinary-click-not-observed': 'click-refusal',
+}
+
+
+def evaluate_exception(details):
+    exception = details.get('exception', {}) if isinstance(details, dict) else {}
+    kind = exception.get('className') if isinstance(exception, dict) else None
+    kind = kind if kind in _EXCEPTION_TYPES else 'unknown'
+    description = exception.get('description', '') if isinstance(exception, dict) else ''
+    detail = 'unclassified-exception'
+    if isinstance(description, str):
+        if kind == 'TypeError' and description.startswith('TypeError: Cannot read properties of null '):
+            detail = 'null-property-access'
+        elif kind == 'TypeError' and description.startswith('TypeError: Cannot read properties of undefined '):
+            detail = 'undefined-property-access'
+        elif kind == 'ReferenceError' and re.match(r'^ReferenceError: [A-Za-z_$][A-Za-z0-9_$]* is not defined(?:\n|$)', description):
+            detail = 'undefined-reference'
+        elif kind == 'SecurityError':
+            detail = 'security-error'
+        elif kind == 'Error' and description.split('\n', 1)[0] in {'Error: '+x for x in ('page-refused', 'page-not-ready', 'link-count-refused', 'link-binding-refused')}:
+            detail = description.split('\n', 1)[0][7:]
+    return BrowserFailure('ordinary-page-evaluation-refused', 'evaluate-exception', kind, detail)
+
+
+def failure_diagnostic(error, controller=None):
+    reason = str(error)
+    category = _REASON_CATEGORIES.get(reason, 'internal-error')
+    if isinstance(error, asyncio.CancelledError):
+        category = 'attempt-cancelled'
+    elif isinstance(error, TimeoutError):
+        category = 'attempt-timeout'
+    if reason not in _REASON_CATEGORIES:
+        reason = 'unrecorded-detail'
+    kind = type(error).__name__
+    result = {'schemaVersion': 'pa-browser-failure-1', 'outcome': 'held', 'category': category,
+              'reason': reason, 'errorType': kind if kind in {'BrowserFailure', 'ValueError', 'RuntimeError', 'TimeoutError', 'CancelledError', 'OSError', 'ConnectionError'} else 'unknown',
+              'pageState': controller.last_page_state if controller else None,
+              'documentObservation': controller.document_observation if controller else None,
+              'liveResumeAuthorized': False}
+    if isinstance(error, BrowserFailure):
+        result['exceptionType'] = error.exception_type if error.exception_type in _EXCEPTION_TYPES else None
+        result['exceptionDetail'] = error.exception_detail if error.exception_detail in _EXCEPTION_DETAILS else None
+        result['protocolCode'] = error.protocol_code if type(error.protocol_code) is int and -32768 <= error.protocol_code <= 32767 else None
+    return result
+
+
+def retain_failure(task, error, controller=None):
+    path = task / 'failure.json'
+    if path.exists() or path.is_symlink():
+        bounded_file(path, 16_000)  # Preserve a first failure through outer timeout/cleanup handling.
+        return
+    publish(path, (json.dumps(failure_diagnostic(error, controller), separators=(',', ':')) + '\n').encode())
+
+
+async def wait_for_page(cdp, session, controller, budget=10):
+    async def wait():
+        while True:
+            cdp.check()
+            snapshot = await cdp.evaluate(SNAPSHOT, session)
+            if not isinstance(snapshot, dict):
+                raise BrowserFailure('page-state-refused', 'protocol-error')
+            controller.last_page_state = page_state(snapshot)
+            if snapshot.get('denied'):
+                raise ValueError('page-denial-or-challenge')
+            if snapshot.get('interstitial'):
+                raise ValueError('page-interstitial-refused')
+            if snapshot.get('url') == PAGE:
+                controller.page_committed = True
+                if snapshot.get('ready') == 'complete' and snapshot.get('bodyPresent') is True:
+                    controller.observe_page(snapshot)
+                    return
+                if snapshot.get('ready') not in ('loading', 'interactive', 'complete') or type(snapshot.get('bodyPresent')) is not bool:
+                    raise BrowserFailure('page-state-refused', 'protocol-error')
+            elif snapshot.get('url') != 'about:blank' or controller.page_committed:
+                raise ValueError('page-url-or-redirect-refused')
+            await asyncio.sleep(.1)
+    try:
+        await asyncio.wait_for(wait(), budget)
+    except TimeoutError:
+        raise BrowserFailure('page-readiness-timeout', 'readiness-timeout') from None
+
 
 
 def preflight(path):
@@ -91,9 +192,12 @@ class CDP:
         self.pending[own] = future
         try:
             await self.ws.send(json.dumps(row))
-            result = await asyncio.wait_for(future, 5)
+            try:
+                result = await asyncio.wait_for(future, 5)
+            except TimeoutError:
+                raise BrowserFailure('cdp-command-timeout', 'protocol-error') from None
             if 'error' in result:
-                raise RuntimeError('CDP-command-refused:' + method)
+                raise BrowserFailure('cdp-protocol-error', 'protocol-error', protocol_code=result['error'].get('code'))
             if not cleanup:
                 self.check()
             return result.get('result', {})
@@ -102,8 +206,10 @@ class CDP:
 
     async def evaluate(self, expression, session, gesture=False):
         result = await self.call('Runtime.evaluate', {'expression': expression, 'returnByValue': True, 'userGesture': gesture, 'timeout': 4000}, session)
-        if result.get('exceptionDetails') or 'value' not in result.get('result', {}):
-            raise ValueError('ordinary-page-evaluation-refused')
+        if result.get('exceptionDetails'):
+            raise evaluate_exception(result['exceptionDetails'])
+        if 'value' not in result.get('result', {}):
+            raise BrowserFailure('ordinary-page-evaluation-refused', 'evaluate-exception', exception_detail='missing-result-value')
         return result['result']['value']
 
     async def stop(self):
@@ -132,15 +238,7 @@ async def attempt(cdp, task, browser):
         navigation = await cdp.call('Page.navigate', {'url': PAGE}, session)
         if navigation.get('errorText') or navigation.get('frameId') != frame:
             raise ValueError('page-navigation-refused')
-        while True:
-            cdp.check()
-            snapshot = await cdp.evaluate(SNAPSHOT, session)
-            if snapshot['url'] != PAGE or snapshot['denied']:
-                raise ValueError('page-redirect-denial-or-challenge')
-            if snapshot['ready'] == 'complete':
-                controller.observe_page(snapshot)
-                break
-            await asyncio.sleep(.1)
+        await wait_for_page(cdp, session, controller)
         controller.click(instant())
         if await cdp.evaluate(CLICK, session, True) != {'clicked': True}:
             raise ValueError('ordinary-click-not-observed')
@@ -160,6 +258,9 @@ async def attempt(cdp, task, browser):
         parts = controller.packet(raw)
         retain_capture(task, parts)
         return {'outcome': 'retained', 'archiveBytes': len(raw), 'fetchingEnabled': True, 'schedulingEnabled': False}
+    except BaseException as error:
+        retain_failure(task, error, controller)
+        raise
     finally:
         async def cleanup():
             # Global cancellation is forbidden; these GUIDs came from our root frame.
@@ -275,7 +376,7 @@ def cli(argv):
             result = asyncio.run(live(task))
             print(json.dumps({**result, 'privateCaptureDirectory': str(task)}))
         except BaseException as error:
-            publish(task / 'failure.json', (json.dumps({'outcome': 'held', 'errorType': type(error).__name__, 'reason': str(error)[:500], 'liveResumeAuthorized': False}) + '\n').encode())
+            retain_failure(task, error)
             raise
     finally:
         os.close(lock_fd)
