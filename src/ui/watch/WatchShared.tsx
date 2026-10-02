@@ -1,3 +1,4 @@
+/** @jsxRuntime automatic */
 import type { PaHealthEntry } from "../../content/pa-source-freshness";
 import { Link } from "@tanstack/react-router";
 import type { WatchKind } from "../../content/watch-query";

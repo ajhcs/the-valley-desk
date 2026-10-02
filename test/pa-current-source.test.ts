@@ -75,3 +75,28 @@ test('CLI imports/replays full original archive above former 500KB limit without
   const replay=JSON.parse(execFileSync(process.execPath,['--import','tsx/esm','scripts/prepare-watch-source.mjs','--replay',packet,'--body',body,'--download-receipt',receipt],{encoding:'utf8'}));
   assert.equal(replay.outcome,'exact-replay');assert.ok(bytes.length>500000);
 });
+
+test('PA freshness SSR works with the CI loader default and no ambient JSX config',()=>{
+  const env={...process.env,TSX_DISABLE_CACHE:'1'};
+  delete env.TSX_TSCONFIG_PATH;
+  const html=execFileSync(process.execPath,['--import','tsx/esm','--input-type','module','-e',`
+    import assert from 'node:assert/strict';
+    import {createElement} from 'react';
+    import {renderToStaticMarkup} from 'react-dom/server';
+    import {PaSourceHealth} from './src/ui/watch/WatchShared.tsx';
+    assert.equal(process.env.TSX_TSCONFIG_PATH,undefined);
+    assert.equal(globalThis.React,undefined);
+    const health={exportAt:'2026-10-01T20:30:06.000Z',exportAgeMs:60000,
+      billLastUpdateAt:null,lastCheckedAt:null,lastSuccessfulUpstreamCheckAt:null,
+      currentFailure:'upstream-blocked',origin:'browser-original',freshness:'unknown',
+      boundMs:null,latestStatusVerified:false};
+    const items=[{id:'synthetic-ssr-bill',slug:'synthetic-hb1925',title:'HB 1925',
+      sources:[{sourceId:'synthetic-pa-source',label:'PA General Assembly'}]}];
+    process.stdout.write(renderToStaticMarkup(createElement(PaSourceHealth,{items,
+      entries:[{subjectId:items[0].id,sourceId:'synthetic-pa-source',health}]})));
+  `],{cwd:new URL('../',import.meta.url),env,encoding:'utf8',timeout:30000});
+  for(const text of ['PA source freshness','HB 1925','/policy-watch/synthetic-hb1925','PA General Assembly',
+    'Last successful upstream check</dt><dd>unknown',
+    'upstream-blocked','Prior dated evidence is retained','Latest bill status remains unverified'])assert.ok(html.includes(text),text);
+  assert.match(html,/datetime="2026-10-01T20:30:06\.000Z"/i);
+});
