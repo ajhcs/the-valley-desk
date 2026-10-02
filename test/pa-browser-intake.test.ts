@@ -49,6 +49,23 @@ test('browser snapshot keeps unknown status unknown and rejects a fabricated 200
  const result=await parsePennsylvaniaExportSnapshot(input);assert.equal(result.health.state,'healthy');assert.equal(result.health.httpStatus,undefined);assert.equal(result.health.origin,'browser-original');assert.equal(result.observations.length,4);
  assert.equal((await parsePennsylvaniaExportSnapshot({...input,status:200})).health.state,'parser-failed');
 });
+test('nested session-link candidate retains exact receipt bytes pending review without source-check renewal',{timeout:120000},async t=>{
+ const db=await database(t),p=await packet(),store=retention();
+ const receiptBytes=new TextEncoder().encode(JSON.stringify({schema_version:1,result:'success',
+   source:{page_url:'https://www.palegis.us/data',offered_href:'/data/file?documentType=BillHistoryData&session=2025_0',offered_resolved_url:source.endpoints[0]},
+   acquisition:{click_started_observed_utc:p.acquisition.startedAt,download_completed_observed_utc:p.acquisition.completedAt,attempts:1,denial_or_captcha_observed:false},
+   transport:{http_status:null,response_headers:null,response_final_url:null},original_archive:{byte_count:p.bytes.length,sha256:p.acquisition.representationSha256},
+   environment:{browser:'SYNTHETIC browser',method:'SYNTHETIC session-link click'},
+ },null,2)+'\n');
+ const acquisition={...p.acquisition,downloadReceiptBytes:receiptBytes.length,downloadReceiptSha256:await sha256(receiptBytes)};
+ const nested={bytes:p.bytes,receiptBytes,acquisitionBytes:new TextEncoder().encode(JSON.stringify(acquisition))};
+ const first=await intakePaBrowserOriginal(db,source,nested,store),second=await intakePaBrowserOriginal(db,source,nested,store);
+ assert.deepEqual(second,first);assert.equal(first.outcome,'pending-review');assert.equal(first.reason,'qualification-or-activation-held');
+ assert.equal(first.successfulUpstreamCheckRenewed,false);assert.equal(first.publicationAuthorized,false);
+ assert.equal(store.packets.size,1);assert.deepEqual([...store.packets.values()][0].receiptBytes,receiptBytes);
+ assert.equal(JSON.parse(Buffer.from([...store.packets.values()][0].acquisitionBytes).toString()).httpStatus,null);
+ for(const table of ['watch_collection_sources','watch_collection_state','watch_raw_representations','watch_public_revisions'])assert.equal(await count(db,table),0,table);
+});
 test('candidate retains exact originals without activation; active pipeline replay stages review only and leaves failure/success clocks intact',{timeout:120000},async t=>{
  const db=await database(t),p=await packet(),store=retention();
  const pending=await intakePaBrowserOriginal(db,source,p,store);assert.equal(pending.outcome,'pending-review');assert.equal(pending.reason,'qualification-or-activation-held');assert.equal(store.packets.size,1);assert.equal(await count(db,'watch_raw_representations'),0);assert.equal(await count(db,'watch_collection_sources'),0);

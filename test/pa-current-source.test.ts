@@ -38,6 +38,67 @@ test('review-only original import preserves unknown HTTP metadata and derives cl
   await assert.rejects(importPaOriginal(source.id,bytes,{...acquisition,exportAt:'2026-10-01T20:30:06.000Z'},receiptBytes));
   await assert.rejects(importPaOriginal(source.id,bytes,acquisition,new Uint8Array(receiptBytes.length)));
 });
+test('legacy required shape takes precedence over unknown format metadata without rewriting receipt bytes',async t=>{
+  const bytes=syntheticZip(),{acquisition,receiptBytes}=await syntheticAcquisition(bytes);
+  const legacy=JSON.parse(new TextDecoder().decode(receiptBytes));
+  for(const metadata of [{result:'success'},{result:'legacy-observation'},{schema_version:1},{schema_version:'legacy-version'},
+    {result:'failure',schema_version:99,source:{page_url:'https://example.invalid'},xml_validation:{export_date_utc:'2099-01-01T00:00:00Z'}}])
+    await t.test(JSON.stringify(metadata),async()=>{
+      const original=new TextEncoder().encode(' \n'+JSON.stringify({...legacy,...metadata},null,2)+'\n');
+      const before=new Uint8Array(original),bound={...acquisition,downloadReceiptBytes:original.length,downloadReceiptSha256:await sha256(original)};
+      const imported=await importPaOriginal(source.id,bytes,bound,original);
+      assert.deepEqual(original,before);assert.equal(await sha256(original),bound.downloadReceiptSha256);
+      assert.deepEqual(imported.acquisition,bound);assert.equal(imported.derivation.exportDate.instant,'2026-09-30T19:30:06.000Z');
+      assert.equal(imported.publicationAuthorized,false);assert.equal(imported.activationAuthorized,false);assert.equal(imported.successfulUpstreamCheckRenewed,false);
+      const rewritten=new TextEncoder().encode(JSON.stringify(JSON.parse(new TextDecoder().decode(original))));
+      await assert.rejects(importPaOriginal(source.id,bytes,bound,rewritten));
+      await assert.rejects(importPaOriginal(source.id,bytes,{...bound,httpStatus:200},original));
+    });
+});
+test('known nested session-link receipt binds unchanged bytes and rejects conflicting observations',async t=>{
+  const bytes=syntheticZip(),{acquisition}=await syntheticAcquisition(bytes);
+  const receipt={schema_version:1,result:'success',
+    source:{page_url:'https://www.palegis.us/data',offered_href:'/data/file?documentType=BillHistoryData&session=2025_0',offered_resolved_url:source.endpoints[0]},
+    acquisition:{click_started_observed_utc:acquisition.startedAt,download_completed_observed_utc:acquisition.completedAt,attempts:1,denial_or_captcha_observed:false},
+    transport:{http_status:null,response_headers:null,response_final_url:null},
+    original_archive:{byte_count:bytes.length,sha256:acquisition.representationSha256},
+    environment:{browser:'SYNTHETIC browser',method:'SYNTHETIC official session-link click'},
+    xml_validation:{export_date_utc:'2099-01-01T00:00:00Z'},pn:'invented',actions:['invented'],
+  };
+  const encode=(value:unknown)=>new TextEncoder().encode(JSON.stringify(value,null,2)+'\n');
+  const receiptBytes=encode(receipt),bound={...acquisition,downloadReceiptBytes:receiptBytes.length,downloadReceiptSha256:await sha256(receiptBytes)};
+  const result=await importPaOriginal(source.id,bytes,bound,receiptBytes);
+  assert.deepEqual(result.acquisition,bound);assert.equal(result.acquisition.httpStatus,null);assert.equal(result.acquisition.redirectChain,null);
+  assert.equal(result.derivation.exportDate.instant,'2026-09-30T19:30:06.000Z');
+  assert.equal(result.successfulUpstreamCheckRenewed,false);assert.equal(result.publicationAuthorized,false);assert.equal(result.activationAuthorized,false);
+  assert.ok(!canonicalJson(result.captures).includes('invented'));
+  await assert.rejects(importPaOriginal(source.id,bytes,bound,encode(receipt).subarray(0,receiptBytes.length-1)));
+  const changes:[string,(r:any)=>void][]=[
+    ['unknown schema',r=>r.schema_version=2],['malformed shape',r=>delete r.environment],['failure',r=>r.result='failure'],
+    ['page URL',r=>r.source.page_url='https://example.invalid/data'],['href',r=>r.source.offered_href+='#shortcut'],
+    ['endpoint',r=>r.source.offered_resolved_url='https://example.invalid/export'],
+    ['invalid timestamp',r=>r.acquisition.click_started_observed_utc='bad'],
+    ['start mismatch',r=>r.acquisition.click_started_observed_utc='2026-09-30T19:59:58.000Z'],
+    ['completion mismatch',r=>r.acquisition.download_completed_observed_utc='2026-09-30T20:00:01.000Z'],
+    ['denial',r=>r.acquisition.denial_or_captcha_observed=true],['attempts',r=>r.acquisition.attempts=2],
+    ['hash',r=>r.original_archive.sha256='0'.repeat(64)],['invalid hash',r=>r.original_archive.sha256='bad'],
+    ['size',r=>r.original_archive.byte_count++],['status',r=>r.transport.http_status=200],
+    ['invalid status',r=>r.transport.http_status=999],['headers',r=>r.transport.response_headers={etag:'fabricated'}],
+    ['final URL',r=>r.transport.response_final_url=source.endpoints[0]],['redirect observation',r=>r.transport.redirect_chain=[]],
+  ];
+  for(const [name,change] of changes)await t.test(name,async()=>{
+    const altered=structuredClone(receipt);change(altered);const alteredBytes=encode(altered);
+    await assert.rejects(importPaOriginal(source.id,bytes,{...bound,downloadReceiptBytes:alteredBytes.length,downloadReceiptSha256:await sha256(alteredBytes)},alteredBytes));
+  });
+  for(const change of [{httpStatus:200},{responseHeaders:{etag:'fabricated'}},{finalResponseUrl:source.endpoints[0]},{redirectChain:[]},
+    {startedAt:'2026-09-30T20:00:01.000Z'},{completedAt:'2026-09-30T19:59:58.000Z'}])
+    await assert.rejects(importPaOriginal(source.id,bytes,{...bound,...change},receiptBytes));
+  const observed=structuredClone(receipt) as any;observed.transport={http_status:200,response_headers:{etag:'synthetic'},response_final_url:source.endpoints[0]};
+  const observedBytes=encode(observed),observedEnvelope={...bound,httpStatus:200,responseHeaders:{etag:'synthetic'},finalResponseUrl:source.endpoints[0],downloadReceiptBytes:observedBytes.length,downloadReceiptSha256:await sha256(observedBytes)};
+  await importPaOriginal(source.id,bytes,observedEnvelope,observedBytes);
+  observed.transport.http_status=403;const deniedBytes=encode(observed);
+  await assert.rejects(importPaOriginal(source.id,bytes,{...observedEnvelope,httpStatus:403,downloadReceiptBytes:deniedBytes.length,downloadReceiptSha256:await sha256(deniedBytes)},deniedBytes));
+});
 test('browser download qualification requires distinct named provenance/access review and reviewed export-age policy',async()=>{
   const samples=await Promise.all([syntheticZip(),syntheticZip(syntheticXml(records.join('\n'),'September 30, 2026 3:35:06 PM EDT'))].map(async(bytes,index)=>{
     const {acquisition,receiptBytes}=await syntheticAcquisition(bytes,index);
