@@ -432,71 +432,102 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   const leadership = result?.leadership;
   if (leadership) {
     const runtimeCoverage = Array.isArray(leadership.runtimeCoverage) ? leadership.runtimeCoverage : [];
-    const runtimeCoverageAvailable = runtimeCoverage.length > 0;
-    const runtimeCoverageLost = runtimeCoverage.filter((row) => (
-      row && row.configuredStatus === "active" && row.coverageLost
-    ));
+    const activeCoverage = runtimeCoverage.filter((row) => row?.configuredStatus === "active");
+    const runtimeCoverageAvailable = activeCoverage.length > 0;
+    const runtimeCoverageLost = activeCoverage.filter((row) => row.coverageLost);
+    const runtimeDegraded = activeCoverage.filter((row) => row.state !== "healthy");
     const stageFailed = leadership.outcome === "failed";
     const legacyCoverageLost = !runtimeCoverageAvailable
       && Number(leadership.failed ?? 0) > 0
       && Number(leadership.failed) >= Number(leadership.coverage?.length ?? 1);
-    if (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageLost.length === 0) {
-      await recover("valley-desk:leadership-monitor", 2, {
-        fetched: Number(leadership.fetched ?? 0),
-        failed: Number(leadership.failed ?? 0),
-        backoff: Number(leadership.backoff ?? 0),
-        coverageLost: 0,
+    const currentFailures = Array.isArray(leadership.failureDetails) ? leadership.failureDetails : [];
+    const issues = new Map();
+    const issueClass = (failure, reason) => {
+      const http = Number.isInteger(failure?.httpStatus) ? failure.httpStatus : Number(/\bHTTP (\d{3})\b/.exec(reason ?? "")?.[1]);
+      if (http >= 100 && http <= 599) return `http-${http}`;
+      const reported = failure?.errorClass;
+      if (["empty-unverified", "unrecognized", "partial", "challenge", "hostile-content", "timeout", "blocked"].includes(reported)) return reported;
+      if (/no readable leadership/.test(reason ?? "")) return "empty-unverified";
+      if (/no recognized leadership/.test(reason ?? "")) return "unrecognized";
+      if (/extraction was incomplete/.test(reason ?? "")) return "partial";
+      return "no-usable-observation";
+    };
+    for (const row of activeCoverage) {
+      for (const source of Array.isArray(row.sourceStates) ? row.sourceStates : []) {
+        if (source.state === "healthy" && !row.coverageLost) continue;
+        const failure = currentFailures.find((entry) => entry.sourceId === source.sourceId && (!entry.institutionId || entry.institutionId === row.institutionId));
+        issues.set(source.sourceId, {
+          institutionId: row.institutionId, sourceId: source.sourceId, state: source.state,
+          errorClass: issueClass(failure, source.reason), failures: source.consecutiveFailures,
+          nextRetryAt: source.nextRetryAt,
+        });
+      }
+    }
+    for (const failure of currentFailures) {
+      if (issues.has(failure.sourceId)) continue;
+      issues.set(failure.sourceId, {
+        institutionId: failure.institutionId ?? null, sourceId: failure.sourceId,
+        state: failure.httpStatus === 401 || failure.httpStatus === 403 ? "blocked" : "failed",
+        errorClass: issueClass(failure, failure.reason), nextRetryAt: failure.nextRetryAt ?? null,
       });
-    } else if (leadership.outcome !== "ok" || (leadership.outcome === "ok" && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageLost.length > 0)) {
-      const leadershipSeverity = stageFailed
-        || legacyCoverageLost
-        || runtimeCoverageLost.length > 0
-        ? "critical"
-        : "warning";
-      const failureDetails = Array.isArray(leadership.failureDetails) ? leadership.failureDetails : [];
-      const failureSummary = failureDetails
-        .slice(0, 4)
-        .map((detail) => `${detail.sourceId ?? "source"}: ${detail.reason ?? detail.errorClass ?? "failed"}`)
-        .join(" | ")
-        .slice(0, 240);
-      const affectedInstitutions = runtimeCoverageLost.map((row) => row.shortName ?? row.institutionId).filter(Boolean).join(", ");
-      const firstFailure = failureDetails[0];
-      const institutionId = runtimeCoverageLost.length === 1
-        ? runtimeCoverageLost[0].institutionId
-        : firstFailure?.institutionId;
-      const leadershipAlert = {
-        fingerprint: "valley-desk:leadership-monitor",
-        event: "leadership-monitor-failed",
-        severity: leadershipSeverity,
-        conditionState: leadershipSeverity === "critical"
-          ? runtimeCoverageLost.some((row) => row.state === "blocked") ? "blocked" : "failed"
+    }
+    const sourceIssues = [...issues.values()];
+    // A quiet backoff pass is not a successful fetch or a recovery. Persistent
+    // losses remain visible even when no source is currently due.
+    const canRecover = leadership.outcome === "ok" && Number(leadership.failed ?? 0) === 0
+      && Number(leadership.backoff ?? 0) === 0 && runtimeCoverageAvailable
+      && runtimeCoverageLost.length === 0 && runtimeDegraded.length === 0
+      && sourceIssues.length === 0;
+    if (canRecover) {
+      await recover("valley-desk:leadership-monitor", 2, {
+        fetched: Number(leadership.fetched ?? 0), failed: 0, backoff: 0, coverageLost: 0,
+      });
+    } else {
+      const critical = stageFailed || legacyCoverageLost || runtimeCoverageLost.length > 0;
+      const severity = critical ? "critical" : "warning";
+      const scopes = new Set([
+        ...runtimeCoverageLost.map((row) => row.institutionId),
+        ...sourceIssues.map((issue) => issue.institutionId),
+      ].filter(Boolean));
+      // Attribute a single institution only when every known issue shares it.
+      const institutionId = scopes.size === 1 && sourceIssues.every((issue) => issue.institutionId === [...scopes][0])
+        ? [...scopes][0] : undefined;
+      const affected = runtimeCoverageLost.length ? runtimeCoverageLost : runtimeDegraded;
+      const failureSummary = currentFailures.slice(0, 4)
+        .map((failure) => `${failure.sourceId ?? "source"}: ${safeAlertError(failure.reason ?? failure.errorClass)}`)
+        .join(" | ").slice(0, 240);
+      const evidence = {};
+      let included = 0;
+      for (const issue of sourceIssues.slice(0, 6)) {
+        const encoded = JSON.stringify(issue);
+        // Alert scalars are capped at240chars; never store truncated JSON.
+        if (encoded.length <= 240) evidence[`sourceIssue${++included}`] = encoded;
+      }
+      const alert = {
+        fingerprint: "valley-desk:leadership-monitor", event: "leadership-monitor-failed",
+        severity, conditionState: critical
+          ? runtimeCoverageLost.some((row) => row.state === "blocked") ? "blocked"
+            : runtimeCoverageLost.length > 0 && runtimeCoverageLost.every((row) => row.state === "backoff") ? "backoff" : "failed"
           : "degraded",
-        threshold: leadershipSeverity === "critical" ? 1 : 2,
-        now,
-        ...(institutionId ? { institutionId } : {}),
-        subsystem: "leadership",
-        groupKey: institutionId ? `valley-desk:leadership:${institutionId}` : "valley-desk:leadership:monitor",
+        threshold: critical ? 1 : 2, now, institutionId: institutionId ?? null,
+        subsystem: "leadership", groupKey: institutionId ? `valley-desk:leadership:${institutionId}` : "valley-desk:leadership:monitor",
         details: {
-          outcome: leadership.outcome,
-          fetched: leadership.fetched,
-          failed: Number(leadership.failed ?? 0),
-          failureCount: failureDetails.length,
-          ...(failureSummary ? { failureSummary } : {}),
-          ...(affectedInstitutions ? { affectedInstitutions } : {}),
-          ...(runtimeCoverageLost.length ? { affectedCoverage: "institution-coverage-lost" } : {}),
-          ...(firstFailure
-            ? safeAlertDetails(firstFailure.reason, {
-              stage: "leadership-monitor",
-              sourceId: firstFailure.sourceId,
-              errorClass: firstFailure.errorClass,
-              httpStatus: firstFailure.httpStatus,
-              nextRetryAt: firstFailure.nextRetryAt,
-            })
-            : safeAlertDetails(leadership.error ?? leadership.outcome, { stage: "leadership-monitor" })),
+          outcome: leadership.outcome, fetched: Number(leadership.fetched ?? 0), failed: Number(leadership.failed ?? 0),
+          backoff: Number(leadership.backoff ?? 0), coverageLostCount: runtimeCoverageLost.length,
+          sourceIssueCount: sourceIssues.length, sourceIssuesOmitted: sourceIssues.length - included,
+          countSemantics: "condition-evaluations",
+          ...(affected.length ? { affectedInstitutions: affected.map((row) => row.shortName ?? row.institutionId).join(", ") } : {}),
+          affectedCoverage: runtimeCoverageLost.length ? "institution-coverage-lost" : runtimeCoverageAvailable ? "institution-coverage-degraded" : "runtime-coverage-unavailable",
+          stage: "leadership-monitor",
+          reason: stageFailed && leadership.error ? safeAlertError(leadership.error)
+            : runtimeCoverageLost.length ? `${runtimeCoverageLost.length} institutions lack current leadership observations`
+            : !runtimeCoverageAvailable ? "Leadership runtime coverage is unavailable"
+              : safeAlertError(leadership.error ?? leadership.outcome),
+          ...(failureSummary ? { failureSummary } : {}), ...evidence,
         },
       };
-      if (leadershipSeverity === "critical") await dispatch(leadershipAlert);
-      else await recordWarning(leadershipAlert);
+      if (severity === "critical") await dispatch(alert);
+      else await recordWarning(alert);
     }
   }
 

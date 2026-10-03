@@ -7,6 +7,11 @@ export const OPS_JWKS_TIMEOUT_MS = 3_000;
 export const OPS_JWKS_CACHE_MS = 5 * 60_000;
 export const OPS_JWKS_COOLDOWN_MS = 30_000;
 
+export type OpsJwtDenialReason = "configuration-unavailable" | "assertion-missing" | "header-rejected"
+  | "key-unavailable" | "token-rejected" | "identity-rejected";
+
+class OpsKeyUnavailableError extends Error {}
+
 export type OpsJwtConfig = {
   OPS_ACCESS_ISSUER?: string;
   OPS_ACCESS_AUDIENCE?: string;
@@ -25,7 +30,20 @@ export function opsJwtConfiguration(env: OpsJwtConfig) {
 export function createOpsJwtVerifier(
   fetcher: typeof fetch = (input, init) => fetch(input, init),
   now: () => Date = () => new Date(),
+  onDenied: (reason: OpsJwtDenialReason) => void = () => undefined,
 ) {
+  // Fixed categories only: no request, token, claim, provider or configuration values.
+  const lastReported = new Map<OpsJwtDenialReason, number>();
+  function deny(reason: OpsJwtDenialReason): undefined {
+    const time = Date.now();
+    const previous = lastReported.get(reason);
+    if (previous === undefined || time - previous >= OPS_JWKS_COOLDOWN_MS) {
+      lastReported.set(reason, time);
+      try { onDenied(reason); } catch { /* Diagnostics cannot change authorization. */ }
+    }
+    return undefined;
+  }
+
   let entry: {
     issuer: string;
     resolve: ReturnType<typeof createRemoteJWKSet>;
@@ -43,7 +61,7 @@ export function createOpsJwtVerifier(
       [customFetch]: async (target, options) => {
         // Workers cannot share another request's in-flight I/O promise. Deny
         // concurrent cold/refresh reads instead; warm public keys are reusable.
-        if (target !== url || busy || Date.now() < nextAttemptAt) throw new Error("ops-key-unavailable");
+        if (target !== url || busy || Date.now() < nextAttemptAt) throw new OpsKeyUnavailableError("ops-key-unavailable");
         busy = true;
         nextAttemptAt = Date.now() + OPS_JWKS_COOLDOWN_MS;
         const controller = new AbortController();
@@ -60,22 +78,22 @@ export function createOpsJwtVerifier(
             });
             if (controller.signal.aborted || response.status !== 200 || !response.body) {
               await response.body?.cancel();
-              throw new Error("ops-key-unavailable");
+              throw new OpsKeyUnavailableError("ops-key-unavailable");
             }
             const declared = response.headers.get("content-length");
             if (declared && (!/^\d+$/.test(declared) || Number(declared) > OPS_JWKS_MAX_BYTES)) {
               await response.body.cancel();
-              throw new Error("ops-key-unavailable");
+              throw new OpsKeyUnavailableError("ops-key-unavailable");
             }
             reader = response.body.getReader();
             const chunks: Uint8Array[] = [];
             let size = 0;
             while (true) {
               const part = await reader.read();
-              if (controller.signal.aborted) throw new Error("ops-key-unavailable");
+              if (controller.signal.aborted) throw new OpsKeyUnavailableError("ops-key-unavailable");
               if (part.done) break;
               size += part.value.byteLength;
-              if (size > OPS_JWKS_MAX_BYTES) throw new Error("ops-key-unavailable");
+              if (size > OPS_JWKS_MAX_BYTES) throw new OpsKeyUnavailableError("ops-key-unavailable");
               chunks.push(part.value);
             }
             const bytes = new Uint8Array(size);
@@ -83,15 +101,18 @@ export function createOpsJwtVerifier(
             for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
             const parsed: unknown = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
             if (!parsed || typeof parsed !== "object" || !("keys" in parsed)
-              || !Array.isArray(parsed.keys) || parsed.keys.length < 1 || parsed.keys.length > 16) throw new Error("ops-key-unavailable");
+              || !Array.isArray(parsed.keys) || parsed.keys.length < 1 || parsed.keys.length > 16) throw new OpsKeyUnavailableError("ops-key-unavailable");
             return new Response(bytes, { headers: { "content-type": "application/json" } });
           };
           return await Promise.race([
             work(),
             new Promise<never>((_, reject) => {
-              timer = setTimeout(() => { abort(); reject(new Error("ops-key-unavailable")); }, OPS_JWKS_TIMEOUT_MS);
+              timer = setTimeout(() => { abort(); reject(new OpsKeyUnavailableError("ops-key-unavailable")); }, OPS_JWKS_TIMEOUT_MS);
             }),
           ]);
+        } catch {
+          // Normalize all transport/body errors without retaining provider text.
+          throw new OpsKeyUnavailableError("ops-key-unavailable");
         } finally {
           if (timer !== undefined) clearTimeout(timer);
           options.signal.removeEventListener("abort", abort);
@@ -108,14 +129,15 @@ export function createOpsJwtVerifier(
 
   return async (request: Request, env: OpsJwtConfig): Promise<string | undefined> => {
     const configuration = opsJwtConfiguration(env);
-    if (!configuration) return undefined;
+    if (!configuration) return deny("configuration-unavailable");
     const token = request.headers.get("cf-access-jwt-assertion");
-    if (!token || token.length > OPS_JWT_MAX_BYTES || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token)) return undefined;
+    if (!token) return deny("assertion-missing");
+    if (token.length > OPS_JWT_MAX_BYTES || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token)) return deny("header-rejected");
     try {
       const header = decodeProtectedHeader(token);
       if (header.alg !== "RS256" || header.typ !== "JWT" || typeof header.kid !== "string"
         || !/^[A-Za-z0-9_-]{1,128}$/.test(header.kid)
-        || ["jku", "jwk", "x5u", "x5c", "crit"].some(key => key in header)) return undefined;
+        || ["jku", "jwk", "x5u", "x5c", "crit"].some(key => key in header)) return deny("header-rejected");
       const date = now();
       const { payload } = await jwtVerify(token, resolver(configuration.issuer), {
         algorithms: ["RS256"], typ: "JWT", issuer: configuration.issuer,
@@ -128,13 +150,14 @@ export function createOpsJwtVerifier(
         || typeof exp !== "number" || typeof iat !== "number" || typeof nbf !== "number"
         || iat > seconds || nbf > seconds || exp <= seconds || exp <= iat || exp <= nbf
         || payload.type !== "app" || typeof payload.sub !== "string" || !payload.sub.trim()
-        || typeof payload.email !== "string" || payload.email.trim().toLowerCase() !== OPS_ALLOWED_EMAIL) return undefined;
+        || typeof payload.email !== "string" || payload.email.trim().toLowerCase() !== OPS_ALLOWED_EMAIL) return deny("identity-rejected");
       return OPS_ALLOWED_EMAIL;
-    } catch {
-      // No token, claim, key-response, configuration or provider error logging.
-      return undefined;
+    } catch (error) {
+      return deny(error instanceof OpsKeyUnavailableError ? "key-unavailable" : "token-rejected");
     }
   };
 }
 
-export const verifiedOpsJwtIdentity = createOpsJwtVerifier();
+export const verifiedOpsJwtIdentity = createOpsJwtVerifier(undefined, undefined, reason => {
+  console.warn("ops_access_denied", reason);
+});

@@ -101,6 +101,13 @@ import {
 import { accessJwtFixture } from "./helpers/ops-jwt-fixture.ts";
 import { seedCoveragePack } from "../src/ingest/executive-persistence.ts";
 import { sendAutomationAlerts } from "../worker.js";
+import { buildRuntimeLeadershipCoverage } from "../src/lib/operational-status.ts";
+
+function healthyLeadershipRuntime(at: string) {
+  return buildRuntimeLeadershipCoverage([
+    { institutionId: "inst-example", shortName: "Example", configuredStatus: "active", sourceIds: ["src-example-leadership"] },
+  ], [{ sourceId: "src-example-leadership", institutionId: "inst-example", cadence: "hourly", state: "healthy", lastSuccessAt: at }], new Date(at));
+}
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = ContentCatalog.parse(JSON.parse(readFileSync(join(root, "fixtures/catalog.json"), "utf8")));
@@ -2088,7 +2095,7 @@ test("automation alerts cover leadership/model failures and stable source finger
 
   const healthy = {
     notes: { sources: [{ id: "source-1", state: "healthy", type: "rss", itemCount: 1 }] },
-    leadership: { outcome: "ok", fetched: 1 },
+    leadership: { outcome: "ok", fetched: 1, runtimeCoverage: healthyLeadershipRuntime("2026-08-28T07:00:00.000Z") },
     modelSelectedCount: 1,
     modelFailedCount: 0,
     modelSucceededCount: 1,
@@ -2295,11 +2302,11 @@ test("leadership backoff does not count as a healthy recovery", async () => {
   assert.deepEqual({ ...row }, { state: "open", recovery_count: 0 });
   await sendAutomationAlerts(env, {
     notes: { sources: [] },
-    leadership: { outcome: "ok", fetched: 0, backoff: 0 },
+    leadership: { outcome: "ok", fetched: 0, backoff: 0, runtimeCoverage: healthyLeadershipRuntime("2026-08-28T03:00:00.000Z") },
   }, new Date("2026-08-28T03:00:00.000Z"));
   await sendAutomationAlerts(env, {
     notes: { sources: [] },
-    leadership: { outcome: "ok", fetched: 0, backoff: 0 },
+    leadership: { outcome: "ok", fetched: 0, backoff: 0, runtimeCoverage: healthyLeadershipRuntime("2026-08-28T03:00:00.000Z") },
   }, new Date("2026-08-28T04:00:00.000Z"));
   row = database.prepare(
     "SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:leadership-monitor'",

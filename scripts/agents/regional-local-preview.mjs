@@ -30,7 +30,7 @@ export async function startRegionalLocalPreview({capturesPath,publicationSnapsho
   };
   const endpoints={'/api/agent/regional-source-inventory':'regional_source_inventory','/api/agent/regional-discovery-candidates':'regional_discovery_candidates','/api/agent/regional-discovery-record':'regional_discovery_record'};
   let origin,mcp;
-  const server=await createServer({root,configFile:false,server:{host:'127.0.0.1',port:0,strictPort:true},plugins:[
+  const server=await createServer({root,configFile:false,server:{host:'127.0.0.1',port:0,strictPort:true,hmr:false},plugins:[
     (await import('@vitejs/plugin-react')).default(),(await import('@tailwindcss/vite')).default(),
     {name:'regional-local-agent-preview',transformIndexHtml:()=>[{tag:'script',attrs:{type:'module',src:'/src/agents/regional-bootstrap.ts'},injectTo:'body'}],
       configureServer(vite){vite.middlewares.use(async(req,res,next)=>{

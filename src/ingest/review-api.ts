@@ -77,6 +77,7 @@ type CoverageStatusRow = {
 
 type RuntimeLeadershipSourceRow = {
   source_id: string;
+  cadence: string | null;
   institution_id: string;
   state: string | null;
   last_attempted_at: string | null;
@@ -555,7 +556,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       FROM scheduled_source_state GROUP BY state ORDER BY state
     `).all();
     const runtimeSources = await env.VALLEY_DESK_DB.prepare(`
-      SELECT c.id AS source_id, c.institution_id, s.state,
+      SELECT c.id AS source_id, c.institution_id, c.cadence, s.state,
              s.last_attempted_at, s.last_success_at, s.next_attempt_at,
              s.consecutive_failures, s.last_error
       FROM coverage_sources c
@@ -580,6 +581,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
       (runtimeSources.results ?? []).map((source) => ({
         sourceId: source.source_id,
         institutionId: source.institution_id,
+        cadence: source.cadence,
         state: source.state,
         lastAttemptedAt: source.last_attempted_at,
         lastSuccessAt: source.last_success_at,
@@ -594,6 +596,10 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
         sourceId: source.sourceId,
         state: source.state,
         rawState: source.rawState,
+        cadence: source.cadence,
+        freshnessBudgetMs: source.freshnessBudgetMs,
+        freshUntilAt: source.freshUntilAt,
+        coverageCurrent: source.coverageCurrent,
         lastSuccessAt: source.lastSuccessAt,
         lastAttemptedAt: source.lastAttemptedAt,
         nextRetryAt: source.nextRetryAt,

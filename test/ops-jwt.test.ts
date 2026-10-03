@@ -190,3 +190,34 @@ test("actual asset-backed Worker route authorizes signed same-origin Ops without
     assert.equal(health.status, 200); assert.equal((await health.json()).buildSha, "synthetic-auth-fix");
   } finally { globalThis.fetch = original; }
 });
+
+
+test("denial diagnostics contain only bounded categories and cannot affect authorization", async () => {
+  const reasons: string[] = [];
+  const verify = createOpsJwtVerifier(fixture.fetcher, undefined, reason => reasons.push(reason));
+  assert.equal(await verify(request(), {}), undefined);
+  assert.equal(await verify(request(), fixture.config), undefined);
+  assert.equal(await verify(request("private-cookie-token"), fixture.config), undefined);
+  assert.equal(await verify(request(await fixture.sign({ nbf: undefined })), fixture.config), undefined);
+  assert.equal(await verify(request(await fixture.sign({ email: "private-person@example.com" })), fixture.config), undefined);
+  assert.equal(await verify(request(await fixture.sign()), fixture.config), "clyons@ajhcs.org");
+  assert.deepEqual(reasons, ["configuration-unavailable", "assertion-missing", "header-rejected", "token-rejected", "identity-rejected"]);
+  for (let i = 0; i < 100; i++) assert.equal(await verify(request(), fixture.config), undefined);
+  assert.equal(reasons.length, 5);
+  const originalNow = Date.now;
+  const time = originalNow();
+  try {
+    Date.now = () => time + 31_000;
+    assert.equal(await verify(request(), fixture.config), undefined);
+    assert.equal(reasons.at(-1), "assertion-missing");
+    assert.equal(reasons.length, 6);
+  } finally { Date.now = originalNow; }
+  const unavailable: string[] = [];
+  const failed = createOpsJwtVerifier(async () => { throw new Error("private-provider-body"); }, undefined, reason => unavailable.push(reason));
+  assert.equal(await failed(request(await fixture.sign()), fixture.config), undefined);
+  assert.equal(await failed(request(await fixture.sign()), fixture.config), undefined);
+  assert.deepEqual(unavailable, ["key-unavailable"]);
+  const brokenReporter = createOpsJwtVerifier(fixture.fetcher, undefined, () => { throw new Error("broken-logger"); });
+  assert.equal(await brokenReporter(request(), fixture.config), undefined);
+  assert.equal(await brokenReporter(request(await fixture.sign()), fixture.config), "clyons@ajhcs.org");
+});

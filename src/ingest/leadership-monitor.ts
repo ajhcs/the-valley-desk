@@ -169,8 +169,13 @@ function documentEvidenceTexts(html: string) {
   }
   const main = /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(cleaned)?.[1];
   if (main) {
-    const text = compactEvidenceText(htmlToText(main));
-    if (text) texts.push(text);
+    // Keep block boundaries before normalizing whitespace. Flattening a section
+    // label and the following headline can invent "Announcement Alex Example".
+    const blocks = main.replace(/<\/?(?:p|div|h[1-6]|li|tr|section|blockquote|dt|dd|br)\b[^>]*>/gi, "\n");
+    for (const block of decodeHtml(blocks.replace(/<[^>]+>/g, " ")).split(/\n+/)) {
+      const text = compactEvidenceText(block);
+      if (text) texts.push(text);
+    }
   }
   return [...new Set(texts)];
 }
@@ -193,11 +198,14 @@ function extractArticleLeaders(html: string, institutionAliases: readonly string
     }
   }
 
+  const articleEvidence = articleDocumentEvidence(html).evidence;
   const merged = new Map<string, ExtractedLeader>();
   const add = (name: string, title: string) => {
     if (!/^[A-Z][A-Za-z.'’\-]*(?:\s+[A-Z][A-Za-z.'’\-]*){1,5}$/.test(name.trim())) return;
     const leader = asLeader(name, title);
-    if (leader && !merged.has(leader.normalizedName)) merged.set(leader.normalizedName, leader);
+    if (leader && !merged.has(leader.normalizedName)) {
+      merged.set(leader.normalizedName, { ...leader, articleEvidence });
+    }
   };
   const afterRole = new RegExp("\\b(" + ARTICLE_ROLE_PATTERN + ")\\s+(" + ARTICLE_NAME_PATTERN + ")\\b", "gi");
   const named = new RegExp(
@@ -249,6 +257,66 @@ function parseJsonLdDocument(raw: string): unknown {
   } catch {
     return undefined;
   }
+}
+
+/** Retain source publication dates verbatim; fetch/dateModified are not publication. */
+function articleDocumentEvidence(html: string) {
+  let isArticle = false;
+  const dates = new Set<string>();
+  const addDate = (value: unknown) => {
+    if (typeof value !== "string") return;
+    const date = value.trim();
+    const match = /^(\d{4})-(\d{2})-(\d{2})(?:T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:0\d|1[0-4]):[0-5]\d))?$/.exec(date);
+    if (!match) return;
+    const year = Number(match[1]), month = Number(match[2]), day = Number(match[3]);
+    const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (month < 1 || month > 12 || day < 1 || day > days[month - 1]! || !Number.isFinite(Date.parse(date))) return;
+    dates.add(date);
+  };
+  const walk = (node: unknown, depth = 0) => {
+    if (depth > 8 || node == null) return;
+    if (Array.isArray(node)) { for (const child of node) walk(child, depth + 1); return; }
+    if (typeof node !== "object") return;
+    const row = node as Record<string, unknown>;
+    if (ldTypes(row["@type"]).some((type) => ["article", "newsarticle", "blogposting"].includes(type))) {
+      isArticle = true;
+      addDate(row.datePublished);
+    }
+    if (row["@graph"]) walk(row["@graph"], depth + 1);
+    if (row.mainEntity) walk(row.mainEntity, depth + 1);
+  };
+  for (const match of html.matchAll(/<script\b[^>]*\btype\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    walk(parseJsonLdDocument(match[1] ?? ""));
+  }
+  for (const match of html.matchAll(/<meta\b[^>]*>/gi)) {
+    const tag = match[0];
+    const name = /\b(?:name|property)\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1]?.toLowerCase();
+    const content = decodeHtml(/\bcontent\s*=\s*["']([^"']*)["']/i.exec(tag)?.[1] ?? "");
+    if (name === "og:type" && content.toLowerCase() === "article") isArticle = true;
+    if (name === "article:published_time") { isArticle = true; addDate(content); }
+  }
+  for (const match of stripNonContent(html).matchAll(/<time\b[^>]*>/gi)) {
+    const tag = match[0];
+    // A generic time may be an effective/update date; only explicit publication
+    // semantics can supply sourcePublishedAt.
+    const itemprop = /\bitemprop\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1]?.split(/\s+/) ?? [];
+    if (!itemprop.includes("datePublished") && !/\spubdate(?:\s|=|>)/i.test(tag)) continue;
+    isArticle = true;
+    addDate(decodeHtml(/\bdatetime\s*=\s*["']([^"']*)["']/i.exec(tag)?.[1] ?? ""));
+  }
+  const candidates = [...dates].sort();
+  return {
+    // Registered roster contracts may use article as a card container. Generic
+    // extraction has no such contract and must treat semantic articles as claims.
+    explicitArticle: isArticle,
+    isArticle: isArticle || /<article\b/i.test(stripNonContent(html)),
+    evidence: {
+      sourcePublishedAt: candidates.length === 1 ? candidates[0]! : null,
+      sourcePublishedCandidates: candidates.slice(0, 8),
+      currentAffiliationVerified: false as const,
+    },
+  };
 }
 
 function asLeader(name: string, title: string): ExtractedLeader | undefined {
@@ -400,16 +468,28 @@ export function extractLeaders(
   html: string,
   institutionAliases: readonly string[] = [],
   contract?: LeadershipExtractionContract,
+  articleSourceContext = false,
 ): ExtractedLeader[] {
-  if (contract) return extractContractLeaders(html, contract);
+  const document = articleDocumentEvidence(html);
+  if (contract) {
+    const rows = extractContractLeaders(html, contract);
+    return (articleSourceContext || document.explicitArticle) ? rows.map((row) => ({ ...row, articleEvidence: document.evidence })) : rows;
+  }
   const jsonLd = extractJsonLdLeaders(html);
   const headings = extractHeadingLeaders(stripNonContent(html));
   const article = extractArticleLeaders(html, institutionAliases);
   const merged = new Map<string, ExtractedLeader>();
   for (const row of [...jsonLd, ...headings, ...article]) {
-    if (!merged.has(row.normalizedName)) merged.set(row.normalizedName, row);
+    const existing = merged.get(row.normalizedName);
+    if (!existing) merged.set(row.normalizedName, row);
+    else if (row.articleEvidence) {
+      // Dedupe must not erase article provenance when a heading/Person record
+      // happens to supply the same name on an otherwise undated page.
+      merged.set(row.normalizedName, { ...existing, articleEvidence: row.articleEvidence });
+    }
   }
-  return [...merged.values()];
+  const rows = [...merged.values()];
+  return (articleSourceContext || document.isArticle) ? rows.map((row) => ({ ...row, articleEvidence: document.evidence })) : rows;
 }
 
 export function normalizeLeadershipText(html: string) {
@@ -426,6 +506,9 @@ function extractionStatus(
   if (!normalizedText) return "empty-unverified";
   if (!extracted.length && CHALLENGE_RE.test(normalizedText)) return "challenge";
   if (!extracted.length) return "unrecognized";
+  // Re-fetching a historical (or undated) article cannot establish a current
+  // roster. Preserve its claims/dates, but never infer arrivals or departures.
+  if (extracted.some((row) => row.articleEvidence)) return "partial";
   const contract = source.leadershipExtractionContract;
   if (contract) {
     const folded = decodeHtml(stripNonContent(html).replace(/<[^>]+>/g, " "))
@@ -613,6 +696,9 @@ function observationsFromSnapshot(
       },
     }];
   }
+  // Article claims remain attached to the snapshot, not current role events
+  // (including a misleading transport-failure event for readable content).
+  if (snapshot.extracted.some((row) => row.articleEvidence)) return [];
   // Transport/allowlist failures use extractionStatus "partial" with an empty
   // body. Incomplete roster extraction also uses state "failed" but must not
   // invent arrivals, departures, or a false fetch-failed observation.
@@ -712,6 +798,7 @@ export async function monitorLeadershipSources(
       const candidateUrls = [source.url, ...(source.alternateUrls ?? [])];
       let lastSnapshot: LeadershipSnapshot | undefined;
       let lastFetchedUrl: string | undefined;
+      let articleSnapshot: LeadershipSnapshot | undefined;
       for (const candidateUrl of candidateUrls) {
         try {
           const page = await fetchAllowlistedArticlePage({
@@ -753,6 +840,10 @@ export async function monitorLeadershipSources(
             page.body,
             institution?.aliases ?? [],
             source.leadershipExtractionContract,
+            // The trusted registry's newsroom primary is article context even
+            // when the publisher omits semantic/structured article markers.
+            source.kind === "newsroom-bio"
+              && normalizeSourceUrl(candidateUrl) === normalizeSourceUrl(source.url),
           );
           const contentHash = await sha256Hex(source.leadershipExtractionContract
             ? JSON.stringify(extracted.map((row) => [row.normalizedName, row.normalizedTitle]))
@@ -770,7 +861,9 @@ export async function monitorLeadershipSources(
           const unchanged = extraction === "complete"
             && Boolean(previous?.lastHash && previous.lastHash === contentHash);
           const hostile = instructionLike || extraction === "challenge";
-          const incompleteError = incompleteExtractionError(extraction);
+          const incompleteError = extracted.some((row) => row.articleEvidence)
+            ? "Article leadership claims retained for review; current affiliation is unverified"
+            : incompleteExtractionError(extraction);
           const snapshot: LeadershipSnapshot = {
             id: `snap-${source.id}-${now.toISOString()}`,
             sourceId: source.id,
@@ -799,6 +892,9 @@ export async function monitorLeadershipSources(
           };
           lastSnapshot = snapshot;
           lastFetchedUrl = page.url;
+          if (snapshot.state === "failed" && snapshot.extracted.some((row) => row.articleEvidence)) {
+            articleSnapshot ??= snapshot;
+          }
           if (snapshot.state !== "failed") {
             return { snapshot, previous, fetchedUrl: page.url };
           }
@@ -820,6 +916,10 @@ export async function monitorLeadershipSources(
           lastFetchedUrl = candidateUrl;
         }
       }
+      // A later empty/failed alternate must not discard the primary article's
+      // dated claims. A usable complete alternate still wins above; this retained
+      // snapshot remains partial and cannot establish current affiliation.
+      if (articleSnapshot) return { snapshot: articleSnapshot, previous, fetchedUrl: articleSnapshot.finalUrl };
       if (lastSnapshot) return { snapshot: lastSnapshot, previous, fetchedUrl: lastFetchedUrl };
       throw new Error("Leadership source failed");
     } catch (error) {

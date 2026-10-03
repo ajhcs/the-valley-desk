@@ -1,0 +1,26 @@
+{
+  "representation": "Synthetic minimized article markup, not retained official wire HTML or new person evidence",
+  "cases": [
+    {
+      "id": "doylestown-label-and-headline",
+      "sourceId": "src-penn-doylestown-ceo",
+      "expectedName": "alex example",
+      "publishedAt": "2026-05-04T00:00:00Z",
+      "html": "<script type=\"application/ld+json\">{\"@type\":\"NewsArticle\",\"datePublished\":\"2026-05-04T00:00:00Z\",\"dateModified\":\"2026-10-03T00:00:00Z\"}</script><meta property=\"og:description\" content=\"Penn Medicine Doylestown Health CEO Alex Example\"><main><span>Announcement</span><h1>Alex Example, MD, MBA, FACHE, named Chief Executive Officer of Penn Medicine Doylestown Health</h1></main>"
+    },
+    {
+      "id": "princeton-historical-quote",
+      "sourceId": "src-penn-princeton-leadership",
+      "expectedName": "jordan example",
+      "publishedAt": "2025-10-20T00:00:00Z",
+      "html": "<script type=\"application/ld+json\">{\"@graph\":[{\"@type\":\"https://schema.org/NewsArticle\",\"datePublished\":\"2025-10-20T00:00:00Z\",\"dateModified\":\"2026-10-03T00:00:00Z\"}]}</script><main><h1>Penn Medicine breaks ground on cancer center at Princeton Health</h1><p>\"This is a significant first step,\" said Princeton Health CEO Jordan Example.</p></main>"
+    },
+    {
+      "id": "undated-appointment-is-not-roster",
+      "sourceId": "src-penn-doylestown-ceo",
+      "expectedName": "alex example",
+      "publishedAt": null,
+      "html": "<main><div>Announcement</div><h1>Alex Example named Chief Executive Officer of Penn Medicine Doylestown Health</h1></main>"
+    }
+  ]
+}
