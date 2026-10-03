@@ -1,0 +1,410 @@
+{
+  "provenance": {
+    "capturedAt": "2026-10-03T03:25:34.967977Z",
+    "alertAt": "2026-10-02T23:04:34.878Z",
+    "readOnlyRowsWritten": 0,
+    "queryReceiptSha256": "58d2d4d4569b47cef36318f74c93ee5dc5629266b15e24bce5b32bece65560ad",
+    "historicalReplayLimit": "Uses the later schedule capture; every relevant row timestamp precedes the alert, but a full retained alert-time state is unavailable.",
+    "contents": "Public institution/source identifiers and bounded operational scheduler metadata; no email headers, person data, raw source body or credentials."
+  },
+  "configured": [
+    {
+      "institutionId": "inst-penn",
+      "shortName": "Penn",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-penn-is-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-jefferson",
+      "shortName": "Jefferson",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-jefferson-enterprise-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-main-line",
+      "shortName": "Main Line",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-main-line-leadership",
+        "src-main-line-luke-olenoski"
+      ]
+    },
+    {
+      "institutionId": "inst-chop",
+      "shortName": "CHOP",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-chop-desai",
+        "src-chop-leadership",
+        "src-chop-pennington",
+        "src-chop-salmasian"
+      ]
+    },
+    {
+      "institutionId": "inst-cooper",
+      "shortName": "Cooper",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-cooper-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-christianacare",
+      "shortName": "ChristianaCare",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-christianacare-anahi",
+        "src-christianacare-gaboriault",
+        "src-christianacare-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-temple",
+      "shortName": "Temple",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-temple-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-virtua",
+      "shortName": "Virtua",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-virtua-leadership",
+        "src-virtua-thomas-gordon"
+      ]
+    },
+    {
+      "institutionId": "inst-tower",
+      "shortName": "Tower",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-tower-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-inspira",
+      "shortName": "Inspira",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-inspira-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-lvhn",
+      "shortName": "LVHN",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-lvhn-leadership-committees"
+      ]
+    },
+    {
+      "institutionId": "inst-penn-princeton",
+      "shortName": "Penn Princeton",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-penn-princeton-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-penn-doylestown",
+      "shortName": "Penn Doylestown",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-penn-doylestown-ceo"
+      ]
+    },
+    {
+      "institutionId": "inst-nemours",
+      "shortName": "Nemours",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-nemours-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-rwjbarnabas",
+      "shortName": "RWJBarnabas",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-rwjbarnabas-leadership"
+      ]
+    },
+    {
+      "institutionId": "inst-st-lukes",
+      "shortName": "St. Luke's",
+      "configuredStatus": "active",
+      "sourceIds": [
+        "src-st-lukes-leadership"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "sourceId": "src-chop-desai",
+      "institutionId": "inst-chop",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T07:46:00.991Z",
+      "lastAttemptedAt": "2026-10-02T07:46:00.991Z",
+      "nextAttemptAt": "2026-10-03T07:46:00.991Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-chop-leadership",
+      "institutionId": "inst-chop",
+      "cadence": "daily",
+      "state": "healthy",
+      "lastSuccessAt": "2026-10-02T07:46:00.991Z",
+      "lastAttemptedAt": "2026-10-02T07:46:00.991Z",
+      "nextAttemptAt": "2026-10-03T07:46:00.991Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-chop-pennington",
+      "institutionId": "inst-chop",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T07:46:00.991Z",
+      "lastAttemptedAt": "2026-10-02T07:46:00.991Z",
+      "nextAttemptAt": "2026-10-03T07:46:00.991Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-chop-salmasian",
+      "institutionId": "inst-chop",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T07:46:00.991Z",
+      "lastAttemptedAt": "2026-10-02T07:46:00.991Z",
+      "nextAttemptAt": "2026-10-03T07:46:00.991Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-christianacare-anahi",
+      "institutionId": "inst-christianacare",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T07:46:00.991Z",
+      "lastAttemptedAt": "2026-10-02T07:46:00.991Z",
+      "nextAttemptAt": "2026-10-03T07:46:00.991Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-christianacare-gaboriault",
+      "institutionId": "inst-christianacare",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T22:45:38.967Z",
+      "lastAttemptedAt": "2026-10-02T22:45:38.967Z",
+      "nextAttemptAt": "2026-10-03T22:45:38.967Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-christianacare-leadership",
+      "institutionId": "inst-christianacare",
+      "cadence": "daily",
+      "state": "healthy",
+      "lastSuccessAt": "2026-10-02T22:45:38.967Z",
+      "lastAttemptedAt": "2026-10-02T22:45:38.967Z",
+      "nextAttemptAt": "2026-10-03T22:45:38.967Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-cooper-leadership",
+      "institutionId": "inst-cooper",
+      "cadence": "daily",
+      "state": "blocked",
+      "lastSuccessAt": null,
+      "lastAttemptedAt": "2026-10-02T23:01:13.480Z",
+      "nextAttemptAt": "2026-10-09T23:01:13.480Z",
+      "consecutiveFailures": 10,
+      "lastError": "HTTP 403"
+    },
+    {
+      "sourceId": "src-inspira-leadership",
+      "institutionId": "inst-inspira",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T07:46:00.991Z",
+      "lastAttemptedAt": "2026-10-02T07:46:00.991Z",
+      "nextAttemptAt": "2026-10-03T07:46:00.991Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-jefferson-enterprise-leadership",
+      "institutionId": "inst-jefferson",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T04:31:01.862Z",
+      "lastAttemptedAt": "2026-10-02T04:31:01.862Z",
+      "nextAttemptAt": "2026-10-03T04:31:01.862Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-lvhn-leadership-committees",
+      "institutionId": "inst-lvhn",
+      "cadence": "daily",
+      "state": "blocked",
+      "lastSuccessAt": null,
+      "lastAttemptedAt": "2026-10-02T23:01:13.480Z",
+      "nextAttemptAt": "2026-10-09T23:01:13.480Z",
+      "consecutiveFailures": 10,
+      "lastError": "HTTP 403"
+    },
+    {
+      "sourceId": "src-main-line-leadership",
+      "institutionId": "inst-main-line",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T07:46:00.991Z",
+      "lastAttemptedAt": "2026-10-02T07:46:00.991Z",
+      "nextAttemptAt": "2026-10-03T07:46:00.991Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-main-line-luke-olenoski",
+      "institutionId": "inst-main-line",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T21:45:55.473Z",
+      "lastAttemptedAt": "2026-10-02T21:45:55.473Z",
+      "nextAttemptAt": "2026-10-03T21:45:55.473Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-nemours-leadership",
+      "institutionId": "inst-nemours",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T08:46:11.181Z",
+      "lastAttemptedAt": "2026-10-02T08:46:11.181Z",
+      "nextAttemptAt": "2026-10-03T08:46:11.181Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-penn-is-leadership",
+      "institutionId": "inst-penn",
+      "cadence": "daily",
+      "state": "upstream-failed",
+      "lastSuccessAt": null,
+      "lastAttemptedAt": "2026-10-02T23:01:13.480Z",
+      "nextAttemptAt": "2026-10-09T23:01:13.480Z",
+      "consecutiveFailures": 10,
+      "lastError": "Page fetched, but no readable leadership content was found"
+    },
+    {
+      "sourceId": "src-penn-doylestown-ceo",
+      "institutionId": "inst-penn-doylestown",
+      "cadence": "daily",
+      "state": "upstream-failed",
+      "lastSuccessAt": "2026-09-01T00:11:49.720Z",
+      "lastAttemptedAt": "2026-09-30T19:45:33.365Z",
+      "nextAttemptAt": "2026-10-07T19:45:33.365Z",
+      "consecutiveFailures": 9,
+      "lastError": "Page fetched, but no readable leadership content was found"
+    },
+    {
+      "sourceId": "src-penn-princeton-leadership",
+      "institutionId": "inst-penn-princeton",
+      "cadence": "daily",
+      "state": "upstream-failed",
+      "lastSuccessAt": "2026-09-01T00:11:49.720Z",
+      "lastAttemptedAt": "2026-09-30T19:45:33.365Z",
+      "nextAttemptAt": "2026-10-07T19:45:33.365Z",
+      "consecutiveFailures": 9,
+      "lastError": "Page fetched, but no readable leadership content was found"
+    },
+    {
+      "sourceId": "src-rwjbarnabas-leadership",
+      "institutionId": "inst-rwjbarnabas",
+      "cadence": "daily",
+      "state": "blocked",
+      "lastSuccessAt": "2026-09-15T05:45:58.990Z",
+      "lastAttemptedAt": "2026-10-01T01:30:44.555Z",
+      "nextAttemptAt": "2026-10-08T01:30:44.555Z",
+      "consecutiveFailures": 7,
+      "lastError": "HTTP 403"
+    },
+    {
+      "sourceId": "src-st-lukes-leadership",
+      "institutionId": "inst-st-lukes",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T03:45:54.370Z",
+      "lastAttemptedAt": "2026-10-02T03:45:54.370Z",
+      "nextAttemptAt": "2026-10-03T03:45:54.370Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-temple-leadership",
+      "institutionId": "inst-temple",
+      "cadence": "daily",
+      "state": "healthy",
+      "lastSuccessAt": "2026-10-02T07:46:00.991Z",
+      "lastAttemptedAt": "2026-10-02T07:46:00.991Z",
+      "nextAttemptAt": "2026-10-03T07:46:00.991Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-tower-leadership",
+      "institutionId": "inst-tower",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T21:45:55.473Z",
+      "lastAttemptedAt": "2026-10-02T21:45:55.473Z",
+      "nextAttemptAt": "2026-10-03T21:45:55.473Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-virtua-leadership",
+      "institutionId": "inst-virtua",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T07:46:00.991Z",
+      "lastAttemptedAt": "2026-10-02T07:46:00.991Z",
+      "nextAttemptAt": "2026-10-03T07:46:00.991Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    },
+    {
+      "sourceId": "src-virtua-thomas-gordon",
+      "institutionId": "inst-virtua",
+      "cadence": "daily",
+      "state": "unchanged",
+      "lastSuccessAt": "2026-10-02T21:45:55.473Z",
+      "lastAttemptedAt": "2026-10-02T21:45:55.473Z",
+      "nextAttemptAt": "2026-10-03T21:45:55.473Z",
+      "consecutiveFailures": 0,
+      "lastError": null
+    }
+  ],
+  "actuallyLost": [
+    "Penn",
+    "Cooper",
+    "LVHN",
+    "Penn Princeton",
+    "Penn Doylestown",
+    "RWJBarnabas"
+  ]
+}

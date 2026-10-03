@@ -1,3 +1,5 @@
+import { LEADERSHIP_CADENCE_MS } from "../ingest/leadership-config";
+
 export const OPERATIONAL_CONDITION_STATES = [
   "healthy",
   "degraded",
@@ -11,7 +13,17 @@ export type OperationalConditionState = (typeof OPERATIONAL_CONDITION_STATES)[nu
 
 /** A recent successful observation keeps a transient source failure non-critical. */
 export const SOURCE_FRESHNESS_SLO_MS = 2 * 60 * 60 * 1_000;
+/** Conservative fallback for missing cadence; daily/weekly sources use their own interval. */
 export const LEADERSHIP_FRESHNESS_SLO_MS = SOURCE_FRESHNESS_SLO_MS;
+export const LEADERSHIP_FRESHNESS_GRACE_MS = 2 * 60 * 60 * 1_000;
+
+export function leadershipFreshnessBudgetMs(cadence: unknown) {
+  if (cadence !== "hourly" && cadence !== "daily" && cadence !== "weekly") {
+    return LEADERSHIP_FRESHNESS_SLO_MS;
+  }
+  const interval = LEADERSHIP_CADENCE_MS[cadence];
+  return interval + Math.min(interval, LEADERSHIP_FRESHNESS_GRACE_MS);
+}
 
 /** Map source scheduler vocabulary onto the operator-facing state model. */
 export function conditionStateForSourceState(state: unknown, fallbackActive = false): OperationalConditionState {
@@ -27,6 +39,8 @@ export type RuntimeLeadershipSourceInput = {
   sourceId: string;
   institutionId: string;
   state?: string | null;
+  /** Trusted configured cadence, never inferred from retry/backoff dates. */
+  cadence?: string | null;
   lastSuccessAt?: string | null;
   lastAttemptedAt?: string | null;
   nextAttemptAt?: string | null;
@@ -39,6 +53,10 @@ export type RuntimeLeadershipSourceStatus = {
   institutionId: string;
   state: Exclude<OperationalConditionState, "resolved">;
   rawState: string;
+  cadence: string | null;
+  freshnessBudgetMs: number;
+  freshUntilAt: string | null;
+  coverageCurrent: boolean;
   lastSuccessAt: string | null;
   lastAttemptedAt: string | null;
   nextRetryAt: string | null;
@@ -70,6 +88,17 @@ export type RuntimeLeadershipCoverage = {
 
 function finiteTimestamp(value: string | null | undefined) {
   if (!value) return undefined;
+  // Date.parse silently rolls September31 or a non-leap February29 forward.
+  // Require a zoned ISO timestamp and validate its calendar before parsing.
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,9})?(Z|[+-]\d{2}:\d{2})$/.exec(value);
+  if (!match) return undefined;
+  const [, yearText, monthText, dayText, hourText, minuteText, secondText, zone] = match;
+  const year = Number(yearText), month = Number(monthText), day = Number(dayText);
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (month < 1 || month > 12 || day < 1 || day > days[month - 1]!
+    || Number(hourText) > 23 || Number(minuteText) > 59 || Number(secondText) > 59
+    || (zone !== "Z" && (Number(zone!.slice(1, 3)) > 23 || Number(zone!.slice(4)) > 59))) return undefined;
   const timestamp = Date.parse(value);
   return Number.isFinite(timestamp) ? timestamp : undefined;
 }
@@ -82,9 +111,13 @@ function sourceStatus(
   const lastSuccessMs = finiteTimestamp(input.lastSuccessAt);
   const nextRetryMs = finiteTimestamp(input.nextAttemptAt);
   const failures = Math.max(0, Number(input.consecutiveFailures) || 0);
-  const fresh = lastSuccessMs !== undefined && nowMs - lastSuccessMs <= LEADERSHIP_FRESHNESS_SLO_MS;
+  const freshnessBudgetMs = leadershipFreshnessBudgetMs(input.cadence);
+  const failureAgeMs = lastSuccessMs !== undefined && lastSuccessMs <= nowMs
+    ? nowMs - lastSuccessMs
+    : null;
+  const fresh = failureAgeMs !== null && failureAgeMs <= freshnessBudgetMs;
   let state: Exclude<OperationalConditionState, "resolved">;
-  if ((rawState === "healthy" || rawState === "unchanged") && fresh) {
+  if ((rawState === "healthy" || rawState === "unchanged") && fresh && failures === 0) {
     state = "healthy";
   } else if (rawState === "blocked") {
     state = "blocked";
@@ -100,10 +133,14 @@ function sourceStatus(
     institutionId: input.institutionId,
     state,
     rawState,
+    cadence: input.cadence ?? null,
+    freshnessBudgetMs,
+    freshUntilAt: failureAgeMs === null ? null : new Date(lastSuccessMs! + freshnessBudgetMs).toISOString(),
+    coverageCurrent: fresh,
     lastSuccessAt: input.lastSuccessAt ?? null,
     lastAttemptedAt: input.lastAttemptedAt ?? null,
     nextRetryAt: input.nextAttemptAt ?? null,
-    failureAgeMs: lastSuccessMs === undefined ? null : Math.max(0, nowMs - lastSuccessMs),
+    failureAgeMs,
     consecutiveFailures: failures,
     reason: input.lastError ?? null,
   };
@@ -123,7 +160,7 @@ export function buildRuntimeLeadershipCoverage(
   const nowMs = now.getTime();
   return configured.map((institution) => {
     const sourceStates = institution.sourceIds.map((sourceId) => sourceStatus(
-      bySource.get(sourceId) ?? {
+      (bySource.get(sourceId)?.institutionId === institution.institutionId ? bySource.get(sourceId) : undefined) ?? {
         sourceId,
         institutionId: institution.institutionId,
         state: "pending",
@@ -133,7 +170,7 @@ export function buildRuntimeLeadershipCoverage(
     ));
     const healthySourceIds = sourceStates.filter((source) => source.state === "healthy").map((source) => source.sourceId);
     const freshSourceIds = sourceStates
-      .filter((source) => source.failureAgeMs !== null && source.failureAgeMs <= LEADERSHIP_FRESHNESS_SLO_MS)
+      .filter((source) => source.coverageCurrent)
       .map((source) => source.sourceId);
     const allBackoff = sourceStates.length > 0 && sourceStates.every((source) => source.state === "backoff");
     const anyBlocked = sourceStates.some((source) => source.state === "blocked");
@@ -148,7 +185,7 @@ export function buildRuntimeLeadershipCoverage(
             : "failed";
     const successTimestamps = sourceStates
       .map((source) => ({ value: source.lastSuccessAt, timestamp: finiteTimestamp(source.lastSuccessAt) }))
-      .filter((source): source is { value: string; timestamp: number } => source.timestamp !== undefined)
+      .filter((source): source is { value: string; timestamp: number } => source.timestamp !== undefined && source.timestamp <= nowMs)
       .sort((a, b) => b.timestamp - a.timestamp);
     const latestSuccess = successTimestamps[0];
     const retryTimestamps = sourceStates

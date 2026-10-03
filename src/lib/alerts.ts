@@ -387,6 +387,7 @@ function alertText(row: OperationalAlertRow) {
     `group_key: ${row.group_key}`,
     `institution: ${row.institution_id ?? "pack-wide"}`,
     `occurrences: ${row.occurrence_count}`,
+    ...(row.subsystem === "leadership" ? ["occurrence_unit: condition-evaluations"] : []),
     `first_seen: ${row.first_seen_at}`,
     `last_seen: ${row.last_seen_at}`,
     `details: ${row.detail_json}`,

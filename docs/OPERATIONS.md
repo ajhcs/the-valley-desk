@@ -40,9 +40,9 @@ No second Worker or `env.staging` block is used.
 | `GET` `/api/signals/social/manifest` | `SOCIAL_INGEST_TOKEN` | Authenticated, read-only canonical LinkedIn/X target manifest with coverage, verification, and hash |
 | `GET`/`POST` `/api/signals/social/runs` | `SOCIAL_INGEST_TOKEN` | Read latest Vale receipt or submit a manifest-bound collector run summary |
 | `GET`/`HEAD` `/ops` | Cloudflare Access (`clyons@ajhcs.org`) | Private operations shell |
-| `GET`/`HEAD` `/ops/api/*` | Cloudflare Access context | Browser status API; no bearer token in browser |
+| `GET`/`HEAD` `/ops/api/*` | Verified Cloudflare Access JWT identity | Browser status API; no bearer token in browser |
 
-Unauthorized private routes return `404 { error: "not_found" }` so they stay undiscoverable. The Worker requires trusted Cloudflare `ctx.access` identity for `/ops` and `/ops/api/*`; it never trusts spoofable `cf-access-authenticated-user-email` headers. Direct `workers.dev/ops` access is denied in code even when Access is configured for the apex path. Health never includes run details, source URLs, or tokens.
+Unauthorized private routes return `404 { error: "not_found" }` so they stay undiscoverable. The Worker verifies the `cf-access-jwt-assertion` RS256 signature against the configured Access issuer and audience, required timing claims, and sole-owner email for `/ops` and `/ops/api/*`; raw email headers, cookies, and `ctx.access` do not authorize these routes. Direct `workers.dev/ops` access is denied in code even when Access is configured for the apex path. Health never includes run details, source URLs, or tokens.
 
 ## Security headers
 
@@ -293,3 +293,16 @@ Watch Cloudflare Worker logs / `/api/automation/status` (token-protected):
 ## Recovery
 
 See `MVP_RECOVERY.md` for the product recovery record. This file is the Cloudflare/D1 runbook that recovery asked for (CI, provenance, rollback).
+
+
+### Private Ops denial diagnostics
+
+The owner entry is `https://thevalleydesk.org/ops`. Access redirects unauthenticated
+visitors; the Worker returns the same private 404 when signed identity verification
+fails. Server logs emit `ops_access_denied` with one fixed category:
+`configuration-unavailable`, `assertion-missing`, `header-rejected`,
+`key-unavailable`, `token-rejected`, or `identity-rejected`. Each category is limited to once per 30 seconds per
+verifier instance. No tokens, cookies, claim values, configuration values, or provider
+error bodies are logged. These diagnostics do not loosen issuer, audience, timing,
+signature, or sole-owner checks. Synthetic route success does not establish a real
+owner login; diagnose an actual denial category before proposing an access change.

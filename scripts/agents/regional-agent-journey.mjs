@@ -9,61 +9,131 @@ if(!output||!capturesPath||!publicationSnapshotPath)throw new Error('Supply evid
 await mkdir(output,{recursive:true});
 const report={checks:[],screenshots:[],protocol:'2025-11-25',paidCalls:0,sourceRequests:0,productionCollectors:0,liveChatGptAccountJourneyPerformed:false,current2026ProtocolClaimed:false};
 // HTTPS browser origin is fulfilled exclusively from an ephemeral local Vite/Worker adapter.
-// Synthetic Access identity tests the local contract; it is not live Cloudflare authentication.
+// Ephemeral signed Access JWTs test the released guard; this is not a live owner login.
+const nativeToolNames=['regional_source_inventory','regional_discovery_candidates','regional_discovery_record'];
+// React development remounting may briefly expose registrations that are about
+// to be aborted. Wait through render frames and require exact names, not count.
+async function waitForNativeRegistration(page) {
+ await page.waitForFunction(async names=>{
+  if(typeof document.modelContext?.getTools!=='function')return false;
+  const exact=tools=>tools.length===names.length&&names.every(name=>tools.filter(tool=>tool.name===name).length===1);
+  if(!exact(await document.modelContext.getTools()))return false;
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  return exact(await document.modelContext.getTools());
+ },nativeToolNames,{timeout:10000});
+}
+// Only the local Vite development handshake is mocked. All other sockets close;
+// no WebSocket connects to the production hostname or a source publisher.
+function localHmrHandshake(socket,origin) {
+ const url=new URL(socket.url());
+ if(url.host===new URL(origin).host&&url.pathname==='/'&&url.searchParams.has('token'))socket.send(JSON.stringify({type:'connected'}));
+ else socket.close();
+}
+async function executeNativeTool(page,name,args) {
+ return page.evaluate(async({name,args})=>{
+  const deadline=performance.now()+10000;let matching;
+  // Poll discovery only: a remount can occur between the outer readiness check
+  // and this evaluation. An execution itself is attempted exactly once.
+  for(;;){
+   matching=(await document.modelContext.getTools()).filter(tool=>tool.name===name);
+   if(matching.length===1)break;
+   if(matching.length>1||performance.now()>=deadline)throw new Error('Expected one current native tool: '+name);
+   await new Promise(resolve=>requestAnimationFrame(resolve));
+  }
+  // Acquire the current RegisteredTool inside the same evaluation as execution.
+  // Never retry an execution or suppress its failure.
+  const result=await document.modelContext.executeTool(matching[0],JSON.stringify(args));
+  return typeof result==='string'?JSON.parse(result):result;
+ },{name,args});
+}
 async function privateOpsJourney(output) {
  const {createServer}=await import('vite');const {readFile}=await import('node:fs/promises');const {fileURLToPath}=await import('node:url');
- const {handleOpsRequest,OPS_ALLOWED_EMAIL}=await import('../../src/ingest/ops-access.ts');
+ const {handleOpsRequest}=await import('../../src/ingest/ops-access.ts');
+ const {accessJwtFixture}=await import('../../test/helpers/ops-jwt-fixture.ts');
+ const {verifiedOpsJwtIdentity}=await import('../../src/ingest/ops-jwt.ts');
+ const fixture=await accessJwtFixture(),token=await fixture.sign(),originalFetch=globalThis.fetch;let local,server,browser;
  const root=fileURLToPath(new URL('../../',import.meta.url)),publicOrigin='https://thevalleydesk.org';
- const evidence={checks:[],browserRequests:[],syntheticAccessIdentity:true,liveAccessVerified:false,sourceRequests:0,modelCalls:0,productionMutations:0};
- const server=await createServer({root,configFile:false,server:{host:'127.0.0.1',port:0,strictPort:true},plugins:[(await import('@vitejs/plugin-react')).default(),(await import('@tailwindcss/vite')).default(),{
+ const evidence={checks:[],browserRequests:[],syntheticAccessIdentity:true,syntheticSignedJwt:true,syntheticDevelopmentHmr:true,blockedResourceRequests:[],liveAccessVerified:false,sourceRequests:0,modelCalls:0,productionMutations:0};
+ // Ephemeral public keys and loopback only. Never fetch live Access keys or sources.
+ globalThis.fetch=async(input,init)=>{const url=new URL(input instanceof Request?input.url:String(input));
+  if(url.href===fixture.issuer+'/cdn-cgi/access/certs')return fixture.fetcher(input,init);
+  if(local&&url.origin===local)return originalFetch(input,init);
+  throw new Error('unexpected-test-network');
+ };
+ try {
+ assert.equal(await verifiedOpsJwtIdentity(new Request('https://thevalleydesk.org/ops',{headers:{'cf-access-jwt-assertion':token}}),fixture.config),'clyons@ajhcs.org');
+ server=await createServer({root,configFile:false,server:{host:'127.0.0.1',port:0,strictPort:true,hmr:false},plugins:[(await import('@vitejs/plugin-react')).default(),(await import('@tailwindcss/vite')).default(),{
  name:'private-ops-worker-contract',configureServer(vite){vite.middlewares.use(async(req,res,next)=>{
   const path=req.url.split('?')[0];if(path!=='/ops'&&!path.startsWith('/ops/api/'))return next();
   try {
    const headers=new Headers();for(const [key,value] of Object.entries(req.headers))if(value!==undefined)headers.set(key,Array.isArray(value)?value.join(','):value);
    const chunks=[];for await(const chunk of req)chunks.push(chunk);const body=Buffer.concat(chunks);
-   const request=new Request(publicOrigin+req.url,{method:req.method,headers,...(req.method==='POST'?{body}: {})});
    const hasSession=(req.headers.cookie??'').split(';').some(row=>row.trim()==='tvd_local_ops=retained-contract-test');
-   const context=hasSession?{access:{getIdentity:async()=>({email:OPS_ALLOWED_EMAIL})}}:undefined;
+   if(hasSession)headers.set('cf-access-jwt-assertion',token);
+   const request=new Request(publicOrigin+req.url,{method:req.method,headers,...(req.method==='POST'?{body}: {})});
    let response;
    if(path.startsWith('/ops/api/')&&!path.startsWith('/ops/api/agent/')&&hasSession)response=Response.json({}); // unrelated status/policy reads use synthetic empty state
-   else response=await handleOpsRequest(request,{},context,publicOrigin,async()=>vite.transformIndexHtml('/ops',await readFile(root+'/index.html','utf8')));
+   else response=await handleOpsRequest(request,fixture.config,undefined,publicOrigin,async()=>vite.transformIndexHtml('/ops',await readFile(root+'/index.html','utf8')));
    res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));
   } catch {res.writeHead(500);res.end('Local contract unavailable');}
  });}}]});
- await server.listen();const local='http://127.0.0.1:'+server.httpServer.address().port;let browser;
- try {
+ await server.listen();local='http://127.0.0.1:'+server.httpServer.address().port;
   browser=await chromium.launch({headless:true,executablePath:'/workspace/cache/builderbob/global-tools/browsers/chromium-1243/chrome-linux64/chrome',args:['--enable-features=WebMCP','--enable-blink-features=ModelContext']});
   evidence.browserVersion=browser.version();const context=await browser.newContext();
+  await context.routeWebSocket('**/*',socket=>localHmrHandshake(socket,publicOrigin));
   await context.route('**/*',async route=>{
-   const request=route.request(),url=new URL(request.url());if(url.origin!==publicOrigin)return route.abort();
-   if(url.pathname.startsWith('/ops/api/agent/'))evidence.browserRequests.push({method:request.method(),path:url.pathname,origin:request.headers().origin??null,sessionCookieSent:(request.headers().cookie??'').includes('tvd_local_ops=retained-contract-test')});
+   const request=route.request(),url=new URL(request.url());if(url.origin!==publicOrigin){evidence.blockedResourceRequests.push({origin:url.origin,path:url.pathname});return route.abort();}
+   const evidenceRow=url.pathname.startsWith('/ops/api/agent/')?{method:request.method(),path:url.pathname,origin:request.headers().origin??null,sessionCookieSent:(request.headers().cookie??'').includes('tvd_local_ops=retained-contract-test')}:null;
+   if(evidenceRow)evidence.browserRequests.push(evidenceRow);
    const headers=await request.allHeaders();delete headers.host;
    const response=await fetch(local+url.pathname+url.search,{method:request.method(),headers,...(request.postDataBuffer()?{body:request.postDataBuffer()}:{}),redirect:'manual'});
+   if(evidenceRow)evidenceRow.status=response.status;
    await route.fulfill({status:response.status,headers:Object.fromEntries(response.headers),body:Buffer.from(await response.arrayBuffer())});
   });
-  const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
+  const page=await context.newPage(),errors=[],consoleErrors=[];page.on('pageerror',error=>errors.push(error.message));
+  page.on('console',message=>{if(message.type()==='error'){let location;try{const url=new URL(message.location().url);location={origin:url.origin,path:url.pathname};}catch{}consoleErrors.push({text:message.text(),...location});}});
   await page.goto(publicOrigin+'/ops');assert.equal(await page.locator('body').innerText(),' {"error":"not_found"}'.trim());evidence.checks.push('Unauthenticated Ops shell denied');
   await context.addCookies([{name:'tvd_local_ops',value:'retained-contract-test',url:publicOrigin,httpOnly:true,secure:true,sameSite:'Strict'}]);
   await page.goto(publicOrigin);await page.waitForFunction(()=>document.querySelector('#root')?.textContent?.length>100);
   assert.equal((await page.evaluate(async()=>await document.modelContext.getTools())).length,0);evidence.checks.push('Public homepage registers no tools');
   await page.evaluate(()=>{history.pushState(null,'','/ops');window.dispatchEvent(new PopStateEvent('popstate'));});
-  await page.waitForFunction(async()=>(await document.modelContext.getTools()).length===3);
-  const call=(name,args)=>page.evaluate(async({name,args})=>{const tool=(await document.modelContext.getTools()).find(row=>row.name===name);const result=await document.modelContext.executeTool(tool,JSON.stringify(args));return typeof result==='string'?JSON.parse(result):result;},{name,args});
+  await waitForNativeRegistration(page);
+  const call=(name,args)=>executeNativeTool(page,name,args);
   const inventory=await call('regional_source_inventory',{limit:50});assert.equal(inventory.counts.sourcesInFilter,49);
   const candidates=await call('regional_discovery_candidates',{institutionIds:['inst-regional-wistar'],limit:10});assert.equal(candidates.results.length,5);
   const detail=await call('regional_discovery_record',{snapshotId:candidates.snapshot.snapshotId,recordId:candidates.results[0].recordId,authorLimit:1});assert.equal(detail.details.authorsReturned,1);
   assert.equal((await call('regional_discovery_candidates',{publish:true})).error.code,'invalid-query');
   await writeFile(output+'/private-ops-native-response.json',JSON.stringify({inventory,candidates,detail},null,2)+'\n');
   evidence.checks.push('All three native tools execute through same-origin private Worker handler');
+  assert.equal(new URL(page.url()).pathname,'/ops');
+  assert.ok((await page.locator('#root').innerText()).length>100);
+  assert.equal(await page.locator('h1').innerText(),'The Valley Desk operations');
+  evidence.checks.push('Ops page identity and nonblank content verified');
   await page.screenshot({path:output+'/private-ops-native.png',fullPage:true});
   await page.evaluate(()=>{history.pushState(null,'','/');window.dispatchEvent(new PopStateEvent('popstate'));});
   await page.waitForFunction(async()=>(await document.modelContext.getTools()).length===0);evidence.checks.push('SPA exit disposes tools');
   await page.evaluate(()=>{history.pushState(null,'','/ops');window.dispatchEvent(new PopStateEvent('popstate'));});
-  await page.waitForFunction(async()=>(await document.modelContext.getTools()).length===3);evidence.checks.push('SPA re-entry registers exactly three tools');
-  assert.deepEqual(errors,[]);assert.ok(evidence.browserRequests.length>=6);assert.ok(evidence.browserRequests.every(row=>row.sessionCookieSent));assert.ok(evidence.browserRequests.filter(row=>row.method==='POST').every(row=>row.origin===publicOrigin));
+  await waitForNativeRegistration(page);
+  assert.equal((await call('regional_source_inventory',{limit:2})).results.length,2);
+  evidence.checks.push('SPA re-entry restores exactly three tools and executes inventory');
+  await page.goto(publicOrigin+'/ops');await waitForNativeRegistration(page);
+  assert.equal((await call('regional_source_inventory',{limit:2})).results.length,2);
+  evidence.checks.push('Authenticated Ops shell reload executes tools through signed-JWT guard');
+  await context.clearCookies();
+  assert.equal((await call('regional_source_inventory',{limit:2})).error.code,'read-unavailable');
+  await page.goto(publicOrigin+'/ops');assert.equal(await page.locator('body').innerText(),'{"error":"not_found"}');
+  assert.equal((await page.evaluate(async()=>await document.modelContext.getTools())).length,0);
+  evidence.checks.push('Session removal denies tool reads and Ops shell without leaking retained data');
+  evidence.pageErrors=errors;evidence.consoleErrors=consoleErrors;
+  assert.deepEqual(errors,[]);assert.ok(consoleErrors.every(message=>/^Failed to load resource: the server responded with a status of 404/.test(message.text)
+   || (message.text==='Failed to load resource: net::ERR_FAILED'&&evidence.blockedResourceRequests.some(row=>row.origin===message.origin&&row.path===message.path))));
+  assert.ok(evidence.browserRequests.length>=6);assert.ok(evidence.browserRequests.filter(row=>row.status===200).every(row=>row.sessionCookieSent));
+  assert.ok(evidence.browserRequests.some(row=>row.status===404&&!row.sessionCookieSent));assert.ok(evidence.browserRequests.filter(row=>row.method==='POST').every(row=>row.origin===publicOrigin));
   evidence.checks.push('Secure HttpOnly same-origin session cookie and POST Origin observed');
+  evidence.jwksFetches=fixture.calls();assert.equal(evidence.jwksFetches,1);
   await writeFile(output+'/private-ops-journey-report.json',JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence,null,2));
- } finally {await browser?.close();await server.close();}
+ } catch(error){evidence.failure={message:error.message};await writeFile(output+'/private-ops-journey-report.json',JSON.stringify(evidence,null,2)+'\n');throw error;}
+ finally {globalThis.fetch=originalFetch;await browser?.close();await server?.close();}
 }
 if(mode==='--private-ops'){await privateOpsJourney(output);process.exit(0);}
 const preview=await startRegionalLocalPreview({capturesPath,publicationSnapshotPath});let client,browser,unsupported;
@@ -99,16 +169,17 @@ try{
  check('Strict safe-error, origin, method, bytes, URL-query and UTF-8 boundaries');
  const executablePath='/workspace/cache/builderbob/global-tools/browsers/chromium-1243/chrome-linux64/chrome';
  unsupported=await chromium.launch({headless:true,executablePath});const fallback=await unsupported.newPage();
+ await fallback.routeWebSocket('**/*',socket=>localHmrHandshake(socket,preview.origin));
  await fallback.route('**/*',route=>new URL(route.request().url()).origin===preview.origin?route.continue():route.abort());
  await fallback.goto(preview.origin);await fallback.waitForFunction(()=>document.querySelector('#root')?.textContent?.length>100);
  assert.equal(await fallback.evaluate(()=>typeof document.modelContext?.registerTool==='function'),false);check('Unsupported browser renders current homepage');
  browser=await chromium.launch({headless:true,executablePath,args:['--enable-features=WebMCP','--enable-blink-features=ModelContext']});report.browserVersion=browser.version();
  const baseline=await browser.newPage({viewport:{width:1400,height:900}}),page=await browser.newPage({viewport:{width:1400,height:900}});
- const errors=[];for(const p of [baseline,page]){p.on('pageerror',e=>errors.push(e.message));await p.route('**/*',route=>new URL(route.request().url()).origin===preview.origin?route.continue():route.abort());}
+ const errors=[];for(const p of [baseline,page]){await p.routeWebSocket('**/*',socket=>localHmrHandshake(socket,preview.origin));p.on('pageerror',e=>errors.push(e.message));await p.route('**/*',route=>new URL(route.request().url()).origin===preview.origin?route.continue():route.abort());}
  await baseline.route('**/src/agents/regional-bootstrap.ts',route=>route.fulfill({contentType:'application/javascript',body:'export {};'}));
  await baseline.goto(preview.origin);await page.goto(preview.origin);
- await page.waitForFunction(async()=>typeof document.modelContext?.getTools==='function'&&(await document.modelContext.getTools()).length===3);
- const native=async(name,args)=>page.evaluate(async({name,args})=>{const tool=(await document.modelContext.getTools()).find(x=>x.name===name);const result=await document.modelContext.executeTool(tool,JSON.stringify(args));return typeof result==='string'?JSON.parse(result):result;},{name,args});
+ await waitForNativeRegistration(page);
+ const native=(name,args)=>executeNativeTool(page,name,args);
  const nativeWistar=await native('regional_discovery_candidates',{institutionIds:['inst-regional-wistar'],limit:10});assert.equal(nativeWistar.results.length,5);
  const nativeDetail=await native('regional_discovery_record',{snapshotId:nativeWistar.snapshot.snapshotId,recordId:nativeWistar.results[0].recordId,authorLimit:1});assert.equal(nativeDetail.details.authorsReturned,1);
  const nativeInventory=await native('regional_source_inventory',{limit:2});assert.equal(nativeInventory.results.length,2);

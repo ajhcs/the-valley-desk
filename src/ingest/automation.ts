@@ -396,6 +396,7 @@ async function runLeadershipStage(
         return {
           sourceId: source.id,
           institutionId: source.institutionId,
+          cadence: source.cadence,
           ...(state ?? { state: "pending", consecutiveFailures: 0 }),
         };
       }),

@@ -6,6 +6,7 @@ import {
   type CoverageSource,
 } from "./coverage-pack";
 import { NewsItem, type ContentItem } from "../content/schema";
+import { normalizeSourceUrl } from "./identity";
 import { LEADERSHIP_CADENCE_MS } from "./leadership-config";
 import {
   applyRoleChange,
@@ -348,6 +349,8 @@ type StoredLeadershipSnapshot = {
   extraction_status: LeadershipSnapshot["extractionStatus"];
   source_cadence: CoverageSource["cadence"];
   source_precedence: number;
+  source_kind: CoverageSource["kind"];
+  source_url: string;
 };
 
 type VerifiedLeadershipEvidence = {
@@ -404,10 +407,25 @@ function parseStoredLeaders(raw: string) {
   }
 }
 
+function hasArticleEvidence(raw: string | null | undefined) {
+  if (!raw) return false;
+  try {
+    const rows = JSON.parse(raw) as unknown;
+    return Array.isArray(rows) && rows.some((row) => row && typeof row === "object" && "articleEvidence" in row);
+  } catch { return false; }
+}
+
+function isNewsroomPrimary(kind: string | null, sourceUrl: string | null, finalUrl: string | null) {
+  const primary = normalizeSourceUrl(sourceUrl);
+  return kind === "newsroom-bio" && Boolean(primary) && primary === normalizeSourceUrl(finalUrl);
+}
+
 function completeSnapshotLeaders(snapshot: StoredLeadershipSnapshot) {
   if (
     (snapshot.state !== "success" && snapshot.state !== "unchanged")
     || snapshot.extraction_status !== "complete"
+    || hasArticleEvidence(snapshot.extracted_json)
+    || isNewsroomPrimary(snapshot.source_kind, snapshot.source_url, snapshot.final_url)
   ) return [];
   return parseStoredLeaders(snapshot.extracted_json);
 }
@@ -789,7 +807,8 @@ export async function autonomouslyVerifyLeadership(
   const sourceRows = await db.prepare(`
     SELECT s.id, s.source_id, c.institution_id, s.fetched_at, s.final_url,
            s.extracted_json, s.state, s.extraction_status,
-           c.cadence AS source_cadence, c.precedence AS source_precedence
+           c.cadence AS source_cadence, c.precedence AS source_precedence,
+           c.kind AS source_kind, c.url AS source_url
     FROM (
       SELECT *, ROW_NUMBER() OVER (PARTITION BY source_id ORDER BY fetched_at DESC, id DESC) AS row_number
       FROM source_snapshots
@@ -1253,11 +1272,15 @@ type ObservationRow = {
   snapshot_state: string | null;
   extraction_status: string | null;
   final_url: string | null;
+  source_kind: string | null;
+  source_url: string | null;
+  snapshot_extracted_json: string | null;
 };
 
 function parseLeader(value: unknown) {
   if (!value || typeof value !== "object") return undefined;
   const row = value as Record<string, unknown>;
+  if ("articleEvidence" in row) return undefined;
   const name = typeof row.name === "string" ? row.name.trim() : "";
   const title = typeof row.title === "string" ? row.title.trim() : "";
   const normalizedName = normalizePersonName(name);
@@ -1338,9 +1361,12 @@ export async function reviewLeadershipObservation(
   const row = await db.prepare(`
     SELECT o.id, o.source_id, o.snapshot_id, o.institution_id, o.person_id, o.kind,
            o.status, o.verification_status, o.payload_json, o.instruction_like, o.created_at,
-           s.state AS snapshot_state, s.extraction_status, s.final_url
+           s.state AS snapshot_state, s.extraction_status, s.final_url,
+           c.kind AS source_kind, c.url AS source_url,
+           s.extracted_json AS snapshot_extracted_json
     FROM source_observations o
     LEFT JOIN source_snapshots s ON s.id = o.snapshot_id
+    LEFT JOIN coverage_sources c ON c.id = o.source_id
     WHERE o.id = ?
   `).bind(observationId).first<ObservationRow>();
   if (!row) throw new Error("Executive observation was not found");
@@ -1360,6 +1386,9 @@ export async function reviewLeadershipObservation(
     return { observationId, decision };
   }
 
+  if (isNewsroomPrimary(row.source_kind, row.source_url, row.final_url) || hasArticleEvidence(row.snapshot_extracted_json)) {
+    throw new Error("Article leadership evidence cannot verify current affiliation");
+  }
   if (row.instruction_like || row.snapshot_state !== "success" || row.extraction_status !== "complete") {
     throw new Error("Only complete, non-hostile leadership snapshots can be verified");
   }

@@ -168,6 +168,12 @@ export type ExtractedLeader = {
   normalizedName: string;
   title: string;
   normalizedTitle: string;
+  /** Article claims are dated evidence, never a current-affiliation roster. */
+  articleEvidence?: {
+    sourcePublishedAt: string | null;
+    sourcePublishedCandidates: string[];
+    currentAffiliationVerified: false;
+  };
 };
 
 export type LeaderDiff = {
