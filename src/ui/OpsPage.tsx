@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { registerRegionalBrowserTools } from "../agents/regional-browser";
 import { PolicyBaseline } from "./PolicyBaselinePage";
 import { WatchEditorialReview } from "./WatchEditorialReview";
 
@@ -106,6 +107,12 @@ function ageLabel(milliseconds?: number | null) {
 function OpsPage() {
   const [payload, setPayload] = useState<OpsPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const lifecycle = new AbortController();
+    void registerRegionalBrowserTools(document, "ops", lifecycle.signal);
+    return () => { lifecycle.abort(); };
+  }, []);
 
   useEffect(() => {
     let active = true;

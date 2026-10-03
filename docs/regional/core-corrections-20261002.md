@@ -1,0 +1,43 @@
+# Regional core corrections for independent retest (2026-10-02)
+
+This eight-file correction is based on the unchanged read-view freeze tree `6d28d1df8bbac3a2aea79601564e0b819a243ad2`. It supersedes the vulnerable core behavior documented in the original implementation/read-view notes. Those original freezes remain historical review artifacts, not accepted operational candidates.
+
+BuilderBob worktree: `/workspace/worktrees/builderbob/thevalleydesk/tvd-regional-core-corrections-20261002`; branch `codex/regional-core-corrections-20261002`. Branch HEAD remains `428213e52f72753863e8d5fecbabcff4466e5f2f`; the staged baseline includes the independently reconstructed main snapshot `43b91045c55c84e99d7d452567cdb59ce66ecbad` (tree `3b587e957dbb10b48933c0784727284bba8dc330`). No fetched-main commit or new authored commit is claimed. The manifest records the precise correction index tree and patch base.
+
+| Finding | Correction | Acceptance evidence |
+| --- | --- | --- |
+| F1: substring and roster identity | Exact whole normalized name/role record plus independently retained first-party Schema.org `ProfilePage`/single `Person`, exact name and canonical profile URL. A conventional-looking path or roster alone remains insufficient. | Partial names, multi-person roster, missing/wrong canonical profile, array of people and altered proof bytes fail. |
+| F2: copied verification marker | Private WeakMap binds only the exact frozen token to its immutable canonical payload. No enumerable Symbol grants authority. | Original matches; spread, JSON, assigned and altered clones remain unresolved. Ambiguity uses two independently verified tokens. |
+| F3: unsupported appointment dates | Every non-null term requires a separately hash-verified, first-party, field-specific JSON declaration matching person, role, profile, institution and both dates. Unknown terms stay null. | Missing/mismatched declarations fail; supported ended term stays unresolved; all proof IDs accompany successful identity resolution. |
+| F4: detached source host | Inventory source host/allowlist must belong to the institution and source URL must exactly match a cited URL or actual cited HTML link. | Changed external host, source-only expanded allowlist and unsupported same-host path fail. External service relationship qualification remains future work. |
+| F5: hidden malformed feed rows | Validate singleton roots/channels; account for every raw row, malformed row, processed row, duplicate and valid row beyond the cap. Malformed rows degrade state. | Mixed scalar rows, repeated channels, and malformed rows beyond the 100-row cap cannot report healthy-empty/success. |
+| F6: invented Atom URL | Resolve root/entry/link `xml:base` in order and enforce the exact allowlist on every base. HTML feed declarations also respect a single permitted document base. | Supported relative bases resolve exactly; off-host/credential/port bases reject; repeated document bases fail. |
+| F7: non-published GitHub anchor | Bounded inert-context-aware HTML tokenizer checks real anchors in the cited span of the retained body. Comments, raw script/style/text contexts, attributes, templates, hidden/inert contexts and duplicate attributes cannot qualify. Same tokenizer handles declared head feeds. | Comment and nearby inert/attribute anchor cases reject; detached quote cannot borrow another visible anchor; real encoded href works. |
+| F8: credential URL echo | Reject sensitive query parameters in public pointer validation. Read projection removes all query parameters and fragments before validation; credentials/private endpoints still reject. Response explicitly describes this lossy projection. | Eight credential/signature variants, nested redirect credentials and fragments never leave the read view. Harmless queries are also omitted; registry configuration is not source verification. |
+| F9: permissive calendar normalization | Explicit ISO/RFC grammars, real calendar days, clock/timezone bounds, no permissive Date.parse fallback. Unsupported/invalid/future source strings stay raw with null published date and explicit hold. | Impossible/noncanonical dates reject; PDT, leap day, numeric offset and bounded RFC3339 fraction controls preserve intended dates. Observation precision is retained; normalized instants use milliseconds. |
+
+The profile and term qualification inputs are narrow offline contracts, not implemented live institutional profile adapters. Positive evidence is synthetic and marked as such. No real roster member was enrolled, no current employment confirmed, and no retrospective appointment history inferred. Existing twelve genuine source citations remain byte-for-byte unchanged and separate from the synthetic tests. The original role-only observations still support literal editorial context, not unique author identity.
+
+## Reproduction and fixture changes
+
+The unmodified independent 42-test harness reproduced 31 passes and 11 failures before correction. After correction it reports 38 passes and four failures: four positive controls dereference null because their old fixture supplies no independent profile/term proof. Every one of its eleven finding assertions passes. This exact-harness result is retained rather than reported as an unchanged 42/42 success.
+
+`test/regional-independent-review.test.mjs` changes only imports/fixture location and its `verified()` setup: it adds a separately retained ProfilePage identity, and a term declaration only for the known-ended-term positive control. All reviewer assertions, including unsupported 2000-2030 dates, are unchanged. A mechanical receipt checks the assertion-containing tail against the original harness.
+
+`test/regional-contracts.test.ts` qualifies its positive affiliations and marks real anchor fixture bytes as HTML. Its old ambiguity setup copied a verification token, which was the F2 vulnerability; it now creates a second independently verified token. Clone rejection is covered explicitly in the nearby cases.
+
+## Validation on BuilderBob
+
+- 126 regional tests: 39 existing positive/control tests, 42 reviewer assertions with qualified setup, 45 nearby adversarial tests. Explicit `node --import tsx/esm --test --test-concurrency=1 test/regional-*.test.*`; shared package scripts/CI remain unchanged.
+- 249 affected-main regressions: theme, editor scheduler coverage, query contracts, official source discovery, technology dossiers, news extraction and executive intelligence.
+- TypeScript build, Vite build and secret scan pass. Existing main bundle >500 kB warning persists.
+- Retained offline replay: 12/12 genuine evidence spans verify; Jefferson RSS yields 22 candidates, zero rejected rows, source listing dates retained, original-work dates unknown; actual Penn-linked CaPTk ID `128938343` verifies without GitHub organization ownership or clinical/license claims. Zero network requests.
+- Read view remains 33 institutions, 49 sources, 39 configured/unobserved source declarations and 127 institution/channel registration gaps when no receipts are supplied. New proposals remain six inventory-only plus three planned; zero operational collector activation. Missing registration is not proof of absent activity; applicability and integrated RSS/event/technology denominators remain unreviewed.
+
+Validation data and logs are outside Git. The new immutable review archive includes existing public captures needed for reproducible source replay and their hashes; these are review evidence, never agent response payloads. No fresh source requests or retries were performed for this correction.
+
+## Review boundaries and holds
+
+Only regional core contracts/parser/projection, their tests and this note change. Original 15-file freeze and four-file addendum hashes and source trees are checked unchanged. No PA branch, PR18, publisher, PA403 disposition, shared frontend/styles/theme, package/dependency lock, Worker, D1, schedule, credential or persistent service changes. No outreach, production collector, paid/model call, publication or deployment.
+
+The separate capability successor contains unreviewed publication transport/browser/MCP preview work. It remains preserved and has not received these corrections or operational approval. Its screenshot parity check previously failed byte equality despite visually similar captures; no acceptance is claimed. Review these corrected core changes first, then explicitly propagate the accepted contract and rerun interface/schema journeys. Transport qualification, operational registry integration, CI inclusion, protected read surface and exact release changes all remain separate review/authorization gates.

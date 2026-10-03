@@ -1,0 +1,7 @@
+# Legacy retained affiliation consistency
+
+The bounded final retest of b1f290023f2354b4e8d807f9ef38708b6d213f07 confirmed both original wire-hash and contact-redaction defects fixed. It identified one remaining annotation inconsistency: when the new reader consumes a hash-bound metadata projection produced before the whole-field fallback, a comment-bearing affiliation is withheld in detail but the summary could still count the pre-mask raw literal as a regional match.
+
+This successor changes only discovery summary match recomputation to use the same redacted retained text as the detail flags. A withheld affiliation therefore contributes zero positive matches and receives the missing-affiliation hold, including legacy projections. It does not modify those retained projection bytes or pretend to verify their original XML. A focused legacy-projection regression covers successful full detail output, privacy, summary count and hold agreement.
+
+Author validation: 208 regional tests, application/tooling typechecks, deterministic retained 12/12 span replay, frontend build and real SDK/native browser journey pass. Desktop/mobile light/dark decoded-pixel comparisons remain identical. Earlier freezes, canonical dirty files, PA work, accepted core and root dependency manifests remain preserved. All source/model requests and production actions remain zero. The separate reviewer must accept this exact narrow successor before local transport acceptance; deployment/source activation decisions remain separate.
