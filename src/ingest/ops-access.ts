@@ -1,9 +1,11 @@
+import { handleRegionalWorkerRead } from "./regional-worker-read";
 import { resolvePublicOrigin } from "../lib/canonical";
 import { handleReviewApi, type ReviewApiOptions } from "./review-api";
 
 export const OPS_PATH = "/ops";
 export const OPS_API_PATH = "/ops/api";
-export const OPS_ALLOWED_EMAIL = "clyons@ajhcs.org";
+export { OPS_ALLOWED_EMAIL } from "./ops-jwt";
+import { verifiedOpsJwtIdentity, type OpsJwtConfig } from "./ops-jwt";
 
 export type AccessIdentity = { email?: unknown };
 export type WorkerAccessContext = {
@@ -19,21 +21,6 @@ export function isOpsPath(pathname: string) {
     || pathname.startsWith(`${OPS_API_PATH}/`);
 }
 
-/**
- * Access identity comes from the platform execution context. Request headers
- * are intentionally ignored because a direct workers.dev caller can spoof
- * any cf-access-* header.
- */
-export async function trustedOpsIdentity(ctx: WorkerAccessContext | undefined) {
-  if (!ctx?.access?.getIdentity) return undefined;
-  try {
-    const identity = await ctx.access.getIdentity();
-    const email = typeof identity?.email === "string" ? identity.email.trim().toLowerCase() : "";
-    return email === OPS_ALLOWED_EMAIL ? email : undefined;
-  } catch {
-    return undefined;
-  }
-}
 
 function privateNotFound() {
   return new Response(JSON.stringify({ error: "not_found" }), {
@@ -52,8 +39,8 @@ function sameOriginMutation(request: Request, publicOrigin: string) {
 
 export async function handleOpsRequest(
   request: Request,
-  env: Parameters<typeof handleReviewApi>[1],
-  ctx: WorkerAccessContext | undefined,
+  env: Parameters<typeof handleReviewApi>[1] & OpsJwtConfig,
+  _ctx: WorkerAccessContext | undefined,
   origin: string,
   loadShell: () => Promise<string>,
 ) {
@@ -64,7 +51,11 @@ export async function handleOpsRequest(
   // is accidentally supplied by a local adapter or future platform change.
   const hostname = url.hostname.toLowerCase();
   if (hostname === "workers.dev" || hostname.endsWith(".workers.dev")) return privateNotFound();
-  const email = await trustedOpsIdentity(ctx);
+  if (url.origin !== resolvePublicOrigin(origin)) return privateNotFound();
+  if (method === "POST" && !sameOriginMutation(request, origin)) return privateNotFound();
+  // Static Assets does not forward ctx.access. Only a signature-verified
+  // application JWT with explicitly reviewed issuer/audience authorizes Ops.
+  const email = await verifiedOpsJwtIdentity(request, env);
   if (!email) return privateNotFound();
 
   if (url.pathname === OPS_PATH || url.pathname === `${OPS_PATH}/`) {
@@ -90,7 +81,7 @@ export async function handleOpsRequest(
   }
 
   if (!url.pathname.startsWith(`${OPS_API_PATH}/`) && url.pathname !== OPS_API_PATH) return privateNotFound();
-  if (method === "POST" && !sameOriginMutation(request, origin)) return privateNotFound();
+  if (url.pathname.startsWith(`${OPS_API_PATH}/agent/`)) return handleRegionalWorkerRead(request);
   const options: ReviewApiOptions = {
     trustedAccessEmail: email,
     routePrefix: OPS_API_PATH,

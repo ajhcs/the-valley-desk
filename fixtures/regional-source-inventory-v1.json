@@ -1,0 +1,387 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-10-02T03:20:27.732719Z",
+  "collectionAuthorized": false,
+  "publicationAuthorized": false,
+  "institutions": [
+    {
+      "id": "inst-regional-wistar",
+      "name": "The Wistar Institute",
+      "kind": "research-institute",
+      "existingInstitutionId": null,
+      "officialHosts": [
+        "www.wistar.org"
+      ],
+      "regionalScope": "core",
+      "evidenceIds": [
+        "ev-wistar-location"
+      ],
+      "owner": "regional-source-owner"
+    },
+    {
+      "id": "inst-regional-esperanza",
+      "name": "Esperanza Health Center (Philadelphia)",
+      "kind": "community-provider",
+      "existingInstitutionId": null,
+      "officialHosts": [
+        "esperanzahealth.com"
+      ],
+      "regionalScope": "core",
+      "evidenceIds": [
+        "ev-esperanza-region"
+      ],
+      "owner": "regional-source-owner"
+    },
+    {
+      "id": "inst-regional-mazzoni",
+      "name": "Mazzoni Center",
+      "kind": "community-provider",
+      "existingInstitutionId": null,
+      "officialHosts": [
+        "www.mazzonicenter.org"
+      ],
+      "regionalScope": "core",
+      "evidenceIds": [
+        "ev-mazzoni-region"
+      ],
+      "owner": "regional-source-owner"
+    },
+    {
+      "id": "inst-regional-drexel",
+      "name": "Drexel University",
+      "kind": "university",
+      "existingInstitutionId": null,
+      "officialHosts": [
+        "library.drexel.edu",
+        "drexel.edu",
+        "researchdiscovery.drexel.edu"
+      ],
+      "regionalScope": "core",
+      "evidenceIds": [
+        "ev-drexel-region",
+        "ev-drexel-repository"
+      ],
+      "owner": "regional-source-owner"
+    },
+    {
+      "id": "inst-regional-jefferson-university",
+      "name": "Thomas Jefferson University",
+      "kind": "university",
+      "existingInstitutionId": null,
+      "officialHosts": [
+        "jdc.jefferson.edu",
+        "www.jefferson.edu"
+      ],
+      "regionalScope": "unverified",
+      "evidenceIds": [
+        "ev-jefferson-repository"
+      ],
+      "owner": "regional-source-owner"
+    },
+    {
+      "id": "inst-regional-penn-university",
+      "name": "University of Pennsylvania (research)",
+      "kind": "university",
+      "existingInstitutionId": null,
+      "officialHosts": [
+        "www.med.upenn.edu",
+        "www.upenn.edu"
+      ],
+      "regionalScope": "core",
+      "evidenceIds": [
+        "ev-penn-university-region",
+        "ev-penn-captk-link"
+      ],
+      "owner": "regional-source-owner"
+    }
+  ],
+  "sources": [
+    {
+      "id": "rgn-wistar-news",
+      "institutionId": "inst-regional-wistar",
+      "channel": "news",
+      "url": "https://www.wistar.org/news/",
+      "allowedHosts": [
+        "www.wistar.org"
+      ],
+      "transport": "html",
+      "status": "inventory-only",
+      "evidenceIds": [
+        "ev-wistar-location"
+      ],
+      "owner": "regional-source-owner",
+      "maxAgeHours": 48,
+      "gaps": [
+        "Access/rights disposition, parser qualification and sustained freshness require review before activation."
+      ]
+    },
+    {
+      "id": "rgn-wistar-conferences",
+      "institutionId": "inst-regional-wistar",
+      "channel": "conference",
+      "url": "https://www.wistar.org/articles/events/",
+      "allowedHosts": [
+        "www.wistar.org"
+      ],
+      "transport": "html",
+      "status": "planned",
+      "evidenceIds": [
+        "ev-wistar-location",
+        "ev-wistar-events-link"
+      ],
+      "owner": "regional-source-owner",
+      "maxAgeHours": 48,
+      "gaps": [
+        "An official event navigation link exists. Specific conferences, dates and regional relevance still require retained event evidence."
+      ]
+    },
+    {
+      "id": "rgn-esperanza-public-information",
+      "institutionId": "inst-regional-esperanza",
+      "channel": "news",
+      "url": "https://esperanzahealth.com/about/our-mission/",
+      "allowedHosts": [
+        "esperanzahealth.com"
+      ],
+      "transport": "html",
+      "status": "planned",
+      "evidenceIds": [
+        "ev-esperanza-region"
+      ],
+      "owner": "regional-source-owner",
+      "maxAgeHours": 48,
+      "gaps": [
+        "Official mission evidence is available; current newsroom/feed discovery is not qualified."
+      ]
+    },
+    {
+      "id": "rgn-esperanza-leadership",
+      "institutionId": "inst-regional-esperanza",
+      "channel": "people",
+      "url": "https://esperanzahealth.com/about/our-leadership/",
+      "allowedHosts": [
+        "esperanzahealth.com"
+      ],
+      "transport": "html",
+      "status": "inventory-only",
+      "evidenceIds": [
+        "ev-esperanza-region",
+        "ev-esperanza-leadership"
+      ],
+      "owner": "regional-source-owner",
+      "maxAgeHours": 48,
+      "gaps": [
+        "Public roster is a bounded observation; named personal-profile identity and appointment/departure dates remain unverified."
+      ]
+    },
+    {
+      "id": "rgn-mazzoni-news",
+      "institutionId": "inst-regional-mazzoni",
+      "channel": "news",
+      "url": "https://www.mazzonicenter.org/",
+      "allowedHosts": [
+        "www.mazzonicenter.org"
+      ],
+      "transport": "html",
+      "status": "inventory-only",
+      "evidenceIds": [
+        "ev-mazzoni-region"
+      ],
+      "owner": "regional-source-owner",
+      "maxAgeHours": 48,
+      "gaps": [
+        "Access/rights disposition, parser qualification and sustained freshness require review before activation."
+      ]
+    },
+    {
+      "id": "rgn-drexel-research",
+      "institutionId": "inst-regional-drexel",
+      "channel": "research",
+      "url": "https://library.drexel.edu/research-support",
+      "allowedHosts": [
+        "library.drexel.edu"
+      ],
+      "transport": "html",
+      "status": "planned",
+      "evidenceIds": [
+        "ev-drexel-repository"
+      ],
+      "owner": "regional-source-owner",
+      "maxAgeHours": 168,
+      "gaps": [
+        "Library documents the institutional repository. Repository transport, permitted access and author-identity bindings require qualification."
+      ]
+    },
+    {
+      "id": "rgn-jefferson-research",
+      "institutionId": "inst-regional-jefferson-university",
+      "channel": "research",
+      "url": "https://jdc.jefferson.edu/about.html",
+      "allowedHosts": [
+        "jdc.jefferson.edu"
+      ],
+      "transport": "html",
+      "status": "inventory-only",
+      "evidenceIds": [
+        "ev-jefferson-repository"
+      ],
+      "owner": "regional-source-owner",
+      "maxAgeHours": 168,
+      "gaps": [
+        "Access/rights disposition, parser qualification and sustained freshness require review before activation."
+      ]
+    },
+    {
+      "id": "rgn-jefferson-declared-rss",
+      "institutionId": "inst-regional-jefferson-university",
+      "channel": "research",
+      "url": "https://jdc.jefferson.edu/recent.rss",
+      "allowedHosts": [
+        "jdc.jefferson.edu"
+      ],
+      "transport": "rss",
+      "status": "inventory-only",
+      "evidenceIds": [
+        "ev-jefferson-rss-link"
+      ],
+      "owner": "regional-source-owner",
+      "maxAgeHours": 168,
+      "gaps": [
+        "Declared official feed fetched successfully during bounded qualification. Parser replay and sustained freshness/access-rights review required before activation.",
+        "Retain institutional location evidence separately; university is distinct from Jefferson Health."
+      ]
+    },
+    {
+      "id": "rgn-penn-captk",
+      "institutionId": "inst-regional-penn-university",
+      "channel": "github",
+      "url": "https://www.med.upenn.edu/cbica/captk/",
+      "allowedHosts": [
+        "www.med.upenn.edu"
+      ],
+      "transport": "html",
+      "status": "inventory-only",
+      "evidenceIds": [
+        "ev-penn-captk-link",
+        "ev-penn-captk-research-use"
+      ],
+      "owner": "regional-source-owner",
+      "maxAgeHours": 168,
+      "gaps": [
+        "Institution links this exact repository. Numeric public repository identity must be checked against retained API bytes.",
+        "No creator/maintainer role or organization-wide ownership inferred.",
+        "Research-use disclaimer and artifact-specific licensing require editorial evidence."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev-wistar-location",
+      "url": "https://www.wistar.org/news/",
+      "observedAt": "2026-10-02T03:07:27.339944Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "f221f1482f2afab3a22c937a4493a882e1d044a5000e15a11f6bc6838a2c1dac",
+      "quote": "3601 Spruce Street Philadelphia, PA 19104",
+      "representation": "normalized-text"
+    },
+    {
+      "id": "ev-esperanza-region",
+      "url": "https://esperanzahealth.com/about/our-mission/",
+      "observedAt": "2026-10-02T03:07:27.787099Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "dcf247da68ad2bfc78630a3d854ac73027e88a5324b871849551a26e03f1d7a8",
+      "quote": "Esperanza Health Center is a multi-cultural ministry providing holistic healthcare to the Latino and underserved communities of Philadelphia.",
+      "representation": "normalized-text"
+    },
+    {
+      "id": "ev-esperanza-leadership",
+      "url": "https://esperanzahealth.com/about/our-leadership/",
+      "observedAt": "2026-10-02T03:07:27.979316Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "37252aafae0ea9141437c208686eee40a559c42bcf21ce5ee80ffd2e5a4d0d1e",
+      "quote": "Susan Post, D.Min, MBA Chief Executive Officer Timothy Leaman, MD Chief Medical Officer",
+      "representation": "normalized-text"
+    },
+    {
+      "id": "ev-mazzoni-region",
+      "url": "https://www.mazzonicenter.org/",
+      "observedAt": "2026-10-02T03:07:28.339431Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "c73c5f9f57d1c2becb45917100f72f52b7c5d5d486e049685bf0b566ecfc8a89",
+      "quote": "Mazzoni Center has been the primary comprehensive LGBTQ+ health and wellness center in Philadelphia since 1979.",
+      "representation": "normalized-text"
+    },
+    {
+      "id": "ev-drexel-region",
+      "url": "https://library.drexel.edu/research-support",
+      "observedAt": "2026-10-02T03:07:29.669714Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "30d0c6ecd30b6e85a9e3058953409a724e2f2d6e21e87ce7918070cce358aa89",
+      "quote": "Drexel University Libraries W. W. Hagerty Library 3300 Market Street Philadelphia, PA 19104",
+      "representation": "normalized-text"
+    },
+    {
+      "id": "ev-drexel-repository",
+      "url": "https://library.drexel.edu/research-support",
+      "observedAt": "2026-10-02T03:07:29.669714Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "30d0c6ecd30b6e85a9e3058953409a724e2f2d6e21e87ce7918070cce358aa89",
+      "quote": "Managed by the Drexel Libraries, the Drexel Research Discovery repository collects and showcases the research, scholarship, and creative work produced by Drexel faculty, staff, and students, including scholarly articles, theses and dissertations, conference papers, and research data.",
+      "representation": "normalized-text"
+    },
+    {
+      "id": "ev-jefferson-repository",
+      "url": "https://jdc.jefferson.edu/about.html",
+      "observedAt": "2026-10-02T03:07:29.208284Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "ee8e02568ea384f6452e63171898e91e01d81e1791b9bca9ccb369c0e7473b7c",
+      "quote": "The Jefferson Digital Commons, or JDC, is Jefferson's open access institutional repository.",
+      "representation": "normalized-text"
+    },
+    {
+      "id": "ev-jefferson-rss-link",
+      "url": "https://jdc.jefferson.edu/about.html",
+      "observedAt": "2026-10-02T03:07:29.208284Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "dc2715eaad7975c5210b6cb345f1671b11c9e60f36abf0bd92387d45e5fc6dbd",
+      "quote": "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"Site Feed\" href=\"/recent.rss\">",
+      "representation": "html"
+    },
+    {
+      "id": "ev-penn-university-region",
+      "url": "https://www.med.upenn.edu/cbica/captk/",
+      "observedAt": "2026-10-02T03:07:30.685467Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "057dd153706c952a5566c97183d18ff7dde8ea7593531f49f74ea4e76dac3faf",
+      "quote": "CBICA 3700 Hamilton Walk Richards Building, 7th Floor Philadelphia, PA 19104",
+      "representation": "normalized-text"
+    },
+    {
+      "id": "ev-penn-captk-link",
+      "url": "https://www.med.upenn.edu/cbica/captk/",
+      "observedAt": "2026-10-02T03:07:30.685467Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "1751cf21cb4a5d95f8be3822bc319af9c0efe6f0055d89b4e7beaca661ba007f",
+      "quote": "<a href=\"https://github.com/cbica/captk\">via GitHub</a>",
+      "representation": "html"
+    },
+    {
+      "id": "ev-wistar-events-link",
+      "url": "https://www.wistar.org/news/",
+      "observedAt": "2026-10-02T03:07:27.339944Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "e6b003d0bbc00f92c84c377eeb86f9466a258dcb68ae1d48e3e0587dedc9d506",
+      "quote": "<a href=\"https://www.wistar.org/articles/events/\">Events</a>",
+      "representation": "html"
+    },
+    {
+      "id": "ev-penn-captk-research-use",
+      "url": "https://www.med.upenn.edu/cbica/captk/",
+      "observedAt": "2026-10-02T03:07:30.685467Z",
+      "sourcePublishedAt": null,
+      "representationSha256": "057dd153706c952a5566c97183d18ff7dde8ea7593531f49f74ea4e76dac3faf",
+      "quote": "The software has been designed for research purposes and is not FDA-approved.",
+      "representation": "normalized-text"
+    }
+  ]
+}

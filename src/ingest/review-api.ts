@@ -33,7 +33,7 @@ type ReviewEnv = {
 };
 
 export type ReviewApiOptions = {
-  /** Set only after the caller has validated ctx.access with Cloudflare. */
+  /** Set only after trusted platform identity or signature-verified Access JWT validation. */
   trustedAccessEmail?: string;
   /** Re-map an Access-only prefix (for example /ops/api) to /api routes. */
   routePrefix?: string;

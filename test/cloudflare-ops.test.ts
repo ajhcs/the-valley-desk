@@ -97,8 +97,8 @@ import {
 import {
   handleOpsRequest,
   isOpsPath,
-  trustedOpsIdentity,
 } from "../src/ingest/ops-access.ts";
+import { accessJwtFixture } from "./helpers/ops-jwt-fixture.ts";
 import { seedCoveragePack } from "../src/ingest/executive-persistence.ts";
 import { sendAutomationAlerts } from "../worker.js";
 
@@ -1828,61 +1828,41 @@ test("oversized and unsupported inbound email is rejected before persistence", a
   database.close();
 });
 
-test("Access context gates ops on both apex and workers.dev without trusting headers", async () => {
+test("signature-verified Access JWT gates Ops without ctx, while missing config and spoofed identities stay denied", async () => {
   assert.equal(isOpsPath("/ops"), true);
   assert.equal(isOpsPath("/ops/"), true);
   assert.equal(isOpsPath("/ops/api/automation/status"), true);
   assert.equal(isOpsPath("/opsx"), false);
-  assert.equal(await trustedOpsIdentity(undefined), undefined);
-  assert.equal(await trustedOpsIdentity({ access: { getIdentity: async () => ({ email: "attacker@example.com" }) } }), undefined);
-  assert.equal(await trustedOpsIdentity({ access: { getIdentity: async () => ({ email: "Clyons@AJHCS.org" }) } }), "clyons@ajhcs.org");
-
+  const fixture = await accessJwtFixture();
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = fixture.fetcher;
   const database = new DatabaseSync(":memory:");
   applyMigrations(database);
   const db = sqliteD1(database);
-  const env = { VALLEY_DESK_DB: db, PUBLIC_ORIGIN: DEFAULT_PUBLIC_ORIGIN };
-  const denied = await handleOpsRequest(
-    new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops`, { headers: { "cf-access-authenticated-user-email": "clyons@ajhcs.org" } }),
-    env,
-    undefined,
-    DEFAULT_PUBLIC_ORIGIN,
-    async () => "private",
-  );
-  assert.equal(denied.status, 404);
-  const allowed = await handleOpsRequest(
-    new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops`),
-    env,
-    { access: { getIdentity: async () => ({ email: "clyons@ajhcs.org" }) } },
-    DEFAULT_PUBLIC_ORIGIN,
-    async () => "private-shell",
-  );
-  assert.equal(allowed.status, 200);
-  assert.equal(await allowed.text(), "private-shell");
-  const workersDev = await handleOpsRequest(
-    new Request(`${PREVIEW_ORIGIN}/ops`),
-    env,
-    { access: { getIdentity: async () => ({ email: "clyons@ajhcs.org" }) } },
-    DEFAULT_PUBLIC_ORIGIN,
-    async () => "private-shell",
-  );
-  assert.equal(workersDev.status, 404);
-  const api = await handleOpsRequest(
-    new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops/api/automation/status`),
-    env,
-    { access: { getIdentity: async () => ({ email: "clyons@ajhcs.org" }) } },
-    DEFAULT_PUBLIC_ORIGIN,
-    async () => "unused",
-  );
-  assert.equal(api.status, 200);
-  const spoofed = await handleOpsRequest(
-    new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops/api/automation/status`, { headers: { "cf-access-authenticated-user-email": "clyons@ajhcs.org" } }),
-    env,
-    undefined,
-    DEFAULT_PUBLIC_ORIGIN,
-    async () => "unused",
-  );
-  assert.equal(spoofed.status, 404);
-  database.close();
+  const env = { VALLEY_DESK_DB: db, PUBLIC_ORIGIN: DEFAULT_PUBLIC_ORIGIN, ...fixture.config };
+  const token = await fixture.sign();
+  const headers = { "cf-access-jwt-assertion": token };
+  try {
+    const denied = await handleOpsRequest(
+      new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops`, { headers: { "cf-access-authenticated-user-email": "clyons@ajhcs.org" } }),
+      env, { access: { getIdentity: async () => ({ email: "clyons@ajhcs.org" }) } }, DEFAULT_PUBLIC_ORIGIN, async () => "private");
+    assert.equal(denied.status, 404);
+    const missingConfig = await handleOpsRequest(new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops`, { headers }),
+      { VALLEY_DESK_DB: db }, undefined, DEFAULT_PUBLIC_ORIGIN, async () => "private");
+    assert.equal(missingConfig.status, 404);
+    const allowed = await handleOpsRequest(new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops`, { headers }),
+      env, undefined, DEFAULT_PUBLIC_ORIGIN, async () => "private-shell");
+    assert.equal(allowed.status, 200); assert.equal(await allowed.text(), "private-shell");
+    const workersDev = await handleOpsRequest(new Request(`${PREVIEW_ORIGIN}/ops`, { headers }),
+      env, undefined, DEFAULT_PUBLIC_ORIGIN, async () => "private-shell");
+    assert.equal(workersDev.status, 404);
+    const api = await handleOpsRequest(new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops/api/automation/status`, { headers }),
+      env, undefined, DEFAULT_PUBLIC_ORIGIN, async () => "unused");
+    assert.equal(api.status, 200);
+    const spoofed = await handleOpsRequest(new Request(`${DEFAULT_PUBLIC_ORIGIN}/ops/api/automation/status`,
+      { headers: { "cf-access-authenticated-user-email": "clyons@ajhcs.org" } }), env, undefined, DEFAULT_PUBLIC_ORIGIN, async () => "unused");
+    assert.equal(spoofed.status, 404);
+  } finally { globalThis.fetch = originalFetch; database.close(); }
 });
 
 test("operational alerts dedupe durably, sanitize secrets, and send to the fixed owner", async () => {
