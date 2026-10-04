@@ -5,7 +5,8 @@ import { handleReviewApi, type ReviewApiOptions } from "./review-api";
 export const OPS_PATH = "/ops";
 export const OPS_API_PATH = "/ops/api";
 export { OPS_ALLOWED_EMAIL } from "./ops-jwt";
-import { verifiedOpsJwtIdentity, type OpsJwtConfig } from "./ops-jwt";
+import { verifiedOpsJwtResult, type OpsJwtConfig } from "./ops-jwt";
+import { opsDenialDiagnostic, OPS_DIAGNOSTIC_HEADER, type OpsDiagnosticConfig } from "./ops-diagnostic";
 
 export type AccessIdentity = { email?: unknown };
 export type WorkerAccessContext = {
@@ -39,7 +40,7 @@ function sameOriginMutation(request: Request, publicOrigin: string) {
 
 export async function handleOpsRequest(
   request: Request,
-  env: Parameters<typeof handleReviewApi>[1] & OpsJwtConfig,
+  env: Parameters<typeof handleReviewApi>[1] & OpsJwtConfig & OpsDiagnosticConfig,
   _ctx: WorkerAccessContext | undefined,
   origin: string,
   loadShell: () => Promise<string>,
@@ -55,8 +56,14 @@ export async function handleOpsRequest(
   if (method === "POST" && !sameOriginMutation(request, origin)) return privateNotFound();
   // Static Assets does not forward ctx.access. Only a signature-verified
   // application JWT with explicitly reviewed issuer/audience authorizes Ops.
-  const email = await verifiedOpsJwtIdentity(request, env);
-  if (!email) return privateNotFound();
+  const identity = await verifiedOpsJwtResult(request, env);
+  if (!identity.authorized) {
+    const response = privateNotFound();
+    const reason = opsDenialDiagnostic(request, env.OPS_DIAGNOSTIC_ENABLED, identity.reason, Date.now());
+    if (reason) response.headers.set(OPS_DIAGNOSTIC_HEADER, reason);
+    return response;
+  }
+  const email = identity.email;
 
   if (url.pathname === OPS_PATH || url.pathname === `${OPS_PATH}/`) {
     if (method !== "GET" && method !== "HEAD") {
