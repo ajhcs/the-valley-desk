@@ -551,9 +551,9 @@ test("article dates retain original publication only; conflicts and invalid date
   assert.equal(conflicting?.sourcePublishedAt, null);
   assert.deepEqual(conflicting?.sourcePublishedCandidates, ["2025-10-20", "2026-05-04"]);
   assert.equal(extract('<script type="application/ld+json">{"@type":"NewsArticle","datePublished":"2024-02-29"}</script>')?.sourcePublishedAt, "2024-02-29");
-  // Structured Person records embedded in an article are also historical claims.
+  // Unscoped structured Person metadata cannot become an institution claim.
   const personArticle = '<script type="application/ld+json">{"@graph":[{"@type":"NewsArticle","datePublished":"2025-10-20"},{"@type":"Person","name":"Alex Example","jobTitle":"CEO"}]}</script>';
-  assert.equal(extractLeaders(personArticle)[0]?.articleEvidence?.currentAffiliationVerified, false);
+  assert.deepEqual(extractLeaders(personArticle), []);
   const undatedHeadingArticle = '<main><h2>Alex Example</h2><p>Alex Example named Chief Executive Officer of Penn Medicine Doylestown Health</p></main>';
   assert.equal(extractLeaders(undatedHeadingArticle, ["Penn Medicine Doylestown Health"])[0]?.articleEvidence?.currentAffiliationVerified, false);
   // Ordinary roster cards keep their existing extraction shape.
@@ -562,12 +562,12 @@ test("article dates retain original publication only; conflicts and invalid date
 
 test("semantic articles cannot promote structured people; only explicit time publication dates qualify", async () => {
   const person = '<script type="application/ld+json">{"@type":"Person","name":"Alex Example","jobTitle":"CEO"}</script>';
-  const article = (time: string) => `<article>${person}<h2>Alex Example</h2><p>Chief Executive Officer</p>${time}</article>`;
-  const generic = extractLeaders(article('<time datetime="2025-10-20">October 20, 2025</time>'));
+  const article = (time: string) => `<article>${person}<h2>Alex Example</h2><p>Alex Example named Chief Executive Officer of Penn Medicine Doylestown Health</p>${time}</article>`;
+  const generic = extractLeaders(article('<time datetime="2025-10-20">October 20, 2025</time>'), ["Penn Medicine Doylestown Health"]);
   assert.equal(generic[0]?.articleEvidence?.sourcePublishedAt, null);
   assert.equal(generic[0]?.articleEvidence?.currentAffiliationVerified, false);
   for (const time of ['<time itemprop="datePublished" datetime="2025-10-20">October 20, 2025</time>', '<time pubdate datetime="2025-10-20">October 20, 2025</time>']) {
-    assert.equal(extractLeaders(article(time))[0]?.articleEvidence?.sourcePublishedAt, "2025-10-20");
+    assert.equal(extractLeaders(article(time), ["Penn Medicine Doylestown Health"])[0]?.articleEvidence?.sourcePublishedAt, "2025-10-20");
   }
   const source = sourceById("src-penn-doylestown-ceo")!;
   const pack = CoveragePackDocument.parse({ ...coveragePack, sources: coveragePack.sources.map((candidate) => (
@@ -595,9 +595,8 @@ test("configured newsroom primaries stay historical evidence even without articl
     fetchImpl: async () => new Response(html, { status: 200 }),
   });
   assert.equal(result.snapshots[0]?.state, "failed");
-  assert.equal(result.snapshots[0]?.extractionStatus, "partial");
-  assert.equal(result.snapshots[0]?.extracted[0]?.articleEvidence?.sourcePublishedAt, null);
-  assert.equal(result.snapshots[0]?.extracted[0]?.articleEvidence?.currentAffiliationVerified, false);
+  assert.equal(result.snapshots[0]?.extractionStatus, "unrecognized");
+  assert.deepEqual(result.snapshots[0]?.extracted, []);
   assert.equal(result.schedule[0]?.lastSuccessAt, null);
   assert.deepEqual(result.observations, []);
   // The same generic roster on a registered leadership-page source is unaffected.

@@ -97,7 +97,7 @@ const CHALLENGE_RE = /\b(?:access denied|captcha|checking your browser|cloudflar
 // description, or opening paragraph instead of a roster-shaped h2/p pair. Keep
 // this grammar deliberately narrow: only a named executive role may become an
 // extracted leader, and the statement must be tied to the configured institution.
-const ARTICLE_ROLE_PATTERN = "(?:chief executive officer|chief operating officer|chief information officer|chief digital and information officer|chief clinical officer|president(?:\\s+and\\s+ceo)?|ceo|coo|cfo|cio|ciso|cmio|cnio|cdao|cdoo|svp|evp|vice president|vp|director|officer)";
+const ARTICLE_ROLE_PATTERN = "(?:chief executive officer|chief operating officer|chief information officer|chief medical information officer|chief nursing officer|chief nursing executive|chief digital and information officer|chief clinical officer|president(?:\\s+and\\s+(?:chief executive(?:\\s+officer)?|ceo))?|chief executive|ceo|coo|cfo|cio|ciso|cmio|cnio|cdao|cdoo|svp|evp|vice president|vp|director|officer)";
 const ARTICLE_NAME_PATTERN = "[A-Z][A-Za-z.'’\\-]*(?:\\s+[A-Z][A-Za-z.'’\\-]*){1,5}";
 const ARTICLE_CREDENTIAL_PATTERN = "(?:MD|DO|PhD|DNP|MBA|MPH|MS|BS|BSN|EMBA|CISM|RN|FACHE|JD|MPA|MHA|FNP|NP)";
 
@@ -167,7 +167,8 @@ function documentEvidenceTexts(html: string) {
     const text = compactEvidenceText(htmlToText(match[1] ?? ""));
     if (text) texts.push(text);
   }
-  const main = /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(cleaned)?.[1];
+  const main = /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(cleaned)?.[1]
+    ?? /<article\b[^>]*>([\s\S]*?)<\/article>/i.exec(cleaned)?.[1];
   if (main) {
     // Keep block boundaries before normalizing whitespace. Flattening a section
     // label and the following headline can invent "Announcement Alex Example".
@@ -207,13 +208,31 @@ function extractArticleLeaders(html: string, institutionAliases: readonly string
       merged.set(leader.normalizedName, { ...leader, articleEvidence });
     }
   };
-  const afterRole = new RegExp("\\b(" + ARTICLE_ROLE_PATTERN + ")\\s+(" + ARTICLE_NAME_PATTERN + ")\\b", "gi");
+  // Every article grammar binds the role to the configured institution in
+  // the same attribution, not merely to an alias elsewhere in the sentence.
+  const escapePattern = (value: string) => [...value].map((char) => "^$.|?*+()[]{}\\".includes(char) ? "\\" + char : char).join("");
+  const institutionPattern = aliases.sort((a, b) => b.length - a.length).map(escapePattern).join("|");
+  const institution = "(?:" + institutionPattern + ")";
+  const institutionEnd = "\\b(?=\\s*(?:[.,;!?\"'\u201c\u201d]|$))";
+  const roleAcronym = "(?:\\s+\\((?:CMIO|CNIO|CEO|COO|CFO|CIO|CISO|CDAO|CDOO)\\))?";
+  const prefixed = new RegExp(
+    "\\b" + institution + "(?:['\u2019]s)?\\s+(?:(?:extends\\s+contract\\s+with|appoints|names)\\s+)?(" + ARTICLE_ROLE_PATTERN + ")\\s+(" + ARTICLE_NAME_PATTERN + ")\\b", "gi",
+  );
+  const afterRole = new RegExp(
+    "\\b(" + ARTICLE_ROLE_PATTERN + ")\\s+(" + ARTICLE_NAME_PATTERN + ")\\s+(?:of|at|for)\\s+" + institution + institutionEnd, "gi",
+  );
   const named = new RegExp(
-    "\\b(" + ARTICLE_NAME_PATTERN + ")(?:\\s*,\\s*" + ARTICLE_CREDENTIAL_PATTERN + ")*(?:\\s*,)?\\s+(?:has been|was|is|will be|will serve as|serves as|appointed as|named|appointed|selected|elected|promoted to)\\s+(" + ARTICLE_ROLE_PATTERN + ")\\b",
-    "gi",
+    "\\b(" + ARTICLE_NAME_PATTERN + ")(?:\\s*,\\s*" + ARTICLE_CREDENTIAL_PATTERN + ")*(?:\\s*,)?\\s+(?:has been|was|is|will be|will serve as|serves as|appointed as|named|appointed|selected|elected|promoted to)\\s+("
+      + ARTICLE_ROLE_PATTERN + ")" + roleAcronym + "\\s+(?:of|at|for)\\s+" + institution + institutionEnd, "gi",
+  );
+  const attributed = new RegExp(
+    "\\bsaid\\s+(" + ARTICLE_NAME_PATTERN + ")(?:\\s*,\\s*" + ARTICLE_CREDENTIAL_PATTERN + ")*\\s*,\\s*("
+      + ARTICLE_ROLE_PATTERN + ")" + roleAcronym + "\\s+(?:at|of|for)\\s+" + institution + institutionEnd, "gi",
   );
   for (const sentence of evidenceSentences) {
     let match: RegExpExecArray | null;
+    while ((match = attributed.exec(sentence))) add(match[1] ?? "", match[2] ?? "");
+    while ((match = prefixed.exec(sentence))) add(match[2] ?? "", match[1] ?? "");
     while ((match = afterRole.exec(sentence))) add(match[2] ?? "", match[1] ?? "");
     while ((match = named.exec(sentence))) add(match[1] ?? "", match[2] ?? "");
   }
@@ -266,7 +285,7 @@ function articleDocumentEvidence(html: string) {
   const addDate = (value: unknown) => {
     if (typeof value !== "string") return;
     const date = value.trim();
-    const match = /^(\d{4})-(\d{2})-(\d{2})(?:T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:0\d|1[0-4]):[0-5]\d))?$/.exec(date);
+    const match = /^(\d{4})-(\d{2})-(\d{2})(?:T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:0\d|1[0-4]):?[0-5]\d))?$/.exec(date);
     if (!match) return;
     const year = Number(match[1]), month = Number(match[2]), day = Number(match[3]);
     const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
@@ -368,12 +387,31 @@ function extractJsonLdLeaders(html: string): ExtractedLeader[] {
 function extractHeadingLeaders(html: string): ExtractedLeader[] {
   const out: ExtractedLeader[] = [];
   const headingRe = /<h([1-4])\b[^>]*>([\s\S]*?)<\/h\1>/gi;
+  const roleHeading = new RegExp("^(?:" + ARTICLE_ROLE_PATTERN + ")$", "i");
+  const inlineRole = new RegExp("^(" + ARTICLE_NAME_PATTERN + "),\\s*(" + ARTICLE_ROLE_PATTERN + ")$", "i");
   let match: RegExpExecArray | null;
   while ((match = headingRe.exec(html))) {
     const name = htmlToText(match[2] ?? "");
-    const following = html.slice(match.index + match[0].length, match.index + match[0].length + 500);
-    const titleMatch = /<(?:p|div|span|dd|h[4-6])\b[^>]*>([\s\S]*?)<\/(?:p|div|span|dd|h[4-6])>/i.exec(following);
-    const title = htmlToText(titleMatch?.[1] ?? following.split(/<h[1-4]\b/i)[0] ?? "");
+    const inline = inlineRole.exec(name);
+    if (inline) {
+      const leader = asLeader(inline[1] ?? "", inline[2] ?? "");
+      if (leader) out.push(leader);
+      continue;
+    }
+    // A role-bearing heading is not itself a person's name.
+    if (TITLE_HINT.test(name)) continue;
+    let following = html.slice(match.index + match[0].length, match.index + match[0].length + 500);
+    const nextHeading = /<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/i.exec(following);
+    let subordinateTitle = "";
+    if (nextHeading) {
+      const text = htmlToText(nextHeading[2] ?? "");
+      // Only an explicit role-only subordinate heading belongs to this person.
+      // Never read a paragraph through any subsequent heading, even with CEO.
+      if (Number(nextHeading[1]) > Number(match[1]) && roleHeading.test(text)) subordinateTitle = text;
+      following = following.slice(0, nextHeading.index);
+    }
+    const titleMatch = /<(?:p|div|span|dd)\b[^>]*>([\s\S]*?)<\/(?:p|div|span|dd)>/i.exec(following);
+    const title = htmlToText(titleMatch?.[1] ?? following) || subordinateTitle;
     const leader = asLeader(name, title);
     if (leader) out.push(leader);
   }
@@ -475,9 +513,12 @@ export function extractLeaders(
     const rows = extractContractLeaders(html, contract);
     return (articleSourceContext || document.explicitArticle) ? rows.map((row) => ({ ...row, articleEvidence: document.evidence })) : rows;
   }
+  const article = extractArticleLeaders(html, institutionAliases);
+  // Article headings/Person metadata do not by themselves link a role to the
+  // target institution. Retain only the explicitly scoped article grammars.
+  if (articleSourceContext || document.isArticle) return article;
   const jsonLd = extractJsonLdLeaders(html);
   const headings = extractHeadingLeaders(stripNonContent(html));
-  const article = extractArticleLeaders(html, institutionAliases);
   const merged = new Map<string, ExtractedLeader>();
   for (const row of [...jsonLd, ...headings, ...article]) {
     const existing = merged.get(row.normalizedName);
@@ -503,8 +544,11 @@ function extractionStatus(
   source: CoverageSource,
   previous?: readonly ExtractedLeader[],
 ): LeadershipExtractionStatus {
+  // Some challenges contain only a vendor bootstrap script and no readable
+  // text. Inspect its explicit script signature before classifying an empty page.
+  const challengeBootstrap = /<script\b[^>]*\bsrc\s*=\s*["']\/_Incapsula_Resource(?:[?"'])/i.test(html);
+  if (!extracted.length && (CHALLENGE_RE.test(normalizedText) || challengeBootstrap)) return "challenge";
   if (!normalizedText) return "empty-unverified";
-  if (!extracted.length && CHALLENGE_RE.test(normalizedText)) return "challenge";
   if (!extracted.length) return "unrecognized";
   // Re-fetching a historical (or undated) article cannot establish a current
   // roster. Preserve its claims/dates, but never infer arrivals or departures.

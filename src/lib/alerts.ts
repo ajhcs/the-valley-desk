@@ -549,9 +549,11 @@ function digestText(date: string, rows: DigestRow[]) {
     const sourceIds = [...new Set(groupRows.map((row) => digestSourceId(row.detail_json)).filter(Boolean))].join(",");
     const details = groupRows.map((row) => digestDetailText(row.detail_json)).filter(Boolean).join(" | ");
     const occurrenceCount = groupRows.reduce((total, row) => total + row.occurrence_count, 0);
+    const occurrenceUnit = groupRows.every((row) => row.subsystem === "leadership")
+      ? "condition evaluations" : "occurrences";
     const lastSeenAt = groupRows.map((row) => row.last_seen_at).sort().at(-1) ?? first.last_seen_at;
     const scope = first.institution_id ?? first.group_key;
-    lines.push(`- ${conditionStates.join("/")} ${severity} ${first.subsystem}/${scope} ${events} (${occurrenceCount} occurrences; last ${lastSeenAt}${sourceIds ? `; sources=${sourceIds}` : ""}${details ? `; ${details}` : ""})`);
+    lines.push(`- ${conditionStates.join("/")} ${severity} ${first.subsystem}/${scope} ${events} (${occurrenceCount} ${occurrenceUnit}; last ${lastSeenAt}${sourceIds ? `; sources=${sourceIds}` : ""}${details ? `; ${details}` : ""})`);
   }
   lines.push("ops: /ops");
   return lines.join("\n");
