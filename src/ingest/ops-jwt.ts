@@ -12,9 +12,6 @@ export type OpsJwtDenialReason = "configuration-unavailable" | "assertion-missin
 
 class OpsKeyUnavailableError extends Error {}
 
-export type OpsJwtResult = { authorized: true; email: string }
-  | { authorized: false; reason: OpsJwtDenialReason };
-
 export type OpsJwtConfig = {
   OPS_ACCESS_ISSUER?: string;
   OPS_ACCESS_AUDIENCE?: string;
@@ -30,21 +27,21 @@ export function opsJwtConfiguration(env: OpsJwtConfig) {
 }
 
 /** One configured issuer per verifier; no token-controlled cache or URL keys. */
-export function createOpsJwtResultVerifier(
+export function createOpsJwtVerifier(
   fetcher: typeof fetch = (input, init) => fetch(input, init),
   now: () => Date = () => new Date(),
   onDenied: (reason: OpsJwtDenialReason) => void = () => undefined,
 ) {
   // Fixed categories only: no request, token, claim, provider or configuration values.
   const lastReported = new Map<OpsJwtDenialReason, number>();
-  function deny(reason: OpsJwtDenialReason): OpsJwtResult {
+  function deny(reason: OpsJwtDenialReason): undefined {
     const time = Date.now();
     const previous = lastReported.get(reason);
     if (previous === undefined || time - previous >= OPS_JWKS_COOLDOWN_MS) {
       lastReported.set(reason, time);
       try { onDenied(reason); } catch { /* Diagnostics cannot change authorization. */ }
     }
-    return { authorized: false, reason };
+    return undefined;
   }
 
   let entry: {
@@ -130,7 +127,7 @@ export function createOpsJwtResultVerifier(
     return resolve;
   }
 
-  return async (request: Request, env: OpsJwtConfig): Promise<OpsJwtResult> => {
+  return async (request: Request, env: OpsJwtConfig): Promise<string | undefined> => {
     const configuration = opsJwtConfiguration(env);
     if (!configuration) return deny("configuration-unavailable");
     const token = request.headers.get("cf-access-jwt-assertion");
@@ -154,32 +151,13 @@ export function createOpsJwtResultVerifier(
         || iat > seconds || nbf > seconds || exp <= seconds || exp <= iat || exp <= nbf
         || payload.type !== "app" || typeof payload.sub !== "string" || !payload.sub.trim()
         || typeof payload.email !== "string" || payload.email.trim().toLowerCase() !== OPS_ALLOWED_EMAIL) return deny("identity-rejected");
-      return { authorized: true, email: OPS_ALLOWED_EMAIL };
+      return OPS_ALLOWED_EMAIL;
     } catch (error) {
       return deny(error instanceof OpsKeyUnavailableError ? "key-unavailable" : "token-rejected");
     }
   };
 }
 
-/** Preserve the existing identity-only API and its authorization semantics. */
-export function createOpsJwtVerifier(
-  fetcher?: typeof fetch,
-  now?: () => Date,
-  onDenied?: (reason: OpsJwtDenialReason) => void,
-) {
-  const verify = createOpsJwtResultVerifier(fetcher, now, onDenied);
-  return async (request: Request, env: OpsJwtConfig): Promise<string | undefined> => {
-    const result = await verify(request, env);
-    return result.authorized ? result.email : undefined;
-  };
-}
-
-export const verifiedOpsJwtResult = createOpsJwtResultVerifier(undefined, undefined, reason => {
+export const verifiedOpsJwtIdentity = createOpsJwtVerifier(undefined, undefined, reason => {
   console.warn("ops_access_denied", reason);
 });
-
-/** Shares the same verifier, key cache and diagnostic throttle as the route. */
-export async function verifiedOpsJwtIdentity(request: Request, env: OpsJwtConfig): Promise<string | undefined> {
-  const result = await verifiedOpsJwtResult(request, env);
-  return result.authorized ? result.email : undefined;
-}
