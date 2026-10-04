@@ -4,11 +4,11 @@ export type OpsDiagnosticConfig = { OPS_DIAGNOSTIC_ENABLED?: string };
 export const OPS_DIAGNOSTIC_MAX_WINDOW_MS = 30 * 60_000;
 export const OPS_DIAGNOSTIC_HEADER = "x-tvd-ops-diagnostic";
 
-// Build-bound review inputs. This candidate has no enablement window, so even
-// a runtime switch cannot disclose a category. Changing these requires a new
-// exact artifact review and specific approval, never request/env discovery.
-export const OPS_DIAGNOSTIC_WINDOW_START_UTC = "";
-export const OPS_DIAGNOSTIC_WINDOW_END_UTC = "";
+// Build-bound UTC inputs for the specifically approved fifteen-minute test.
+// Runtime/request timestamps cannot create or extend this immutable interval.
+// After the deadline this build is inert even if the switch remains enabled.
+export const OPS_DIAGNOSTIC_WINDOW_START_UTC = "2026-10-04T03:55:00.000Z";
+export const OPS_DIAGNOSTIC_WINDOW_END_UTC = "2026-10-04T04:10:00.000Z";
 
 const reasons: readonly OpsJwtDenialReason[] = Object.freeze([
   "configuration-unavailable", "assertion-missing", "header-rejected",

@@ -41,7 +41,7 @@ const reasons: OpsJwtDenialReason[] = ["configuration-unavailable", "assertion-m
 const iso = (ms: number) => new Date(ms).toISOString();
 
 // These fixtures exercise the same source with a test-only, immutable window.
-// Production source remains unassigned; no env/request timestamps can select it.
+// Production uses only its reviewed immutable UTC constants, never env/request timing.
 async function localWindowWorker(start: string, end: string) {
   const dir = await mkdtemp(join(tmpdir(), "tvd-ops-diagnostic-test-"));
   const modulePath = resolve(root, "src/ingest/ops-diagnostic.ts");
@@ -52,8 +52,8 @@ async function localWindowWorker(start: string, end: string) {
         builder.onLoad({ filter: /ops-diagnostic\.ts$/ }, async args => {
           assert.equal(args.path, modulePath);
           const source = await readFile(args.path, "utf8");
-          const startMarker = 'OPS_DIAGNOSTIC_WINDOW_START_UTC = ""';
-          const endMarker = 'OPS_DIAGNOSTIC_WINDOW_END_UTC = ""';
+          const startMarker = `OPS_DIAGNOSTIC_WINDOW_START_UTC = ${JSON.stringify(OPS_DIAGNOSTIC_WINDOW_START_UTC)}`;
+          const endMarker = `OPS_DIAGNOSTIC_WINDOW_END_UTC = ${JSON.stringify(OPS_DIAGNOSTIC_WINDOW_END_UTC)}`;
           assert.equal(source.split(startMarker).length, 2);
           assert.equal(source.split(endMarker).length, 2);
           return { loader: "ts", contents: source.replace(startMarker,
@@ -77,10 +77,21 @@ async function private404(response: Response, reason?: OpsJwtDenialReason) {
   assert.equal(response.headers.get(OPS_DIAGNOSTIC_HEADER), reason ?? null);
 }
 
-test("diagnostic candidate is inert even with the runtime switch enabled", () => {
-  assert.equal(OPS_DIAGNOSTIC_WINDOW_START_UTC, "");
-  assert.equal(OPS_DIAGNOSTIC_WINDOW_END_UTC, "");
-  for (const reason of reasons) assert.equal(opsDenialDiagnostic(request(), "true", reason, Date.now()), undefined);
+test("compiled production window is exactly the approved fifteen minutes and remains closed outside it", () => {
+  assert.equal(OPS_DIAGNOSTIC_WINDOW_START_UTC, "2026-10-04T03:55:00.000Z");
+  assert.equal(OPS_DIAGNOSTIC_WINDOW_END_UTC, "2026-10-04T04:10:00.000Z");
+  const start = Date.parse(OPS_DIAGNOSTIC_WINDOW_START_UTC);
+  const end = Date.parse(OPS_DIAGNOSTIC_WINDOW_END_UTC);
+  assert.equal(end - start, 15 * 60_000);
+  assert.equal(OPS_DIAGNOSTIC_MAX_WINDOW_MS, 30 * 60_000);
+  for (const reason of reasons) {
+    assert.equal(opsDenialDiagnostic(request(), "true", reason, start - 1), undefined);
+    assert.equal(opsDenialDiagnostic(request(), "true", reason, start), reason);
+    assert.equal(opsDenialDiagnostic(request(), "true", reason, end - 1), reason);
+    assert.equal(opsDenialDiagnostic(request(), "true", reason, end), undefined);
+    assert.equal(opsDenialDiagnostic(request(), undefined, reason, start), undefined);
+    assert.equal(opsDenialDiagnostic(request(), "false", reason, start), undefined);
+  }
 });
 
 test("immutable UTC window is at most 30 minutes, inclusive start and exclusive end", () => {
