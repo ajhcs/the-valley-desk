@@ -4514,6 +4514,7 @@ function applyMigrations(database: DatabaseSync) {
     "0026_source_health_attribution.sql",
     "0027_policy_intelligence_hardening.sql",
     "0028_policy_pdf_review.sql",
+    "0039_source_delivery_freshness.sql",
   ]) database.exec(readFileSync(join(root, "migrations", name), "utf8"));
 }
 

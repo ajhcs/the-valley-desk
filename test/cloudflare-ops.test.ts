@@ -2026,7 +2026,7 @@ test("operational alerts require durable consecutive recovery and reopen cleanly
   });
   assert.equal(resolved?.state, "resolved");
   assert.equal(resolved?.recovery_count, 2);
-  assert.deepEqual(JSON.parse(resolved!.recovery_detail_json), { outcome: "healthy", attempted: 4, failed: 0 });
+  assert.deepEqual(JSON.parse(resolved!.recovery_detail_json), { observationId: "2026-08-28T02:00:00.000Z", outcome: "healthy", attempted: 4, failed: 0 });
   assert.deepEqual(JSON.parse(resolved!.detail_json), {}, "the incident-opening evidence is preserved separately");
 
   const reopened = await dispatchOperationalAlert(db, binding, {

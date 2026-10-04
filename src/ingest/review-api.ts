@@ -66,6 +66,8 @@ type SourceHealthStatusRow = {
   last_http_status: number | null;
   requires_auth: number;
   last_fallback_url: string | null;
+  last_primary_success_at?: string | null;
+  last_fallback_success_at?: string | null;
   institution_ids_json: string | null;
 };
 
@@ -327,11 +329,7 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
     "SELECT COUNT(*) AS count, MAX(updated_at) AS updated_at FROM published_content",
   ).first();
   const sources = await env.VALLEY_DESK_DB.prepare(`
-      SELECT source_id, origin, source_type, source_url, state, complete, item_count,
-             consecutive_failures, last_checked_at, last_success_at, last_error,
-             next_attempt_at, last_http_status, requires_auth, last_fallback_url,
-             institution_ids_json
-      FROM source_health ORDER BY source_type, source_id
+      SELECT * FROM source_health ORDER BY source_type, source_id
     `).all<SourceHealthStatusRow>();
   const sourceHealth = (sources.results ?? []).map((row) => ({
     source_id: row.source_id,
@@ -344,6 +342,8 @@ async function statusPayload(env: ReviewEnv, detailed: boolean) {
     consecutive_failures: row.consecutive_failures,
     last_checked_at: row.last_checked_at,
     last_success_at: row.last_success_at,
+    last_primary_success_at: row.last_primary_success_at ?? null,
+    last_fallback_success_at: row.last_fallback_success_at ?? null,
     last_error: boundedText(row.last_error),
     next_attempt_at: row.next_attempt_at,
     last_http_status: row.last_http_status,

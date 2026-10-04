@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { operationalConditionLabel } from "../lib/operational-presentation";
 import { registerRegionalBrowserTools } from "../agents/regional-browser";
 import { PolicyBaseline } from "./PolicyBaselinePage";
 import { WatchEditorialReview } from "./WatchEditorialReview";
@@ -17,6 +18,8 @@ type OpsPayload = {
     last_checked_at?: string;
     next_attempt_at?: string;
     last_success_at?: string;
+    last_primary_success_at?: string | null;
+    last_fallback_success_at?: string | null;
     last_fallback_url?: string | null;
     last_http_status?: number | null;
     last_error?: string | null;
@@ -197,10 +200,10 @@ function OpsPage() {
             <ul>
               {(payload.alerts?.open ?? []).map((alert) => (
                 <li key={alert.fingerprint ?? alert.event ?? "alert"}>
-                  {alert.severity ?? "unknown"} · {alert.condition_state ?? alert.state ?? "unknown"} · {alert.subsystem ?? "automation"}
+                  {alert.severity ?? "unknown"} · {operationalConditionLabel(alert.condition_state, alert.state ?? "open")} · {alert.subsystem ?? "automation"}
                   {alert.institution_id ? ` · ${alert.institution_id}` : " · pack-wide"}
                   {`: ${alert.event ?? alert.fingerprint ?? "alert"}`}
-                  {alert.occurrence_count ? ` (${alert.occurrence_count} occurrences)` : ""}
+                  {alert.occurrence_count ? ` (${alert.occurrence_count} condition evaluations)` : ""}
                   {alert.next_notify_at ? ` · next ${alert.next_notify_at}` : ""}
                   {alert.detail_json ? ` · ${alert.detail_json}` : ""}
                 </li>
@@ -219,12 +222,13 @@ function OpsPage() {
           <ul>
             {(payload.sources ?? []).map((source) => (
               <li key={source.source_id ?? source.last_checked_at ?? "source"}>
-                {source.source_id ?? "unknown"}: {source.state ?? "unknown"}
+                {source.source_id ?? "unknown"}: {source.source_type === "rss" ? "collection " : ""}{source.state ?? "unknown"}
                 {source.institution_ids?.length ? ` · ${source.institution_ids.join(", ")}` : ""}
                 {source.consecutive_failures ? ` (${source.consecutive_failures} failures)` : ""}
-                {source.failure_age_ms != null ? ` · failure age ${ageLabel(source.failure_age_ms)}` : ""}
+                {source.failure_age_ms != null ? ` · last collection age ${ageLabel(source.failure_age_ms)}` : ""}
+                {source.source_type === "rss" ? ` · primary last collected ${source.last_primary_success_at ?? "unknown"} · fallback last collected ${source.last_fallback_success_at ?? "unknown"}` : ""}
                 {source.next_attempt_at ? ` · next ${source.next_attempt_at}` : ""}
-                {source.last_fallback_url ? ` · fallback ${source.last_fallback_url}` : ""}
+                {source.last_fallback_url ? ` · last fallback ${source.last_fallback_url}` : ""}
                 {source.last_error ? ` · ${source.last_error}` : ""}
               </li>
             ))}

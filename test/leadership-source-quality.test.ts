@@ -92,14 +92,14 @@ test("a future retry date prevents all fetches, even with an available fixture",
   const result = await monitor("<h2>Alex Example</h2><p>Chief Information Officer</p>", pack, new Map([[id, state]]));
   assert.deepEqual(result.calls, []); assert.deepEqual(result.snapshots, []); assert.deepEqual(result.schedule, []);
 });
-test("leadership digest counts are condition evaluations; other units stay occurrences", async () => {
+test("digest counts consistently describe condition evaluations rather than attempts", async () => {
   const rows = ["leadership", "editorial"].map((subsystem) => ({ fingerprint: subsystem, pack_id: "offline", event: "source-unhealthy", severity: "warning", condition_state: "backoff", institution_id: null, subsystem, group_key: subsystem, occurrence_count: 176, first_seen_at: "2026-10-03T00:00:00Z", last_seen_at: NOW.toISOString(), detail_json: "{}" }));
   const db = { prepare() { return { bind() { return this; }, async first() { return null; }, async run() { return { success: true, meta: { changes: 1 } }; }, async all() { return { results: rows }; } }; } } as unknown as D1DatabaseLike;
   let text = "";
   const result = await dispatchOperationalDigest(db, { async send(message) { text = message.text; return { messageId: "offline-mock" }; } }, NOW, "offline");
   assert.equal(result.outcome, "sent");
   assert.match(text, /leadership.*176 condition evaluations/);
-  assert.match(text, /editorial.*176 occurrences/);
+  assert.match(text, /editorial.*176 condition evaluations/);
   assert.doesNotMatch(text, /176 new failures/);
 });
 
