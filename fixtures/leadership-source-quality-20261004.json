@@ -1,0 +1,29 @@
+{
+  "representation": "Minimized synthetic HTML wrappers in tests around bounded literal official attribution clauses; not retained wire HTML, not new current-person records",
+  "cases": [
+    {
+      "id": "cooper-cmio-quote",
+      "sourceUrl": "https://blogs.cooperhealth.org/news/2026/09/cooper-norcross-health-first-in-new-jersey-to-bring-ambient-ai-to-the-nursing-bedside-with-microsoft-dragon-copilot/",
+      "sourcePublishedAt": "2026-09-28T20:39:34+00:00",
+      "literalClaim": "said Snehal Gandhi, MD, chief medical information officer (CMIO) at Cooper Norcross Health.",
+      "aliases": [
+        "Cooper Norcross Health"
+      ],
+      "expectedName": "snehal gandhi",
+      "expectedTitle": "chief medical information officer",
+      "evidenceScope": "Official publisher article claim as of publication; not a complete current roster"
+    },
+    {
+      "id": "rutgers-rwjbarnabas-quote",
+      "sourceUrl": "https://www.rutgers.edu/news/rutgers-and-rwjbarnabas-health-launch-innovation-hub-powered-amazon-web-services",
+      "sourcePublishedAt": "2026-09-15T11:03:19-0400",
+      "literalClaim": "said Mark E. Manigan, president and chief executive of RWJBarnabas Health.",
+      "aliases": [
+        "RWJBarnabas Health"
+      ],
+      "expectedName": "mark e manigan",
+      "expectedTitle": "president and chief executive",
+      "evidenceScope": "Official institutional partner's dated article; not RWJBarnabas's own current roster"
+    }
+  ]
+}
