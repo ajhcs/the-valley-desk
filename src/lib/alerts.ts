@@ -1,5 +1,6 @@
 import type { D1DatabaseLike } from "../ingest/persistence";
 import { logOps } from "./ops";
+import { operationalConditionLabel } from "./operational-presentation";
 import type { OperationalConditionState } from "./operational-status";
 
 export { OPERATIONAL_CONDITION_STATES } from "./operational-status";
@@ -79,6 +80,8 @@ export type AlertRecoveryResult = {
 };
 
 type DigestRow = {
+  recovery_count: number;
+  last_recovered_at: string | null;
   fingerprint: string;
   pack_id: string;
   event: string;
@@ -194,6 +197,7 @@ function rowSelect() {
 /**
  * Record one occurrence, then atomically claim a notification slot. D1 is the
  * authority so duplicate Worker isolates cannot emit duplicate alerts.
+ * Older failure observations cannot replace newer failure or recovery evidence.
  */
 export async function recordOperationalAlert(
   db: D1DatabaseLike,
@@ -213,7 +217,7 @@ export async function recordOperationalAlert(
   const groupKey = safeField(input.groupKey, 240, `${packId}:${subsystem}:${event}`);
   const threshold = Math.max(1, Math.min(100, Math.trunc(input.threshold ?? ALERT_DEFAULT_THRESHOLD)));
   const detailJson = safeDetailJson(input.details);
-  await db.prepare(`
+  const recorded = await db.prepare(`
     INSERT INTO operational_alerts (
       fingerprint, pack_id, event, severity, state, occurrence_count,
       condition_state, institution_id, subsystem, group_key,
@@ -257,6 +261,9 @@ export async function recordOperationalAlert(
       recovery_count = 0,
       recovery_detail_json = '{}',
       resolved_at = NULL
+    WHERE excluded.last_seen_at >= operational_alerts.last_seen_at
+      AND (operational_alerts.last_recovered_at IS NULL
+        OR excluded.last_seen_at >= operational_alerts.last_recovered_at)
   `).bind(
     fingerprint,
     packId,
@@ -274,6 +281,8 @@ export async function recordOperationalAlert(
 
   const before = await db.prepare(rowSelect()).bind(fingerprint).first<OperationalAlertRow>();
   if (!before) throw new Error("Operational alert row was not persisted");
+  // A rejected stale condition cannot claim mail for the retained newer row.
+  if (changedRows(recorded) === 0) return { row: before, claimed: false };
   if (input.notify === false) return { row: before, claimed: false };
   const due = Date.parse(before.next_notify_at) <= now.getTime();
   const eligible = before.state === "open"
@@ -313,7 +322,8 @@ export async function markOperationalAlertSent(
 /**
  * Record a healthy observation without sending a recovery email. An alert is
  * resolved only after consecutive healthy observations; one flaky success
- * therefore cannot silence a still-degraded source. D1 owns this counter so
+ * therefore cannot silence a still-degraded source. Success must postdate the
+ * failure boundary; failure wins equal timestamps. D1 owns this counter so
  * recovery remains safe across Worker isolates and retries.
  */
 export async function resolveOperationalAlertWithTransition(
@@ -326,6 +336,9 @@ export async function resolveOperationalAlertWithTransition(
   const safeFingerprint = stripControls(fingerprint).slice(0, 240);
   const required = Math.max(1, Math.min(20, Math.trunc(requiredSuccesses) || 1));
   const nowIso = now.toISOString();
+  const observationId = safeField(recoveryDetails.observationId, 240, nowIso);
+  const observationDetails = { ...recoveryDetails };
+  delete observationDetails.observationId;
   await db.prepare(`
     UPDATE operational_alerts
     SET condition_state = 'healthy',
@@ -333,7 +346,10 @@ export async function resolveOperationalAlertWithTransition(
         last_recovered_at = ?,
         recovery_detail_json = ?
     WHERE fingerprint = ? AND state = 'open'
-  `).bind(required, nowIso, safeDetailJson(recoveryDetails), safeFingerprint).run();
+      AND COALESCE(json_extract(recovery_detail_json, '$.observationId'), last_recovered_at, '') != ?
+      AND (last_recovered_at IS NULL OR last_recovered_at <= ?)
+      AND last_seen_at < ?
+  `).bind(required, nowIso, safeDetailJson({ observationId, ...observationDetails }), safeFingerprint, observationId, nowIso, nowIso).run();
   const resolution = await db.prepare(`
     UPDATE operational_alerts
     SET state = 'resolved', condition_state = 'resolved', resolved_at = ?, last_notification_error = NULL
@@ -349,6 +365,24 @@ export async function resolveOperationalAlertWithTransition(
     });
   }
   return { row, resolved };
+}
+
+/** Interrupt an open streak only at or after its latest failure/recovery boundary. */
+export async function interruptOperationalAlertRecovery(
+  db: D1DatabaseLike,
+  fingerprint: string,
+  conditionState: Exclude<OperationalConditionState, "healthy" | "resolved">,
+  now: Date,
+  details: Record<string, unknown> = {},
+) {
+  const nowIso = now.toISOString();
+  return db.prepare(`
+    UPDATE operational_alerts
+    SET condition_state = ?, recovery_count = 0, recovery_detail_json = '{}',
+        last_seen_at = ?, detail_json = ?, occurrence_count = occurrence_count + 1
+    WHERE fingerprint = ? AND state = 'open' AND last_seen_at <= ?
+      AND (last_recovered_at IS NULL OR last_recovered_at <= ?)
+  `).bind(conditionState, nowIso, safeDetailJson(details), stripControls(fingerprint).slice(0, 240), nowIso, nowIso).run();
 }
 
 export async function resolveOperationalAlert(
@@ -380,14 +414,14 @@ function alertText(row: OperationalAlertRow) {
   return [
     "The Valley Desk operational alert",
     `severity: ${row.severity}`,
-    `condition_state: ${row.condition_state}`,
+    `condition_state: ${operationalConditionLabel(row.condition_state, row.state)}`,
     `event: ${row.event}`,
     `pack: ${row.pack_id}`,
     `subsystem: ${row.subsystem}`,
     `group_key: ${row.group_key}`,
     `institution: ${row.institution_id ?? "pack-wide"}`,
     `occurrences: ${row.occurrence_count}`,
-    ...(row.subsystem === "leadership" ? ["occurrence_unit: condition-evaluations"] : []),
+    "occurrence_unit: condition-evaluations",
     `first_seen: ${row.first_seen_at}`,
     `last_seen: ${row.last_seen_at}`,
     `details: ${row.detail_json}`,
@@ -484,7 +518,7 @@ function digestSelect() {
   return `
     SELECT fingerprint, pack_id, event, severity, occurrence_count,
            condition_state, institution_id, subsystem, group_key,
-           first_seen_at, last_seen_at, detail_json
+           first_seen_at, last_seen_at, detail_json, recovery_count, last_recovered_at
     FROM operational_alerts
     WHERE pack_id = ? AND state = 'open'
     ORDER BY CASE severity WHEN 'critical' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END,
@@ -498,6 +532,7 @@ function digestDetailText(detailJson: string) {
     const keys = [
       "sourceId", "stage", "errorClass", "httpStatus", "lastSuccessAt",
       "failureAgeMs", "currentFallback", "nextRetryAt", "affectedCoverage",
+      "collectionAgeMs", "observedAt", "primaryState", "primaryLastSuccessAt", "fallbackLastSuccessAt", "servingPath",
     ];
     return keys
       .filter((key) => Object.prototype.hasOwnProperty.call(details, key))
@@ -544,13 +579,18 @@ function digestText(date: string, rows: DigestRow[]) {
       severityRank(row.severity) > severityRank(current) ? row.severity : current
     ), first.severity);
     const conditionStates = [...new Set(groupRows.map((row) => row.condition_state))]
-      .sort((left, right) => conditionRank(right) - conditionRank(left));
+      .sort((left, right) => conditionRank(right) - conditionRank(left))
+      .map((state) => operationalConditionLabel(state));
     const events = [...new Set(groupRows.map((row) => row.event))].join("+");
     const sourceIds = [...new Set(groupRows.map((row) => digestSourceId(row.detail_json)).filter(Boolean))].join(",");
-    const details = groupRows.map((row) => digestDetailText(row.detail_json)).filter(Boolean).join(" | ");
+    const details = groupRows.map((row) => [
+      digestDetailText(row.detail_json),
+      ...(row.condition_state === "healthy" ? [
+        `recoveryChecks=${row.recovery_count}, lastHealthyObservationAt=${row.last_recovered_at ?? "unknown"}`,
+      ] : []),
+    ].filter(Boolean).join(", ")).filter(Boolean).join(" | ");
     const occurrenceCount = groupRows.reduce((total, row) => total + row.occurrence_count, 0);
-    const occurrenceUnit = groupRows.every((row) => row.subsystem === "leadership")
-      ? "condition evaluations" : "occurrences";
+    const occurrenceUnit = "condition evaluations";
     const lastSeenAt = groupRows.map((row) => row.last_seen_at).sort().at(-1) ?? first.last_seen_at;
     const scope = first.institution_id ?? first.group_key;
     lines.push(`- ${conditionStates.join("/")} ${severity} ${first.subsystem}/${scope} ${events} (${occurrenceCount} ${occurrenceUnit}; last ${lastSeenAt}${sourceIds ? `; sources=${sourceIds}` : ""}${details ? `; ${details}` : ""})`);

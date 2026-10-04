@@ -22,7 +22,10 @@ export type PersistedSourceHealth = {
   completeness?: SnapshotCompleteness;
   consecutiveFailures: number;
   lastCheckedAt: string;
+  /** Last successful collection from either serving path; not primary health. */
   lastSuccessAt: string | null;
+  primaryLastSuccessAt?: string | null;
+  fallbackLastSuccessAt?: string | null;
   lastError: string | null;
   nextAttemptAt: string;
   lastHttpStatus: number | null;
@@ -65,7 +68,12 @@ export type SourceRunNote = {
   fallbackUrl?: string;
   /** Durable streak metadata copied into operational results when available. */
   consecutiveFailures?: number;
+  /** Collection times, distinct from source publication dates. */
   lastSuccessAt?: string | null;
+  primaryLastSuccessAt?: string | null;
+  fallbackLastSuccessAt?: string | null;
+  primaryState?: SourceRunState;
+  servingPath?: "primary" | "fallback" | "official-html-fallback" | "independent-discovery-fallback" | "unavailable";
   /** Canonical coverage institutions associated with this source, when known. */
   institutionIds?: string[];
 };

@@ -33,7 +33,7 @@ import { decorateHtml, decorateWatchHtml, watchPrimaryNoscript } from "./src/lib
 import { isWatchPagePath, readWatchPage } from "./src/lib/watch-page.ts";
 import { publicFeaturesFromEnv } from "./src/lib/public-features.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
-import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
+import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, interruptOperationalAlertRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
 import { conditionStateForSourceState, SOURCE_FRESHNESS_SLO_MS } from "./src/lib/operational-status.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
@@ -241,9 +241,12 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   // run into a false automation failure. Durable state is still written when
   // the send binding is unavailable, and each helper isolates its own D1 or
   // provider error.
+  const completedAt = Date.parse(result?.finishedAt ?? "");
+  const recoveryTime = Number.isFinite(completedAt) && completedAt <= now.getTime()
+    ? new Date(completedAt) : now;
   const dispatch = async (input) => {
     try {
-      return await dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, input);
+      return await dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, { ...input, now: recoveryTime });
     } catch (error) {
       logOps("ops-alert", {
         outcome: "record-failed",
@@ -255,7 +258,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   };
   const recordWarning = async (input) => {
     try {
-      return await recordOperationalAlert(env.VALLEY_DESK_DB, { ...input, notify: false });
+      return await recordOperationalAlert(env.VALLEY_DESK_DB, { ...input, now: recoveryTime, notify: false });
     } catch (error) {
       logOps("ops-alert", {
         outcome: "record-failed",
@@ -265,14 +268,23 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       return undefined;
     }
   };
+  const recoveredFingerprints = new Set();
+  // runId persists across duplicate deliveries; timestamp is a legacy fallback.
+  const observationId = typeof result?.runId === "string" && result.runId
+    ? result.runId : now.toISOString();
   const recover = async (fingerprint, requiredSuccesses = 2, details = {}) => {
+    if (recoveredFingerprints.has(fingerprint)) return undefined;
+    recoveredFingerprints.add(fingerprint);
     try {
+      const sourceObservedAt = Date.parse(details.observedAt ?? "");
+      const observedAt = Number.isFinite(sourceObservedAt) && sourceObservedAt <= recoveryTime.getTime()
+        ? new Date(sourceObservedAt).toISOString() : recoveryTime.toISOString();
       const recovery = await resolveOperationalAlertWithTransition(
         env.VALLEY_DESK_DB,
         fingerprint,
-        now,
+        recoveryTime,
         requiredSuccesses,
-        { outcome: "healthy", observedAt: now.toISOString(), ...details },
+        { ...details, outcome: "healthy", observedAt, observationId },
       );
       if (recovery.resolved && recovery.row) {
         await dispatchOperationalRecovery(env.VALLEY_DESK_DB, env.NOTIFY_OPS, recovery.row);
@@ -285,6 +297,13 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
         message: safeAlertError(error),
       }, "warn");
       return undefined;
+    }
+  };
+  const interrupt = async (fingerprint, conditionState, details) => {
+    try {
+      await interruptOperationalAlertRecovery(env.VALLEY_DESK_DB, fingerprint, conditionState, recoveryTime, details);
+    } catch (error) {
+      logOps("ops-alert", { outcome: "recovery-interruption-failed", fingerprint, message: safeAlertError(error) }, "warn");
     }
   };
   if (result?.skipped) {
@@ -315,7 +334,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     const hasFreshCoverage = (candidate) => {
       if (candidate.state === "healthy" || candidate.state === "healthy-empty") return true;
       const lastSuccess = Date.parse(candidate.lastSuccessAt ?? "");
-      const age = now.getTime() - lastSuccess;
+      const age = recoveryTime.getTime() - lastSuccess;
       return Number.isFinite(lastSuccess) && age >= 0 && age <= SOURCE_FRESHNESS_SLO_MS;
     };
     return peers.length > 0 && peers.every((candidate) => (
@@ -330,13 +349,22 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       await recover(fingerprint, 1);
       continue;
     }
+    const freshnessDetails = {
+      observedAt: source.checkedAt ?? recoveryTime.toISOString(),
+      primaryState: source.primaryState ?? "unknown",
+      primaryLastSuccessAt: source.primaryLastSuccessAt ?? null,
+      fallbackLastSuccessAt: source.fallbackLastSuccessAt ?? null,
+      servingPath: source.servingPath ?? "unknown",
+      countSemantics: "condition-evaluations",
+    };
+    const currentFallback = Boolean(source.fallbackUrl) && source.servingPath !== "unavailable";
     if (source.state === "backoff") {
       logOps("source-backoff", {
         sourceId,
         nextRetryAt: source.nextAttemptAt,
         failures: source.consecutiveFailures,
       });
-      if (source.fallbackUrl) {
+      if (currentFallback) {
         const fallbackFingerprint = `valley-desk:source-fallback:${sourceId}`;
         await recordWarning({
           fingerprint: fallbackFingerprint,
@@ -349,18 +377,30 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
           details: {
             sourceId,
             state: source.state,
-            fallbackActive: true,
+            fallbackActive: currentFallback,
+            currentFallback,
             primaryBackoff: true,
+            ...freshnessDetails,
             itemCount: source.itemCount,
             lastSuccessAt: source.lastSuccessAt ?? null,
             nextRetryAt: source.nextAttemptAt ?? null,
-            affectedCoverage: "fallback-serving-during-backoff",
+            affectedCoverage: currentFallback ? "fallback-serving-during-backoff" : "fallback-unavailable-during-backoff",
           },
         });
         // A pre-0022 source alert may have been critical before the source
         // was classified as public-blocked/backoff. Fallback coverage removes
         // that critical condition, but the fallback warning remains active.
-        await recover(fingerprint, 2);
+        await recover(fingerprint, 2, { ...freshnessDetails, affectedCoverage: "fallback-serving-during-backoff" });
+      } else if (source.servingPath === "unavailable") {
+        // No usable snapshot interrupts both availability and primary recovery.
+        // Update existing incidents only; a quiet cooldown does not create one.
+        const unavailableDetails = {
+          sourceId, state: source.state, ...freshnessDetails,
+          currentFallback: false, nextRetryAt: source.nextAttemptAt ?? null,
+          affectedCoverage: "fallback-unavailable-during-backoff",
+        };
+        await interrupt(fingerprint, "backoff", unavailableDetails);
+        await interrupt(`valley-desk:source-fallback:${sourceId}`, "backoff", unavailableDetails);
       }
       continue;
     }
@@ -380,21 +420,29 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
             sourceId,
             state: source.state,
             fallbackActive: true,
+            ...freshnessDetails,
             itemCount: source.itemCount,
             lastSuccessAt: source.lastSuccessAt ?? null,
-            failureAgeMs: Number.isFinite(lastSuccessMs) ? Math.max(0, now.getTime() - lastSuccessMs) : null,
+            collectionAgeMs: Number.isFinite(lastSuccessMs) ? Math.max(0, recoveryTime.getTime() - lastSuccessMs) : null,
             currentFallback: true,
             nextRetryAt: source.nextAttemptAt ?? null,
             affectedCoverage: "fallback-serving",
           },
         });
-        await recover(fingerprint, 2);
       } else {
         await recover(fallbackFingerprint, 2);
       }
-      await recover(fingerprint, 2);
+      await recover(fingerprint, 2, {
+        ...freshnessDetails,
+        affectedCoverage: source.fallbackUrl ? "fallback-serving" : "primary-serving",
+      });
       continue;
     }
+    await interrupt(`valley-desk:source-fallback:${sourceId}`, conditionStateForSourceState(source.state), {
+      sourceId, state: source.state, ...freshnessDetails,
+      currentFallback: false, nextRetryAt: source.nextAttemptAt ?? null,
+      affectedCoverage: "all-serving-paths-unavailable",
+    });
     const lastSuccessMs = Date.parse(source.lastSuccessAt ?? "");
     const coverageLost = sourceCoverageLost(source);
     const alert = {
@@ -412,8 +460,9 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
         coverageLost,
         affectedCoverage: coverageLost ? "all-source-peers" : "remaining-source-peers",
         lastSuccessAt: source.lastSuccessAt ?? null,
-        failureAgeMs: Number.isFinite(lastSuccessMs) ? Math.max(0, now.getTime() - lastSuccessMs) : null,
-        currentFallback: Boolean(source.fallbackUrl),
+        failureAgeMs: Number.isFinite(lastSuccessMs) ? Math.max(0, recoveryTime.getTime() - lastSuccessMs) : null,
+        currentFallback,
+        ...freshnessDetails,
         nextRetryAt: source.nextAttemptAt ?? null,
         // URLs are stripped from alert details; keep a non-sensitive fallback signal.
         hasFallback: Boolean(source.fallbackUrl),

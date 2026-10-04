@@ -51,7 +51,7 @@ import { syncPublishedEventCalendar } from "./event-calendar-runtime";
 import { matchingProductUses } from "./product-watch";
 import { sourceIdentityKey } from "./identity";
 import { runScheduledIngest, type IngestRun, type IngestRunOptions } from "./run-all";
-import { isSuccessfulSourceState } from "./source-health";
+import { isSuccessfulSourceState, type SourceRunNote } from "./source-health";
 import { markSocialEvidenceProcessed } from "./social-evidence";
 import {
   officialSourceCoverage,
@@ -119,6 +119,32 @@ export type AutomationOptions = {
 // pipeline causes `Illegal invocation` in production even though Node accepts
 // it in tests.
 export const runtimeFetch: typeof fetch = (input, init) => globalThis.fetch(input, init);
+
+/** The same bounded source projection feeds logs and scheduled alert evaluation. */
+export function projectOperationalSources(sources: readonly SourceRunNote[]) {
+  return sources.map((source) => ({
+    id: source.id,
+    checkedAt: source.checkedAt,
+    origin: source.origin,
+    type: source.type,
+    state: source.state,
+    itemCount: source.itemCount,
+    complete: source.complete,
+    ...(source.completeness ? { completeness: source.completeness } : {}),
+    ...(source.error ? { error: source.error.replace(/\s+/g, " ").trim().slice(0, 240) } : {}),
+    ...(source.httpStatus === undefined ? {} : { httpStatus: source.httpStatus }),
+    ...(source.nextAttemptAt ? { nextAttemptAt: source.nextAttemptAt } : {}),
+    ...(source.fallbackUrl ? { fallbackUrl: source.fallbackUrl } : {}),
+    ...(source.consecutiveFailures === undefined ? {} : { consecutiveFailures: source.consecutiveFailures }),
+    ...(source.lastSuccessAt === undefined ? {} : { lastSuccessAt: source.lastSuccessAt }),
+    ...(source.primaryLastSuccessAt === undefined ? {} : { primaryLastSuccessAt: source.primaryLastSuccessAt }),
+    ...(source.fallbackLastSuccessAt === undefined ? {} : { fallbackLastSuccessAt: source.fallbackLastSuccessAt }),
+    ...(source.primaryState ? { primaryState: source.primaryState } : {}),
+    ...(source.servingPath ? { servingPath: source.servingPath } : {}),
+    ...(source.requiresAuth === undefined ? {} : { requiresAuth: source.requiresAuth }),
+  }));
+}
+
 
 const BUNDLED_INGEST_EVENTS = ContentCatalog.parse(publishedCatalog)
   .filter((item): item is Extract<ContentItem, { kind: "event" }> => (
@@ -818,22 +844,7 @@ export async function runAutomation(
       row.attempt?.outcome === "failure" && row.attempt.error?.startsWith("validation:")
     )).length;
     const modelOperationalFailedCount = modelFailedCount - modelValidationRejectedCount;
-    const sources = (run.notes.sources ?? []).map((source) => ({
-      id: source.id,
-      origin: source.origin,
-      type: source.type,
-      state: source.state,
-      itemCount: source.itemCount,
-      complete: source.complete,
-      ...(source.completeness ? { completeness: source.completeness } : {}),
-      ...(source.error ? { error: source.error.replace(/\s+/g, " ").trim().slice(0, 240) } : {}),
-      ...(source.httpStatus === undefined ? {} : { httpStatus: source.httpStatus }),
-      ...(source.nextAttemptAt ? { nextAttemptAt: source.nextAttemptAt } : {}),
-      ...(source.fallbackUrl ? { fallbackUrl: source.fallbackUrl } : {}),
-      ...(source.consecutiveFailures === undefined ? {} : { consecutiveFailures: source.consecutiveFailures }),
-      ...(source.lastSuccessAt === undefined ? {} : { lastSuccessAt: source.lastSuccessAt }),
-      ...(source.requiresAuth === undefined ? {} : { requiresAuth: source.requiresAuth }),
-    }));
+    const sources = projectOperationalSources(run.notes.sources ?? []);
     const sourceErrorCount = sources.filter(
       (source) => !["disabled", "misconfigured"].includes(source.state) && !isSuccessfulSourceState(source.state),
     ).length;

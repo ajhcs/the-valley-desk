@@ -754,8 +754,8 @@ export async function persistSourceHealth(
       source_id, origin, source_type, source_url, state, complete, completeness, item_count,
       consecutive_failures, last_checked_at, last_success_at, last_error, last_run_id,
       next_attempt_at, last_http_status, requires_auth, last_fallback_url,
-      institution_ids_json
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      institution_ids_json, last_primary_success_at, last_fallback_success_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(source_id) DO UPDATE SET
       origin = excluded.origin,
       source_type = excluded.source_type,
@@ -766,10 +766,9 @@ export async function persistSourceHealth(
       item_count = excluded.item_count,
       consecutive_failures = excluded.consecutive_failures,
       last_checked_at = excluded.last_checked_at,
-      last_success_at = CASE
-        WHEN excluded.state IN ('healthy', 'healthy-empty') THEN excluded.last_checked_at
-        ELSE source_health.last_success_at
-      END,
+      last_success_at = COALESCE(excluded.last_success_at, source_health.last_success_at),
+      last_primary_success_at = COALESCE(excluded.last_primary_success_at, source_health.last_primary_success_at),
+      last_fallback_success_at = COALESCE(excluded.last_fallback_success_at, source_health.last_fallback_success_at),
       last_error = CASE
         WHEN excluded.state IN ('healthy', 'healthy-empty') THEN NULL
         ELSE excluded.last_error
@@ -807,7 +806,7 @@ export async function persistSourceHealth(
         source.itemCount,
         consecutiveFailures,
         source.checkedAt,
-        isSuccessfulSourceState(source.state) ? source.checkedAt : null,
+        isSuccessfulSourceState(source.state) || source.fallbackLastSuccessAt === source.checkedAt ? source.checkedAt : null,
         source.error ?? (deliberateBackoff ? prior?.lastError ?? "Source is in retry backoff" : null),
         runId,
         nextAttemptAt,
@@ -815,6 +814,8 @@ export async function persistSourceHealth(
         source.requiresAuth ? 1 : (deliberateBackoff && prior?.requiresAuth ? 1 : 0),
         source.fallbackUrl ?? (deliberateBackoff ? prior?.lastFallbackUrl ?? null : null),
         JSON.stringify(source.institutionIds ?? prior?.institutionIds ?? []),
+        source.primaryLastSuccessAt ?? null,
+        source.fallbackLastSuccessAt ?? null,
       ];
     })(),
   ));
@@ -839,14 +840,14 @@ type SourceHealthRow = {
   requires_auth: number;
   last_fallback_url: string | null;
   institution_ids_json: string | null;
+  last_primary_success_at?: string | null;
+  last_fallback_success_at?: string | null;
 };
 
 export async function readSourceHealth(db: D1DatabaseLike): Promise<Map<string, PersistedSourceHealth>> {
   try {
-    const result = await db.prepare(`SELECT source_id, state, item_count, complete, completeness,
-        consecutive_failures, last_checked_at, last_success_at, last_error, next_attempt_at,
-        last_http_status, requires_auth, last_fallback_url, institution_ids_json
-      FROM source_health`).all<SourceHealthRow>();
+    // SELECT * also reads pre-0039 state without dropping existing retry holds.
+    const result = await db.prepare(`SELECT * FROM source_health`).all<SourceHealthRow>();
     return new Map((result.results ?? []).flatMap((row) => {
       if (!(SOURCE_RUN_STATES as readonly string[]).includes(row.state)) return [];
       const completeness = row.completeness === "complete" || row.completeness === "partial" || row.completeness === "empty-unverified"
@@ -861,6 +862,8 @@ export async function readSourceHealth(db: D1DatabaseLike): Promise<Map<string, 
         consecutiveFailures: Number(row.consecutive_failures) || 0,
         lastCheckedAt: row.last_checked_at,
         lastSuccessAt: row.last_success_at,
+        primaryLastSuccessAt: row.last_primary_success_at ?? null,
+        fallbackLastSuccessAt: row.last_fallback_success_at ?? null,
         lastError: row.last_error,
         nextAttemptAt: row.next_attempt_at,
         lastHttpStatus: row.last_http_status == null ? null : Number(row.last_http_status),

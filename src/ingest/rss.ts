@@ -19,6 +19,7 @@ import {
   sourceIsInBackoff,
   sourceNote,
   sourceStateForItemCount,
+  sourceNextAttemptAt,
   type IngestSourceResult,
   type SourceRunNote,
 } from "./source-health";
@@ -368,6 +369,7 @@ type WorkingRss = {
   orgIds?: readonly string[];
   authorityUrl?: string;
   authorityName?: string;
+  servingPath?: SourceRunNote["servingPath"];
   status: number;
   items: ParsedFeedItem[];
 };
@@ -468,6 +470,8 @@ async function fetchRssSources(
           const independent = candidate.adapter === "cooper-independent";
           fallback = {
             url: candidate.url,
+            servingPath: independent ? "independent-discovery-fallback"
+              : candidate.adapter === "cooper-newsroom" ? "official-html-fallback" : "fallback",
             name: source.name,
             origin: independent ? "cooper-independent-discovery" : source.origin,
             orgIds: source.orgIds,
@@ -502,12 +506,20 @@ async function fetchRssSources(
           requiresAuth: prior?.requiresAuth,
           fallbackUrl: fallback.url,
           consecutiveFailures: prior?.consecutiveFailures ?? 0,
-          lastSuccessAt: prior?.lastSuccessAt ?? null,
+          lastSuccessAt: checkedAt,
+          primaryLastSuccessAt: prior?.primaryLastSuccessAt ?? null,
+          fallbackLastSuccessAt: checkedAt,
+          primaryState: "backoff",
+          servingPath: fallback.servingPath,
           institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
         }));
       } else {
         sources.push({
           ...sourceBackoffNote(source.id, source.origin ?? source.name, "rss", checkedAt, prior, source.url),
+          primaryLastSuccessAt: prior?.primaryLastSuccessAt ?? null,
+          fallbackLastSuccessAt: prior?.fallbackLastSuccessAt ?? null,
+          primaryState: "backoff",
+          servingPath: "unavailable",
           institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
         });
       }
@@ -515,12 +527,16 @@ async function fetchRssSources(
     }
     let success: WorkingRss | undefined;
     let lastError: UpstreamError | undefined;
+    let primaryError: UpstreamError | undefined;
     for (const candidate of candidates) {
       try {
         const feed = await readCandidate(candidate);
         const independent = candidate.adapter === "cooper-independent";
         success = {
           url: candidate.url,
+          servingPath: candidate.url === source.url ? "primary"
+            : independent ? "independent-discovery-fallback"
+              : candidate.adapter === "cooper-newsroom" ? "official-html-fallback" : "fallback",
           name: source.name,
           origin: independent ? "cooper-independent-discovery" : source.origin,
           orgIds: source.orgIds,
@@ -537,6 +553,7 @@ async function fetchRssSources(
         lastError = error instanceof UpstreamError
           ? error
           : new UpstreamError("upstream-failed", error instanceof Error ? error.message : String(error));
+        if (candidate.url === source.url) primaryError = lastError;
       }
     }
     if (success) {
@@ -548,6 +565,12 @@ async function fetchRssSources(
         state: sourceStateForItemCount(success.items.length),
         checkedAt,
         itemCount: success.items.length,
+        lastSuccessAt: checkedAt,
+        primaryLastSuccessAt: success.url === source.url ? checkedAt : prior?.primaryLastSuccessAt ?? null,
+        fallbackLastSuccessAt: success.url !== source.url ? checkedAt : prior?.fallbackLastSuccessAt ?? null,
+        primaryState: success.url === source.url ? sourceStateForItemCount(success.items.length) : primaryError?.code ?? "upstream-failed",
+        servingPath: success.servingPath,
+        nextAttemptAt: sourceNextAttemptAt(sourceStateForItemCount(success.items.length), checkedAt, 0),
         url: success.url,
         ...(success.url !== source.url ? { fallbackUrl: success.url } : {}),
         institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
@@ -566,6 +589,10 @@ async function fetchRssSources(
       requiresAuth: false,
       consecutiveFailures: (prior?.consecutiveFailures ?? 0) + 1,
       lastSuccessAt: prior?.lastSuccessAt ?? null,
+      primaryLastSuccessAt: prior?.primaryLastSuccessAt ?? null,
+      fallbackLastSuccessAt: prior?.fallbackLastSuccessAt ?? null,
+      primaryState: primaryError?.code ?? "upstream-failed",
+      servingPath: "unavailable",
       institutionIds: institutionIdsForOrgIds(source.orgIds ?? []),
     }));
   }
