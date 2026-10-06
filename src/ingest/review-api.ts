@@ -20,6 +20,7 @@ import { handleWatchEditorialApi } from "./watch-editorial-api";
 import { createWatchEditorialRuntime } from "./watch-editorial-runtime";
 import { handleRepresentativeReview } from "./representative-api";
 import { resolveRepresentativeSourcePolicy } from "./representative-runtime";
+import { regionalEvidenceReviewPayload } from "./regional-evidence-review";
 import { tupleKey } from "../content/watch-schema";
 import { syncPublishedEventCalendar } from "./event-calendar-runtime";
 
@@ -310,6 +311,7 @@ export function isReviewApiPath(pathname: string) {
     || /^\/api\/(?:watch-drafts|representative-drafts)(?:\/|$)/.test(pathname)
     || pathname === "/api/automation/status"
     || pathname === "/api/automation/status/review"
+    || pathname === "/api/automation/status/regional-review"
     || pathname.startsWith("/api/executive-observations")
     || pathname.startsWith("/api/email-pdf-attachments")
     || pathname.startsWith("/api/review-queue");
@@ -851,6 +853,17 @@ export async function handleReviewApi(request: Request, env: ReviewEnv, options:
       return json({ error: "rate_limited" }, 429);
     }
     return handlePolicyPdfApi(request, env.VALLEY_DESK_DB, pathname, options.trustedAccessEmail ?? "review-api-token");
+  }
+
+  if (pathname === "/api/automation/status/regional-review") {
+    if (method !== "GET" && method !== "HEAD")
+      return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
+    try {
+      const payload = await regionalEvidenceReviewPayload(env.VALLEY_DESK_DB, new Date().toISOString());
+      return method === "HEAD" ? new Response(null, { headers: JSON_HEADERS }) : json(payload);
+    } catch {
+      return json({ error: "regional-evidence-review-unavailable", status: "unavailable", reviewOnly: true }, 503);
+    }
   }
 
   if (pathname === "/api/automation/status" || pathname === "/api/automation/status/review") {

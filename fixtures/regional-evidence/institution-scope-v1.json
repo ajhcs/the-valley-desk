@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "status": "review-only",
+  "collectionAuthorized": false,
+  "publicationAuthorized": false,
+  "coreMonitorIds": [
+    "inst-penn", "inst-jefferson", "inst-main-line", "inst-chop", "inst-cooper",
+    "inst-christianacare", "inst-temple", "inst-virtua", "inst-tower", "inst-inspira",
+    "inst-lvhn", "inst-penn-princeton", "inst-penn-doylestown", "inst-nemours",
+    "inst-rwjbarnabas", "inst-st-lukes"
+  ],
+  "additionalInstitutionScopes": [
+    { "id": "inst-review-penn-perelman", "name": "Perelman School of Medicine (source scope only)" }
+  ],
+  "evidence": [
+    {
+      "id": "scope-penn-uphs", "sourceId": "ofs-penn-news", "kind": "source-scope",
+      "basis": "delegated-research-summary",
+      "url": "https://www.pennmedicine.org/news/media-resources?redirect=1&source=fsu",
+      "summary": "Delegated research establishes that Penn's newsroom serves the University of Pennsylvania Health System. This is source scope, not article attribution or current employment.",
+      "institutionIds": ["inst-penn"], "inventoryEvidenceId": null,
+      "observedAt": null, "representationSha256": null
+    },
+    {
+      "id": "scope-penn-perelman", "sourceId": "ofs-penn-news", "kind": "source-scope",
+      "basis": "delegated-research-summary",
+      "url": "https://www.pennmedicine.org/news/media-resources?redirect=1&source=fsu",
+      "summary": "Delegated research establishes that Penn's existing newsroom also serves the Perelman School of Medicine. Perelman remains a separate review scope outside the fixed 16 institution denominator.",
+      "institutionIds": ["inst-review-penn-perelman"], "inventoryEvidenceId": null,
+      "observedAt": null, "representationSha256": null
+    },
+    {
+      "id": "scope-penn-princeton", "sourceId": "ofs-penn-news", "kind": "source-scope",
+      "basis": "delegated-research-summary",
+      "url": "https://www.pennmedicine.org/news/media-resources?redirect=1&source=fsu",
+      "summary": "Delegated research establishes that Penn's media resources lists Princeton Health. A separately qualified Princeton article binding and institution freshness receipt remain missing; news absence is not established.",
+      "institutionIds": ["inst-penn-princeton"], "inventoryEvidenceId": null,
+      "observedAt": null, "representationSha256": null
+    },
+    {
+      "id": "scope-penn-doylestown", "sourceId": "ofs-penn-news", "kind": "source-scope",
+      "basis": "delegated-research-summary",
+      "url": "https://www.pennmedicine.org/news/media-resources?redirect=1&source=fsu",
+      "summary": "Delegated research establishes that Penn's media resources lists Doylestown Health. A separately qualified Doylestown article binding and institution freshness receipt remain missing; news absence is not established.",
+      "institutionIds": ["inst-penn-doylestown"], "inventoryEvidenceId": null,
+      "observedAt": null, "representationSha256": null
+    },
+    {
+      "id": "scope-jdc-university", "sourceId": "rgn-jefferson-research", "kind": "source-scope",
+      "basis": "delegated-research-summary", "url": "https://jdc.jefferson.edu/about.html",
+      "summary": "Delegated research establishes that Jefferson Digital Commons includes University works, Health works, and invited works. Repository inclusion alone cannot establish an author's current employment.",
+      "institutionIds": ["inst-regional-jefferson-university"], "inventoryEvidenceId": null,
+      "observedAt": null, "representationSha256": null
+    },
+    {
+      "id": "scope-jdc-health", "sourceId": "rgn-jefferson-research", "kind": "source-scope",
+      "basis": "delegated-research-summary", "url": "https://jdc.jefferson.edu/about.html",
+      "summary": "Delegated research establishes that Jefferson Digital Commons includes Health works as well as University and invited works. This relationship does not enroll authors or infer affiliation from an article's presence.",
+      "institutionIds": ["inst-jefferson"], "inventoryEvidenceId": null,
+      "observedAt": null, "representationSha256": null
+    },
+    {
+      "id": "scope-penn-captk", "sourceId": "rgn-penn-captk", "kind": "repository-link",
+      "basis": "existing-inventory-declaration", "url": "https://www.med.upenn.edu/cbica/captk/",
+      "summary": "The existing University research inventory cites an exact CaPTk repository link. This slice does not reverify retained bytes, infer UPHS ownership, or infer organization-wide ownership.",
+      "institutionIds": ["inst-regional-penn-university"], "inventoryEvidenceId": "ev-penn-captk-link",
+      "observedAt": null, "representationSha256": null
+    }
+  ],
+  "relationships": [
+    { "id": "rel-penn-uphs", "sourceId": "ofs-penn-news", "institutionId": "inst-penn", "relation": "newsroom-serves-institution", "evidenceIds": ["scope-penn-uphs"], "status": "review-only" },
+    { "id": "rel-penn-perelman", "sourceId": "ofs-penn-news", "institutionId": "inst-review-penn-perelman", "relation": "newsroom-serves-institution", "evidenceIds": ["scope-penn-perelman"], "status": "review-only" },
+    { "id": "rel-penn-princeton", "sourceId": "ofs-penn-news", "institutionId": "inst-penn-princeton", "relation": "newsroom-serves-institution", "evidenceIds": ["scope-penn-princeton"], "status": "review-only" },
+    { "id": "rel-penn-doylestown", "sourceId": "ofs-penn-news", "institutionId": "inst-penn-doylestown", "relation": "newsroom-serves-institution", "evidenceIds": ["scope-penn-doylestown"], "status": "review-only" },
+    { "id": "rel-jdc-university", "sourceId": "rgn-jefferson-research", "institutionId": "inst-regional-jefferson-university", "relation": "repository-includes-institutional-work", "evidenceIds": ["scope-jdc-university"], "status": "review-only" },
+    { "id": "rel-jdc-health", "sourceId": "rgn-jefferson-research", "institutionId": "inst-jefferson", "relation": "repository-includes-institutional-work", "evidenceIds": ["scope-jdc-health"], "status": "review-only" },
+    { "id": "rel-penn-captk", "sourceId": "rgn-penn-captk", "institutionId": "inst-regional-penn-university", "relation": "institution-links-repository", "evidenceIds": ["scope-penn-captk"], "status": "review-only" }
+  ]
+}
