@@ -42,6 +42,8 @@ export type OperationalAlertInput = {
   now?: Date;
   /** Record the occurrence for the daily digest without claiming immediate mail. */
   notify?: boolean;
+  /** Stable internal run ID; duplicate deliveries are not new conditions. */
+  observationId?: string;
 };
 
 export type OperationalAlertRow = {
@@ -216,7 +218,10 @@ export async function recordOperationalAlert(
   const subsystem = safeField(input.subsystem, 80, "automation");
   const groupKey = safeField(input.groupKey, 240, `${packId}:${subsystem}:${event}`);
   const threshold = Math.max(1, Math.min(100, Math.trunc(input.threshold ?? ALERT_DEFAULT_THRESHOLD)));
-  const detailJson = safeDetailJson(input.details);
+  const observationId = safeField(input.observationId, 240, "") || null;
+  const details = { ...input.details };
+  delete details.observationId;
+  const detailJson = safeDetailJson(observationId ? { observationId, ...details } : details);
   const recorded = await db.prepare(`
     INSERT INTO operational_alerts (
       fingerprint, pack_id, event, severity, state, occurrence_count,
@@ -234,6 +239,9 @@ export async function recordOperationalAlert(
       group_key = excluded.group_key,
       occurrence_count = CASE
         WHEN operational_alerts.state = 'resolved' THEN 1
+        WHEN json_extract(excluded.detail_json, '$.observationId') IS NOT NULL
+          AND excluded.last_seen_at = operational_alerts.last_seen_at
+          THEN operational_alerts.occurrence_count
         ELSE operational_alerts.occurrence_count + 1
       END,
       last_seen_at = excluded.last_seen_at,
@@ -264,6 +272,7 @@ export async function recordOperationalAlert(
     WHERE excluded.last_seen_at >= operational_alerts.last_seen_at
       AND (operational_alerts.last_recovered_at IS NULL
         OR excluded.last_seen_at >= operational_alerts.last_recovered_at)
+      AND (? IS NULL OR COALESCE(json_extract(operational_alerts.detail_json, '$.observationId'), '') != ?)
   `).bind(
     fingerprint,
     packId,
@@ -277,6 +286,8 @@ export async function recordOperationalAlert(
     nowIso,
     nowIso,
     detailJson,
+    observationId,
+    observationId,
   ).run();
 
   const before = await db.prepare(rowSelect()).bind(fingerprint).first<OperationalAlertRow>();
@@ -347,7 +358,7 @@ export async function resolveOperationalAlertWithTransition(
         recovery_detail_json = ?
     WHERE fingerprint = ? AND state = 'open'
       AND COALESCE(json_extract(recovery_detail_json, '$.observationId'), last_recovered_at, '') != ?
-      AND (last_recovered_at IS NULL OR last_recovered_at <= ?)
+      AND (last_recovered_at IS NULL OR last_recovered_at < ?)
       AND last_seen_at < ?
   `).bind(required, nowIso, safeDetailJson({ observationId, ...observationDetails }), safeFingerprint, observationId, nowIso, nowIso).run();
   const resolution = await db.prepare(`

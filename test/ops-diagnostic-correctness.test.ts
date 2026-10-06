@@ -203,6 +203,9 @@ test("replaying an old completed run cannot recover a newly recorded failure", a
     await sendAutomationAlerts(env, { runId: "old-healthy", finishedAt: at, notes: { sources: [source] } }, new Date("2026-10-04T08:30:00.000Z"));
     assert.equal(alert(sqlite).recovery_count, 0); assert.equal(alert(sqlite).condition_state, "blocked");
     await sendAutomationAlerts(env, { runId: "new-healthy-1", finishedAt: "2026-10-04T08:35:00.000Z", notes: { sources: [source] } }, new Date("2026-10-04T08:36:00.000Z"));
+    assert.equal(alert(sqlite).recovery_count, 0, "later completion cannot freshen pre-failure evidence");
+    const freshAt = "2026-10-04T08:40:00.000Z";
+    await sendAutomationAlerts(env, { runId: "fresh-healthy", finishedAt: freshAt, notes: { sources: [(await collect("official", freshAt)).source] } }, new Date(freshAt));
     assert.equal(alert(sqlite).recovery_count, 1);
   } finally { sqlite.close(); }
 });
