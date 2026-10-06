@@ -345,8 +345,17 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     if (!source) continue;
     const sourceId = typeof source.id === "string" ? source.id.slice(0, 100) : "unknown";
     const fingerprint = `valley-desk:source:${sourceId}`;
-    if (source.state === "disabled" || source.state === "misconfigured") {
+    if (source.state === "disabled") {
       await recover(fingerprint, 1);
+      continue;
+    }
+    if (source.state === "misconfigured") {
+      // Missing configuration is not a successful source observation.
+      // Preserve an existing outage and interrupt its recovery streak.
+      await interrupt(fingerprint, "degraded", {
+        sourceId, state: source.state, reason: "source-configuration-unavailable",
+        affectedCoverage: "collection-unavailable", countSemantics: "condition-evaluations",
+      });
       continue;
     }
     const freshnessDetails = {

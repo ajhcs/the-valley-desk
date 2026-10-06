@@ -1,0 +1,133 @@
+{
+  "status": "awaiting-due-capture",
+  "provenance": "Preparation only. No real markup, selector qualification, or current affiliations asserted. Synthetic data-fixture-* selectors exist only in offline tests.",
+  "contracts": [
+    {
+      "sourceId": "src-chop-leadership",
+      "institutionId": "inst-chop",
+      "identityScope": "roster",
+      "expectedProfileIdentity": null,
+      "allowedFixtureScopes": [
+        "executive"
+      ],
+      "rawCaptureSha256": null,
+      "officialSelectors": null,
+      "qualified": false,
+      "acceptance": [
+        "Bind exact checksum and source/final URL to a permitted complete-body due capture.",
+        "Qualify institution, region and section; pair each name/title in the same person container.",
+        "Reject labels, crossed roles, related articles, board/region substitutions and ambiguous identities.",
+        "Prove completeness independently before renewing freshness or deriving roster events; a profile never establishes a whole roster."
+      ]
+    },
+    {
+      "sourceId": "src-chop-desai",
+      "institutionId": "inst-chop",
+      "identityScope": "profile",
+      "expectedProfileIdentity": "Bimal Desai",
+      "allowedFixtureScopes": [
+        "profile"
+      ],
+      "rawCaptureSha256": null,
+      "officialSelectors": null,
+      "qualified": false,
+      "acceptance": [
+        "Bind exact checksum and source/final URL to a permitted complete-body due capture.",
+        "Qualify institution, region and section; pair each name/title in the same person container.",
+        "Reject labels, crossed roles, related articles, board/region substitutions and ambiguous identities.",
+        "Prove completeness independently before renewing freshness or deriving roster events; a profile never establishes a whole roster."
+      ]
+    },
+    {
+      "sourceId": "src-chop-pennington",
+      "institutionId": "inst-chop",
+      "identityScope": "profile",
+      "expectedProfileIdentity": "Jeffrey Pennington",
+      "allowedFixtureScopes": [
+        "profile"
+      ],
+      "rawCaptureSha256": null,
+      "officialSelectors": null,
+      "qualified": false,
+      "acceptance": [
+        "Bind exact checksum and source/final URL to a permitted complete-body due capture.",
+        "Qualify institution, region and section; pair each name/title in the same person container.",
+        "Reject labels, crossed roles, related articles, board/region substitutions and ambiguous identities.",
+        "Prove completeness independently before renewing freshness or deriving roster events; a profile never establishes a whole roster."
+      ]
+    },
+    {
+      "sourceId": "src-chop-salmasian",
+      "institutionId": "inst-chop",
+      "identityScope": "profile",
+      "expectedProfileIdentity": "Hojjat Salmasian",
+      "allowedFixtureScopes": [
+        "profile"
+      ],
+      "rawCaptureSha256": null,
+      "officialSelectors": null,
+      "qualified": false,
+      "acceptance": [
+        "Bind exact checksum and source/final URL to a permitted complete-body due capture.",
+        "Qualify institution, region and section; pair each name/title in the same person container.",
+        "Reject labels, crossed roles, related articles, board/region substitutions and ambiguous identities.",
+        "Prove completeness independently before renewing freshness or deriving roster events; a profile never establishes a whole roster."
+      ]
+    },
+    {
+      "sourceId": "src-temple-leadership",
+      "institutionId": "inst-temple",
+      "identityScope": "roster",
+      "expectedProfileIdentity": null,
+      "allowedFixtureScopes": [
+        "executive"
+      ],
+      "rawCaptureSha256": null,
+      "officialSelectors": null,
+      "qualified": false,
+      "acceptance": [
+        "Bind exact checksum and source/final URL to a permitted complete-body due capture.",
+        "Qualify institution, region and section; pair each name/title in the same person container.",
+        "Reject labels, crossed roles, related articles, board/region substitutions and ambiguous identities.",
+        "Prove completeness independently before renewing freshness or deriving roster events; a profile never establishes a whole roster."
+      ]
+    },
+    {
+      "sourceId": "src-inspira-leadership",
+      "institutionId": "inst-inspira",
+      "identityScope": "roster",
+      "expectedProfileIdentity": null,
+      "allowedFixtureScopes": [
+        "executive"
+      ],
+      "rawCaptureSha256": null,
+      "officialSelectors": null,
+      "qualified": false,
+      "acceptance": [
+        "Bind exact checksum and source/final URL to a permitted complete-body due capture.",
+        "Qualify institution, region and section; pair each name/title in the same person container.",
+        "Reject labels, crossed roles, related articles, board/region substitutions and ambiguous identities.",
+        "Prove completeness independently before renewing freshness or deriving roster events; a profile never establishes a whole roster."
+      ]
+    },
+    {
+      "sourceId": "src-nemours-leadership",
+      "institutionId": "inst-nemours",
+      "identityScope": "roster",
+      "expectedProfileIdentity": null,
+      "allowedFixtureScopes": [
+        "system-executive",
+        "delaware-valley"
+      ],
+      "rawCaptureSha256": null,
+      "officialSelectors": null,
+      "qualified": false,
+      "acceptance": [
+        "Bind exact checksum and source/final URL to a permitted complete-body due capture.",
+        "Qualify institution, region and section; pair each name/title in the same person container.",
+        "Reject labels, crossed roles, related articles, board/region substitutions and ambiguous identities.",
+        "Prove completeness independently before renewing freshness or deriving roster events; a profile never establishes a whole roster."
+      ]
+    }
+  ]
+}

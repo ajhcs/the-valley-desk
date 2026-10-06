@@ -1,0 +1,108 @@
+{
+  "checkedAt": "2026-10-06T17:38:11.223Z",
+  "sourceWindow": "2026-10-06T02:30:00Z/2026-10-06T04:00:00Z",
+  "expiry": "2026-10-07T04:00:00Z",
+  "qualification": "offline-review-only",
+  "currentAffiliationsVerified": false,
+  "renewFreshness": false,
+  "authorizeDeparture": false,
+  "sources": [
+    {
+      "sourceId": "src-chop-desai",
+      "url": "https://www.chop.edu/doctors/desai-bimal",
+      "receivedAt": "2026-10-06T02:45:31.358Z",
+      "expiresAt": "2026-10-07T04:00:00.000Z",
+      "rawSHA256": "6b519c7ab93568ab23fa3097c62eab895698d118b89297f8d20c95761c834f12",
+      "decodedSHA256": "6b519c7ab93568ab23fa3097c62eab895698d118b89297f8d20c95761c834f12",
+      "rawBytes": 125416,
+      "integrityVerified": true,
+      "candidateCount": 1,
+      "rejectionCounts": {}
+    },
+    {
+      "sourceId": "src-chop-leadership",
+      "url": "https://www.chop.edu/about-us/executive-leadership",
+      "receivedAt": "2026-10-06T02:45:30.280Z",
+      "expiresAt": "2026-10-07T04:00:00.000Z",
+      "rawSHA256": "1ce6424d803f21af77fc3ed799bfe5eeccff385b6d379273fee023551823ac91",
+      "decodedSHA256": "1ce6424d803f21af77fc3ed799bfe5eeccff385b6d379273fee023551823ac91",
+      "rawBytes": 297996,
+      "integrityVerified": true,
+      "candidateCount": 13,
+      "rejectionCounts": {}
+    },
+    {
+      "sourceId": "src-chop-pennington",
+      "url": "https://www.chop.edu/administrative-staff/pennington-jeffrey",
+      "receivedAt": "2026-10-06T02:45:32.447Z",
+      "expiresAt": "2026-10-07T04:00:00.000Z",
+      "rawSHA256": "df9289b14ff8cd4c136a0db8481606c5109d111ac155379b86aa7b078c3d451e",
+      "decodedSHA256": "df9289b14ff8cd4c136a0db8481606c5109d111ac155379b86aa7b078c3d451e",
+      "rawBytes": 120826,
+      "integrityVerified": true,
+      "candidateCount": 1,
+      "rejectionCounts": {}
+    },
+    {
+      "sourceId": "src-chop-salmasian",
+      "url": "https://www.chop.edu/administrative-staff/salmasian-hojjat",
+      "receivedAt": "2026-10-06T02:45:28.982Z",
+      "expiresAt": "2026-10-07T04:00:00.000Z",
+      "rawSHA256": "f0fc1e4cfdcebfa65a130eff47b16dc001a305172f69cda1fe11e5079123d9ea",
+      "decodedSHA256": "f0fc1e4cfdcebfa65a130eff47b16dc001a305172f69cda1fe11e5079123d9ea",
+      "rawBytes": 127071,
+      "integrityVerified": true,
+      "candidateCount": 1,
+      "rejectionCounts": {}
+    },
+    {
+      "sourceId": "src-inspira-leadership",
+      "url": "https://www.inspirahealthnetwork.org/about-us/executive-management-and-senior-leadership-team",
+      "receivedAt": "2026-10-06T02:45:28.867Z",
+      "expiresAt": "2026-10-07T04:00:00.000Z",
+      "rawSHA256": "efaa5250997b2914f35710bb15a2ca2dbf46753525b09b37caeaf88a888c1534",
+      "decodedSHA256": "efaa5250997b2914f35710bb15a2ca2dbf46753525b09b37caeaf88a888c1534",
+      "rawBytes": 75437,
+      "integrityVerified": true,
+      "candidateCount": 13,
+      "rejectionCounts": {}
+    },
+    {
+      "sourceId": "src-nemours-leadership",
+      "url": "https://www.nemours.org/about/leadership.html",
+      "receivedAt": "2026-10-06T03:45:27.628Z",
+      "expiresAt": "2026-10-07T04:00:00.000Z",
+      "rawSHA256": "a1a68f3ab1ca90d29224bab8534c72f2a1fcea4fe371ca73f716b902fbc8d456",
+      "decodedSHA256": "a1a68f3ab1ca90d29224bab8534c72f2a1fcea4fe371ca73f716b902fbc8d456",
+      "rawBytes": 405112,
+      "integrityVerified": true,
+      "candidateCount": 22,
+      "rejectionCounts": {
+        "outside-regional-scope": 4,
+        "board-or-unproven-section": 2
+      }
+    },
+    {
+      "sourceId": "src-temple-leadership",
+      "url": "https://www.templehealth.org/about/leadership",
+      "receivedAt": "2026-10-06T02:45:28.164Z",
+      "expiresAt": "2026-10-07T04:00:00.000Z",
+      "rawSHA256": "98e04ebac04c7126328788aacfc7186868082feb74e623bccded7ac7ccf7fafc",
+      "decodedSHA256": "98e04ebac04c7126328788aacfc7186868082feb74e623bccded7ac7ccf7fafc",
+      "rawBytes": 113251,
+      "integrityVerified": true,
+      "candidateCount": 20,
+      "rejectionCounts": {}
+    }
+  ],
+  "outputBoundary": "all-candidate-and-rejection-strings-validated; timestamps-canonicalized",
+  "finalOutputGuardVerification": {
+    "checkedAt": "2026-10-06T17:43:24.728Z",
+    "mode": "existing-nonraw-metadata-only",
+    "rawResponsesRead": 0,
+    "priorEvaluationAt": "2026-10-06T17:38:11.223Z",
+    "candidates": 71,
+    "validatedStrings": 720,
+    "allPassed": true
+  }
+}

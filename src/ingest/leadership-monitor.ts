@@ -13,6 +13,7 @@ import {
   resolvePersonId,
   type ExtractedLeader,
 } from "./executive-history";
+import {isLeadershipDomReviewSource,previewLeadershipDom} from "./leadership-dom-review";
 import { normalizeSourceUrl } from "./identity";
 import {
   LEADERSHIP_ERROR_MAX_CHARS,
@@ -29,6 +30,8 @@ import {
 } from "./leadership-config";
 import { fetchAllowlistedArticlePage } from "./news-extraction";
 import { looksInstructionLike } from "./untrusted-text";
+
+import { MARKUP_CAPTURE_SOURCES, markupCaptureWindow, makeMarkupCapture, type LeadershipMarkupCapture } from "./leadership-markup-capture";
 
 export type LeadershipSnapshotState = "success" | "unchanged" | "failed" | "blocked" | "hostile";
 export type LeadershipExtractionStatus = "complete" | "empty-unverified" | "challenge" | "partial" | "unrecognized";
@@ -47,6 +50,8 @@ export type LeadershipSnapshot = {
   error?: string | null;
   httpStatus?: number | null;
   instructionLike: boolean;
+  /** Quarantined diagnostic bytes, persisted separately; never role evidence. */
+  markupCapture?: LeadershipMarkupCapture;
 };
 
 export type LeadershipObservationKind =
@@ -552,7 +557,7 @@ function extractionStatus(
   if (!extracted.length) return "unrecognized";
   // Re-fetching a historical (or undated) article cannot establish a current
   // roster. Preserve its claims/dates, but never infer arrivals or departures.
-  if (extracted.some((row) => row.articleEvidence)) return "partial";
+  if (extracted.some((row) => "articleEvidence" in row && row.articleEvidence)) return "partial";
   const contract = source.leadershipExtractionContract;
   if (contract) {
     const folded = decodeHtml(stripNonContent(html).replace(/<[^>]+>/g, " "))
@@ -742,7 +747,10 @@ function observationsFromSnapshot(
   }
   // Article claims remain attached to the snapshot, not current role events
   // (including a misleading transport-failure event for readable content).
-  if (snapshot.extracted.some((row) => row.articleEvidence)) return [];
+  if (snapshot.extracted.some((row) => "articleEvidence" in row && row.articleEvidence)) return [];
+  // Readable DOM candidates remain snapshot review evidence, not transport errors.
+  if (snapshot.extractionStatus === "partial" && snapshot.extracted.length > 0
+    && isLeadershipDomReviewSource(source.id)) return [];
   // Transport/allowlist failures use extractionStatus "partial" with an empty
   // body. Incomplete roster extraction also uses state "failed" but must not
   // invent arrivals, departures, or a false fetch-failed observation.
@@ -799,6 +807,8 @@ export type LeadershipMonitorOptions = {
   states?: ReadonlyMap<string, ScheduledLeadershipState>;
   candidateCap?: number;
   concurrency?: number;
+  captureMarkupSourceIds?: ReadonlySet<string>;
+  markupClock?: () => Date;
 };
 
 export async function monitorLeadershipSources(
@@ -854,6 +864,11 @@ export async function monitorLeadershipSources(
             maxRedirects: LEADERSHIP_MAX_REDIRECTS,
             scanMaxBytes: source.scanMaxBytes,
             retainSuffixBytes: source.retainSuffixBytes,
+            retainMarkupBytes: options.captureMarkupSourceIds?.has(source.id)
+              && MARKUP_CAPTURE_SOURCES[source.id] === source.url
+              && markupCaptureWindow(now)
+              && markupCaptureWindow(options.markupClock?.() ?? new Date()),
+            markupClock: options.markupClock,
           });
           if (!page.ok) {
             const httpStatus = httpStatusFromError(page.error);
@@ -880,7 +895,9 @@ export async function monitorLeadershipSources(
           }
           const normalizedText = normalizeLeadershipText(page.body);
           const institution = pack.institutions.find((row) => row.id === source.institutionId);
-          const extracted = extractLeaders(
+          const domReview = isLeadershipDomReviewSource(source.id)
+            ? previewLeadershipDom(source.id, page.body, normalizeSourceUrl(page.url) === normalizeSourceUrl(source.url) ? source.url : page.url) : null;
+          const extracted = domReview ? domReview.candidates : extractLeaders(
             page.body,
             institution?.aliases ?? [],
             source.leadershipExtractionContract,
@@ -892,7 +909,11 @@ export async function monitorLeadershipSources(
           const contentHash = await sha256Hex(source.leadershipExtractionContract
             ? JSON.stringify(extracted.map((row) => [row.normalizedName, row.normalizedTitle]))
             : normalizedText);
-          const extraction = extractionStatus(normalizedText, extracted, page.body, source, previous?.lastExtracted);
+          // Repaired structure does not certify a roster or current affiliation.
+          // No legacy regex fallback for scoped DOM sources, including wrong URLs.
+          const fetchedExtraction = extractionStatus(normalizedText, extracted, page.body, source, previous?.lastExtracted);
+          const extraction = domReview && fetchedExtraction === "complete"
+            ? "partial" : fetchedExtraction;
           const instructionLike = looksInstructionLike(
             page.body,
             normalizedText,
@@ -905,7 +926,9 @@ export async function monitorLeadershipSources(
           const unchanged = extraction === "complete"
             && Boolean(previous?.lastHash && previous.lastHash === contentHash);
           const hostile = instructionLike || extraction === "challenge";
-          const incompleteError = extracted.some((row) => row.articleEvidence)
+          const incompleteError = domReview && extracted.length
+            ? "DOM parser candidates retained for review; current affiliation and roster qualification are unverified"
+            : extracted.some((row) => "articleEvidence" in row && row.articleEvidence)
             ? "Article leadership claims retained for review; current affiliation is unverified"
             : incompleteExtractionError(extraction);
           const snapshot: LeadershipSnapshot = {
@@ -934,9 +957,11 @@ export async function monitorLeadershipSources(
                 : incompleteError,
             instructionLike: instructionLike || extraction === "challenge",
           };
+          const capture = await makeMarkupCapture(source.id, source.url, candidateUrl, page);
+          if (capture) snapshot.markupCapture = capture;
           lastSnapshot = snapshot;
           lastFetchedUrl = page.url;
-          if (snapshot.state === "failed" && snapshot.extracted.some((row) => row.articleEvidence)) {
+          if (snapshot.state === "failed" && snapshot.extracted.some((row) => "articleEvidence" in row && row.articleEvidence)) {
             articleSnapshot ??= snapshot;
           }
           if (snapshot.state !== "failed") {
