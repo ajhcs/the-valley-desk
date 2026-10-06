@@ -244,9 +244,12 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   const completedAt = Date.parse(result?.finishedAt ?? "");
   const recoveryTime = Number.isFinite(completedAt) && completedAt <= now.getTime()
     ? new Date(completedAt) : now;
+  // Completion time is stable across replay even for legacy results without runId.
+  const observationId = typeof result?.runId === "string" && result.runId
+    ? result.runId : recoveryTime.toISOString();
   const dispatch = async (input) => {
     try {
-      return await dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, { ...input, now: recoveryTime });
+      return await dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, { ...input, now: recoveryTime, observationId });
     } catch (error) {
       logOps("ops-alert", {
         outcome: "record-failed",
@@ -258,7 +261,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   };
   const recordWarning = async (input) => {
     try {
-      return await recordOperationalAlert(env.VALLEY_DESK_DB, { ...input, now: recoveryTime, notify: false });
+      return await recordOperationalAlert(env.VALLEY_DESK_DB, { ...input, now: recoveryTime, notify: false, observationId });
     } catch (error) {
       logOps("ops-alert", {
         outcome: "record-failed",
@@ -269,22 +272,29 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
     }
   };
   const recoveredFingerprints = new Set();
-  // runId persists across duplicate deliveries; timestamp is a legacy fallback.
-  const observationId = typeof result?.runId === "string" && result.runId
-    ? result.runId : now.toISOString();
   const recover = async (fingerprint, requiredSuccesses = 2, details = {}) => {
     if (recoveredFingerprints.has(fingerprint)) return undefined;
     recoveredFingerprints.add(fingerprint);
     try {
+      // A declared completion clock must be valid; run identity cannot repair it.
+      if (result?.finishedAt != null && (!Number.isFinite(completedAt) || completedAt > now.getTime())) return undefined;
+      const hasSourceTimestamp = details.observedAt != null;
       const sourceObservedAt = Date.parse(details.observedAt ?? "");
-      const observedAt = Number.isFinite(sourceObservedAt) && sourceObservedAt <= recoveryTime.getTime()
+      const validSourceTimestamp = Number.isFinite(sourceObservedAt) && sourceObservedAt <= recoveryTime.getTime();
+      // Explicit invalid/future evidence is not replaced by completion time.
+      if (hasSourceTimestamp && !validSourceTimestamp) return undefined;
+      const stableCompletion = Number.isFinite(completedAt) && completedAt <= now.getTime();
+      const stableRunId = typeof result?.runId === "string" && result.runId.trim().length > 0;
+      if (!stableRunId && !stableCompletion && !validSourceTimestamp) return undefined;
+      const observedAt = validSourceTimestamp
         ? new Date(sourceObservedAt).toISOString() : recoveryTime.toISOString();
+      const recoveryObservationId = stableRunId || stableCompletion ? observationId : observedAt;
       const recovery = await resolveOperationalAlertWithTransition(
         env.VALLEY_DESK_DB,
         fingerprint,
-        recoveryTime,
+        new Date(observedAt),
         requiredSuccesses,
-        { ...details, outcome: "healthy", observedAt, observationId },
+        { ...details, outcome: "healthy", observedAt, observationId: recoveryObservationId },
       );
       if (recovery.resolved && recovery.row) {
         await dispatchOperationalRecovery(env.VALLEY_DESK_DB, env.NOTIFY_OPS, recovery.row);
@@ -359,7 +369,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
       continue;
     }
     const freshnessDetails = {
-      observedAt: source.checkedAt ?? recoveryTime.toISOString(),
+      observedAt: source.checkedAt ?? undefined,
       primaryState: source.primaryState ?? "unknown",
       primaryLastSuccessAt: source.primaryLastSuccessAt ?? null,
       fallbackLastSuccessAt: source.fallbackLastSuccessAt ?? null,
@@ -439,7 +449,7 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
           },
         });
       } else {
-        await recover(fallbackFingerprint, 2);
+        await recover(fallbackFingerprint, 2, freshnessDetails);
       }
       await recover(fingerprint, 2, {
         ...freshnessDetails,

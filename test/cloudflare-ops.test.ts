@@ -2100,8 +2100,8 @@ test("automation alerts cover leadership/model failures and stable source finger
     modelFailedCount: 0,
     modelSucceededCount: 1,
   };
-  await sendAutomationAlerts(env, healthy, new Date("2026-08-28T07:00:00.000Z"));
-  await sendAutomationAlerts(env, healthy, new Date("2026-08-28T08:00:00.000Z"));
+  await sendAutomationAlerts(env, { ...healthy, finishedAt: "2026-08-28T07:00:00.000Z" }, new Date("2026-08-28T07:00:00.000Z"));
+  await sendAutomationAlerts(env, { ...healthy, finishedAt: "2026-08-28T08:00:00.000Z" }, new Date("2026-08-28T08:00:00.000Z"));
   const resolved = database.prepare("SELECT COUNT(*) AS count FROM operational_alerts WHERE state = 'resolved'").get() as { count: number };
   assert.equal(resolved.count, 3);
   assert.equal(sent.filter((subject) => subject.includes("RECOVERED")).length, 3);
@@ -2301,10 +2301,12 @@ test("leadership backoff does not count as a healthy recovery", async () => {
   ).get() as { state: string; recovery_count: number };
   assert.deepEqual({ ...row }, { state: "open", recovery_count: 0 });
   await sendAutomationAlerts(env, {
+    finishedAt: "2026-08-28T03:00:00.000Z",
     notes: { sources: [] },
     leadership: { outcome: "ok", fetched: 0, backoff: 0, runtimeCoverage: healthyLeadershipRuntime("2026-08-28T03:00:00.000Z") },
   }, new Date("2026-08-28T03:00:00.000Z"));
   await sendAutomationAlerts(env, {
+    finishedAt: "2026-08-28T04:00:00.000Z",
     notes: { sources: [] },
     leadership: { outcome: "ok", fetched: 0, backoff: 0, runtimeCoverage: healthyLeadershipRuntime("2026-08-28T03:00:00.000Z") },
   }, new Date("2026-08-28T04:00:00.000Z"));
@@ -2444,8 +2446,8 @@ test("active source fallback is visible in the digest and recovers only after pr
   assert.equal(sent.length, 0, "fallback use is digest data, not an immediate alert");
 
   const primary = { notes: { sources: [{ id: "cooper-newsroom", state: "healthy", type: "rss", itemCount: 3 }] } };
-  await sendAutomationAlerts(env, primary, new Date("2026-08-28T01:00:00.000Z"));
-  await sendAutomationAlerts(env, primary, new Date("2026-08-28T02:00:00.000Z"));
+  await sendAutomationAlerts(env, { ...primary, finishedAt: "2026-08-28T01:00:00.000Z" }, new Date("2026-08-28T01:00:00.000Z"));
+  await sendAutomationAlerts(env, { ...primary, finishedAt: "2026-08-28T02:00:00.000Z" }, new Date("2026-08-28T02:00:00.000Z"));
   const recovered = database.prepare(
     "SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:source-fallback:cooper-newsroom'",
   ).get() as { state: string; recovery_count: number };
@@ -2486,8 +2488,8 @@ test("fallback coverage recovers a legacy critical source alert after two observ
     fallbackUrl: "https://phillyvoice.com/tags/cooperuniversity-health-care",
     institutionIds: ["inst-cooper"],
   };
-  await sendAutomationAlerts(env, { notes: { sources: [fallback] } }, new Date("2026-08-28T01:00:00.000Z"));
-  await sendAutomationAlerts(env, { notes: { sources: [fallback] } }, new Date("2026-08-28T02:00:00.000Z"));
+  await sendAutomationAlerts(env, { finishedAt: "2026-08-28T01:00:00.000Z", notes: { sources: [{ ...fallback, checkedAt: "2026-08-28T01:00:00.000Z" }] } }, new Date("2026-08-28T01:00:00.000Z"));
+  await sendAutomationAlerts(env, { finishedAt: "2026-08-28T02:00:00.000Z", notes: { sources: [{ ...fallback, checkedAt: "2026-08-28T02:00:00.000Z" }] } }, new Date("2026-08-28T02:00:00.000Z"));
   const recovered = database.prepare(
     "SELECT severity, state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:source:cooper-newsroom'",
   ).get() as { severity: string; state: string; recovery_count: number };
@@ -2507,8 +2509,8 @@ test("successful runs recover a durable automation lock-busy warning", async () 
   await sendAutomationAlerts(env, { skipped: true, reason: "automation-already-running" }, new Date("2026-08-28T00:00:00.000Z"));
   await sendAutomationAlerts(env, { skipped: true, reason: "automation-already-running" }, new Date("2026-08-28T01:00:00.000Z"));
   await sendAutomationAlerts(env, { skipped: true, reason: "automation-already-running" }, new Date("2026-08-28T02:00:00.000Z"));
-  await sendAutomationAlerts(env, { notes: { sources: [] } }, new Date("2026-08-28T03:00:00.000Z"));
-  await sendAutomationAlerts(env, { notes: { sources: [] } }, new Date("2026-08-28T04:00:00.000Z"));
+  await sendAutomationAlerts(env, { finishedAt: "2026-08-28T03:00:00.000Z", notes: { sources: [] } }, new Date("2026-08-28T03:00:00.000Z"));
+  await sendAutomationAlerts(env, { finishedAt: "2026-08-28T04:00:00.000Z", notes: { sources: [] } }, new Date("2026-08-28T04:00:00.000Z"));
   const recovered = database.prepare(
     "SELECT state, recovery_count FROM operational_alerts WHERE fingerprint = 'valley-desk:automation-lock-busy'",
   ).get() as { state: string; recovery_count: number };
