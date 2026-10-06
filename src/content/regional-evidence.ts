@@ -59,7 +59,9 @@ export const RegionalEvidenceInventory = z.object({
 });
 export type RegionalEvidenceInventory = z.infer<typeof RegionalEvidenceInventory>;
 
-const Health = z.object({ sourceId: Id, state: z.enum(SOURCE_RUN_STATES),
+// Runtime identities include the existing source "x"; retain strict inventory IDs above.
+const HealthSourceId = z.string().regex(/^[a-z][a-z0-9-]*$/).max(200);
+const Health = z.object({ sourceId: HealthSourceId, state: z.enum(SOURCE_RUN_STATES),
   lastCheckedAt: Instant, lastSuccessAt: Instant.nullable() }).strict();
 const LeadershipRuntime = z.object({ sourceId: Id, institutionId: Id,
   state: z.enum(["pending", "healthy", "unchanged", "hostile", "blocked", "disabled", "inventory-only", "misconfigured", "upstream-failed", "timed-out"]),
