@@ -36,3 +36,13 @@ No active registry, collector, schedule, migration, affiliation, retention,
 publication gate, public feed or frontend is changed. No model/provider calls
 are added. This local candidate is not published or deployed. Exact integrated
 checks and independent review are required before any publishing behavior.
+
+PR27 live metadata qualification exposed the existing source-health identity `x`.
+The narrow successor permits one-character lowercase runtime health identities,
+while inventory, evidence and relationship identities retain their original rules.
+No identity is renamed or mapped to an institution. The unregistered receipt stays
+visible and grants no regional freshness, attribution or employment qualification.
+State, calendar, length, character and receipt bounds remain validated. Regression
+coverage reproduces the original failure and verifies the corrected unknown-source
+projection plus invalid states, dates and identities. Production remained on the
+prior reviewed PR26 Worker while this successor was prepared and reviewed.

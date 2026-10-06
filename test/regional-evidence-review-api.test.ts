@@ -94,3 +94,34 @@ test("oversized receipts fail closed rather than imply complete coverage", async
     assert.equal(response.status, 503);
   } finally { sqlite.close(); }
 });
+
+test("single-character existing source stays visible without qualifying regional coverage", async () => {
+  const { sqlite, db } = database(); const at = "2026-10-06T19:00:00Z";
+  try {
+    sqlite.prepare("INSERT INTO source_health VALUES (?, ?, ?, ?)").run("x", "healthy", at, at);
+    const result = await regionalEvidenceReviewPayload(db, at);
+    assert.ok(result.healthReceiptsForUnregisteredSources.includes("x"));
+    assert.equal(result.counts.freshDistinctSourceHealthReceipts, 0);
+    assert.equal(result.counts.coreNewsAttributionGaps, 2);
+    assert.equal(result.counts.peopleWithCurrentEmployment, null);
+    assert.equal(result.counts.qualifiedInstitutionCoverage, null);
+  } finally { sqlite.close(); }
+});
+
+test("single-character receipt retains state and timestamp validation", async () => {
+  for (const [id, state, at] of [
+    ["x", "private-secret-marker", "2026-10-06T19:00:00Z"],
+    ["x", "healthy", "2026-02-30T19:00:00Z"],
+    ["", "healthy", "2026-10-06T19:00:00Z"],
+    ["X", "healthy", "2026-10-06T19:00:00Z"],
+    ["source:other", "healthy", "2026-10-06T19:00:00Z"],
+  ]) {
+    const { sqlite, db } = database();
+    try {
+      sqlite.prepare("INSERT INTO source_health VALUES (?, ?, ?, ?)").run(id, state, at, null);
+      const response = await handleReviewApi(request(), { VALLEY_DESK_DB: db }, trusted);
+      assert.equal(response.status, 503);
+      assert.ok(!(await response.text()).includes("private-secret-marker"));
+    } finally { sqlite.close(); }
+  }
+});
