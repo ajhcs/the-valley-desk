@@ -17,7 +17,7 @@ import {
   NEWS_ARTICLE_SUCCESS_REFRESH_MS,
   NEWS_ARTICLE_TIMEOUT_MS,
 } from "./news-extraction-config";
-import { SOURCE_USER_AGENT, readBoundedText } from "./upstream";
+import { SOURCE_USER_AGENT, readBoundedText, readBoundedBytes } from "./upstream";
 
 const seedEntities = Entity.array().parse(entityFixtures);
 
@@ -84,7 +84,7 @@ export type NewsArticleOverlayOptions = {
 };
 
 export type ArticlePageFetchResult =
-  | { ok: true; url: string; body: string }
+  | { ok: true; url: string; body: string; markupResponse?: { bytes: Uint8Array; status: number; contentType: string; receivedAt: string } }
   | { ok: false; error: string };
 
 function decodeHtml(value: string) {
@@ -382,6 +382,9 @@ export async function fetchAllowlistedArticlePage(options: {
   maxRedirects?: number;
   scanMaxBytes?: number;
   retainSuffixBytes?: number;
+  /** Diagnostics only: reuse the existing bounded body read, never request again. */
+  retainMarkupBytes?: boolean;
+  markupClock?: () => Date;
 }): Promise<ArticlePageFetchResult> {
   let current = isEligibleNewsArticleUrl(options.url, options.allowedHosts);
   if (!current) return { ok: false, error: "URL is not an allowlisted article page" };
@@ -440,6 +443,17 @@ export async function fetchAllowlistedArticlePage(options: {
       return { ok: false, error: "Unsupported content type" };
     }
     try {
+      // Suffix scans cannot prove full-document bytes. Capture only explicit HTML.
+      const contentType = response.headers.get("content-type") ?? "";
+      if (options.retainMarkupBytes && !boundedSuffixScan
+        && /^(?:text\/html|application\/xhtml\+xml)(?:;|$)/i.test(contentType.trim())) {
+        const bytes = await readBoundedBytes(response, maxBytes);
+        const body = new TextDecoder().decode(bytes);
+        return { ok: true, url: current, body, markupResponse: {
+          bytes, status: response.status, contentType,
+          receivedAt: (options.markupClock?.() ?? new Date()).toISOString(),
+        } };
+      }
       const body = boundedSuffixScan
         ? await readBoundedSuffixText(response, scanMaxBytes, retainSuffixBytes)
         : await readBoundedText(response, maxBytes);

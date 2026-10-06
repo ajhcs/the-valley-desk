@@ -71,6 +71,7 @@ import {
   seedCoveragePack,
   autonomouslyVerifyLeadership,
 } from "./executive-persistence";
+import { selectMarkupCaptureSources, persistMarkupCaptures, purgeExpiredMarkupCaptures } from "./leadership-markup-capture";
 import { monitorLeadershipSources } from "./leadership-monitor";
 import { verifyPendingSignalPointers, type SignalVerificationResult } from "./signal-verification";
 import {
@@ -79,6 +80,7 @@ import {
 } from "./official-source-automation";
 
 export type AutomationEnv = {
+  LEADERSHIP_MARKUP_CAPTURE_ENABLED?: string;
   EVENT_CALENDAR_COLLECTION_ENABLED?: string;
   PUBLIC_ORIGIN?: string;
   VALLEY_DESK_DB: D1DatabaseLike;
@@ -407,10 +409,15 @@ async function runLeadershipStage(
       const next = Date.parse(state.nextAttemptAt);
       return state.consecutiveFailures > 0 && Number.isFinite(next) && next > now.getTime();
     }).length;
-    const result = await monitorLeadershipSources({ fetchImpl, pack: coveragePack, states, now });
+    const captureCleanup = await purgeExpiredMarkupCaptures(env.VALLEY_DESK_DB);
+    if (captureCleanup.failed) logOps("leadership-markup-retention", { outcome: "degraded", failed: 1 });
+    const captureMarkupSourceIds = await selectMarkupCaptureSources(env.VALLEY_DESK_DB, env.LEADERSHIP_MARKUP_CAPTURE_ENABLED, now);
+    const result = await monitorLeadershipSources({ fetchImpl, pack: coveragePack, states, now, captureMarkupSourceIds });
     const snapshots = await persistLeadershipSnapshots(env.VALLEY_DESK_DB, result.snapshots);
     const observations = await persistLeadershipObservations(env.VALLEY_DESK_DB, result.observations);
     const schedules = await persistScheduledSourceState(env.VALLEY_DESK_DB, result.schedule);
+    const captureDiagnostic = await persistMarkupCaptures(env.VALLEY_DESK_DB, result.snapshots);
+    if (captureDiagnostic.failed) logOps("leadership-markup-capture", { outcome: "degraded", failed: captureDiagnostic.failed });
     const currentSchedule = new Map([
       ...states.entries(),
       ...result.schedule.map((row) => [row.sourceId, row] as const),

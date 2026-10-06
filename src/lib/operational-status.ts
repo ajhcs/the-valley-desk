@@ -78,6 +78,9 @@ export type RuntimeLeadershipCoverage = {
   configuredStatus: "active" | "degraded";
   state: Exclude<OperationalConditionState, "resolved">;
   coverageLost: boolean;
+  /** Evidence expiry, not a retry deadline or evidence of a person's departure. */
+  freshUntilAt: string | null;
+  coverageLossReason: "expired" | "never-observed" | "invalid-success-time" | null;
   sourceIds: string[];
   healthySourceIds: string[];
   lastSuccessAt: string | null;
@@ -188,6 +191,18 @@ export function buildRuntimeLeadershipCoverage(
       .filter((source): source is { value: string; timestamp: number } => source.timestamp !== undefined && source.timestamp <= nowMs)
       .sort((a, b) => b.timestamp - a.timestamp);
     const latestSuccess = successTimestamps[0];
+    const coverageLost = freshSourceIds.length === 0;
+    const expiryTimestamps = sourceStates
+      .map((source) => ({ value: source.freshUntilAt, timestamp: finiteTimestamp(source.freshUntilAt) }))
+      .filter((source): source is { value: string; timestamp: number } => source.timestamp !== undefined)
+      .sort((a, b) => b.timestamp - a.timestamp);
+    const coverageLossReason = !coverageLost
+      ? null
+      : latestSuccess
+        ? "expired" as const
+        : sourceStates.some((source) => source.lastSuccessAt)
+          ? "invalid-success-time" as const
+          : "never-observed" as const;
     const retryTimestamps = sourceStates
       .map((source) => ({ value: source.nextRetryAt, timestamp: finiteTimestamp(source.nextRetryAt) }))
       .filter((source): source is { value: string; timestamp: number } => source.timestamp !== undefined && source.timestamp > nowMs)
@@ -200,7 +215,9 @@ export function buildRuntimeLeadershipCoverage(
       // A blocked/backoff source can still provide current coverage until its
       // last successful observation ages past the freshness SLO. Alerting
       // should distinguish that degraded condition from actual coverage loss.
-      coverageLost: freshSourceIds.length === 0,
+      coverageLost,
+      freshUntilAt: expiryTimestamps[0]?.value ?? null,
+      coverageLossReason,
       sourceIds: [...institution.sourceIds],
       healthySourceIds,
       lastSuccessAt: latestSuccess?.value ?? null,

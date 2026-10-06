@@ -272,3 +272,21 @@ test("all-path failure interrupts primary recovery of the fallback warning", asy
     assert.equal(alert(sqlite, fallbackFingerprint).state, "resolved");
   } finally { sqlite.close(); }
 });
+
+test("missing source configuration cannot resolve an outage or complete recovery", async () => {
+ const {sqlite,db}=database();const sent:string[]=[];
+ try {
+  const env={VALLEY_DESK_DB:db,NOTIFY_OPS:{send:async(m:{text:string})=>{sent.push(m.text);return {};}}};
+  await sendAutomationAlerts(env,{runId:'configuration-failure',notes:{sources:[failedSource]}},new Date('2026-10-04T07:00:00Z'));
+  const first=(await collect('primary')).source;
+  await sendAutomationAlerts(env,{runId:'configuration-recovery-1',notes:{sources:[first]}},new Date(at));
+  assert.equal(alert(sqlite).recovery_count,1);
+  await sendAutomationAlerts(env,{runId:'configuration-missing',notes:{sources:[{...first,state:'misconfigured',itemCount:0}]}},new Date('2026-10-04T08:05:00Z'));
+  assert.equal(alert(sqlite).state,'open');assert.equal(alert(sqlite).condition_state,'degraded');assert.equal(alert(sqlite).recovery_count,0);
+  assert.equal(sent.filter(text=>text.includes('operational alert recovered')).length,0);
+  await sendAutomationAlerts(env,{runId:'configuration-recovery-2',notes:{sources:[(await collect('primary',later)).source]}},new Date(later));
+  assert.equal(alert(sqlite).state,'open');assert.equal(alert(sqlite).recovery_count,1);
+  await sendAutomationAlerts(env,{runId:'configuration-recovery-3',notes:{sources:[(await collect('primary','2026-10-04T08:30:00Z')).source]}},new Date('2026-10-04T08:30:00Z'));
+  assert.equal(alert(sqlite).state,'resolved');assert.equal(sent.filter(text=>text.includes('operational alert recovered')).length,1);
+ } finally {sqlite.close();}
+});

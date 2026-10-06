@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { readFileSync, readdirSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import replay from "../fixtures/leadership-health-replay-20261003.json";
+import expiryReplay from "../fixtures/leadership-expiry-replay-20261004.json";
 import { buildRuntimeLeadershipCoverage } from "../src/lib/operational-status.ts";
 import { sendAutomationAlerts } from "../worker.js";
 import { handleReviewApi } from "../src/ingest/review-api.ts";
@@ -111,6 +112,7 @@ test("review status and automation both use configured daily cadence without col
   const data=await response.json() as any;
   const rows=data.executiveIntelligence.runtimeCoverage;
   assert.equal(rows.length,16);assert.ok(rows.every((r:any)=>!r.coverageLost&&r.state==="healthy"));
+  assert.ok(rows.every((r:any)=>r.coverageLossReason===null && r.freshUntilAt===new Date(Date.parse(last)+26*3600000).toISOString()),"protected read API includes trusted observation expiry and nullable loss reason");
   assert.ok(rows.flatMap((r:any)=>r.sourceStates).every((s:any)=>s.cadence==="daily"&&s.freshnessBudgetMs===26*3600000&&s.coverageCurrent));
   const networkCalls:string[]=[];
   const result=await runAutomation({VALLEY_DESK_DB:db},async input=>{networkCalls.push(input instanceof Request ? input.url : String(input));throw new Error("Local network disabled");},async()=>({fetchedAt:at.toISOString(),rss:[],events:[],social:[],notes:{rss:0,events:0,linkedin:{count:0},x:{count:0},grok:{count:0,pending:0},sources:[]}}));
@@ -142,4 +144,56 @@ test("offline tiny unreadable pages and403failures preserve last good history an
  for(const next of result.schedule){const previous=states.get(next.sourceId)!;assert.equal(next.lastSuccessAt,previous.lastSuccessAt);assert.equal(next.lastHash,previous.lastHash);assert.deepEqual(next.lastExtracted,previous.lastExtracted);assert.equal(next.consecutiveFailures,previous.consecutiveFailures+1);assert.equal(Date.parse(next.nextAttemptAt)-now.getTime(),7*24*3600000);}
  const allowed=new Set(pack.sources.flatMap(s=>[s.url,...(s.alternateUrls??[])]).flatMap(url=>[url,new URL("/robots.txt",url).href]).map(normalizeSourceUrl));
  assert.ok(calls.every(url=>allowed.has(url)),JSON.stringify({unexpected:calls.filter(url=>!allowed.has(url))}));
+});
+
+
+test("retained Oct4 alert explains eleven losses and five new expiries without modifying source holds", () => {
+ const inputs=structuredClone(expiryReplay.sources);
+ const original=structuredClone(inputs);
+ const rows=buildRuntimeLeadershipCoverage(expiryReplay.configured.map(x=>({...x,configuredStatus:"active" as const})),inputs,new Date(expiryReplay.provenance.alertObservedAt));
+ assert.equal(rows.length,16);
+ assert.deepEqual(rows.filter(x=>x.coverageLost).map(x=>x.institutionId).sort(),[...expiryReplay.expectedLost].sort());
+ assert.equal(rows.filter(x=>x.coverageLossReason==="expired").length,8);
+ assert.equal(rows.filter(x=>x.coverageLossReason==="never-observed").length,3);
+ for(const id of expiryReplay.newExpired)assert.equal(rows.find(x=>x.institutionId===id)?.coverageLossReason,"expired",id);
+ assert.equal(rows.find(x=>x.institutionId==="inst-jefferson")?.freshUntilAt,"2026-10-04T06:45:32.195Z");
+ for(const id of ["inst-chop","inst-temple","inst-inspira"])assert.equal(rows.find(x=>x.institutionId===id)?.freshUntilAt,"2026-10-04T10:01:11.035Z");
+ assert.equal(rows.find(x=>x.institutionId==="inst-nemours")?.freshUntilAt,"2026-10-04T11:01:09.474Z");
+ assert.equal(rows.find(x=>x.institutionId==="inst-main-line")?.coverageLossReason,null,"failed roster does not erase a fresh scoped profile");
+ assert.equal(rows.find(x=>x.institutionId==="inst-christianacare")?.coverageLossReason,null);
+ assert.deepEqual(inputs,original,"read-only explanation cannot reset retry holds or successful observation dates");
+ assert.equal(coverage().filter(x=>x.coverageLost).length,6,"separate retained Oct3 capture retains the six original losses");
+});
+
+test("expiry explanations use cadence boundaries and never retry deadlines", () => {
+ const configured=[{institutionId:"inst-one",shortName:"One",configuredStatus:"active" as const,sourceIds:["src-one"]}];
+ const lastSuccessAt="2026-10-03T08:01:11.035Z";
+ const input={sourceId:"src-one",institutionId:"inst-one",cadence:"daily",state:"upstream-failed",lastSuccessAt,nextAttemptAt:"2099-01-01T00:00:00.000Z",consecutiveFailures:10};
+ const boundary=buildRuntimeLeadershipCoverage(configured,[input],new Date("2026-10-04T10:01:11.035Z"))[0]!;
+ assert.equal(boundary.coverageLost,false);assert.equal(boundary.coverageLossReason,null);
+ const expired=buildRuntimeLeadershipCoverage(configured,[input],new Date("2026-10-04T10:01:11.036Z"))[0]!;
+ assert.equal(expired.coverageLossReason,"expired");assert.equal(expired.freshUntilAt,"2026-10-04T10:01:11.035Z");assert.equal(expired.nextRetryAt,input.nextAttemptAt);
+ for(const timestamp of ["2026-10-05T00:00:00Z","2026-09-31T00:00:00Z","not-a-date","2026-10-03T08:01:11.035"]) {
+  const row=buildRuntimeLeadershipCoverage(configured,[{...input,lastSuccessAt:timestamp}],new Date("2026-10-04T23:20:25.635Z"))[0]!;
+  assert.equal(row.coverageLossReason,"invalid-success-time",timestamp);assert.equal(row.freshUntilAt,null,timestamp);
+ }
+ const missing=buildRuntimeLeadershipCoverage(configured,[],new Date("2026-10-04T23:20:25.635Z"))[0]!;
+ assert.equal(missing.coverageLossReason,"never-observed");assert.equal(missing.freshUntilAt,null);
+ const foreign=buildRuntimeLeadershipCoverage(configured,[{...input,institutionId:"inst-other"}],new Date("2026-10-04T23:20:25.635Z"))[0]!;
+ assert.equal(foreign.coverageLossReason,"never-observed");assert.equal(foreign.freshUntilAt,null);
+});
+
+test("multi-source explanation retains last expiring valid evidence and clears only its diagnostic reason", () => {
+ const configured=[{institutionId:"inst-one",shortName:"One",configuredStatus:"active" as const,sourceIds:["src-old","src-current"]}];
+ const sources=[{sourceId:"src-old",institutionId:"inst-one",cadence:"daily",state:"upstream-failed",lastSuccessAt:"2026-10-01T00:00:00Z",nextAttemptAt:"2099-01-01T00:00:00Z",consecutiveFailures:8},{sourceId:"src-current",institutionId:"inst-one",cadence:"daily",state:"unchanged",lastSuccessAt:"2026-10-04T22:01:03.313Z",consecutiveFailures:0}];
+ const row=buildRuntimeLeadershipCoverage(configured,sources,new Date("2026-10-04T23:20:25.635Z"))[0]!;
+ assert.equal(row.coverageLost,false);assert.equal(row.state,"degraded");assert.equal(row.coverageLossReason,null);assert.equal(row.freshUntilAt,"2026-10-06T00:01:03.313Z");
+ assert.equal(row.sourceStates[0]!.coverageCurrent,false,"old source stays expired and held");
+});
+
+
+test("institution expiry follows the longest valid source cadence rather than the most recent observation", () => {
+ const configured=[{institutionId:"inst-one",shortName:"One",configuredStatus:"active" as const,sourceIds:["src-daily","src-weekly"]}];
+ const row=buildRuntimeLeadershipCoverage(configured,[{sourceId:"src-daily",institutionId:"inst-one",cadence:"daily",state:"unchanged",lastSuccessAt:"2026-10-04T22:01:03.313Z"},{sourceId:"src-weekly",institutionId:"inst-one",cadence:"weekly",state:"unchanged",lastSuccessAt:"2026-10-01T00:00:00Z"}],new Date("2026-10-04T23:20:25.635Z"))[0]!;
+ assert.equal(row.lastSuccessAt,"2026-10-04T22:01:03.313Z");assert.equal(row.freshUntilAt,"2026-10-08T02:00:00.000Z");assert.equal(row.coverageLossReason,null);
 });

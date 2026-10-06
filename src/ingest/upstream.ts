@@ -75,13 +75,13 @@ export function sleep(ms: number) {
   });
 }
 
-export async function readBoundedText(res: Response, maxBytes: number, onBytes?: (received: number) => void) {
+export async function readBoundedBytes(res: Response, maxBytes: number, onBytes?: (received: number) => void) {
   const declared = Number(res.headers.get("content-length"));
   if (Number.isFinite(declared) && declared > maxBytes) {
     await res.body?.cancel().catch(() => undefined);
     throw new UpstreamError("upstream-failed", `Response exceeded ${maxBytes} bytes`, 413);
   }
-  if (!res.body) return "";
+  if (!res.body) return new Uint8Array();
   const reader = res.body.getReader();
   const chunks: Uint8Array[] = [];
   let received = 0;
@@ -96,7 +96,11 @@ export async function readBoundedText(res: Response, maxBytes: number, onBytes?:
     }
     chunks.push(value);
   }
-  return new TextDecoder().decode(concat(chunks));
+  return concat(chunks);
+}
+
+export async function readBoundedText(res: Response, maxBytes: number, onBytes?: (received: number) => void) {
+  return new TextDecoder().decode(await readBoundedBytes(res, maxBytes, onBytes));
 }
 
 export async function readBoundedJson<T>(res: Response, maxBytes: number): Promise<T> {
