@@ -195,3 +195,74 @@ test("malformed JSON remains a classified model failure", async () => {
     (error: unknown) => error instanceof EditorModelError && error.code === "malformed",
   );
 });
+
+test('HTTP 402 diagnostics retain only documented credit fields and never provider prose', async () => {
+  let diagnostic: ModelResponseDiagnostic | undefined;
+  let calls = 0;
+  const response = new Response(JSON.stringify({error:{code:402,message:'PRIVATE-PROVIDER-PROSE',metadata:{
+    limit_source:'openrouter_in_flight_budget',reason:'in_flight_budget_exhausted',remedy_hint:'PRIVATE-PROVIDER-PROSE',other:'PRIVATE-PROVIDER-PROSE',
+  }}}), {status:402,headers:{'content-type':'application/json','retry-after':'7'}});
+  await assert.rejects(completeEditorJson([], {apiKey:'DO-NOT-RECORD'}, async () => {calls++;return response;}, {onDiagnostic:d=>{diagnostic=d;}}), (error:unknown) => {
+    assert.ok(error instanceof EditorModelError);
+    assert.equal(error.code,'http');
+    assert.match(error.message,/Editor model failed \(402\)/);
+    assert.match(error.message,/limit_source=openrouter_in_flight_budget/);
+    assert.match(error.message,/reason=in_flight_budget_exhausted/);
+    assert.match(error.message,/retry_after_seconds=7/);
+    assert.ok(!error.message.includes('PRIVATE-PROVIDER-PROSE'));
+    return true;
+  });
+  assert.equal(calls,1);
+  assert.equal(diagnostic?.creditLimitSource,'openrouter_in_flight_budget');
+  assert.equal(diagnostic?.creditLimitReason,'in_flight_budget_exhausted');
+  assert.equal(diagnostic?.retryAfterSeconds,7);
+  assert.equal(diagnostic?.phase,'transport');
+  assert.equal(diagnostic?.failure,'http');
+  assert.ok(!JSON.stringify(diagnostic).includes('PRIVATE-PROVIDER-PROSE'));
+});
+
+test('HTTP 402 unknown metadata stays unqualified and bounded diagnostic reads do not change failure', async () => {
+  const bodies = [
+    JSON.stringify({error:{code:402,metadata:{limit_source:'PRIVATE-UNKNOWN',reason:'PRIVATE-UNKNOWN'}}}),
+    JSON.stringify({error:{code:429,metadata:{limit_source:'openrouter_key_limit'}}}),
+    '{"error":',
+    'x'.repeat(8193),
+  ];
+  for(const body of bodies){
+    let diagnostic:ModelResponseDiagnostic|undefined;
+    await assert.rejects(completeEditorJson([], {apiKey:'test'}, async () => new Response(body,{status:402,headers:{'content-type':'application/json','retry-after':'PRIVATE-UNKNOWN'}}),{onDiagnostic:d=>{diagnostic=d;}}), (error:unknown)=>{
+      assert.ok(error instanceof EditorModelError);assert.equal(error.message,'Editor model failed (402)');return true;
+    });
+    assert.equal(diagnostic?.creditLimitSource,undefined);
+    assert.equal(diagnostic?.creditLimitReason,undefined);
+    assert.equal(diagnostic?.retryAfterSeconds,undefined);
+    assert.ok(!JSON.stringify(diagnostic).includes('PRIVATE-UNKNOWN'));
+  }
+});
+
+test('HTTP 402 stalled error body is cancelled within the diagnostic deadline', async () => {
+  let cancelled=false;let diagnostic:ModelResponseDiagnostic|undefined;
+  const started=Date.now();
+  await assert.rejects(completeEditorJson([], {apiKey:'test'},async()=>new Response(new ReadableStream({cancel(){cancelled=true;}}),{status:402,headers:{'content-type':'application/json'}}),{onDiagnostic:d=>{diagnostic=d;}}),/Editor model failed \(402\)/);
+  assert.ok(Date.now()-started<1500);
+  assert.equal(cancelled,true);
+  assert.equal(diagnostic?.failure,'http');
+});
+
+test('HTTP 402 account and key limits stay literal; HTTP 429 and invalid retry hints are unchanged', async () => {
+  for(const limit of ['openrouter_key_limit','openrouter_credits'] as const){
+    let diagnostic:ModelResponseDiagnostic|undefined;
+    await assert.rejects(completeEditorJson([], {apiKey:'test'},async()=>new Response(JSON.stringify({error:{code:402,metadata:{limit_source:limit,reason:'weight_exceeds_budget'}}}),{status:402,headers:{'content-type':'application/json; charset=utf-8','retry-after':'86401'}}),{onDiagnostic:d=>{diagnostic=d;}}), (error:unknown)=>{
+      assert.ok(error instanceof EditorModelError);assert.ok(error.message.includes(`limit_source=${limit}`));assert.ok(!error.message.includes('retry_after'));return true;
+    });
+    assert.equal(diagnostic?.creditLimitSource,limit);assert.equal(diagnostic?.creditLimitReason,'weight_exceeds_budget');assert.equal(diagnostic?.retryAfterSeconds,undefined);
+  }
+  let diagnostic:ModelResponseDiagnostic|undefined;
+  const body=new ReadableStream();
+  await assert.rejects(completeEditorJson([], {apiKey:'test'},async()=>new Response(body,{status:429,headers:{'content-type':'application/json','retry-after':'7'}}),{onDiagnostic:d=>{diagnostic=d;}}), (error:unknown)=>{
+    assert.ok(error instanceof EditorModelError);assert.equal(error.message,'Editor model failed (429)');return true;
+  });
+  assert.equal(diagnostic?.creditLimitSource,undefined);assert.equal(diagnostic?.retryAfterSeconds,undefined);
+  // The stream may pre-pull independently; no reader was acquired by the HTTP 429 path.
+  assert.equal(body.locked,false);await body.cancel();
+});
