@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { diagnosticId, diagnosticShape, diagnosticUsage, readBoundedModelBody, ModelResponseSizeError, type ModelResponseDiagnostic } from "./model-response-diagnostics";
+import { diagnosticId, diagnosticShape, diagnosticUsage, readCreditLimitDiagnostic, readBoundedModelBody, ModelResponseSizeError, type ModelResponseDiagnostic } from "./model-response-diagnostics";
 import { ContentCatalog, type ContentItem } from "../content/schema";
 import publishedCatalog from "../content/published-catalog.json";
 import { publicOrigin } from "../lib/canonical";
@@ -375,7 +375,20 @@ async function completeEditorJsonRequest(
   }
   diagnostic.status = response.status;
   diagnostic.requestId = diagnosticId(response.headers.get("x-request-id"));
-  if (!response.ok) throw new EditorModelError("http", `Editor model failed (${response.status})`);
+  if (!response.ok) {
+    let detail = "";
+    if (response.status === 402) {
+      const credit = await readCreditLimitDiagnostic(response).catch(() => ({} as Partial<ModelResponseDiagnostic>));
+      Object.assign(diagnostic, credit);
+      const fields = [
+        credit.creditLimitSource ? `limit_source=${credit.creditLimitSource}` : "",
+        credit.creditLimitReason ? `reason=${credit.creditLimitReason}` : "",
+        credit.retryAfterSeconds ? `retry_after_seconds=${credit.retryAfterSeconds}` : "",
+      ].filter(Boolean);
+      if (fields.length) detail = `; ${fields.join("; ")}`;
+    }
+    throw new EditorModelError("http", `Editor model failed (${response.status})${detail}`);
+  }
   let payload: {
     id?: unknown; usage?: unknown;
     choices?: { message?: { content?: unknown }; finish_reason?: string }[];
