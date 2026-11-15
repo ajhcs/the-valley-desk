@@ -1,0 +1,190 @@
+{
+  "package": "WP10",
+  "disposition": "accepted_local_implementation",
+  "accepted_at": "2026-11-15T18:46:44.246107+00:00",
+  "reviewed_code_commit": "cf0a3b833824f0393a77810cb9508a913aa441e5",
+  "owner": "Sol",
+  "independent_tester": "Terra",
+  "code_reviewer_and_final_fix": "Astra",
+  "orchestrator": "root",
+  "scope": "Independent bounded Crossref work/institution discovery, retained cursor ancestry and private metadata replay; no public admission.",
+  "decision": "../implementation-decisions.md#ex14--bounded-crossref-identity-and-retained-chain-composition",
+  "reviews": [
+    "../reviews/wp10-sol.md",
+    "../reviews/wp10-terra.md",
+    "../reviews/wp10-astra.md",
+    "../reviews/wp10-orchestrator.md"
+  ],
+  "integration": "../wp10-integration-validation.json",
+  "acceptance_criteria": {
+    "AC-WP10-01": "pass_local: actual D1 Crossref-only scope, retained raw response and private publication leads/page receipt; no GitHub/PubMed/catalog prerequisite.",
+    "AC-WP10-02": "pass_local: explicit restricted DOI truth table, stable canonical identity and original spelling retention; unsupported encodings fail rather than collapse.",
+    "AC-WP10-03": "pass_local: same name and missing affiliation leave person/current employment/regional attribution unresolved; no catalog admission.",
+    "AC-WP10-04": "pass_local: partial online/print dates retained separately; indexed/deposited remain metadata-only; location-independent versions include subtype/stage.",
+    "AC-WP10-05": "pass_local: provisional evidence cannot count; explicit reviewed equivalence merges Crossref/PubMed origins from2to1, never by DOI alone.",
+    "AC-WP10-06": "pass_local: malformed/oversized/missing-endpoint cases, expiry, query mismatch, ancestry corruption, caps and mixed items fail or stay incomplete; retained replay after settlement/expiry is read-only."
+  },
+  "outputs": {
+    "src/ingest/discovery/crossref.ts": "4e34e224ea21b1ae718851d6ca774134e4426b114378b97aa3f2fb286a4a0b2f",
+    "src/ingest/discovery/collection-contract.ts": "3032623e521689913af54cf5fb78d151ab974ca3f75dd51065433f5fed8c66ce",
+    "src/ingest/discovery/collection-store.ts": "9b64742715a50203d694f1f98c55ce5a41927caddf12595020e34571e4e46f96",
+    "test/discovery-crossref.test.ts": "6fe4045697339bcda10e2022c45e66761957690db29ab52759286903f08f7321",
+    "scripts/discovery-reference-intake.mjs": "1551cb006704abeb0e7992f14e77297a334e1f62c1b753d2ccd273b64c4b5fc2",
+    "test/discovery-reference-cli.test.ts": "71018255a9a4394ba3c9e1e1c46ebaf080edef5027089409d4e0fdb58bde907b",
+    "package.json": "13ad84850550f2ac71d2ab15e4c8ed9acdc8a5e834c5e8d4f92d8169dc260625",
+    "docs/discovery/implementation-decisions.md": "7f30de4f98cb120b8ab99e9a316bc599d63baf61b899786e3bd2b5bd30b07e92",
+    "docs/discovery/wp10-evidence-plan.md": "8c6a0a95fa22b4248d4982029067b2ccb8cc6f9298474dd95399900966736538",
+    "docs/discovery/wp03-cli-intake.md": "461a94c34ebda8b6a1b99379470572740597965f72e28396a51e8b10baec16d6",
+    "docs/discovery/evaluation-protocol.md": "f3aed6a2e3255f56f37f5122f4b87ae7dda18c0b2cce2a1efc169f08fd0c2d40",
+    "test/fixtures/discovery-sources/crossref/README.md": "400e5a5565b1cd27b647a16c71dcb551ac0a245b838aa4a948cf898a195b416a",
+    "test/fixtures/discovery-sources/crossref/scope.json": "e5b6d5013748ef025a2cf8dfe56eaf769010643649c9760debf3cc2dad077e70",
+    "test/fixtures/discovery-sources/crossref/work-list.json": "d75185243b6e081a6786eef99ec4444ef74b505672eab0f696831faf0e773b83",
+    "test/fixtures/discovery-sources/crossref/missing-correction-endpoint.json": "1062fcf52f5a30edc44369b88aeee3476deee3d68fc4e1045563531a7e7e3893",
+    "test/fixtures/discovery-sources/crossref/doi-truth-table.json": "4387b72871a42ea0796bafee45ce7826ebe57f63fca65569a5b6d44a44a56146",
+    "test/fixtures/discovery-sources/crossref/heterogeneous.json": "b5218c31adde21a6a9012e423c97a0a4c61cc23faa09ddcc260dc6a08cde27ce",
+    "test/fixtures/discovery-sources/crossref/corrected.json": "8b4356c5bec2d4288c4dbad5236f4863880a638b7e7f94d34a2f050957d5b1ba",
+    "docs/discovery/reviews/wp10-sol.md": "8015e69633371db41fc6a199c6cb02eb6acb00d21036218d8247b55a6855faf5",
+    "docs/discovery/reviews/wp10-terra.md": "d248a8722372d449e4865e901a337810ca56f6c0e757d94f1de56e68dbc854cf",
+    "docs/discovery/reviews/wp10-astra.md": "5273047e13c856de44faa8da93323346e51c6a66e6987b53b9ed6d94c431b292",
+    "docs/discovery/reviews/wp10-orchestrator.md": "fe40c8a7bceebe33dff0699ac07f40c3724d4b3666407454414f906df2501405",
+    "docs/discovery/reviews/wp03-sol-cli.md": "ac9255eefebe1972af66de783d36dc55c0fa9b810362e07c30a04b9944d39355",
+    "docs/discovery/reviews/wp03-terra-cli.md": "2c8cbdc2f0d55a4d16815a06e2857be3391e18453bc00ad133a65431807bce3c",
+    "docs/discovery/reviews/wp03-astra-cli.md": "3c8743653c043761ca21293fcb419730e4c9f4cfb90ef5fad0628058720a81af"
+  },
+  "validation": {
+    "enumerated_tests": {
+      "status": "all_passed_across_completed_bounded_groups",
+      "tests": 1296,
+      "primary": 937,
+      "watch_launch": 146,
+      "discovery": 213,
+      "groups": {
+        "primary-final-a": {
+          "tests": 552,
+          "pass": 552,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "primary-final-b": {
+          "tests": 385,
+          "pass": 385,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "watch-final": {
+          "tests": 146,
+          "pass": 146,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-core": {
+          "tests": 115,
+          "pass": 115,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-transport": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-collection": {
+          "tests": 33,
+          "pass": 33,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-providers": {
+          "tests": 34,
+          "pass": 34,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-crossref": {
+          "tests": 10,
+          "pass": 10,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        }
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "discovery_command_coverage": {
+      "explicit_files": 14,
+      "all_enumerated_files_executed": true,
+      "duplicates": false
+    },
+    "interrupted_combined_discovery": {
+      "command": [
+        "npm",
+        "run",
+        "test:discovery"
+      ],
+      "exit_code": 143,
+      "signal": "SIGTERM",
+      "cause": "unverified",
+      "assertion_failure_observed": false,
+      "log": "discovery.log",
+      "qualification": "superseded by completed bounded groups; not an exit0 claim"
+    },
+    "discovery_typecheck": "pass",
+    "application_typecheck_and_build": "pass; existing500kB chunk warning",
+    "mandatory_pdf": {
+      "tests": 7,
+      "status": "pass"
+    },
+    "local_ops_smoke": "pass; isolated local D1 and fake bindings",
+    "secret_scan": "pass; includes acceptance documents",
+    "input_count": 572,
+    "input_drift": [],
+    "terra_wp10": {
+      "tests": 10,
+      "status": "pass; actual local D1; included in213"
+    },
+    "astra_wp10": {
+      "adapter_checks": 23,
+      "doi_checks": 13,
+      "status": "pass; root reran final programs; not added to integrated count"
+    },
+    "wp03_cli": {
+      "tests": 19,
+      "included_in_discovery": true,
+      "astra_independent_scenarios": 12,
+      "fully_synthetic_signed_ready_path": "exit0,360heldout/100recall/100audit,5057signed_receipts,0findings; no freeze",
+      "actual_empty_manifest_negative": "exit2 blocked,zero cases; fictional pin policy only; no operator enrollment"
+    },
+    "dependency_audit": {
+      "exit": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 1,
+        "moderate": 2,
+        "high": 4,
+        "critical": 0,
+        "total": 7
+      }
+    }
+  },
+  "limits": [
+    "Local implementation acceptance only. No real provider enrollment, access/rights qualification, pacing or E04 route qualification.",
+    "Private leads and retained replay only; no public SourcePage/catalog admission or current employment/regional claim.",
+    "Restricted DOI, URL, JSON/field and48kB parser subset may reject legitimate provider metadata; typed failures/gaps remain explicit.",
+    "Conservative cursor expiry and accepted WP07 loop checks can stop early; no whole-query or regional recall guarantee.",
+    "WP03 actual trust, permitted evidence, independent humans, corpus/recall/sampling/history and accountable freeze remain absent; zero real cases and E01-E06 not_run.",
+    "Dependency audit remains release/CI blocker: four high,seven total; unchanged lockfile.",
+    "Native model and frozen handoff unchanged; no new native proof, operational validation or release claim.",
+    "No merge, remote migration, provider activation, service registration, publication or deployment."
+  ],
+  "accepted_snapshot": ".discovery-work/wp10/accepted-candidate/manifest.json"
+}

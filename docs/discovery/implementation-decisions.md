@@ -473,8 +473,8 @@ rights, source truth or independent adjudication. The helper never issues a free
 
 ## EX14 — Bounded Crossref identity and retained chain composition
 
-**Status:** Local implementation under review; acceptance requires the WP10 and
-composition receipts. Affects WP02/WP04's missing DOI rule and WP07/WP10/WP14/WP23.
+**Status:** Accepted for local implementation; see the [WP10 receipt](receipts/WP10.json)
+and [composition receipt](receipts/WP07-WP10-composition.json). Affects WP02/WP04's missing DOI rule and WP07/WP10/WP14/WP23.
 No policy threshold, native model, schema migration or prior receipt is rewritten.
 
 The WP10 handoff expected a previously frozen DOI normalizer. Inspection found
@@ -526,7 +526,8 @@ collection until a separately reviewed protocol can qualify that behavior.
 
 ## EX15 — Offline file intake is readiness reporting, not corpus acceptance
 
-**Status:** WP03 preparation increment under final integration review. Affects
+**Status:** WP03 preparation increment independently reviewed; see the
+[CLI progress receipt](receipts/WP03-cli-intake-progress.json). Affects
 WP03/WP14/WP22/WP24; thresholds and actual manifest remain unchanged.
 
 The CLI accepts three explicit bounded local JSON files and an independently

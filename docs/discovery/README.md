@@ -5,7 +5,7 @@ evidence persistence, provenance, scoped removal, bounded collection and evaluat
 tooling. Public discovery routes and reader interfaces are still future packages.
 No deployment or remote migration has occurred.
 
-WP05–WP09 are accepted after independent tests, transaction challenges and
+WP05–WP10 are accepted after independent tests, transaction challenges and
 final integration checks. The source-response intake contract is recorded in
 [EX08](implementation-decisions.md), and the guarded registry integration in
 [EX09](implementation-decisions.md). [EX10](implementation-decisions.md) defines
@@ -42,6 +42,7 @@ the earlier task; implementation was subsequently authorized on 2026-11-13.
 | [WP07](receipts/WP07.json) | Accepted within local implementation scope | Frozen ordered rounds, linked leases, atomic raw/lead/page/checkpoint commit, restart replay, conservative accounting and scoped progress | Sol store / Terra collector / Astra review, with independent Sol tests |
 | [WP08](receipts/WP08.json) | Accepted within local implementation scope | Independent GitHub repository/account/search acquisition, retained-baseline lists, native identities, source stages/dates and authenticated pagination | Sol / Terra; root integration |
 | [WP09](receipts/WP09.json) | Accepted within local implementation scope | Independently qualified PubMed search/fetch, durable scope/batch binding, historical author candidates, partial dates and truthful gaps | Sol / Terra tests / Astra review; root integration |
+| [WP10](receipts/WP10.json) | Accepted within local implementation scope | Independent Crossref work/institution queries, explicit DOI subset, partial dates and unresolved contributors, retained cursor ancestry and private metadata replay | Sol / Terra tests / Astra review and fixes; root integration |
 
 WP07's private page receipt acknowledges collected leads; it does not fabricate
 catalog subjects or evidence-backed `SourcePage` observations. Additional provider
@@ -79,25 +80,30 @@ Ed25519 record/authority verification under separately supplied operator pins.
 revocation. It does not establish actual human trust, anti-rollback administration,
 source rights or reference truth. The real corpus remains empty and unfrozen.
 
+The [offline file command](wp03-cli-intake.md) and its
+[progress receipt](receipts/WP03-cli-intake-progress.json) add bounded local-file
+intake and private no-clobber readiness reporting. A complete fictional signed
+corpus exercises ready/exit0 without freeze; the actual empty corpus stays
+blocked/not_frozen. No human authority or source rights were enrolled.
+
 ## Validation and remaining release blockers
 
-The [WP09 integration receipt](wp09-integration-validation.json) records final
-commands and hashes. The [WP08 receipt](wp08-integration-validation.json),
+The [WP10 integration receipt](wp10-integration-validation.json) records final
+commands and hashes. The [WP09 receipt](wp09-integration-validation.json),
+[WP08 receipt](wp08-integration-validation.json),
 [WP07 receipt](wp07-integration-validation.json),
 [WP06 receipt](wp06-integration-validation.json),
 [WP05 receipt](wp05-integration-validation.json) and
 [earlier foundation receipt](integration-validation.json) remain historical evidence.
 With the qualified Node 22.23.2 runtime:
 
-- All 1,267 enumerated tests passed across completed groups (937 primary, 146
-  Watch, 184 discovery), with zero assertion failures/skips. The final local npm
-  command ended with SIGTERM near the end; the remaining 31 WP06/Wistar tests
-  passed separately. The retained interrupted command is not reported as exit0.
-  GitHub CI run 43744284777 on code commit 90f9867 independently passed the full
-  Tests step. Discovery compile-time contract checks also passed.
-- The earlier standalone PDF check passed seven tests using the pinned project
-  runtime; those inputs are unchanged. WP09 code CI independently passed the
-  mandatory PDF regression step; no standalone local rerun is claimed.
+- All 1,296 enumerated tests passed in completed bounded groups: 937 primary,
+  146 Watch and 213 discovery, with zero failures/skips/cancellations. The earlier
+  combined discovery command ended with exit 143/SIGTERM; cause unverified, no assertion
+  failure observed. It is retained and is not reported as exit0. Five shorter
+  discovery commands cover exactly all 14 explicitly enumerated files. Discovery
+  contract typechecking passed.
+- Seven mandatory PDF regressions passed using the pinned project runtime.
 - Build, isolated local D1 smoke and secret scan passed. WP04 additionally has
   an independent nine-test local D1 challenge covering rollback and replay. WP05
   has 13 independent acceptance tests. WP06 has 21 independent tests and 16
@@ -116,20 +122,25 @@ With the qualified Node 22.23.2 runtime:
   parent-binding and diagnostic probes. The ten original Wistar publication tests
   now run explicitly in the discovery command. Nineteen new signature tests and
   16 independent Astra signature probes also pass.
+- WP10 has ten independent actual-D1 tests, including three-page ancestry,
+  corrupted mappings, retained replay, caps and reviewed cross-provider origins.
+  Astra passed 36 separate DOI/adapter checks; root reran those probes. WP03's 19
+  CLI tests and 12 separate Astra subprocess scenarios include a fully fictional
+  signed ready/exit0 run that still issues no freeze. Integrated counts overlap.
 - `npm audit --audit-level=high`: failed with four high-severity advisories,
   seven total. The dependency lockfile is unchanged; see the
   [audit and remediation record](dependency-audit.json).
 
-The code CI run passed tests, PDF regressions, build and local smoke, then failed
-audit and skipped its later secret scan. Local secret scan passed. The PR stays
-draft; subsequent documentation commits have their own CI state. This is not
-completed release qualification. The baseline
+Exact-head CI state is recorded in [execution.json](execution.json). The earlier
+WP09 code CI passed tests/PDF/build/smoke, then failed audit and skipped its later
+secret scan. Current local secret scan passes. The PR stays draft; local package
+acceptance does not complete release qualification. The baseline
 inventory originally identified 11 omitted legacy regional test files; WP09 adds
 the Wistar publication file, leaving ten outside the scripts. These are not counted
 as executed. A bundle-size warning remains.
 The model receipt states the bounds and assumptions of every proof/check. Its
-native inputs did not change during WP09; no new native proof claim is made.
-All 561 root qualification inputs match before/after. Independent suites also
+native inputs did not change during WP10; no new native proof claim is made.
+All 572 root qualification inputs match before/after. Independent suites also
 record stable inputs. Earlier failing candidates and adjudicated fixture changes
 remain preserved; a mutation that outlives a timeout is reconciled as uncertain,
 not assumed cancelled or refunded.
@@ -142,13 +153,13 @@ hash-verified local wheel provisioning are retained in that evidence directory.
 
 ## Continue from the accepted dependencies
 
-1. Begin [WP10](../discovery-engineering/work-packages/WP10.md), the Crossref adapter.
-   WP10–WP13 are eligible against the accepted registry/transport contracts.
+1. Begin [WP11](../discovery-engineering/work-packages/WP11.md), the arXiv adapter.
+   WP11–WP13 are eligible against the accepted registry/transport contracts.
    Integrate provider parsers with WP07's trusted provisional parse and private
    receipt boundary; preserve exact native keys, stages and source dates. Keep
    provider access qualification distinct from synthetic route fixtures.
    Native network egress has no default; no real source is enrolled or activated.
-   GitHub and PubMed remain locally verified only: real access/rights and E04 source-class
+   GitHub, PubMed and Crossref remain locally verified only: real access/rights and E04 source-class
    qualification are still required. Requests are unconditional, unsolicited304
    fails, and full pages without a usable next Link remain partial.
 2. Preserve WP07's explicit round creation and one-attempt slots. A completed

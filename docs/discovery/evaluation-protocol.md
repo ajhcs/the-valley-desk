@@ -253,7 +253,7 @@ blocked/not_frozen. Engineering reviewers are not reference adjudicators.
 The [file intake command](wp03-cli-intake.md) accepts explicit bounded manifest,
 signed-record and policy files with a separately supplied raw policy checksum.
 It creates a private aggregate report with no overwrite. It does not acquire
-evidence, enroll authority or freeze a corpus. Exit 0 only requests accountable
+evidence, enroll authority or freeze a corpus. Exit 0 only means ready for accountable
 freeze review; reports always retain not_frozen and packageAccepted=false.
 The complete synthetic signed fixture exercises that path without adding any
 real cases. Actual operator trust, rights, reviewers, sampling and corpus remain

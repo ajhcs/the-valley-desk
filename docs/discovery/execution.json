@@ -50,10 +50,11 @@
       "status": "in_progress",
       "receipt": "receipts/WP03-preparation.json",
       "acceptance": null,
-      "notes": "Evaluation and receipt preparation plus offline Ed25519 record/authority verification under operator pins reviewed by Sol/Terra/Astra. Nineteen new signature tests and 16 independent Astra probes pass. Real operator trust/current policy/rights/humans/corpus/recall/freeze remain absent. Actual manifest has zero real cases, blocked/not_frozen; WP03 remains incomplete and cannot satisfy WP14.",
+      "notes": "Preparation plus bounded offline file intake CLI reviewed by Sol/Terra/Astra: 19 CLI tests, 12 independent Astra scenarios and a wholly fictional 5,057-signature corpus exercise ready/exit0 without freeze. Real operator trust, rights, humans, corpus, recall, history and freeze remain absent. Actual manifest has zero real cases, blocked/not_frozen; WP03 remains incomplete and cannot satisfy WP14.",
       "progress_receipts": [
         "receipts/WP03-receipt-intake-progress.json",
-        "receipts/WP03-signature-intake-progress.json"
+        "receipts/WP03-signature-intake-progress.json",
+        "receipts/WP03-cli-intake-progress.json"
       ]
     },
     {
@@ -115,7 +116,8 @@
       "notes": "Private bounded collection accepted after 33 independent actual-D1 tests, 6 focused collector tests, 21 Astra checks and 1,193 integrated tests with 535 unchanged inputs. Fixed rounds, linked leases, atomic raw/lead/page/checkpoint/settlement and conservative restart behavior; no provider activation, public admission or scheduling.",
       "started_at": "2026-11-14T02:46:31.975225+00:00",
       "amendment_receipts": [
-        "receipts/WP06-WP07-WP08-composition.json"
+        "receipts/WP06-WP07-WP08-composition.json",
+        "receipts/WP07-WP10-composition.json"
       ]
     },
     {
@@ -151,10 +153,11 @@
       "depends_on": [
         "WP06"
       ],
-      "status": "not_started",
-      "receipt": null,
-      "acceptance": null,
-      "notes": ""
+      "status": "accepted",
+      "receipt": "receipts/WP10.json",
+      "acceptance": "2026-11-15T18:45:38.908223+00:00",
+      "notes": "Local Crossref implementation accepted after Sol implementation, Terra 10 actual-D1 tests, Astra 36 independent checks and final query-digest fix, and root 1,296 tests plus seven PDF regressions on 572 stable inputs. EX14 defines the DOI subset and retained-chain composition. No live provider activation, public admission or deployment; E04 and empirical gates remain pending.",
+      "started_at": "2026-11-15T18:29:22.900876+00:00"
     },
     {
       "id": "WP11",
@@ -457,7 +460,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-14T02:46:31.975225+00:00",
+  "updated_at": "2026-11-15T18:45:38.908223+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -574,10 +577,35 @@
         "WP24"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX14",
+      "path": "implementation-decisions.md",
+      "status": "accepted_local_implementation",
+      "affects": [
+        "WP02",
+        "WP04",
+        "WP07",
+        "WP10",
+        "WP14",
+        "WP23"
+      ],
+      "thresholds_changed": false
+    },
+    {
+      "id": "EX15",
+      "path": "implementation-decisions.md",
+      "status": "preparation_increment_reviewed_package_incomplete",
+      "affects": [
+        "WP03",
+        "WP14",
+        "WP22",
+        "WP24"
+      ],
+      "thresholds_changed": false
     }
   ],
   "next_ready_packages": [
-    "WP10",
     "WP11",
     "WP12",
     "WP13"
@@ -594,8 +622,8 @@
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "90f9867cad2befe5b43fdb11fb347165fb8d9c38",
-    "code_ci_run": 43744284777,
-    "code_ci": "tests/PDF/build/smoke passed; audit failed; CI secret scan skipped; final docs commit CI separate"
+    "reviewed_code_commit": "cf0a3b833824f0393a77810cb9508a913aa441e5",
+    "code_ci_run": 43748500551,
+    "code_ci": "cf0a3b8 code CI in progress at observation; local 1296 tests,7 PDF,build,smoke and secret scan pass; dependency audit fails with four high/seven total; final documentation head CI separate"
   }
 }

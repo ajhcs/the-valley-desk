@@ -1,0 +1,44 @@
+{
+  "package": "WP03",
+  "disposition": "cli_preparation_reviewed_package_incomplete",
+  "recorded_at": "2026-11-15T18:46:44.246107+00:00",
+  "prior_progress_receipt": "WP03-signature-intake-progress.json",
+  "decision": "EX15",
+  "owner": "Sol",
+  "independent_reviewer": "Terra",
+  "code_reviewer": "Astra",
+  "reviewed_code_commit": "cf0a3b833824f0393a77810cb9508a913aa441e5",
+  "scope": "Bounded offline file/JSON intake and private no-clobber aggregate readiness report over existing signed store; no enrollment or freeze.",
+  "outputs": {
+    "scripts/discovery-reference-intake.mjs": "1551cb006704abeb0e7992f14e77297a334e1f62c1b753d2ccd273b64c4b5fc2",
+    "test/discovery-reference-cli.test.ts": "71018255a9a4394ba3c9e1e1c46ebaf080edef5027089409d4e0fdb58bde907b",
+    "docs/discovery/wp03-cli-intake.md": "461a94c34ebda8b6a1b99379470572740597965f72e28396a51e8b10baec16d6",
+    "docs/discovery/reviews/wp03-sol-cli.md": "ac9255eefebe1972af66de783d36dc55c0fa9b810362e07c30a04b9944d39355",
+    "docs/discovery/reviews/wp03-terra-cli.md": "2c8cbdc2f0d55a4d16815a06e2857be3391e18453bc00ad133a65431807bce3c",
+    "docs/discovery/reviews/wp03-astra-cli.md": "3c8743653c043761ca21293fcb419730e4c9f4cfb90ef5fad0628058720a81af"
+  },
+  "validation": {
+    "tests": 19,
+    "included_in_discovery": true,
+    "astra_independent_scenarios": 12,
+    "fully_synthetic_signed_ready_path": "exit0,360heldout/100recall/100audit,5057signed_receipts,0findings; no freeze",
+    "actual_empty_manifest_negative": "exit2 blocked,zero cases; fictional pin policy only; no operator enrollment"
+  },
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "real_case_count": 0,
+  "manifest_status": "not_frozen",
+  "readiness": "blocked",
+  "freeze_issued": false,
+  "empirical_gates": "E01-E06 not_run",
+  "remaining_inputs": "WP03 actual trust, permitted evidence, independent humans, corpus/recall/sampling/history and accountable freeze remain absent; zero real cases and E01-E06 not_run.",
+  "limits": [
+    "Local implementation acceptance only. No real provider enrollment, access/rights qualification, pacing or E04 route qualification.",
+    "Private leads and retained replay only; no public SourcePage/catalog admission or current employment/regional claim.",
+    "Restricted DOI, URL, JSON/field and48kB parser subset may reject legitimate provider metadata; typed failures/gaps remain explicit.",
+    "Conservative cursor expiry and accepted WP07 loop checks can stop early; no whole-query or regional recall guarantee.",
+    "WP03 actual trust, permitted evidence, independent humans, corpus/recall/sampling/history and accountable freeze remain absent; zero real cases and E01-E06 not_run.",
+    "Dependency audit remains release/CI blocker: four high,seven total; unchanged lockfile.",
+    "Native model and frozen handoff unchanged; no new native proof, operational validation or release claim.",
+    "No merge, remote migration, provider activation, service registration, publication or deployment."
+  ]
+}
