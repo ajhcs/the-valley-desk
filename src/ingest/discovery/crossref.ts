@@ -14,6 +14,7 @@ import {
   type DiscoveryCollectionParseInput, type DiscoveryCollectionLead, type DiscoveryCollectionClaim,
 } from './collection-contract';
 import type { DiscoveryTrustedAdapterRepresentation } from './adapter';
+import { decodeDiscoveryMetadataJson } from './metadata-preflight';
 
 export const CROSSREF_DOI_NORMALIZER = 'crossref-doi-ascii-v1' as const;
 const CURSOR_TTL_MS = 300000;
@@ -131,8 +132,7 @@ function publicLink(value: unknown): string | null {
 }
 function envelope(bytes: Uint8Array) {
   if (bytes.length > 48000) return fail('body-cap');
-  let root: Record<string, any>;
-  try { root = record(JSON.parse(new TextDecoder('utf-8', {fatal: true}).decode(bytes))); } catch { return fail('json'); }
+  const root = record(decodeDiscoveryMetadataJson(bytes, 'crossref', fail));
   if (Object.keys(root).some(key => ['error','errors','warning','warnings'].includes(key.toLowerCase())) ||
       root.status !== 'ok' || root['message-type'] !== 'work-list') return fail('response-status');
   const message = record(root.message);

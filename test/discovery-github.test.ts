@@ -740,3 +740,68 @@ test('GitHub request headers and credentials reach egress without affecting othe
     else {assert.equal(observed?.['User-Agent'],undefined);assert.equal(observed?.Accept,undefined);assert.equal(observed?.['X-GitHub-Api-Version'],undefined);}
   });
 });
+
+test('GitHub whole-payload metadata preflight rejects before D1 retention', {timeout:600_000}, async t => {
+  const {createDiscoveryGithubAdapter}=await import('../src/ingest/discovery/github');
+  const f=await fixture(t);
+  const base={id:451,name:'repo',full_name:'clinic/repo',private:false,owner:{id:77,login:'clinic',type:'Organization'}};
+  const canary='raw-retention-canary@example.org';
+  const cases: [string,string][]=[
+    ['nested-contact',JSON.stringify({...base,unknown:{items:[{ignored:canary}]}})],
+    ['percent-contact',JSON.stringify({...base,unknown:'https://safe.example/raw-retention-canary%40example.org'})],
+    ['entity-contact',JSON.stringify({...base,unknown:'raw-retention-canary&#64;example.org'})],
+    ['formatted-phone',JSON.stringify({...base,unknown:'call +1 (215) 555-0123'})],
+    ['escaped-contact',JSON.stringify({...base,unknown:canary}).replace('@','\\u0040')],
+    ['escaped-contact-key',JSON.stringify({...base,unknown:{email:'not-an-address'}}).replace('"email"','"\\u0065mail"')],
+    ['duplicate-masked-contact',JSON.stringify(base).replace('{"id":451','{"ignored":"'+canary+'","ign\\u006fred":null,"id":451')],
+    ['credential-url',JSON.stringify({...base,unknown:['https://reader:fixture-password@safe.example/path']})],
+    ['credential-query',JSON.stringify({...base,unknown:{url:'https://safe.example/path?api_key=fixture-secret'}})],
+    ['temporary-clone-credential',JSON.stringify({...base,temp_clone_token:'opaque-clone-canary'})],
+    ['encoded-credential-query',JSON.stringify({...base,unknown:encodeURIComponent('https://safe.example/path?api_key=fixture-secret')})],
+    ['encoded-bearer',JSON.stringify({...base,unknown:'%42earer%20fixturesecretvalue'})],
+    ['encoded-query-key',JSON.stringify({...base,unknown:'https://safe.example/path?%20token=fixture-secret'})],
+    ['encoded-credential-key',JSON.stringify({...base,unknown:{'api%5fkey':'fixture-secret'}})],
+    ['entity-credential-key',JSON.stringify({...base,unknown:{'api&#95;key':'fixture-secret'}})],
+    ['nested-ssh-spoof',JSON.stringify({...base,unknown:{...base,ssh_url:'git@github.com:clinic/repo.git'}})],
+    ['mismatched-ssh',JSON.stringify({...base,ssh_url:'git@github.com:other/repo.git'})],
+  ];
+  for(const [mode,payload] of cases) {
+    const s=await f.source('metadata-'+mode,{path:'/repos/clinic/repo'});let store:ReturnType<typeof f.makeStore>;
+    const adapter=createDiscoveryGithubAdapter({resolveSource:async id=>id===s.value.id?s.value:null,resolvePage:id=>store.resolvePage(id),resolveRepresentation:r=>f.registry.resolveRetainedRepresentation(r)});
+    store=f.makeStore(f.db,adapter.parser);f.advance(31000);await f.makeRound(store,'round:'+mode,'cohort:'+mode,[s]);
+    const before=await f.db.prepare("SELECT count(*) AS n FROM discovery_evidence_revisions WHERE kind='representation'").first<{n:number}>();
+    const result=await f.makeCollector(store,{transportOptions:{egress:{send:async()=>new Response(payload)}}}).step(f.stepInput('round:'+mode));
+    assert.equal(result.kind,'failure',mode+': '+JSON.stringify(result));
+    assert.equal((await f.db.prepare("SELECT count(*) AS n FROM discovery_evidence_revisions WHERE kind='representation'").first<{n:number}>())?.n,before?.n,mode);
+    assert.equal((await f.db.prepare('SELECT count(*) AS n FROM discovery_collection_pages').first<{n:number}>())?.n,0,mode);
+    assert.equal((await f.db.prepare('SELECT count(*) AS n FROM discovery_collection_leads').first<{n:number}>())?.n,0,mode);
+    assert.equal((await store.readHealth(s.value.id))?.lastCompleteAt,null,mode);
+    assert.equal((await store.readHealth(s.value.id))?.lastGoodReceiptId,null,mode);
+    const flat=JSON.stringify(await f.dump());assert.equal(flat.includes(canary),false,mode);assert.equal(flat.includes('fixture-password'),false,mode);assert.equal(flat.includes('fixture-secret'),false,mode);assert.equal(flat.includes('opaque-clone-canary'),false,mode);
+  }
+});
+
+test('GitHub canonical SSH remains supported only on route-known repository records', {timeout:600_000}, async t => {
+  const {createDiscoveryGithubAdapter}=await import('../src/ingest/discovery/github');const f=await fixture(t);
+  const repo={id:451,name:'repo',full_name:'clinic/repo',private:false,owner:{id:77,login:'clinic',type:'Organization',email:null},temp_clone_token:null,ssh_url:'git@github.com:clinic/repo.git',score:1.25,web_commit_signoff_required:false,unknown:{token_count:2}};
+  for(const [mode,path,body] of [
+    ['root','/repos/clinic/repo',repo],
+    ['search','/search/repositories',{total_count:1,incomplete_results:false,items:[repo]}],
+    ['inventory','/orgs/clinic/repos',[repo]],
+  ] as const) {
+    const s=await f.source('ssh-'+mode,{path});let store:ReturnType<typeof f.makeStore>;
+    const adapter=createDiscoveryGithubAdapter({resolveSource:async id=>id===s.value.id?s.value:null,resolvePage:id=>store.resolvePage(id),resolveRepresentation:r=>f.registry.resolveRetainedRepresentation(r)});
+    store=f.makeStore(f.db,adapter.parser);f.advance(31000);await f.makeRound(store,'round:ssh-'+mode,'cohort:ssh-'+mode,[s]);
+    const payload=JSON.stringify(body),result=await f.makeCollector(store,{transportOptions:{egress:{send:async()=>new Response(payload)}}}).step(f.stepInput('round:ssh-'+mode));
+    assert.equal(result.kind,'page',mode+': '+JSON.stringify(result));if(result.kind!=='page')throw Error('page');
+    assert.equal(result.receipt.leadCount,1);assert.equal(new TextDecoder().decode((await f.registry.resolveRetainedRepresentation(result.receipt.representation))!.bytes),payload);
+  }
+});
+
+test('shared metadata decoder rejects ambiguous JSON while preserving ordinary provider scores', async () => {
+  const {decodeDiscoveryMetadataJson}=await import('../src/ingest/discovery/metadata-preflight');
+  const reject=(code:string):never=>{throw Error('fixed-'+code)};
+  for(const value of ['{"score":1.25}','{"score":1.25e1}','{"score":0.1}','{"score":1e-7}']) assert.ok(decodeDiscoveryMetadataJson(bytes(value),'github',reject));
+  for(const value of ['{"a":1,"\\u0061":2}','{"ignored":"\\ud800"}','{"ignored":"\\udc00"}','{"score":9007199254740993}','{"score":1e400}','{"score":1e-400}','{"score":9007199254740991.1}','{"score":1.234567890123456789}']) assert.throws(()=>decodeDiscoveryMetadataJson(bytes(value),'github',reject),/^Error: fixed-json$/);
+  assert.throws(()=>decodeDiscoveryMetadataJson(new Uint8Array([0x7b,0xff,0x7d]),'github',reject),/^Error: fixed-json$/);
+});

@@ -647,7 +647,8 @@ test('AC01/03/04/06 Crossref-only actual D1 receipts, dates, holds and cursor re
   const preprint=await bodyVariant(crossrefBody([{...crossrefItem(),type:'posted-content',subtype:'preprint'}],1));
   const nonPreprint=await bodyVariant(crossrefBody([{...crossrefItem(),type:'posted-content',subtype:'other'}],1));
   assert.equal(preprint.draft.leads[0].sourceStage,'preprint');assert.equal(nonPreprint.draft.leads[0].sourceStage,'publication');assert.notEqual(preprint.draft.leads[0].sourceVersion,nonPreprint.draft.leads[0].sourceVersion);
-  for(const url of ['http://127.0.0.1/license','https://localhost/license','https://license.example.org/path?token=secret','https://EXAMPLE.org/license']) {
+  await assert.rejects(()=>bodyVariant(crossrefBody([{...crossrefItem(),license:[{URL:'https://license.example.org/path?token=secret'}]}],1)));
+  for(const url of ['http://127.0.0.1/license','https://localhost/license','https://EXAMPLE.org/license']) {
     const invalid=await bodyVariant(crossrefBody([{...crossrefItem(),license:[{URL:url}]}],1));assert.equal(invalid.draft.rejectedCount,1,`unsafe license ${url}`);assert.equal(invalid.draft.terminal,false);
   }
   const missing=await bodyVariant(crossrefBody([{...crossrefItem(),relation:{'is-correction-of':[{ 'id-type':'doi'}]}}],1));
@@ -712,4 +713,41 @@ test('actual D1 ancestry enforces page and total-item caps without completing', 
       if(page===1){assert.equal(result.receipt.nextCheckpoint,'cursor-2');f.advance(1000);}else{assert.equal(result.receipt.chainComplete,false);assert.equal(result.receipt.providerLimited,true);assert.equal(result.receipt.nextCheckpoint,null);assert.equal((await store.readHealth(s.value.id))?.lastCompleteAt,null);}
     }
   });
+});
+
+test('Crossref whole-payload metadata preflight rejects contact and article material before D1 retention', {timeout:600_000}, async t => {
+  const {createDiscoveryCrossrefAdapter,qualifyDiscoveryCrossrefScope}=await import('../src/ingest/discovery/crossref');
+  const f=await fixture(t),scope=await qualifyDiscoveryCrossrefScope(crossrefScopeInput),canary='crossref-retention-canary@example.org';
+  const cases:[string,string][]=[
+    ['nested-contact',crossrefBody([{...crossrefItem(),unknown:{items:[{ignored:canary}]}}])],
+    ['percent-contact',crossrefBody([{...crossrefItem(),unknown:'https://safe.example/crossref-retention-canary%40example.org'}])],
+    ['entity-contact',crossrefBody([{...crossrefItem(),unknown:'crossref-retention-canary&#64;example.org'}])],
+    ['formatted-phone',crossrefBody([{...crossrefItem(),unknown:'call +1 (215) 555-0123'}])],
+    ['escaped-contact',crossrefBody([{...crossrefItem(),unknown:canary}]).replace('@','\\u0040')],
+    ['duplicate-masked-contact',crossrefBody([crossrefItem()]).replace('{"DOI":','{"ignored":"'+canary+'","ign\\u006fred":null,"DOI":')],
+    ['contact-key',crossrefBody([{...crossrefItem(),unknown:{phone:'5550100'}}])],
+    ['credential-url',crossrefBody([{...crossrefItem(),unknown:{url:'https://reader:fixture-password@safe.example/path'}}])],
+    ['encoded-credential-query',crossrefBody([{...crossrefItem(),unknown:encodeURIComponent('https://safe.example/path?api_key=fixture-secret')}])],
+    ['entity-bearer',crossrefBody([{...crossrefItem(),unknown:'&#66;earer fixturesecretvalue'}])],
+    ['encoded-query-key',crossrefBody([{...crossrefItem(),unknown:'https://safe.example/path?%20token=fixture-secret'}])],
+    ['encoded-credential-key',crossrefBody([{...crossrefItem(),unknown:{'api%5fkey':'fixture-secret'}}])],
+    ['encoded-abstract-key',crossrefBody([{...crossrefItem(),unknown:{'abstr%61ct':'Synthetic copyright-sensitive abstract canary'}}])],
+    ['abstract',crossrefBody([{...crossrefItem(),abstract:'Synthetic copyright-sensitive abstract canary',license:[{URL:'https://creativecommons.org/licenses/by/4.0/'}]}])],
+    ['nested-fulltext',crossrefBody([{...crossrefItem(),unknown:{'full-text':'Synthetic full-text canary'}}])],
+    ['contact-fixture',readFileSync(new URL('./fixtures/discovery-sources/crossref/work-list.json',import.meta.url),'utf8')],
+  ];
+  for(const [mode,payload] of cases) {
+    const template:DiscoveryEndpointTemplate={id:'endpoint:preflight-'+mode,origin:'https://api.crossref.org',path:'/works',fixed:{query:scope.queryLiteral,filter:scope.filter,rows:'2'},parameters:{cursor:{kind:'token',maxLength:512}},required:['cursor'],pageParameter:'cursor'};
+    const s=await f.source('preflight-'+mode,{scopeId:scope.id,template,params:{cursor:'*'}});let store:ReturnType<typeof f.makeStore>;
+    const adapter=createDiscoveryCrossrefAdapter({resolveSource:async id=>id===s.value.id?s.value:null,resolveScope:async id=>id===scope.id?scope:null,resolvePlan:id=>f.registry.resolvePlan(id),resolvePage:id=>store.resolvePage(id),resolveRepresentation:r=>f.registry.resolveRetainedRepresentation(r),resolveClaim:id=>store.resolveClaim(id),resolveChainPage:(id,n)=>store.resolveChainPage(id,n),now:f.now});
+    store=f.makeStore(f.db,adapter.parser);f.advance(31000);await f.makeRound(store,'round:preflight-'+mode,'cohort:preflight-'+mode,[s]);
+    const before=await f.db.prepare("SELECT count(*) AS n FROM discovery_evidence_revisions WHERE kind='representation'").first<{n:number}>();
+    const result=await f.makeCollector(store,{transportOptions:{egress:{send:async()=>new Response(payload)}}}).step(f.stepInput('round:preflight-'+mode));
+    assert.equal(result.kind,'failure',mode+': '+JSON.stringify(result));
+    assert.equal((await f.db.prepare("SELECT count(*) AS n FROM discovery_evidence_revisions WHERE kind='representation'").first<{n:number}>())?.n,before?.n,mode);
+    assert.equal((await f.db.prepare('SELECT count(*) AS n FROM discovery_collection_pages').first<{n:number}>())?.n,0,mode);
+    assert.equal((await f.db.prepare('SELECT count(*) AS n FROM discovery_collection_leads').first<{n:number}>())?.n,0,mode);
+    assert.equal((await store.readHealth(s.value.id))?.lastCompleteAt,null,mode);assert.equal((await store.readHealth(s.value.id))?.lastGoodReceiptId,null,mode);
+    const flat=JSON.stringify(await f.dump());for(const value of [canary,'fixture-password','copyright-sensitive abstract canary','Synthetic full-text canary','alex@example.org']) assert.equal(flat.includes(value),false,mode);
+  }
 });

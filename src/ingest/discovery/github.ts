@@ -10,6 +10,7 @@ import {
   type DiscoveryCollectionLead,
 } from './collection-contract';
 import type { DiscoveryTrustedAdapterRepresentation } from './adapter';
+import { decodeDiscoveryMetadataJson } from './metadata-preflight';
 
 export type DiscoveryGithubResolvers = {
   resolveSource(id: string): Promise<DiscoveryRuntimeSource | null>;
@@ -44,13 +45,9 @@ async function sha(bytes: Uint8Array) {
   const hash = await crypto.subtle.digest('SHA-256', new Uint8Array(bytes));
   return Array.from(new Uint8Array(hash), x => x.toString(16).padStart(2, '0')).join('');
 }
-function body(bytes: Uint8Array): any {
+function body(bytes: Uint8Array, repositories?: 'repository' | 'inventory' | 'search-repositories'): any {
   if (bytes.length > 48000) return fail('body-cap');
-  try {
-    return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
-  } catch {
-    return fail('json');
-  }
+  return decodeDiscoveryMetadataJson(bytes, 'github', fail, repositories);
 }
 function route(path: string) {
   if (/^\/(users|orgs)\/[A-Za-z0-9_.-]+$/.test(path)) return 'profile';
@@ -107,7 +104,7 @@ export function createDiscoveryGithubAdapter(resolvers: DiscoveryGithubResolvers
   async function repositoryBinding(receiptId: string) {
     const r=await retainedPage(receiptId);
     if(route(r.s.endpointTemplate.path)!=='repository'||r.page.truncated||r.page.rejectedCount||r.page.providerLimited||r.page.leadCount!==1) return fail('baseline-receipt');
-    const raw=record(body(r.retained.bytes));
+    const raw=record(body(r.retained.bytes, 'repository'));
     const lead=repository(raw,[]);
     if(r.s.endpointTemplate.path!==`/repos/${lead.displayName}`) return fail('baseline-alias');
     return {repositoryId:lead.nativeId,alias:lead.displayName,receiptId,representation:r.page.representation};
@@ -118,7 +115,7 @@ export function createDiscoveryGithubAdapter(resolvers: DiscoveryGithubResolvers
     if(request.provider!=='github'||request.endpointConstructor!==t.id||canonical(request.configuration)!==canonical(s.configuration)||canonical(request.enrollment)!==canonical(s.enrollment)||canonical(request.parser)!==canonical(s.parser)||request.installation!==s.installation||request.scopeId!==s.scopeId||canonical(request.permission)!==canonical(s.permission)||canonical(input.parser)!==canonical(s.parser)||await sha(input.bytes)!==input.representationSha256||await sha(new TextEncoder().encode(canonical(request)))!==input.requestSha256) return fail('request-binding');
     await constructDiscoveryEndpoint(t,Object.entries(request.parameters));
     if(!Number.isSafeInteger(input.maxItems)||input.maxItems<1||input.maxItems>100) return fail('item-budget');
-    const kind=route(t.path), raw=body(input.bytes), metadata: DiscoveryGithubMetadata[]=[], gaps: DiscoveryGithubGap[]=[];
+    const kind=route(t.path), raw=body(input.bytes, ['repository','inventory','search-repositories'].includes(kind) ? kind as 'repository' | 'inventory' | 'search-repositories' : undefined), metadata: DiscoveryGithubMetadata[]=[], gaps: DiscoveryGithubGap[]=[];
     const single=kind==='repository'||kind==='profile', search=kind.startsWith('search-');
     let rows: any[], providerLimited=false;
     if(single) rows=[record(raw)]; else if(search) { const result=record(raw);
