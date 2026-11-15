@@ -13,7 +13,7 @@ const Labels = z.object({ overall: Label, identity: Dimension, professionalBasis
 export const DiscoveryEvaluationFamilies = z.object({ people: z.array(Id).max(200), projects: z.array(Id).max(200),
   origins: z.array(Id).min(1).max(200), equivalences: z.array(Id).max(200) }).strict();
 export type DiscoveryEvaluationFamilies = z.infer<typeof DiscoveryEvaluationFamilies>;
-const Annotation = z.object({ reviewerId: Id, labels: Labels, rationale: Text, confidence: z.enum(["low", "medium", "high"]),
+export const DiscoveryIndependentAnnotation = z.object({ reviewerId: Id, labels: Labels, rationale: Text, confidence: z.enum(["low", "medium", "high"]),
   sourceIds: z.array(Id).min(1).max(128), rubric: RevisionRef, recordedAt: Instant, blindedBatch: Ref, receipt: Ref }).strict();
 const Adjudication = z.object({ reviewerId: Id, labels: Labels, rationale: Text, sourceIds: z.array(Id).min(1).max(128),
   rubric: RevisionRef, recordedAt: Instant, receipt: Ref }).strict();
@@ -23,7 +23,7 @@ export const DiscoveryReferenceCase = z.object({ id: Id, partition: z.enum(["dev
   claimMode: z.enum(["creator-current", "creator-historical", "work-regional-at-creation", "identity-relationship"]),
   subject: DiscoverySubject, primaryRoute: z.enum(DISCOVERY_PROVIDERS), appearances: z.array(z.enum(DISCOVERY_PROVIDERS)).min(1).max(6),
   counties: z.array(z.enum(DISCOVERY_COUNTY_KEYS)).max(9), countyUnknown: z.boolean(), families: DiscoveryEvaluationFamilies,
-  sourceIds: z.array(Id).min(1).max(128), familyReview: Ref, annotations: z.array(Annotation).max(10), adjudication: Adjudication.nullable(),
+  sourceIds: z.array(Id).min(1).max(128), familyReview: Ref, annotations: z.array(DiscoveryIndependentAnnotation).max(10), adjudication: Adjudication.nullable(),
   selectionReceipt: Ref, challenges: z.array(z.enum(["ambiguous-name", "account-person", "expired-affiliation", "adoption-only", "generic-ai",
     "repository-free-paper", "creator-without-work", "partial-date", "retraction", "mirror", "unsupported-project-join"])).max(11) }).strict();
 export type DiscoveryReferenceCase = z.infer<typeof DiscoveryReferenceCase>;
@@ -67,6 +67,25 @@ export function discoveryFamilyKeys(families: DiscoveryEvaluationFamilies): stri
 }
 const duplicate = (values: string[]) => new Set(values).size !== values.length;
 const sameRevision = (a: z.infer<typeof RevisionRef>, b: z.infer<typeof RevisionRef>) => a.id === b.id && a.revision === b.revision;
+
+/** Exact EX17 context; annotation and receipt references deliberately remain outside it. */
+export function discoveryReferenceReviewContext(manifest: DiscoveryReferenceManifest, item: DiscoveryReferenceCase) {
+  const sources = new Map(manifest.sources.map(source => [source.id, source]));
+  return {
+      schemaVersion: "discovery-case-selection-review-v2",
+      manifest: { revision: manifest.revision, rubric: manifest.rubric, policy: manifest.policy, design: manifest.design },
+      case: { id: item.id, partition: item.partition, subject: item.subject, claimMode: item.claimMode,
+        primaryRoute: item.primaryRoute, appearances: item.appearances, counties: item.counties,
+        countyUnknown: item.countyUnknown, families: item.families, sourceIds: item.sourceIds, challenges: item.challenges },
+      sourceBindings: [...item.sourceIds].sort().map(id => {
+        const source = sources.get(id);
+        if (!source) return { id, source: null };
+        const { evidence: _evidence, permission: _permission, ...descriptor } = source;
+        return { id, source: descriptor };
+      }),
+      sampling: item.partition in manifest.sampling ? manifest.sampling[item.partition as keyof typeof manifest.sampling] : null,
+    };
+ }
 
 /** Structural/evidence-reference readiness is not source truth, human acceptance, or a freeze. */
 export async function assessDiscoveryReferenceReadiness(input: unknown, verify?: DiscoveryReceiptVerifier) {
@@ -137,20 +156,7 @@ export async function assessDiscoveryReferenceReadiness(input: unknown, verify?:
     // Versioned full descriptor attestation: legacy partial selection receipts must
     // be re-reviewed, never silently upgraded. Labels and receipt refs stay outside
     // the case descriptor to avoid annotation/adjudication dependency cycles.
-    const reviewContext = {
-      schemaVersion: "discovery-case-selection-review-v2",
-      manifest: { revision: m.revision, rubric: m.rubric, policy: m.policy, design: m.design },
-      case: { id: item.id, partition: item.partition, subject: item.subject, claimMode: item.claimMode,
-        primaryRoute: item.primaryRoute, appearances: item.appearances, counties: item.counties,
-        countyUnknown: item.countyUnknown, families: item.families, sourceIds: item.sourceIds, challenges: item.challenges },
-      sourceBindings: [...item.sourceIds].sort().map(id => {
-        const source = sources.get(id);
-        if (!source) return { id, source: null };
-        const { evidence: _evidence, permission: _permission, ...descriptor } = source;
-        return { id, source: descriptor };
-      }),
-      sampling: item.partition in m.sampling ? m.sampling[item.partition as keyof typeof m.sampling] : null,
-    };
+    const reviewContext = discoveryReferenceReviewContext(m, item);
     const contextSha256 = await discoveryEvaluationDigest(reviewContext);
     await verifyReceipt(item.selectionReceipt, "selection", item.id, reviewContext);
     if (item.annotations.length < 2 || duplicate(item.annotations.map(x => x.reviewerId))) add(`independent-annotations-required:${item.id}`);
@@ -236,6 +242,78 @@ export async function assessDiscoveryReferenceReadiness(input: unknown, verify?:
     findings, counts: { heldout: heldout.length, recall: m.cases.filter(x => x.partition === "recall").length, audit: m.cases.filter(x => x.partition === "audit").length },
     heldoutHistory: { caseIds: [...heldoutConnectedIds].sort(), familyKeys: [...heldoutConnectedKeys].sort() },
     claimScope: "Selected structure and externally resolved receipt bindings only; no authentication implementation or source-truth verdict." };
+}
+
+/** Pre-annotation structure only. The caller must authenticate the source,
+ * selection, family, sampling and exposure statements before relying on it.
+ * No annotations, independent-human truth, dispatch authority or freeze is issued. */
+export function assessDiscoveryReferenceDispatchStructure(input: unknown, caseId: string) {
+  const parsed = DiscoveryReferenceManifest.safeParse(input);
+  if (!parsed.success) return { status: "not_frozen" as const, readiness: "blocked" as const, findings: ["invalid-reference-manifest"] };
+  const m = parsed.data, findings: string[] = [], add = (value: string) => findings.push(value);
+  for (const [kind, rows] of [["case", m.cases], ["source", m.sources], ["reviewer", m.reviewers]] as const)
+    if (duplicate(rows.map(x => x.id))) add(`duplicate-${kind}-id`);
+  const selected = m.cases.find(x => x.id === caseId);
+  if (!selected) add("unknown-dispatch-case");
+  if (selected?.partition === "audit") add("admitted-audit-dispatch-belongs-to-WP24");
+  const sources = new Map(m.sources.map(x => [x.id, x])), byCaseId = new Map(m.cases.map(x => [x.id, x]));
+  const keys = new Map<string, string[]>();
+  for (const item of m.cases) {
+    if (item.claimMode.startsWith("creator-") && !["person", "organization"].includes(item.subject.kind)) add(`claim-subject-kind:${item.id}`);
+    if (item.claimMode === "work-regional-at-creation" && !["project", "artifact"].includes(item.subject.kind)) add(`claim-subject-kind:${item.id}`);
+    if (duplicate(item.sourceIds) || duplicate(item.appearances) || duplicate(item.counties) || duplicate(discoveryFamilyKeys(item.families))) add(`duplicate-case-members:${item.id}`);
+    if (!item.appearances.includes(item.primaryRoute)) add(`primary-route-not-in-appearances:${item.id}`);
+    if (!item.counties.length && !item.countyUnknown) add(`missing-county-disposition:${item.id}`);
+    const all = [...discoveryFamilyKeys(item.families), `subject:${item.subject.kind}:${item.subject.id}`], routes = new Set<string>();
+    for (const id of item.sourceIds) {
+      const source = sources.get(id);
+      if (!source) { add(`unknown-source:${item.id}:${id}`); continue; }
+      if (!item.families.origins.includes(source.originFamilyId)) add(`missing-origin-family:${item.id}:${id}`);
+      routes.add(source.identity.provider);
+      all.push(`bytes:${source.representationSha256}`, `native:${canonical(source.identity)}`);
+    }
+    if (!routes.has(item.primaryRoute) || item.appearances.some(route => !routes.has(route))) add(`unsupported-route-appearance:${item.id}`);
+    keys.set(item.id, all);
+  }
+  const groups = connectedGroups(m.cases.map(item => ({ id: item.id, keys: keys.get(item.id)! })));
+  for (const ids of groups) if (ids.some(id => byCaseId.get(id)!.partition === "development") && ids.some(id => byCaseId.get(id)!.partition === "heldout"))
+    add(`partition-leakage:connected-component:${ids[0]}`);
+  const heldout = m.cases.filter(item => item.partition === "heldout");
+  const heldoutConnected = new Set(groups.filter(ids => ids.some(id => byCaseId.get(id)!.partition === "heldout")).flat());
+  const heldoutKeys = new Set([...heldoutConnected].flatMap(id => keys.get(id)!));
+  const canonicalKeys = (item: DiscoveryReferenceCase) => keys.get(item.id)!.filter(key => !key.startsWith("people:") && !key.startsWith("projects:"));
+  const canonicalGroups = connectedGroups(m.cases.map(item => ({ id: item.id, keys: canonicalKeys(item) })));
+  const canonicalIndex = new Map(canonicalGroups.flatMap((ids, group) => ids.map(id => [id, group] as const)));
+  const independentCount = (items: DiscoveryReferenceCase[]) => new Set(items.map(item => canonicalIndex.get(item.id))).size;
+  if (heldout.length && independentCount(heldout) !== heldout.length) add("heldout-cross-route-or-family-duplicates");
+  if (selected?.partition === "heldout") {
+    if (heldout.length !== 360) add(`heldout-total:${heldout.length}:expected-360`);
+    for (const route of DISCOVERY_PROVIDERS) {
+      const count = heldout.filter(item => item.primaryRoute === route).length;
+      if (count !== 60) add(`heldout-route:${route}:${count}:expected-60`);
+    }
+    if (!m.cases.some(item => item.partition === "development")) add("missing-development-set");
+  }
+  if (selected?.partition === "recall") {
+    const count = independentCount(m.cases.filter(item => item.partition === "recall"));
+    if (count < 100) add(`recall-independent-count:${count}:minimum-100`);
+  }
+  if (!m.history) {
+    if (selected && ["heldout", "recall"].includes(selected.partition)) add("missing-authenticated-exposure-history");
+  } else {
+    for (const exposure of m.history.exposures) for (const id of exposure.caseIds) {
+      if (!keys.has(id)) add(`unknown-exposure-case:${id}`);
+      else if (heldoutConnected.has(id)) add(`heldout-family-already-exposed:${id}`);
+    }
+    for (const old of m.history.previous) {
+      if (sameRevision(old.revision, m.revision)) add("revision-reused");
+      if ((old.exposedAt !== null || !sameRevision(old.rubric, m.rubric)) &&
+          (old.heldoutCaseIds.some(id => heldoutConnected.has(id)) || old.heldoutFamilyKeys.some(key => heldoutKeys.has(key))))
+        add("fresh-holdout-required-after-exposure-or-rubric-change");
+    }
+  }
+  return { status: "not_frozen" as const, readiness: findings.length ? "blocked" as const : "ready_for_authenticated_dispatch_checks" as const,
+    findings: [...new Set(findings)], claimScope: "Selected structure/family/exposure conditions only; no statement authentication or independent-human truth." };
 }
 
 function connectedGroups(rows: { id: string; keys: string[] }[]): string[][] {

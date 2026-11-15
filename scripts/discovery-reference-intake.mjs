@@ -66,7 +66,7 @@ async function rejectSymlinkAncestors(path, enforceOwnership = false) {
     }
   }
 }
-async function readBounded(path, limit) {
+export async function readBounded(path, limit) {
   await rejectSymlinkAncestors(path);
   const handle = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
   try {
@@ -77,13 +77,25 @@ async function readBounded(path, limit) {
     return { data: data.subarray(0, count), inode: `${stat.dev}:${stat.ino}` };
   } finally { await handle.close(); }
 }
-async function privateOutput(path) {
+export async function privateOutput(path) {
   const parent = dirname(path);
   await rejectSymlinkAncestors(path, true);
   const stat = await lstat(parent);
   if (stat.uid !== process.getuid() || (stat.mode & 0o777) !== 0o700 || await realpath(parent) !== parent) throw new Error("invalid-output");
   try { await lstat(path); } catch (error) { if (error.code === "ENOENT") return; throw error; }
   throw new Error("output-exists");
+}
+
+/** Shared bounded private publication; destination must be absent and its parent 0700. */
+export async function writeDiscoveryPrivateOutput(output, bytes, limit = 16000000) {
+  if (!Buffer.isBuffer(bytes) || !isAbsolute(output) || resolve(output) !== output || bytes.length > limit) throw new Error("invalid-output");
+  await privateOutput(output);
+  const temporary = join(dirname(output), `.discovery-human-${randomBytes(16).toString("hex")}.tmp`);
+  try {
+    const handle = await open(temporary, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+    try { await handle.writeFile(bytes); await handle.sync(); } finally { await handle.close(); }
+    await link(temporary, output);
+  } finally { await unlink(temporary).catch(() => {}); }
 }
 
 export async function runDiscoveryReferenceIntake(argv) {
