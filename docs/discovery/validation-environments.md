@@ -37,7 +37,34 @@ The historical production note `/home/plumbob/.codex/memories/plumbob-server/the
 
 No deployed-health request was made. Record any later permitted observation separately with timestamp and reported revision, retaining disagreement with source. Do not equate a healthy endpoint, matching source hash, or code-level schema label with complete discovery delivery or database state.
 
-Real source acquisition, enrollment, retention/display permission, participant recruitment, real editorial actions, paid/recurring trials, remote migration, deployment, recovery and host service changes remain outside this local scope. Fixtures permit continued local implementation; they do not qualify any of the six providers or E01–E06. Never launch ingestion scripts, a scheduler, or `wrangler dev --test-scheduled` merely because README lists them.
+At the original local-validation baseline, real source acquisition, enrollment, retention/display permission, participant recruitment, real editorial actions, paid/recurring trials, remote migration, deployment, recovery and host service changes were outside scope. The following dated amendment expands only bounded public source investigation. Fixtures do not qualify providers or E01–E06. Never launch ingestion scripts, a scheduler, or `wrangler dev --test-scheduled` merely because README lists them.
+
+## 15 November 2026: authorized real source qualification
+
+The user's request to perform real source qualification authorizes bounded anonymous
+public policy/access reads and source-specific permitted evidence capture. EX21 in
+[implementation decisions](implementation-decisions.md) records this amendment;
+[the qualification record](qualification/README.md) records results and limits.
+The original local-only baseline above remains historical evidence.
+
+Six fixed root GETs inspected OpenMRS robots/terms/basic-info, ROR robots, and the
+Penn/CHOP organization endpoints. Four separately recorded institution-research GETs
+read ROR/Penn robots and official API/data-policy documentation. Primary web-policy
+research is recorded separately, not counted as native capture requests. No forum
+discussion or institutional profile body was acquired. Exact CC0 organization JSON
+was retained only after a source-specific rights and bounded privacy decision;
+independent full field/URI review preceded the portable copy.
+
+Root requests used standalone certificate-verifying, public-IP-pinned Python HTTPS,
+no credentials/proxy/redirects, identity encoding, byte caps and an outer 25-second
+subprocess deadline. They did not exercise WP06 transport or create source authority.
+The preserved first receipt's `native_transport: true` means this standalone method,
+not project transport qualification. Other receipts make that distinction explicit.
+
+Production enrollment/activation, recurring collection, private or paid access,
+provider outreach, real human/trust enrollment, editorial admission, remote migration,
+deployment and host service changes remain outside this investigation. No freeze or
+empirical gate is waived. HTTP/rights/format/corpus results remain separate outcomes.
 
 ## Repeatable WP00 evidence review
 

@@ -1,0 +1,48 @@
+# Astra independent real-source qualification review
+
+Status: policy and implementation-boundary review in progress; no provider is qualified by this document. Inspected baseline `3f2b9297ef83d65449bec830332341787e766767`. Bounded public policy/access/schema qualification is authorized; production enrollment, credentials, paid access, deployment and editorial admission are not. No post or profile body was requested for this review before root's source-specific rights decision.
+
+## Independent policy findings
+
+| Candidate | Primary evidence read | Bounded conclusion |
+| --- | --- | --- |
+| OpenMRS Talk | [Site terms and contribution/copyright policy](https://talk.openmrs.org/tos), read 2026-11-15 | Original website contributions are offered under CC BY 4.0 unless otherwise noted; redistribution needs origin attribution. Third-party material and trademarks have separate conditions. This supports a conditional basis for original text, not blanket rights over attachments, quotations, private data or unrestricted API/bulk acquisition. |
+| OHDSI forum | [Terms §3](https://forums.ohdsi.org/tos), read 2026-11-15 | User contributions carry CC BY-NC-SA 3.0. Do not classify this as unrestricted commercial reuse. A compatible restricted use or separate permission would need its own decision. |
+| Slicer forum | [Terms §3](https://discourse.slicer.org/tos), read 2026-11-15 | User contributions also carry CC BY-NC-SA 3.0. The terms document's CC-BY-SA notice is not a different license for forum contributions. |
+| ROR | [Official infrastructure licensing](https://ror.readme.io/docs/infrastructure), [API access documentation](https://ror.readme.io/docs/rest-api), read 2026-11-15 | ROR dataset/IDs are CC0; website content and logos have different licenses. The API is documented as public with rate limits. These facts do not license linked institutional pages or establish an observed API response. Organization metadata is not person-employment or clinical/regional truth. |
+
+The ROR website FAQ fetch returned 403 in this review. The separate institution research receipts show `/robots.txt` at the API host returned 403 with no body retained, while official documentation Markdown returned 200 with hashes. These are endpoint-specific observations, not proof of API success or a general API outage. No alternative identity or access-control bypass was attempted.
+
+## What the existing registry proves
+
+`DiscoverySourceQualification` binds source revision, installation, configuration digest, parser, permission, rights, access/display decisions, owners, validity and retained sample references. `source-registry.qualify` checks those bindings and the usable retained sample's exact endpoint/hash/scope/parser/configuration. Its authorized mutation is separate from activation.
+
+The registry does not interpret licenses, execute the parser during qualification, establish reviewer identity independently of its capability resolver, or prove source truth. A synthetic local capability and invented owner/grant IDs can exercise storage but cannot become real authorization merely because the bytes came from a real website. A successful fetch or a matching hash does not replace permission or accountable review.
+
+## Required separate determinations
+
+For each exact endpoint and bounded purpose, preserve access/robots/API conditions, raw retention permission and duration, transformation permission, redisplay rights/attribution, parser/version compatibility, regional/identity limits, maintenance and deletion obligations as separate outcomes. Record unknown or blocked outcomes explicitly. Rights to metadata do not automatically cover post bodies, profiles, attachments, code or images.
+
+An actual capture receipt must identify the request/observation time, exact URL/method, safe status/MIME/encoding metadata, byte ceiling/count/hash, redirect handling and network implementation. Distinguish application-decoded bytes from wire bytes. A later local-D1 replay must identify itself as replay of that capture, not a second real acquisition or proof of native WP06 egress. Keep rejected private content out of retained bodies, tracked fixtures and failure reports.
+
+Native forum responses must pass the unchanged installation-specific whole-response contract; projecting or removing fields first creates a different representation and cannot be described as native parser success. The institutional adapter is a narrow passive HTML extractor; a ROR JSON response or a reformatted profile cannot prove its compatibility. ROR may supply separately scoped organization identity/location proposals, not a substitute biography, actual-unit affiliation, health-tech basis or roster denominator.
+
+## Approved capture review and bounded format correction
+
+Root authorized offline review of the exact native ROR Penn capture. Its 2,123 bytes independently match SHA-256 `3f61195d95153df4cd882655b5397e0e50823c2daa2332b107b7bb61dc4823c6` and the receipt's byte count. The receipt records anonymous pinned-public-IP HTTPS, status 200 and `application/json`, with no redirects/proxy, at 2026-11-15T20:34:20.635527+00:00. This was standalone capture, explicitly not WP06 transport. Negotiated TLS version is unrecorded (`null`); code inspection confirms use of the default certificate-verifying context and original hostname. A socket inactivity timeout alone is not a total elapsed bound; the capture method requires an external or monotonic total deadline for future runs.
+
+The native record identifies `https://ror.org/00b30xv10`, University of Pennsylvania, active organization status, education/funder types and Philadelphia/Pennsylvania locality metadata. Its administration dates describe ROR record creation/modification, not personal affiliation validity. City coordinates and organization status do not establish an author's actual unit, current employment or health-tech role. Linked institutions/pages were not fetched. This is a real organization-metadata observation, not a real reference label.
+
+OpenMRS robots and terms direct requests returned 403 with bodies discarded. The readable browser-policy evidence remains separate from those unsuccessful direct captures. No native forum category/topic body, installation version or parser compatibility has been established. ROR robots also returned 403; the separately approved exact organization endpoint succeeded. These outcomes must not be collapsed into a single host-wide access claim.
+
+The exact ROR bytes already failed the preceding HTML adapter's decoded-URL check; they did not reproduce a healthy-empty result. Separate synthetic JSON/plain-text probes did reveal a generic format gap under a zero roster. Root explicitly assigned the narrow fix: require leading HTML markup after BOM/whitespace, with fixed `unsupported-format` failure, preserving valid empty HTML. Final source hash is `b975fb44afaac237a647ed8f39afd9d8f52e5c0576fdb79878c75d2f479a8a83`; all 55 independent institutional checks and app TypeScript compilation pass. See [the detailed WP13 review](../reviews/wp13-astra.md). This is not MIME validation or ROR parser support; affected actual-D1/integration qualification remains root's gate.
+
+The ROR sample can be staged as unannotated, development-exposed evidence under the approved CC0 scope. No source registry qualification/activation, person admission, real reviewer/trust enrollment, WP03 freeze or WP12/WP13 full-package acceptance follows from this work.
+
+## Final portable evidence readback
+
+Read-only review covered the qualification README, both portable native bodies and observation receipts, aggregate access/policy observations, material index and WP03 staging/entry notes. Penn is 2,123 bytes with SHA-256 `3f61195d95153df4cd882655b5397e0e50823c2daa2332b107b7bb61dc4823c6`; CHOP is 1,426 bytes with SHA-256 `d8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893`. Both match the original workspace captures byte-for-byte, companion and aggregate receipts, and staging index. Native IDs, active organization status and record-modification dates agree with the staging descriptions. All local Markdown links in the qualification directory resolve.
+
+Full body inspection found organization identifiers, names, relationships, website references, administration dates and city-level location metadata; no person, private contact or credential fields were present. Penn's HTTP Wikipedia URL remains original source data, not an approved fetch target. CHOP's healthcare type supplies no health-technology eligibility or creator label. Both records share the ROR publisher and related-organization context; neither supplies an independent reference unit or untouched held-out sample. Policy observation hashes refer to previously reviewed local policy artifacts; those policy bodies are not included in the portable package, so the package preserves observation metadata rather than a self-contained policy text archive.
+
+No implementation blocker was found in this final readback. Two wording clarifications were sent to root: the original OpenMRS robots receipt retains the legacy `native_transport: true` field and needs the aggregate's explicit standalone/non-WP06 interpretation; the statement that no relationship-target page was acquired should distinguish linked institutional/web pages from the separately authorized CHOP ROR API record. Neither requires changing original capture bytes. Root reports the affected 19 institutional tests, type checks, seven PDF checks, build and smoke checks passed; those are root's validation results, separate from this independent readback. No new HTTP request or evidence acquisition occurred during this review.

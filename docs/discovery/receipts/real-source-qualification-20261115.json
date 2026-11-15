@@ -1,0 +1,182 @@
+{
+  "id": "TVD-REAL-SOURCE-QUALIFICATION-20261115",
+  "recorded_at": "2026-11-15T20:57:16.171802+00:00",
+  "decision": "EX21",
+  "entry_revision": "3f2b9297ef83d65449bec830332341787e766767",
+  "disposition": "bounded_manual_organization_evidence_pass_automated_pipeline_unqualified",
+  "packages": [
+    "WP03",
+    "WP12",
+    "WP13"
+  ],
+  "owner": "orchestrating engineer with Sol",
+  "independent_reviewers": [
+    "Terra",
+    "Astra"
+  ],
+  "authority": "User-authorized bounded public real source investigation; no production enrollment, recurring/private/paid access, provider outreach, human/trust enrollment, editorial admission or deployment.",
+  "source_results": {
+    "ROR": {
+      "manual_metadata_scope": "pass_for_two_exact_CC0_organization_records",
+      "native_records": 2,
+      "access": "two_fixed_record_GET_200; robots_403_separate_resource",
+      "rights": "CC0_ROR_IDs_and_metadata_only",
+      "privacy": "full_observed_nested_field_URI_and_contact_review_passed_before_portable_copy",
+      "transport": "standalone_pinned_native_HTTPS_not_WP06",
+      "wp06_registry_authority": "not_established",
+      "wp13_native_format": "unsupported_JSON_and_fixed_query_free_endpoint",
+      "person_county_creator_relevance_or_current_employment_truth": "not_established"
+    },
+    "OpenMRS_Talk": {
+      "access": "hold_three_anonymous_403_responses",
+      "rights": "conditional_original_contribution_CC_BY_4_0_policy_evidence; third_party_attribution_and_retention_review_still_required",
+      "native_installation_version_API_parser": "unqualified",
+      "discussion_bodies_requested": 0
+    },
+    "OHDSI_and_Slicer": {
+      "redisplay": "excluded_from_general_commercial_path_without_compatible_separate_permission",
+      "rights": "user_contributions_CC_BY_NC_SA_3_0",
+      "discussion_bodies_deliberately_requested": 0
+    },
+    "Penn_Medicine_CBICA": {
+      "access": "robots_query_disallow_conflicts_with_mandatory_page_query",
+      "profile_body_rights_and_format": "unqualified",
+      "profile_bodies_requested": 0
+    }
+  },
+  "observations": {
+    "root_fixed_GETs": 6,
+    "institution_research_policy_GETs": 4,
+    "primary_web_policy_research": "separately_recorded_not_native_response_capture",
+    "root_request_limits": "anonymous_no_proxy_no_redirects_identity_encoding_64KiB_data_256KiB_terms_outer_25s_deadline",
+    "root_TLS_version": "not_recorded_default_certificate_verification_inspected",
+    "root_error_bodies_retained": 0
+  },
+  "software_correction": {
+    "reason": "synthetic_JSON_or_plain_text_could_report_healthy_empty_zero_roster",
+    "actual_Penn_pre_fix": "already_rejected_by_decoded_URL_check_not_a_false_empty_reproduction",
+    "fix": "leading_HTML_markup_required_after_UTF8_BOM_whitespace_before_capture",
+    "new_ROR_adapter": false,
+    "general_MIME_binding_implemented": false,
+    "outputs": {
+      "src/ingest/discovery/institutional.ts": "b975fb44afaac237a647ed8f39afd9d8f52e5c0576fdb79878c75d2f479a8a83",
+      "test/discovery-institutional.test.ts": "d1f4e7583f79d976cf9697427407ab02a36c410abe53f8719732ed746ff5481a"
+    }
+  },
+  "validation": {
+    "affected_institutional_tests": {
+      "tests": 19,
+      "pass": 19,
+      "fail": 0,
+      "skipped": 0
+    },
+    "actual_Penn_byte_offline_D1_replay": {
+      "tests": 3,
+      "pass": 3,
+      "scope": "synthetic_request_authority_bindings_no_HTTP; actual_native_body_unchanged"
+    },
+    "Astra_independent_checks": {
+      "checks": 55,
+      "passed": 55
+    },
+    "PDF_regressions": {
+      "tests": 7,
+      "pass": 7
+    },
+    "discovery_types": "pass",
+    "build": "pass",
+    "local_synthetic_smoke": "pass",
+    "prior_full_suite": "1361_tests_historical_prior_receipt_not_fresh_rerun",
+    "test_whitespace_note": "Independent 19-test snapshot used 2b7d6520; root removed one EOF blank line producing current d1f4e758 with identical test statements. The root 19-test run and global checks completed successfully. No source logic changed afterward.",
+    "local_secret_scan": "pass_934_tracked_and_nonignored_untracked_files"
+  },
+  "outputs": {
+    "docs/discovery/qualification/README.md": "005dbbdac9229dcbb7ed3f9b1bab545f913b09db77d1f20fdb884b9ef3d19f5c",
+    "docs/discovery/qualification/astra-source-review.md": "e0147c8dee1e49598ff2cd36de1e79f76e04c6d16a026ff5816e933dee2ad129",
+    "docs/discovery/qualification/evidence/access-observations.json": "45144f27b00e7d2f8ccc84bcdda90d146984c14b11ef252f8cddef7d34ae4dd4",
+    "docs/discovery/qualification/evidence/capture-method.py": "6ce80de911f231c61157b87700a4003bf6ac70466a588f9d2e8baa4b0ccc4083",
+    "docs/discovery/qualification/evidence/policy-observations.json": "d3037bd4d54715383f9623c1d0f0f44f9a936d3c9d34e1a0cd51681b4dd50db3",
+    "docs/discovery/qualification/evidence/ror-chop-20261115/body.json": "d8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893",
+    "docs/discovery/qualification/evidence/ror-chop-20261115/observation.json": "5f77819e099351b932f2ec4f86e993bb75987981ee12ade7a6167be22b3d033a",
+    "docs/discovery/qualification/evidence/ror-penn-20261115/body.json": "3f61195d95153df4cd882655b5397e0e50823c2daa2332b107b7bb61dc4823c6",
+    "docs/discovery/qualification/evidence/ror-penn-20261115/observation.json": "43784109366808c13fc50550ef5a4f65013a8f337a4386f71ccfe910ce0b1e3b",
+    "docs/discovery/qualification/forum-source-assessment.md": "f22e6e551e4bae685c3a3dfdf1346b765515d473e476903c51053fe244dc128f",
+    "docs/discovery/qualification/independent-source-review.md": "1e69cd9cc82f50e9969e0e9962782a4d0d474a8330c8c102ce7b7df007de4ed2",
+    "docs/discovery/qualification/institution-source-assessment.md": "815851b798c31c583c4a657c0ce48a46671bd533bf047087d00a15c131fae42f",
+    "docs/discovery/qualification/wp03-evidence-entry-review.md": "c079f2708e0613d2946811b5c1945658b18e0672f5541f2765349d96d9142f75",
+    "docs/discovery/qualification/wp03-material-index.json": "7bbf1260813a6f80c3fe606b57eaaffdaa6bea5f28a51e521ba02869e128e7de",
+    "docs/discovery/qualification/wp03-real-material.md": "9aed41b8b975fffb11da638ed3076317cf68c8a5652b21c6ea8b5661b1231604",
+    "docs/discovery/reviews/wp13-astra.md": "91d422bb3ce0096646d9a6e6024ff5abd4e98b94364a87cf1cdb6074b15aaf1f",
+    "docs/discovery/README.md": "efce969446bf326e17a645a439877d61f7e643f8f0e4140c44b27756030508bf",
+    "docs/discovery/implementation-decisions.md": "ae6a00413c2593093744137792f46723f1d09d45dcfd2df725fd6b3723804255",
+    "docs/discovery/validation-environments.md": "7c32ec83612fe748691f5a3f7c13c706847bc667603424e0115b3c2d87f1bd1d",
+    "docs/discovery/execution.json": "31f8fb688152727067d7447b4fe6c48226400595af18a8d53deb1beaace5ee12"
+  },
+  "private_artifacts": {
+    ".discovery-work/source-qualification/root/institutional-final.log": "315525ec66056b03508f0c86f0d21e6d5be4bde372a419129650dbd5a11e6b4e",
+    ".discovery-work/source-qualification/root/types-final.log": "8096a1cdf4a03a83d5c0f167a9106deb1075fc86d38e42ad1a235b3988c172d6",
+    ".discovery-work/source-qualification/root/pdf-final.log": "ddd4a35da5b27b85a076a18f60e416a73e76346bcd526fcd9cf8ed607b368aae",
+    ".discovery-work/source-qualification/root/build-final.log": "d3a30d010497c72d383a10482a819006dbcd1fd120c040c68cb59b019ec94632",
+    ".discovery-work/source-qualification/root/smoke-final.log": "15fbe9e026394af229c7aca06dfbb000cf6cac20d108b608eba5dae19f075d13",
+    ".discovery-work/source-qualification/root/validation.json": "e62b0a15036f21c76acb36e22e83f5852e986c80c37a387d5780c104533be7ec",
+    ".discovery-work/source-qualification/root/artifact-checks.json": "150a2b00deec5757d71f5cce9738ebe5f1af524e03550b5f2ec5df3c4565e97e",
+    ".discovery-work/source-qualification/root/input-sha256.json": "399a4f2b2a39a1800c90bab49689ffcfccbfa53ac4ad91aae11a657758b52d82",
+    ".discovery-work/source-qualification/root/ror-penn/offline-actual-fixed.tap": "486ebe1e2af5eef454e7f09827aaa3fff5827dfbc71e324aaf1f887b0905719c",
+    ".discovery-work/source-qualification/root/secret-final.log": "2effddac82e620f949f893b3e7e1c927b34e803a0ef9d647021931e4e5acd8de"
+  },
+  "runtime_inputs": {
+    "path": ".discovery-work/source-qualification/root/input-sha256.json",
+    "sha256": "399a4f2b2a39a1800c90bab49689ffcfccbfa53ac4ad91aae11a657758b52d82",
+    "count": 607,
+    "delta_from_previous": [
+      "src/ingest/discovery/institutional.ts",
+      "test/discovery-institutional.test.ts"
+    ]
+  },
+  "frozen_manifests": [
+    {
+      "manifest": "docs/discovery-engineering/HANDOFF-MANIFEST.json",
+      "entries": 70,
+      "mismatches": []
+    },
+    {
+      "manifest": "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json",
+      "entries": 21,
+      "mismatches": []
+    }
+  ],
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "real_staged_material_count": 2,
+  "actual_reference_cases": 0,
+  "actual_human_reviewers": 0,
+  "manifest_status": "not_frozen",
+  "WP14": "not_started_blocked_by_WP03",
+  "full_WP12_accepted": false,
+  "full_WP13_accepted": false,
+  "empirical_gates": "E01-E06_not_run",
+  "deployment_performed": false,
+  "production_state_changed": false,
+  "prior_head_CI": {
+    "head": "3f2b9297ef83d65449bec830332341787e766767",
+    "run_id": 43756652704,
+    "run_number": 165,
+    "conclusion": "failure",
+    "tests_PDF_build_smoke": "success",
+    "npm_audit": "failure",
+    "CI_secret_scan": "skipped",
+    "observed_this_task": true
+  },
+  "limits": [
+    "Two reachable related registry records do not establish corpus representativeness, independent origins or recall.",
+    "Agent/policy/capture reviews do not replace actual authenticated evidence/permission statements, enrolled humans, blinded labels or accountable freeze.",
+    "WP12 automatic native edit/deletion current-claim consumer remains unimplemented.",
+    "Unchanged lockfile retains previously recorded four high/seven total audit advisories; no green CI/release claim."
+  ],
+  "reviewed_code_commit": "d4f43ca54312889d93a83e27fdfb156250baf273",
+  "metadata_finalized_at": "2026-11-15T20:59:08.563873+00:00"
+}

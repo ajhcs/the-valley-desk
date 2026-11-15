@@ -726,3 +726,48 @@ The user confirmed continuing in dependency order after the WP03 corpus gate was
 explained. [WP14 entry preparation](wp14-entry-plan.md) documents the concrete
 existing authority/store gaps and planned interfaces/tests. It changes no route,
 migration, rule or decision authority, and does not waive WP03.
+
+## EX21 — Real source investigation and WP03 material staging
+
+**Status:** Bounded manual ROR organization-evidence scope reviewed; automated
+WP12/WP13 source qualification and full package acceptance remain ungranted.
+WP03 remains in_progress and not_frozen; WP14 remains gated. No threshold,
+reference manifest, model or production configuration changes.
+
+The user explicitly requested real source qualification. This expands the earlier
+local-only validation scope to anonymous public policy/access investigation and
+source-specific permitted evidence capture. It grants no recurring collection,
+production enrollment, paid/private access, provider outreach, human/trust
+enrollment, editorial action or deployment. The
+[qualification record](qualification/README.md) preserves the exact evidence and
+separate rights/access/format outcomes; standalone HTTPS observations are not
+WP06 registry/transport authority or authenticated WP03 permission statements.
+
+Two fixed ROR API GETs returned exact CC0 Penn and CHOP organization JSON. Both
+records passed independent native-byte/hash, field/URI and contact checks before
+portable retention. They are staged as unannotated, development-exposed metadata,
+with no actual-unit, county, person, creator or health-technology labels. ROR
+metadata rights do not license linked pages. The related records share a publisher
+and are not two independent reference cases or a recall roster.
+
+OpenMRS robots/terms/basic-info probes returned 403; no discussion body was fetched
+and native API/version qualification remains on hold. OHDSI/Slicer contribution
+terms restrict commercial reuse, so general commercial redisplay remains excluded
+absent compatible separate permission. Penn Medicine robots disallow query URLs,
+conflicting with the existing mandatory page grammar; profile rights/format remain
+unqualified. A code repository's license does not license its associated website.
+
+Native ROR JSON and its fixed query-free endpoint cannot qualify WP13's paged HTML
+contract. The exact Penn bytes already failed the preceding parser's URL checks.
+Separate synthetic JSON/plain-text probes exposed a false healthy-empty outcome
+under a declared zero roster. The minimal correction requires leading HTML markup
+after UTF-8/BOM/whitespace handling and fails other formats before raw capture.
+This does not implement JSON mapping or general MIME binding. Affected D1 tests,
+exact-byte offline replay and independent adversarial checks passed with those
+boundaries preserved.
+
+WP03's strict manifest remains byte-identical with zero cases/reviewers. Authentic
+evidence/permission statements, actual independent human review, family/partition
+and sampling review, the required corpus and accountable freeze remain missing.
+The subordinate staging index supplies none of that authority. E01–E06 remain
+not_run; no source truth, full coverage or operational acceptance is claimed.

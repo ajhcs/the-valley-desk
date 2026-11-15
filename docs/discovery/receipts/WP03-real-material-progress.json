@@ -1,0 +1,32 @@
+{
+  "package": "WP03",
+  "disposition": "two_real_unannotated_development_exposed_materials_staged_package_incomplete",
+  "recorded_at": "2026-11-15T20:57:16.171802+00:00",
+  "decision": "EX21",
+  "qualification_receipt": "real-source-qualification-20261115.json",
+  "qualification_receipt_sha256": "7b533d0ffe84e1b9ba19cce922fb6c1aa796880ddeba5f320288b1b7ef354ef6",
+  "outputs": {
+    "docs/discovery/qualification/wp03-material-index.json": "7bbf1260813a6f80c3fe606b57eaaffdaa6bea5f28a51e521ba02869e128e7de",
+    "docs/discovery/qualification/wp03-real-material.md": "9aed41b8b975fffb11da638ed3076317cf68c8a5652b21c6ea8b5661b1231604",
+    "docs/discovery/qualification/wp03-evidence-entry-review.md": "c079f2708e0613d2946811b5c1945658b18e0672f5541f2765349d96d9142f75"
+  },
+  "staged_materials": 2,
+  "actual_reference_cases": 0,
+  "actual_human_reviewers": 0,
+  "trust_enrollment": "none",
+  "authenticated_evidence_and_permission_statements": 0,
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "reference_manifest_status": "not_frozen",
+  "readiness": "blocked",
+  "freeze_issued": false,
+  "package_accepted": false,
+  "missing": [
+    "Accountable authenticated original-evidence and permitted-use statements under actual operator trust.",
+    "Actual independent human reviewers, blinded labels, preserved disagreement and adjudication.",
+    "Reviewed origin/family/partition and development-exposure history.",
+    "Independent sampling/recall frames, complete required corpus and accountable freeze review."
+  ],
+  "WP14_dependency_satisfied": false,
+  "empirical_gates": "E01-E06_not_run",
+  "reviewed_code_commit": "d4f43ca54312889d93a83e27fdfb156250baf273"
+}

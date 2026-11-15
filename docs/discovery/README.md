@@ -35,7 +35,7 @@ the earlier task; implementation was subsequently authorized on 2026-11-13.
 | [WP00](receipts/WP00.json) | Accepted | Source and handoff reconciliation, decisions, ownership and validation boundaries | Astra / Sol |
 | [WP01](receipts/WP01.json) | Accepted | Nine-county healthcare technology policy and 26 synthetic calibration cases | Terra / Astra |
 | [WP02](receipts/WP02.json) | Accepted within recorded scope | Model v0.5, strict shared contracts, dependency guards and formal counterexamples | Astra, with Terra types / Sol |
-| [WP03](receipts/WP03-preparation.json) | Preparation reviewed; package incomplete | Reference protocol, manifest checks, cohort metrics and exposure safeguards; 21 synthetic tests | Astra / Terra |
+| [WP03](receipts/WP03-real-material-progress.json) | Preparation reviewed; package incomplete | Signed intake/context safeguards and two real unannotated ROR organization records staged; zero reference cases | Astra / Terra; Sol material review |
 | [WP04](receipts/WP04.json) | Accepted | Additive D1 catalog, stable identities, immutable revisions, typed relations and transactional write checks | Sol / Astra |
 | [WP05](receipts/WP05.json) | Accepted | Evidence ledger, scoped removal, provenance, integrity quarantine and first-response intake; [independent acceptance tests](reviews/wp05-terra.md) | Sol / Astra, with Terra tests |
 | [WP06](receipts/WP06.json) | Accepted within local implementation scope | Source registry, qualification, credentials, exact endpoint rules, bounded transport/budgets, guarded retention and six synthetic adapter contracts | Sol registry / Terra transport / Astra review, with independent Sol tests |
@@ -64,6 +64,16 @@ independent annotations/adjudication and independent recall roster remain
 outstanding. E01–E06 remain `not_run`. Neither synthetic fixtures nor formal
 checks establish real-world identity, geographic relevance, source coverage or
 reader usefulness.
+
+The [real source qualification](qualification/README.md) subsequently acquired
+and independently reviewed exact CC0 Penn and CHOP organization metadata. Their
+[staging index](qualification/wp03-material-index.json) preserves native bodies,
+observation receipts and development exposure. They have no human labels, trusted
+permission/evidence attestations, family/partition assignments or strict manifest
+membership. This is two staged records, not two reference cases. The bounded manual
+metadata pass does not qualify the WP06/WP13 automated pipeline; measured forum and
+institutional access/rights/format holds remain recorded in the
+[qualification receipt](receipts/real-source-qualification-20261115.json).
 
 WP03's [receipt-intake increment](receipts/WP03-receipt-intake-progress.json) adds
 strict offline receipt/authority binding and a read-only readiness report, with
@@ -112,7 +122,7 @@ reviewed software and explicit unmet package conditions. Earlier
 [WP07](wp07-integration-validation.json), [WP06](wp06-integration-validation.json),
 [WP05](wp05-integration-validation.json) and [foundation](integration-validation.json)
 records remain historical evidence.
-With the qualified Node 22.23.2 runtime:
+The preceding WP12/WP13 increment used the qualified Node 22.23.2 runtime:
 
 - All 1,361 enumerated tests passed in completed bounded groups: 937 primary,
   146 Watch and 278 discovery, with zero failures/skips/cancellations. Seven
@@ -157,8 +167,17 @@ With the qualified Node 22.23.2 runtime:
   seven total. The dependency lockfile is unchanged; see the
   [audit and remediation record](dependency-audit.json).
 
-Exact-head CI state is recorded in [execution.json](execution.json). The prior
-WP11 head 84b801b CI passed tests/PDF/build/smoke, then failed audit and skipped its later
+The later real-source investigation fixed a separate non-HTML healthy-empty gap.
+The affected institutional suite now passes 19 tests; exact Penn bytes also pass
+three rejection/replay tests under synthetic D1 authority. Astra passed 55 separate
+institutional checks. Types, seven PDF regressions, build, local smoke and secret
+scan passed again. These are targeted rechecks, not a fresh run of all 1,361 prior
+tests; only the institutional source/test differ among the 607 runtime inputs.
+The [qualification receipt](receipts/real-source-qualification-20261115.json)
+preserves both the actual observations and the separate synthetic format defect.
+
+Exact-head CI state is recorded in [execution.json](execution.json). Prior
+head 3f2b929 CI165 passed tests/PDF/build/smoke, then failed audit and skipped its later
 secret scan. Current local secret scan passes. The PR stays draft; local package
 acceptance does not complete release qualification. The baseline
 inventory originally identified 11 omitted legacy regional test files; WP09 adds

@@ -2,7 +2,7 @@
   "id": "TVD-DISCOVERY-EXECUTION-1",
   "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
   "handoff_plan_sha256": "cf74e8a1ecbcfaafe1d70ba58e5f2a347f8d78a6a7cd30eacb29ffa64f77cf3c",
-  "authority": "Active package status and acceptance; frozen handoff remains the scope baseline. User authorized implementation beginning WP00 on 2026-11-13 and explicitly prohibited deployment. No live provider enrollment, editorial action, outreach, service registration or production change is authorized by local implementation.",
+  "authority": "Active package status and acceptance; frozen handoff remains the scope baseline. User authorized implementation beginning WP00 on 2026-11-13 and explicitly prohibited deployment. No live provider enrollment, editorial action, outreach, service registration or production change is authorized by local implementation. On 15 November 2026 the user additionally authorized bounded public real source qualification; EX21 records that limited investigation and portable permitted evidence. No enrollment/activation, recurring collection, outreach, human/trust enrollment or deployment follows.",
   "created_at": "2026-11-13T23:59:42.280311+00:00",
   "deployment_authorized": false,
   "packages": [
@@ -50,13 +50,14 @@
       "status": "in_progress",
       "receipt": "receipts/WP03-preparation.json",
       "acceptance": null,
-      "notes": "Signed annotation, blinding and adjudication now bind the exact EX17 case/source context; adjudication also binds preserved independent annotations. Authentic stale-label replay is rejected, with no legacy fallback. Sol/Terra/Astra reviewed; fixture DAG depth corrected. Actual corpus has zero real cases, no independently enrolled humans/rights/trust/recall/freeze; blocked/not_frozen. WP03 remains incomplete and cannot satisfy WP14.",
+      "notes": "EX20 signed review-context integrity remains reviewed. EX21 adds two actual CC0 ROR organization records as unannotated development-exposed staging material, with native-byte/rights/field review; zero strict reference cases or human reviewers. Authenticated evidence/permission/trust, independent labels, sampling/family review and accountable freeze remain missing. WP03 incomplete/not_frozen; WP14 gated.",
       "progress_receipts": [
         "receipts/WP03-receipt-intake-progress.json",
         "receipts/WP03-signature-intake-progress.json",
         "receipts/WP03-cli-intake-progress.json",
         "receipts/WP03-case-selection-binding-progress.json",
-        "receipts/WP03-label-context-progress.json"
+        "receipts/WP03-label-context-progress.json",
+        "receipts/WP03-real-material-progress.json"
       ]
     },
     {
@@ -184,10 +185,11 @@
       "status": "in_progress",
       "receipt": null,
       "acceptance": null,
-      "notes": "Bounded software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP12 acceptance ungranted: actual installation/version/response/access/rights qualification absent and AC06 automatic native edit/deletion current-claim consumer unimplemented. Read-only proposals and separate authorized ledger revocation boundary tested.",
+      "notes": "Bounded software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP12 acceptance ungranted: actual installation/version/response/access/rights qualification absent and AC06 automatic native edit/deletion current-claim consumer unimplemented. Read-only proposals and separate authorized ledger revocation boundary tested. EX21 actual OpenMRS robots/terms/basic-info requests all returned 403: access hold; no discussion body acquired or native version/API compatibility qualified. OHDSI/Slicer contribution NC terms exclude general commercial redisplay without compatible separate permission.",
       "started_at": "2026-11-15T19:32:22.113537+00:00",
       "progress_receipts": [
-        "receipts/WP12-local-implementation.json"
+        "receipts/WP12-local-implementation.json",
+        "receipts/real-source-qualification-20261115.json"
       ]
     },
     {
@@ -200,10 +202,11 @@
       "status": "in_progress",
       "receipt": null,
       "acceptance": null,
-      "notes": "Bounded passive HTML software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP13 acceptance ungranted pending actual source/profile/access/rights qualification. Literal role/location/date extraction and reviewed-origin boundary tested; no geographic/current-employment admission.",
+      "notes": "Bounded passive HTML software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP13 acceptance ungranted pending actual source/profile/access/rights qualification. Literal role/location/date extraction and reviewed-origin boundary tested; no geographic/current-employment admission. EX21 two real CC0 ROR organization records pass bounded manual metadata review, but native JSON/fixed endpoints cannot qualify the paged HTML adapter; Penn Medicine query-disallow/rights/format holds remain. Synthetic wrong-format healthy-empty gap fixed; 19 affected tests and 55 Astra checks passed. No full source acceptance.",
       "started_at": "2026-11-15T19:32:22.113537+00:00",
       "progress_receipts": [
-        "receipts/WP13-local-implementation.json"
+        "receipts/WP13-local-implementation.json",
+        "receipts/real-source-qualification-20261115.json"
       ]
     },
     {
@@ -477,7 +480,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-15T20:01:42.325947+00:00",
+  "updated_at": "2026-11-15T20:59:08.563873+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -680,6 +683,18 @@
         "WP24"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX21",
+      "path": "implementation-decisions.md",
+      "status": "bounded_real_evidence_reviewed_automated_source_and_corpus_incomplete",
+      "affects": [
+        "WP03",
+        "WP12",
+        "WP13",
+        "WP14"
+      ],
+      "thresholds_changed": false
     }
   ],
   "next_ready_packages": [],
@@ -697,8 +712,8 @@
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "8b37a1bac741854d939f4a4f7766daba280cbe81",
+    "reviewed_code_commit": "d4f43ca54312889d93a83e27fdfb156250baf273",
     "code_ci_run": null,
-    "code_ci": "New exact-head CI pending. Prior84b801b CI159 tests/PDF/build/smoke passed then audit failed. Current local1361 tests,7 PDF,typecheck/build/smoke/secret scan pass; audit four high/seven total. FullWP12/WP13 acceptance ungranted;WP14 gated."
+    "code_ci": "Next exact-head CI pending push. Prior 3f2b929 CI165 tests/PDF/build/smoke passed then audit failed; secret scan skipped. Current affected 19 institutional tests, 3 actual-byte offline replay tests, 55 independent Astra checks, 7 PDF regressions, typecheck/build/local smoke/secret scan passed. Full WP12/WP13 unaccepted; WP03 two staged materials, zero reference cases; WP14 gated."
   }
 }

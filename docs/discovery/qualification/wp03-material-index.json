@@ -1,0 +1,161 @@
+{
+  "purpose": "Subordinate unannotated material staging index; not the WP03 reference manifest or an authority schema.",
+  "status": "not_frozen",
+  "staged_material_count": 2,
+  "actual_reference_case_count": 0,
+  "actual_human_reviewer_count": 0,
+  "actual_trust_enrollment": "none",
+  "freeze": "none",
+  "materials": [
+    {
+      "local_material_locator": "ror-penn-20261115",
+      "source": {
+        "provider": "Research Organization Registry (ROR)",
+        "native_organization_id": "https://ror.org/00b30xv10",
+        "source_url": "https://api.ror.org/v2/organizations/00b30xv10",
+        "reported_name": "University of Pennsylvania",
+        "reported_status": "active",
+        "reported_location_text": "Philadelphia, Pennsylvania, United States",
+        "reported_record_modified_date": "2026-07-20",
+        "source_fact_scope": "Organization registry metadata as reported by ROR; no person, employment, health-technology relevance, county or creator labels inferred."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T20:34:20.635527+00:00",
+        "observed_at_utc": "2026-11-15T20:34:21.093705+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 2123,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "3f61195d95153df4cd882655b5397e0e50823c2daa2332b107b7bb61dc4823c6",
+        "portable_native_body_path": "evidence/ror-penn-20261115/body.json",
+        "portable_observation_path": "evidence/ror-penn-20261115/observation.json",
+        "transport": "standalone-pinned-native-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "observation_receipt_scope": "Local acquisition observation only; not an authenticated WP03 evidence or permission statement."
+      },
+      "rights_basis": {
+        "basis": "ROR published CC0 dedication for all ROR IDs and API metadata; one-record native retention authorized within this task.",
+        "official_terms_url": "https://ror.org/about/terms/",
+        "supporting_official_data_documentation_url": "https://ror.readme.io/docs/data-dump",
+        "assessment_paths": [
+          "institution-source-assessment.md",
+          "astra-source-review.md",
+          "wp03-evidence-entry-review.md"
+        ],
+        "scope": "The exact retained ROR JSON IDs and organization metadata only.",
+        "restrictions": [
+          "No linked institutional or Wikipedia web page was acquired or licensed by this capture. The separate CHOP ROR API record fetch is explicitly recorded; it grants no rights to external pages.",
+          "No ROR website assets, logos, third-party page bodies or person records are included in this rights basis.",
+          "No continuing collection, source enrollment, publication or real operator trust enrollment is established.",
+          "Published license evidence and task authorization do not replace authenticated WP03 permission assertions or accountable review."
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation and review agents inspected the native material for source/parser qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "native_wp13_html_adapter": "unsupported: the captured representation is application/json, not institutional HTML",
+        "native_json_mapping_review": "separate WP13 review required; this staging entry does not assert parser qualification",
+        "next_inputs": [
+          "Independent native-byte/hash and source-format review with no HTML conversion or substituted representation.",
+          "Accountable rights-purpose and provenance review, with authenticated evidence/permission statements under actual separately enrolled trust if entering WP03.",
+          "Accepted rubric and actual independent human reviewers, blinded first annotations, preserved disagreements and accountable adjudication.",
+          "Reviewed family/origin assignments and exposure history; do not treat this development-exposed material as untouched heldout truth.",
+          "Independent sampling frames and the complete required corpus, followed by accountable freeze review."
+        ]
+      }
+    },
+    {
+      "local_material_locator": "ror-chop-20261115",
+      "source": {
+        "provider": "Research Organization Registry (ROR)",
+        "native_organization_id": "https://ror.org/01z7r7q48",
+        "source_url": "https://api.ror.org/v2/organizations/01z7r7q48",
+        "reported_name": "Children's Hospital of Philadelphia",
+        "reported_status": "active",
+        "reported_location_text": "Philadelphia, Pennsylvania, United States",
+        "reported_record_modified_date": "2024-12-11",
+        "source_fact_scope": "Organization registry metadata as reported by ROR; reported healthcare organization type is not health-technology work, person, employment, county or creator truth."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T20:40:43.249369+00:00",
+        "observed_at_utc": "2026-11-15T20:40:43.711663+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 1426,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "d8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893",
+        "portable_native_body_path": "evidence/ror-chop-20261115/body.json",
+        "portable_observation_path": "evidence/ror-chop-20261115/observation.json",
+        "transport": "standalone-pinned-native-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "observation_receipt_scope": "Local acquisition observation only; not an authenticated WP03 evidence or permission statement.",
+        "selection_scope": "One explicitly authorized fixed-ID GET; ID selected from the prior Penn registry relationship. No automatic traversal, linked-page acquisition or bulk collection."
+      },
+      "rights_basis": {
+        "basis": "ROR published CC0 dedication for all ROR IDs and API metadata; this second fixed-record native retention authorized within this task.",
+        "official_terms_url": "https://ror.org/about/terms/",
+        "supporting_official_data_documentation_url": "https://ror.readme.io/docs/data-dump",
+        "assessment_paths": [
+          "institution-source-assessment.md",
+          "astra-source-review.md",
+          "wp03-evidence-entry-review.md"
+        ],
+        "scope": "The exact retained ROR JSON IDs and organization metadata only.",
+        "restrictions": [
+          "No linked institutional or Wikipedia web page was acquired or licensed by this capture. The separate CHOP ROR API record fetch is explicitly recorded; it grants no rights to external pages.",
+          "No ROR website assets, logos, third-party page bodies or person records are included in this rights basis.",
+          "No continuing collection, source enrollment, publication or real operator trust enrollment is established.",
+          "Published license evidence and task authorization do not replace authenticated WP03 permission assertions or accountable review."
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation and review agents inspected the native material for source/parser qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "native_wp13_html_adapter": "unsupported: the captured representation is application/json, not institutional HTML",
+        "native_json_mapping_review": "separate WP13 review required; this staging entry does not assert parser qualification",
+        "next_inputs": [
+          "Independent native-byte/hash and source-format review with no HTML conversion or substituted representation.",
+          "Accountable rights-purpose and provenance review, with authenticated evidence/permission statements under actual separately enrolled trust if entering WP03.",
+          "Accepted rubric and actual independent human reviewers, blinded first annotations, preserved disagreements and accountable adjudication.",
+          "Reviewed family/origin assignments and exposure history; do not treat this development-exposed material as untouched heldout truth.",
+          "Independent sampling frames and the complete required corpus, followed by accountable freeze review."
+        ]
+      }
+    }
+  ],
+  "independence_note": "Both staged records come from the same ROR publisher and contain relationship links. Family/origin/partition assignments are unreviewed; two staged records are not two independent reference cases."
+}

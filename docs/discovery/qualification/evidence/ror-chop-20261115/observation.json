@@ -1,0 +1,36 @@
+{
+  "id": "ror-chop",
+  "url": "https://api.ror.org/v2/organizations/01z7r7q48",
+  "started_at_utc": "2026-11-15T20:40:43.249369+00:00",
+  "method": "GET",
+  "user_agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+  "anonymous": true,
+  "redirects_followed": 0,
+  "byte_cap": 65536,
+  "body_retained": true,
+  "mode": "cc0",
+  "transport": "standalone-pinned-native-HTTPS",
+  "wp06_transport": false,
+  "proxy_used": false,
+  "dns_public_addresses": [
+    "108.128.178.29",
+    "40.180.228.224",
+    "99.81.222.219"
+  ],
+  "selected_public_ip": "108.128.178.29",
+  "status": 200,
+  "tls_version": null,
+  "response_headers": {
+    "date": "Sun, 15 Nov 2026 20:40:43 GMT",
+    "content-type": "application/json",
+    "content-length": "1426"
+  },
+  "received_bytes": 1426,
+  "body_sha256": "d8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893",
+  "response_complete": true,
+  "rights_basis": "ROR official terms: all IDs and metadata CC0; no linked-page/body rights inferred.",
+  "preflight": "Exact organization identity and bounded top-level key/private-key checks; full schema and native WP13 parser qualification pending. No person labels or authority inferred.",
+  "body_path": ".discovery-work/source-qualification/root/ror-chop/body.json",
+  "ended_at_utc": "2026-11-15T20:40:43.711663+00:00",
+  "elapsed_seconds": 0.462
+}
