@@ -553,7 +553,8 @@ skipped argument validation. The actual corpus remains empty and blocked.
 
 ## EX16 — arXiv identity, version and offset scope
 
-**Status:** Local implementation under review. Affects WP02/WP04's missing
+**Status:** Accepted local implementation; see [WP11 receipt](receipts/WP11.json).
+Affects WP02/WP04's missing
 identifier decision and WP11/WP14/WP23. No migration, threshold or frozen model
 change. The handoff's expected preexisting arXiv normalizer was not implemented
 in the generic provider identity contract.
@@ -585,7 +586,7 @@ as egress authority. Feed IDs may differ by page query. Feed freshness is not a
 scientific activity date; entry submission/update fields remain source dates.
 
 The supported parser subset is text-only Atom with qualified namespaces and
-exact returned-entry counters. Ambiguous text, unknown vocabulary, unsafe XML,
+exact returned-entry counters. Ambiguous text, foreign vocabulary, unsafe XML,
 unbound page offsets, short inconsistent pages and changing totals fail or yield
 explicit gaps. A stricter subset may reject legitimate provider records; actual
 source response/rights/pacing qualification remains E04 work before activation.
@@ -603,7 +604,8 @@ bounded traversal completion is not an immutable snapshot or regional recall.
 
 ## EX17 — Selection receipts bind case descriptors and source snapshots
 
-**Status:** WP03 preparation correction under final integration review. Affects
+**Status:** Reviewed WP03 preparation correction; see the
+[progress receipt](receipts/WP03-case-selection-binding-progress.json). Affects
 WP03/WP14/WP22/WP24. No schema, threshold, corpus or native model change.
 
 Independent review reproduced a valid signed fictional manifest remaining ready

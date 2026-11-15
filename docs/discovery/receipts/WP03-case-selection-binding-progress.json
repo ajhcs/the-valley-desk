@@ -1,0 +1,42 @@
+{
+  "package": "WP03",
+  "disposition": "case_selection_integrity_correction_reviewed_package_incomplete",
+  "recorded_at": "2026-11-15T19:17:22.031027+00:00",
+  "prior_progress_receipt": "WP03-cli-intake-progress.json",
+  "decision": "EX17",
+  "reviewed_code_commit": "e0a24309459a690b4cdd3e17c9c70f50700b092e",
+  "owner": "Sol",
+  "independent_reviewer": "Terra",
+  "code_reviewer": "Astra",
+  "scope": "Versioned full case-selection/source-snapshot attestation; signed old selections require accountable re-review and re-attestation.",
+  "outputs": {
+    "src/ingest/discovery-evaluation.ts": "cf088cfa1d8f36f69884abb6e7fa954f568005e5ca563cc6ceb405944af23a8d",
+    "test/discovery-reference-case-binding.test.ts": "990c4b4f5f8d8319bd72ebe0b659aa556d1d206fa1af6b86cdc57e75984681b8",
+    "docs/discovery/wp03-case-selection-binding.md": "1f937b091059423587fcd495a3798e51305e7f91fe84eaca1fad4cf850e5166e",
+    "docs/discovery/reviews/wp03-sol-case-binding.md": "178f98b8dad2a16eda54117a7bfa132e0c7ce066c4ab028c3cac73ae6e1f77ea",
+    "docs/discovery/reviews/wp03-terra-case-binding.md": "6d45ec9a80d91cb5cdd22530b23964b7906e5a6f1970c31a6c8eb30692568ef5",
+    "docs/discovery/reviews/wp03-astra-case-binding.md": "6e36bcfedc889f0b4babb91b7e9d1d2ae1ef912ab3e1adf556af105ac6875226"
+  },
+  "validation": {
+    "permanent_signed_test": 1,
+    "descriptor_context_source_mutations": 20,
+    "astra_additional_checks": 9,
+    "old_authentic_selections_rejected": 561,
+    "fully_fictional_cases": 561,
+    "fully_fictional_signed_receipts": 5057,
+    "actual_cases": 0,
+    "freeze_issued": false,
+    "mandatory_re_attestation": true
+  },
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "real_case_count": 0,
+  "manifest_status": "not_frozen",
+  "readiness": "blocked",
+  "freeze_issued": false,
+  "empirical_gates": "E01-E06 not_run",
+  "limits": [
+    "WP03 v2 requires accountable re-attestation of legacy partial selection receipts; no automatic signing/migration or legacy fallback.",
+    "Case-selection attestation is not a signed whole manifest or freeze. Real trust, rights, independent humans, sources, corpus, recall, sampling/history and accountable freeze remain absent.",
+    "Actual manifest remains zero cases, blocked/not_frozen; E01-E06 not_run."
+  ]
+}

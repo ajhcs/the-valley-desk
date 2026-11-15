@@ -9,6 +9,6 @@
     <author><name>Alex Same</name><arxiv:affiliation>Example Institute, Philadelphia, PA</arxiv:affiliation><uri>https://orcid.org/0000-0000-0000-0001</uri></author>
     <author><name>Alex Same</name></author>
     <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/><arxiv:primary_category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
-    
+
   </entry>
 </feed>

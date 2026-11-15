@@ -1,0 +1,211 @@
+{
+  "package": "WP11",
+  "disposition": "accepted_local_implementation",
+  "accepted_at": "2026-11-15T19:17:22.031027+00:00",
+  "reviewed_code_commit": "e0a24309459a690b4cdd3e17c9c70f50700b092e",
+  "owner": "Sol",
+  "independent_tester": "Terra",
+  "code_reviewer": "Astra",
+  "orchestrator": "root",
+  "scope": "Independent bounded arXiv preprint acquisition, explicit base/version identity, qualified Atom, retained offset ancestry and read-only metadata replay.",
+  "decision": "../implementation-decisions.md#ex16--arxiv-identity-version-and-offset-scope",
+  "reviews": [
+    "../reviews/wp11-sol.md",
+    "../reviews/wp11-terra.md",
+    "../reviews/wp11-astra.md",
+    "../reviews/wp11-orchestrator.md"
+  ],
+  "integration": "../wp11-integration-validation.json",
+  "acceptance_criteria": {
+    "AC-WP11-01": "pass_local: arXiv-only qualified scope commits raw bytes/private preprint lead/page receipt in actual D1 without another artifact/provider prerequisite.",
+    "AC-WP11-02": "pass_local: v1/v2/repeatedv2 share base, retain distinct explicit versions and stable repeated metadata; predecessor is unverified proposal, no public graph fabricated.",
+    "AC-WP11-03": "pass_local: DOI/journal reference and same-name authors remain relation/identity proposals; no person merge or peer-review stage upgrade.",
+    "AC-WP11-04": "pass_local: absent affiliation/county retains preprint with unresolved attribution and no regional/current-person admission.",
+    "AC-WP11-05": "pass_local: entry submission/update dates stay source dates; feed/collection freshness does not change source metadata version. Unknown license unadmitted; resolved explicit version binds candidate URL.",
+    "AC-WP11-06": "pass_local: namespaces/XML/counters/offsets/short pages/totals/caps/retention and rate/budget negatives fail or remain incomplete; genuine three-page ancestry and replay tested."
+  },
+  "outputs": {
+    "src/ingest/discovery/arxiv.ts": "ab65fd6911543c551c401b8a4bc63a3d305149f65315e62c8ac962ec24cb92ce",
+    "src/ingest/discovery-evaluation.ts": "cf088cfa1d8f36f69884abb6e7fa954f568005e5ca563cc6ceb405944af23a8d",
+    "test/discovery-arxiv.test.ts": "ab5c19d7fd1e06fa5920ef8e908b62b7027e82dcb0cfd563793fa5f571cf01ca",
+    "test/discovery-reference-case-binding.test.ts": "990c4b4f5f8d8319bd72ebe0b659aa556d1d206fa1af6b86cdc57e75984681b8",
+    "package.json": "4969f7120131f1a05ee1853b3b0ec12adc90723922a186b43a6c04208c71953a",
+    "docs/discovery/implementation-decisions.md": "8a836737f6b3c69d01d56ae4b099cf1c7dacd8f309824dfa838c5e75f72a3b0d",
+    "docs/discovery/wp11-evidence-plan.md": "34c880a98507cf6b42e8a79f4f5f1e1677c0086befce15c0276598f3e12552d0",
+    "docs/discovery/wp03-case-selection-binding.md": "1f937b091059423587fcd495a3798e51305e7f91fe84eaca1fad4cf850e5166e",
+    "docs/discovery/evaluation-protocol.md": "a425bd109e9526da7bc36603596ee28a5313944de0904745f952c451d6cdd082",
+    "test/fixtures/discovery-sources/arxiv/v2.xml": "227e476e82352d74f4fef998bcb7fbdda17ef65cd2f2ae63ddc5b2415b2847cd",
+    "test/fixtures/discovery-sources/arxiv/README.md": "0ae94aad6c32e8dc1ce526796ce4a24da3c994f9809e8f26c2530570c96881d1",
+    "test/fixtures/discovery-sources/arxiv/v1.xml": "07ce51b39ae2330e1705c976305b99805963e58fea22590f36a0540895017c9f",
+    "test/fixtures/discovery-sources/arxiv/identifier-truth-table.json": "6e57b49acae38aec824ee62fcbf9f2956fec0086941ac0bd48bd1d9b885ad945",
+    "test/fixtures/discovery-sources/arxiv/unversioned.xml": "3881849491177ee1d368137a8f8ce92957a881da7f73fb430609acb6d0834a4b",
+    "test/fixtures/discovery-sources/arxiv/foreign-entry.xml": "2c970493c2b4587b526d19c1e63f5fa9d1f60a986bf78ff1faabe84f303f4e81",
+    "test/fixtures/discovery-sources/arxiv/scope.json": "ba1b6da53d4ad59ea69d26c0750c36f9bbbc61685bb815a0efb4dacf2cdb73bd",
+    "test/fixtures/discovery-sources/arxiv/unknown-license.xml": "f02b2d5ffc2eb670ec8f8217fb9fecc4d448913acf014239af476c7124dee652",
+    "test/fixtures/discovery-sources/arxiv/hostile-entity.xml": "36063b049c2a79b79496cb5226ef7914744456e3f84803b38f4b25adffbd3901",
+    "docs/discovery/reviews/wp11-sol.md": "7ab0177d58e0ebb438f2041071e41698c34c32595343929f8022f06f45acad43",
+    "docs/discovery/reviews/wp11-terra.md": "a85e91c7aa402d6d724e29a8421c87ab8283e2405568c434a8a1272d14460d09",
+    "docs/discovery/reviews/wp11-astra.md": "389a857b3e2d64c58503ecd650ec5ffb115cb7eeeee5747f2657130db3fc50f0",
+    "docs/discovery/reviews/wp11-orchestrator.md": "b82eff1e8fe04cc2f63d310c637180f2eef1ddb89107c77c86d18ce02bb96753",
+    "docs/discovery/reviews/wp03-sol-case-binding.md": "178f98b8dad2a16eda54117a7bfa132e0c7ce066c4ab028c3cac73ae6e1f77ea",
+    "docs/discovery/reviews/wp03-terra-case-binding.md": "6d45ec9a80d91cb5cdd22530b23964b7906e5a6f1970c31a6c8eb30692568ef5",
+    "docs/discovery/reviews/wp03-astra-case-binding.md": "6e36bcfedc889f0b4babb91b7e9d1d2ae1ef912ab3e1adf556af105ac6875226"
+  },
+  "validation": {
+    "enumerated_tests": {
+      "status": "all_passed_across_completed_bounded_groups",
+      "tests": 1318,
+      "primary": 937,
+      "watch_launch": 146,
+      "discovery": 235,
+      "groups": {
+        "primary-final-a": {
+          "tests": 552,
+          "pass": 552,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "primary-final-b": {
+          "tests": 385,
+          "pass": 385,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "watch-final": {
+          "tests": 146,
+          "pass": 146,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-collection": {
+          "tests": 33,
+          "pass": 33,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-core": {
+          "tests": 116,
+          "pass": 116,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-crossref": {
+          "tests": 10,
+          "pass": 10,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-transport": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-providers": {
+          "tests": 34,
+          "pass": 34,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-arxiv": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        }
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "all_explicit_discovery_files_executed": 16,
+    "discovery_typecheck": "pass",
+    "application_typecheck_and_build": "pass; existing chunk exceeds500kB",
+    "mandatory_pdf": {
+      "tests": 7,
+      "status": "pass"
+    },
+    "isolated_local_ops_smoke": "pass",
+    "secret_scan": "pass; final committed document scan also performed separately",
+    "input_count": 584,
+    "input_drift": [],
+    "post_qualification_fixture_cleanup": [
+      {
+        "path": "test/fixtures/discovery-sources/arxiv/v1.xml",
+        "beforeSha256": "225122b0d0a27b43ba6d8783e5605bbaeca5f8941b7ccd47db56b8f09634823a",
+        "afterSha256": "07ce51b39ae2330e1705c976305b99805963e58fea22590f36a0540895017c9f",
+        "onlyBlankLineIndentationChanged": true,
+        "trimmedNamespaceAwareTreeEqual": true
+      },
+      {
+        "path": "test/fixtures/discovery-sources/arxiv/unversioned.xml",
+        "beforeSha256": "32b6ddaf4adb26480b7b384ed4656a9af12db23b327ee2ec9d9200f052ad5417",
+        "afterSha256": "3881849491177ee1d368137a8f8ce92957a881da7f73fb430609acb6d0834a4b",
+        "onlyBlankLineIndentationChanged": true,
+        "trimmedNamespaceAwareTreeEqual": true
+      },
+      {
+        "path": "test/fixtures/discovery-sources/arxiv/foreign-entry.xml",
+        "beforeSha256": "302410e5f7ab64467f2a5de32e5f0c5f0a5f03be6e52e46aa8997088a7536e1f",
+        "afterSha256": "2c970493c2b4587b526d19c1e63f5fa9d1f60a986bf78ff1faabe84f303f4e81",
+        "onlyBlankLineIndentationChanged": true,
+        "trimmedNamespaceAwareTreeEqual": true
+      }
+    ],
+    "terra_wp11": {
+      "tests": 21,
+      "actual_d1": true,
+      "included_in_discovery": true,
+      "strict_standalone_typecheck": "pass"
+    },
+    "astra_wp11": {
+      "independent_snapshot_probes": 41,
+      "additional_actual_d1_initial_offset_guard": 1,
+      "status": "pass; root reran final probes; not added to1318"
+    },
+    "wp03_case_selection": {
+      "permanent_signed_test": 1,
+      "descriptor_context_source_mutations": 20,
+      "astra_additional_checks": 9,
+      "old_authentic_selections_rejected": 561,
+      "fully_fictional_cases": 561,
+      "fully_fictional_signed_receipts": 5057,
+      "actual_cases": 0,
+      "freeze_issued": false,
+      "mandatory_re_attestation": true
+    },
+    "dependency_audit": {
+      "exit_code": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 1,
+        "moderate": 2,
+        "high": 4,
+        "critical": 0,
+        "total": 7
+      }
+    }
+  },
+  "limits": [
+    "Local implementation acceptance only; no actual arXiv access/rights/retention, recurring pacing or E04 qualification.",
+    "Private leads and proposed identity/version/DOI/license/status relations; no SourcePage/catalog/person/regional/current-employment admission or peer-review upgrade.",
+    "Restricted identifier/Atom/text/48kB subset can reject legitimate provider metadata. Unversioned remains version unknown; no inferred v1.",
+    "Offset completion is bounded observed traversal, not an immutable snapshot or provider/regional recall; equal-total membership churn can evade detection.",
+    "WP03 v2 requires accountable re-attestation of legacy partial selection receipts; no automatic signing/migration or legacy fallback.",
+    "Case-selection attestation is not a signed whole manifest or freeze. Real trust, rights, independent humans, sources, corpus, recall, sampling/history and accountable freeze remain absent.",
+    "Actual manifest remains zero cases, blocked/not_frozen; E01-E06 not_run.",
+    "Unchanged lockfile retains four high/seven total advisories; release/CI audit blocked.",
+    "Native model and frozen handoff unchanged; no new native proof or operational validation claim.",
+    "No merge, deployment, remote migration, real enrollment, source publication, service or scheduler activation."
+  ],
+  "accepted_snapshot": ".discovery-work/wp11/accepted-candidate/manifest.json"
+}
