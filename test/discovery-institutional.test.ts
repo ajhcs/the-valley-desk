@@ -618,7 +618,7 @@ test('WP13 synthetic directory retains creator-first and temporal/location cases
   const away = unit('PA:Philadelphia', 'headquarters', dateStart + currentThrough) + unit('PA:Lancaster', 'actual-unit', dateStart + currentThrough);
   const old = unit('PA:Philadelphia', 'actual-unit', dateStart + '<time class="date-end" datetime="2028-12-31">2028-12-31</time>');
   const unknown = unit('PA:Philadelphia', 'actual-unit', dateStart);
-  const body = `<!doctype html><html><body>${profile('local',local)}${profile('away',away)}${profile('old',old)}${profile('unknown',unknown)}</body></html>`;
+  const body = `<html><body>${profile('local',local)}${profile('away',away)}${profile('old',old)}${profile('unknown',unknown)}</body></html>`;
   f.advance(31000);
   await f.makeRound(store, 'round:institutional-directory', 'cohort:institutional-directory', [s]);
   let sends = 0;
@@ -704,7 +704,7 @@ test('association output preserves separate publisher and creator, and off-scope
 });
 
 test('private contact, script, and hidden content prevent whole response retention', {timeout:600_000}, async t => {
-  for (const [name, extra] of [['contact','<p>private@example.org</p>'],['script','<script>secret</script>'],['hidden','<p hidden>secret</p>'],['entity-contact','<p>private&#64;example.org</p>'],['stylesheet','<link rel="stylesheet" href="https://styles.example.org/layout.css">'],['url-token','<a href="https://profiles.example.org/people?token=privatecanary">Link</a>'],['fragment','<a href="https://profiles.example.org/people#token=fragmentcanary">Link</a>']] as const) await t.test(name, async sub => {
+  for (const [name, extra] of [['contact','<p>private@example.org</p>'],['script','<script>secret</script>'],['hidden','<p hidden>secret</p>'],['entity-contact','<p>private&#64;example.org</p>'],['end-tag-contact','</p title="private&#64;example.org">'],['stylesheet','<link rel="stylesheet" href="https://styles.example.org/layout.css">'],['url-token','<a href="https://profiles.example.org/people?token=privatecanary">Link</a>'],['fragment','<a href="https://profiles.example.org/people#token=fragmentcanary">Link</a>']] as const) await t.test(name, async sub => {
     const h = await institutionalHarness(sub, `privacy-${name}`);
     const body = `<!doctype html><html><body>${profile('person',unit('PA:Philadelphia','actual-unit',dateStart+currentThrough))}${extra}</body></html>`;
     await h.f.makeRound(h.store, `round:privacy-${name}`, `cohort:privacy-${name}`, [h.s]);

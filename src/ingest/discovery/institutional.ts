@@ -106,13 +106,18 @@ function document(body: Uint8Array, scope: DiscoveryInstitutionalScope, endpoint
   if (body.byteLength > 48000) return fail('body-cap');
   let html: string;
   try { html = new TextDecoder('utf-8',{fatal:true}).decode(body); } catch { return fail('encoding'); }
-  const duplicateOffsets: number[] = [];
+  let unsupportedSyntax = false;
   if (contact(html) || /<!--|<!\[CDATA\[|<\?/i.test(html)) return fail('private-or-unsupported-document');
   const root = parseHtml(html, {sourceCodeLocationInfo:true, scriptingEnabled:true,
-    onParseError: e => { if (e.code === ErrorCodes.duplicateAttribute) duplicateOffsets.push(e.startOffset); }});
+    // Recovery can discard private attributes before the DOM privacy walk sees
+    // them. Only an omitted doctype is supported by this passive subset.
+    onParseError: e => { if (e.code !== ErrorCodes.missingDoctype) unsupportedSyntax = true; }});
+  if (unsupportedSyntax) return fail('private-or-unsupported-document');
   const decodedText: string[] = [];
   const elements: Element[] = [], descendants = new Map<Element, Element[]>();
   const walk = (node: DefaultTreeAdapterTypes.Node, parents: Element[], depth: number) => {
+    if (node.nodeName === '#documentType' && 'publicId' in node &&
+        (node.name !== 'html' || node.publicId !== '' || node.systemId !== '')) return fail('private-or-unsupported-document');
     if ('value' in node && typeof node.value === 'string') { if (contact(node.value)) return fail('private-or-unsupported-document'); decodedText.push(node.value); }
     if (depth > 100 || elements.length > 10000) return fail('html-bound');
     if ('tagName' in node) {
@@ -136,8 +141,6 @@ function document(body: Uint8Array, scope: DiscoveryInstitutionalScope, endpoint
       if (node.namespaceURI !== HTML || ['script','style','template','noscript'].includes(node.tagName) ||
           'hidden' in a || 'inert' in a || a['aria-hidden']?.toLowerCase() === 'true' ||
           /(?:display\s*:\s*none|visibility\s*:\s*hidden)/i.test(a.style ?? '')) return;
-      const loc = node.sourceCodeLocation;
-      if (loc && duplicateOffsets.some(x => x >= loc.startOffset && x <= (loc.startTag?.endOffset ?? loc.endOffset))) return fail('duplicate-attribute');
       elements.push(node); descendants.set(node, []);
       for (const p of parents) descendants.get(p)!.push(node);
       parents = [...parents,node];
