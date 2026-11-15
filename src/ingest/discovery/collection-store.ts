@@ -601,6 +601,22 @@ export function createDiscoveryCollectionStore(
       return null;
     }
   }
+  async function resolveChainPage(
+    chainId: string,
+    pageOrdinal: number,
+  ): Promise<DiscoveryCollectionPageReceipt | null> {
+    DiscoveryId.parse(chainId);
+    z.number().int().positive().safe().parse(pageOrdinal);
+    const row = await sql(
+      'SELECT id FROM discovery_collection_pages WHERE chain_id=? AND page_ordinal=?',
+      [chainId, pageOrdinal],
+    ).first<{ id: string }>();
+    if (!row) return null;
+    const page = await resolvePage(row.id);
+    return page?.chainId === chainId && page.pageOrdinal === pageOrdinal
+      ? page
+      : null;
+  }
   async function slotAck(
     id: string,
   ): Promise<DiscoveryCollectionSlotAck | null> {
@@ -2324,6 +2340,7 @@ export function createDiscoveryCollectionStore(
     finishSlot,
     stopRound,
     resolvePage,
+    resolveChainPage,
     resolveOperation,
     createTransport,
     readRound,

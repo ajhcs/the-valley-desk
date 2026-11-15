@@ -1,0 +1,19 @@
+# WP03 offline CLI — Astra independent review
+
+Disposition: recommend local preparation-increment acceptance after root integration checks. The reproduced entrypoint defect is fixed. WP03 remains incomplete and not_frozen; final acceptance remains with root.
+
+Reviewed CLI SHA-256: `1551cb006704abeb0e7992f14e77297a334e1f62c1b753d2ccd273b64c4b5fc2`.
+
+Astra reviewed the CLI against the accepted signed receipt store and unchanged readiness validator. Raw file bytes are bounded before JSON parsing; duplicate decoded keys, unsafe numeric forms and unpaired Unicode surrogates are rejected. The operator-supplied policy digest binds raw policy bytes, while the report explicitly leaves enrollment, policy freshness and source truth external. The report projects fixed finding categories/counts rather than private IDs or full validation messages. Output is exclusively linked from a synced private temporary file, so an existing file is not overwritten.
+
+Initial independent subprocess evidence under qualified Node 22.23.2 and an empty inherited environment passed nine checks: honest zero-case report exits 2, remains not_frozen and mode 0600; repeat output fails without clobber; duplicate escaped-equivalent JSON keys, lossy integer, unpaired surrogate, private unknown-key diagnostics, input symlink, aliased hardlink inputs and wrong policy digest all fail with exit 3 and no report. `cli-probe.mjs`, `cli-probe-1.log` and `cli-probe-2.log` are retained under `.discovery-work/wp10-astra/`. Inputs and all test filesystem artifacts are synthetic and workspace-local.
+
+The initial main guard compared a resolved argv path against the URL pathname of the module. Direct invocation through a script symlink skipped the CLI entirely and returned exit 0 with no report or diagnostic, even with no arguments. A raw URL pathname also mismatches decoded paths containing spaces. Exact reproduction is retained in `entry-symlink-result.json`; root was asked to resolve the executable path and decode file URLs while preserving import side-effect isolation.
+
+The filesystem model protects against other users through private output directories and controlled ancestors. A process under the same trusted Unix identity can replace application code, pins or filesystem paths; this CLI is not a sandbox against that operator. No trust enrollment, freeze, empirical acceptance or source acquisition follows from a valid local report.
+
+The final guard resolves the invoked executable with realpath and decodes the module file URL. All nine independent CLI cases were rerun, followed by symlink entrypoint and actual space-containing script-path controls: both now validate arguments and exit 3 rather than silently succeeding. The space-path copy changes only the relative signature-module import to an absolute path. All 11 checks passed; `cli-final.log` retains the final run. Earlier failing evidence remains retained. Terra owns the broader permanent bounded-file, filesystem and concurrency suite. No remaining blocker was found in the reviewed bytes.
+
+Astra subprocess probes exercise blocked/exit-2 and invalid/exit-3 paths. The full independently signed synthetic ready/exit-0 path was subsequently completed by Terra and independently invoked through the actual CLI by Astra; it was not inferred from library tests or the other exit states.
+
+Final independent ready-path invocation used Terra's complete fictional fixture (5,057 signed receipts) and wrote only Astra's own private report. The subprocess returned exit 0 and ready_for_accountable_freeze_review with 360 heldout, 100 recall, 100 audit cases and zero findings, while status remained not_frozen and freezeIssued/packageAccepted remained false. `ready-independent.log` and `ready-report/report.json` retain the assertions and output. Combined with the prior 11 scenarios, all 12 independent CLI scenarios pass on the same reviewed hash. No real human or corpus authority is implied.

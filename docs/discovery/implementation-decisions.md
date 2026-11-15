@@ -470,3 +470,82 @@ remain external responsibilities. Revocation is an explicit versioned expiring
 snapshot that requires store replacement; no live feed or maximum policy TTL is
 claimed. Signatures prove integrity under the supplied pins, not human identity,
 rights, source truth or independent adjudication. The helper never issues a freeze.
+
+## EX14 — Bounded Crossref identity and retained chain composition
+
+**Status:** Local implementation under review; acceptance requires the WP10 and
+composition receipts. Affects WP02/WP04's missing DOI rule and WP07/WP10/WP14/WP23.
+No policy threshold, native model, schema migration or prior receipt is rewritten.
+
+The WP10 handoff expected a previously frozen DOI normalizer. Inspection found
+only opaque provider identifiers in WP02/WP04. This decision closes that missing
+precondition explicitly. `crossref-doi-ascii-v1` accepts a bounded subset: printable
+ASCII bare DOI, case-insensitive `doi:` prefix or exact `https://doi.org/` wrapper,
+with optional outer ASCII spaces. The bare grammar is
+`10\.[0-9]{4,9}/[A-Za-z0-9._;()/:+-]+`. ASCII letters fold to lowercase. Original
+input, canonical DOI, native provider identity and normalizer version remain
+separate. Public URLs must round-trip through the accepted subset. Slashes and
+trailing punctuation are preserved, so `10.1234/a` and `10.1234/a/` remain distinct.
+Controls, internal whitespace, Unicode, percent encoding, dot path segments, URL
+credentials/ports/query/fragment and other wrappers are unsupported and yield
+explicit rejected-item gaps. This is not a complete DOI grammar.
+
+The [DOI Foundation resolution documentation](https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation/)
+allows a broader character set and distinguishes trailing slashes. The limited
+subset avoids silently changing those identifiers; extending it requires a new
+reviewed normalizer version and equivalence evidence. DOI spelling normalization
+does not grant person identity, regional relevance, artifact merge or independent
+provenance.
+
+Qualified scopes bind declared revision, reviewed literal/work or affiliation
+query, date window, page size, chain caps and denominator into a content-derived
+ID. The sole dynamic parameter is an opaque cursor. Exact `/works` or `/v1/works`
+paths on `https://api.crossref.org` are permitted.
+[Crossref's current API guidance](https://www.crossref.org/documentation/retrieve-metadata/rest-api/tips-for-using-the-crossref-rest-api/)
+and [Swagger reference](https://api.crossref.org/swagger-ui/index.html) were checked
+on 2026-11-15; the latter documents five-minute unused-cursor expiry. Real endpoint
+behavior remains an E04 qualification obligation.
+
+A small additive `resolveChainPage(chainId, pageOrdinal)` read-only store method
+looks up existing collection rows, then delegates to `resolvePage` and rechecks
+chain/ordinal. It cannot manufacture a receipt or bypass integrity/removal checks.
+The adapter uses it to reconstruct exact predecessor pages, original claim
+snapshots, request/body digests and checkpoints. Current parse/inspect resolves
+the actual live issued plan. Historical replay resolves authentic retained pages
+and bytes instead of attempting to revive a settled plan. No new write authority
+or API endpoint is added.
+
+The original parent claim expiry caps local cursor usability conservatively: a
+WP07 claim lasts at most five minutes from before the response. The effective
+deadline is the minimum of that immutable expiry, the issued continuation expiry
+and parent commit plus five minutes. This may shorten a still-valid provider
+cursor; it cannot extend one from delayed commit time. Expiry demands a new bounded
+cohort rather than silently resetting the old budget. The accepted WP07 token-loop
+rule remains enforced; providers that reuse a cursor will yield an incomplete
+collection until a separately reviewed protocol can qualify that behavior.
+
+## EX15 — Offline file intake is readiness reporting, not corpus acceptance
+
+**Status:** WP03 preparation increment under final integration review. Affects
+WP03/WP14/WP22/WP24; thresholds and actual manifest remain unchanged.
+
+The CLI accepts three explicit bounded local JSON files and an independently
+supplied raw policy checksum. It invokes existing Ed25519 verification and
+readiness checks, then creates a private no-clobber aggregate report. No network,
+credential, key generation, signing, human enrollment or freeze path is added.
+Exit 0 means ready for accountable freeze review; every report still says
+not_frozen, freezeIssued=false and packageAccepted=false. Invalid inputs exit 3;
+valid but blocked inputs exit 2. Raw input hashes support reproducibility without
+disclosing receipt data.
+
+Strict JSON rejects duplicate decoded keys, lossy/unsupported numbers and invalid
+Unicode. Files, paths, byte limits, private output permissions and concurrent
+no-clobber behavior are tested through actual subprocesses. Inputs must be stable
+local snapshots. A hostile process under the same trusted Unix identity remains
+outside this filesystem boundary. Policy byte integrity does not establish
+operator authority, freshness, revocation administration or source truth.
+
+Sol implemented the CLI; Terra tested it independently, including a wholly
+fictional complete signed corpus returning exit 0 without freeze; Astra found and
+verified the fix for symlink/space-containing executable paths that previously
+skipped argument validation. The actual corpus remains empty and blocked.

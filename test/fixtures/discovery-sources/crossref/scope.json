@@ -1,0 +1,12 @@
+{
+  "declaredId": "scope:crossref-synthetic",
+  "revision": 1,
+  "queryKind": "institution",
+  "queryLiteral": "Example Institute",
+  "startDay": "2024-01-01",
+  "endDay": "2024-03-01",
+  "pageSize": 2,
+  "maxPages": 3,
+  "maxItems": 5,
+  "denominator": "Crossref works matching frozen affiliation query and publication-date window; not all regional research."
+}

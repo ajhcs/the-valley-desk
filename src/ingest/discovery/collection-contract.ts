@@ -383,6 +383,11 @@ export interface DiscoveryCollectionStore {
   resolvePage(
     receiptId: string,
   ): Promise<DiscoveryCollectionPageReceipt | null>;
+  // Historical lookup only; delegates the same integrity/removal checks as resolvePage.
+  resolveChainPage(
+    chainId: string,
+    pageOrdinal: number,
+  ): Promise<DiscoveryCollectionPageReceipt | null>;
   resolveOperation(
     operationId: string,
   ): Promise<

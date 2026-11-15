@@ -1,0 +1,1 @@
+Authored synthetic Crossref-shaped fixtures only. These are not retained provider records, access qualification or regional evidence. The DOI subset is a new bounded WP10 rule; unsupported legitimate forms must remain gaps.

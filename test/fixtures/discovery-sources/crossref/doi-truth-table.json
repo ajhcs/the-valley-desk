@@ -1,0 +1,33 @@
+{
+  "normalizer": "crossref-doi-ascii-v1",
+  "accepted": [
+    {
+      "input": "10.1234/ABC",
+      "canonical": "10.1234/abc"
+    },
+    {
+      "input": "doi:10.1234/ABC",
+      "canonical": "10.1234/abc"
+    },
+    {
+      "input": "https://doi.org/10.1234/ABC",
+      "canonical": "10.1234/abc"
+    },
+    {
+      "input": " 10.1234/A(B);C+D:E/F ",
+      "canonical": "10.1234/a(b);c+d:e/f"
+    }
+  ],
+  "unsupported": [
+    "http://doi.org/10.1234/x",
+    "https://doi.org:443/10.1234/x",
+    "https://user@doi.org/10.1234/x",
+    "https://doi.org/10.1234/x?q=1",
+    "https://doi.org/10.1234/x#fragment",
+    "10.1234/a%2Fb",
+    "10.1234/\u00fcmlaut",
+    "10.1234/a/../b",
+    "10.1234/white space",
+    "10.1234/suffix?literal"
+  ]
+}

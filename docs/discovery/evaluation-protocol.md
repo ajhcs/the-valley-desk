@@ -247,3 +247,14 @@ implements record integrity checks under supplied pins, while real operator trus
 enrollment, current policy/clock, source rights, human adjudication and the corpus
 remain missing. The helper never issues a freeze and the actual manifest stays
 blocked/not_frozen. Engineering reviewers are not reference adjudicators.
+
+## Offline file command progress (2026-11-15)
+
+The [file intake command](wp03-cli-intake.md) accepts explicit bounded manifest,
+signed-record and policy files with a separately supplied raw policy checksum.
+It creates a private aggregate report with no overwrite. It does not acquire
+evidence, enroll authority or freeze a corpus. Exit 0 only requests accountable
+freeze review; reports always retain not_frozen and packageAccepted=false.
+The complete synthetic signed fixture exercises that path without adding any
+real cases. Actual operator trust, rights, reviewers, sampling and corpus remain
+outstanding. E01–E06 stay not_run and WP03 remains incomplete.
