@@ -90,9 +90,15 @@ authority. The acquisition-time and final helper hashes are recorded separately.
 
 ## Qualification boundary and next evidence
 
+At EX22, the request gap below was still open. The later
+[EX23 fixed-DOI qualification](../crossref-fixed-doi-qualification.md) closes it
+for the new canonical fixed lookup mode, with six fresh exact-endpoint captures.
+These original observations and their query ordering remain unchanged historical
+evidence; production enrollment and WP03 human/corpus gates remain open.
+
 The current GitHub adapter maps repository baselines; it does not parse README or
-CITATION publication links. Crossref's selected DOI-filter requests differ from
-WP10's enrolled search/cursor grammar. Offline native-byte format checks under
+CITATION publication links. EX22's selected DOI-filter requests differed from
+WP10's then-supported search/cursor grammar. Offline native-byte format checks under
 synthetic request authority cannot qualify those actual requests or enroll sources.
 PubMed/publisher web evidence is distinct from a native ESearch/EFetch pipeline.
 Correction/retraction status has not been qualified by the selected response fields.

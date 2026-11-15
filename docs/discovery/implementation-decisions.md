@@ -829,3 +829,51 @@ two repository and two publication records. It still has zero strict reference
 cases/human reviewers. Independent labels/adjudication, trustworthy statements,
 family/partition and independent sampling review, the required corpus and an
 accountable freeze remain missing. WP14 remains gated; E01–E06 remain not_run.
+
+## EX23 — Fixed DOI requests and additional real source material
+
+**Status:** Local fixed-DOI request/parser/retention contract reviewed with exact
+native request/response evidence. WP03 remains incomplete and not_frozen. No
+threshold, strict reference manifest, native model, production source or deployment
+change is made.
+
+The user's follow-up requests closure of the Crossref request-qualification gap
+and more real source material. [The fixed-DOI guide](crossref-fixed-doi-qualification.md)
+defines the separate strict scope, original DOI literal versus canonical identity,
+fixed factual fields, singleton denominator and absence of a date-window claim.
+The adapter preserves the existing work/institution search and cursor contract.
+No shared endpoint canonicalization is relaxed to fit an earlier capture.
+
+EX22's selected bodies had been replayed under a different search request. The
+new mode instead registers the exact canonical `/v1/works` DOI-filter/field-select
+lookup and matches issued endpoint, original observation, retained request and
+unchanged body. Prior observations retain their different query serialization.
+Two fresh requests for the original works returned the same body bytes, but are
+new acquisition observations rather than new independent works.
+
+Fixed parsing requires the actual local collection claim bound by issued plan ID.
+It rejects copied/unqualified scopes, wrong source/configuration/lease bindings,
+noninitial chains, changed fields/rows, missing/wrong/extra results, cursors and
+continuation metadata before capture. Fixed projection failures cannot become
+healthy-empty success. A valid result has one requested DOI, one terminal page and
+no continuation. Retained replay uses historical evidence rather than a settled
+live transport lease. Existing whole-body material/privacy guards remain in force.
+
+Six canonical Crossref requests and four new GitHub baseline requests succeeded
+with bounded anonymous standalone HTTPS and pacing. Independent review preceded
+portable copying. New dossiers cover AutoGVP, ImmunoTar, Phenomantics and DeepCNV,
+with separately sourced Philadelphia affiliations, outside/multiple units and
+clinical-use limits. Phenomantics' historical alias and directional publication
+links are preserved. Article CC BY observations do not license repository code;
+ImmunoTar's separate software terms restrict commercial redistribution.
+
+The staging index now has 16 acquisition records and 14 distinct native body
+hashes across six project dossiers. Shared authors, preprints, aliases and origin
+families remain unreviewed. All material is development-exposed; no route quota,
+reference label or independent denominator credit is added. The strict reference
+manifest remains byte-identical with zero cases and zero human reviewers.
+
+The accepted scope closes request compatibility for this fixed metadata mode.
+Actual external source/trust enrollment, authenticated corpus statements,
+independent blinded human review, sampling/family decisions and accountable
+freeze remain separate gates. WP14 stays not_started; E01–E06 stay not_run.

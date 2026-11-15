@@ -1,10 +1,13 @@
 # WP03 real material staging
 
-The staging inventory now has **six native representations**: two ROR organization
-records, two GitHub repository records and two linked-publication Crossref records.
-The [repository/publication dossiers](github-publication-qualification.md) record
+The staging inventory now has **16 acquisition records and 14 distinct native
+bodies**: two organization records, six repository records and eight publication
+acquisitions for six distinct DOIs. Two publication bodies were recaptured at new
+canonical request URLs. The [fixed-DOI qualification](../crossref-fixed-doi-qualification.md)
+closes the local request gap and adds AutoGVP, ImmunoTar, Phenomantics and DeepCNV.
+The earlier [repository/publication dossiers](github-publication-qualification.md) record
 QSIPrep and CaPTk, explicit software-paper citations, historical affiliation evidence,
-rights/access limits and independent review. All six remain development-exposed.
+rights/access limits and independent review. All material remains development-exposed.
 This is real acquisition progress. It adds **no reference case, human label, reviewer,
 trust enrollment or freeze**. The actual strict WP03 manifest remains empty and
 not_frozen; WP14 remains dependent on actual WP03 completion.

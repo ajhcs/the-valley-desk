@@ -6,7 +6,8 @@ and no full WP12/WP13 acceptance or WP03 freeze is granted.
 
 | Source and intended use | Actual evidence | Disposition |
 | --- | --- | --- |
-| QSIPrep and CaPTk repository baselines plus linked publication metadata | Two native GitHub repository bodies and two native provider-selected Crossref work lists retained after whole-payload review. Exact README/CITATION snapshots link each repository to its named publication. | Pass for bounded manual factual metadata review. GitHub fixed baseline payloads replay under synthetic authority; actual source enrollment is unqualified. Crossref DOI-filter/select requests remain outside WP10's query grammar. |
+| Canonical Crossref fixed requests and four additional project dossiers | Six fixed-DOI and four GitHub baseline GETs succeeded. Original endpoints, requests, retained bytes, identities and finite replay match in local D1. AutoGVP, ImmunoTar, Phenomantics and DeepCNV have separately reviewed publication-time regional evidence and rights. | Pass for the local fixed-DOI request/parser/retention contract and bounded factual source material. No production enrollment or corpus freeze. |
+| Earlier QSIPrep/CaPTk repository baselines and publication metadata | Four native bodies retained after whole-payload review. Exact README/CITATION snapshots link each repository to its named publication. Two later canonical Crossref recaptures repeat the same bodies. | Earlier manual metadata pass preserved. EX23 closes the canonical fixed lookup gap without rewriting the old request serialization. |
 | ROR Penn and CHOP organization metadata for manual evidence review | Two anonymous, pinned-public-IP HTTPS requests returned 200 application/json: Penn 2,123 bytes and CHOP 1,426 bytes. Exact original bodies and safe observation receipts are retained. Official ROR documentation states IDs and metadata are CC0; independent offline record/URI/contact checks passed. | Pass for this bounded manual organization-metadata evidence scope. Not WP06 registry authority qualification or WP13 native parser qualification. |
 | OpenMRS Talk forum text | Public policy documentation describes CC BY 4.0 original contributions, with attribution and third-party exceptions. Direct robots, terms and basic-info probes all returned 403; no discussion body was requested. | Access hold. Robots rules, installation version, anonymous API shape and automation compatibility remain unqualified. No bypass attempted. |
 | OHDSI and Slicer forum contributions | Primary user-content terms specify CC BY-NC-SA 3.0. | Excluded from the general commercial redisplay path without separately established compatible permission. Terms-document/footer licenses do not replace the contribution license. |
@@ -40,6 +41,13 @@ the reported reset. Crossref's third selected request returned 429 and was not
 retried. That failure has only a clearly marked post hoc observation. Source
 acquisition, native format checks, original request grammar and authority are
 separate outcomes.
+
+The [fixed-DOI follow-up](../crossref-fixed-doi-qualification.md) then qualified
+the exact lookup mode and expanded material across four additional projects.
+All ten new reads succeeded without retry. Two are repeat-body acquisitions,
+so total counts are 16 acquisition records and 14 distinct bodies, not independent
+case counts. The source work is concentrated in Philadelphia and does not prove
+coverage of the other DVRPC counties.
 
 ## Exact evidence and transport boundary
 
@@ -84,9 +92,9 @@ is introduced. WP06 still lacks a general MIME binding for these parsers.
 
 ## WP03 handoff
 
-The [material index](wp03-material-index.json) now contains **six real unannotated,
-development-exposed representations**: two organization, two repository and two
-publication records. [The staging note](wp03-real-material.md)
+The [material index](wp03-material-index.json) now contains **16 unannotated,
+development-exposed acquisition records and 14 distinct native bodies**, across
+six project dossiers plus the original organization evidence. [The staging note](wp03-real-material.md)
 and [entry review](wp03-evidence-entry-review.md) explain the limits. Family and
 partition assignment remain unreviewed; this material is not fresh held-out truth.
 There are still zero actual reference cases/reviewers and no authenticated
@@ -95,6 +103,6 @@ strict reference manifest remains unchanged and not_frozen; WP14 remains gated.
 
 Next work is accountable evidence/permission and human-review/corpus assembly,
 including the possible cross-project person/family connection. Native organization
-mapping, provider-approved forum access, README/CITATION parsing and the scoped
-Crossref request grammar remain distinct implementation or qualification work.
+mapping, provider-approved forum access, README/CITATION parsing and actual
+provider/trust enrollment remain distinct implementation or qualification work.
 None is supplied by an HTTP 200 or a license string.

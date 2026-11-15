@@ -35,14 +35,14 @@ the earlier task; implementation was subsequently authorized on 2026-11-13.
 | [WP00](receipts/WP00.json) | Accepted | Source and handoff reconciliation, decisions, ownership and validation boundaries | Astra / Sol |
 | [WP01](receipts/WP01.json) | Accepted | Nine-county healthcare technology policy and 26 synthetic calibration cases | Terra / Astra |
 | [WP02](receipts/WP02.json) | Accepted within recorded scope | Model v0.5, strict shared contracts, dependency guards and formal counterexamples | Astra, with Terra types / Sol |
-| [WP03](receipts/WP03-github-publication-progress.json) | Preparation reviewed; package incomplete | Signed intake/context safeguards and six real unannotated representations staged: two organization, two repository, two publication; zero reference cases | Sol/Terra source work; Astra review |
+| [WP03](receipts/WP03-crossref-request-progress.json) | Preparation reviewed; package incomplete | Six project dossiers; 16 native acquisitions / 14 distinct bodies staged; zero reference cases | Sol/Terra source work; Astra review |
 | [WP04](receipts/WP04.json) | Accepted | Additive D1 catalog, stable identities, immutable revisions, typed relations and transactional write checks | Sol / Astra |
 | [WP05](receipts/WP05.json) | Accepted | Evidence ledger, scoped removal, provenance, integrity quarantine and first-response intake; [independent acceptance tests](reviews/wp05-terra.md) | Sol / Astra, with Terra tests |
 | [WP06](receipts/WP06.json) | Accepted within local implementation scope | Source registry, qualification, credentials, exact endpoint rules, bounded transport/budgets, guarded retention and six synthetic adapter contracts | Sol registry / Terra transport / Astra review, with independent Sol tests |
 | [WP07](receipts/WP07.json) | Accepted within local implementation scope | Frozen ordered rounds, linked leases, atomic raw/lead/page/checkpoint commit, restart replay, conservative accounting and scoped progress | Sol store / Terra collector / Astra review, with independent Sol tests |
 | [WP08](receipts/WP08.json) | Accepted within local implementation scope | Independent GitHub repository/account/search acquisition, retained-baseline lists, native identities, source stages/dates and authenticated pagination | Sol / Terra; root integration |
 | [WP09](receipts/WP09.json) | Accepted within local implementation scope | Independently qualified PubMed search/fetch, durable scope/batch binding, historical author candidates, partial dates and truthful gaps | Sol / Terra tests / Astra review; root integration |
-| [WP10](receipts/WP10.json) | Accepted within local implementation scope | Independent Crossref work/institution queries, explicit DOI subset, partial dates and unresolved contributors, retained cursor ancestry and private metadata replay | Sol / Terra tests / Astra review and fixes; root integration |
+| [WP10](receipts/WP10.json) | Accepted within local implementation scope | Crossref work/institution cursor queries plus separately reviewed fixed-DOI metadata requests, exact original endpoint/body matching, partial dates and unresolved contributors | Sol / Terra tests / Astra review; root integration |
 | [WP11](receipts/WP11.json) | Accepted within local implementation scope | Independent arXiv queries, base/version identity, qualified Atom, retained numeric-offset ancestry and private replay | Sol / Terra tests / Astra review; root integration |
 | [WP12](receipts/WP12-local-implementation.json) | Software increment reviewed; full package unaccepted | Installation-bound public forum subset, strict pre-retention privacy, retained category/topic ancestry; actual qualification and native change consumer open | Sol / Terra / Astra |
 | [WP13](receipts/WP13-local-implementation.json) | Software increment reviewed; full package unaccepted | Source-specific passive profiles/directories, literal unit/role/date inputs, reviewed-origin boundary; actual qualification open | Sol / Terra / Astra |
@@ -72,14 +72,19 @@ adds QSIPrep and CaPTk, their explicit publication links and historical Philadel
 affiliation evidence. Four additional native metadata bodies passed independent
 field/URI review and offline replay. The
 [staging index](qualification/wp03-material-index.json) preserves native bodies,
-observation receipts and development exposure for all six records. They have no human labels, trusted
+observation receipts and development exposure. EX23's
+[fixed-DOI qualification](crossref-fixed-doi-qualification.md) closes the request
+gap with six canonical Crossref captures and adds four new repository baselines:
+AutoGVP, ImmunoTar, Phenomantics and DeepCNV. The inventory now has 16 acquisition
+records and 14 distinct body hashes across six project dossiers. They have no human labels, trusted
 permission/evidence attestations, family/partition assignments or strict manifest
 membership. Two project dossiers may share a person/family connection; their
 representations do not supply independent sampling credit. The bounded manual
-metadata pass does not enroll providers or qualify the original Crossref selected
-request grammar; measured forum and institutional holds remain. The
-[latest qualification receipt](receipts/github-publication-qualification-20261115.json)
-preserves those distinctions and the local retention correction.
+metadata pass does not enroll providers. The fixed request mode is locally
+qualified against exact new observations; older differently serialized observations
+are preserved. Measured forum and institutional holds remain. The
+[latest qualification receipt](receipts/crossref-request-qualification-20261115.json)
+preserves the request, authority, rights and corpus distinctions.
 
 WP03's [receipt-intake increment](receipts/WP03-receipt-intake-progress.json) adds
 strict offline receipt/authority binding and a read-only readiness report, with
@@ -182,8 +187,8 @@ tests; only the institutional source/test differ among the 607 runtime inputs.
 The [qualification receipt](receipts/real-source-qualification-20261115.json)
 preserves both the actual observations and the separate synthetic format defect.
 
-The GitHub/publication follow-up also found and fixed ignored raw contact and
-article-material retention. All 39 GitHub/Crossref tests pass on the corrected
+The preceding GitHub/publication follow-up found and fixed ignored raw contact and
+article-material retention. Its 39 GitHub/Crossref tests passed on the corrected
 logic, with 16 independent actual-D1 checks and Astra's additional adversarial
 matrices. Four exact native payloads replay under synthetic authority. Types,
 seven PDF regressions, build and local smoke pass. Five runtime paths differ
@@ -192,8 +197,15 @@ brings the total to 608. One trailing LF was removed after the full run, with
 exact byte-equivalence evidence and independent direct checks retained. Historical
 full-suite counts above are not described as a fresh full rerun.
 
+EX23's final run passes all 43 GitHub/Crossref tests, including six exact native
+Crossref endpoint/request/body/ledger replays. Terra passed 23 Crossref D1 checks
+and four original query-free GitHub endpoint replays; Astra passed 27 adversarial
+checks and one legacy-cursor regression. Types, seven PDF regressions, build and
+local smoke passed with stable hashes for all 608 runtime inputs. Only Crossref's
+module/test differ from the preceding snapshot; 606 inputs are unchanged.
+
 Exact-head CI state is recorded in [execution.json](execution.json). Prior
-head 509283c CI167 passed tests/PDF/build/smoke, then failed audit and skipped its later
+head 59ba1bc CI169 passed tests/PDF/build/smoke, then failed audit and skipped its later
 secret scan. Current local secret scan passes. The PR stays draft; local package
 acceptance does not complete release qualification. The baseline
 inventory originally identified 11 omitted legacy regional test files; WP09 adds

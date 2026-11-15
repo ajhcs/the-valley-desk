@@ -1,0 +1,199 @@
+{
+  "schema": "wp03-derived-repository-observations-v1",
+  "observation_window": {
+    "start_utc": "2026-11-15T21:43:23Z",
+    "end_checkpoint_utc": "2026-11-15T21:45:06Z",
+    "meaning": "Metadata/ref batch started at initial clock checkpoint; tree and exact-commit file observations preceded end checkpoint. Per-request HTTP times unavailable."
+  },
+  "method": {
+    "provider": "GitHub connector",
+    "tools": [
+      "get_repo",
+      "fetch",
+      "fetch_file"
+    ],
+    "native_http_capture": false,
+    "http_status_headers_bytes": "not provided by connector",
+    "raw_file_bodies_saved": false,
+    "contact_addresses_saved": false,
+    "scope": "public organization-owned repository metadata, pinned refs, file paths and factual README/license observations; no contributor/person/commit-author collection"
+  },
+  "review_state": {
+    "development_exposed": true,
+    "family_review": "unreviewed",
+    "human_reference_labels": 0,
+    "source_activation": false,
+    "freeze": false
+  },
+  "repositories": [
+    {
+      "repository_id": 525946788,
+      "canonical_full_name": "diskin-lab-chop/AutoGVP",
+      "owner_id": 53345105,
+      "owner_login": "diskin-lab-chop",
+      "owner_type": "Organization",
+      "visibility": "public",
+      "private": false,
+      "fork": false,
+      "archived": false,
+      "disabled": false,
+      "default_branch": "main",
+      "head_sha": "8645aa708046a3d86417ce0d8b542071857e875f",
+      "api_license": null,
+      "publication_doi": "10.1093/bioinformatics/btae114",
+      "historical_alias": null,
+      "metadata_url": "https://api.github.com/repos/diskin-lab-chop/AutoGVP",
+      "branch_ref_url": "https://api.github.com/repos/diskin-lab-chop/AutoGVP/git/ref/heads/main",
+      "tree_url": "https://api.github.com/repos/diskin-lab-chop/AutoGVP/git/trees/8645aa708046a3d86417ce0d8b542071857e875f?recursive=1",
+      "tree_count": 53,
+      "tree_truncated": false,
+      "standard_license_and_citation_paths": [],
+      "readme_files": [
+        {
+          "path": "README.md",
+          "blob_sha": "1c9262fd1d1e730ea4d6aae44b853c4efc4dac87",
+          "url": "https://github.com/diskin-lab-chop/AutoGVP/blob/8645aa708046a3d86417ce0d8b542071857e875f/README.md"
+        }
+      ],
+      "root_readme_target_doi_explicit": true,
+      "root_readme_generic_paper_mentions": false,
+      "paper_to_repository_edge": "Primary article explicit repository URL, assessed separately in crossref-expansion-source-assessment.md",
+      "license_review": {
+        "path": null,
+        "derived_terms": "No standard license filename in complete pinned Git tree or license statement identified in consulted README files. API license null is not a grant.",
+        "redistribution_permission": "not established"
+      }
+    },
+    {
+      "repository_id": 734388793,
+      "canonical_full_name": "sacanlab/immunotar",
+      "owner_id": 18205643,
+      "owner_login": "sacanlab",
+      "owner_type": "Organization",
+      "visibility": "public",
+      "private": false,
+      "fork": false,
+      "archived": false,
+      "disabled": false,
+      "default_branch": "master",
+      "head_sha": "e99cb6aa1d3ab53730fcfb47003e2fdcc5ab5bbc",
+      "api_license": null,
+      "publication_doi": "10.1093/bioinformatics/btaf060",
+      "historical_alias": null,
+      "metadata_url": "https://api.github.com/repos/sacanlab/immunotar",
+      "branch_ref_url": "https://api.github.com/repos/sacanlab/immunotar/git/ref/heads/master",
+      "tree_url": "https://api.github.com/repos/sacanlab/immunotar/git/trees/e99cb6aa1d3ab53730fcfb47003e2fdcc5ab5bbc?recursive=1",
+      "tree_count": 121,
+      "tree_truncated": false,
+      "standard_license_and_citation_paths": [],
+      "readme_files": [
+        {
+          "path": "README.md",
+          "blob_sha": "949a24fd14c11b719e94c0ff69ca7dc45e3106a6",
+          "url": "https://github.com/sacanlab/immunotar/blob/e99cb6aa1d3ab53730fcfb47003e2fdcc5ab5bbc/README.md"
+        }
+      ],
+      "root_readme_target_doi_explicit": false,
+      "root_readme_generic_paper_mentions": false,
+      "paper_to_repository_edge": "Primary article explicit repository URL, assessed separately in crossref-expansion-source-assessment.md",
+      "license_review": {
+        "path": "DESCRIPTION",
+        "blob_sha": "3b6dcd2fdb2d08bdcc93c4d0f64c27bac1ce4279",
+        "url": "https://github.com/sacanlab/immunotar/blob/e99cb6aa1d3ab53730fcfb47003e2fdcc5ab5bbc/DESCRIPTION",
+        "derived_terms": "Free noncommercial use; redistribution and commercial use require contact with authors. No contact details retained.",
+        "redistribution_permission": "not established"
+      }
+    },
+    {
+      "repository_id": 15715626,
+      "canonical_full_name": "chop-dbhi/phenomantics",
+      "owner_id": 709892,
+      "owner_login": "chop-dbhi",
+      "owner_type": "Organization",
+      "visibility": "public",
+      "private": false,
+      "fork": false,
+      "archived": false,
+      "disabled": false,
+      "default_branch": "master",
+      "head_sha": "0c222f717c4382cd61dc8f054b3e191184cd31cc",
+      "api_license": null,
+      "publication_doi": "10.1186/1471-2105-15-248",
+      "historical_alias": "cbmi/phenomantics",
+      "metadata_url": "https://api.github.com/repos/chop-dbhi/phenomantics",
+      "branch_ref_url": "https://api.github.com/repos/chop-dbhi/phenomantics/git/ref/heads/master",
+      "tree_url": "https://api.github.com/repos/chop-dbhi/phenomantics/git/trees/0c222f717c4382cd61dc8f054b3e191184cd31cc?recursive=1",
+      "tree_count": 98,
+      "tree_truncated": false,
+      "standard_license_and_citation_paths": [],
+      "readme_files": [
+        {
+          "path": "README.md",
+          "blob_sha": "fef29a59ffa5e632ab641a4a0020bd94fc18047f",
+          "url": "https://github.com/chop-dbhi/phenomantics/blob/0c222f717c4382cd61dc8f054b3e191184cd31cc/README.md"
+        },
+        {
+          "path": "apps/genesis_aws/README.md",
+          "blob_sha": "63d7b6919bd607a0cd0a949aecf1e0b0b8aff587",
+          "url": "https://github.com/chop-dbhi/phenomantics/blob/0c222f717c4382cd61dc8f054b3e191184cd31cc/apps/genesis_aws/README.md"
+        }
+      ],
+      "root_readme_target_doi_explicit": false,
+      "root_readme_generic_paper_mentions": false,
+      "paper_to_repository_edge": "Primary article explicit repository URL, assessed separately in crossref-expansion-source-assessment.md",
+      "license_review": {
+        "path": null,
+        "derived_terms": "No standard license filename in complete pinned Git tree or license statement identified in consulted README files. API license null is not a grant.",
+        "redistribution_permission": "not established"
+      }
+    },
+    {
+      "repository_id": 285885136,
+      "canonical_full_name": "CAG-CNV/DeepCNV",
+      "owner_id": 31705609,
+      "owner_login": "CAG-CNV",
+      "owner_type": "Organization",
+      "visibility": "public",
+      "private": false,
+      "fork": false,
+      "archived": false,
+      "disabled": false,
+      "default_branch": "master",
+      "head_sha": "47bc7dbea9dc4d835feef7607b0477ad7a9210ba",
+      "api_license": null,
+      "publication_doi": "10.1093/bib/bbaa381",
+      "historical_alias": null,
+      "metadata_url": "https://api.github.com/repos/CAG-CNV/DeepCNV",
+      "branch_ref_url": "https://api.github.com/repos/CAG-CNV/DeepCNV/git/ref/heads/master",
+      "tree_url": "https://api.github.com/repos/CAG-CNV/DeepCNV/git/trees/47bc7dbea9dc4d835feef7607b0477ad7a9210ba?recursive=1",
+      "tree_count": 70,
+      "tree_truncated": false,
+      "standard_license_and_citation_paths": [],
+      "readme_files": [
+        {
+          "path": "DeepCNV_Seqv2/readme.txt",
+          "blob_sha": "7bb754f10570f4f5008c7828f14e8687598dce54",
+          "url": "https://github.com/CAG-CNV/DeepCNV/blob/47bc7dbea9dc4d835feef7607b0477ad7a9210ba/DeepCNV_Seqv2/readme.txt"
+        },
+        {
+          "path": "DeepCNVv2/readme.txt",
+          "blob_sha": "434d79b7cb8b8ee42bd47450ae4fad03a9526c2e",
+          "url": "https://github.com/CAG-CNV/DeepCNV/blob/47bc7dbea9dc4d835feef7607b0477ad7a9210ba/DeepCNVv2/readme.txt"
+        },
+        {
+          "path": "README.md",
+          "blob_sha": "9b481599153681a3540b08724a15273e2cad1db1",
+          "url": "https://github.com/CAG-CNV/DeepCNV/blob/47bc7dbea9dc4d835feef7607b0477ad7a9210ba/README.md"
+        }
+      ],
+      "root_readme_target_doi_explicit": false,
+      "root_readme_generic_paper_mentions": true,
+      "paper_to_repository_edge": "Primary article explicit repository URL, assessed separately in crossref-expansion-source-assessment.md",
+      "license_review": {
+        "path": null,
+        "derived_terms": "No standard license filename in complete pinned Git tree or license statement identified in consulted README files. API license null is not a grant.",
+        "redistribution_permission": "not established"
+      }
+    }
+  ]
+}

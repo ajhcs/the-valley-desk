@@ -50,7 +50,7 @@
       "status": "in_progress",
       "receipt": "receipts/WP03-preparation.json",
       "acceptance": null,
-      "notes": "EX22 adds native GitHub repository and linked Crossref publication metadata for QSIPrep/CaPTk. Six development-exposed native representations are staged: two organization, two repository and two publication records; zero strict reference cases or human reviewers. Explicit citations and historical Philadelphia affiliation evidence were reviewed; the shared-name/family connection remains unassigned. Authenticated statements/trust, independent labels, sampling and accountable freeze remain missing; WP14 stays gated.",
+      "notes": "EX23 closes the local fixed-DOI request/parser/retention gap against six exact native request URLs and original bodies. Four additional project dossiers add eight distinct bodies: 16 acquisition records/14 body hashes across six dossiers; zero strict reference cases or human reviewers. All material is development-exposed. Independent labels, trusted statements, sampling/family review and accountable freeze remain missing; WP14 stays gated.",
       "progress_receipts": [
         "receipts/WP03-receipt-intake-progress.json",
         "receipts/WP03-signature-intake-progress.json",
@@ -58,7 +58,8 @@
         "receipts/WP03-case-selection-binding-progress.json",
         "receipts/WP03-label-context-progress.json",
         "receipts/WP03-real-material-progress.json",
-        "receipts/WP03-github-publication-progress.json"
+        "receipts/WP03-github-publication-progress.json",
+        "receipts/WP03-crossref-request-progress.json"
       ]
     },
     {
@@ -163,10 +164,11 @@
       "status": "accepted",
       "receipt": "receipts/WP10.json",
       "acceptance": "2026-11-15T18:45:38.908223+00:00",
-      "notes": "Local Crossref implementation accepted after Sol implementation, Terra 10 actual-D1 tests, Astra 36 independent checks and final query-digest fix, and root 1,296 tests plus seven PDF regressions on 572 stable inputs. EX14 defines the DOI subset and retained-chain composition. No live provider activation, public admission or deployment; E04 and empirical gates remain pending. EX22 local whole-payload raw-retention correction reviewed; 39 provider tests and 16 independent D1 checks pass. Real metadata reviewed manually; no source enrollment. Original real DOI-filter/select request grammar remains outside WP10 search/cursor scope; payload replay alone does not qualify it.",
+      "notes": "Existing work/institution search/cursor contract and EX22 whole-body metadata guards remain locally accepted. EX23 separately qualifies canonical fixed-DOI factual lookups with exact observed/issued/retained request and original-body matching, finite singleton/no-continuation checks and actual claim lookup. All 43 provider tests, independent D1/adversarial matrices and global checks passed. External source/trust enrollment and corpus acceptance remain separate.",
       "started_at": "2026-11-15T18:29:22.900876+00:00",
       "amendment_receipts": [
-        "receipts/github-publication-qualification-20261115.json"
+        "receipts/github-publication-qualification-20261115.json",
+        "receipts/crossref-request-qualification-20261115.json"
       ]
     },
     {
@@ -487,7 +489,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-15T21:33:42.410143+00:00",
+  "updated_at": "2026-11-15T22:06:42.217284+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -714,6 +716,17 @@
         "WP14"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX23",
+      "path": "implementation-decisions.md",
+      "status": "local_fixed_request_contract_and_expanded_metadata_reviewed_corpus_incomplete",
+      "affects": [
+        "WP03",
+        "WP10",
+        "WP14"
+      ],
+      "thresholds_changed": false
     }
   ],
   "next_ready_packages": [],
@@ -731,8 +744,8 @@
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "1600ee8db50b912b100179968bcf9f1f5122658c",
+    "reviewed_code_commit": "6c803f85a5b0be03c7c88357e5cdeea7ac056567",
     "code_ci_run": null,
-    "code_ci": "New exact-head CI pending push. Prior 509283c CI167 tests/PDF/build/smoke passed, then npm audit failed and secret scan was skipped. Current 39 GitHub/Crossref tests, 16 independent D1 tests, adversarial/native guard checks, seven PDF regressions, types/build/local smoke and local secret scan passed. One EOF LF was removed after full tests; byte-equivalence and direct rechecks are retained. WP03 has six staged native records and zero reference cases; not_frozen; no deployment."
+    "code_ci": "New exact-head CI pending push. Prior 59ba1bc CI169 tests/PDF/build/smoke passed, then npm audit failed and secret scan was skipped. Current 43 provider tests, Terra 23 Crossref + 4 GitHub D1 checks, Astra 27 adversarial + 1 legacy check, types/seven PDF regressions/build/local smoke/local secret scan passed. All 608 runtime inputs stayed stable. WP03 has 16 acquisition records/14 distinct bodies and zero reference cases; not_frozen; no deployment."
   }
 }

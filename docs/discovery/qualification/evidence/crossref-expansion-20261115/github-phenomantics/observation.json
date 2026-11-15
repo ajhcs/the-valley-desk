@@ -1,0 +1,56 @@
+{
+  "provider": "github",
+  "name": "phenomantics",
+  "url": "https://api.github.com/repos/chop-dbhi/phenomantics",
+  "method": "GET",
+  "started_at_utc": "2026-11-15T21:47:03.775809+00:00",
+  "transport": "standalone-public-IP-pinned-HTTPS",
+  "wp06_transport": false,
+  "anonymous": true,
+  "authentication_sent": false,
+  "proxy_used": false,
+  "redirects_followed": 0,
+  "byte_cap": 48000,
+  "outer_deadline_seconds": 25,
+  "request_headers": {
+    "User-Agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+    "Accept-Encoding": "identity",
+    "Accept": "application/vnd.github+json",
+    "Connection": "close",
+    "X-GitHub-Api-Version": "2022-11-28"
+  },
+  "body_retained": true,
+  "rights_scope": "User-authorized bounded public factual source qualification; no article/code/contact-body redistribution or production enrollment.",
+  "dns_public_addresses": [
+    "140.82.114.6"
+  ],
+  "selected_public_ip": "140.82.114.6",
+  "tls_version": "TLSv1.3",
+  "status": 200,
+  "link_header_present": false,
+  "response_headers": {
+    "date": "Sun, 15 Nov 2026 21:47:03 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"6b0b260999658066326e98137a6c09bb07097877d65bc21a492761d8315bcc1c\"",
+    "last-modified": "Mon, 05 Jun 2023 08:04:07 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "54",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-reset": "1794780431",
+    "content-length": "6323"
+  },
+  "received_bytes": 6323,
+  "body_sha256": "8a596641421dde32216c5e72bf8b888585f49f05591a174dfdc46003c3abc51e",
+  "response_complete": true,
+  "native_identity": {
+    "repository_id": 15715626,
+    "alias": "chop-dbhi/phenomantics",
+    "owner_id": 709892
+  },
+  "preflight_source_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+  "preflight": "Strict entire-payload JSON/material gate before persistence, plus exact requested DOI/cardinality/selected fields or public organization-owned repository identity. No projection or body rewriting.",
+  "body_path": ".discovery-work/source-qualification/crossref-expansion/root/captures/github-phenomantics/body.json",
+  "ended_at_utc": "2026-11-15T21:47:04.040098+00:00",
+  "elapsed_seconds": 0.264
+}

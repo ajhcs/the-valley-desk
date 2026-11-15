@@ -97,6 +97,29 @@ No model output becomes a human label, authenticated source grant, regional
 admission, publication decision or corpus freeze. No source enrollment, recurring
 collector, deployment, remote migration or external outreach was performed.
 
+## 15 November 2026: exact Crossref fixed requests and expansion
+
+The follow-up user request authorizes closure of the request-contract gap and
+bounded real-source expansion. EX23 records the new fixed-DOI mode. Ten native
+GETs covered six exact canonical Crossref URLs and four public GitHub repository
+baselines. Calls were spaced at least 3.2 seconds, with one attempt per endpoint,
+no credentials/proxy/redirects, certificate-verifying public-IP-pinned HTTPS,
+48,000-byte caps and caller-enforced 25-second limits. All ten returned 200 and
+passed the strict material/identity preflight before persistence. There was no
+rate-limit failure or retry in this batch. Earlier failures remain historical.
+
+Independent full field/URI review preceded portable copying. Crossref raw bodies,
+issued local requests and observed URLs now match the actual fixed-mode grammar;
+no local response projection or substitute search scope is used. Local D1
+qualification still uses synthetic authority and injected transport responses.
+The actual network captures remain standalone acquisition, not production WP06
+enrollment. Historical replay does not reacquire a released live lease.
+
+Two recaptures repeat prior bytes, so ten new acquisitions add eight distinct
+body hashes. All source material is development-exposed. Independent case counts,
+human labels, source trust, regional/clinical truth, operational acceptance,
+production collection and deployment are not supplied by this qualification.
+
 ## Repeatable WP00 evidence review
 
 From the selected checkout, the reviewer can rerun the receipt's `commands[].argv` as read-only observations. Source status may change as authorized work proceeds; compare timestamps and retained file hashes rather than replacing the original snapshot. Recompute each frozen manifest entry's SHA-256 and byte length against its manifest. The baseline records 70 handoff entries and 21 frozen entries checked without mismatch.

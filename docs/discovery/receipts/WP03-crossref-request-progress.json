@@ -1,0 +1,32 @@
+{
+  "package": "WP03",
+  "recorded_at": "2026-11-15T22:04:36.249038+00:00",
+  "decision": "EX23",
+  "disposition": "fixed_request_contract_closed_and_real_material_expanded_package_incomplete",
+  "reviewed_code_commit": "6c803f85a5b0be03c7c88357e5cdeea7ac056567",
+  "qualification_receipt": "crossref-request-qualification-20261115.json",
+  "qualification_receipt_sha256": "97fa25bba8664fd1c5f642ade58f546effa386cc0904d458ee2a13830bad1878",
+  "crossref_fixed_request_contract_qualified_locally": true,
+  "staged_acquisition_records": 16,
+  "distinct_native_body_hashes": 14,
+  "project_dossiers": 6,
+  "actual_reference_cases": 0,
+  "actual_human_reviewers": 0,
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "manifest_status": "not_frozen",
+  "freeze_issued": false,
+  "package_accepted": false,
+  "WP14_dependency_satisfied": false,
+  "outputs": {
+    "docs/discovery/qualification/wp03-material-index.json": "0abd5620c51a93bff55e78a8a7b7c7c2bb938c1b15a4ef191bd38109d639562b",
+    "docs/discovery/qualification/wp03-real-material.md": "33c658b8eb4b9e21cc369e0212448f28813e8b3934de5f4177e5285d8098e4b8",
+    "docs/discovery/crossref-fixed-doi-qualification.md": "727ec9f5c0ca9887409636baa3360889df42852f4c50a7de1927079ac891599b"
+  },
+  "remaining": [
+    "Authenticated original evidence and permitted-use statements under actual operator trust.",
+    "Independent blinded human annotations, preserved disagreement and adjudication.",
+    "Reviewed transitive person/project/origin families, exposure and independent sampling/recall frames.",
+    "Complete required reference corpus and accountable freeze review."
+  ],
+  "empirical_gates": "E01-E06_not_run"
+}
