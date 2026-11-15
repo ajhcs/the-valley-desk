@@ -1,0 +1,58 @@
+{
+  "id": "TVD-DISCOVERY-WP05-INTEGRATION-1",
+  "recorded_at": "2026-11-14T01:38:29.683887+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "disposition": "local_wp05_checks_passed_release_remains_unqualified",
+  "checkout": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113",
+  "branch": "codex/discovery-implementation-20261113",
+  "checks": {
+    "npm_test": {
+      "exit_code": 0,
+      "tests": 1133,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 50
+      },
+      "failed": 0,
+      "skipped": 0
+    },
+    "independent_wp05_suite": "13/13 including parent",
+    "build": "pass; existing chunk-size warning",
+    "local_ops_smoke": "pass; fake bindings and injected fetch only",
+    "secret_scan": "pass;749 tracked and untracked files",
+    "input_files_unchanged": 522
+  },
+  "artifacts": {
+    ".discovery-work/wp05/root-final/input-sha256.json": "0bcdb92ad82770789d270882cd511830f7aa958b069ccb3439867887480dcc34",
+    ".discovery-work/wp05/root-final/npm-test.log": "7cfb5023ca523b1e954b55f5471b12d1ac0b759958b12bed6eecf12f0aaa80a7",
+    ".discovery-work/wp05/root-final/build.log": "502ec7b87d9ebc9f87c1f61bd4368886d9a0a1c300abb46e8ffdf6725c099040",
+    ".discovery-work/wp05/root-final/ops-smoke.log": "464cf8e34bb85dd84230bb51a2a639e18c76f1e7ff2cbf74524758d967433545",
+    ".discovery-work/wp05/root-final/secret-scan.log": "032e5bbd52a4fe69c0a7d7676b0cd516c6e29c5d5756d8717cf7f85c88fe6d77"
+  },
+  "earlier_candidate": {
+    "path": ".discovery-work/wp05/root-qualification",
+    "tests": 1132,
+    "status": "superseded_for_acceptance_by_final_fixes",
+    "changed_inputs": [
+      "src/content/discovery-evidence.ts",
+      "src/ingest/discovery-evidence-store.ts",
+      "migrations/0042_discovery_evidence.sql",
+      "test/discovery-evidence.test.ts"
+    ]
+  },
+  "lockfile_sha256": "f90749d123fe5d553057a037188af6a827367aa6bc427e84ccc25a3c4218fe05",
+  "dependency_audit": "dependency-audit.json; unchanged lockfile; no new audit or remediation claimed",
+  "deployment_performed": false,
+  "production_state_changed": false,
+  "input_drift": [],
+  "limitations": [
+    "Capability and issued-request resolvers are synthetic in tests; no real authentication, provider permission or legal sufficiency is established.",
+    "WP06 must implement actual registry qualification, lease/budget/issued-request predicates in the same retention transaction; WP07 must compose one atomic raw/observation/page/checkpoint commit.",
+    "WP14 must implement selector-to-reviewed-origin adjudication, requalification after grant renewal and the catalog/public removal bridge.",
+    "Quarantine verifies stored hashes and transform consistency within one bounded SQL read; it does not resist coherent unrestricted database rewrite or prove source truth.",
+    "Removal is logical current-DB removal with explicitly permitted minimal audit metadata; WP26 owns backup/restore reconciliation.",
+    "Four high advisories in unchanged lockfile remain a release blocker; E01-E06 not run; no deployment."
+  ],
+  "accepted_package": "WP05"
+}

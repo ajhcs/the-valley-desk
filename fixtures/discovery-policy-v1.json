@@ -1,0 +1,178 @@
+{
+  "version": "discovery-policy-v1",
+  "status": "frozen_for_local_implementation",
+  "created": "2026-11-13",
+  "provenance": "All cases, persons, organizations and source descriptions are synthetic; no real records or access claims.",
+  "as_of": "2026-11-13",
+  "county_keys": [
+    "PA:Bucks",
+    "PA:Chester",
+    "PA:Delaware",
+    "PA:Montgomery",
+    "PA:Philadelphia",
+    "NJ:Burlington",
+    "NJ:Camden",
+    "NJ:Gloucester",
+    "NJ:Mercer"
+  ],
+  "cases": [
+    {
+      "id": "county-01",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization authored a healthcare data interoperability technical report. A supported substantive contribution occurred in PA:Bucks on 2024-05-01. Organization identity and metadata display authority are supported; no individual author is identified."
+    },
+    {
+      "id": "county-02",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization authored a healthcare data interoperability technical report. A supported substantive contribution occurred in PA:Chester on 2024-05-01. Organization identity and metadata display authority are supported; no individual author is identified."
+    },
+    {
+      "id": "county-03",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization authored a healthcare data interoperability technical report. A supported substantive contribution occurred in PA:Delaware on 2024-05-01. Organization identity and metadata display authority are supported; no individual author is identified."
+    },
+    {
+      "id": "county-04",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization authored a healthcare data interoperability technical report. A supported substantive contribution occurred in PA:Montgomery on 2024-05-01. Organization identity and metadata display authority are supported; no individual author is identified."
+    },
+    {
+      "id": "county-05",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization authored a healthcare data interoperability technical report. A supported substantive contribution occurred in PA:Philadelphia on 2024-05-01. Organization identity and metadata display authority are supported; no individual author is identified."
+    },
+    {
+      "id": "county-06",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization authored a healthcare data interoperability technical report. A supported substantive contribution occurred in NJ:Burlington on 2024-05-01. Organization identity and metadata display authority are supported; no individual author is identified."
+    },
+    {
+      "id": "county-07",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization authored a healthcare data interoperability technical report. A supported substantive contribution occurred in NJ:Camden on 2024-05-01. Organization identity and metadata display authority are supported; no individual author is identified."
+    },
+    {
+      "id": "county-08",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization authored a healthcare data interoperability technical report. A supported substantive contribution occurred in NJ:Gloucester on 2024-05-01. Organization identity and metadata display authority are supported; no individual author is identified."
+    },
+    {
+      "id": "county-09",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization authored a healthcare data interoperability technical report. A supported substantive contribution occurred in NJ:Mercer on 2024-05-01. Organization identity and metadata display authority are supported; no individual author is identified."
+    },
+    {
+      "id": "outside-same-name",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "An invented organization created a clinical interoperability tool in PA:Mercer on 2024-05-01; metadata authority and identity are supported."
+    },
+    {
+      "id": "outside-delaware",
+      "source_route": "github",
+      "provenance": "synthetic",
+      "scenario": "An invented organization created a healthcare device interface in NJ:Delaware on 2024-05-01; identity and metadata authority are supported."
+    },
+    {
+      "id": "unknown-state",
+      "source_route": "crossref",
+      "provenance": "synthetic",
+      "scenario": "A fabricated technical healthcare paper states only Mercer County for its creator contribution in 2024; identity and metadata authority are supported."
+    },
+    {
+      "id": "move-in",
+      "source_route": "pubmed",
+      "provenance": "synthetic",
+      "scenario": "A fictional researcher created a clinical informatics study in PA:Allegheny on 2022-04-10, moved to a verified professional position in PA:Bucks on 2023-01-01, and is verified current at 2026-11-13. Identity and metadata authority are supported."
+    },
+    {
+      "id": "move-out",
+      "source_route": "arxiv",
+      "provenance": "synthetic",
+      "scenario": "A fictional researcher created a health AI evaluation in NJ:Camden on 2022-04-10, moved professionally to PA:Allegheny on 2023-01-01, and is verified there at 2026-11-13. Identity and metadata authority are supported."
+    },
+    {
+      "id": "partial-date-move",
+      "source_route": "crossref",
+      "provenance": "synthetic",
+      "scenario": "A fictional researcher made a substantive healthcare data contribution in 2022, with only year precision; the verified move from PA:Allegheny to PA:Bucks occurred 2022-07-01. No other location evidence exists. Identity and metadata authority are supported."
+    },
+    {
+      "id": "residence-only",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "A fictional clinical software developer has a public residential address in PA:Chester but an evidenced professional practice in PA:Allegheny. No local professional work is evidenced."
+    },
+    {
+      "id": "independent-no-work",
+      "source_route": "association",
+      "provenance": "synthetic",
+      "scenario": "An invented independent professional has a currently verified professional practice in NJ:Mercer and publicly explains medical device interoperability. Identity and profile display authority are supported; no indexed work, employer or repository is known."
+    },
+    {
+      "id": "paper-no-repo",
+      "source_route": "pubmed",
+      "provenance": "synthetic",
+      "scenario": "An invented paper reports a technical evaluation of a clinical decision-support system; the documented creator contribution was in PA:Philadelphia on 2024-03-01. Work and creator role are supported; metadata display is allowed; no repository exists."
+    },
+    {
+      "id": "forum-no-repo",
+      "source_route": "forum",
+      "provenance": "synthetic",
+      "scenario": "A fictional public forum discussion substantively explains the design of a healthcare data standard; its supported author contribution was made in NJ:Gloucester on 2024-03-01. Account and work are supported but no person identity or repository is established; metadata display is allowed."
+    },
+    {
+      "id": "clinical-routine",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "A fictional clinic in PA:Bucks posts routine clinical advice using a word processor. Identity, date and display authority are supported."
+    },
+    {
+      "id": "generic-ai",
+      "source_route": "github",
+      "provenance": "synthetic",
+      "scenario": "A fictional NJ:Camden developer publishes a generic image model with no healthcare purpose. Identity, local creation date and metadata authority are supported."
+    },
+    {
+      "id": "unclear-purpose",
+      "source_route": "arxiv",
+      "provenance": "synthetic",
+      "scenario": "An invented technical model describes image segmentation without stating its application. The contribution occurred in PA:Montgomery on 2024-03-01; identity and metadata authority are supported."
+    },
+    {
+      "id": "unknown-rights",
+      "source_route": "crossref",
+      "provenance": "synthetic",
+      "scenario": "An invented healthcare informatics paper was created by a supported organization in PA:Delaware on 2024-03-01. Public access is known but display rights for its text and figures are unknown, as is separate metadata display authority."
+    },
+    {
+      "id": "name-collision",
+      "source_route": "pubmed",
+      "provenance": "synthetic",
+      "scenario": "An invented healthcare paper is organization-authored, lists an individual author named Alex Kim, and has a local organization contribution in NJ:Burlington. Two distinct fictional people share that name; no identity link is established. Organization identity, creation date and metadata rights are supported."
+    },
+    {
+      "id": "adoption-only",
+      "source_route": "institutional",
+      "provenance": "synthetic",
+      "scenario": "A fictional hospital in NJ:Mercer adopts a healthcare software product developed elsewhere; no local creator contribution is evidenced. Identity and metadata rights are supported."
+    },
+    {
+      "id": "unknown-end",
+      "source_route": "association",
+      "provenance": "synthetic",
+      "scenario": "A fictional professional had a healthcare informatics role in PA:Chester beginning in 2020; a 2021 source gives no end date and no current verification. Identity and profile display authority are supported."
+    }
+  ],
+  "accepted_at": "2026-11-14T00:08:21.204517+00:00",
+  "acceptance_receipt": "../docs/discovery/receipts/WP01.json"
+}

@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "posttest": "npm run test:watch-launch",
+    "posttest": "npm run test:watch-launch && npm run test:discovery",
     "test:watch-launch": "node --import tsx/esm --test --test-concurrency=1 test/watch-scheduled.test.ts test/watch-collection.test.ts test/representative-persistence.test.ts test/representative-roster-drafts.test.ts test/technology-dossiers.test.ts test/policy-watch-workflow.test.ts test/watch-editorial.test.ts test/watch-editorial-api.test.ts test/watch-editorial-runtime.test.ts test/watch-views.test.ts test/watch-editorial-client.test.ts test/watch-updates-scale.test.ts test/watch-updates-api.test.ts test/event-calendar.test.ts test/event-calendar-runtime.test.ts test/watch-source-preparation.test.ts test/evaluation-preparation.test.ts test/verifier-diagnostics.test.ts test/representative-source-rule.test.ts test/technology-observed.test.ts",
     "policy:background:capture": "tsx scripts/capture-policy-background.mjs",
     "policy:pdf:bootstrap": "node scripts/policy-pdf-runtime.mjs bootstrap",
@@ -24,7 +24,9 @@
     "backfill:policy:dry-run": "tsx scripts/backfill-policy-baseline.mjs --dry-run",
     "test": "node --import tsx/esm --test --test-concurrency=1 test/theme.test.ts test/query-contracts.test.ts test/cloudflare-ops.test.ts test/ops-jwt.test.ts test/brand-prod.test.ts test/events-ingest.test.ts test/news-extraction.test.ts test/pagination.test.ts test/executive-intelligence.test.ts test/leadership-health-repair.test.ts test/leadership-markup-capture.test.ts test/leadership-dom-preview.test.ts test/retained-leadership-evaluator.test.ts test/leadership-dom-production.test.ts test/leadership-contract-preparation.test.ts test/ops-diagnostic-correctness.test.ts test/ops-recovery-ordering.test.ts test/ops-incident-replay.test.ts test/leadership-source-quality.test.ts test/editor-scheduler-coverage.test.ts test/editor-lanes.test.ts test/editor-model-resilience.test.ts test/official-source-discovery.test.ts test/policy-detail-audit.test.ts test/policy-background.test.ts test/policy-pdf-integration.test.ts test/signal-verification.test.ts test/social-evidence.test.ts test/watch-legacy-contracts.test.ts test/watch-contracts.test.ts test/watch-model-evaluation.test.ts test/watch-persistence.test.ts test/watch-d1.test.ts test/watch-adapters.test.ts test/watch-representatives.test.ts test/news-event-filters.test.ts test/news-event-crawler.test.ts test/watch-ui-contracts.test.ts test/watch-delivery.test.ts test/watch-routing.test.ts test/editor-cache-provenance.test.ts test/watch-review-packets.test.ts test/regional-evidence.test.ts test/regional-contracts.test.ts test/regional-coverage.test.ts test/regional-read-view.test.ts test/regional-evidence-review-api.test.ts",
     "ops:smoke": "node --import tsx/esm scripts/ops-smoke.mjs",
-    "secret-scan": "node scripts/secret-scan.mjs"
+    "secret-scan": "node scripts/secret-scan.mjs",
+    "test:discovery:types": "tsc --project tsconfig.discovery-contracts.json",
+    "test:discovery": "npm run test:discovery:types && node --import tsx/esm --test --test-concurrency=1 test/discovery-contracts.test.ts test/discovery-evaluation.test.ts test/discovery-identities.test.ts test/discovery-evidence.test.ts test/discovery-transport.test.ts test/discovery-collection.test.ts test/discovery-collector.test.ts test/discovery-github.test.ts test/discovery-reference-receipts.test.ts"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.170.31",

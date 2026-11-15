@@ -1,0 +1,552 @@
+{
+  "version": "TVD-WP02-SUCCESSOR-VERIFICATION/1.0",
+  "revision": "TVD-CONCEPT-0.5",
+  "created_at": "2026-11-14T00:30:07.208191+00:00",
+  "status": "pass_for_selected_model_and_authored_refinement_checks",
+  "independent_review": "Sol final bounded-scope recommendation at ../reviews/wp02-sol.md; final receipt/hash refresh awaits root readback. Package acceptance belongs to root.",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "model_sha256": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+  "frozen_reference_sha256": "2db650c71d7a8703ff01b814e1db84629b33c9de99b702e2d90bad30235387a9",
+  "policy_sha256": "25319e1e02733267dd5102b7c795f533088cede5be09eb7e9f79a036ae90df23",
+  "interface_contract_sha256": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+  "inputs_sha256": {
+    "README.md": "c63753a32f9fdb2ab3b37a292005ee6c85e6bc17834cf879614c427ec0dd0bfb",
+    "evidence/accepted-direction.md": "d37b58f7d2bc70baeed077b86923613ee78eeb54b51f41155fc40c60ed1f7039",
+    "evidence/design-policy.md": "7ad2c26d59d0bf458480e16b425e35ca14cac53a0fa89639c3c8d52f111d7de0",
+    "evidence/geography-policy.json": "c1308298ff89b0e8f511704fcd8e3a73287e6bb6ac8fffedd9d743cdc275aa0f",
+    "evidence/source-research.json": "45cbbc0bf7ee5e8910c4f748af9ddce994ec257842553084a5601b0e96f51b82",
+    "model/tvd-discovery.english.json": "2f33db1add9eaf31c3808b59ccf6304069cfb2fb9ab765fb214cbc907eaa4a3c",
+    "model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "model-contract-scope.json": "0854f3a4e68812dedadf4a50ee54600b527fe325dc194c904c7106d0e21b4cd2",
+    "model-contract-scope.sha256": "5987ff151ce7fb0552c930f3d66ddb56e199039406e9577a842fb24ef1358366",
+    "proof-scope.json": "679e824c2f26273caac2474648a2b2aee3d234d3af2ce4d715033bdeb54ebb2b",
+    "proof-scope.sha256": "c652c2a6744a39f52a1756828841137b576bec4518d805a6bdd43244901ace6b",
+    "proofs/finite-manifest.json": "4bfa3185f9eede45385f82910f207f96e4d82cf725fe43325721a1e81cf51b75",
+    "proofs/finite-model.json": "bc4fbfe1baba6ad0c1ca6bbda01b634aee9b206eb47f6ec3da80f515cdf94827",
+    "proofs/function-flow.json": "3add418f1a3826457522c1114e836113eb1c63bb891597a41ace27f1809dca7b",
+    "proofs/native-bindings.json": "b24cf4da6cc74ed746857c51ff008979bcaf7205bd46e23712806906b034511f",
+    "refinement-scope.json": "871bdb916d71f759711b7071a16eed6b81538ffb021f886f4ee786cdb4143dc5",
+    "refinement-scope.sha256": "c630bd184acd5be55826b1714b9c08f8abf9c2176243692d1db5c324eb9e8efd",
+    "requirements-proof.txt": "f17c4cd2125bcce9a1ec20619f060fa53928c0d092fbe73432fb2659e578887a",
+    "review-scope-v0.5.json": "f8adc686e99e805d9d2072ad6638ef489d88058638fdfece242b6ec108d89f61",
+    "review-scope-v0.5.sha256": "c876e25fd31a2dbd2f44349e12f26684f073a3a186499a0b85a68c7bdf2372d9",
+    "review-scope.json": "993756f3200e59790a7e0488fe85edd33d90f645ab504b4004982fb7d9aeb319",
+    "review-scope.sha256": "c43757a3e9717248926a77c78efb8036e8aac38865b1b858f5a5c33eba39a5b5",
+    "scope-refinement.json": "6e3202900acd0e8b40d06f8bb030b73221a6659532f391fef6b1cac9a51e7489",
+    "tools/check_record_scope.py": "3c55e636efb9d27cdbb00cc6a9088c927e580c8c0c55e3d26a20f08b08b71ca5",
+    "tools/verify_controls.py": "446848b6d8c32dbda15c9205e170d33dac4fc68286571965ac487fe29ac94dfe",
+    "tools/verify_mathematics.py": "b76b596d0e7086c7aae019abbf0026cd6a2e8cec7c6eb90cd27d6100624584c0",
+    "tools/verify_refinements.py": "09c516951cbbd01db91ea2cd5ee258facb94985a69c0afa4eae4d16cb925852c"
+  },
+  "environment": {
+    "cse_runtime": "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8",
+    "parser": "OMG SysML v2 Pilot 2025-09 / kernel 0.52.0",
+    "parser_cache": ".discovery-work/wp02-successor/parser-cache",
+    "python": "3.12.3",
+    "z3_version": "5.4.1.0",
+    "z3_environment": "Existing hash-qualified WP02 baseline virtual environment, referenced read-only from scratch candidates. PYTHONDONTWRITEBYTECODE=1.",
+    "host_packages_changed": false,
+    "network_for_native_checks": false,
+    "source_acquisition": false
+  },
+  "checks": {
+    "native_parse": "pass",
+    "selected_terminology": "pass",
+    "selected_record_structure": {
+      "status": "pass",
+      "fields": 114,
+      "specializations": 11
+    },
+    "documentary_scope": {
+      "status": "pass",
+      "retained_expectations": 60,
+      "additional_expectations": 3,
+      "checked": 63,
+      "acceptance": "not_evaluated"
+    },
+    "finite_workflow": {
+      "status": "pass",
+      "obligations": {
+        "consistency": "pass",
+        "declarations": "pass",
+        "scenarios": "pass",
+        "scope": "pass",
+        "traces": "pass",
+        "types": "pass"
+      }
+    },
+    "native_function_flow": {
+      "status": "pass",
+      "native_execution": "unsupported",
+      "transformation_correctness": "not_evaluated"
+    },
+    "historical_mathematics": {
+      "status": "pass",
+      "counts": {
+        "symbolic_lemmas": 74,
+        "symbolic_families": 30,
+        "negative_controls": 28
+      },
+      "lifecycle": {
+        "status": "pass",
+        "states": 320,
+        "transitions": 2348,
+        "initial_contexts": 64,
+        "bound": "All reachable states of the declared 10-Boolean abstraction; no exploration cap was hit."
+      },
+      "missing": []
+    },
+    "historical_replay": {
+      "status": "pass",
+      "smt_replays": 74,
+      "finite_negative_controls": [
+        {
+          "case": "omitted_independent_channel",
+          "status": "detected"
+        },
+        {
+          "case": "missing_captured_data",
+          "status": "detected"
+        }
+      ],
+      "failed_replays": []
+    },
+    "refinements": {
+      "status": "pass",
+      "obligations": 9,
+      "mixed_inventory_symbolic_and_truth_table_cases": 59,
+      "negative_controls": 13,
+      "snapshot_flag_combinations": 256,
+      "claim": "Authored rule inventories, coupled revision-array commit guard (1..512 aligned required slots), exact-key reuse predicate, identity tuple and snapshot outcomes; no actual D1 or arbitrary native execution."
+    },
+    "preservation": "validation/preservation.json",
+    "prose": "validation/prose.json"
+  },
+  "commands": [
+    {
+      "check": "python-version",
+      "argv": [
+        "python3",
+        "--version"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:04.721832+00:00",
+      "duration_seconds": 0.001,
+      "exit": 0,
+      "stdout": "python-version.stdout",
+      "stderr": "python-version.stderr",
+      "stdout_sha256": "5b3e43dc38ca01e3f5a7854ba50d4330864b0c1e0f646650b2c78cf072acc366",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "java-version",
+      "argv": [
+        "java",
+        "--version"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:04.722850+00:00",
+      "duration_seconds": 0.012,
+      "exit": 0,
+      "stdout": "java-version.stdout",
+      "stderr": "java-version.stderr",
+      "stdout_sha256": "4f170d7558b19a79d9d7b3d70a7864e65044b69d5cc296800b52525397035854",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "javac-version",
+      "argv": [
+        "javac",
+        "-version"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:04.734906+00:00",
+      "duration_seconds": 0.05,
+      "exit": 0,
+      "stdout": "javac-version.stdout",
+      "stderr": "javac-version.stderr",
+      "stdout_sha256": "d4ec95a2ba43a1da0b55700c964618275ecf681cc7f16781211dce3ee3db50db",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "z3-version",
+      "argv": [
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/.venv/bin/python",
+        "-c",
+        "import z3; print(z3.get_full_version())"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:04.784854+00:00",
+      "duration_seconds": 0.08,
+      "exit": 0,
+      "stdout": "z3-version.stdout",
+      "stderr": "z3-version.stderr",
+      "stdout_sha256": "3aa6989bf26b14261250aa41dbe3a687c72050ca4939957aa514290c94feb740",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "z3-cli-version",
+      "argv": [
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/.venv/bin/z3",
+        "--version"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:04.865041+00:00",
+      "duration_seconds": 0.001,
+      "exit": 0,
+      "stdout": "z3-cli-version.stdout",
+      "stderr": "z3-cli-version.stderr",
+      "stdout_sha256": "b37dbc0de3a53037542d033d260ce691219b0473c8d536cf3295c32baabf7484",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "runtime",
+      "argv": [
+        "python3",
+        "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/skills/develop-system-concept/scripts/cse.py",
+        "runtime"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:04.866494+00:00",
+      "duration_seconds": 0.016,
+      "exit": 0,
+      "stdout": "runtime.stdout",
+      "stderr": "runtime.stderr",
+      "stdout_sha256": "e12e8dc0efa6926ebae048469d22a3d8e222ad62f93f129893097ade35662bef",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_status": null
+    },
+    {
+      "check": "parser-final",
+      "argv": [
+        "python3",
+        "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/skills/develop-system-concept/scripts/cse.py",
+        "check",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/model/tvd-discovery.sysml",
+        "--syntax-only",
+        "--kind",
+        "concept",
+        "--json"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:04.882798+00:00",
+      "duration_seconds": 1.828,
+      "exit": 0,
+      "stdout": "parser-final.stdout",
+      "stderr": "parser-final.stderr",
+      "stdout_sha256": "3f28d34a098c35a788b98d03e1e10b8e623530dfbf68c0d292f29e362d4e644b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_status": "pass"
+    },
+    {
+      "check": "record-scope",
+      "argv": [
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/.venv/bin/python",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/tools/check_record_scope.py"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:06.711584+00:00",
+      "duration_seconds": 0.015,
+      "exit": 0,
+      "stdout": "record-scope.stdout",
+      "stderr": "record-scope.stderr",
+      "stdout_sha256": "f076c6e0365c5ae13ad486a78a07be02b4b7dbb96b001b2c91ac416b9f560e36",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_status": "pass"
+    },
+    {
+      "check": "concept-final",
+      "argv": [
+        "python3",
+        "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/skills/develop-system-concept/scripts/cse.py",
+        "concept-review",
+        "check",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/model/tvd-discovery.sysml",
+        "--scope",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/review-scope-v0.5.json",
+        "--scope-sha256",
+        "f8adc686e99e805d9d2072ad6638ef489d88058638fdfece242b6ec108d89f61",
+        "--source",
+        "DIRECTION=/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/evidence/accepted-direction.md",
+        "--source",
+        "DESIGN=/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/evidence/design-policy.md",
+        "--source",
+        "POLICY_V1=/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/docs/discovery-policy.md",
+        "--json"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:06.726423+00:00",
+      "duration_seconds": 3.637,
+      "exit": 0,
+      "stdout": "concept-final.stdout",
+      "stderr": "concept-final.stderr",
+      "stdout_sha256": "1139856ddbc08bf96dd1de9a5216dcc310adb36c1a47bd15ba77de525b030a5c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_status": "pass"
+    },
+    {
+      "check": "finite-final",
+      "argv": [
+        "python3",
+        "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/skills/develop-system-concept/scripts/cse.py",
+        "finite",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/proofs/finite-model.json",
+        "--manifest",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/proofs/finite-manifest.json",
+        "--review",
+        "--json",
+        "--detail"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:10.363973+00:00",
+      "duration_seconds": 0.034,
+      "exit": 0,
+      "stdout": "finite-final.stdout",
+      "stderr": "finite-final.stderr",
+      "stdout_sha256": "26f36c7cb4f24baa560313a0a80d7a01109eedc8285ace0ab0a45cd262b1a7b8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_status": "pass"
+    },
+    {
+      "check": "native-flow-final",
+      "argv": [
+        "python3",
+        "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/skills/develop-system-concept/scripts/cse.py",
+        "analyze",
+        "functional-graph",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/proofs/function-flow.json",
+        "--native-model",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/model/tvd-discovery.sysml",
+        "--native-bindings",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/proofs/native-bindings.json"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:10.398526+00:00",
+      "duration_seconds": 1.835,
+      "exit": 0,
+      "stdout": "native-flow-final.stdout",
+      "stderr": "native-flow-final.stderr",
+      "stdout_sha256": "05f4669c38adc4d8568b4342294ef5009b4723dc4a1b936caa299c65cfd85eb6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_status": "pass"
+    },
+    {
+      "check": "mathematics",
+      "argv": [
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/.venv/bin/python",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/tools/verify_mathematics.py"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:12.234007+00:00",
+      "duration_seconds": 0.485,
+      "exit": 0,
+      "stdout": "mathematics.stdout",
+      "stderr": "mathematics.stderr",
+      "stdout_sha256": "3dce01f5d4cd77fcd9cfa18d2c08b8639a419be3d82023673686658bf9d0d63a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_status": "pass"
+    },
+    {
+      "check": "proof-replay",
+      "argv": [
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/.venv/bin/python",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/tools/verify_controls.py"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:12.719250+00:00",
+      "duration_seconds": 0.482,
+      "exit": 0,
+      "stdout": "proof-replay.stdout",
+      "stderr": "proof-replay.stderr",
+      "stdout_sha256": "8f57b1df414a83cc1c0cd125c370c785cfe3ab40dc2febf401072388e5d12743",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_status": "pass"
+    },
+    {
+      "check": "refinements",
+      "argv": [
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/.venv/bin/python",
+        "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate/tools/verify_refinements.py"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/attempt-4/candidate",
+      "environment_overrides": {
+        "CSE_SYSML_CACHE": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/parser-cache",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_at": "2026-11-14T00:29:13.200982+00:00",
+      "duration_seconds": 0.138,
+      "exit": 0,
+      "stdout": "refinements.stdout",
+      "stderr": "refinements.stderr",
+      "stdout_sha256": "0ebbdce8aa06d1c1c61286f0e69e1797102441c0018822a61db9f1a2dda5c11c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_status": "pass"
+    }
+  ],
+  "evidence": {
+    "final_scratch": ".discovery-work/wp02-successor/attempt-4",
+    "output_manifest": ".discovery-work/wp02-successor/outputs-sha256.json",
+    "output_manifest_sha256": "5265e8c3f09da5d1e0cb641321626dc8490651fc509fa64e3b9f128357010243",
+    "retained_output_files": 978,
+    "first_parser_failure": ".discovery-work/wp02-successor/native-attempt-1.json",
+    "first_parser_input_reconstruction": {
+      "path": ".discovery-work/wp02-successor/native-attempt-1.sysml",
+      "sha256": "0066326b13525df3e24d20b6a6cc4dfa11f60efd5d1a9eeff779b3260d50c29a",
+      "method": "Reconstructed exact failed candidate bytes from retained scratch candidate; digest equals original parser receipt input digest."
+    },
+    "first_complete_attempt": ".discovery-work/wp02-successor",
+    "second_complete_attempt": ".discovery-work/wp02-successor/attempt-2",
+    "third_complete_attempt": ".discovery-work/wp02-successor/attempt-3"
+  },
+  "failure_history": [
+    {
+      "attempt": "native-attempt-1",
+      "finding": "Reserved SysML identifiers metadata/subject caused syntax/linking failure.",
+      "resolution": "Native metadataMaterial and subjectReference names; runtime mapping recorded. Parser rerun passed."
+    },
+    {
+      "attempt": "first complete attempt",
+      "finding": "Original retained documentary scope allows exactly DIRECTION/DESIGN sources, so extra POLICY_V1 input refused.",
+      "resolution": "Retained original scope byte-identical; successor scope adds POLICY_V1 and three evidence plans, preserving all 60 original expectations."
+    },
+    {
+      "attempt": "first complete attempt",
+      "finding": "Z3 datatype constructor requires explicit StringVal values.",
+      "resolution": "Corrected checker construction without changing modeled obligation; successful fresh rerun retained."
+    },
+    {
+      "attempt": "second complete attempt",
+      "finding": "Policy excerpt was a paraphrase, failing exact unique source binding.",
+      "resolution": "Replaced with a literal uniquely occurring policy sentence; successful fresh full rerun retained."
+    },
+    {
+      "attempt": "independent review after third complete attempt",
+      "finding": "RF03 used a detached headsMatch Boolean and separate inequality facts; RF02 did not couple key equality to reusable assessment. Earlier passes did not establish the intended coupled guarantees.",
+      "resolution": "Root counterexample accepted. Bind headsMatch to all aligned required revision slots, compile the same predicate into commit and prove stale/ABA rejection with satisfiable other gates. Bind exact rights tuple and explicit reuse permission to reusable assessment; retain omitted-key and value-only ABA mutants. Full attempt4 rerun passed."
+    },
+    {
+      "attempt": "independent review after third complete attempt",
+      "finding": "Native target subtype could carry contradictory redundant targetKind/subjectKind/subjectId fields despite typed refs.",
+      "resolution": "Sol counterexample accepted. Discriminator and target ID now derive solely from concrete subtype and typed ref; base holds expected revision only. Creator/Work bases abstract; original specialization IDs preserved. Full attempt4 rerun passed."
+    },
+    {
+      "attempt": "final contract receipt refresh",
+      "finding": "Final sourceVersion blueprint/types fixture amendment made previous interface digest stale; new prose extraction initially treated complete Markdown table as one paragraph.",
+      "resolution": "Retained prior receipt/manifest/prose and table-extraction failure. Rechecked every prior967 output hash, reviewed final named fixtures and exact schema field, reran9 focused tests and lexical check with table cells separated. Updated final contract/type hashes; model inputs unchanged."
+    }
+  ],
+  "scope_refinements": "scope-refinement.json",
+  "acceptance_criteria": {
+    "AC-WP02-01": "Represented and reviewed: four native target subtypes and strict TypeScript target union admit creator-without-work and evidence-backed relationship; expected revisions/dependencies and authority records are explicit. Actual authenticated review remains downstream.",
+    "AC-WP02-02": "Represented and tested: version/material rights matrix covers paper/forum text, code, data and weights with independent unknown/allow/deny reuse. RF02 couples exact key and permission; schemas establish shape only.",
+    "AC-WP02-03": "Specified and bounded-model checked: full18-kind vector, coupled complete-vector compare/ABA rejection, guard-raise SQL pseudocode and race cases. External restore incarnation invalidates old continuations. Actual D1 rollback/concurrency remain WP16/WP23.",
+    "AC-WP02-04": "Specified and pure-helper tested: primary coherent observation/no-store sequence, immutable rows and normalized query, material changes/expiry return410restart, future/mismatched context400. Model256 flag combinations checked; HTTP/read implementation remains WP17.",
+    "AC-WP02-05": "All six named synthetic provider fixtures parsed in9 passing tests. Stable IDs/version, independent creator/artifact and distinct forum account represented without repository prerequisite. No source qualification or fact validation."
+  },
+  "empirical_gates": {
+    "E01": "not_run",
+    "E02": "not_run",
+    "E03": "not_run",
+    "E04": "not_run",
+    "E05": "not_run",
+    "E06": "not_run"
+  },
+  "limits": [
+    "Historical P09 proves provider/nativeId only; full installation/kind tuple is separately checked as RF09.",
+    "Historical P11/P28 guard abstract evidence/policy heads; RF03 adds vector assumptions, not real atomic SQL.",
+    "Record checker is a post-parse selected field/type inspection, not a parser or general semantic equivalence proof.",
+    "Finite native binding preserves authored mappings; native execution remains unsupported and transformation correctness unevaluated.",
+    "Concrete Zod tests, D1/API behavior, provider rights/access, external facts, reader acceptance and operations require their own evidence.",
+    "No deployment, source enrollment, host package or persistent service change occurred."
+  ],
+  "refreshed_at": "2026-11-14T00:36:46.705689+00:00",
+  "final_contract_inputs_sha256": {
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "src/content/discovery-schema.ts": "b238472e67d4a2911bf139576290a174f7f61531b5c22294e2dcfbd00780b53e",
+    "src/ingest/discovery/source-contract.ts": "ee6e59565c85e6391b843c1047e39ee686f94e5ef716984eaafc0c9fb11a671b",
+    "test/discovery-contracts.test.ts": "d02ac45d7837cd2d0f2947fcaebb8d13fa29c78cd0c97e50d7f4e2f5bcd3a4ae",
+    "test/types/discovery-contracts.ts": "c31db0c6d0838f779dac84f3d443851113fa5c7c29313b450c4818e66edc020f",
+    "tsconfig.discovery-contracts.json": "b0b132551defee92faf24137f276a5b98a9fac8e5a8e10e73157c677cd7a3e71"
+  },
+  "final_readback": {
+    "source_version": "Optional 1..200 UTF-16 units retained separately from stable provider identity; no relationship, truth or authorization inferred. Named synthetic fixtures cover GitHub numeric repository identity, PMID, DOI with organization evidence reference, arXiv stable base/version, separate forum work/account, and independent institutional person.",
+    "model_unchanged": true,
+    "model_checks": "All14 attempt4 commands retain exact model/input hashes. Documentation amendment does not change modeled predicates or native source; no redundant model rerun.",
+    "concrete_tests": {
+      "argv": [
+        "/workspace/build/builderbob/runtimes/node-v22.23.2-linux-x64/bin/node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "test/discovery-contracts.test.ts"
+      ],
+      "cwd": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113",
+      "environment_overrides": {
+        "TMPDIR": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/tmp"
+      },
+      "started_at": "2026-11-14T00:36:21.262853+00:00",
+      "exit": 0,
+      "stdout": ".discovery-work/wp02-successor/final-freeze/contracts.stdout",
+      "stderr": ".discovery-work/wp02-successor/final-freeze/contracts.stderr"
+    },
+    "concrete_result": {
+      "tests": 9,
+      "passed": 9,
+      "failed": 0
+    },
+    "history": ".discovery-work/wp02-successor/final-freeze/receipt-before-final-contract-refresh.json",
+    "author_freeze": true
+  }
+}

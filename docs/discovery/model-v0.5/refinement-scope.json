@@ -1,0 +1,93 @@
+{
+  "version": "TVD-REFINEMENT-SCOPE/1.0",
+  "basis": "WP02 retained acceptance criteria, accepted WP01 policy and reviewed architecture amendments; additional to all 32 historical families and 60 documentary expectations.",
+  "obligations": {
+    "RF01": {
+      "target": "F_REVIEW",
+      "claim": "Creator, work, claim and relationship review remain independent, and creator review has no work prerequisite."
+    },
+    "RF02": {
+      "target": "F_DISPLAY",
+      "claim": "Rights apply to an exact artifact version and material; reuse and display remain distinct permissions."
+    },
+    "RF03": {
+      "target": "F_PUBLISH",
+      "claim": "A stale required head, unauthorized actor, expired dependency, invalid fence or budget, incomplete vector or conflicting operation cannot produce a modeled commit; ABA advances revision."
+    },
+    "RF04": {
+      "target": "F_SEARCH",
+      "claim": "Well-formed invalidated, expired or old-incarnation continuations return 410; mismatched input returns 400 and invalid pages contain no rows."
+    },
+    "RF05": {
+      "target": "F_SEARCH",
+      "claim": "Unrelated addition advances the generation coordinate without invalidating an otherwise valid snapshot; partition applies only while valid."
+    },
+    "RF06": {
+      "target": "F_QUALIFY",
+      "claim": "Current professional presence and local contribution at creation have independent eligibility outcomes."
+    },
+    "RF07": {
+      "target": "F_DISCOVER",
+      "claim": "All six provider routes admit independent artifact discovery, and an institutional creator needs no work; qualification sample is bounded and cannot activate collection."
+    },
+    "RF08": {
+      "target": "F_SORT",
+      "claim": "Calendar precision does not manufacture UTC instants; unknown timezone cannot authorize an instant, and unknown dates fail positive date filters."
+    },
+    "RF09": {
+      "target": "F_RESOLVE",
+      "claim": "Provider identity includes provider, installation, kind and nativeId, so same nativeId in distinct forums or account/person namespaces never collides."
+    }
+  },
+  "expected_commit_conditions": [
+    "authority",
+    "requiredComplete",
+    "headsMatch",
+    "unexpired",
+    "fenceValid",
+    "budgetValid",
+    "targetMatches",
+    "operationCompatible"
+  ],
+  "expected_validity_conditions": [
+    "epochMatches",
+    "incarnationMatches",
+    "unexpired"
+  ],
+  "expected_request_match_conditions": [
+    "wellFormed",
+    "snapshotMatches",
+    "queryMatches",
+    "positionMatches",
+    "notBeforeAsOf"
+  ],
+  "expected_dependency_kinds": [
+    "evidence-observation",
+    "claim",
+    "decision",
+    "relationship",
+    "endpoint",
+    "identity-resolution",
+    "rights-assessment",
+    "source-enrollment",
+    "source-configuration",
+    "source-qualification",
+    "source-permission",
+    "verification-rule",
+    "geographic-policy",
+    "relevance-policy",
+    "review-policy",
+    "public-field-policy",
+    "projection-generation",
+    "currentness"
+  ],
+  "expected_provider_routes": [
+    "github",
+    "pubmed",
+    "crossref",
+    "arxiv",
+    "forum",
+    "institutional"
+  ],
+  "limits": "These are authored abstract obligations, not authenticated authority, external facts, SQL transactions, UI behavior or provider access. Actual code and operating evidence remain separate."
+}

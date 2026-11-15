@@ -1,0 +1,142 @@
+{
+  "package": "WP08",
+  "disposition": "accepted",
+  "recorded_at": "2026-11-15T17:32:42.558241+00:00",
+  "accepted_at": "2026-11-15T17:33:45.525658+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "source_state": "uncommitted selected working tree bound by output hashes",
+  "depends_on": [
+    "WP06"
+  ],
+  "composition_dependency": "WP07",
+  "owner": "Sol",
+  "reviewer": "Terra",
+  "authority": "orchestrating engineer after independent review and final integrated checks",
+  "scope": "GitHub-only account/repository/search acquisition and retained-baseline lists, private native leads, authenticated pagination and typed gaps; local implementation only.",
+  "design_amendment": "../implementation-decisions.md#ex11--github-pagination-and-rate-limit-transport-metadata",
+  "dependency_amendment": "WP06-WP07-WP08-composition.json",
+  "reviews": [
+    "../reviews/wp08-sol.md",
+    "../reviews/wp08-terra.md",
+    "../reviews/wp08-orchestrator.md"
+  ],
+  "integration": "../wp08-integration-validation.json",
+  "verification_plan": "../wp08-evidence-plan.md",
+  "outputs": {
+    "src/ingest/discovery/github.ts": "87fb47260edf058f2f0efbbd473b17498f60dac3abc2fcc856ef6d444b1eb183",
+    "test/discovery-github.test.ts": "cd4b5e8df03d8f592f24f8a6719bbd99ebb1141813813c9ff59102c80670aa43",
+    "src/ingest/discovery/runtime-contract.ts": "810e7d30f745bd2fb3e77b0fb0710511194e39606d34989f05b9d25ab29af830",
+    "src/ingest/discovery/source-registry.ts": "e1d19bf25611151afde868ec547208226cbf73caf9846a6bcdcac876f58f2af2",
+    "src/ingest/discovery/transport.ts": "79b53861342332f696961c22d4abca9b02669c8145dc2ff4256e236b3fa9f192",
+    "src/ingest/discovery/collection-contract.ts": "4fd37b1d4dbaf8fd2591d55bafc07974d1d219bb40590989456299d555eeb1b8",
+    "src/ingest/discovery/collection-store.ts": "333f05300bb17fd413e1687ea55bf7d615b151c618afaaebc7874af11fa83a78",
+    "src/ingest/discovery-reference-receipts.ts": "f01ad22554b7291d1327a696161305b1de6146a28c2b6247611a487f1d33e704",
+    "test/discovery-reference-receipts.test.ts": "78c81237227d5becbb411c357c74d988ba2e41b53311fb92bc071a175011073e",
+    "package.json": "caf95f91afc4f788b49d210c89db03323be89a8ef9ebc3260ef676d38cea153a",
+    "docs/discovery/reviews/wp08-sol.md": "b84b8f92c65aab8ade1da7daf424a243c24defa93e0c7a6b970811f38563e964",
+    "docs/discovery/reviews/wp08-terra.md": "011a2f8fb13c91b1cea7f6cb2ed8bba4bdf64e941f5c80d6e8850e96854c9896",
+    "docs/discovery/reviews/wp08-orchestrator.md": "7ff57d8b74f8d07ec447562ee4573befff406b02295b7866783677a78c2ec209",
+    "docs/discovery/wp08-evidence-plan.md": "0b3419e5df18b0004da02572d954a2fec3d6f962e511015e9d3579a7be02827a",
+    "docs/discovery/reviews/wp03-sol-progress.md": "c8db4c2b0832c3a7507c5ccc527c7265ef0119f530938fd7af6bcc9253222835",
+    "docs/discovery/reviews/wp03-terra-progress.md": "5806daafbd296abe4cb0fbec8f56e5ea5d64eab2410594132a060d6a095fed87",
+    "docs/discovery/wp03-intake.md": "007bc4fd4f6880ac39c1297b4cc7bdee05ff4977a47e88b82f0694803cb210cd",
+    "test/fixtures/discovery-sources/github/inventory.json": "c9af3d066c1b8b0729b0dc043a9b697d24992b8a0a3925dc6f2bedaf3c16aa72",
+    "test/fixtures/discovery-sources/github/repository.json": "0e0505f380a7ec30d59c9e097f7b6e87b0f2fea7c5742db564bc2382993f68b0",
+    "test/fixtures/discovery-sources/github/search.json": "c56429178fc04dc35e3b34207843b30b536dc2fed0ff4fc34e5f4fc1693bf44e",
+    "test/fixtures/discovery-sources/github/tags.json": "e10c4ad1da4fb87032af2b0fe2cdd91c368acf86aa51431fd6514a6e4d1c5ce2",
+    "test/fixtures/discovery-sources/github/search-truncated.json": "6ce51f54e957184154ddb004b3f3abe5616b81d15f578a4f6fb697f0c5163f2b",
+    "test/fixtures/discovery-sources/github/repository-transferred.json": "032d7f94087383385407c3a704379ea05bbad41596e23d1bb7d3c62e250fabe5",
+    "test/fixtures/discovery-sources/github/profile.json": "829386abd60920dc041623cf26a65067550abe249055d3f1d13f2425fc13d123",
+    "test/fixtures/discovery-sources/github/releases.json": "7bd859a959f0282ea216a72c98060eb88aea7e6c3d80e05f026b8ecb3dad641f",
+    "test/fixtures/discovery-sources/github/pagination.json": "798510b83ff75bb1357bbbd3470202020bb301c1d11cab9be80b7d6c93a3dbe4",
+    "test/fixtures/discovery-sources/github/commits.json": "21787407cc4d6801514f04fa912e390ab11bb1a3aba235bcb2a66890911333a1",
+    "test/fixtures/discovery-sources/github/contributors.json": "858ed347444695719c7e7c4df09bcc0a5baa014171a82ca31dfdc4579bf4be07"
+  },
+  "acceptance_criteria": {
+    "AC-WP08-01": {
+      "status": "pass_local",
+      "evidence": "Actual D1 GitHub-only repository search and creator-first profile/user-search/account-inventory from empty databases; original bytes, private leads and page receipts committed; publicationAuthorized=false."
+    },
+    "AC-WP08-02": {
+      "status": "pass_local",
+      "evidence": "Two normalized bodies retain the same safe numeric repository identity across rename/transfer and expose changed alias/owner. Public catalog alias materialization is a later WP14 obligation."
+    },
+    "AC-WP08-03": {
+      "status": "pass_local",
+      "evidence": "Accounts, owner/contributor IDs and unresolved personal author remain distinct; no catalog person or regional admission. Invalid type/login and numeric contradictions rejected."
+    },
+    "AC-WP08-04": {
+      "status": "pass_local",
+      "evidence": "Actual retained baseline receipt/body/request hashes gate releases/tags/commits/contributors; distinct stage/version/date output, no ingestion-time date substitution; forged/missing/corrupt baseline rejected."
+    },
+    "AC-WP08-05": {
+      "status": "pass_local",
+      "evidence": "Actual D1 rejects unsolicited304 and foreign origin/path/query Link; valid next advances only after commit; changed/omitted authenticated Link fails before parser; withdrawal erases the copied Link."
+    },
+    "AC-WP08-06": {
+      "status": "pass_local",
+      "evidence": "403 with rate hints and429 preserve conservative backoff; plain403 auth-failed and404 unresolved upstream gap; private/truncated/inconsistent search cannot claim complete inventory."
+    }
+  },
+  "validation": {
+    "npm_test": {
+      "exit_code": 0,
+      "tests": 1235,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 152
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "independent_wp08": {
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "stable_input_count": 8,
+      "scope": "fresh actual local D1 0001-0044; synthetic capabilities and egress"
+    },
+    "wp03_progress": {
+      "new_tests": 17,
+      "existing_evaluation_tests": 21,
+      "independent_combined_tests": 38,
+      "real_case_count": 0,
+      "status": "not_frozen",
+      "readiness": "blocked",
+      "freeze_issued": false
+    },
+    "shared_compatibility": {
+      "wp06_tests": 21,
+      "wp07_tests": 33,
+      "focused_collector_tests": 6,
+      "scope": "unchanged original tests included in final npm run on amended runtime; WP07 and WP08 use actual D1 0001-0044"
+    },
+    "build": {
+      "exit_code": 0,
+      "warning": "existing bundle larger than500kB"
+    },
+    "local_ops_smoke": {
+      "exit_code": 0,
+      "scope": "fake bindings and closed injected egress"
+    },
+    "secret_scan": {
+      "exit_code": 0,
+      "files": 804,
+      "scope": "tracked and nonignored untracked files, including final review and acceptance documents; existing script file exclusions/allowlists retained"
+    },
+    "stable_qualification_inputs": 550,
+    "count_note": "Independent suites overlap integrated totals; do not add counts."
+  },
+  "limits": [
+    "This is local implementation acceptance using synthetic qualification, authority, provider responses and egress. No live GitHub access, credentials, permissions, source-class E04 acceptance or regional inventory completeness is established.",
+    "Acquisition returns private candidate leads and collection receipts. Profile links, alias, license and role hints remain raw-backed inspect metadata; WP14 must materialize actual evidence/catalog claims. No person merge, regional admission or publication authority is granted.",
+    "Transport is unconditional and rejects unsolicited304; same-endpoint retained ETag refresh is not implemented. A full page without usable next Link remains partial even if it might be a true final page. This conservative coverage limitation remains visible.",
+    "Source responses are untrusted data. Search count consistency and safe numeric IDs do not prove stable provider snapshots, relevance, identity accuracy or current affiliation. Semantic source qualification and all empirical gates remain open.",
+    "WP03 has zero real cases/reviewers/permission records. New offline receipt tooling requires an independently authenticated store, authority configuration, trusted clock/revocation and accountable human corpus/freeze review; it cannot manufacture those inputs. WP03 stays incomplete and WP14 remains dependent on it.",
+    "The inherited transaction/egress and uncertainty boundaries remain: in-flight D1 mutations can commit after timeout, synchronous parser CPU is not preempted, and uncertain requests remain charged. Logical scoped erasure does not erase backups/Time Travel.",
+    "The lockfile is unchanged and retains four high advisories, seven total. Eleven legacy tests omitted by existing scripts are not included. Native systems-model inputs are unchanged; no new native proof is claimed. Release is not qualified and deployment remains prohibited."
+  ],
+  "accepted_snapshot": ".discovery-work/wp08/accepted-candidate/manifest.json"
+}

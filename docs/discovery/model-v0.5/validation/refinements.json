@@ -1,0 +1,569 @@
+{
+  "version": "TVD-REFINEMENT-CHECK/1.0",
+  "status": "pass",
+  "model_sha256": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+  "scope_sha256": "871bdb916d71f759711b7071a16eed6b81538ffb021f886f4ee786cdb4143dc5",
+  "solver_version": "5.4.1.0",
+  "results": [
+    {
+      "family": "RF01",
+      "case": "strict_target_family_inventory",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF01",
+      "case": "creator_without_work",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF02",
+      "case": "rights_identity_includes_version_and_material",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF02",
+      "case": "independent_reuse_permission",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF02",
+      "case": "changed_artifactId_blocks_reuse",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF02",
+      "case": "changed_artifactVersion_blocks_reuse",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF02",
+      "case": "changed_material_blocks_reuse",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF02",
+      "case": "display_permission_alone_cannot_reuse",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "complete_commit_guard_inventory",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF03",
+      "case": "authority_required",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "requiredComplete_required",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "headsMatch_required",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "unexpired_required",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "fenceValid_required",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "budgetValid_required",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "targetMatches_required",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "operationCompatible_required",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "any_required_stale_slot_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "complete_dependency_inventory",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF03",
+      "case": "stale_evidence-observation_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_claim_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_decision_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_relationship_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_endpoint_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_identity-resolution_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_rights-assessment_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_source-enrollment_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_source-configuration_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_source-qualification_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_source-permission_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_verification-rule_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_geographic-policy_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_relevance-policy_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_review-policy_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_public-field-policy_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_projection-generation_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "stale_currentness_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF03",
+      "case": "ABA_equal_content_stale_revision_prevents_commit",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF04",
+      "case": "complete_request_guard_inventory",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF04",
+      "case": "complete_validity_guard_inventory",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF04",
+      "case": "typed_status_contract",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF04",
+      "case": "all_snapshot_guard_combinations",
+      "status": "pass",
+      "detail": {
+        "combinations": 256,
+        "rows_on_non200": "none by declared delivery contract; actual API not executed"
+      }
+    },
+    {
+      "family": "RF05",
+      "case": "generation_is_coordinate_not_lifetime_guard",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF05",
+      "case": "partition_requires_valid_snapshot",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF06",
+      "case": "current_False_creation_False",
+      "status": "pass",
+      "detail": {
+        "current_person": false,
+        "regional_work": false,
+        "remaining_evidence_assumed": true
+      }
+    },
+    {
+      "family": "RF06",
+      "case": "current_False_creation_True",
+      "status": "pass",
+      "detail": {
+        "current_person": false,
+        "regional_work": true,
+        "remaining_evidence_assumed": true
+      }
+    },
+    {
+      "family": "RF06",
+      "case": "current_True_creation_False",
+      "status": "pass",
+      "detail": {
+        "current_person": true,
+        "regional_work": false,
+        "remaining_evidence_assumed": true
+      }
+    },
+    {
+      "family": "RF06",
+      "case": "current_True_creation_True",
+      "status": "pass",
+      "detail": {
+        "current_person": true,
+        "regional_work": true,
+        "remaining_evidence_assumed": true
+      }
+    },
+    {
+      "family": "RF06",
+      "case": "distinct_temporal_rule_inputs",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF07",
+      "case": "six_routes",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF07",
+      "case": "independent_creator",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF07",
+      "case": "qualification_sample_no_bootstrap_cycle",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF08",
+      "case": "calendar_domains_do_not_assert_utc",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF08",
+      "case": "unknown_cannot_match_positive_filter",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF08",
+      "case": "instant_requires_offset",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF09",
+      "case": "full_provider_tuple",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "family": "RF09",
+      "case": "same_forum_native_id_distinct_installations",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF09",
+      "case": "same_native_id_distinct_kinds",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    },
+    {
+      "family": "RF09",
+      "case": "exact_tuple_is_idempotent",
+      "status": "pass",
+      "detail": {
+        "assumptions": "sat",
+        "negated_guarantee": "unsat"
+      }
+    }
+  ],
+  "negative_controls": [
+    {
+      "family": "RF02",
+      "mutation": "omit_artifactId_from_reuse_key",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF02",
+      "mutation": "omit_artifactVersion_from_reuse_key",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF02",
+      "mutation": "omit_material_from_reuse_key",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF03",
+      "mutation": "omit_authority",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF03",
+      "mutation": "omit_requiredComplete",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF03",
+      "mutation": "omit_headsMatch",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF03",
+      "mutation": "omit_unexpired",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF03",
+      "mutation": "omit_fenceValid",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF03",
+      "mutation": "omit_budgetValid",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF03",
+      "mutation": "omit_targetMatches",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF03",
+      "mutation": "omit_operationCompatible",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF03",
+      "mutation": "value_only_ABA_guard_commits_stale_revision",
+      "result": "sat",
+      "detected": true
+    },
+    {
+      "family": "RF09",
+      "mutation": "omit_installation_key",
+      "result": "sat",
+      "detected": true
+    }
+  ],
+  "limits": "These are authored abstract obligations, not authenticated authority, external facts, SQL transactions, UI behavior or provider access. Actual code and operating evidence remain separate.",
+  "method": "Authoritative documentary refinement rule inventories, symbolic guards and exhaustive 256 snapshot-flag combinations; no arbitrary native SysML execution or actual code/storage behavior."
+}

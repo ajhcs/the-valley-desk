@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.discovery-contracts.tsbuildinfo"
+  },
+  "include": ["test/types/discovery-contracts.ts"]
+}

@@ -1,0 +1,568 @@
+{
+  "id": "TVD-DISCOVERY-EXECUTION-1",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "handoff_plan_sha256": "cf74e8a1ecbcfaafe1d70ba58e5f2a347f8d78a6a7cd30eacb29ffa64f77cf3c",
+  "authority": "Active package status and acceptance; frozen handoff remains the scope baseline. User authorized implementation beginning WP00 on 2026-11-13 and explicitly prohibited deployment. No live provider enrollment, editorial action, outreach, service registration or production change is authorized by local implementation.",
+  "created_at": "2026-11-13T23:59:42.280311+00:00",
+  "deployment_authorized": false,
+  "packages": [
+    {
+      "id": "WP00",
+      "owner": "Astra",
+      "reviewer": "Sol",
+      "depends_on": [],
+      "status": "accepted",
+      "receipt": "receipts/WP00.json",
+      "acceptance": "2026-11-14T00:04:39.489943+00:00",
+      "notes": "Baseline accepted; production/provider/runtime facts remain unverified as specified."
+    },
+    {
+      "id": "WP01",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP00"
+      ],
+      "status": "accepted",
+      "receipt": "receipts/WP01.json",
+      "acceptance": "2026-11-14T00:08:21.204517+00:00",
+      "notes": "Policy and synthetic calibration frozen; no empirical validation claimed."
+    },
+    {
+      "id": "WP02",
+      "owner": "Astra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP01"
+      ],
+      "status": "accepted",
+      "receipt": "receipts/WP02.json",
+      "acceptance": "2026-11-14T00:39:08.531957+00:00",
+      "notes": "Model v0.5 and shared contracts accepted within recorded formal/schema scope; no operational or empirical acceptance."
+    },
+    {
+      "id": "WP03",
+      "owner": "Astra",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP02"
+      ],
+      "status": "in_progress",
+      "receipt": "receipts/WP03-preparation.json",
+      "acceptance": null,
+      "notes": "Original evaluation preparation plus offline receipt-intake increment independently reviewed: 17 new tests, 21 original evaluation tests; caller-owned authenticated store integration still external. Zero real cases, reviewers or source permissions; manifest blocked/not_frozen. Real 360-case heldout corpus, independent recall roster and human adjudication remain required before accepting WP03 or WP14.",
+      "progress_receipts": [
+        "receipts/WP03-receipt-intake-progress.json"
+      ]
+    },
+    {
+      "id": "WP04",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP02"
+      ],
+      "status": "accepted",
+      "receipt": "receipts/WP04.json",
+      "acceptance": "2026-11-14T00:44:25.177210+00:00",
+      "notes": "Additive catalog and actual local-D1 transaction checks accepted; no real source admission or publication."
+    },
+    {
+      "id": "WP05",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP04"
+      ],
+      "status": "accepted",
+      "receipt": "receipts/WP05.json",
+      "acceptance": "2026-11-14T01:38:56.900973+00:00",
+      "notes": "Original evidence/provenance package accepted. EX09 guarded registry composition separately accepted and requalified in WP06; original receipt preserved.",
+      "started_at": "2026-11-14T00:53:50.168049+00:00",
+      "amendment_receipts": [
+        "receipts/WP05-WP06-composition.json"
+      ]
+    },
+    {
+      "id": "WP06",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP02",
+        "WP05"
+      ],
+      "status": "accepted",
+      "receipt": "receipts/WP06.json",
+      "acceptance": "2026-11-14T02:32:17.715352+00:00",
+      "notes": "Original registry/transport acceptance and receipt preserved. EX10 migration 0044 source-lease uniqueness and collection admission guards separately requalified with 21 original-contract tests under migrations 0001-0044; accepted WP05/WP06 runtime sources remain unchanged.",
+      "started_at": "2026-11-14T01:38:56.900973+00:00",
+      "amendment_receipts": [
+        "receipts/WP06-WP07-collection.json",
+        "receipts/WP06-WP07-WP08-composition.json"
+      ]
+    },
+    {
+      "id": "WP07",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "accepted",
+      "receipt": "receipts/WP07.json",
+      "acceptance": "2026-11-14T03:53:34.282509+00:00",
+      "notes": "Private bounded collection accepted after 33 independent actual-D1 tests, 6 focused collector tests, 21 Astra checks and 1,193 integrated tests with 535 unchanged inputs. Fixed rounds, linked leases, atomic raw/lead/page/checkpoint/settlement and conservative restart behavior; no provider activation, public admission or scheduling.",
+      "started_at": "2026-11-14T02:46:31.975225+00:00",
+      "amendment_receipts": [
+        "receipts/WP06-WP07-WP08-composition.json"
+      ]
+    },
+    {
+      "id": "WP08",
+      "owner": "Sol",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "accepted",
+      "receipt": "receipts/WP08.json",
+      "acceptance": "2026-11-15T17:33:45.525658+00:00",
+      "notes": "Local implementation accepted after 25 independent actual-D1 tests and 1,235 integrated tests on 550 stable inputs. Native GitHub leads, retained-baseline stages, authenticated Link metadata and typed gaps; EX11 requalifies shared WP06/WP07 composition. Actual provider access/rights and E04 route qualification remain pending; no live enrollment or deployment.",
+      "started_at": "2026-11-15T17:16:25.701427+00:00"
+    },
+    {
+      "id": "WP09",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP10",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP11",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP12",
+      "owner": "Sol",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP13",
+      "owner": "Sol",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP14",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP03",
+        "WP05",
+        "WP06"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP15",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP14",
+        "WP16"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP16",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP05",
+        "WP14"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP17",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP16"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP18",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP17"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP19",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP17",
+        "WP18"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP20",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP15",
+        "WP18",
+        "WP19"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP21",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP07",
+        "WP14",
+        "WP15",
+        "WP16",
+        "WP17"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP22",
+      "owner": "Astra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP06",
+        "WP14",
+        "WP15",
+        "WP17",
+        "WP19",
+        "WP21"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP23",
+      "owner": "Astra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP02",
+        "WP04",
+        "WP05",
+        "WP06",
+        "WP07",
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP14",
+        "WP15",
+        "WP16",
+        "WP17",
+        "WP18",
+        "WP19",
+        "WP20",
+        "WP21",
+        "WP22",
+        "WP30"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP24",
+      "owner": "Astra",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP03",
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP20",
+        "WP21",
+        "WP22",
+        "WP23"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP25",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP21",
+        "WP24"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP26",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP04",
+        "WP16",
+        "WP19",
+        "WP21",
+        "WP22",
+        "WP23"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP27",
+      "owner": "Astra",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP24",
+        "WP25",
+        "WP26"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP28",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP27"
+      ],
+      "status": "deferred",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP29",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP25",
+        "WP27"
+      ],
+      "status": "deferred",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    },
+    {
+      "id": "WP30",
+      "owner": "Astra",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP08",
+        "WP09",
+        "WP13",
+        "WP15",
+        "WP17",
+        "WP18"
+      ],
+      "status": "not_started",
+      "receipt": null,
+      "acceptance": null,
+      "notes": ""
+    }
+  ],
+  "updated_at": "2026-11-14T02:46:31.975225+00:00",
+  "amendments": [
+    {
+      "id": "EX06",
+      "path": "implementation-decisions.md",
+      "status": "accepted_for_local_validation",
+      "affects": [
+        "WP00",
+        "WP04",
+        "WP23"
+      ]
+    },
+    {
+      "id": "EX07",
+      "path": "implementation-decisions.md",
+      "status": "accepted_design_and_local_preparation_reviewed",
+      "affects": [
+        "WP03",
+        "WP14",
+        "WP24"
+      ],
+      "thresholds_changed": false
+    },
+    {
+      "id": "EX08",
+      "path": "implementation-decisions.md",
+      "status": "accepted_design_and_wp05_implementation_reviewed",
+      "affects": [
+        "WP05",
+        "WP06",
+        "WP07",
+        "WP14",
+        "WP16",
+        "WP22",
+        "WP26"
+      ],
+      "thresholds_changed": false
+    },
+    {
+      "id": "EX09",
+      "path": "implementation-decisions.md",
+      "status": "accepted_design_and_wp06_implementation_reviewed",
+      "affects": [
+        "WP05",
+        "WP06",
+        "WP07",
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP22",
+        "WP23",
+        "WP26"
+      ],
+      "thresholds_changed": false
+    },
+    {
+      "id": "EX10",
+      "path": "implementation-decisions.md",
+      "status": "accepted_design_and_wp07_implementation_reviewed",
+      "affects": [
+        "WP05",
+        "WP06",
+        "WP07",
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP21",
+        "WP22",
+        "WP23",
+        "WP26"
+      ],
+      "thresholds_changed": false
+    },
+    {
+      "id": "EX11",
+      "path": "implementation-decisions.md",
+      "status": "accepted_design_and_local_wp08_implementation_reviewed",
+      "affects": [
+        "WP06",
+        "WP07",
+        "WP08",
+        "WP22",
+        "WP23",
+        "WP26"
+      ],
+      "thresholds_changed": false
+    }
+  ],
+  "next_ready_packages": [
+    "WP09",
+    "WP10",
+    "WP11",
+    "WP12",
+    "WP13"
+  ],
+  "release_readiness": "not_qualified",
+  "release_blockers": [
+    "dependency-audit: four high advisories in unchanged lockfile",
+    "remaining unaccepted core packages and empirical/operating gates",
+    "deployment explicitly prohibited"
+  ],
+  "active_packages": [
+    "WP03"
+  ]
+}

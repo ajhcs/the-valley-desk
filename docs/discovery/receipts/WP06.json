@@ -1,0 +1,69 @@
+{
+  "package": "WP06",
+  "disposition": "accepted",
+  "recorded_at": "2026-11-14T02:32:17.715352+00:00",
+  "accepted_at": "2026-11-14T02:32:17.715352+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "owner": "Sol registry/contracts; Terra endpoint/transport",
+  "reviewer": "Astra",
+  "independent_test_author": "Separate Sol agent",
+  "authority": "orchestrating engineer after independent review, actual D1 challenges and final integrated checks",
+  "scope": "Private source registry, scoped qualification/activation, credential/endpoint/transport boundaries, durable budgets/backoff, six synthetic adapter contracts, guarded evidence retention and typed failure identity. No provider activation or deployment.",
+  "design_amendment": "../implementation-decisions.md#ex09--registry-guards-in-the-evidence-transaction",
+  "review": "../reviews/wp06-astra.md",
+  "integration": "../wp06-integration-validation.json",
+  "outputs": {
+    "src/ingest/discovery/runtime-contract.ts": "fc2d2d85c30d462a3dee68a80dfc452cfcdd330bce1c42599d578e084b8566fc",
+    "src/ingest/discovery/source-registry.ts": "d30741724aed9ad051c689f91edcaa49649aad2e3c55c8757d5b019f9b42ffa9",
+    "src/ingest/discovery/endpoint.ts": "c68b45e9f1bda9d4ee86a13876a963a75ed9c420ac25a00f1c5567bd64c055dc",
+    "src/ingest/discovery/transport.ts": "2776bf5ea043300ddd984456e69957248f199a3a70cd5332f1c8a637907fdd6c",
+    "src/ingest/discovery/adapter.ts": "187236b801bf0191e894ff65552fca63352f6c1907f2ff6a57eac5a03ca993ad",
+    "migrations/0043_discovery_registry.sql": "733332e836bfe0c3c0dba2d5af343529e7f783aa4a0274b63e9518a02bf28b89",
+    "src/ingest/discovery-evidence-store.ts": "b366224eb46276f5143df0fc0df2b9b9ea546b98c363863fb0e0cdab96ce3ea6",
+    "test/discovery-transport.test.ts": "8ed479d609ea1e3886b2ece5111170ad7d1326450123ae21492f60a989af0b37",
+    "package.json": "1d0c4fbb1354c8434cef4b867cb4c0ba6114e55de811d68fca76461d39ace6da",
+    "src/lib/ops.ts": "e0d82e616343dcbb6912b9ff028c1fbffec1d5b293cc738c6e4bf9d939d196db",
+    "docs/discovery/reviews/wp06-sol.md": "b58e8fcb97da2e26d63050920ae170540d764ea4ee2ffa7d39f262adbb0463d5",
+    "docs/discovery/reviews/wp06-terra.md": "a102cafc6e1e9ec2cbd96e274eefc7340e8670d97504d6a1ad4a0b8b92805d26",
+    "docs/discovery/reviews/wp06-tests-sol.md": "bde19dac284d786c6f130896435c8ba759dad19012aa645ed56a3070a4f4f0c4",
+    "docs/discovery/reviews/wp06-astra.md": "e89485e5bbddc9490b69886eb540fdbd5ef4f134b098ba17e7cece688e2a4406"
+  },
+  "acceptance_criteria": {
+    "AC-WP06-01": "Separate activation rejects changed configuration/parser, expired rights, unusable qualification samples and corrupt current controls.",
+    "AC-WP06-02": "Missing/expired/wrong-origin credentials and absent egress send zero requests; dependency errors are redacted; known failures retain exact audit-backed source/operation identities.",
+    "AC-WP06-03": "Two-page synthetic receipt contracts bind exact retained parent/request/hash/query/token. Extra/duplicate/lossy Unicode parameters and stale/forged parents fail; no production page acknowledgment is invented.",
+    "AC-WP06-04": "Cross-origin/private/changed-endpoint redirects stop before a second send or credential forwarding.",
+    "AC-WP06-05": "Actual D1 races cap requests/bytes/items. Missing budget, changed lease/control and final-statement failure roll back the complete retention/settlement batch.",
+    "AC-WP06-06": "Six independent synthetic channels exercise trusted plan/parse/nextPage, two pages, identity distinctions, item truncation and failure paths without publication authority."
+  },
+  "validation": {
+    "npm_test": {
+      "exit_code": 0,
+      "tests": 1154,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 71
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "independent_wp06_suite": "21/21 including parent; stable 13-input audit",
+    "independent_astra_suite": "21/21 plus 16 adversarial cases; final transport probes",
+    "build": "pass; existing chunk-size warning",
+    "local_ops_smoke": "pass; fake bindings and injected egress only",
+    "secret_scan": "pass;763 tracked and untracked files including final review and acceptance documents",
+    "final_input_files_matched": 529,
+    "other_input_files_unchanged_through_root_run": 528,
+    "test_harness_correction": "Missing DiscoveryId import corrected before root WP06 execution. That execution independently captured identical corrected hashes before/after; see test-import-correction.json."
+  },
+  "limits": [
+    "All acquisition, capability resolution and page receipts are synthetic. No actual provider, credential ownership, legal sufficiency, authentication, DNS egress or production qualification is established.",
+    "WP07 must compose raw representation, normalized observations, page receipt and contiguous checkpoint mutation in one D1 transaction; WP06 retains evidence revisions only.",
+    "Redirects to changed endpoints need new issuance. Lost one-time request binding tokens require fresh authorized attempts; uncertain reservations remain charged.",
+    "Initial identity/plan lookup has a 300-second ceiling before per-source deadline is known; later waits use persisted and monotonic bounds. Database admission cannot atomically retract a later socket send.",
+    "Quarantine covers bounded integrity/currentness checks, not coherent unrestricted database rewrite or source truth; WP14 origin adjudication/public removal bridge and WP26 restore reconciliation remain required.",
+    "Four high dependency advisories remain in unchanged lockfile; WP03 has zero real reference cases, E01-E06 not run; deployment prohibited."
+  ]
+}

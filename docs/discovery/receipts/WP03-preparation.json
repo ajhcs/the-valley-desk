@@ -1,0 +1,27 @@
+{
+  "package": "WP03",
+  "disposition": "preparation_reviewed_package_incomplete",
+  "reviewed_at": "2026-11-14T00:44:25.177210+00:00",
+  "owner": "Astra",
+  "reviewer": "Terra",
+  "review": "../reviews/wp03-terra.md",
+  "preparation_receipt": "../reviews/wp03-preparation.json",
+  "scope": "Protocol, strict manifest readiness validator, cohort-specific metrics and exposure safeguards; synthetic tests only.",
+  "acceptance_criteria": {
+    "AC-WP03-01": "not_met: no actual 360-case heldout corpus",
+    "AC-WP03-02": "not_met: no real independent annotations/adjudication",
+    "AC-WP03-03": "not_met: no independently assembled eligible recall roster",
+    "AC-WP03-04": "local calculation/tooling evidence reviewed; no actual outcome evaluation",
+    "AC-WP03-05": "local exposure/rubric procedure and counterexamples reviewed; no corpus frozen"
+  },
+  "fixture_manifest_status": "not_frozen",
+  "real_case_count": 0,
+  "synthetic_tests": 21,
+  "next_actions": [
+    "Assemble permitted independent development/heldout and recall evidence with source and family provenance.",
+    "Arrange accountable independent annotation and adjudication, including disagreements.",
+    "Integrate independently verified receipt resolution and review actual corpus before freezing.",
+    "Freeze audit selection procedure now; perform actual admitted-item audit in WP24 under EX07."
+  ],
+  "empirical_gates": "not_run"
+}

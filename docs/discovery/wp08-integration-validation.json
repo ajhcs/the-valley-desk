@@ -1,0 +1,222 @@
+{
+  "id": "TVD-DISCOVERY-WP08-INTEGRATION-1",
+  "recorded_at": "2026-11-15T17:32:42.558241+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "disposition": "local_wp08_checks_passed_release_remains_unqualified",
+  "checkout": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113",
+  "branch": "codex/discovery-implementation-20261113",
+  "checks": {
+    "npm_test": {
+      "exit_code": 0,
+      "tests": 1235,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 152
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "independent_wp08": {
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "stable_input_count": 8,
+      "scope": "fresh actual local D1 0001-0044; synthetic capabilities and egress"
+    },
+    "wp03_progress": {
+      "new_tests": 17,
+      "existing_evaluation_tests": 21,
+      "independent_combined_tests": 38,
+      "real_case_count": 0,
+      "status": "not_frozen",
+      "readiness": "blocked",
+      "freeze_issued": false
+    },
+    "shared_compatibility": {
+      "wp06_tests": 21,
+      "wp07_tests": 33,
+      "focused_collector_tests": 6,
+      "scope": "unchanged original tests included in final npm run on amended runtime; WP07 and WP08 use actual D1 0001-0044"
+    },
+    "build": {
+      "exit_code": 0,
+      "warning": "existing bundle larger than500kB"
+    },
+    "local_ops_smoke": {
+      "exit_code": 0,
+      "scope": "fake bindings and closed injected egress"
+    },
+    "secret_scan": {
+      "exit_code": 0,
+      "files": 804,
+      "scope": "tracked and nonignored untracked files, including final review and acceptance documents; existing script file exclusions/allowlists retained"
+    },
+    "stable_qualification_inputs": 550,
+    "count_note": "Independent suites overlap integrated totals; do not add counts."
+  },
+  "outputs": {
+    "src/ingest/discovery/github.ts": "87fb47260edf058f2f0efbbd473b17498f60dac3abc2fcc856ef6d444b1eb183",
+    "test/discovery-github.test.ts": "cd4b5e8df03d8f592f24f8a6719bbd99ebb1141813813c9ff59102c80670aa43",
+    "src/ingest/discovery/runtime-contract.ts": "810e7d30f745bd2fb3e77b0fb0710511194e39606d34989f05b9d25ab29af830",
+    "src/ingest/discovery/source-registry.ts": "e1d19bf25611151afde868ec547208226cbf73caf9846a6bcdcac876f58f2af2",
+    "src/ingest/discovery/transport.ts": "79b53861342332f696961c22d4abca9b02669c8145dc2ff4256e236b3fa9f192",
+    "src/ingest/discovery/collection-contract.ts": "4fd37b1d4dbaf8fd2591d55bafc07974d1d219bb40590989456299d555eeb1b8",
+    "src/ingest/discovery/collection-store.ts": "333f05300bb17fd413e1687ea55bf7d615b151c618afaaebc7874af11fa83a78",
+    "src/ingest/discovery-reference-receipts.ts": "f01ad22554b7291d1327a696161305b1de6146a28c2b6247611a487f1d33e704",
+    "test/discovery-reference-receipts.test.ts": "78c81237227d5becbb411c357c74d988ba2e41b53311fb92bc071a175011073e",
+    "package.json": "caf95f91afc4f788b49d210c89db03323be89a8ef9ebc3260ef676d38cea153a",
+    "docs/discovery/reviews/wp08-sol.md": "b84b8f92c65aab8ade1da7daf424a243c24defa93e0c7a6b970811f38563e964",
+    "docs/discovery/reviews/wp08-terra.md": "011a2f8fb13c91b1cea7f6cb2ed8bba4bdf64e941f5c80d6e8850e96854c9896",
+    "docs/discovery/reviews/wp08-orchestrator.md": "7ff57d8b74f8d07ec447562ee4573befff406b02295b7866783677a78c2ec209",
+    "docs/discovery/wp08-evidence-plan.md": "0b3419e5df18b0004da02572d954a2fec3d6f962e511015e9d3579a7be02827a",
+    "docs/discovery/reviews/wp03-sol-progress.md": "c8db4c2b0832c3a7507c5ccc527c7265ef0119f530938fd7af6bcc9253222835",
+    "docs/discovery/reviews/wp03-terra-progress.md": "5806daafbd296abe4cb0fbec8f56e5ea5d64eab2410594132a060d6a095fed87",
+    "docs/discovery/wp03-intake.md": "007bc4fd4f6880ac39c1297b4cc7bdee05ff4977a47e88b82f0694803cb210cd",
+    "test/fixtures/discovery-sources/github/inventory.json": "c9af3d066c1b8b0729b0dc043a9b697d24992b8a0a3925dc6f2bedaf3c16aa72",
+    "test/fixtures/discovery-sources/github/repository.json": "0e0505f380a7ec30d59c9e097f7b6e87b0f2fea7c5742db564bc2382993f68b0",
+    "test/fixtures/discovery-sources/github/search.json": "c56429178fc04dc35e3b34207843b30b536dc2fed0ff4fc34e5f4fc1693bf44e",
+    "test/fixtures/discovery-sources/github/tags.json": "e10c4ad1da4fb87032af2b0fe2cdd91c368acf86aa51431fd6514a6e4d1c5ce2",
+    "test/fixtures/discovery-sources/github/search-truncated.json": "6ce51f54e957184154ddb004b3f3abe5616b81d15f578a4f6fb697f0c5163f2b",
+    "test/fixtures/discovery-sources/github/repository-transferred.json": "032d7f94087383385407c3a704379ea05bbad41596e23d1bb7d3c62e250fabe5",
+    "test/fixtures/discovery-sources/github/profile.json": "829386abd60920dc041623cf26a65067550abe249055d3f1d13f2425fc13d123",
+    "test/fixtures/discovery-sources/github/releases.json": "7bd859a959f0282ea216a72c98060eb88aea7e6c3d80e05f026b8ecb3dad641f",
+    "test/fixtures/discovery-sources/github/pagination.json": "798510b83ff75bb1357bbbd3470202020bb301c1d11cab9be80b7d6c93a3dbe4",
+    "test/fixtures/discovery-sources/github/commits.json": "21787407cc4d6801514f04fa912e390ab11bb1a3aba235bcb2a66890911333a1",
+    "test/fixtures/discovery-sources/github/contributors.json": "858ed347444695719c7e7c4df09bcc0a5baa014171a82ca31dfdc4579bf4be07"
+  },
+  "artifacts": {
+    ".discovery-work/wp08/root-final/input-sha256.json": "d2569bfccfdfa9b83c285efc4dba236d41ca7c57b31633f883dbb5b199e2f9ab",
+    ".discovery-work/wp08/root-final/input-check.json": "46a9223c5dcb2a98151aae1eafbbacad174f8db35303bafbf0df66d10ae7638d",
+    ".discovery-work/wp08/root-final/npm-test.log": "ef48734e5c5ed7f063436298d5921f5df709b5bcb92a15541a9e211926851dc8",
+    ".discovery-work/wp08/root-final/build.log": "235691772a80d5ca47363cafb696d5dfb249b6ba3d3b0bd92691473ef3e0a5bd",
+    ".discovery-work/wp08/root-final/ops-smoke.log": "7654ef2ce40ae3dffc3b882e85e0842dcf821b9eb293685b28d98022a9e6cebc",
+    ".discovery-work/wp08/root-final/frozen-manifests.json": "4e0f74507b31ea4a250790e73d8cca85e9473acbac9ccdc0e2c89ee693c358c3",
+    ".discovery-work/wp08/root-final/native-model-inputs.json": "884b9e4d23a053b89ab98ad185b841485121579266229345e7d23e716b9bf2b6",
+    ".discovery-work/wp08/root-final/wp03-intake-report.json": "26cb4e5e9db6488094cc82d07760ae79aaffbbb374b868cf68121a2b4b23aea3",
+    ".discovery-work/wp08/root-final/wp03-adversarial.log": "2aa4eb9984f3a8541fc768942154a17700fdcf017eed44a517e79bc942f446e0",
+    ".discovery-work/wp08/root-final/wp03-progress-inputs.json": "13cc06ae77aedd7d4f8b76a3a4faa3d155fa959d5171547418588bd212717675",
+    ".discovery-work/wp08-terra/final2.tap": "ca1551027b9907bb8b6b4c2a9b63114813688c046870e496b3efa6545dda0a67",
+    ".discovery-work/wp08-terra/final2-before.sha256": "c6d9296543ddb50616a81173e606a9ef6f67ab594ec020327009f0119654df4b",
+    ".discovery-work/wp08-terra/final2-after.sha256": "c6d9296543ddb50616a81173e606a9ef6f67ab594ec020327009f0119654df4b",
+    ".discovery-work/wp08-terra/typecheck3.tap": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".discovery-work/wp03-sol/tests.log": "7e998103873421c156ddfaf94eb2319b5fe38d46504969578fd958e116e37043",
+    ".discovery-work/wp03-terra/adversarial.ts": "3ec6710b471635a6e49cff4871cc876b2b27e5a266065b71daa34077f718cd38",
+    ".discovery-work/wp08/root-final/secret-scan-final.log": "373b476d873d2d59af287180a4cc2496470f11f5b9e077cb128df685aea4f4f7"
+  },
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "ops:smoke"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx/esm",
+        ".discovery-work/wp08/root-final/intake-report.mts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx/esm",
+        ".discovery-work/wp03-terra/adversarial.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        ".discovery-work/wp08/root-final/inputs.py",
+        "check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "secret-scan"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "environment": "Node22.23.2; env -i; HOME unchanged; TMP/XDG/npm caches on workspace; telemetry disabled; local D1 envFiles:[], persist:false, remoteBindings:false",
+  "lockfile_sha256": "f90749d123fe5d553057a037188af6a827367aa6bc427e84ccc25a3c4218fe05",
+  "dependency_audit": "dependency-audit.json; unchanged lockfile; no remediation/new audit claimed",
+  "native_model_inputs_changed": false,
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "frozen_handoff_manifest_entries_verified": 70,
+  "frozen_model_manifest_entries_verified": 21,
+  "deployment_performed": false,
+  "production_state_changed": false,
+  "limitations": [
+    "This is local implementation acceptance using synthetic qualification, authority, provider responses and egress. No live GitHub access, credentials, permissions, source-class E04 acceptance or regional inventory completeness is established.",
+    "Acquisition returns private candidate leads and collection receipts. Profile links, alias, license and role hints remain raw-backed inspect metadata; WP14 must materialize actual evidence/catalog claims. No person merge, regional admission or publication authority is granted.",
+    "Transport is unconditional and rejects unsolicited304; same-endpoint retained ETag refresh is not implemented. A full page without usable next Link remains partial even if it might be a true final page. This conservative coverage limitation remains visible.",
+    "Source responses are untrusted data. Search count consistency and safe numeric IDs do not prove stable provider snapshots, relevance, identity accuracy or current affiliation. Semantic source qualification and all empirical gates remain open.",
+    "WP03 has zero real cases/reviewers/permission records. New offline receipt tooling requires an independently authenticated store, authority configuration, trusted clock/revocation and accountable human corpus/freeze review; it cannot manufacture those inputs. WP03 stays incomplete and WP14 remains dependent on it.",
+    "The inherited transaction/egress and uncertainty boundaries remain: in-flight D1 mutations can commit after timeout, synchronous parser CPU is not preempted, and uncertain requests remain charged. Logical scoped erasure does not erase backups/Time Travel.",
+    "The lockfile is unchanged and retains four high advisories, seven total. Eleven legacy tests omitted by existing scripts are not included. Native systems-model inputs are unchanged; no new native proof is claimed. Release is not qualified and deployment remains prohibited."
+  ],
+  "retained_diagnostics": [
+    ".discovery-work/wp08-terra/transport-first.tap",
+    ".discovery-work/wp08-terra/full-first.tap",
+    ".discovery-work/wp08-terra/full-second.tap",
+    ".discovery-work/wp08-terra/adversarial-first.tap",
+    ".discovery-work/wp08-terra/typecheck4.tap",
+    ".discovery-work/wp08/root-final/wp03-intake-wrong-relative-path.log"
+  ],
+  "accepted_package": "WP08",
+  "accepted_at": "2026-11-15T17:33:45.525658+00:00",
+  "previous_candidate_comparison": {
+    "previous_input_manifest": ".discovery-work/wp07/root-final/input-sha256.json",
+    "previous_inputs": 535,
+    "unchanged": 529,
+    "intentional_changed_inputs": [
+      "package.json",
+      "src/ingest/discovery/collection-contract.ts",
+      "src/ingest/discovery/collection-store.ts",
+      "src/ingest/discovery/runtime-contract.ts",
+      "src/ingest/discovery/source-registry.ts",
+      "src/ingest/discovery/transport.ts"
+    ],
+    "unchanged_migration_files": 44,
+    "unchanged_prior_test_and_fixture_inputs": 140
+  }
+}

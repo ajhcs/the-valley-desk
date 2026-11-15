@@ -1,0 +1,11 @@
+{
+  "name": "valley-desk-local-smoke",
+  "compatibility_date": "2026-09-01",
+  "send_metrics": false,
+  "d1_databases": [{
+    "binding": "VALLEY_DESK_DB",
+    "database_name": "valley-desk-local-smoke",
+    "database_id": "00000000-0000-0000-0000-000000000041",
+    "migrations_dir": "../../../migrations"
+  }]
+}

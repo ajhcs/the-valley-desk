@@ -1,0 +1,39 @@
+{
+  "baseline": "TVD-CONCEPT-0.4",
+  "successor": "TVD-CONCEPT-0.5",
+  "original_scope_sha256": "3697971f003a8dc636177ad173e8a048be40d39ed31e99769f5a3b0abf74d653",
+  "retained_roles": 44,
+  "retained_specializations": 7,
+  "changed_field_types": [
+    {
+      "record": "SearchSnapshot",
+      "field": "results",
+      "before": "Work",
+      "after": "PublicRowReference",
+      "reason": "Same result role now references immutable public row identity; no dropped membership obligation."
+    },
+    {
+      "record": "SearchSnapshot",
+      "field": "creatorResults",
+      "before": "PublicCreatorProjection",
+      "after": "PublicRowReference",
+      "reason": "Same result role now references immutable public row identity; no dropped membership obligation."
+    }
+  ],
+  "added_field_checks": 70,
+  "historical_proof_and_documentary_scopes": "copied byte-identical; additional refinement obligations separately retained",
+  "limits": "Refining a selected type expectation is an explicit WP02 design change for independent Sol review, not evidence of old exact type correspondence.",
+  "added_specialization_checks": 4,
+  "documentary_scope_extension": {
+    "original": "review-scope.json",
+    "successor": "review-scope-v0.5.json",
+    "retained_expectations": 60,
+    "additional_expectations": 3,
+    "additional_source": "POLICY_V1",
+    "reason": "CSE requires exactly scope-declared source inputs; preserve original independent scope unchanged and extend it with accepted WP01 source and new evidence plans."
+  },
+  "additional_semantic_refinements": [
+    "Creator and Work bases are abstract; original Person/Organization and Project/Artifact specializations remain.",
+    "ReviewTarget discriminator and target identity derive from concrete subtype and its typed ref; redundant independently mutable fields removed after reviewer counterexample."
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "package": "WP03",
+  "disposition": "preparation_increment_reviewed_package_incomplete",
+  "recorded_at": "2026-11-15T17:32:42.558241+00:00",
+  "original_preparation_receipt": "WP03-preparation.json",
+  "owner": "Sol (bounded preparation increment)",
+  "reviewer": "Terra",
+  "authority": "orchestrating engineer reviews increment; full package remains incomplete",
+  "scope": "Offline adapter from caller-owned authenticated receipt store to unchanged readiness verifier; purpose/subject/principal/content/digest/authority/validity/revocation checks and actionable intake report.",
+  "outputs": {
+    "src/ingest/discovery-reference-receipts.ts": "f01ad22554b7291d1327a696161305b1de6146a28c2b6247611a487f1d33e704",
+    "test/discovery-reference-receipts.test.ts": "78c81237227d5becbb411c357c74d988ba2e41b53311fb92bc071a175011073e",
+    "docs/discovery/reviews/wp03-sol-progress.md": "c8db4c2b0832c3a7507c5ccc527c7265ef0119f530938fd7af6bcc9253222835",
+    "docs/discovery/reviews/wp03-terra-progress.md": "5806daafbd296abe4cb0fbec8f56e5ea5d64eab2410594132a060d6a095fed87",
+    "docs/discovery/wp03-intake.md": "007bc4fd4f6880ac39c1297b4cc7bdee05ff4977a47e88b82f0694803cb210cd",
+    "docs/discovery/evaluation-protocol.md": "c98da8af0168e73e6323e25bf6ed369b615dd33becd3c795dd77f4197130becb"
+  },
+  "validation": {
+    "new_tests": 17,
+    "existing_evaluation_tests": 21,
+    "independent_combined_tests": 38,
+    "real_case_count": 0,
+    "status": "not_frozen",
+    "readiness": "blocked",
+    "freeze_issued": false
+  },
+  "artifacts": {
+    ".discovery-work/wp08/root-final/wp03-intake-report.json": "26cb4e5e9db6488094cc82d07760ae79aaffbbb374b868cf68121a2b4b23aea3",
+    ".discovery-work/wp08/root-final/wp03-adversarial.log": "2aa4eb9984f3a8541fc768942154a17700fdcf017eed44a517e79bc942f446e0",
+    ".discovery-work/wp08/root-final/wp03-progress-inputs.json": "13cc06ae77aedd7d4f8b76a3a4faa3d155fa959d5171547418588bd212717675",
+    ".discovery-work/wp03-sol/tests.log": "7e998103873421c156ddfaf94eb2319b5fe38d46504969578fd958e116e37043",
+    ".discovery-work/wp03-terra/adversarial.ts": "3ec6710b471635a6e49cff4871cc876b2b27e5a266065b71daa34077f718cd38"
+  },
+  "original_evaluation_sha256": "83623ecabaf0080212b6a936f9ed0da868435f6b5050af2f1dd2b566404264c3",
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "empirical_gates": "E01-E06 not_run",
+  "real_case_count": 0,
+  "status": "not_frozen",
+  "freeze_issued": false,
+  "acceptance_criteria": {
+    "AC-WP03-01": "not_met: no real360 heldout corpus",
+    "AC-WP03-02": "not_met: no independent human annotations/adjudication",
+    "AC-WP03-03": "not_met: no independent100-case eligible recall roster",
+    "AC-WP03-04": "local calculation and receipt-binding tools reviewed; actual evaluation not run",
+    "AC-WP03-05": "exposure safeguards preserved; no corpus/freeze exists"
+  },
+  "remaining_inputs": [
+    "independently authenticated store and trusted authority configuration/clock/revocation",
+    "permitted original evidence and source/permission receipts",
+    "accountable independent human reviewers and adjudication",
+    "development set plus360 heldout cases,60/route; independent100-case recall roster",
+    "selection/exposure history and separately authenticated sealed freeze review"
+  ],
+  "limits": [
+    "The adapter cannot authenticate a dishonest caller-owned store. A matching hash or asserted authority JSON supplies no external trust.",
+    "No actual cases, labels, permissions, reviewer identities, recruitment or evaluation results were created. WP03 remains in_progress and cannot satisfy WP14 dependency."
+  ],
+  "reviewed_at": "2026-11-15T17:33:45.525658+00:00"
+}

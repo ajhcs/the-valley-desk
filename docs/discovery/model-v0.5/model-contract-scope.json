@@ -1,0 +1,195 @@
+{
+  "version": "TVD-NATIVE-RECORD-SCOPE/1.1",
+  "basis": "All 44 retained record roles and seven specializations preserved; two snapshot row types refined from mutable records to immutable PublicRowReference. See scope-refinement.json.",
+  "inheritance": {
+    "Person": "Creator",
+    "Organization": "Creator",
+    "Project": "Work",
+    "Artifact": "Work",
+    "Repository": "Artifact",
+    "Publication": "Artifact",
+    "Discussion": "Artifact",
+    "CreatorReviewTarget": "ReviewTarget",
+    "WorkReviewTarget": "ReviewTarget",
+    "ClaimReviewTarget": "ReviewTarget",
+    "RelationshipReviewTarget": "ReviewTarget"
+  },
+  "fields": {
+    "Creator": {
+      "identityReviewState": "ReviewState"
+    },
+    "Account": {
+      "platform": "String",
+      "nativeAccountId": "String"
+    },
+    "AccountIdentityLink": {
+      "account": "Account",
+      "creator": "Creator",
+      "linkState": "LinkState",
+      "evidenceIds": "String"
+    },
+    "PublicCreatorProjection": {
+      "creator": "Creator",
+      "professionalHealthTechBasis": "String",
+      "countyKey": "String",
+      "temporalLabel": "String",
+      "reviewState": "ReviewState"
+    },
+    "RegionalEligibility": {
+      "countyKey": "String",
+      "creator": "Creator",
+      "work": "Work"
+    },
+    "Affiliation": {
+      "person": "Person",
+      "organization": "Organization",
+      "assertionBasis": "String",
+      "verificationValidThrough": "String"
+    },
+    "WorkRelationship": {
+      "fromWork": "Work",
+      "toWork": "Work",
+      "relationshipKind": "String",
+      "evidenceIds": "String"
+    },
+    "RelevanceDecision": {
+      "healthcareApplication": "Integer",
+      "technologyContribution": "Integer",
+      "informaticsContribution": "Integer",
+      "healthAiContribution": "Integer"
+    },
+    "Publication": {
+      "publicationStage": "PublicationStage",
+      "publicationStatus": "PublicationStatus"
+    },
+    "Discussion": {
+      "forumId": "String",
+      "topicId": "String",
+      "postId": "String",
+      "authorAccounts": "Account"
+    },
+    "SearchSnapshot": {
+      "results": "PublicRowReference",
+      "creatorResults": "PublicRowReference",
+      "normalizedQuery": "String",
+      "sortMode": "String",
+      "publicationGeneration": "Integer",
+      "invalidationEpoch": "Integer",
+      "recoveryIncarnation": "String",
+      "expiresAt": "String",
+      "dependencies": "DependencyVector"
+    },
+    "WorkQuery": {
+      "regionalTemporalMode": "String",
+      "fromSourceDate": "String",
+      "untilSourceDate": "String"
+    },
+    "SourceObservation": {
+      "providerClass": "String",
+      "nativeObjectId": "String",
+      "representationSha256": "String",
+      "sourceDatePrecision": "String"
+    },
+    "ReviewTarget": {
+      "revision": "Integer"
+    },
+    "ReviewDecision": {
+      "candidate": "ReviewTarget",
+      "targetRevision": "Integer",
+      "decisionRevision": "Integer",
+      "policyRevision": "String",
+      "reason": "String",
+      "operationId": "String",
+      "evidenceRevisions": "RevisionReference",
+      "expectedDependencies": "DependencyVector"
+    },
+    "LicenseAssessment": {
+      "artifact": "Artifact",
+      "artifactVersion": "String",
+      "scope": "MaterialScope",
+      "revision": "Integer",
+      "displayPermission": "PermissionDecision",
+      "reusePermission": "PermissionDecision"
+    },
+    "DependencyVector": {
+      "entries": "DependencyRevision",
+      "requiredKeys": "String"
+    },
+    "DependencyRevision": {
+      "kind": "String",
+      "id": "String",
+      "revision": "Integer",
+      "expiresAt": "String",
+      "role": "DependencyRole"
+    },
+    "PublicRowReference": {
+      "rowKind": "String",
+      "subjectId": "String",
+      "rowId": "String",
+      "revision": "Integer"
+    },
+    "PublicRevision": {
+      "row": "PublicRowReference",
+      "dependencies": "DependencyVector",
+      "decision": "RevisionReference",
+      "publicationGeneration": "Integer",
+      "expiresAt": "String"
+    },
+    "PrecisionDate": {
+      "precision": "String",
+      "reportedValue": "String",
+      "calendarLowerDate": "String",
+      "calendarUpperDate": "String",
+      "instantLowerEpochMs": "Integer",
+      "instantUpperEpochMs": "Integer"
+    },
+    "SnapshotCursor": {
+      "snapshotId": "String",
+      "normalizedQuery": "String",
+      "recoveryIncarnation": "String"
+    },
+    "SnapshotContinuation": {
+      "httpStatus": "Integer",
+      "resultKind": "String",
+      "restart": "Boolean"
+    },
+    "DiscoverySourceRequest": {
+      "provider": "ProviderRoute",
+      "installation": "String",
+      "qualification": "RevisionReference",
+      "permission": "RevisionReference",
+      "leaseFence": "RevisionReference",
+      "purpose": "String",
+      "samplingAuthorization": "RevisionReference"
+    },
+    "ProviderIdentity": {
+      "provider": "ProviderRoute",
+      "installation": "String",
+      "nativeId": "String",
+      "identityKind": "SubjectKind"
+    },
+    "DiscoverySourcePage": {
+      "request": "DiscoverySourceRequest",
+      "limitationReceipt": "RevisionReference",
+      "pageReceipt": "RevisionReference"
+    },
+    "CreatorReviewTarget": {
+      "creator": "Creator"
+    },
+    "WorkReviewTarget": {
+      "work": "Work"
+    },
+    "ClaimReviewTarget": {
+      "claim": "DiscoveryClaim"
+    },
+    "RelationshipReviewTarget": {
+      "relationship": "ReviewedRelationship"
+    },
+    "DiscoverySourceCapture": {
+      "request": "DiscoverySourceRequest",
+      "observations": "SourceObservation",
+      "proposedCheckpoint": "String",
+      "limitationReceipt": "RevisionReference"
+    }
+  }
+}

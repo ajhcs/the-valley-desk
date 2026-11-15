@@ -1,0 +1,9 @@
+{
+  "status": "pass",
+  "claim": "Selected source-record structure after native parser validation; not a replacement parser or behavioral proof.",
+  "model_sha256": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+  "scope_sha256": "0854f3a4e68812dedadf4a50ee54600b527fe325dc194c904c7106d0e21b4cd2",
+  "inheritance_checks": 11,
+  "field_checks": 114,
+  "findings": []
+}

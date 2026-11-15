@@ -1,0 +1,58 @@
+{
+  "packages": [
+    "WP06",
+    "WP07"
+  ],
+  "amendment": "EX11",
+  "disposition": "accepted_as_part_of_local_wp08",
+  "accepted_at": "2026-11-15T17:33:45.525658+00:00",
+  "original_receipts": [
+    "WP06.json",
+    "WP07.json"
+  ],
+  "qualifying_receipt": "WP08.json",
+  "original_snapshots": [
+    ".discovery-work/wp06/accepted-candidate/manifest.json",
+    ".discovery-work/wp07/accepted-candidate/manifest.json"
+  ],
+  "changes": {
+    "src/ingest/discovery/runtime-contract.ts": {
+      "previous_sha256": "fc2d2d85c30d462a3dee68a80dfc452cfcdd330bce1c42599d578e084b8566fc",
+      "current_sha256": "810e7d30f745bd2fb3e77b0fb0710511194e39606d34989f05b9d25ab29af830"
+    },
+    "src/ingest/discovery/source-registry.ts": {
+      "previous_sha256": "d30741724aed9ad051c689f91edcaa49649aad2e3c55c8757d5b019f9b42ffa9",
+      "current_sha256": "e1d19bf25611151afde868ec547208226cbf73caf9846a6bcdcac876f58f2af2"
+    },
+    "src/ingest/discovery/transport.ts": {
+      "previous_sha256": "2776bf5ea043300ddd984456e69957248f199a3a70cd5332f1c8a637907fdd6c",
+      "current_sha256": "79b53861342332f696961c22d4abca9b02669c8145dc2ff4256e236b3fa9f192"
+    },
+    "src/ingest/discovery/collection-contract.ts": {
+      "previous_sha256": "9fb85d794584a99724ff02db4fbe63713411b2cd66bbd79ea0e827b9832e0ba0",
+      "current_sha256": "4fd37b1d4dbaf8fd2591d55bafc07974d1d219bb40590989456299d555eeb1b8"
+    },
+    "src/ingest/discovery/collection-store.ts": {
+      "previous_sha256": "f800b375f5e86e1f4764c8bb2bc9de69fff33cc419f2e77443e0fa115e720084",
+      "current_sha256": "333f05300bb17fd413e1687ea55bf7d615b151c618afaaebc7874af11fa83a78"
+    }
+  },
+  "scope": "Optional bounded Link metadata bound to existing immutable finish digest, checked before provisional parser and retained/removed with page scope. GitHub-specific API headers and conservative403/429 backoff. No migrations or accepted original receipts/tests edited.",
+  "validation": {
+    "wp06_tests": 21,
+    "wp07_tests": 33,
+    "focused_collector_tests": 6,
+    "scope": "unchanged original tests included in final npm run on amended runtime; WP07 and WP08 use actual D1 0001-0044"
+  },
+  "additional_tests": 25,
+  "integration": "../wp08-integration-validation.json",
+  "limits": [
+    "This is local implementation acceptance using synthetic qualification, authority, provider responses and egress. No live GitHub access, credentials, permissions, source-class E04 acceptance or regional inventory completeness is established.",
+    "Acquisition returns private candidate leads and collection receipts. Profile links, alias, license and role hints remain raw-backed inspect metadata; WP14 must materialize actual evidence/catalog claims. No person merge, regional admission or publication authority is granted.",
+    "Transport is unconditional and rejects unsolicited304; same-endpoint retained ETag refresh is not implemented. A full page without usable next Link remains partial even if it might be a true final page. This conservative coverage limitation remains visible.",
+    "Source responses are untrusted data. Search count consistency and safe numeric IDs do not prove stable provider snapshots, relevance, identity accuracy or current affiliation. Semantic source qualification and all empirical gates remain open.",
+    "WP03 has zero real cases/reviewers/permission records. New offline receipt tooling requires an independently authenticated store, authority configuration, trusted clock/revocation and accountable human corpus/freeze review; it cannot manufacture those inputs. WP03 stays incomplete and WP14 remains dependent on it.",
+    "The inherited transaction/egress and uncertainty boundaries remain: in-flight D1 mutations can commit after timeout, synchronous parser CPU is not preempted, and uncertain requests remain charged. Logical scoped erasure does not erase backups/Time Travel.",
+    "The lockfile is unchanged and retains four high advisories, seven total. Eleven legacy tests omitted by existing scripts are not included. Native systems-model inputs are unchanged; no new native proof is claimed. Release is not qualified and deployment remains prohibited."
+  ]
+}

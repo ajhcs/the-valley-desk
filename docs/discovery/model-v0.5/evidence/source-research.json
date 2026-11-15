@@ -1,0 +1,120 @@
+{
+  "review_date": "2026-11-13",
+  "sources": [
+    {
+      "id": "DVRPC",
+      "url": "https://www.dvrpc.org/about/",
+      "title": "DVRPC regional description",
+      "used_for": "The accepted county policy has five Pennsylvania counties and four New Jersey counties.",
+      "limit": "Defines the selected planning region, not a person-location inference rule."
+    },
+    {
+      "id": "GITHUB",
+      "url": "https://docs.github.com/en/rest/repos/repos",
+      "title": "GitHub repository REST API",
+      "used_for": "Stable repository identity and bounded repository metadata are suitable discovery inputs.",
+      "limit": "Account location, repository ownership and institutional adoption do not independently establish regional authorship."
+    },
+    {
+      "id": "PUBMED",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK25501/",
+      "title": "NCBI E-utilities",
+      "used_for": "Publication identifiers, author metadata and reported affiliations support candidate discovery.",
+      "limit": "The reviewed site code qualifies a bounded Wistar scope. A publication affiliation does not establish current employment.",
+      "documentation_access": "The full Bookshelf page returned a browser challenge. The retained source code and official search excerpts informed this bounded assessment; API access remains unqualified."
+    },
+    {
+      "id": "CROSSREF",
+      "url": "https://www.crossref.org/documentation/retrieve-metadata/rest-api/",
+      "title": "Crossref REST metadata API",
+      "used_for": "DOI metadata can connect contributors, publications and identifiers.",
+      "limit": "Metadata access is distinct from rights to reproduce full text. Field availability requires source-specific qualification."
+    },
+    {
+      "id": "ARXIV",
+      "url": "https://info.arxiv.org/help/api/user-manual.html",
+      "title": "arXiv API user manual",
+      "used_for": "Independent preprint discovery, versioned identifiers and distinct original/updated submission dates.",
+      "limit": "Author affiliation, journal references and DOI fields are optional. A name-only author record is not verified local identity."
+    },
+    {
+      "id": "DISCOURSE",
+      "url": "https://docs.discourse.org/",
+      "title": "Discourse API documentation",
+      "used_for": "Topic, post and account identities provide a structured forum adapter shape.",
+      "limit": "Read access and source rules must be qualified per forum installation. No global forum or local-participant inventory is assumed."
+    },
+    {
+      "id": "ORCID",
+      "url": "https://info.orcid.org/documentation/api-tutorials/api-tutorial-searching-the-orcid-registry/",
+      "title": "ORCID registry search tutorial",
+      "used_for": "Public researcher identifiers and affiliation search provide identity leads.",
+      "limit": "Public visibility, record source and dates matter. Registry matching alone does not authenticate every claim or current affiliation."
+    },
+    {
+      "id": "ROR",
+      "url": "https://ror.readme.io/docs/ror-data-structure",
+      "title": "ROR data structure",
+      "used_for": "Organization identities, relationships and location fields can support institution normalization.",
+      "limit": "An organization location does not establish the location of every member or unit."
+    },
+    {
+      "id": "Z3",
+      "url": "https://microsoft.github.io/z3guide/docs/logic/intro/",
+      "title": "Official Z3 guide",
+      "used_for": "Satisfiability checking over explicit logical theories and SMT-LIB replay.",
+      "limit": "The solver checks the encoded formula and assumptions. It does not establish source truth or arbitrary native SysML execution."
+    }
+  ],
+  "providers": [
+    {
+      "class": "github",
+      "entry": "Creator account/org registration, repository search and outgoing project references.",
+      "identity": "Provider plus numeric repository/account IDs; names and URLs are aliases.",
+      "qualify": "Exact identity, public metadata access, regional creator role, health-tech evidence and artifact-specific reuse terms.",
+      "implementation": "Extend src/ingest/watch/github-adapter.ts and technology source plans.",
+      "status": "Existing parser and selected project machinery; broad new enrollment is not claimed."
+    },
+    {
+      "class": "publication",
+      "entry": "Institution and author discovery, PubMed, Crossref, repository citations and publisher metadata.",
+      "identity": "Provider native identifier with DOI/PMID aliases admitted separately.",
+      "qualify": "Reported authors, dated affiliations, exact work identity and health-tech contribution.",
+      "implementation": "Generalize the bounded src/ingest/regional-publications.ts path; add Crossref discovery.",
+      "status": "Bounded PubMed path exists; independent connected-work delivery requires implementation."
+    },
+    {
+      "class": "preprint",
+      "entry": "arXiv author/topic search and links from qualified regional profiles.",
+      "identity": "Base arXiv identifier plus separate version and publication/DOI relationships.",
+      "qualify": "Preprint label, optional affiliation handling, regional author evidence and source version dates.",
+      "implementation": "New arXiv adapter under the proposed discovery source interface.",
+      "status": "Dedicated adapter not identified in reviewed source; source access and metadata examples must be qualified."
+    },
+    {
+      "class": "forum",
+      "entry": "Enrolled public technical communities, project discussions and source-linked local creator accounts.",
+      "identity": "Forum installation, topic/post IDs and source-scoped account ID.",
+      "qualify": "Public access, technical work relevance, exact authorship/mention role and independently established regional work connection.",
+      "implementation": "New bounded Discourse-style adapter; other forums use the same source qualification contract.",
+      "status": "No dedicated forum adapter identified. Authentication or inaccessible threads remain explicit source gaps."
+    },
+    {
+      "class": "institutional",
+      "entry": "Official institutional/lab/association project pages, public directories, RSS and structured profiles.",
+      "identity": "Verified organization/unit and source-scoped profile/project identifiers.",
+      "qualify": "Professional location or affiliation with a dated basis; project authorship distinct from sponsorship or adoption.",
+      "implementation": "Reuse regional HTML, public-profile and source inventory mechanisms.",
+      "status": "Partial infrastructure exists; people/project discovery and public profiles require expansion."
+    },
+    {
+      "class": "other_enrolled",
+      "entry": "Qualified conference/project sites, additional metadata APIs, RSS and reader-supplied leads.",
+      "identity": "Namespaced native identifiers and retained provenance.",
+      "qualify": "The same access, evidence, role, domain and review gates apply.",
+      "implementation": "Source registry extension after per-source qualification.",
+      "status": "An extension contract, not a promise that every website is collectable."
+    }
+  ],
+  "claim": "Primary documentation and retained code inspection inform the design. No source enrollment, external participant contact or ingestion run occurred."
+}

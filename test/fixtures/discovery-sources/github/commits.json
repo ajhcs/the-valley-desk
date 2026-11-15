@@ -1,0 +1,21 @@
+[
+  {
+    "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "author": {
+      "id": 11,
+      "login": "synthetic-maker",
+      "type": "User",
+      "html_url": "https://github.com/synthetic-maker",
+      "blog": "https://synthetic.example/profile"
+    },
+    "commit": {
+      "author": {
+        "name": "Unverified Same Name",
+        "date": "2024-01-02T00:00:00Z"
+      },
+      "committer": {
+        "date": "2024-01-03T00:00:00Z"
+      }
+    }
+  }
+]

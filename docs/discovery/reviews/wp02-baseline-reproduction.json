@@ -1,0 +1,142 @@
+{
+  "version": "TVD-WP02-BASELINE-REPRODUCTION/1.0",
+  "created_at": "2026-11-14T00:06:01.566997+00:00",
+  "revision": "TVD-CONCEPT-0.4",
+  "status": "pass_for_selected_historical_checks",
+  "review_disposition": "awaiting_independent_review",
+  "goal_validation": "not_run",
+  "model_sha256": "2db650c71d7a8703ff01b814e1db84629b33c9de99b702e2d90bad30235387a9",
+  "frozen_reference_manifest_sha256": "6e5a05c18af741435e6c2c6901bdadaa9f74516e7ad1d90b357ef3deb6cc989e",
+  "frozen_engineering_files_unchanged": 71,
+  "retained_inputs_byte_identical": true,
+  "scope_hashes": {
+    "proof-scope.json": "679e824c2f26273caac2474648a2b2aee3d234d3af2ce4d715033bdeb54ebb2b",
+    "review-scope.json": "993756f3200e59790a7e0488fe85edd33d90f645ab504b4004982fb7d9aeb319",
+    "model-contract-scope.json": "3697971f003a8dc636177ad173e8a048be40d39ed31e99769f5a3b0abf74d653"
+  },
+  "environment": {
+    "cse_runtime": "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8",
+    "cse_version": "0.2.0-alpha.8",
+    "python": "Python 3.12.3",
+    "java": "openjdk 26.0.2.1 2026-08-18",
+    "javac": "javac 26.0.2.1",
+    "parser": "OMG SysML v2 Pilot 2025-09 / kernel 0.52.0",
+    "parser_archive_sha256": "c59342cb8ff5cbf9402a4df7ea3b47108078904802718792699ad854a78a3c32",
+    "z3_version": "5.4.1.0",
+    "z3_wheel_sha256": "e680ce083683abca5d07c3e55c2f620ff9a29cb91c548eeeea27ae29e8060522",
+    "z3_wheel_files_verified_after_run": 45,
+    "private_environment": ".discovery-work/wp02-baseline/tvd-concept-v0.4/.venv",
+    "private_parser_cache": ".discovery-work/wp02-baseline/tvd-concept-v0.4/.cache/sysml",
+    "parser_bridge": "Freshly compiled from installed CSE bridge with javac --release 21; dependencies extracted from pre-existing hash-verified archive.",
+    "network_fetches": 0,
+    "host_packages_changed": false
+  },
+  "checks": {
+    "native_syntax_concept_shape": {
+      "status": "pass",
+      "checker_version": "sysml-2.0-alpha.2"
+    },
+    "selected_terminology": {
+      "status": "pass"
+    },
+    "retained_record_scope": {
+      "status": "pass",
+      "fields": 44,
+      "specializations": 7,
+      "method": "Historical selected-structure checker, applied only after native parser pass; not a replacement parser."
+    },
+    "retained_documentary_scope": {
+      "status": "pass",
+      "expectations": 60,
+      "acceptance": "not_evaluated"
+    },
+    "finite_workflow": {
+      "status": "pass",
+      "scenarios": [
+        "ForumDiscovery",
+        "IndependentPaper",
+        "RefreshReview"
+      ],
+      "obligations": {
+        "consistency": "pass",
+        "declarations": "pass",
+        "scenarios": "pass",
+        "scope": "pass",
+        "traces": "pass",
+        "types": "pass"
+      }
+    },
+    "function_flow_native_binding": {
+      "status": "pass",
+      "mapping_counts": {
+        "data": 6,
+        "functions": 6,
+        "parties": 2,
+        "properties": 5,
+        "relations": 0,
+        "scenarios": 3,
+        "steps": 18
+      },
+      "native_execution": "unsupported",
+      "transformation_correctness": "not_evaluated"
+    },
+    "symbolic_contracts": {
+      "status": "pass",
+      "lemmas": 74,
+      "symbolic_families": 30,
+      "assumptions": "74 satisfiable",
+      "negated_guarantees": "74 unsatisfiable"
+    },
+    "abstract_lifecycle": {
+      "status": "pass",
+      "states": 320,
+      "transitions": 2348,
+      "initial_contexts": 64,
+      "bound": "All reachable states of the declared 10-Boolean abstraction; no exploration cap was hit."
+    },
+    "solver_replay": {
+      "status": "pass",
+      "replays": 74,
+      "independence": "Separate CLI invocation of same trusted solver implementation; not an independent proof kernel."
+    },
+    "negative_controls": {
+      "status": "pass",
+      "symbolic_and_abstract": 28,
+      "finite": 2,
+      "total_detected": 30
+    }
+  },
+  "adaptations": [
+    "No byte changes to any selected model, scope, finite input, evidence source or historical proof driver.",
+    "Original hard-coded CSE path already resolves to installed alpha.8, so driver-adaptations.diff is empty.",
+    "Created private virtualenv from existing pinned wheel and private parser cache from existing pinned archive, without downloads.",
+    "Renamed copied historical receipt to validation/historical-receipt.json.",
+    "Executed selected original run_model_checks.py commands individually; v0.3 scope/model comparisons and diagrams are outside selected reproduction."
+  ],
+  "failure_history": {
+    "selected_checks": [],
+    "unavailable_selected_checks": [],
+    "setup_discovery_only": [
+      "Initial git status in historical artifact directory returned not a git repository; subsequent repository status used selected checkout.",
+      "Initial guessed scripts/sysml_parser.py lookup was unavailable; resolved installed verifier/sysml.py and scripts/install_sysml_parser.py."
+    ]
+  },
+  "evidence": {
+    "scratch": ".discovery-work/wp02-baseline",
+    "reproduction_driver": ".discovery-work/wp02-baseline/run_selected.py",
+    "exact_check_commands": ".discovery-work/wp02-baseline/commands.jsonl",
+    "raw_output_manifest": ".discovery-work/wp02-baseline/outputs-sha256.json",
+    "runtime_file_hashes": ".discovery-work/wp02-baseline/runtime-file-sha256.json",
+    "parser_dependency_hashes": ".discovery-work/wp02-baseline/parser-dependency-sha256.json",
+    "driver_adaptations_diff": ".discovery-work/wp02-baseline/driver-adaptations.diff",
+    "frozen_before": ".discovery-work/wp02-baseline/frozen-before.json",
+    "frozen_after": ".discovery-work/wp02-baseline/frozen-after.json"
+  },
+  "limits": [
+    "Historical 32 families comprise 30 SMT families, P29 declared Boolean lifecycle and P30 retained finite/native flow scope.",
+    "No source-truth, provider, reader, implementation/D1 concurrency, general native SysML execution, operating or deployment validation is claimed.",
+    "Historical model gaps remain, including Work-only ReviewDecision candidate, Repository-specific LicenseAssessment and mutable Work snapshot references.",
+    "CSE selected record/finite bindings do not prove transformations or native behavior equivalence.",
+    "E01-E06 remain not_run; historical PASS does not verify a successor model or application."
+  ]
+}

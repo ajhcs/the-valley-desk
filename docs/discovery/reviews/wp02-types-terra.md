@@ -1,0 +1,29 @@
+# WP02 concrete contract implementation — Terra handoff
+
+2026-11-14. Review candidate against `docs/discovery/interface-contracts.md`; not WP02 acceptance. Files owned: `src/content/discovery-schema.ts`, `src/ingest/discovery/source-contract.ts`, `test/discovery-contracts.test.ts`. Shared names are exported as Zod schemas and inferred types; constants and pure helpers are exported. No app wiring, persistence, authentication, source requests, package changes, or operational action is included.
+
+The implementation covers strict typed review targets and authority descriptors with expected vectors; per-version/material rights with separate reuse; date precision and real Gregorian checking; exact dependency key sets and guard/validity roles; canonical query, snapshot and continuation validation; and purpose-specific source envelopes, observations, page outcomes and failures. The synthetic six-route cases represent independent subject kinds and have no repository prerequisite. Qualification sampling has its own authorization and does not require a completed qualification. Provider-limited pages require an explicit limitation receipt. Byte limits are enforced when the caller invokes `assertDiscoveryEnvelopeBytes`; a parsed schema does not itself invoke that helper.
+
+Focused validation, with workspace-local temporary/cache directories and `/workspace/build/builderbob/runtimes/node-v22.23.2-linux-x64/bin` first in PATH:
+
+- `node --import tsx/esm --test test/discovery-contracts.test.ts`: 6 tests passed.
+- `./node_modules/.bin/tsc --ignoreConfig --noEmit --strict --target es2022 --module esnext --moduleResolution bundler --skipLibCheck src/content/discovery-schema.ts src/ingest/discovery/source-contract.ts`: passed.
+- Initial targeted TypeScript invocation omitted `--ignoreConfig` and failed with TS5112; the successful rerun used the flag as required by TypeScript 7. No failure was suppressed.
+
+These checks test contract behavior, not truth, authority, provider access, SQL atomicity, replay, live heads, currentness, protected API enforcement, HTTP headers, cache behavior, or full WP02/WP03–WP04 acceptance. Required dependency sets are caller-supplied and must be independently derived by a trusted projection builder. Source pages embed a request but a trusted collector must compare it with the issued request. An uncommitted page cannot carry a next checkpoint; this is a conservative representation, not proof of durable commit. Subsequent WP16/WP23/WP26 work must exercise the documented transactional and recovery claims. The six synthetic routes are structural examples rather than independently qualified provider samples.
+
+Independent Sol and orchestrator review remain pending. Package/CI wiring is owned by the orchestrator, and the frozen handoff is unchanged.
+
+## Review revision
+
+Root and Sol requested normal multiline formatting and static target narrowing. The creator and work variants now use strict branch-specific subject enums, with `@ts-expect-error` compile-time examples and runtime rejection cases. Calendar, expiry and canonical query comparison have named helpers. Shared limits use `DISCOVERY_LIMITS` where they govern the stated field. The query text bound counts Unicode code points; other string bounds retain Zod's UTF-16 code-unit semantics, and the envelope bound counts UTF-8 bytes. A continuation whose `now` predates its snapshot `asOf` returns 400. Astra recorded both boundary semantics in the interface contract.
+
+The focused test now passes all 8 cases, including each dependency kind's incorrect role, duplicate and excessive references, astral Unicode, reordered object properties and future snapshot observation. Strict targeted TypeScript checking also passed including the test's negative type assertions. The first attempt to type-check the test failed TS2591 because this checkout does not install Node type declarations. The successful repeat supplied `.tmp-test/node-test-shims.d.ts`, a workspace-local, narrow declaration of only `node:test` and `node:assert/strict`; it does not validate Node library typings. The earlier TS5112 failure and its corrected command remain recorded above. Formatting used an ephemeral Prettier package cached on `/workspace`; no dependency or package file was changed.
+
+## IF02 capture and acknowledgment refinement
+
+The amended IF02 distinguishes provisional `DiscoverySourceCapture` (including `proposedCheckpoint`) from a `DiscoverySourcePage` durable acknowledgment (`committed:true`, `pageReceipt`, and `nextCheckpoint`). Both use the same outcome, completeness, provider/installation/parser binding and limitation-receipt checks. Strict schemas reject a receipt or commitment field on capture and reject `committed:false` acknowledgment. Parsing either shape does not perform or establish persistence. Nine focused Node 22 tests and the targeted strict typecheck (including narrow Node test shims) passed after this revision.
+
+Astra's final readback requested a source version distinct from the native identity and clearer route cases. `DiscoverySourceObservation.sourceVersion` is now optional and bounded to 1–200 code units; the tests use named synthetic GitHub repository, PubMed paper, Crossref organization-evidence, arXiv base/version, forum work/account and institutional person examples. These exercise serialization and separate references; they do not prove a real creator role, authorship, source access, or a relationship implementation. Nine focused tests and targeted strict typechecking passed again.
+
+Scratch preservation: the temporary Node type shims, npm formatter cache and test cache originally under `.tmp-test/` were moved intact to `.discovery-work/terra-type-validation/` after all associated processes exited. Subsequent local validation should use that workspace path.

@@ -1,0 +1,24 @@
+# WP08 independent review — Terra
+
+Independent synthetic tests use fresh local D1 migrations 0001–0044, `envFiles: []`, `persist: false`, `remoteBindings: false`, closed injected egress and qualified synthetic source controls. No provider access, deployment, scheduling or live enrollment is exercised. Detailed TAP and input hashes are retained under `.discovery-work/wp08-terra/`.
+
+The reviewer reproduced two integration gaps before correction: GitHub rate-limit 403 was typed as authentication failure (`transport-first.tap`); a malicious next Link was discarded and the chain falsely completed (`full-first.tap`). GitHub documents both [403/429 rate limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api) and [Link pagination](https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api). Later runs exercise the amended transport and durable collection seams. An inconsistent search count also initially completed (`adversarial-first.tap`), and is now rejected.
+
+The synthetic GitHub-only search test commits original bytes, a private artifact lead, receipt and checkpoint through actual D1; numeric IDs, rename/transfer, source stages and dates, account ambiguity, private and truncated results, malformed identifiers, malicious prose, unqualified Links, 304, rate/auth/unavailable outcomes and incomplete health are challenged. A retained repository receipt gates release/tag/commit/contributor parsing; missing and corrupted baseline page or bytes are rejected before normalization. Link metadata tampering is checked before parser invocation. A full page without Link remains partial. Qualification and all source responses are synthetic.
+
+Metadata exposed by `inspect` is recoverable from retained source bytes and provenance, but profile links, role metadata, license hints and aliases are not independently persisted as public entities by the private collection draft. WP14 remains responsible for materialization and evidence-backed identity/admission decisions. No result here establishes provider access, regional coverage, real-world identity, production readiness or empirical recall.
+
+## Final independent result
+
+The final run, `.discovery-work/wp08-terra/final2.tap`, passed **25 tests, zero failures or skips**, on Node 22.23.2. It includes actual D1 checks for all six criteria:
+
+- AC01: artifact-first repository search and creator-first profile, user search and account inventory from empty synthetic databases; original response bytes and private leads are committed without catalog admission.
+- AC02: the same numeric repository ID survives a changed owner and repository name; the changed alias is retained in the provisional lead.
+- AC03: owner and contributor account identifiers remain distinct, including a same-name account, and no person or catalog entity is created; valid Bot and invalid User bot-style logins are distinguished.
+- AC04: a real retained repository receipt gates release, tag and commit parsing; stage, native key and source-date fields remain distinct. Missing, forged and corrupted baseline evidence is rejected.
+- AC05: 304, malicious Link origin, path and query fail without completing the chain. Qualified continuation advances; a full page without Link remains partial. Changed or omitted authenticated Link metadata is rejected before the parser. Scope withdrawal removes the retained Link and makes its page unresolvable.
+- AC06: rate-limit 403 and 429 outcomes, backoff, authentication and unavailable outcomes, private repositories and truncated search results are checked without claiming complete coverage.
+
+The frozen input manifests `.discovery-work/wp08-terra/final2-before.sha256` and `final2-after.sha256` are identical. Key SHA-256 values are `cd4b5e8df03d8f592f24f8a6719bbd99ebb1141813813c9ff59102c80670aa43` for the test, `87fb47260edf058f2f0efbbd473b17498f60dac3abc2fcc856ef6d444b1eb183` for `github.ts`, and `79b53861342332f696961c22d4abca9b02669c8145dc2ff4256e236b3fa9f192` for `transport.ts`. The manifests also bind collection, registry, runtime and collector sources.
+
+A strict standalone test typecheck passed using existing Node types at `/workspace/tmp/builderbob/colelyons-vrar-execution-riue8ogj/validation/node_modules/@types`; its output is `typecheck3.tap`. The initial invocation without `--ignoreConfig`, a retry without Node types, and a retry against the older `/usr/share/nodejs/@types` that lacks `TestContext` are retained separately. `full-second.tap` also preserves a test-fixture clock mismatch in the backoff assertions; the final fixture explicitly injects the same clock into transport and registry. The earlier missing-Link propagation false completion and rate-limit misclassification remain preserved in `full-first.tap` and `transport-first.tap`, respectively; they are not treated as passing evidence.
