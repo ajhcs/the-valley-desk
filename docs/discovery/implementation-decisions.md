@@ -924,3 +924,53 @@ content mapping and controlled source/rights access also remain accountable
 external work. Complete fresh frames, actual independent annotations/adjudication,
 authenticated statements and separate corpus freeze are still required. There
 was no source request, external outreach, key enrollment, merge or deployment.
+
+## EX25 — Orchestrator ownership and next delivery
+
+**Status:** Execution priorities selected by the orchestrator under the user's
+instruction to own the project and its decisions. This is a direction update;
+no work package is accepted, dependency relaxed or implementation started by it.
+
+The product outcome remains an evidence-backed answer to who is doing relevant
+health-technology work in the nine-county DVRPC region, what they are doing,
+why it qualifies, and how a reader finds and explores it. The next product
+milestone is the [WP30 complete discovery journey](../discovery-engineering/work-packages/WP30.md),
+including a creator without indexed work, a paper without code, supported
+repository/publication links, unresolved joins and a correction. A collection
+of independently passing adapters does not demonstrate that journey.
+
+The orchestrator owns prioritization, technical tradeoffs, bounded assignments,
+independent review and engineering acceptance. Existing Sol/Terra/Astra package
+allocations remain in [ownership](ownership.md). Routine implementation decisions
+are resolved within the authorized scope and recorded when consequential.
+
+1. Resolve the dependency-audit failure through a separately reviewed dependency
+   change. A fresh audit still reports four high, two moderate and one low
+   affected-package entries; it proposes a major Zod update. Investigate and
+   qualify the actual compatibility changes before adopting them. Retain the
+   high-severity CI gate and actual audit findings. This work can proceed without
+   the WP03 corpus, and it must preserve native validation, receipt and source
+   contracts through the relevant regression checks.
+2. Complete WP03's actual authority, source-use, independent-human and corpus
+   prerequisites using the prepared workflow. Resolve applicable WP12/WP13
+   implementation and source-qualification gaps in parallel. Preserve missing
+   facts and development exposure; agents cannot supply independent human truth
+   by assigning themselves reviewer identities.
+3. Implement WP14 admission, then WP16 publication, followed by WP15 review and
+   WP17 queries, WP18 reader journeys and WP30 integration when each recorded
+   entry condition is met. Prefer the smallest complete useful journey before
+   broad acquisition and feature expansion. Retain all six required source routes
+   and the later whole-goal, operating and release obligations.
+
+The reason for this order is to remove an independently tractable CI blocker,
+preserve trustworthy evaluation, and focus the accepted architecture on a reader
+outcome. Reconsider the sequence when dependency remediation exposes a material
+compatibility problem, permitted human/source inputs change, or the first complete
+journey reveals a contract mismatch. Adapt the affected packages with evidence;
+do not change an obligation merely to match an incomplete implementation.
+
+CI173 on `680deabf7a45ba36fb22d3f22deb66f0945b4987` finished with tests, PDF
+regressions, build and local smoke passing, then dependency audit failing and its
+later secret scan skipped. The earlier local secret scan passed. This direction
+update changes documentation only; no new application test result is claimed.
+The strict corpus remains empty and not_frozen. Deployment remains prohibited.
