@@ -49,7 +49,7 @@ async function attest(m: Manifest, staleSelection?: any) {
   const walk = (x: any): void => { if (!x || typeof x !== "object") return; if (typeof x.id === "string" && typeof x.sha256 === "string") refs.push(x); else Object.values(x).forEach(walk); };
   walk(m);
   const records = new Map<string, any>();
-  for (let round = 0; round < 4; round++) {
+  for (let round = 0; round < 8; round++) {
     records.clear();
     await assessDiscoveryReferenceReadiness(m, async (r, e) => {
       records.set(r.id, { schemaVersion: "discovery-authenticated-receipt-v1", id: r.id, authorityId: "fictional-authority", ...e, issuedAt: start, expiresAt: end });

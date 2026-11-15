@@ -1,0 +1,50 @@
+{
+  "declaredId": "synthetic:independent-profiles",
+  "revision": 1,
+  "sourceFamily": "independent-professional",
+  "recordKind": "person",
+  "endpointTemplate": {
+    "id": "endpoint:institutional",
+    "origin": "https://profiles.example.org",
+    "path": "/people",
+    "fixed": {},
+    "parameters": {
+      "page": {
+        "kind": "integer",
+        "min": 1,
+        "max": 10
+      }
+    },
+    "required": [
+      "page"
+    ],
+    "pageParameter": "page"
+  },
+  "originUrl": "https://profiles.example.org/people",
+  "provenanceOriginId": "origin:synthetic-profiles",
+  "classes": {
+    "record": "profile",
+    "name": "name",
+    "healthTechBasis": "health-tech-basis",
+    "affiliation": "affiliation",
+    "unit": "unit",
+    "county": "county",
+    "locationRole": "location-role",
+    "dateStart": "date-start",
+    "dateEnd": "date-end",
+    "currentThrough": "current-through",
+    "sourceDate": "source-date",
+    "creator": "creator",
+    "publisher": "publisher",
+    "adopter": "adopter",
+    "professionalId": "professional-id"
+  },
+  "pageSize": 10,
+  "maxPages": 10,
+  "maxItems": 100,
+  "denominator": "Reviewed synthetic public directory members",
+  "rosterTotal": 1,
+  "startDay": "2020-01-01",
+  "endDay": "2031-01-01",
+  "dateBasis": "source-profile-date"
+}

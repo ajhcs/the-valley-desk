@@ -624,3 +624,99 @@ attestation. No real records need migration because the actual manifest is empty
 This is not whole-manifest signing, proof of truth or a freeze. WP03 remains
 incomplete; real trust, permitted originals, humans and independent corpus
 assembly remain missing.
+
+## EX18 — Bounded forum software; qualification and lifecycle holds
+
+**Status:** Software increment under integration review; full WP12 remains
+in_progress. No actual installation, access or retention permission is established.
+
+One versioned Discourse-shaped anonymous JSON subset is implemented. The frozen
+scope binds installation/origin/version, category slug and ID, local time window,
+caps, denominator and policy reference. The category route is exact
+`/c/{slug}/{categoryId}/l/latest.json`; per-topic sources at `/t/{id}.json` derive
+from a genuine retained listing, not caller-supplied topic lists or observed URLs.
+Category and topic requests remain separately enrolled, qualified and budgeted.
+The local window is a candidate filter, not an undocumented provider query.
+[Official API documentation](https://docs.discourse.org/) and
+[upstream route definitions](https://github.com/discourse/discourse/blob/main/config/routes.rb)
+are reference evidence only. Normal richer responses may be unsupported; this
+is not a universal forum parser or general native Discourse compatibility claim.
+
+Because WP07 retains original response bytes, privacy checks reject the entire
+response before successful preparation. Strict JSON rejects duplicate decoded
+keys, malformed Unicode and lossy/unsupported numbers. Unknown/private fields,
+restricted categories/messages, hidden/deleted content, contact-bearing values
+and unsupported HTML cannot hide inside excluded records. Passive cooked HTML
+checks raw, decoded and concatenated text/attributes; comments, hidden/active
+markup, private URLs and unsupported Link headers fail. Failure reports contain
+safe codes and counters, not offending bodies. These are explicit format checks,
+not a universal sensitive-prose classifier or evidence of source permission.
+
+Native topic/post/account IDs are installation-scoped. Accounts remain distinct
+from people. Source instructions cannot change scope or authority. The scope's
+policy must equal the actual enrolled source accessDecision used by capture; it
+is not a new retention grant. Actual rights/permission controls remain separate.
+
+Edits produce a new retained lead/version. Read-only removal proposals carry
+requested reasons and revokeAuthorized=false, not verified deletion or authority.
+Existing authorized ledger revocation invalidates affected claims and preserves
+unrelated installation state. Automatic native-edit/deletion consumption into
+current-claim invalidation remains unimplemented pending WP14/WP16 integration;
+AC-WP12-06 is not fully met. No full package acceptance is granted by this increment.
+
+## EX19 — Source-specific passive institutional HTML
+
+**Status:** Software increment under integration review; full WP13 remains
+in_progress until actual sources, access/rights and response profiles qualify.
+No thresholds, shared runtime writes or native model changes.
+
+A content-derived scope binds one reviewed endpoint/parameter grammar, source
+family, semantic class-token mapping, record kind, source-date window, page caps
+and denominator. Fields must come from actual unique matching nodes and literal
+spans. This supports independent professionals, institutions/labs and associations
+without an artifact prerequisite; it does not guess arbitrary HTML structures.
+
+Only the explicit passive HTML subset can be retained. Whole-document preflight
+rejects unsupported nodes/attributes, hidden/active content, comments, decoded or
+split contacts, unsafe URL queries/fragments and unsupported HTTP Link metadata,
+including outside selected records. The subset excludes stylesheets rather than
+claiming to evaluate CSS visibility. Real profiles outside it require separately
+reviewed format support and permission; arbitrary websites are not qualified.
+
+Actual-unit county/role/date evidence is separate from headquarters, residence,
+service area, publisher and adopter inputs. Current status remains an assessment
+proposal; no employment or regional admission occurs. Source versions hash source
+semantics, excluding extraction offsets and clock-dependent assessments. Native
+card identity includes the complete canonical issued page endpoint, so document-
+local HTML IDs on different pages do not merge. Source IDs are not person IDs.
+
+Declared feeds/navigation are inert proposals unless already qualified. Fixed
+queries are unsupported in this subset; only the registered numeric page query
+may appear. Partial directories retain denominator gaps. Equal biography text or
+an unresolved originReview ref cannot grant equivalence: distinct origin counts
+use the existing reviewed evidence ledger. Real geographic truth and recall stay
+future validation work. No full WP13 acceptance is granted by this increment.
+
+## EX20 — Signed labels bind the reviewed case/source context
+
+**Status:** WP03 preparation correction under integration review; actual corpus
+remains empty and not_frozen. Affects WP03/WP14/WP22/WP24. No schema, threshold or
+reference truth is changed.
+
+Independent genuine-signature tests showed that newly attested source/selection
+context could reuse old signed annotations, blinding records and adjudication.
+The correction binds all three v2 expectation wrappers to the digest of the exact
+EX17 review context. Adjudication additionally binds the complete independent
+annotation set, including signed annotation/blinding references. Changed evidence,
+case meaning or disagreement basis therefore requires re-review and attestation.
+
+The [label-context guide](wp03-label-context-binding.md) records the acyclic
+signing dependencies and legacy rejection. Synthetic fixture hashing depth was
+increased to construct that deeper graph; there is no runtime legacy fallback,
+automatic signing or authority enrollment. Real independent humans, permitted
+originals, source truth and accountable freeze remain absent.
+
+The user confirmed continuing in dependency order after the WP03 corpus gate was
+explained. [WP14 entry preparation](wp14-entry-plan.md) documents the concrete
+existing authority/store gaps and planned interfaces/tests. It changes no route,
+migration, rule or decision authority, and does not waive WP03.

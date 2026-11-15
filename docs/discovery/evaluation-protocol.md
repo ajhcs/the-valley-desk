@@ -267,3 +267,12 @@ selection receipts require accountable re-review and fresh authenticated
 attestation; no fallback or automatic signing is available. Signed mutation and
 re-attestation tests establish this integrity boundary only. The actual corpus
 remains empty, not_frozen and incomplete, with E01–E06 not_run.
+
+## Signed label context correction (2026-11-15)
+
+The [label-context correction](wp03-label-context-binding.md) binds independent
+annotation, blinding and adjudication expectations to the exact EX17 case/source
+context. Adjudication also binds preserved independent annotations. Legacy labels
+require actual re-review before fresh attestation; no automatic signing or fallback
+is available. The actual empty corpus remains blocked/not_frozen. WP14 waits for
+WP03's real cases, human review and accountable freeze.

@@ -137,7 +137,7 @@ export async function assessDiscoveryReferenceReadiness(input: unknown, verify?:
     // Versioned full descriptor attestation: legacy partial selection receipts must
     // be re-reviewed, never silently upgraded. Labels and receipt refs stay outside
     // the case descriptor to avoid annotation/adjudication dependency cycles.
-    await verifyReceipt(item.selectionReceipt, "selection", item.id, {
+    const reviewContext = {
       schemaVersion: "discovery-case-selection-review-v2",
       manifest: { revision: m.revision, rubric: m.rubric, policy: m.policy, design: m.design },
       case: { id: item.id, partition: item.partition, subject: item.subject, claimMode: item.claimMode,
@@ -150,15 +150,22 @@ export async function assessDiscoveryReferenceReadiness(input: unknown, verify?:
         return { id, source: descriptor };
       }),
       sampling: item.partition in m.sampling ? m.sampling[item.partition as keyof typeof m.sampling] : null,
-    });
+    };
+    const contextSha256 = await discoveryEvaluationDigest(reviewContext);
+    await verifyReceipt(item.selectionReceipt, "selection", item.id, reviewContext);
     if (item.annotations.length < 2 || duplicate(item.annotations.map(x => x.reviewerId))) add(`independent-annotations-required:${item.id}`);
     for (const annotation of item.annotations) {
       const { receipt, blindedBatch, ...payload } = annotation;
       if (!reviewers.has(annotation.reviewerId)) add(`unknown-reviewer:${item.id}`);
       if (!sameRevision(annotation.rubric, m.rubric)) add(`stale-annotation-rubric:${item.id}`);
       if (annotation.sourceIds.some(id => !item.sourceIds.includes(id))) add(`annotation-source-outside-case:${item.id}`);
-      await verifyReceipt(receipt, "independent-annotation", item.id, payload, annotation.reviewerId);
-      await verifyReceipt(blindedBatch, "blinding", item.id, { reviewerId: annotation.reviewerId, rubric: annotation.rubric, annotation: receipt }, annotation.reviewerId);
+      await verifyReceipt(receipt, "independent-annotation", item.id, {
+        schemaVersion: "discovery-independent-annotation-v2", contextSha256, annotation: payload,
+      }, annotation.reviewerId);
+      await verifyReceipt(blindedBatch, "blinding", item.id, {
+        schemaVersion: "discovery-blinding-v2", contextSha256,
+        reviewerId: annotation.reviewerId, rubric: annotation.rubric, annotation: receipt,
+      }, annotation.reviewerId);
     }
     if (!item.adjudication) add(`missing-adjudication:${item.id}`);
     else {
@@ -167,7 +174,10 @@ export async function assessDiscoveryReferenceReadiness(input: unknown, verify?:
       if (!sameRevision(payload.rubric, m.rubric)) add(`stale-adjudication-rubric:${item.id}`);
       if (payload.sourceIds.some(id => !item.sourceIds.includes(id))) add(`adjudication-source-outside-case:${item.id}`);
       if (item.annotations.some(a => Date.parse(a.recordedAt) > Date.parse(payload.recordedAt))) add(`adjudication-before-annotation:${item.id}`);
-      await verifyReceipt(receipt, "adjudication", item.id, { ...payload, annotations: item.annotations }, payload.reviewerId);
+      await verifyReceipt(receipt, "adjudication", item.id, {
+        schemaVersion: "discovery-adjudication-v2", contextSha256,
+        adjudication: payload, annotations: item.annotations,
+      }, payload.reviewerId);
       if (item.partition === "recall" && payload.labels.overall !== "eligible") add(`recall-not-independently-eligible:${item.id}`);
     }
   }

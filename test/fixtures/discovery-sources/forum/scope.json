@@ -1,0 +1,22 @@
+{
+  "declaredId": "scope:forum-synthetic",
+  "revision": 1,
+  "installationId": "forum:synthetic-a",
+  "origin": "https://forum-a.example.org",
+  "installationVersion": "reviewed-synthetic-shape-v1",
+  "family": "discourse-public-json-v1",
+  "categoryId": 7,
+  "categorySlug": "health-tech",
+  "startDay": "2024-01-01",
+  "endDay": "2024-03-01",
+  "maxTopicsPerPage": 2,
+  "maxPages": 3,
+  "maxTopics": 5,
+  "maxPostsPerTopic": 10,
+  "maxExcerptChars": 500,
+  "denominator": "Only reviewed public-category pages and separately budgeted listed topics; no complete forum/window recall.",
+  "retentionPolicy": {
+    "id": "policy:forum-synthetic-retention",
+    "revision": 1
+  }
+}
