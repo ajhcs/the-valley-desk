@@ -134,7 +134,23 @@ export async function assessDiscoveryReferenceReadiness(input: unknown, verify?:
       }
     }
     await verifyReceipt(item.familyReview, "family-review", item.id, { subject: item.subject, families: item.families, sourceIds: item.sourceIds });
-    await verifyReceipt(item.selectionReceipt, "selection", item.id, { revision: m.revision, partition: item.partition, claimMode: item.claimMode, primaryRoute: item.primaryRoute, sampling: item.partition in m.sampling ? m.sampling[item.partition as keyof typeof m.sampling] : null });
+    // Versioned full descriptor attestation: legacy partial selection receipts must
+    // be re-reviewed, never silently upgraded. Labels and receipt refs stay outside
+    // the case descriptor to avoid annotation/adjudication dependency cycles.
+    await verifyReceipt(item.selectionReceipt, "selection", item.id, {
+      schemaVersion: "discovery-case-selection-review-v2",
+      manifest: { revision: m.revision, rubric: m.rubric, policy: m.policy, design: m.design },
+      case: { id: item.id, partition: item.partition, subject: item.subject, claimMode: item.claimMode,
+        primaryRoute: item.primaryRoute, appearances: item.appearances, counties: item.counties,
+        countyUnknown: item.countyUnknown, families: item.families, sourceIds: item.sourceIds, challenges: item.challenges },
+      sourceBindings: [...item.sourceIds].sort().map(id => {
+        const source = sources.get(id);
+        if (!source) return { id, source: null };
+        const { evidence: _evidence, permission: _permission, ...descriptor } = source;
+        return { id, source: descriptor };
+      }),
+      sampling: item.partition in m.sampling ? m.sampling[item.partition as keyof typeof m.sampling] : null,
+    });
     if (item.annotations.length < 2 || duplicate(item.annotations.map(x => x.reviewerId))) add(`independent-annotations-required:${item.id}`);
     for (const annotation of item.annotations) {
       const { receipt, blindedBatch, ...payload } = annotation;

@@ -26,7 +26,7 @@
     "ops:smoke": "node --import tsx/esm scripts/ops-smoke.mjs",
     "secret-scan": "node scripts/secret-scan.mjs",
     "test:discovery:types": "tsc --project tsconfig.discovery-contracts.json",
-    "test:discovery": "npm run test:discovery:types && node --import tsx/esm --test --test-concurrency=1 test/discovery-contracts.test.ts test/discovery-evaluation.test.ts test/discovery-identities.test.ts test/discovery-evidence.test.ts test/discovery-transport.test.ts test/discovery-collection.test.ts test/discovery-collector.test.ts test/discovery-github.test.ts test/discovery-reference-receipts.test.ts test/discovery-pubmed.test.ts test/discovery-reference-signatures.test.ts test/regional-publications.test.ts test/discovery-crossref.test.ts test/discovery-reference-cli.test.ts",
+    "test:discovery": "npm run test:discovery:types && node --import tsx/esm --test --test-concurrency=1 test/discovery-contracts.test.ts test/discovery-evaluation.test.ts test/discovery-identities.test.ts test/discovery-evidence.test.ts test/discovery-transport.test.ts test/discovery-collection.test.ts test/discovery-collector.test.ts test/discovery-github.test.ts test/discovery-reference-receipts.test.ts test/discovery-pubmed.test.ts test/discovery-reference-signatures.test.ts test/regional-publications.test.ts test/discovery-crossref.test.ts test/discovery-reference-cli.test.ts test/discovery-arxiv.test.ts test/discovery-reference-case-binding.test.ts",
     "discovery:reference:intake": "node --import tsx/esm scripts/discovery-reference-intake.mjs"
   },
   "dependencies": {

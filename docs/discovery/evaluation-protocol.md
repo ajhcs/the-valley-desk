@@ -258,3 +258,12 @@ freeze review; reports always retain not_frozen and packageAccepted=false.
 The complete synthetic signed fixture exercises that path without adding any
 real cases. Actual operator trust, rights, reviewers, sampling and corpus remain
 outstanding. E01–E06 stay not_run and WP03 remains incomplete.
+
+## Case-selection integrity correction (2026-11-15)
+
+The [v2 selection attestation](wp03-case-selection-binding.md) binds all case
+descriptors, manifest context and referenced source snapshots. Legacy partial
+selection receipts require accountable re-review and fresh authenticated
+attestation; no fallback or automatic signing is available. Signed mutation and
+re-attestation tests establish this integrity boundary only. The actual corpus
+remains empty, not_frozen and incomplete, with E01–E06 not_run.

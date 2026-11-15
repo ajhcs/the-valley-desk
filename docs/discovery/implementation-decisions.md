@@ -550,3 +550,75 @@ Sol implemented the CLI; Terra tested it independently, including a wholly
 fictional complete signed corpus returning exit 0 without freeze; Astra found and
 verified the fix for symlink/space-containing executable paths that previously
 skipped argument validation. The actual corpus remains empty and blocked.
+
+## EX16 — arXiv identity, version and offset scope
+
+**Status:** Local implementation under review. Affects WP02/WP04's missing
+identifier decision and WP11/WP14/WP23. No migration, threshold or frozen model
+change. The handoff's expected preexisting arXiv normalizer was not implemented
+in the generic provider identity contract.
+
+`arxiv-base-version-v1` explicitly supports modern monthly identifiers with the
+reviewed four/five-digit sequence transition and legacy archive/month/sequence
+forms. Invalid month, zero sequence, unsupported date/width, encoding, whitespace,
+credentials, port, query and fragment forms fail. Bare identifiers, arXiv prefixes
+and exact http(s) arxiv.org abstract wrappers are supported; public links use HTTPS.
+Syntax is not proof that a submission exists. Future grammar extensions require
+a new reviewed normalizer rule.
+
+The [arXiv identifier guide](https://info.arxiv.org/help/arxiv_identifier.html)
+and [interacting-services guide](https://info.arxiv.org/help/arxiv_identifier_for_services.html)
+were checked on 2026-11-15. The latter explicitly documents legacy subject-class
+aliases. Optional .CLASS is removed only for math, cs, nlin and q-bio; original
+spelling/class remains available. Other archive/class combinations are rejected.
+The canonical base identity excludes version; an explicit version remains a
+separate native version. An unversioned ID has version=null and an unknown-version
+hold, never inferred v1. A same-base explicit alternate may supply a version;
+conflicting versions are rejected. Links reflect the final resolved version.
+
+The [API manual](https://info.arxiv.org/help/api/user-manual.html) supports the
+reviewed Atom/OpenSearch vocabulary and source fields. Category/term/date-window
+queries, page size, caps and denominator derive a frozen scope identity. Only
+the numeric start offset varies at the enrolled HTTPS export API endpoint. Feed
+self/next links are descriptive and validated against that scope, never followed
+as egress authority. Feed IDs may differ by page query. Feed freshness is not a
+scientific activity date; entry submission/update fields remain source dates.
+
+The supported parser subset is text-only Atom with qualified namespaces and
+exact returned-entry counters. Ambiguous text, unknown vocabulary, unsafe XML,
+unbound page offsets, short inconsistent pages and changing totals fail or yield
+explicit gaps. A stricter subset may reject legitimate provider records; actual
+source response/rights/pacing qualification remains E04 work before activation.
+Authors, affiliations, identity links, DOI/journal relations, predecessor versions
+and licenses remain proposals. Category and keyword matches do not establish
+healthcare relevance, county or current employment. Stage remains preprint.
+
+Offset pagination has no imported Crossref cursor lifetime. Live parsing requires
+the actual current WP07 plan, current lease and configured continuation expiry.
+Historical parents bind scope, offset and ancestry; read-only plan/nextPage are
+progress proposals, not request authority. Retained replay uses the accepted page,
+claim and chain readers without reviving a settled plan. No new shared store seam
+is needed. Equal-total membership churn cannot be detected reliably by offsets;
+bounded traversal completion is not an immutable snapshot or regional recall.
+
+## EX17 — Selection receipts bind case descriptors and source snapshots
+
+**Status:** WP03 preparation correction under final integration review. Affects
+WP03/WP14/WP22/WP24. No schema, threshold, corpus or native model change.
+
+Independent review reproduced a valid signed fictional manifest remaining ready
+after county/challenge edits. The old selection payload did not bind those
+readiness inputs. `discovery-case-selection-review-v2` binds full case descriptors,
+manifest revision/policy/rubric/design, existing sampling and sorted referenced
+source snapshots. A missing source remains explicit null and fails the existing
+unknown-source check. New valid source receipts cannot silently carry forward
+a selection made against different source metadata under the same source ID.
+
+The [attestation guide](wp03-case-selection-binding.md) specifies the exact
+boundary. Cyclic annotation/adjudication/receipt refs remain outside selection,
+with their separate verification unchanged. No legacy fallback or auto-signing
+is permitted: old selections require accountable re-review and new authenticated
+attestation. No real records need migration because the actual manifest is empty.
+This is not whole-manifest signing, proof of truth or a freeze. WP03 remains
+incomplete; real trust, permitted originals, humans and independent corpus
+assembly remain missing.

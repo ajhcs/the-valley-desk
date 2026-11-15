@@ -1,0 +1,1 @@
+Authored synthetic Atom/provider-shaped fixtures only; no real API acquisition or institutional evidence. Identifier grammar is the explicit bounded EX16 contract. No fixture author, DOI, affiliation, license or version relation is admitted truth.
