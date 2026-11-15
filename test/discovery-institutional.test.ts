@@ -808,3 +808,24 @@ test('guessed and off-origin endpoints fail the exact reviewed grammar', async (
   await assert.rejects(()=>validateDiscoveryEndpoint(institutionTemplate, 'https://profiles.example.org/feed'));
   await assert.rejects(()=>validateDiscoveryEndpoint(institutionTemplate, 'https://other.example.org/people?page=1'));
 });
+
+
+test('native fixed ROR endpoint cannot satisfy WP13 mandatory page grammar',async()=>{
+  const {qualifyDiscoveryInstitutionalScope}=await import('../src/ingest/discovery/institutional');
+  const endpointTemplate={id:'endpoint:ror-native',origin:'https://api.ror.org',path:'/v2/organizations/00b30xv10',fixed:{},parameters:{},required:[]};
+  await assert.rejects(()=>qualifyDiscoveryInstitutionalScope({...institutionScope,endpointTemplate,originUrl:'https://api.ror.org/v2/organizations/00b30xv10'} as any));
+});
+
+test('wrong-format JSON cannot commit or claim empty institutional coverage', {timeout:600_000},async t=>{
+  for(const rosterTotal of [0,null])await t.test(`roster-${rosterTotal}`,async sub=>{
+    const h=await institutionalHarness(sub,`wrong-json-${rosterTotal}`,{rosterTotal});
+    await h.f.makeRound(h.store,`round:wrong-json-${rosterTotal}`,`cohort:wrong-json-${rosterTotal}`,[h.s]);
+    const raw='{"name":"Synthetic organization"}';
+    const result=await h.f.makeCollector(h.store,{transportOptions:{clock:()=>Date.parse(h.f.now()),egress:{send:async()=>new Response(raw,{headers:{'Content-Type':'application/json'}})}}}).step(h.f.stepInput(`round:wrong-json-${rosterTotal}`));
+    assert.equal(result.kind,'failure',JSON.stringify(result));if(result.kind==='failure')assert.equal(result.ack.outcome,'parser-failed');
+    assert.equal((await h.store.readHealth(h.s.value.id))?.lastCompleteAt,null);
+    assert.equal((await h.f.db.prepare('SELECT count(*) AS n FROM discovery_collection_pages').first<{n:number}>())?.n,0);
+    assert.equal((await h.f.db.prepare('SELECT count(*) AS n FROM discovery_collection_leads').first<{n:number}>())?.n,0);
+    assert.equal((await h.f.db.prepare("SELECT count(*) AS n FROM discovery_evidence_contents WHERE kind='representation' AND json_extract(payload_json,'$.originalBytesSha256')=?").bind(sha(raw)).first<{n:number}>())?.n,0);
+  });
+});

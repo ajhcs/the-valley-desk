@@ -106,6 +106,7 @@ function document(body: Uint8Array, scope: DiscoveryInstitutionalScope, endpoint
   if (body.byteLength > 48000) return fail('body-cap');
   let html: string;
   try { html = new TextDecoder('utf-8',{fatal:true}).decode(body); } catch { return fail('encoding'); }
+  if (!html.replace(/^\uFEFF/, '').trimStart().startsWith('<')) return fail('unsupported-format');
   let unsupportedSyntax = false;
   if (contact(html) || /<!--|<!\[CDATA\[|<\?/i.test(html)) return fail('private-or-unsupported-document');
   const root = parseHtml(html, {sourceCodeLocationInfo:true, scriptingEnabled:true,
