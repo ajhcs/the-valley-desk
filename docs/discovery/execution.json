@@ -137,10 +137,11 @@
       "depends_on": [
         "WP06"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "receipt": null,
       "acceptance": null,
-      "notes": ""
+      "notes": "Sol implements separately budgeted PubMed search/fetch; Terra actual-D1 tests; Astra independently reviews and challenges. WP03 signed offline intake progresses in parallel. Root owns qualification, commits and draft PR; deployment prohibited.",
+      "started_at": "2026-11-15T17:46:23.423303+00:00"
     },
     {
       "id": "WP10",
@@ -563,6 +564,7 @@
     "deployment explicitly prohibited"
   ],
   "active_packages": [
-    "WP03"
+    "WP03",
+    "WP09"
   ]
 }

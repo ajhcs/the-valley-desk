@@ -402,3 +402,69 @@ The pinned version remains supported; revalidate its status before live qualific
 The compatibility amendment and WP08 receipt must record exact changed sources,
 actual D1 results and retained limitations before local acceptance. Original
 WP06/WP07 receipts and snapshots remain historical evidence.
+
+## EX12 — PubMed search and metadata are separate durable scopes
+
+**Status:** Implementation and independent checks completed; root qualification
+pending. Affects WP09, WP14, WP21, WP23 and WP24. No shared runtime or policy
+threshold changes.
+
+An ESearch response is retained with its exact institutional scope, query, window,
+offset, requested page size, reported count and ordered PMIDs. Nonempty search
+receipts remain incomplete while metadata is pending. Search cannot call EFetch
+from its parser. EFetch has a separately enrolled source/template, request budget,
+qualification and explicit collection round.
+
+Qualified scope IDs derive from the complete validated evidence, declared scope
+identifier/revision, exact accepted DVRPC county/state relation, query/window,
+limits and denominator. The original declared ID remains inspectable. This avoids
+changing geography or search meaning behind a durable source.scopeId. The adapter
+uses the accepted PA/NJ nine-county keys; legacy broader regional geography cannot
+expand discovery scope. First-party literal evidence produces private qualification
+and author-at-publication candidates, not current employment or public admission.
+
+A fetch source ID derives from its genuine retained search receipt, request/body
+hashes, content-derived qualified scope, query/window/offset and ordered PMIDs.
+The external lookup only locates that parent; changing it cannot authorize another
+batch behind the same durable source ID. Source, plan and parse resolution enforce
+the commitment after restart. Short inconsistent search pages fail instead of
+skipping IDs. Valid capped search pages may supply a metadata batch while keeping
+the inherited search-cap gap and inventoryComplete=false.
+
+Budget exhaustion remains incomplete. A later source revision with separately
+qualified permissions and an explicit new budget window/cohort may resume the
+same batch; it cannot refund or reset the earlier consumed budget. A completed
+metadata batch covers only those requested PMIDs. Missing PMIDs and partial author
+coverage remain visible, and a publication needs no repository/project.
+
+XML handling is conservative: only the selected unnamespaced PubMed vocabulary
+and narrowly permitted stripped NLM external declaration are supported. No entity
+resolution occurs. Mixed text/child content is rejected because the shared XML
+projection cannot preserve its word order. Year/month precision is retained;
+unknown reported dates and all candidate display/contact fields are redacted.
+Correction/retraction metadata yields a new source version under the same PMID.
+Restrictive parser/size behavior remains a real-source qualification limitation.
+
+The existing Wistar implementation is unchanged and its tests become explicitly
+enumerated. Live E-utilities provider-wide request pacing, access/rights and route
+qualification must precede activation. There is no native network fallback or
+new scheduler. The code does not claim current author employment, semantic source
+truth, whole inventory coverage or empirical acceptance.
+
+## EX13 — Offline signatures authenticate receipt bytes under operator pins
+
+**Status:** Independently reviewed preparation increment; root integration pending.
+Affects WP03/WP14/WP22/WP24. The real reference corpus remains absent and unfrozen.
+
+A separate offline store verifies Ed25519 receipt and authority-statement envelopes
+under independently supplied operator pins. Domain, algorithm, key identifier and
+canonical payload digest are signed. Authority purpose/principal/grant validity
+and existing manifest expectation bindings remain mandatory. Issuance/expiry is
+rechecked after awaited cryptography. Bounded UTF-8 preflight precedes deep schema
+cloning and refuses executable/non-JSON shapes.
+
+Operator trust enrollment, current policy selection, trusted clock and anti-rollback
+remain external responsibilities. Revocation is an explicit versioned expiring
+snapshot that requires store replacement; no live feed or maximum policy TTL is
+claimed. Signatures prove integrity under the supplied pins, not human identity,
+rights, source truth or independent adjudication. The helper never issues a freeze.

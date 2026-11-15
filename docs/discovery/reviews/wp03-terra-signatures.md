@@ -1,0 +1,13 @@
+# WP03 signed receipt intake — independent review
+
+2026-11-15. Reviewed the offline signature store and its intake documentation as a preparation increment, against WP03, the evaluation protocol and the earlier receipt-adapter review. This does not accept WP03 or freeze a corpus.
+
+The store verifies separate Ed25519 receipt and authority signatures against separately supplied public-key pins, with domain, algorithm, key ID and payload digest in the signing preimage. It checks signer roles and authority scope, signed authority grants, receipt bindings through the existing adapter, validity and a bounded-lived revocation snapshot. Caller-supplied pins, policy distribution, anti-rollback, clock and policy refresh remain trusted operational dependencies. Signatures do not establish the truth of a receipt or human authority, and an attacker-controlled policy would defeat the boundary.
+
+I found that an earlier revision checked receipt validity against the authority object but did not enforce containment in the signed statement window as documented. The owner corrected this by narrowing the returned authority validity to the signed statement window; the final tests include the counterexample. The final implementation also bounds object traversal before schema copying. The documentation correctly states that raw file input requires its own byte limit and that a still-valid older policy is not automatically detected as rollback.
+
+I independently ran the final owner signature tests under sanitized workspace Node 22: 19 passed, 0 failed. A separate scratch probe passed forged receipt and authority signatures, attacker/unpinned keys, wrong signer role and scope, receipt and authority revocation, replayed payload and domain confusion, mismatched purpose/subject/principal/content, expiry, wrong algorithm, injected key material, returned-record mutation, policy/bundle mutation, duplicate records and oversized pin lists. The scratch test uses ephemeral synthetic keys only; it is retained at `.discovery-work/wp03-signatures-terra/adversarial.ts`, SHA-256 `306edc733c4755e42d2d439b764874cfcaa32e9881d58ec9b15f606b8447d3a4`.
+
+Reviewed SHA-256: implementation `fdf45e6995a0e2d4e1675600d34254d36caeb9c0c52e3c683153ce5668e7b9d0`; owner tests `c49168738fe629a1140a848744b48662339ec8ded3524a427f792499843d6830`; documentation `5b0fe8a78fef7dc998a179fc1475039779709b18d0bd0386a95b73c49aad5e12`.
+
+No blocking defect remains in this bounded review. Actual trust enrollment and its administration, source rights, independent cases and reviewers, authenticated history and accountable freeze remain missing. The current corpus remains empty and `not_frozen`; E01–E05 remain not run. The orchestrator decides acceptance of this increment.

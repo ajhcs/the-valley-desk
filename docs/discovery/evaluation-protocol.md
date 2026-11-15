@@ -238,3 +238,12 @@ authenticated-store capability. Its read-only report keeps the actual empty mani
 blocked and not_frozen. The store authentication integration, permitted evidence,
 independent human review and sealed freeze remain missing. The new progress receipt
 records synthetic tests only; the corpus and E01–E06 remain incomplete/not_run.
+
+## Offline signature verification progress (2026-11-15)
+
+The [signed intake guide](wp03-signed-intake.md) connects separately pinned
+Ed25519 receipt and authority verification to the prior readiness boundary. This
+implements record integrity checks under supplied pins, while real operator trust
+enrollment, current policy/clock, source rights, human adjudication and the corpus
+remain missing. The helper never issues a freeze and the actual manifest stays
+blocked/not_frozen. Engineering reviewers are not reference adjudicators.
