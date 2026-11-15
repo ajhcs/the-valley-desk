@@ -44,6 +44,9 @@ the earlier task; implementation was subsequently authorized on 2026-11-13.
 | [WP09](receipts/WP09.json) | Accepted within local implementation scope | Independently qualified PubMed search/fetch, durable scope/batch binding, historical author candidates, partial dates and truthful gaps | Sol / Terra tests / Astra review; root integration |
 | [WP10](receipts/WP10.json) | Accepted within local implementation scope | Independent Crossref work/institution queries, explicit DOI subset, partial dates and unresolved contributors, retained cursor ancestry and private metadata replay | Sol / Terra tests / Astra review and fixes; root integration |
 | [WP11](receipts/WP11.json) | Accepted within local implementation scope | Independent arXiv queries, base/version identity, qualified Atom, retained numeric-offset ancestry and private replay | Sol / Terra tests / Astra review; root integration |
+| [WP12](receipts/WP12-local-implementation.json) | Software increment reviewed; full package unaccepted | Installation-bound public forum subset, strict pre-retention privacy, retained category/topic ancestry; actual qualification and native change consumer open | Sol / Terra / Astra |
+| [WP13](receipts/WP13-local-implementation.json) | Software increment reviewed; full package unaccepted | Source-specific passive profiles/directories, literal unit/role/date inputs, reviewed-origin boundary; actual qualification open | Sol / Terra / Astra |
+| [WP14](receipts/WP14-entry-preparation.json) | Entry handoff reviewed; implementation not started | Concrete authority/store gaps, proposed API and planned tests; waits for WP03 | Sol preparation / Astra review |
 
 WP07's private page receipt acknowledges collected leads; it does not fabricate
 catalog subjects or evidence-backed `SourcePage` observations. Additional provider
@@ -93,24 +96,29 @@ the selection attestation. Its [progress receipt](receipts/WP03-case-selection-b
 records genuine synthetic-signature mutation/re-attestation tests. Old partial
 selections require accountable re-review; the actual corpus stays empty.
 
+The [signed label-context correction](wp03-label-context-binding.md) binds
+annotation, blinding and adjudication to the exact reviewed case/source context.
+Changed disagreements invalidate stale adjudication. Legacy labels require actual
+re-review and authenticated re-attestation; no signing or fallback is added.
+The [progress receipt](receipts/WP03-label-context-progress.json) retains the
+genuine synthetic counterexample and fixes. The actual corpus remains empty.
+
 ## Validation and remaining release blockers
 
-The [WP11 integration receipt](wp11-integration-validation.json) records final
-commands and hashes. The [WP10 receipt](wp10-integration-validation.json),
-[WP09 receipt](wp09-integration-validation.json),
-[WP08 receipt](wp08-integration-validation.json),
-[WP07 receipt](wp07-integration-validation.json),
-[WP06 receipt](wp06-integration-validation.json),
-[WP05 receipt](wp05-integration-validation.json) and
-[earlier foundation receipt](integration-validation.json) remain historical evidence.
+The [WP12/WP13 integration record](wp12-wp13-integration-validation.json) records
+reviewed software and explicit unmet package conditions. Earlier
+[WP11](wp11-integration-validation.json), [WP10](wp10-integration-validation.json),
+[WP09](wp09-integration-validation.json), [WP08](wp08-integration-validation.json),
+[WP07](wp07-integration-validation.json), [WP06](wp06-integration-validation.json),
+[WP05](wp05-integration-validation.json) and [foundation](integration-validation.json)
+records remain historical evidence.
 With the qualified Node 22.23.2 runtime:
 
-- All 1,318 enumerated tests passed in completed bounded groups: 937 primary,
-  146 Watch and 235 discovery, with zero failures/skips/cancellations. Six shorter
-  discovery commands cover exactly all 16 explicitly enumerated files. No combined
-  long discovery command was used for WP11. Earlier WP09/WP10 SIGTERM attempts
-  remain historical evidence and are not reported as exit0. Discovery contract
-  typechecking passed.
+- All 1,361 enumerated tests passed in completed bounded groups: 937 primary,
+  146 Watch and 278 discovery, with zero failures/skips/cancellations. Seven
+  discovery commands cover exactly all 19 explicit files. No combined long
+  discovery command was used. Earlier SIGTERM attempts remain historical evidence,
+  not exit0 claims. Discovery contract typechecking passed.
 - Seven mandatory PDF regressions passed using the pinned project runtime.
 - Build, isolated local D1 smoke and secret scan passed. WP04 additionally has
   an independent nine-test local D1 challenge covering rollback and replay. WP05
@@ -140,23 +148,28 @@ With the qualified Node 22.23.2 runtime:
   complete signed integrity test with 20 mutation cases and nine independent
   Astra checks. Old signed selections fail; fresh accountable re-attestation is
   required. These counts are not added again to the integrated total.
+- WP12 has 27 actual-D1 tests; WP13 has 15. Both cover genuine three-page
+  ancestry and whole-response raw-retention canaries. Astra passed 40 forum and
+  48 institutional probes, including authentic-snapshot replay and ancestor failures.
+  WP03 adds genuine signed stale-label rejection plus 14 independent context/DAG
+  checks. These counts overlap or supplement the suite and are not added twice.
 - `npm audit --audit-level=high`: failed with four high-severity advisories,
   seven total. The dependency lockfile is unchanged; see the
   [audit and remediation record](dependency-audit.json).
 
 Exact-head CI state is recorded in [execution.json](execution.json). The prior
-WP10 head dcb2b10 CI passed tests/PDF/build/smoke, then failed audit and skipped its later
+WP11 head 84b801b CI passed tests/PDF/build/smoke, then failed audit and skipped its later
 secret scan. Current local secret scan passes. The PR stays draft; local package
 acceptance does not complete release qualification. The baseline
 inventory originally identified 11 omitted legacy regional test files; WP09 adds
 the Wistar publication file, leaving ten outside the scripts. These are not counted
 as executed. A bundle-size warning remains.
 The model receipt states the bounds and assumptions of every proof/check. Its
-native inputs did not change during WP11; no new native proof claim is made.
-All 584 runtime qualification inputs matched during tests. Three authored XML
-fixtures then received blank-line whitespace cleanup; namespace-aware parsed-tree
-comparisons passed, and both original and delivery hash manifests are retained.
-All other inputs are unchanged. Independent suites also record stable inputs. Earlier failing candidates and adjudicated fixture changes
+native inputs did not change during this increment; no new native proof claim is made.
+The late institutional HTML-recovery fix changed only its module and test;
+605 other inputs are unchanged. The full institutional suite, independent matrices
+and global type/PDF/build/smoke checks passed again. Both 607-file manifests and
+superseded results are retained. Independent suites retain stable final hashes. Earlier failing candidates and adjudicated fixture changes
 remain preserved; a mutation that outlives a timeout is reconciled as uncertain,
 not assumed cancelled or refunded.
 
@@ -168,15 +181,11 @@ hash-verified local wheel provisioning are retained in that evidence directory.
 
 ## Continue from the accepted dependencies
 
-1. Begin [WP12](../discovery-engineering/work-packages/WP12.md), qualified forum acquisition.
-   WP12–WP13 are eligible against the accepted registry/transport contracts.
-   Integrate provider parsers with WP07's trusted provisional parse and private
-   receipt boundary; preserve exact native keys, stages and source dates. Keep
-   provider access qualification distinct from synthetic route fixtures.
-   Native network egress has no default; no real source is enrolled or activated.
-   GitHub, PubMed, Crossref and arXiv remain locally verified only: real access/rights and E04 source-class
-   qualification are still required. Requests are unconditional, unsolicited304
-   fails, and full pages without a usable next Link remain partial.
+1. Complete WP12's real installation/version/access/rights/response qualification
+   and native edit/deletion-to-current-claim consumer; complete WP13's actual
+   source/profile/access/rights qualification. The reviewed local implementations
+   do not grant full acceptance. Never broaden the strict response subset or
+   enable real collection merely because synthetic inputs pass.
 2. Preserve WP07's explicit round creation and one-attempt slots. A completed
    scheduling round does not prove complete source coverage. Expired continuations
    require a new inventory cohort; failed/uncertain work stays charged. Do not
@@ -184,7 +193,9 @@ hash-verified local wheel provisioning are retained in that evidence directory.
 3. Continue WP03 reference preparation where permitted inputs are available.
    Keep it incomplete until its real corpus and independent adjudication exist.
    [EX07](implementation-decisions.md) moves the admitted-item audit to WP24
-   without weakening its thresholds. WP14 still requires WP03.
+   without weakening its thresholds. WP14 still requires WP03. Its
+   [entry handoff](wp14-entry-plan.md) is reviewed preparation; no endpoint, rule,
+   authority or migration implementation has started.
 4. Preserve separate provider, empirical, security, migration and operating gates.
    Resolve the dependency audit before release qualification.
 

@@ -1,0 +1,531 @@
+{
+  "id": "TVD-DISCOVERY-WP12-WP13-INTEGRATION-1",
+  "recorded_at": "2026-11-15T20:10:01.478358+00:00",
+  "reviewed_code_commit": "8b37a1bac741854d939f4a4f7766daba280cbe81",
+  "entry_revision": "84b801bd0905e2759e6ee6afca1c2f4e4088f910",
+  "disposition": "software_increments_reviewed_packages_unaccepted",
+  "checks": {
+    "enumerated_tests": {
+      "status": "all_passed_completed_bounded_groups",
+      "tests": 1361,
+      "primary": 937,
+      "watch_launch": 146,
+      "discovery": 278,
+      "groups": {
+        "primary-final-a": {
+          "tests": 552,
+          "pass": 552,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "primary-final-b": {
+          "tests": 385,
+          "pass": 385,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "watch-final": {
+          "tests": 146,
+          "pass": 146,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-collection": {
+          "tests": 33,
+          "pass": 33,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-core": {
+          "tests": 117,
+          "pass": 117,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-transport": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-providers": {
+          "tests": 34,
+          "pass": 34,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-institutional": {
+          "tests": 15,
+          "pass": 15,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-bibliographic": {
+          "tests": 31,
+          "pass": 31,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-forum": {
+          "tests": 27,
+          "pass": 27,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        }
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "explicit_discovery_files": 19,
+    "input_count": 607,
+    "input_drift": [],
+    "pdf_tests": 7,
+    "types_build_local_smoke": "pass",
+    "secret_scan": "pass; includes final delivery documents",
+    "terra": {
+      "forum_actual_d1": 27,
+      "institutional_actual_d1": 15,
+      "signed_label_and_prior_case_tests": 2,
+      "included_in_integrated_count": true
+    },
+    "astra": {
+      "forum": 40,
+      "institutional": 48,
+      "label_context": 14,
+      "root_reran_final_programs": true,
+      "counts_not_added_to1361": true
+    },
+    "dependency_audit": {
+      "exit_code": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 1,
+        "moderate": 2,
+        "high": 4,
+        "critical": 0,
+        "total": 7
+      }
+    },
+    "html_recovery_fix": {
+      "changed_inputs": {
+        "src/ingest/discovery/institutional.ts": {
+          "before": "920880957ad9a67e7475281cd3b18ef4b9327012386f0196f4cfc91e63cac778",
+          "after": "71036db7a7886e01afa750b15fa19b3267450763bec6e23d2d6388a620c41287"
+        },
+        "test/discovery-institutional.test.ts": {
+          "before": "4c8bc7b3872b5059166d3bf22c8e599d55a84a9783a6bdd5098bd8e9e5c7a812",
+          "after": "5f1c7d37ea7950ca2fc40b7588cfc52e336192e392904f9ba8c9c07afd7ccabc"
+        }
+      },
+      "unaffected_inputs": 605,
+      "reason": "Confirmed HTML recovery privacy leak; targeted source fix plus permanent D1 canary and positive missing-doctype control.",
+      "scope": "Only institutional module/test; no other runtime inputs changed.",
+      "rerun": "Full institutional test plus global type/PDF/build/smoke and independent matrices; original other groups consume unchanged inputs."
+    }
+  },
+  "outputs": {
+    "src/ingest/discovery/forum.ts": "b679f2f24b8eebc163d0aac06af121d533e5c9415cd89d77eec277dab0cac5cc",
+    "src/ingest/discovery/institutional.ts": "71036db7a7886e01afa750b15fa19b3267450763bec6e23d2d6388a620c41287",
+    "src/ingest/discovery-evaluation.ts": "678353d5066f5d8326b65ad5bea3bb249ab4143cc70214cd41e4330dd1194f02",
+    "test/discovery-forum.test.ts": "51b63de6ac8dae0e3867d1e1ecdd252e8f98891fa4c6409b836f4aabdae06541",
+    "test/discovery-institutional.test.ts": "5f1c7d37ea7950ca2fc40b7588cfc52e336192e392904f9ba8c9c07afd7ccabc",
+    "test/discovery-reference-label-binding.test.ts": "971d165f5f1c4f62cc5f18af1413ac26d16778d3e8c16b1ea97fcace7d575623",
+    "test/discovery-reference-case-binding.test.ts": "bdf2234aab0ac71cab1890706a04a16982a93d47dab18ffbafbc593c7ccda547",
+    "package.json": "7f8e7a126d562f975b7f42f8219c88972cd06fdface907cbc8654d3b9a6e265f",
+    "docs/discovery/implementation-decisions.md": "e85a63ec7f74b27f62a92ca9c1f6899849923d77079ec206a1306213ffb9a079",
+    "docs/discovery/evaluation-protocol.md": "6d14db41120bf9fb52d37490d0f060e8dc80adb893a0493fbdd7c9939b75e58f",
+    "docs/discovery/wp12-wp13-evidence-plan.md": "126c911632ed2bb485cfe110631993f982c714b2d88294f17008a0f8ab91a1cd",
+    "docs/discovery/wp03-label-context-binding.md": "cf63c77aa95a71c7c407af610ebe7eae3e6bc8daeda17292501bb9b0e0a840db",
+    "docs/discovery/wp14-entry-plan.md": "ba5077459103f0941138262cd38813932b612db1e44971a7d9f4b8dcff511bb8",
+    "test/fixtures/discovery-sources/forum/README.md": "6711f6be9add467e65c409c71279f5827f46e289858f79206aecec89d8acf067",
+    "test/fixtures/discovery-sources/forum/private-message.json": "2fefd3e6ece54d6ee088721bbe05ce38f227f3912ae0cbdf06aa3e08700374cb",
+    "test/fixtures/discovery-sources/forum/scope.json": "5aee2360a0c2eaecd2f09e2dfe2477f158a63f8306ca1581bcbe8de9432fe1ea",
+    "test/fixtures/discovery-sources/forum/hidden-comment.json": "90d3f14cc75db74d518790a83264cfdeddbca3deed46df65f2c76e86c70461d1",
+    "test/fixtures/discovery-sources/forum/topic.json": "20f0d0ae2d62c5cc0b762eeeac8b1da66cec6a7d34c35afebf7ca5928b4c8b5d",
+    "test/fixtures/discovery-sources/forum/off-scope-next.json": "c942b3926945a1ea2b1dc55b79692fea6f44fdb5f71323528258fa87b1249a07",
+    "test/fixtures/discovery-sources/forum/encoded-contact.json": "49477dd4374a98781438069342a2acfb593473674dc3cd9a86f8cf780c8971b4",
+    "test/fixtures/discovery-sources/forum/topic-edited.json": "5c313173fcdd2e4bdb0258d57c9732c0e724586e96b560ab2bc35135dd8c6fd0",
+    "test/fixtures/discovery-sources/forum/listing.json": "9942b6f6103b90dc0edce251b3b00152d5872e376f658b930819cdd4051c419c",
+    "test/fixtures/discovery-sources/institutional/directory-page2.html": "42627b271c709bd11437b2681bc7611557867068d31689bcc85753c11357dddd",
+    "test/fixtures/discovery-sources/institutional/association-output.html": "1db3723cb32d49958375f67f588cee17e44921a3fbc2c5f6bd2096b703b42232",
+    "test/fixtures/discovery-sources/institutional/scope.json": "386025bd1565e38ad4b24b14e38bc30331f0a8305e3d197eca871e7c0ed686b8",
+    "test/fixtures/discovery-sources/institutional/offscope-next.html": "db74b3799d24f53437ff5fd20e18482ae48477eb7c5889f5c5a9c21c3fa0ec9f",
+    "test/fixtures/discovery-sources/institutional/private-unmapped.html": "5a09389f02c42196f170f0d0b1f5472d7ef282dacf9efa86fbe71874ce8819f3",
+    "test/fixtures/discovery-sources/institutional/hq-outside-unit.html": "903fbee0bbb26a725390a8f4376aea83d8e01f8a3b313671be715d49969c9900",
+    "test/fixtures/discovery-sources/institutional/directory-page1.html": "531d6125e8a295e2daf7b6e094dd97626e72c36185b9470e2be639c67cf2a5b0",
+    "test/fixtures/discovery-sources/institutional/independent-profile.html": "59e7f9e61dc6384703d355c94e9741d5419de1332f107321f1c0f68b16972aa9",
+    "test/fixtures/discovery-sources/institutional/historical-unknown.html": "37208bbc70cc81bda6f9260a147b20022b93f282f0bd9f425969ed7c9b01353c",
+    "docs/discovery/reviews/wp12-sol.md": "077bc098fc901ae999d0465639f3f3194e6e9e70373b1fa0647c9e7c768b5b77",
+    "docs/discovery/reviews/wp12-terra.md": "4b8badce9dfc8a9fce1fda8a6c7617d3d77c40f2c4e026c1009701ff035b4882",
+    "docs/discovery/reviews/wp12-astra.md": "98172169f26b7180b047f261daaae9235576cf4b7d6bfb441a894afd2889107e",
+    "docs/discovery/reviews/wp13-sol.md": "ab10816d6fd378ff3ea26db47d23451be14afd23f6ff524614c85368f5b993df",
+    "docs/discovery/reviews/wp13-terra.md": "07812c4742d75d426bebc7b8bae9439f35dd8646d7038bcf9083b134cd2b983c",
+    "docs/discovery/reviews/wp13-astra.md": "3df98af957a792a2f6b1ab08a83d538096ba4e502f2ab07efd17e70cd645f4c0",
+    "docs/discovery/reviews/wp12-wp13-orchestrator.md": "61c840f5f43fe575111586e5b7655eeb1cc734587cc1b89545155eb6ad07ead6",
+    "docs/discovery/reviews/wp03-sol-label-binding.md": "11f566e5dd8be6fc8ed772890b7bbf07b399208412c8723b7b11e295c03358e2",
+    "docs/discovery/reviews/wp03-terra-label-binding.md": "d1d6544c5a8301ee5764720c794da4ec71e9668a694db4fde0bdaa7b3ba4b93e",
+    "docs/discovery/reviews/wp03-astra-label-binding.md": "1c6896d35386236cffa93a8531ab226bd0169e3112b95bb610c3f89da9e763c1",
+    "docs/discovery/reviews/wp14-astra-entry.md": "16a65257c31cf5e87a2b47730447ccbed76db22d57903dec5374a36a5281e4e0"
+  },
+  "artifacts": {
+    ".discovery-work/wp12/root-final/completed-groups.json": "88dd4a83f936d472393ecee0535e046e257a9c1687d9172a4eb1e4e3d9bc37a9",
+    ".discovery-work/wp12/root-final/types.log": "8096a1cdf4a03a83d5c0f167a9106deb1075fc86d38e42ad1a235b3988c172d6",
+    ".discovery-work/wp12/root-final/discovery-bibliographic.log": "0e3a3ceea9401142affa62ca671778867572d711b8ef63182b7257e7d7e371bc",
+    ".discovery-work/wp12/root-final/final-checks-after-html-fix.json": "d96b13040111753218eb87339bb323874f1bfefb68117aaee0d86f8d14d8a028",
+    ".discovery-work/wp12/root-final/astra-rerun.json": "5fcb3b7db413769f79b7bafa30569b93b92539503da3391b03fd17f865f9a9ad",
+    ".discovery-work/wp12/root-final/primary-final-a.log": "88aa9b44f54bc5c8a19c9091ed1d442cab504765e1a567e958f96f7ce2125c35",
+    ".discovery-work/wp12/root-final/astra-institutional.log": "85ce17ff99d96cb8c832607d5655e84cfa4330b11d72c65fa96f01b5b6649adc",
+    ".discovery-work/wp12/root-final/build-after-html-fix.log": "47a61f04a99e0be0828c935f5f44fc318e8cd6abfa54e786c175829c9993433e",
+    ".discovery-work/wp12/root-final/astra-institutional-after-fix.log": "fe28b25d46649658a0553b33ff7e9f7819cec156365a59eeea90e38654b049c1",
+    ".discovery-work/wp12/root-final/astra-after-fix.json": "fd54e2ee12a1bb66b0adacd4455d7f17bc9a7aefa2615188b7bead4c07d8519e",
+    ".discovery-work/wp12/root-final/primary-final-a.json": "02af1f8ae3e9b38fbfc2421339eba24901ef5d52c66687a2ed10cafbfe3932d6",
+    ".discovery-work/wp12/root-final/input-sha256.json": "ff284a93183daf55f2c4cd5bc35f86236b6b037acd37ee7f6989fa0826429a25",
+    ".discovery-work/wp12/root-final/audit-current.json": "8a841b09983c4f961e412f062c75959092f4d7ccc4fcdf1b243097cf3a2a0b06",
+    ".discovery-work/wp12/root-final/astra-institutional-chain.log": "69f70da3844127cb50dcd9026389e04d59ce48f9485d3d2b9df70dfc77653936",
+    ".discovery-work/wp12/root-final/astra-forum.log": "2ebccd97a8c1662ffdf3d6d53947168871b2d442027752daf4bf8cef9344ab2c",
+    ".discovery-work/wp12/root-final/build.log": "9d13f5ac60ea3df3cbf0bfd5f67d058885c5111766901ce2c083026a05da9e4d",
+    ".discovery-work/wp12/root-final/final-checks.json": "56934ed0ea8182d1864cbeb59d46250f6c0ca07dae9b307c3f151fe1d3df9e4c",
+    ".discovery-work/wp12/root-final/discovery-institutional.log": "5db3eece571f098cb00b27d2a8a03b30bf4680b6b8eb59c6e9c5335f0d7d12f7",
+    ".discovery-work/wp12/root-final/primary-final-b.json": "e5ff42f7517b47337fc9e8ea8c102fc02078ac5a944b72fb68bfd268e7f35540",
+    ".discovery-work/wp12/root-final/astra-institutional-chain-after-fix.log": "69f70da3844127cb50dcd9026389e04d59ce48f9485d3d2b9df70dfc77653936",
+    ".discovery-work/wp12/root-final/run-final-regression.py": "f671e61503f3d0f756a30b19e5944c1d1c71e5960b3b3da62ba0778f8d2570b2",
+    ".discovery-work/wp12/root-final/ops-smoke.log": "5d97fd332f47c305e1b27a4854c0e44fa7992ad4ed089b942b46378f61368b64",
+    ".discovery-work/wp12/root-final/astra-three-page-after-fix.log": "0c330a7dfa73ca17aa9146ad28488be70c3755242e50b6992364a62874d15054",
+    ".discovery-work/wp12/root-final/discovery-institutional-before-html-recovery-fix.log": "f8ee10e0011a4cf5abb010ddc4f425a8c26ab0ef6558c43d5aefe864df151ede",
+    ".discovery-work/wp12/root-final/prior-head-ci.json": "fcdfa6b36c498860bc163ff737ec480f6d4d0e23516239a4029cb605d49c0131",
+    ".discovery-work/wp12/root-final/watch-final.json": "ca9a278c6859247d9883fb81d7b60246c59584492f24f121355fa01d013744c5",
+    ".discovery-work/wp12/root-final/secret-scan-candidate.log": "8e0e4e0c5f123df983345987a576fcec1afc58bea3f44f5b0d901b650dd3d01f",
+    ".discovery-work/wp12/root-final/types-after-html-fix.log": "8096a1cdf4a03a83d5c0f167a9106deb1075fc86d38e42ad1a235b3988c172d6",
+    ".discovery-work/wp12/root-final/astra-label-context.log": "1558a437149ddc5da466394778d78fcea11ef5b6f0dcdc28493f2a3ca6a69be1",
+    ".discovery-work/wp12/root-final/primary-final-b.log": "2a3b2fcfadb6180ffc8dd915b9a15613eee4bcd13a18a8a9e3f6ed6170b48d08",
+    ".discovery-work/wp12/root-final/audit-result.json": "8ad5d5ea4b4b31e5565eed66b63222a8071e3cb93ccc1b67eb0d090b3b5bff3d",
+    ".discovery-work/wp12/root-final/update-final-records.py": "7226be157ac85c9901e4ee45e30bd1cbac645c1dfc20bef2d58bc997b88b50f6",
+    ".discovery-work/wp12/root-final/discovery-core.log": "c47d3b2f64c4a0d0e36a9f65bad70e6a169a1a66d4e891cbf34d75e0e4c37006",
+    ".discovery-work/wp12/root-final/pdf.log": "917571b2ca07dd237d3c92d344d05841793c636e1280e017b448baec9c53b001",
+    ".discovery-work/wp12/root-final/frozen-manifests.json": "4e0f74507b31ea4a250790e73d8cca85e9473acbac9ccdc0e2c89ee693c358c3",
+    ".discovery-work/wp12/root-final/watch-final.log": "d286e068875abce29a9197bfa075c4b240b618c2d803b018690e98ee6312fe3f",
+    ".discovery-work/wp12/root-final/native-model-inputs.json": "884b9e4d23a053b89ab98ad185b841485121579266229345e7d23e716b9bf2b6",
+    ".discovery-work/wp12/root-final/html-recovery-change.json": "13eea44d82c1ca79420bd0b7d4c6f5472f77a9a5ae7d732dd3067b91f9dcb7d4",
+    ".discovery-work/wp12/root-final/input-sha256-before-html-recovery-fix.json": "592ab1ae115c39f245a14019ab25ca5c32353b6772a2c27a5be08633b2fe6cf1",
+    ".discovery-work/wp12/root-final/record-increments.py": "78e7f8ca715580955d92b48579d540e8595f2074fe9dc95eef9ed35125855838",
+    ".discovery-work/wp12/root-final/discovery-collection.log": "7e37acd7dda3bf434afd9284ed2814a114e6ddc6f0f0653227c1d7ab2e135522",
+    ".discovery-work/wp12/root-final/pdf-after-html-fix.log": "7f5a582eb14d4be57e4dbc6eb5308c50d0f24d750bbd31182c4efa5e5bc79f5f",
+    ".discovery-work/wp12/root-final/ops-smoke-after-html-fix.log": "6eca027f2a77cde824548c41979937c2e1343b825c1b7a2bc1d5550a300e4993",
+    ".discovery-work/wp12/root-final/astra-three-page.log": "0c330a7dfa73ca17aa9146ad28488be70c3755242e50b6992364a62874d15054",
+    ".discovery-work/wp12/root-final/discovery-forum.log": "f4a6e34279acc5fcb8b751b17600f59ae7cb597793e101474b376c3392ff87bf",
+    ".discovery-work/wp12/root-final/discovery-transport.log": "7617d4aaf41b52252d63382a530806029a22a2f108b906e05b3ba4e88c0a1971",
+    ".discovery-work/wp12/root-final/discovery-providers.log": "7d53454e56ad3e07862a684f74c907da909043ab0742fea4d617a23707fb6cd1",
+    ".discovery-work/wp12/root-final/inputs.py": "9e410f83648a36f660d202acf26774c2d619987c03e519015369db5d00e4f1ac",
+    ".discovery-work/wp12-astra/forum-final.log": "2ebccd97a8c1662ffdf3d6d53947168871b2d442027752daf4bf8cef9344ab2c",
+    ".discovery-work/wp12-astra/three-page-probe.log": "0c330a7dfa73ca17aa9146ad28488be70c3755242e50b6992364a62874d15054",
+    ".discovery-work/wp12-astra/label-context-probe.log": "1558a437149ddc5da466394778d78fcea11ef5b6f0dcdc28493f2a3ca6a69be1"
+  },
+  "commands": [
+    {
+      "name": "discovery-collection",
+      "files": [
+        "test/discovery-collection.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-collection.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-core",
+      "files": [
+        "test/discovery-contracts.test.ts",
+        "test/discovery-evaluation.test.ts",
+        "test/discovery-identities.test.ts",
+        "test/discovery-evidence.test.ts",
+        "test/discovery-reference-receipts.test.ts",
+        "test/discovery-reference-signatures.test.ts",
+        "test/discovery-reference-cli.test.ts",
+        "test/discovery-reference-case-binding.test.ts",
+        "test/discovery-reference-label-binding.test.ts",
+        "test/regional-publications.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-contracts.test.ts",
+        "test/discovery-evaluation.test.ts",
+        "test/discovery-identities.test.ts",
+        "test/discovery-evidence.test.ts",
+        "test/discovery-reference-receipts.test.ts",
+        "test/discovery-reference-signatures.test.ts",
+        "test/discovery-reference-cli.test.ts",
+        "test/discovery-reference-case-binding.test.ts",
+        "test/discovery-reference-label-binding.test.ts",
+        "test/regional-publications.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-transport",
+      "files": [
+        "test/discovery-transport.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-transport.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-providers",
+      "files": [
+        "test/discovery-collector.test.ts",
+        "test/discovery-github.test.ts",
+        "test/discovery-pubmed.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-collector.test.ts",
+        "test/discovery-github.test.ts",
+        "test/discovery-pubmed.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-institutional",
+      "files": [
+        "test/discovery-institutional.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-institutional.test.ts"
+      ],
+      "exit_code": 0,
+      "qualification": "Full rerun after HTML recovery fix; prior14-test result retained as superseded."
+    },
+    {
+      "name": "discovery-bibliographic",
+      "files": [
+        "test/discovery-crossref.test.ts",
+        "test/discovery-arxiv.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-crossref.test.ts",
+        "test/discovery-arxiv.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-forum",
+      "files": [
+        "test/discovery-forum.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-forum.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        ".discovery-work/wp12/run.sh",
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/theme.test.ts",
+        "test/query-contracts.test.ts",
+        "test/cloudflare-ops.test.ts",
+        "test/ops-jwt.test.ts",
+        "test/brand-prod.test.ts",
+        "test/events-ingest.test.ts",
+        "test/news-extraction.test.ts",
+        "test/pagination.test.ts",
+        "test/executive-intelligence.test.ts",
+        "test/leadership-health-repair.test.ts",
+        "test/leadership-markup-capture.test.ts",
+        "test/leadership-dom-preview.test.ts",
+        "test/retained-leadership-evaluator.test.ts",
+        "test/leadership-dom-production.test.ts",
+        "test/leadership-contract-preparation.test.ts",
+        "test/ops-diagnostic-correctness.test.ts",
+        "test/ops-recovery-ordering.test.ts",
+        "test/ops-incident-replay.test.ts",
+        "test/leadership-source-quality.test.ts",
+        "test/editor-scheduler-coverage.test.ts",
+        "test/editor-lanes.test.ts",
+        "test/editor-model-resilience.test.ts",
+        "test/official-source-discovery.test.ts"
+      ],
+      "exit_code": 0,
+      "seconds": 24.42
+    },
+    {
+      "command": [
+        ".discovery-work/wp12/run.sh",
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/policy-detail-audit.test.ts",
+        "test/policy-background.test.ts",
+        "test/policy-pdf-integration.test.ts",
+        "test/signal-verification.test.ts",
+        "test/social-evidence.test.ts",
+        "test/watch-legacy-contracts.test.ts",
+        "test/watch-contracts.test.ts",
+        "test/watch-model-evaluation.test.ts",
+        "test/watch-persistence.test.ts",
+        "test/watch-d1.test.ts",
+        "test/watch-adapters.test.ts",
+        "test/watch-representatives.test.ts",
+        "test/news-event-filters.test.ts",
+        "test/news-event-crawler.test.ts",
+        "test/watch-ui-contracts.test.ts",
+        "test/watch-delivery.test.ts",
+        "test/watch-routing.test.ts",
+        "test/editor-cache-provenance.test.ts",
+        "test/watch-review-packets.test.ts",
+        "test/regional-evidence.test.ts",
+        "test/regional-contracts.test.ts",
+        "test/regional-coverage.test.ts",
+        "test/regional-read-view.test.ts",
+        "test/regional-evidence-review-api.test.ts"
+      ],
+      "exit_code": 0,
+      "seconds": 21.64
+    },
+    {
+      "command": [
+        ".discovery-work/wp12/run.sh",
+        "npm",
+        "run",
+        "test:watch-launch"
+      ],
+      "exit_code": 0,
+      "seconds": 24.12
+    },
+    {
+      "name": "types-after-html-fix",
+      "command": [
+        "npm",
+        "run",
+        "test:discovery:types"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "pdf-after-html-fix",
+      "command": [
+        "npm",
+        "run",
+        "test:policy-pdf"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "build-after-html-fix",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "ops-smoke-after-html-fix",
+      "command": [
+        "npm",
+        "run",
+        "ops:smoke"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "environment": "sanitized pinned workspace Node22.23.2; unchanged HOME; workspace TMP/XDG/npm caches; telemetry off; actual localD1 envFiles:[],persist:false,remoteBindings:false; closed synthetic egress",
+  "input_manifest": ".discovery-work/wp12/root-final/input-sha256.json",
+  "input_manifest_sha256": "ff284a93183daf55f2c4cd5bc35f86236b6b037acd37ee7f6989fa0826429a25",
+  "lockfile_sha256": "f90749d123fe5d553057a037188af6a827367aa6bc427e84ccc25a3c4218fe05",
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "frozen_manifests": [
+    {
+      "manifest": "docs/discovery-engineering/HANDOFF-MANIFEST.json",
+      "entries": 70,
+      "mismatches": []
+    },
+    {
+      "manifest": "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json",
+      "entries": 21,
+      "mismatches": []
+    }
+  ],
+  "prior_head_ci": {
+    "head": "84b801bd0905e2759e6ee6afca1c2f4e4088f910",
+    "run_id": 43751687674,
+    "job_id": 132926835107,
+    "conclusion": "failure",
+    "tests": "success",
+    "pdf": "success",
+    "build": "success",
+    "smoke": "success",
+    "audit": "failure",
+    "ci_secret_scan": "skipped",
+    "observed_this_turn": true
+  },
+  "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
+  "deployment_performed": false,
+  "production_state_changed": false,
+  "limits": [
+    "Reviewed synthetic software increments only; no full WP12/WP13 acceptance or actual source qualification.",
+    "WP12 needs a real approved installation/version/response/access/rights/retention profile; strict subset is not general native Discourse compatibility.",
+    "WP12 AC06 native edit/deletion current-claim consumer is unimplemented; read-only proposals do not revoke. Separate authorized ledger revocation closure is tested.",
+    "WP13 needs actual source/profile/access/rights qualification; passive HTML subset rejects many normal pages and is not a universal sensitive-prose classifier.",
+    "WP03 still has zero real cases, no independent human trust/corpus/recall/freeze; all old label purposes require actual re-review and authenticated re-attestation.",
+    "WP14 remains not_started and gated on WP03; its handoff contains proposals and planned not_run tests, not new endpoint/rule/authority/migration code.",
+    "Native model and frozen handoff unchanged; E01-E06 not_run, no empirical relevance/recall or clinical/current-local truth claim.",
+    "Existing four-high/seven-total dependency audit blocks release/CI; no lockfile upgrade or suppression.",
+    "No merge, deployment, live enrollment, real source acquisition, publication, service or scheduler activation."
+  ]
+}

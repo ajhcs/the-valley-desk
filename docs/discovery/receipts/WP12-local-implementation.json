@@ -1,0 +1,212 @@
+{
+  "package": "WP12",
+  "disposition": "reviewed_software_increment_full_package_unaccepted",
+  "full_package_accepted": false,
+  "reviewed_at": "2026-11-15T20:10:01.478358+00:00",
+  "reviewed_code_commit": "8b37a1bac741854d939f4a4f7766daba280cbe81",
+  "owner": "Sol",
+  "independent_tester": "Terra",
+  "code_reviewer": "Astra",
+  "reviews": [
+    "../reviews/wp12-sol.md",
+    "../reviews/wp12-terra.md",
+    "../reviews/wp12-astra.md",
+    "../reviews/wp12-wp13-orchestrator.md"
+  ],
+  "decision": "EX18",
+  "acceptance_criteria": {
+    "AC-WP12-01": "pass_local_candidate; standalone reader path future WP21 and actual qualifying discussion absent.",
+    "AC-WP12-02": "pass_local: two genuine synthetic installations have distinct stable account/topic/post keys.",
+    "AC-WP12-03": "pass_local: account name does not merge with person or establish current-local.",
+    "AC-WP12-04": "pass_local_subset: whole response privacy failures retain no restricted body; only public qualified mock route contacted. Actual access/rights unqualified.",
+    "AC-WP12-05": "pass_local: source instructions and off-scope next cannot change authority or send scope.",
+    "AC-WP12-06": "partial: edit alone leaves existing claim usable; explicit authorized rights revocation invalidates it. Native edit/deletion current-claim consumer unimplemented, full criterion unmet."
+  },
+  "validation": {
+    "enumerated_tests": {
+      "status": "all_passed_completed_bounded_groups",
+      "tests": 1361,
+      "primary": 937,
+      "watch_launch": 146,
+      "discovery": 278,
+      "groups": {
+        "primary-final-a": {
+          "tests": 552,
+          "pass": 552,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "primary-final-b": {
+          "tests": 385,
+          "pass": 385,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "watch-final": {
+          "tests": 146,
+          "pass": 146,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-collection": {
+          "tests": 33,
+          "pass": 33,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-core": {
+          "tests": 117,
+          "pass": 117,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-transport": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-providers": {
+          "tests": 34,
+          "pass": 34,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-institutional": {
+          "tests": 15,
+          "pass": 15,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-bibliographic": {
+          "tests": 31,
+          "pass": 31,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-forum": {
+          "tests": 27,
+          "pass": 27,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        }
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "explicit_discovery_files": 19,
+    "input_count": 607,
+    "input_drift": [],
+    "pdf_tests": 7,
+    "types_build_local_smoke": "pass",
+    "secret_scan": "pass; includes final delivery documents",
+    "terra": {
+      "forum_actual_d1": 27,
+      "institutional_actual_d1": 15,
+      "signed_label_and_prior_case_tests": 2,
+      "included_in_integrated_count": true
+    },
+    "astra": {
+      "forum": 40,
+      "institutional": 48,
+      "label_context": 14,
+      "root_reran_final_programs": true,
+      "counts_not_added_to1361": true
+    },
+    "dependency_audit": {
+      "exit_code": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 1,
+        "moderate": 2,
+        "high": 4,
+        "critical": 0,
+        "total": 7
+      }
+    },
+    "html_recovery_fix": {
+      "changed_inputs": {
+        "src/ingest/discovery/institutional.ts": {
+          "before": "920880957ad9a67e7475281cd3b18ef4b9327012386f0196f4cfc91e63cac778",
+          "after": "71036db7a7886e01afa750b15fa19b3267450763bec6e23d2d6388a620c41287"
+        },
+        "test/discovery-institutional.test.ts": {
+          "before": "4c8bc7b3872b5059166d3bf22c8e599d55a84a9783a6bdd5098bd8e9e5c7a812",
+          "after": "5f1c7d37ea7950ca2fc40b7588cfc52e336192e392904f9ba8c9c07afd7ccabc"
+        }
+      },
+      "unaffected_inputs": 605,
+      "reason": "Confirmed HTML recovery privacy leak; targeted source fix plus permanent D1 canary and positive missing-doctype control.",
+      "scope": "Only institutional module/test; no other runtime inputs changed.",
+      "rerun": "Full institutional test plus global type/PDF/build/smoke and independent matrices; original other groups consume unchanged inputs."
+    }
+  },
+  "outputs": {
+    "src/ingest/discovery/forum.ts": "b679f2f24b8eebc163d0aac06af121d533e5c9415cd89d77eec277dab0cac5cc",
+    "src/ingest/discovery/institutional.ts": "71036db7a7886e01afa750b15fa19b3267450763bec6e23d2d6388a620c41287",
+    "src/ingest/discovery-evaluation.ts": "678353d5066f5d8326b65ad5bea3bb249ab4143cc70214cd41e4330dd1194f02",
+    "test/discovery-forum.test.ts": "51b63de6ac8dae0e3867d1e1ecdd252e8f98891fa4c6409b836f4aabdae06541",
+    "test/discovery-institutional.test.ts": "5f1c7d37ea7950ca2fc40b7588cfc52e336192e392904f9ba8c9c07afd7ccabc",
+    "test/discovery-reference-label-binding.test.ts": "971d165f5f1c4f62cc5f18af1413ac26d16778d3e8c16b1ea97fcace7d575623",
+    "test/discovery-reference-case-binding.test.ts": "bdf2234aab0ac71cab1890706a04a16982a93d47dab18ffbafbc593c7ccda547",
+    "package.json": "7f8e7a126d562f975b7f42f8219c88972cd06fdface907cbc8654d3b9a6e265f",
+    "docs/discovery/implementation-decisions.md": "e85a63ec7f74b27f62a92ca9c1f6899849923d77079ec206a1306213ffb9a079",
+    "docs/discovery/evaluation-protocol.md": "6d14db41120bf9fb52d37490d0f060e8dc80adb893a0493fbdd7c9939b75e58f",
+    "docs/discovery/wp12-wp13-evidence-plan.md": "126c911632ed2bb485cfe110631993f982c714b2d88294f17008a0f8ab91a1cd",
+    "docs/discovery/wp03-label-context-binding.md": "cf63c77aa95a71c7c407af610ebe7eae3e6bc8daeda17292501bb9b0e0a840db",
+    "docs/discovery/wp14-entry-plan.md": "ba5077459103f0941138262cd38813932b612db1e44971a7d9f4b8dcff511bb8",
+    "test/fixtures/discovery-sources/forum/README.md": "6711f6be9add467e65c409c71279f5827f46e289858f79206aecec89d8acf067",
+    "test/fixtures/discovery-sources/forum/private-message.json": "2fefd3e6ece54d6ee088721bbe05ce38f227f3912ae0cbdf06aa3e08700374cb",
+    "test/fixtures/discovery-sources/forum/scope.json": "5aee2360a0c2eaecd2f09e2dfe2477f158a63f8306ca1581bcbe8de9432fe1ea",
+    "test/fixtures/discovery-sources/forum/hidden-comment.json": "90d3f14cc75db74d518790a83264cfdeddbca3deed46df65f2c76e86c70461d1",
+    "test/fixtures/discovery-sources/forum/topic.json": "20f0d0ae2d62c5cc0b762eeeac8b1da66cec6a7d34c35afebf7ca5928b4c8b5d",
+    "test/fixtures/discovery-sources/forum/off-scope-next.json": "c942b3926945a1ea2b1dc55b79692fea6f44fdb5f71323528258fa87b1249a07",
+    "test/fixtures/discovery-sources/forum/encoded-contact.json": "49477dd4374a98781438069342a2acfb593473674dc3cd9a86f8cf780c8971b4",
+    "test/fixtures/discovery-sources/forum/topic-edited.json": "5c313173fcdd2e4bdb0258d57c9732c0e724586e96b560ab2bc35135dd8c6fd0",
+    "test/fixtures/discovery-sources/forum/listing.json": "9942b6f6103b90dc0edce251b3b00152d5872e376f658b930819cdd4051c419c",
+    "test/fixtures/discovery-sources/institutional/directory-page2.html": "42627b271c709bd11437b2681bc7611557867068d31689bcc85753c11357dddd",
+    "test/fixtures/discovery-sources/institutional/association-output.html": "1db3723cb32d49958375f67f588cee17e44921a3fbc2c5f6bd2096b703b42232",
+    "test/fixtures/discovery-sources/institutional/scope.json": "386025bd1565e38ad4b24b14e38bc30331f0a8305e3d197eca871e7c0ed686b8",
+    "test/fixtures/discovery-sources/institutional/offscope-next.html": "db74b3799d24f53437ff5fd20e18482ae48477eb7c5889f5c5a9c21c3fa0ec9f",
+    "test/fixtures/discovery-sources/institutional/private-unmapped.html": "5a09389f02c42196f170f0d0b1f5472d7ef282dacf9efa86fbe71874ce8819f3",
+    "test/fixtures/discovery-sources/institutional/hq-outside-unit.html": "903fbee0bbb26a725390a8f4376aea83d8e01f8a3b313671be715d49969c9900",
+    "test/fixtures/discovery-sources/institutional/directory-page1.html": "531d6125e8a295e2daf7b6e094dd97626e72c36185b9470e2be639c67cf2a5b0",
+    "test/fixtures/discovery-sources/institutional/independent-profile.html": "59e7f9e61dc6384703d355c94e9741d5419de1332f107321f1c0f68b16972aa9",
+    "test/fixtures/discovery-sources/institutional/historical-unknown.html": "37208bbc70cc81bda6f9260a147b20022b93f282f0bd9f425969ed7c9b01353c",
+    "docs/discovery/reviews/wp12-sol.md": "077bc098fc901ae999d0465639f3f3194e6e9e70373b1fa0647c9e7c768b5b77",
+    "docs/discovery/reviews/wp12-terra.md": "4b8badce9dfc8a9fce1fda8a6c7617d3d77c40f2c4e026c1009701ff035b4882",
+    "docs/discovery/reviews/wp12-astra.md": "98172169f26b7180b047f261daaae9235576cf4b7d6bfb441a894afd2889107e",
+    "docs/discovery/reviews/wp13-sol.md": "ab10816d6fd378ff3ea26db47d23451be14afd23f6ff524614c85368f5b993df",
+    "docs/discovery/reviews/wp13-terra.md": "07812c4742d75d426bebc7b8bae9439f35dd8646d7038bcf9083b134cd2b983c",
+    "docs/discovery/reviews/wp13-astra.md": "3df98af957a792a2f6b1ab08a83d538096ba4e502f2ab07efd17e70cd645f4c0",
+    "docs/discovery/reviews/wp12-wp13-orchestrator.md": "61c840f5f43fe575111586e5b7655eeb1cc734587cc1b89545155eb6ad07ead6",
+    "docs/discovery/reviews/wp03-sol-label-binding.md": "11f566e5dd8be6fc8ed772890b7bbf07b399208412c8723b7b11e295c03358e2",
+    "docs/discovery/reviews/wp03-terra-label-binding.md": "d1d6544c5a8301ee5764720c794da4ec71e9668a694db4fde0bdaa7b3ba4b93e",
+    "docs/discovery/reviews/wp03-astra-label-binding.md": "1c6896d35386236cffa93a8531ab226bd0169e3112b95bb610c3f89da9e763c1",
+    "docs/discovery/reviews/wp14-astra-entry.md": "16a65257c31cf5e87a2b47730447ccbed76db22d57903dec5374a36a5281e4e0"
+  },
+  "limits": [
+    "Reviewed synthetic software increments only; no full WP12/WP13 acceptance or actual source qualification.",
+    "WP12 needs a real approved installation/version/response/access/rights/retention profile; strict subset is not general native Discourse compatibility.",
+    "WP12 AC06 native edit/deletion current-claim consumer is unimplemented; read-only proposals do not revoke. Separate authorized ledger revocation closure is tested.",
+    "WP13 needs actual source/profile/access/rights qualification; passive HTML subset rejects many normal pages and is not a universal sensitive-prose classifier.",
+    "WP03 still has zero real cases, no independent human trust/corpus/recall/freeze; all old label purposes require actual re-review and authenticated re-attestation.",
+    "WP14 remains not_started and gated on WP03; its handoff contains proposals and planned not_run tests, not new endpoint/rule/authority/migration code.",
+    "Native model and frozen handoff unchanged; E01-E06 not_run, no empirical relevance/recall or clinical/current-local truth claim.",
+    "Existing four-high/seven-total dependency audit blocks release/CI; no lockfile upgrade or suppression.",
+    "No merge, deployment, live enrollment, real source acquisition, publication, service or scheduler activation."
+  ],
+  "integration": "../wp12-wp13-integration-validation.json",
+  "reviewed_snapshot": ".discovery-work/wp12/reviewed-candidate/manifest.json"
+}

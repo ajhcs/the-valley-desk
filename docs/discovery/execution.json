@@ -50,12 +50,13 @@
       "status": "in_progress",
       "receipt": "receipts/WP03-preparation.json",
       "acceptance": null,
-      "notes": "Versioned selection expectation now binds full case descriptors, manifest context and source snapshots after authentic legacy county/challenge edits reproduced false readiness. Sol implementation, Terra signed mutation/re-attestation test and Astra nine extra checks reviewed. Old partial receipts require accountable re-review with no fallback. Real operator trust, rights, humans, corpus, recall, history and freeze remain absent. Actual manifest has zero cases, blocked/not_frozen; WP03 remains incomplete and cannot satisfy WP14.",
+      "notes": "Signed annotation, blinding and adjudication now bind the exact EX17 case/source context; adjudication also binds preserved independent annotations. Authentic stale-label replay is rejected, with no legacy fallback. Sol/Terra/Astra reviewed; fixture DAG depth corrected. Actual corpus has zero real cases, no independently enrolled humans/rights/trust/recall/freeze; blocked/not_frozen. WP03 remains incomplete and cannot satisfy WP14.",
       "progress_receipts": [
         "receipts/WP03-receipt-intake-progress.json",
         "receipts/WP03-signature-intake-progress.json",
         "receipts/WP03-cli-intake-progress.json",
-        "receipts/WP03-case-selection-binding-progress.json"
+        "receipts/WP03-case-selection-binding-progress.json",
+        "receipts/WP03-label-context-progress.json"
       ]
     },
     {
@@ -180,10 +181,14 @@
       "depends_on": [
         "WP06"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "receipt": null,
       "acceptance": null,
-      "notes": ""
+      "notes": "Bounded software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP12 acceptance ungranted: actual installation/version/response/access/rights qualification absent and AC06 automatic native edit/deletion current-claim consumer unimplemented. Read-only proposals and separate authorized ledger revocation boundary tested.",
+      "started_at": "2026-11-15T19:32:22.113537+00:00",
+      "progress_receipts": [
+        "receipts/WP12-local-implementation.json"
+      ]
     },
     {
       "id": "WP13",
@@ -192,10 +197,14 @@
       "depends_on": [
         "WP06"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "receipt": null,
       "acceptance": null,
-      "notes": ""
+      "notes": "Bounded passive HTML software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP13 acceptance ungranted pending actual source/profile/access/rights qualification. Literal role/location/date extraction and reviewed-origin boundary tested; no geographic/current-employment admission.",
+      "started_at": "2026-11-15T19:32:22.113537+00:00",
+      "progress_receipts": [
+        "receipts/WP13-local-implementation.json"
+      ]
     },
     {
       "id": "WP14",
@@ -209,7 +218,13 @@
       "status": "not_started",
       "receipt": null,
       "acceptance": null,
-      "notes": ""
+      "notes": "Entry handoff inspected by Sol/Astra; concrete authority/store gaps and planned API/tests recorded. User confirmed continuing in dependency order. No endpoint, rule, authority, migration or admission implementation started; actual WP03 freeze remains required.",
+      "progress_receipts": [
+        "receipts/WP14-entry-preparation.json"
+      ],
+      "blocked_by": [
+        "WP03"
+      ]
     },
     {
       "id": "WP15",
@@ -462,7 +477,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-15T19:17:21.990312+00:00",
+  "updated_at": "2026-11-15T20:01:42.325947+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -630,12 +645,44 @@
         "WP24"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX18",
+      "path": "implementation-decisions.md",
+      "status": "software_increment_reviewed_full_package_unaccepted",
+      "affects": [
+        "WP12",
+        "WP14",
+        "WP16",
+        "WP23"
+      ],
+      "thresholds_changed": false
+    },
+    {
+      "id": "EX19",
+      "path": "implementation-decisions.md",
+      "status": "software_increment_reviewed_full_package_unaccepted",
+      "affects": [
+        "WP13",
+        "WP14",
+        "WP23"
+      ],
+      "thresholds_changed": false
+    },
+    {
+      "id": "EX20",
+      "path": "implementation-decisions.md",
+      "status": "preparation_integrity_correction_reviewed_package_incomplete",
+      "affects": [
+        "WP03",
+        "WP14",
+        "WP22",
+        "WP24"
+      ],
+      "thresholds_changed": false
     }
   ],
-  "next_ready_packages": [
-    "WP12",
-    "WP13"
-  ],
+  "next_ready_packages": [],
   "release_readiness": "not_qualified",
   "release_blockers": [
     "dependency-audit: four high advisories in unchanged lockfile",
@@ -643,13 +690,15 @@
     "deployment explicitly prohibited"
   ],
   "active_packages": [
-    "WP03"
+    "WP03",
+    "WP12",
+    "WP13"
   ],
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "e0a24309459a690b4cdd3e17c9c70f50700b092e",
-    "code_ci_run": 43751196486,
-    "code_ci": "e0a2430 code CI157 in progress at observation. Prior dcb2b10 CI155 tests/PDF/build/smoke passed then audit failed. Current local1318 tests,7 PDF,typecheck/build/smoke/secret scan pass; audit remains four high/seven total. Final documentation head CI separate."
+    "reviewed_code_commit": "8b37a1bac741854d939f4a4f7766daba280cbe81",
+    "code_ci_run": null,
+    "code_ci": "New exact-head CI pending. Prior84b801b CI159 tests/PDF/build/smoke passed then audit failed. Current local1361 tests,7 PDF,typecheck/build/smoke/secret scan pass; audit four high/seven total. FullWP12/WP13 acceptance ungranted;WP14 gated."
   }
 }

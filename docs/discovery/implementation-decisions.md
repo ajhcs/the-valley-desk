@@ -627,7 +627,7 @@ assembly remain missing.
 
 ## EX18 — Bounded forum software; qualification and lifecycle holds
 
-**Status:** Software increment under integration review; full WP12 remains
+**Status:** Software increment reviewed; full WP12 remains
 in_progress. No actual installation, access or retention permission is established.
 
 One versioned Discourse-shaped anonymous JSON subset is implemented. The frozen
@@ -666,7 +666,7 @@ AC-WP12-06 is not fully met. No full package acceptance is granted by this incre
 
 ## EX19 — Source-specific passive institutional HTML
 
-**Status:** Software increment under integration review; full WP13 remains
+**Status:** Software increment reviewed; full WP13 remains
 in_progress until actual sources, access/rights and response profiles qualify.
 No thresholds, shared runtime writes or native model changes.
 
@@ -697,9 +697,15 @@ an unresolved originReview ref cannot grant equivalence: distinct origin counts
 use the existing reviewed evidence ledger. Real geographic truth and recall stay
 future validation work. No full WP13 acceptance is granted by this increment.
 
+The final institutional parser also rejects all HTML recovery diagnostics except
+missing-doctype, plus non-HTML or public/system doctypes. A reproduced encoded
+contact on a discarded closing-tag attribute could otherwise remain in raw bytes.
+The permanent D1 regression rejects it before capture, while valid no-doctype
+HTML remains supported. Earlier source/results are retained as superseded.
+
 ## EX20 — Signed labels bind the reviewed case/source context
 
-**Status:** WP03 preparation correction under integration review; actual corpus
+**Status:** WP03 preparation correction reviewed; actual corpus
 remains empty and not_frozen. Affects WP03/WP14/WP22/WP24. No schema, threshold or
 reference truth is changed.
 

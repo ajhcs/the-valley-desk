@@ -1,0 +1,39 @@
+{
+  "package": "WP03",
+  "disposition": "label_context_integrity_correction_reviewed_package_incomplete",
+  "recorded_at": "2026-11-15T20:10:01.478358+00:00",
+  "prior_progress_receipt": "WP03-case-selection-binding-progress.json",
+  "decision": "EX20",
+  "reviewed_code_commit": "8b37a1bac741854d939f4a4f7766daba280cbe81",
+  "owner": "Sol",
+  "independent_reviewer": "Terra",
+  "code_reviewer": "Astra",
+  "outputs": {
+    "src/ingest/discovery-evaluation.ts": "678353d5066f5d8326b65ad5bea3bb249ab4143cc70214cd41e4330dd1194f02",
+    "test/discovery-reference-label-binding.test.ts": "971d165f5f1c4f62cc5f18af1413ac26d16778d3e8c16b1ea97fcace7d575623",
+    "test/discovery-reference-case-binding.test.ts": "bdf2234aab0ac71cab1890706a04a16982a93d47dab18ffbafbc593c7ccda547",
+    "docs/discovery/wp03-label-context-binding.md": "cf63c77aa95a71c7c407af610ebe7eae3e6bc8daeda17292501bb9b0e0a840db",
+    "docs/discovery/reviews/wp03-sol-label-binding.md": "11f566e5dd8be6fc8ed772890b7bbf07b399208412c8723b7b11e295c03358e2",
+    "docs/discovery/reviews/wp03-terra-label-binding.md": "d1d6544c5a8301ee5764720c794da4ec71e9668a694db4fde0bdaa7b3ba4b93e",
+    "docs/discovery/reviews/wp03-astra-label-binding.md": "1c6896d35386236cffa93a8531ab226bd0169e3112b95bb610c3f89da9e763c1"
+  },
+  "validation": {
+    "new_genuine_signed_test": 1,
+    "prior_genuine_signed_test": 1,
+    "independent_wrapper_context_DAG_checks": 14,
+    "stale_annotation_blinding_adjudication_rejected": true,
+    "legacy_fallback": false,
+    "fixture_hashing_rounds": 8,
+    "freeze_issued": false
+  },
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "real_case_count": 0,
+  "readiness": "blocked",
+  "manifest_status": "not_frozen",
+  "empirical_gates": "E01-E06 not_run",
+  "limits": [
+    "WP03 still has zero real cases, no independent human trust/corpus/recall/freeze; all old label purposes require actual re-review and authenticated re-attestation.",
+    "WP14 remains not_started and gated on WP03; its handoff contains proposals and planned not_run tests, not new endpoint/rule/authority/migration code.",
+    "Native model and frozen handoff unchanged; E01-E06 not_run, no empirical relevance/recall or clinical/current-local truth claim."
+  ]
+}
