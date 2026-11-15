@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "source_revision": "TVD-CONCEPT-0.4 independent retained P30 operational-path obligation",
+  "requirements": [
+    "FC_SCOPE",
+    "FC_AUTHORITY",
+    "FC_EVIDENCE"
+  ],
+  "scenarios": [
+    "IndependentPaper",
+    "ForumDiscovery",
+    "RefreshReview"
+  ]
+}

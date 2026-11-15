@@ -1,0 +1,198 @@
+{
+  "requirements": [
+    {
+      "id": "R01",
+      "title": "Exact DVRPC geography and temporal regional meaning",
+      "work_packages": [
+        "WP01",
+        "WP02",
+        "WP04",
+        "WP14",
+        "WP24"
+      ]
+    },
+    {
+      "id": "R02",
+      "title": "Substantive healthcare technology relevance",
+      "work_packages": [
+        "WP01",
+        "WP03",
+        "WP14",
+        "WP24"
+      ]
+    },
+    {
+      "id": "R03",
+      "title": "Distinct creators and accounts; independent people and work",
+      "work_packages": [
+        "WP02",
+        "WP04",
+        "WP14",
+        "WP18",
+        "WP30"
+      ]
+    },
+    {
+      "id": "R04",
+      "title": "Claim evidence, provenance origins and version history",
+      "work_packages": [
+        "WP05",
+        "WP06",
+        "WP14",
+        "WP23"
+      ]
+    },
+    {
+      "id": "R05",
+      "title": "Typed relationships, partial dates and artifact rights",
+      "work_packages": [
+        "WP02",
+        "WP04",
+        "WP05",
+        "WP14",
+        "WP18"
+      ]
+    },
+    {
+      "id": "R06",
+      "title": "Six independent acquisition routes and extension contract",
+      "work_packages": [
+        "WP06",
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP24"
+      ]
+    },
+    {
+      "id": "R07",
+      "title": "Qualified bounded acquisition, durable progress and typed health",
+      "work_packages": [
+        "WP06",
+        "WP07",
+        "WP21",
+        "WP23"
+      ]
+    },
+    {
+      "id": "R08",
+      "title": "Authenticated admission and accountable review",
+      "work_packages": [
+        "WP14",
+        "WP15",
+        "WP22",
+        "WP23"
+      ]
+    },
+    {
+      "id": "R09",
+      "title": "Atomic public projections with complete dependency guards",
+      "work_packages": [
+        "WP05",
+        "WP16",
+        "WP22",
+        "WP23"
+      ]
+    },
+    {
+      "id": "R10",
+      "title": "Normalized exact query, facets and deterministic ordering",
+      "work_packages": [
+        "WP02",
+        "WP17",
+        "WP18",
+        "WP23",
+        "WP24"
+      ]
+    },
+    {
+      "id": "R11",
+      "title": "Immutable snapshot pagination and explicit invalidation",
+      "work_packages": [
+        "WP02",
+        "WP16",
+        "WP17",
+        "WP21",
+        "WP23"
+      ]
+    },
+    {
+      "id": "R12",
+      "title": "Complete reader journeys and supported next actions",
+      "work_packages": [
+        "WP15",
+        "WP18",
+        "WP19",
+        "WP20",
+        "WP24",
+        "WP30"
+      ]
+    },
+    {
+      "id": "R13",
+      "title": "Accessible responsive and performant delivery",
+      "work_packages": [
+        "WP20",
+        "WP24"
+      ]
+    },
+    {
+      "id": "R14",
+      "title": "Corrections, current claims, coverage and freshness",
+      "work_packages": [
+        "WP15",
+        "WP16",
+        "WP21",
+        "WP24"
+      ]
+    },
+    {
+      "id": "R15",
+      "title": "Compatible legacy routes, feeds and consumers",
+      "work_packages": [
+        "WP00",
+        "WP19",
+        "WP26",
+        "WP27",
+        "WP28"
+      ]
+    },
+    {
+      "id": "R16",
+      "title": "Security, retention, observability and recoverable operations",
+      "work_packages": [
+        "WP06",
+        "WP07",
+        "WP21",
+        "WP22",
+        "WP26",
+        "WP27"
+      ]
+    },
+    {
+      "id": "R17",
+      "title": "Independent verification, empirical evaluation and exact-candidate evidence",
+      "work_packages": [
+        "WP00",
+        "WP02",
+        "WP03",
+        "WP23",
+        "WP24",
+        "WP27"
+      ]
+    },
+    {
+      "id": "R18",
+      "title": "Public product focus and sustainable editorial business",
+      "work_packages": [
+        "WP01",
+        "WP25",
+        "WP28",
+        "WP29"
+      ]
+    }
+  ]
+}

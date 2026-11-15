@@ -1,0 +1,1213 @@
+{
+  "scope": "Selected lexical budgets on handoff prose, visible table cells and command lines; frozen historical artifacts excluded. No semantic or full STE verdict.",
+  "budgets": {
+    "sentence_words": 60,
+    "paragraph_words": 160,
+    "document_words": 5000
+  },
+  "extraction": "Markdown link labels retained; table cells and command lines are separate blocks; all other headings, list items and prose retained.",
+  "checker": "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/scripts/prose.py",
+  "status": "pass",
+  "results": [
+    {
+      "document": "ARCHITECTURE.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 140,
+          "sentences": 232,
+          "words": 2265
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/ARCHITECTURE.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "25c06238892c80be3d8c11d214a24b91c7ed6f46a0b686e1fb63be7415631f58",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "EVIDENCE.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 67,
+          "sentences": 150,
+          "words": 1757
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/EVIDENCE.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "2c6d9fae56870f60e2e341e863eed89826c8568513f5cecb9bb7857cdc00732c",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "EXECUTION.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 52,
+          "sentences": 114,
+          "words": 1298
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/EXECUTION.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "b20f8a1bf849abd1228c0b55fbc5a43ec6749be533449162e6fa9bbcc1d1e41c",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "INPUTS-AND-RISKS.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 104,
+          "sentences": 107,
+          "words": 825
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/INPUTS-AND-RISKS.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "e4d0cecd0e1baf91cbdf4e65883024a1697d4dd443714bd486d3ebc4319f9aa5",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "README.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 180,
+          "sentences": 213,
+          "words": 1016
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/README.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "6f0ab6636f1a3f5ef3dc056dc3bf988968eabb0e1041ff62a9772b8a02148f09",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "REQUIREMENTS.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 118,
+          "sentences": 148,
+          "words": 1298
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/REQUIREMENTS.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "2626fbc398bac1f98970db58d125308a2733e12a4ac0188c63eaf4a3e06bb473",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "SCOPE.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 299,
+          "sentences": 301,
+          "words": 960
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/SCOPE.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "1deb82c8154333488ccd2de178107ff9a248da54c2303a2e6e665e7c1e09d7ea",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "VALIDATION.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 47,
+          "sentences": 61,
+          "words": 640
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/VALIDATION.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "6d2a94792febab7fa690c7ce86711c2e2af680ba4f68a7d8a86568b8e788bc0a",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "baseline/README.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 9,
+          "sentences": 32,
+          "words": 422
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/baseline__README.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "fdc8443768edcebf0d71b3aa2a1be2067fda63b47cf110a99ca2783f78776895",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP00.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 21,
+          "sentences": 57,
+          "words": 584
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP00.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "151eef89b4abd99a5fa27cd87ce03a0f7d66a6bc9aa4aaab818d9fafbe618bea",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP01.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 20,
+          "sentences": 46,
+          "words": 639
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP01.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "778395cca42e3c45fcba4a0f3a6db7f171dab18daf571a1ac50ee920bf3ac227",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP02.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 19,
+          "sentences": 58,
+          "words": 708
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP02.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "2d1c83feef6973a945ef7d5f5c52e00436e19aa86c2c78d5332d87a074a821a9",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP03.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 17,
+          "sentences": 47,
+          "words": 637
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP03.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "3fe079cb9abb4b8addff3413d2f7f5d4539293392f687019bc3039f3f2881fb9",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP04.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 51,
+          "words": 609
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP04.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "8375e03d3fd9b22c5e7753ee6e380d622a9044006503e724ef6177de01e3def5",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP05.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 53,
+          "words": 621
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP05.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "99a709a0ef6f92981a73dca51b69dd1cee91811952ebbdd4162b46b7be1896e0",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP06.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 55,
+          "words": 625
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP06.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "058d4767c225bc1e16fb53298ac18322c8467664ad8c028bcf8854fad4fe1816",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP07.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 52,
+          "words": 613
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP07.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "6b277509b1b40a4fc52886e772b28253cc947d1b2c564ce8fa17db73a45b6d7c",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP08.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 51,
+          "words": 595
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP08.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "de3ed57bede65be12d1c0f96dce7b9a8a1ce3dfcb950339535376cf3f196a527",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP09.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 52,
+          "words": 612
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP09.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "eaf1d87b3b3d3457b1ad8507bfc36222cde6752258634725efa2e1aae8535ef4",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP10.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 52,
+          "words": 606
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP10.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "4d0acb69bdedae9139b5ce914ad98e62d1f22fb3037e7cf0c005c4d8884d92ea",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP11.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 50,
+          "words": 604
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP11.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "0fae8a6b8f30355b1a16402bf00bdc1942390579158ff3ccb027f0fbf2aaeb37",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP12.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 50,
+          "words": 598
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP12.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "234324d9d9a21114d5a0ba85471ee2f478562c1411a9f7f814b2a78665d2d156",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP13.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 51,
+          "words": 607
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP13.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "aa9e291a7e3eec242cebf9442840a0b5a60960501de31f1cba74d0476f3be8bc",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP14.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 53,
+          "words": 654
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP14.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "c31b9fda28918538df8942b4662b50eeda836ae81cf8f7b028977a3c1913f27d",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP15.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 18,
+          "sentences": 41,
+          "words": 592
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP15.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "ba39a6964fbe9ff00300a486560c1d5f6c1908a7f963aab7dcc518a2bbeaeb5e",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP16.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 28,
+          "sentences": 55,
+          "words": 641
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP16.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "2892abaeb78e8206c5c672b34cafa9018205594996e2f2954d1c5e322a05a3b4",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP17.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 31,
+          "sentences": 65,
+          "words": 903
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP17.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "e73c415462e52debc98b02329ace9bdda1fdc4ba222d77e9e8f6cb67e2d5263e",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP18.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 20,
+          "sentences": 49,
+          "words": 702
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP18.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "a0c3a47131b0568443a8a0c43e85866897b42325551145522be0800499e73e61",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP19.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 18,
+          "sentences": 40,
+          "words": 569
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP19.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "bfa902702269bc659d58549c55b9691747180663cf31061e7561c7ffcfd0f74c",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP20.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 18,
+          "sentences": 43,
+          "words": 626
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP20.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "2f433368ef5065bece24bceda08abf4e4a54ed72b4e6c8ef537dc49351ad051f",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP21.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 20,
+          "sentences": 46,
+          "words": 675
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP21.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "d41347de2dac92c8609622aaa5551b8a4d4f680ba44fab39fd02a1609b91c9cd",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP22.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 20,
+          "sentences": 53,
+          "words": 598
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP22.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "6cea6ca17a1e65cddb62b1bdd84f651b452cec92252d5486f7313ce6d4291725",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP23.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 18,
+          "sentences": 48,
+          "words": 646
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP23.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "43231b73c82d2b61b643b99ec7e6a3576b441fb00a4bc4511cac8dcec5cf29a8",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP24.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 21,
+          "sentences": 59,
+          "words": 747
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP24.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "867c1986e2ec7bac6927d8c529c898950ffe95150cfc66232d9404eff28954d7",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP25.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 19,
+          "sentences": 47,
+          "words": 772
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP25.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "04529dc582b267391eb1da077cb7c1ed8f210786fd81ce2f0c33895d04315c6d",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP26.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 31,
+          "sentences": 60,
+          "words": 799
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP26.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "739a98d4b8a329714805a541e123c276ac5b94fe6466c377ab4b1db1423c6cf1",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP27.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 21,
+          "sentences": 57,
+          "words": 620
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP27.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "77a004efff97197445ca55ef793b95719624467198d68d06f919262fae2f98dc",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP28.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 17,
+          "sentences": 37,
+          "words": 475
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP28.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "364faab152172cccb1fb1808639131f32f110b0a82c1055a7059626d289a6855",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP29.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 17,
+          "sentences": 35,
+          "words": 492
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP29.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "c606ddbffa44eebe9690ca9ab7b5030dcb95c0a80c8d3c5a443cbe5dde5071e8",
+        "total_findings": 0
+      }
+    },
+    {
+      "document": "work-packages/WP30.md",
+      "exit": 0,
+      "result": {
+        "checker_version": "prose-1.0",
+        "claim_scope": "selected_lexical_prose_budgets",
+        "counts": {
+          "paragraphs": 20,
+          "sentences": 51,
+          "words": 649
+        },
+        "diagnostic_limits": {
+          "findings": 100,
+          "snippet_characters": 240
+        },
+        "file": "/workspace/build/builderbob/tvd-discovery-handoff-review-20261113/work-packages__WP30.md.txt",
+        "findings": [],
+        "findings_truncated": false,
+        "kind": "description",
+        "limits": {
+          "document_words": 5000,
+          "paragraph_words": 160,
+          "sentence_words": 60
+        },
+        "returned_findings": 0,
+        "status": "pass",
+        "text_sha256": "b90f3f6b38b803401c7a016e6a181a51cac4f48aabaf57b03b5755c41b98f6af",
+        "total_findings": 0
+      }
+    }
+  ]
+}

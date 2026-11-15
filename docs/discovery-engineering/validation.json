@@ -1,0 +1,246 @@
+{
+  "id": "TVD-HANDOFF-DOCUMENT-VALIDATION/1.0",
+  "checked_at_utc": "2026-11-13T23:52:20.791833+00:00",
+  "status": "pass",
+  "scope": "Documentation metadata, graph, allocation, acceptance IDs, local links, frozen bytes and scoped Git changes. No application, source-access, empirical or production qualification.",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "counts": {
+    "work_packages": 31,
+    "core_packages": 29,
+    "conditional_packages": 2,
+    "acceptance_criteria": 171,
+    "original_scope_items": 101,
+    "requirements": 18,
+    "formal_families": 32,
+    "empirical_gates": 6,
+    "local_links_checked": 561,
+    "frozen_files_checked": 21
+  },
+  "dependency_waves": [
+    [
+      "WP00"
+    ],
+    [
+      "WP01"
+    ],
+    [
+      "WP02"
+    ],
+    [
+      "WP03",
+      "WP04"
+    ],
+    [
+      "WP05"
+    ],
+    [
+      "WP06"
+    ],
+    [
+      "WP07",
+      "WP08",
+      "WP09",
+      "WP10",
+      "WP11",
+      "WP12",
+      "WP13",
+      "WP14"
+    ],
+    [
+      "WP16"
+    ],
+    [
+      "WP15",
+      "WP17"
+    ],
+    [
+      "WP18",
+      "WP21"
+    ],
+    [
+      "WP19",
+      "WP30"
+    ],
+    [
+      "WP20",
+      "WP22"
+    ],
+    [
+      "WP23"
+    ],
+    [
+      "WP24",
+      "WP26"
+    ],
+    [
+      "WP25"
+    ],
+    [
+      "WP27"
+    ],
+    [
+      "WP28",
+      "WP29"
+    ]
+  ],
+  "package_checks": [
+    {
+      "id": "WP00",
+      "acceptance_criteria": 5,
+      "words": 584
+    },
+    {
+      "id": "WP01",
+      "acceptance_criteria": 5,
+      "words": 639
+    },
+    {
+      "id": "WP02",
+      "acceptance_criteria": 5,
+      "words": 708
+    },
+    {
+      "id": "WP03",
+      "acceptance_criteria": 5,
+      "words": 637
+    },
+    {
+      "id": "WP04",
+      "acceptance_criteria": 6,
+      "words": 611
+    },
+    {
+      "id": "WP05",
+      "acceptance_criteria": 6,
+      "words": 623
+    },
+    {
+      "id": "WP06",
+      "acceptance_criteria": 6,
+      "words": 627
+    },
+    {
+      "id": "WP07",
+      "acceptance_criteria": 6,
+      "words": 615
+    },
+    {
+      "id": "WP08",
+      "acceptance_criteria": 6,
+      "words": 597
+    },
+    {
+      "id": "WP09",
+      "acceptance_criteria": 6,
+      "words": 614
+    },
+    {
+      "id": "WP10",
+      "acceptance_criteria": 6,
+      "words": 608
+    },
+    {
+      "id": "WP11",
+      "acceptance_criteria": 6,
+      "words": 606
+    },
+    {
+      "id": "WP12",
+      "acceptance_criteria": 6,
+      "words": 600
+    },
+    {
+      "id": "WP13",
+      "acceptance_criteria": 6,
+      "words": 609
+    },
+    {
+      "id": "WP14",
+      "acceptance_criteria": 6,
+      "words": 656
+    },
+    {
+      "id": "WP15",
+      "acceptance_criteria": 4,
+      "words": 592
+    },
+    {
+      "id": "WP16",
+      "acceptance_criteria": 6,
+      "words": 643
+    },
+    {
+      "id": "WP17",
+      "acceptance_criteria": 8,
+      "words": 905
+    },
+    {
+      "id": "WP18",
+      "acceptance_criteria": 5,
+      "words": 702
+    },
+    {
+      "id": "WP19",
+      "acceptance_criteria": 4,
+      "words": 569
+    },
+    {
+      "id": "WP20",
+      "acceptance_criteria": 4,
+      "words": 626
+    },
+    {
+      "id": "WP21",
+      "acceptance_criteria": 5,
+      "words": 675
+    },
+    {
+      "id": "WP22",
+      "acceptance_criteria": 6,
+      "words": 598
+    },
+    {
+      "id": "WP23",
+      "acceptance_criteria": 5,
+      "words": 646
+    },
+    {
+      "id": "WP24",
+      "acceptance_criteria": 6,
+      "words": 747
+    },
+    {
+      "id": "WP25",
+      "acceptance_criteria": 5,
+      "words": 772
+    },
+    {
+      "id": "WP26",
+      "acceptance_criteria": 7,
+      "words": 801
+    },
+    {
+      "id": "WP27",
+      "acceptance_criteria": 6,
+      "words": 620
+    },
+    {
+      "id": "WP28",
+      "acceptance_criteria": 4,
+      "words": 475
+    },
+    {
+      "id": "WP29",
+      "acceptance_criteria": 4,
+      "words": 492
+    },
+    {
+      "id": "WP30",
+      "acceptance_criteria": 6,
+      "words": 649
+    }
+  ],
+  "errors": [],
+  "implementation_status": "not_started",
+  "empirical_status": "not_run"
+}

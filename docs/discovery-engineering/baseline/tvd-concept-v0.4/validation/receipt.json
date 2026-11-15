@@ -1,0 +1,298 @@
+{
+  "version": "TVD-COMPLETE-DISCOVERY-RECEIPT/1.0",
+  "revision": "TVD-CONCEPT-0.4",
+  "created_at": "2026-11-13T22:53:18.468361+00:00",
+  "status": "pass_for_declared_formal_contracts_and_documentary_scope",
+  "goal_validation": "not_run; requires the implementation and empirical gates E01-E06",
+  "model_sha256": "2db650c71d7a8703ff01b814e1db84629b33c9de99b702e2d90bad30235387a9",
+  "proof_scope_sha256": "679e824c2f26273caac2474648a2b2aee3d234d3af2ce4d715033bdeb54ebb2b",
+  "concept_scope_sha256": "993756f3200e59790a7e0488fe85edd33d90f645ab504b4004982fb7d9aeb319",
+  "record_scope_sha256": "3697971f003a8dc636177ad173e8a048be40d39ed31e99769f5a3b0abf74d653",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "geography": {
+    "policy": "DVRPC_9",
+    "selection": "User accepted",
+    "county_keys": [
+      "PA:Bucks",
+      "PA:Chester",
+      "PA:Delaware",
+      "PA:Montgomery",
+      "PA:Philadelphia",
+      "NJ:Burlington",
+      "NJ:Camden",
+      "NJ:Gloucester",
+      "NJ:Mercer"
+    ]
+  },
+  "counts": {
+    "formal_obligation_families": 32,
+    "symbolic_lemmas": 74,
+    "solver_input_replays": 74,
+    "reachable_abstract_states": 320,
+    "abstract_transitions": 2348,
+    "negative_controls": 30,
+    "workflow_elements": 63,
+    "documentary_relations": 52,
+    "retained_concept_expectations": 60,
+    "native_record_fields": 44,
+    "native_specialization_checks": 7,
+    "implementation_increments": 9,
+    "empirical_gates": 6,
+    "diagrams": 3
+  },
+  "families": {
+    "P01": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P02": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 4
+    },
+    "P03": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 5
+    },
+    "P04": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 2
+    },
+    "P05": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 6
+    },
+    "P06": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 5
+    },
+    "P07": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 2
+    },
+    "P08": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P09": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 2
+    },
+    "P10": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 2
+    },
+    "P11": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P12": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P13": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 2
+    },
+    "P14": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 2
+    },
+    "P15": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P16": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 5
+    },
+    "P17": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 3
+    },
+    "P18": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P19": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 2
+    },
+    "P20": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P21": {
+      "status": "pass",
+      "method": "SMT_AND_INDUCTION",
+      "lemmas": 4
+    },
+    "P22": {
+      "status": "pass",
+      "method": "SMT_INDUCTION",
+      "lemmas": 1
+    },
+    "P23": {
+      "status": "pass",
+      "method": "SMT_INDUCTION",
+      "lemmas": 1
+    },
+    "P24": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 2
+    },
+    "P25": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P26": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P27": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    },
+    "P28": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 2
+    },
+    "P29": {
+      "status": "pass",
+      "method": "Exhaustive declared Boolean-state exploration",
+      "states": 320
+    },
+    "P30": {
+      "status": "pass",
+      "method": "Retained finite review plus native identity/type/flow correspondence"
+    },
+    "P31": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 11
+    },
+    "P32": {
+      "status": "pass",
+      "method": "SMT",
+      "lemmas": 1
+    }
+  },
+  "solver": {
+    "package": "z3-solver",
+    "version": "5.4.1.0",
+    "solver_version": "5.4.1.0",
+    "wheel": "z3_solver-5.4.1.0-py3-none-manylinux_2_27_x86_64.whl",
+    "wheel_sha256": "e680ce083683abca5d07c3e55c2f620ff9a29cb91c548eeeea27ae29e8060522",
+    "source": "https://files.pythonhosted.org/packages/04/bd/0f7c575074092d7606751245a1e3577cf5ab922c2a59389f39c4f037c749/z3_solver-5.4.1.0-py3-none-manylinux_2_27_x86_64.whl",
+    "environment": "/workspace/worktrees/builderbob/thevalleydesk/work/tvd-concept-v0.4/.venv",
+    "method": "Verified wheel extraction into an isolated virtual environment; no host package change."
+  },
+  "checks": {
+    "native_parse_and_concept_shape": "pass",
+    "selected_terminology": "pass",
+    "retained_documentary_scope": "pass",
+    "symbolic_negated_guarantees": "pass; assumptions satisfiable and negations unsatisfiable",
+    "solver_replay": "pass; same trusted solver implementation",
+    "abstract_lifecycle": "pass; exhaustive declared Boolean abstraction",
+    "finite_review_and_native_flow_binding": "pass",
+    "negative_controls": "pass; all intentional defects detected",
+    "selected_native_record_structure": "pass",
+    "goal_and_implementation_trace": "pass",
+    "implementation_dependency_reachability": "pass",
+    "rendered_geometry_and_reader_interactions": "pass",
+    "pixel_inspection": "performed on all three diagrams",
+    "report_prose_budgets": "pass",
+    "artifact_freshness": "pass",
+    "previous_models_and_application_source_unchanged": "pass"
+  },
+  "empirical_gates": {
+    "E01": {
+      "name": "Creator and regional truth",
+      "status": "not_run"
+    },
+    "E02": {
+      "name": "Health-tech relevance",
+      "status": "not_run"
+    },
+    "E03": {
+      "name": "Discovery recall and coverage",
+      "status": "not_run"
+    },
+    "E04": {
+      "name": "Provider qualification",
+      "status": "not_run"
+    },
+    "E05": {
+      "name": "Reader usefulness",
+      "status": "not_run"
+    },
+    "E06": {
+      "name": "Implementation correspondence",
+      "status": "not_run"
+    }
+  },
+  "unrun": [
+    "Source-truth and held-out relevance evaluation",
+    "Independent regional recall evaluation",
+    "Live provider/source enrollment qualification",
+    "Target application implementation and conformance tests",
+    "Intended-reader usability and value validation",
+    "General native SysML execution equivalence",
+    "Native Draw.io editor edit/save/reopen",
+    "Independent expert acceptance",
+    "Operational changes and deployment"
+  ],
+  "review": "Self-review; no independent agent was requested.",
+  "limits": [
+    "Guarantees apply to explicit rules, domains and assumptions.",
+    "Qualified evidence inputs and atomic operations are assumptions requiring implementation and empirical checks.",
+    "Native function/type correspondence does not establish transformation correctness or arbitrary native execution.",
+    "Source coverage is scoped to enrolled sources and retained cohorts, not the entire regional population.",
+    "The implementation plan is prepared after formal checks; it is not implemented or released."
+  ],
+  "artifacts": {
+    "README.md": "b03dad4b06f8c16962e90b841e7b541abea60fb3b5d6836e6c5841899e92f426",
+    "index.html": "1acf373dd0998d038b1f0fa0bde64061a28a37eebf515515119c96bd09fb3759",
+    "system-review.md": "888ad20c374cc1382cfe6a03ff541635c2f7ee1d450859c7b8c40ea2ae3649c5",
+    "assurance.md": "017305ca210ec576e863fdb843b1f6e31e790baffa57575733af422d959bd11d",
+    "implementation-plan.md": "dc180166a39a18f6c618701b18190911cfc7f4ab8af9e79e69d4df8a741950b3",
+    "implementation-plan.json": "82a3fef01d33e3315eede860a72c45532d7ddb4ded783dd2a8155ddeec76a605",
+    "model/tvd-discovery.sysml": "2db650c71d7a8703ff01b814e1db84629b33c9de99b702e2d90bad30235387a9",
+    "model/tvd-discovery.english.json": "28078defd1f833b6ec83d894a2857e090f92e637468bca91a925f90ecebb1a85",
+    "semantic-ledger.json": "87b6d2315514d3b094ea7999270652abf1b9f69be3cdaee797dd4cf290da5e69",
+    "proof-scope.json": "679e824c2f26273caac2474648a2b2aee3d234d3af2ce4d715033bdeb54ebb2b",
+    "review-scope.json": "993756f3200e59790a7e0488fe85edd33d90f645ab504b4004982fb7d9aeb319",
+    "model-contract-scope.json": "3697971f003a8dc636177ad173e8a048be40d39ed31e99769f5a3b0abf74d653",
+    "views/discovery.svg": "9195062cefc3e7582b240d5219f2db2ba9182896156f00bb40c1b3df84e6dd6d",
+    "views/discovery.png": "54d21589ce8cfd394cbe6c48c157ac70ff14c7d158d22027c8487de8fcd0aa11",
+    "views/records.svg": "ebf76d0a7a9ea07b583ece9856466a504f180e9c619f9a60c9167461b74237f7",
+    "views/records.png": "80fba8035c74d6b41510d19fd65964e8d1687f710df18fcc2b8aad2e689e2e19",
+    "views/implementation.svg": "53de24fca9d8b263e66d36fcc5896a96d9291e15e7a7fa9e230f806b432ef94a",
+    "views/implementation.png": "f6255233aaee9bee4dd90388a9be057f19d5c1d844b49301f590b8f5cd0f2638",
+    "views/tvd-concept-v0.4.drawio": "c7a671a658b5a35ab112f65d39cfa3f8f2f77e028aadd757626cc960b727a813"
+  }
+}

@@ -1,0 +1,556 @@
+{
+  "version": 2,
+  "actors": {
+    "System": {},
+    "Operator": {}
+  },
+  "properties": {
+    "eligible": {
+      "type": "bool",
+      "owner": "input"
+    },
+    "authority": {
+      "type": "bool",
+      "owner": "input"
+    },
+    "evidenceCurrent": {
+      "type": "bool",
+      "owner": "input"
+    },
+    "accepted": {
+      "type": "bool",
+      "owner": "controlled"
+    },
+    "projected": {
+      "type": "bool",
+      "owner": "controlled"
+    }
+  },
+  "data": {
+    "Captured": {
+      "type": "bool"
+    },
+    "Qualified": {
+      "type": "bool"
+    },
+    "Decision": {
+      "type": "bool"
+    },
+    "Projected": {
+      "type": "bool"
+    },
+    "Held": {
+      "type": "bool"
+    },
+    "Displayed": {
+      "type": "bool"
+    }
+  },
+  "exchanges": {},
+  "statements": {
+    "FC_NEED": {
+      "category": "need",
+      "subject": "Operator",
+      "text": "Retain a typed admission path for independent work and explicit holds."
+    },
+    "FC_SCOPE": {
+      "category": "requirement",
+      "subject": "System",
+      "modality": "shall",
+      "when": {
+        "ref": "eligible",
+        "op": "==",
+        "value": false
+      },
+      "predicate": {
+        "ref": "accepted",
+        "op": "==",
+        "value": false
+      }
+    },
+    "FC_AUTHORITY": {
+      "category": "requirement",
+      "subject": "System",
+      "modality": "shall",
+      "when": {
+        "ref": "authority",
+        "op": "==",
+        "value": false
+      },
+      "predicate": {
+        "ref": "accepted",
+        "op": "==",
+        "value": false
+      }
+    },
+    "FC_EVIDENCE": {
+      "category": "requirement",
+      "subject": "System",
+      "modality": "shall",
+      "when": {
+        "ref": "evidenceCurrent",
+        "op": "==",
+        "value": false
+      },
+      "predicate": {
+        "ref": "accepted",
+        "op": "==",
+        "value": false
+      }
+    }
+  },
+  "traces": [
+    {
+      "from": "FC_SCOPE",
+      "to": "FC_NEED",
+      "kind": "justifies"
+    },
+    {
+      "from": "FC_AUTHORITY",
+      "to": "FC_NEED",
+      "kind": "justifies"
+    },
+    {
+      "from": "FC_EVIDENCE",
+      "to": "FC_NEED",
+      "kind": "justifies"
+    },
+    {
+      "from": "IndependentPaper",
+      "to": "FC_SCOPE",
+      "kind": "addresses"
+    },
+    {
+      "from": "IndependentPaper",
+      "to": "FC_AUTHORITY",
+      "kind": "addresses"
+    },
+    {
+      "from": "IndependentPaper",
+      "to": "FC_EVIDENCE",
+      "kind": "addresses"
+    },
+    {
+      "from": "ForumDiscovery",
+      "to": "FC_SCOPE",
+      "kind": "addresses"
+    },
+    {
+      "from": "ForumDiscovery",
+      "to": "FC_AUTHORITY",
+      "kind": "addresses"
+    },
+    {
+      "from": "ForumDiscovery",
+      "to": "FC_EVIDENCE",
+      "kind": "addresses"
+    },
+    {
+      "from": "RefreshReview",
+      "to": "FC_SCOPE",
+      "kind": "addresses"
+    },
+    {
+      "from": "RefreshReview",
+      "to": "FC_AUTHORITY",
+      "kind": "addresses"
+    },
+    {
+      "from": "RefreshReview",
+      "to": "FC_EVIDENCE",
+      "kind": "addresses"
+    }
+  ],
+  "scenarios": {
+    "IndependentPaper": {
+      "start": "start",
+      "initial": {
+        "accepted": false,
+        "projected": false
+      },
+      "terminal": {
+        "done": "A public projection is available.",
+        "held": "An unresolved candidate remains in review."
+      },
+      "completion": [
+        "done",
+        "held"
+      ],
+      "require_completion": true,
+      "steps": {
+        "IndependentPaper_Capture": {
+          "from": "start",
+          "to": "captured",
+          "produces": [
+            "Captured"
+          ]
+        },
+        "IndependentPaper_Qualify": {
+          "from": "captured",
+          "to": "qualified",
+          "consumes": [
+            "Captured"
+          ],
+          "produces": [
+            "Qualified"
+          ]
+        },
+        "IndependentPaper_Approve": {
+          "from": "qualified",
+          "to": "decided",
+          "guard": {
+            "all": [
+              {
+                "ref": "eligible",
+                "op": "==",
+                "value": true
+              },
+              {
+                "ref": "authority",
+                "op": "==",
+                "value": true
+              },
+              {
+                "ref": "evidenceCurrent",
+                "op": "==",
+                "value": true
+              }
+            ]
+          },
+          "consumes": [
+            "Qualified"
+          ],
+          "produces": [
+            "Decision"
+          ],
+          "effects": {
+            "accepted": true
+          }
+        },
+        "IndependentPaper_Hold": {
+          "from": "qualified",
+          "to": "held",
+          "guard": {
+            "not": {
+              "all": [
+                {
+                  "ref": "eligible",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "ref": "authority",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "ref": "evidenceCurrent",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
+          },
+          "consumes": [
+            "Qualified"
+          ],
+          "produces": [
+            "Held"
+          ],
+          "effects": {
+            "accepted": false,
+            "projected": false
+          }
+        },
+        "IndependentPaper_Publish": {
+          "from": "decided",
+          "to": "projected",
+          "guard": {
+            "ref": "accepted",
+            "op": "==",
+            "value": true
+          },
+          "consumes": [
+            "Decision"
+          ],
+          "produces": [
+            "Projected"
+          ],
+          "effects": {
+            "projected": true
+          }
+        },
+        "IndependentPaper_Display": {
+          "from": "projected",
+          "to": "done",
+          "consumes": [
+            "Projected"
+          ],
+          "produces": [
+            "Displayed"
+          ]
+        }
+      }
+    },
+    "ForumDiscovery": {
+      "start": "start",
+      "initial": {
+        "accepted": false,
+        "projected": false
+      },
+      "terminal": {
+        "done": "A public projection is available.",
+        "held": "An unresolved candidate remains in review."
+      },
+      "completion": [
+        "done",
+        "held"
+      ],
+      "require_completion": true,
+      "steps": {
+        "ForumDiscovery_Capture": {
+          "from": "start",
+          "to": "captured",
+          "produces": [
+            "Captured"
+          ]
+        },
+        "ForumDiscovery_Qualify": {
+          "from": "captured",
+          "to": "qualified",
+          "consumes": [
+            "Captured"
+          ],
+          "produces": [
+            "Qualified"
+          ]
+        },
+        "ForumDiscovery_Approve": {
+          "from": "qualified",
+          "to": "decided",
+          "guard": {
+            "all": [
+              {
+                "ref": "eligible",
+                "op": "==",
+                "value": true
+              },
+              {
+                "ref": "authority",
+                "op": "==",
+                "value": true
+              },
+              {
+                "ref": "evidenceCurrent",
+                "op": "==",
+                "value": true
+              }
+            ]
+          },
+          "consumes": [
+            "Qualified"
+          ],
+          "produces": [
+            "Decision"
+          ],
+          "effects": {
+            "accepted": true
+          }
+        },
+        "ForumDiscovery_Hold": {
+          "from": "qualified",
+          "to": "held",
+          "guard": {
+            "not": {
+              "all": [
+                {
+                  "ref": "eligible",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "ref": "authority",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "ref": "evidenceCurrent",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
+          },
+          "consumes": [
+            "Qualified"
+          ],
+          "produces": [
+            "Held"
+          ],
+          "effects": {
+            "accepted": false,
+            "projected": false
+          }
+        },
+        "ForumDiscovery_Publish": {
+          "from": "decided",
+          "to": "projected",
+          "guard": {
+            "ref": "accepted",
+            "op": "==",
+            "value": true
+          },
+          "consumes": [
+            "Decision"
+          ],
+          "produces": [
+            "Projected"
+          ],
+          "effects": {
+            "projected": true
+          }
+        },
+        "ForumDiscovery_Display": {
+          "from": "projected",
+          "to": "done",
+          "consumes": [
+            "Projected"
+          ],
+          "produces": [
+            "Displayed"
+          ]
+        }
+      }
+    },
+    "RefreshReview": {
+      "start": "start",
+      "initial": {
+        "accepted": false,
+        "projected": false
+      },
+      "terminal": {
+        "done": "A public projection is available.",
+        "held": "An unresolved candidate remains in review."
+      },
+      "completion": [
+        "done",
+        "held"
+      ],
+      "require_completion": true,
+      "steps": {
+        "RefreshReview_Capture": {
+          "from": "start",
+          "to": "captured",
+          "produces": [
+            "Captured"
+          ]
+        },
+        "RefreshReview_Qualify": {
+          "from": "captured",
+          "to": "qualified",
+          "consumes": [
+            "Captured"
+          ],
+          "produces": [
+            "Qualified"
+          ]
+        },
+        "RefreshReview_Approve": {
+          "from": "qualified",
+          "to": "decided",
+          "guard": {
+            "all": [
+              {
+                "ref": "eligible",
+                "op": "==",
+                "value": true
+              },
+              {
+                "ref": "authority",
+                "op": "==",
+                "value": true
+              },
+              {
+                "ref": "evidenceCurrent",
+                "op": "==",
+                "value": true
+              }
+            ]
+          },
+          "consumes": [
+            "Qualified"
+          ],
+          "produces": [
+            "Decision"
+          ],
+          "effects": {
+            "accepted": true
+          }
+        },
+        "RefreshReview_Hold": {
+          "from": "qualified",
+          "to": "held",
+          "guard": {
+            "not": {
+              "all": [
+                {
+                  "ref": "eligible",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "ref": "authority",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "ref": "evidenceCurrent",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
+          },
+          "consumes": [
+            "Qualified"
+          ],
+          "produces": [
+            "Held"
+          ],
+          "effects": {
+            "accepted": false,
+            "projected": false
+          }
+        },
+        "RefreshReview_Publish": {
+          "from": "decided",
+          "to": "projected",
+          "guard": {
+            "ref": "accepted",
+            "op": "==",
+            "value": true
+          },
+          "consumes": [
+            "Decision"
+          ],
+          "produces": [
+            "Projected"
+          ],
+          "effects": {
+            "projected": true
+          }
+        },
+        "RefreshReview_Display": {
+          "from": "projected",
+          "to": "done",
+          "consumes": [
+            "Projected"
+          ],
+          "produces": [
+            "Displayed"
+          ]
+        }
+      }
+    }
+  }
+}

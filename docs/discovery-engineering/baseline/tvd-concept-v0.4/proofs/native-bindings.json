@@ -1,0 +1,248 @@
+{
+  "version": "function-native-1.0",
+  "native_model_sha256": "2db650c71d7a8703ff01b814e1db84629b33c9de99b702e2d90bad30235387a9",
+  "function_flow_sha256": "b135294b56d3605f498076f419373e05a79f825c54bda1090909391dbe04fc35",
+  "functions": {
+    "Capture": {
+      "kind": "function",
+      "element": "F_CAPTURE",
+      "native_name": "TVD_Concept::captureEvidence"
+    },
+    "Qualify": {
+      "kind": "function",
+      "element": "F_QUALIFY",
+      "native_name": "TVD_Concept::qualifyWork"
+    },
+    "Approve": {
+      "kind": "function",
+      "element": "F_REVIEW",
+      "native_name": "TVD_Concept::reviewCandidates"
+    },
+    "Hold": {
+      "kind": "function",
+      "native_name": "TVD_Concept::holdCandidate"
+    },
+    "Publish": {
+      "kind": "function",
+      "element": "F_PUBLISH",
+      "native_name": "TVD_Concept::publishCatalog"
+    },
+    "Display": {
+      "kind": "function",
+      "element": "F_DISPLAY",
+      "native_name": "TVD_Concept::presentWork"
+    }
+  },
+  "parties": {
+    "System": {
+      "kind": "system",
+      "element": "SYS_TVD",
+      "native_name": "TVD_Concept::tvd"
+    },
+    "Operator": {
+      "kind": "actor",
+      "element": "A_OPERATOR",
+      "native_name": "TVD_Concept::operator"
+    }
+  },
+  "scenarios": {
+    "IndependentPaper": [
+      {
+        "kind": "scenario",
+        "element": "S_INDEPENDENT",
+        "native_name": "TVD_Concept::independentPublicationDiscovery"
+      }
+    ],
+    "ForumDiscovery": [
+      {
+        "kind": "scenario",
+        "element": "S_FORUM",
+        "native_name": "TVD_Concept::regionalDiscussionDiscovery"
+      }
+    ],
+    "RefreshReview": [
+      {
+        "kind": "scenario",
+        "element": "S_REFRESH",
+        "native_name": "TVD_Concept::upstreamRefreshFailure"
+      }
+    ]
+  },
+  "steps": {
+    "IndependentPaper": {
+      "IndependentPaper_Capture": {
+        "kind": "function",
+        "element": "F_CAPTURE",
+        "native_name": "TVD_Concept::captureEvidence"
+      },
+      "IndependentPaper_Qualify": {
+        "kind": "function",
+        "element": "F_QUALIFY",
+        "native_name": "TVD_Concept::qualifyWork"
+      },
+      "IndependentPaper_Approve": {
+        "kind": "function",
+        "element": "F_REVIEW",
+        "native_name": "TVD_Concept::reviewCandidates"
+      },
+      "IndependentPaper_Hold": {
+        "kind": "function",
+        "native_name": "TVD_Concept::holdCandidate"
+      },
+      "IndependentPaper_Publish": {
+        "kind": "function",
+        "element": "F_PUBLISH",
+        "native_name": "TVD_Concept::publishCatalog"
+      },
+      "IndependentPaper_Display": {
+        "kind": "function",
+        "element": "F_DISPLAY",
+        "native_name": "TVD_Concept::presentWork"
+      }
+    },
+    "ForumDiscovery": {
+      "ForumDiscovery_Capture": {
+        "kind": "function",
+        "element": "F_CAPTURE",
+        "native_name": "TVD_Concept::captureEvidence"
+      },
+      "ForumDiscovery_Qualify": {
+        "kind": "function",
+        "element": "F_QUALIFY",
+        "native_name": "TVD_Concept::qualifyWork"
+      },
+      "ForumDiscovery_Approve": {
+        "kind": "function",
+        "element": "F_REVIEW",
+        "native_name": "TVD_Concept::reviewCandidates"
+      },
+      "ForumDiscovery_Hold": {
+        "kind": "function",
+        "native_name": "TVD_Concept::holdCandidate"
+      },
+      "ForumDiscovery_Publish": {
+        "kind": "function",
+        "element": "F_PUBLISH",
+        "native_name": "TVD_Concept::publishCatalog"
+      },
+      "ForumDiscovery_Display": {
+        "kind": "function",
+        "element": "F_DISPLAY",
+        "native_name": "TVD_Concept::presentWork"
+      }
+    },
+    "RefreshReview": {
+      "RefreshReview_Capture": {
+        "kind": "function",
+        "element": "F_CAPTURE",
+        "native_name": "TVD_Concept::captureEvidence"
+      },
+      "RefreshReview_Qualify": {
+        "kind": "function",
+        "element": "F_QUALIFY",
+        "native_name": "TVD_Concept::qualifyWork"
+      },
+      "RefreshReview_Approve": {
+        "kind": "function",
+        "element": "F_REVIEW",
+        "native_name": "TVD_Concept::reviewCandidates"
+      },
+      "RefreshReview_Hold": {
+        "kind": "function",
+        "native_name": "TVD_Concept::holdCandidate"
+      },
+      "RefreshReview_Publish": {
+        "kind": "function",
+        "element": "F_PUBLISH",
+        "native_name": "TVD_Concept::publishCatalog"
+      },
+      "RefreshReview_Display": {
+        "kind": "function",
+        "element": "F_DISPLAY",
+        "native_name": "TVD_Concept::presentWork"
+      }
+    }
+  },
+  "data": {
+    "Captured": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::captureData"
+    },
+    "Qualified": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::qualificationData"
+    },
+    "Decision": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::decisionData"
+    },
+    "Projected": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::projectionData"
+    },
+    "Held": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::heldData"
+    },
+    "Displayed": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::displayData"
+    }
+  },
+  "properties": {
+    "eligible": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::eligible"
+    },
+    "authority": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::authority"
+    },
+    "evidenceCurrent": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::evidenceCurrent"
+    },
+    "accepted": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::accepted"
+    },
+    "projected": {
+      "part": {
+        "kind": "element",
+        "native_name": "TVD_Concept::VerificationSlice::abstractState"
+      },
+      "attribute": "TVD_Concept::VerificationSlice::AbstractState::projected"
+    }
+  },
+  "relations": {}
+}

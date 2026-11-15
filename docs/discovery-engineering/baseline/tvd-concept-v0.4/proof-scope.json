@@ -1,0 +1,261 @@
+{
+  "version": "TVD-PROOF-SCOPE/1.0",
+  "revision": "TVD-CONCEPT-0.4",
+  "basis": {
+    "direction_sha256": "d37b58f7d2bc70baeed077b86923613ee78eeb54b51f41155fc40c60ed1f7039",
+    "geography_sha256": "c1308298ff89b0e8f511704fcd8e3a73287e6bb6ac8fffedd9d743cdc275aa0f"
+  },
+  "obligations": {
+    "P01": {
+      "name": "Health-tech admission",
+      "model_id": "F_RELEVANCE",
+      "method": "SMT",
+      "guarantee": "Admitted work has a documented healthcare purpose and a technology, informatics or health-AI contribution.",
+      "assumption": "A_FACTS"
+    },
+    "P02": {
+      "name": "Regional role admission",
+      "model_id": "F_QUALIFY",
+      "method": "SMT",
+      "guarantee": "An admitted regional work claim requires an affirmative regional creator-role decision.",
+      "assumption": "A_GEO"
+    },
+    "P03": {
+      "name": "Temporal attribution",
+      "model_id": "F_RESOLVE",
+      "method": "SMT",
+      "guarantee": "Dated attribution uses half-open intervals; an expired or unknown-current assertion cannot establish current presence.",
+      "assumption": "A_TIME"
+    },
+    "P04": {
+      "name": "Publication authority",
+      "model_id": "F_REVIEW",
+      "method": "SMT",
+      "guarantee": "Model output alone cannot authorize a public work claim.",
+      "assumption": "A_AUTHORITY"
+    },
+    "P05": {
+      "name": "Independent source channels",
+      "model_id": "F_DISCOVER",
+      "method": "SMT",
+      "guarantee": "Each admitted source class can qualify independently of source platform.",
+      "assumption": "A_PROVIDER"
+    },
+    "P06": {
+      "name": "No repository prerequisite",
+      "model_id": "F_PUBLISH",
+      "method": "SMT",
+      "guarantee": "A valid publication, preprint or discussion does not require a repository or project grouping.",
+      "assumption": "A_FACTS"
+    },
+    "P07": {
+      "name": "No name-only identity merge",
+      "model_id": "F_RESOLVE",
+      "method": "SMT",
+      "guarantee": "A matching name is insufficient for an identity merge.",
+      "assumption": "A_IDENTITY"
+    },
+    "P08": {
+      "name": "Typed identities",
+      "model_id": "F_RESOLVE",
+      "method": "SMT",
+      "guarantee": "Person, account and organization identities cannot be silently merged across kinds.",
+      "assumption": "A_IDENTITY"
+    },
+    "P09": {
+      "name": "Replay idempotence",
+      "model_id": "F_CAPTURE",
+      "method": "SMT",
+      "guarantee": "Replaying the same stable source identity does not create another identity in the retained set.",
+      "assumption": "A_KEYS"
+    },
+    "P10": {
+      "name": "Evidence retention",
+      "model_id": "F_REFRESH",
+      "method": "SMT",
+      "guarantee": "A failed refresh preserves retained evidence and cannot establish a new healthy observation.",
+      "assumption": "A_STORAGE"
+    },
+    "P11": {
+      "name": "Evidence-head guard",
+      "model_id": "F_PUBLISH",
+      "method": "SMT",
+      "guarantee": "A current public projection cannot commit against a different retained evidence head.",
+      "assumption": "A_ATOMIC"
+    },
+    "P12": {
+      "name": "Supported relation endpoints",
+      "model_id": "F_LINK",
+      "method": "SMT",
+      "guarantee": "A public relation requires an admitted relation and available admitted endpoints.",
+      "assumption": "A_FACTS"
+    },
+    "P13": {
+      "name": "Reuse claims",
+      "model_id": "F_DISPLAY",
+      "method": "SMT",
+      "guarantee": "Unknown or restricted license evidence cannot create an unrestricted-reuse claim.",
+      "assumption": "A_FACTS"
+    },
+    "P14": {
+      "name": "Public field projection",
+      "model_id": "F_DISPLAY",
+      "method": "SMT",
+      "guarantee": "Public display is restricted to admitted public fields; internal candidate fields stay outside the projection.",
+      "assumption": "A_SCHEMA"
+    },
+    "P15": {
+      "name": "Query admission",
+      "model_id": "F_SEARCH",
+      "method": "SMT",
+      "guarantee": "Every query result belongs to the admitted snapshot and satisfies the selected filters.",
+      "assumption": "A_SNAPSHOT"
+    },
+    "P16": {
+      "name": "Filter algebra",
+      "model_id": "F_SEARCH",
+      "method": "SMT",
+      "guarantee": "OR within a selected facet and AND across facets are deterministic, commutative and idempotent.",
+      "assumption": "A_QUERY"
+    },
+    "P17": {
+      "name": "Strict total ordering",
+      "model_id": "F_SORT",
+      "method": "SMT",
+      "guarantee": "The declared sort key gives a strict total order when stable tie identities are distinct.",
+      "assumption": "A_KEYS"
+    },
+    "P18": {
+      "name": "Sort transitivity",
+      "model_id": "F_SORT",
+      "method": "SMT",
+      "guarantee": "The lexicographic comparator is transitive for all declared integer key coordinates.",
+      "assumption": "A_ORDER"
+    },
+    "P19": {
+      "name": "Date integrity",
+      "model_id": "F_SORT",
+      "method": "SMT",
+      "guarantee": "Changing ingestion time alone cannot improve a source-event-date sort key. Unknown dates remain explicit.",
+      "assumption": "A_TIME"
+    },
+    "P20": {
+      "name": "Cursor binding",
+      "model_id": "F_SEARCH",
+      "method": "SMT",
+      "guarantee": "A continuation is rejected when its snapshot, normalized query or sort mode changes.",
+      "assumption": "A_SNAPSHOT"
+    },
+    "P21": {
+      "name": "Pagination partition",
+      "model_id": "F_SEARCH",
+      "method": "SMT_AND_INDUCTION",
+      "guarantee": "Positive-size keyset pages partition a fixed finite ordered snapshot without duplicates or omissions.",
+      "assumption": "A_SNAPSHOT"
+    },
+    "P22": {
+      "name": "Request budget",
+      "model_id": "F_DISCOVER",
+      "method": "SMT_INDUCTION",
+      "guarantee": "A guarded atomic request counter cannot exceed its declared run budget.",
+      "assumption": "A_ATOMIC"
+    },
+    "P23": {
+      "name": "Byte budget",
+      "model_id": "F_CAPTURE",
+      "method": "SMT_INDUCTION",
+      "guarantee": "A guarded append cannot retain more than its declared byte budget.",
+      "assumption": "A_ATOMIC"
+    },
+    "P24": {
+      "name": "Conditional round-robin fairness",
+      "model_id": "F_COVERAGE",
+      "method": "SMT",
+      "guarantee": "Every member of a fixed nonempty eligible source cohort has a slot in one complete round.",
+      "assumption": "A_FAIRNESS"
+    },
+    "P25": {
+      "name": "Nonvacuous coverage",
+      "model_id": "F_COVERAGE",
+      "method": "SMT",
+      "guarantee": "An empty enrollment or an incomplete, failed or truncated check set cannot claim completed enrolled-scope coverage.",
+      "assumption": "A_COVERAGE"
+    },
+    "P26": {
+      "name": "Cohort accounting",
+      "model_id": "F_COVERAGE",
+      "method": "SMT",
+      "guarantee": "Within one retained cohort, published membership is contained in admitted membership and captured membership.",
+      "assumption": "A_COVERAGE"
+    },
+    "P27": {
+      "name": "Project grouping",
+      "model_id": "F_GROUP",
+      "method": "SMT",
+      "guarantee": "A project relationship needs admitted relationship evidence; shared titles alone cannot establish grouping.",
+      "assumption": "A_IDENTITY"
+    },
+    "P28": {
+      "name": "Policy-head guard",
+      "model_id": "F_PUBLISH",
+      "method": "SMT",
+      "guarantee": "A changed geography, relevance or review-policy head invalidates current-projection status until readmission.",
+      "assumption": "A_ATOMIC"
+    },
+    "P29": {
+      "name": "Lifecycle safety",
+      "model_id": "F_REFRESH",
+      "method": "EXHAUSTIVE_STATE",
+      "guarantee": "All states reachable under the declared abstract transitions preserve admission and retained-evidence invariants.",
+      "assumption": "A_TRANSITIONS"
+    },
+    "P30": {
+      "name": "Operational paths",
+      "model_id": "F_INTERPRET",
+      "method": "CSE_FINITE",
+      "guarantee": "The explicit finite workflows retain typed declarations, consistent obligations and supported completion paths, including holds.",
+      "assumption": "A_TRANSITIONS"
+    },
+    "P31": {
+      "name": "Exact nine-county policy",
+      "model_id": "F_QUALIFY",
+      "method": "SMT",
+      "guarantee": "The admitted county relation is exactly the selected nine-county set; unknown or outside keys cannot satisfy membership.",
+      "assumption": "A_GEO"
+    },
+    "P32": {
+      "name": "Corroboration deduplication",
+      "model_id": "F_CAPTURE",
+      "method": "SMT",
+      "guarantee": "Repeating evidence from the same admitted provenance origin cannot increase the distinct-origin set.",
+      "assumption": "A_ORIGIN"
+    }
+  },
+  "assumptions": {
+    "A_FACTS": "The decision inputs mean what their evidence and reviewer assert. Mathematical consistency does not establish their truth.",
+    "A_GEO": "The user-selected county set is authoritative. Professional-location and creator-role evidence are correctly interpreted and dated.",
+    "A_TIME": "Source times and intervals have been normalized correctly. Freshness policy is explicit; an unknown end date is not proof of a current relationship.",
+    "A_AUTHORITY": "Human or deterministic-rule authority is authenticated outside the mathematical gate. The model-output role has no such authority.",
+    "A_PROVIDER": "Source access and enrollment are qualified per installation. An API description does not establish actual regional coverage or complete metadata.",
+    "A_IDENTITY": "Admitted equivalence and relationship evidence is correctly adjudicated. Names and similarity are discovery leads only.",
+    "A_KEYS": "Canonical provider/native identifiers and stable tie identities are correctly assigned; persistent uniqueness guards reject collisions.",
+    "A_STORAGE": "The storage implementation preserves committed immutable evidence and distinguishes observations from source failures.",
+    "A_ATOMIC": "The modeled guard and mutation occur atomically, or an equivalent transaction/CAS guard protects the implementation.",
+    "A_SCHEMA": "The selected public-field allowlist and field-level evidence admission are correct and enforced by the eventual projection.",
+    "A_SNAPSHOT": "A result snapshot is immutable, finite and canonically identified. The actual normalized query is compared, not only a collision-prone digest.",
+    "A_QUERY": "Facet values and query terms have already been normalized according to the selected exact matching rules.",
+    "A_ORDER": "Sort coordinates use exact integers and the selected direction. Stable tie identity is unique within the snapshot.",
+    "A_FAIRNESS": "The eligible cohort and cursor order are fixed for the round, dispatch continues, and each attempt advances the cursor. Permanent outages do not imply delivery.",
+    "A_COVERAGE": "Counts refer to the same declared source scope, window or candidate cohort. They do not describe an unknown global population.",
+    "A_TRANSITIONS": "Only the explicitly declared abstract transitions occur. Correspondence to native descriptions and future code requires separate review and tests.",
+    "A_ORIGIN": "Provenance-origin equivalence is correctly assigned. Distinct URLs do not themselves establish independent sources."
+  },
+  "not_mathematically_established": {
+    "E01": "Who actually has the claimed regional professional connection, including missing or stale public profiles.",
+    "E02": "Whether a work contribution is truly relevant to the intended health-tech audience.",
+    "E03": "Regional recall and which people or work remain undiscovered.",
+    "E04": "Provider access, source permission, metadata completeness and ongoing availability.",
+    "E05": "Whether ranking, summaries and presentation help readers make useful discoveries.",
+    "E06": "Whether the eventual Worker, database, adapters and UI faithfully implement the formal contracts."
+  }
+}

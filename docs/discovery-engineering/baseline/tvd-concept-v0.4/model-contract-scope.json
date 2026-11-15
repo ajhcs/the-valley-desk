@@ -1,0 +1,28 @@
+{
+  "version": "TVD-NATIVE-RECORD-SCOPE/1.0",
+  "basis": "Retain the record roles needed for WHO, WHAT, relevance, finding, sorting and display. This is a self-authored structural review input, not empirical proof.",
+  "inheritance": {
+    "Person": "Creator",
+    "Organization": "Creator",
+    "Project": "Work",
+    "Artifact": "Work",
+    "Repository": "Artifact",
+    "Publication": "Artifact",
+    "Discussion": "Artifact"
+  },
+  "fields": {
+    "Creator": {"identityReviewState": "ReviewState"},
+    "Account": {"platform": "String", "nativeAccountId": "String"},
+    "AccountIdentityLink": {"account": "Account", "creator": "Creator", "linkState": "LinkState", "evidenceIds": "String"},
+    "PublicCreatorProjection": {"creator": "Creator", "professionalHealthTechBasis": "String", "countyKey": "String", "temporalLabel": "String", "reviewState": "ReviewState"},
+    "RegionalEligibility": {"countyKey": "String", "creator": "Creator", "work": "Work"},
+    "Affiliation": {"person": "Person", "organization": "Organization", "assertionBasis": "String", "verificationValidThrough": "String"},
+    "WorkRelationship": {"fromWork": "Work", "toWork": "Work", "relationshipKind": "String", "evidenceIds": "String"},
+    "RelevanceDecision": {"healthcareApplication": "Integer", "technologyContribution": "Integer", "informaticsContribution": "Integer", "healthAiContribution": "Integer"},
+    "Publication": {"publicationStage": "PublicationStage", "publicationStatus": "PublicationStatus"},
+    "Discussion": {"forumId": "String", "topicId": "String", "postId": "String", "authorAccounts": "Account"},
+    "SearchSnapshot": {"results": "Work", "creatorResults": "PublicCreatorProjection", "normalizedQuery": "String", "sortMode": "String"},
+    "WorkQuery": {"regionalTemporalMode": "String", "fromSourceDate": "String", "untilSourceDate": "String"},
+    "SourceObservation": {"providerClass": "String", "nativeObjectId": "String", "representationSha256": "String", "sourceDatePrecision": "String"}
+  }
+}
