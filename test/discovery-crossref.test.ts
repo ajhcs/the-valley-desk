@@ -751,3 +751,157 @@ test('Crossref whole-payload metadata preflight rejects contact and article mate
     const flat=JSON.stringify(await f.dump());for(const value of [canary,'fixture-password','copyright-sensitive abstract canary','Synthetic full-text canary','alex@example.org']) assert.equal(flat.includes(value),false,mode);
   }
 });
+
+const fixedDoiInput=(tag:string,doiLiteral='10.1234/Alpha')=>({declaredId:'scope:fixed-'+tag,revision:1,queryKind:'fixed-doi' as const,doiLiteral});
+const fixedDoiTemplate=(id:string,scope:{filter:string;select:string}):DiscoveryEndpointTemplate=>({id,origin:'https://api.crossref.org',path:'/v1/works',fixed:{filter:scope.filter,select:scope.select,rows:'1'},parameters:{},required:[]});
+const selectedFixedItem=(doi='10.1234/Alpha')=>({DOI:doi,title:['Synthetic fixed DOI metadata'],type:'journal-article',author:[{given:'Alex',family:'Smith'}],published:{'date-parts':[[2024,2,3]]},URL:'https://doi.org/'+doi,publisher:'Synthetic publisher'});
+const fixedBody=(items:unknown[],total=items.length)=>JSON.stringify({status:'ok','message-type':'work-list',message:{'total-results':total,'items-per-page':1,items}});
+
+test('fixed DOI scope preserves literal request spelling separately from canonical identity',async()=>{
+  const {qualifyDiscoveryCrossrefScope,CROSSREF_FIXED_DOI_SELECT}=await import('../src/ingest/discovery/crossref');
+  const upper=await qualifyDiscoveryCrossrefScope(fixedDoiInput('literal','10.1117/1.JMI.5.1.011018'));
+  const lower=await qualifyDiscoveryCrossrefScope(fixedDoiInput('literal','10.1117/1.jmi.5.1.011018'));
+  assert.equal(upper.canonicalDoi,lower.canonicalDoi);assert.notEqual(upper.id,lower.id);
+  assert.equal(upper.filter,'doi:10.1117/1.JMI.5.1.011018');assert.equal(upper.select,CROSSREF_FIXED_DOI_SELECT);
+  assert.equal('startDay' in upper,false);assert.equal('queryParameter' in upper,false);
+  for(const doiLiteral of ['doi:10.1234/a','https://doi.org/10.1234/a',' 10.1234/a','10.1234/a ','10.1234/a,b','10.1234/a%2Fb']) await assert.rejects(()=>qualifyDiscoveryCrossrefScope(fixedDoiInput('bad',doiLiteral)));
+  for(const field of [{startDay:'2024-01-01'},{cursor:'*'},{queryLiteral:'synthetic'},{pageSize:1},{maxPages:1}]) await assert.rejects(()=>qualifyDiscoveryCrossrefScope({...fixedDoiInput('extra'),...field}));
+  const legacy=await qualifyDiscoveryCrossrefScope(crossrefScopeInput);
+  assert.equal(legacy.scopeSha256,sha(canonicalDiscoveryEvidenceJson({...crossrefScopeInput,queryParameter:'query',filter:'from-pub-date:2020-01-01,until-pub-date:2020-12-31'})));
+});
+
+test('fixed DOI rejects wrong membership, extra material and continuation before actual D1 capture',{timeout:600_000},async t=>{
+  const {createDiscoveryCrossrefAdapter,qualifyDiscoveryCrossrefScope}=await import('../src/ingest/discovery/crossref');
+  const f=await fixture(t),scope=await qualifyDiscoveryCrossrefScope(fixedDoiInput('negative')),sources=new Map<string,DiscoveryRuntimeSource>();let store:ReturnType<typeof f.makeStore>;
+  const adapter=createDiscoveryCrossrefAdapter({resolveSource:async id=>sources.get(id)??null,resolveScope:async id=>id===scope.id?scope:null,resolvePlan:id=>f.registry.resolvePlan(id),resolvePage:id=>store.resolvePage(id),resolveRepresentation:r=>f.registry.resolveRetainedRepresentation(r),resolveClaim:id=>store.resolveClaim(id),resolveClaimForPlan:async id=>{const row=await f.db.prepare('SELECT id FROM discovery_collection_claims WHERE issued_plan_id=?').bind(id).first<{id:string}>();return row?store.resolveClaim(row.id):null},resolveChainPage:(id,n)=>store.resolveChainPage(id,n),now:f.now});
+  store=f.makeStore(f.db,adapter.parser);
+  const cases:[string,string][]=[
+    ['wrong-doi',fixedBody([selectedFixedItem('10.1234/other')])],
+    ['duplicate-item',fixedBody([selectedFixedItem(),selectedFixedItem()],1)],
+    ['extra-item',fixedBody([selectedFixedItem(),selectedFixedItem('10.1234/other')],2)],
+    ['missing-item',fixedBody([],1)],
+    ['wrong-total',fixedBody([selectedFixedItem()],2)],
+    ['null-cursor',fixedBody([selectedFixedItem()]).replace('"items-per-page":1','"next-cursor":null,"items-per-page":1')],
+    ['cursor',fixedBody([selectedFixedItem()]).replace('"items-per-page":1','"next-cursor":"opaque-next","items-per-page":1')],
+    ['extra-selected-field',fixedBody([{...selectedFixedItem(),score:1.25}])],
+    ['abstract',fixedBody([{...selectedFixedItem(),abstract:'Synthetic abstract canary'}])],
+    ['malformed-title',fixedBody([{...selectedFixedItem(),title:[]}])],
+    ['unsupported-type',fixedBody([{...selectedFixedItem(),type:'unsupported'}])],
+    ['malformed-date',fixedBody([{...selectedFixedItem(),published:{'date-parts':[[2024,13,1]]}}])],
+    ['unsafe-license',fixedBody([{...selectedFixedItem(),license:[{URL:'https://localhost/license'}]}])],
+    ['unresolved-relation',fixedBody([{...selectedFixedItem(),relation:{'is-correction-of':[{'id-type':'doi'}]}}])],
+  ];
+  for(const [mode,payload] of cases){
+    const s=await f.source('fixed-'+mode,{scopeId:scope.id,template:fixedDoiTemplate('endpoint:fixed-'+mode,scope),params:{}});sources.set(s.value.id,s.value);
+    f.advance(31000);await f.makeRound(store,'round:fixed-'+mode,'cohort:fixed-'+mode,[s]);
+    const before=await f.db.prepare("SELECT count(*) AS n FROM discovery_evidence_revisions WHERE kind='representation'").first<{n:number}>();
+    const result=await f.makeCollector(store,{transportOptions:{egress:{send:async()=>new Response(payload)}}}).step(f.stepInput('round:fixed-'+mode));
+    assert.equal(result.kind,'failure',mode+': '+JSON.stringify(result));
+    assert.equal((await f.db.prepare("SELECT count(*) AS n FROM discovery_evidence_revisions WHERE kind='representation'").first<{n:number}>())?.n,before?.n,mode);
+    assert.equal((await f.db.prepare('SELECT count(*) AS n FROM discovery_collection_pages').first<{n:number}>())?.n,0,mode);
+    assert.equal((await f.db.prepare('SELECT count(*) AS n FROM discovery_collection_leads').first<{n:number}>())?.n,0,mode);
+    assert.equal((await store.readHealth(s.value.id))?.lastCompleteAt,null,mode);
+    assert.equal((await store.readHealth(s.value.id))?.lastGoodReceiptId,null,mode);
+  }
+});
+
+test('fixed DOI actual D1 collector binds its issued canonical endpoint and finite singleton receipt',{timeout:600_000},async t=>{
+  const {createDiscoveryCrossrefAdapter,qualifyDiscoveryCrossrefScope}=await import('../src/ingest/discovery/crossref');
+  const f=await fixture(t),scope=await qualifyDiscoveryCrossrefScope(fixedDoiInput('positive'));
+  const template=fixedDoiTemplate('endpoint:fixed-positive',scope),s=await f.source('fixed-positive',{scopeId:scope.id,template,params:{}});
+  let store:ReturnType<typeof f.makeStore>,captured:any,issued:any;
+  const resolveClaimForPlan=async(id:string)=>{const row=await f.db.prepare('SELECT id FROM discovery_collection_claims WHERE issued_plan_id=?').bind(id).first<{id:string}>();return row?store.resolveClaim(row.id):null};
+  const resolvers={resolveSource:async(id:string)=>id===s.value.id?s.value:null,resolveScope:async(id:string)=>id===scope.id?scope:null,resolvePlan:(id:string)=>f.registry.resolvePlan(id),resolvePage:(id:string)=>store.resolvePage(id),resolveRepresentation:(r:{id:string;revision:number})=>f.registry.resolveRetainedRepresentation(r),resolveClaim:(id:string)=>store.resolveClaim(id),resolveClaimForPlan,resolveChainPage:(id:string,n:number)=>store.resolveChainPage(id,n),now:f.now};
+  let challenged=false;
+  const adapter=createDiscoveryCrossrefAdapter(resolvers);store=f.makeStore(f.db,async input=>{
+    captured=structuredClone(input);issued=await f.registry.resolvePlan(input.request.budgetReservation.id);
+    const claim=await resolveClaimForPlan(issued.id);assert.ok(claim);assert.equal(claim.chain.status,'active');
+    for(const bad of [
+      {...resolvers,resolveClaimForPlan:undefined},
+      {...resolvers,resolveClaimForPlan:async()=>null},
+      {...resolvers,resolveClaimForPlan:async()=>({...claim,issuedPlanId:'plan:wrong'})},
+      {...resolvers,resolveClaimForPlan:async()=>({...claim,chain:{...claim.chain,pageCount:1}})},
+      {...resolvers,resolveClaimForPlan:async()=>({...claim,chain:{...claim.chain,lastReceiptId:'page:wrong'}})},
+      {...resolvers,resolveClaimForPlan:async()=>({...claim,chain:{...claim.chain,checkpoint:'opaque'}})},
+      {...resolvers,resolvePlan:async()=>({...issued,continuation:null})},
+      {...resolvers,resolvePlan:async()=>({...issued,configurationSha256:'0'.repeat(64)})},
+      {...resolvers,resolvePlan:async()=>({...issued,endpoint:issued.endpoint+'&query=other'})},
+    ]) await assert.rejects(()=>createDiscoveryCrossrefAdapter(bad as any).inspect(input));
+    await assert.rejects(()=>adapter.inspect({...input,responseLink:'<https://api.crossref.org/v1/works?cursor=next>; rel="next"'}));
+    for(const [parts,precision] of [[[2024],'year'],[[2024,2],'month'],[[2024,2,3],'day']] as const){
+      const body=fixedBody([{...selectedFixedItem(),published:{'date-parts':[parts]}}]),data=bytes(body);
+      const draft=await adapter.inspect({...input,bytes:data,representationSha256:sha(data)});
+      assert.equal(draft.draft.leads[0].sourceDates[0].date.precision,precision);
+    }
+    challenged=true;return adapter.parse(input);
+  });
+  const planned=await adapter.plan(s.value.id);assert.deepEqual(planned.parameters,{});
+  for(const changed of [
+    {...template,path:'/works'},
+    {...template,fixed:{...template.fixed,filter:'doi:10.1234/alpha'}},
+    {...template,fixed:{...template.fixed,rows:'2'}},
+    {...template,fixed:{...template.fixed,select:scope.select+',abstract'}},
+    {...template,fixed:{...template.fixed,query:'synthetic'}},
+    {...template,parameters:{cursor:{kind:'token',maxLength:512}},required:['cursor'],pageParameter:'cursor'},
+  ]) await assert.rejects(()=>createDiscoveryCrossrefAdapter({...resolvers,resolveSource:async()=>({...s.value,endpointTemplate:changed})} as any).plan(s.value.id));
+  for(const args of [['*'],['next'],[undefined,'page:parent']] as const) await assert.rejects(()=>adapter.plan(s.value.id,...args));
+  f.advance(31000);await f.makeRound(store,'round:fixed-positive','cohort:fixed-positive',[s]);
+  const payload=fixedBody([selectedFixedItem()]);let endpoint:string|undefined;
+  const result=await f.makeCollector(store,{transportOptions:{egress:{send:async url=>{endpoint=String(url);return new Response(payload)}}}}).step(f.stepInput('round:fixed-positive'));
+  assert.equal(result.kind,'page',JSON.stringify(result));if(result.kind!=='page')throw Error('page');
+  assert.equal(endpoint,planned.endpoint);assert.equal(issued.endpoint,planned.endpoint);assert.deepEqual(captured.request.parameters,{});
+  assert.equal(result.receipt.terminal,true);assert.equal(result.receipt.chainComplete,true);assert.equal(result.receipt.nextCheckpoint,null);assert.equal(result.receipt.leadCount,1);
+  const raw=await f.registry.resolveRetainedRepresentation(result.receipt.representation);assert.equal(new TextDecoder().decode(raw!.bytes),payload);assert.equal(raw!.representationSha256,sha(payload));
+  assert.equal(await adapter.nextPage(result.receipt.id),null);
+  const replay=await adapter.replay(result.receipt.id);assert.equal(replay.draft.leads[0].nativeId,'10.1234/alpha');assert.equal(replay.draft.leads[0].publicationAuthorized,false);
+  assert.equal(replay.draft.leads[0].sourceDates[0].date.precision,'day');
+  assert.equal(challenged,true);
+  // All authority/source activation in this test is synthetic local D1 scaffolding.
+  // It does not attest real external source enrollment or reviewer approval.
+});
+
+test('six original fixed-DOI captures replay through D1 with exact original URL and unchanged bytes under synthetic authority',{timeout:600_000},async t=>{
+  const {createDiscoveryCrossrefAdapter,qualifyDiscoveryCrossrefScope}=await import('../src/ingest/discovery/crossref');
+  const portable=new URL('../docs/discovery/qualification/evidence/crossref-expansion-20261115/',import.meta.url);
+  const manifest=JSON.parse(readFileSync(new URL('capture-request-manifest.json',portable),'utf8'));
+  const requests=manifest.requests.filter((r:any)=>r.provider==='crossref');assert.equal(requests.length,6);
+  const f=await fixture(t),scopes=new Map<string,any>(),sources=new Map<string,DiscoveryRuntimeSource>();let store:ReturnType<typeof f.makeStore>,captured:any,issued:any;
+  const adapter=createDiscoveryCrossrefAdapter({resolveSource:async id=>sources.get(id)??null,resolveScope:async id=>scopes.get(id)??null,resolvePlan:id=>f.registry.resolvePlan(id),resolvePage:id=>store.resolvePage(id),resolveRepresentation:r=>f.registry.resolveRetainedRepresentation(r),resolveClaim:id=>store.resolveClaim(id),
+    resolveClaimForPlan:async id=>{const row=await f.db.prepare('SELECT id FROM discovery_collection_claims WHERE issued_plan_id=?').bind(id).first<{id:string}>();return row?store.resolveClaim(row.id):null},
+    resolveChainPage:(id,n)=>store.resolveChainPage(id,n),now:f.now});
+  store=f.makeStore(f.db,async input=>{captured=structuredClone(input);issued=await f.registry.resolvePlan(input.request.budgetReservation.id);return adapter.parse(input)});
+  for(const request of requests){
+    const name=request.name,observation=JSON.parse(readFileSync(new URL('crossref-'+name+'/observation.json',portable),'utf8'));
+    const original=readFileSync(new URL('crossref-'+name+'/body.json',portable));
+    assert.equal(observation.status,200,name);assert.equal(observation.body_sha256,sha(original),name);assert.equal(observation.received_bytes,original.byteLength,name);assert.equal(observation.url,request.url,name);
+    const scope=await qualifyDiscoveryCrossrefScope(request.scopeInput);scopes.set(scope.id,scope);
+    assert.equal(scope.queryKind,'fixed-doi');assert.equal(scope.canonicalDoi,request.doiCanonical,name);assert.equal(scope.filter,'doi:'+request.scopeInput.doiLiteral,name);
+    const s=await f.source('original-fixed-'+name,{scopeId:scope.id,template:request.template,params:{},maxResponseBytes:48000});sources.set(s.value.id,s.value);
+    const planned=await adapter.plan(s.value.id);assert.equal(planned.endpoint,observation.url,name);assert.deepEqual(planned.parameters,{},name);
+    f.advance(31000);await f.makeRound(store,'round:original-fixed-'+name,'cohort:original-fixed-'+name,[s]);let sends=0;
+    const result=await f.makeCollector(store,{transportOptions:{egress:{send:async url=>{sends++;assert.equal(String(url),observation.url,name);return new Response(original,{status:observation.status,headers:{'Content-Type':observation.response_headers['content-type']}})}}}}).step(f.stepInput('round:original-fixed-'+name));
+    assert.equal(result.kind,'page',name+': '+JSON.stringify(result));if(result.kind!=='page')throw Error('page');assert.equal(sends,1,name);
+    assert.equal(issued.endpoint,observation.url,name);assert.deepEqual(captured.request.parameters,{},name);assert.equal(captured.request.checkpoint,null,name);
+    assert.equal(result.receipt.representationSha256,observation.body_sha256,name);assert.equal(result.receipt.requestSha256,issued.requestSha256,name);
+    const retained=await f.registry.resolveRetainedRepresentation(result.receipt.representation);assert.ok(retained,name);
+    assert.deepEqual(Array.from(retained.bytes),Array.from(original),name);assert.deepEqual(retained.request,captured.request,name);
+    const ledger=await f.db.prepare("SELECT payload_json FROM discovery_evidence_contents WHERE kind='issued-request' AND id=?").bind(result.receipt.planId).first<{payload_json:string}>();
+    assert.ok(ledger,name);const issuedRequest=JSON.parse(ledger.payload_json);assert.equal(issuedRequest.actualEndpoint,observation.url,name);assert.equal(issuedRequest.requestSha256,result.receipt.requestSha256,name);
+    assert.equal(result.receipt.leadCount,1,name);assert.equal(result.receipt.chainComplete,true,name);assert.equal(result.receipt.terminal,true,name);assert.equal(result.receipt.nextCheckpoint,null,name);assert.equal(await adapter.nextPage(result.receipt.id),null,name);
+    const replay=await adapter.replay(result.receipt.id);assert.equal(replay.draft.leads[0].nativeId,request.doiCanonical,name);assert.equal(replay.draft.leads[0].publicationAuthorized,false,name);
+    assert.equal(replay.pageCount,1,name);assert.equal(replay.consumedItems,1,name);assert.equal(replay.provenance.parentReceiptId,null,name);
+    const native=JSON.parse(original.toString('utf8')).message.items[0],parts=native.published['date-parts'][0];
+    assert.equal(replay.draft.leads[0].sourceDates[0].date.precision,['year','month','day'][parts.length-1],name);
+    if(name==='qsiprep'||name==='captk-main'){
+      const priorName=name==='qsiprep'?'crossref-qsiprep':'crossref-captk-main';
+      const prior=new URL('../docs/discovery/qualification/evidence/github-publications-20261115/'+priorName+'/',import.meta.url);
+      const oldObservation=JSON.parse(readFileSync(new URL('observation.json',prior),'utf8'));
+      assert.notEqual(oldObservation.url,observation.url,name+': earlier parameter order was not this issued URL');
+      assert.equal(sha(readFileSync(new URL('body.json',prior))),sha(original),name+': identical body does not rewrite prior request provenance');
+      assert.deepEqual([...new URL(oldObservation.url).searchParams].sort(),[...new URL(observation.url).searchParams].sort(),name);
+    }
+  }
+  assert.equal((await f.db.prepare('SELECT count(*) AS n FROM discovery_catalog_entities').first<{n:number}>())?.n,0);
+  // Native provider bytes and recorded URLs are real; all registry/evidence permissions,
+  // activation, capabilities and claims above are explicitly synthetic local D1 scaffolding.
+});

@@ -18,7 +18,7 @@ import { decodeDiscoveryMetadataJson } from './metadata-preflight';
 
 export const CROSSREF_DOI_NORMALIZER = 'crossref-doi-ascii-v1' as const;
 const CURSOR_TTL_MS = 300000;
-const scopeInput = z.object({
+const searchScopeInput = z.object({
   declaredId: z.string().min(1).max(200),
   revision: z.number().int().positive().safe(),
   queryKind: z.enum(['work', 'institution']),
@@ -30,13 +30,31 @@ const scopeInput = z.object({
   maxItems: z.number().int().min(1).max(1000),
   denominator: z.string().min(3).max(512),
 }).strict();
+const fixedScopeInput = z.object({
+  declaredId: z.string().min(1).max(200),
+  revision: z.number().int().positive().safe(),
+  queryKind: z.literal('fixed-doi'),
+  doiLiteral: z.string().min(1).max(512),
+}).strict();
+const scopeInput = z.discriminatedUnion('queryKind', [searchScopeInput, fixedScopeInput]);
+export const CROSSREF_FIXED_DOI_SELECT = 'DOI,title,type,author,published,URL,publisher,relation,license' as const;
 export type DiscoveryCrossrefScopeInput = z.infer<typeof scopeInput>;
-export type DiscoveryCrossrefScope = Readonly<DiscoveryCrossrefScopeInput & {
+type ScopeIdentity = {
   id: string;
   scopeSha256: string;
+};
+type SearchScope = Readonly<z.infer<typeof searchScopeInput> & ScopeIdentity & {
   queryParameter: 'query' | 'query.affiliation';
   filter: string;
 }>;
+type FixedScope = Readonly<z.infer<typeof fixedScopeInput> & ScopeIdentity & {
+  canonicalDoi: string;
+  filter: string;
+  select: typeof CROSSREF_FIXED_DOI_SELECT;
+}>;
+export type DiscoveryCrossrefScope = SearchScope | FixedScope;
+const bounds = (scope: DiscoveryCrossrefScope) => scope.queryKind === 'fixed-doi'
+  ? {pageSize: 1, maxPages: 1, maxItems: 1} : scope;
 const qualifiedScopes = new WeakSet<object>();
 function fail(code: string): never {
   throw new DiscoveryRuntimeError('parser-failed', `discovery-crossref-${code}`);
@@ -47,8 +65,19 @@ async function digest(bytes: Uint8Array): Promise<string> {
   return Array.from(new Uint8Array(hash), x => x.toString(16).padStart(2, '0')).join('');
 }
 /** Frozen candidate-query grammar only; provider access and regional admission are separate. */
+export function qualifyDiscoveryCrossrefScope(input: z.infer<typeof searchScopeInput>): Promise<SearchScope>;
+export function qualifyDiscoveryCrossrefScope(input: z.infer<typeof fixedScopeInput>): Promise<FixedScope>;
+export function qualifyDiscoveryCrossrefScope(input: DiscoveryCrossrefScopeInput): Promise<DiscoveryCrossrefScope>;
 export async function qualifyDiscoveryCrossrefScope(input: DiscoveryCrossrefScopeInput): Promise<DiscoveryCrossrefScope> {
   const checked = scopeInput.parse(JSON.parse(canonical(input)));
+  if (checked.queryKind === 'fixed-doi') {
+    if (!checked.doiLiteral.startsWith('10.') || checked.doiLiteral !== checked.doiLiteral.trim()) return fail('fixed-doi-literal');
+    const {canonicalDoi} = normalizeDiscoveryCrossrefDoi(checked.doiLiteral);
+    const filter = `doi:${checked.doiLiteral}`, select = CROSSREF_FIXED_DOI_SELECT;
+    const scopeSha256 = await digest(encode(canonical({...checked, canonicalDoi, filter, select})));
+    const result = Object.freeze({...checked, canonicalDoi, filter, select, scopeSha256, id: `crossref-scope:${scopeSha256}`});
+    qualifiedScopes.add(result); return result;
+  }
   if (checked.startDay > checked.endDay || Date.parse(checked.endDay) - Date.parse(checked.startDay) > 366 * 86400000 ||
       redact(checked.queryLiteral) !== checked.queryLiteral || !/[\p{L}\p{N}]/u.test(checked.queryLiteral)) return fail('scope-invalid');
   const queryParameter = checked.queryKind === 'institution' ? 'query.affiliation' : 'query';
@@ -64,6 +93,8 @@ export type DiscoveryCrossrefResolvers = {
   resolvePlan(id: string): Promise<DiscoveryIssuedPlan>;
   resolvePage(id: string): Promise<DiscoveryCollectionPageReceipt | null>;
   resolveClaim(id: string): Promise<DiscoveryCollectionClaim>;
+  /** Required for fixed-DOI parsing: resolves the actual initial collection claim bound to this issued plan. */
+  resolveClaimForPlan?(planId: string): Promise<DiscoveryCollectionClaim | null>;
   resolveRepresentation(ref: {id: string; revision: number}): Promise<DiscoveryTrustedAdapterRepresentation | null>;
   distinctOriginCount?(refs: {id: string; revision: number}[]): Promise<number>;
   now?(): string;
@@ -143,6 +174,14 @@ function envelope(bytes: Uint8Array) {
   if (cursor !== undefined && cursor !== null &&
       (typeof cursor !== 'string' || !cursor.length || cursor.length > 512 || /[\u0000-\u001f\u007f]/u.test(cursor) || /^\s*(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(cursor))) return fail('cursor-shape');
   return {message, items: message.items as unknown[], total, cursor: cursor ?? null};
+}
+function fixedResponse(parsed: ReturnType<typeof envelope>, scope: DiscoveryCrossrefScope) {
+  if (scope.queryKind !== 'fixed-doi') return;
+  if (parsed.total !== 1 || parsed.items.length !== 1 || Object.hasOwn(parsed.message, 'next-cursor') ||
+      parsed.message['items-per-page'] !== undefined && parsed.message['items-per-page'] !== 1) return fail('fixed-response-shape');
+  const item = record(parsed.items[0]), selected = new Set<string>(CROSSREF_FIXED_DOI_SELECT.split(','));
+  if (Object.keys(item).some(key => !selected.has(key))) return fail('fixed-selection');
+  if (normalizeDiscoveryCrossrefDoi(item.DOI).canonicalDoi !== scope.canonicalDoi) return fail('fixed-doi-membership');
 }
 
 /** New bounded WP10 DOI subset, not a claim that all valid DOI syntax is supported. */
@@ -286,7 +325,11 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
     const scope = await trusted.resolveScope(value.scopeId);
     if (value.id !== id || value.provider !== 'crossref' || template.origin !== 'https://api.crossref.org' ||
         !['/works', '/v1/works'].includes(template.path) || !scope || !qualifiedScopes.has(scope) || scope.id !== value.scopeId) return fail('source-binding');
-    if (template.pageParameter !== 'cursor' || Object.keys(template.parameters).join(',') !== 'cursor' ||
+    if (scope.queryKind === 'fixed-doi') {
+      if (template.path !== '/v1/works' || template.pageParameter !== undefined || Object.keys(template.parameters).length ||
+          template.required.length || value.materialScope.material !== 'metadata' ||
+          canonical(template.fixed) !== canonical({filter: scope.filter, select: scope.select, rows: '1'})) return fail('fixed-query-binding');
+    } else if (template.pageParameter !== 'cursor' || Object.keys(template.parameters).join(',') !== 'cursor' ||
         template.parameters.cursor.kind !== 'token' || template.required.length !== 1 || template.required[0] !== 'cursor' ||
         template.fixed[scope.queryParameter] !== scope.queryLiteral || template.fixed.filter !== scope.filter ||
         template.fixed.rows !== String(scope.pageSize) || Object.keys(template.fixed).some(key =>
@@ -298,7 +341,7 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
         request.scopeId !== s.scope.id || request.endpointConstructor !== s.template.id ||
         canonical(request.enrollment) !== canonical(s.value.enrollment) || canonical(request.configuration) !== canonical(s.value.configuration) ||
         canonical(request.parser) !== canonical(s.value.parser) || canonical(request.permission) !== canonical(s.value.permission) ||
-        Object.keys(request.parameters).join(',') !== 'cursor') return fail('request-binding');
+        (s.scope.queryKind === 'fixed-doi' ? Object.keys(request.parameters).length !== 0 : Object.keys(request.parameters).join(',') !== 'cursor')) return fail('request-binding');
   }
   async function retainedPage(id: string) {
     const resolved = await trusted.resolvePage(id);
@@ -316,7 +359,8 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
         await digest(encode(canonical(retained.request))) !== page.requestSha256) return fail('retained-binding');
     await constructDiscoveryEndpoint(s.template, Object.entries(retained.request.parameters));
     const parsed = envelope(retained.bytes);
-    if (parsed.items.length > s.scope.pageSize) return fail('page-shape');
+    fixedResponse(parsed, s.scope);
+    if (parsed.items.length > bounds(s.scope).pageSize) return fail('page-shape');
     const resolvedClaim = await trusted.resolveClaim(page.claimId);
     const claim = {...resolvedClaim, source: DiscoveryRuntimeSource.parse(JSON.parse(canonical(resolvedClaim.source))),
       chain: {...resolvedClaim.chain}, sourceLease: {...resolvedClaim.sourceLease}};
@@ -326,9 +370,15 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
         claim.chain.sourceRevision !== page.sourceRevision || claim.chain.pageCount + 1 !== page.pageOrdinal ||
         !DiscoveryInstant.safeParse(claim.expiresAt).success || !DiscoveryInstant.safeParse(claim.processingDeadlineAt).success ||
         claim.sourceLease.expiresAt !== claim.expiresAt || Date.parse(page.committedAt) >= Date.parse(claim.expiresAt)) return fail('claim-binding');
+    if (s.scope.queryKind === 'fixed-doi' && (page.pageOrdinal !== 1 || claim.chain.pageCount !== 0 ||
+        claim.chain.lastReceiptId !== null || claim.chain.checkpoint !== null || retained.request.checkpoint !== null ||
+        Object.keys(claim.parameters).length || page.nextCheckpoint !== null || page.proposedCheckpoint !== null ||
+        page.responseLink !== undefined && page.responseLink !== null ||
+        !page.terminal || !page.chainComplete || page.leadCount !== 1 || page.rejectedCount || page.truncated || page.providerLimited)) return fail('fixed-receipt');
     return {page, retained, s, parsed, claim};
   }
   async function ancestry(parentId: string, s: Awaited<ReturnType<typeof source>>) {
+    if (s.scope.queryKind === 'fixed-doi') return fail('fixed-continuation');
     const parent = await retainedPage(parentId), chainId = parent.page.chainId;
     if (parent.page.sourceId !== s.value.id || parent.page.pageOrdinal >= s.scope.maxPages ||
         parent.page.truncated || parent.page.rejectedCount || parent.page.providerLimited || parent.page.terminal ||
@@ -360,6 +410,17 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
     if (plan.id !== input.request.budgetReservation.id || canonical(plan.request) !== canonical(input.request) ||
         plan.requestSha256 !== input.requestSha256 || canonical(plan.source) !== canonical(s.value) ||
         plan.endpoint !== await constructDiscoveryEndpoint(s.template, Object.entries(input.request.parameters))) return fail('issued-plan-binding');
+    if (s.scope.queryKind === 'fixed-doi') {
+      if (input.request.checkpoint !== null || Object.hasOwn(plan, 'continuation') || Object.hasOwn(plan, 'continuationParentCaptureId')) return fail('fixed-continuation');
+      if (plan.configurationSha256 !== await digest(encode(canonical(s.value)))) return fail('fixed-configuration-binding');
+      const claim = await trusted.resolveClaimForPlan?.(plan.id);
+      if (!claim || claim.issuedPlanId !== plan.id || canonical(claim.source) !== canonical(s.value) ||
+          Object.keys(claim.parameters).length || claim.chain.sourceId !== s.value.id || claim.chain.sourceRevision !== s.value.revision ||
+          claim.chain.pageCount !== 0 || claim.chain.lastReceiptId !== null || claim.chain.checkpoint !== null ||
+          claim.chain.status !== 'active' || claim.chain.querySha256 !== s.value.materialScope.requestScopeSha256 ||
+          claim.chain.configurationSha256 !== plan.configurationSha256 || canonical(claim.sourceLease) !== canonical(plan.lease)) return fail('fixed-initial-claim');
+      return {pages: [] as Awaited<ReturnType<typeof retainedPage>>[], consumed: 0};
+    }
     const cursor = input.request.parameters.cursor;
     if (cursor === '*') {
       if (input.request.checkpoint !== null || plan.continuation) return fail('initial-cursor');
@@ -381,6 +442,7 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
       request: DiscoverySourceRequest.parse(JSON.parse(canonical(supplied.request))), parser: {...supplied.parser}};
     const s = await source(input.request.sourceId);
     bindRequest(input.request, s);
+    if (s.scope.queryKind === 'fixed-doi' && input.responseLink !== undefined && input.responseLink !== null) return fail('fixed-continuation');
     if (canonical(input.parser) !== canonical(s.value.parser) || !Number.isSafeInteger(input.maxItems) ||
         input.maxItems < 1 || input.maxItems > 100 || await digest(input.bytes) !== input.representationSha256 ||
         await digest(encode(canonical(input.request))) !== input.requestSha256) return fail('input-binding');
@@ -390,7 +452,8 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
   async function project(input: DiscoveryCollectionParseInput, s: Awaited<ReturnType<typeof source>>,
     chain: {pages: Awaited<ReturnType<typeof retainedPage>>[]; consumed: number}) {
     const parsed = envelope(input.bytes);
-    if (parsed.items.length > s.scope.pageSize) return fail('page-shape');
+    fixedResponse(parsed, s.scope);
+    if (parsed.items.length > bounds(s.scope).pageSize) return fail('page-shape');
     const leads: DiscoveryCollectionLead[] = [], metadata: DiscoveryCrossrefMetadata[] = [], gaps: DiscoveryCrossrefGap[] = [];
     const seen = new Map<string, Set<string>>();
     for (const previous of chain.pages) for (let index = 0; index < previous.parsed.items.length; index++) {
@@ -399,11 +462,12 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
       versions.add(item.lead.sourceVersion!); seen.set(item.lead.nativeId, versions);
     }
     let rejectedCount = 0, providerLimited = false;
-    const itemCap = Math.min(input.maxItems, s.scope.maxItems - chain.consumed);
+    const itemCap = Math.min(input.maxItems, bounds(s.scope).maxItems - chain.consumed);
     for (let index = 0; index < parsed.items.length; index++) {
       if (index >= itemCap) { rejectedCount++; gaps.push({code: 'item-cap', itemIndex: index}); continue; }
       try {
         const item = await projectItem(parsed.items[index], index), versions = seen.get(item.lead.nativeId);
+        if (s.scope.queryKind === 'fixed-doi' && item.relationGap) return fail('fixed-unresolved-relation');
         if (versions?.has(item.lead.sourceVersion!)) { rejectedCount++; gaps.push({code: 'duplicate-doi', itemIndex: index}); continue; }
         if (versions?.size) item.metadata.holds.push('contradictory-metadata-review-required');
         const nextVersions = versions ?? new Set<string>();
@@ -411,19 +475,20 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
         leads.push(item.lead); metadata.push(item.metadata);
         if (item.relationGap) { providerLimited = true; gaps.push({code: 'malformed-item', itemIndex: index, reason: 'relation-endpoint-unresolved'}); }
       } catch (error) {
+        if (s.scope.queryKind === 'fixed-doi') throw error;
         rejectedCount++;
         gaps.push({code: 'malformed-item', itemIndex: index,
           reason: error instanceof DiscoveryRuntimeError ? error.code : 'unsupported-qualified-field'});
       }
     }
     const consumed = chain.consumed + parsed.items.length, pageCount = chain.pages.length + 1;
-    let terminal = parsed.items.length < s.scope.pageSize, nextCheckpoint: string | null = null;
+    let terminal = s.scope.queryKind === 'fixed-doi' || parsed.items.length < bounds(s.scope).pageSize, nextCheckpoint: string | null = null;
     if (parsed.total < consumed || terminal && parsed.total > consumed) {
       providerLimited = true; gaps.push({code: 'provider-total-conflict'});
     }
     if (!terminal) {
-      if (pageCount >= s.scope.maxPages) { providerLimited = true; gaps.push({code: 'page-cap'}); }
-      else if (consumed >= s.scope.maxItems) { providerLimited = true; gaps.push({code: 'item-cap'}); }
+      if (pageCount >= bounds(s.scope).maxPages) { providerLimited = true; gaps.push({code: 'page-cap'}); }
+      else if (consumed >= bounds(s.scope).maxItems) { providerLimited = true; gaps.push({code: 'item-cap'}); }
       else if (!parsed.cursor) { providerLimited = true; gaps.push({code: 'missing-cursor'}); }
       else {
         await constructDiscoveryEndpoint(s.template, [['cursor', parsed.cursor]]);
@@ -444,7 +509,10 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
   async function replay(receiptId: string) {
     const retained = await retainedPage(receiptId), {page, s, claim} = retained;
     let chain: {pages: Awaited<ReturnType<typeof retainedPage>>[]; consumed: number} = {pages: [], consumed: 0};
-    if (page.pageOrdinal === 1) {
+    if (s.scope.queryKind === 'fixed-doi') {
+      if (page.pageOrdinal !== 1 || retained.retained.request.checkpoint !== null || claim.chain.pageCount !== 0 ||
+          claim.chain.lastReceiptId !== null || claim.chain.checkpoint !== null) return fail('fixed-replay-initial');
+    } else if (page.pageOrdinal === 1) {
       if (retained.retained.request.parameters.cursor !== '*' || retained.retained.request.checkpoint !== null ||
           claim.chain.lastReceiptId !== null || claim.chain.checkpoint !== null) return fail('replay-initial');
     } else {
@@ -465,8 +533,13 @@ export function createDiscoveryCrossrefAdapter(options: DiscoveryCrossrefResolve
   }
   const parse = async (input: DiscoveryCollectionParseInput) => (await inspect(input)).draft;
   return {provider: 'crossref' as const, parser: parse, parse, inspect, replay,
-    async plan(sourceId: string, cursor = '*', parentReceiptId?: string) {
+    async plan(sourceId: string, suppliedCursor?: string, parentReceiptId?: string) {
       const s = await source(sourceId);
+      if (s.scope.queryKind === 'fixed-doi') {
+        if (suppliedCursor !== undefined || parentReceiptId !== undefined) return fail('fixed-continuation');
+        return {sourceId, parameters: {}, endpoint: await constructDiscoveryEndpoint(s.template, []), scopeSha256: s.scope.scopeSha256};
+      }
+      const cursor = suppliedCursor ?? '*';
       if (cursor !== '*') {
         if (!parentReceiptId) return fail('cursor-unbound');
         const previous = await ancestry(parentReceiptId, s);
