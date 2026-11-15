@@ -5,7 +5,7 @@ evidence persistence, provenance, scoped removal, bounded collection and evaluat
 tooling. Public discovery routes and reader interfaces are still future packages.
 No deployment or remote migration has occurred.
 
-WP05–WP08 are accepted after independent tests, transaction challenges and
+WP05–WP09 are accepted after independent tests, transaction challenges and
 final integration checks. The source-response intake contract is recorded in
 [EX08](implementation-decisions.md), and the guarded registry integration in
 [EX09](implementation-decisions.md). [EX10](implementation-decisions.md) defines
@@ -20,7 +20,9 @@ changed WP06/WP07 runtime while preserving their original receipts.
 The selected checkout is
 `/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113`,
 on `codex/discovery-implementation-20261113`, based on
-`c8b36d7e9b27376bf121d9d6670c500a25c62423`. Changes remain local.
+`c8b36d7e9b27376bf121d9d6670c500a25c62423`. The reviewed handoff and foundation
+are committed; [draft PR #30](https://github.com/ajhcs/the-valley-desk/pull/30)
+contains the implementation branch. No merge or deployment has occurred.
 [execution.json](execution.json) is the active status register. The
 [frozen engineering handoff](../discovery-engineering/README.md), its manifests
 and historical model results remain unchanged. Its planning-only status describes
@@ -39,9 +41,10 @@ the earlier task; implementation was subsequently authorized on 2026-11-13.
 | [WP06](receipts/WP06.json) | Accepted within local implementation scope | Source registry, qualification, credentials, exact endpoint rules, bounded transport/budgets, guarded retention and six synthetic adapter contracts | Sol registry / Terra transport / Astra review, with independent Sol tests |
 | [WP07](receipts/WP07.json) | Accepted within local implementation scope | Frozen ordered rounds, linked leases, atomic raw/lead/page/checkpoint commit, restart replay, conservative accounting and scoped progress | Sol store / Terra collector / Astra review, with independent Sol tests |
 | [WP08](receipts/WP08.json) | Accepted within local implementation scope | Independent GitHub repository/account/search acquisition, retained-baseline lists, native identities, source stages/dates and authenticated pagination | Sol / Terra; root integration |
+| [WP09](receipts/WP09.json) | Accepted within local implementation scope | Independently qualified PubMed search/fetch, durable scope/batch binding, historical author candidates, partial dates and truthful gaps | Sol / Terra tests / Astra review; root integration |
 
 WP07's private page receipt acknowledges collected leads; it does not fabricate
-catalog subjects or evidence-backed `SourcePage` observations. Trusted provider
+catalog subjects or evidence-backed `SourcePage` observations. Additional provider
 parsers and WP14 materialization remain separate packages. The
 [verification plan](wp07-evidence-plan.md) and
 [orchestrator review](reviews/wp07-orchestrator.md) map crash, fairness, lease,
@@ -70,19 +73,31 @@ fractional revisions; evaluation partitions detect transitive exposure and keep
 admission precision separate from candidate prediction. Reviews, failed attempts
 and exact input hashes are retained with the linked receipts.
 
+The [signed intake increment](receipts/WP03-signature-intake-progress.json) adds
+Ed25519 record/authority verification under separately supplied operator pins.
+[Its guide](wp03-signed-intake.md) specifies domains, limits, expiry and snapshot
+revocation. It does not establish actual human trust, anti-rollback administration,
+source rights or reference truth. The real corpus remains empty and unfrozen.
+
 ## Validation and remaining release blockers
 
-The [WP08 integration receipt](wp08-integration-validation.json) records the final
-commands and hashes. The [WP07 receipt](wp07-integration-validation.json),
+The [WP09 integration receipt](wp09-integration-validation.json) records final
+commands and hashes. The [WP08 receipt](wp08-integration-validation.json),
+[WP07 receipt](wp07-integration-validation.json),
 [WP06 receipt](wp06-integration-validation.json),
 [WP05 receipt](wp05-integration-validation.json) and
 [earlier foundation receipt](integration-validation.json) remain historical evidence.
 With the qualified Node 22.23.2 runtime:
 
-- `npm test`: 1,235 passed, zero failed or skipped (937 primary, 146 Watch,
-  152 discovery); the discovery command also runs compile-time contract checks.
+- All 1,267 enumerated tests passed across completed groups (937 primary, 146
+  Watch, 184 discovery), with zero assertion failures/skips. The final local npm
+  command ended with SIGTERM near the end; the remaining 31 WP06/Wistar tests
+  passed separately. The retained interrupted command is not reported as exit0.
+  GitHub CI run 43744284777 on code commit 90f9867 independently passed the full
+  Tests step. Discovery compile-time contract checks also passed.
 - The earlier standalone PDF check passed seven tests using the pinned project
-  runtime; those inputs are unchanged. It was not repeated for WP05–WP08.
+  runtime; those inputs are unchanged. WP09 code CI independently passed the
+  mandatory PDF regression step; no standalone local rerun is claimed.
 - Build, isolated local D1 smoke and secret scan passed. WP04 additionally has
   an independent nine-test local D1 challenge covering rollback and replay. WP05
   has 13 independent acceptance tests. WP06 has 21 independent tests and 16
@@ -96,16 +111,25 @@ With the qualified Node 22.23.2 runtime:
   native identities, retained baseline lists, unsafe pagination, 304, rate limits,
   API headers and scoped removal. The shared WP06/WP07 regressions pass on the
   amended runtime. All provider responses and qualifications remain synthetic.
+- WP09 has three comprehensive actual-D1 scenarios plus eleven existing regional
+  contract checks in its independent run; Astra passed 40 separate geography,
+  parent-binding and diagnostic probes. The ten original Wistar publication tests
+  now run explicitly in the discovery command. Nineteen new signature tests and
+  16 independent Astra signature probes also pass.
 - `npm audit --audit-level=high`: failed with four high-severity advisories,
   seven total. The dependency lockfile is unchanged; see the
   [audit and remediation record](dependency-audit.json).
 
-These are local checks, not completed CI or release qualification. The baseline
-inventory identifies 11 legacy regional tests omitted by the existing test
-scripts; the count above does not claim they ran. A bundle-size warning remains.
+The code CI run passed tests, PDF regressions, build and local smoke, then failed
+audit and skipped its later secret scan. Local secret scan passed. The PR stays
+draft; subsequent documentation commits have their own CI state. This is not
+completed release qualification. The baseline
+inventory originally identified 11 omitted legacy regional test files; WP09 adds
+the Wistar publication file, leaving ten outside the scripts. These are not counted
+as executed. A bundle-size warning remains.
 The model receipt states the bounds and assumptions of every proof/check. Its
-native inputs did not change during WP08; no new native proof claim is made.
-All 550 root qualification inputs match before/after. Independent suites also
+native inputs did not change during WP09; no new native proof claim is made.
+All 561 root qualification inputs match before/after. Independent suites also
 record stable inputs. Earlier failing candidates and adjudicated fixture changes
 remain preserved; a mutation that outlives a timeout is reconciled as uncertain,
 not assumed cancelled or refunded.
@@ -118,13 +142,13 @@ hash-verified local wheel provisioning are retained in that evidence directory.
 
 ## Continue from the accepted dependencies
 
-1. Begin [WP09](../discovery-engineering/work-packages/WP09.md), the PubMed adapter.
-   WP09–WP13 are eligible against the accepted registry/transport contracts.
+1. Begin [WP10](../discovery-engineering/work-packages/WP10.md), the Crossref adapter.
+   WP10–WP13 are eligible against the accepted registry/transport contracts.
    Integrate provider parsers with WP07's trusted provisional parse and private
    receipt boundary; preserve exact native keys, stages and source dates. Keep
    provider access qualification distinct from synthetic route fixtures.
    Native network egress has no default; no real source is enrolled or activated.
-   WP08 remains locally verified only: real access/rights and E04 source-class
+   GitHub and PubMed remain locally verified only: real access/rights and E04 source-class
    qualification are still required. Requests are unconditional, unsolicited304
    fails, and full pages without a usable next Link remain partial.
 2. Preserve WP07's explicit round creation and one-attempt slots. A completed

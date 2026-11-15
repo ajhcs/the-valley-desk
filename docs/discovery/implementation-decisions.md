@@ -405,8 +405,8 @@ WP06/WP07 receipts and snapshots remain historical evidence.
 
 ## EX12 — PubMed search and metadata are separate durable scopes
 
-**Status:** Implementation and independent checks completed; root qualification
-pending. Affects WP09, WP14, WP21, WP23 and WP24. No shared runtime or policy
+**Status:** Accepted for local WP09 implementation after independent Terra/Astra
+review and root qualification; see [WP09 receipt](receipts/WP09.json). Affects WP09, WP14, WP21, WP23 and WP24. No shared runtime or policy
 threshold changes.
 
 An ESearch response is retained with its exact institutional scope, query, window,
@@ -428,7 +428,8 @@ hashes, content-derived qualified scope, query/window/offset and ordered PMIDs.
 The external lookup only locates that parent; changing it cannot authorize another
 batch behind the same durable source ID. Source, plan and parse resolution enforce
 the commitment after restart. Short inconsistent search pages fail instead of
-skipping IDs. Valid capped search pages may supply a metadata batch while keeping
+skipping IDs. Root and result error/warning diagnostics are checked before any
+healthy-empty completion; only the documented empty WarningList shapes pass. Valid capped search pages may supply a metadata batch while keeping
 the inherited search-cap gap and inventoryComplete=false.
 
 Budget exhaustion remains incomplete. A later source revision with separately
@@ -453,7 +454,8 @@ truth, whole inventory coverage or empirical acceptance.
 
 ## EX13 — Offline signatures authenticate receipt bytes under operator pins
 
-**Status:** Independently reviewed preparation increment; root integration pending.
+**Status:** Preparation increment independently reviewed by Terra/Astra and root;
+see [signed intake receipt](receipts/WP03-signature-intake-progress.json).
 Affects WP03/WP14/WP22/WP24. The real reference corpus remains absent and unfrozen.
 
 A separate offline store verifies Ed25519 receipt and authority-statement envelopes

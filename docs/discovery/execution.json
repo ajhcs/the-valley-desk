@@ -50,9 +50,10 @@
       "status": "in_progress",
       "receipt": "receipts/WP03-preparation.json",
       "acceptance": null,
-      "notes": "Original evaluation preparation plus offline receipt-intake increment independently reviewed: 17 new tests, 21 original evaluation tests; caller-owned authenticated store integration still external. Zero real cases, reviewers or source permissions; manifest blocked/not_frozen. Real 360-case heldout corpus, independent recall roster and human adjudication remain required before accepting WP03 or WP14.",
+      "notes": "Evaluation and receipt preparation plus offline Ed25519 record/authority verification under operator pins reviewed by Sol/Terra/Astra. Nineteen new signature tests and 16 independent Astra probes pass. Real operator trust/current policy/rights/humans/corpus/recall/freeze remain absent. Actual manifest has zero real cases, blocked/not_frozen; WP03 remains incomplete and cannot satisfy WP14.",
       "progress_receipts": [
-        "receipts/WP03-receipt-intake-progress.json"
+        "receipts/WP03-receipt-intake-progress.json",
+        "receipts/WP03-signature-intake-progress.json"
       ]
     },
     {
@@ -137,10 +138,10 @@
       "depends_on": [
         "WP06"
       ],
-      "status": "in_progress",
-      "receipt": null,
-      "acceptance": null,
-      "notes": "Sol implements separately budgeted PubMed search/fetch; Terra actual-D1 tests; Astra independently reviews and challenges. WP03 signed offline intake progresses in parallel. Root owns qualification, commits and draft PR; deployment prohibited.",
+      "status": "accepted",
+      "receipt": "receipts/WP09.json",
+      "acceptance": "2026-11-15T18:13:45.401366+00:00",
+      "notes": "Local PubMed implementation accepted after Sol implementation, Terra actual-D1 tests, 40 independent Astra PubMed checks and root qualification of 1,267 enumerated tests under 561 stable inputs. Code CI passed tests/PDF/build/smoke; audit failed. Immutable scope/batch binding, separate budgets and truthful diagnostics/gaps. No live provider activation/deployment; E04 and empirical gates pending.",
       "started_at": "2026-11-15T17:46:23.423303+00:00"
     },
     {
@@ -548,10 +549,34 @@
         "WP26"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX12",
+      "path": "implementation-decisions.md",
+      "status": "accepted_local_implementation_design",
+      "affects": [
+        "WP09",
+        "WP14",
+        "WP21",
+        "WP23",
+        "WP24"
+      ],
+      "thresholds_changed": false
+    },
+    {
+      "id": "EX13",
+      "path": "implementation-decisions.md",
+      "status": "preparation_increment_reviewed_package_incomplete",
+      "affects": [
+        "WP03",
+        "WP14",
+        "WP22",
+        "WP24"
+      ],
+      "thresholds_changed": false
     }
   ],
   "next_ready_packages": [
-    "WP09",
     "WP10",
     "WP11",
     "WP12",
@@ -564,7 +589,13 @@
     "deployment explicitly prohibited"
   ],
   "active_packages": [
-    "WP03",
-    "WP09"
-  ]
+    "WP03"
+  ],
+  "delivery": {
+    "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
+    "pr_state": "draft",
+    "reviewed_code_commit": "90f9867cad2befe5b43fdb11fb347165fb8d9c38",
+    "code_ci_run": 43744284777,
+    "code_ci": "tests/PDF/build/smoke passed; audit failed; CI secret scan skipped; final docs commit CI separate"
+  }
 }

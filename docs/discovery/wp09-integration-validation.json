@@ -1,0 +1,245 @@
+{
+  "id": "TVD-DISCOVERY-WP09-INTEGRATION-1",
+  "recorded_at": "2026-11-15T18:11:38.967956+00:00",
+  "source_revision": "90f9867cad2befe5b43fdb11fb347165fb8d9c38",
+  "disposition": "local_wp09_checks_passed_release_remains_unqualified",
+  "checkout": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113",
+  "branch": "codex/discovery-implementation-20261113",
+  "checks": {
+    "enumerated_tests": {
+      "status": "all_passed_across_segmented_runs",
+      "tests": 1267,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 184
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "interrupted_npm_test": {
+      "exit_code": 143,
+      "termination": "SIGTERM; no assertion failure observed; cause unverified",
+      "completed_primary": 937,
+      "completed_watch": 146,
+      "completed_discovery_before_wp06": 153
+    },
+    "remaining_test_groups": {
+      "exit_code": 0,
+      "tests": 31,
+      "scope": "WP06 transport21 plus legacy Wistar10"
+    },
+    "independent_pubmed_regional": {
+      "passed": 14,
+      "pubmed_cases": 3,
+      "existing_regional_contract_cases": 11,
+      "failed": 0,
+      "inputs_unchanged": true
+    },
+    "astra_pubmed": {
+      "checks": 40,
+      "passed": 40,
+      "method": "6 geography,17 adapter,17 query diagnostics; independent probes rerun by root"
+    },
+    "wp03_signatures": {
+      "new_tests": 19,
+      "combined_preparation_tests": 57,
+      "astra_checks": 16,
+      "real_reference_cases": 0,
+      "freeze_issued": false
+    },
+    "legacy_wistar": {
+      "tests": 10,
+      "status": "pass_in_final_discovery_command",
+      "remaining_omitted_legacy_test_files": 10
+    },
+    "ci_code_commit": {
+      "sha": "90f9867cad2befe5b43fdb11fb347165fb8d9c38",
+      "run_id": 43744284777,
+      "tests_pdf_build_smoke": "pass",
+      "audit": "failure",
+      "ci_secret_scan": "skipped",
+      "overall": "failure"
+    },
+    "build": {
+      "exit_code": 0,
+      "warning": "existing main chunk exceeds500kB"
+    },
+    "local_ops_smoke": {
+      "exit_code": 0,
+      "scope": "fake isolated local bindings and closed egress"
+    },
+    "stable_inputs": 561,
+    "secret_scan": {
+      "exit_code": 0,
+      "files": 827,
+      "scope": "tracked and nonignored untracked files including final acceptance/review documents; existing script exclusions retained"
+    },
+    "count_note": "Independent/probe/compatibility checks overlap npm totals and are not additive."
+  },
+  "outputs": {
+    "src/ingest/discovery/pubmed.ts": "c21d7c9bfd4b4c458ac70fdf248f3a870b08180d92e8f9f79eef04f962a4a478",
+    "test/discovery-pubmed.test.ts": "2aab1f2be743093f30c32c2a4c294c780dfd7a3a5da8f2a7e3361604af6ea0fd",
+    "src/ingest/discovery-reference-signatures.ts": "fdf45e6995a0e2d4e1675600d34254d36caeb9c0c52e3c683153ce5668e7b9d0",
+    "test/discovery-reference-signatures.test.ts": "c49168738fe629a1140a848744b48662339ec8ded3524a427f792499843d6830",
+    "package.json": "350bbcc7bdaca0fc2a3ec3f0360dc8cddbfc66d8786a4dee28db253249bf01e5",
+    "docs/discovery/wp09-evidence-plan.md": "dddc7c9d3134be6da8985444c328358991fff898d4a8965b00c0127210514d51",
+    "docs/discovery/reviews/wp09-sol.md": "38764245e76e49d06d2992bef18a3361c815d81f835c9218eaa3e396e485ba86",
+    "docs/discovery/reviews/wp09-terra.md": "571a30abcd14b6fa10e24e7b28a17c5d1d7e4bbe1a25fa18a8574a17cdd6722d",
+    "docs/discovery/reviews/wp09-astra.md": "6330e881f443fb38c3b18413fde8c5053e1cf65ddc8671a0ffc9d6362caf7cc6",
+    "docs/discovery/reviews/wp09-orchestrator.md": "c98435dbcfa2da5d0625117a3673f54172a724a32212348cb68e9395be2b91ce",
+    "docs/discovery/wp03-signed-intake.md": "5b0fe8a78fef7dc998a179fc1475039779709b18d0bd0386a95b73c49aad5e12",
+    "docs/discovery/reviews/wp03-sol-signatures.md": "e88b3ab74eeb64fdf7bb922f995119dc67ce16dd920ae8012345645c3f96ed23",
+    "docs/discovery/reviews/wp03-terra-signatures.md": "4165db484de79a61badeb8d1a8dda70efc8c0142c650aa4423148fb96477aa9e",
+    "docs/discovery/reviews/wp03-astra-signatures.md": "918a447f7f7fa3c08a32b373bf47cabca75e5cef02dc81cd9b310ffaebf1a8c2",
+    "docs/discovery/evaluation-protocol.md": "0e2f437fe749de69e97e8755ae7ec527a752abd295e03fc3ee3c81a1c9f84c81",
+    "test/fixtures/discovery-sources/pubmed/README.md": "04402f197fa31186602c02f6c2361c0290fd02cbdac32ac78c778d90ee4f3d50",
+    "test/fixtures/discovery-sources/pubmed/efetch.xml": "30f9700af06ceedd5f086849de60ee5c100fae5454fb4f6159c277785408feae",
+    "test/fixtures/discovery-sources/pubmed/efetch-corrected.xml": "653dcca889c1bdaa32fed76fe03afd2fbc59e56547f8a9bea639aef9c83b62b0",
+    "test/fixtures/discovery-sources/pubmed/scope.json": "d620cbafa3bdefeb380c33716034843910f8f81101fab50c55b54d07e67620ec",
+    "test/fixtures/discovery-sources/pubmed/esearch.json": "bcfe10f7c30b50c4846f5de9e043c67ab39146a209ebe3bec6bc787f0b08abfd",
+    "test/fixtures/discovery-sources/pubmed/hostile-entity.xml": "6f795c83f635d07bd7938e92cb77bc0d12b1bd2e310e2e7d83c5a502c778399f",
+    "test/fixtures/discovery-sources/pubmed/mixed-title.xml": "f8b4244a9e99a1e3bc0a1309554b5cf8c202e767650e27ee08d8a030681cf6b7"
+  },
+  "artifacts": {
+    ".discovery-work/wp09/root-final/input-sha256.json": "74c41f49e12731316c49d908699e8cd03ce0c24ea3fea34e90bd663f8a34e5a9",
+    ".discovery-work/wp09/root-final/input-check.json": "b496c4ab284026b42b0009ac7d4a5440afab71a6dd86c39b4b9d948f0ca4c18f",
+    ".discovery-work/wp09/root-final/npm-test-final-interrupted.log": "d8379ef540324186bc383d52cd71de5293db1fc38e74a9289a4e91921bd73852",
+    ".discovery-work/wp09/root-final/interruption.json": "93913db7c17c86f4fe81053af69d4e642bca1acf38f3eafc621b9463f2e1cbb2",
+    ".discovery-work/wp09/root-final/remaining-tests.log": "a46a21017e5061e244470eb4c7249dc84481954dcbe889d44568c4221e2cb799",
+    ".discovery-work/wp09/root-final/build.log": "b81a5f940abeadf2743172d5da0a7b67f5f62997da0a8d4c172676c49a8adb50",
+    ".discovery-work/wp09/root-final/ops-smoke.log": "48954a992f36df0891d91e99c56405f43086b5e164cbe451c2ebfe49f42a585f",
+    ".discovery-work/wp09/root-final/frozen-manifests.json": "4e0f74507b31ea4a250790e73d8cca85e9473acbac9ccdc0e2c89ee693c358c3",
+    ".discovery-work/wp09/root-final/native-model-inputs.json": "884b9e4d23a053b89ab98ad185b841485121579266229345e7d23e716b9bf2b6",
+    ".discovery-work/wp09/root-final/astra-rerun.json": "996aa27eeea83a543da608f014c8f52788fefbfb8627db40588c427e67c54f3a",
+    ".discovery-work/wp09/root-final/ci-code-observation.json": "4c843c120eebf570d0b6d055feab151eb2d406fe667269b4de33ac952c120008",
+    ".discovery-work/wp09/root-final/astra-geography.log": "9e3f8529b7082278e275b3a76e9a11ef315970c3ed1b495cd8139a0fe654f7d1",
+    ".discovery-work/wp09/root-final/astra-pubmed.log": "9d40acf3060e50308fbc5fd88106fa281f89f87038e5db8274f99770ffa1d9e0",
+    ".discovery-work/wp09/root-final/astra-diagnostics.log": "9d40acf3060e50308fbc5fd88106fa281f89f87038e5db8274f99770ffa1d9e0",
+    ".discovery-work/wp09/root-final/astra-signatures.log": "a2569ba23c3372bc0cfa93f0455a55de416913d200fee685198b1615044ad5be",
+    ".discovery-work/wp09/root-final/wp03-signed-intake-report.json": "130dfad1fdadbee183a55e33403aa6bbcc2a5b0a33cce7f46fd658da42a2ab55",
+    ".discovery-work/wp09/root-final/wp03-signed-intake.log": "10f0b1337bd18e82c8c7f91ab7a45c6043adef8fa068c6c428b5cd292bae540e",
+    ".discovery-work/wp09-terra/diagnostic-final.tap": "921a05324e2395418319803f50397429945c21733bf7a0da33f5d135fcbeed87",
+    ".discovery-work/wp09-terra/diagnostic-final-before.sha256": "9ad257ffae6fa1c2d248dfa8162870f4bef4732d78b3c0efeaec4379a2f20a7c",
+    ".discovery-work/wp09-terra/diagnostic-final-after.sha256": "9ad257ffae6fa1c2d248dfa8162870f4bef4732d78b3c0efeaec4379a2f20a7c",
+    ".discovery-work/wp09-terra/final-extra-before.sha256": "91497e1d62d43299da924408549d1970ea71f73d1ddc793663be570258f71ed3",
+    ".discovery-work/wp09-terra/final-extra-after.sha256": "91497e1d62d43299da924408549d1970ea71f73d1ddc793663be570258f71ed3",
+    ".discovery-work/wp03-signatures-sol/tests.log": "1fee5b858acade83539da491a5e7a38a66ada93c6b394ab5988a7651078e7e8a",
+    ".discovery-work/wp03-signatures-terra/adversarial.ts": "306edc733c4755e42d2d439b764874cfcaa32e9881d58ec9b15f606b8447d3a4",
+    ".discovery-work/wp09-astra/audit-current.json": "8a841b09983c4f961e412f062c75959092f4d7ccc4fcdf1b243097cf3a2a0b06",
+    ".discovery-work/wp09/root-final/secret-scan-final.log": "1069a85eaa2d20b149b5018055763f1093bcedae4a7b5252f2f708c9756a8bcb"
+  },
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "exit_code": 143,
+      "disposition": "interrupted; completed groups retained"
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-transport.test.ts",
+        "test/regional-publications.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "ops:smoke"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        ".discovery-work/wp09/root-final/inputs.py",
+        "check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "secret-scan"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "environment": "sanitized Node22.23.2; unchanged HOME; workspace-only TMP/XDG/npm caches; telemetry off; actual local D1 envFiles:[], persist:false, remoteBindings:false; closed synthetic egress",
+  "lockfile_sha256": "f90749d123fe5d553057a037188af6a827367aa6bc427e84ccc25a3c4218fe05",
+  "dependency_audit": {
+    "high": 4,
+    "total": 7,
+    "raw_report": ".discovery-work/wp09-astra/audit-current.json",
+    "status": "release_and_CI_audit_gate_blocked_no_dependency_change"
+  },
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "native_model_inputs_changed": false,
+  "frozen_handoff_entries": 70,
+  "frozen_model_entries": 21,
+  "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
+  "pr_state": "draft",
+  "deployment_performed": false,
+  "production_state_changed": false,
+  "limits": [
+    "Local implementation uses synthetic source/evidence permissions, capabilities and provider responses; no live PubMed qualification, access/rights or E01-E06 success is established.",
+    "Metadata batch completion covers only the exact requested PMIDs. Search/inventory completion, provider-wide pacing and complete geographic discovery remain separate; warnings/errors fail before empty completion.",
+    "Conservative XML vocabulary, mixed-content, byte and field bounds may reject valid provider metadata. Partial dates remain partial, current employment and person identity unknown. Raw/inspect metadata needs WP14 materialization.",
+    "WP03 signatures verify integrity under supplied operator pins only. Real trust enrollment, current policy selection, trusted clock/anti-rollback, source permissions, independent humans, corpus and sealed freeze remain absent. Revocation is a replaceable expiring snapshot with no maximum TTL.",
+    "All shared runtime/schema/migration and old Wistar bytes are unchanged. Native model inputs are unchanged; no new native proof is claimed. Existing uncertainty, external-egress and logical-erasure/backup limits remain.",
+    "Fresh audit still reports4high/7total under unchanged lockfile. PR remains draft; ten old legacy test files remain omitted. No audit gate suppression, merge, provider activation, remote migration or deployment."
+  ],
+  "retained_superseded_runs": [
+    ".discovery-work/wp09/root-final/npm-test-before-search-warning-fix.log",
+    ".discovery-work/wp09/root-final/input-sha256-before-search-warning-fix.json",
+    ".discovery-work/wp09-astra/warning-old-reproduced.log",
+    ".discovery-work/wp09-astra/warning-final-1.log",
+    ".discovery-work/wp09-astra/geography-before.log",
+    ".discovery-work/wp09-astra/xml-order-before.log"
+  ],
+  "pre_warning_run_note": "1267 earlier tests passed but omitted newly identified search diagnostic failures; superseded and not used as final acceptance evidence.",
+  "accepted_at": "2026-11-15T18:13:45.401366+00:00",
+  "accepted_package": "WP09",
+  "ci_code_commit_runtime_inputs_matched": 561,
+  "prior_accepted_candidate_comparison": {
+    "previous_inputs": 550,
+    "unchanged": 549,
+    "intentional_changed_inputs": [
+      "package.json"
+    ],
+    "new_inputs": 11,
+    "migrations_unchanged": 44,
+    "shared_runtime_schema_and_legacy_bytes_changed": false
+  }
+}

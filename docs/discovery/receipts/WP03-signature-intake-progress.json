@@ -1,0 +1,56 @@
+{
+  "package": "WP03",
+  "disposition": "signed_intake_preparation_reviewed_package_incomplete",
+  "recorded_at": "2026-11-15T18:11:38.967956+00:00",
+  "reviewed_at": "2026-11-15T18:11:38.967956+00:00",
+  "prior_progress_receipt": "WP03-receipt-intake-progress.json",
+  "owner": "Sol (bounded signed-store increment)",
+  "independent_reviewer": "Terra",
+  "code_reviewer": "Astra",
+  "scope": "Offline Ed25519 receipt and authority verification under separately provisioned pins, connected to existing readiness/expectation checks; no real trust or corpus enrollment.",
+  "outputs": {
+    "src/ingest/discovery-reference-signatures.ts": "fdf45e6995a0e2d4e1675600d34254d36caeb9c0c52e3c683153ce5668e7b9d0",
+    "test/discovery-reference-signatures.test.ts": "c49168738fe629a1140a848744b48662339ec8ded3524a427f792499843d6830",
+    "docs/discovery/wp03-signed-intake.md": "5b0fe8a78fef7dc998a179fc1475039779709b18d0bd0386a95b73c49aad5e12",
+    "docs/discovery/reviews/wp03-sol-signatures.md": "e88b3ab74eeb64fdf7bb922f995119dc67ce16dd920ae8012345645c3f96ed23",
+    "docs/discovery/reviews/wp03-terra-signatures.md": "4165db484de79a61badeb8d1a8dda70efc8c0142c650aa4423148fb96477aa9e",
+    "docs/discovery/reviews/wp03-astra-signatures.md": "918a447f7f7fa3c08a32b373bf47cabca75e5cef02dc81cd9b310ffaebf1a8c2"
+  },
+  "validation": {
+    "new_tests": 19,
+    "combined_preparation_tests": 57,
+    "astra_checks": 16,
+    "real_reference_cases": 0,
+    "freeze_issued": false
+  },
+  "artifacts": {
+    ".discovery-work/wp09/root-final/astra-signatures.log": "a2569ba23c3372bc0cfa93f0455a55de416913d200fee685198b1615044ad5be",
+    ".discovery-work/wp09/root-final/wp03-signed-intake-report.json": "130dfad1fdadbee183a55e33403aa6bbcc2a5b0a33cce7f46fd658da42a2ab55",
+    ".discovery-work/wp09/root-final/wp03-signed-intake.log": "10f0b1337bd18e82c8c7f91ab7a45c6043adef8fa068c6c428b5cd292bae540e",
+    ".discovery-work/wp03-signatures-sol/tests.log": "1fee5b858acade83539da491a5e7a38a66ada93c6b394ab5988a7651078e7e8a",
+    ".discovery-work/wp03-signatures-terra/adversarial.ts": "306edc733c4755e42d2d439b764874cfcaa32e9881d58ec9b15f606b8447d3a4"
+  },
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "real_case_count": 0,
+  "manifest_status": "not_frozen",
+  "readiness": "blocked",
+  "freeze_issued": false,
+  "empirical_gates": "E01-E06 not_run",
+  "acceptance_criteria": {
+    "AC-WP03-01": "not_met: no actual360-case heldout corpus",
+    "AC-WP03-02": "not_met: no real independent annotation/adjudication",
+    "AC-WP03-03": "not_met: no independent100-case eligible recall roster",
+    "AC-WP03-04": "local tools/cryptographic binding reviewed; actual outcome evaluation not run",
+    "AC-WP03-05": "exposure controls unchanged; no actual sealed freeze"
+  },
+  "remaining_inputs": [
+    "accountable operator key enrollment and current authenticated policy/clock/anti-rollback",
+    "permitted original evidence and rights",
+    "independent human reviewers and blinded adjudication",
+    "development material plus360 heldout cases,60/route, and independent100-case eligible recall roster",
+    "sampling/exposure/history and independently authenticated sealed freeze review"
+  ],
+  "limits": [
+    "WP03 signatures verify integrity under supplied operator pins only. Real trust enrollment, current policy selection, trusted clock/anti-rollback, source permissions, independent humans, corpus and sealed freeze remain absent. Revocation is a replaceable expiring snapshot with no maximum TTL."
+  ]
+}
