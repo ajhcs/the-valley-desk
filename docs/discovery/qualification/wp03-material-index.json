@@ -1,7 +1,7 @@
 {
   "purpose": "Subordinate unannotated material staging index; not the WP03 reference manifest or an authority schema.",
   "status": "not_frozen",
-  "staged_material_count": 2,
+  "staged_material_count": 6,
   "actual_reference_case_count": 0,
   "actual_human_reviewer_count": 0,
   "actual_trust_enrollment": "none",
@@ -155,7 +155,323 @@
           "Independent sampling frames and the complete required corpus, followed by accountable freeze review."
         ]
       }
+    },
+    {
+      "local_material_locator": "github-qsiprep-20261115",
+      "material_kind": "native_public_repository_metadata",
+      "source": {
+        "provider": "GitHub",
+        "native_repository_id": "156589095",
+        "source_url": "https://api.github.com/repos/PennLINC/qsiprep",
+        "reported_name": "PennLINC/qsiprep",
+        "reported_owner": {
+          "id": "61955309",
+          "login": "PennLINC",
+          "type": "Organization"
+        },
+        "reported_dates": {
+          "created_at": "2018-11-07T18:14:12Z",
+          "updated_at": "2026-11-11T21:13:26Z",
+          "pushed_at": "2026-11-12T18:26:45Z"
+        },
+        "citation_file_snapshot": {
+          "commit": "ae8ab16930309d77a44f7970028b3c6642c1aae7",
+          "paths": [
+            "README.rst",
+            "CITATION.cff"
+          ],
+          "observation": "separate GitHub connector file/ref observations; commit is not a field of the native repository response"
+        },
+        "source_fact_scope": "Public repository facts and organization-owner relationship; no person, actual-unit, county, current-employment or clinical truth inferred."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:17:46.393559+00:00",
+        "observed_at_utc": "2026-11-15T21:17:46.825485+00:00",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "received_bytes": 6303,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "89e4ccc7d089c3b5d5d117ad722869ab5ad186f07cfead7a6da53e8d550663aa",
+        "portable_native_body_path": "evidence/github-publications-20261115/github-qsiprep/body.json",
+        "portable_observation_path": "evidence/github-publications-20261115/github-qsiprep/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "observation_receipt_scope": "Local acquisition observation only; not an authenticated WP03 evidence or permission statement. Native GET followed observed rate-reset, without authentication/proxy or deliberate IP manipulation."
+      },
+      "rights_basis": {
+        "basis": "Bounded public factual repository research under GitHub API/research terms; software-body licenses evaluated separately.",
+        "official_terms_url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+        "research_policy_url": "https://docs.github.com/en/site-policy/acceptable-use-policies/github-acceptable-use-policies",
+        "scope": "Exact reviewed nonpersonal public repository metadata for this public qualification assessment. No blanket commercial README/code/article/body redisplay or ongoing enrollment.",
+        "assessment_paths": [
+          "github-repository-assessment.md",
+          "github-publication-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation/review agents inspected these sources and native representations for source qualification and raw-retention repairs.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "linkage": {
+        "publication_doi": "10.1038/s41592-021-01185-5",
+        "publication_pmid": "34155395",
+        "basis": "Explicit DOI citation in exact-commit README/CITATION files, independently matched to publication identity.",
+        "automated_README_CITATION_join_implemented": false,
+        "linked_project_family": "unassigned; possible cross-project person connection requires review"
+      },
+      "format_and_handoff": {
+        "native_repository_baseline_format": "supported_in_offline_actual_D1_replay_under_synthetic_authority",
+        "source_registry_enrollment": "none",
+        "manual_dossier": "github-publication-qualification.md",
+        "actual_individual_creator_geography_or_relevance_labels": "none"
+      }
+    },
+    {
+      "local_material_locator": "github-captk-20261115",
+      "material_kind": "native_public_repository_metadata",
+      "source": {
+        "provider": "GitHub",
+        "native_repository_id": "128938343",
+        "source_url": "https://api.github.com/repos/CBICA/CaPTk",
+        "reported_name": "CBICA/CaPTk",
+        "reported_owner": {
+          "id": "35823615",
+          "login": "CBICA",
+          "type": "Organization"
+        },
+        "reported_dates": {
+          "created_at": "2018-04-10T13:36:31Z",
+          "updated_at": "2026-10-07T07:58:11Z",
+          "pushed_at": "2023-12-09T00:42:42Z"
+        },
+        "citation_file_snapshot": {
+          "commit": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+          "paths": [
+            "Readme.md",
+            "README.txt"
+          ],
+          "observation": "separate GitHub connector file/ref observations; commit is not a field of the native repository response"
+        },
+        "source_fact_scope": "Public repository facts and organization-owner relationship; no person, actual-unit, county, current-employment or clinical truth inferred."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:17:46.851888+00:00",
+        "observed_at_utc": "2026-11-15T21:17:47.138094+00:00",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "received_bytes": 6227,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "28e58fd68f32470d292fb471056e05dc647923771710e2a595b74c614f1cc6cb",
+        "portable_native_body_path": "evidence/github-publications-20261115/github-captk/body.json",
+        "portable_observation_path": "evidence/github-publications-20261115/github-captk/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "observation_receipt_scope": "Local acquisition observation only; not an authenticated WP03 evidence or permission statement. Native GET followed observed rate-reset, without authentication/proxy or deliberate IP manipulation."
+      },
+      "rights_basis": {
+        "basis": "Bounded public factual repository research under GitHub API/research terms; software-body licenses evaluated separately.",
+        "official_terms_url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+        "research_policy_url": "https://docs.github.com/en/site-policy/acceptable-use-policies/github-acceptable-use-policies",
+        "scope": "Exact reviewed nonpersonal public repository metadata for this public qualification assessment. No blanket commercial README/code/article/body redisplay or ongoing enrollment.",
+        "assessment_paths": [
+          "github-repository-assessment.md",
+          "github-publication-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation/review agents inspected these sources and native representations for source qualification and raw-retention repairs.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "linkage": {
+        "publication_doi": "10.1117/1.jmi.5.1.011018",
+        "publication_pmid": "29340286",
+        "basis": "Explicit DOI citation in exact-commit README/CITATION files, independently matched to publication identity.",
+        "automated_README_CITATION_join_implemented": false,
+        "linked_project_family": "unassigned; possible cross-project person connection requires review"
+      },
+      "format_and_handoff": {
+        "native_repository_baseline_format": "supported_in_offline_actual_D1_replay_under_synthetic_authority",
+        "source_registry_enrollment": "none",
+        "manual_dossier": "github-publication-qualification.md",
+        "actual_individual_creator_geography_or_relevance_labels": "none"
+      }
+    },
+    {
+      "local_material_locator": "crossref-qsiprep-20261115",
+      "material_kind": "native_provider_selected_bibliographic_work_list",
+      "source": {
+        "provider": "Crossref",
+        "native_doi": "10.1038/s41592-021-01185-5",
+        "canonical_doi": "10.1038/s41592-021-01185-5",
+        "pmid_from_separate_publication_review": "34155395",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense&rows=1",
+        "reported_title": [
+          "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data"
+        ],
+        "reported_published_date_parts": [
+          [
+            2021,
+            6,
+            21
+          ]
+        ],
+        "reported_author_count": 42,
+        "source_fact_scope": "Bibliographic facts as reported by Crossref. QSIPrep has no affiliation entries; CaPTk has institution names only. City/unit evidence is separately reviewed publication evidence, not these native fields. No correction/retraction status, clinical or current-employment truth established."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:06:38.057658+00:00",
+        "observed_at_utc": "2026-11-15T21:06:38.285850+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 7503,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+        "portable_native_body_path": "evidence/github-publications-20261115/crossref-qsiprep/body.json",
+        "portable_observation_path": "evidence/github-publications-20261115/crossref-qsiprep/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "selection": "Provider-native DOI filter and factual-field select; no local projection or substituted envelope.",
+        "limitations": "Safe rate/pagination headers and negotiated TLS version were not recorded; unknown, not absent. Original DOI-filter/select request is outside current WP10 scope grammar."
+      },
+      "rights_basis": {
+        "basis": "Crossref reusable factual bibliographic metadata policy; no abstract/full-text material in the provider-selected body.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual bibliographic representation only; no abstract, full text, images, contact data or linked website rights inferred.",
+        "assessment_paths": [
+          "linked-publication-assessment.md",
+          "github-publication-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation/review agents inspected these sources and native representations for source qualification and raw-retention repairs.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "native_work_list_payload": "accepted_with_exact_bytes_in_offline_actual_D1_replay_under_synthetic_request_scope",
+        "original_DOI_filter_select_request": "unsupported_current_WP10_query_binding",
+        "source_registry_enrollment": "none",
+        "manual_dossier": "github-publication-qualification.md",
+        "actual_human_geography_creator_or_relevance_labels": "none"
+      }
+    },
+    {
+      "local_material_locator": "crossref-captk-main-20261115",
+      "material_kind": "native_provider_selected_bibliographic_work_list",
+      "source": {
+        "provider": "Crossref",
+        "native_doi": "10.1117/1.jmi.5.1.011018",
+        "canonical_doi": "10.1117/1.jmi.5.1.011018",
+        "pmid_from_separate_publication_review": "29340286",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1117%2F1.JMI.5.1.011018&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense&rows=1",
+        "reported_title": [
+          "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome"
+        ],
+        "reported_published_date_parts": [
+          [
+            2018,
+            1,
+            11
+          ]
+        ],
+        "reported_author_count": 25,
+        "source_fact_scope": "Bibliographic facts as reported by Crossref. QSIPrep has no affiliation entries; CaPTk has institution names only. City/unit evidence is separately reviewed publication evidence, not these native fields. No correction/retraction status, clinical or current-employment truth established."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:06:38.310929+00:00",
+        "observed_at_utc": "2026-11-15T21:06:38.462171+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 5056,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "b291ed6c35fc31625450ddf2868318fa5335917da42fa90deb614f608c146153",
+        "portable_native_body_path": "evidence/github-publications-20261115/crossref-captk-main/body.json",
+        "portable_observation_path": "evidence/github-publications-20261115/crossref-captk-main/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "selection": "Provider-native DOI filter and factual-field select; no local projection or substituted envelope.",
+        "limitations": "Safe rate/pagination headers and negotiated TLS version were not recorded; unknown, not absent. Original DOI-filter/select request is outside current WP10 scope grammar."
+      },
+      "rights_basis": {
+        "basis": "Crossref reusable factual bibliographic metadata policy; no abstract/full-text material in the provider-selected body.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual bibliographic representation only; no abstract, full text, images, contact data or linked website rights inferred.",
+        "assessment_paths": [
+          "linked-publication-assessment.md",
+          "github-publication-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation/review agents inspected these sources and native representations for source qualification and raw-retention repairs.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "native_work_list_payload": "accepted_with_exact_bytes_in_offline_actual_D1_replay_under_synthetic_request_scope",
+        "original_DOI_filter_select_request": "unsupported_current_WP10_query_binding",
+        "source_registry_enrollment": "none",
+        "manual_dossier": "github-publication-qualification.md",
+        "actual_human_geography_creator_or_relevance_labels": "none"
+      }
     }
   ],
-  "independence_note": "Both staged records come from the same ROR publisher and contain relationship links. Family/origin/partition assignments are unreviewed; two staged records are not two independent reference cases."
+  "independence_note": "Six staged native representations are not six reference cases or independent measurement units. Repository/paper representations link within projects, and Christos Davatzikos is an exact author-name overlap across the two project dossiers. Identity, transitive family/origin/partition and sampling review remain unassigned. All material is development-exposed."
 }

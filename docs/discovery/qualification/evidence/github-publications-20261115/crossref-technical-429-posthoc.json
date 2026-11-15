@@ -1,0 +1,14 @@
+{
+  "recorded_utc": "2026-11-15T21:08:34.631643+00:00",
+  "provenance": "post hoc transcription of command tool output; not a contemporaneous native receipt",
+  "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1007%2F978-3-030-46643-5_38&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense&rows=1",
+  "status": 429,
+  "observed_body_bytes": 0,
+  "retry": "none",
+  "original_start_utc": null,
+  "original_end_utc": null,
+  "response_headers": null,
+  "retry_after": null,
+  "unknowns": "Original request timestamps and response headers were not retained; null means unknown, not absent.",
+  "method_sha256": "5574bee51a5d766759c8777be144164171543e660fefc33b64c1d192d427ac1d"
+}

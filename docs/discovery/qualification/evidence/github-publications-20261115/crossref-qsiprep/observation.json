@@ -1,0 +1,27 @@
+{
+  "start_utc": "2026-11-15T21:06:38.057658+00:00",
+  "end_utc": "2026-11-15T21:06:38.285850+00:00",
+  "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense&rows=1",
+  "ip": "100.51.192.124",
+  "ip_global": true,
+  "status": 200,
+  "content_type": "application/json",
+  "content_encoding": null,
+  "bytes": 7503,
+  "sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+  "doi": "10.1038/s41592-021-01185-5",
+  "message_type": "work-list",
+  "item_keys": [
+    "DOI",
+    "URL",
+    "author",
+    "license",
+    "published",
+    "publisher",
+    "title",
+    "type"
+  ],
+  "abstract_or_contact_key_and_email_scan": "pass",
+  "preflight": "decoded full payload, exact DOI, allowed item keys, no redirects",
+  "transport": "standalone pinned HTTPS, no proxy or authentication"
+}

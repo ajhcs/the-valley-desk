@@ -771,3 +771,61 @@ evidence/permission statements, actual independent human review, family/partitio
 and sampling review, the required corpus and accountable freeze remain missing.
 The subordinate staging index supplies none of that authority. E01–E06 remain
 not_run; no source truth, full coverage or operational acceptance is claimed.
+
+## EX22 — Repository/publication evidence and whole-payload metadata guards
+
+**Status:** Bounded manual GitHub/Crossref metadata evidence and the local
+raw-retention correction reviewed. WP03 remains incomplete and not_frozen;
+no real source authority, automated publication join or deployment is granted.
+No policy threshold, strict reference manifest, native model or production change.
+
+The user requested real GitHub repositories and linked publications in the DVRPC
+region. [QSIPrep and CaPTk dossiers](qualification/github-publication-qualification.md)
+connect exact repository identities and commit-pinned citations to separately
+identified papers and publication-time Philadelphia affiliation evidence. MRI
+preprocessing and cancer-imaging software supply specific health-technology
+purposes. GitHub organizations, human authors, creative roles, historical work
+affiliation and present employment remain distinct. Outside/multiple affiliations
+are preserved. A shared author name creates a possible cross-project family link;
+two projects are not two established independent measurement units.
+
+Two native GitHub repository JSON responses and two native provider-selected
+Crossref bibliographic work lists passed independent whole-body/URI review before
+portable retention. GitHub's first response was discarded after a capture-method
+SSH false positive; the second was rate-limited. Two final fixed requests waited
+until after the reported reset, with no credential/proxy or deliberate address
+manipulation. A third selected Crossref request returned 429 without retry; its
+missing contemporaneous receipt is retained as an explicit post hoc limitation.
+Earlier unreceipted singleton metadata remains excluded from qualified portability.
+
+The metadata rights decision covers this bounded factual research assessment.
+QSIPrep's BSD license and CaPTk's component terms do not license article text,
+contacts or linked websites. Crossref's provider-side factual-field selection
+excludes abstracts before capture; it is not local projection masquerading as
+native input. Article-specific full-text rights remain unqualified. All source
+trust/enrollment and authenticated WP03 evidence/permission assertions remain absent.
+
+Independent D1 probes also reproduced ignored contact bytes persisting through
+GitHub/Crossref projections and a Crossref abstract retained under metadata-only
+scope. A shared strict decoder/preflight now checks the complete original JSON,
+including unknown fields and decoded key names, before any projection or capture.
+It rejects duplicate keys, unsupported Unicode/numbers, demonstrated contact and
+credential encodings, and nonempty Crossref abstract/full-text material. GitHub's
+SSH exception requires an exact alias-bound value on a validated route-known
+repository record. Known credential fields such as temp_clone_token permit null
+absence but reject opaque nonnull values. Diagnostics contain fixed codes only.
+These bounded rules do not establish universal privacy or interpret licenses.
+
+The four native payloads pass offline checks and actual-D1 replay under synthetic
+request authority. The GitHub baseline endpoint shape is supported; README/CITATION
+parsing is not implemented. Crossref's actual DOI-filter/select request grammar
+is outside WP10's qualified search/cursor contract, despite supported work-list
+payloads. Neither replay enrolls a provider or supplies real WP06 transport authority.
+Existing WP08/WP10 acceptance remains local software scope, with this correction
+separately recorded; no new live-source acceptance is implied.
+
+WP03 now stages six development-exposed native representations: two organization,
+two repository and two publication records. It still has zero strict reference
+cases/human reviewers. Independent labels/adjudication, trustworthy statements,
+family/partition and independent sampling review, the required corpus and an
+accountable freeze remain missing. WP14 remains gated; E01–E06 remain not_run.

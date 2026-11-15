@@ -1,0 +1,30 @@
+{
+  "package": "WP03",
+  "recorded_at": "2026-11-15T21:30:26.901702+00:00",
+  "decision": "EX22",
+  "disposition": "four_new_native_repository_publication_materials_staged_package_incomplete",
+  "reviewed_code_commit": "1600ee8db50b912b100179968bcf9f1f5122658c",
+  "qualification_receipt": "github-publication-qualification-20261115.json",
+  "qualification_receipt_sha256": "f906c36079543f3994423f44e64a39ad4f1f4a3b5c2b1a2ec77df45f782e3551",
+  "staged_materials": 6,
+  "new_native_materials": 4,
+  "actual_reference_cases": 0,
+  "actual_human_reviewers": 0,
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "manifest_status": "not_frozen",
+  "freeze_issued": false,
+  "package_accepted": false,
+  "WP14_dependency_satisfied": false,
+  "outputs": {
+    "docs/discovery/qualification/wp03-material-index.json": "dd9a0a0d4716e56e1410a33327e0161a2d2d674c68e8fb60e24b361f6ffe543d",
+    "docs/discovery/qualification/wp03-real-material.md": "6a30218dcc07a9b7cc8393de6891a1020f29d59c82e5e4b28018cfb6e35574ff",
+    "docs/discovery/qualification/github-publication-qualification.md": "bd0b09fa50337a3a59be43a8071f73bd8e20e9f7d24c6fc4c6063c4d35baf382"
+  },
+  "remaining": [
+    "Authenticated evidence/permission statements under real separately provisioned operator trust.",
+    "Actual independent blinded human annotations, preserved disagreements and adjudication.",
+    "Reviewed transitive identity/project/origin families and development exposure.",
+    "Independent sampling/recall frames, complete required corpus and accountable freeze review."
+  ],
+  "empirical_gates": "E01-E06_not_run"
+}

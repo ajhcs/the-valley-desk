@@ -6,6 +6,7 @@ and no full WP12/WP13 acceptance or WP03 freeze is granted.
 
 | Source and intended use | Actual evidence | Disposition |
 | --- | --- | --- |
+| QSIPrep and CaPTk repository baselines plus linked publication metadata | Two native GitHub repository bodies and two native provider-selected Crossref work lists retained after whole-payload review. Exact README/CITATION snapshots link each repository to its named publication. | Pass for bounded manual factual metadata review. GitHub fixed baseline payloads replay under synthetic authority; actual source enrollment is unqualified. Crossref DOI-filter/select requests remain outside WP10's query grammar. |
 | ROR Penn and CHOP organization metadata for manual evidence review | Two anonymous, pinned-public-IP HTTPS requests returned 200 application/json: Penn 2,123 bytes and CHOP 1,426 bytes. Exact original bodies and safe observation receipts are retained. Official ROR documentation states IDs and metadata are CC0; independent offline record/URI/contact checks passed. | Pass for this bounded manual organization-metadata evidence scope. Not WP06 registry authority qualification or WP13 native parser qualification. |
 | OpenMRS Talk forum text | Public policy documentation describes CC BY 4.0 original contributions, with attribution and third-party exceptions. Direct robots, terms and basic-info probes all returned 403; no discussion body was requested. | Access hold. Robots rules, installation version, anonymous API shape and automation compatibility remain unqualified. No bypass attempted. |
 | OHDSI and Slicer forum contributions | Primary user-content terms specify CC BY-NC-SA 3.0. | Excluded from the general commercial redisplay path without separately established compatible permission. Terms-document/footer licenses do not replace the contribution license. |
@@ -29,6 +30,16 @@ primary search evidence but direct retrieval returned 403; the official data/API
 documentation was independently retrieved successfully. The native response and
 field inspection establish what the registry reported, not the truth of a person's
 employment, actual unit, county eligibility, health-tech contribution or authorship.
+
+The later [repository/publication investigation](github-publication-qualification.md)
+adds concrete health-technology projects with publication-time Philadelphia
+affiliation evidence. Four native representations are retained, with independent
+Sol/Terra/Astra review. The GitHub preflight's initial SSH false positive and later
+rate-limited request are preserved; two final anonymous requests succeeded after
+the reported reset. Crossref's third selected request returned 429 and was not
+retried. That failure has only a clearly marked post hoc observation. Source
+acquisition, native format checks, original request grammar and authority are
+separate outcomes.
 
 ## Exact evidence and transport boundary
 
@@ -73,14 +84,17 @@ is introduced. WP06 still lacks a general MIME binding for these parsers.
 
 ## WP03 handoff
 
-The [material index](wp03-material-index.json) now contains **two real unannotated
-development-exposed organization records**. [The staging note](wp03-real-material.md)
+The [material index](wp03-material-index.json) now contains **six real unannotated,
+development-exposed representations**: two organization, two repository and two
+publication records. [The staging note](wp03-real-material.md)
 and [entry review](wp03-evidence-entry-review.md) explain the limits. Family and
 partition assignment remain unreviewed; this material is not fresh held-out truth.
 There are still zero actual reference cases/reviewers and no authenticated
 evidence/permission receipts, independent labels or accountable freeze. The
 strict reference manifest remains unchanged and not_frozen; WP14 remains gated.
 
-Next work is an explicitly reviewed native organization-JSON mapping if needed,
-provider-approved forum access and retention scope, and accountable source/trust/
-human-review/corpus assembly. None is supplied by an HTTP 200 or a license string.
+Next work is accountable evidence/permission and human-review/corpus assembly,
+including the possible cross-project person/family connection. Native organization
+mapping, provider-approved forum access, README/CITATION parsing and the scoped
+Crossref request grammar remain distinct implementation or qualification work.
+None is supplied by an HTTP 200 or a license string.

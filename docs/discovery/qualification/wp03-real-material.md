@@ -1,7 +1,10 @@
 # WP03 real material staging
 
-Two original, licensed organization metadata responses have now been acquired from
-ROR: University of Pennsylvania and Children's Hospital of Philadelphia (CHOP).
+The staging inventory now has **six native representations**: two ROR organization
+records, two GitHub repository records and two linked-publication Crossref records.
+The [repository/publication dossiers](github-publication-qualification.md) record
+QSIPrep and CaPTk, explicit software-paper citations, historical affiliation evidence,
+rights/access limits and independent review. All six remain development-exposed.
 This is real acquisition progress. It adds **no reference case, human label, reviewer,
 trust enrollment or freeze**. The actual strict WP03 manifest remains empty and
 not_frozen; WP14 remains dependent on actual WP03 completion.
@@ -12,7 +15,10 @@ locator is a storage reference, not an authenticated Source/case/origin ID or a 
 corpus schema. It must not be loaded into the strict reference manifest as a substitute
 for its evidence, permission, selection or independent-review receipts.
 
-Both portable bodies preserve exact native HTTP 200 application/json bytes:
+The initial ROR batch described below preserves exact native HTTP 200
+application/json bytes for Penn and CHOP. The four later GitHub/Crossref bodies
+and their observations are also indexed in the same subordinate material index;
+they do not provide four additional independent project or sampling units.
 
 | ROR record | Observed UTC | Native bytes / SHA-256 | Portable evidence |
 | --- | --- | --- | --- |

@@ -1,0 +1,223 @@
+{
+  "purpose": "Derived factual repository research observations, not native HTTP bodies, authenticated evidence/permission receipts or reference cases.",
+  "tool_boundary": "GitHub connector returned metadata/ref JSON text and Unicode file text in a tool envelope. This safe fact selection is derived; no raw HTTP/body fidelity is claimed.",
+  "observations": [
+    {
+      "repository": "PennLINC/qsiprep",
+      "source_url": "https://api.github.com/repos/PennLINC/qsiprep",
+      "started_at_utc": "2026-11-15 21:04:53 UTC",
+      "ended_at_utc": "2026-11-15 21:04:53 UTC",
+      "method": "GitHub connector fetch GET; structuredContent.content JSON text; not native HTTP bytes",
+      "native_http_headers_available": false,
+      "body_shape": "object",
+      "id": 156589095,
+      "full_name": "PennLINC/qsiprep",
+      "private": false,
+      "owner": {
+        "login": "PennLINC",
+        "id": 61955309,
+        "type": "Organization"
+      },
+      "description": "Preprocessing of diffusion MRI",
+      "html_url": "https://github.com/PennLINC/qsiprep",
+      "homepage": "http://qsiprep.readthedocs.io",
+      "fork": false,
+      "archived": false,
+      "disabled": false,
+      "default_branch": "main",
+      "source_dates": {
+        "created_at": "2018-11-07T18:14:12Z",
+        "updated_at": "2026-11-11T21:13:26Z",
+        "pushed_at": "2026-11-12T18:26:45Z"
+      },
+      "license_hint": {
+        "key": "bsd-3-clause",
+        "name": "BSD 3-Clause \"New\" or \"Revised\" License",
+        "spdx_id": "BSD-3-Clause",
+        "url": "https://api.github.com/licenses/bsd-3-clause",
+        "node_id": "MDc6TGljZW5zZTU="
+      },
+      "public_person_profile_read": false,
+      "raw_provider_body_retained": false
+    },
+    {
+      "repository": "CBICA/CaPTk",
+      "source_url": "https://api.github.com/repos/CBICA/CaPTk",
+      "started_at_utc": "2026-11-15 21:04:53 UTC",
+      "ended_at_utc": "2026-11-15 21:04:54 UTC",
+      "method": "GitHub connector fetch GET; structuredContent.content JSON text; not native HTTP bytes",
+      "native_http_headers_available": false,
+      "body_shape": "object",
+      "id": 128938343,
+      "full_name": "CBICA/CaPTk",
+      "private": false,
+      "owner": {
+        "login": "CBICA",
+        "id": 35823615,
+        "type": "Organization"
+      },
+      "description": "Cancer Imaging Phenomics Toolkit (CaPTk) is a software platform to perform image analysis and predictive modeling tasks. Documentation: https://cbica.github.io/CaPTk",
+      "html_url": "https://github.com/CBICA/CaPTk",
+      "homepage": "https://www.cbica.upenn.edu/captk",
+      "fork": false,
+      "archived": false,
+      "disabled": false,
+      "default_branch": "master",
+      "source_dates": {
+        "created_at": "2018-04-10T13:36:31Z",
+        "updated_at": "2026-10-07T07:58:11Z",
+        "pushed_at": "2023-12-09T00:42:42Z"
+      },
+      "license_hint": {
+        "key": "other",
+        "name": "Other",
+        "spdx_id": "NOASSERTION",
+        "url": null,
+        "node_id": "MDc6TGljZW5zZTA="
+      },
+      "public_person_profile_read": false,
+      "raw_provider_body_retained": false
+    }
+  ],
+  "head_observation": {
+    "started_at_utc": "2026-11-15 21:05:37 UTC",
+    "ended_at_utc": "2026-11-15 21:05:37 UTC",
+    "method": "GitHub connector native ref JSON text inside tool envelope; no HTTP receipt",
+    "heads": [
+      {
+        "url": "https://api.github.com/repos/PennLINC/qsiprep/git/ref/heads/main",
+        "response": {
+          "ref": "refs/heads/main",
+          "node_id": "MDM6UmVmMTU2NTg5MDk1OnJlZnMvaGVhZHMvbWFpbg==",
+          "url": "https://api.github.com/repos/PennLINC/qsiprep/git/refs/heads/main",
+          "object": {
+            "sha": "ae8ab16930309d77a44f7970028b3c6642c1aae7",
+            "type": "commit",
+            "url": "https://api.github.com/repos/PennLINC/qsiprep/git/commits/ae8ab16930309d77a44f7970028b3c6642c1aae7"
+          }
+        }
+      },
+      {
+        "url": "https://api.github.com/repos/CBICA/CaPTk/git/ref/heads/master",
+        "response": {
+          "ref": "refs/heads/master",
+          "node_id": "MDM6UmVmMTI4OTM4MzQzOnJlZnMvaGVhZHMvbWFzdGVy",
+          "url": "https://api.github.com/repos/CBICA/CaPTk/git/refs/heads/master",
+          "object": {
+            "sha": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+            "type": "commit",
+            "url": "https://api.github.com/repos/CBICA/CaPTk/git/commits/cce88180d3159546a057b32ca9b4172d3ee2624d"
+          }
+        }
+      }
+    ]
+  },
+  "file_observation_batch": {
+    "started_at_utc": "2026-11-15 21:05:10 UTC",
+    "ended_at_utc": "2026-11-15 21:05:10 UTC",
+    "method": "GitHub connector fetch bounded raw public files",
+    "transport_claim": "Tool-delivered Unicode file contents, not native HTTP bytes or independently verified Content-Type",
+    "files": [
+      {
+        "repository": "PennLINC/qsiprep",
+        "commit": "ae8ab16930309d77a44f7970028b3c6642c1aae7",
+        "path": "LICENSE",
+        "permalink": "https://github.com/PennLINC/qsiprep/blob/ae8ab16930309d77a44f7970028b3c6642c1aae7/LICENSE",
+        "tool_success": true,
+        "unicode_length": 1494,
+        "raw_body_persisted": false,
+        "contacts_present_in_tool_response": false,
+        "doi_mentions": []
+      },
+      {
+        "repository": "PennLINC/qsiprep",
+        "commit": "ae8ab16930309d77a44f7970028b3c6642c1aae7",
+        "path": "README.rst",
+        "permalink": "https://github.com/PennLINC/qsiprep/blob/ae8ab16930309d77a44f7970028b3c6642c1aae7/README.rst",
+        "tool_success": true,
+        "unicode_length": 3123,
+        "raw_body_persisted": false,
+        "contacts_present_in_tool_response": false,
+        "doi_mentions": [
+          "10.1038/s41592-021-01185-5",
+          "10.5281/zenodo.14187327"
+        ]
+      },
+      {
+        "repository": "PennLINC/qsiprep",
+        "commit": "ae8ab16930309d77a44f7970028b3c6642c1aae7",
+        "path": "CITATION.cff",
+        "permalink": "https://github.com/PennLINC/qsiprep/blob/ae8ab16930309d77a44f7970028b3c6642c1aae7/CITATION.cff",
+        "tool_success": true,
+        "unicode_length": 6059,
+        "raw_body_persisted": false,
+        "contacts_present_in_tool_response": true,
+        "doi_mentions": [
+          "10.1038/s41592-021-01185-5"
+        ]
+      },
+      {
+        "repository": "CBICA/CaPTk",
+        "commit": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+        "path": "LICENSE",
+        "permalink": "https://github.com/CBICA/CaPTk/blob/cce88180d3159546a057b32ca9b4172d3ee2624d/LICENSE",
+        "tool_success": true,
+        "unicode_length": 1014,
+        "raw_body_persisted": false,
+        "contacts_present_in_tool_response": false,
+        "doi_mentions": []
+      },
+      {
+        "repository": "CBICA/CaPTk",
+        "commit": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+        "path": "Readme.md",
+        "permalink": "https://github.com/CBICA/CaPTk/blob/cce88180d3159546a057b32ca9b4172d3ee2624d/Readme.md",
+        "tool_success": true,
+        "unicode_length": 5001,
+        "raw_body_persisted": false,
+        "contacts_present_in_tool_response": true,
+        "doi_mentions": [
+          "10.1117/1.JMI.5.1.011018"
+        ]
+      },
+      {
+        "repository": "CBICA/CaPTk",
+        "commit": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+        "path": "README.txt",
+        "permalink": "https://github.com/CBICA/CaPTk/blob/cce88180d3159546a057b32ca9b4172d3ee2624d/README.txt",
+        "tool_success": true,
+        "unicode_length": 6276,
+        "raw_body_persisted": false,
+        "contacts_present_in_tool_response": true,
+        "doi_mentions": [
+          "10.1117/1.JMI.5.1.011018",
+          "10.1007/978-3-030-46643-5_38",
+          "10.1007/978-3-319-75238-9_12"
+        ]
+      }
+    ]
+  },
+  "explicit_repository_publication_edges": [
+    {
+      "repository": "PennLINC/qsiprep",
+      "commit": "ae8ab16930309d77a44f7970028b3c6642c1aae7",
+      "paths": [
+        "README.rst",
+        "CITATION.cff"
+      ],
+      "doi": "10.1038/s41592-021-01185-5"
+    },
+    {
+      "repository": "CBICA/CaPTk",
+      "commit": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+      "paths": [
+        "Readme.md",
+        "README.txt"
+      ],
+      "doi": "10.1117/1.JMI.5.1.011018"
+    }
+  ],
+  "development_exposed": true,
+  "actual_reference_case_count": 0,
+  "actual_human_reviewer_count": 0
+}

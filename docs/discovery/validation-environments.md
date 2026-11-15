@@ -66,6 +66,37 @@ provider outreach, real human/trust enrollment, editorial admission, remote migr
 deployment and host service changes remain outside this investigation. No freeze or
 empirical gate is waived. HTTP/rights/format/corpus results remain separate outcomes.
 
+## 15 November 2026: GitHub and linked-publication qualification
+
+The user's follow-up explicitly includes real GitHub repositories and linked
+publications in the DVRPC region. [EX22](implementation-decisions.md) records the
+bounded investigation and local retention correction. Sol and Terra performed
+source work and independent actual-D1 checks; Astra reviewed native material and
+adversarial corrections. Earlier EX21 observations remain historical evidence.
+
+Four direct anonymous GitHub source GETs covered two fixed repository endpoints.
+The initial 200 body was discarded by a method false positive and the next request
+hit a rate limit. Two final requests occurred after the observed reset and retained
+the exact reviewed bodies. DNS-selected destination addresses are recorded; no
+proxy, credential or deliberate address change was used to evade a limit. The
+GitHub connector's earlier metadata/ref/file reads remain separately identified
+tool-mediated observations, not native HTTP byte receipts.
+
+Crossref work included two exploratory singleton responses without complete
+acquisition receipts, excluded from portable qualified evidence, then three fixed
+provider-selected work-list requests. Two returned retained factual metadata;
+the third returned 429 with no retry and only a marked post hoc failure observation.
+Crossref's original method records fewer headers than GitHub's; absent header
+records mean unknown. Native requests used standalone pinned/certificate-verifying
+HTTPS and byte caps, with caller-bounded invocations, rather than WP06 transport.
+
+Four portable native bodies were copied only after independent source/field/URI
+review. Runtime format/D1 checks replay their unchanged bytes under synthetic local
+authority, with original request grammar and acquisition limitations preserved.
+No model output becomes a human label, authenticated source grant, regional
+admission, publication decision or corpus freeze. No source enrollment, recurring
+collector, deployment, remote migration or external outreach was performed.
+
 ## Repeatable WP00 evidence review
 
 From the selected checkout, the reviewer can rerun the receipt's `commands[].argv` as read-only observations. Source status may change as authorized work proceeds; compare timestamps and retained file hashes rather than replacing the original snapshot. Recompute each frozen manifest entry's SHA-256 and byte length against its manifest. The baseline records 70 handoff entries and 21 frozen entries checked without mismatch.
