@@ -65,6 +65,16 @@ outstanding. E01–E06 remain `not_run`. Neither synthetic fixtures nor formal
 checks establish real-world identity, geographic relevance, source coverage or
 reader usefulness.
 
+The [human-review operating procedure](human-review/operating-procedure.md),
+[rubric](human-review/rubric.md), [private worksheet](human-review/worksheet.md)
+and [offline tooling guide](human-review/tooling.md) now provide the preparation,
+blinded dispatch, return verification and adjudication handoff workflow. EX24
+prepares eight blocked development task groups from the existing material: six
+projects and two organization-background groups, with two blank reviewer slots
+and all eight labels null per slot. Strict-context dispatch requires actual
+authenticated prerequisites. No actual human, permission, label, case or freeze
+was created; WP03 remains in progress and WP14 remains gated.
+
 The [initial real source qualification](qualification/README.md) acquired
 and independently reviewed exact CC0 Penn and CHOP organization metadata. The
 [later repository/publication investigation](qualification/github-publication-qualification.md)

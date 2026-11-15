@@ -2,7 +2,7 @@
   "id": "TVD-DISCOVERY-EXECUTION-1",
   "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
   "handoff_plan_sha256": "cf74e8a1ecbcfaafe1d70ba58e5f2a347f8d78a6a7cd30eacb29ffa64f77cf3c",
-  "authority": "Active package status and acceptance; frozen handoff remains the scope baseline. User authorized implementation beginning WP00 on 2026-11-13 and explicitly prohibited deployment. No live provider enrollment, editorial action, outreach, service registration or production change is authorized by local implementation. On 15 November 2026 the user additionally authorized bounded public real source qualification; EX21 records that limited investigation and portable permitted evidence. No enrollment/activation, recurring collection, outreach, human/trust enrollment or deployment follows. The follow-up authorized bounded real GitHub repository and linked-publication qualification plus local gap repair; EX22 records actual investigation, normal rate-reset handling and remaining trust/corpus gates.",
+  "authority": "Active package status and acceptance; frozen handoff remains the scope baseline. User authorized implementation beginning WP00 on 2026-11-13 and explicitly prohibited deployment. No live provider enrollment, editorial action, outreach, service registration or production change is authorized by local implementation. On 15 November 2026 the user additionally authorized bounded public real source qualification; EX21 records that limited investigation and portable permitted evidence. No enrollment/activation, recurring collection, outreach, human/trust enrollment or deployment follows. The follow-up authorized bounded real GitHub repository and linked-publication qualification plus local gap repair; EX22 records actual investigation, normal rate-reset handling and remaining trust/corpus gates. The subsequent user instruction authorizes local independent human-review workflow setup and blank corpus preparation (EX24), with Sol/Terra implementation and Astra review; no actual human recruitment, trust enrollment or deployment follows.",
   "created_at": "2026-11-13T23:59:42.280311+00:00",
   "deployment_authorized": false,
   "packages": [
@@ -50,7 +50,7 @@
       "status": "in_progress",
       "receipt": "receipts/WP03-preparation.json",
       "acceptance": null,
-      "notes": "EX23 closes the local fixed-DOI request/parser/retention gap against six exact native request URLs and original bodies. Four additional project dossiers add eight distinct bodies: 16 acquisition records/14 body hashes across six dossiers; zero strict reference cases or human reviewers. All material is development-exposed. Independent labels, trusted statements, sampling/family review and accountable freeze remain missing; WP14 stays gated.",
+      "notes": "EX24 adds independently reviewed offline human-review preparation, blinded dispatch, native return verification and preserved adjudication handoff. Eight blocked development groups cover 16 acquisitions/14 bodies with 16 blank reviewer slots and 128 null labels. Zero strict cases/human reviewers; not_frozen. Actual trust/rights/humans, independent sampling/family/history, annotations/adjudication and accountable freeze remain missing; WP14 stays gated.",
       "progress_receipts": [
         "receipts/WP03-receipt-intake-progress.json",
         "receipts/WP03-signature-intake-progress.json",
@@ -59,7 +59,8 @@
         "receipts/WP03-label-context-progress.json",
         "receipts/WP03-real-material-progress.json",
         "receipts/WP03-github-publication-progress.json",
-        "receipts/WP03-crossref-request-progress.json"
+        "receipts/WP03-crossref-request-progress.json",
+        "receipts/WP03-human-review-progress.json"
       ]
     },
     {
@@ -489,7 +490,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-15T22:06:42.217284+00:00",
+  "updated_at": "2026-11-15T22:49:39.947121+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -727,6 +728,16 @@
         "WP14"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX24",
+      "path": "implementation-decisions.md",
+      "status": "local_human_review_workflow_and_blank_preparation_reviewed_corpus_incomplete",
+      "affects": [
+        "WP03",
+        "WP14"
+      ],
+      "thresholds_changed": false
     }
   ],
   "next_ready_packages": [],
@@ -744,8 +755,8 @@
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "6c803f85a5b0be03c7c88357e5cdeea7ac056567",
+    "reviewed_code_commit": "41d306e95ce4bcf0872bb2d223fc6016a87eb98a",
     "code_ci_run": null,
-    "code_ci": "New exact-head CI pending push. Prior 59ba1bc CI169 tests/PDF/build/smoke passed, then npm audit failed and secret scan was skipped. Current 43 provider tests, Terra 23 Crossref + 4 GitHub D1 checks, Astra 27 adversarial + 1 legacy check, types/seven PDF regressions/build/local smoke/local secret scan passed. All 608 runtime inputs stayed stable. WP03 has 16 acquisition records/14 distinct bodies and zero reference cases; not_frozen; no deployment."
+    "code_ci": "New exact-head CI pending push. Prior 71d9caf CI171 tests/PDF/build/smoke passed, then dependency audit failed and secret scan skipped. Current 308 discovery tests including types, seven PDF regressions, build, local smoke and local secret scan pass on 612 stable inputs. Actual eight blocked preparation groups create no labels/reviewers/cases; WP03 not_frozen and no deployment."
   }
 }

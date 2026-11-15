@@ -120,6 +120,33 @@ body hashes. All source material is development-exposed. Independent case counts
 human labels, source trust, regional/clinical truth, operational acceptance,
 production collection and deployment are not supplied by this qualification.
 
+## WP03 independent human-review workflow preparation
+
+The subsequent user instruction authorizes local human-review workflow setup
+and preparation of the existing source corpus. The offline `discovery:review`
+command reads explicitly selected files only; it performs no network requests,
+signing, enrollment, manifest update, freeze, migration or deployment. See the
+[tooling guide](human-review/tooling.md) for exact operations, inputs, exit codes,
+file limits and controlled distribution requirements.
+
+The actual local preparation writes eight blocked groups from 16 acquisitions
+and 14 distinct bodies, with 16 blank reviewer slots and 128 null label cells.
+The private request and output are retained under
+`.discovery-work/wp03-human/root/preparation/`, with a `0700` parent and `0600`
+files. Preparation exits 2 by design; it creates zero strict cases or permissions
+and dispatches nothing. All inputs remain development-exposed; no sampling credit
+or human independence follows from local mode bits or checksums.
+
+Sol implementation, Terra procedural and independent fixture checks, and Astra
+adversarial review use explicitly fictional authority and ephemeral signing keys
+only. Full-frame 360-heldout/100-recall fixtures exercise structural, sampling,
+exposure and native receipt bindings without labeling any real case. Same-context
+replay, actual human identity/blinding and the rubric revision-to-text mapping
+require accountable external records and controlled delivery. Audit dispatch
+remains WP24. The strict reference manifest, 91 frozen handoff entries and native
+model contracts remain unchanged. Broader qualification is recorded separately
+in the progress receipt; the dependency-audit hold remains.
+
 ## Repeatable WP00 evidence review
 
 From the selected checkout, the reviewer can rerun the receipt's `commands[].argv` as read-only observations. Source status may change as authorized work proceeds; compare timestamps and retained file hashes rather than replacing the original snapshot. Recompute each frozen manifest entry's SHA-256 and byte length against its manifest. The baseline records 70 handoff entries and 21 frozen entries checked without mismatch.

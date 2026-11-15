@@ -877,3 +877,50 @@ The accepted scope closes request compatibility for this fixed metadata mode.
 Actual external source/trust enrollment, authenticated corpus statements,
 independent blinded human review, sampling/family decisions and accountable
 freeze remain separate gates. WP14 stays not_started; E01–E06 stay not_run.
+
+## EX24 — Independent human-review workflow and blank source preparation
+
+**Status:** Bounded local workflow implementation and independent engineering
+review. WP03 remains incomplete and not_frozen; WP14's dependency is unmet.
+
+The user requested an independent human-review workflow and preparation of the
+existing corpus. The [operating procedure](human-review/operating-procedure.md),
+[rubric](human-review/rubric.md), [private worksheet](human-review/worksheet.md)
+and [CLI guide](human-review/tooling.md) allocate the accountable roles, conflicts,
+blinding, rights, source/rubric access, external assignment ledger, preserved
+returns and adjudication. No participant was recruited or enrolled, and no
+policy, native label taxonomy, reference threshold or source permission changed.
+
+The offline command separates blocked source preparation from authenticated
+strict-context dispatch. A single recipient sees permitted original bytes and
+neutral source/claim metadata, without machine verdicts, family conclusions,
+peer annotations or adjudication. Dispatch checks exact EX17 context, original
+digests, permitted uses and reviewer authority under the existing signed store.
+Held-out and recall dispatch additionally check complete applicable structure,
+all current family/selection records, sampling/assembly and exposure history.
+Audit dispatch remains WP24. Preliminary annotation has no labels to satisfy
+later outcome quotas; existing full native intake still enforces those quotas.
+
+Unsigned returns emit detached expectations only. Signed return checks preserve
+the existing EX20 context/annotation/blinding bindings and original return files.
+Two-return handoff preserves both first reviews and disagreements and leaves
+adjudication null; an already-integrated annotation set is refused so no third
+review can disappear. Full-set adjudication remains the native accountable path.
+Inputs are snapshotted before asynchronous verification to prevent later mutation
+from replacing authenticated content. Private files are bounded, no-clobber and
+locally checked, using the existing intake guards; fixed diagnostics omit content.
+
+The actual preparation covers six project groups and two organization-background
+groups, all 16 acquisition records and 14 body hashes. It leaves 16 reviewer slots
+and 128 label cells blank, adds no strict reference case and explicitly forbids
+dispatch. Grouping is source organization, not adjudicated family identity. The
+source index, original representations and strict manifest remain unchanged.
+
+Independent genuine-signature fixtures verify the local protocol; they do not
+create actual authority or prove human truth, source rights or independence.
+Native EX20 does not authenticate a new delivery round; same-context replay and
+same-person aliases require the external ledger. The full rubric's revision-to-
+content mapping and controlled source/rights access also remain accountable
+external work. Complete fresh frames, actual independent annotations/adjudication,
+authenticated statements and separate corpus freeze are still required. There
+was no source request, external outreach, key enrollment, merge or deployment.
