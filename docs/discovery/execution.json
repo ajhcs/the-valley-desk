@@ -2,7 +2,7 @@
   "id": "TVD-DISCOVERY-EXECUTION-1",
   "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
   "handoff_plan_sha256": "cf74e8a1ecbcfaafe1d70ba58e5f2a347f8d78a6a7cd30eacb29ffa64f77cf3c",
-  "authority": "Active package status and acceptance; frozen handoff remains the scope baseline. User authorized implementation beginning WP00 on 2026-11-13 and explicitly prohibited deployment. No live provider enrollment, editorial action, outreach, service registration or production change is authorized by local implementation. On 15 November 2026 the user additionally authorized bounded public real source qualification; EX21 records that limited investigation and portable permitted evidence. No enrollment/activation, recurring collection, outreach, human/trust enrollment or deployment follows. The follow-up authorized bounded real GitHub repository and linked-publication qualification plus local gap repair; EX22 records actual investigation, normal rate-reset handling and remaining trust/corpus gates. The subsequent user instruction authorizes local independent human-review workflow setup and blank corpus preparation (EX24), with Sol/Terra implementation and Astra review; no actual human recruitment, trust enrollment or deployment follows. The user reaffirmed orchestrator ownership of project/code decisions. EX25 records the selected delivery priorities; existing dependency, independent-human and deployment gates remain in force.",
+  "authority": "Active package status and acceptance; frozen handoff remains the scope baseline. User authorized implementation beginning WP00 on 2026-11-13 and explicitly prohibited deployment. No live provider enrollment, editorial action, outreach, service registration or production change is authorized by local implementation. On 15 November 2026 the user additionally authorized bounded public real source qualification; EX21 records that limited investigation and portable permitted evidence. No enrollment/activation, recurring collection, outreach, human/trust enrollment or deployment follows. The follow-up authorized bounded real GitHub repository and linked-publication qualification plus local gap repair; EX22 records actual investigation, normal rate-reset handling and remaining trust/corpus gates. The subsequent user instruction authorizes local independent human-review workflow setup and blank corpus preparation (EX24), with Sol/Terra implementation and Astra review; no actual human recruitment, trust enrollment or deployment follows. The user reaffirmed orchestrator ownership of project/code decisions. EX25 records the selected delivery priorities; existing dependency, independent-human and deployment gates remain in force. EX32 records the user-selected internal-first public go-live direction, broad discovery and lean paper-optional records. This task authorizes detailed adaptive planning only; no implementation, collection activation or deployment follows.",
   "created_at": "2026-11-13T23:59:42.280311+00:00",
   "deployment_authorized": false,
   "packages": [
@@ -523,7 +523,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-16T18:20:30.998838+00:00",
+  "updated_at": "2026-11-16T19:39:23.984813+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -879,6 +879,23 @@
         "MP03"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX32",
+      "path": "go-live/README.md",
+      "status": "user_selected_direction_plan_only",
+      "affects": [
+        "MP04",
+        "WP18",
+        "WP19",
+        "WP20",
+        "WP21",
+        "WP25",
+        "WP27"
+      ],
+      "launch_scope_changed": true,
+      "original_benchmark_thresholds_changed": false,
+      "original_package_acceptance_changed": false
     }
   ],
   "next_ready_packages": [],
@@ -1118,6 +1135,25 @@
         "benchmark_changed": false,
         "deployment": false
       }
+    ]
+  },
+  "go_live": {
+    "decision": "EX32",
+    "plan": "go-live/plan.json",
+    "overview": "go-live/README.md",
+    "status": "plan_only",
+    "public_pilot_phase_required": false,
+    "internal_first_publicly_accessible": true,
+    "broad_discovery_required": true,
+    "linked_publication_required": false,
+    "complete_person_profile_required": false,
+    "benchmark_required_for_scoped_launch": false,
+    "full_text_required": false,
+    "implementation_authorized_by_this_task": false,
+    "deployment_authorized": false,
+    "package_status_authority": "go-live/plan.json",
+    "next_when_implementation_authorized": [
+      "GL00"
     ]
   }
 }

@@ -1111,3 +1111,38 @@ The [county record](metadata-link-pilot-counties.md) and new receipt retain actu
 checks, scope and source commit. MP01–MP03 reopen for this increment, preserving
 acceptance history. MP04 release, original 31-package/model/benchmark gates,
 source enrollment and deployment authority are unaffected.
+
+## EX32 — Internal-first public go-live with broad, lean discovery
+
+**Status:** User-selected product direction; detailed adaptive plan only. No
+implementation or operational acceptance is supplied by this decision.
+
+The user requested an end-to-end plan addressing the seven launch priorities,
+with subagents able to adapt to findings. They explicitly removed the need for a
+public pilot phase and emphasized internal use with public availability. Broad
+coverage, including repositories outside prominent journals/news, is central.
+Useful factual fields, links and affiliations suffice; complete biographies,
+exhaustive research dossiers and linked papers are not prerequisites.
+
+The [new plan](go-live/README.md) and [GL00–GL11 register](go-live/plan.json)
+define lean source-backed admission, independent discovery routes, quiet/personal/
+paperless repository discovery, ordinary search, home/results/detail journeys,
+maintenance, scoped breadth checks and direct release readiness. Bounded batches,
+miss investigation, explicit gap states and independent review govern adaptation.
+A PR-reviewed snapshot can be the initial release mechanism; it does not accept
+the unfinished general authenticated admission/publication system.
+
+The prior MP ledger, original 31-package acceptance, native model/contracts,
+benchmark manifest, full-system E01–E06 thresholds and historical evidence remain
+unchanged. Full-text reuse and independent benchmark review are separate. Scoped
+launch does not require universal six-route completion, complete current-person
+verification or the original 360-case benchmark. These full-system obligations
+remain unearned and cannot be advertised as completed.
+
+The public product is The Valley Desk's health-tech discovery service, without
+pilot branding. Existing internal names/APIs can retain a compatibility period;
+there is no reason to rename every internal module before useful delivery.
+GL11 prepares a concrete candidate, source/coverage scope, operations and rollback
+before any missing release authorization is requested. This task changes plans
+and navigation to those plans only; application behavior, enrollment, recurring
+collection, merge and deployment remain unchanged.

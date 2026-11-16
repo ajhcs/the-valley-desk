@@ -1,4 +1,9 @@
-# Metadata-and-link pilot — active delivery plan
+# Metadata-and-link pilot — EX28–EX31 implementation history
+
+EX32 selects the [direct go-live plan](go-live/README.md) for the next delivery.
+Its internal-first, publicly accessible service has no public pilot phase. This
+file preserves the earlier implementation scope and acceptance history; the new
+plan does not modify its historical receipts or imply deployment.
 
 Decision EX28, 16 November 2026. The user authorized a metadata-and-link pilot,
 optional full-text reuse, and benchmark review as a separate workstream. This

@@ -9,9 +9,11 @@ Local implementation progress and reviewed package receipts are recorded in
 [discovery implementation](docs/discovery/README.md). Deployment is outside the
 current implementation scope.
 
-The current delivery amendment is a [metadata-and-link pilot](docs/discovery/metadata-link-pilot-plan.md):
-a finite directory with original-source links and dated provenance. Optional
-full-text reuse and independent benchmark review have separate gates.
+The current product direction is the [direct go-live plan](docs/discovery/go-live/README.md):
+an internal-first, publicly accessible regional health-tech index with broad discovery,
+lean sourced records and useful links. Its GL00–GL11 implementation is planned,
+not started. Existing metadata-and-link code remains the qualified foundation;
+optional full-text reuse and independent benchmark review stay separate.
 
 Product source. Human news + agent feed. Delaware Valley / Greater Philadelphia healthcare technology.
 

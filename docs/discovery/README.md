@@ -1,11 +1,16 @@
 # Discovery implementation
 
-The active near-term delivery is the [metadata-and-link pilot](metadata-link-pilot-plan.md),
-authorized in EX28. Its finite read-only directory has a separate acceptance
-ledger in [execution.json](execution.json). Full-text reuse is optional;
-WP03 benchmark annotation/freeze remains a separate validation workstream.
-Neither is a universal prerequisite for the pilot. Public activation and deployment
-remain separately gated and are not authorized in this task.
+The current product direction is the [direct go-live engineering plan](go-live/README.md),
+authorized for planning in EX32. It covers an internal-first, publicly accessible
+health-tech discovery service with broad source coverage and lean useful records.
+There is no separate public pilot phase. [The launch work register](go-live/plan.json)
+contains GL00–GL11, all not started; implementation and deployment are not authorized
+by this planning task.
+
+The existing [metadata-and-link implementation](metadata-link-pilot-plan.md) and
+its MP acceptance ledger remain historical, qualified code foundations. Full-text
+reuse and WP03 benchmark annotation/freeze remain separate workstreams. EX32 does
+not retroactively accept unfinished original WP packages or alter earlier receipts.
 
 EX29's [Astra product review and repair pass](metadata-link-pilot-product-review.md)
 adds complete source-author search, the two known citation contexts, repository
