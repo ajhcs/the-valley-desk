@@ -55,10 +55,21 @@ Do not enable the flag in `wrangler.jsonc` or invoke deployment for this preview
 
 ## Useful checks
 
+- Search **Mercer County** or **Princeton**, then filter Publications or
+  Repositories: GASTON and its paper are found through separately sourced
+  historical author/campus context. Publication native affiliations remain empty.
+- Search **Camden County** or **Rutgers-Camden**: SleepBoost appears. Its owner is
+  a User account, separate from Iman Dehzangi's source-reported author connection.
+- Search **Gloucester County** or **Rowan**: inspect OpenPBTA's historical
+  collaboration and archived-repository scope note. It is not labeled Rowan-owned.
+- Expand **Regional evidence and scope** for exact source links, observation
+  dates, direct/indexed methods and optional technical trace. Direct regional
+  matches have a separate explanation. Repo matches retain citation direction;
+  supporting publication data does not become extra result cards.
 - Search **Naqvi**: one publication, with its author affiliations available
   for inspection. Rockville and Philadelphia affiliations belong to their named
   authors; none is presented as current employment.
-- Filter **Repositories**: ten records, including six supported outbound
+- Filter **Repositories**: thirteen records, including nine supported outbound
   publication citations. Each citation exposes its commit-pinned repository
   evidence link. Other relationships are withheld.
 - Search **CaPTk**, filter **Publications**: the retained repository citation now
@@ -104,7 +115,7 @@ also runs in the normal discovery test chain and rejects generated drift.
 No command in this workflow refreshes the retained source snapshots.
 
 The [active plan](metadata-link-pilot-plan.md), [source basis](metadata-link-pilot-sources.md)
-and [current expansion review](reviews/metadata-link-pilot-expansion-astra.md) define scope and
+and [current county review](reviews/metadata-link-pilot-counties-astra.md) define scope and
 limits. Local package acceptance is distinct from delivered-head CI, which is
 tracked on PR30 before the implementation handoff completes. Neither is public
 release authorization, benchmark validation or evidence of regional completeness.

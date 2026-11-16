@@ -523,7 +523,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-16T16:48:19.965487+00:00",
+  "updated_at": "2026-11-16T18:20:30.998838+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -868,6 +868,17 @@
         "MP03"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX31",
+      "path": "metadata-link-pilot-plan.md",
+      "status": "county_context_expansion_in_qualification",
+      "affects": [
+        "MP01",
+        "MP02",
+        "MP03"
+      ],
+      "thresholds_changed": false
     }
   ],
   "next_ready_packages": [],
@@ -884,9 +895,9 @@
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "84bb755e48b9985707e8ccfa5b9241d11b93d8bc",
+    "reviewed_code_commit": "8e17885f02a3a7ba9fcc86eac16aa82df4726935",
     "code_ci_run": null,
-    "code_ci": "EX30 locally qualified: 1,442 tests,7 PDF,build,local smoke,audit0,secret;48 root browser assertions and3 assembled Worker/bundle groups after final build;630 stable inputs. Astra8projection groups/50browser assertions and Terra field comparison passed. Exact delivered-head CI is tracked on PR30 before handoff completion. MP01-MP03 acceptance is local only; MP04 remains held. Original WP03/WP12/WP13 and empirical benchmark gates unchanged."
+    "code_ci": "EX31 locally qualified: 1,451 tests,7 PDF,build,local smoke,audit0,secret;65 root browser assertions and3 assembled Worker/bundle groups after final build;630 stable inputs. Astra8v3 core groups,93main+12supplemental browser assertions,18final query and8final phrase browser cases; Terra479static and12Node22 local-reader checks passed. Exact delivered-head CI is tracked on PR30 before handoff completion. MP01-MP03 acceptance is local only; MP04 remains held. Original WP03/WP12/WP13 and empirical benchmark gates unchanged."
   },
   "pilot": {
     "decision": "EX28",
@@ -915,12 +926,12 @@
           "MP00"
         ],
         "acceptance": {
-          "recorded_at": "2026-11-16T16:48:19.965487+00:00",
-          "amendment": "EX30",
-          "scope": "local finite pilot expansion with four new repository-publication pairs; earlier acceptance retained in history",
-          "receipt": "receipts/metadata-link-pilot-expansion.json",
-          "source_commit": "84bb755e48b9985707e8ccfa5b9241d11b93d8bc",
-          "reviewer": "Astra independent whole-body/citation/projection/browser review; Terra source selection/comparison; Sol regressions; orchestrator capture/integration",
+          "recorded_at": "2026-11-16T18:30:43.205487+00:00",
+          "amendment": "EX31",
+          "scope": "local finite metadata/link expansion and v3 separate historical regional context; earlier acceptance retained in history",
+          "receipt": "receipts/metadata-link-pilot-counties.json",
+          "source_commit": "8e17885f02a3a7ba9fcc86eac16aa82df4726935",
+          "reviewer": "Astra independent whole-body/citation/county/core/browser review; Terra source facts and comparisons; Sol core/search regressions; orchestrator capture/UI/integration",
           "benchmark_accepted": false,
           "deployment_authorized": false
         },
@@ -944,6 +955,16 @@
             "reviewer": "Astra independent product/core/Worker/browser review; orchestrator implementation/integration",
             "benchmark_accepted": false,
             "deployment_authorized": false
+          },
+          {
+            "recorded_at": "2026-11-16T16:48:19.965487+00:00",
+            "amendment": "EX30",
+            "scope": "local finite pilot expansion with four new repository-publication pairs; earlier acceptance retained in history",
+            "receipt": "receipts/metadata-link-pilot-expansion.json",
+            "source_commit": "84bb755e48b9985707e8ccfa5b9241d11b93d8bc",
+            "reviewer": "Astra independent whole-body/citation/projection/browser review; Terra source selection/comparison; Sol regressions; orchestrator capture/integration",
+            "benchmark_accepted": false,
+            "deployment_authorized": false
           }
         ]
       },
@@ -954,12 +975,12 @@
           "MP01"
         ],
         "acceptance": {
-          "recorded_at": "2026-11-16T16:48:19.965487+00:00",
-          "amendment": "EX30",
-          "scope": "local finite pilot expansion with four new repository-publication pairs; earlier acceptance retained in history",
-          "receipt": "receipts/metadata-link-pilot-expansion.json",
-          "source_commit": "84bb755e48b9985707e8ccfa5b9241d11b93d8bc",
-          "reviewer": "Astra independent whole-body/citation/projection/browser review; Terra source selection/comparison; Sol regressions; orchestrator capture/integration",
+          "recorded_at": "2026-11-16T18:30:43.205508+00:00",
+          "amendment": "EX31",
+          "scope": "local finite metadata/link expansion and v3 separate historical regional context; earlier acceptance retained in history",
+          "receipt": "receipts/metadata-link-pilot-counties.json",
+          "source_commit": "8e17885f02a3a7ba9fcc86eac16aa82df4726935",
+          "reviewer": "Astra independent whole-body/citation/county/core/browser review; Terra source facts and comparisons; Sol core/search regressions; orchestrator capture/UI/integration",
           "benchmark_accepted": false,
           "deployment_authorized": false
         },
@@ -980,6 +1001,16 @@
             "receipt": "receipts/metadata-link-pilot-product.json",
             "source_commit": "2f013debf1e499e072830f7a820fe416db3b3cfc",
             "reviewer": "Astra independent product/core/Worker/browser review; orchestrator implementation/integration",
+            "benchmark_accepted": false,
+            "deployment_authorized": false
+          },
+          {
+            "recorded_at": "2026-11-16T16:48:19.965487+00:00",
+            "amendment": "EX30",
+            "scope": "local finite pilot expansion with four new repository-publication pairs; earlier acceptance retained in history",
+            "receipt": "receipts/metadata-link-pilot-expansion.json",
+            "source_commit": "84bb755e48b9985707e8ccfa5b9241d11b93d8bc",
+            "reviewer": "Astra independent whole-body/citation/projection/browser review; Terra source selection/comparison; Sol regressions; orchestrator capture/integration",
             "benchmark_accepted": false,
             "deployment_authorized": false
           }
@@ -993,12 +1024,12 @@
           "MP02"
         ],
         "acceptance": {
-          "recorded_at": "2026-11-16T16:48:19.965487+00:00",
-          "amendment": "EX30",
-          "scope": "local finite pilot expansion with four new repository-publication pairs; earlier acceptance retained in history",
-          "receipt": "receipts/metadata-link-pilot-expansion.json",
-          "source_commit": "84bb755e48b9985707e8ccfa5b9241d11b93d8bc",
-          "reviewer": "Astra independent whole-body/citation/projection/browser review; Terra source selection/comparison; Sol regressions; orchestrator capture/integration",
+          "recorded_at": "2026-11-16T18:30:43.205512+00:00",
+          "amendment": "EX31",
+          "scope": "local finite metadata/link expansion and v3 separate historical regional context; earlier acceptance retained in history",
+          "receipt": "receipts/metadata-link-pilot-counties.json",
+          "source_commit": "8e17885f02a3a7ba9fcc86eac16aa82df4726935",
+          "reviewer": "Astra independent whole-body/citation/county/core/browser review; Terra source facts and comparisons; Sol core/search regressions; orchestrator capture/UI/integration",
           "benchmark_accepted": false,
           "deployment_authorized": false
         },
@@ -1019,6 +1050,16 @@
             "receipt": "receipts/metadata-link-pilot-product.json",
             "source_commit": "2f013debf1e499e072830f7a820fe416db3b3cfc",
             "reviewer": "Astra independent product/core/Worker/browser review; orchestrator implementation/integration",
+            "benchmark_accepted": false,
+            "deployment_authorized": false
+          },
+          {
+            "recorded_at": "2026-11-16T16:48:19.965487+00:00",
+            "amendment": "EX30",
+            "scope": "local finite pilot expansion with four new repository-publication pairs; earlier acceptance retained in history",
+            "receipt": "receipts/metadata-link-pilot-expansion.json",
+            "source_commit": "84bb755e48b9985707e8ccfa5b9241d11b93d8bc",
+            "reviewer": "Astra independent whole-body/citation/projection/browser review; Terra source selection/comparison; Sol regressions; orchestrator capture/integration",
             "benchmark_accepted": false,
             "deployment_authorized": false
           }
@@ -1038,21 +1079,23 @@
     "benchmark_status": "WP03_not_frozen_E01-E06_not_run",
     "full_text_reuse": "optional_source_specific",
     "release_status": "not_authorized",
-    "qualification_receipt": "receipts/metadata-link-pilot-expansion.json",
+    "qualification_receipt": "receipts/metadata-link-pilot-counties.json",
     "counts": {
-      "records": 22,
-      "repositories": 10,
-      "publications": 10,
+      "records": 28,
+      "repositories": 13,
+      "publications": 13,
       "organization_backgrounds": 2,
-      "directed_repository_citations": 6,
-      "source_author_entries_not_distinct_people": 289,
-      "non_null_source_descriptions": 8
+      "directed_repository_citations": 9,
+      "source_author_entries_not_distinct_people": 367,
+      "non_null_source_descriptions": 11,
+      "separate_regional_contexts": 3,
+      "named_regional_author_references": 4
     },
     "local_preview_route": "/discover",
-    "source_commit": "84bb755e48b9985707e8ccfa5b9241d11b93d8bc",
+    "source_commit": "8e17885f02a3a7ba9fcc86eac16aa82df4726935",
     "active_packages": [],
     "next_gate": "MP04: separately authorized public release review; deployment remains prohibited",
-    "active_amendment": "EX30",
+    "active_amendment": "EX31",
     "amendments": [
       {
         "id": "EX29",
@@ -1064,6 +1107,13 @@
       {
         "id": "EX30",
         "scope": "four new real repository-publication pairs; eight native metadata bodies and four pinned citation observations",
+        "status": "locally_qualified",
+        "benchmark_changed": false,
+        "deployment": false
+      },
+      {
+        "id": "EX31",
+        "scope": "three institutional/county connections, six selected native bodies from eight captures, v3 separate regional context and related publication support",
         "status": "locally_qualified",
         "benchmark_changed": false,
         "deployment": false

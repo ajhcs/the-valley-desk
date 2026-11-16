@@ -17,6 +17,12 @@ and ModelArray and their linked papers. The [expansion record](metadata-link-pil
 keeps its source qualification, local results and separate delivered-head CI
 visible. Public activation and benchmark acceptance remain held.
 
+EX31 adds three documented NJ county/institution connections and a v3 regional
+context contract. The [county integration record](metadata-link-pilot-counties.md)
+explains the 28-record selection, separate historical source context, excluded
+THREAD lead and source/native boundaries. Public activation and benchmark
+acceptance remain separate.
+
 The accepted foundation implements discovery contracts, private catalog and
 evidence persistence, provenance, scoped removal, bounded collection and evaluation
 tooling. The complete automated catalog and reader journeys remain future packages;

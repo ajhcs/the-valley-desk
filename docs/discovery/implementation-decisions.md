@@ -1080,3 +1080,34 @@ Original package/model/benchmark evidence and earlier receipts remain unchanged.
 MP01–MP03 were reopened for this amendment, then locally accepted against the
 new receipt, preserving acceptance history; MP04 remains held. A new receipt records actual final results and source
 commit; PR30 records final delivered-head CI separately.
+
+
+## EX31 — Broaden county/institution discovery without inventing native geography
+
+**Status:** Source/projection, browser and fresh full local qualification passed.
+Delivered-head CI is tracked separately on PR30 before handoff completion.
+Deployment remains held.
+
+The user authorized expansion beyond Penn/Philadelphia with Sol/Terra and Astra
+review, commits and PR updates. Select three pairs with Princeton/Mercer,
+Rutgers–Camden/Camden and historical Rowan–Glassboro/Gloucester coauthor evidence.
+Eight new anonymous captures succeeded; six are selected and two exact-preprint
+THREAD leads remain research-only. County mapping, source access limits, personal
+account ownership, an author-name correction and an archived collaboration are
+separately documented. No institution-wide or postal shortcut locates authors.
+
+All new native affiliations are empty, so a data-only expansion would not answer
+institution/county searches. The v3 amendment adds explicitly separate regional
+facts and native snapshot/author binding, distinct match explanations, related
+publication support for repo-only results, and visible source/campus context.
+It preserves all twenty-eight native record objects and their unknown county
+fields. Original twenty-two records and historical evidence remain unchanged.
+
+Review caught missing neighbor-only binding, weak county references, an
+unsupported native-name rewrite, misleading publication-source wording and
+full-phrase/hyphen query misses. Fixes precede acceptance; intermediate v2/static
+and pre-fix browser evidence remain historical rather than restamped as final.
+The [county record](metadata-link-pilot-counties.md) and new receipt retain actual
+checks, scope and source commit. MP01–MP03 reopen for this increment, preserving
+acceptance history. MP04 release, original 31-package/model/benchmark gates,
+source enrollment and deployment authority are unaffected.

@@ -5,8 +5,9 @@ optional full-text reuse, and benchmark review as a separate workstream. This
 amends the active delivery sequence; it does not revise the frozen handoff,
 model, reference manifest, historical receipts or empirical thresholds.
 
-The active EX30 expansion below adds four reviewed repository–publication pairs;
-its local qualification is recorded separately from EX28/EX29.
+The active EX31 amendment below adds three county/institution connections and
+separately sourced regional search/display context. Its qualification is recorded
+separately from EX28–EX30.
 
 ## Outcome and limits
 
@@ -229,3 +230,58 @@ independent benchmark gates, the original 31-package ledger and release authorit
 are unaffected. See [source qualification](qualification/pilot-expansion-20261116.md),
 [integration record](metadata-link-pilot-expansion.md) and
 [independent review](reviews/metadata-link-pilot-expansion-astra.md).
+
+
+## EX31 — Broader institutions and counties with separate regional context
+
+The user authorized real repository/publication expansion beyond Penn and
+Philadelphia, Sol/Terra work, Astra review, commits and PR updates without
+deployment. Select GASTON with Princeton/Mercer evidence, SleepBoost with
+Rutgers–Camden/Camden evidence and OpenPBTA-analysis with a Rowan–Glassboro/
+Gloucester coauthor connection. The latter is a historical multi-institution
+collaboration involving Penn/CHOP; it is not Rowan-origin, Rowan-owned or evidence
+of an independent new laboratory. No claim of complete county coverage follows.
+Bounded Pennsylvania searches remain recorded as leads/exclusions, not absence.
+
+Eight anonymous native metadata requests succeeded. Six bodies supply the three
+new pairs. The other two concern THREAD and its cited preprint; exact-version
+local affiliation was not established, so they remain research-only and do not
+enter the catalog. The pilot now selects thirteen repositories, thirteen papers
+and two organization backgrounds with nine directed citations. The three new
+native author arrays contain 7, 5 and 66 entries, all without affiliations.
+
+Merely adding these records leaves Princeton/Mercer/Rutgers/Rowan keyword queries
+unanswered. V3 therefore adds separate top-level regional contexts with exact
+native publication/hash/year/author bindings and independently reviewed
+institutional/campus/county source facts. Neither native affiliation arrays nor
+native record county fields change. All twenty-eight native record objects are
+preserved from the first EX31 projection; the prior twenty-two are unchanged.
+The new source context is displayed with named publication authors, publication
+year, associated campus/county, sources, observation date/method and caveats.
+It does not establish current roles, individual code contributions, repository
+ownership, code origin or physical work location.
+
+Selection/catalog/API versions become v3. Regional observation values bind to an
+exact retained JSON hash and semantic `/contexts/N` pointer. Identity, year,
+native snapshot hash, source-indexed author names, source URLs/dates/methods,
+duplicate context/source/provenance checks and safe output are explicit. Direct
+publication matches distinguish regional context from native metadata. Related
+repository matches retain one-hop citation meaning. When a context-bearing
+publication is absent from result items, separate supporting publication records
+bind its native claims and citation summary; those records do not increase item
+counts or create extra result cards. Unrelated, missing, duplicate or contradictory
+support is rejected. Full county phrases and hyphenated campus terms are usable
+without rewriting source values or merging people.
+
+The dependency order remains MP00 → MP01 → MP02 → MP03. Reopen MP01–MP03 only for
+this amended evidence/data/API/UI scope and requalification, preserving earlier
+acceptance history. Terra owns source facts and independent comparisons; Sol
+owns builder/schema/query and adverse regressions; the orchestrator owns native
+capture, integration and delivery; Astra independently challenges facts, whole
+bodies, software, browser behavior and final records. Repeat existing full-suite,
+PDF/build/smoke/audit/secret gates and inspect actual county/institution journeys.
+Record final delivered-head CI separately before handoff completion. MP04,
+benchmark gates, original package/model evidence and deployment authority remain
+unchanged. See the [county qualification](qualification/pilot-counties-20261116.md),
+[integration record](metadata-link-pilot-counties.md) and
+[independent review](reviews/metadata-link-pilot-counties-astra.md).
