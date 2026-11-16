@@ -229,7 +229,7 @@
         "G04",
         "G05"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "work": "work-packages.md#gl04--review-lean-records-and-build-the-public-projection",
       "acceptance_ids": [
         "GL04-A1",

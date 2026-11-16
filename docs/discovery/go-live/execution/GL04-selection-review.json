@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "directory-selection-review-attestation-v1",
+  "id": "GL04:selection-review:sol:1",
+  "reviewedAt": "2026-11-16",
+  "status": "approved_for_source_slice_only",
+  "reviewer": "agent:sol_gl04_review",
+  "operator": "agent:root",
+  "roleBasis": "EX33 ordinary PR operator and assigned independent agent reviewer; not human benchmark annotation or cryptographic person authentication.",
+  "selection": {
+    "path": "docs/discovery/go-live/evidence/GL04/selection.json",
+    "fileSha256": "fcaf8f90f81cadea09451680b939f2a0963fb014559808b284cb30b98bde7e18",
+    "canonicalSha256": "0e790590fd6d58c71320fb6935f7316115257c2afa7a7efdee9d9c7d429856a3",
+    "allManifestFieldsReviewed": true,
+    "bootstrapPriorState": null
+  },
+  "selectedEvidence": {
+    "docs/discovery/go-live/evidence/GL03/original/G04.json": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+    "docs/discovery/go-live/evidence/GL04/source-observations.json": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-gaston/body.json": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/regional-contexts.json": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c"
+  },
+  "additionalReviewedGL03Plan": {
+    "path": "docs/discovery/go-live/evidence/GL03/original/plan.json",
+    "fileSha256": "3f83f5d516ea22490c986789b092444a676abf661c0daa85036f6aecadf3b2c0",
+    "canonicalSha256": "1c090798c63eb9d03f7ee66dea1ebf0d2e53b59cc4f0c1f9f81c3807f085a7dc",
+    "matchedPage": "G04",
+    "matchedReceipt": "GL03:receipt:G04",
+    "matchedTuple": [
+      "sourceId",
+      "scopeId",
+      "installation",
+      "qualificationSha256",
+      "requestSha256",
+      "parserRevision",
+      "parserSha256"
+    ],
+    "nativeBodyRetained": false
+  },
+  "admittedSourceJudgments": [
+    {
+      "candidateId": "G04",
+      "workId": "GL04:work:github:760662846",
+      "decision": "accept",
+      "workSha256ExcludingReviewRefs": "bd3425980e5a5c6084f5786b8a86bf3d63f251f3968ab7d032153bbf7c6d74a4",
+      "reviewReceiptSha256": "088b5a24f9036873074a17363d397e3f8e78bf3b61b13f001fd5e013044ce539",
+      "judgment": "Exact GitHub identity and original URL; primary Penn software observation supports a substantive MRI research purpose and dated institutional project association in Philadelphia. County, owner, person identity and source date remain absent."
+    },
+    {
+      "candidateId": "GASTON",
+      "workId": "GL04:work:crossref:gaston",
+      "decision": "accept",
+      "workSha256ExcludingReviewRefs": "5e9128ce1710d414b2b9dfe8a399dff065397ce11cc0140c28e956be3c2e59b7",
+      "reviewReceiptSha256": "60a5215b93050ce212430f2f92651a450345f0c5944f9e1a754dc6c04a2ac511",
+      "judgment": "Exact retained Crossref identity, title, original DOI URL and day-precision publication date; short research purpose supported by primary Princeton publication record; source-indexed historical author affiliation and distinct Mercer campus mapping supported. No citation relation, owner or person identity is inferred."
+    }
+  ],
+  "privateDispositions": [
+    {
+      "candidateId": "G03-0",
+      "decision": "hold",
+      "reason": "Health purpose and dated regional association need evidence."
+    },
+    {
+      "candidateId": "G03-1",
+      "decision": "hold",
+      "reason": "Project-specific purpose and dated regional association need evidence."
+    },
+    {
+      "candidateId": "G03-2",
+      "decision": "hold",
+      "reason": "Health purpose and dated regional association need evidence."
+    },
+    {
+      "candidateId": "G03-3",
+      "decision": "hold",
+      "reason": "Health purpose and dated regional association need evidence."
+    },
+    {
+      "candidateId": "G03-4",
+      "decision": "hold",
+      "reason": "Health purpose and dated regional association need evidence."
+    },
+    {
+      "candidateId": "G05",
+      "decision": "hold",
+      "reason": "Research purpose and dated regional association need evidence."
+    },
+    {
+      "candidateId": "C02",
+      "decision": "hold",
+      "reason": "Substantive health application needs evidence."
+    },
+    {
+      "candidateId": "scope-G01",
+      "decision": "hold",
+      "reason": "Malformed Link; discarded response and cause unknown."
+    },
+    {
+      "candidateId": "scope-G02",
+      "decision": "hold",
+      "reason": "Malformed field census; discarded response and cause unknown."
+    },
+    {
+      "candidateId": "scope-C01",
+      "decision": "hold",
+      "reason": "Malformed publication identity; discarded response and cause unknown."
+    }
+  ],
+  "sourceUseBoundary": "Narrow factual metadata, short reviewed purpose statements, dated institutional/author context and safe original links only. No source body, article, abstract, README, code, contact, biography or image reuse is granted.",
+  "authorityBoundary": "This immutable review attestation records actual independent assessment of this exact selection. Root must separately pin its bytes and complete canonical selection digest in trusted reviewed code. Candidate-supplied names, model assertions, receipts, recomputed hashes or this file outside that reviewed context cannot grant publication. Same-user modification of trusted code is outside this boundary.",
+  "limits": [
+    "Source-slice approval only: no GL04 package acceptance, API/HTML acceptance, release readiness, live activation, native request, database action, recurring enrollment or deployment is granted.",
+    "ExerciseCESTv2 native facts are qualified retained packet observations with original native pointer descriptors and plan/receipt bindings; discarded native bytes are not independently reparsed.",
+    "ExerciseCESTv2 uses an institutional software-page route without publication evidence. Paperless means that admission route; it does not assert that no paper exists.",
+    "GASTON is admitted as a standalone publication with no repository relation. Its historic discovery was repository-linked; no independent-publication discovery credit or GL09 breadth closure follows.",
+    "The publication regional claim is historical source author occurrence 0, not current employment, repository ownership, individual worksite, code authorship or a resolved person. Native author affiliations stay unchanged and are not filled from regional context.",
+    "The direct Nature rendering failed through an authorization redirect; historical/indexed primary context was independently corroborated through indexed PubMed and primary institutional evidence. No direct publisher body capture is claimed.",
+    "Two admitted works are not two verified project groups or a people total. All existing 28 record objects, nine citations and three historical regional contexts remain separate preserved evidence.",
+    "Seven GL03 leads remain held; the three failed source scopes remain incomplete and held. No candidate disappeared or became healthy-empty."
+  ],
+  "diagnosticReviewEvidence": {
+    "actual-validator-probes.final-source.json": {
+      "sha256": "3515f3785484ef377e8fa11bf62db124fd2b06c48c71939e858e1b358d17c39b",
+      "cases": 28,
+      "scope": "Diagnostic independent engineering checks; no production authority or independent human benchmark credit."
+    },
+    "lifecycle-probes.final-source.json": {
+      "sha256": "c25f6c46adc844948a013162c50d1fe3ef598ecc3b254a8ce3fc7ec8c3cb6e5a",
+      "cases": 14,
+      "scope": "Diagnostic independent engineering checks; no production authority or independent human benchmark credit."
+    },
+    "relation-probes.final-source.json": {
+      "sha256": "500f409e9de3f8262283450ce03249aed8217185b2f82990e3085a5f5b89bd53",
+      "cases": 5,
+      "scope": "Diagnostic independent engineering checks; no production authority or independent human benchmark credit."
+    }
+  },
+  "repairedFindings": [
+    "Wrong curated repository link was accepted as regional project evidence; the repeated case now rejects.",
+    "Purpose-only evidence was accepted in the geographic role; the repeated case now rejects.",
+    "GASTON now has a separately bound county pointer and Princeton geographic source URL/date, distinct from its publisher author-affiliation evidence."
+  ]
+}

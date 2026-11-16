@@ -1,0 +1,711 @@
+{
+  "schemaVersion": "directory-review-selection-v1",
+  "version": "GL04-selection-v1",
+  "evidence": [
+    {
+      "id": "GL04:gid",
+      "path": "docs/discovery/go-live/evidence/GL03/original/G04.json",
+      "sha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+      "sourceUrl": "https://api.github.com/repos/newilson/ExerciseCESTv2",
+      "observedDate": "2026-11-16",
+      "method": "reviewed-observation",
+      "kind": "gl03-fact-packet"
+    },
+    {
+      "id": "GL04:gtitle",
+      "path": "docs/discovery/go-live/evidence/GL03/original/G04.json",
+      "sha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+      "sourceUrl": "https://api.github.com/repos/newilson/ExerciseCESTv2",
+      "observedDate": "2026-11-16",
+      "method": "reviewed-observation",
+      "kind": "gl03-fact-packet"
+    },
+    {
+      "id": "GL04:gurl",
+      "path": "docs/discovery/go-live/evidence/GL03/original/G04.json",
+      "sha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+      "sourceUrl": "https://api.github.com/repos/newilson/ExerciseCESTv2",
+      "observedDate": "2026-11-16",
+      "method": "reviewed-observation",
+      "kind": "gl03-fact-packet"
+    },
+    {
+      "id": "GL04:purpose",
+      "path": "docs/discovery/go-live/evidence/GL04/source-observations.json",
+      "sha256": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+      "sourceUrl": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+      "observedDate": "2026-11-16",
+      "method": "primary-web-rendering",
+      "kind": "curated-observation"
+    },
+    {
+      "id": "GL04:center",
+      "path": "docs/discovery/go-live/evidence/GL04/source-observations.json",
+      "sha256": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+      "sourceUrl": "https://www.med.upenn.edu/CAMIPM/",
+      "observedDate": "2026-11-16",
+      "method": "primary-web-rendering",
+      "kind": "curated-observation"
+    },
+    {
+      "id": "GL04:gastonpurpose",
+      "path": "docs/discovery/go-live/evidence/GL04/source-observations.json",
+      "sha256": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+      "sourceUrl": "https://collaborate.princeton.edu/en/publications/mapping-the-topography-of-spatial-gene-expression-with-interpreta/",
+      "observedDate": "2026-11-16",
+      "method": "primary-web-rendering",
+      "kind": "curated-observation"
+    },
+    {
+      "id": "GL04:doi",
+      "path": "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-gaston/body.json",
+      "sha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+      "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedDate": "2026-11-16",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL04:ptitle",
+      "path": "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-gaston/body.json",
+      "sha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+      "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedDate": "2026-11-16",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL04:purl",
+      "path": "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-gaston/body.json",
+      "sha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+      "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedDate": "2026-11-16",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL04:pdate",
+      "path": "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-gaston/body.json",
+      "sha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+      "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedDate": "2026-11-16",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL04:pregion",
+      "path": "docs/discovery/qualification/evidence/pilot-counties-20261116/regional-contexts.json",
+      "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+      "sourceUrl": "https://www.nature.com/articles/s41592-024-02503-3",
+      "observedDate": "2026-11-16",
+      "method": "reviewed-observation",
+      "kind": "curated-observation"
+    },
+    {
+      "id": "GL04:pgeography",
+      "path": "docs/discovery/qualification/evidence/pilot-counties-20261116/regional-contexts.json",
+      "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+      "sourceUrl": "https://orpa.princeton.edu/institutional-information",
+      "observedDate": "2026-11-16",
+      "method": "reviewed-observation",
+      "kind": "curated-observation"
+    }
+  ],
+  "entries": [
+    {
+      "candidateId": "G04",
+      "decision": "accept",
+      "reason": "Supported purpose and dated regional association; limited to stated source scope.",
+      "work": {
+        "schemaVersion": "discovery-directory-work-v1",
+        "id": "GL04:work:github:760662846",
+        "revision": 1,
+        "kind": "repository",
+        "nativeIdentity": {
+          "provider": "github",
+          "namespace": null,
+          "nativeId": "760662846",
+          "evidenceId": "GL04:gid"
+        },
+        "title": {
+          "value": "newilson/ExerciseCESTv2",
+          "evidenceId": "GL04:gtitle"
+        },
+        "url": {
+          "value": "https://github.com/newilson/ExerciseCESTv2",
+          "evidenceId": "GL04:gurl"
+        },
+        "description": null,
+        "owner": null,
+        "sourceDate": null,
+        "checkedAt": "2026-11-16",
+        "evidence": [
+          {
+            "id": "GL04:gid",
+            "sourceUrl": "https://api.github.com/repos/newilson/ExerciseCESTv2",
+            "observedDate": "2026-11-16",
+            "observationSha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+            "pointer": "/packet/facts/0/nativeId",
+            "method": "reviewed-observation"
+          },
+          {
+            "id": "GL04:gtitle",
+            "sourceUrl": "https://api.github.com/repos/newilson/ExerciseCESTv2",
+            "observedDate": "2026-11-16",
+            "observationSha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+            "pointer": "/packet/facts/0/title",
+            "method": "reviewed-observation"
+          },
+          {
+            "id": "GL04:gurl",
+            "sourceUrl": "https://api.github.com/repos/newilson/ExerciseCESTv2",
+            "observedDate": "2026-11-16",
+            "observationSha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+            "pointer": "/packet/facts/0/url",
+            "method": "reviewed-observation"
+          },
+          {
+            "id": "GL04:purpose",
+            "sourceUrl": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+            "observedDate": "2026-11-16",
+            "observationSha256": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+            "pointer": "/observations/0/facts/purpose",
+            "method": "primary-web-rendering"
+          },
+          {
+            "id": "GL04:center",
+            "sourceUrl": "https://www.med.upenn.edu/CAMIPM/",
+            "observedDate": "2026-11-16",
+            "observationSha256": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+            "pointer": "/observations/1/facts/municipality",
+            "method": "primary-web-rendering"
+          }
+        ],
+        "claims": [
+          {
+            "id": "GL04:claim:g04:purpose",
+            "subjectId": "GL04:work:github:760662846",
+            "evidenceIds": [
+              "GL04:purpose"
+            ],
+            "reviewId": "GL04:decision:G04",
+            "kind": "health-purpose",
+            "text": "Processes CrCEST imaging data and produces quantitative maps of creatine recovery and exchange."
+          },
+          {
+            "id": "GL04:claim:g04:region",
+            "subjectId": "GL04:work:github:760662846",
+            "evidenceIds": [
+              "GL04:purpose",
+              "GL04:center"
+            ],
+            "reviewId": "GL04:decision:G04",
+            "kind": "regional-connection",
+            "institution": "University of Pennsylvania",
+            "campus": null,
+            "municipality": "Philadelphia",
+            "state": "PA",
+            "regionalBasis": "municipality",
+            "county": null,
+            "asOf": {
+              "precision": "day",
+              "value": "2026-11-16"
+            },
+            "subjectRole": "project-association",
+            "subjectLabel": "CAMIPM CrCEST processing GUI",
+            "sourceAuthorIndex": null,
+            "affiliationEvidenceIds": [
+              "GL04:purpose",
+              "GL04:center"
+            ],
+            "geographyEvidenceIds": [
+              "GL04:center"
+            ],
+            "scope": "observed",
+            "qualification": "Institutional project association; not evidence of creator identity or code worksite."
+          }
+        ],
+        "relations": [],
+        "reviewRefs": [
+          {
+            "id": "GL04:decision:G04",
+            "receiptSha256": "088b5a24f9036873074a17363d397e3f8e78bf3b61b13f001fd5e013044ce539"
+          }
+        ]
+      },
+      "bindings": [
+        {
+          "field": "/nativeIdentity/nativeId",
+          "evidenceId": "GL04:gid",
+          "pointer": "/packet/facts/0/nativeId",
+          "transform": "identity",
+          "nativePointer": "/id"
+        },
+        {
+          "field": "/title/value",
+          "evidenceId": "GL04:gtitle",
+          "pointer": "/packet/facts/0/title",
+          "transform": "identity",
+          "nativePointer": "/full_name"
+        },
+        {
+          "field": "/url/value",
+          "evidenceId": "GL04:gurl",
+          "pointer": "/packet/facts/0/url",
+          "transform": "identity",
+          "nativePointer": "/html_url"
+        },
+        {
+          "field": "/claims/0/text",
+          "evidenceId": "GL04:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/1/municipality",
+          "evidenceId": "GL04:center",
+          "pointer": "/observations/1/facts/municipality",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/0",
+          "evidenceId": "GL04:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/1",
+          "evidenceId": "GL04:center",
+          "pointer": "/observations/1/facts/municipality",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        }
+      ],
+      "receipt": {
+        "id": "GL04:decision:G04",
+        "workSha256": "bd3425980e5a5c6084f5786b8a86bf3d63f251f3968ab7d032153bbf7c6d74a4",
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "accept",
+        "candidateId": "G04",
+        "reason": "Supported purpose and dated regional association; limited to stated source scope.",
+        "target": null,
+        "bindingsSha256": "9276780aa4cc0886690cf34c4e796dce3b905c37addce27c99f082e14fa68907"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "GASTON",
+      "decision": "accept",
+      "reason": "Supported purpose and dated regional association; limited to stated source scope.",
+      "work": {
+        "schemaVersion": "discovery-directory-work-v1",
+        "id": "GL04:work:crossref:gaston",
+        "revision": 1,
+        "kind": "publication",
+        "nativeIdentity": {
+          "provider": "crossref",
+          "namespace": null,
+          "nativeId": "10.1038/s41592-024-02503-3",
+          "evidenceId": "GL04:doi"
+        },
+        "title": {
+          "value": "Mapping the topography of spatial gene expression with interpretable deep learning",
+          "evidenceId": "GL04:ptitle"
+        },
+        "url": {
+          "value": "https://doi.org/10.1038/s41592-024-02503-3",
+          "evidenceId": "GL04:purl"
+        },
+        "description": null,
+        "owner": null,
+        "sourceDate": {
+          "value": {
+            "precision": "day",
+            "value": "2025-01-23"
+          },
+          "evidenceId": "GL04:pdate"
+        },
+        "checkedAt": "2026-11-16",
+        "evidence": [
+          {
+            "id": "GL04:doi",
+            "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+            "observedDate": "2026-11-16",
+            "observationSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+            "pointer": "/message/items/0/DOI",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL04:ptitle",
+            "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+            "observedDate": "2026-11-16",
+            "observationSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+            "pointer": "/message/items/0/title/0",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL04:purl",
+            "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+            "observedDate": "2026-11-16",
+            "observationSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+            "pointer": "/message/items/0/URL",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL04:pdate",
+            "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+            "observedDate": "2026-11-16",
+            "observationSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+            "pointer": "/message/items/0/published/date-parts/0",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL04:gastonpurpose",
+            "sourceUrl": "https://collaborate.princeton.edu/en/publications/mapping-the-topography-of-spatial-gene-expression-with-interpreta/",
+            "observedDate": "2026-11-16",
+            "observationSha256": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+            "pointer": "/observations/3/facts/purpose",
+            "method": "primary-web-rendering"
+          },
+          {
+            "id": "GL04:pregion",
+            "sourceUrl": "https://www.nature.com/articles/s41592-024-02503-3",
+            "observedDate": "2026-11-16",
+            "observationSha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+            "pointer": "/contexts/0/institution",
+            "method": "reviewed-observation"
+          },
+          {
+            "id": "GL04:pgeography",
+            "sourceUrl": "https://orpa.princeton.edu/institutional-information",
+            "observedDate": "2026-11-16",
+            "observationSha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+            "pointer": "/contexts/0/county",
+            "method": "reviewed-observation"
+          }
+        ],
+        "claims": [
+          {
+            "id": "GL04:claim:gaston:purpose",
+            "subjectId": "GL04:work:crossref:gaston",
+            "evidenceIds": [
+              "GL04:gastonpurpose"
+            ],
+            "reviewId": "GL04:decision:GASTON",
+            "kind": "health-purpose",
+            "text": "Analyzes spatial gene expression, including tumor microenvironment research."
+          },
+          {
+            "id": "GL04:claim:gaston:region",
+            "subjectId": "GL04:work:crossref:gaston",
+            "evidenceIds": [
+              "GL04:pregion",
+              "GL04:pgeography"
+            ],
+            "reviewId": "GL04:decision:GASTON",
+            "kind": "regional-connection",
+            "institution": "Princeton University",
+            "campus": "Princeton Computer Science main building, 35 Olden Street",
+            "municipality": "Princeton",
+            "state": "NJ",
+            "regionalBasis": "campus",
+            "county": "Mercer",
+            "asOf": {
+              "precision": "year",
+              "value": "2025"
+            },
+            "subjectRole": "author-affiliation",
+            "subjectLabel": "Uthsav Chitra",
+            "sourceAuthorIndex": 0,
+            "affiliationEvidenceIds": [
+              "GL04:pregion"
+            ],
+            "geographyEvidenceIds": [
+              "GL04:pgeography"
+            ],
+            "scope": "historical",
+            "qualification": "Publication author affiliation at publication; not current employment or worksite."
+          }
+        ],
+        "relations": [],
+        "reviewRefs": [
+          {
+            "id": "GL04:decision:GASTON",
+            "receiptSha256": "60a5215b93050ce212430f2f92651a450345f0c5944f9e1a754dc6c04a2ac511"
+          }
+        ]
+      },
+      "bindings": [
+        {
+          "field": "/nativeIdentity/nativeId",
+          "evidenceId": "GL04:doi",
+          "pointer": "/message/items/0/DOI",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/title/value",
+          "evidenceId": "GL04:ptitle",
+          "pointer": "/message/items/0/title/0",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/url/value",
+          "evidenceId": "GL04:purl",
+          "pointer": "/message/items/0/URL",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/sourceDate/value",
+          "evidenceId": "GL04:pdate",
+          "pointer": "/message/items/0/published/date-parts/0",
+          "transform": "date-parts",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/0/text",
+          "evidenceId": "GL04:gastonpurpose",
+          "pointer": "/observations/3/facts/purpose",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/1/institution",
+          "evidenceId": "GL04:pregion",
+          "pointer": "/contexts/0/institution",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/0",
+          "evidenceId": "GL04:gastonpurpose",
+          "pointer": "/observations/3/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/1",
+          "evidenceId": "GL04:pregion",
+          "pointer": "/contexts/0/institution",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/1/county",
+          "evidenceId": "GL04:pgeography",
+          "pointer": "/contexts/0/county",
+          "transform": "identity",
+          "nativePointer": null
+        }
+      ],
+      "receipt": {
+        "id": "GL04:decision:GASTON",
+        "workSha256": "5e9128ce1710d414b2b9dfe8a399dff065397ce11cc0140c28e956be3c2e59b7",
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "accept",
+        "candidateId": "GASTON",
+        "reason": "Supported purpose and dated regional association; limited to stated source scope.",
+        "target": null,
+        "bindingsSha256": "dbfa925b296205b03e6fbf46782fb1e1c15675fd14a4e1d46c49b788a6d8c183"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "G03-0",
+      "decision": "hold",
+      "reason": "Health purpose and dated regional association need evidence.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:G03-0",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "G03-0",
+        "reason": "Health purpose and dated regional association need evidence.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "G03-1",
+      "decision": "hold",
+      "reason": "Project-specific purpose and dated regional association need evidence.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:G03-1",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "G03-1",
+        "reason": "Project-specific purpose and dated regional association need evidence.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "G03-2",
+      "decision": "hold",
+      "reason": "Health purpose and dated regional association need evidence.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:G03-2",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "G03-2",
+        "reason": "Health purpose and dated regional association need evidence.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "G03-3",
+      "decision": "hold",
+      "reason": "Health purpose and dated regional association need evidence.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:G03-3",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "G03-3",
+        "reason": "Health purpose and dated regional association need evidence.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "G03-4",
+      "decision": "hold",
+      "reason": "Health purpose and dated regional association need evidence.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:G03-4",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "G03-4",
+        "reason": "Health purpose and dated regional association need evidence.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "G05",
+      "decision": "hold",
+      "reason": "Research purpose and dated regional association need evidence.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:G05",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "G05",
+        "reason": "Research purpose and dated regional association need evidence.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "C02",
+      "decision": "hold",
+      "reason": "Substantive health application needs evidence.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:C02",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "C02",
+        "reason": "Substantive health application needs evidence.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "scope-G01",
+      "decision": "hold",
+      "reason": "Malformed Link; discarded response and cause unknown.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:scope-G01",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "scope-G01",
+        "reason": "Malformed Link; discarded response and cause unknown.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "scope-G02",
+      "decision": "hold",
+      "reason": "Malformed field census; discarded response and cause unknown.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:scope-G02",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "scope-G02",
+        "reason": "Malformed field census; discarded response and cause unknown.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    },
+    {
+      "candidateId": "scope-C01",
+      "decision": "hold",
+      "reason": "Malformed publication identity; discarded response and cause unknown.",
+      "work": null,
+      "bindings": [],
+      "receipt": {
+        "id": "GL04:decision:scope-C01",
+        "workSha256": null,
+        "operator": "agent:root",
+        "reviewer": "agent:sol_gl04_review",
+        "decision": "hold",
+        "candidateId": "scope-C01",
+        "reason": "Malformed publication identity; discarded response and cause unknown.",
+        "target": null,
+        "bindingsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "target": null
+    }
+  ]
+}
