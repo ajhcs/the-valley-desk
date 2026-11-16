@@ -8,6 +8,13 @@ contains GL00–GL11. EX33 now authorizes implementation from GL00 with Terra an
 Sol review, commits and PR updates, and deployment of the ready existing-site
 candidate as appropriate. No deployment has occurred; GL11 readiness remains open.
 
+GL00, GL01 and GL02 are accepted at their recorded scopes. GL01's new work/snapshot
+and private-frontier contracts are inactive at runtime and locally qualified;
+GL02 is an exploration design, with diagnostics and acquisition still unrun.
+[The current checkpoint](go-live/README.md#current-implementation-checkpoint)
+links the receipts and next GL03 dependency. The original 28-record catalog,
+original package/model/benchmark acceptance and production behavior are unchanged.
+
 The existing [metadata-and-link implementation](metadata-link-pilot-plan.md) and
 its MP acceptance ledger remain historical, qualified code foundations. Full-text
 reuse and WP03 benchmark annotation/freeze remain separate workstreams. EX32 does

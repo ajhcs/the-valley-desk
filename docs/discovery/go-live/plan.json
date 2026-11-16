@@ -112,7 +112,7 @@
         "G03",
         "G04"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "work": "work-packages.md#gl01--freeze-the-minimum-useful-record-and-claim-contracts",
       "acceptance_ids": [
         "GL01-A1",
@@ -121,7 +121,15 @@
         "GL01-A4",
         "GL01-A5"
       ],
-      "acceptance": null,
+      "acceptance": {
+        "recorded_at": "2026-11-16T20:35:54.744290+00:00",
+        "scope": "locally qualified structural work/snapshot and private-frontier contracts; no publication/admission authority",
+        "source_commit": "2ba42446f6b7c8f943a39a5d6c2d109d0d12dd50",
+        "owner": "Terra",
+        "reviewer": "Sol",
+        "review": "execution/GL01-sol-review.md",
+        "receipt": "execution/GL01-acceptance.json"
+      },
       "findings": []
     },
     {
@@ -408,8 +416,8 @@
   "implementation_baseline": "6ed650156100104e3f00e756e3c3094027c130fb",
   "execution_decision": "EX33",
   "deployment_status": "not_performed_readiness_pending",
-  "next_ready_packages": [],
-  "active_packages": [
-    "GL01"
-  ]
+  "next_ready_packages": [
+    "GL03"
+  ],
+  "active_packages": []
 }

@@ -523,7 +523,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-16T20:20:41.419363+00:00",
+  "updated_at": "2026-11-16T20:35:54.744290+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -1176,20 +1176,21 @@
     "package_status_authority": "go-live/plan.json",
     "execution_decision": "EX33",
     "deployment_status": "not_performed_GL11_readiness_pending",
-    "active_packages": [
-      "GL01"
+    "active_packages": [],
+    "next_ready_packages": [
+      "GL03"
     ],
-    "next_ready_packages": [],
     "release_readiness": "not_qualified",
     "release_blockers": [
-      "GL00\u2013GL10 accepted-output and integrated launch evidence incomplete",
+      "GL03\u2013GL10 accepted-output and integrated launch evidence incomplete",
       "GL11 exact-candidate operational reconciliation, rollback and served readback pending"
     ],
     "accepted_packages": [
       "GL00",
+      "GL01",
       "GL02"
     ],
-    "latest_receipt": "go-live/execution/GL02-acceptance.json"
+    "latest_receipt": "go-live/execution/GL01-acceptance.json"
   },
   "deployment_status": "not_performed_GL11_readiness_pending",
   "release_readiness_scope": "original_full_system; scoped go-live is tracked under go_live"

@@ -1,0 +1,161 @@
+{
+  "id": "TVD-GL01-1",
+  "recorded_at": "2026-11-16T20:35:54.744290+00:00",
+  "disposition": "locally_qualified_bounded_contracts",
+  "source_commit": "2ba42446f6b7c8f943a39a5d6c2d109d0d12dd50",
+  "owner": "Terra",
+  "reviewer": "Sol",
+  "acceptor": "Orchestrator",
+  "depends_on": [
+    "GL00"
+  ],
+  "unlocked_when_combined_with_GL02": [
+    "GL03"
+  ],
+  "criteria": {
+    "GL01-A1": "accepted_with_structural_and_semantic_boundary_recorded",
+    "GL01-A2": "accepted_with_structural_and_semantic_boundary_recorded",
+    "GL01-A3": "accepted_with_structural_and_semantic_boundary_recorded",
+    "GL01-A4": "accepted_with_structural_and_semantic_boundary_recorded",
+    "GL01-A5": "accepted_with_structural_and_semantic_boundary_recorded"
+  },
+  "runtime_outputs": {
+    "src/content/discovery-directory.ts": "584f733c5679adb306d809899510028f4c5afc9e6f0991299dc25e11ec0b8fb8",
+    "src/ingest/discovery/directory-frontier.ts": "9ffc3e427cb74f15199453f78b444e72ef18f4b28888e57a077685b4d8686990",
+    "test/discovery-directory.test.ts": "47f490cfbbc5579c9df4c82b806d04ba8cc31dab32dfa251148e0107280d292f",
+    "package.json": "d541b63f7cbb24111f591d63efd0143a81baf7e8e21a6f319879ecd394ea76e1"
+  },
+  "outputs": {
+    "docs/discovery/go-live/execution/GL01-contracts.md": "0f1479bc2133d9dafb2f73b60b224e8b9100c92503e2ecea6266c00a00c68ec4",
+    "docs/discovery/go-live/execution/GL01-sol-review.md": "55563697f42bb8a9f1ca7004dd6f7e8b830f7349a6426fc0b3d59130a5c244b2"
+  },
+  "private_artifacts": {
+    ".discovery-work/go-live-implementation/root/GL01-final/accept.py": "0a54f8532d3d3fd0b967e4ae26ca91f0cf3593def9820847bcafda91ec8c9c0f",
+    ".discovery-work/go-live-implementation/root/GL01-final/audit-final.log": "d04ff73073bfcca2d06bfef3ca46173bfba16cd7ae37d6c1de342054ae6c56e1",
+    ".discovery-work/go-live-implementation/root/GL01-final/build-final.log": "4fa2a333f9907367ea4024b5a4a2e012df2cbad1a56c7e8dca63259f4f238664",
+    ".discovery-work/go-live-implementation/root/GL01-final/input-sha256.json": "7d700530a7d86efccb2eb676f65b368e827ea2d5ade2dfa6faa67b13e6d19583",
+    ".discovery-work/go-live-implementation/root/GL01-final/pdf-final.log": "bdd46a0fc088a975c55d8c8fd15f1b2b44dd31f357c10cd75a08bf3fa5c2b006",
+    ".discovery-work/go-live-implementation/root/GL01-final/secret-final.log": "8343f122faa5c7f170c24805e25e0495328084818e40d298989fa3d52da68321",
+    ".discovery-work/go-live-implementation/root/GL01-final/smoke-final.log": "1d65eba00fe73642dc8d931a245af58a73cb715f8b9595d59c75395edf7ef94b",
+    ".discovery-work/go-live-implementation/root/GL01-final/tests-final.log": "e173833d1997197e584de4094574ca8f4de790c8f68f3f383a4c5b49ba4f98bb",
+    ".discovery-work/go-live-implementation/root/GL01-final/validate.py": "acc8306ca0ad255e47fb202011654699b6dc12b873cbadfdcfb328d8dd67a627",
+    ".discovery-work/go-live-implementation/root/GL01-final/validation.json": "369dce5d09c9281e19aed84edb4a857cbe1f4a5afc92f135ab18a84a105c3eaf",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/terra/GL01/focused-final.tap": "a6e27e1d35c89f25e9b7f38dd3674d17029ee82e85e37d9f447f8c74f2c554fc",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/terra/GL01/focused.tap": "68d1228f53ca77341142babb8c5b360dd4ea8c1391667dbf937c945de8448eb2",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/terra/GL01/typecheck-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/terra/GL01/typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL01/baseline-delta.json": "89b449b76c0d0c50327ed77a897ed624189bcc4dd4e74dd340658d7efb0c2db2",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL01/baseline-delta.py": "2645ade56d572b60f1f767b6a251fe7778b48773c4ff0bd5dabcc79a758879a6",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL01/baseline-delta.stdout.json": "89b449b76c0d0c50327ed77a897ed624189bcc4dd4e74dd340658d7efb0c2db2",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL01/contract-probe.before-fixes.json": "0ced3fbd518fcba86fe2361717f60b0d36d208fbede2a4be529c1281db1f8105",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL01/contract-probe.json": "84aee3ee2ef201e52c581524a933695848f7c3d4760d4b65a73de55073fbd900",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL01/contract-probe.mjs": "6a281f83d787382811cb52d558d6160eb83cc3808eb86821442a0d3000da2ef4",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL01/focused-tests.log": "d4017eba584439311f82cc95d280bcd9666317fadcd82e55141f0c3a9f2e2c0f",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL01/typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "runtime_input_manifest": {
+    "path": ".discovery-work/go-live-implementation/root/GL01-final/input-sha256.json",
+    "sha256": "7d700530a7d86efccb2eb676f65b368e827ea2d5ade2dfa6faa67b13e6d19583",
+    "count": 633,
+    "drift": []
+  },
+  "validation": {
+    "commands": [
+      {
+        "name": "tests",
+        "argv": [
+          "npm",
+          "test"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "pdf",
+        "argv": [
+          "npm",
+          "run",
+          "test:policy-pdf"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build",
+        "argv": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "smoke",
+        "argv": [
+          "npm",
+          "run",
+          "ops:smoke"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "audit",
+        "argv": [
+          "npm",
+          "audit",
+          "--audit-level=high",
+          "--json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "secret",
+        "argv": [
+          "npm",
+          "run",
+          "secret-scan"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "suite_counts": [
+      939,
+      146,
+      387
+    ],
+    "executed_tests": 1472,
+    "failures": 0,
+    "skips": 0,
+    "cancellations": 0,
+    "PDF_regressions": 7,
+    "audit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "focused_directory_tests": 21,
+    "Sol_independent_probes": 73,
+    "Sol_baseline_checks": 19,
+    "counts_overlap": true,
+    "source_CI": "tracked separately on PR30 for exact source commit; required exact-release CI remains GL10/GL11"
+  },
+  "scope": {
+    "public_module": "strict lean work/snapshot shapes, typed source/claim/review-reference closure and identity/date/region guards",
+    "private_module": "separate non-public frontier; exact existing collection lead and typed source/page references or manual observation; publicationAuthorized false",
+    "actual_source_truth_checked_by_schema": false,
+    "review_authority_granted_by_schema": false,
+    "GL04_required": "Reconstruct permitted observations, bind actual native field/value/subject/time and validate real review authority before publication.",
+    "optional_extensions": "GL01-D01 requires reviewed versioned additions before later creator/professional/firstSeen/archive/fork/correction fields are emitted.",
+    "runtime_activation": false,
+    "new_public_records": 0,
+    "native_capture_or_enrollment": false
+  },
+  "known_followup": "Legacy pilot/Watch pointer patterns have a scoped GL10 robustness/GL11 compatibility follow-up before less-trusted reuse; no anonymous pointer-controlled entry was found in Sol trace.",
+  "original_package_and_MP_acceptance_unchanged": true,
+  "existing_28_record_objects_unchanged": true,
+  "deployment_authorized": true,
+  "deployment_performed": false,
+  "benchmark_credit": 0,
+  "merge": false
+}

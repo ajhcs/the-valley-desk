@@ -18,6 +18,28 @@ The [independent planning review](review.md) records resolved findings and the l
 
 The source baseline is `60d6bd3aaba90a4970821f41fb2ca0329cbf8d20`. It has 28 selected native records: 13 repositories, 13 publications and two organization backgrounds. Nine repository-to-publication citations and three separate historical regional contexts are represented. The 367 authorship entries are not 367 distinct or local people. Qualification includes 1,451 tests, seven PDF regressions and successful delivered-head CI #186/#187. These are historical results for that revision, not evidence that this plan has been implemented.
 
+## Current implementation checkpoint
+
+EX33 has accepted GL00's source/runtime and launch baseline, GL01's locally
+qualified lean public/private contracts, and GL02's pre-collection exploration
+design. See the [GL00 acceptance](execution/GL00-acceptance.json),
+[GL01 acceptance](execution/GL01-acceptance.json) and
+[GL02 acceptance](execution/GL02-acceptance.json). Terra authored the packages;
+Sol independently reviewed and challenged them before orchestrator acceptance.
+
+GL01's source commit is `2ba42446f6b7c8f943a39a5d6c2d109d0d12dd50`.
+Full local qualification passed 1,472 tests, seven PDF regressions, build/typecheck,
+local smoke, dependency audit with zero reported vulnerabilities and secret scan,
+on 633 unchanged runtime inputs. Exact source CI remains separately tracked on
+PR30; no release readiness is inferred from local acceptance.
+
+GL03 is now ready. The public catalog still has the original 28 records; no new
+source is enrolled, collected into the launch directory or publicly admitted by
+these packages. The work/snapshot schemas validate structure, not external facts
+or publication authority. GL04 must reconstruct permitted observations and verify
+actual review decisions. GL11 readiness remains open; deployment is authorized
+within its scope but has not occurred.
+
 ## Product decisions
 
 | ID | Decision and consequence |
