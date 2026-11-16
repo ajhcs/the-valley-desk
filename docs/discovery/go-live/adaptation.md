@@ -13,9 +13,9 @@ Before starting a package, the orchestrator gives its owner:
 - Required observable outputs, meaningful adverse cases, named independent reviewer and integration point.
 - A small first increment that can reveal the main uncertainty before extensive implementation.
 
-Sol owns schemas, collectors, query/API behavior, projection, migration and recovery implementation. Terra owns discovery research, source inventories, reader flows, coverage and operating measures, with focused implementation where assigned. Astra independently challenges evidence, identity/geography semantics, source/privacy boundaries, interface safety and observed outcomes. The orchestrator integrates and decides acceptance. These are model/agent roles, not invented staff identities or new operational permissions.
+EX33 changes the active assignment to Terra implementation and source work, with Sol independent review, following the latest user instruction. The orchestrator integrates and decides acceptance. Reviewers inspect actual outputs and exercise discriminating cases. These roles do not invent staff identities or supply unrelated operational permissions. Earlier Sol/Terra/Astra assignments describe the planning defaults and can be reused only when a later explicit assignment calls for them.
 
-Use existing agents and their established model assignments when available. If new agents are explicitly authorized, select Sol/Terra/Astra for these bounded roles. A different model does not make a review independent if it merely repeats the author's assertions. The reviewer must inspect actual outputs and exercise discriminating cases.
+Use existing agents and their established model assignments when available. If new agents are explicitly authorized, use the current Terra/Sol execution assignments for these bounded roles. A different model does not make a review independent if it merely repeats the author's assertions. The reviewer must inspect actual outputs and exercise discriminating cases.
 
 ## Package state and evidence
 
@@ -23,14 +23,14 @@ The package states are `not_started`, `in_progress`, `in_review`, `accepted` and
 
 Every acceptance record identifies the implementation revision, input/contract revisions, changed files, actual executed checks, limitations and reviewer disposition. Keep failed attempts and repaired findings. Tests, source observations, agent judgments and human reader observations remain distinguishable. A hash establishes which bytes were used; it does not establish an affiliation's truth or a reader's usefulness judgment.
 
-All packages in this planning revision start `not_started`. Existing MP and WP acceptance is reusable only within its recorded inputs and scope. Do not overwrite a historical receipt to make it describe a later implementation. Record new acceptance and an explicit preservation comparison.
+EX32 began with all packages `not_started`; EX33 execution updates plan.json as work is performed. Existing MP and WP acceptance is reusable only within its recorded inputs and scope. Do not overwrite a historical receipt to make it describe a later implementation. Record new acceptance and an explicit preservation comparison.
 
 ## Change classes and authority
 
 | Class | Examples | Agent/orchestrator action |
 | --- | --- | --- |
 | Routine implementation | Component factoring, accessibility fixes, clearer copy, bounded query optimization, existing-library reuse. | Owner proposes or makes the local change; orchestrator accepts after relevant tests and independent review. Preserve the agreed behavior. |
-| Evidence-driven design | Snapshot exceeds measured envelope; topics fail reader tasks; a source route is unavailable; a custom intake form costs more than a maintained link. | Open a decision with finding, alternatives, smallest viable choice, affected interfaces and rechecks. Orchestrator and Astra review the new means. Do not wait for a user decision already delegated. |
+| Evidence-driven design | Snapshot exceeds measured envelope; topics fail reader tasks; a source route is unavailable; a custom intake form costs more than a maintained link. | Open a decision with finding, alternatives, smallest viable choice, affected interfaces and rechecks. Orchestrator and Sol review the new means. Do not wait for a user decision already delegated. |
 | Contract or acceptance change | New DTO/API version, changed query semantics, adjusted coverage denominator or predeclared performance envelope. | Revise the contract before its new run; preserve old results, reopen affected consumers and obtain independent review. A changed threshold cannot retroactively make an old failure pass. |
 | Consequential scope/authority | Changing the nine counties or health-tech boundary, publishing uncertain identity, expanding source-use rights, adding paid services, actual outreach or deployment. | Prepare a concrete scoped proposal and verify existing session authority. Seek only a genuinely missing decision. Neither time passing nor a model output supplies approval. |
 
@@ -87,6 +87,6 @@ Use a search or storage service only after a measured limit, an alternatives rev
 
 A false person merge, materially false local attribution, private/sensitive-data exposure, publication-authority bypass, unauthorized source action, broken removal or unsafe rollback blocks the affected release. Preserve the finding and repair/retest. A failed critical reader task or required legacy consumer also blocks its launch scope.
 
-An optional professional link, empty county, blocked optional source or cosmetic issue can have a reviewed follow-up. Record its user impact and coverage wording. A collection of optional gaps that destroys broad discovery is a product failure, not a reason to label each gap individually harmless. Astra and the orchestrator must assess their combined effect.
+An optional professional link, empty county, blocked optional source or cosmetic issue can have a reviewed follow-up. Record its user impact and coverage wording. A collection of optional gaps that destroys broad discovery is a product failure, not a reason to label each gap individually harmless. Sol and the orchestrator must assess their combined effect.
 
 Escalate to the user only when an actual missing input or authority prevents further meaningful progress. Prepare the concrete choice and the work needed to assess it first. Continue independent packages, preserve unfinished work and report the remaining boundary accurately.

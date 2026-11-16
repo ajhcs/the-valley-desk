@@ -1146,3 +1146,21 @@ GL11 prepares a concrete candidate, source/coverage scope, operations and rollba
 before any missing release authorization is requested. This task changes plans
 and navigation to those plans only; application behavior, enrollment, recurring
 collection, merge and deployment remain unchanged.
+
+## EX33 — Authorized go-live implementation and readiness-qualified deployment
+
+The user instructed implementation beginning GL00, following dependencies, with
+Terra ownership, independent Sol review, gap repair before acceptance, commits and
+PR updates. They explicitly authorized deployment as appropriate. This supersedes
+earlier planning-only and no-deployment task restrictions for the reviewed
+existing-site GL11 release. Readiness checks and actual operational readback still
+apply; the grant is not an acceptance result.
+
+The active launch register records Terra/Sol assignments and actual package
+progress. GL00 reconciles source, current deployed identity, selected control-plane
+settings and the remote migration ledger through read-only observations. Missing
+or conflicting facts remain assigned actions rather than invented successes.
+Unrelated host/Plumbob administration, new paid services, provider outreach and
+unfinished general admission/model/benchmark acceptance remain outside this grant.
+No deployment, migration, recurring source activation or public discovery release
+has occurred in GL00. See the [execution baseline](go-live/execution/GL00-baseline.md).

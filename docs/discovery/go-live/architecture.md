@@ -1,5 +1,7 @@
 # GL architecture: a maintained regional health-tech directory
 
+EX33 authorizes implementation with Terra and independent Sol review, and deployment of the readiness-qualified existing-site candidate. The methods and thresholds below remain proposed until their package is executed; earlier planning-only language describes EX32 and does not revoke that later authorization. No deployment has occurred.
+
 Planning baseline: `60d6bd3aaba90a4970821f41fb2ca0329cbf8d20`. This document proposes implementation; no source acquisition, enrollment, migration, application change or deployment occurred. GL00–GL11 identify shared plan packages, not accepted operating authority.
 
 ## Delivery shape and existing seams — GL00, GL01

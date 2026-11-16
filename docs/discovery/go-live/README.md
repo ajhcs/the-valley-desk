@@ -1,6 +1,6 @@
 # Go-live engineering plan
 
-TVD-GO-LIVE-1 · EX32 · 16 November 2026 · Plan only
+TVD-GO-LIVE-1 · EX32 plan / EX33 execution · 16 November 2026 · Implementation in progress
 
 Build The Valley Desk for our own recurring discovery work and make the same useful service publicly accessible. Launch as The Valley Desk, without a public pilot phase or pilot branding. The main product is a broad, source-backed index of regional health-technology work. A few useful facts and good links should let a reader decide what to inspect next.
 
@@ -31,7 +31,7 @@ The source baseline is `60d6bd3aaba90a4970821f41fb2ca0329cbf8d20`. It has 28 sel
 | D07 | Keep source truth and unknowns visible. Fewer supported facts are preferable to invented summaries, affiliations, contribution claims or regional completeness. |
 | D08 | Use the existing stack and accepted components where their contracts fit. Add storage, search services or paid dependencies only after a measured need and a reviewed decision. |
 
-This task authorizes planning and documentation. It does not authorize application implementation, source enrollment, recurring acquisition, outreach, merge or deployment. A future implementation instruction starts GL00. The eventual go-live uses one reviewed release candidate and the applicable operational authorization; it is not a separate public-pilot product phase.
+EX33 records the subsequent user instruction to implement from GL00, follow dependencies, use Terra with Sol review, make commits and update the PR. The user also authorized deployment as appropriate. That authority is available for the existing-site GL11 candidate after its readiness checks; no repeated deployment permission is needed within that scope. No release has occurred. Unrelated infrastructure changes, new paid services and outreach retain their separate boundaries. Current assignments and acceptance are in plan.json; earlier planning-only statements describe EX32 history.
 
 ## Seven priorities and accountable outputs
 

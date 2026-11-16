@@ -1,5 +1,7 @@
 # Validation, launch evidence and release
 
+EX33 authorizes implementation with Terra and independent Sol review, and deployment of the readiness-qualified existing-site candidate. The methods and thresholds below remain proposed until their package is executed; earlier planning-only language describes EX32 and does not revoke that later authorization. No deployment has occurred.
+
 This is a future evidence plan. The GL checks below are **not run**. The historical source baseline and CI results are in the plan overview. Neither those earlier results nor a review of this document establishes the future service's usefulness, breadth or operational acceptance.
 
 ## Scope and evidence types
@@ -12,19 +14,19 @@ The original WP03/E01–E06 reference benchmark remains separate. These developm
 
 | Goal | Claim to assess | Method / observable | Owner / challenge |
 | --- | --- | --- | --- |
-| G01 | A new reader can find work from the homepage. | Browser demonstration of home → query/browse → result → original source; observe copy comprehension and route preservation. | Terra / Astra |
-| G02 | Ordinary supported vocabulary produces useful results. | Freeze query cases before tuning; verify actual result IDs, explanations, negative cases, facet counts and stable order. | Sol / Terra, Astra |
-| G03 | Compact results support a decision without hiding qualifications. | Inspect claim-to-source bindings, then observe a reader explaining purpose, health relevance, region/date and next action. | Terra / Astra |
-| G04 | Lean creator/institution paths have correct identities. | Adverse same-name/account tests and actual detail/institution journeys, including unresolved people and missing optional links. | Sol, Terra / Astra |
-| G05 | Discovery reaches less visible eligible work and exposes scoped gaps. | Execute frozen bounded exploration, compare declared explored account inventories and perform an independent miss/bias review. | Terra / Astra |
-| G06 | The small team can maintain public facts. | Actual permitted batch, measured effort/backlog, suggestion triage and isolated update/correction/removal plus search/cache checks. | Sol, Terra / Astra |
-| G07 | The candidate is usable and recoverable in its declared envelope. | Browser/accessibility/performance tests, private-output/intake probes, full required CI, isolated release/rollback and actual release readback. | Orchestrator / Astra |
+| G01 | A new reader can find work from the homepage. | Browser demonstration of home → query/browse → result → original source; observe copy comprehension and route preservation. | Terra / Sol |
+| G02 | Ordinary supported vocabulary produces useful results. | Freeze query cases before tuning; verify actual result IDs, explanations, negative cases, facet counts and stable order. | Terra / Sol |
+| G03 | Compact results support a decision without hiding qualifications. | Inspect claim-to-source bindings, then observe a reader explaining purpose, health relevance, region/date and next action. | Terra / Sol |
+| G04 | Lean creator/institution paths have correct identities. | Adverse same-name/account tests and actual detail/institution journeys, including unresolved people and missing optional links. | Terra / Sol |
+| G05 | Discovery reaches less visible eligible work and exposes scoped gaps. | Execute frozen bounded exploration, compare declared explored account inventories and perform an independent miss/bias review. | Terra / Sol |
+| G06 | The small team can maintain public facts. | Actual permitted batch, measured effort/backlog, suggestion triage and isolated update/correction/removal plus search/cache checks. | Terra / Sol |
+| G07 | The candidate is usable and recoverable in its declared envelope. | Browser/accessibility/performance tests, private-output/intake probes, full required CI, isolated release/rollback and actual release readback. | Orchestrator / Sol |
 
 ## Freeze the task and measurement envelope
 
 GL00/GL01 select the initial examples and success definitions. GL02 freezes the explored inventory and miss diagnostic before acquisition. GL10 freezes device, data, timing and observation conditions before performance or reader evaluation. Preserve the versions, actual inputs, commands, resulting artifacts and failures.
 
-Initial engineering targets below are **proposed planning defaults**, not measured results or contractual claims. The orchestrator and Astra can replace them before a run with an evidence-based envelope. A replacement after a failed run creates a new decision and run; it does not change the failed result.
+Initial engineering targets below are **proposed planning defaults**, not measured results or contractual claims. The orchestrator and Sol can replace them before a run with an evidence-based envelope. A replacement after a failed run creates a new decision and run; it does not change the failed result.
 
 | Item | Proposed initial envelope / criterion | Meaning and revision rule |
 | --- | --- | --- |

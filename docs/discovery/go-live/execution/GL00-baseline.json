@@ -1,0 +1,325 @@
+{
+  "purpose": "GL00 immutable source-tree baseline; source observations, not current production state or a build/test receipt",
+  "revision": "6ed650156100104e3f00e756e3c3094027c130fb",
+  "gitTree": "7da208c50143a13dc8b1b76e13dc1de1da1d5642",
+  "branch": "codex/discovery-implementation-20261113",
+  "baselineStatus": "clean when GL00 investigation began; later concurrent task edits do not change this git tree",
+  "files": [
+    {
+      "path": "README.md",
+      "gitBlob": "2196beb2ff7e1478b5240829f0fa5947fb466333",
+      "sha256": "fd327a194c91d5e6781fd0d6f67503e4b336fa963b087281f156d210c3df3503",
+      "bytes": 23075,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/OPERATIONS.md",
+      "gitBlob": "b032cfb7aaf7ff46b0d5e77ec6c0bc7dbba1319b",
+      "sha256": "05622d3e153f0002c7db01e0226140dc647f55249006898bdff91b36a4112223",
+      "bytes": 34425,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/validation-environments.md",
+      "gitBlob": "b94bc0d4246a12a2a8a96650fbdf39a005dbd023",
+      "sha256": "ccf5386f4bfe8fe9a160c2bc54f17e004b03a15f9cf97e1f8e8e76204466a329",
+      "bytes": 14800,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/go-live/README.md",
+      "gitBlob": "5283db4de83dedf31e648440266a348f2d838458",
+      "sha256": "335ddd386fc582269d87826f7dca88b30502fcbc67fbd66f2f659d68cae1ec68",
+      "bytes": 11848,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/go-live/plan.json",
+      "gitBlob": "902f55e0c137c50f91b5ee87b5faafffd9121a0d",
+      "sha256": "31dc2517bffa63ca4033b077c395868f4187cdbcb0766d0aba834643dd15b9e8",
+      "bytes": 8767,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/go-live/work-packages.md",
+      "gitBlob": "3192d5ca281f765b12b5480155f8adcfbc07f98e",
+      "sha256": "be89e4307977cdae876f9af399d3af96ba669491b6a4f161bb6413a84395f61f",
+      "bytes": 31054,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/go-live/architecture.md",
+      "gitBlob": "aafe63f481ed50eda0fdfb35c6c2413cff24b366",
+      "sha256": "bd3f5785da3f7c7be75374173f8d3ac91144169213338ca6303e7495c86fb369",
+      "bytes": 18520,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/go-live/coverage.md",
+      "gitBlob": "c9381ff385b6b589478f6504692bb2e625a52760",
+      "sha256": "d7c10417805a837089574cab4469d928b7f821561fbc8015160f460993e89d79",
+      "bytes": 17727,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/go-live/operations.md",
+      "gitBlob": "a9e2bcda81e32acda2cb8ef189c469f4f1764291",
+      "sha256": "2077cd133d26bd05b2ef5721cbbb890dd17125ac188ab8442836c99c3cf487c1",
+      "bytes": 13436,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/go-live/validation.md",
+      "gitBlob": "84be18c2e00e4136fcc3ad929de3b9a02f95be83",
+      "sha256": "b079dfd27c75e5fd9668dac3ef709efa1467021313766eb5316a0e9b87c39272",
+      "bytes": 14205,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/execution.json",
+      "gitBlob": "feae236bd97b7b049ad22db2d2fccd8203578f47",
+      "sha256": "5cde752ee039002f30f96dbee9da72dc9b46745cc31a1c254b43230abe91244a",
+      "bytes": 39508,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery-engineering/plan.json",
+      "gitBlob": "e310c4087adfd921f672001d31ea83638cb1684c",
+      "sha256": "cf74e8a1ecbcfaafe1d70ba58e5f2a347f8d78a6a7cd30eacb29ffa64f77cf3c",
+      "bytes": 25425,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/wp14-entry-plan.md",
+      "gitBlob": "fb8dee6aab02496d413815682afafb75324e3ab4",
+      "sha256": "b3be293ab78b40405109aa8a6ed88d65909d20b8ec6ea7932ce9299be560bfb2",
+      "bytes": 20536,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/metadata-link-pilot-sources.md",
+      "gitBlob": "b6a5661f05529c4a9c8b7c6fa41550aeaac7dd3b",
+      "sha256": "e969c8bc5467aa695faac76a0cc34857d95c4ed7917d1a4b1cb61b9c82f396e7",
+      "bytes": 11324,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/qualification/evidence/pilot-counties-20261116/material-index.json",
+      "gitBlob": "a34e7fb9dbffb402a4e13e550f8fbbb07d3c6988",
+      "sha256": "88c26d766e5780a30a045723af5ecbb237c931f8c291a1b702b7c17e1ef7f3e6",
+      "bytes": 6460,
+      "worktreeMatches": true
+    },
+    {
+      "path": "docs/discovery/qualification/evidence/pilot-counties-20261116/regional-contexts.json",
+      "gitBlob": "d2d7f0b205d0fc0724af6776cf2137534fde61a3",
+      "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+      "bytes": 4720,
+      "worktreeMatches": true
+    },
+    {
+      "path": "fixtures/discovery-pilot-selection.json",
+      "gitBlob": "2c3560015e298c7114d2019b8a565d8d6141c26f",
+      "sha256": "5b0516e7a1ef8d4232681f6feedffbea0b80282acc207385a5df0aec0b5320eb",
+      "bytes": 274223,
+      "worktreeMatches": true
+    },
+    {
+      "path": "src/content/discovery-pilot-catalog.json",
+      "gitBlob": "af9140b8811c910dfb5a15e04c33f9738b3a8e8b",
+      "sha256": "eade1825e08432413a67f94fb2a1a57dc5d75342e2162cb2bd28e722c1dcbccf",
+      "bytes": 163511,
+      "worktreeMatches": true
+    },
+    {
+      "path": "src/content/published-catalog.json",
+      "gitBlob": "105fd1893ea88b365ea7cb1018045ff561531478",
+      "sha256": "e02072007f9130c307e07e758533f610ad6b5509638be660af1cabfe13c66afb",
+      "bytes": 92076,
+      "worktreeMatches": true
+    },
+    {
+      "path": "fixtures/catalog.json",
+      "gitBlob": "d2339481a8a861865d6d25be400447662a1f5ef6",
+      "sha256": "55955be02a045eeb1f6214a2e84b73e0adc158e8a7da3ae45466bac3e227385f",
+      "bytes": 107718,
+      "worktreeMatches": true
+    },
+    {
+      "path": "package.json",
+      "gitBlob": "7ed7c8e9401876e56e402393de0942672dfea452",
+      "sha256": "78cf6973354b1cff584d6b99e7c9a83c64d680eff0cd1d7f2b62fd80591bd8b4",
+      "bytes": 5678,
+      "worktreeMatches": true
+    },
+    {
+      "path": "package-lock.json",
+      "gitBlob": "4c43f5515d5fa09b20643cb052c688654b6dbbf9",
+      "sha256": "88a44b19e556f92ba10550bbc0ab215f8c91a4207a5beabebfbf0ad4eae1abd6",
+      "bytes": 113524,
+      "worktreeMatches": true
+    },
+    {
+      "path": "wrangler.jsonc",
+      "gitBlob": "9f44e96b0f953c85ae9d7b7f4d373e7e6d51a760",
+      "sha256": "5049c10be1fc55c21aaff893dda0c5706e399e9ea08bdeb9b8dd6c58f7158c30",
+      "bytes": 1893,
+      "worktreeMatches": true
+    },
+    {
+      "path": "worker.js",
+      "gitBlob": "54c3cd93099c1080d17b93852fe3a47a02046c75",
+      "sha256": "5d1f05d9ba3346d0c4e35f317f44223a28627d3e662a8c06f084ce616339b840",
+      "bytes": 44060,
+      "worktreeMatches": true
+    },
+    {
+      "path": "worker-published.js",
+      "gitBlob": "7f27fd51af8b34567f16fbc78716208f4c52e3e5",
+      "sha256": "4f7ae9c9eb6b129714c8c532e8a8bc7bd9f908f077bc6c023e5e76ef8eb316c9",
+      "bytes": 17169,
+      "worktreeMatches": true
+    },
+    {
+      "path": "vite.config.ts",
+      "gitBlob": "0ce1839d21a6052148aaa345a7f8eb4e9cae71ef",
+      "sha256": "17f7fff409cf4acde70741f4aed8b09d4d937f4189f468e4749a08f14c34d92d",
+      "bytes": 196,
+      "worktreeMatches": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "gitBlob": "5ad33d944ecc78415c11ec51c5a85dce0b44e86c",
+      "sha256": "16a27f5ea9941522f8a1ed1f8983c367bb477893a3b37429ec48b120ecd271cd",
+      "bytes": 865,
+      "worktreeMatches": true
+    },
+    {
+      "path": "src/router.tsx",
+      "gitBlob": "dbb5468cd0c7527646edd7e8d8384c074ee8887c",
+      "sha256": "0736c6bfea97d47183f9a2c525d5cbf181c7399912ddf562d97afc2b71c6999b",
+      "bytes": 5322,
+      "worktreeMatches": true
+    },
+    {
+      "path": "src/ingest/discovery-pilot.ts",
+      "gitBlob": "760124cee22080403cf30ff68d5f59a5805adbd4",
+      "sha256": "687fad1cb6777573cef1e5d596c9a15166952a0eae4593de31d5eefce88b34a7",
+      "bytes": 9339,
+      "worktreeMatches": true
+    },
+    {
+      "path": "src/ingest/discovery-pilot-page.ts",
+      "gitBlob": "5aaf20451f4977dc63f66e967510c9988d50a6e6",
+      "sha256": "7b949166d152b6ead967cac65d0a31e733dc72fed488b8e1bb8609b90136aadc",
+      "bytes": 4248,
+      "worktreeMatches": true
+    },
+    {
+      "path": "src/content/discovery-pilot.ts",
+      "gitBlob": "0794b57c295b806ae8fe7f508de3eadaaa5d0d8b",
+      "sha256": "fdfb3cd7a2706994b1e59c47e12def9c4ea015177a7863386bc2de0c946b06df",
+      "bytes": 15247,
+      "worktreeMatches": true
+    },
+    {
+      "path": "scripts/build-discovery-pilot.mjs",
+      "gitBlob": "f796187d379c83c86773d7f0b5a198a18fab6784",
+      "sha256": "3a9dec298b0e134ecf4fedbddf9d58303e92984563b0325c6c2f4d3e91d8f874",
+      "bytes": 20970,
+      "worktreeMatches": true
+    },
+    {
+      "path": "scripts/build-feed.mjs",
+      "gitBlob": "0a7fce28c42f4eb0b713b4411d5be1a63f345134",
+      "sha256": "933eee79c9942682e367ef0ff9b87eaa31a9759784f56d13d06f490382ba8996",
+      "bytes": 6169,
+      "worktreeMatches": true
+    },
+    {
+      "path": "public/feed.json",
+      "gitBlob": "e38617e5268788855bd92835ddce3d929270a04a",
+      "sha256": "1d248cfc4e4b69246eb24001225e8c5722b8c28b3b8c0ae9e40602d6338717ff",
+      "bytes": 96354,
+      "worktreeMatches": true
+    },
+    {
+      "path": "public/feed.xml",
+      "gitBlob": "74b918427b55945c3ee63288369aa98de65ace84",
+      "sha256": "6226acb4f4acbca6fff8d4753c1da5885307dadbbf3ee01e81e6b498fb3c347e",
+      "bytes": 23809,
+      "worktreeMatches": true
+    },
+    {
+      "path": "public/sitemap.xml",
+      "gitBlob": "0731c2384db1f3b97b04e9e5a74d04261941dc66",
+      "sha256": "ee7fa83120860a0b98cb9fe2746bd994dd0c7fffe89710d936cd3cb3bd796f82",
+      "bytes": 6419,
+      "worktreeMatches": true
+    },
+    {
+      "path": "public/robots.txt",
+      "gitBlob": "0be67703d7ac614b729d2356a03ca91f98626596",
+      "sha256": "856a7956f1d5cc8e219c8ca0817fb878af8cf92e58893e844caaebde3d06b74d",
+      "bytes": 85,
+      "worktreeMatches": true
+    },
+    {
+      "path": "public/llms.txt",
+      "gitBlob": "4c5c331c1669378b1bd785ec09b4da8dad2bbe37",
+      "sha256": "d8e66c293d1a5c78c66a7977aa2f741f603232b750dd46c2004211f4ef97240e",
+      "bytes": 1120,
+      "worktreeMatches": true
+    },
+    {
+      "path": "migrations/0041_discovery_catalog.sql",
+      "gitBlob": "f94a6a9d3873404b4990d24c1c32247c9e774235",
+      "sha256": "de141d4f4a342747905d69c27629c7a2102097118604336628ba67a35a63cd8d",
+      "bytes": 26597,
+      "worktreeMatches": true
+    },
+    {
+      "path": "migrations/0042_discovery_evidence.sql",
+      "gitBlob": "3f29e5c0e0f6d9cf037f0f3521254687ba62d16e",
+      "sha256": "e8fd2e35521450de9b1baf3f6b126d561cd53bde0e280d02b66745a4101d5231",
+      "bytes": 27663,
+      "worktreeMatches": true
+    },
+    {
+      "path": "migrations/0043_discovery_registry.sql",
+      "gitBlob": "4ed9e202b333d1333a7702afb71872f7720f7505",
+      "sha256": "733332e836bfe0c3c0dba2d5af343529e7f783aa4a0274b63e9518a02bf28b89",
+      "bytes": 16995,
+      "worktreeMatches": true
+    },
+    {
+      "path": "migrations/0044_discovery_collection.sql",
+      "gitBlob": "b188f7a2c2d4856bf8e9b62c92a51c5808350caa",
+      "sha256": "94c84e6421620087b92919ee8550949d22922f4b679138257d1a2f96ee1f83fd",
+      "bytes": 12476,
+      "worktreeMatches": true
+    },
+    {
+      "path": "migrations/0045_discovery_source_support.sql",
+      "gitBlob": "b44bc369589ac60b2ba26d2cc10be37550eae6a2",
+      "sha256": "eccbd341c0cf15b9e47781d740e5c54588321e03cad041d9306747effa12622d",
+      "bytes": 11603,
+      "worktreeMatches": true
+    }
+  ],
+  "snapshot": {
+    "selectionSchema": "discovery-pilot-selection-v3",
+    "catalogSchema": "discovery-pilot-catalog-v3",
+    "catalogVersion": "2026-11-16-counties-regional-context-1",
+    "canonicalSelectionSha256": "189b2ad80f084732e4332fd60356827e7b669d89fc700bee20a911fe1ad10a27",
+    "records": 28,
+    "repositories": 13,
+    "publications": 13,
+    "organizations": 2,
+    "authorshipEntries": 367,
+    "citationEdges": 9,
+    "regionalContexts": 3
+  },
+  "execution": "Terra source-only inspection; no tests, build, production action or source acquisition; root later performed separately documented read-only observations",
+  "productionState": "unknown from source-only inspection; separately bounded runtime observations in GL00-baseline.md"
+}

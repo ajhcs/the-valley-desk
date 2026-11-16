@@ -1,0 +1,76 @@
+{
+  "id": "TVD-GL00-1",
+  "recorded_at": "2026-11-16T19:59:11.898778+00:00",
+  "disposition": "accepted_source_and_scope_baseline_only",
+  "owner": "Terra",
+  "reviewer": "Sol",
+  "acceptor": "Orchestrator",
+  "source_baseline": "6ed650156100104e3f00e756e3c3094027c130fb",
+  "criteria": {
+    "GL00-A1": "accepted_with_recorded_scope_and_followups",
+    "GL00-A2": "accepted_with_recorded_scope_and_followups",
+    "GL00-A3": "accepted_with_recorded_scope_and_followups",
+    "GL00-A4": "accepted_with_recorded_scope_and_followups",
+    "GL00-A5": "accepted_with_recorded_scope_and_followups"
+  },
+  "unlocked": [
+    "GL01",
+    "GL02"
+  ],
+  "outputs": {
+    "docs/discovery/go-live/execution/GL00-baseline.json": "04f1f0e843a7656fe62ca870f1b864b429e1425e593e47d1ed5d5fd13b30dfd2",
+    "docs/discovery/go-live/execution/GL00-baseline.md": "419ea2055718c091eca75384f0378e249521fae9648b916ffce1d08ab8fe7d38",
+    "docs/discovery/go-live/execution/GL00-compatibility.md": "bbf1027a0ea0ed050b01ae9ecfe59ede61a2821287a710e8890566dd31599a31",
+    "docs/discovery/go-live/execution/GL00-decisions.md": "38b2d20cdaac95546161e5145782785a22550b1265a3c8741d84e20840b6f003",
+    "docs/discovery/go-live/execution/GL00-sol-review.md": "4e42dbc3ed98f9e27e35d57c1c82ceb709728989361bedaa36c408d232b9ecce"
+  },
+  "private_artifacts": {
+    ".discovery-work/go-live-implementation/root/GL00/api-discovery-pilot.body": "be2577a709ccbcf087034f304c83eefc29f9e015e6ca84bd5506fb11d4640774",
+    ".discovery-work/go-live-implementation/root/GL00/api-health.body": "20ca2ef4ccbc99b8dc733a7f30820ae19a00876dee501814e2560a241872aa7a",
+    ".discovery-work/go-live-implementation/root/GL00/checks/check.py": "fbfffb579721760821b896dba61ddcf5f28d791b85b32c61af2f5e11bd2bbb1d",
+    ".discovery-work/go-live-implementation/root/GL00/checks/result.json": "a07f061ad63d59e7350552b23fe26e1d9c8d58a5e084da4078d04634a7505f0f",
+    ".discovery-work/go-live-implementation/root/GL00/checks/secret.log": "a576c89919524c69c2ce25f7ac13e231e32f5b1bed568098e555af7b2e0a3d25",
+    ".discovery-work/go-live-implementation/root/GL00/control-plane-summary.json": "242651ceeb17e135fe633c096ff06cc1f3ebc0694cdf0fa240e6db6f203be821",
+    ".discovery-work/go-live-implementation/root/GL00/d1-migrations.json": "cb6c0ed12a7fda99fc93f276f50bcb675d9cef461db05b9ec60292375d51e7a0",
+    ".discovery-work/go-live-implementation/root/GL00/deployments.json": "928c3d8d6f7e94cf95dcafd0457f94c5839b7f930e8894d5eb5afa443af32a8f",
+    ".discovery-work/go-live-implementation/root/GL00/discover.body": "5dc80c5f0bc5cbc8d8372aac0950260df897629d130d575865081de21a6f0cca",
+    ".discovery-work/go-live-implementation/root/GL00/home.body": "f0b30ffde67f94a7c4de5eb82af5cb8f9180909cde804017880fa388851a46b5",
+    ".discovery-work/go-live-implementation/root/GL00/public-observations.json": "d9b134504924e44eaf879e5ea984120623a7bf61e3de9a0c7312ec76a989228f",
+    ".discovery-work/go-live-implementation/root/GL00/robots.txt.body": "856a7956f1d5cc8e219c8ca0817fb878af8cf92e58893e844caaebde3d06b74d",
+    ".discovery-work/go-live-implementation/root/GL00/version.json": "7ef9c0a0f3959ab7d83a3ba4e3c63bc34a70510aabfc15b2013733f2537547ba",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/artifact-review.json": "43b1375866f6f2b46eea36b7cc59c8517970213f44b17508308877f42f6a63a4",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/artifact-review.py": "7ea31f5b2f3e40665340b90a87db2068799d2fe43677ce84cc8dccd294acb58b",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/baseline-check.json": "247a55de7c1280f164d07fdf857e070414523be6297f7388344dc4e7f4f2d6da",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/baseline-check.py": "c4ce5e5d223e85e13130964a5abbf66dd791566b443b13c9aa38bebd3f036d5b",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/reader-baseline.json": "eb4db2d989af6a5416fb846132ecb6c68e71ae3b981d877f695dd2137a8d1f07",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/reader-baseline.mjs": "48d252592c55130086bd5b35baa659675a2b6cc93d649512e978aa7179bacce8",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/reader-baseline.stdout.json": "eb4db2d989af6a5416fb846132ecb6c68e71ae3b981d877f695dd2137a8d1f07"
+  },
+  "root_checks": {
+    "source_metadata_preservation_checks": 65,
+    "secret_scan": "passed",
+    "diff_whitespace": "passed",
+    "runtime_files_changed": false,
+    "scope": "inspection and bounded actual read-only runtime metadata; not full application acceptance"
+  },
+  "observed_production": {
+    "build_sha": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+    "worker_version": "78508c21-b5d7-47c8-9a9c-7d362daf188e",
+    "remote_migration_count": 40,
+    "remote_migration_last": "0040_leadership_markup_captures.sql",
+    "discovery_routes": "404_at_observation",
+    "leadership_capture_flag": "deployed_true_missing_tracked_config_preserve_at_release"
+  },
+  "known_followups": {
+    "report_channel": "Existing Leads mailto is a candidate; delivery/maintenance remains GL08. Private GitHub issues cannot be public fallback.",
+    "GL11": "Refresh exact live bindings/flags/assets/crons/migrations, preserve leadership flag, verify candidate compatibility and removal-aware rollback before authorized deployment.",
+    "GL01_GL05": "sleep AI currently misses supported SleepBoost; freeze and fix through reviewed topic/query contracts."
+  },
+  "deployment_authorized": true,
+  "deployment_performed": false,
+  "remote_mutations": false,
+  "provider_enrollment": false,
+  "benchmark_acceptance": false,
+  "original_WP_and_MP_acceptance_unchanged": true,
+  "phase_note": "Sol input bindings describe the review before root applied this acceptance transition; source artifacts remain bound above."
+}

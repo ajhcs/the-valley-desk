@@ -2,9 +2,9 @@
   "id": "TVD-DISCOVERY-EXECUTION-1",
   "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
   "handoff_plan_sha256": "cf74e8a1ecbcfaafe1d70ba58e5f2a347f8d78a6a7cd30eacb29ffa64f77cf3c",
-  "authority": "Active package status and acceptance; frozen handoff remains the scope baseline. User authorized implementation beginning WP00 on 2026-11-13 and explicitly prohibited deployment. No live provider enrollment, editorial action, outreach, service registration or production change is authorized by local implementation. On 15 November 2026 the user additionally authorized bounded public real source qualification; EX21 records that limited investigation and portable permitted evidence. No enrollment/activation, recurring collection, outreach, human/trust enrollment or deployment follows. The follow-up authorized bounded real GitHub repository and linked-publication qualification plus local gap repair; EX22 records actual investigation, normal rate-reset handling and remaining trust/corpus gates. The subsequent user instruction authorizes local independent human-review workflow setup and blank corpus preparation (EX24), with Sol/Terra implementation and Astra review; no actual human recruitment, trust enrollment or deployment follows. The user reaffirmed orchestrator ownership of project/code decisions. EX25 records the selected delivery priorities; existing dependency, independent-human and deployment gates remain in force. EX32 records the user-selected internal-first public go-live direction, broad discovery and lean paper-optional records. This task authorizes detailed adaptive planning only; no implementation, collection activation or deployment follows.",
+  "authority": "Active package status and acceptance; frozen handoff remains the scope baseline. User authorized implementation beginning WP00 on 2026-11-13 and explicitly prohibited deployment. No live provider enrollment, editorial action, outreach, service registration or production change is authorized by local implementation. On 15 November 2026 the user additionally authorized bounded public real source qualification; EX21 records that limited investigation and portable permitted evidence. No enrollment/activation, recurring collection, outreach, human/trust enrollment or deployment follows. The follow-up authorized bounded real GitHub repository and linked-publication qualification plus local gap repair; EX22 records actual investigation, normal rate-reset handling and remaining trust/corpus gates. The subsequent user instruction authorizes local independent human-review workflow setup and blank corpus preparation (EX24), with Sol/Terra implementation and Astra review; no actual human recruitment, trust enrollment or deployment follows. The user reaffirmed orchestrator ownership of project/code decisions. EX25 records the selected delivery priorities; existing dependency, independent-human and deployment gates remain in force. EX32 records the user-selected internal-first public go-live direction, broad discovery and lean paper-optional records. This task authorizes detailed adaptive planning only; no implementation, collection activation or deployment follows. EX33: the subsequent user authorized implementation from GL00 following dependencies, Terra with Sol review, appropriate commits/PR updates, and deployment as appropriate. This supersedes earlier task deployment prohibitions for the readiness-qualified existing-site GL11 candidate; it does not accept any package or authorize unrelated infrastructure, new paid services or outreach.",
   "created_at": "2026-11-13T23:59:42.280311+00:00",
-  "deployment_authorized": false,
+  "deployment_authorized": true,
   "packages": [
     {
       "id": "WP00",
@@ -523,7 +523,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-16T19:39:23.984813+00:00",
+  "updated_at": "2026-11-16T19:59:11.898778+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -896,13 +896,35 @@
       "launch_scope_changed": true,
       "original_benchmark_thresholds_changed": false,
       "original_package_acceptance_changed": false
+    },
+    {
+      "id": "EX33",
+      "path": "go-live/execution/GL00-baseline.md",
+      "status": "GL00_accepted_GL01_GL02_ready",
+      "affects": [
+        "GL00",
+        "GL01",
+        "GL02",
+        "GL03",
+        "GL04",
+        "GL05",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09",
+        "GL10",
+        "GL11"
+      ],
+      "deployment_authorized": true,
+      "deployment_performed": false,
+      "review_assignment": "Terra owner; Sol independent review; orchestrator acceptance",
+      "original_package_acceptance_changed": false
     }
   ],
   "next_ready_packages": [],
   "release_readiness": "not_qualified",
   "release_blockers": [
-    "remaining unaccepted core packages and empirical/operating gates",
-    "deployment explicitly prohibited"
+    "Original full-system package and empirical gates remain unaccepted; these do not replace the EX32/EX33 scoped launch gates."
   ],
   "active_packages": [
     "WP03",
@@ -1141,7 +1163,7 @@
     "decision": "EX32",
     "plan": "go-live/plan.json",
     "overview": "go-live/README.md",
-    "status": "plan_only",
+    "status": "implementation_in_progress",
     "public_pilot_phase_required": false,
     "internal_first_publicly_accessible": true,
     "broad_discovery_required": true,
@@ -1149,11 +1171,26 @@
     "complete_person_profile_required": false,
     "benchmark_required_for_scoped_launch": false,
     "full_text_required": false,
-    "implementation_authorized_by_this_task": false,
-    "deployment_authorized": false,
+    "implementation_authorized_by_this_task": true,
+    "deployment_authorized": true,
     "package_status_authority": "go-live/plan.json",
-    "next_when_implementation_authorized": [
+    "execution_decision": "EX33",
+    "deployment_status": "not_performed_GL11_readiness_pending",
+    "active_packages": [],
+    "next_ready_packages": [
+      "GL01",
+      "GL02"
+    ],
+    "release_readiness": "not_qualified",
+    "release_blockers": [
+      "GL00\u2013GL10 accepted-output and integrated launch evidence incomplete",
+      "GL11 exact-candidate operational reconciliation, rollback and served readback pending"
+    ],
+    "accepted_packages": [
       "GL00"
-    ]
-  }
+    ],
+    "latest_receipt": "go-live/execution/GL00-acceptance.json"
+  },
+  "deployment_status": "not_performed_GL11_readiness_pending",
+  "release_readiness_scope": "original_full_system; scoped go-live is tracked under go_live"
 }

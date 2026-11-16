@@ -1,23 +1,23 @@
 # Work packages and dependency handoffs
 
-All packages below are **not started**. They describe future implementation, not additional acceptance of the existing WP or MP packages. Owners can use contract-bound fixtures before dependencies finish; acceptance requires the integrated dependency outputs. The orchestrator owns the final shared contract and acceptance decision. Astra independently reviews each integrated package; the author cannot approve their own change.
+EX33 authorizes implementation beginning GL00 with Terra ownership and independent Sol review, following the latest user instruction. Current package status and assignments are in plan.json. The descriptions below remain acceptance obligations; they do not grant additional acceptance to the existing WP or MP packages. Owners can use contract-bound fixtures before dependencies finish; acceptance requires integrated dependency outputs. The orchestrator owns the final shared contract and acceptance decision; the author cannot approve their own change.
 
 ## Sequence and ownership
 
 | Package | Owner | Supporting agent | Independent review | Accepted-output dependencies |
 | --- | --- | --- | --- | --- |
-| GL00: Scope and launch baseline | Orchestrator | Terra | Astra | None |
-| GL01: Lean records and claim contracts | Sol | Terra | Astra | GL00 |
-| GL02: Broad source inventory and exploration design | Terra | Sol | Astra | GL00 |
-| GL03: Bounded acquisition and discovery frontier | Sol | Terra | Astra | GL01, GL02 |
-| GL04: Reviewed admission and public projection | Sol | Terra | Astra | GL01, GL03 |
-| GL05: Search, browse and ordering | Sol | Terra | Astra | GL04 |
-| GL06: Homepage, navigation and compact results | Terra | Sol | Astra | GL04, GL05 |
-| GL07: Work, account, creator and institution journeys | Terra | Sol | Astra | GL04, GL06 |
-| GL08: Maintenance, corrections and suggestions | Sol | Terra | Astra | GL04 |
-| GL09: Regional breadth and miss audit | Terra | Sol | Astra | GL02, GL03, GL04, GL08 |
-| GL10: Reader, accessibility and technical qualification | Terra | Sol | Astra | GL05, GL06, GL07, GL08, GL09 |
-| GL11: Exact-candidate go-live and operational acceptance | Orchestrator | Sol, Terra | Astra | GL10 |
+| GL00: Scope and launch baseline | Terra | Orchestrator | Sol | None |
+| GL01: Lean records and claim contracts | Terra | Orchestrator | Sol | GL00 |
+| GL02: Broad source inventory and exploration design | Terra | Orchestrator | Sol | GL00 |
+| GL03: Bounded acquisition and discovery frontier | Terra | Orchestrator | Sol | GL01, GL02 |
+| GL04: Reviewed admission and public projection | Terra | Orchestrator | Sol | GL01, GL03 |
+| GL05: Search, browse and ordering | Terra | Orchestrator | Sol | GL04 |
+| GL06: Homepage, navigation and compact results | Terra | Orchestrator | Sol | GL04, GL05 |
+| GL07: Work, account, creator and institution journeys | Terra | Orchestrator | Sol | GL04, GL06 |
+| GL08: Maintenance, corrections and suggestions | Terra | Orchestrator | Sol | GL04 |
+| GL09: Regional breadth and miss audit | Terra | Orchestrator | Sol | GL02, GL03, GL04, GL08 |
+| GL10: Reader, accessibility and technical qualification | Terra | Orchestrator | Sol | GL05, GL06, GL07, GL08, GL09 |
+| GL11: Exact-candidate go-live and operational acceptance | Orchestrator | Terra | Sol | GL10 |
 
 ```mermaid
 flowchart LR
@@ -255,7 +255,7 @@ Prioritize outer Pennsylvania counties and Burlington alongside the new Mercer/C
 - GL09-A4: Known eligible misses within declared explored sources are fixed and rerun. An unsearched/blocked source is not reported as exhausted or as absence of work.
 - GL09-A5: Admission, duplicate, candidate, project and person counts remain distinct; no search result total is advertised as regional recall.
 
-**Adaptation:** Fix a systematic bias rather than merely adding one handpicked example. A documented unavoidable source gap can narrow a coverage claim with Astra/orchestrator review. Removing paperless or individual-account support would contradict the user's goal and requires a new scope decision.
+**Adaptation:** Fix a systematic bias rather than merely adding one handpicked example. A documented unavoidable source gap can narrow a coverage claim with Sol/orchestrator review. Removing paperless or individual-account support would contradict the user's goal and requires a new scope decision.
 
 ## GL10 — Verify useful journeys and technical quality
 

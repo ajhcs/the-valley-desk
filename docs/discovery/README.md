@@ -4,8 +4,9 @@ The current product direction is the [direct go-live engineering plan](go-live/R
 authorized for planning in EX32. It covers an internal-first, publicly accessible
 health-tech discovery service with broad source coverage and lean useful records.
 There is no separate public pilot phase. [The launch work register](go-live/plan.json)
-contains GL00–GL11, all not started; implementation and deployment are not authorized
-by this planning task.
+contains GL00–GL11. EX33 now authorizes implementation from GL00 with Terra and
+Sol review, commits and PR updates, and deployment of the ready existing-site
+candidate as appropriate. No deployment has occurred; GL11 readiness remains open.
 
 The existing [metadata-and-link implementation](metadata-link-pilot-plan.md) and
 its MP acceptance ledger remain historical, qualified code foundations. Full-text

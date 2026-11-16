@@ -1,0 +1,55 @@
+# GL00 launch decisions, roles and remaining actions
+
+This freezes the initial implementation direction under the user's instruction to start GL00 and follow dependencies. The user has authorized deployment as appropriate under the Master Chief direction; **GL11 must establish readiness and verify the exact candidate and operational scope before deploying**, with no redundant confirmation for that already granted scope. A safe, reviewed additive migration genuinely required for the GL11 candidate can fall within this deployment grant after its exact scope, compatibility and recovery checks. A new bounded public source method needs actual source qualification and an applicable terms basis under the plan, not automatic new human permission. New paid services, unrelated private-provider access, host-service changes, destructive recovery and outreach remain outside this grant; recurring collection and other scope extensions retain their applicable authorization. Root orchestrates, Terra owns these GL00 artifacts, and Sol independently reviews GL00 as the current task directs. Earlier plans naming Astra as reviewer are historical planning assignments; they do not override the current direction. Package work and evidence remain reviewable before acceptance.
+
+## Frozen scope and ownership
+
+| Goal | Initial implementation / evidence owner and success evidence |
+| --- | --- |
+| G01 — front door | GL06 implements and GL10 checks a home → browse/search → work → source journey; GL11 checks legacy routes and served result. |
+| G02 — ordinary search | GL01/GL05 define source-backed topic and literal queries, including `sleep AI`; GL10 checks expected matches, explanations, negative cases and ordering. |
+| G03 — useful cards | GL01/GL04 define lean sourced claims; GL06 displays purpose, supported health/region/date and original link; GL10 checks claim support and comprehension. |
+| G04 — who and next step | GL01/GL07 preserve account, author, institution and person distinctions and useful partial details; GL10 tests same-name and unresolved cases. |
+| G05 — regional breadth | GL02/GL03/GL09 explore a frozen inventory, complete or mark account pagination, independently investigate known misses, and disclose gaps; GL10 reviews scoped evidence. |
+| G06 — maintenance | GL08 supplies an operator workflow, reader correction/suggestion action, source checks and correction/removal rehearsal; GL09 measures backlog and coverage changes. |
+| G07 — readiness | GL10 runs representative reader, accessibility, privacy, compatibility and performance checks; GL11 binds exact revision, operating assignment, rollback and public readback. |
+
+Root assigns specific implementation agents and independent reviews as dependencies become ready; this table assigns work to packages and evidence owners without inventing human staff. The accountable operating and release identity is the existing trusted operator/orchestrating engineer under Cole's business authority. For absence, the initial fallback is to **pause updates and release** until that operator is available; a named substitute is not assumed. This fallback must be made operational and the actual release responsibility recorded in GL08/GL11.
+
+The region comprises Bucks, Chester, Delaware, Montgomery, Philadelphia, Burlington, Camden, Gloucester and Mercer counties. GL02 freezes sourced campuses and an explored-account inventory; GL09 reports actual explored and unknown coverage without county quotas or regional-recall claims. Broad routes include institutional and lab/project pages, personal and organization accounts, publications/preprints and community/forum leads. Enumerate selected verified accounts across bounded pages without a stars or recency filter. An institution/lab association may be sourced without a paper. Preserve incomplete pagination, access blocks and unresolved matches.
+
+Minimum public listing: stable identity and kind, title, safe original link, concise supported purpose and health-tech relevance, dated supported regional basis and checked-at observation, with inspectable source and review. Where an essential claim is absent, hold that claim/record or find better evidence; do not invent it. An individual owner/author, complete biography, photo, known software license, journal status, linked paper, current employer, popularity threshold or universal bespoke permission is not required. A standalone project, preprint or user-owned paperless repository is eligible when its own claims are supported. `Paperless` means accepted without paper evidence, not a claim that no paper exists. Human independent benchmark labels or enrollment are not prerequisites for the lean factual index.
+
+Public material is an explicit allowlisted, versioned projection of reviewed facts and links, including separately labeled curated regional evidence. Native affiliations, owner identity and relationship directions retain their own source meaning. Private candidate/frontier records, unreviewed suggestions, review notes, source bodies, credentials, contacts and operational paths never automatically publish or trigger arbitrary URL fetches. No model output authorizes publication. GL01 defines field-level schemas and GL04 implements review and removal behavior.
+
+## Snapshot decision and authority boundaries
+
+Choose the existing deterministic, reviewed, server-only **versioned snapshot** approach as the first release path: the baseline selection → source observations → build script → validated JSON catalog is the concrete starting mechanism. It must evolve through GL01/GL04 into an explicit reviewed public projection, version/digest binding, pagination and correction/removal behavior before launch. Its data are not an automatic publisher and the existing 100-record envelope is not a growth guarantee. GL05/GL10 measure size, query performance and privacy; only a demonstrated limitation and scoped review justify a materialized D1 or other index. No new D1 migration, scheduler, paid search service or remote source activation is assumed.
+
+This EX32 route is a **separate lean index publication contract**, not acceptance of original WP14 or WP16. Preserve their storage guards, original reference/benchmark, held-out requirements, model and historical package statuses. Their full automated-system work remains unfinished. Historical MP04 hold does not require a public-pilot phase or public pilot branding; the chosen direct release still requires the GL10/GL11 evidence and any record-specific source rights and authority. The retained EX31 catalog and source qualification are a starting snapshot, not independently labeled cases or proof of broad launch coverage.
+
+## Initial reader and adverse cases
+
+Freeze expected IDs, exact source/data revision and success criteria before tuning. GL10 expands these with real supported cases from approved batches; nonexistent paperless or non-Philadelphia examples must not be fabricated. Each journey succeeds only when the reader finds an eligible result, understands its stated regional/date/ownership limits and follows the right source without coaching:
+
+1. Homepage to a topic search and original source; preserve existing News/Events navigation.
+2. `sleep AI` and `Camden sleep`: relevant supported topics and citations, without merging unrelated neighbors or treating arbitrary AI text as a health claim.
+3. A quiet/user-owned repository admitted without publication evidence; a separate standalone publication/preprint; and a sparse item whose missing optional people remain unknown.
+4. Princeton/Mercer, Rutgers–Camden/Camden and Rowan/Gloucester contexts with explicit historical author-affiliation and campus basis, no account-to-person or repository-location inference. Expand to a supported non-Philadelphia Pennsylvania case when available; record Burlington and other source gaps.
+5. Same-name user and author stay distinct; publication-to-code and repository-to-paper relationships retain their direction; archived/fork/successor status remains accurate.
+6. Reader can report a correction or suggest work; private intake does not publish or fetch a submitted arbitrary link. Correct/remove an association and ensure it disappears from lists, details, search, counts, support records and caches; rollback must not resurrect it.
+7. Empty, error, no-JS, keyboard, long-text and mobile journeys and required existing routes/feeds remain usable. Record actual reader evidence separately from engineering scripts and original independent benchmark claims.
+
+## Correction channel and release follow-up
+
+The checked-in footer already links `mailto:leads@thevalleydesk.org`; OPERATIONS describes forwarding separately from the D1 Worker inbox and also documents setup/verification steps. This makes it a **candidate existing channel**, not proof of current delivery, owner monitoring, public accessibility or maintenance. Root independently reports the remote repository is private even though Issues are enabled, so its Issues page cannot serve as an unauthenticated public correction route. GL00/GL08 must verify a real existing maintained destination and handling without sending a message absent explicit messaging authorization; record any gap and propose the smallest viable action. Public launch must expose a working **Report issue / Suggest work** route to the confirmed channel. A new mailbox, custom form or public repository is not assumed; private candidate/review notes and contact information must not publish automatically.
+
+| Remaining action | Owner | Stop condition / evidence |
+| --- | --- | --- |
+| Confirm channel destination, accessibility and handling; document fallback | GL08 / trusted operator, root coordinates | No usable maintained route blocks the public correction action, not unrelated GL01/GL02 planning. No test message without explicit authorization. |
+| Refresh actual deployed Worker/build, bindings, feature flags, routing and remote migration ledger | Root / GL11 | Root observed deployed version 105/build c8b36d7, ledger through 0040 and a leadership-markup flag absent in tracked config. Refresh and reconcile these findings and Watch disagreement without secret values. |
+| Freeze reviewed contract, source permissions and first discovery batch | GL01–GL04 | New source methods and private inputs require their actual scoped basis; refused/uncertain material stays held. |
+| Verify compatible prior release, removal-aware rollback and exact target | GL10 / GL11 | Failed or unknown recovery blocks affected release; no destructive restore implied. |
+| Run integrated source/identity/privacy, reader, CI and served-readback checks | GL10 / GL11 | Block false attribution, sensitive exposure, unauthorized publish, essential interaction failure or broken legacy consumers. Missing optional biography or county count is not a blocker by itself. |
+
+Acceptance of GL00 is a source and scope baseline only. It neither marks the other GL packages done nor proves the full production state, an operational reporting channel, new source acquisition, or deployment readiness.
