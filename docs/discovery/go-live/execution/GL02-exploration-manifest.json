@@ -1,0 +1,136 @@
+{
+  "id": "GL02-exploration-v1",
+  "frozen_on": "2026-11-16",
+  "status": "accepted_pre_collection_design",
+  "depends_on": [
+    "GL00 accepted",
+    "GL01 shared contract for GL03",
+    "source-specific policy/request/retention preflight before a bounded qualification probe; receipt/parser review before broader collection"
+  ],
+  "aggregate_limits": {
+    "duration_active_minutes": 270,
+    "per_county_active_minutes": 30,
+    "leads_total": 90,
+    "leads_per_county": 10,
+    "requests_total": 120,
+    "requests_per_provider": 35,
+    "concurrency_total": 3,
+    "max_pages_per_account": 3,
+    "max_pages_per_query": 2,
+    "max_results_per_page": 30,
+    "followup_links_per_lead": 2,
+    "frontier_queue_max": 180,
+    "rule": "All requests including redirects count against aggregate and provider limits; allocate centrally before parallel workers start. No borrowing beyond limits; stop at first applicable cap."
+  },
+  "frontier_order": [
+    "For each county, attempt named institution project route and independent topical route where qualification and seed exist, round-robin.",
+    "Then account pages, alternating User and Organization, then independent publication/preprint and community leads.",
+    "Follow dated source relationships and unresolved gaps; do not rank by reputation, stars, recency or prior publication."
+  ],
+  "queries": [
+    {
+      "id": "I1",
+      "method": "institution_page",
+      "terms": "<seed institution> biomedical informatics software project lab GitHub; then inspect department/project page links",
+      "per_county": "one named seed"
+    },
+    {
+      "id": "T1",
+      "method": "topical_search",
+      "terms": "(<county> OR <campus>) (clinical imaging OR wearable OR sleep OR assistive OR public health) (software OR tool OR project)",
+      "per_county": "one query"
+    },
+    {
+      "id": "T2",
+      "method": "topical_search",
+      "terms": "<seed institution> (clinical NLP OR biomedical data OR medical AI) (code OR tool OR dataset)",
+      "per_county": "next batch if budget allows"
+    },
+    {
+      "id": "A1",
+      "method": "account_enumeration",
+      "terms": "all public repositories, including archived and forks; source-native pagination",
+      "accounts": [
+        "akibzaman",
+        "raphael-group",
+        "PennLINC",
+        "sacanlab"
+      ]
+    },
+    {
+      "id": "P1",
+      "method": "pubmed_search",
+      "terms": "(<institution>[Affiliation]) AND (software OR informatics OR imaging OR wearable)",
+      "rule": "Publication route stands alone; no code requirement."
+    },
+    {
+      "id": "P2",
+      "method": "preprint_search",
+      "terms": "<institution> AND (medical imaging OR biomedical software)",
+      "rule": "Record exact preprint version and dated affiliation."
+    },
+    {
+      "id": "C1",
+      "method": "community",
+      "terms": "<institution or lab> health software project forum OR community directory",
+      "rule": "Leads only; source-specific access rules, no automatic post collection."
+    },
+    {
+      "id": "I2",
+      "method": "institution_page",
+      "terms": "CAMIPM analysis software: CrCEST processing GUI -> ExerciseCESTv2",
+      "seed_url": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+      "expected_url": "https://github.com/newilson/ExerciseCESTv2",
+      "rule": "Directional diagnostic D07: discover without a paper; admission remains conditional on qualification and review."
+    }
+  ],
+  "states": {
+    "pending": "not attempted or blocked by qualification",
+    "complete": "all planned pages and followups actually examined with terminal continuation",
+    "truncated": "cap or time limit leaves continuation or required evidence",
+    "refused": "403, access refusal, rate limit or equivalent; stop, never bypass",
+    "unknown": "unavailable, parser error, missing continuation or ambiguous evidence"
+  },
+  "stop_and_followup": "No retries or access bypass within batch on 403/429/blocked/unavailable. Record actual response and checkpoint, mark incomplete and defer to independently reviewed next manifest. Pending leads persist; no inference of absence or healthy empty.",
+  "evidence_per_attempt": [
+    "method and source qualification revision",
+    "exact query or safe URL, date/time and source-native IDs",
+    "request counts and page/continuation state",
+    "response outcome and whether indexed or direct",
+    "lead counts and disposition with reasons",
+    "fact and relationship provenance and unresolved gaps"
+  ],
+  "measures": [
+    "county x route attempts / planned, with exclusions",
+    "account pages exhausted and eligible decisions / explored account pages; incomplete separate",
+    "known diagnostic found/missed/ineligible/unknown/refused",
+    "source cluster and user-owned composition among reviewed leads",
+    "missingness and pending queue; region-wide denominator unknown"
+  ],
+  "targets": "Attempt both routes per county where defensible and permitted; no record quotas; independently review known misses before launch.",
+  "roles": {
+    "implementation": "Terra",
+    "independent_review": "Sol",
+    "acceptance": "root"
+  },
+  "exclusions": [
+    "private sources, credentials, raw source bodies, contact harvesting, protected data, unrestricted post or article reuse",
+    "unsupported regional or health claims from name alone; do not discard quiet, archived or paperless projects"
+  ],
+  "request_limits": {
+    "status": "proposed batch limits; not provider maxima",
+    "outer_deadline_seconds": 25,
+    "max_decoded_response_bytes": 48000,
+    "content_encoding": "identity only; reject any non-identity response",
+    "redirects": 0,
+    "retries": 0,
+    "first_qualification_probe_max_records": 5,
+    "first_probe_max_pages": 1,
+    "first_probe_response_bytes": 48000,
+    "pre_retention": "Inspect full response shape and every returned field against the approved metadata allowlist and material/rights scope; reject unknown or prohibited fields before any retention.",
+    "stricter_rule": "Exact source preflight or transport may impose lower limits; apply the strictest. Any expansion requires a revised independently reviewed manifest. Reject oversize, compressed, redirect, timeout or malformed response; record outcome as incomplete, not empty.",
+    "basis": "src/ingest/discovery/runtime-contract.ts caps maxResponseBytes at 48000; these additional choices are batch policy and are not claimed to be provider quotas or existing transport behavior."
+  },
+  "accepted_at": "2026-11-16T20:20:41.419363+00:00",
+  "acceptance_receipt": "GL02-acceptance.json"
+}

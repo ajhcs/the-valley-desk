@@ -1,0 +1,47 @@
+# GL02 independent review — Sol
+
+**Disposition: PASS for GL02-A1–A5 as a pre-collection design; no remaining blocking design finding.** Root owns acceptance. The nine-county inventory, bounded exploration and diagnostic are ready to guide GL03 after its dependencies are accepted. This does not qualify a new provider, complete any exploration, admit a record, establish regional completeness or accept GL09/GL10/GL11.
+
+Reviewed 16 November 2026 against accepted GL00 commit `5a395043fd3bbcad2cf8a2b8b08d84e0bcb572e9`. Terra authored the four outputs. Sol independently read their actual contents, inspected existing transport limits and prior source assessments, checked local links/JSON/budgets and performed narrowly scoped primary-page research. No application code was changed by this review.
+
+## Findings and repairs
+
+1. **Non-executable paperless diagnostic, resolved.** The initial known examples all depended on existing publication journeys; SleepBoost's proposed paperless regional support was unresolved and the separate paperless slot was empty. Terra added D07 and exploration route I2: begin at Penn CAMIPM's software page and discover its explicit link to `newilson/ExerciseCESTv2` without consulting a publication. The expected discovery and conditional admission outcome are separate. No account owner type, developer identity, present activity, development location or absence of a paper is inferred.
+2. **Source-observation specificity, resolved.** New verified site/campus statements initially had URLs and summaries without sufficiently explicit observation sections. The inventory now records O1–O10 with URL, date, access mode, source section, supported statement and limits. Direct DCCC statements replace the indirect Marple citation and provide a Chester seed. Earlier Princeton/Rutgers/publication evidence remains explicitly incorporated historical research, not a fresh native receipt.
+3. **Circular first-probe qualification, resolved.** Initial wording could require an already qualified actual response before a new method's first request. The revised sequence separates policy/exact-request/material/retention preflight from the bounded first probe, then requires review of its actual receipt/parser/continuation before broader collection or enrollment. Routine permitted qualification probes can fall within the existing user scope; this is not an automatic new human approval gate.
+4. **Missing per-request/probe bounds, resolved.** Root identified that aggregate caps alone did not bound a single response or qualification probe. The manifest now specifies an outer deadline, decoded-byte ceiling, identity encoding, zero redirects/retries, first-probe record/page limits and full field/material preflight before retention. The smaller applicable source/transport limit wins. These are proposed batch ceilings, not observed provider quotas or a claim that the controls are already implemented at every request boundary.
+
+## Independent source checks
+
+Sol directly opened the [CAMIPM software page](https://www.med.upenn.edu/CAMIPM/analysis-software/) and confirmed that its CrCEST processing section describes MRI processing and links the named repository. The [center home](https://www.med.upenn.edu/CAMIPM/) identifies its Penn Perelman association and Philadelphia institutional location. These observations make D07 an actual source-directed discovery path; they do not establish repository ownership, an individual's worksite or clinical effectiveness. The project may be reviewed through a publication-independent pathway; admission remains conditional on qualified sources and exact evidence reconstruction.
+
+The [DCCC announcement](https://www.dccc.edu/about-dccc/announcements/), in its April 2026 location-consolidation section, independently supports the Downingtown Center's Chester County and Marple campus's Delaware County statements. Indexed primary results independently support the [DelVal campus's two municipalities within Bucks County](https://delval.edu/public-safety/annual-campus-security-report) and the [Penn State Abington renovation site's Montgomery County location](https://www.opp.psu.edu/project/physical-education-building-renovation). These are campus/site seeds, not evidence that a health-tech project or its creators worked there.
+
+These were dated primary web/index observations, not new native API captures or GL03 acquisition results. Sol retained only derived factual observations and safe source links, with access-mode qualifications; no page, README, article or contact text was retained. No repository endpoint or profile was fetched for D07. The old reviewed sources were inspected locally with their recorded access limitations.
+
+## Acceptance criteria
+
+| Criterion | Independent disposition |
+| --- | --- |
+| GL02-A1 | **Pass.** Exactly nine unique DVRPC counties have named exploration seeds, primary-source location reasoning and two planned route types. Burlington's remaining county corroboration gap is explicit. Project relationships remain unresolved/lead-only across the inventory; a campus statement is never promoted to project location. |
+| GL02-A2 | **Pass for design.** Account enumeration and independent topic/institution/publication/preprint/community paths are planned. Both known User and Organization leads are present. Enumeration includes archived/forked repositories within caps, without paper, stars, prestige or recent-push eligibility thresholds. Independent publication/preprint work needs no repository. Actual completion and outcomes remain unrun. |
+| GL02-A3 | **Pass for method and field-use planning.** The matrix identifies endpoint families, primary policy/documentation, narrow factual uses, material exclusions and source-specific unresolved qualification. Historical fixed-repository/DOI evidence does not qualify enumeration or arbitrary search. Unselected general search and forum installations remain pending. Credential configuration is referenced without values. Actual access, parser, field-use and retention qualification must precede broader use. |
+| GL02-A4 | **Pass.** The frozen proposal caps aggregate requests at 120, each provider at 35, concurrent work at three, leads at 90/ten per county and active effort at 270 minutes. It also bounds pages/follow-ups/frontier size. Each response is capped at 48,000 decoded bytes and 25 seconds; the first probe is one page of at most five records, with identity encoding and no redirects/retries. Stricter limits prevail. Truncation/refusal/unknown are distinct from complete/empty, and expansions require a revised reviewed manifest. GL03 must implement and prove these controls before use. |
+| GL02-A5 | **Pass for the directional diagnostic design.** Seven cases include a known User-owned repository, organization/collaboration and publication-to-code paths, explicit unavailable examples and concrete publication-independent D07. All are pending/unknown, and the set is unrun. They are development-exposed diagnostics, not independent labels or a benchmark. |
+
+D07 remains a **Penn/Philadelphia proof of an acquisition path**. It is not new regional breadth and cannot close GL09 by itself. Missing non-Philadelphia Pennsylvania/Burlington paperless and standalone-preprint examples stay explicit. GL03/GL09 must report actual attempts, supported admissions, incomplete enumeration, known misses and neglected-route follow-ups; no quota or census claim substitutes for that work. Unresolved optional biography/author/license/paper fields are not exclusion reasons. A permitted source may support more than one claim when its actual content does so; source review must not introduce a blanket second-source rule.
+
+The machine-readable frontier is not yet acquired. GL03 must instantiate the frozen scopes/queries into its strict private staging contract, enforce centralized budgets, preserve checkpoints and reasons, resolve native IDs/page bindings and record the actual outcomes. A failed route stays incomplete without blocking unrelated qualified routes or implying regional absence.
+
+## Verification and reviewed bindings
+
+All three JSON files parse. The independent retained review records **21 bounded design checks**, including county uniqueness, route/account diversity, unrun states, diagnostic coverage, observation structure, relative links, first-probe sequencing and request caps. These checks do not test a running collector or prove source rights. No GL03 batch, source activation, enrollment, commit or deployment was performed by Sol. Root's own manifest/link/source-method checks and acceptance remain separate.
+
+| Output | SHA-256 |
+| --- | --- |
+| [Source inventory](GL02-source-inventory.json) | `e262f273d73e7a2e3a721ea68ea85a8de86a14303f4df8cd95fb670956078aa3` |
+| [Exploration manifest](GL02-exploration-manifest.json) | `66bcd6837cee7a5bcbf1f18cd10464ca886afbf13292d9676aea9d7c2374c704` |
+| [Known-project diagnostic](GL02-known-project-diagnostic.json) | `6b694800c29e2d10c8820c1d1fb06b0c00e331e2b561f269f75f92799730df48` |
+| [Source methods](GL02-source-methods.md) | `e5fd09a5b276b9c3e17ecc9d2eafb1a96a60c2ad5205bdbc0f5c1bb802a169ed` |
+
+Restricted review evidence: `/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL02/design-review.json`, SHA-256 `aa24d372c73fd357a786d99c930ab590f74cb4d62b8205ba7eb29fe7f95e9b4e`. GL00/GL01 evidence remains unchanged. Changes to the frozen inventory, limits, method or diagnostic require a scoped review before dependent collection.

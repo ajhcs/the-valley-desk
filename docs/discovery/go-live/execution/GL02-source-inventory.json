@@ -1,0 +1,327 @@
+{
+  "id": "GL02-source-inventory-v1",
+  "date": "2026-11-16",
+  "scope": "Nine DVRPC counties; leads only, no admission or labels",
+  "observation_note": "Indexed primary means search index rendering, not a native HTTP receipt; prior observations are documented in GL00 and the county assessment. Sources establish only the stated geographic scope, not project worksite.",
+  "counties": [
+    {
+      "county": "Bucks",
+      "state": "PA",
+      "seed": "Delaware Valley University",
+      "municipality": "Doylestown",
+      "location_status": "verified_campus",
+      "reasoning": "University security report places campus partly in New Britain Borough and Doylestown Township, Bucks County; individual work location unresolved.",
+      "source_urls": [
+        "https://delval.edu/public-safety/annual-campus-security-report"
+      ],
+      "observed_date": "2026-11-16",
+      "access": "indexed_primary",
+      "routes": [
+        "institution_project",
+        "independent_topic"
+      ],
+      "work_relationship": "unresolved",
+      "candidate_status": "lead_only"
+    },
+    {
+      "county": "Chester",
+      "state": "PA",
+      "seed": "Delaware County Community College Downingtown Center",
+      "municipality": "Downingtown",
+      "location_status": "verified_site",
+      "reasoning": "DCCC describes its Downingtown Center as in Chester County with nursing simulation lab and STEM wing; no health technology project association established.",
+      "source_urls": [
+        "https://www.dccc.edu/about-dccc/announcements/",
+        "https://www.dccc.edu/campus/downingtown-center/"
+      ],
+      "observed_date": "2026-11-16",
+      "access": "direct_primary_and_indexed_primary",
+      "routes": [
+        "institution_project",
+        "independent_topic"
+      ],
+      "work_relationship": "unresolved",
+      "candidate_status": "lead_only"
+    },
+    {
+      "county": "Delaware",
+      "state": "PA",
+      "seed": "Delaware County Community College Marple campus",
+      "municipality": "Marple",
+      "location_status": "verified_campus",
+      "reasoning": "DCCC identifies its main campus in Marple Township, Delaware County and separately identifies Marple Campus; no project association established.",
+      "source_urls": [
+        "https://www.dccc.edu/about-dccc/announcements/",
+        "https://www.dccc.edu/campus/marple-campus/"
+      ],
+      "observed_date": "2026-11-16",
+      "access": "direct_primary",
+      "routes": [
+        "institution_project",
+        "independent_topic"
+      ],
+      "work_relationship": "unresolved",
+      "candidate_status": "lead_only"
+    },
+    {
+      "county": "Montgomery",
+      "state": "PA",
+      "seed": "Penn State Abington",
+      "municipality": "Abington Township",
+      "location_status": "verified_site",
+      "reasoning": "Penn State identifies Abington campus project site in Montgomery County; verify a specific unit before attaching it.",
+      "source_urls": [
+        "https://www.opp.psu.edu/project/physical-education-building-renovation"
+      ],
+      "observed_date": "2026-11-16",
+      "access": "indexed_primary",
+      "routes": [
+        "institution_project",
+        "independent_topic"
+      ],
+      "work_relationship": "unresolved",
+      "candidate_status": "lead_only"
+    },
+    {
+      "county": "Philadelphia",
+      "state": "PA",
+      "seed": "University of Pennsylvania / PennLINC",
+      "municipality": "Philadelphia",
+      "location_status": "verified_historical_association",
+      "reasoning": "Existing qualification links publication authors to Penn Philadelphia; exact campus and unit location remain separately scoped.",
+      "source_urls": [
+        "https://www.nature.com/articles/s41592-021-01185-5"
+      ],
+      "observed_date": "2026-11-16",
+      "access": "prior_reviewed_primary_observation",
+      "routes": [
+        "institution_project",
+        "independent_topic"
+      ],
+      "work_relationship": "unresolved",
+      "candidate_status": "lead_only"
+    },
+    {
+      "county": "Burlington",
+      "state": "NJ",
+      "seed": "Rowan College at Burlington County Mount Laurel campus",
+      "municipality": "Mount Laurel",
+      "location_status": "unresolved",
+      "reasoning": "College identifies the campus and municipality; county boundary corroboration remains needed.",
+      "source_urls": [
+        "https://rcbc.edu/mount-laurel"
+      ],
+      "observed_date": "2026-11-16",
+      "access": "indexed_primary",
+      "routes": [
+        "institution_project",
+        "independent_topic"
+      ],
+      "work_relationship": "unresolved",
+      "candidate_status": "lead_only"
+    },
+    {
+      "county": "Camden",
+      "state": "NJ",
+      "seed": "Rutgers University–Camden",
+      "municipality": "Camden",
+      "location_status": "verified_campus",
+      "reasoning": "Rutgers identifies Camden campus and county lists Camden municipality; not proof of worksite.",
+      "source_urls": [
+        "https://camden.rutgers.edu/visit",
+        "https://www.camdencounty.com/your-government/municipalities-camden-county/"
+      ],
+      "observed_date": "2026-11-16",
+      "access": "prior_reviewed_primary_observation",
+      "routes": [
+        "institution_project",
+        "independent_topic"
+      ],
+      "work_relationship": "unresolved",
+      "candidate_status": "lead_only"
+    },
+    {
+      "county": "Gloucester",
+      "state": "NJ",
+      "seed": "Rowan University Glassboro main campus",
+      "municipality": "Glassboro",
+      "location_status": "verified_campus",
+      "reasoning": "Rowan map identifies main campus under Gloucester County campuses.",
+      "source_urls": [
+        "https://www.rowan.edu/about/visiting/west.pdf"
+      ],
+      "observed_date": "2026-11-16",
+      "access": "indexed_primary",
+      "routes": [
+        "institution_project",
+        "independent_topic"
+      ],
+      "work_relationship": "unresolved",
+      "candidate_status": "lead_only"
+    },
+    {
+      "county": "Mercer",
+      "state": "NJ",
+      "seed": "Princeton Computer Science",
+      "municipality": "Princeton",
+      "location_status": "verified_site",
+      "reasoning": "Department identifies its building; university identifies Mercer County; building-specific corroboration retained in prior county assessment.",
+      "source_urls": [
+        "https://www.cs.princeton.edu/contact-us",
+        "https://orpa.princeton.edu/institutional-information"
+      ],
+      "observed_date": "2026-11-16",
+      "access": "prior_reviewed_primary_observation",
+      "routes": [
+        "institution_project",
+        "independent_topic"
+      ],
+      "work_relationship": "unresolved",
+      "candidate_status": "lead_only"
+    }
+  ],
+  "account_leads": [
+    {
+      "account": "akibzaman",
+      "owner_type": "User",
+      "url": "https://github.com/akibzaman/SleepBoost",
+      "basis": "Prior reviewed native repository metadata identifies User owner; Rutgers connection is a dated coauthor affiliation, not account identity.",
+      "source": "../../qualification/pilot-counties-20261116.md",
+      "enumeration": "pending_qualification"
+    },
+    {
+      "account": "raphael-group",
+      "owner_type": "Organization",
+      "url": "https://github.com/raphael-group/GASTON",
+      "basis": "Prior reviewed metadata and publication associate authors with Princeton; account-to-institution identity unresolved.",
+      "source": "../../qualification/pilot-counties-20261116.md",
+      "enumeration": "pending_qualification"
+    },
+    {
+      "account": "PennLINC",
+      "owner_type": "Organization",
+      "url": "https://github.com/PennLINC/qsiprep",
+      "basis": "Prior reviewed repository metadata; association must be separately established per project.",
+      "source": "../../qualification/github-publication-qualification.md",
+      "enumeration": "pending_qualification"
+    },
+    {
+      "account": "sacanlab",
+      "owner_type": "unknown",
+      "url": "https://github.com/sacanlab/immunotar",
+      "basis": "Prior reviewed research repository; validate account type and lab association independently.",
+      "source": "../../qualification/crossref-expansion-source-assessment.md",
+      "enumeration": "pending_qualification"
+    }
+  ],
+  "additional_leads": [
+    {
+      "name": "Children’s Hospital of Philadelphia Center for Data-Driven Discovery in Biomedicine",
+      "source": "https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btae114/56810542/btae114.pdf",
+      "basis": "2024 dated author affiliation, Philadelphia; institutional project and account relationship need separate evidence",
+      "access": "prior_reviewed_indexed_or_direct_unspecified"
+    },
+    {
+      "name": "Rowan College at Burlington County health sciences",
+      "source": "https://rcbc.edu/mount-laurel",
+      "basis": "Campus page describes Health Sciences Center; specific health-tech projects unknown",
+      "access": "indexed_primary"
+    },
+    {
+      "name": "Penn CAMIPM CrCEST processing GUI / ExerciseCESTv2",
+      "source": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+      "project_url": "https://github.com/newilson/ExerciseCESTv2",
+      "regional_source": "https://www.med.upenn.edu/CAMIPM/",
+      "basis": "Institutional software page describes in-house MRI image processing, labels the CrCEST GUI and links this repository; center home places the center at Penn in Philadelphia. Observation 2026-11-16; project-specific site and account identity unresolved.",
+      "access": "direct_primary",
+      "candidate_status": "lead_only_pending_qualification"
+    }
+  ],
+  "limitations": [
+    "County seeds are not a complete institutional inventory.",
+    "No source body, contact, labels or work is enrolled.",
+    "Previously observed examples cannot count as novel coverage."
+  ],
+  "source_observations": [
+    {
+      "id": "O1",
+      "url": "https://delval.edu/public-safety/annual-campus-security-report",
+      "date": "2026-11-16",
+      "access": "indexed_primary",
+      "passage": "University location paragraph: campus partly New Britain Borough and Doylestown Township, Bucks County.",
+      "limits": "No particular lab or project."
+    },
+    {
+      "id": "O2",
+      "url": "https://www.dccc.edu/about-dccc/announcements/",
+      "date": "2026-11-16",
+      "access": "direct_primary_browser",
+      "passage": "Location consolidation paragraphs identify Downingtown Center in Chester and main campus in Marple Township, Delaware County.",
+      "limits": "College statement, no project location."
+    },
+    {
+      "id": "O3",
+      "url": "https://www.dccc.edu/campus/marple-campus/",
+      "date": "2026-11-16",
+      "access": "direct_primary_browser",
+      "passage": "Marple Campus heading and campus location paragraph identify the college campus.",
+      "limits": "Postal town alone not county evidence; O2 supplies county."
+    },
+    {
+      "id": "O4",
+      "url": "https://www.dccc.edu/campus/downingtown-center/",
+      "date": "2026-11-16",
+      "access": "indexed_primary",
+      "passage": "Center overview describes nursing simulation and STEM facilities at Downingtown.",
+      "limits": "Project leads remain unknown."
+    },
+    {
+      "id": "O5",
+      "url": "https://www.opp.psu.edu/project/physical-education-building-renovation",
+      "date": "2026-11-16",
+      "access": "indexed_primary",
+      "passage": "Project site is Abington campus in Abington Township, Montgomery County.",
+      "limits": "Specific project site, no general worksite inference."
+    },
+    {
+      "id": "O6",
+      "url": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+      "date": "2026-11-16",
+      "access": "direct_primary_browser",
+      "passage": "Analysis Software introduction and CrCEST processing GUI section describe in-house MRI processing and link ExerciseCESTv2.",
+      "limits": "Unversioned page observed on date; not a native API receipt; no paper absence assertion."
+    },
+    {
+      "id": "O7",
+      "url": "https://www.med.upenn.edu/CAMIPM/",
+      "date": "2026-11-16",
+      "access": "direct_primary_browser",
+      "passage": "Home identifies the center with Penn Perelman and provides a Philadelphia center address.",
+      "limits": "Center association, not developer identity, code worksite or present project activity."
+    },
+    {
+      "id": "O8",
+      "url": "https://www.rowan.edu/about/visiting/west.pdf",
+      "date": "2026-11-16",
+      "access": "indexed_primary",
+      "passage": "Campus map labels Glassboro main campus among Gloucester County campuses.",
+      "limits": "No creator or repository location inference."
+    },
+    {
+      "id": "O9",
+      "url": "../../qualification/pilot-counties-20261116.md",
+      "date": "2026-11-16",
+      "access": "prior_reviewed_observation",
+      "passage": "County assessment gives exact Princeton CS building, county source, Rutgers campus and Camden municipality links and dates; documents historical publication relationships and access limits.",
+      "limits": "Incorporates prior observation, not a newly executed direct HTTP request."
+    },
+    {
+      "id": "O10",
+      "url": "../../qualification/github-publication-qualification.md",
+      "date": "2026-11-16",
+      "access": "prior_reviewed_observation",
+      "passage": "QSIPrep entry identifies dated publication authors at Penn in Philadelphia.",
+      "limits": "Historical author affiliation, not campus boundary or creator location."
+    }
+  ]
+}

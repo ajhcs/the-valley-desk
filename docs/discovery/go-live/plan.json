@@ -112,7 +112,7 @@
         "G03",
         "G04"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "work": "work-packages.md#gl01--freeze-the-minimum-useful-record-and-claim-contracts",
       "acceptance_ids": [
         "GL01-A1",
@@ -135,7 +135,7 @@
       "goals": [
         "G05"
       ],
-      "status": "not_started",
+      "status": "accepted",
       "work": "work-packages.md#gl02--design-discovery-for-breadth",
       "acceptance_ids": [
         "GL02-A1",
@@ -144,7 +144,14 @@
         "GL02-A4",
         "GL02-A5"
       ],
-      "acceptance": null,
+      "acceptance": {
+        "recorded_at": "2026-11-16T20:20:41.419363+00:00",
+        "scope": "GL02 source inventory and pre-collection exploration design only",
+        "owner": "Terra",
+        "reviewer": "Sol",
+        "review": "execution/GL02-sol-review.md",
+        "receipt": "execution/GL02-acceptance.json"
+      },
       "findings": []
     },
     {
@@ -372,7 +379,24 @@
   ],
   "original_package_acceptance_changed": false,
   "original_model_or_benchmark_changed": false,
-  "decisions": [],
+  "decisions": [
+    {
+      "id": "GL01-D01",
+      "status": "independently_reviewed_bounded_adaptation",
+      "reason": "Freeze a lean work-level public contract and separate private frontier now. Optional creator/professional links, first-seen/archive/fork and correction presentation extensions require real consumer/source needs, not a complete graph before useful listing.",
+      "choice": "Reuse existing private CollectionLead under a strict non-public frontier wrapper. Keep public schemas independent of ingest imports. Any later optional public fields need a reviewed version before GL04/GL06/GL07/GL08 emit them.",
+      "affects": [
+        "GL03",
+        "GL04",
+        "GL06",
+        "GL07",
+        "GL08"
+      ],
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true
+    }
+  ],
   "planning_review": {
     "status": "reviewed_plan_only",
     "path": "review.md",
@@ -384,9 +408,8 @@
   "implementation_baseline": "6ed650156100104e3f00e756e3c3094027c130fb",
   "execution_decision": "EX33",
   "deployment_status": "not_performed_readiness_pending",
-  "next_ready_packages": [
-    "GL01",
-    "GL02"
-  ],
-  "active_packages": []
+  "next_ready_packages": [],
+  "active_packages": [
+    "GL01"
+  ]
 }
