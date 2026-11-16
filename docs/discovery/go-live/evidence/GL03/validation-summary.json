@@ -1,0 +1,51 @@
+{
+  "scope": "Existing unchanged application/Watch/discovery paths plus final separately tested acquisition methods; no release readiness claim",
+  "application": {
+    "command": "npm --ignore-scripts test",
+    "exit_code": 0,
+    "tests": 939
+  },
+  "watch": {
+    "command": "npm run test:watch-launch",
+    "exit_code": 0,
+    "tests": 146
+  },
+  "discovery": {
+    "command": "npm run test:discovery",
+    "exit_code": 0,
+    "tests": 410,
+    "duration_ms": 1224614.239937,
+    "note": "Full regression began before supplemental method changes. The final sender/inspector delta and additional cases were rerun below; no full exact-head claim."
+  },
+  "focused": {
+    "command": "node --import tsx/esm --test test/discovery-directory-acquisition.test.ts test/discovery-directory-method.test.ts",
+    "exit_code": 0,
+    "tests": 26,
+    "note": "Latest code; overlaps discovery suite and is not an additive total."
+  },
+  "pdf": {
+    "exit_code": 0,
+    "tests": 7
+  },
+  "build": {
+    "exit_code": 0
+  },
+  "smoke": {
+    "exit_code": 0,
+    "scope": "isolated local D1 only"
+  },
+  "audit": {
+    "exit_code": 0,
+    "vulnerabilities": 0
+  },
+  "secret_scan": {
+    "exit_code": 0
+  },
+  "prior_GL01_runtime": {
+    "inputs": 633,
+    "changed": [
+      "package.json"
+    ],
+    "new_runtime_paths": "separately qualified acquisition modules/scripts/tests; no old runtime module changed"
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "receipt": {
+    "schemaVersion": "directory-native-receipt-v1",
+    "id": "GL03:receipt:C02",
+    "pageId": "C02",
+    "manifestSha256": "3375cde742dd1a2b0b8bc30ea11889d03db4e62c405c7384e02d164fe149752c",
+    "sourceId": "GL03:crossref",
+    "scopeId": "GL03:C02",
+    "installation": "crossref-public",
+    "qualificationSha256": "58afc782d0f402d364351e1b32e504eaba5d51f6e79445c00199c8618f2f479a",
+    "requestSha256": "39921874953928d46c158c105258a1d3dff64246d8a0319eb3d74e4f4a000852",
+    "issuedAt": "2026-11-16T21:35:03.963Z",
+    "completedAt": "2026-11-16T21:35:04.580Z",
+    "status": "received",
+    "httpStatus": 200,
+    "responseBytes": 406,
+    "contentEncoding": "identity",
+    "contentType": "application/json",
+    "utf8": "valid",
+    "redirects": 0,
+    "nativeBodySha256": "ec39b5fdfb2f7ef5b7fb66066203876dae4fbc0a1c29acaf7bf0c1e98bafd391",
+    "projectionSha256": "5bd72c2a0f482a6bb83cab761f9e056d6fad2ed7c4dda371dbffba0bcef14306",
+    "packetSha256": "aaa6f206812e90de9c24287d2d90a07d03e8cf19c7db8d940f29afe7b1e91b80",
+    "parserRevision": "GL03:parser:2",
+    "parserSha256": "f314c8fbdb5ed0b49a262933daf1b945f48f2bb44eb1b40f5aa3a5d182d839fb"
+  },
+  "packet": {
+    "schemaVersion": "directory-factual-page-v1",
+    "publicationAuthorized": false,
+    "receiptId": "GL03:receipt:C02",
+    "pageId": "C02",
+    "manifestSha256": "3375cde742dd1a2b0b8bc30ea11889d03db4e62c405c7384e02d164fe149752c",
+    "qualificationSha256": "58afc782d0f402d364351e1b32e504eaba5d51f6e79445c00199c8618f2f479a",
+    "requestSha256": "39921874953928d46c158c105258a1d3dff64246d8a0319eb3d74e4f4a000852",
+    "nativeBodySha256": "ec39b5fdfb2f7ef5b7fb66066203876dae4fbc0a1c29acaf7bf0c1e98bafd391",
+    "parserSha256": "f314c8fbdb5ed0b49a262933daf1b945f48f2bb44eb1b40f5aa3a5d182d839fb",
+    "parserRevision": "GL03:parser:2",
+    "observedDate": "2026-11-16",
+    "continuation": "more",
+    "nextRequestSha256": "b51a73d12b236ecfc81663c1577ceeaf6e41b250039897fff93671501b59c359",
+    "providerIncomplete": false,
+    "facts": [
+      {
+        "nativeId": "10.3934/nhm.2011.6.647",
+        "kind": "publication",
+        "title": "A model for biological dynamic networks",
+        "url": "https://doi.org/10.3934/nhm.2011.6.647",
+        "pointers": {
+          "nativeId": "/message/items/0/DOI",
+          "title": "/message/items/0/title/0",
+          "url": "/message/items/0/URL",
+          "ownerType": null,
+          "archived": null,
+          "fork": null,
+          "sourceVersion": null,
+          "sourceDates": [
+            {
+              "field": "published",
+              "pointer": "/message/items/0/published/date-parts/0"
+            }
+          ]
+        },
+        "ownerType": null,
+        "archived": null,
+        "fork": null,
+        "frontier": {
+          "schemaVersion": "discovery-directory-private-frontier-v1",
+          "id": "GL03:lead:8f87c6292f15728df5f05acc7a6c1ef009391b799cba8b49d4b3020ea873b4c5",
+          "revision": 1,
+          "source": {
+            "kind": "collection-lead",
+            "provider": "crossref",
+            "sourceId": "GL03:crossref",
+            "scopeId": "GL03:C02",
+            "pageReceiptId": "GL03:receipt:C02",
+            "requestSha256": "39921874953928d46c158c105258a1d3dff64246d8a0319eb3d74e4f4a000852",
+            "representationSha256": "ec39b5fdfb2f7ef5b7fb66066203876dae4fbc0a1c29acaf7bf0c1e98bafd391",
+            "leadIndex": 0,
+            "lead": {
+              "nativeId": "10.3934/nhm.2011.6.647",
+              "kind": "artifact",
+              "displayName": "A model for biological dynamic networks",
+              "artifactKind": "publication",
+              "sourceStage": "publication",
+              "sourceDates": [
+                {
+                  "field": "published",
+                  "date": {
+                    "precision": "year",
+                    "value": "2011",
+                    "calendar": "proleptic-gregorian",
+                    "lowerDate": "2011-01-01",
+                    "upperDate": "2012-01-01"
+                  }
+                }
+              ],
+              "relatedAccounts": [],
+              "unresolvedPeople": [],
+              "publicationAuthorized": false
+            }
+          },
+          "disposition": "pending",
+          "duplicateOf": null,
+          "reason": null,
+          "publicationAuthorized": false
+        }
+      }
+    ],
+    "projectionSha256": "5bd72c2a0f482a6bb83cab761f9e056d6fad2ed7c4dda371dbffba0bcef14306"
+  },
+  "audit": {
+    "requestId": "C02",
+    "anonymous": true,
+    "redirectsFollowed": 0,
+    "retries": 0,
+    "rawBodyRetained": false,
+    "wp06TransportExercised": false,
+    "parserSourceSha256": "f314c8fbdb5ed0b49a262933daf1b945f48f2bb44eb1b40f5aa3a5d182d839fb",
+    "selectedPublicIp": "100.51.192.124",
+    "tlsVersion": "TLSv1.3",
+    "itemCount": 1,
+    "providerTotal": 250374,
+    "providerIncomplete": false,
+    "continuation": "more",
+    "continuationPolicy": "strict_link",
+    "bodyProjectionReproducible": false
+  },
+  "settled": {
+    "outcome": "capped",
+    "inserted": 1,
+    "pending": 0
+  }
+}

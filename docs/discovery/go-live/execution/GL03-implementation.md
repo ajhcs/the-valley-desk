@@ -1,6 +1,6 @@
-# GL03 bounded operator journal — implementation under review
+# GL03 bounded operator acquisition — implementation
 
-This increment prepares a private, operator-run acquisition frontier. It contains **no HTTP client, public API, publication writer, scheduler, migration or Worker activation**. `src/ingest/discovery/directory-acquisition.ts` defines strict serializable plan, native receipt and reduced-fact packet schemas; `scripts/discovery-directory-acquire.mjs` is the Node-only SQLite journal. It embeds the existing GL01 `DirectoryPrivateFrontierSchema` and `DiscoveryCollectionLead`, preserving `publicationAuthorized: false`; it does not claim source enrollment or replace the original guarded WP06/WP14 authority contracts. Existing transport is not assumed to implement this batch's zero-redirect, identity-encoding or whole-body/retention rules.
+This package adds a private, operator-run acquisition frontier. The SQLite journal contains **no HTTP client or publication writer**; the separate bounded capture client is described below. The package adds no public API, scheduler, migration or Worker activation. `src/ingest/discovery/directory-acquisition.ts` defines strict serializable plan, native receipt and reduced-fact packet schemas; `scripts/discovery-directory-acquire.mjs` is the Node-only SQLite journal. It embeds the existing GL01 `DirectoryPrivateFrontierSchema` and `DiscoveryCollectionLead`, preserving `publicationAuthorized: false`; it does not claim source enrollment or replace the original guarded WP06/WP14 authority contracts. Existing transport is not assumed to implement this batch's zero-redirect, identity-encoding or whole-body/retention rules.
 
 ## Operator boundary and exact bindings
 
@@ -26,4 +26,33 @@ Crash semantics are conservative: after reservation but before `markAttempt`, no
 
 Synthetic local tests use temporary owner-only directories on `/workspace` and exercise permits, process restart and a two-process race, body/projection/source/parser mismatch, privacy guards, provider holds, pagination and caps, account/topic deduplication, a User-owned repository, a standalone publication, and no-publication frontier state. Full test results, exact final hashes and independent Sol probes are recorded separately by the orchestrator. Synthetic packets do not satisfy GL03-A1 or prove a provider's parser, current terms, native source, public visibility or repository-to-institution relationship.
 
-Actual account enumeration and an independent topical or publication route require the separately accepted source preflight, root's reserved/issued native requests, whole-payload inspection, reviewed fact-only packets and receipts, and independent replay/qualification before being claimed. A failure, inaccessible source, partial page, capped frontier or missing continuation is an explicit gap, never complete coverage. GL03-A1/A2 real-source evidence and broader integration remain pending until those actions and review occur. GL04 owns any later public projection; GL09 reports actual scope, incompleteness and follow-up. No full-system benchmark, old package status or WP source enrollment is changed by this journal.
+Actual account enumeration and an independent topical or publication route require the separately accepted source preflight, root's reserved/issued native requests, whole-payload inspection, reviewed fact-only packets and receipts, and independent replay/qualification before being claimed. A failure, inaccessible source, partial page, capped frontier or missing continuation is an explicit gap, never complete coverage. The actual bounded source evidence and review are recorded in the source results and acceptance receipt; broader integration remains separate. GL04 owns any later public projection; GL09 reports actual scope, incompleteness and follow-up. No full-system benchmark, old package status or WP source enrollment is changed by this journal.
+
+## Actual operator boundary
+
+The [capture method](../../../../scripts/discovery-directory-capture.py) invokes
+the [journal boundary](../../../../scripts/discovery-directory-journal.mjs)
+immediately before HTTP; it accepts no saved send-permit file. Only the two
+reviewed manifest identities are recognized. Both the source policy/manifest
+and their actual private copies must match the frozen bindings before issue.
+The exact plan is then bound by the durable journal. No source body is written.
+The [inspector](../../../../scripts/discovery-directory-inspect.mjs) performs
+whole-body privacy/material screening and closed field/type validation before
+projecting facts. The exact Crossref search query, first offset, page size,
+total and publication type are checked. Arbitrary provider metadata does not
+become a publication merely because it comes from Crossref.
+
+The original five-probe method intentionally stopped on three inspection gaps.
+The new two-probe qualification preserved those failures and charged requests.
+It did not expand the Organization field census. Its User inventory method
+discards Link without reading or forwarding its value and always reports
+continuation unknown; duplicate Link headers cannot change that method's
+outcome. Its separate journal-article search independently checks the filtered
+native type. The sender verifies all prior receipt hashes and carries any
+provider refusal/rate-limit hold before obtaining a supplemental permit.
+
+Actual results and limits are in [source results](GL03-source-results.md), with
+the two immutable scopes in [internal evidence](../evidence/GL03/README.md).
+There is no generic cross-batch reset or permission to add future requests.
+GL04 must review relevance, regional evidence, rights and publication authority;
+GL09 must investigate the unresolved Organization inventory and breadth gaps.

@@ -30,14 +30,32 @@ Sol independently reviewed and challenged them before orchestrator acceptance.
 GL01's source commit is `2ba42446f6b7c8f943a39a5d6c2d109d0d12dd50`.
 Full local qualification passed 1,472 tests, seven PDF regressions, build/typecheck,
 local smoke, dependency audit with zero reported vulnerabilities and secret scan,
-on 633 unchanged runtime inputs. Exact source CI remains separately tracked on
-PR30; no release readiness is inferred from local acceptance.
+on 633 unchanged runtime inputs. The GL01 descendant head `3ad7cb3` and original GL03 source `4518343` passed
+both push and pull-request CI. These results remain specific to those heads.
 
-GL03 is now ready. The public catalog still has the original 28 records; no new
-source is enrolled, collected into the launch directory or publicly admitted by
-these packages. The work/snapshot schemas validate structure, not external facts
-or publication authority. GL04 must reconstruct permitted observations and verify
-actual review decisions. GL11 readiness remains open; deployment is authorized
+GL03 is accepted for bounded operator-run acquisition, a durable private SQLite frontier,
+whole-body ephemeral inspection, one-use request permits, and separately reviewed
+source scopes. Seven requests retained eight private leads: seven repositories
+and one publication. Three original inspection failures remain explicit; no
+account, regional or publication inventory is complete. The same-name repository
+and biological-networks paper have no established health-tech/regional
+eligibility. See [GL03 results](execution/GL03-source-results.md),
+[Sol review](execution/GL03-sol-review.md),
+[acceptance](execution/GL03-acceptance.json) and
+[internal evidence](evidence/GL03/README.md).
+
+Full regression passed 939 application, 146 Watch and 410 Discovery tests. The
+final acquisition-method refinements passed 26 focused tests; these counts
+overlap. Seven PDF regressions, build/typecheck, local smoke, zero-vulnerability
+audit and secret scan passed. The full regression preceded the final narrowly
+scoped refinements; their latest code was tested separately. Updated-head CI is
+tracked on PR30, and no exact release-head pass is inferred.
+
+GL04 is the next package. All eight leads need claim, relevance, region and rights
+review. The public catalog still contains the original 28 records. No Worker,
+route, scheduler, production configuration, remote migration, source enrollment
+or release changed. Broader Organization inventory qualification and regional
+coverage remain GL09 work. GL11 readiness remains open; deployment is authorized
 within its scope but has not occurred.
 
 ## Product decisions

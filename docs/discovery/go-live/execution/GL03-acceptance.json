@@ -1,0 +1,220 @@
+{
+  "id": "TVD-GL03-1",
+  "recorded_at": "2026-11-16T21:46:46.402908+00:00",
+  "disposition": "accepted_bounded_private_operator_acquisition",
+  "owner": "Terra",
+  "integration_owner": "Orchestrator",
+  "reviewer": "Sol",
+  "acceptor": "Orchestrator",
+  "depends_on": [
+    "GL01",
+    "GL02"
+  ],
+  "source_commits": [
+    "451834385340591aef6a6f96c3947d70f74919f2",
+    "ed87e93924ec9e02f8d20d6cfa30b767bae6605f"
+  ],
+  "criteria": {
+    "GL03-A1": "accepted_with_declared_two_plan_method_and_fact_replay_limits",
+    "GL03-A2": "accepted_with_declared_two_plan_method_and_fact_replay_limits",
+    "GL03-A3": "accepted_with_declared_two_plan_method_and_fact_replay_limits",
+    "GL03-A4": "accepted_with_declared_two_plan_method_and_fact_replay_limits",
+    "GL03-A5": "accepted_with_declared_two_plan_method_and_fact_replay_limits"
+  },
+  "outputs": {
+    "docs/discovery/go-live/evidence/GL03/README.md": "d78003becb5cadbcabaaf119ad5e85796007b234120f739dc78fd6d2c0e019bf",
+    "docs/discovery/go-live/evidence/GL03/activity-used.mjs": "7f4f4793493baef356ff54fbc4565607487f0e8538bd6987c09a63b1f57a38be",
+    "docs/discovery/go-live/evidence/GL03/activity-budget.json": "320a44e68847dbf3ec65763d4f83245b0f1f12ac68358403a29d3d2d5a1f2974",
+    "docs/discovery/go-live/evidence/GL03/validation-summary.json": "98f68c1e2ec842194d324c23b7ef84a40d69088080bc3faacc8c1dacc3454177",
+    "docs/discovery/go-live/evidence/GL03/preservation.json": "2d66696df6edbf7b4335bdb84f4aa676ac9979f53e4d649c8d452485586d010c",
+    "docs/discovery/go-live/evidence/GL03/prepare-original-used.mjs": "134499e59b2c444e2027a58d566add58255d9a7d2a75d4516f5f0f2d79ab5064",
+    "docs/discovery/go-live/evidence/GL03/replay-used.mjs": "020d47e52c65be9ebe47314c03a6e6a0caf0bb95463679bbcfc73a0bcf6f816a",
+    "docs/discovery/go-live/evidence/GL03/prepare-supplemental-used.mjs": "61cdd9ac862baa365205fc3f1106dd6afa7a391f27d0f2508a1d04447ded18ce",
+    "docs/discovery/go-live/evidence/GL03/supplemental/replay-result.json": "df15ad9fc330e6e13d704aba0f9f86d6de5fb937eca8f2e7f2c976d4d1c9b750",
+    "docs/discovery/go-live/evidence/GL03/supplemental/preflight.md": "801c8a0e1cb7ed95f8f8f981bd6bc544dc063989b8a0978a2bf557e3db795de2",
+    "docs/discovery/go-live/evidence/GL03/supplemental/methods.json": "970a1ab51e57d74f998ac9a27501063aa3e2d5dabe4c8201e87cf2461b7632ed",
+    "docs/discovery/go-live/evidence/GL03/supplemental/C02.json": "12f46ec9fe10749e7c1edc6fcc97c5b91f697493aa3855745240d14a527a3c48",
+    "docs/discovery/go-live/evidence/GL03/supplemental/G05.json": "4913512de5f645c174ef444668ae6e2ae5b227b47c40f5d83aa61596f6c841af",
+    "docs/discovery/go-live/evidence/GL03/supplemental/plan.json": "40af8ad04eea1fbfc720a5e0e8ec7ff18974774e700dbf048f1c9f95a60a8d6c",
+    "docs/discovery/go-live/evidence/GL03/supplemental/request-manifest.json": "ad8905ac59642eb48c004d33e4642505659e67921af661f1deb602d7728d40cc",
+    "docs/discovery/go-live/evidence/GL03/original/replay-result.json": "a2924ba73884a9711f7eb6a234c1bcf1d7456d257c0a3e0c7630f0eeb8761837",
+    "docs/discovery/go-live/evidence/GL03/original/C01.json": "ad8fc876f23bd71fbc8bb16cf29a93d874f0363a44c07c15ea1304e346783984",
+    "docs/discovery/go-live/evidence/GL03/original/preflight.md": "12633e4c6ab6089870e774e8de961bf047035e29812f4430c685f2f36c6ccf27",
+    "docs/discovery/go-live/evidence/GL03/original/methods.json": "1168afbc6d09abeba10726b5d81d169d0bffa5fc74dd4b1b8b46d4d0340a61ee",
+    "docs/discovery/go-live/evidence/GL03/original/G01.json": "2387e4f3c4e7942f14b3ef17201010c30def0443f26ec6ef56d2e7b43c8d7d63",
+    "docs/discovery/go-live/evidence/GL03/original/G04.json": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+    "docs/discovery/go-live/evidence/GL03/original/G03.json": "15ef3d91d477a7ade4b2b02cae40ce73d9eeb86e9b59967ebb65f7467d1c9676",
+    "docs/discovery/go-live/evidence/GL03/original/plan.json": "3f83f5d516ea22490c986789b092444a676abf661c0daa85036f6aecadf3b2c0",
+    "docs/discovery/go-live/evidence/GL03/original/request-manifest.json": "6f6ca254180f24dd86dad478290acdefe148d8410b6615e94e4458c487e5579e",
+    "docs/discovery/go-live/evidence/GL03/original/G02.json": "1838ca92a0e94cbc2306174643bbaae9ffe570b846e5b3b26c79c888c37b8ee3",
+    "docs/discovery/go-live/execution/GL03-source-preflight-sol.md": "d3830bcdb22e1bfc430eea556297bf03c97a4bb8d3f89d40cabb4cc53897bb54",
+    "docs/discovery/go-live/execution/GL03-sol-review.md": "f9861498908057f3f9ae06291eabc826414b41b562a313550cd57b223ff90576",
+    "docs/discovery/go-live/execution/GL03-source-preflight.md": "12633e4c6ab6089870e774e8de961bf047035e29812f4430c685f2f36c6ccf27",
+    "docs/discovery/go-live/execution/GL03-source-results.md": "ac403c0733630c4d43f1b8eba7dae4fb13ed187d98e7a5807709848a5f6e5cb9",
+    "docs/discovery/go-live/execution/GL03-supplemental-preflight.md": "801c8a0e1cb7ed95f8f8f981bd6bc544dc063989b8a0978a2bf557e3db795de2",
+    "docs/discovery/go-live/execution/GL03-request-manifest.json": "6f6ca254180f24dd86dad478290acdefe148d8410b6615e94e4458c487e5579e",
+    "docs/discovery/go-live/execution/GL03-implementation.md": "12222e0f571004f3fee81b1f94d0fc25512ace72a67379b6eda6fb48ccba6d4c",
+    "docs/discovery/go-live/execution/GL03-supplemental-request-manifest.json": "ad8905ac59642eb48c004d33e4642505659e67921af661f1deb602d7728d40cc",
+    "docs/discovery/go-live/README.md": "53477bd1424d088c922d741f6db94746b47590a6c5da2cc67807ca4ed19bab51",
+    "docs/discovery/go-live/plan.json": "9ee168a66ff1ff20e994427fa8ca4ed08070eee991af3ddc18b4dab59bbc299b",
+    "src/ingest/discovery/directory-acquisition.ts": "8b6c7fc00e24a1dba6333ca16c979dfef488e7780bd44b644cb2625ac416bfaa",
+    "scripts/discovery-directory-acquire.mjs": "73c00932015968961162ad0e2dfbf7e78bd8ca97597ae9c0bc35e5a2061a74f7",
+    "scripts/discovery-directory-capture.py": "1ba75b2fe9fbf6685f073e9c616ff400b27d633236e16f64b829d2916c96f925",
+    "scripts/discovery-directory-inspect.mjs": "f314c8fbdb5ed0b49a262933daf1b945f48f2bb44eb1b40f5aa3a5d182d839fb",
+    "scripts/discovery-directory-journal.mjs": "e10824268e32d85dd8b07d6c3a3f78b5960372c24c580218ec999b90c81a9aca",
+    "test/discovery-directory-acquisition.test.ts": "3c8747413b4150c122e0fd2ba11ed006f0e04836cef9e4fd66b7c8dc3939edc6",
+    "test/discovery-directory-method.test.ts": "1d0e80f642ede82155e25f9ca2cfd674ea408363480201670fbd2a1b1673612d",
+    "package.json": "5ee61525f53145467a66cd21942eda7bd3d3bb1998ea00dd8bd80f171bc74417",
+    ".github/workflows/ci.yml": "87b6b562ccefee527e4a59810ba5dba4d418637d83aa1d1c84f1c1618e1d65d2"
+  },
+  "review_evidence": {
+    "actual_packet_review": {
+      "path": "/workspace/build/builderbob/tvd-gl03-20261116/sol/actual-packet-review.json",
+      "sha256": "be3573ff6003d0f49a32cc1a601802c3c238be7a843686695d0c608d4f25ce06",
+      "passed": 20
+    },
+    "preservation_activity": {
+      "path": "/workspace/build/builderbob/tvd-gl03-20261116/sol/final-preservation-activity-review.corrected.json",
+      "sha256": "a040fa3685219df9360177bc07f53b9ba72bbfe5c14a8037827334757c539a52",
+      "passed": 8
+    },
+    "journal_cases": 15,
+    "inspector_cases": 17,
+    "original_synthetic_sender_cases": 9,
+    "supplemental_synthetic_sender_cases": 4
+  },
+  "scope": {
+    "native_requests": 7,
+    "github_requests": 5,
+    "crossref_requests": 2,
+    "private_leads": 8,
+    "repositories": 7,
+    "publications": 1,
+    "original_inspection_failures": [
+      "G01:link",
+      "G02:field-census",
+      "C01:publication-identity"
+    ],
+    "native_bodies_retained": 0,
+    "new_public_records": 0,
+    "source_enrollment": false,
+    "worker_activation": false,
+    "complete_account_or_region_inventory": false,
+    "native_projection_reproducible_from_retained_bytes": false
+  },
+  "validation": {
+    "scope": "Existing unchanged application/Watch/discovery paths plus final separately tested acquisition methods; no release readiness claim",
+    "application": {
+      "command": "npm --ignore-scripts test",
+      "exit_code": 0,
+      "tests": 939
+    },
+    "watch": {
+      "command": "npm run test:watch-launch",
+      "exit_code": 0,
+      "tests": 146
+    },
+    "discovery": {
+      "command": "npm run test:discovery",
+      "exit_code": 0,
+      "tests": 410,
+      "duration_ms": 1224614.239937,
+      "note": "Full regression began before supplemental method changes. The final sender/inspector delta and additional cases were rerun below; no full exact-head claim."
+    },
+    "focused": {
+      "command": "node --import tsx/esm --test test/discovery-directory-acquisition.test.ts test/discovery-directory-method.test.ts",
+      "exit_code": 0,
+      "tests": 26,
+      "note": "Latest code; overlaps discovery suite and is not an additive total."
+    },
+    "pdf": {
+      "exit_code": 0,
+      "tests": 7
+    },
+    "build": {
+      "exit_code": 0
+    },
+    "smoke": {
+      "exit_code": 0,
+      "scope": "isolated local D1 only"
+    },
+    "audit": {
+      "exit_code": 0,
+      "vulnerabilities": 0
+    },
+    "secret_scan": {
+      "exit_code": 0
+    },
+    "prior_GL01_runtime": {
+      "inputs": 633,
+      "changed": [
+        "package.json"
+      ],
+      "new_runtime_paths": "separately qualified acquisition modules/scripts/tests; no old runtime module changed"
+    }
+  },
+  "activity_budget": {
+    "basis": "Conservative upper bound: entire wall window from first issue to last native response charged as manual collection time to EACH explored county, in addition to full request allowances. Includes interleaved method engineering. Post-capture verification/release engineering is separate; no more source exploration occurs.",
+    "start": "2026-11-16T21:15:29.528Z",
+    "end": "2026-11-16T21:35:04.580Z",
+    "manualMsPerCounty": 1175052,
+    "requestAllowanceMs": 175000,
+    "totalChargedMs": 3700156,
+    "countyChargedMs": {
+      "Camden": 1275052,
+      "Mercer": 1200052,
+      "Philadelphia": 1225052
+    },
+    "totalCeilingMs": 16200000,
+    "countyCeilingMs": 1800000,
+    "allWithinCeilings": true,
+    "reportedActivityJournal": "/workspace/build/builderbob/tvd-gl03-20261116/root/batch/journal/frontier.sqlite",
+    "newNativeRequests": 0
+  },
+  "preservation": {
+    "baseline": "3ad7cb310ea033ce09ccc03721177ce9a97a43c3",
+    "baseline_tracked_files": 1138,
+    "existing_paths_changed": [
+      ".github/workflows/ci.yml",
+      "docs/discovery/go-live/README.md",
+      "docs/discovery/go-live/plan.json",
+      "package.json"
+    ],
+    "unexpected_changes": [],
+    "unchanged_existing_paths": 1134,
+    "all_prior_runtime_modules_native_records_models_historical_receipts_31_packages_and_MP_unchanged": true
+  },
+  "ci": {
+    "451834385340591aef6a6f96c3947d70f74919f2": {
+      "push_run": 43957642045,
+      "pull_request_run": 43957650163,
+      "conclusion": "success"
+    },
+    "latest_supplemental_and_qualification_head": "not_yet_pushed_at_acceptance; track PR30 separately; no exact-final-head pass claimed"
+  },
+  "known_gaps": [
+    {
+      "package": "GL04",
+      "work": "Review all eight private leads for purpose, health relevance, dated regional evidence, permitted fields and publication authority; same-name repository and biological-networks publication remain unsupported."
+    },
+    {
+      "package": "GL09",
+      "work": "Preserve G01/G02/C01 failures and scope holds; independently qualify Organization census, account continuation and broader source/county coverage before further collection."
+    },
+    {
+      "package": "GL08",
+      "work": "Retain the explicit operator batch boundary; recurring collection and a general cross-batch service are not accepted by GL03."
+    },
+    {
+      "package": "GL11",
+      "work": "Exact release-head CI and remaining launch readiness are required before deployment under existing authority."
+    }
+  ],
+  "phase_note": "After independent review root updated only results phase/evidence-copy wording, implementation journal-only HTTP wording, plan/README/acceptance status and links. Frozen request scopes, source facts, native packets, receipts and reviewer verdicts were not changed. Full regression began before supplemental refinements; final changed acquisition methods passed the separately recorded focused tests.",
+  "deployment_authorized": true,
+  "deployment_performed": false,
+  "GL04_accepted": false,
+  "GL09_accepted": false,
+  "GL11_accepted": false,
+  "benchmark_credit": 0
+}

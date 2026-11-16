@@ -1,0 +1,517 @@
+{
+  "receipt": {
+    "schemaVersion": "directory-native-receipt-v1",
+    "id": "GL03:receipt:G03",
+    "pageId": "G03",
+    "manifestSha256": "1c090798c63eb9d03f7ee66dea1ebf0d2e53b59cc4f0c1f9f81c3807f085a7dc",
+    "sourceId": "GL03:github",
+    "scopeId": "GL03:G03",
+    "installation": "github-public",
+    "qualificationSha256": "150e5e8b64ba266c8f8504eb112b63d6432e255ae7ea1e8209b1ef6d8d995210",
+    "requestSha256": "d0677703e6adfe6a83bed4755444c226c18cd367e16108c5c425ffa33ceb5c9c",
+    "issuedAt": "2026-11-16T21:20:26.700Z",
+    "completedAt": "2026-11-16T21:20:27.401Z",
+    "status": "received",
+    "httpStatus": 200,
+    "responseBytes": 30137,
+    "contentEncoding": "identity",
+    "contentType": "application/json",
+    "utf8": "valid",
+    "redirects": 0,
+    "nativeBodySha256": "b6075e2bddd297eb2ed4170c3291101afdd4d5c79e9667eb8847f64ffd75fc05",
+    "projectionSha256": "5972a3c912804678fa090b0ca01c10ca41d00ebeb4a47bdc16f7f9f408ded620",
+    "packetSha256": "178ddc70c547da239eb3b1880e4f48deba341b2fa63931d92485a43b8d425f8a",
+    "parserRevision": "GL03:parser:1",
+    "parserSha256": "71ab9258b85353c327118438bdad40496d8e2c68cb7356799ab49d5dec63f801"
+  },
+  "packet": {
+    "schemaVersion": "directory-factual-page-v1",
+    "publicationAuthorized": false,
+    "receiptId": "GL03:receipt:G03",
+    "pageId": "G03",
+    "manifestSha256": "1c090798c63eb9d03f7ee66dea1ebf0d2e53b59cc4f0c1f9f81c3807f085a7dc",
+    "qualificationSha256": "150e5e8b64ba266c8f8504eb112b63d6432e255ae7ea1e8209b1ef6d8d995210",
+    "requestSha256": "d0677703e6adfe6a83bed4755444c226c18cd367e16108c5c425ffa33ceb5c9c",
+    "nativeBodySha256": "b6075e2bddd297eb2ed4170c3291101afdd4d5c79e9667eb8847f64ffd75fc05",
+    "parserSha256": "71ab9258b85353c327118438bdad40496d8e2c68cb7356799ab49d5dec63f801",
+    "parserRevision": "GL03:parser:1",
+    "observedDate": "2026-11-16",
+    "continuation": "more",
+    "nextRequestSha256": "1f09d797169f11bb6dd7ab134215d166d36c986406607bba9863317a609f8fcd",
+    "providerIncomplete": false,
+    "facts": [
+      {
+        "nativeId": "271411305",
+        "kind": "repository",
+        "title": "ambientpointcorp/covid19-philadelphia",
+        "url": "https://github.com/ambientpointcorp/covid19-philadelphia",
+        "pointers": {
+          "nativeId": "/items/0/id",
+          "title": "/items/0/full_name",
+          "url": "/items/0/html_url",
+          "ownerType": "/items/0/owner/type",
+          "archived": "/items/0/archived",
+          "fork": "/items/0/fork",
+          "sourceVersion": null,
+          "sourceDates": [
+            {
+              "field": "created_at",
+              "pointer": "/items/0/created_at"
+            },
+            {
+              "field": "updated_at",
+              "pointer": "/items/0/updated_at"
+            },
+            {
+              "field": "pushed_at",
+              "pointer": "/items/0/pushed_at"
+            }
+          ]
+        },
+        "ownerType": "Organization",
+        "archived": false,
+        "fork": false,
+        "frontier": {
+          "schemaVersion": "discovery-directory-private-frontier-v1",
+          "id": "GL03:lead:7d9233f765c1d81c5790d9fc40905ebd6d300fb8ec2729b9b66b3613c3bba666",
+          "revision": 1,
+          "source": {
+            "kind": "collection-lead",
+            "provider": "github",
+            "sourceId": "GL03:github",
+            "scopeId": "GL03:G03",
+            "pageReceiptId": "GL03:receipt:G03",
+            "requestSha256": "d0677703e6adfe6a83bed4755444c226c18cd367e16108c5c425ffa33ceb5c9c",
+            "representationSha256": "b6075e2bddd297eb2ed4170c3291101afdd4d5c79e9667eb8847f64ffd75fc05",
+            "leadIndex": 0,
+            "lead": {
+              "nativeId": "271411305",
+              "kind": "artifact",
+              "displayName": "ambientpointcorp/covid19-philadelphia",
+              "artifactKind": "repository",
+              "sourceStage": "baseline",
+              "sourceDates": [
+                {
+                  "field": "created_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2020-06-11T00:06:12Z",
+                    "lowerEpochMs": 1591833972000,
+                    "upperEpochMs": 1591833972001
+                  }
+                },
+                {
+                  "field": "updated_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2025-06-02T15:06:59Z",
+                    "lowerEpochMs": 1748876819000,
+                    "upperEpochMs": 1748876819001
+                  }
+                },
+                {
+                  "field": "pushed_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2023-06-04T18:14:53Z",
+                    "lowerEpochMs": 1685902493000,
+                    "upperEpochMs": 1685902493001
+                  }
+                }
+              ],
+              "relatedAccounts": [],
+              "unresolvedPeople": [],
+              "publicationAuthorized": false
+            }
+          },
+          "disposition": "pending",
+          "duplicateOf": null,
+          "reason": null,
+          "publicationAuthorized": false
+        }
+      },
+      {
+        "nativeId": "255676995",
+        "kind": "repository",
+        "title": "PhilaController/covid19-forecaster",
+        "url": "https://github.com/PhilaController/covid19-forecaster",
+        "pointers": {
+          "nativeId": "/items/1/id",
+          "title": "/items/1/full_name",
+          "url": "/items/1/html_url",
+          "ownerType": "/items/1/owner/type",
+          "archived": "/items/1/archived",
+          "fork": "/items/1/fork",
+          "sourceVersion": null,
+          "sourceDates": [
+            {
+              "field": "created_at",
+              "pointer": "/items/1/created_at"
+            },
+            {
+              "field": "updated_at",
+              "pointer": "/items/1/updated_at"
+            },
+            {
+              "field": "pushed_at",
+              "pointer": "/items/1/pushed_at"
+            }
+          ]
+        },
+        "ownerType": "Organization",
+        "archived": false,
+        "fork": false,
+        "frontier": {
+          "schemaVersion": "discovery-directory-private-frontier-v1",
+          "id": "GL03:lead:42dbafb416cfec8254495e259d116b3744fedb67a858298529e5f2513dcab1b7",
+          "revision": 1,
+          "source": {
+            "kind": "collection-lead",
+            "provider": "github",
+            "sourceId": "GL03:github",
+            "scopeId": "GL03:G03",
+            "pageReceiptId": "GL03:receipt:G03",
+            "requestSha256": "d0677703e6adfe6a83bed4755444c226c18cd367e16108c5c425ffa33ceb5c9c",
+            "representationSha256": "b6075e2bddd297eb2ed4170c3291101afdd4d5c79e9667eb8847f64ffd75fc05",
+            "leadIndex": 1,
+            "lead": {
+              "nativeId": "255676995",
+              "kind": "artifact",
+              "displayName": "PhilaController/covid19-forecaster",
+              "artifactKind": "repository",
+              "sourceStage": "baseline",
+              "sourceDates": [
+                {
+                  "field": "created_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2020-04-14T17:25:11Z",
+                    "lowerEpochMs": 1586885111000,
+                    "upperEpochMs": 1586885111001
+                  }
+                },
+                {
+                  "field": "updated_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2021-05-28T16:51:23Z",
+                    "lowerEpochMs": 1622220683000,
+                    "upperEpochMs": 1622220683001
+                  }
+                },
+                {
+                  "field": "pushed_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2024-02-01T21:46:01Z",
+                    "lowerEpochMs": 1706823961000,
+                    "upperEpochMs": 1706823961001
+                  }
+                }
+              ],
+              "relatedAccounts": [],
+              "unresolvedPeople": [],
+              "publicationAuthorized": false
+            }
+          },
+          "disposition": "pending",
+          "duplicateOf": null,
+          "reason": null,
+          "publicationAuthorized": false
+        }
+      },
+      {
+        "nativeId": "314719188",
+        "kind": "repository",
+        "title": "wesweaver/philly_covid19_analysis",
+        "url": "https://github.com/wesweaver/philly_covid19_analysis",
+        "pointers": {
+          "nativeId": "/items/2/id",
+          "title": "/items/2/full_name",
+          "url": "/items/2/html_url",
+          "ownerType": "/items/2/owner/type",
+          "archived": "/items/2/archived",
+          "fork": "/items/2/fork",
+          "sourceVersion": null,
+          "sourceDates": [
+            {
+              "field": "created_at",
+              "pointer": "/items/2/created_at"
+            },
+            {
+              "field": "updated_at",
+              "pointer": "/items/2/updated_at"
+            },
+            {
+              "field": "pushed_at",
+              "pointer": "/items/2/pushed_at"
+            }
+          ]
+        },
+        "ownerType": "User",
+        "archived": false,
+        "fork": false,
+        "frontier": {
+          "schemaVersion": "discovery-directory-private-frontier-v1",
+          "id": "GL03:lead:1467152e4978c107d619077da582d67b2cf0779b06a2d46cc386760130e49c1a",
+          "revision": 1,
+          "source": {
+            "kind": "collection-lead",
+            "provider": "github",
+            "sourceId": "GL03:github",
+            "scopeId": "GL03:G03",
+            "pageReceiptId": "GL03:receipt:G03",
+            "requestSha256": "d0677703e6adfe6a83bed4755444c226c18cd367e16108c5c425ffa33ceb5c9c",
+            "representationSha256": "b6075e2bddd297eb2ed4170c3291101afdd4d5c79e9667eb8847f64ffd75fc05",
+            "leadIndex": 2,
+            "lead": {
+              "nativeId": "314719188",
+              "kind": "artifact",
+              "displayName": "wesweaver/philly_covid19_analysis",
+              "artifactKind": "repository",
+              "sourceStage": "baseline",
+              "sourceDates": [
+                {
+                  "field": "created_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2020-11-21T02:49:42Z",
+                    "lowerEpochMs": 1605926982000,
+                    "upperEpochMs": 1605926982001
+                  }
+                },
+                {
+                  "field": "updated_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2021-03-30T14:45:24Z",
+                    "lowerEpochMs": 1617115524000,
+                    "upperEpochMs": 1617115524001
+                  }
+                },
+                {
+                  "field": "pushed_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2021-03-30T14:45:21Z",
+                    "lowerEpochMs": 1617115521000,
+                    "upperEpochMs": 1617115521001
+                  }
+                }
+              ],
+              "relatedAccounts": [],
+              "unresolvedPeople": [],
+              "publicationAuthorized": false
+            }
+          },
+          "disposition": "pending",
+          "duplicateOf": null,
+          "reason": null,
+          "publicationAuthorized": false
+        }
+      },
+      {
+        "nativeId": "586355542",
+        "kind": "repository",
+        "title": "tuo91575/Philadelphia-Covid-Trends",
+        "url": "https://github.com/tuo91575/Philadelphia-Covid-Trends",
+        "pointers": {
+          "nativeId": "/items/3/id",
+          "title": "/items/3/full_name",
+          "url": "/items/3/html_url",
+          "ownerType": "/items/3/owner/type",
+          "archived": "/items/3/archived",
+          "fork": "/items/3/fork",
+          "sourceVersion": null,
+          "sourceDates": [
+            {
+              "field": "created_at",
+              "pointer": "/items/3/created_at"
+            },
+            {
+              "field": "updated_at",
+              "pointer": "/items/3/updated_at"
+            },
+            {
+              "field": "pushed_at",
+              "pointer": "/items/3/pushed_at"
+            }
+          ]
+        },
+        "ownerType": "User",
+        "archived": false,
+        "fork": false,
+        "frontier": {
+          "schemaVersion": "discovery-directory-private-frontier-v1",
+          "id": "GL03:lead:a2590895c3b7c8fa0684056c0288871eb8c505772201c36626e60885c9b96ce9",
+          "revision": 1,
+          "source": {
+            "kind": "collection-lead",
+            "provider": "github",
+            "sourceId": "GL03:github",
+            "scopeId": "GL03:G03",
+            "pageReceiptId": "GL03:receipt:G03",
+            "requestSha256": "d0677703e6adfe6a83bed4755444c226c18cd367e16108c5c425ffa33ceb5c9c",
+            "representationSha256": "b6075e2bddd297eb2ed4170c3291101afdd4d5c79e9667eb8847f64ffd75fc05",
+            "leadIndex": 3,
+            "lead": {
+              "nativeId": "586355542",
+              "kind": "artifact",
+              "displayName": "tuo91575/Philadelphia-Covid-Trends",
+              "artifactKind": "repository",
+              "sourceStage": "baseline",
+              "sourceDates": [
+                {
+                  "field": "created_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2023-01-07T20:52:09Z",
+                    "lowerEpochMs": 1673124729000,
+                    "upperEpochMs": 1673124729001
+                  }
+                },
+                {
+                  "field": "updated_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2023-01-09T14:12:38Z",
+                    "lowerEpochMs": 1673273558000,
+                    "upperEpochMs": 1673273558001
+                  }
+                },
+                {
+                  "field": "pushed_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2023-01-09T13:45:25Z",
+                    "lowerEpochMs": 1673271925000,
+                    "upperEpochMs": 1673271925001
+                  }
+                }
+              ],
+              "relatedAccounts": [],
+              "unresolvedPeople": [],
+              "publicationAuthorized": false
+            }
+          },
+          "disposition": "pending",
+          "duplicateOf": null,
+          "reason": null,
+          "publicationAuthorized": false
+        }
+      },
+      {
+        "nativeId": "870305377",
+        "kind": "repository",
+        "title": "boer-coding/Philadelphia-covid-data-explorer",
+        "url": "https://github.com/boer-coding/Philadelphia-covid-data-explorer",
+        "pointers": {
+          "nativeId": "/items/4/id",
+          "title": "/items/4/full_name",
+          "url": "/items/4/html_url",
+          "ownerType": "/items/4/owner/type",
+          "archived": "/items/4/archived",
+          "fork": "/items/4/fork",
+          "sourceVersion": null,
+          "sourceDates": [
+            {
+              "field": "created_at",
+              "pointer": "/items/4/created_at"
+            },
+            {
+              "field": "updated_at",
+              "pointer": "/items/4/updated_at"
+            },
+            {
+              "field": "pushed_at",
+              "pointer": "/items/4/pushed_at"
+            }
+          ]
+        },
+        "ownerType": "User",
+        "archived": false,
+        "fork": false,
+        "frontier": {
+          "schemaVersion": "discovery-directory-private-frontier-v1",
+          "id": "GL03:lead:4ebd6d5c26cd4ba6b49d986d0c7c1f1e8adfe34385d5177a67bf54b02b5877fd",
+          "revision": 1,
+          "source": {
+            "kind": "collection-lead",
+            "provider": "github",
+            "sourceId": "GL03:github",
+            "scopeId": "GL03:G03",
+            "pageReceiptId": "GL03:receipt:G03",
+            "requestSha256": "d0677703e6adfe6a83bed4755444c226c18cd367e16108c5c425ffa33ceb5c9c",
+            "representationSha256": "b6075e2bddd297eb2ed4170c3291101afdd4d5c79e9667eb8847f64ffd75fc05",
+            "leadIndex": 4,
+            "lead": {
+              "nativeId": "870305377",
+              "kind": "artifact",
+              "displayName": "boer-coding/Philadelphia-covid-data-explorer",
+              "artifactKind": "repository",
+              "sourceStage": "baseline",
+              "sourceDates": [
+                {
+                  "field": "created_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2024-10-09T19:53:29Z",
+                    "lowerEpochMs": 1728503609000,
+                    "upperEpochMs": 1728503609001
+                  }
+                },
+                {
+                  "field": "updated_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2024-10-09T20:45:02Z",
+                    "lowerEpochMs": 1728506702000,
+                    "upperEpochMs": 1728506702001
+                  }
+                },
+                {
+                  "field": "pushed_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2024-10-09T20:44:58Z",
+                    "lowerEpochMs": 1728506698000,
+                    "upperEpochMs": 1728506698001
+                  }
+                }
+              ],
+              "relatedAccounts": [],
+              "unresolvedPeople": [],
+              "publicationAuthorized": false
+            }
+          },
+          "disposition": "pending",
+          "duplicateOf": null,
+          "reason": null,
+          "publicationAuthorized": false
+        }
+      }
+    ],
+    "projectionSha256": "5972a3c912804678fa090b0ca01c10ca41d00ebeb4a47bdc16f7f9f408ded620"
+  },
+  "audit": {
+    "requestId": "G03",
+    "anonymous": true,
+    "redirectsFollowed": 0,
+    "retries": 0,
+    "rawBodyRetained": false,
+    "wp06TransportExercised": false,
+    "parserSourceSha256": "71ab9258b85353c327118438bdad40496d8e2c68cb7356799ab49d5dec63f801",
+    "selectedPublicIp": "140.82.114.6",
+    "tlsVersion": "TLSv1.3",
+    "itemCount": 5,
+    "providerTotal": 40,
+    "providerIncomplete": false,
+    "continuation": "more",
+    "bodyProjectionReproducible": false
+  },
+  "settled": {
+    "outcome": "capped",
+    "inserted": 5,
+    "pending": 0
+  }
+}

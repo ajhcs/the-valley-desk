@@ -1,7 +1,7 @@
 {
   "id": "TVD-GO-LIVE-1",
   "decision": "EX32",
-  "revision": 2,
+  "revision": 3,
   "status": "implementation_in_progress",
   "source_baseline": "60d6bd3aaba90a4970821f41fb2ca0329cbf8d20",
   "authority": "On 16 November 2026 the user authorized implementation beginning GL00 and following accepted dependencies, Terra implementation with independent Sol review, commits and PR updates, and deployment as appropriate. Deployment authority covers the reviewed existing-site GL11 release when its actual readiness conditions are met; it does not accept unimplemented work, permit unrelated infrastructure changes, new paid services or outreach.",
@@ -174,7 +174,7 @@
       "goals": [
         "G05"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "work": "work-packages.md#gl03--acquire-candidates-with-a-durable-bounded-frontier",
       "acceptance_ids": [
         "GL03-A1",
@@ -183,8 +183,37 @@
         "GL03-A4",
         "GL03-A5"
       ],
-      "acceptance": null,
-      "findings": []
+      "acceptance": {
+        "recorded_at": "2026-11-16T21:46:46.402908+00:00",
+        "scope": "Finite two-plan private operator acquisition procedure; no public admission, recurring enrollment, regional completeness or release readiness",
+        "reviewer": "Sol",
+        "review": "execution/GL03-sol-review.md",
+        "receipt": "execution/GL03-acceptance.json",
+        "source_baseline": "3ad7cb310ea033ce09ccc03721177ce9a97a43c3",
+        "source_commits": [
+          "451834385340591aef6a6f96c3947d70f74919f2",
+          "ed87e93924ec9e02f8d20d6cfa30b767bae6605f"
+        ]
+      },
+      "findings": [],
+      "followups": [
+        {
+          "package": "GL04",
+          "work": "Review all eight private leads for purpose, health relevance, dated regional evidence, permitted fields and publication authority; same-name repository and biological-networks publication remain unsupported."
+        },
+        {
+          "package": "GL09",
+          "work": "Preserve G01/G02/C01 failures and scope holds; independently qualify Organization census, account continuation and broader source/county coverage before further collection."
+        },
+        {
+          "package": "GL08",
+          "work": "Retain the explicit operator batch boundary; recurring collection and a general cross-batch service are not accepted by GL03."
+        },
+        {
+          "package": "GL11",
+          "work": "Exact release-head CI and remaining launch readiness are required before deployment under existing authority."
+        }
+      ]
     },
     {
       "id": "GL04",

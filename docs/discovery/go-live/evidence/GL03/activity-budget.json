@@ -1,0 +1,18 @@
+{
+  "basis": "Conservative upper bound: entire wall window from first issue to last native response charged as manual collection time to EACH explored county, in addition to full request allowances. Includes interleaved method engineering. Post-capture verification/release engineering is separate; no more source exploration occurs.",
+  "start": "2026-11-16T21:15:29.528Z",
+  "end": "2026-11-16T21:35:04.580Z",
+  "manualMsPerCounty": 1175052,
+  "requestAllowanceMs": 175000,
+  "totalChargedMs": 3700156,
+  "countyChargedMs": {
+    "Camden": 1275052,
+    "Mercer": 1200052,
+    "Philadelphia": 1225052
+  },
+  "totalCeilingMs": 16200000,
+  "countyCeilingMs": 1800000,
+  "allWithinCeilings": true,
+  "reportedActivityJournal": "/workspace/build/builderbob/tvd-gl03-20261116/root/batch/journal/frontier.sqlite",
+  "newNativeRequests": 0
+}
