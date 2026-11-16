@@ -98,7 +98,8 @@
       "started_at": "2026-11-14T00:53:50.168049+00:00",
       "amendment_receipts": [
         "receipts/WP05-WP06-composition.json",
-        "receipts/dependency-remediation.json"
+        "receipts/dependency-remediation.json",
+        "receipts/WP12-edit-invalidation-progress.json"
       ]
     },
     {
@@ -117,7 +118,8 @@
       "amendment_receipts": [
         "receipts/WP06-WP07-collection.json",
         "receipts/WP06-WP07-WP08-composition.json",
-        "receipts/dependency-remediation.json"
+        "receipts/dependency-remediation.json",
+        "receipts/WP12-edit-invalidation-progress.json"
       ]
     },
     {
@@ -215,14 +217,15 @@
       "status": "in_progress",
       "receipt": null,
       "acceptance": null,
-      "notes": "Bounded software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP12 acceptance ungranted: actual installation/version/response/access/rights qualification absent and AC06 automatic native edit/deletion current-claim consumer unimplemented. Read-only proposals and separate authorized ledger revocation boundary tested. EX21 actual OpenMRS robots/terms/basic-info requests all returned 403: access hold; no discussion body acquired or native version/API compatibility qualified. OHDSI/Slicer contribution NC terms exclude general commercial redisplay without compatible separate permission.",
+      "notes": "Bounded software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP12 acceptance ungranted: actual installation/version/response/access/rights qualification remains absent. The initial increment lacked an AC06 native edit/deletion consumer; EX27 adds the bounded private edit component described below. Read-only proposals and separate authorized ledger revocation boundary tested. EX21 actual OpenMRS robots/terms/basic-info requests all returned 403: access hold; no discussion body acquired or native version/API compatibility qualified. OHDSI/Slicer contribution NC terms exclude general commercial redisplay without compatible separate permission. EX27 locally qualifies an edit-only private support invalidator and stale-evidence write guard with 1,407 full tests; native deletion, qualification-sample/cross-frame holds, actual source/authority and public integration remain unmet. Full AC06/package acceptance is not granted.",
       "started_at": "2026-11-15T19:32:22.113537+00:00",
       "progress_receipts": [
         "receipts/WP12-local-implementation.json",
         "receipts/real-source-qualification-20261115.json"
       ],
       "amendment_receipts": [
-        "receipts/dependency-remediation.json"
+        "receipts/dependency-remediation.json",
+        "receipts/WP12-edit-invalidation-progress.json"
       ]
     },
     {
@@ -235,14 +238,15 @@
       "status": "in_progress",
       "receipt": null,
       "acceptance": null,
-      "notes": "Bounded passive HTML software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP13 acceptance ungranted pending actual source/profile/access/rights qualification. Literal role/location/date extraction and reviewed-origin boundary tested; no geographic/current-employment admission. EX21 two real CC0 ROR organization records pass bounded manual metadata review, but native JSON/fixed endpoints cannot qualify the paged HTML adapter; Penn Medicine query-disallow/rights/format holds remain. Synthetic wrong-format healthy-empty gap fixed; 19 affected tests and 55 Astra checks passed. No full source acceptance.",
+      "notes": "Bounded passive HTML software increment reviewed by Sol/Terra/Astra and root 1361-test integration. Full WP13 acceptance ungranted pending actual source/profile/access/rights qualification. Literal role/location/date extraction and reviewed-origin boundary tested; no geographic/current-employment admission. EX21 two real CC0 ROR organization records pass bounded manual metadata review, but native JSON/fixed endpoints cannot qualify the paged HTML adapter; Penn Medicine query-disallow/rights/format holds remain. Synthetic wrong-format healthy-empty gap fixed; 19 affected tests and 55 Astra checks passed. No full source acceptance. EX27 investigates four non-Philadelphia institutional leads; robots/query, privacy, raw-format and use-rights holds remain. No target body capture, source enrollment or package acceptance.",
       "started_at": "2026-11-15T19:32:22.113537+00:00",
       "progress_receipts": [
         "receipts/WP13-local-implementation.json",
         "receipts/real-source-qualification-20261115.json"
       ],
       "amendment_receipts": [
-        "receipts/dependency-remediation.json"
+        "receipts/dependency-remediation.json",
+        "receipts/WP12-edit-invalidation-progress.json"
       ]
     },
     {
@@ -519,7 +523,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-16T00:17:13.428297+00:00",
+  "updated_at": "2026-11-16T02:19:07.437116+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -806,6 +810,22 @@
         "WP23"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX27",
+      "path": "implementation-decisions.md",
+      "status": "private_edit_increment_locally_qualified_source_and_public_gates_unmet",
+      "affects": [
+        "WP03",
+        "WP05",
+        "WP06",
+        "WP12",
+        "WP13",
+        "WP14",
+        "WP16",
+        "WP23"
+      ],
+      "thresholds_changed": false
     }
   ],
   "next_ready_packages": [],
@@ -822,8 +842,8 @@
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "166de35158721b63b26177ea308afad8bb8a5719",
+    "reviewed_code_commit": "a60ba78179cc8b6be904bf606f10cf178bb64ed2",
     "code_ci_run": null,
-    "code_ci": "EX26 local qualification: 1401 executed tests,7PDF,build,local smoke,audit0,secret pass with615 stable inputs. Delivered-head CI is tracked on PR30; prior CI173 audit failure is historical. No deployment or work-package acceptance change."
+    "code_ci": "EX27 local qualification passed 1,407 executed tests,7PDF,build,local smoke,audit0,secret on619 stable inputs. Delivered-head CI tracked on PR30. WP12/WP13/WP03 remain in_progress; no deployment."
   }
 }
