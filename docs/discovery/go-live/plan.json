@@ -174,7 +174,7 @@
       "goals": [
         "G05"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "work": "work-packages.md#gl03--acquire-candidates-with-a-durable-bounded-frontier",
       "acceptance_ids": [
         "GL03-A1",
