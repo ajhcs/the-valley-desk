@@ -2,6 +2,11 @@ import { z } from 'zod';
 
 // Private research leads only. None of these structures is an admission or publication projection.
 const https = z.string().url().refine(value => new URL(value).protocol === 'https:', 'HTTPS source required');
+const calendarDay = (value: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return Number.isFinite(date.valueOf()) && date.toISOString().slice(0, 10) === value;
+};
 const repoSchema = z.object({ url: https, purpose: z.string().min(1), purposeSource: https, githubPageChecked: z.boolean(), note: z.string().nullable() }).passthrough();
 const occurrenceSchema = z.object({
   account: z.string().min(1), accountUrl: https, accountType: z.string().nullable(), person: z.string().nullable(),
@@ -10,7 +15,7 @@ const occurrenceSchema = z.object({
   accountLinkSource: https, relationshipBasis: z.string().min(1), publicationAuthorized: z.literal(false), repositories: z.array(repoSchema).min(1),
 }).passthrough();
 const accountOnlySchema = z.object({ account: z.string().min(1), url: https, person: z.string().nullable(), institution: z.string().min(1), affiliationTimeScope: z.string().min(1), location: z.string().nullable(), source: https, publicationAuthorized: z.literal(false) }).passthrough();
-export const ResearchLeadInputSchema = z.object({ accountOnlyLeads: z.array(accountOnlySchema).default([]), title: z.string(), observedDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), status: z.string(), method: z.string(), publicationAuthorized: z.literal(false), accounts: z.array(occurrenceSchema) }).passthrough();
+export const ResearchLeadInputSchema = z.object({ accountOnlyLeads: z.array(accountOnlySchema).default([]), title: z.string(), observedDate: z.string().refine(calendarDay, 'Valid calendar day required'), status: z.string(), method: z.string(), publicationAuthorized: z.literal(false), accounts: z.array(occurrenceSchema) }).passthrough();
 type LeadInput = z.infer<typeof ResearchLeadInputSchema>;
 
 function githubPath(value: string, length: number): string[] {
@@ -23,6 +28,7 @@ const key = (value: string) => value.toLowerCase();
 const sort = <T>(values: T[], f: (v: T) => string): T[] => values.sort((a, b) => f(a).localeCompare(f(b), 'en'));
 
 export function buildResearchAccountMap(raw: { source: string; data: unknown; sha256?: string }[], baseline: { source: string; data: unknown }[] = []) {
+  if (new Set(raw.map(item => item.source)).size !== raw.length) throw new Error('Duplicate input source');
   const inputs = raw.map(({ source, data, sha256 }) => {
     if (sha256 !== undefined && !/^[0-9a-f]{64}$/.test(sha256)) throw new Error(`Invalid input SHA-256: ${source}`);
     if (!/^docs\/discovery\/go-live\/evidence\/GL05\/[a-z0-9-]+\.json$/.test(source)) throw new Error(`Invalid evidence reference: ${source}`);
@@ -65,7 +71,7 @@ export function buildResearchAccountMap(raw: { source: string; data: unknown; sh
       ? { type: 'source-person-resource-association', person: entry.person, repositoryKey: 'shannonpileggi/gtreg', source: entry.accountLinkSource, qualification: 'Documentation names author and maintainer; account control not authenticated.' }
       : entry.person === 'Nick Battista' && accountKey === 'nickabattista' && links.some(link => link.repositoryKey === 'nickabattista/ib2d') && entry.accountLinkSource === 'https://nickabattista.wixsite.com/home'
       ? { type: 'source-person-resource-association', person: entry.person, repositoryKey: 'nickabattista/ib2d', source: entry.accountLinkSource, qualification: 'Lab page reports his GitHub site and project association; account control not authenticated.' } : null;
-    occurrences.push({ id: occurrenceId, observedDate: data.observedDate, accountKey, personOccurrence: entry.person === null ? null : { name: entry.person, role: accountKey === 'sacanlab' ? 'paper-author; account ownership not established' : 'source-reported person; role requires source review' }, personAccountEdge, personResourceAssociation, institutionOrLab: entry.institutionOrLab, institutionAccountSource: entry.accountLinkSource, relationshipBasis: entry.relationshipBasis, affiliationTimeScope: entry.affiliationTimeScope, region: entry.region, projectWorksite: null, currentEmployment: null, repositories: links, novelty: 'unknown; reconcile against catalog and frontier', publicationAuthorized: false });
+    occurrences.push({ id: occurrenceId, observedDate: data.observedDate, sourceAccess: entry.sourceAccess ?? entry.evidenceAccess ?? entry.observationMethod ?? data.method, accountKey, personOccurrence: entry.person === null ? null : { name: entry.person, role: accountKey === 'sacanlab' ? 'paper-author; account ownership not established' : 'source-reported person; role requires source review' }, personAccountEdge, personResourceAssociation, institutionOrLab: entry.institutionOrLab, institutionAccountSource: entry.accountLinkSource, relationshipBasis: entry.relationshipBasis, affiliationTimeScope: entry.affiliationTimeScope, region: entry.region, projectWorksite: null, currentEmployment: null, repositories: links, novelty: 'unknown; reconcile against catalog and frontier', publicationAuthorized: false });
   }
   for (const { source, data } of inputs) for (const [index, entry] of data.accountOnlyLeads.entries()) {
     const path = githubPath(entry.url, 1), accountKey = key(entry.account);
@@ -73,7 +79,7 @@ export function buildResearchAccountMap(raw: { source: string; data: unknown; sh
     const occurrenceId = `${source}#/accountOnlyLeads/${index}`;
     const account = accounts.get(accountKey) ?? { key: accountKey, url: `https://github.com/${accountKey}`, occurrenceIds: [], repositoryKeys: [] };
     account.occurrenceIds.push(occurrenceId); accounts.set(accountKey, account);
-    occurrences.push({ id: occurrenceId, observedDate: data.observedDate, accountKey, personOccurrence: entry.person === null ? null : { name: entry.person, role: 'source-reported researcher or student occurrence; account ownership not established' }, personAccountEdge: null, personResourceAssociation: null, institutionOrLab: entry.institution, institutionAccountSource: entry.source, relationshipBasis: 'Source associates a lab or project with this account; individual ownership unverified', affiliationTimeScope: entry.affiliationTimeScope, region: { municipality: null, county: null, basis: entry.location ?? 'unknown', source: entry.source }, projectWorksite: null, currentEmployment: null, repositories: [], reportedProjectPurpose: typeof entry.projectPurpose === 'string' ? entry.projectPurpose : null, novelty: 'unknown; reconcile against catalog and frontier', publicationAuthorized: false });
+    occurrences.push({ id: occurrenceId, observedDate: data.observedDate, sourceAccess: data.method, accountKey, personOccurrence: entry.person === null ? null : { name: entry.person, role: 'source-reported researcher or student occurrence; account ownership not established' }, personAccountEdge: null, personResourceAssociation: null, institutionOrLab: entry.institution, institutionAccountSource: entry.source, relationshipBasis: 'Source associates a lab or project with this account; individual ownership unverified', affiliationTimeScope: entry.affiliationTimeScope, region: { municipality: null, county: null, basis: entry.location ?? 'unknown', source: entry.source }, projectWorksite: null, currentEmployment: null, repositories: [], reportedProjectPurpose: typeof entry.projectPurpose === 'string' ? entry.projectPurpose : null, novelty: 'unknown; reconcile against catalog and frontier', publicationAuthorized: false });
   }
   // Reconciliation is a literal URL/namespace cross-reference, not a novelty finding.
   const references = new Map<string, Set<string>>();

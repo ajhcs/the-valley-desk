@@ -1443,6 +1443,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary source search index; no GitHub page verification",
       "accountKey": "mlbc-lab",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1503,6 +1504,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/1",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary source search index; no GitHub page verification",
       "accountKey": "chenyongrowan",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1536,6 +1538,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/2",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary source search index; no GitHub page verification",
       "accountKey": "beemd",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1569,6 +1572,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/3",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary source search index; no GitHub page verification",
       "accountKey": "faisalahm3d",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1602,6 +1606,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/4",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary source search index; no GitHub page verification",
       "accountKey": "abelavit",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1635,6 +1640,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary source search index; no GitHub page verification",
       "accountKey": "raphael-group",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1704,6 +1710,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/6",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary source search index; no GitHub page verification",
       "accountKey": "akibzaman",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1737,6 +1744,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "murthylab",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1797,6 +1805,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/1",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "princetonuniversity",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1830,6 +1839,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/10",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "brody-lab",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1863,6 +1873,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/2",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "nickabattista",
       "personOccurrence": {
         "name": "Nick Battista",
@@ -1905,6 +1916,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/3",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "marbd11",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1938,6 +1950,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/4",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "wanglabprinceton",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -1971,6 +1984,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "leiferlab",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2031,6 +2045,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/6",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "braincogs",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2064,6 +2079,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/7",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "singh-lab",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2097,6 +2113,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/8",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "raphael-group",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2130,6 +2147,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/9",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary search index rendering",
       "accountKey": "banaiek",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2163,6 +2181,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accountOnlyLeads/0",
       "observedDate": "2026-11-16",
+      "sourceAccess": "First-party source text surfaced in search indexing. No direct source page, GitHub endpoint, code, README, or profile body collected. No retries of refused requests.",
       "accountKey": "phucngo1711",
       "personOccurrence": {
         "name": "Phuc Ngo",
@@ -2190,6 +2209,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/0",
       "observedDate": "2026-11-16",
+      "sourceAccess": "indexed first-party source text; GitHub page not directly read",
       "accountKey": "malikyousef",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2223,6 +2243,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/1",
       "observedDate": "2026-11-16",
+      "sourceAccess": "indexed first-party source text; GitHub page not directly read",
       "accountKey": "tju-cmc-org",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2256,6 +2277,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/2",
       "observedDate": "2026-11-16",
+      "sourceAccess": "indexed first-party source text; GitHub page not directly read",
       "accountKey": "tingtingzhan",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2289,6 +2311,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/3",
       "observedDate": "2026-11-16",
+      "sourceAccess": "indexed first-party source text; GitHub page not directly read",
       "accountKey": "eesi",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2322,6 +2345,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/4",
       "observedDate": "2026-11-16",
+      "sourceAccess": "indexed first-party source text; GitHub page not directly read",
       "accountKey": "david-wzhao",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2355,6 +2379,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/5",
       "observedDate": "2026-11-16",
+      "sourceAccess": "indexed first-party source text; GitHub page not directly read",
       "accountKey": "iclab4dl",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2388,6 +2413,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/0",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "dvs-lab",
       "personOccurrence": {
         "name": "David V. Smith",
@@ -2415,6 +2441,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/1",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "dynamicbrainmind",
       "personOccurrence": {
         "name": "Aaron Kucyi",
@@ -2442,6 +2469,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/2",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "ryanefendy95",
       "personOccurrence": {
         "name": "Ryan Efendy",
@@ -2469,6 +2497,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/3",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "ob74",
       "personOccurrence": {
         "name": "Omair Bhore",
@@ -2496,6 +2525,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/4",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "hna6300",
       "personOccurrence": {
         "name": "Anh Huynh",
@@ -2523,6 +2553,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/5",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "deepak8694",
       "personOccurrence": {
         "name": "Deepak Yadav",
@@ -2550,6 +2581,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/6",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "mrcalderon",
       "personOccurrence": {
         "name": "Miguel Calderon",
@@ -2577,6 +2609,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/0",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "newilson",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2610,6 +2643,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/1",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "markymarkymark",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2643,6 +2677,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/2",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "mldataanalytics",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2676,6 +2711,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/3",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "clear-ec",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2709,6 +2745,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/4",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "pennchopmicrobiomeprogram",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2742,6 +2779,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/5",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "sacanlab",
       "personOccurrence": {
         "name": "Ahmet Sacan",
@@ -2778,6 +2816,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/6",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "bioccjw",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2811,6 +2850,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/7",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "dsin85691",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2844,6 +2884,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/8",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "felixagbavor",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2877,6 +2918,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/9",
       "observedDate": "2026-11-16",
+      "sourceAccess": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
       "accountKey": "mlbc-lab",
       "personOccurrence": null,
       "personAccountEdge": null,
@@ -2910,6 +2952,7 @@
     {
       "id": "docs/discovery/go-live/evidence/GL05/root-account-leads.json#/accounts/0",
       "observedDate": "2026-11-16",
+      "sourceAccess": "primary-web-rendering",
       "accountKey": "shannonpileggi",
       "personOccurrence": {
         "name": "Shannon Pileggi",

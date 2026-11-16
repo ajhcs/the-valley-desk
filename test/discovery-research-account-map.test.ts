@@ -75,3 +75,12 @@ test('generated input hashes bind exact five sources and script rejects unknown 
   const invalid = spawnSync(process.execPath, ['--import', 'tsx/esm', 'scripts/build-research-account-map.mjs', '--invalid'], { encoding: 'utf8' });
   assert.notEqual(invalid.status, 0); assert.match(invalid.stderr, /Usage:/);
 });
+
+test('rejects duplicate source references and invalid calendar days', () => {
+  const data = fixture();
+  assert.throws(() => buildResearchAccountMap([{ source, data }, { source, data }]), /Duplicate input source/);
+  const impossible = fixture(); impossible.observedDate = '2026-02-30';
+  assert.throws(() => buildResearchAccountMap([{ source, data: impossible }]));
+  const leap = fixture(); leap.observedDate = '2024-02-29';
+  assert.equal(buildResearchAccountMap([{ source, data: leap }]).occurrences[0].observedDate, '2024-02-29');
+});
