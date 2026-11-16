@@ -974,3 +974,11 @@ regressions, build and local smoke passing, then dependency audit failing and it
 later secret scan skipped. The earlier local secret scan passed. This direction
 update changes documentation only; no new application test result is claimed.
 The strict corpus remains empty and not_frozen. Deployment remains prohibited.
+
+## EX26 — Dependency audit remediation
+
+**Status:** Local dependency migration and independent engineering review passed; exact-head CI is recorded separately.
+
+The user authorized resolving the CI dependency blocker with Sol/Terra implementation and Astra review. [The qualification guide](dependency-remediation.md) records the genuine Zod 4 migration, legacy string/default preservation, intentional unsafe-integer and required-value hardening, original signed-receipt compatibility, and independent router/XML and lock checks. Root retained the high-severity audit gate and pinned the direct patched dependency versions.
+
+The full npm test chain passed 1401 executed tests; seven PDF regressions, build, local smoke, online audit and secret scan passed on 615 stable runtime inputs. The online audit changed from seven affected-package entries (four high) to zero reported vulnerabilities. All frozen handoff/model contracts and the empty not_frozen reference manifest remain unchanged. Actual source enrollment, independent human review, E01–E06 and deployment are still held. No work package changes acceptance by this dependency amendment.

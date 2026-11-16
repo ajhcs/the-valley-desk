@@ -1,0 +1,192 @@
+{
+  "id": "TVD-DEPENDENCY-REMEDIATION-1",
+  "decision": "EX26",
+  "recorded_at": "2026-11-16T00:17:13.428297+00:00",
+  "reviewed_code_commit": "166de35158721b63b26177ea308afad8bb8a5719",
+  "disposition": "locally_qualified_exact_head_CI_tracked_on_PR",
+  "versions": {
+    "zod": "4.6.7",
+    "fast-xml-parser": "5.12.0",
+    "vite": "8.2.4",
+    "wrangler": "4.153.0",
+    "miniflare": "5.20261023.0-beta",
+    "undici": "7.30.1",
+    "seroval": "1.8.1",
+    "seroval-plugins": "1.6.3"
+  },
+  "validation": {
+    "commands": [
+      {
+        "name": "tests",
+        "argv": [
+          "npm",
+          "test"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "pdf",
+        "argv": [
+          "npm",
+          "run",
+          "test:policy-pdf"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build",
+        "argv": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "smoke",
+        "argv": [
+          "npm",
+          "run",
+          "ops:smoke"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "audit",
+        "argv": [
+          "npm",
+          "audit",
+          "--audit-level=high",
+          "--json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "secret",
+        "argv": [
+          "npm",
+          "run",
+          "secret-scan"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "application_Watch_discovery_counts": [
+      939,
+      146,
+      316
+    ],
+    "executed_tests": 1401,
+    "failures": 0,
+    "skips": 0,
+    "PDF_tests": 7,
+    "online_audit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "Astra_focused_tests": 59,
+    "Astra_differential_cases": 5269,
+    "original_v3_signed_receipts": 11,
+    "Sol_targeted_tests": 86,
+    "scope": "Focused counts overlap full suite and are not added as unique coverage; no human authority or whole-program equivalence."
+  },
+  "runtime_inputs": {
+    "path": ".discovery-work/dependency-remediation/input-sha256.json",
+    "sha256": "d8ba6802120e2f392a5ce283206e20b0b597cc1dd79354fe488038909c5d7c23",
+    "count": 615,
+    "drift": []
+  },
+  "runtime_outputs": {
+    "package-lock.json": "88a44b19e556f92ba10550bbc0ab215f8c91a4207a5beabebfbf0ad4eae1abd6",
+    "package.json": "03d5733e525a456eb196729f9268123a115baea79a83f05047b23a6031fbc952",
+    "src/agents/regional-agent-contract.ts": "53a2fc938cfd7edfe2f24df008631a56f2acd5e850d8a30babf825542e4ebede",
+    "src/content/discovery-evidence.ts": "6f5a7ccbf4a31d1c36a23521ea43842d532dc4fbf7f0d1f3d9a85439d4645e86",
+    "src/content/entity.ts": "ae8ea7bea4d29526ccd3aad00da17015dc8ed3c919c3d4d0f5d32224aa03a573",
+    "src/content/regional-evidence.ts": "0bb715c0f860c7c2b90378f85cefd883d96c19a093773a19a2fd13a205138a17",
+    "src/content/schema.ts": "a2392cd94d1a135445bbeb3c5769136c8865dedf57b6a6d196d157a5f12fe64e",
+    "src/content/watch-representatives.ts": "9420ed014435884c68a3ce1e3482afb916b99132458b7051e205b3963397c12a",
+    "src/content/watch-schema.ts": "608d4c9d84adcbf9ffe8e3993ebe3f5cce5a2f0d5f57158eb47fd53f32d27d2a",
+    "src/ingest/coverage-pack.ts": "44f3a58240a736037fcdfddae642fad91a45f747f7fead89a3b77efc58cf48ff",
+    "src/ingest/discovery-evaluation.ts": "7f452e7615ab25e853145621d8cdbf8b47acaf0b84ec6cba20f52f4039a5fcc1",
+    "src/ingest/discovery-reference-receipts.ts": "19980fa01cea945dd692f2c442f058af4bfc327a8431f659124fe9bc69f86f4d",
+    "src/ingest/discovery-reference-signatures.ts": "d956c63865abe17b6de362a4297bad4f69fdd3009881ef9570aa90c501e758cb",
+    "src/ingest/envelope.ts": "0872116e010cd9c7c5e8f6d0cb6d17151120793d9295a9ce0bc68e055da89222",
+    "src/ingest/event-calendar.ts": "eab8b09d50a83380f72acebfa76e7a29fe80c6dada8724600dad00375168e048",
+    "src/ingest/feed-contract.ts": "90821c06ca08897e7aaf56b22bdad2e2e89812582b795358d4960328294f9b6f",
+    "src/ingest/official-source-discovery.ts": "8d05f2e4af22cdcc5123158179c963cd8b683f11ab012f623fe5e9d9aae9d5fb",
+    "src/ingest/origins.ts": "43edec834ddda62357537511dbbc6c201b826b00295aae8ec54219eb8313a8a4",
+    "src/ingest/pa-bill-evidence.ts": "899acffb0745dc510ab7f5f5eb6df8f3f0e0eb1104766f6912eeba8de08f04e0",
+    "src/ingest/policy-baseline.ts": "8783d00de6cd07145da2669eb3b63bd920573df5c6b219ab4c303cc98c7dedcc",
+    "src/ingest/policy-watch-native.ts": "b31d1740a64767e25f8c6bd52fc0336db4d481c84a43d4f3b12b82ba8f376485",
+    "src/ingest/product-watch.ts": "145d21bff6b046cbd5513b73b7552498fd2b9f1326cfed84565ca492b97c4c9f",
+    "src/ingest/regional-contracts.ts": "b82353be7d36e5a75de3a2190a083418201d9891c3a41aded5f167788fdee75e",
+    "src/ingest/regional-discovery-view.ts": "b25359888cac88e31e297c342f9ab809b5bca06b7aafcae8bd521677801301c7",
+    "src/ingest/regional-publications.ts": "31b53746912bdc37d3878a3e1d41459518abd3e11e903d1897795237396f6740",
+    "src/ingest/regional-read-view.ts": "460088bf460787dfca8f73d7787a0417492b3454b2d5bed66592224f9eb95200",
+    "src/ingest/regional-worker-read.ts": "709558196b0dba08b6811938f1b168f29e1c7aaf69f72ed5ba5faf90d1f40d45",
+    "src/ingest/representative-collection.ts": "fe20020167ea8e61677b2e1bbce79710a011f0885a3468e187951c68d991159c",
+    "src/ingest/representative-persistence.ts": "2f801b0b3d95d8b72dc785c9e05fedf17a7ae86c3edb66471193e5012672976e",
+    "src/ingest/representative-roster-drafts.ts": "c08422f51d90ea8021440f0f780df629993047c36ace94e29d723c2c241137a5",
+    "src/ingest/social-evidence.ts": "cf8b5ac85cf9b7a5d9a0f032bac0e8519ce59449f3154bc0e7c976ef991d3136",
+    "src/ingest/verification.ts": "7726fd3f8b92aa0fd9d8eb7a291c9337a93fa20abbcc18b73ef3aae1f7409d54",
+    "src/ingest/watch-model-evaluation.ts": "eed7cb9eb2636e7ff808d96a258e40cc653d6aa46c9f08ee0719169eabd56bbb",
+    "src/ingest/watch-persistence.ts": "63477b575bc69cd8ba9e71071115f1203bfc28eb018dc1039845616b31741a3a",
+    "src/ingest/watch-updates-api.ts": "b639567ef7f1e707a6f89e024e7427a959d2f9d93af16b2490c6cf89014cd9e5",
+    "src/ingest/watch/policy-adapter.ts": "9c746e14133b33f1d4ca35acc3f5389cd43f43deaf7893a475e9c63c99a0c4b2",
+    "src/lib/schema-compat.ts": "24e7cf5ea7c3e919b964b01e539cdbd66f9d0f8893a232c9223269abcc1096a9",
+    "test/discovery-dependency-security.test.ts": "a9b49d06d4818abe84298d9bf48d72db0134d5f5b30b822d4439ff9b785b7f43",
+    "test/fixtures/watch-legacy/zod3-semantics.json": "358ad83e275d167da47f7ba0577976778c711894bd58a1e2851f5650ddfc643f",
+    "test/watch-legacy-contracts.test.ts": "27264365ca332881cb2d1acf51771c3e2f917c14bbea9c583b9d8efc5415a630"
+  },
+  "outputs": {
+    "docs/discovery/dependency-remediation.md": "b7526257a20936f3c68eb7a76572630dfbd71e1565e8fb8914b1256ee6ffea84",
+    "docs/discovery/reviews/dependency-remediation-astra.md": "ed30651f094911149a32cb57b5f511fc6d6201401a304aac6d343cc2df65d988",
+    "docs/discovery/implementation-decisions.md": "2067d2eb8f675cc7bb512909fe38d8d105ee3a7f78e09fc2126eae76084363e8",
+    "docs/discovery/README.md": "bb6c81ece5e2bb0fb54d83dbcee368226d4cf469935f2b6fa03e531586a77c09"
+  },
+  "private_artifacts": {
+    ".discovery-work/dependency-remediation/tests-final.log": "ea902fcb12f05ad51676dd1bf4aaa6ea789a8e6b3417d966b99e23ba560e9239",
+    ".discovery-work/dependency-remediation/pdf-final.log": "b6019cd4b5c06d123d090a8143981fc070af353de5125b1468f47e0b9ab8ef60",
+    ".discovery-work/dependency-remediation/build-final.log": "d061f2c8eefa7a77555d5549adbacc2af3e485414d6ad53ab1df7ac3e49b131c",
+    ".discovery-work/dependency-remediation/smoke-final.log": "b93e7e783ccd3dbdd03c2cc161a490ec21700cb3a248b06c5dcb7343adcc9e6d",
+    ".discovery-work/dependency-remediation/audit-final.log": "d04ff73073bfcca2d06bfef3ca46173bfba16cd7ae37d6c1de342054ae6c56e1",
+    ".discovery-work/dependency-remediation/secret-final.log": "900ea9c7752542f3d30dccc17bc4ab7c7568583558b07720ca37be0d16c8ff5c",
+    ".discovery-work/dependency-remediation/input-sha256.json": "d8ba6802120e2f392a5ce283206e20b0b597cc1dd79354fe488038909c5d7c23",
+    ".discovery-work/dependency-remediation/validation.json": "369dce5d09c9281e19aed84edb4a857cbe1f4a5afc92f135ab18a84a105c3eaf",
+    ".discovery-work/dependency-remediation/clean-install.log": "bf98e985113b2ecba3f09b6f32febfa9eb5db7b061c38fd44f16616d646924dc",
+    ".discovery-work/dependency-remediation/pdf-bootstrap.log": "0b50f19b34159f3ecb9112dce5d8275b8dc92790c27fe285e7d5ea71597588a3",
+    ".discovery-work/dependency-remediation/pdf-bootstrap-qualified.log": "4a5fefba6591ee725099f67abe8a136c2ae3521011304ce88f255e86cee1ee6b",
+    ".discovery-work/dependency-remediation/pdf-bootstrap-clean.log": "09793eebaf1dface368f15d7f366eb90aea0b778e6d3557776383282012643ac",
+    ".discovery-work/dependency-remediation/terra/actual-root-esm.log": "287d235af98aa6ff25598ad2309da888b3ed51e598c89b535010ad887940d46c",
+    ".discovery-work/dependency-remediation/astra/migration-independent-final.log": "7d1a84ad23874bb87d4be93d2a9628bfb95ad77ee03a15a8e77a01d77f0c06fa",
+    ".discovery-work/dependency-remediation/astra/compat-comparison.json": "6b20197e645c90b2a91255ec4d347e6614e8a6b7295902ce2440f2b61b5d6170",
+    ".discovery-work/dependency-remediation/astra/esbuild-lock-platforms.json": "3b7266d0c72aabcd9ca0a1e32f74124abb4c7dd367f4c2577926592252e63645"
+  },
+  "frozen_manifests": [
+    {
+      "path": "docs/discovery-engineering/HANDOFF-MANIFEST.json",
+      "entries": 70,
+      "mismatches": []
+    },
+    {
+      "path": "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json",
+      "entries": 21,
+      "mismatches": []
+    }
+  ],
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "package_acceptance_changed": false,
+  "manifest_status": "not_frozen",
+  "empirical_gates": "E01-E06_not_run",
+  "deployment": false,
+  "merge": false
+}

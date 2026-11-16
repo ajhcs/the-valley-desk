@@ -38,7 +38,10 @@
       "status": "accepted",
       "receipt": "receipts/WP02.json",
       "acceptance": "2026-11-14T00:39:08.531957+00:00",
-      "notes": "Model v0.5 and shared contracts accepted within recorded formal/schema scope; no operational or empirical acceptance."
+      "notes": "Model v0.5 and shared contracts accepted within recorded formal/schema scope; no operational or empirical acceptance.",
+      "amendment_receipts": [
+        "receipts/dependency-remediation.json"
+      ]
     },
     {
       "id": "WP03",
@@ -61,6 +64,9 @@
         "receipts/WP03-github-publication-progress.json",
         "receipts/WP03-crossref-request-progress.json",
         "receipts/WP03-human-review-progress.json"
+      ],
+      "amendment_receipts": [
+        "receipts/dependency-remediation.json"
       ]
     },
     {
@@ -73,7 +79,10 @@
       "status": "accepted",
       "receipt": "receipts/WP04.json",
       "acceptance": "2026-11-14T00:44:25.177210+00:00",
-      "notes": "Additive catalog and actual local-D1 transaction checks accepted; no real source admission or publication."
+      "notes": "Additive catalog and actual local-D1 transaction checks accepted; no real source admission or publication.",
+      "amendment_receipts": [
+        "receipts/dependency-remediation.json"
+      ]
     },
     {
       "id": "WP05",
@@ -88,7 +97,8 @@
       "notes": "Original evidence/provenance package accepted. EX09 guarded registry composition separately accepted and requalified in WP06; original receipt preserved.",
       "started_at": "2026-11-14T00:53:50.168049+00:00",
       "amendment_receipts": [
-        "receipts/WP05-WP06-composition.json"
+        "receipts/WP05-WP06-composition.json",
+        "receipts/dependency-remediation.json"
       ]
     },
     {
@@ -106,7 +116,8 @@
       "started_at": "2026-11-14T01:38:56.900973+00:00",
       "amendment_receipts": [
         "receipts/WP06-WP07-collection.json",
-        "receipts/WP06-WP07-WP08-composition.json"
+        "receipts/WP06-WP07-WP08-composition.json",
+        "receipts/dependency-remediation.json"
       ]
     },
     {
@@ -123,7 +134,8 @@
       "started_at": "2026-11-14T02:46:31.975225+00:00",
       "amendment_receipts": [
         "receipts/WP06-WP07-WP08-composition.json",
-        "receipts/WP07-WP10-composition.json"
+        "receipts/WP07-WP10-composition.json",
+        "receipts/dependency-remediation.json"
       ]
     },
     {
@@ -139,7 +151,8 @@
       "notes": "Local implementation accepted after 25 independent actual-D1 tests and 1,235 integrated tests on 550 stable inputs. Native GitHub leads, retained-baseline stages, authenticated Link metadata and typed gaps; EX11 requalifies shared WP06/WP07 composition. Actual provider access/rights and E04 route qualification remain pending; no live enrollment or deployment. EX22 local whole-payload raw-retention correction reviewed; 39 provider tests and 16 independent D1 checks pass. Real metadata reviewed manually; no source enrollment. Fixed repository-baseline native payloads replay under synthetic authority; README/CITATION join remains unimplemented.",
       "started_at": "2026-11-15T17:16:25.701427+00:00",
       "amendment_receipts": [
-        "receipts/github-publication-qualification-20261115.json"
+        "receipts/github-publication-qualification-20261115.json",
+        "receipts/dependency-remediation.json"
       ]
     },
     {
@@ -153,7 +166,10 @@
       "receipt": "receipts/WP09.json",
       "acceptance": "2026-11-15T18:13:45.401366+00:00",
       "notes": "Local PubMed implementation accepted after Sol implementation, Terra actual-D1 tests, 40 independent Astra PubMed checks and root qualification of 1,267 enumerated tests under 561 stable inputs. Code CI passed tests/PDF/build/smoke; audit failed. Immutable scope/batch binding, separate budgets and truthful diagnostics/gaps. No live provider activation/deployment; E04 and empirical gates pending.",
-      "started_at": "2026-11-15T17:46:23.423303+00:00"
+      "started_at": "2026-11-15T17:46:23.423303+00:00",
+      "amendment_receipts": [
+        "receipts/dependency-remediation.json"
+      ]
     },
     {
       "id": "WP10",
@@ -169,7 +185,8 @@
       "started_at": "2026-11-15T18:29:22.900876+00:00",
       "amendment_receipts": [
         "receipts/github-publication-qualification-20261115.json",
-        "receipts/crossref-request-qualification-20261115.json"
+        "receipts/crossref-request-qualification-20261115.json",
+        "receipts/dependency-remediation.json"
       ]
     },
     {
@@ -183,7 +200,10 @@
       "receipt": "receipts/WP11.json",
       "acceptance": "2026-11-15T19:17:21.990312+00:00",
       "notes": "Local arXiv implementation accepted after Sol implementation, Terra 21 actual-D1 tests, Astra 41 independent probes plus a D1 initial-offset guard experiment, and root 1,318 tests plus seven PDF regressions. EX16 freezes the identifier subset. No shared store change, live activation, public admission or deployment; actual source/E04 and empirical qualification remain pending.",
-      "started_at": "2026-11-15T18:53:42.994075+00:00"
+      "started_at": "2026-11-15T18:53:42.994075+00:00",
+      "amendment_receipts": [
+        "receipts/dependency-remediation.json"
+      ]
     },
     {
       "id": "WP12",
@@ -200,6 +220,9 @@
       "progress_receipts": [
         "receipts/WP12-local-implementation.json",
         "receipts/real-source-qualification-20261115.json"
+      ],
+      "amendment_receipts": [
+        "receipts/dependency-remediation.json"
       ]
     },
     {
@@ -217,6 +240,9 @@
       "progress_receipts": [
         "receipts/WP13-local-implementation.json",
         "receipts/real-source-qualification-20261115.json"
+      ],
+      "amendment_receipts": [
+        "receipts/dependency-remediation.json"
       ]
     },
     {
@@ -379,7 +405,10 @@
       "status": "not_started",
       "receipt": null,
       "acceptance": null,
-      "notes": ""
+      "notes": "",
+      "amendment_receipts": [
+        "receipts/dependency-remediation.json"
+      ]
     },
     {
       "id": "WP24",
@@ -490,7 +519,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-15T23:44:34.996852+00:00",
+  "updated_at": "2026-11-16T00:17:13.428297+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -756,12 +785,32 @@
         "WP30"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX26",
+      "path": "implementation-decisions.md",
+      "status": "dependency_migration_locally_qualified_exact_head_CI_separate",
+      "affects": [
+        "WP02",
+        "WP03",
+        "WP04",
+        "WP05",
+        "WP06",
+        "WP07",
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP23"
+      ],
+      "thresholds_changed": false
     }
   ],
   "next_ready_packages": [],
   "release_readiness": "not_qualified",
   "release_blockers": [
-    "dependency-audit: four high advisories in unchanged lockfile",
     "remaining unaccepted core packages and empirical/operating gates",
     "deployment explicitly prohibited"
   ],
@@ -773,8 +822,8 @@
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "41d306e95ce4bcf0872bb2d223fc6016a87eb98a",
-    "code_ci_run": 43771502022,
-    "code_ci": "Observed CI173 on 680deabf7a45ba36fb22d3f22deb66f0945b4987: tests, PDF regressions, build and local smoke passed; dependency audit failed and later secret scan was skipped. The preceding local secret scan passed. A fresh audit confirms four high/seven total affected-package entries. EX25 changes direction/status documentation only; no new runtime test result or package acceptance. A later documentation-head CI is separate."
+    "reviewed_code_commit": "166de35158721b63b26177ea308afad8bb8a5719",
+    "code_ci_run": null,
+    "code_ci": "EX26 local qualification: 1401 executed tests,7PDF,build,local smoke,audit0,secret pass with615 stable inputs. Delivered-head CI is tracked on PR30; prior CI173 audit failure is historical. No deployment or work-package acceptance change."
   }
 }

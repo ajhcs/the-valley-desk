@@ -184,9 +184,10 @@ The preceding WP12/WP13 increment used the qualified Node 22.23.2 runtime:
   48 institutional probes, including authentic-snapshot replay and ancestor failures.
   WP03 adds genuine signed stale-label rejection plus 14 independent context/DAG
   checks. These counts overlap or supplement the suite and are not added twice.
-- `npm audit --audit-level=high`: failed with four high-severity advisories,
-  seven total. The dependency lockfile is unchanged; see the
-  [audit and remediation record](dependency-audit.json).
+- EX26: the patched dependency graph passes online `npm audit --audit-level=high`
+  with zero reported vulnerabilities at qualification time. The earlier four-high,
+  seven-total result is historical in [the original audit](dependency-audit.json).
+  See [current dependency qualification](receipts/dependency-remediation.json).
 
 The later real-source investigation fixed a separate non-HTML healthy-empty gap.
 The affected institutional suite now passes 19 tests; exact Penn bytes also pass
