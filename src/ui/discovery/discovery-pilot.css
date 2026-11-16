@@ -1,38 +1,51 @@
-.DiscoveryPilot { max-width: 1220px; margin: 0 auto; padding: 48px 24px 72px; color: var(--text); line-height: 1.6; overflow-wrap: anywhere; }
+.DiscoveryPilot { max-width: 1220px; margin: 0 auto; padding: 24px 0 64px; color: var(--text); line-height: 1.6; overflow-wrap: anywhere; }
 .DiscoveryPilot *, .DiscoveryPilot *::before, .DiscoveryPilot *::after { box-sizing: border-box; }
 .DiscoveryPilot :is(h1,h2,h3,p,ul,dl) { margin: 0; }
 .DiscoveryPilot a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 .DiscoveryPilot :is(a,input,select,button,summary):focus-visible { outline: 3px solid var(--admiral); outline-offset: 4px; }
-.PilotHeading { max-width: 850px; margin-bottom: 30px; }
+.PilotHeading { max-width: 900px; margin-bottom: 22px; }
 .PilotEyebrow { color: var(--mute); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-.PilotHeading h1 { margin: 8px 0 16px; font-family: var(--font-serif); font-size: clamp(32px,4vw,48px); line-height: 1.15; font-weight: 600; text-wrap: balance; }
-.PilotHeading > p { margin-top: 12px; }
-.PilotScope, .PilotCollectionNote, .PilotDate, .PilotSource, .PilotRegional > p { color: var(--mute); font-size: 14px; }
-.PilotFilters { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; padding: 24px; border: 1px solid var(--rule); background: var(--paper-bright); }
-.PilotFilters > label, .PilotFilters > .PilotField { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; min-width: 140px; flex: 1; }
-.PilotFilters .PilotSearch { flex: 3; min-width: min(290px,100%); }
+.PilotHeading h1 { margin: 6px 0 10px; font-family: var(--font-serif); font-size: clamp(28px,3vw,38px); line-height: 1.2; font-weight: 600; text-wrap: balance; }
+.PilotHeading > p { margin-top: 8px; }
+.PilotScope, .PilotDate, .PilotSource, .PilotMuted { color: var(--mute); font-size: 13px; }
+.PilotFilters { display: grid; grid-template-columns: minmax(220px,2fr) minmax(140px,1fr) minmax(160px,1fr) auto auto; align-items: end; gap: 12px; padding: 16px; border: 1px solid var(--rule); background: var(--paper-bright); }
+.PilotFilters > label, .PilotFilters > .PilotField { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; min-width: 0; }
 .PilotFilters :is(input,select,button) { min-height: 44px; font: inherit; font-size: 15px; border: 1px solid var(--mute); border-radius: 3px; padding: 9px 12px; }
 .PilotFilters :is(input,select) { background: var(--paper); color: var(--text); min-width: 0; width: 100%; }
 .PilotFilters button { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 600; cursor: pointer; }
 .PilotFilters > a { display: flex; align-items: center; min-height: 44px; padding: 8px; }
-.PilotStatus { margin-top: 26px; font-weight: 600; }
-.PilotCollectionNote { max-width: 900px; margin: 8px 0 24px !important; }
+.PilotAdvanced { grid-column: 1 / -1; font-size: 13px; }
+.PilotAdvanced summary { cursor: pointer; min-height: 44px; padding: 10px 0; text-decoration: underline; text-underline-offset: 3px; }
+.PilotAdvanced label { display: block; margin: 0 0 6px; }
+.PilotAdvanced select { max-width: 320px; }
+.PilotResultHeader { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; margin: 12px 0; }
+.PilotStatus { font-size: 14px; font-weight: 600; }
+.PilotAbout { margin-left: auto; color: var(--mute); font-size: 13px; }
+.PilotAbout[open] { width: 100%; margin-left: 0; }
+.PilotAbout summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
+.PilotAbout p { max-width: 900px; margin-bottom: 10px; }
 .PilotGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; align-items: start; }
-.PilotCard { border-top: 3px solid var(--ink); border-bottom: 1px solid var(--rule); padding: 20px 0 24px; min-width: 0; }
+.PilotCard { border-top: 3px solid var(--ink); border-bottom: 1px solid var(--rule); padding: 16px 0 20px; min-width: 0; }
 .PilotCard-top { display: flex; gap: 12px; color: var(--mute); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-.PilotCard h2 { font-family: var(--font-serif); font-size: 23px; font-weight: 600; line-height: 1.35; margin: 10px 0 14px; }
+.PilotCard h2 { font-family: var(--font-serif); font-size: 22px; font-weight: 600; line-height: 1.3; margin: 8px 0 10px; }
 .PilotCard h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.PilotByline, .PilotAuthors { font-size: 14px; margin-bottom: 16px !important; }
-.PilotAuthors details { margin-top: 10px; }
-.PilotCard summary { cursor: pointer; min-height: 34px; }
+.PilotDescription { font-size: 14px; margin-bottom: 12px !important; }
+.PilotByline, .PilotAuthors { font-size: 14px; margin-bottom: 10px !important; }
+.PilotAuthors { margin-top: 12px; }
+.PilotCard summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
 .PilotCard ul { padding-left: 20px; }
 .PilotCard li { margin-bottom: 6px; }
 .PilotAuthors details > p { margin-top: 12px; }
-.PilotRegional { padding: 12px 14px; margin-bottom: 16px; border-left: 2px solid var(--rule); font-size: 14px; }
+.PilotAuthors .PilotAuthorPreview { padding: 0; list-style: none; }
+.PilotAuthorPreview li { margin: 8px 0; }
+.PilotAffiliationPreview { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--mute); font-size: 13px; }
+.PilotMatch { border-left: 2px solid var(--rule); padding-left: 12px; font-size: 13px; margin: 8px 0 !important; }
 .PilotRelated { font-size: 14px; margin: 16px 0; }
-.PilotRelated small { display: block; color: var(--mute); }
-.PilotEvidenceLink { display: inline-block; font-size: 12px; }
-.PilotOriginal { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; margin: 10px 0; font-weight: 600; }
+.PilotRelatedTitle { font-weight: 600; }
+.PilotRelatedActions { display: flex; flex-wrap: wrap; gap: 0 14px; }
+.PilotRelatedActions a { display: inline-flex; align-items: center; min-height: 44px; }
+.PilotActions { display: flex; margin: 12px 0; }
+.DiscoveryPilot .PilotOriginal { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 12px; font-size: 14px; font-weight: 600; color: var(--paper); background: var(--ink); border: 1px solid var(--ink); border-radius: 3px; text-decoration: none; }
 .PilotSource { margin-top: 8px; }
 .PilotSource dl { margin: 10px 0; }
 .PilotSource dt { margin-top: 10px; font-weight: 600; }
@@ -41,10 +54,11 @@
 .PilotSource > p { margin-top: 12px; }
 .PilotEmpty { padding: 32px 0; }
 @media (max-width: 650px) {
-  .DiscoveryPilot { padding: 30px 16px 48px; }
+  .DiscoveryPilot { padding: 12px 0 40px; }
   .PilotGrid { grid-template-columns: minmax(0,1fr); }
-  .PilotFilters { padding: 16px; gap: 14px; }
-  .PilotFilters > label, .PilotFilters > .PilotField { min-width: calc(50% - 14px); }
-  .PilotFilters .PilotSearch { min-width: 100%; }
-  .PilotFilters button { flex: 1; }
+  .PilotFilters { grid-template-columns: minmax(0,1fr) minmax(0,1fr); padding: 12px; gap: 10px; }
+  .PilotFilters .PilotSearch { grid-column: 1 / -1; }
+  .PilotHeading h1 { text-wrap: initial; }
+  .PilotEyebrow { letter-spacing: .04em; }
 }
+@media (min-width: 651px) and (max-width: 950px) { .PilotFilters { grid-template-columns: repeat(2,minmax(0,1fr)); } .PilotSearch { grid-column: 1 / -1; } }

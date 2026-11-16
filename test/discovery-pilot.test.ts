@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { DiscoveryPilotCatalogSchema, DiscoveryPilotResultSchema } from '../src/content/discovery-pilot';
 import { handleDiscoveryPilot, parseDiscoveryPilotQuery, queryDiscoveryPilot, readDiscoveryPilot } from '../src/ingest/discovery-pilot';
 import { buildDiscoveryPilotCatalog, canonicalPilotJson, parsePilotJson, pilotPointer } from '../scripts/build-discovery-pilot.mjs';
+import { pilotAuthorPreview, pilotDateLabel, pilotRecordPath } from '../src/ui/discovery/pilot-presentation';
 const selectionFile = new URL('../fixtures/discovery-pilot-selection.json', import.meta.url);
 const catalogFile = new URL('../src/content/discovery-pilot-catalog.json', import.meta.url);
 const selection = async () => JSON.parse(await readFile(selectionFile, 'utf8'));
@@ -243,4 +244,116 @@ test('generated projection drift check is executable and imports do not rebuild 
   assert.equal(result.stdout, 'pilot_projection_current\n');
   assert.deepEqual(await readFile(catalogFile), before);
   assert.equal(DiscoveryPilotCatalogSchema.parse(await catalog()).records.length, 14);
+});
+
+test('all 109 retained author entries are projected in source order without merging people', async () => {
+  const selected = await selection();
+  const generated = await buildDiscoveryPilotCatalog(selected);
+  const counts: number[] = [];
+  for (const row of selected.records.filter((entry: any) => entry.kind === 'publication')) {
+    const source = selected.sources[row.fields.nativeId.source];
+    const body = JSON.parse((await raw(source.bodyPath)).toString());
+    const work = body.message.items?.[0] ?? body.message;
+    const record = generated.records.find(entry => entry.id === row.id)!;
+    counts.push(record.authors.length);
+    assert.deepEqual(record.authors, work.author.map((author: any, sourceIndex: number) => ({
+      sourceIndex, name: [author.given, author.family].filter(Boolean).join(' ') || author.name,
+      affiliations: (author.affiliation ?? []).map((affiliation: any) => affiliation.name),
+    })));
+  }
+  assert.deepEqual(counts, [42, 25, 14, 9, 9, 10]);
+  assert.equal(counts.reduce((a, b) => a + b), 109);
+  const result = await readDiscoveryPilot(generated, { q: 'Philip Cook', kind: 'publication' });
+  assert.equal(result.items.length, 1);
+  assert.equal(result.items[0].nativeId, '10.1038/s41592-021-01185-5');
+  const preview = pilotAuthorPreview(result.items[0].authors, result.query.q);
+  assert.equal(preview.matchesSearch, true);
+  assert.match(preview.authors[0].name, /Philip.*Cook/);
+  assert.equal(result.items[0].authors.length, 42);
+});
+
+test('an omitted, duplicated or reordered author entry cannot silently shrink the source roster', async () => {
+  for (const change of ['omit', 'duplicate', 'reorder']) {
+    const value = await selection();
+    const authors = value.records.find((entry: any) => entry.kind === 'publication').fields.authors;
+    if (change === 'omit') authors.pop();
+    if (change === 'duplicate') authors[1] = structuredClone(authors[0]);
+    if (change === 'reorder') [authors[0], authors[1]] = [authors[1], authors[0]];
+    await assert.rejects(buildDiscoveryPilotCatalog(value), undefined, change);
+  }
+});
+
+test('four short repository descriptions retain exact metadata values and source pointers', async () => {
+  const selected = await selection();
+  const generated = await buildDiscoveryPilotCatalog(selected);
+  const repositories = generated.records.filter(record => record.kind === 'repository');
+  assert.equal(repositories.filter(record => record.description !== null).length, 4);
+  for (const record of repositories) {
+    const row = selected.records.find((entry: any) => entry.id === record.id);
+    const source = selected.sources[row.fields.nativeId.source];
+    assert.equal(record.description, JSON.parse((await raw(source.bodyPath)).toString()).description);
+    assert.ok(record.provenance.some(ref => ref.field === 'description' && ref.pointer === '/description'));
+  }
+  selected.records[0].fields.description = selected.records[0].fields.title;
+  await assert.rejects(buildDiscoveryPilotCatalog(selected));
+});
+
+test('citation-aware search finds CaPTk paper and Cook repository without transferring authors or geography', async () => {
+  const value = await catalog();
+  const paper = await readDiscoveryPilot(value, { q: 'CaPTk', kind: 'publication' });
+  assert.equal(paper.items.length, 1);
+  assert.equal(paper.items[0].nativeId.toLowerCase(), '10.1117/1.jmi.5.1.011018');
+  assert.equal(paper.matches[0].basis, 'citing-repository');
+  assert.equal(paper.matches[0].relatedRecordId, 'github:128938343');
+  const repo = await readDiscoveryPilot(value, { q: 'Philip Cook', kind: 'repository' });
+  assert.equal(repo.items.length, 1);
+  assert.equal(repo.items[0].id, 'github:156589095');
+  assert.equal(repo.matches[0].basis, 'cited-publication');
+  assert.deepEqual(repo.items[0].authors, []);
+  assert.equal(repo.items[0].geography.basis, 'not-established');
+  assert.equal(repo.items[0].geography.county, null);
+  assert.equal((await readDiscoveryPilot(value, { q: 'MRI', kind: 'repository' })).items[0].id, 'github:156589095');
+  const unlinked = await readDiscoveryPilot(value, { q: '10.1093/bioinformatics/btaf060', kind: 'repository' });
+  assert.equal(unlinked.items.length, 0);
+  assert.equal(unlinked.citations.length, 0);
+});
+
+test('browsable citation context preserves its source direction for publication-only results', async () => {
+  const value = await catalog();
+  const result = await readDiscoveryPilot(value, { kind: 'publication' });
+  assert.equal(result.items.length, 6);
+  assert.equal(result.citations.length, 2);
+  assert.ok(result.items.every(item => item.relatedLinks.length === 0));
+  assert.ok(result.citations.every(citation => citation.repository.kind === 'repository' && citation.publication.kind === 'publication'));
+  const broken = structuredClone(value);
+  broken.records.find((record: any) => record.relatedLinks.length).relatedLinks[0].targetId = 'crossref:10.9999/missing';
+  assert.throws(() => queryDiscoveryPilot(broken, { q: 'MRI' }));
+  const path = new URL(pilotRecordPath(result.items[0]), 'https://pilot.invalid');
+  assert.equal(path.pathname, '/discover');
+  assert.equal(path.searchParams.get('kind'), 'publication');
+  assert.equal(path.searchParams.get('q'), result.items[0].nativeId);
+  assert.equal(pilotDateLabel('2024'), '2024');
+  assert.equal(pilotDateLabel('2024-02'), 'Feb 2024');
+  assert.equal(pilotDateLabel('2024-02-29'), 'Feb 29, 2024');
+});
+
+test('v2 response rejects contradictory, duplicated or unrelated citation context', async () => {
+  const full = await readDiscoveryPilot(await catalog(), {});
+  for (const mutation of ['title', 'url', 'evidence', 'duplicate-item', 'duplicate-citation', 'missing-citation']) {
+    const value = structuredClone(full);
+    if (mutation === 'title') value.citations[0].publication.title = 'Wrong publication title';
+    if (mutation === 'url') value.citations[0].publication.url = 'https://example.org/wrong';
+    if (mutation === 'evidence') value.citations[0].evidence.sha256 = '0'.repeat(64);
+    if (mutation === 'duplicate-item') {
+      value.items.push(structuredClone(value.items[0]));
+      value.matches.push(structuredClone(value.matches[0]));
+      value.filteredRecords++; value.totalRecords++; value.counts[value.items[0].kind]++;
+    }
+    if (mutation === 'duplicate-citation') value.citations.push(structuredClone(value.citations[0]));
+    if (mutation === 'missing-citation') value.citations = [];
+    assert.equal(DiscoveryPilotResultSchema.safeParse(value).success, false, mutation);
+  }
+  const unrelated = await readDiscoveryPilot(await catalog(), { kind: 'organization' });
+  unrelated.citations.push(full.citations[0]);
+  assert.equal(DiscoveryPilotResultSchema.safeParse(unrelated).success, false);
 });

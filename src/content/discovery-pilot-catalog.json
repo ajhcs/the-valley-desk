@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "discovery-pilot-catalog-v1",
-  "catalogVersion": "2026-11-16",
-  "selectionSha256": "80f9593bee2349b68d62174d116fbdef97f08cc9e5aff3205e12da330b33759f",
+  "schemaVersion": "discovery-pilot-catalog-v2",
+  "catalogVersion": "2026-11-16-product-review-1",
+  "selectionSha256": "09dd1e6df98e44ec608eb4e858555d8e33c4b94ef6c3acc79d644390b3ec47b2",
   "records": [
     {
       "id": "crossref:10.1038/s41592-021-01185-5",
@@ -9,12 +9,218 @@
       "provider": "crossref",
       "nativeId": "10.1038/s41592-021-01185-5",
       "title": "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data",
+      "description": null,
       "url": "https://doi.org/10.1038/s41592-021-01185-5",
       "owner": null,
       "authors": [
         {
           "sourceIndex": 0,
           "name": "Matthew Cieslak",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Philip A. Cook",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Xiaosong He",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Fang-Cheng Yeh",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Thijs Dhollander",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Azeez Adebimpe",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Geoffrey K. Aguirre",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Danielle S. Bassett",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Richard F. Betzel",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Josiane Bourque",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Laura M. Cabral",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Christos Davatzikos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "John A. Detre",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Eric Earl",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Mark A. Elliott",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Shreyas Fadnavis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Damien A. Fair",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Will Foran",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Panagiotis Fotiadis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Eleftherios Garyfallidis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Barry Giesbrecht",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 21,
+          "name": "Ruben C. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Raquel E. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Max B. Kelz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Anisha Keshavan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 25,
+          "name": "Bart S. Larsen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 26,
+          "name": "Beatriz Luna",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 27,
+          "name": "Allyson P. Mackey",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 28,
+          "name": "Michael P. Milham",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 29,
+          "name": "Desmond J. Oathes",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 30,
+          "name": "Anders Perrone",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 31,
+          "name": "Adam R. Pines",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 32,
+          "name": "David R. Roalf",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 33,
+          "name": "Adam Richie-Halford",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 34,
+          "name": "Ariel Rokem",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 35,
+          "name": "Valerie J. Sydnor",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 36,
+          "name": "Tinashe M. Tapera",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 37,
+          "name": "Ursula A. Tooley",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 38,
+          "name": "Jean M. Vettel",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 39,
+          "name": "Jason D. Yeatman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 40,
+          "name": "Scott T. Grafton",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 41,
+          "name": "Theodore D. Satterthwaite",
           "affiliations": []
         }
       ],
@@ -62,6 +268,170 @@
         {
           "field": "authors/0",
           "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
+        },
+        {
+          "field": "authors/25",
+          "pointer": "/message/items/0/author/25"
+        },
+        {
+          "field": "authors/26",
+          "pointer": "/message/items/0/author/26"
+        },
+        {
+          "field": "authors/27",
+          "pointer": "/message/items/0/author/27"
+        },
+        {
+          "field": "authors/28",
+          "pointer": "/message/items/0/author/28"
+        },
+        {
+          "field": "authors/29",
+          "pointer": "/message/items/0/author/29"
+        },
+        {
+          "field": "authors/30",
+          "pointer": "/message/items/0/author/30"
+        },
+        {
+          "field": "authors/31",
+          "pointer": "/message/items/0/author/31"
+        },
+        {
+          "field": "authors/32",
+          "pointer": "/message/items/0/author/32"
+        },
+        {
+          "field": "authors/33",
+          "pointer": "/message/items/0/author/33"
+        },
+        {
+          "field": "authors/34",
+          "pointer": "/message/items/0/author/34"
+        },
+        {
+          "field": "authors/35",
+          "pointer": "/message/items/0/author/35"
+        },
+        {
+          "field": "authors/36",
+          "pointer": "/message/items/0/author/36"
+        },
+        {
+          "field": "authors/37",
+          "pointer": "/message/items/0/author/37"
+        },
+        {
+          "field": "authors/38",
+          "pointer": "/message/items/0/author/38"
+        },
+        {
+          "field": "authors/39",
+          "pointer": "/message/items/0/author/39"
+        },
+        {
+          "field": "authors/40",
+          "pointer": "/message/items/0/author/40"
+        },
+        {
+          "field": "authors/41",
+          "pointer": "/message/items/0/author/41"
         }
       ],
       "relatedLinks": []
@@ -72,6 +442,7 @@
       "provider": "crossref",
       "nativeId": "10.1093/bib/bbaa381",
       "title": "DeepCNV: a deep learning approach for authenticating copy number variations",
+      "description": null,
       "url": "https://doi.org/10.1093/bib/bbaa381",
       "owner": null,
       "authors": [
@@ -81,6 +452,70 @@
           "affiliations": [
             "Center for Applied Genomics, Department of Human Genetics, Children's Hospital of Philadelphia, Philadelphia, PA 19104, USA",
             "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Xiurui Hou",
+          "affiliations": [
+            "Department of Computer Science, New Jersey Institute of Technology, Newark, NJ 07102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Cheng Zhong",
+          "affiliations": [
+            "Department of Computer Science, New Jersey Institute of Technology, Newark, NJ 07102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Jie Zhang",
+          "affiliations": [
+            "Adobe Inc., San Jose, CA 95110, USA"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Munir Khan",
+          "affiliations": [
+            "Center for Applied Genomics, Department of Human Genetics, Children's Hospital of Philadelphia, Philadelphia, PA 19104, USA",
+            "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Fabian Brand",
+          "affiliations": [
+            "University of Bonn, 53113 Bonn, Germany"
+          ]
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Peter Krawitz",
+          "affiliations": [
+            "University of Bonn, 53113 Bonn, Germany"
+          ]
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Patrick M A Sleiman",
+          "affiliations": [
+            "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Hakon Hakonarson",
+          "affiliations": [
+            "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Zhi Wei",
+          "affiliations": [
+            "Department of Computer Science, New Jersey Institute of Technology, Newark, NJ 07102, USA"
           ]
         }
       ],
@@ -94,7 +529,10 @@
         "basis": "publication-reported-affiliation",
         "reportedLocations": [
           "Center for Applied Genomics, Department of Human Genetics, Children's Hospital of Philadelphia, Philadelphia, PA 19104, USA",
-          "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA",
+          "Department of Computer Science, New Jersey Institute of Technology, Newark, NJ 07102, USA",
+          "Adobe Inc., San Jose, CA 95110, USA",
+          "University of Bonn, 53113 Bonn, Germany"
         ],
         "county": null
       },
@@ -131,6 +569,42 @@
         {
           "field": "authors/0",
           "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
         }
       ],
       "relatedLinks": []
@@ -141,6 +615,7 @@
       "provider": "crossref",
       "nativeId": "10.1093/bioinformatics/btae114",
       "title": "AutoGVP: a dockerized workflow integrating ClinVar and InterVar germline sequence variant classification",
+      "description": null,
       "url": "https://doi.org/10.1093/bioinformatics/btae114",
       "owner": null,
       "authors": [
@@ -158,6 +633,102 @@
             "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
             "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
           ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Ryan J Corbett",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Rebecca S Kaufman",
+          "affiliations": [
+            "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Zalman Vaksman",
+          "affiliations": [
+            "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Miguel A Brown",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Daniel P Miller",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Saksham Phul",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Zhuangzhuang Geng",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Phillip B Storm",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Adam C Resnick",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Douglas R Stewart",
+          "affiliations": [
+            "Division of Cancer Epidemiology and Genetics, National Cancer Institute , Rockville, MD 20850, United States"
+          ]
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Jo Lynne Rokita",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Sharon J Diskin",
+          "affiliations": [
+            "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Department of Pediatrics, University of Pennsylvania , Philadelphia, PA 19104, United States"
+          ]
         }
       ],
       "sourceDate": {
@@ -171,7 +742,10 @@
         "reportedLocations": [
           "Division of Cancer Epidemiology and Genetics, National Cancer Institute , Rockville, MD 20850, United States",
           "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
-          "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+          "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+          "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+          "Department of Pediatrics, University of Pennsylvania , Philadelphia, PA 19104, United States"
         ],
         "county": null
       },
@@ -212,6 +786,54 @@
         {
           "field": "authors/1",
           "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
         }
       ],
       "relatedLinks": []
@@ -222,6 +844,7 @@
       "provider": "crossref",
       "nativeId": "10.1093/bioinformatics/btaf060",
       "title": "ImmunoTar—integrative prioritization of cell surface targets for cancer immunotherapy",
+      "description": null,
       "url": "https://doi.org/10.1093/bioinformatics/btaf060",
       "owner": null,
       "authors": [
@@ -230,6 +853,69 @@
           "name": "Rawan Shraim",
           "affiliations": [
             "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+            "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Brian Mooney",
+          "affiliations": [
+            "Department of Molecular Oncology, BC Cancer Research Institute , Vancouver, BC V5Z 0B4,",
+            "Canada’s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,"
+          ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Karina L Conkrite",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Amber K Hamilton",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Gregg B Morin",
+          "affiliations": [
+            "Canada’s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,",
+            "Department of Medical Genetics, University of British Columbia , Vancouver, BC V6T 1Z4,"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Poul H Sorensen",
+          "affiliations": [
+            "Department of Molecular Oncology, BC Cancer Research Institute , Vancouver, BC V5Z 0B4,",
+            "Department of Pathology and Laboratory Medicine, University of British Columbia , Vancouver, BC V6T 1Z4,"
+          ]
+        },
+        {
+          "sourceIndex": 6,
+          "name": "John M Maris",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+            "Department of Pediatrics, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,",
+            "Abramson Family Cancer Research Institute, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Sharon J Diskin",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+            "Department of Pediatrics, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,",
+            "Abramson Family Cancer Research Institute, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Ahmet Sacan",
+          "affiliations": [
             "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,"
           ]
         }
@@ -244,7 +930,13 @@
         "basis": "publication-reported-affiliation",
         "reportedLocations": [
           "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
-          "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,"
+          "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,",
+          "Department of Molecular Oncology, BC Cancer Research Institute , Vancouver, BC V5Z 0B4,",
+          "Canada’s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,",
+          "Department of Medical Genetics, University of British Columbia , Vancouver, BC V6T 1Z4,",
+          "Department of Pathology and Laboratory Medicine, University of British Columbia , Vancouver, BC V6T 1Z4,",
+          "Department of Pediatrics, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,",
+          "Abramson Family Cancer Research Institute, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,"
         ],
         "county": null
       },
@@ -281,6 +973,38 @@
         {
           "field": "authors/0",
           "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
         }
       ],
       "relatedLinks": []
@@ -291,12 +1015,181 @@
       "provider": "crossref",
       "nativeId": "10.1117/1.jmi.5.1.011018",
       "title": "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome",
+      "description": null,
       "url": "https://doi.org/10.1117/1.jmi.5.1.011018",
       "owner": null,
       "authors": [
         {
           "sourceIndex": 0,
           "name": "Christos Davatzikos",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Saima Rathore",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Spyridon Bakas",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Sarthak Pati",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Mark Bergman",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Ratheesh Kalarot",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Patmaa Sridharan",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Aimilia Gastounioti",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Nariman Jahani",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Eric Cohen",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Hamed Akbari",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Birkan Tunc",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Jimit Doshi",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Drew Parker",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Michael Hsieh",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Aristeidis Sotiras",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Hongming Li",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Yangming Ou",
+          "affiliations": [
+            "Massachusetts General Hospital"
+          ]
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Robert K. Doot",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Michel Bilello",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Yong Fan",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 21,
+          "name": "Russell T. Shinohara",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Paul Yushkevich",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Ragini Verma",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Despina Kontos",
           "affiliations": [
             "Univ. of Pennsylvania"
           ]
@@ -311,7 +1204,8 @@
       "geography": {
         "basis": "publication-reported-affiliation",
         "reportedLocations": [
-          "Univ. of Pennsylvania"
+          "Univ. of Pennsylvania",
+          "Massachusetts General Hospital"
         ],
         "county": null
       },
@@ -348,6 +1242,102 @@
         {
           "field": "authors/0",
           "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
         }
       ],
       "relatedLinks": []
@@ -358,12 +1348,53 @@
       "provider": "crossref",
       "nativeId": "10.1186/1471-2105-15-248",
       "title": "Clinical phenotype-based gene prioritization: an initial study using semantic similarity and the human phenotype ontology",
+      "description": null,
       "url": "https://doi.org/10.1186/1471-2105-15-248",
       "owner": null,
       "authors": [
         {
           "sourceIndex": 0,
           "name": "Aaron J Masino",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Elizabeth T Dechene",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Matthew C Dulik",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Alisha Wilkens",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Nancy B Spinner",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Ian D Krantz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Jeffrey W Pennington",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Peter N Robinson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Peter S White",
           "affiliations": []
         }
       ],
@@ -411,6 +1442,38 @@
         {
           "field": "authors/0",
           "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
         }
       ],
       "relatedLinks": []
@@ -421,6 +1484,7 @@
       "provider": "github",
       "nativeId": "128938343",
       "title": "CBICA/CaPTk",
+      "description": "Cancer Imaging Phenomics Toolkit (CaPTk) is a software platform to perform image analysis and predictive modeling tasks. Documentation: https://cbica.github.io/CaPTk",
       "url": "https://github.com/CBICA/CaPTk",
       "owner": {
         "id": "35823615",
@@ -473,6 +1537,10 @@
           "pointer": "/html_url"
         },
         {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
           "field": "ownerId",
           "pointer": "/owner/id"
         },
@@ -500,6 +1568,7 @@
       "relatedLinks": [
         {
           "targetId": "crossref:10.1117/1.jmi.5.1.011018",
+          "targetNativeId": "10.1117/1.jmi.5.1.011018",
           "targetTitle": "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome",
           "url": "https://doi.org/10.1117/1.jmi.5.1.011018",
           "relation": "cites-publication",
@@ -520,6 +1589,7 @@
       "provider": "github",
       "nativeId": "156589095",
       "title": "PennLINC/qsiprep",
+      "description": "Preprocessing of diffusion MRI",
       "url": "https://github.com/PennLINC/qsiprep",
       "owner": {
         "id": "61955309",
@@ -572,6 +1642,10 @@
           "pointer": "/html_url"
         },
         {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
           "field": "ownerId",
           "pointer": "/owner/id"
         },
@@ -599,6 +1673,7 @@
       "relatedLinks": [
         {
           "targetId": "crossref:10.1038/s41592-021-01185-5",
+          "targetNativeId": "10.1038/s41592-021-01185-5",
           "targetTitle": "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data",
           "url": "https://doi.org/10.1038/s41592-021-01185-5",
           "relation": "cites-publication",
@@ -619,6 +1694,7 @@
       "provider": "github",
       "nativeId": "15715626",
       "title": "chop-dbhi/phenomantics",
+      "description": "Multiple projects related to variant prioritization using phenotype semantic similarity",
       "url": "https://github.com/chop-dbhi/phenomantics",
       "owner": {
         "id": "709892",
@@ -671,6 +1747,10 @@
           "pointer": "/html_url"
         },
         {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
           "field": "ownerId",
           "pointer": "/owner/id"
         },
@@ -703,6 +1783,7 @@
       "provider": "github",
       "nativeId": "285885136",
       "title": "CAG-CNV/DeepCNV",
+      "description": "DeepCNV: A Deep Learning Approach for Authenticating Copy Number Variants",
       "url": "https://github.com/CAG-CNV/DeepCNV",
       "owner": {
         "id": "31705609",
@@ -755,6 +1836,10 @@
           "pointer": "/html_url"
         },
         {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
           "field": "ownerId",
           "pointer": "/owner/id"
         },
@@ -787,6 +1872,7 @@
       "provider": "github",
       "nativeId": "525946788",
       "title": "diskin-lab-chop/AutoGVP",
+      "description": null,
       "url": "https://github.com/diskin-lab-chop/AutoGVP",
       "owner": {
         "id": "53345105",
@@ -839,6 +1925,10 @@
           "pointer": "/html_url"
         },
         {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
           "field": "ownerId",
           "pointer": "/owner/id"
         },
@@ -871,6 +1961,7 @@
       "provider": "github",
       "nativeId": "734388793",
       "title": "sacanlab/immunotar",
+      "description": null,
       "url": "https://github.com/sacanlab/immunotar",
       "owner": {
         "id": "18205643",
@@ -923,6 +2014,10 @@
           "pointer": "/html_url"
         },
         {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
           "field": "ownerId",
           "pointer": "/owner/id"
         },
@@ -955,6 +2050,7 @@
       "provider": "ror",
       "nativeId": "https://ror.org/00b30xv10",
       "title": "University of Pennsylvania",
+      "description": null,
       "url": "https://ror.org/00b30xv10",
       "owner": null,
       "authors": [],
@@ -1010,6 +2106,7 @@
       "provider": "ror",
       "nativeId": "https://ror.org/01z7r7q48",
       "title": "Children's Hospital of Philadelphia",
+      "description": null,
       "url": "https://ror.org/01z7r7q48",
       "owner": null,
       "authors": [],

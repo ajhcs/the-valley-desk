@@ -1,5 +1,5 @@
 import { DiscoveryPilotCatalogSchema, DiscoveryPilotQuerySchema, DiscoveryPilotResultSchema } from '../content/discovery-pilot';
-import type { DiscoveryPilotCatalog, DiscoveryPilotQuery, DiscoveryPilotResult, DiscoveryPilotRecord } from '../content/discovery-pilot';
+import type { DiscoveryPilotCatalog, DiscoveryPilotQuery, DiscoveryPilotResult, DiscoveryPilotRecord, DiscoveryPilotCitation, DiscoveryPilotSearchMatch } from '../content/discovery-pilot';
 export function parseDiscoveryPilotQuery(params: URLSearchParams): DiscoveryPilotQuery {
   if (params.toString().length > 4096) throw new Error('pilot-query-size');
   const values: Record<string, string> = Object.create(null);
@@ -19,13 +19,39 @@ function dateKey(record: DiscoveryPilotRecord): string | null {
   return `${year}-${month}-${day}T00:00:00.000Z`;
 }
 function searchable(record: DiscoveryPilotRecord) {
-  return folded([record.title, record.nativeId, record.provider, record.owner?.name ?? '', ...record.authors.flatMap(author => [author.name, ...author.affiliations]), ...record.geography.reportedLocations].join(' '));
+  return folded([record.title, record.description ?? '', record.nativeId, record.provider, record.owner?.name ?? '', ...record.authors.flatMap(author => [author.name, ...author.affiliations]), ...record.geography.reportedLocations].join(' '));
 }
+const summary = (record: DiscoveryPilotRecord) => ({ id: record.id, nativeId: record.nativeId, kind: record.kind, title: record.title, url: record.url });
 export function queryDiscoveryPilot(input: unknown, queryInput: unknown) {
   const catalog = DiscoveryPilotCatalogSchema.parse(input),
     query = DiscoveryPilotQuerySchema.parse(queryInput);
   const terms = folded(query.q).trim().split(/\s+/).filter(Boolean);
-  const items = catalog.records.filter(record => (query.kind === 'all' || record.kind === query.kind) && (query.provider === 'all' || record.provider === query.provider) && terms.every(term => searchable(record).includes(term)));
+  const records = new Map(catalog.records.map(record => [record.id, record]));
+  const textById = new Map(catalog.records.map(record => [record.id, searchable(record)]));
+  const citations: DiscoveryPilotCitation[] = catalog.records.flatMap(repository => repository.relatedLinks.map(link => ({
+    repository: summary(repository), publication: summary(records.get(link.targetId)!), evidence: link.evidence,
+  })));
+  const neighbors = new Map<string, { id: string; basis: DiscoveryPilotSearchMatch['basis'] }[]>();
+  for (const citation of citations) {
+    neighbors.set(citation.repository.id, [...neighbors.get(citation.repository.id) ?? [], { id: citation.publication.id, basis: 'cited-publication' }]);
+    neighbors.set(citation.publication.id, [...neighbors.get(citation.publication.id) ?? [], { id: citation.repository.id, basis: 'citing-repository' }]);
+  }
+  for (const values of neighbors.values()) values.sort((a, b) => compare(a.id, b.id));
+  const matches: DiscoveryPilotSearchMatch[] = [];
+  const items = catalog.records.filter(record => {
+    if ((query.kind !== 'all' && record.kind !== query.kind) || (query.provider !== 'all' && record.provider !== query.provider)) return false;
+    const ownText = textById.get(record.id)!;
+    if (terms.every(term => ownText.includes(term))) {
+      matches.push({ recordId: record.id, basis: 'own-metadata', relatedRecordId: null });
+      return true;
+    }
+    // Only one retained, validated citation edge supplies additional search context.
+    // The record itself never inherits that neighbor's authors, owner or location.
+    const related = (neighbors.get(record.id) ?? []).find(neighbor => terms.every(term => ownText.includes(term) || textById.get(neighbor.id)!.includes(term)));
+    if (!related) return false;
+    matches.push({ recordId: record.id, basis: related.basis, relatedRecordId: related.id });
+    return true;
+  });
   items.sort((left, right) => {
     if (query.sort.startsWith('title-')) return (query.sort === 'title-desc' ? -1 : 1) * compare(folded(left.title), folded(right.title)) || compare(left.id, right.id);
     const a = dateKey(left),
@@ -39,11 +65,14 @@ export function queryDiscoveryPilot(input: unknown, queryInput: unknown) {
     organization: 0
   };
   for (const record of catalog.records) counts[record.kind]++;
+  const selectedIds = new Set(items.map(record => record.id));
   return {
     catalog,
     query,
     items,
-    counts
+    counts,
+    matches: items.map(record => matches.find(match => match.recordId === record.id)!),
+    citations: citations.filter(citation => selectedIds.has(citation.repository.id) || selectedIds.has(citation.publication.id)),
   };
 }
 function canonical(value: unknown): string {
@@ -60,17 +89,21 @@ export async function readDiscoveryPilot(catalogInput: unknown, queryInput: unkn
     catalog,
     query,
     items,
-    counts
+    counts,
+    matches,
+    citations,
   } = queryDiscoveryPilot(catalogInput, queryInput);
   return DiscoveryPilotResultSchema.parse({
-    schemaVersion: 'discovery-pilot-v1',
+    schemaVersion: 'discovery-pilot-v2',
     catalogVersion: catalog.catalogVersion,
     catalogSha256: await digest(catalog),
     totalRecords: catalog.records.length,
     filteredRecords: items.length,
     counts,
     query,
-    items
+    items,
+    matches,
+    citations,
   });
 }
 function response(request: Request, status: number, value: unknown, headers: Record<string, string> = {}) {

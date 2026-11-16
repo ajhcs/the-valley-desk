@@ -34,6 +34,7 @@ const DateValue = z.object({
 });
 const RelatedLink = z.object({
   targetId: Id,
+  targetNativeId: Text,
   targetTitle: Text,
   url: DiscoveryPilotHttpsUrl,
   relation: z.literal('cites-publication'),
@@ -52,6 +53,7 @@ export const DiscoveryPilotRecordSchema = z.object({
   provider: Provider,
   nativeId: Text,
   title: Text,
+  description: Text.max(1000).nullable(),
   url: DiscoveryPilotHttpsUrl,
   owner: z.object({
     id: z.string().regex(/^[1-9]\d*$/),
@@ -62,7 +64,7 @@ export const DiscoveryPilotRecordSchema = z.object({
     sourceIndex: z.number().int().min(0).max(1000),
     name: Text,
     affiliations: z.array(Text).max(20)
-  }).strict()).max(8),
+  }).strict()).max(128),
   sourceDate: DateValue.nullable(),
   additionalDates: z.array(DateValue).max(4),
   geography: z.object({
@@ -98,14 +100,49 @@ export const DiscoveryPilotQuerySchema = z.object({
 }).strict();
 export type DiscoveryPilotQuery = z.infer<typeof DiscoveryPilotQuerySchema>;
 export const DiscoveryPilotCatalogSchema = z.object({
-  schemaVersion: z.literal('discovery-pilot-catalog-v1'),
+  schemaVersion: z.literal('discovery-pilot-catalog-v2'),
   catalogVersion: Text,
   selectionSha256: Hash,
   records: z.array(DiscoveryPilotRecordSchema).min(1).max(100)
-}).strict().refine(catalog => new Set(catalog.records.map(record => record.id)).size === catalog.records.length);
+}).strict().superRefine((catalog, context) => {
+  const records = new Map(catalog.records.map(record => [record.id, record]));
+  if (records.size !== catalog.records.length) context.addIssue({ code: 'custom', message: 'Duplicate record identity' });
+  for (const record of catalog.records) {
+    const seen = new Set<string>();
+    for (const link of record.relatedLinks) {
+      const target = records.get(link.targetId);
+      if (record.kind !== 'repository' || target?.kind !== 'publication' ||
+          target.nativeId !== link.targetNativeId || target.title !== link.targetTitle || target.url !== link.url || seen.has(link.targetId)) {
+        context.addIssue({ code: 'custom', message: 'Citation endpoints must match catalog records' });
+      }
+      seen.add(link.targetId);
+    }
+  }
+});
 export type DiscoveryPilotCatalog = z.infer<typeof DiscoveryPilotCatalogSchema>;
+const PilotRecordSummary = z.object({ id: Id, nativeId: Text, kind: Kind, title: Text, url: DiscoveryPilotHttpsUrl }).strict().refine(record => {
+  if (record.kind === 'repository') return record.id === `github:${record.nativeId}` && /^[1-9]\d*$/.test(record.nativeId) && record.url === `https://github.com/${record.title}`;
+  if (record.kind === 'publication') {
+    const url = new URL(record.url);
+    try { return record.id === `crossref:${record.nativeId}` && url.hostname === 'doi.org' && !url.search && !url.hash && decodeURIComponent(url.pathname.slice(1)).toLowerCase() === record.nativeId.toLowerCase(); }
+    catch { return false; }
+  }
+  return record.id === `ror:${record.nativeId.split('/').at(-1)}` && record.url === record.nativeId;
+});
+const PilotCitation = z.object({
+  repository: PilotRecordSummary.refine(record => record.kind === 'repository'),
+  publication: PilotRecordSummary.refine(record => record.kind === 'publication'),
+  evidence: RelatedLink.shape.evidence,
+}).strict();
+export type DiscoveryPilotCitation = z.infer<typeof PilotCitation>;
+const PilotSearchMatch = z.object({
+  recordId: Id,
+  basis: z.enum(['own-metadata', 'cited-publication', 'citing-repository']),
+  relatedRecordId: Id.nullable(),
+}).strict().refine(match => match.basis === 'own-metadata' ? match.relatedRecordId === null : match.relatedRecordId !== null);
+export type DiscoveryPilotSearchMatch = z.infer<typeof PilotSearchMatch>;
 export const DiscoveryPilotResultSchema = z.object({
-  schemaVersion: z.literal('discovery-pilot-v1'),
+  schemaVersion: z.literal('discovery-pilot-v2'),
   catalogVersion: Text,
   catalogSha256: Hash,
   totalRecords: z.number().int().min(0).max(100),
@@ -116,6 +153,39 @@ export const DiscoveryPilotResultSchema = z.object({
     organization: z.number().int().min(0).max(100)
   }).strict(),
   query: DiscoveryPilotQuerySchema,
-  items: z.array(DiscoveryPilotRecordSchema).max(100)
-}).strict();
+  items: z.array(DiscoveryPilotRecordSchema).max(100),
+  matches: z.array(PilotSearchMatch).max(100),
+  citations: z.array(PilotCitation).max(800),
+}).strict().superRefine((result, context) => {
+  const selected = new Map(result.items.map(item => [item.id, item]));
+  const sameSummary = (left: z.infer<typeof PilotRecordSummary>, right: z.infer<typeof PilotRecordSummary>) =>
+    (['id', 'nativeId', 'kind', 'title', 'url'] as const).every(field => left[field] === right[field]);
+  const sameEvidence = (left: z.infer<typeof RelatedLink>['evidence'], right: z.infer<typeof RelatedLink>['evidence']) =>
+    (['url', 'observedAt', 'sha256', 'pointer', 'filePointer', 'method'] as const).every(field => left[field] === right[field]);
+  let valid = selected.size === result.items.length && result.filteredRecords === result.items.length && result.filteredRecords <= result.totalRecords &&
+    Object.values(result.counts).reduce((a, b) => a + b, 0) === result.totalRecords && result.matches.length === result.items.length &&
+    new Set(result.matches.map(match => match.recordId)).size === result.items.length && result.items.every(item => result.matches.some(match => match.recordId === item.id));
+  for (const kind of ['repository', 'publication', 'organization'] as const) valid &&= result.items.filter(item => item.kind === kind).length <= result.counts[kind];
+  const pairs = new Set<string>();
+  for (const citation of result.citations) {
+    const repository = selected.get(citation.repository.id);
+    const publication = selected.get(citation.publication.id);
+    const pair = `${citation.repository.id}\u0000${citation.publication.id}`;
+    valid &&= !pairs.has(pair) && Boolean(repository || publication);
+    pairs.add(pair);
+    if (repository) valid &&= sameSummary(repository, citation.repository) && repository.relatedLinks.some(link =>
+      link.targetId === citation.publication.id && link.targetNativeId === citation.publication.nativeId &&
+      link.targetTitle === citation.publication.title && link.url === citation.publication.url && sameEvidence(link.evidence, citation.evidence));
+    if (publication) valid &&= sameSummary(publication, citation.publication);
+  }
+  for (const item of result.items) {
+    if (item.kind !== 'repository') valid &&= item.relatedLinks.length === 0;
+    for (const link of item.relatedLinks) valid &&= result.citations.some(citation =>
+      citation.repository.id === item.id && citation.publication.id === link.targetId && sameEvidence(citation.evidence, link.evidence));
+  }
+  for (const match of result.matches) valid &&= match.basis === 'own-metadata' || result.citations.some(citation =>
+    match.basis === 'cited-publication' ? citation.repository.id === match.recordId && citation.publication.id === match.relatedRecordId :
+      citation.publication.id === match.recordId && citation.repository.id === match.relatedRecordId);
+  if (!valid) context.addIssue({ code: 'custom', message: 'Inconsistent search or citation context' });
+});
 export type DiscoveryPilotResult = z.infer<typeof DiscoveryPilotResultSchema>;

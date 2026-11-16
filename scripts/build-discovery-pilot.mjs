@@ -32,6 +32,7 @@ const RecordSelection = z.discriminatedUnion('kind', [z.object({
   kind: z.literal('repository'),
   fields: z.object({
     ...common,
+    description: Field,
     ownerName: Field,
     ownerId: Field,
     ownerKind: Field,
@@ -46,7 +47,7 @@ const RecordSelection = z.discriminatedUnion('kind', [z.object({
     ...common,
     publicationType: Field,
     publishedDateParts: Field,
-    authors: z.array(Field).max(8)
+    authors: z.array(Field).max(128)
   }).strict()
 }).strict(), z.object({
   id: Id,
@@ -58,7 +59,7 @@ const RecordSelection = z.discriminatedUnion('kind', [z.object({
   }).strict()
 }).strict()]);
 const Selection = z.object({
-  schemaVersion: z.literal('discovery-pilot-selection-v1'),
+  schemaVersion: z.literal('discovery-pilot-selection-v2'),
   version: z.string().min(1).max(100),
   sources: z.record(Id, z.object({
     provider: z.enum(['github', 'crossref', 'ror']),
@@ -206,6 +207,7 @@ export async function buildDiscoveryPilotCatalog(input, loadBytes = readLocal) {
     const expectedPointers = selected.kind === 'repository' ? {
       nativeId: '/id',
       title: '/full_name',
+      description: '/description',
       url: '/html_url',
       ownerName: '/owner/login',
       ownerId: '/owner/id',
@@ -252,6 +254,7 @@ export async function buildDiscoveryPilotCatalog(input, loadBytes = readLocal) {
       provider: source.provider,
       nativeId,
       title,
+      description: null,
       url,
       owner: null,
       authors: [],
@@ -273,6 +276,7 @@ export async function buildDiscoveryPilotCatalog(input, loadBytes = readLocal) {
     };
     if (selected.kind === 'repository') {
       if (selected.id !== `github:${nativeId}` || url !== `https://github.com/${title}` || source.requestUrl !== `https://api.github.com/repos/${title}`) throw Error('repository-identity');
+      record.description = text.max(1000).nullable().parse(field('description'));
       record.owner = {
         id: String(numberId.parse(field('ownerId'))),
         name: text.parse(field('ownerName')),
@@ -296,6 +300,9 @@ export async function buildDiscoveryPilotCatalog(input, loadBytes = readLocal) {
       if (selected.id !== `crossref:${nativeId}` || new URL(url).hostname !== 'doi.org' || !crossrefRequestMatches(source.requestUrl, nativeId) || decodeURIComponent(new URL(url).pathname.slice(1)).toLowerCase() !== nativeId.toLowerCase()) throw Error('publication-identity');
       text.parse(field('publicationType'));
       record.sourceDate = dateParts(field('publishedDateParts'));
+      const sourceAuthors = pilotPointer(body, `${publicationRoot}/author`);
+      if (!Array.isArray(sourceAuthors) || sourceAuthors.length > 128 || selected.fields.authors.length !== sourceAuthors.length ||
+          selected.fields.authors.some((entry, index) => entry.pointer !== `${publicationRoot}/author/${index}`)) throw Error('incomplete-author-roster');
       record.authors = selected.fields.authors.map((author, index) => {
         const raw = field(`authors/${index}`, author),
           authorPrefix = `${publicationRoot}/author/`,
@@ -373,6 +380,7 @@ export async function buildDiscoveryPilotCatalog(input, loadBytes = readLocal) {
     if (from.relatedLinks.some(link => link.targetId === to.id)) throw Error('duplicate-relation');
     from.relatedLinks.push({
       targetId: to.id,
+      targetNativeId: to.nativeId,
       targetTitle: to.title,
       url: to.url,
       relation: 'cites-publication',
@@ -387,7 +395,7 @@ export async function buildDiscoveryPilotCatalog(input, loadBytes = readLocal) {
     });
   }
   return DiscoveryPilotCatalogSchema.parse({
-    schemaVersion: 'discovery-pilot-catalog-v1',
+    schemaVersion: 'discovery-pilot-catalog-v2',
     catalogVersion: selection.version,
     selectionSha256: hash(canonicalPilotJson(inputSnapshot)),
     records: records.sort((a, b) => a.id.localeCompare(b.id))
