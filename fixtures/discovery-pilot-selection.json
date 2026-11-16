@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "discovery-pilot-selection-v2",
-  "version": "2026-11-16-source-expansion-1",
+  "schemaVersion": "discovery-pilot-selection-v3",
+  "version": "2026-11-16-counties-regional-context-1",
   "sources": {
     "github-qsiprep-20261115": {
       "provider": "github",
@@ -239,6 +239,72 @@
       "requestUrl": "https://api.github.com/repos/PennLINC/ModelArray",
       "observedAt": "2026-11-16T16:18:37.542800+00:00",
       "sha256": "9356adef4b7651849c9beebc48d848ea13620158f4e88a1afbd6575c9e4f65fa",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "crossref-gaston-county-20261116": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-gaston/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T17:39:45.966987+00:00",
+      "sha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-sleepboost-county-20261116": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-sleepboost/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1007%2Fs11517-024-03096-x&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T17:39:53.209871+00:00",
+      "sha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-openpbta-county-20261116": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-openpbta/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.xgen.2023.100340&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T17:39:49.588333+00:00",
+      "sha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "github-gaston-county-20261116": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-counties-20261116/github-gaston/body.json",
+      "requestUrl": "https://api.github.com/repos/raphael-group/GASTON",
+      "observedAt": "2026-11-16T17:39:30.886621+00:00",
+      "sha256": "85084be70321c48775e6d48e1801370bfff34208b2a4f194aca37e771c75ff45",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-sleepboost-county-20261116": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-counties-20261116/github-sleepboost/body.json",
+      "requestUrl": "https://api.github.com/repos/akibzaman/SleepBoost",
+      "observedAt": "2026-11-16T17:39:38.372429+00:00",
+      "sha256": "66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-openpbta-county-20261116": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-counties-20261116/github-openpbta/body.json",
+      "requestUrl": "https://api.github.com/repos/AlexsLemonade/OpenPBTA-analysis",
+      "observedAt": "2026-11-16T17:39:34.618464+00:00",
+      "sha256": "168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867",
       "useBasis": {
         "label": "GitHub public repository metadata and API terms",
         "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
@@ -6441,6 +6507,1552 @@
           "value": "2026-10-18T03:21:56Z"
         }
       }
+    },
+    {
+      "id": "crossref:10.1038/s41592-024-02503-3",
+      "kind": "publication",
+      "fields": {
+        "nativeId": {
+          "source": "crossref-gaston-county-20261116",
+          "pointer": "/message/items/0/DOI",
+          "value": "10.1038/s41592-024-02503-3"
+        },
+        "title": {
+          "source": "crossref-gaston-county-20261116",
+          "pointer": "/message/items/0/title",
+          "value": [
+            "Mapping the topography of spatial gene expression with interpretable deep learning"
+          ]
+        },
+        "url": {
+          "source": "crossref-gaston-county-20261116",
+          "pointer": "/message/items/0/URL",
+          "value": "https://doi.org/10.1038/s41592-024-02503-3"
+        },
+        "publicationType": {
+          "source": "crossref-gaston-county-20261116",
+          "pointer": "/message/items/0/type",
+          "value": "journal-article"
+        },
+        "publishedDateParts": {
+          "source": "crossref-gaston-county-20261116",
+          "pointer": "/message/items/0/published/date-parts",
+          "value": [
+            [
+              2025,
+              1,
+              23
+            ]
+          ]
+        },
+        "authors": [
+          {
+            "source": "crossref-gaston-county-20261116",
+            "pointer": "/message/items/0/author/0",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-6016-0960",
+              "authenticated-orcid": false,
+              "given": "Uthsav",
+              "family": "Chitra",
+              "sequence": "first",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gaston-county-20261116",
+            "pointer": "/message/items/0/author/1",
+            "value": {
+              "given": "Brian J.",
+              "family": "Arnold",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gaston-county-20261116",
+            "pointer": "/message/items/0/author/2",
+            "value": {
+              "given": "Hirak",
+              "family": "Sarkar",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gaston-county-20261116",
+            "pointer": "/message/items/0/author/3",
+            "value": {
+              "ORCID": "https://orcid.org/0009-0001-4695-2993",
+              "authenticated-orcid": false,
+              "given": "Kohei",
+              "family": "Sanno",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gaston-county-20261116",
+            "pointer": "/message/items/0/author/4",
+            "value": {
+              "given": "Cong",
+              "family": "Ma",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gaston-county-20261116",
+            "pointer": "/message/items/0/author/5",
+            "value": {
+              "given": "Sereno",
+              "family": "Lopez-Darwin",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gaston-county-20261116",
+            "pointer": "/message/items/0/author/6",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0003-1274-048X",
+              "authenticated-orcid": false,
+              "given": "Benjamin J.",
+              "family": "Raphael",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "crossref:10.1007/s11517-024-03096-x",
+      "kind": "publication",
+      "fields": {
+        "nativeId": {
+          "source": "crossref-sleepboost-county-20261116",
+          "pointer": "/message/items/0/DOI",
+          "value": "10.1007/s11517-024-03096-x"
+        },
+        "title": {
+          "source": "crossref-sleepboost-county-20261116",
+          "pointer": "/message/items/0/title",
+          "value": [
+            "SleepBoost: a multi-level tree-based ensemble model for automatic sleep stage classification"
+          ]
+        },
+        "url": {
+          "source": "crossref-sleepboost-county-20261116",
+          "pointer": "/message/items/0/URL",
+          "value": "https://doi.org/10.1007/s11517-024-03096-x"
+        },
+        "publicationType": {
+          "source": "crossref-sleepboost-county-20261116",
+          "pointer": "/message/items/0/type",
+          "value": "journal-article"
+        },
+        "publishedDateParts": {
+          "source": "crossref-sleepboost-county-20261116",
+          "pointer": "/message/items/0/published/date-parts",
+          "value": [
+            [
+              2024,
+              5,
+              3
+            ]
+          ]
+        },
+        "authors": [
+          {
+            "source": "crossref-sleepboost-county-20261116",
+            "pointer": "/message/items/0/author/0",
+            "value": {
+              "given": "Akib",
+              "family": "Zaman",
+              "sequence": "first",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-sleepboost-county-20261116",
+            "pointer": "/message/items/0/author/1",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-6145-1065",
+              "authenticated-orcid": false,
+              "given": "Shiu",
+              "family": "Kumar",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-sleepboost-county-20261116",
+            "pointer": "/message/items/0/author/2",
+            "value": {
+              "given": "Swakkhar",
+              "family": "Shatabda",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-sleepboost-county-20261116",
+            "pointer": "/message/items/0/author/3",
+            "value": {
+              "given": "Iman",
+              "family": "Dehzangi",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-sleepboost-county-20261116",
+            "pointer": "/message/items/0/author/4",
+            "value": {
+              "given": "Alok",
+              "family": "Sharma",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "crossref:10.1016/j.xgen.2023.100340",
+      "kind": "publication",
+      "fields": {
+        "nativeId": {
+          "source": "crossref-openpbta-county-20261116",
+          "pointer": "/message/items/0/DOI",
+          "value": "10.1016/j.xgen.2023.100340"
+        },
+        "title": {
+          "source": "crossref-openpbta-county-20261116",
+          "pointer": "/message/items/0/title",
+          "value": [
+            "OpenPBTA: The Open Pediatric Brain Tumor Atlas"
+          ]
+        },
+        "url": {
+          "source": "crossref-openpbta-county-20261116",
+          "pointer": "/message/items/0/URL",
+          "value": "https://doi.org/10.1016/j.xgen.2023.100340"
+        },
+        "publicationType": {
+          "source": "crossref-openpbta-county-20261116",
+          "pointer": "/message/items/0/type",
+          "value": "journal-article"
+        },
+        "publishedDateParts": {
+          "source": "crossref-openpbta-county-20261116",
+          "pointer": "/message/items/0/published/date-parts",
+          "value": [
+            [
+              2023,
+              7
+            ]
+          ]
+        },
+        "authors": [
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/0",
+            "value": {
+              "given": "Joshua A.",
+              "family": "Shapiro",
+              "sequence": "first",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/1",
+            "value": {
+              "given": "Krutika S.",
+              "family": "Gaonkar",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/2",
+            "value": {
+              "given": "Stephanie J.",
+              "family": "Spielman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/3",
+            "value": {
+              "given": "Candace L.",
+              "family": "Savonen",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/4",
+            "value": {
+              "given": "Chante J.",
+              "family": "Bethell",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/5",
+            "value": {
+              "given": "Run",
+              "family": "Jin",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/6",
+            "value": {
+              "given": "Komal S.",
+              "family": "Rathi",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/7",
+            "value": {
+              "given": "Yuankun",
+              "family": "Zhu",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/8",
+            "value": {
+              "given": "Laura E.",
+              "family": "Egolf",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/9",
+            "value": {
+              "given": "Bailey K.",
+              "family": "Farrow",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/10",
+            "value": {
+              "given": "Daniel P.",
+              "family": "Miller",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/11",
+            "value": {
+              "given": "Yang",
+              "family": "Yang",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/12",
+            "value": {
+              "given": "Tejaswi",
+              "family": "Koganti",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/13",
+            "value": {
+              "given": "Nighat",
+              "family": "Noureen",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/14",
+            "value": {
+              "given": "Mateusz P.",
+              "family": "Koptyra",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/15",
+            "value": {
+              "given": "Nhat",
+              "family": "Duong",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/16",
+            "value": {
+              "given": "Mariarita",
+              "family": "Santi",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/17",
+            "value": {
+              "given": "Jung",
+              "family": "Kim",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/18",
+            "value": {
+              "given": "Shannon",
+              "family": "Robins",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/19",
+            "value": {
+              "given": "Phillip B.",
+              "family": "Storm",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/20",
+            "value": {
+              "given": "Stephen C.",
+              "family": "Mack",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/21",
+            "value": {
+              "given": "Jena V.",
+              "family": "Lilly",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/22",
+            "value": {
+              "given": "Hongbo M.",
+              "family": "Xie",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/23",
+            "value": {
+              "given": "Payal",
+              "family": "Jain",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/24",
+            "value": {
+              "given": "Pichai",
+              "family": "Raman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/25",
+            "value": {
+              "given": "Brian R.",
+              "family": "Rood",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/26",
+            "value": {
+              "given": "Rishi R.",
+              "family": "Lulla",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/27",
+            "value": {
+              "given": "Javad",
+              "family": "Nazarian",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/28",
+            "value": {
+              "given": "Adam A.",
+              "family": "Kraya",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/29",
+            "value": {
+              "given": "Zalman",
+              "family": "Vaksman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/30",
+            "value": {
+              "given": "Allison P.",
+              "family": "Heath",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/31",
+            "value": {
+              "given": "Cassie",
+              "family": "Kline",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/32",
+            "value": {
+              "given": "Laura",
+              "family": "Scolaro",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/33",
+            "value": {
+              "given": "Angela N.",
+              "family": "Viaene",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/34",
+            "value": {
+              "given": "Xiaoyan",
+              "family": "Huang",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/35",
+            "value": {
+              "given": "Gregory P.",
+              "family": "Way",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/36",
+            "value": {
+              "given": "Steven M.",
+              "family": "Foltz",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/37",
+            "value": {
+              "given": "Bo",
+              "family": "Zhang",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/38",
+            "value": {
+              "given": "Anna R.",
+              "family": "Poetsch",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/39",
+            "value": {
+              "given": "Sabine",
+              "family": "Mueller",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/40",
+            "value": {
+              "given": "Brian M.",
+              "family": "Ennis",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/41",
+            "value": {
+              "given": "Michael",
+              "family": "Prados",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/42",
+            "value": {
+              "given": "Sharon J.",
+              "family": "Diskin",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/43",
+            "value": {
+              "given": "Siyuan",
+              "family": "Zheng",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/44",
+            "value": {
+              "given": "Yiran",
+              "family": "Guo",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/45",
+            "value": {
+              "given": "Shrivats",
+              "family": "Kannan",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/46",
+            "value": {
+              "given": "Angela J.",
+              "family": "Waanders",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/47",
+            "value": {
+              "given": "Ashley S.",
+              "family": "Margol",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/48",
+            "value": {
+              "given": "Meen Chul",
+              "family": "Kim",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/49",
+            "value": {
+              "given": "Derek",
+              "family": "Hanson",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/50",
+            "value": {
+              "given": "Nicholas",
+              "family": "Van Kuren",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/51",
+            "value": {
+              "given": "Jessica",
+              "family": "Wong",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/52",
+            "value": {
+              "given": "Rebecca S.",
+              "family": "Kaufman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/53",
+            "value": {
+              "given": "Noel",
+              "family": "Coleman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/54",
+            "value": {
+              "given": "Christopher",
+              "family": "Blackden",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/55",
+            "value": {
+              "given": "Kristina A.",
+              "family": "Cole",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/56",
+            "value": {
+              "given": "Jennifer L.",
+              "family": "Mason",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/57",
+            "value": {
+              "given": "Peter J.",
+              "family": "Madsen",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/58",
+            "value": {
+              "given": "Carl J.",
+              "family": "Koschmann",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/59",
+            "value": {
+              "given": "Douglas R.",
+              "family": "Stewart",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/60",
+            "value": {
+              "given": "Eric",
+              "family": "Wafula",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/61",
+            "value": {
+              "given": "Miguel A.",
+              "family": "Brown",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/62",
+            "value": {
+              "given": "Adam C.",
+              "family": "Resnick",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/63",
+            "value": {
+              "given": "Casey S.",
+              "family": "Greene",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/64",
+            "value": {
+              "given": "Jo Lynne",
+              "family": "Rokita",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-openpbta-county-20261116",
+            "pointer": "/message/items/0/author/65",
+            "value": {
+              "given": "Jaclyn N.",
+              "family": "Taroni",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "github:692249664",
+      "kind": "repository",
+      "fields": {
+        "nativeId": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/id",
+          "value": 692249664
+        },
+        "title": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/full_name",
+          "value": "raphael-group/GASTON"
+        },
+        "url": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/html_url",
+          "value": "https://github.com/raphael-group/GASTON"
+        },
+        "description": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/description",
+          "value": "GASTON: deep learning algorithm learns \"topography\" of a tissue slice from spatial transcriptomics data"
+        },
+        "ownerName": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/owner/login",
+          "value": "raphael-group"
+        },
+        "ownerId": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/owner/id",
+          "value": 5168500
+        },
+        "ownerKind": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/owner/type",
+          "value": "Organization"
+        },
+        "createdAt": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/created_at",
+          "value": "2023-09-15T23:13:14Z"
+        },
+        "updatedAt": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/updated_at",
+          "value": "2026-11-05T00:43:37Z"
+        },
+        "pushedAt": {
+          "source": "github-gaston-county-20261116",
+          "pointer": "/pushed_at",
+          "value": "2025-12-01T19:58:23Z"
+        }
+      }
+    },
+    {
+      "id": "github:617168725",
+      "kind": "repository",
+      "fields": {
+        "nativeId": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/id",
+          "value": 617168725
+        },
+        "title": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/full_name",
+          "value": "akibzaman/SleepBoost"
+        },
+        "url": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/html_url",
+          "value": "https://github.com/akibzaman/SleepBoost"
+        },
+        "description": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/description",
+          "value": "A Multi-Level Tree-based Ensemble Model for Automatic Sleep Stage Classification"
+        },
+        "ownerName": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/owner/login",
+          "value": "akibzaman"
+        },
+        "ownerId": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/owner/id",
+          "value": 55422467
+        },
+        "ownerKind": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/owner/type",
+          "value": "User"
+        },
+        "createdAt": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/created_at",
+          "value": "2023-03-21T20:41:23Z"
+        },
+        "updatedAt": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/updated_at",
+          "value": "2026-10-11T16:34:47Z"
+        },
+        "pushedAt": {
+          "source": "github-sleepboost-county-20261116",
+          "pointer": "/pushed_at",
+          "value": "2025-05-14T03:44:45Z"
+        }
+      }
+    },
+    {
+      "id": "github:192607622",
+      "kind": "repository",
+      "fields": {
+        "nativeId": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/id",
+          "value": 192607622
+        },
+        "title": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/full_name",
+          "value": "AlexsLemonade/OpenPBTA-analysis"
+        },
+        "url": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/html_url",
+          "value": "https://github.com/AlexsLemonade/OpenPBTA-analysis"
+        },
+        "description": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/description",
+          "value": "The analysis repository for the Open Pediatric Brain Tumor Atlas Project"
+        },
+        "ownerName": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/owner/login",
+          "value": "AlexsLemonade"
+        },
+        "ownerId": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/owner/id",
+          "value": 29661525
+        },
+        "ownerKind": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/owner/type",
+          "value": "Organization"
+        },
+        "createdAt": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/created_at",
+          "value": "2019-06-18T20:23:45Z"
+        },
+        "updatedAt": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/updated_at",
+          "value": "2026-08-04T19:20:58Z"
+        },
+        "pushedAt": {
+          "source": "github-openpbta-county-20261116",
+          "pointer": "/pushed_at",
+          "value": "2023-06-21T16:24:54Z"
+        }
+      }
     }
   ],
   "observations": {
@@ -6451,6 +8063,14 @@
     "pilot-expansion-connector-20261116": {
       "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/connector-observations.json",
       "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63"
+    },
+    "pilot-counties-connector-20261116": {
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-counties-20261116/connector-observations.json",
+      "sha256": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4"
+    },
+    "pilot-counties-regional-context-20261116": {
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-counties-20261116/regional-contexts.json",
+      "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c"
     }
   },
   "relationships": [
@@ -6709,6 +8329,279 @@
         "observation": "pilot-expansion-connector-20261116",
         "pointer": "/file_observation_batch/ended_at_utc",
         "value": "2026-11-16 16:18:33 UTC"
+      }
+    },
+    {
+      "fromId": "github:692249664",
+      "toId": "crossref:10.1038/s41592-024-02503-3",
+      "relation": "cites-publication",
+      "edge": {
+        "observation": "pilot-counties-connector-20261116",
+        "pointer": "/explicit_repository_publication_edges/0",
+        "value": {
+          "repository": "raphael-group/GASTON",
+          "commit": "79577c45111b3442b808c8e620711b822965493b",
+          "paths": [
+            "README.md"
+          ],
+          "doi": "10.1038/s41592-024-02503-3"
+        }
+      },
+      "file": {
+        "observation": "pilot-counties-connector-20261116",
+        "pointer": "/file_observation_batch/files/0",
+        "value": {
+          "repository": "raphael-group/GASTON",
+          "commit": "79577c45111b3442b808c8e620711b822965493b",
+          "path": "README.md",
+          "permalink": "https://github.com/raphael-group/GASTON/blob/79577c45111b3442b808c8e620711b822965493b/README.md",
+          "tool_success": true,
+          "doi_mentions": [
+            "10.1038/s41592-024-02503-3"
+          ],
+          "blob_sha": "19ce1b5ac3d58264baf7e49aa32b60a1b89b492b",
+          "lines": [
+            71,
+            88
+          ],
+          "started_at_utc": "2026-11-16 17:42:05 UTC",
+          "ended_at_utc": "2026-11-16 17:42:05 UTC",
+          "raw_body_persisted": false
+        }
+      },
+      "observedAt": {
+        "observation": "pilot-counties-connector-20261116",
+        "pointer": "/file_observation_batch/ended_at_utc",
+        "value": "2026-11-16 17:42:05 UTC"
+      }
+    },
+    {
+      "fromId": "github:617168725",
+      "toId": "crossref:10.1007/s11517-024-03096-x",
+      "relation": "cites-publication",
+      "edge": {
+        "observation": "pilot-counties-connector-20261116",
+        "pointer": "/explicit_repository_publication_edges/1",
+        "value": {
+          "repository": "akibzaman/SleepBoost",
+          "commit": "0ad7794aa201698f362562f86d2e191c969b9ab5",
+          "paths": [
+            "README.md"
+          ],
+          "doi": "10.1007/s11517-024-03096-x"
+        }
+      },
+      "file": {
+        "observation": "pilot-counties-connector-20261116",
+        "pointer": "/file_observation_batch/files/1",
+        "value": {
+          "repository": "akibzaman/SleepBoost",
+          "commit": "0ad7794aa201698f362562f86d2e191c969b9ab5",
+          "path": "README.md",
+          "permalink": "https://github.com/akibzaman/SleepBoost/blob/0ad7794aa201698f362562f86d2e191c969b9ab5/README.md",
+          "tool_success": true,
+          "doi_mentions": [
+            "10.1007/s11517-024-03096-x"
+          ],
+          "blob_sha": "e7b737ac479260f68467f52ed5c113c72539b579",
+          "lines": [
+            1,
+            3
+          ],
+          "started_at_utc": "2026-11-16 17:41:39 UTC",
+          "ended_at_utc": "2026-11-16 17:41:39 UTC",
+          "raw_body_persisted": false
+        }
+      },
+      "observedAt": {
+        "observation": "pilot-counties-connector-20261116",
+        "pointer": "/file_observation_batch/ended_at_utc",
+        "value": "2026-11-16 17:42:05 UTC"
+      }
+    },
+    {
+      "fromId": "github:192607622",
+      "toId": "crossref:10.1016/j.xgen.2023.100340",
+      "relation": "cites-publication",
+      "edge": {
+        "observation": "pilot-counties-connector-20261116",
+        "pointer": "/explicit_repository_publication_edges/2",
+        "value": {
+          "repository": "AlexsLemonade/OpenPBTA-analysis",
+          "commit": "e854738b57b16c3725673ad63b4ffd20ec48ad19",
+          "paths": [
+            "README.md"
+          ],
+          "doi": "10.1016/j.xgen.2023.100340"
+        }
+      },
+      "file": {
+        "observation": "pilot-counties-connector-20261116",
+        "pointer": "/file_observation_batch/files/2",
+        "value": {
+          "repository": "AlexsLemonade/OpenPBTA-analysis",
+          "commit": "e854738b57b16c3725673ad63b4ffd20ec48ad19",
+          "path": "README.md",
+          "permalink": "https://github.com/AlexsLemonade/OpenPBTA-analysis/blob/e854738b57b16c3725673ad63b4ffd20ec48ad19/README.md",
+          "tool_success": true,
+          "doi_mentions": [
+            "10.1016/j.xgen.2023.100340"
+          ],
+          "blob_sha": "af5e9b0375e0f150c519a81eed0015de5aacd88f",
+          "lines": [
+            1,
+            12
+          ],
+          "started_at_utc": "2026-11-16 17:42:05 UTC",
+          "ended_at_utc": "2026-11-16 17:42:05 UTC",
+          "raw_body_persisted": false
+        }
+      },
+      "observedAt": {
+        "observation": "pilot-counties-connector-20261116",
+        "pointer": "/file_observation_batch/ended_at_utc",
+        "value": "2026-11-16 17:42:05 UTC"
+      }
+    }
+  ],
+  "regionalContexts": [
+    {
+      "observation": "pilot-counties-regional-context-20261116",
+      "pointer": "/contexts/0",
+      "value": {
+        "recordId": "crossref:10.1038/s41592-024-02503-3",
+        "publicationSourceSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+        "publicationYear": 2025,
+        "authors": [
+          {
+            "sourceIndex": 0,
+            "name": "Uthsav Chitra"
+          },
+          {
+            "sourceIndex": 6,
+            "name": "Benjamin J. Raphael"
+          }
+        ],
+        "institution": "Princeton University",
+        "campus": "Princeton Computer Science main building, 35 Olden Street",
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "affiliationSources": [
+          {
+            "url": "https://www.nature.com/articles/s41592-024-02503-3",
+            "observedDate": "2026-11-16",
+            "method": "primary-indexed-rendering"
+          }
+        ],
+        "countySources": [
+          {
+            "url": "https://www.cs.princeton.edu/contact-us",
+            "observedDate": "2026-11-16",
+            "method": "primary-indexed-rendering"
+          },
+          {
+            "url": "https://nj.gov/www.nj.gov/treasury/unclaimed-property/pdf/counties/MERCER.pdf",
+            "observedDate": "2026-11-16",
+            "method": "primary-web-rendering"
+          },
+          {
+            "url": "https://orpa.princeton.edu/institutional-information",
+            "observedDate": "2026-11-16",
+            "method": "primary-web-rendering"
+          }
+        ],
+        "notes": [
+          "The published affiliation is Princeton Computer Science; campus and county evidence associates the department's main building with Mercer County, not an individual's worksite or where code was written."
+        ]
+      }
+    },
+    {
+      "observation": "pilot-counties-regional-context-20261116",
+      "pointer": "/contexts/1",
+      "value": {
+        "recordId": "crossref:10.1007/s11517-024-03096-x",
+        "publicationSourceSha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+        "publicationYear": 2024,
+        "authors": [
+          {
+            "sourceIndex": 3,
+            "name": "Iman Dehzangi"
+          }
+        ],
+        "institution": "Rutgers University\u2013Camden",
+        "campus": "Rutgers University\u2013Camden campus",
+        "municipality": "Camden",
+        "county": "Camden",
+        "affiliationSources": [
+          {
+            "url": "https://link.springer.com/article/10.1007/s11517-024-03096-x",
+            "observedDate": "2026-11-16",
+            "method": "primary-web-rendering"
+          },
+          {
+            "url": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+            "observedDate": "2026-11-16",
+            "method": "primary-indexed-rendering"
+          },
+          {
+            "url": "https://www.researchwithrutgers.org/en/publications/correction-to-sleepboost-a-multi-level-tree-based-ensemble-model-/",
+            "observedDate": "2026-11-16",
+            "method": "primary-indexed-rendering"
+          }
+        ],
+        "countySources": [
+          {
+            "url": "https://camden.rutgers.edu/visit",
+            "observedDate": "2026-11-16",
+            "method": "primary-web-rendering"
+          },
+          {
+            "url": "https://www.camdencounty.com/your-government/municipalities-camden-county/",
+            "observedDate": "2026-11-16",
+            "method": "primary-web-rendering"
+          }
+        ],
+        "notes": [
+          "The GitHub User owner is separate from the institutional affiliation; no institutional ownership is inferred.",
+          "The publisher's correction changed the author's first name from Imam to Iman; the retained Crossref response already says Iman."
+        ]
+      }
+    },
+    {
+      "observation": "pilot-counties-regional-context-20261116",
+      "pointer": "/contexts/2",
+      "value": {
+        "recordId": "crossref:10.1016/j.xgen.2023.100340",
+        "publicationSourceSha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+        "publicationYear": 2023,
+        "authors": [
+          {
+            "sourceIndex": 2,
+            "name": "Stephanie J. Spielman"
+          }
+        ],
+        "institution": "Rowan University",
+        "campus": "Rowan University Glassboro main campus",
+        "municipality": "Glassboro",
+        "county": "Gloucester",
+        "affiliationSources": [
+          {
+            "url": "https://pubmed.ncbi.nlm.nih.gov/37492101/",
+            "observedDate": "2026-11-16",
+            "method": "primary-indexed-rendering"
+          }
+        ],
+        "countySources": [
+          {
+            "url": "https://www.rowan.edu/about/visiting/west.pdf",
+            "observedDate": "2026-11-16",
+            "method": "primary-web-rendering"
+          }
+        ],
+        "notes": [
+          "OpenPBTA is a multi-institution collaboration; Rowan affiliation does not establish Rowan ownership or origin of the repository, or independent Penn or CHOP laboratory coverage.",
+          "The historical analysis repository is archived, no longer accepts contributions, and points to a successor."
+        ]
       }
     }
   ]

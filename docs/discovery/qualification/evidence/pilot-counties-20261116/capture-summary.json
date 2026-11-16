@@ -1,0 +1,58 @@
+[
+  {
+    "provider": "github",
+    "name": "gaston",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"github\", \"name\": \"gaston\", \"status\": 200, \"received_bytes\": 6514, \"body_sha256\": \"85084be70321c48775e6d48e1801370bfff34208b2a4f194aca37e771c75ff45\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.358}",
+    "stderr": ""
+  },
+  {
+    "provider": "github",
+    "name": "openpbta",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"github\", \"name\": \"openpbta\", \"status\": 200, \"received_bytes\": 6909, \"body_sha256\": \"168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.306}",
+    "stderr": ""
+  },
+  {
+    "provider": "github",
+    "name": "sleepboost",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"github\", \"name\": \"sleepboost\", \"status\": 200, \"received_bytes\": 5453, \"body_sha256\": \"66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.329}",
+    "stderr": ""
+  },
+  {
+    "provider": "github",
+    "name": "thread-preprint",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"github\", \"name\": \"thread-preprint\", \"status\": 200, \"received_bytes\": 6232, \"body_sha256\": \"3ac39ae88948604ac3c1a330445a3f7e95bf8ee8cec64a9fad546849e23d96d4\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.408}",
+    "stderr": ""
+  },
+  {
+    "provider": "crossref",
+    "name": "gaston",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"crossref\", \"name\": \"gaston\", \"status\": 200, \"received_bytes\": 2205, \"body_sha256\": \"4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.332}",
+    "stderr": ""
+  },
+  {
+    "provider": "crossref",
+    "name": "openpbta",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"crossref\", \"name\": \"openpbta\", \"status\": 200, \"received_bytes\": 9748, \"body_sha256\": \"87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.194}",
+    "stderr": ""
+  },
+  {
+    "provider": "crossref",
+    "name": "sleepboost",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"crossref\", \"name\": \"sleepboost\", \"status\": 200, \"received_bytes\": 1786, \"body_sha256\": \"7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.197}",
+    "stderr": ""
+  },
+  {
+    "provider": "crossref",
+    "name": "thread-preprint",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"crossref\", \"name\": \"thread-preprint\", \"status\": 200, \"received_bytes\": 2217, \"body_sha256\": \"65d034f8c74ef5347d91f9ec4561df32ee667da3cdca1061b7c398b5d940f62b\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.217}",
+    "stderr": ""
+  }
+]

@@ -1,8 +1,108 @@
 {
-  "schemaVersion": "discovery-pilot-catalog-v2",
-  "catalogVersion": "2026-11-16-source-expansion-1",
-  "selectionSha256": "1f817b19d60484f4e6716a278b9efbd1a2d14f4ef8ff4959c561f4f211adc596",
+  "schemaVersion": "discovery-pilot-catalog-v3",
+  "catalogVersion": "2026-11-16-counties-regional-context-1",
+  "selectionSha256": "189b2ad80f084732e4332fd60356827e7b669d89fc700bee20a911fe1ad10a27",
   "records": [
+    {
+      "id": "crossref:10.1007/s11517-024-03096-x",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1007/s11517-024-03096-x",
+      "title": "SleepBoost: a multi-level tree-based ensemble model for automatic sleep stage classification",
+      "description": null,
+      "url": "https://doi.org/10.1007/s11517-024-03096-x",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Akib Zaman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Shiu Kumar",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Swakkhar Shatabda",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Iman Dehzangi",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Alok Sharma",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2024-05-03",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1007%2Fs11517-024-03096-x&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T17:39:53.209871+00:00",
+        "sha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        }
+      ],
+      "relatedLinks": []
+    },
     {
       "id": "crossref:10.1016/j.neuroimage.2023.120037",
       "kind": "publication",
@@ -216,6 +316,655 @@
         {
           "field": "authors/17",
           "pointer": "/message/items/0/author/17"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1016/j.xgen.2023.100340",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1016/j.xgen.2023.100340",
+      "title": "OpenPBTA: The Open Pediatric Brain Tumor Atlas",
+      "description": null,
+      "url": "https://doi.org/10.1016/j.xgen.2023.100340",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Joshua A. Shapiro",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Krutika S. Gaonkar",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Stephanie J. Spielman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Candace L. Savonen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Chante J. Bethell",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Run Jin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Komal S. Rathi",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Yuankun Zhu",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Laura E. Egolf",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Bailey K. Farrow",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Daniel P. Miller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Yang Yang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Tejaswi Koganti",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Nighat Noureen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Mateusz P. Koptyra",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Nhat Duong",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Mariarita Santi",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Jung Kim",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Shannon Robins",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Phillip B. Storm",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Stephen C. Mack",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 21,
+          "name": "Jena V. Lilly",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Hongbo M. Xie",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Payal Jain",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Pichai Raman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 25,
+          "name": "Brian R. Rood",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 26,
+          "name": "Rishi R. Lulla",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 27,
+          "name": "Javad Nazarian",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 28,
+          "name": "Adam A. Kraya",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 29,
+          "name": "Zalman Vaksman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 30,
+          "name": "Allison P. Heath",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 31,
+          "name": "Cassie Kline",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 32,
+          "name": "Laura Scolaro",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 33,
+          "name": "Angela N. Viaene",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 34,
+          "name": "Xiaoyan Huang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 35,
+          "name": "Gregory P. Way",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 36,
+          "name": "Steven M. Foltz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 37,
+          "name": "Bo Zhang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 38,
+          "name": "Anna R. Poetsch",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 39,
+          "name": "Sabine Mueller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 40,
+          "name": "Brian M. Ennis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 41,
+          "name": "Michael Prados",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 42,
+          "name": "Sharon J. Diskin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 43,
+          "name": "Siyuan Zheng",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 44,
+          "name": "Yiran Guo",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 45,
+          "name": "Shrivats Kannan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 46,
+          "name": "Angela J. Waanders",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 47,
+          "name": "Ashley S. Margol",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 48,
+          "name": "Meen Chul Kim",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 49,
+          "name": "Derek Hanson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 50,
+          "name": "Nicholas Van Kuren",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 51,
+          "name": "Jessica Wong",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 52,
+          "name": "Rebecca S. Kaufman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 53,
+          "name": "Noel Coleman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 54,
+          "name": "Christopher Blackden",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 55,
+          "name": "Kristina A. Cole",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 56,
+          "name": "Jennifer L. Mason",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 57,
+          "name": "Peter J. Madsen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 58,
+          "name": "Carl J. Koschmann",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 59,
+          "name": "Douglas R. Stewart",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 60,
+          "name": "Eric Wafula",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 61,
+          "name": "Miguel A. Brown",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 62,
+          "name": "Adam C. Resnick",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 63,
+          "name": "Casey S. Greene",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 64,
+          "name": "Jo Lynne Rokita",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 65,
+          "name": "Jaclyn N. Taroni",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2023-07",
+        "precision": "month"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.xgen.2023.100340&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T17:39:49.588333+00:00",
+        "sha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
+        },
+        {
+          "field": "authors/25",
+          "pointer": "/message/items/0/author/25"
+        },
+        {
+          "field": "authors/26",
+          "pointer": "/message/items/0/author/26"
+        },
+        {
+          "field": "authors/27",
+          "pointer": "/message/items/0/author/27"
+        },
+        {
+          "field": "authors/28",
+          "pointer": "/message/items/0/author/28"
+        },
+        {
+          "field": "authors/29",
+          "pointer": "/message/items/0/author/29"
+        },
+        {
+          "field": "authors/30",
+          "pointer": "/message/items/0/author/30"
+        },
+        {
+          "field": "authors/31",
+          "pointer": "/message/items/0/author/31"
+        },
+        {
+          "field": "authors/32",
+          "pointer": "/message/items/0/author/32"
+        },
+        {
+          "field": "authors/33",
+          "pointer": "/message/items/0/author/33"
+        },
+        {
+          "field": "authors/34",
+          "pointer": "/message/items/0/author/34"
+        },
+        {
+          "field": "authors/35",
+          "pointer": "/message/items/0/author/35"
+        },
+        {
+          "field": "authors/36",
+          "pointer": "/message/items/0/author/36"
+        },
+        {
+          "field": "authors/37",
+          "pointer": "/message/items/0/author/37"
+        },
+        {
+          "field": "authors/38",
+          "pointer": "/message/items/0/author/38"
+        },
+        {
+          "field": "authors/39",
+          "pointer": "/message/items/0/author/39"
+        },
+        {
+          "field": "authors/40",
+          "pointer": "/message/items/0/author/40"
+        },
+        {
+          "field": "authors/41",
+          "pointer": "/message/items/0/author/41"
+        },
+        {
+          "field": "authors/42",
+          "pointer": "/message/items/0/author/42"
+        },
+        {
+          "field": "authors/43",
+          "pointer": "/message/items/0/author/43"
+        },
+        {
+          "field": "authors/44",
+          "pointer": "/message/items/0/author/44"
+        },
+        {
+          "field": "authors/45",
+          "pointer": "/message/items/0/author/45"
+        },
+        {
+          "field": "authors/46",
+          "pointer": "/message/items/0/author/46"
+        },
+        {
+          "field": "authors/47",
+          "pointer": "/message/items/0/author/47"
+        },
+        {
+          "field": "authors/48",
+          "pointer": "/message/items/0/author/48"
+        },
+        {
+          "field": "authors/49",
+          "pointer": "/message/items/0/author/49"
+        },
+        {
+          "field": "authors/50",
+          "pointer": "/message/items/0/author/50"
+        },
+        {
+          "field": "authors/51",
+          "pointer": "/message/items/0/author/51"
+        },
+        {
+          "field": "authors/52",
+          "pointer": "/message/items/0/author/52"
+        },
+        {
+          "field": "authors/53",
+          "pointer": "/message/items/0/author/53"
+        },
+        {
+          "field": "authors/54",
+          "pointer": "/message/items/0/author/54"
+        },
+        {
+          "field": "authors/55",
+          "pointer": "/message/items/0/author/55"
+        },
+        {
+          "field": "authors/56",
+          "pointer": "/message/items/0/author/56"
+        },
+        {
+          "field": "authors/57",
+          "pointer": "/message/items/0/author/57"
+        },
+        {
+          "field": "authors/58",
+          "pointer": "/message/items/0/author/58"
+        },
+        {
+          "field": "authors/59",
+          "pointer": "/message/items/0/author/59"
+        },
+        {
+          "field": "authors/60",
+          "pointer": "/message/items/0/author/60"
+        },
+        {
+          "field": "authors/61",
+          "pointer": "/message/items/0/author/61"
+        },
+        {
+          "field": "authors/62",
+          "pointer": "/message/items/0/author/62"
+        },
+        {
+          "field": "authors/63",
+          "pointer": "/message/items/0/author/63"
+        },
+        {
+          "field": "authors/64",
+          "pointer": "/message/items/0/author/64"
+        },
+        {
+          "field": "authors/65",
+          "pointer": "/message/items/0/author/65"
         }
       ],
       "relatedLinks": []
@@ -1730,6 +2479,124 @@
         {
           "field": "authors/113",
           "pointer": "/message/items/0/author/113"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1038/s41592-024-02503-3",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1038/s41592-024-02503-3",
+      "title": "Mapping the topography of spatial gene expression with interpretable deep learning",
+      "description": null,
+      "url": "https://doi.org/10.1038/s41592-024-02503-3",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Uthsav Chitra",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Brian J. Arnold",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Hirak Sarkar",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Kohei Sanno",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Cong Ma",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Sereno Lopez-Darwin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Benjamin J. Raphael",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2025-01-23",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T17:39:45.966987+00:00",
+        "sha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
         }
       ],
       "relatedLinks": []
@@ -3744,6 +4611,111 @@
       ]
     },
     {
+      "id": "github:192607622",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "192607622",
+      "title": "AlexsLemonade/OpenPBTA-analysis",
+      "description": "The analysis repository for the Open Pediatric Brain Tumor Atlas Project",
+      "url": "https://github.com/AlexsLemonade/OpenPBTA-analysis",
+      "owner": {
+        "id": "29661525",
+        "name": "AlexsLemonade",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2023-06-21T16:24:54Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2019-06-18T20:23:45Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-08-04T19:20:58Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/AlexsLemonade/OpenPBTA-analysis",
+        "observedAt": "2026-11-16T17:39:34.618464+00:00",
+        "sha256": "168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1016/j.xgen.2023.100340",
+          "targetNativeId": "10.1016/j.xgen.2023.100340",
+          "targetTitle": "OpenPBTA: The Open Pediatric Brain Tumor Atlas",
+          "url": "https://doi.org/10.1016/j.xgen.2023.100340",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/AlexsLemonade/OpenPBTA-analysis/blob/e854738b57b16c3725673ad63b4ffd20ec48ad19/README.md",
+            "observedAt": "2026-11-16T17:42:05Z",
+            "sha256": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4",
+            "pointer": "/explicit_repository_publication_edges/2",
+            "filePointer": "/file_observation_batch/files/2",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
       "id": "github:256420694",
       "kind": "repository",
       "provider": "github",
@@ -4237,6 +5209,216 @@
       "relatedLinks": []
     },
     {
+      "id": "github:617168725",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "617168725",
+      "title": "akibzaman/SleepBoost",
+      "description": "A Multi-Level Tree-based Ensemble Model for Automatic Sleep Stage Classification",
+      "url": "https://github.com/akibzaman/SleepBoost",
+      "owner": {
+        "id": "55422467",
+        "name": "akibzaman",
+        "kind": "User"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2025-05-14T03:44:45Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2023-03-21T20:41:23Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-10-11T16:34:47Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/akibzaman/SleepBoost",
+        "observedAt": "2026-11-16T17:39:38.372429+00:00",
+        "sha256": "66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1007/s11517-024-03096-x",
+          "targetNativeId": "10.1007/s11517-024-03096-x",
+          "targetTitle": "SleepBoost: a multi-level tree-based ensemble model for automatic sleep stage classification",
+          "url": "https://doi.org/10.1007/s11517-024-03096-x",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/akibzaman/SleepBoost/blob/0ad7794aa201698f362562f86d2e191c969b9ab5/README.md",
+            "observedAt": "2026-11-16T17:42:05Z",
+            "sha256": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4",
+            "pointer": "/explicit_repository_publication_edges/1",
+            "filePointer": "/file_observation_batch/files/1",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:692249664",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "692249664",
+      "title": "raphael-group/GASTON",
+      "description": "GASTON: deep learning algorithm learns \"topography\" of a tissue slice from spatial transcriptomics data",
+      "url": "https://github.com/raphael-group/GASTON",
+      "owner": {
+        "id": "5168500",
+        "name": "raphael-group",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2025-12-01T19:58:23Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2023-09-15T23:13:14Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-05T00:43:37Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/raphael-group/GASTON",
+        "observedAt": "2026-11-16T17:39:30.886621+00:00",
+        "sha256": "85084be70321c48775e6d48e1801370bfff34208b2a4f194aca37e771c75ff45",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1038/s41592-024-02503-3",
+          "targetNativeId": "10.1038/s41592-024-02503-3",
+          "targetTitle": "Mapping the topography of spatial gene expression with interpretable deep learning",
+          "url": "https://doi.org/10.1038/s41592-024-02503-3",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/raphael-group/GASTON/blob/79577c45111b3442b808c8e620711b822965493b/README.md",
+            "observedAt": "2026-11-16T17:42:05Z",
+            "sha256": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4",
+            "pointer": "/explicit_repository_publication_edges/0",
+            "filePointer": "/file_observation_batch/files/0",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
       "id": "github:734388793",
       "kind": "repository",
       "provider": "github",
@@ -4436,6 +5618,150 @@
         }
       ],
       "relatedLinks": []
+    }
+  ],
+  "regionalContexts": [
+    {
+      "recordId": "crossref:10.1038/s41592-024-02503-3",
+      "publicationSourceSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+      "publicationYear": 2025,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Uthsav Chitra"
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Benjamin J. Raphael"
+        }
+      ],
+      "institution": "Princeton University",
+      "campus": "Princeton Computer Science main building, 35 Olden Street",
+      "municipality": "Princeton",
+      "county": "Mercer",
+      "affiliationSources": [
+        {
+          "url": "https://www.nature.com/articles/s41592-024-02503-3",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        }
+      ],
+      "countySources": [
+        {
+          "url": "https://www.cs.princeton.edu/contact-us",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        },
+        {
+          "url": "https://nj.gov/www.nj.gov/treasury/unclaimed-property/pdf/counties/MERCER.pdf",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        },
+        {
+          "url": "https://orpa.princeton.edu/institutional-information",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "notes": [
+        "The published affiliation is Princeton Computer Science; campus and county evidence associates the department's main building with Mercer County, not an individual's worksite or where code was written."
+      ],
+      "provenance": {
+        "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+        "pointer": "/contexts/0",
+        "method": "derived-regional-selection-observation"
+      }
+    },
+    {
+      "recordId": "crossref:10.1007/s11517-024-03096-x",
+      "publicationSourceSha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+      "publicationYear": 2024,
+      "authors": [
+        {
+          "sourceIndex": 3,
+          "name": "Iman Dehzangi"
+        }
+      ],
+      "institution": "Rutgers University–Camden",
+      "campus": "Rutgers University–Camden campus",
+      "municipality": "Camden",
+      "county": "Camden",
+      "affiliationSources": [
+        {
+          "url": "https://link.springer.com/article/10.1007/s11517-024-03096-x",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        },
+        {
+          "url": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        },
+        {
+          "url": "https://www.researchwithrutgers.org/en/publications/correction-to-sleepboost-a-multi-level-tree-based-ensemble-model-/",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        }
+      ],
+      "countySources": [
+        {
+          "url": "https://camden.rutgers.edu/visit",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        },
+        {
+          "url": "https://www.camdencounty.com/your-government/municipalities-camden-county/",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "notes": [
+        "The GitHub User owner is separate from the institutional affiliation; no institutional ownership is inferred.",
+        "The publisher's correction changed the author's first name from Imam to Iman; the retained Crossref response already says Iman."
+      ],
+      "provenance": {
+        "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+        "pointer": "/contexts/1",
+        "method": "derived-regional-selection-observation"
+      }
+    },
+    {
+      "recordId": "crossref:10.1016/j.xgen.2023.100340",
+      "publicationSourceSha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+      "publicationYear": 2023,
+      "authors": [
+        {
+          "sourceIndex": 2,
+          "name": "Stephanie J. Spielman"
+        }
+      ],
+      "institution": "Rowan University",
+      "campus": "Rowan University Glassboro main campus",
+      "municipality": "Glassboro",
+      "county": "Gloucester",
+      "affiliationSources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/37492101/",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        }
+      ],
+      "countySources": [
+        {
+          "url": "https://www.rowan.edu/about/visiting/west.pdf",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "notes": [
+        "OpenPBTA is a multi-institution collaboration; Rowan affiliation does not establish Rowan ownership or origin of the repository, or independent Penn or CHOP laboratory coverage.",
+        "The historical analysis repository is archived, no longer accepts contributions, and points to a successor."
+      ],
+      "provenance": {
+        "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+        "pointer": "/contexts/2",
+        "method": "derived-regional-selection-observation"
+      }
     }
   ]
 }

@@ -1,0 +1,162 @@
+{
+  "purpose": "EX31 bounded factual county-diversity qualification; no enrollment, clinical/current-location claim or benchmark labels. Thread preprint remains conditional on exact native affiliations.",
+  "nativeRequestBudget": 8,
+  "requests": [
+    {
+      "name": "gaston",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-county-expansion-gaston",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1038/s41592-024-02503-3"
+      },
+      "template": {
+        "id": "endpoint:crossref-county-expansion-gaston",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1038/s41592-024-02503-3",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1038/s41592-024-02503-3",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000,
+      "candidateOnly": false
+    },
+    {
+      "name": "sleepboost",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-county-expansion-sleepboost",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1007/s11517-024-03096-x"
+      },
+      "template": {
+        "id": "endpoint:crossref-county-expansion-sleepboost",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1007/s11517-024-03096-x",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1007%2Fs11517-024-03096-x&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1007/s11517-024-03096-x",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000,
+      "candidateOnly": false
+    },
+    {
+      "name": "openpbta",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-county-expansion-openpbta",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1016/j.xgen.2023.100340"
+      },
+      "template": {
+        "id": "endpoint:crossref-county-expansion-openpbta",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1016/j.xgen.2023.100340",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.xgen.2023.100340&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1016/j.xgen.2023.100340",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000,
+      "candidateOnly": false
+    },
+    {
+      "name": "thread-preprint",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-county-expansion-thread-preprint",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1101/2020.01.15.908459"
+      },
+      "template": {
+        "id": "endpoint:crossref-county-expansion-thread-preprint",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1101/2020.01.15.908459",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1101%2F2020.01.15.908459&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1101/2020.01.15.908459",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000,
+      "candidateOnly": true
+    },
+    {
+      "name": "gaston",
+      "provider": "github",
+      "url": "https://api.github.com/repos/raphael-group/GASTON",
+      "alias": "raphael-group/GASTON",
+      "id": 692249664,
+      "ownerId": 5168500,
+      "ownerType": "Organization",
+      "sourceKind": "public-repository-metadata-with-explicit-owner-type",
+      "maxBytes": 48000,
+      "candidateOnly": false
+    },
+    {
+      "name": "sleepboost",
+      "provider": "github",
+      "url": "https://api.github.com/repos/akibzaman/SleepBoost",
+      "alias": "akibzaman/SleepBoost",
+      "id": 617168725,
+      "ownerId": 55422467,
+      "ownerType": "User",
+      "sourceKind": "public-repository-metadata-with-explicit-owner-type",
+      "maxBytes": 48000,
+      "candidateOnly": false
+    },
+    {
+      "name": "openpbta",
+      "provider": "github",
+      "url": "https://api.github.com/repos/AlexsLemonade/OpenPBTA-analysis",
+      "alias": "AlexsLemonade/OpenPBTA-analysis",
+      "id": 192607622,
+      "ownerId": 29661525,
+      "ownerType": "Organization",
+      "sourceKind": "public-repository-metadata-with-explicit-owner-type",
+      "maxBytes": 48000,
+      "candidateOnly": false
+    },
+    {
+      "name": "thread-preprint",
+      "provider": "github",
+      "url": "https://api.github.com/repos/mathiesonlab/thread",
+      "alias": "mathiesonlab/thread",
+      "id": 218530629,
+      "ownerId": 54542479,
+      "ownerType": "Organization",
+      "sourceKind": "public-repository-metadata-with-explicit-owner-type",
+      "maxBytes": 48000,
+      "candidateOnly": true
+    }
+  ]
+}

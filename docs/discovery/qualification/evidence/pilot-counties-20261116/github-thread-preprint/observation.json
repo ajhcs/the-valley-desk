@@ -1,0 +1,57 @@
+{
+  "provider": "github",
+  "name": "thread-preprint",
+  "url": "https://api.github.com/repos/mathiesonlab/thread",
+  "method": "GET",
+  "started_at_utc": "2026-11-16T17:39:41.800692+00:00",
+  "transport": "standalone-public-IP-pinned-HTTPS",
+  "wp06_transport": false,
+  "anonymous": true,
+  "authentication_sent": false,
+  "proxy_used": false,
+  "redirects_followed": 0,
+  "byte_cap": 48000,
+  "outer_deadline_seconds": 25,
+  "request_headers": {
+    "User-Agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+    "Accept-Encoding": "identity",
+    "Accept": "application/vnd.github+json",
+    "Connection": "close",
+    "X-GitHub-Api-Version": "2022-11-28"
+  },
+  "body_retained": true,
+  "rights_scope": "User-authorized bounded public factual source qualification; no article/code/contact-body redistribution or production enrollment.",
+  "dns_public_addresses": [
+    "140.82.114.6"
+  ],
+  "selected_public_ip": "140.82.114.6",
+  "tls_version": "TLSv1.3",
+  "status": 200,
+  "link_header_present": false,
+  "response_headers": {
+    "date": "Mon, 16 Nov 2026 17:39:42 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"f615effa5f0faaac5053fdf3ae9989eec31d0ea55de46bf2225b6ffded0dff69\"",
+    "last-modified": "Thu, 24 Oct 2024 09:16:00 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "56",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-reset": "1794854370",
+    "content-length": "6232"
+  },
+  "received_bytes": 6232,
+  "body_sha256": "3ac39ae88948604ac3c1a330445a3f7e95bf8ee8cec64a9fad546849e23d96d4",
+  "response_complete": true,
+  "native_identity": {
+    "repository_id": 218530629,
+    "alias": "mathiesonlab/thread",
+    "owner_id": 54542479,
+    "owner_type": "Organization"
+  },
+  "preflight_source_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+  "preflight": "Strict entire-payload JSON/material gate before persistence, plus exact requested DOI/cardinality/selected fields or public repository and explicit requested account-owner identity. No projection or body rewriting.",
+  "body_path": ".discovery-work/county-expansion/root/captures/github-thread-preprint/body.json",
+  "ended_at_utc": "2026-11-16T17:39:42.208907+00:00",
+  "elapsed_seconds": 0.408
+}

@@ -25,9 +25,12 @@ const summary = (record: DiscoveryPilotRecord) => ({ id: record.id, nativeId: re
 export function queryDiscoveryPilot(input: unknown, queryInput: unknown) {
   const catalog = DiscoveryPilotCatalogSchema.parse(input),
     query = DiscoveryPilotQuerySchema.parse(queryInput);
-  const terms = folded(query.q).trim().split(/\s+/).filter(Boolean);
+  const terms = folded(query.q).trim().split(/[\s\u2010-\u2015-]+/u).filter(Boolean);
   const records = new Map(catalog.records.map(record => [record.id, record]));
   const textById = new Map(catalog.records.map(record => [record.id, searchable(record)]));
+  const regionalText = new Map(catalog.records.map(record => [record.id, folded(catalog.regionalContexts.filter(context => context.recordId === record.id).flatMap(context =>
+    [context.institution, context.campus, context.municipality, `${context.county} County`, ...context.authors.map(author => author.name)]).join(' '))]));
+  const withRegional = (id: string) => `${textById.get(id)!} ${regionalText.get(id)!}`;
   const citations: DiscoveryPilotCitation[] = catalog.records.flatMap(repository => repository.relatedLinks.map(link => ({
     repository: summary(repository), publication: summary(records.get(link.targetId)!), evidence: link.evidence,
   })));
@@ -45,9 +48,13 @@ export function queryDiscoveryPilot(input: unknown, queryInput: unknown) {
       matches.push({ recordId: record.id, basis: 'own-metadata', relatedRecordId: null });
       return true;
     }
+    if (terms.every(term => withRegional(record.id).includes(term))) {
+      matches.push({ recordId: record.id, basis: 'regional-context', relatedRecordId: null });
+      return true;
+    }
     // Only one retained, validated citation edge supplies additional search context.
     // The record itself never inherits that neighbor's authors, owner or location.
-    const related = (neighbors.get(record.id) ?? []).find(neighbor => terms.every(term => ownText.includes(term) || textById.get(neighbor.id)!.includes(term)));
+    const related = (neighbors.get(record.id) ?? []).find(neighbor => terms.every(term => withRegional(record.id).includes(term) || withRegional(neighbor.id).includes(term)));
     if (!related) return false;
     matches.push({ recordId: record.id, basis: related.basis, relatedRecordId: related.id });
     return true;
@@ -66,13 +73,20 @@ export function queryDiscoveryPilot(input: unknown, queryInput: unknown) {
   };
   for (const record of catalog.records) counts[record.kind]++;
   const selectedIds = new Set(items.map(record => record.id));
+  const selectedCitations = citations.filter(citation => selectedIds.has(citation.repository.id) || selectedIds.has(citation.publication.id));
+  const regionalIds = new Set([...items.filter(record => record.kind === 'publication').map(record => record.id),
+    ...selectedCitations.filter(citation => selectedIds.has(citation.repository.id)).map(citation => citation.publication.id)]);
+  const regionalContexts = catalog.regionalContexts.filter(context => regionalIds.has(context.recordId));
+  const regionalSupportIds = new Set(regionalContexts.filter(context => !selectedIds.has(context.recordId)).map(context => context.recordId));
   return {
     catalog,
     query,
     items,
     counts,
     matches: items.map(record => matches.find(match => match.recordId === record.id)!),
-    citations: citations.filter(citation => selectedIds.has(citation.repository.id) || selectedIds.has(citation.publication.id)),
+    citations: selectedCitations,
+    regionalContexts,
+    regionalPublications: catalog.records.filter(record => regionalSupportIds.has(record.id)),
   };
 }
 function canonical(value: unknown): string {
@@ -92,9 +106,11 @@ export async function readDiscoveryPilot(catalogInput: unknown, queryInput: unkn
     counts,
     matches,
     citations,
+    regionalContexts,
+    regionalPublications,
   } = queryDiscoveryPilot(catalogInput, queryInput);
   return DiscoveryPilotResultSchema.parse({
-    schemaVersion: 'discovery-pilot-v2',
+    schemaVersion: 'discovery-pilot-v3',
     catalogVersion: catalog.catalogVersion,
     catalogSha256: await digest(catalog),
     totalRecords: catalog.records.length,
@@ -104,6 +120,8 @@ export async function readDiscoveryPilot(catalogInput: unknown, queryInput: unkn
     items,
     matches,
     citations,
+    regionalContexts,
+    regionalPublications,
   });
 }
 function response(request: Request, status: number, value: unknown, headers: Record<string, string> = {}) {

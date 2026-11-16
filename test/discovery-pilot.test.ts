@@ -32,6 +32,7 @@ const baselineRepositoryIds = ['github:156589095', 'github:128938343', 'github:5
 const baselineIds = new Set([...baselineRepositoryIds, ...baselineAuthorCounts.keys(), 'ror:00b30xv10', 'ror:01z7r7q48']);
 const baselineCatalog = (value: Awaited<ReturnType<typeof buildDiscoveryPilotCatalog>>) => ({
   ...value, records: value.records.filter(record => baselineIds.has(record.id)),
+  regionalContexts: value.regionalContexts.filter(context => baselineIds.has(context.recordId)),
 });
 const expansionPairs = [
   { repositoryId: 'github:256420694', repository: 'PennLINC/aslprep', doi: '10.1038/s41592-022-01458-7', authorCount: 114, commit: '48a418cf92b57c5c66502286d2847fd742cbbd48', path: 'CITATION.cff' },
@@ -39,20 +40,35 @@ const expansionPairs = [
   { repositoryId: 'github:163997867', repository: 'CBICA/HistoReg', doi: '10.3390/app11041892', authorCount: 6, commit: '5f7290781ae519b5ae930e85be594576576df853', path: 'README.md' },
   { repositoryId: 'github:390797198', repository: 'PennLINC/ModelArray', doi: '10.1016/j.neuroimage.2023.120037', authorCount: 18, commit: 'b38bb2582d38e82040e25aa5b08c98161287411a', path: 'README.Rmd' },
 ];
-test('retained-byte projection is deterministic, source-traced and contains 22 distinct listings', async () => {
+// EX30 is a second fixed regression subset. County expansion must preserve all
+// twenty-two reviewed record objects, including their original evidence.
+const ex30Ids = new Set([...baselineIds, ...expansionPairs.flatMap(pair => [pair.repositoryId, `crossref:${pair.doi}`])]);
+const ex30Catalog = (value: Awaited<ReturnType<typeof buildDiscoveryPilotCatalog>>) => ({
+  ...value, records: value.records.filter(record => ex30Ids.has(record.id)),
+  regionalContexts: value.regionalContexts.filter(context => ex30Ids.has(context.recordId)),
+});
+const countyPairs = [
+  { repositoryId: 'github:692249664', repository: 'raphael-group/GASTON', owner: { id: '5168500', name: 'raphael-group', kind: 'Organization' }, doi: '10.1038/s41592-024-02503-3', authorCount: 7, commit: '79577c45111b3442b808c8e620711b822965493b', blob: '19ce1b5ac3d58264baf7e49aa32b60a1b89b492b', lines: [71, 88], authorQuery: 'Uthsav Chitra' },
+  { repositoryId: 'github:617168725', repository: 'akibzaman/SleepBoost', owner: { id: '55422467', name: 'akibzaman', kind: 'User' }, doi: '10.1007/s11517-024-03096-x', authorCount: 5, commit: '0ad7794aa201698f362562f86d2e191c969b9ab5', blob: 'e7b737ac479260f68467f52ed5c113c72539b579', lines: [1, 3], authorQuery: 'Iman Dehzangi' },
+  { repositoryId: 'github:192607622', repository: 'AlexsLemonade/OpenPBTA-analysis', owner: { id: '29661525', name: 'AlexsLemonade', kind: 'Organization' }, doi: '10.1016/j.xgen.2023.100340', authorCount: 66, commit: 'e854738b57b16c3725673ad63b4ffd20ec48ad19', blob: 'af5e9b0375e0f150c519a81eed0015de5aacd88f', lines: [1, 12], authorQuery: 'Stephanie J. Spielman' },
+];
+test('retained-byte projection is deterministic, source-traced and preserves 22 distinct EX30 listings', async () => {
   const selected = await selection(),
     generated = await buildDiscoveryPilotCatalog(selected);
   assert.deepEqual(generated, await catalog());
   assert.deepEqual(await buildDiscoveryPilotCatalog(selected), generated);
-  assert.equal(generated.records.length, 22);
+  assert.equal(generated.records.length, 28);
+  assert.equal(sha(canonicalPilotJson(generated.records)), '7d21281dfd8da10fe9b6d2f107d08558e80b695e1e5fb1560ee34aea281d6f01');
+  assert.equal(ex30Catalog(generated).records.length, 22);
   assert.equal(baselineCatalog(generated).records.length, 14);
-  assert.deepEqual(queryDiscoveryPilot(generated, {}).counts, {
+  assert.equal(sha(canonicalPilotJson(ex30Catalog(generated).records)), '47fedcc07ef997a84055e722a5e94f31fbcb31f246b4e4572cd292fed0a981ef');
+  assert.deepEqual(queryDiscoveryPilot(ex30Catalog(generated), {}).counts, {
     repository: 10,
     publication: 10,
     organization: 2
   });
   assert.equal(generated.selectionSha256, sha(canonicalPilotJson(selected)));
-  assert.equal(new Set(generated.records.map(record => `${record.provider}:${record.nativeId}`)).size, 22);
+  assert.equal(new Set(generated.records.map(record => `${record.provider}:${record.nativeId}`)).size, generated.records.length);
   for (const record of generated.records) {
     const source = (Object.values(selected.sources).find((value: any) => value.sha256 === record.source.sha256) as any);
     assert.ok(source);
@@ -65,15 +81,105 @@ test('retained-byte projection is deterministic, source-traced and contains 22 d
     assert.ok(record.provenance.some(value => value.field === 'title'));
   }
 });
+test('the actual county batch adds exactly three source-bound pairs and nine total directed citations', async () => {
+  const selected = await selection();
+  const generated = await buildDiscoveryPilotCatalog(selected);
+  const actualNewIds = generated.records.filter(record => !ex30Ids.has(record.id)).map(record => record.id).sort();
+  assert.deepEqual(actualNewIds, countyPairs.flatMap(pair => [pair.repositoryId, `crossref:${pair.doi}`]).sort());
+  assert.deepEqual(queryDiscoveryPilot(generated, {}).counts, { repository: 13, publication: 13, organization: 2 });
+  assert.equal(generated.records.flatMap(record => record.relatedLinks).length, 9);
+  const publicationOnly = await readDiscoveryPilot(generated, { kind: 'publication' });
+  assert.equal(publicationOnly.items.length, 13);
+  assert.equal(publicationOnly.citations.length, 9);
+  assert.ok(publicationOnly.items.every(record => record.relatedLinks.length === 0));
+  for (const expected of countyPairs) {
+    const repository = generated.records.find(record => record.id === expected.repositoryId)!;
+    const publication = generated.records.find(record => record.id === `crossref:${expected.doi}`)!;
+    assert.equal(repository.kind, 'repository');
+    assert.equal(repository.nativeId, expected.repositoryId.slice('github:'.length));
+    assert.equal(repository.title, expected.repository);
+    assert.deepEqual(repository.owner, expected.owner);
+    assert.equal(repository.source.url, `https://api.github.com/repos/${expected.repository}`);
+    assert.equal(publication.nativeId, expected.doi);
+    assert.equal(publication.authors.length, expected.authorCount);
+    assert.equal(repository.relatedLinks.length, 1);
+    const link = repository.relatedLinks[0];
+    assert.equal(link.targetId, publication.id);
+    assert.equal(link.targetTitle, publication.title);
+    assert.equal(link.url, publication.url);
+    assert.equal(link.relation, 'cites-publication');
+    assert.equal(link.evidence.method, 'derived-connector-observation');
+    assert.equal(link.evidence.observedAt, '2026-11-16T17:42:05Z');
+    assert.equal(link.evidence.url, `https://github.com/${expected.repository}/blob/${expected.commit}/README.md`);
+    const relation = selected.relationships.find((entry: any) => entry.fromId === repository.id);
+    assert.ok(relation);
+    assert.equal(relation.file.value.blob_sha, expected.blob);
+    assert.deepEqual(relation.file.value.lines, expected.lines);
+    assert.deepEqual(relation.file.value.doi_mentions, [expected.doi]);
+    assert.equal(relation.file.value.raw_body_persisted, false);
+    assert.deepEqual(repository.authors, []);
+    assert.deepEqual(repository.geography, { basis: 'not-established', reportedLocations: [], county: null });
+    assert.equal(publication.owner, null);
+    assert.deepEqual(publication.relatedLinks, []);
+  }
+});
+test('county publication affiliation gaps stay empty and research-only thread is not selected', async () => {
+  const selected = await selection();
+  const generated = await buildDiscoveryPilotCatalog(selected);
+  for (const expected of countyPairs) {
+    const publication = generated.records.find(record => record.id === `crossref:${expected.doi}`)!;
+    assert.ok(publication.authors.every(author => author.affiliations.length === 0));
+    assert.deepEqual(publication.geography, { basis: 'publication-reported-affiliation', reportedLocations: [], county: null });
+  }
+  const sleep = generated.records.find(record => record.id === 'crossref:10.1007/s11517-024-03096-x')!;
+  assert.equal(sleep.authors[3].name, 'Iman Dehzangi');
+  assert.ok(!generated.records.some(record => ['github:218530629', 'crossref:10.1101/2020.01.15.908459', 'crossref:10.1371/journal.pcbi.1008638'].includes(record.id)));
+  assert.ok(!Object.values(selected.sources).some((source: any) => source.requestUrl === 'https://api.github.com/repos/mathiesonlab/thread' || source.requestUrl.includes('2020.01.15.908459')));
+  const unselected = await readDiscoveryPilot(generated, { q: '10.1101/2020.01.15.908459' });
+  assert.equal(unselected.items.length, 0);
+  assert.deepEqual(unselected.citations, []);
+});
+test('each county pair supports DOI, repository and author search with exact citation direction', async () => {
+  const generated = await catalog();
+  for (const expected of countyPairs) {
+    for (const q of [expected.doi, expected.authorQuery]) {
+      const result = await readDiscoveryPilot(generated, { q, kind: 'repository' });
+      assert.deepEqual(result.items.map(record => record.id), [expected.repositoryId]);
+      assert.deepEqual(result.matches, [{ recordId: expected.repositoryId, basis: 'cited-publication', relatedRecordId: `crossref:${expected.doi}` }]);
+      assert.deepEqual(result.items[0].authors, []);
+      assert.equal(result.items[0].geography.county, null);
+    }
+    const paperResult = await readDiscoveryPilot(generated, { q: expected.repository, kind: 'publication' });
+    assert.deepEqual(paperResult.items.map(record => record.id), [`crossref:${expected.doi}`]);
+    assert.deepEqual(paperResult.matches, [{ recordId: `crossref:${expected.doi}`, basis: 'citing-repository', relatedRecordId: expected.repositoryId }]);
+    assert.equal(paperResult.citations[0].repository.id, expected.repositoryId);
+    assert.equal(paperResult.citations[0].publication.id, `crossref:${expected.doi}`);
+    assert.deepEqual(paperResult.items[0].relatedLinks, []);
+  }
+});
 test('whitelist excludes native author internals, full text, private paths and rights inferences', async () => {
   const value = await readDiscoveryPilot(await catalog(), {}),
     serialized = JSON.stringify(value);
   for (const forbidden of ['bodyPath', 'ORCID', 'authenticated-orcid', 'raw_body', 'license_hint', 'README text', '/workspace/', '.discovery-work', 'publicationAuthorized', 'currentEmploymentConfirmed', 'abstract', '"html_url":']) assert.ok(!serialized.includes(forbidden), forbidden);
-  assert.ok(value.items.filter(row => row.kind === 'repository').every(row => row.owner?.kind === 'Organization' && row.authors.length === 0 && row.geography.basis === 'not-established'));
+  assert.ok(value.items.filter(row => row.kind === 'repository').every(row => row.authors.length === 0 && row.geography.basis === 'not-established'));
+  assert.ok(value.items.filter(row => baselineRepositoryIds.includes(row.id) || expansionPairs.some(pair => pair.repositoryId === row.id)).every(row => row.owner?.kind === 'Organization'));
   assert.ok(value.items.filter(row => row.kind === 'publication').every(row => row.owner === null && row.geography.basis === 'publication-reported-affiliation'));
   assert.ok(value.items.filter(row => row.kind === 'organization').every(row => row.owner === null && row.authors.length === 0 && row.geography.basis === 'registry-reported-location'));
   assert.equal(value.items.find(row => row.id === 'github:156589095')?.sourceDate?.label, 'Repository pushed');
   assert.equal(value.items.find(row => row.id.startsWith('crossref:'))?.sourceDate?.label, 'Published');
+});
+test('repository owner identities and User or Organization roles remain exactly source-reported', async () => {
+  const selected = await selection();
+  const generated = await buildDiscoveryPilotCatalog(selected);
+  for (const repository of generated.records.filter(record => record.kind === 'repository')) {
+    const row = selected.records.find((entry: any) => entry.id === repository.id);
+    const source = selected.sources[row.fields.nativeId.source];
+    const body = JSON.parse((await raw(source.bodyPath)).toString());
+    assert.deepEqual(repository.owner, { id: String(body.owner.id), name: body.owner.login, kind: body.owner.type });
+    assert.ok(repository.owner?.kind === 'User' || repository.owner?.kind === 'Organization');
+    assert.deepEqual(repository.authors, []);
+    assert.deepEqual(repository.geography, { basis: 'not-established', reportedLocations: [], county: null });
+  }
 });
 test('the two original directed repository citations retain their exact derived edge/file/time evidence', async () => {
   const value = baselineCatalog(await catalog()),
@@ -99,7 +205,7 @@ test('the two original directed repository citations retain their exact derived 
   }
 });
 test('the four new repository-publication pairs use the observed pinned citations and preserve source roles', async () => {
-  const value = await catalog();
+  const value = ex30Catalog(await catalog());
   const newRecords = value.records.filter((record: any) => !baselineIds.has(record.id));
   assert.equal(newRecords.length, 8);
   assert.equal(value.records.flatMap((record: any) => record.relatedLinks).length, 6);
@@ -279,8 +385,11 @@ test('search, type/provider filters and both date directions are deterministic w
   assert.equal(queryDiscoveryPilot(value, {
     q: 'no-existing-native-record-xyz'
   }).items.length, 0);
-  const unknownId = value.records[0].id;
-  value.records[0].sourceDate = null;
+  // A context-bound paper requires its native publication year. Exercise the
+  // unknown-date sorting branch with an unchanged baseline record instead.
+  const unknown = value.records.find((record: any) => baselineIds.has(record.id))!;
+  const unknownId = unknown.id;
+  unknown.sourceDate = null;
   for (const sort of ['source-date-asc', 'source-date-desc']) {
     const result = queryDiscoveryPilot(value, {
       sort
@@ -340,7 +449,7 @@ test('disabled endpoint does not read catalog; enabled GET/HEAD/method and error
   assert.equal(await head.text(), '');
   for (const header of ['content-type', 'cache-control', 'cdn-cache-control', 'x-robots-tag']) assert.equal(get.headers.get(header), head.headers.get(header));
   assert.equal(get.headers.get('cache-control'), 'no-store');
-  assert.equal(DiscoveryPilotResultSchema.parse(await get.json()).totalRecords, 22);
+  assert.equal(DiscoveryPilotResultSchema.parse(await get.json()).totalRecords, 28);
   const failed = await handleDiscoveryPilot(request(), {
     DISCOVERY_PILOT_ENABLED: 'true'
   }, {
@@ -373,7 +482,7 @@ test('generated projection drift check is executable and imports do not rebuild 
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, 'pilot_projection_current\n');
   assert.deepEqual(await readFile(catalogFile), before);
-  assert.equal(DiscoveryPilotCatalogSchema.parse(await catalog()).records.length, 22);
+  assert.equal(DiscoveryPilotCatalogSchema.parse(ex30Catalog(await catalog())).records.length, 22);
 });
 
 test('all source author entries remain in order and the original 109 authorship entries are preserved', async () => {
@@ -393,7 +502,8 @@ test('all source author entries remain in order and the original 109 authorship 
   }
   for (const [id, expected] of baselineAuthorCounts) assert.equal(counts.get(id), expected, id);
   assert.equal([...baselineAuthorCounts.keys()].reduce((sum, id) => sum + counts.get(id)!, 0), 109);
-  assert.equal([...counts.values()].reduce((sum, count) => sum + count, 0), 289);
+  assert.equal([...counts].filter(([id]) => ex30Ids.has(id)).reduce((sum, [, count]) => sum + count, 0), 289);
+  assert.equal([...counts.values()].reduce((sum, count) => sum + count, 0), 367);
   const result = await readDiscoveryPilot(baselineCatalog(generated), { q: 'Philip Cook', kind: 'publication' });
   assert.equal(result.items.length, 1);
   assert.equal(result.items[0].nativeId, '10.1038/s41592-021-01185-5');
@@ -418,7 +528,8 @@ test('all descriptions retain exact metadata values and source pointers, includi
   const selected = await selection();
   const generated = await buildDiscoveryPilotCatalog(selected);
   const repositories = generated.records.filter(record => record.kind === 'repository');
-  assert.equal(repositories.filter(record => record.description !== null).length, 8);
+  assert.equal(repositories.filter(record => record.description !== null).length, 11);
+  assert.equal(repositories.filter(record => ex30Ids.has(record.id) && record.description !== null).length, 8);
   assert.equal(repositories.filter(record => baselineRepositoryIds.includes(record.id) && record.description !== null).length, 4);
   for (const record of repositories) {
     const row = selected.records.find((entry: any) => entry.id === record.id);
@@ -451,7 +562,7 @@ test('citation-aware search finds CaPTk paper and Cook repository without transf
 });
 
 test('browsable citation context preserves its source direction for publication-only results', async () => {
-  const value = await catalog();
+  const value = ex30Catalog(await catalog());
   const result = await readDiscoveryPilot(value, { kind: 'publication' });
   assert.equal(result.items.length, 10);
   assert.equal(result.citations.length, 6);
@@ -469,7 +580,7 @@ test('browsable citation context preserves its source direction for publication-
   assert.equal(pilotDateLabel('2024-02-29'), 'Feb 29, 2024');
 });
 
-test('v2 response rejects contradictory, duplicated or unrelated citation context', async () => {
+test('v3 response rejects contradictory, duplicated or unrelated citation context', async () => {
   const full = await readDiscoveryPilot(await catalog(), {});
   for (const mutation of ['title', 'url', 'evidence', 'duplicate-item', 'duplicate-citation', 'missing-citation']) {
     const value = structuredClone(full);
@@ -488,4 +599,159 @@ test('v2 response rejects contradictory, duplicated or unrelated citation contex
   const unrelated = await readDiscoveryPilot(await catalog(), { kind: 'organization' });
   unrelated.citations.push(full.citations[0]);
   assert.equal(DiscoveryPilotResultSchema.safeParse(unrelated).success, false);
+});
+
+test('regional contexts enable the actual three county journeys without filling native affiliations', async () => {
+  const generated = await catalog();
+  assert.equal(generated.schemaVersion, 'discovery-pilot-catalog-v3');
+  assert.equal(generated.regionalContexts.length, 3);
+  assert.deepEqual(generated.regionalContexts.map((context: any) => context.recordId).sort(), countyPairs.map(pair => `crossref:${pair.doi}`).sort());
+  const cases = [
+    { pair: countyPairs[0], queries: ['Princeton', 'Mercer', 'Mercer County'] },
+    { pair: countyPairs[1], queries: ['Rutgers', 'Camden', 'Camden County', 'Rutgers-Camden', 'Rutgers–Camden'] },
+    { pair: countyPairs[2], queries: ['Rowan', 'Gloucester', 'Gloucester County'] },
+  ];
+  for (const { pair, queries } of cases) {
+    for (const q of queries) {
+      const papers = await readDiscoveryPilot(generated, { q, kind: 'publication' });
+      assert.equal(papers.query.q, q);
+      assert.deepEqual(papers.items.map(record => record.id), [`crossref:${pair.doi}`]);
+      assert.deepEqual(papers.matches, [{ recordId: `crossref:${pair.doi}`, basis: 'regional-context', relatedRecordId: null }]);
+      assert.equal(papers.regionalContexts.length, 1);
+      assert.deepEqual(papers.regionalPublications, []);
+      assert.equal(papers.regionalContexts[0].recordId, papers.items[0].id);
+      assert.ok(papers.items[0].authors.every(author => author.affiliations.length === 0));
+      assert.deepEqual(papers.items[0].geography.reportedLocations, []);
+      assert.equal(papers.items[0].geography.county, null);
+      const repositories = await readDiscoveryPilot(generated, { q, kind: 'repository' });
+      assert.equal(repositories.query.q, q);
+      assert.deepEqual(repositories.items.map(record => record.id), [pair.repositoryId]);
+      assert.deepEqual(repositories.matches, [{ recordId: pair.repositoryId, basis: 'cited-publication', relatedRecordId: `crossref:${pair.doi}` }]);
+      assert.equal(repositories.regionalContexts.length, 1);
+      assert.deepEqual(repositories.regionalPublications.map(record => record.id), [`crossref:${pair.doi}`]);
+      assert.equal(repositories.regionalContexts[0].recordId, `crossref:${pair.doi}`);
+      assert.equal(repositories.citations[0].publication.id, repositories.regionalContexts[0].recordId);
+      assert.deepEqual(repositories.items[0].authors, []);
+      assert.deepEqual(repositories.items[0].geography, { basis: 'not-established', reportedLocations: [], county: null });
+    }
+  }
+  for (const query of [{ kind: 'organization' }, { q: 'qsiprep', kind: 'repository' }, { q: '10.9999/no-such-regional-record' }, { q: 'Mercer Camden' }, { q: 'Princeton Gloucester' }, { q: 'Rutgers-Gloucester' }]) {
+    assert.deepEqual((await readDiscoveryPilot(generated, query)).regionalContexts, []);
+    assert.deepEqual((await readDiscoveryPilot(generated, query)).regionalPublications, []);
+  }
+  for (const q of ['Mercer Camden', 'Princeton Gloucester', 'Rutgers-Gloucester']) {
+    assert.deepEqual((await readDiscoveryPilot(generated, { q })).items, []);
+  }
+});
+
+test('regional context fields and public provenance bind to the retained observation and native publication', async () => {
+  const selected = await selection();
+  const generated = await buildDiscoveryPilotCatalog(selected);
+  for (const field of selected.regionalContexts) {
+    const observation = selected.observations[field.observation];
+    const bytes = await raw(observation.bodyPath);
+    assert.equal(sha(bytes), observation.sha256);
+    assert.deepEqual(pilotPointer(JSON.parse(bytes.toString()), field.pointer), field.value);
+    const context = generated.regionalContexts.find(context => context.recordId === field.value.recordId)!;
+    assert.deepEqual(context, { ...field.value, provenance: { sha256: observation.sha256, pointer: field.pointer, method: 'derived-regional-selection-observation' } });
+    const publication = generated.records.find(record => record.id === context.recordId)!;
+    assert.equal(context.publicationSourceSha256, publication.source.sha256);
+    assert.equal(context.publicationYear, Number(publication.sourceDate!.value.slice(0, 4)));
+    for (const author of context.authors) assert.ok(publication.authors.some(native => native.sourceIndex === author.sourceIndex && native.name === author.name));
+  }
+  const publicResult = JSON.stringify(await readDiscoveryPilot(generated, {}));
+  assert.ok(!publicResult.includes('bodyPath'));
+  assert.ok(!publicResult.includes('/workspace/'));
+});
+
+test('regional projection rejects unbound facts and rehashed source, date, author or record substitutions', async () => {
+  for (const mutation of ['observation-hash', 'unbound-value', 'pointer', 'source-sha', 'year', 'author-name', 'author-index', 'author-duplicate', 'unknown-record', 'repository-record', 'county', 'source-url', 'source-date', 'source-method', 'source-empty', 'affiliation-source-duplicate', 'county-source-duplicate', 'notes', 'unexpected-field']) {
+    const input = await selection();
+    const field = input.regionalContexts[0];
+    const observation = input.observations[field.observation];
+    const body = JSON.parse((await raw(observation.bodyPath)).toString());
+    if (mutation === 'observation-hash') observation.sha256 = '0'.repeat(64);
+    if (mutation === 'unbound-value') field.value.institution = 'Unobserved institution';
+    if (mutation === 'pointer') field.pointer = '/contexts/01';
+    if (mutation === 'source-sha') field.value.publicationSourceSha256 = input.regionalContexts[1].value.publicationSourceSha256;
+    if (mutation === 'year') field.value.publicationYear--;
+    if (mutation === 'author-name') field.value.authors[0].name = 'Unrelated Author';
+    if (mutation === 'author-index') field.value.authors[0].sourceIndex = 999;
+    if (mutation === 'author-duplicate') field.value.authors.push(structuredClone(field.value.authors[0]));
+    if (mutation === 'unknown-record') field.value.recordId = 'crossref:10.9999/unknown';
+    if (mutation === 'repository-record') field.value.recordId = countyPairs[0].repositoryId;
+    if (mutation === 'county') field.value.county = 'Atlantic';
+    if (mutation === 'source-url') field.value.affiliationSources[0].url = 'http://untrusted.invalid/';
+    if (mutation === 'source-date') field.value.affiliationSources[0].observedDate = '2026-02-30';
+    if (mutation === 'source-method') field.value.countySources[0].method = 'model-inference';
+    if (mutation === 'source-empty') field.value.countySources = [];
+    if (mutation === 'affiliation-source-duplicate') field.value.affiliationSources.push(structuredClone(field.value.affiliationSources[0]));
+    if (mutation === 'county-source-duplicate') field.value.countySources.push(structuredClone(field.value.countySources[0]));
+    if (mutation === 'notes') field.value.notes = ['x'.repeat(401)];
+    if (mutation === 'unexpected-field') field.value.currentEmploymentConfirmed = true;
+    if (!['observation-hash', 'unbound-value', 'pointer'].includes(mutation)) {
+      body.contexts[0] = structuredClone(field.value);
+      const bytes = Buffer.from(JSON.stringify(body));
+      observation.sha256 = sha(bytes);
+      await assert.rejects(buildDiscoveryPilotCatalog(input, (path: string) => path === observation.bodyPath ? Promise.resolve(bytes) : raw(path)), undefined, mutation);
+    } else await assert.rejects(buildDiscoveryPilotCatalog(input), undefined, mutation);
+  }
+  const duplicated = await selection();
+  duplicated.regionalContexts.push(structuredClone(duplicated.regionalContexts[0]));
+  await assert.rejects(buildDiscoveryPilotCatalog(duplicated), /regional context binding/);
+});
+
+test('regional catalog and result validation reject dangling, duplicate or contradictory contexts', async () => {
+  const generated = await catalog();
+  for (const mutation of ['duplicate', 'unknown', 'source-sha', 'year', 'author', 'provenance', 'provenance-collision']) {
+    const candidate = structuredClone(generated);
+    const context = candidate.regionalContexts[0];
+    if (mutation === 'duplicate') candidate.regionalContexts.push(structuredClone(context));
+    if (mutation === 'unknown') context.recordId = 'crossref:10.9999/unknown';
+    if (mutation === 'source-sha') context.publicationSourceSha256 = '0'.repeat(64);
+    if (mutation === 'year') context.publicationYear--;
+    if (mutation === 'author') context.authors[0].name = 'Unknown Author';
+    if (mutation === 'provenance') context.provenance.pointer = '/other/0';
+    if (mutation === 'provenance-collision') candidate.regionalContexts[1].provenance = structuredClone(context.provenance);
+    assert.equal(DiscoveryPilotCatalogSchema.safeParse(candidate).success, false, mutation);
+    const result = structuredClone(await readDiscoveryPilot(generated, { kind: 'publication' }));
+    result.regionalContexts = candidate.regionalContexts;
+    assert.equal(DiscoveryPilotResultSchema.safeParse(result).success, false, mutation);
+  }
+  const unrelated = await readDiscoveryPilot(generated, { kind: 'organization' });
+  unrelated.regionalContexts = [generated.regionalContexts[0]];
+  assert.equal(DiscoveryPilotResultSchema.safeParse(unrelated).success, false);
+  const wrongNeighbor = await readDiscoveryPilot(generated, { q: 'qsiprep', kind: 'repository' });
+  wrongNeighbor.regionalContexts = [generated.regionalContexts[0]];
+  assert.equal(DiscoveryPilotResultSchema.safeParse(wrongNeighbor).success, false);
+  const missingExplanation = await readDiscoveryPilot(generated, { q: 'Mercer', kind: 'publication' });
+  missingExplanation.regionalContexts = [];
+  assert.equal(DiscoveryPilotResultSchema.safeParse(missingExplanation).success, false);
+});
+
+test('repo-only regional results require exact, relevant publication support instead of unbound summaries', async () => {
+  const generated = await catalog();
+  const original = await readDiscoveryPilot(generated, { q: 'Mercer', kind: 'repository' });
+  assert.equal(original.regionalPublications.length, 1);
+  for (const mutation of ['missing-support', 'duplicate-support', 'unrelated-support', 'wrong-kind', 'native-sha', 'native-year', 'native-author', 'summary-title', 'context-sha', 'context-year', 'context-author']) {
+    const result = structuredClone(original);
+    const publication = result.regionalPublications[0];
+    const context = result.regionalContexts[0];
+    if (mutation === 'missing-support') result.regionalPublications = [];
+    if (mutation === 'duplicate-support') result.regionalPublications.push(structuredClone(publication));
+    if (mutation === 'unrelated-support') result.regionalPublications.push(generated.records.find((record: any) => record.id === 'crossref:10.1038/s41592-021-01185-5'));
+    if (mutation === 'wrong-kind') result.regionalPublications = [result.items[0]];
+    if (mutation === 'native-sha') publication.source.sha256 = '0'.repeat(64);
+    if (mutation === 'native-year') publication.sourceDate!.value = `1900${publication.sourceDate!.value.slice(4)}`;
+    if (mutation === 'native-author') publication.authors[context.authors[0].sourceIndex].name = 'Unrelated Author';
+    if (mutation === 'summary-title') publication.title = 'Wrong summary title';
+    if (mutation === 'context-sha') context.publicationSourceSha256 = '0'.repeat(64);
+    if (mutation === 'context-year') context.publicationYear--;
+    if (mutation === 'context-author') context.authors[0].name = 'Unrelated Author';
+    assert.equal(DiscoveryPilotResultSchema.safeParse(result).success, false, mutation);
+  }
+  const alreadySelected = await readDiscoveryPilot(generated, { q: 'Mercer' });
+  assert.deepEqual(alreadySelected.regionalPublications, []);
+  alreadySelected.regionalPublications.push(original.regionalPublications[0]);
+  assert.equal(DiscoveryPilotResultSchema.safeParse(alreadySelected).success, false);
 });

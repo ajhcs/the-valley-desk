@@ -92,6 +92,51 @@ export const DiscoveryPilotRecordSchema = z.object({
   organization: 'ror'
 } as const)[record.kind] === record.provider);
 export type DiscoveryPilotRecord = z.infer<typeof DiscoveryPilotRecordSchema>;
+const ObservationDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(value => {
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value && Number(value.slice(0, 4)) > 0;
+});
+const RegionalSource = z.object({
+  url: DiscoveryPilotHttpsUrl,
+  observedDate: ObservationDate,
+  method: z.enum(['primary-web-rendering', 'primary-indexed-rendering']),
+}).strict();
+const RegionalContextValueObject = z.object({
+  recordId: Id.regex(/^crossref:10\.\d{4,9}\/\S+$/),
+  publicationSourceSha256: Hash,
+  publicationYear: z.number().int().min(1).max(9999),
+  authors: z.array(z.object({ sourceIndex: z.number().int().min(0).max(1000), name: Text }).strict()).min(1).max(128),
+  institution: Text.max(400),
+  campus: Text.max(400),
+  municipality: Text.max(400),
+  county: z.enum(['Bucks', 'Chester', 'Delaware', 'Montgomery', 'Philadelphia', 'Burlington', 'Camden', 'Gloucester', 'Mercer']),
+  affiliationSources: z.array(RegionalSource).min(1).max(5),
+  countySources: z.array(RegionalSource).min(1).max(5),
+  notes: z.array(Text.max(400)).max(3),
+}).strict();
+const uniqueRegionalAuthors = (value: z.infer<typeof RegionalContextValueObject>) => new Set(value.authors.map(author => author.sourceIndex)).size === value.authors.length;
+const uniqueRegionalSources = (value: z.infer<typeof RegionalContextValueObject>) => {
+  try { return [value.affiliationSources, value.countySources].every(sources => new Set(sources.map(source => new URL(source.url).href)).size === sources.length); }
+  catch { return false; }
+};
+export const DiscoveryPilotRegionalContextValueSchema = RegionalContextValueObject.refine(uniqueRegionalAuthors, 'Duplicate regional source author').refine(uniqueRegionalSources, 'Duplicate regional source URL');
+export const DiscoveryPilotRegionalContextSchema = RegionalContextValueObject.extend({
+  provenance: z.object({
+    sha256: Hash,
+    pointer: z.string().regex(/^\/contexts\/(0|[1-9]\d*)$/),
+    method: z.literal('derived-regional-selection-observation'),
+  }).strict(),
+}).strict().refine(uniqueRegionalAuthors, 'Duplicate regional source author').refine(uniqueRegionalSources, 'Duplicate regional source URL');
+export type DiscoveryPilotRegionalContextValue = z.infer<typeof DiscoveryPilotRegionalContextValueSchema>;
+export type DiscoveryPilotRegionalContext = z.infer<typeof DiscoveryPilotRegionalContextSchema>;
+function regionalKey(value: DiscoveryPilotRegionalContext): string {
+  return [value.recordId, value.institution, value.campus].map(text => text.normalize('NFKC').trim().toLowerCase()).join('\u0000');
+}
+function regionalBinding(value: DiscoveryPilotRegionalContext, record: DiscoveryPilotRecord): boolean {
+  return record.kind === 'publication' && value.publicationSourceSha256 === record.source.sha256 &&
+    Number(record.sourceDate?.value.slice(0, 4)) === value.publicationYear && value.authors.every(author =>
+      record.authors.some(native => native.sourceIndex === author.sourceIndex && native.name === author.name));
+}
 export const DiscoveryPilotQuerySchema = z.object({
   q: z.string().max(160).refine(value => !/[\u0000-\u001f\u007f]/.test(value)).default(''),
   kind: Kind.or(z.literal('all')).default('all'),
@@ -100,13 +145,23 @@ export const DiscoveryPilotQuerySchema = z.object({
 }).strict();
 export type DiscoveryPilotQuery = z.infer<typeof DiscoveryPilotQuerySchema>;
 export const DiscoveryPilotCatalogSchema = z.object({
-  schemaVersion: z.literal('discovery-pilot-catalog-v2'),
+  schemaVersion: z.literal('discovery-pilot-catalog-v3'),
   catalogVersion: Text,
   selectionSha256: Hash,
-  records: z.array(DiscoveryPilotRecordSchema).min(1).max(100)
+  records: z.array(DiscoveryPilotRecordSchema).min(1).max(100),
+  regionalContexts: z.array(DiscoveryPilotRegionalContextSchema).max(100),
 }).strict().superRefine((catalog, context) => {
   const records = new Map(catalog.records.map(record => [record.id, record]));
   if (records.size !== catalog.records.length) context.addIssue({ code: 'custom', message: 'Duplicate record identity' });
+  const regionalKeys = new Set<string>();
+  const regionalProvenance = new Set<string>();
+  for (const regional of catalog.regionalContexts) {
+    const record = records.get(regional.recordId), key = regionalKey(regional);
+    const provenance = `${regional.provenance.sha256}:${regional.provenance.pointer}`;
+    if (!record || !regionalBinding(regional, record) || regionalKeys.has(key) || regionalProvenance.has(provenance)) context.addIssue({ code: 'custom', message: 'Inconsistent regional context binding' });
+    regionalKeys.add(key);
+    regionalProvenance.add(provenance);
+  }
   for (const record of catalog.records) {
     const seen = new Set<string>();
     for (const link of record.relatedLinks) {
@@ -137,12 +192,12 @@ const PilotCitation = z.object({
 export type DiscoveryPilotCitation = z.infer<typeof PilotCitation>;
 const PilotSearchMatch = z.object({
   recordId: Id,
-  basis: z.enum(['own-metadata', 'cited-publication', 'citing-repository']),
+  basis: z.enum(['own-metadata', 'regional-context', 'cited-publication', 'citing-repository']),
   relatedRecordId: Id.nullable(),
-}).strict().refine(match => match.basis === 'own-metadata' ? match.relatedRecordId === null : match.relatedRecordId !== null);
+}).strict().refine(match => ['own-metadata', 'regional-context'].includes(match.basis) ? match.relatedRecordId === null : match.relatedRecordId !== null);
 export type DiscoveryPilotSearchMatch = z.infer<typeof PilotSearchMatch>;
 export const DiscoveryPilotResultSchema = z.object({
-  schemaVersion: z.literal('discovery-pilot-v2'),
+  schemaVersion: z.literal('discovery-pilot-v3'),
   catalogVersion: Text,
   catalogSha256: Hash,
   totalRecords: z.number().int().min(0).max(100),
@@ -156,8 +211,11 @@ export const DiscoveryPilotResultSchema = z.object({
   items: z.array(DiscoveryPilotRecordSchema).max(100),
   matches: z.array(PilotSearchMatch).max(100),
   citations: z.array(PilotCitation).max(800),
+  regionalContexts: z.array(DiscoveryPilotRegionalContextSchema).max(100),
+  regionalPublications: z.array(DiscoveryPilotRecordSchema).max(100),
 }).strict().superRefine((result, context) => {
   const selected = new Map(result.items.map(item => [item.id, item]));
+  const regionalPublications = new Map(result.regionalPublications.map(record => [record.id, record]));
   const sameSummary = (left: z.infer<typeof PilotRecordSummary>, right: z.infer<typeof PilotRecordSummary>) =>
     (['id', 'nativeId', 'kind', 'title', 'url'] as const).every(field => left[field] === right[field]);
   const sameEvidence = (left: z.infer<typeof RelatedLink>['evidence'], right: z.infer<typeof RelatedLink>['evidence']) =>
@@ -165,6 +223,7 @@ export const DiscoveryPilotResultSchema = z.object({
   let valid = selected.size === result.items.length && result.filteredRecords === result.items.length && result.filteredRecords <= result.totalRecords &&
     Object.values(result.counts).reduce((a, b) => a + b, 0) === result.totalRecords && result.matches.length === result.items.length &&
     new Set(result.matches.map(match => match.recordId)).size === result.items.length && result.items.every(item => result.matches.some(match => match.recordId === item.id));
+  valid &&= regionalPublications.size === result.regionalPublications.length;
   for (const kind of ['repository', 'publication', 'organization'] as const) valid &&= result.items.filter(item => item.kind === kind).length <= result.counts[kind];
   const pairs = new Set<string>();
   for (const citation of result.citations) {
@@ -183,9 +242,22 @@ export const DiscoveryPilotResultSchema = z.object({
     for (const link of item.relatedLinks) valid &&= result.citations.some(citation =>
       citation.repository.id === item.id && citation.publication.id === link.targetId && sameEvidence(citation.evidence, link.evidence));
   }
-  for (const match of result.matches) valid &&= match.basis === 'own-metadata' || result.citations.some(citation =>
+  const regionalKeys = new Set<string>();
+  const regionalProvenance = new Set<string>();
+  for (const publication of result.regionalPublications) valid &&= publication.kind === 'publication' && publication.relatedLinks.length === 0 && !selected.has(publication.id) &&
+    result.regionalContexts.some(regional => regional.recordId === publication.id) && result.citations.some(citation =>
+      citation.publication.id === publication.id && sameSummary(publication, citation.publication) && selected.get(citation.repository.id)?.kind === 'repository');
+  for (const regional of result.regionalContexts) {
+    const record = selected.get(regional.recordId) ?? regionalPublications.get(regional.recordId), key = regionalKey(regional);
+    const provenance = `${regional.provenance.sha256}:${regional.provenance.pointer}`;
+    valid &&= !regionalKeys.has(key) && !regionalProvenance.has(provenance) && Boolean(record && regionalBinding(regional, record));
+    regionalKeys.add(key);
+    regionalProvenance.add(provenance);
+  }
+  for (const match of result.matches) valid &&= match.basis === 'own-metadata' || (match.basis === 'regional-context' ?
+    selected.get(match.recordId)?.kind === 'publication' && result.regionalContexts.some(regional => regional.recordId === match.recordId) : result.citations.some(citation =>
     match.basis === 'cited-publication' ? citation.repository.id === match.recordId && citation.publication.id === match.relatedRecordId :
-      citation.publication.id === match.recordId && citation.repository.id === match.relatedRecordId);
+      citation.publication.id === match.recordId && citation.repository.id === match.relatedRecordId));
   if (!valid) context.addIssue({ code: 'custom', message: 'Inconsistent search or citation context' });
 });
 export type DiscoveryPilotResult = z.infer<typeof DiscoveryPilotResultSchema>;

@@ -4,7 +4,7 @@ import { resolve, relative, isAbsolute, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash, randomBytes } from 'node:crypto';
 import { z } from 'zod';
-import { DiscoveryPilotCatalogSchema, DiscoveryPilotHttpsUrl } from '../src/content/discovery-pilot.ts';
+import { DiscoveryPilotCatalogSchema, DiscoveryPilotHttpsUrl, DiscoveryPilotRegionalContextValueSchema } from '../src/content/discovery-pilot.ts';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const selectionPath = 'fixtures/discovery-pilot-selection.json';
 const catalogPath = 'src/content/discovery-pilot-catalog.json';
@@ -59,7 +59,7 @@ const RecordSelection = z.discriminatedUnion('kind', [z.object({
   }).strict()
 }).strict()]);
 const Selection = z.object({
-  schemaVersion: z.literal('discovery-pilot-selection-v2'),
+  schemaVersion: z.literal('discovery-pilot-selection-v3'),
   version: z.string().min(1).max(100),
   sources: z.record(Id, z.object({
     provider: z.enum(['github', 'crossref', 'ror']),
@@ -79,6 +79,7 @@ const Selection = z.object({
     bodyPath: z.string().max(1000),
     sha256: Hash
   }).strict()).default({}),
+  regionalContexts: z.array(ObservationField).max(100).default([]),
   relationships: z.array(z.object({
     fromId: Id,
     toId: Id,
@@ -394,11 +395,22 @@ export async function buildDiscoveryPilotCatalog(input, loadBytes = readLocal) {
       }
     });
   }
+  const regionalContexts = selection.regionalContexts.map(field => {
+    const loaded = observations.get(field.observation);
+    if (!loaded || !/^\/contexts\/(0|[1-9]\d*)$/.test(field.pointer)) throw Error('regional-context-source');
+    if (canonicalPilotJson(pilotPointer(loaded.body, field.pointer)) !== canonicalPilotJson(field.value)) throw Error('regional-context-disagreement');
+    const value = DiscoveryPilotRegionalContextValueSchema.parse(field.value);
+    const record = records.find(record => record.id === value.recordId);
+    if (!record || record.kind !== 'publication' || record.source.sha256 !== value.publicationSourceSha256 || Number(record.sourceDate?.value.slice(0, 4)) !== value.publicationYear ||
+        !value.authors.every(author => record.authors.some(native => native.sourceIndex === author.sourceIndex && native.name === author.name))) throw Error('regional-context-binding');
+    return { ...value, provenance: { sha256: loaded.source.sha256, pointer: field.pointer, method: 'derived-regional-selection-observation' } };
+  });
   return DiscoveryPilotCatalogSchema.parse({
-    schemaVersion: 'discovery-pilot-catalog-v2',
+    schemaVersion: 'discovery-pilot-catalog-v3',
     catalogVersion: selection.version,
     selectionSha256: hash(canonicalPilotJson(inputSnapshot)),
-    records: records.sort((a, b) => a.id.localeCompare(b.id))
+    records: records.sort((a, b) => a.id.localeCompare(b.id)),
+    regionalContexts,
   });
 }
 export async function runDiscoveryPilotBuild(args) {
