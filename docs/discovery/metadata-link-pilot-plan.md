@@ -5,6 +5,9 @@ optional full-text reuse, and benchmark review as a separate workstream. This
 amends the active delivery sequence; it does not revise the frozen handoff,
 model, reference manifest, historical receipts or empirical thresholds.
 
+The active EX30 expansion below adds four reviewed repository–publication pairs;
+its local qualification is recorded separately from EX28/EX29.
+
 ## Outcome and limits
 
 Help a reader find health-technology work and the people or organizations named
@@ -178,3 +181,51 @@ literal description values, unchanged role/geography boundaries, paired fresh
 desktop/mobile captures, citation navigation, error handling and existing checks.
 Version 1 receipts remain historical; new inputs and results receive an EX29
 receipt. Neither benchmark thresholds nor the original package ledger changes.
+
+
+## EX30 — Four additional evidenced project pairs
+
+The user authorized expanding the pilot with real GitHub repositories and linked
+publications in the DVRPC region, Sol/Terra implementation and Astra review,
+commits and PR updates, with no deployment. This batch selects ASLPrep, GaNDLF,
+HistoReg and ModelArray. Each has a project-specific request to cite its paper at
+a verified immutable GitHub file. The catalog grows to ten repository records,
+ten publications and two organization backgrounds; six directed repository
+citations are represented. These listing counts are not independent-project or
+benchmark counts.
+
+Dependencies remain MP00 → MP01 → MP02 → MP03. MP01–MP03 reopen only for this
+amendment's evidence, projection, display and requalification; prior acceptances
+remain in history. MP04 remains held. Terra owns source selection and independent
+field comparison, Sol owns regression adaptation and adverse binding tests, the
+orchestrator owns bounded native capture, integration and delivery, and Astra
+independently reviews whole bodies, actual pinned citation sources and behavior.
+No new runtime relation type or API version is needed.
+
+Acceptance requires eight successful, bounded native metadata receipts; exact
+identity/hash/value/pointer agreement; full source author arrays; independently
+checked pinned repository-to-paper citations; dated author-specific regional
+selection evidence; safe text rendering; deterministic queries and both metadata
+browsing directions. Repeat the normal suite/build/PDF/smoke/audit/secret checks,
+inspect desktop/mobile source journeys and record delivered-head CI separately.
+The source assessment and new receipt must distinguish native bytes, derived
+connector facts and publisher observations.
+
+Only HistoReg's new Crossref response supplies affiliation strings. The other
+three remain empty in the projected API; separate publisher author/Philadelphia
+evidence supports selection without filling those native fields. Repository
+owners retain their actual account identities: GaNDLF's is mlcommons. No current
+employment, code contribution, local work site or clinical validity follows.
+The 180 new authorship entries include a consortium and possible name variants;
+289 entries in the whole catalog are not a distinct-person count. HistoReg's
+literal XML ampersands remain in retained metadata and are formatted as escaped
+plain text only for display.
+
+The eight new bodies have a pilot-only material index. All material is
+development-exposed; the original source-material index and strict reference
+manifest are unchanged, with zero new reference cases or human reviewers. The
+existing fourteen record objects remain unchanged. Optional richer reuse,
+independent benchmark gates, the original 31-package ledger and release authority
+are unaffected. See [source qualification](qualification/pilot-expansion-20261116.md),
+[integration record](metadata-link-pilot-expansion.md) and
+[independent review](reviews/metadata-link-pilot-expansion-astra.md).

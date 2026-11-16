@@ -96,3 +96,33 @@ Only the two previously retained repository citation edges supply related search
 and metadata navigation. Reverse browsing means that a repository cites the paper;
 it does not assert that the paper cites that repository. Search context stays
 separate from the source record's own author, owner and geographic fields.
+
+
+## EX30 — Source expansion
+
+The [new qualification record](qualification/pilot-expansion-20261116.md) identifies
+four additional repository/paper pairs, actual numeric repository/owner IDs,
+publication DOIs, immutable citation files and author-specific Philadelphia
+selection evidence. The [pilot-only material index](qualification/evidence/pilot-expansion-20261116/material-index.json)
+records eight anonymous native API acquisitions and their exact bytes, hashes,
+request URLs and capture times. No article, abstract, README, citation-file text,
+software, image or contact body is added to the served catalog or retained as new
+source content. Connector reads keep only separately identified citation facts.
+GitHub API terms and Crossref metadata guidance were rechecked for this batch;
+the documented narrow factual listing basis remains separate from richer reuse.
+
+Crossref author arrays contain 114, 42, 6 and 18 entries. HistoReg supplies eleven
+reported affiliation entries across six authors, including Philadelphia. The
+other three new publication metadata bodies supply no affiliations; publisher
+observations stay separate and do not fill native arrays. Repository location
+remains unestablished. HistoReg's software agreement/research-only wording and
+native publisher-license links do not become blanket software or full-text
+permissions. The new GitHub descriptions are passive metadata; their linked
+homepages are not fetched automatically.
+
+Each new edge uses an explicit project-citation request observed in an immutable
+GitHub file. Those derived observations are not native HTTP file captures. The
+two original edges and fourteen original record objects remain unchanged.
+QSIRecon's reverse publication-to-repository lead and XCP-D's duplicate paper lead
+were not converted into new repository citations. The batch adds no benchmark
+case, human label, present-day creator claim or regional completeness evidence.

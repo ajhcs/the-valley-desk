@@ -58,15 +58,24 @@ Do not enable the flag in `wrangler.jsonc` or invoke deployment for this preview
 - Search **Naqvi**: one publication, with its author affiliations available
   for inspection. Rockville and Philadelphia affiliations belong to their named
   authors; none is presented as current employment.
-- Filter **Repositories**: six records, including two supported outbound
+- Filter **Repositories**: ten records, including six supported outbound
   publication citations. Each citation exposes its commit-pinned repository
   evidence link. Other relationships are withheld.
 - Search **CaPTk**, filter **Publications**: the retained repository citation now
   finds the paper and explains that match. Its publication metadata names Penn
   without supplying a city. The UI does not fill that gap from another record.
-- Search **Philip Cook**, filter **Publications**: QSIPrep is found through the
-  complete 42-author metadata roster. Its query-matched preview shows Philip A.
-  Cook; the full author disclosure preserves source order and missing affiliations.
+- Search **Philip Cook**, filter **Publications**: inspect the matching papers,
+  including QSIPrep with its complete 42-entry roster. The larger collection can
+  return other papers with matching author names; it does not merge author identities.
+  The full author disclosure preserves source order and missing affiliations.
+- Search **PennLINC/aslprep**, **mlcommons/GaNDLF**, **CBICA/HistoReg** or
+  **PennLINC/ModelArray**, filter **Publications**: each paper is found through
+  its retained repository citation.
+  Follow local repository metadata and return to its publication. ASLPrep has
+  114 source entries including a consortium; GaNDLF is owned by the mlcommons
+  organization account. HistoReg shows named Philadelphia affiliations and plain
+  ampersands while preserving original encoded metadata in the API. The other
+  three new papers retain their absent native affiliations.
 - From a cited-publication or citing-repository section, use **View publication
   metadata** or **View repository metadata** to inspect the related record locally.
   The separate original-source and citation-evidence links retain their targets.
@@ -95,7 +104,7 @@ also runs in the normal discovery test chain and rejects generated drift.
 No command in this workflow refreshes the retained source snapshots.
 
 The [active plan](metadata-link-pilot-plan.md), [source basis](metadata-link-pilot-sources.md)
-and [independent review](reviews/metadata-link-pilot-astra.md) define scope and
+and [current expansion review](reviews/metadata-link-pilot-expansion-astra.md) define scope and
 limits. Local package acceptance is distinct from delivered-head CI, which is
 tracked on PR30 before the implementation handoff completes. Neither is public
 release authorization, benchmark validation or evidence of regional completeness.

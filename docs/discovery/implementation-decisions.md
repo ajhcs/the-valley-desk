@@ -1049,3 +1049,34 @@ earlier local acceptances remain in history. MP04 public
 activation is not authorized. Existing package, empirical and model evidence is
 not rewritten to fit the repaired implementation. A new receipt binds final
 source, tests and review; delivered-head CI is recorded separately on PR30.
+
+
+## EX30 — Expand the finite pilot with four evidenced project pairs
+
+**Status:** Source/projection, browser review and fresh local qualification passed
+on `84bb755e48b9985707e8ccfa5b9241d11b93d8bc`. Delivered-head CI remains
+separately tracked on PR30. Deployment remains held.
+
+The user authorized real GitHub and linked-publication expansion with Sol/Terra
+and Astra review, commits and PR updates. The selected batch adds ASLPrep,
+GaNDLF, HistoReg and ModelArray using eight bounded native metadata captures and
+four independently reread immutable repository citations. Terra's source
+comparison and Astra's whole-body/source/behavior review precede local acceptance.
+
+The existing v2 builder/API and direction semantics suffice. The orchestrator
+integrated the source selection and catalog, removed obsolete two-citation copy
+and formats HistoReg's deposited ampersands as plain display text; raw values stay
+exact. Sol preserves the named fourteen-record baseline while checking the new
+pairs and adverse source/relationship bindings. An inherited fourteen-record
+routing expectation was corrected to twenty-two. No new source activation,
+collector, D1 write, navigation promotion or production flag change is included.
+
+Separate publisher observations establish historical author/Philadelphia
+selection rationale where the native API supplies no affiliations. They do not
+fill those arrays or transfer location to repositories. Current employment,
+individual software contributions and clinical validity remain unestablished.
+The pilot-only material index adds no WP03 case, human label or held-out credit.
+Original package/model/benchmark evidence and earlier receipts remain unchanged.
+MP01–MP03 were reopened for this amendment, then locally accepted against the
+new receipt, preserving acceptance history; MP04 remains held. A new receipt records actual final results and source
+commit; PR30 records final delivered-head CI separately.
