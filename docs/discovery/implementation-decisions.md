@@ -1019,3 +1019,33 @@ projection/query/API, the orchestrator owns UI/Worker integration and delivery,
 and Astra independently challenges the amendment and implementation. Public
 activation is disabled by default. No deployment, remote migration, production
 collector, actual human enrollment or sealed corpus freeze is authorized here.
+
+## EX29 — Repair discovery and mobile usability after Astra product review
+
+**Status:** Product findings and repairs independently reviewed; fresh local
+qualification passed on `2f013debf1e499e072830f7a820fe416db3b3cfc`. Delivered-head CI is tracked separately on PR30; deployment remains held.
+
+The user asked Astra to review the pilot and take ownership of needed
+improvements. The [product review](metadata-link-pilot-product-review.md) records
+fresh task-based desktop/mobile evidence and six concrete gaps: missing known
+citation matches, incomplete source-author search, omitted repository purpose,
+mobile hierarchy, author/affiliation pairing and unclear evidence actions.
+The orchestrator implemented the repairs; Astra independently challenged the
+revised source projection, response boundary and actual reader journeys.
+
+The v2 pilot adds complete retained Crossref author rosters and four short
+source-reported GitHub descriptions. Search and local metadata navigation use
+only the two existing citation observations, with explicit match context and no
+transfer of authorship or geography to a related record. A reproduced citation
+summary/result contradiction and the duplicate main landmark were also fixed.
+There are still fourteen listings, fourteen retained bodies and two citation
+edges. The 109 authorship entries are not distinct-person or regional-coverage
+credit. Source acquisition, full-text reuse, the strict reference manifest and
+human reviewer enrollment are unchanged.
+
+MP01–MP03 were reopened for this amendment's field/query/UI changes and
+requalification, then locally accepted against the new EX29 receipt; their
+earlier local acceptances remain in history. MP04 public
+activation is not authorized. Existing package, empirical and model evidence is
+not rewritten to fit the repaired implementation. A new receipt binds final
+source, tests and review; delivered-head CI is recorded separately on PR30.

@@ -523,7 +523,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-16T03:57:42.651699+00:00",
+  "updated_at": "2026-11-16T15:26:50.360255+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -846,6 +846,17 @@
       ],
       "thresholds_changed": false,
       "dependency_scope_changed": "separate finite metadata/link pilot MP00-MP04; original automated admission and benchmark gates retained"
+    },
+    {
+      "id": "EX29",
+      "path": "metadata-link-pilot-plan.md",
+      "status": "product_review_repairs_locally_qualified_delivered_head_CI_separate",
+      "affects": [
+        "MP01",
+        "MP02",
+        "MP03"
+      ],
+      "thresholds_changed": false
     }
   ],
   "next_ready_packages": [],
@@ -862,9 +873,9 @@
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
+    "reviewed_code_commit": "2f013debf1e499e072830f7a820fe416db3b3cfc",
     "code_ci_run": null,
-    "code_ci": "EX28 local pilot qualification: 1,431 tests,7PDF,build,local smoke,audit0,secret and browser checks passed on629 stable inputs. Exact delivered-head CI is tracked on PR30 before handoff completion. MP00-MP03 acceptance is local only; MP04 remains held. Original WP03/WP12/WP13 and empirical benchmark gates are unchanged."
+    "code_ci": "EX29 local product repairs qualified: 1,437 tests,7 PDF,build,local smoke,audit0,secret and 25 browser assertions passed on630 stable inputs. Astra independent v2/core/assembled/browser review passed. Exact delivered-head CI is tracked on PR30 before handoff completion. MP01-MP03 acceptance is local only; MP04 remains held. Original WP03/WP12/WP13 and empirical benchmark gates are unchanged."
   },
   "pilot": {
     "decision": "EX28",
@@ -893,15 +904,27 @@
           "MP00"
         ],
         "acceptance": {
-          "scope": "retained factual selection and deterministic projection; local only",
-          "reviewer": "Astra; independent Terra source comparison",
-          "records": 14,
-          "source_bodies": 14,
-          "derived_observations": 1,
-          "directed_citations": 2,
-          "benchmark_credit": 0,
-          "full_text_included": false
-        }
+          "recorded_at": "2026-11-16T15:26:50.360255+00:00",
+          "amendment": "EX29",
+          "scope": "local v2 finite metadata/link product repairs only; earlier EX28 acceptance retained in history",
+          "receipt": "receipts/metadata-link-pilot-product.json",
+          "source_commit": "2f013debf1e499e072830f7a820fe416db3b3cfc",
+          "reviewer": "Astra independent product/core/Worker/browser review; orchestrator implementation/integration",
+          "benchmark_accepted": false,
+          "deployment_authorized": false
+        },
+        "acceptance_history": [
+          {
+            "scope": "retained factual selection and deterministic projection; local only",
+            "reviewer": "Astra; independent Terra source comparison",
+            "records": 14,
+            "source_bodies": 14,
+            "derived_observations": 1,
+            "directed_citations": 2,
+            "benchmark_credit": 0,
+            "full_text_included": false
+          }
+        ]
       },
       {
         "id": "MP02",
@@ -910,14 +933,26 @@
           "MP01"
         ],
         "acceptance": {
-          "recorded_at": "2026-11-16T03:57:42.651699+00:00",
-          "scope": "local finite metadata/link software qualification only",
-          "receipt": "receipts/metadata-link-pilot.json",
-          "source_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
-          "reviewer": "Astra; Terra source/browser checks; orchestrator integration",
+          "recorded_at": "2026-11-16T15:26:50.360255+00:00",
+          "amendment": "EX29",
+          "scope": "local v2 finite metadata/link product repairs only; earlier EX28 acceptance retained in history",
+          "receipt": "receipts/metadata-link-pilot-product.json",
+          "source_commit": "2f013debf1e499e072830f7a820fe416db3b3cfc",
+          "reviewer": "Astra independent product/core/Worker/browser review; orchestrator implementation/integration",
           "benchmark_accepted": false,
           "deployment_authorized": false
-        }
+        },
+        "acceptance_history": [
+          {
+            "recorded_at": "2026-11-16T03:57:42.651699+00:00",
+            "scope": "local finite metadata/link software qualification only",
+            "receipt": "receipts/metadata-link-pilot.json",
+            "source_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
+            "reviewer": "Astra; Terra source/browser checks; orchestrator integration",
+            "benchmark_accepted": false,
+            "deployment_authorized": false
+          }
+        ]
       },
       {
         "id": "MP03",
@@ -927,14 +962,26 @@
           "MP02"
         ],
         "acceptance": {
-          "recorded_at": "2026-11-16T03:57:42.651699+00:00",
-          "scope": "local finite metadata/link software qualification only",
-          "receipt": "receipts/metadata-link-pilot.json",
-          "source_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
-          "reviewer": "Astra; Terra source/browser checks; orchestrator integration",
+          "recorded_at": "2026-11-16T15:26:50.360255+00:00",
+          "amendment": "EX29",
+          "scope": "local v2 finite metadata/link product repairs only; earlier EX28 acceptance retained in history",
+          "receipt": "receipts/metadata-link-pilot-product.json",
+          "source_commit": "2f013debf1e499e072830f7a820fe416db3b3cfc",
+          "reviewer": "Astra independent product/core/Worker/browser review; orchestrator implementation/integration",
           "benchmark_accepted": false,
           "deployment_authorized": false
-        }
+        },
+        "acceptance_history": [
+          {
+            "recorded_at": "2026-11-16T03:57:42.651699+00:00",
+            "scope": "local finite metadata/link software qualification only",
+            "receipt": "receipts/metadata-link-pilot.json",
+            "source_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
+            "reviewer": "Astra; Terra source/browser checks; orchestrator integration",
+            "benchmark_accepted": false,
+            "deployment_authorized": false
+          }
+        ]
       },
       {
         "id": "MP04",
@@ -950,17 +997,29 @@
     "benchmark_status": "WP03_not_frozen_E01-E06_not_run",
     "full_text_reuse": "optional_source_specific",
     "release_status": "not_authorized",
-    "qualification_receipt": "receipts/metadata-link-pilot.json",
+    "qualification_receipt": "receipts/metadata-link-pilot-product.json",
     "counts": {
       "records": 14,
       "repositories": 6,
       "publications": 6,
       "organization_backgrounds": 2,
-      "directed_repository_citations": 2
+      "directed_repository_citations": 2,
+      "source_author_entries_not_distinct_people": 109,
+      "non_null_source_descriptions": 4
     },
     "local_preview_route": "/discover",
-    "source_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
+    "source_commit": "2f013debf1e499e072830f7a820fe416db3b3cfc",
     "active_packages": [],
-    "next_gate": "MP04: separately authorized public release review; deployment remains prohibited"
+    "next_gate": "MP04: separately authorized public release review; deployment remains prohibited",
+    "active_amendment": "EX29",
+    "amendments": [
+      {
+        "id": "EX29",
+        "scope": "complete source-author rosters, short descriptions, citation-aware search, clearer responsive reader flow",
+        "status": "locally_qualified",
+        "benchmark_changed": false,
+        "deployment": false
+      }
+    ]
   }
 }

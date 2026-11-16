@@ -141,3 +141,40 @@ The [local preview procedure](metadata-link-pilot-preview.md) gives the isolated
 Worker configuration and exercised reader tasks. Local acceptance and final
 delivered-head CI are separate records; PR30 tracks the latter before handoff
 completion. Neither authorizes public activation.
+
+## EX29 — Product-review improvements
+
+The user's request for Astra to review the pilot authorizes this bounded repair
+pass. Fresh desktop/mobile flows found incomplete people search, missed retained
+citation context, omitted repository purpose, excessive mobile height and unclear
+source actions. The orchestrator implements repairs; Astra independently reviews
+their actual behavior. Public activation remains held.
+
+The v2 projection includes every author entry in each retained Crossref record,
+in source order, with a 128-entry bound. The present six rosters contain 109
+authorship entries, including repeated people across papers; this is not a count
+of distinct local people or proof that Crossref reports every author of a work.
+An omitted, duplicated, reordered or oversized roster fails rather than silently
+shrinking the searchable set. Four short descriptions are selected from the
+existing GitHub `/description` metadata fields; two null values stay null. These
+plain source-reported descriptions do not include README/code/article content
+or establish clinical validity or software reuse rights.
+
+Search uses own metadata and at most one of the two retained citation edges.
+Related context can find a cited paper from a repository name, or a repository
+from its cited paper's authors. It does not create additional edges, person
+entities, reciprocal citation assertions, repository authorship, current presence
+or regional creation. The result identifies the matching context. Citation
+endpoint summaries, evidence, counts and selected records must agree; missing,
+duplicate, dangling or contradictory context is rejected. Metadata navigation
+uses the existing `/discover` route and preserves the source citation direction.
+
+The UI gives priority to search/results/original-source actions, displays
+query-matched author previews with their own affiliation text, and exposes the
+complete roster in one disclosure. Provider filters and technical traces remain
+available as secondary controls. The layout supplies one main landmark and skip
+target. Verification includes the failed search examples, all source rosters,
+literal description values, unchanged role/geography boundaries, paired fresh
+desktop/mobile captures, citation navigation, error handling and existing checks.
+Version 1 receipts remain historical; new inputs and results receive an EX29
+receipt. Neither benchmark thresholds nor the original package ledger changes.

@@ -74,3 +74,25 @@ works or independent observations for a benchmark. The strict WP03 reference
 manifest, human-review requirements and held-out/recall quotas remain separate;
 this selection creates no reference case or human label. Local projection and
 source-use checks do not activate recurring ingestion or deploy the pilot.
+
+## EX29 field expansion after product review
+
+The same fourteen retained bodies now supply the full six Crossref author arrays
+(42, 25, 14, 9, 9 and 10 entries). Names and affiliation strings remain attributed
+to the particular publication metadata, with original source indices and pointers.
+No author-account merge, distinct-person count, current role or work-location
+claim follows. No ORCID authentication flag or private author metadata is emitted.
+
+Four retained GitHub `/description` values provide short repository context:
+QSIPrep (30 characters), CaPTk (165), Phenomantics (87) and DeepCNV (73).
+AutoGVP and ImmunoTar supply null descriptions. Astra independently inspected the
+exact values and existing source hashes: no contact address, markup, patient
+data or copied README/article passage was identified. CaPTk's documentation URL
+is rendered as plain text; it is not automatically fetched. The API terms above
+remain the scoped listing basis, not a CC0 dedication or blanket software/full-text
+license. No additional request or body capture was needed.
+
+Only the two previously retained repository citation edges supply related search
+and metadata navigation. Reverse browsing means that a repository cites the paper;
+it does not assert that the paper cites that repository. Search context stays
+separate from the source record's own author, owner and geographic fields.

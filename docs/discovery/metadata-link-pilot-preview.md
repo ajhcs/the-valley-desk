@@ -55,14 +55,21 @@ Do not enable the flag in `wrangler.jsonc` or invoke deployment for this preview
 
 ## Useful checks
 
-- Search **Naqvi**: one publication, with selected author affiliations available
+- Search **Naqvi**: one publication, with its author affiliations available
   for inspection. Rockville and Philadelphia affiliations belong to their named
   authors; none is presented as current employment.
 - Filter **Repositories**: six records, including two supported outbound
   publication citations. Each citation exposes its commit-pinned repository
   evidence link. Other relationships are withheld.
-- Search **Cancer imaging phenomics**, filter **Publications**: the selected metadata names Penn
+- Search **CaPTk**, filter **Publications**: the retained repository citation now
+  finds the paper and explains that match. Its publication metadata names Penn
   without supplying a city. The UI does not fill that gap from another record.
+- Search **Philip Cook**, filter **Publications**: QSIPrep is found through the
+  complete 42-author metadata roster. Its query-matched preview shows Philip A.
+  Cook; the full author disclosure preserves source order and missing affiliations.
+- From a cited-publication or citing-repository section, use **View publication
+  metadata** or **View repository metadata** to inspect the related record locally.
+  The separate original-source and citation-evidence links retain their targets.
 - Sort by source date: repository push, publication and registry modification
   dates retain their own labels. Partial dates retain their precision and sort
   by the start of the stated interval; unknown dates sort last in either direction.

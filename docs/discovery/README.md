@@ -7,6 +7,11 @@ WP03 benchmark annotation/freeze remains a separate validation workstream.
 Neither is a universal prerequisite for the pilot. Public activation and deployment
 remain separately gated and are not authorized in this task.
 
+EX29's [Astra product review and repair pass](metadata-link-pilot-product-review.md)
+adds complete source-author search, the two known citation contexts, repository
+purpose and a more usable mobile flow. Its v2 contract and fresh qualification
+are separate from the original pilot receipt and from benchmark acceptance.
+
 The accepted foundation implements discovery contracts, private catalog and
 evidence persistence, provenance, scoped removal, bounded collection and evaluation
 tooling. The complete automated catalog and reader journeys remain future packages;
