@@ -1,5 +1,10 @@
 import type { DiscoveryPilotRecord } from "../../content/discovery-pilot";
 
+/** Display deposited XML ampersands as text; the retained source value stays exact. */
+export function pilotAffiliationLabel(value: string) {
+  return value.replaceAll("&amp;", "&");
+}
+
 export function pilotRecordPath(record: Pick<DiscoveryPilotRecord, "kind" | "nativeId">) {
   return `/discover?${new URLSearchParams({ kind: record.kind, q: record.nativeId })}`;
 }

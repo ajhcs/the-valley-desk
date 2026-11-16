@@ -1,6 +1,6 @@
 {
   "schemaVersion": "discovery-pilot-selection-v2",
-  "version": "2026-11-16-product-review-1",
+  "version": "2026-11-16-source-expansion-1",
   "sources": {
     "github-qsiprep-20261115": {
       "provider": "github",
@@ -154,6 +154,94 @@
       "useBasis": {
         "label": "ROR API metadata CC0",
         "url": "https://ror.org/about/terms/"
+      }
+    },
+    "crossref-aslprep-20261116": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-aslprep/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-022-01458-7&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T16:18:41.279225+00:00",
+      "sha256": "43129723e1e8cf08767afcafdd135a8966f2ab822e2f088a2b94b29dc483fc57",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-gandlf-20261116": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-gandlf/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs44172-023-00066-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T16:18:45.006552+00:00",
+      "sha256": "cbb844b117bbbb82f8919656e98963415166c82e5082a884500fd01ca09de26f",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-historeg-20261116": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-historeg/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.3390%2Fapp11041892&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T16:18:48.664101+00:00",
+      "sha256": "0d596c2e75f0bec984945876a8d653f1fddfbc3d599d96f039106f886e0fc39f",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-modelarray-20261116": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-modelarray/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.neuroimage.2023.120037&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T16:18:52.337394+00:00",
+      "sha256": "4a70e90e49b1782c67f20182a68126b697fce4783ef4ca7542df852966e88699",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "github-aslprep-20261116": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-aslprep/body.json",
+      "requestUrl": "https://api.github.com/repos/PennLINC/aslprep",
+      "observedAt": "2026-11-16T16:18:26.249121+00:00",
+      "sha256": "4d177083b862c4003c92b5b452669f0546b18b563fd3aec69c38e7eaec9e9e85",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-gandlf-20261116": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-gandlf/body.json",
+      "requestUrl": "https://api.github.com/repos/mlcommons/GaNDLF",
+      "observedAt": "2026-11-16T16:18:30.041556+00:00",
+      "sha256": "92a0e397ae33a29be804ebb9ea65bfce2b9b86f54b09da76d65e6276aeb71857",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-historeg-20261116": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-historeg/body.json",
+      "requestUrl": "https://api.github.com/repos/CBICA/HistoReg",
+      "observedAt": "2026-11-16T16:18:33.795004+00:00",
+      "sha256": "ccdc403dbb9f602924300506c4000fa4a252412bc54f780cc86588cf771b06ba",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-modelarray-20261116": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-modelarray/body.json",
+      "requestUrl": "https://api.github.com/repos/PennLINC/ModelArray",
+      "observedAt": "2026-11-16T16:18:37.542800+00:00",
+      "sha256": "9356adef4b7651849c9beebc48d848ea13620158f4e88a1afbd6575c9e4f65fa",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
       }
     }
   },
@@ -1857,10 +1945,10 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
-                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Division of Neurosurgery, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 }
               ],
               "role": [
@@ -1880,10 +1968,10 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
-                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Division of Neurosurgery, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 }
               ],
               "role": [
@@ -1903,7 +1991,7 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Department of Bioinformatics and Health Informatics, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
                   "name": "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States"
@@ -1926,7 +2014,7 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Department of Bioinformatics and Health Informatics, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
                   "name": "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States"
@@ -1949,10 +2037,10 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
-                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Division of Neurosurgery, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 }
               ],
               "role": [
@@ -1972,10 +2060,10 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
-                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Division of Neurosurgery, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 }
               ],
               "role": [
@@ -1997,10 +2085,10 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
-                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Division of Neurosurgery, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 }
               ],
               "role": [
@@ -2020,10 +2108,10 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
-                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Division of Neurosurgery, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 }
               ],
               "role": [
@@ -2043,10 +2131,10 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
-                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Division of Neurosurgery, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 }
               ],
               "role": [
@@ -2066,10 +2154,10 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
-                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Division of Neurosurgery, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 }
               ],
               "role": [
@@ -2111,10 +2199,10 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
-                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Division of Neurosurgery, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 }
               ],
               "role": [
@@ -2136,7 +2224,7 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                  "name": "Department of Bioinformatics and Health Informatics, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
                 },
                 {
                   "name": "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States"
@@ -2167,7 +2255,7 @@
         },
         "title": {
           "value": [
-            "ImmunoTar—integrative prioritization of cell surface targets for cancer immunotherapy"
+            "ImmunoTar\u2014integrative prioritization of cell surface targets for cancer immunotherapy"
           ],
           "source": "crossref-immunotar-expansion-20261115",
           "pointer": "/message/items/0/title"
@@ -2205,7 +2293,7 @@
               "sequence": "first",
               "affiliation": [
                 {
-                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104,",
                   "place": [
                     "United States"
                   ]
@@ -2240,7 +2328,7 @@
                   ]
                 },
                 {
-                  "name": "Canada’s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,",
+                  "name": "Canada\u2019s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,",
                   "place": [
                     "Canada"
                   ]
@@ -2263,7 +2351,7 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104,",
                   "place": [
                     "United States"
                   ]
@@ -2286,7 +2374,7 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104,",
                   "place": [
                     "United States"
                   ]
@@ -2311,7 +2399,7 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Canada’s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,",
+                  "name": "Canada\u2019s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,",
                   "place": [
                     "Canada"
                   ]
@@ -2369,7 +2457,7 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104,",
                   "place": [
                     "United States"
                   ]
@@ -2406,7 +2494,7 @@
               "sequence": "additional",
               "affiliation": [
                 {
-                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children\u2019s Hospital of Philadelphia , Philadelphia, PA 19104,",
                   "place": [
                     "United States"
                   ]
@@ -2983,12 +3071,3386 @@
           "pointer": "/admin/last_modified/date"
         }
       }
+    },
+    {
+      "id": "crossref:10.1038/s41592-022-01458-7",
+      "kind": "publication",
+      "fields": {
+        "nativeId": {
+          "source": "crossref-aslprep-20261116",
+          "pointer": "/message/items/0/DOI",
+          "value": "10.1038/s41592-022-01458-7"
+        },
+        "title": {
+          "source": "crossref-aslprep-20261116",
+          "pointer": "/message/items/0/title",
+          "value": [
+            "ASLPrep: a platform for processing of arterial spin labeled MRI and quantification of regional brain perfusion"
+          ]
+        },
+        "url": {
+          "source": "crossref-aslprep-20261116",
+          "pointer": "/message/items/0/URL",
+          "value": "https://doi.org/10.1038/s41592-022-01458-7"
+        },
+        "publicationType": {
+          "source": "crossref-aslprep-20261116",
+          "pointer": "/message/items/0/type",
+          "value": "journal-article"
+        },
+        "publishedDateParts": {
+          "source": "crossref-aslprep-20261116",
+          "pointer": "/message/items/0/published/date-parts",
+          "value": [
+            [
+              2022,
+              6
+            ]
+          ]
+        },
+        "authors": [
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/0",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-9049-0135",
+              "authenticated-orcid": false,
+              "given": "Azeez",
+              "family": "Adebimpe",
+              "sequence": "first",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/1",
+            "value": {
+              "given": "Maxwell",
+              "family": "Bertolero",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/2",
+            "value": {
+              "given": "Sudipto",
+              "family": "Dolui",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/3",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-1931-4734",
+              "authenticated-orcid": false,
+              "given": "Matthew",
+              "family": "Cieslak",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/4",
+            "value": {
+              "given": "Kristin",
+              "family": "Murtha",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/5",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-7987-3773",
+              "authenticated-orcid": false,
+              "given": "Erica B.",
+              "family": "Baller",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/6",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-4153-8187",
+              "authenticated-orcid": false,
+              "given": "Bradley",
+              "family": "Boeve",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/7",
+            "value": {
+              "given": "Adam",
+              "family": "Boxer",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/8",
+            "value": {
+              "given": "Ellyn R.",
+              "family": "Butler",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/9",
+            "value": {
+              "given": "Phil",
+              "family": "Cook",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/10",
+            "value": {
+              "given": "Stan",
+              "family": "Colcombe",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/11",
+            "value": {
+              "given": "Sydney",
+              "family": "Covitz",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/12",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-1025-8561",
+              "authenticated-orcid": false,
+              "given": "Christos",
+              "family": "Davatzikos",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/13",
+            "value": {
+              "given": "Diego G.",
+              "family": "Davila",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/14",
+            "value": {
+              "given": "Mark A.",
+              "family": "Elliott",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/15",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-7014-4665",
+              "authenticated-orcid": false,
+              "given": "Matthew W.",
+              "family": "Flounders",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/16",
+            "value": {
+              "given": "Alexandre R.",
+              "family": "Franco",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/17",
+            "value": {
+              "given": "Raquel E.",
+              "family": "Gur",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/18",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-9657-1996",
+              "authenticated-orcid": false,
+              "given": "Ruben C.",
+              "family": "Gur",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/19",
+            "value": {
+              "given": "Basma",
+              "family": "Jaber",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/20",
+            "value": {
+              "given": "Corey",
+              "family": "McMillian",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/21",
+            "value": {
+              "name": "the ALLFTD Consortium",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/22",
+            "value": {
+              "given": "Liana",
+              "family": "Apostolova",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/23",
+            "value": {
+              "given": "Brian",
+              "family": "Appleby",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/24",
+            "value": {
+              "given": "Sami",
+              "family": "Barmada",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/25",
+            "value": {
+              "given": "Yvette",
+              "family": "Bordelon",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/26",
+            "value": {
+              "given": "Hugo",
+              "family": "Botha",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/27",
+            "value": {
+              "given": "Adam L.",
+              "family": "Boxer",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/28",
+            "value": {
+              "given": "Andrea",
+              "family": "Bozoki",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/29",
+            "value": {
+              "given": "Danielle",
+              "family": "Brushaber",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/30",
+            "value": {
+              "given": "David",
+              "family": "Clark",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/31",
+            "value": {
+              "given": "Giovanni",
+              "family": "Coppola",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/32",
+            "value": {
+              "given": "Ryan",
+              "family": "Darby",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/33",
+            "value": {
+              "given": "Dennis",
+              "family": "Dickson",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/34",
+            "value": {
+              "given": "Kimiko",
+              "family": "Domoto-Reilly",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/35",
+            "value": {
+              "given": "Kelley",
+              "family": "Faber",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/36",
+            "value": {
+              "given": "Anne",
+              "family": "Fagan",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/37",
+            "value": {
+              "given": "Julie A.",
+              "family": "Fields",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/38",
+            "value": {
+              "given": "Tatiana",
+              "family": "Foroud",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/39",
+            "value": {
+              "given": "Leah K.",
+              "family": "Forsberg",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/40",
+            "value": {
+              "given": "Daniel",
+              "family": "Geschwind",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/41",
+            "value": {
+              "given": "Jill",
+              "family": "Goldman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/42",
+            "value": {
+              "given": "Douglas R.",
+              "family": "Galasko",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/43",
+            "value": {
+              "given": "Ralitza",
+              "family": "Gavrilova",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/44",
+            "value": {
+              "given": "Tania",
+              "family": "Gendron",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/45",
+            "value": {
+              "given": "Jonathon",
+              "family": "Graff-Radford",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/46",
+            "value": {
+              "given": "Neill",
+              "family": "Graff-Radford",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/47",
+            "value": {
+              "given": "Ian M.",
+              "family": "Grant",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/48",
+            "value": {
+              "given": "Murray",
+              "family": "Grossman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/49",
+            "value": {
+              "given": "Matthew",
+              "family": "Hall",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/50",
+            "value": {
+              "given": "Eric",
+              "family": "Huang",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/51",
+            "value": {
+              "given": "Hilary W.",
+              "family": "Heuer",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/52",
+            "value": {
+              "given": "Ging-Yuek Robin",
+              "family": "Hsiung",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/53",
+            "value": {
+              "given": "Edward D.",
+              "family": "Huey",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/54",
+            "value": {
+              "given": "David",
+              "family": "Irwin",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/55",
+            "value": {
+              "given": "David T.",
+              "family": "Jones",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/56",
+            "value": {
+              "given": "Kejal",
+              "family": "Kantarci",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/57",
+            "value": {
+              "given": "Daniel",
+              "family": "Kaufer",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/58",
+            "value": {
+              "given": "Diana",
+              "family": "Kerwin",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/59",
+            "value": {
+              "given": "David",
+              "family": "Knopman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/60",
+            "value": {
+              "given": "John",
+              "family": "Kornak",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/61",
+            "value": {
+              "given": "Joel",
+              "family": "Kramer",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/62",
+            "value": {
+              "given": "Walter",
+              "family": "Kremers",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/63",
+            "value": {
+              "given": "Maria",
+              "family": "Lapid",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/64",
+            "value": {
+              "given": "Argentina Lario",
+              "family": "Lago",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/65",
+            "value": {
+              "given": "Gabriel",
+              "family": "Leger",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/66",
+            "value": {
+              "given": "Peter",
+              "family": "Ljubenkov",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/67",
+            "value": {
+              "given": "Irene",
+              "family": "Litvan",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/68",
+            "value": {
+              "given": "Diane",
+              "family": "Lucente",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/69",
+            "value": {
+              "given": "Ian R.",
+              "family": "Mackenzie",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/70",
+            "value": {
+              "given": "Joseph C.",
+              "family": "Masdeu",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/71",
+            "value": {
+              "given": "Scott",
+              "family": "McGinnis",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/72",
+            "value": {
+              "given": "Mario",
+              "family": "Mendez",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/73",
+            "value": {
+              "given": "Carly",
+              "family": "Mester",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/74",
+            "value": {
+              "given": "Bruce L.",
+              "family": "Miller",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/75",
+            "value": {
+              "given": "Chiadi",
+              "family": "Onyike",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/76",
+            "value": {
+              "given": "M. Belen",
+              "family": "Pascual",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/77",
+            "value": {
+              "given": "Leonard",
+              "family": "Petrucelli",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/78",
+            "value": {
+              "given": "Peter",
+              "family": "Pressman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/79",
+            "value": {
+              "given": "Rosa",
+              "family": "Rademakers",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/80",
+            "value": {
+              "given": "Vijay",
+              "family": "Ramanan",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/81",
+            "value": {
+              "given": "E. Marisa",
+              "family": "Ramos",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/82",
+            "value": {
+              "given": "Meghana",
+              "family": "Rao",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/83",
+            "value": {
+              "given": "Katya",
+              "family": "Rascovsky",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/84",
+            "value": {
+              "given": "Katherine P.",
+              "family": "Rankin",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/85",
+            "value": {
+              "given": "Aaron",
+              "family": "Ritter",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/86",
+            "value": {
+              "given": "Erik D.",
+              "family": "Roberson",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/87",
+            "value": {
+              "given": "Julio",
+              "family": "Rojas-Martinez",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/88",
+            "value": {
+              "given": "Howard J.",
+              "family": "Rosen",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/89",
+            "value": {
+              "given": "Rodolfo",
+              "family": "Savica",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/90",
+            "value": {
+              "given": "William",
+              "family": "Seeley",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/91",
+            "value": {
+              "given": "Jeremy",
+              "family": "Syrjanen",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/92",
+            "value": {
+              "given": "Adam M.",
+              "family": "Staffaroni",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/93",
+            "value": {
+              "given": "M. Carmela",
+              "family": "Tartaglia",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/94",
+            "value": {
+              "given": "Jack",
+              "family": "Taylor",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/95",
+            "value": {
+              "given": "Lawren",
+              "family": "VandeVrede",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/96",
+            "value": {
+              "given": "Sandra",
+              "family": "Weintraub",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/97",
+            "value": {
+              "given": "Bonnie",
+              "family": "Wong",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/98",
+            "value": {
+              "given": "Zbigniew",
+              "family": "Wszolek",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/99",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0003-3532-1210",
+              "authenticated-orcid": false,
+              "given": "Michael",
+              "family": "Milham",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/100",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0003-0894-0307",
+              "authenticated-orcid": false,
+              "given": "Henk J. M. M.",
+              "family": "Mutsaerts",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/101",
+            "value": {
+              "given": "Desmond J.",
+              "family": "Oathes",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/102",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-4858-2359",
+              "authenticated-orcid": false,
+              "given": "Christopher A.",
+              "family": "Olm",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/103",
+            "value": {
+              "given": "Jeffrey S.",
+              "family": "Phillips",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/104",
+            "value": {
+              "given": "Will",
+              "family": "Tackett",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/105",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-1728-9782",
+              "authenticated-orcid": false,
+              "given": "David R.",
+              "family": "Roalf",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/106",
+            "value": {
+              "given": "Howard",
+              "family": "Rosen",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/107",
+            "value": {
+              "given": "Tinashe M.",
+              "family": "Tapera",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/108",
+            "value": {
+              "given": "M. Dylan",
+              "family": "Tisdall",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/109",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-9240-1327",
+              "authenticated-orcid": false,
+              "given": "Dale",
+              "family": "Zhou",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/110",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-8435-6191",
+              "authenticated-orcid": false,
+              "given": "Oscar",
+              "family": "Esteban",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/111",
+            "value": {
+              "given": "Russell A.",
+              "family": "Poldrack",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/112",
+            "value": {
+              "given": "John A.",
+              "family": "Detre",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-aslprep-20261116",
+            "pointer": "/message/items/0/author/113",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-7072-9399",
+              "authenticated-orcid": false,
+              "given": "Theodore D.",
+              "family": "Satterthwaite",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "crossref:10.1038/s44172-023-00066-3",
+      "kind": "publication",
+      "fields": {
+        "nativeId": {
+          "source": "crossref-gandlf-20261116",
+          "pointer": "/message/items/0/DOI",
+          "value": "10.1038/s44172-023-00066-3"
+        },
+        "title": {
+          "source": "crossref-gandlf-20261116",
+          "pointer": "/message/items/0/title",
+          "value": [
+            "GaNDLF: the generally nuanced deep learning framework for scalable end-to-end clinical workflows"
+          ]
+        },
+        "url": {
+          "source": "crossref-gandlf-20261116",
+          "pointer": "/message/items/0/URL",
+          "value": "https://doi.org/10.1038/s44172-023-00066-3"
+        },
+        "publicationType": {
+          "source": "crossref-gandlf-20261116",
+          "pointer": "/message/items/0/type",
+          "value": "journal-article"
+        },
+        "publishedDateParts": {
+          "source": "crossref-gandlf-20261116",
+          "pointer": "/message/items/0/published/date-parts",
+          "value": [
+            [
+              2023,
+              5,
+              16
+            ]
+          ]
+        },
+        "authors": [
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/0",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0003-2243-8487",
+              "authenticated-orcid": false,
+              "given": "Sarthak",
+              "family": "Pati",
+              "sequence": "first",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/1",
+            "value": {
+              "given": "Siddhesh P.",
+              "family": "Thakur",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/2",
+            "value": {
+              "given": "\u0130brahim Ethem",
+              "family": "Hamamc\u0131",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/3",
+            "value": {
+              "given": "Ujjwal",
+              "family": "Baid",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/4",
+            "value": {
+              "given": "Bhakti",
+              "family": "Baheti",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/5",
+            "value": {
+              "given": "Megh",
+              "family": "Bhalerao",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/6",
+            "value": {
+              "given": "Orhun",
+              "family": "G\u00fcley",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/7",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-6095-4549",
+              "authenticated-orcid": false,
+              "given": "Sofia",
+              "family": "Mouchtaris",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/8",
+            "value": {
+              "given": "David",
+              "family": "Lang",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/9",
+            "value": {
+              "given": "Spyridon",
+              "family": "Thermos",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/10",
+            "value": {
+              "given": "Karol",
+              "family": "Gotkowski",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/11",
+            "value": {
+              "given": "Camila",
+              "family": "Gonz\u00e1lez",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/12",
+            "value": {
+              "given": "Caleb",
+              "family": "Grenko",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/13",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-9319-8479",
+              "authenticated-orcid": false,
+              "given": "Alexander",
+              "family": "Getka",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/14",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-0957-9149",
+              "authenticated-orcid": false,
+              "given": "Brandon",
+              "family": "Edwards",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/15",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-6571-0850",
+              "authenticated-orcid": false,
+              "given": "Micah",
+              "family": "Sheller",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/16",
+            "value": {
+              "given": "Junwen",
+              "family": "Wu",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/17",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-0623-548X",
+              "authenticated-orcid": false,
+              "given": "Deepthi",
+              "family": "Karkada",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/18",
+            "value": {
+              "given": "Ravi",
+              "family": "Panchumarthy",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/19",
+            "value": {
+              "given": "Vinayak",
+              "family": "Ahluwalia",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/20",
+            "value": {
+              "given": "Chunrui",
+              "family": "Zou",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/21",
+            "value": {
+              "given": "Vishnu",
+              "family": "Bashyam",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/22",
+            "value": {
+              "given": "Yuemeng",
+              "family": "Li",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/23",
+            "value": {
+              "given": "Babak",
+              "family": "Haghighi",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/24",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-7880-930X",
+              "authenticated-orcid": false,
+              "given": "Rhea",
+              "family": "Chitalia",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/25",
+            "value": {
+              "given": "Shahira",
+              "family": "Abousamra",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/26",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-9237-4306",
+              "authenticated-orcid": false,
+              "given": "Tahsin M.",
+              "family": "Kurc",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/27",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-3359-7195",
+              "authenticated-orcid": false,
+              "given": "Aimilia",
+              "family": "Gastounioti",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/28",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-7266-9844",
+              "authenticated-orcid": false,
+              "given": "Sezgin",
+              "family": "Er",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/29",
+            "value": {
+              "given": "Mark",
+              "family": "Bergman",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/30",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-3451-2165",
+              "authenticated-orcid": false,
+              "given": "Joel H.",
+              "family": "Saltz",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/31",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-9869-4685",
+              "authenticated-orcid": false,
+              "given": "Yong",
+              "family": "Fan",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/32",
+            "value": {
+              "given": "Prashant",
+              "family": "Shah",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/33",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0003-0669-4018",
+              "authenticated-orcid": false,
+              "given": "Anirban",
+              "family": "Mukhopadhyay",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/34",
+            "value": {
+              "given": "Sotirios A.",
+              "family": "Tsaftaris",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/35",
+            "value": {
+              "given": "Bjoern",
+              "family": "Menze",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/36",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-1025-8561",
+              "authenticated-orcid": false,
+              "given": "Christos",
+              "family": "Davatzikos",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/37",
+            "value": {
+              "given": "Despina",
+              "family": "Kontos",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/38",
+            "value": {
+              "given": "Alexandros",
+              "family": "Karargyris",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/39",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-5561-6932",
+              "authenticated-orcid": false,
+              "given": "Renato",
+              "family": "Umeton",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/40",
+            "value": {
+              "given": "Peter",
+              "family": "Mattson",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-gandlf-20261116",
+            "pointer": "/message/items/0/author/41",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-8734-6482",
+              "authenticated-orcid": false,
+              "given": "Spyridon",
+              "family": "Bakas",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "crossref:10.3390/app11041892",
+      "kind": "publication",
+      "fields": {
+        "nativeId": {
+          "source": "crossref-historeg-20261116",
+          "pointer": "/message/items/0/DOI",
+          "value": "10.3390/app11041892"
+        },
+        "title": {
+          "source": "crossref-historeg-20261116",
+          "pointer": "/message/items/0/title",
+          "value": [
+            "Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration"
+          ]
+        },
+        "url": {
+          "source": "crossref-historeg-20261116",
+          "pointer": "/message/items/0/URL",
+          "value": "https://doi.org/10.3390/app11041892"
+        },
+        "publicationType": {
+          "source": "crossref-historeg-20261116",
+          "pointer": "/message/items/0/type",
+          "value": "journal-article"
+        },
+        "publishedDateParts": {
+          "source": "crossref-historeg-20261116",
+          "pointer": "/message/items/0/published/date-parts",
+          "value": [
+            [
+              2021,
+              2,
+              21
+            ]
+          ]
+        },
+        "authors": [
+          {
+            "source": "crossref-historeg-20261116",
+            "pointer": "/message/items/0/author/0",
+            "value": {
+              "given": "Ludovic",
+              "family": "Venet",
+              "sequence": "first",
+              "affiliation": [
+                {
+                  "name": "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-historeg-20261116",
+            "pointer": "/message/items/0/author/1",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0003-2243-8487",
+              "authenticated-orcid": false,
+              "given": "Sarthak",
+              "family": "Pati",
+              "sequence": "additional",
+              "affiliation": [
+                {
+                  "name": "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                },
+                {
+                  "name": "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                },
+                {
+                  "name": "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-historeg-20261116",
+            "pointer": "/message/items/0/author/2",
+            "value": {
+              "given": "Michael D.",
+              "family": "Feldman",
+              "sequence": "additional",
+              "affiliation": [
+                {
+                  "name": "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-historeg-20261116",
+            "pointer": "/message/items/0/author/3",
+            "value": {
+              "given": "MacLean P.",
+              "family": "Nasrallah",
+              "sequence": "additional",
+              "affiliation": [
+                {
+                  "name": "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-historeg-20261116",
+            "pointer": "/message/items/0/author/4",
+            "value": {
+              "given": "Paul",
+              "family": "Yushkevich",
+              "sequence": "additional",
+              "affiliation": [
+                {
+                  "name": "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                },
+                {
+                  "name": "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-historeg-20261116",
+            "pointer": "/message/items/0/author/5",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-8734-6482",
+              "authenticated-orcid": false,
+              "given": "Spyridon",
+              "family": "Bakas",
+              "sequence": "additional",
+              "affiliation": [
+                {
+                  "name": "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                },
+                {
+                  "name": "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                },
+                {
+                  "name": "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "crossref:10.1016/j.neuroimage.2023.120037",
+      "kind": "publication",
+      "fields": {
+        "nativeId": {
+          "source": "crossref-modelarray-20261116",
+          "pointer": "/message/items/0/DOI",
+          "value": "10.1016/j.neuroimage.2023.120037"
+        },
+        "title": {
+          "source": "crossref-modelarray-20261116",
+          "pointer": "/message/items/0/title",
+          "value": [
+            "ModelArray: An R package for statistical analysis of fixel-wise data"
+          ]
+        },
+        "url": {
+          "source": "crossref-modelarray-20261116",
+          "pointer": "/message/items/0/URL",
+          "value": "https://doi.org/10.1016/j.neuroimage.2023.120037"
+        },
+        "publicationType": {
+          "source": "crossref-modelarray-20261116",
+          "pointer": "/message/items/0/type",
+          "value": "journal-article"
+        },
+        "publishedDateParts": {
+          "source": "crossref-modelarray-20261116",
+          "pointer": "/message/items/0/published/date-parts",
+          "value": [
+            [
+              2023,
+              5
+            ]
+          ]
+        },
+        "authors": [
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/0",
+            "value": {
+              "given": "Chenying",
+              "family": "Zhao",
+              "sequence": "first",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/1",
+            "value": {
+              "given": "Tinashe M.",
+              "family": "Tapera",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/2",
+            "value": {
+              "given": "Jo\u00eblle",
+              "family": "Bagautdinova",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/3",
+            "value": {
+              "given": "Josiane",
+              "family": "Bourque",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/4",
+            "value": {
+              "given": "Sydney",
+              "family": "Covitz",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/5",
+            "value": {
+              "given": "Raquel E.",
+              "family": "Gur",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/6",
+            "value": {
+              "given": "Ruben C.",
+              "family": "Gur",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/7",
+            "value": {
+              "given": "Bart",
+              "family": "Larsen",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/8",
+            "value": {
+              "given": "Kahini",
+              "family": "Mehta",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/9",
+            "value": {
+              "given": "Steven L.",
+              "family": "Meisler",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/10",
+            "value": {
+              "given": "Kristin",
+              "family": "Murtha",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/11",
+            "value": {
+              "given": "John",
+              "family": "Muschelli",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/12",
+            "value": {
+              "given": "David R.",
+              "family": "Roalf",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/13",
+            "value": {
+              "given": "Valerie J.",
+              "family": "Sydnor",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/14",
+            "value": {
+              "given": "Alessandra M.",
+              "family": "Valcarcel",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/15",
+            "value": {
+              "given": "Russell T.",
+              "family": "Shinohara",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/16",
+            "value": {
+              "given": "Matthew",
+              "family": "Cieslak",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          },
+          {
+            "source": "crossref-modelarray-20261116",
+            "pointer": "/message/items/0/author/17",
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-7072-9399",
+              "authenticated-orcid": false,
+              "given": "Theodore D.",
+              "family": "Satterthwaite",
+              "sequence": "additional",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "github:256420694",
+      "kind": "repository",
+      "fields": {
+        "nativeId": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/id",
+          "value": 256420694
+        },
+        "title": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/full_name",
+          "value": "PennLINC/aslprep"
+        },
+        "url": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/html_url",
+          "value": "https://github.com/PennLINC/aslprep"
+        },
+        "description": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/description",
+          "value": "Preprocessing of arterial spin labeling (ASL) data"
+        },
+        "ownerName": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/owner/login",
+          "value": "PennLINC"
+        },
+        "ownerId": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/owner/id",
+          "value": 61955309
+        },
+        "ownerKind": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/owner/type",
+          "value": "Organization"
+        },
+        "createdAt": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/created_at",
+          "value": "2020-04-17T06:27:25Z"
+        },
+        "updatedAt": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/updated_at",
+          "value": "2026-11-11T14:01:50Z"
+        },
+        "pushedAt": {
+          "source": "github-aslprep-20261116",
+          "pointer": "/pushed_at",
+          "value": "2026-11-11T13:01:48Z"
+        }
+      }
+    },
+    {
+      "id": "github:342691278",
+      "kind": "repository",
+      "fields": {
+        "nativeId": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/id",
+          "value": 342691278
+        },
+        "title": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/full_name",
+          "value": "mlcommons/GaNDLF"
+        },
+        "url": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/html_url",
+          "value": "https://github.com/mlcommons/GaNDLF"
+        },
+        "description": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/description",
+          "value": "A generalizable application framework for segmentation, regression, and classification using PyTorch"
+        },
+        "ownerName": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/owner/login",
+          "value": "mlcommons"
+        },
+        "ownerId": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/owner/id",
+          "value": 67760141
+        },
+        "ownerKind": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/owner/type",
+          "value": "Organization"
+        },
+        "createdAt": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/created_at",
+          "value": "2021-02-26T20:20:06Z"
+        },
+        "updatedAt": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/updated_at",
+          "value": "2026-11-07T20:57:18Z"
+        },
+        "pushedAt": {
+          "source": "github-gandlf-20261116",
+          "pointer": "/pushed_at",
+          "value": "2025-08-16T00:44:57Z"
+        }
+      }
+    },
+    {
+      "id": "github:163997867",
+      "kind": "repository",
+      "fields": {
+        "nativeId": {
+          "source": "github-historeg-20261116",
+          "pointer": "/id",
+          "value": 163997867
+        },
+        "title": {
+          "source": "github-historeg-20261116",
+          "pointer": "/full_name",
+          "value": "CBICA/HistoReg"
+        },
+        "url": {
+          "source": "github-historeg-20261116",
+          "pointer": "/html_url",
+          "value": "https://github.com/CBICA/HistoReg"
+        },
+        "description": {
+          "source": "github-historeg-20261116",
+          "pointer": "/description",
+          "value": "Framework for registration of sequential digitized histology slices"
+        },
+        "ownerName": {
+          "source": "github-historeg-20261116",
+          "pointer": "/owner/login",
+          "value": "CBICA"
+        },
+        "ownerId": {
+          "source": "github-historeg-20261116",
+          "pointer": "/owner/id",
+          "value": 35823615
+        },
+        "ownerKind": {
+          "source": "github-historeg-20261116",
+          "pointer": "/owner/type",
+          "value": "Organization"
+        },
+        "createdAt": {
+          "source": "github-historeg-20261116",
+          "pointer": "/created_at",
+          "value": "2019-01-03T16:36:06Z"
+        },
+        "updatedAt": {
+          "source": "github-historeg-20261116",
+          "pointer": "/updated_at",
+          "value": "2026-10-19T07:39:31Z"
+        },
+        "pushedAt": {
+          "source": "github-historeg-20261116",
+          "pointer": "/pushed_at",
+          "value": "2022-03-24T10:50:45Z"
+        }
+      }
+    },
+    {
+      "id": "github:390797198",
+      "kind": "repository",
+      "fields": {
+        "nativeId": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/id",
+          "value": 390797198
+        },
+        "title": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/full_name",
+          "value": "PennLINC/ModelArray"
+        },
+        "url": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/html_url",
+          "value": "https://github.com/PennLINC/ModelArray"
+        },
+        "description": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/description",
+          "value": "ModelArray: an R package for statistical analysis of fixel-wise data and beyond"
+        },
+        "ownerName": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/owner/login",
+          "value": "PennLINC"
+        },
+        "ownerId": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/owner/id",
+          "value": 61955309
+        },
+        "ownerKind": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/owner/type",
+          "value": "Organization"
+        },
+        "createdAt": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/created_at",
+          "value": "2021-07-29T17:07:32Z"
+        },
+        "updatedAt": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/updated_at",
+          "value": "2026-08-04T17:35:46Z"
+        },
+        "pushedAt": {
+          "source": "github-modelarray-20261116",
+          "pointer": "/pushed_at",
+          "value": "2026-10-18T03:21:56Z"
+        }
+      }
     }
   ],
   "observations": {
     "github-derived": {
       "bodyPath": "docs/discovery/qualification/evidence/github-publications-20261115/github-tool-observations.json",
       "sha256": "595b0a8157c0b6a9f5e381ac11597a0f598b64b4963ab73a9ac656bd880dd82d"
+    },
+    "pilot-expansion-connector-20261116": {
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/connector-observations.json",
+      "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63"
     }
   },
   "relationships": [
@@ -3071,6 +6533,182 @@
         "observation": "github-derived",
         "pointer": "/file_observation_batch/ended_at_utc",
         "value": "2026-11-15 21:05:10 UTC"
+      }
+    },
+    {
+      "fromId": "github:256420694",
+      "toId": "crossref:10.1038/s41592-022-01458-7",
+      "relation": "cites-publication",
+      "edge": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/explicit_repository_publication_edges/0",
+        "value": {
+          "repository": "PennLINC/aslprep",
+          "commit": "48a418cf92b57c5c66502286d2847fd742cbbd48",
+          "paths": [
+            "CITATION.cff"
+          ],
+          "doi": "10.1038/s41592-022-01458-7"
+        }
+      },
+      "file": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/file_observation_batch/files/0",
+        "value": {
+          "repository": "PennLINC/aslprep",
+          "commit": "48a418cf92b57c5c66502286d2847fd742cbbd48",
+          "path": "CITATION.cff",
+          "permalink": "https://github.com/PennLINC/aslprep/blob/48a418cf92b57c5c66502286d2847fd742cbbd48/CITATION.cff",
+          "tool_success": true,
+          "doi_mentions": [
+            "10.1038/s41592-022-01458-7"
+          ],
+          "blob_sha": "dedd04e385f00037519077b584e7407eb1d283b2",
+          "lines": [
+            7,
+            10
+          ],
+          "started_at_utc": "2026-11-16 16:18:32 UTC",
+          "ended_at_utc": "2026-11-16 16:18:32 UTC",
+          "raw_body_persisted": false
+        }
+      },
+      "observedAt": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/file_observation_batch/ended_at_utc",
+        "value": "2026-11-16 16:18:33 UTC"
+      }
+    },
+    {
+      "fromId": "github:342691278",
+      "toId": "crossref:10.1038/s44172-023-00066-3",
+      "relation": "cites-publication",
+      "edge": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/explicit_repository_publication_edges/1",
+        "value": {
+          "repository": "mlcommons/GaNDLF",
+          "commit": "3f9b7726925be0f97a8a0eb108c8f35b19ff50dd",
+          "paths": [
+            "README.md"
+          ],
+          "doi": "10.1038/s44172-023-00066-3"
+        }
+      },
+      "file": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/file_observation_batch/files/1",
+        "value": {
+          "repository": "mlcommons/GaNDLF",
+          "commit": "3f9b7726925be0f97a8a0eb108c8f35b19ff50dd",
+          "path": "README.md",
+          "permalink": "https://github.com/mlcommons/GaNDLF/blob/3f9b7726925be0f97a8a0eb108c8f35b19ff50dd/README.md",
+          "tool_success": true,
+          "doi_mentions": [
+            "10.1038/s44172-023-00066-3"
+          ],
+          "blob_sha": "89c69c375f7c5a983b6bee664366f29806f224a2",
+          "lines": [
+            42,
+            65
+          ],
+          "started_at_utc": "2026-11-16 16:18:32 UTC",
+          "ended_at_utc": "2026-11-16 16:18:32 UTC",
+          "raw_body_persisted": false
+        }
+      },
+      "observedAt": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/file_observation_batch/ended_at_utc",
+        "value": "2026-11-16 16:18:33 UTC"
+      }
+    },
+    {
+      "fromId": "github:163997867",
+      "toId": "crossref:10.3390/app11041892",
+      "relation": "cites-publication",
+      "edge": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/explicit_repository_publication_edges/2",
+        "value": {
+          "repository": "CBICA/HistoReg",
+          "commit": "5f7290781ae519b5ae930e85be594576576df853",
+          "paths": [
+            "README.md"
+          ],
+          "doi": "10.3390/app11041892"
+        }
+      },
+      "file": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/file_observation_batch/files/2",
+        "value": {
+          "repository": "CBICA/HistoReg",
+          "commit": "5f7290781ae519b5ae930e85be594576576df853",
+          "path": "README.md",
+          "permalink": "https://github.com/CBICA/HistoReg/blob/5f7290781ae519b5ae930e85be594576576df853/README.md",
+          "tool_success": true,
+          "doi_mentions": [
+            "10.3390/app11041892"
+          ],
+          "blob_sha": "e44568bd4e0724a525544435bd2dfbcc066965a8",
+          "lines": [
+            12,
+            27
+          ],
+          "started_at_utc": "2026-11-16 16:18:32 UTC",
+          "ended_at_utc": "2026-11-16 16:18:33 UTC",
+          "raw_body_persisted": false
+        }
+      },
+      "observedAt": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/file_observation_batch/ended_at_utc",
+        "value": "2026-11-16 16:18:33 UTC"
+      }
+    },
+    {
+      "fromId": "github:390797198",
+      "toId": "crossref:10.1016/j.neuroimage.2023.120037",
+      "relation": "cites-publication",
+      "edge": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/explicit_repository_publication_edges/3",
+        "value": {
+          "repository": "PennLINC/ModelArray",
+          "commit": "b38bb2582d38e82040e25aa5b08c98161287411a",
+          "paths": [
+            "README.Rmd"
+          ],
+          "doi": "10.1016/j.neuroimage.2023.120037"
+        }
+      },
+      "file": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/file_observation_batch/files/3",
+        "value": {
+          "repository": "PennLINC/ModelArray",
+          "commit": "b38bb2582d38e82040e25aa5b08c98161287411a",
+          "path": "README.Rmd",
+          "permalink": "https://github.com/PennLINC/ModelArray/blob/b38bb2582d38e82040e25aa5b08c98161287411a/README.Rmd",
+          "tool_success": true,
+          "doi_mentions": [
+            "10.1016/j.neuroimage.2023.120037"
+          ],
+          "blob_sha": "403c9bc7c66ba109edd6a1fda7405db1f15876d7",
+          "lines": [
+            106,
+            110
+          ],
+          "started_at_utc": "2026-11-16 16:18:33 UTC",
+          "ended_at_utc": "2026-11-16 16:18:33 UTC",
+          "raw_body_persisted": false
+        }
+      },
+      "observedAt": {
+        "observation": "pilot-expansion-connector-20261116",
+        "pointer": "/file_observation_batch/ended_at_utc",
+        "value": "2026-11-16 16:18:33 UTC"
       }
     }
   ]

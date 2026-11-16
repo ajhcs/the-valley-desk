@@ -50,7 +50,7 @@ test("enabled pilot page is noindex/no-store and uses only its finite metadata A
   assert.equal(response.headers.get("x-robots-tag"), "noindex");
   const html = await response.text();
   assert.match(html, /Health-tech research · The Valley Desk/);
-  assert.match(html, /1 of 14 selected records/);
+  assert.match(html, /1 of 22 selected records/);
   assert.match(html, /doi\.org\/10\.1093\/bioinformatics\/btae114/);
   assert.match(html, /current employment is not established/);
   assert.doesNotMatch(html, /Legacy fallback|application\/ld\+json|__VALLEY_DESK_RUNTIME_ITEMS__|\.discovery-work|\/workspace\//);

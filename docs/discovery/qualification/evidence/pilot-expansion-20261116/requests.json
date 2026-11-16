@@ -1,0 +1,150 @@
+{
+  "purpose": "EX30 bounded user-authorized factual pilot expansion; no production/source activation or benchmark labels.",
+  "nativeRequestBudget": 8,
+  "requests": [
+    {
+      "name": "aslprep",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-pilot-expansion-aslprep",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1038/s41592-022-01458-7"
+      },
+      "template": {
+        "id": "endpoint:crossref-pilot-expansion-aslprep",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1038/s41592-022-01458-7",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-022-01458-7&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1038/s41592-022-01458-7",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "gandlf",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-pilot-expansion-gandlf",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1038/s44172-023-00066-3"
+      },
+      "template": {
+        "id": "endpoint:crossref-pilot-expansion-gandlf",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1038/s44172-023-00066-3",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs44172-023-00066-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1038/s44172-023-00066-3",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "historeg",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-pilot-expansion-historeg",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.3390/app11041892"
+      },
+      "template": {
+        "id": "endpoint:crossref-pilot-expansion-historeg",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.3390/app11041892",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.3390%2Fapp11041892&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.3390/app11041892",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "modelarray",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-pilot-expansion-modelarray",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1016/j.neuroimage.2023.120037"
+      },
+      "template": {
+        "id": "endpoint:crossref-pilot-expansion-modelarray",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1016/j.neuroimage.2023.120037",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.neuroimage.2023.120037&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1016/j.neuroimage.2023.120037",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "aslprep",
+      "provider": "github",
+      "url": "https://api.github.com/repos/PennLINC/aslprep",
+      "alias": "PennLINC/aslprep",
+      "id": 256420694,
+      "ownerId": 61955309,
+      "sourceKind": "public-organization-repository-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "gandlf",
+      "provider": "github",
+      "url": "https://api.github.com/repos/mlcommons/GaNDLF",
+      "alias": "mlcommons/GaNDLF",
+      "id": 342691278,
+      "ownerId": 67760141,
+      "sourceKind": "public-organization-repository-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "historeg",
+      "provider": "github",
+      "url": "https://api.github.com/repos/CBICA/HistoReg",
+      "alias": "CBICA/HistoReg",
+      "id": 163997867,
+      "ownerId": 35823615,
+      "sourceKind": "public-organization-repository-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "modelarray",
+      "provider": "github",
+      "url": "https://api.github.com/repos/PennLINC/ModelArray",
+      "alias": "PennLINC/ModelArray",
+      "id": 390797198,
+      "ownerId": 61955309,
+      "sourceKind": "public-organization-repository-metadata",
+      "maxBytes": 48000
+    }
+  ]
+}

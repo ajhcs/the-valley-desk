@@ -1,0 +1,58 @@
+[
+  {
+    "provider": "github",
+    "name": "aslprep",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"github\", \"name\": \"aslprep\", \"status\": 200, \"received_bytes\": 6160, \"body_sha256\": \"4d177083b862c4003c92b5b452669f0546b18b563fd3aec69c38e7eaec9e9e85\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.409}",
+    "stderr": ""
+  },
+  {
+    "provider": "github",
+    "name": "gandlf",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"github\", \"name\": \"gandlf\", \"status\": 200, \"received_bytes\": 6490, \"body_sha256\": \"92a0e397ae33a29be804ebb9ea65bfce2b9b86f54b09da76d65e6276aeb71857\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.368}",
+    "stderr": ""
+  },
+  {
+    "provider": "github",
+    "name": "historeg",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"github\", \"name\": \"historeg\", \"status\": 200, \"received_bytes\": 5961, \"body_sha256\": \"ccdc403dbb9f602924300506c4000fa4a252412bc54f780cc86588cf771b06ba\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.327}",
+    "stderr": ""
+  },
+  {
+    "provider": "github",
+    "name": "modelarray",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"github\", \"name\": \"modelarray\", \"status\": 200, \"received_bytes\": 6345, \"body_sha256\": \"9356adef4b7651849c9beebc48d848ea13620158f4e88a1afbd6575c9e4f65fa\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.322}",
+    "stderr": ""
+  },
+  {
+    "provider": "crossref",
+    "name": "aslprep",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"crossref\", \"name\": \"aslprep\", \"status\": 200, \"received_bytes\": 16889, \"body_sha256\": \"43129723e1e8cf08767afcafdd135a8966f2ab822e2f088a2b94b29dc483fc57\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.31}",
+    "stderr": ""
+  },
+  {
+    "provider": "crossref",
+    "name": "gandlf",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"crossref\", \"name\": \"gandlf\", \"status\": 200, \"received_bytes\": 7677, \"body_sha256\": \"cbb844b117bbbb82f8919656e98963415166c82e5082a884500fd01ca09de26f\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.301}",
+    "stderr": ""
+  },
+  {
+    "provider": "crossref",
+    "name": "historeg",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"crossref\", \"name\": \"historeg\", \"status\": 200, \"received_bytes\": 3076, \"body_sha256\": \"0d596c2e75f0bec984945876a8d653f1fddfbc3d599d96f039106f886e0fc39f\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.232}",
+    "stderr": ""
+  },
+  {
+    "provider": "crossref",
+    "name": "modelarray",
+    "exit_code": 0,
+    "stdout": "{\"provider\": \"crossref\", \"name\": \"modelarray\", \"status\": 200, \"received_bytes\": 3540, \"body_sha256\": \"4a70e90e49b1782c67f20182a68126b697fce4783ef4ca7542df852966e88699\", \"body_retained\": true, \"failure_code\": null, \"elapsed_seconds\": 0.246}",
+    "stderr": ""
+  }
+]

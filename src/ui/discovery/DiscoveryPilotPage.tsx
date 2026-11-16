@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { DiscoveryPilotResultSchema } from "../../content/discovery-pilot";
 import type { DiscoveryPilotRecord, DiscoveryPilotResult, DiscoveryPilotCitation, DiscoveryPilotSearchMatch } from "../../content/discovery-pilot";
-import { pilotAuthorPreview, pilotDateLabel, pilotRecordPath } from "./pilot-presentation";
+import { pilotAffiliationLabel, pilotAuthorPreview, pilotDateLabel, pilotRecordPath } from "./pilot-presentation";
 import "./discovery-pilot.css";
 
 const labels = { repository: "Repository", publication: "Publication", organization: "Organization" };
@@ -45,13 +45,13 @@ function PilotRecord({ item, query, citations, match }: { item: DiscoveryPilotRe
     {item.authors.length ? <div className="PilotAuthors">
       <h3>Authors in this source record ({item.authors.length})</h3>
       {!authorsOpen ? <ul className="PilotAuthorPreview" aria-label={preview.matchesSearch ? "Authors matching the search" : "Author preview"}>{preview.authors.map(author => <li key={author.sourceIndex}><strong>{author.name}</strong>
-        {author.affiliations[0] ? <span className="PilotAffiliationPreview">{author.affiliations[0]}</span> : null}
+        {author.affiliations[0] ? <span className="PilotAffiliationPreview">{pilotAffiliationLabel(author.affiliations[0])}</span> : null}
       </li>)}</ul> : null}
       {!authorsOpen && item.authors.every(author => author.affiliations.length === 0) ? <p className="PilotMuted">Affiliations were not supplied in this metadata.</p> : null}
       <details open={authorsOpen} onToggle={event => setAuthorsOpen(event.currentTarget.open)}><summary>View all {item.authors.length} authors and affiliations</summary>
         <p className="PilotMuted">Affiliations reported with {item.sourceDate?.value.slice(0, 4) ?? "the"} publication; current roles and software contributions are not verified.</p>
         <ul>{item.authors.map(author => <li key={author.sourceIndex}><strong>{author.name}</strong>
-          {author.affiliations.length ? <ul>{author.affiliations.map((affiliation, i) => <li key={i}>{affiliation}</li>)}</ul> : <span> — affiliation not supplied in this record</span>}
+          {author.affiliations.length ? <ul>{author.affiliations.map((affiliation, i) => <li key={i}>{pilotAffiliationLabel(affiliation)}</li>)}</ul> : <span> — affiliation not supplied in this record</span>}
         </li>)}</ul>
       </details>
     </div> : null}
@@ -117,7 +117,7 @@ export function DiscoveryPilotPage() {
     </form>
     <div className="PilotResultHeader"><div className="PilotStatus" role="status" aria-live="polite">
       {state.status === "loading" ? "Loading the selected collection…" : state.status === "error" ? state.message : `${state.result.filteredRecords} of ${state.result.totalRecords} selected records`}
-    </div>{state.status === "ready" ? <details className="PilotAbout"><summary>About this pilot</summary><p>This is a selected source sample, not a complete regional roster. Records can describe the same project. Repository owners, publication authors and current professional roles are separate.</p><p>The DVRPC scope is Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania; Burlington, Camden, Gloucester and Mercer in New Jersey. Publication affiliations do not establish current employment or where software was created.</p><p>Search includes complete author rosters from these metadata records and context from the two supported repository citations. It does not infer additional relationships or person identities.</p></details> : null}</div>
+    </div>{state.status === "ready" ? <details className="PilotAbout"><summary>About this pilot</summary><p>This is a selected source sample, not a complete regional roster. Records can describe the same project. Repository owners, publication authors and current professional roles are separate.</p><p>The DVRPC scope is Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania; Burlington, Camden, Gloucester and Mercer in New Jersey. Publication affiliations do not establish current employment or where software was created.</p><p>Search includes complete author rosters from these metadata records and context from supported repository citations. It does not infer additional relationships or person identities.</p></details> : null}</div>
     {state.status === "ready" ? <>
       {state.result.items.length ? <div className="PilotGrid">{state.result.items.map(item => <PilotRecord key={item.id} item={item} query={state.result.query.q} citations={state.result.citations} match={state.result.matches.find(match => match.recordId === item.id)!} />)}</div> : <section className="PilotEmpty"><h2>No records match these filters.</h2><p>Try a broader term or <a href="/discover">reset the filters</a>.</p></section>}
     </> : state.status === "error" ? <p><a href="/discover">Reset filters and reload</a></p> : null}

@@ -1,8 +1,225 @@
 {
   "schemaVersion": "discovery-pilot-catalog-v2",
-  "catalogVersion": "2026-11-16-product-review-1",
-  "selectionSha256": "09dd1e6df98e44ec608eb4e858555d8e33c4b94ef6c3acc79d644390b3ec47b2",
+  "catalogVersion": "2026-11-16-source-expansion-1",
+  "selectionSha256": "1f817b19d60484f4e6716a278b9efbd1a2d14f4ef8ff4959c561f4f211adc596",
   "records": [
+    {
+      "id": "crossref:10.1016/j.neuroimage.2023.120037",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1016/j.neuroimage.2023.120037",
+      "title": "ModelArray: An R package for statistical analysis of fixel-wise data",
+      "description": null,
+      "url": "https://doi.org/10.1016/j.neuroimage.2023.120037",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Chenying Zhao",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Tinashe M. Tapera",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Joëlle Bagautdinova",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Josiane Bourque",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Sydney Covitz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Raquel E. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Ruben C. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Bart Larsen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Kahini Mehta",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Steven L. Meisler",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Kristin Murtha",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "John Muschelli",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "David R. Roalf",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Valerie J. Sydnor",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Alessandra M. Valcarcel",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Russell T. Shinohara",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Matthew Cieslak",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Theodore D. Satterthwaite",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2023-05",
+        "precision": "month"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.neuroimage.2023.120037&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T16:18:52.337394+00:00",
+        "sha256": "4a70e90e49b1782c67f20182a68126b697fce4783ef4ca7542df852966e88699",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        }
+      ],
+      "relatedLinks": []
+    },
     {
       "id": "crossref:10.1038/s41592-021-01185-5",
       "kind": "publication",
@@ -239,6 +456,1520 @@
         "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
         "observedAt": "2026-11-15T21:46:36.343883+00:00",
         "sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
+        },
+        {
+          "field": "authors/25",
+          "pointer": "/message/items/0/author/25"
+        },
+        {
+          "field": "authors/26",
+          "pointer": "/message/items/0/author/26"
+        },
+        {
+          "field": "authors/27",
+          "pointer": "/message/items/0/author/27"
+        },
+        {
+          "field": "authors/28",
+          "pointer": "/message/items/0/author/28"
+        },
+        {
+          "field": "authors/29",
+          "pointer": "/message/items/0/author/29"
+        },
+        {
+          "field": "authors/30",
+          "pointer": "/message/items/0/author/30"
+        },
+        {
+          "field": "authors/31",
+          "pointer": "/message/items/0/author/31"
+        },
+        {
+          "field": "authors/32",
+          "pointer": "/message/items/0/author/32"
+        },
+        {
+          "field": "authors/33",
+          "pointer": "/message/items/0/author/33"
+        },
+        {
+          "field": "authors/34",
+          "pointer": "/message/items/0/author/34"
+        },
+        {
+          "field": "authors/35",
+          "pointer": "/message/items/0/author/35"
+        },
+        {
+          "field": "authors/36",
+          "pointer": "/message/items/0/author/36"
+        },
+        {
+          "field": "authors/37",
+          "pointer": "/message/items/0/author/37"
+        },
+        {
+          "field": "authors/38",
+          "pointer": "/message/items/0/author/38"
+        },
+        {
+          "field": "authors/39",
+          "pointer": "/message/items/0/author/39"
+        },
+        {
+          "field": "authors/40",
+          "pointer": "/message/items/0/author/40"
+        },
+        {
+          "field": "authors/41",
+          "pointer": "/message/items/0/author/41"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1038/s41592-022-01458-7",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1038/s41592-022-01458-7",
+      "title": "ASLPrep: a platform for processing of arterial spin labeled MRI and quantification of regional brain perfusion",
+      "description": null,
+      "url": "https://doi.org/10.1038/s41592-022-01458-7",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Azeez Adebimpe",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Maxwell Bertolero",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Sudipto Dolui",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Matthew Cieslak",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Kristin Murtha",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Erica B. Baller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Bradley Boeve",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Adam Boxer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Ellyn R. Butler",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Phil Cook",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Stan Colcombe",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Sydney Covitz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Christos Davatzikos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Diego G. Davila",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Mark A. Elliott",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Matthew W. Flounders",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Alexandre R. Franco",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Raquel E. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Ruben C. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Basma Jaber",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Corey McMillian",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 21,
+          "name": "the ALLFTD Consortium",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Liana Apostolova",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Brian Appleby",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Sami Barmada",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 25,
+          "name": "Yvette Bordelon",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 26,
+          "name": "Hugo Botha",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 27,
+          "name": "Adam L. Boxer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 28,
+          "name": "Andrea Bozoki",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 29,
+          "name": "Danielle Brushaber",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 30,
+          "name": "David Clark",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 31,
+          "name": "Giovanni Coppola",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 32,
+          "name": "Ryan Darby",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 33,
+          "name": "Dennis Dickson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 34,
+          "name": "Kimiko Domoto-Reilly",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 35,
+          "name": "Kelley Faber",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 36,
+          "name": "Anne Fagan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 37,
+          "name": "Julie A. Fields",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 38,
+          "name": "Tatiana Foroud",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 39,
+          "name": "Leah K. Forsberg",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 40,
+          "name": "Daniel Geschwind",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 41,
+          "name": "Jill Goldman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 42,
+          "name": "Douglas R. Galasko",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 43,
+          "name": "Ralitza Gavrilova",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 44,
+          "name": "Tania Gendron",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 45,
+          "name": "Jonathon Graff-Radford",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 46,
+          "name": "Neill Graff-Radford",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 47,
+          "name": "Ian M. Grant",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 48,
+          "name": "Murray Grossman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 49,
+          "name": "Matthew Hall",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 50,
+          "name": "Eric Huang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 51,
+          "name": "Hilary W. Heuer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 52,
+          "name": "Ging-Yuek Robin Hsiung",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 53,
+          "name": "Edward D. Huey",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 54,
+          "name": "David Irwin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 55,
+          "name": "David T. Jones",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 56,
+          "name": "Kejal Kantarci",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 57,
+          "name": "Daniel Kaufer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 58,
+          "name": "Diana Kerwin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 59,
+          "name": "David Knopman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 60,
+          "name": "John Kornak",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 61,
+          "name": "Joel Kramer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 62,
+          "name": "Walter Kremers",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 63,
+          "name": "Maria Lapid",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 64,
+          "name": "Argentina Lario Lago",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 65,
+          "name": "Gabriel Leger",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 66,
+          "name": "Peter Ljubenkov",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 67,
+          "name": "Irene Litvan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 68,
+          "name": "Diane Lucente",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 69,
+          "name": "Ian R. Mackenzie",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 70,
+          "name": "Joseph C. Masdeu",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 71,
+          "name": "Scott McGinnis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 72,
+          "name": "Mario Mendez",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 73,
+          "name": "Carly Mester",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 74,
+          "name": "Bruce L. Miller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 75,
+          "name": "Chiadi Onyike",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 76,
+          "name": "M. Belen Pascual",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 77,
+          "name": "Leonard Petrucelli",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 78,
+          "name": "Peter Pressman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 79,
+          "name": "Rosa Rademakers",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 80,
+          "name": "Vijay Ramanan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 81,
+          "name": "E. Marisa Ramos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 82,
+          "name": "Meghana Rao",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 83,
+          "name": "Katya Rascovsky",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 84,
+          "name": "Katherine P. Rankin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 85,
+          "name": "Aaron Ritter",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 86,
+          "name": "Erik D. Roberson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 87,
+          "name": "Julio Rojas-Martinez",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 88,
+          "name": "Howard J. Rosen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 89,
+          "name": "Rodolfo Savica",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 90,
+          "name": "William Seeley",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 91,
+          "name": "Jeremy Syrjanen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 92,
+          "name": "Adam M. Staffaroni",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 93,
+          "name": "M. Carmela Tartaglia",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 94,
+          "name": "Jack Taylor",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 95,
+          "name": "Lawren VandeVrede",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 96,
+          "name": "Sandra Weintraub",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 97,
+          "name": "Bonnie Wong",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 98,
+          "name": "Zbigniew Wszolek",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 99,
+          "name": "Michael Milham",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 100,
+          "name": "Henk J. M. M. Mutsaerts",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 101,
+          "name": "Desmond J. Oathes",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 102,
+          "name": "Christopher A. Olm",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 103,
+          "name": "Jeffrey S. Phillips",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 104,
+          "name": "Will Tackett",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 105,
+          "name": "David R. Roalf",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 106,
+          "name": "Howard Rosen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 107,
+          "name": "Tinashe M. Tapera",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 108,
+          "name": "M. Dylan Tisdall",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 109,
+          "name": "Dale Zhou",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 110,
+          "name": "Oscar Esteban",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 111,
+          "name": "Russell A. Poldrack",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 112,
+          "name": "John A. Detre",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 113,
+          "name": "Theodore D. Satterthwaite",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2022-06",
+        "precision": "month"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-022-01458-7&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T16:18:41.279225+00:00",
+        "sha256": "43129723e1e8cf08767afcafdd135a8966f2ab822e2f088a2b94b29dc483fc57",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
+        },
+        {
+          "field": "authors/25",
+          "pointer": "/message/items/0/author/25"
+        },
+        {
+          "field": "authors/26",
+          "pointer": "/message/items/0/author/26"
+        },
+        {
+          "field": "authors/27",
+          "pointer": "/message/items/0/author/27"
+        },
+        {
+          "field": "authors/28",
+          "pointer": "/message/items/0/author/28"
+        },
+        {
+          "field": "authors/29",
+          "pointer": "/message/items/0/author/29"
+        },
+        {
+          "field": "authors/30",
+          "pointer": "/message/items/0/author/30"
+        },
+        {
+          "field": "authors/31",
+          "pointer": "/message/items/0/author/31"
+        },
+        {
+          "field": "authors/32",
+          "pointer": "/message/items/0/author/32"
+        },
+        {
+          "field": "authors/33",
+          "pointer": "/message/items/0/author/33"
+        },
+        {
+          "field": "authors/34",
+          "pointer": "/message/items/0/author/34"
+        },
+        {
+          "field": "authors/35",
+          "pointer": "/message/items/0/author/35"
+        },
+        {
+          "field": "authors/36",
+          "pointer": "/message/items/0/author/36"
+        },
+        {
+          "field": "authors/37",
+          "pointer": "/message/items/0/author/37"
+        },
+        {
+          "field": "authors/38",
+          "pointer": "/message/items/0/author/38"
+        },
+        {
+          "field": "authors/39",
+          "pointer": "/message/items/0/author/39"
+        },
+        {
+          "field": "authors/40",
+          "pointer": "/message/items/0/author/40"
+        },
+        {
+          "field": "authors/41",
+          "pointer": "/message/items/0/author/41"
+        },
+        {
+          "field": "authors/42",
+          "pointer": "/message/items/0/author/42"
+        },
+        {
+          "field": "authors/43",
+          "pointer": "/message/items/0/author/43"
+        },
+        {
+          "field": "authors/44",
+          "pointer": "/message/items/0/author/44"
+        },
+        {
+          "field": "authors/45",
+          "pointer": "/message/items/0/author/45"
+        },
+        {
+          "field": "authors/46",
+          "pointer": "/message/items/0/author/46"
+        },
+        {
+          "field": "authors/47",
+          "pointer": "/message/items/0/author/47"
+        },
+        {
+          "field": "authors/48",
+          "pointer": "/message/items/0/author/48"
+        },
+        {
+          "field": "authors/49",
+          "pointer": "/message/items/0/author/49"
+        },
+        {
+          "field": "authors/50",
+          "pointer": "/message/items/0/author/50"
+        },
+        {
+          "field": "authors/51",
+          "pointer": "/message/items/0/author/51"
+        },
+        {
+          "field": "authors/52",
+          "pointer": "/message/items/0/author/52"
+        },
+        {
+          "field": "authors/53",
+          "pointer": "/message/items/0/author/53"
+        },
+        {
+          "field": "authors/54",
+          "pointer": "/message/items/0/author/54"
+        },
+        {
+          "field": "authors/55",
+          "pointer": "/message/items/0/author/55"
+        },
+        {
+          "field": "authors/56",
+          "pointer": "/message/items/0/author/56"
+        },
+        {
+          "field": "authors/57",
+          "pointer": "/message/items/0/author/57"
+        },
+        {
+          "field": "authors/58",
+          "pointer": "/message/items/0/author/58"
+        },
+        {
+          "field": "authors/59",
+          "pointer": "/message/items/0/author/59"
+        },
+        {
+          "field": "authors/60",
+          "pointer": "/message/items/0/author/60"
+        },
+        {
+          "field": "authors/61",
+          "pointer": "/message/items/0/author/61"
+        },
+        {
+          "field": "authors/62",
+          "pointer": "/message/items/0/author/62"
+        },
+        {
+          "field": "authors/63",
+          "pointer": "/message/items/0/author/63"
+        },
+        {
+          "field": "authors/64",
+          "pointer": "/message/items/0/author/64"
+        },
+        {
+          "field": "authors/65",
+          "pointer": "/message/items/0/author/65"
+        },
+        {
+          "field": "authors/66",
+          "pointer": "/message/items/0/author/66"
+        },
+        {
+          "field": "authors/67",
+          "pointer": "/message/items/0/author/67"
+        },
+        {
+          "field": "authors/68",
+          "pointer": "/message/items/0/author/68"
+        },
+        {
+          "field": "authors/69",
+          "pointer": "/message/items/0/author/69"
+        },
+        {
+          "field": "authors/70",
+          "pointer": "/message/items/0/author/70"
+        },
+        {
+          "field": "authors/71",
+          "pointer": "/message/items/0/author/71"
+        },
+        {
+          "field": "authors/72",
+          "pointer": "/message/items/0/author/72"
+        },
+        {
+          "field": "authors/73",
+          "pointer": "/message/items/0/author/73"
+        },
+        {
+          "field": "authors/74",
+          "pointer": "/message/items/0/author/74"
+        },
+        {
+          "field": "authors/75",
+          "pointer": "/message/items/0/author/75"
+        },
+        {
+          "field": "authors/76",
+          "pointer": "/message/items/0/author/76"
+        },
+        {
+          "field": "authors/77",
+          "pointer": "/message/items/0/author/77"
+        },
+        {
+          "field": "authors/78",
+          "pointer": "/message/items/0/author/78"
+        },
+        {
+          "field": "authors/79",
+          "pointer": "/message/items/0/author/79"
+        },
+        {
+          "field": "authors/80",
+          "pointer": "/message/items/0/author/80"
+        },
+        {
+          "field": "authors/81",
+          "pointer": "/message/items/0/author/81"
+        },
+        {
+          "field": "authors/82",
+          "pointer": "/message/items/0/author/82"
+        },
+        {
+          "field": "authors/83",
+          "pointer": "/message/items/0/author/83"
+        },
+        {
+          "field": "authors/84",
+          "pointer": "/message/items/0/author/84"
+        },
+        {
+          "field": "authors/85",
+          "pointer": "/message/items/0/author/85"
+        },
+        {
+          "field": "authors/86",
+          "pointer": "/message/items/0/author/86"
+        },
+        {
+          "field": "authors/87",
+          "pointer": "/message/items/0/author/87"
+        },
+        {
+          "field": "authors/88",
+          "pointer": "/message/items/0/author/88"
+        },
+        {
+          "field": "authors/89",
+          "pointer": "/message/items/0/author/89"
+        },
+        {
+          "field": "authors/90",
+          "pointer": "/message/items/0/author/90"
+        },
+        {
+          "field": "authors/91",
+          "pointer": "/message/items/0/author/91"
+        },
+        {
+          "field": "authors/92",
+          "pointer": "/message/items/0/author/92"
+        },
+        {
+          "field": "authors/93",
+          "pointer": "/message/items/0/author/93"
+        },
+        {
+          "field": "authors/94",
+          "pointer": "/message/items/0/author/94"
+        },
+        {
+          "field": "authors/95",
+          "pointer": "/message/items/0/author/95"
+        },
+        {
+          "field": "authors/96",
+          "pointer": "/message/items/0/author/96"
+        },
+        {
+          "field": "authors/97",
+          "pointer": "/message/items/0/author/97"
+        },
+        {
+          "field": "authors/98",
+          "pointer": "/message/items/0/author/98"
+        },
+        {
+          "field": "authors/99",
+          "pointer": "/message/items/0/author/99"
+        },
+        {
+          "field": "authors/100",
+          "pointer": "/message/items/0/author/100"
+        },
+        {
+          "field": "authors/101",
+          "pointer": "/message/items/0/author/101"
+        },
+        {
+          "field": "authors/102",
+          "pointer": "/message/items/0/author/102"
+        },
+        {
+          "field": "authors/103",
+          "pointer": "/message/items/0/author/103"
+        },
+        {
+          "field": "authors/104",
+          "pointer": "/message/items/0/author/104"
+        },
+        {
+          "field": "authors/105",
+          "pointer": "/message/items/0/author/105"
+        },
+        {
+          "field": "authors/106",
+          "pointer": "/message/items/0/author/106"
+        },
+        {
+          "field": "authors/107",
+          "pointer": "/message/items/0/author/107"
+        },
+        {
+          "field": "authors/108",
+          "pointer": "/message/items/0/author/108"
+        },
+        {
+          "field": "authors/109",
+          "pointer": "/message/items/0/author/109"
+        },
+        {
+          "field": "authors/110",
+          "pointer": "/message/items/0/author/110"
+        },
+        {
+          "field": "authors/111",
+          "pointer": "/message/items/0/author/111"
+        },
+        {
+          "field": "authors/112",
+          "pointer": "/message/items/0/author/112"
+        },
+        {
+          "field": "authors/113",
+          "pointer": "/message/items/0/author/113"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1038/s44172-023-00066-3",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1038/s44172-023-00066-3",
+      "title": "GaNDLF: the generally nuanced deep learning framework for scalable end-to-end clinical workflows",
+      "description": null,
+      "url": "https://doi.org/10.1038/s44172-023-00066-3",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Sarthak Pati",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Siddhesh P. Thakur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "İbrahim Ethem Hamamcı",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Ujjwal Baid",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Bhakti Baheti",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Megh Bhalerao",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Orhun Güley",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Sofia Mouchtaris",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "David Lang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Spyridon Thermos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Karol Gotkowski",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Camila González",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Caleb Grenko",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Alexander Getka",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Brandon Edwards",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Micah Sheller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Junwen Wu",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Deepthi Karkada",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Ravi Panchumarthy",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Vinayak Ahluwalia",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Chunrui Zou",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 21,
+          "name": "Vishnu Bashyam",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Yuemeng Li",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Babak Haghighi",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Rhea Chitalia",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 25,
+          "name": "Shahira Abousamra",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 26,
+          "name": "Tahsin M. Kurc",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 27,
+          "name": "Aimilia Gastounioti",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 28,
+          "name": "Sezgin Er",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 29,
+          "name": "Mark Bergman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 30,
+          "name": "Joel H. Saltz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 31,
+          "name": "Yong Fan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 32,
+          "name": "Prashant Shah",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 33,
+          "name": "Anirban Mukhopadhyay",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 34,
+          "name": "Sotirios A. Tsaftaris",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 35,
+          "name": "Bjoern Menze",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 36,
+          "name": "Christos Davatzikos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 37,
+          "name": "Despina Kontos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 38,
+          "name": "Alexandros Karargyris",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 39,
+          "name": "Renato Umeton",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 40,
+          "name": "Peter Mattson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 41,
+          "name": "Spyridon Bakas",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2023-05-16",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs44172-023-00066-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T16:18:45.006552+00:00",
+        "sha256": "cbb844b117bbbb82f8919656e98963415166c82e5082a884500fd01ca09de26f",
         "useBasis": {
           "label": "Crossref factual bibliographic metadata guidance",
           "url": "https://www.crossref.org/documentation/retrieve-metadata/"
@@ -1479,6 +3210,136 @@
       "relatedLinks": []
     },
     {
+      "id": "crossref:10.3390/app11041892",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.3390/app11041892",
+      "title": "Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration",
+      "description": null,
+      "url": "https://doi.org/10.3390/app11041892",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Ludovic Venet",
+          "affiliations": [
+            "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Sarthak Pati",
+          "affiliations": [
+            "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Michael D. Feldman",
+          "affiliations": [
+            "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "MacLean P. Nasrallah",
+          "affiliations": [
+            "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Paul Yushkevich",
+          "affiliations": [
+            "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Spyridon Bakas",
+          "affiliations": [
+            "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2021-02-21",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA",
+          "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA",
+          "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.3390%2Fapp11041892&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T16:18:48.664101+00:00",
+        "sha256": "0d596c2e75f0bec984945876a8d653f1fddfbc3d599d96f039106f886e0fc39f",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
       "id": "github:128938343",
       "kind": "repository",
       "provider": "github",
@@ -1778,6 +3639,216 @@
       "relatedLinks": []
     },
     {
+      "id": "github:163997867",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "163997867",
+      "title": "CBICA/HistoReg",
+      "description": "Framework for registration of sequential digitized histology slices",
+      "url": "https://github.com/CBICA/HistoReg",
+      "owner": {
+        "id": "35823615",
+        "name": "CBICA",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2022-03-24T10:50:45Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2019-01-03T16:36:06Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-10-19T07:39:31Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/CBICA/HistoReg",
+        "observedAt": "2026-11-16T16:18:33.795004+00:00",
+        "sha256": "ccdc403dbb9f602924300506c4000fa4a252412bc54f780cc86588cf771b06ba",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.3390/app11041892",
+          "targetNativeId": "10.3390/app11041892",
+          "targetTitle": "Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration",
+          "url": "https://doi.org/10.3390/app11041892",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/CBICA/HistoReg/blob/5f7290781ae519b5ae930e85be594576576df853/README.md",
+            "observedAt": "2026-11-16T16:18:33Z",
+            "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+            "pointer": "/explicit_repository_publication_edges/2",
+            "filePointer": "/file_observation_batch/files/2",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:256420694",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "256420694",
+      "title": "PennLINC/aslprep",
+      "description": "Preprocessing of arterial spin labeling (ASL) data",
+      "url": "https://github.com/PennLINC/aslprep",
+      "owner": {
+        "id": "61955309",
+        "name": "PennLINC",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2026-11-11T13:01:48Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2020-04-17T06:27:25Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-11T14:01:50Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/PennLINC/aslprep",
+        "observedAt": "2026-11-16T16:18:26.249121+00:00",
+        "sha256": "4d177083b862c4003c92b5b452669f0546b18b563fd3aec69c38e7eaec9e9e85",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1038/s41592-022-01458-7",
+          "targetNativeId": "10.1038/s41592-022-01458-7",
+          "targetTitle": "ASLPrep: a platform for processing of arterial spin labeled MRI and quantification of regional brain perfusion",
+          "url": "https://doi.org/10.1038/s41592-022-01458-7",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/PennLINC/aslprep/blob/48a418cf92b57c5c66502286d2847fd742cbbd48/CITATION.cff",
+            "observedAt": "2026-11-16T16:18:33Z",
+            "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+            "pointer": "/explicit_repository_publication_edges/0",
+            "filePointer": "/file_observation_batch/files/0",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
       "id": "github:285885136",
       "kind": "repository",
       "provider": "github",
@@ -1865,6 +3936,216 @@
         }
       ],
       "relatedLinks": []
+    },
+    {
+      "id": "github:342691278",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "342691278",
+      "title": "mlcommons/GaNDLF",
+      "description": "A generalizable application framework for segmentation, regression, and classification using PyTorch",
+      "url": "https://github.com/mlcommons/GaNDLF",
+      "owner": {
+        "id": "67760141",
+        "name": "mlcommons",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2025-08-16T00:44:57Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2021-02-26T20:20:06Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-07T20:57:18Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/mlcommons/GaNDLF",
+        "observedAt": "2026-11-16T16:18:30.041556+00:00",
+        "sha256": "92a0e397ae33a29be804ebb9ea65bfce2b9b86f54b09da76d65e6276aeb71857",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1038/s44172-023-00066-3",
+          "targetNativeId": "10.1038/s44172-023-00066-3",
+          "targetTitle": "GaNDLF: the generally nuanced deep learning framework for scalable end-to-end clinical workflows",
+          "url": "https://doi.org/10.1038/s44172-023-00066-3",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/mlcommons/GaNDLF/blob/3f9b7726925be0f97a8a0eb108c8f35b19ff50dd/README.md",
+            "observedAt": "2026-11-16T16:18:33Z",
+            "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+            "pointer": "/explicit_repository_publication_edges/1",
+            "filePointer": "/file_observation_batch/files/1",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:390797198",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "390797198",
+      "title": "PennLINC/ModelArray",
+      "description": "ModelArray: an R package for statistical analysis of fixel-wise data and beyond",
+      "url": "https://github.com/PennLINC/ModelArray",
+      "owner": {
+        "id": "61955309",
+        "name": "PennLINC",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2026-10-18T03:21:56Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2021-07-29T17:07:32Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-08-04T17:35:46Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/PennLINC/ModelArray",
+        "observedAt": "2026-11-16T16:18:37.542800+00:00",
+        "sha256": "9356adef4b7651849c9beebc48d848ea13620158f4e88a1afbd6575c9e4f65fa",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1016/j.neuroimage.2023.120037",
+          "targetNativeId": "10.1016/j.neuroimage.2023.120037",
+          "targetTitle": "ModelArray: An R package for statistical analysis of fixel-wise data",
+          "url": "https://doi.org/10.1016/j.neuroimage.2023.120037",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/PennLINC/ModelArray/blob/b38bb2582d38e82040e25aa5b08c98161287411a/README.Rmd",
+            "observedAt": "2026-11-16T16:18:33Z",
+            "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+            "pointer": "/explicit_repository_publication_edges/3",
+            "filePointer": "/file_observation_batch/files/3",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
     },
     {
       "id": "github:525946788",
