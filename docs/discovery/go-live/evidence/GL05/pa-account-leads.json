@@ -1,0 +1,384 @@
+{
+  "title": "Pennsylvania account and repository research leads",
+  "observedDate": "2026-11-16",
+  "status": "private leads; unreviewed; not publication or source enrollment",
+  "publicationAuthorized": false,
+  "method": "Bounded first-party web search observations; project pages link accounts through repository URLs. GitHub repository pages not independently inspected. No code or README collected.",
+  "accounts": [
+    {
+      "account": "newilson",
+      "accountUrl": "https://github.com/newilson",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Penn CAMIPM",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": "Philadelphia",
+        "county": null,
+        "basis": "Center page lists Philadelphia address; county not independently sourced",
+        "source": "https://www.med.upenn.edu/CAMIPM/analysis-software/"
+      },
+      "accountLinkSource": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/newilson/ExerciseCESTv2",
+          "purpose": "CrCEST MRI creatine recovery and exchange maps",
+          "purposeSource": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+          "githubPageChecked": false,
+          "note": null
+        }
+      ],
+      "previouslyKnown": true,
+      "regionalConnectionStatus": "source association only; independent county evidence absent",
+      "newDiscoveryClaim": false
+    },
+    {
+      "account": "markymarkymark",
+      "accountUrl": "https://github.com/markymarkymark",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Penn CAMIPM",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": "Philadelphia",
+        "county": null,
+        "basis": "Center address on analysis software page",
+        "source": "https://www.med.upenn.edu/CAMIPM/analysis-software/"
+      },
+      "accountLinkSource": "https://www.med.upenn.edu/CAMIPM/imscribe.html",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/markymarkymark/Imscribe",
+          "purpose": "MRI image registration and field-of-view tools",
+          "purposeSource": "https://www.med.upenn.edu/CAMIPM/imscribe.html",
+          "githubPageChecked": false,
+          "note": "Page names a contact; does not establish that contact owns GitHub account."
+        }
+      ],
+      "previouslyKnown": false,
+      "regionalConnectionStatus": "source association only; independent county evidence absent",
+      "newDiscoveryClaim": null
+    },
+    {
+      "account": "MLDataAnalytics",
+      "accountUrl": "https://github.com/MLDataAnalytics",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Penn Research Laboratory for Machine Learning and Biomedical Data Analytics",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Penn institutional lab page; location requires independent check",
+        "source": "https://www.med.upenn.edu/machine-learning-biomed-data/software/"
+      },
+      "accountLinkSource": "https://www.med.upenn.edu/machine-learning-biomed-data/functional-network-modeling.html",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/MLDataAnalytics/pNet",
+          "purpose": "Functional brain network modeling toolbox",
+          "purposeSource": "https://www.med.upenn.edu/machine-learning-biomed-data/functional-network-modeling.html",
+          "githubPageChecked": false,
+          "note": null
+        }
+      ],
+      "previouslyKnown": false,
+      "regionalConnectionStatus": "source association only; independent county evidence absent",
+      "newDiscoveryClaim": null
+    },
+    {
+      "account": "CLEAR-EC",
+      "accountUrl": "https://github.com/CLEAR-EC",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Penn OPTIC Lab challenge",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Penn OPTIC Lab page; challenge collaboration does not establish development location",
+        "source": "https://opticlab.med.upenn.edu/clear-ec-challenge"
+      },
+      "accountLinkSource": "https://opticlab.med.upenn.edu/clear-ec-challenge",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/CLEAR-EC/CLEAR-EC",
+          "purpose": "Reference corneal endothelial image segmentation and metrics pipeline",
+          "purposeSource": "https://opticlab.med.upenn.edu/clear-ec-challenge",
+          "githubPageChecked": false,
+          "note": null
+        }
+      ],
+      "previouslyKnown": false,
+      "regionalConnectionStatus": "source association only; independent county evidence absent",
+      "newDiscoveryClaim": null
+    },
+    {
+      "account": "PennChopMicrobiomeProgram",
+      "accountUrl": "https://github.com/PennChopMicrobiomeProgram",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Penn MicroBioCode",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Penn institutional page; local development not established",
+        "source": "https://www.med.upenn.edu/microbiocode/do%E2%80%99s-and-donts-of-metadata-formatting-part-1"
+      },
+      "accountLinkSource": "https://www.med.upenn.edu/microbiocode/do%E2%80%99s-and-donts-of-metadata-formatting-part-1",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/PennChopMicrobiomeProgram/CHOP_metadata_checker",
+          "purpose": "Checks metadata used by microbiome research projects",
+          "purposeSource": "https://www.med.upenn.edu/microbiocode/do%E2%80%99s-and-donts-of-metadata-formatting-part-1",
+          "githubPageChecked": false,
+          "note": "Page names a software engineer, but does not connect the account ownership to that person."
+        }
+      ],
+      "previouslyKnown": false,
+      "regionalConnectionStatus": "source association only; independent county evidence absent",
+      "newDiscoveryClaim": null
+    },
+    {
+      "account": "sacanlab",
+      "accountUrl": "https://github.com/sacanlab",
+      "accountType": null,
+      "person": "Ahmet Sacan",
+      "institutionOrLab": "Drexel University and collaborators",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Drexel institutional repository reports Drexel affiliation; specific location not independently established",
+        "source": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/ImmunoTar-integrative-prioritization-of-cell-surface-targets/991022028237904721?institution=01DRXU_INST"
+      },
+      "accountLinkSource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/ImmunoTar-integrative-prioritization-of-cell-surface-targets/991022028237904721?institution=01DRXU_INST",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/sacanlab/immunotar",
+          "purpose": "Prioritizes cell surface targets for cancer immunotherapy",
+          "purposeSource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/ImmunoTar-integrative-prioritization-of-cell-surface-targets/991022028237904721?institution=01DRXU_INST",
+          "githubPageChecked": false,
+          "note": "Source reports Sacan as Drexel corresponding author and links code; does not establish account ownership or affiliation of every contributor."
+        }
+      ],
+      "previouslyKnown": true,
+      "regionalConnectionStatus": "source association only; independent county evidence absent",
+      "newDiscoveryClaim": false
+    },
+    {
+      "account": "Bioccjw",
+      "accountUrl": "https://github.com/Bioccjw",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Jefferson Department of Cancer Biology faculty paper",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Faculty paper collection; contributor affiliation and development location require independent verification",
+        "source": "https://jdc.jefferson.edu/cbfp/195/"
+      },
+      "accountLinkSource": "https://jdc.jefferson.edu/cbfp/195/",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/Bioccjw/CTpathway",
+          "purpose": "Cancer risk pathway enrichment analysis",
+          "purposeSource": "https://jdc.jefferson.edu/cbfp/195/",
+          "githubPageChecked": false,
+          "note": "Source links collaborator code; does not establish account holder is Jefferson-affiliated."
+        }
+      ],
+      "previouslyKnown": false,
+      "regionalConnectionStatus": "source association only; independent county evidence absent",
+      "newDiscoveryClaim": null
+    },
+    {
+      "account": "dsin85691",
+      "accountUrl": "https://github.com/dsin85691",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Drexel-associated preprint",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Preprint identifies one Drexel creator; no development location established",
+        "source": "https://researchdiscovery.drexel.edu/esploro/outputs/preprint/Towards-Personalized-Treatment-Plan-Geometrical-Model-Agnostic/991022124263004721"
+      },
+      "accountLinkSource": "https://researchdiscovery.drexel.edu/esploro/outputs/preprint/Towards-Personalized-Treatment-Plan-Geometrical-Model-Agnostic/991022124263004721",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/dsin85691/SSBA_For_Counterfactuals",
+          "purpose": "Counterfactual explanation approach evaluated including a health dataset",
+          "purposeSource": "https://researchdiscovery.drexel.edu/esploro/outputs/preprint/Towards-Personalized-Treatment-Plan-Geometrical-Model-Agnostic/991022124263004721",
+          "githubPageChecked": false,
+          "note": "General method with a health application; account-to-person affiliation unresolved."
+        }
+      ],
+      "previouslyKnown": false,
+      "regionalConnectionStatus": "source association only; independent county evidence absent",
+      "newDiscoveryClaim": null
+    },
+    {
+      "account": "felixagbavor",
+      "accountUrl": "https://github.com/felixagbavor",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Drexel biomedical engineering course project",
+      "affiliationTimeScope": "2020-12-08 student project; current status unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Drexel School of Biomedical Engineering listed in course report; county unverified",
+        "source": "https://sacan.urcf.drexel.edu/proj/?__route=%2Fdownload&cat=advbcomp&details=1&id=270&ticket=&type=report"
+      },
+      "accountLinkSource": "https://sacan.urcf.drexel.edu/proj/?__route=%2Fdownload&cat=advbcomp&details=1&id=270&ticket=&type=report",
+      "relationshipBasis": "Student course report links project repository; account owner not established",
+      "publicationAuthorized": false,
+      "previouslyKnown": false,
+      "repositories": [
+        {
+          "url": "https://github.com/felixagbavor/bmes_550",
+          "purpose": "Experimental pulmonary fibrosis CT image processing student project",
+          "purposeSource": "https://sacan.urcf.drexel.edu/proj/?__route=%2Fdownload&cat=advbcomp&details=1&id=270&ticket=&type=report",
+          "githubPageChecked": false,
+          "note": "Historical student research; no clinical performance or current role claim."
+        }
+      ]
+    },
+    {
+      "account": "MLBC-lab",
+      "accountUrl": "https://github.com/MLBC-lab",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Drexel-associated research paper",
+      "affiliationTimeScope": "Research repository record; individual affiliation and current status not established",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Drexel research repository record; source-specific regional affiliation requires review",
+        "source": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Deep-learning-multi-omics-integration-identifies-new/991022180789204721"
+      },
+      "accountLinkSource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Deep-learning-multi-omics-integration-identifies-new/991022180789204721",
+      "relationshipBasis": "Research repository record links source code; account ownership and local contribution unresolved",
+      "publicationAuthorized": false,
+      "previouslyKnown": false,
+      "repositories": [
+        {
+          "url": "https://github.com/MLBC-lab/LungClust",
+          "purpose": "Multi-omics integration for lung cancer subtypes",
+          "purposeSource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Deep-learning-multi-omics-integration-identifies-new/991022180789204721",
+          "githubPageChecked": false,
+          "note": "No clinical use claim."
+        }
+      ]
+    }
+  ],
+  "accountOnlyLeads": [
+    {
+      "account": "DVS-Lab",
+      "url": "https://github.com/DVS-Lab",
+      "person": "David V. Smith",
+      "institution": "Temple University",
+      "affiliationTimeScope": "CV dated 2024-10-29 reports Temple appointment from 2023; current role unverified",
+      "location": "Philadelphia, PA; county independently unverified",
+      "source": "https://liberalarts.temple.edu/sites/liberalarts/files/SmithDV_vita_0.pdf",
+      "publicationAuthorized": false
+    },
+    {
+      "account": "DynamicBrainMind",
+      "url": "https://github.com/DynamicBrainMind",
+      "person": "Aaron Kucyi",
+      "institution": "Drexel University",
+      "affiliationTimeScope": "CV reports Drexel appointment from 2022; present-day status unverified",
+      "location": "Philadelphia, PA; county independently unverified",
+      "source": "https://drexel.edu/~/media/Files/coas2/psychology/faculty-cv/drexel-aaron-kucyi-cv.ashx?la=en",
+      "publicationAuthorized": false
+    },
+    {
+      "account": "ryanefendy95",
+      "url": "https://github.com/ryanefendy95",
+      "person": "Ryan Efendy",
+      "institution": "Drexel University senior project ROADMAP",
+      "affiliationTimeScope": "2017\u20132018 student team; current role unknown",
+      "location": null,
+      "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "projectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "repositoryUrl": null,
+      "publicationAuthorized": false
+    },
+    {
+      "account": "ob74",
+      "url": "https://github.com/ob74",
+      "person": "Omair Bhore",
+      "institution": "Drexel University senior project ROADMAP",
+      "affiliationTimeScope": "2017\u20132018 student team; current role unknown",
+      "location": null,
+      "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "projectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "repositoryUrl": null,
+      "publicationAuthorized": false
+    },
+    {
+      "account": "hna6300",
+      "url": "https://github.com/hna6300",
+      "person": "Anh Huynh",
+      "institution": "Drexel University senior project ROADMAP",
+      "affiliationTimeScope": "2017\u20132018 student team; current role unknown",
+      "location": null,
+      "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "projectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "repositoryUrl": null,
+      "publicationAuthorized": false
+    },
+    {
+      "account": "deepak8694",
+      "url": "https://github.com/deepak8694",
+      "person": "Deepak Yadav",
+      "institution": "Drexel University senior project ROADMAP",
+      "affiliationTimeScope": "2017\u20132018 student team; current role unknown",
+      "location": null,
+      "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "projectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "repositoryUrl": null,
+      "publicationAuthorized": false
+    },
+    {
+      "account": "mrcalderon",
+      "url": "https://github.com/mrcalderon",
+      "person": "Miguel Calderon",
+      "institution": "Drexel University senior project ROADMAP",
+      "affiliationTimeScope": "2017\u20132018 student team; current role unknown",
+      "location": null,
+      "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "projectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "repositoryUrl": null,
+      "publicationAuthorized": false
+    }
+  ],
+  "gaps": [
+    "Bucks, Chester, Delaware and Montgomery county linkage remains unverified.",
+    "No GitHub endpoint was queried; repository existence, availability, status and owner type are unverified.",
+    "Some collaborative institutional repositories only establish project-level institutional involvement, not account-holder employment.",
+    "Search does not establish comprehensive coverage.",
+    "Generic genomics tools without explicit health application in the observed source were excluded from this lead set. Account-to-person identity remains unverified for repository-linked handles."
+  ]
+}

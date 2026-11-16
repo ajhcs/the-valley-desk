@@ -1,0 +1,198 @@
+{
+  "title": "Pennsylvania account leads, supplemental pass",
+  "observedDate": "2026-11-16",
+  "status": "private leads; unreviewed; no source enrollment",
+  "publicationAuthorized": false,
+  "method": "First-party source text surfaced in search indexing. No direct source page, GitHub endpoint, code, README, or profile body collected. No retries of refused requests.",
+  "accounts": [
+    {
+      "account": "malikyousef",
+      "accountUrl": "https://github.com/malikyousef",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Jefferson Cancer Biology faculty paper (2021)",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://jdc.jefferson.edu/cbfp/182/"
+      },
+      "accountLinkSource": "https://jdc.jefferson.edu/cbfp/182/",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "publicationAuthorized": false,
+      "previouslyKnown": null,
+      "observationMethod": "indexed first-party source text; GitHub page not directly read",
+      "repositories": [
+        {
+          "url": "https://github.com/malikyousef/miRcorrNet",
+          "purpose": "Machine learning integration of RNA expression profiles evaluated for cancer",
+          "purposeSource": "https://jdc.jefferson.edu/cbfp/182/",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ]
+    },
+    {
+      "account": "TJU-CMC-Org",
+      "accountUrl": "https://github.com/TJU-CMC-Org",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Jefferson Computational Medicine Center faculty paper (2021)",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://jdc.jefferson.edu/tjucompmedctrfp/38/"
+      },
+      "accountLinkSource": "https://jdc.jefferson.edu/tjucompmedctrfp/38/",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "publicationAuthorized": false,
+      "previouslyKnown": null,
+      "observationMethod": "indexed first-party source text; GitHub page not directly read",
+      "repositories": [
+        {
+          "url": "https://github.com/TJU-CMC-Org/isoMiRmap",
+          "purpose": "RNA-seq isomiR analysis with published cancer atlas profiles",
+          "purposeSource": "https://jdc.jefferson.edu/tjucompmedctrfp/38/",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ]
+    },
+    {
+      "account": "tingtingzhan",
+      "accountUrl": "https://github.com/tingtingzhan",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Jefferson Pharmacology, Physiology, and Cancer Biology faculty paper (2025)",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://jdc.jefferson.edu/ppcbfp/39/"
+      },
+      "accountLinkSource": "https://jdc.jefferson.edu/ppcbfp/39/",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "publicationAuthorized": false,
+      "previouslyKnown": null,
+      "observationMethod": "indexed first-party source text; GitHub page not directly read",
+      "repositories": [
+        {
+          "url": "https://github.com/tingtingzhan/hyper.gam",
+          "purpose": "Package associated with functional protein biomarkers in single-cell cancer imaging",
+          "purposeSource": "https://jdc.jefferson.edu/ppcbfp/39/",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ]
+    },
+    {
+      "account": "EESI",
+      "accountUrl": "https://github.com/EESI",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Drexel-associated research profile; paper dated 2019",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://researchdiscovery.drexel.edu/esploro/profile/gideon_simpson/output/postedContent?institution=01DRXU_INST"
+      },
+      "accountLinkSource": "https://researchdiscovery.drexel.edu/esploro/profile/gideon_simpson/output/postedContent?institution=01DRXU_INST",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "publicationAuthorized": false,
+      "previouslyKnown": null,
+      "observationMethod": "indexed first-party source text; GitHub page not directly read",
+      "repositories": [
+        {
+          "url": "https://github.com/EESI/themetagenomics",
+          "purpose": "Microbiome analysis applied to inflammatory bowel disease and oral cancer data",
+          "purposeSource": "https://researchdiscovery.drexel.edu/esploro/profile/gideon_simpson/output/postedContent?institution=01DRXU_INST",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ]
+    },
+    {
+      "account": "David-WZhao",
+      "accountUrl": "https://github.com/David-WZhao",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Drexel institutional research repository; author-specific affiliation requires review",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Causal-ARG-A-Causality-guided-Framework-for-Annotating/991021866846304721?institution=01DRXU_INST"
+      },
+      "accountLinkSource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Causal-ARG-A-Causality-guided-Framework-for-Annotating/991021866846304721?institution=01DRXU_INST",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "publicationAuthorized": false,
+      "previouslyKnown": null,
+      "observationMethod": "indexed first-party source text; GitHub page not directly read",
+      "repositories": [
+        {
+          "url": "https://github.com/David-WZhao/CausalARG",
+          "purpose": "Annotation of antibiotic resistance gene properties",
+          "purposeSource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Causal-ARG-A-Causality-guided-Framework-for-Annotating/991021866846304721?institution=01DRXU_INST",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ]
+    },
+    {
+      "account": "ICLab4DL",
+      "accountUrl": "https://github.com/ICLab4DL",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Temple-hosted research manuscript; author-specific Temple affiliation requires review",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://cis.temple.edu/~wu/research/publications/Publication_files/pdf_Revised_manuscript_%20791d9a81-a475-481f-b0d4-4b8e76628630.pdf"
+      },
+      "accountLinkSource": "https://cis.temple.edu/~wu/research/publications/Publication_files/pdf_Revised_manuscript_%20791d9a81-a475-481f-b0d4-4b8e76628630.pdf",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "publicationAuthorized": false,
+      "previouslyKnown": null,
+      "observationMethod": "indexed first-party source text; GitHub page not directly read",
+      "repositories": [
+        {
+          "url": "https://github.com/ICLab4DL/GGN",
+          "purpose": "Experimental EEG network model evaluated using Temple University Hospital EEG data",
+          "purposeSource": "https://cis.temple.edu/~wu/research/publications/Publication_files/pdf_Revised_manuscript_%20791d9a81-a475-481f-b0d4-4b8e76628630.pdf",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ]
+    }
+  ],
+  "accountOnlyLeads": [
+    {
+      "account": "PhucNgo1711",
+      "url": "https://github.com/PhucNgo1711",
+      "person": "Phuc Ngo",
+      "institution": "Drexel University senior project ROADMAP",
+      "affiliationTimeScope": "2017\u20132018 student project; current status unknown",
+      "location": null,
+      "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "projectPurpose": "Brain tumor and lesion imaging software additions",
+      "repositoryUrl": null,
+      "observationMethod": "indexed first-party source text",
+      "publicationAuthorized": false
+    }
+  ],
+  "gaps": [
+    "No new verified outer-county work location; county remains null.",
+    "Source statements link project code; they do not establish personal ownership or local code authorship.",
+    "Additional generic genomics tools and non-health repositories excluded.",
+    "Repository URLs were not independently checked; novelty and prior-corpus overlap are unknown."
+  ]
+}

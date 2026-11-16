@@ -5,7 +5,8 @@ import {parse} from 'parse5';
 import {handleDiscoveryDirectory} from '../src/ingest/discovery-directory-http';
 import {handleDiscoveryDirectoryPage} from '../src/ingest/discovery-directory-page';
 
-const source=()=>JSON.parse(readFileSync('src/content/discovery-directory-catalog.json','utf8'));
+// Frozen GL04 renderer fixtures preserve their historical assertions as the current catalog grows.
+const source=()=>JSON.parse(readFileSync('docs/discovery/go-live/evidence/GL04/generations/cfb33800e554f75836f2fcc2c659b3edd37eb97ac66d7b1efd61f5f71bdb3891.json','utf8')).snapshot;
 const removed=(snapshot:ReturnType<typeof source>,ids:string[]=[])=>({schemaVersion:'discovery-directory-removals-v1',snapshotVersion:snapshot.version,removedIds:ids});
 const request=(path:string,method='GET')=>new Request('https://directory.example'+path,{method});
 const enabled={DISCOVERY_DIRECTORY_ENABLED:'true'};

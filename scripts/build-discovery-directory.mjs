@@ -6,12 +6,12 @@ import { randomBytes } from 'node:crypto';
 import { parsePilotJson } from './build-discovery-pilot.mjs';
 import { validateDirectorySelection, directorySha256 } from '../src/ingest/discovery/directory-review.ts';
 const root = fileURLToPath(new URL('../', import.meta.url));
-export const selectionPath = 'docs/discovery/go-live/evidence/GL04/selection.json';
+export const selectionPath = 'docs/discovery/go-live/evidence/GL05/selection.json';
 export const catalogPath = 'src/content/discovery-directory-catalog.json';
 export const removalsPath = 'src/content/discovery-directory-removals.json';
-export const statePath = 'docs/discovery/go-live/evidence/GL04/generation-state.json';
-export const reportPath = 'docs/discovery/go-live/evidence/GL04/generation-report.json';
-export const generationsPath = 'docs/discovery/go-live/evidence/GL04/generations';
+export const statePath = 'docs/discovery/go-live/evidence/GL05/generation-state.json';
+export const reportPath = 'docs/discovery/go-live/evidence/GL05/generation-report.json';
+export const generationsPath = 'docs/discovery/go-live/evidence/GL05/generations';
 /** Publish exact bytes under their digest without overwriting an existing archive. */
 export async function archiveGeneration(directory, bytes, check = false) {
   const sha256 = await directorySha256(bytes);
@@ -50,7 +50,7 @@ export async function runDirectoryBuild(args) {
     if (!DIRECTORY_REVIEW_AUTHORITY || !DIRECTORY_REVIEW_ARTIFACT || await directorySha256(await loadEvidence(DIRECTORY_REVIEW_ARTIFACT.path)) !== DIRECTORY_REVIEW_ARTIFACT.sha256) throw Error('authority-absent');
     if (DIRECTORY_REVIEW_AUTHORITY.priorState) {
       const prior = DIRECTORY_REVIEW_AUTHORITY.priorState;
-      if (prior.path !== `${generationsPath}/${prior.sha256}.json`) throw Error('mutable-prior-path');
+      if (!/^docs\/discovery\/go-live\/evidence\/GL[0-9]{2}\/generations\/[a-f0-9]{64}\.json$/.test(prior.path) || !prior.path.endsWith(`/${prior.sha256}.json`)) throw Error('mutable-prior-path');
       const entry = await lstat(resolve(root, prior.path));
       if (!entry.isFile() || entry.isSymbolicLink() || await realpath(resolve(root, prior.path)) !== resolve(root, prior.path)) throw Error('mutable-prior-path');
     }

@@ -56,6 +56,25 @@ function transform(value: unknown, kind: z.infer<typeof binding>['transform']): 
   const parts = z.array(z.number().int()).min(1).max(3).parse(value);
   return { precision: ['year', 'month', 'day'][parts.length - 1], value: parts.map((n, i) => String(n).padStart(i ? 2 : 4, '0')).join('-') };
 }
+// Only these retained GL05 captures are qualified here. A selection's own hash
+// cannot establish that an arbitrary provider response was actually observed.
+const gl05Captures: Record<string, { provider: 'github' | 'crossref'; id: string; body: string; receipt: string; url: string }> = {
+  'github-sleepboost': { provider: 'github', id: '617168725', body: '66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56', receipt: 'fd5942605aa036f2b046ddab44bc3f4d35d736229dd55419f8e90194391d5496', url: 'https://api.github.com/repos/akibzaman/SleepBoost' },
+  'github-openpbta': { provider: 'github', id: '192607622', body: '168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867', receipt: '880d03353a4a004d1fa12f484044816f3fdc93a269a7ae2bae4bf5db9049d6fb', url: 'https://api.github.com/repos/AlexsLemonade/OpenPBTA-analysis' },
+  'crossref-sleepboost': { provider: 'crossref', id: '10.1007/s11517-024-03096-x', body: '7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42', receipt: 'c874ed334895c833b3d63bc29bd947058ee11fe2fcbc2933c3c663b3c045c55f', url: 'https://api.crossref.org/v1/works?filter=doi%3A10.1007%2Fs11517-024-03096-x&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense' },
+  'crossref-openpbta': { provider: 'crossref', id: '10.1016/j.xgen.2023.100340', body: '87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d', receipt: 'c756e1aedbfe7f9fa050848f4185a467b508df46fece0f489985ffdaa4d9f41a', url: 'https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.xgen.2023.100340&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense' },
+};
+const gl05Base = 'docs/discovery/qualification/evidence/pilot-counties-20261116/';
+async function qualifyGl05Capture(meta: z.infer<typeof evidence>, work: z.infer<typeof DirectoryWorkSchema>, loadBytes: (path: string) => Promise<Uint8Array>) {
+  const match = /^docs\/discovery\/qualification\/evidence\/pilot-counties-20261116\/(github-sleepboost|github-openpbta|crossref-sleepboost|crossref-openpbta)\/body\.json$/.exec(meta.path);
+  if (!match) throw Error('gl05-unqualified-capture');
+  const capture = gl05Captures[match[1]];
+  if (meta.kind !== 'native-json' || meta.sha256 !== capture.body || meta.sourceUrl !== capture.url || meta.method !== 'provider-metadata' || work.nativeIdentity?.provider !== capture.provider || work.nativeIdentity.nativeId.toLowerCase() !== capture.id) throw Error('gl05-capture-subject');
+  const bytes = await loadBytes(`${gl05Base}${match[1]}/observation.json`);
+  if (await directorySha256(bytes) !== capture.receipt) throw Error('gl05-receipt-hash');
+  const receipt: unknown = parseEvidenceJson(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+  if (at(receipt, '/provider') !== capture.provider || at(receipt, '/url') !== capture.url || at(receipt, '/body_sha256') !== capture.body || at(receipt, '/status') !== 200 || at(receipt, '/response_complete') !== true || at(receipt, '/started_at_utc') !== undefined && !(at(receipt, '/started_at_utc') as string).startsWith(meta.observedDate)) throw Error('gl05-receipt');
+}
 /** trustedContext is supplied by reviewed code, never by the selection itself. */
 export async function validateDirectorySelection(input: unknown, trustedContext: DirectoryTrustedContext, loadBytes: (path: string) => Promise<Uint8Array>) {
   if (!trustedContext || !(trustedContext.priorState === null || typeof trustedContext.priorState === 'object' && trustedContext.priorState !== null && hash.safeParse(trustedContext.priorState.sha256).success && typeof trustedContext.priorState.path === 'string') || !hash.safeParse(trustedContext.selectionSha256).success || !trustedContext.operator || !trustedContext.reviewer || trustedContext.operator === trustedContext.reviewer || await directorySha256(canonicalDirectoryJson(input)) !== trustedContext.selectionSha256) throw Error('untrusted-selection');
@@ -146,7 +165,18 @@ export async function validateDirectorySelection(input: unknown, trustedContext:
         if (!m || work.nativeIdentity?.provider !== 'github' || at(source.body, '/receipt/id') !== at(source.body, '/packet/receiptId') || at(source.body, '/receipt/manifestSha256') !== at(source.body, '/packet/manifestSha256') || at(source.body, '/receipt/qualificationSha256') !== at(source.body, '/packet/qualificationSha256') || at(source.body, '/receipt/requestSha256') !== at(source.body, '/packet/requestSha256') || at(source.body, '/receipt/parserSha256') !== at(source.body, '/packet/parserSha256') || b.nativePointer !== expected[m[2]] || at(source.body, `/packet/facts/${m[1]}/pointers/${m[2] === 'ownerType' ? 'ownerType' : m[2]}`) !== b.nativePointer || at(source.body, '/receipt/status') !== 'received' || at(source.body, '/packet/publicationAuthorized') !== false) throw Error('gl03-binding');
       } else {
         if (b.nativePointer !== null) throw Error('unexpected-native-pointer');
+        const gl05Native = source.meta.kind === 'native-json' && /^docs\/discovery\/qualification\/evidence\/pilot-counties-20261116\/(?:github|crossref)-(?:sleepboost|openpbta)\/body\.json$/.test(source.meta.path);
+        if (source.meta.kind === 'native-json' && Object.values(gl05Captures).some(c => c.provider === work.nativeIdentity?.provider && c.id === work.nativeIdentity.nativeId.toLowerCase()) && !gl05Native) throw Error('gl05-unqualified-capture');
+        if (gl05Native) {
+          await qualifyGl05Capture(source.meta, work, loadBytes);
+          if (work.nativeIdentity?.provider === 'github') {
+            const paths: Record<string, [string, string]> = { '/nativeIdentity/nativeId': ['/id', 'number-string'], '/title/value': ['/full_name', 'identity'], '/url/value': ['/html_url', 'identity'], '/description/value': ['/description', 'identity'], '/owner/name': ['/owner/login', 'identity'], '/owner/kind': ['/owner/type', 'identity'], '/owner/nativeId': ['/owner/id', 'number-string'] };
+            const expected = paths[b.field];
+            if (!expected || b.pointer !== expected[0] || b.transform !== expected[1]) throw Error('gl05-native-field');
+          }
+        }
         if (source.meta.kind === 'native-json' && ['/nativeIdentity/nativeId', '/title/value', '/url/value', '/sourceDate/value'].includes(b.field)) {
+          if (work.nativeIdentity?.provider === 'github' && gl05Native) continue;
           if (work.nativeIdentity?.provider !== 'crossref') throw Error('unqualified-native-provider');
           const patterns: Record<string, RegExp> = { '/nativeIdentity/nativeId': /^\/message\/items\/(0|[1-9]\d*)\/DOI$/, '/title/value': /^\/message\/items\/(0|[1-9]\d*)\/title\/0$/, '/url/value': /^\/message\/items\/(0|[1-9]\d*)\/URL$/, '/sourceDate/value': /^\/message\/items\/(0|[1-9]\d*)\/published\/date-parts\/0$/ };
           if (!patterns[b.field].test(b.pointer)) throw Error('native-semantic-pointer');
@@ -169,9 +199,52 @@ export async function validateDirectorySelection(input: unknown, trustedContext:
     const required = ['/title/value', '/url/value', ...(work.nativeIdentity ? ['/nativeIdentity/nativeId'] : []), ...(work.description ? ['/description/value'] : []), ...(work.owner ? ['/owner/name', '/owner/kind', ...(work.owner.nativeId ? ['/owner/nativeId'] : [])] : []), ...(work.sourceDate ? ['/sourceDate/value'] : [])];
     if (required.some(f => !fields.has(f))) throw Error('missing-native-binding');
     for (let i = 0; i < work.claims.length; i++) if (!entry.bindings.some(b => b.field === `/claims/${i}` && b.transform === 'reviewed-claim' && work.claims[i].evidenceIds.includes(b.evidenceId))) throw Error('missing-claim-binding');
+    if (work.evidence.some(e => sources.get(e.id)?.meta.path === 'docs/discovery/go-live/evidence/GL05/source-observations.json')) {
+      const claimPointers: Record<string, Record<string, string>> = {
+        'github:760662846': { 'medical-imaging': '/observations/3/facts/medicalImaging' },
+        'crossref:10.1038/s41592-024-02503-3': { 'machine-learning': '/observations/2/facts/machineLearning', 'biomedical-data': '/observations/2/facts/biomedicalData' },
+        'github:617168725': { sleep: '/observations/6/facts/purpose', 'machine-learning': '/observations/6/facts/purpose' },
+        'crossref:10.1007/s11517-024-03096-x': { sleep: '/observations/6/facts/purpose', 'machine-learning': '/observations/6/facts/purpose' },
+        'github:192607622': { 'biomedical-data': '/observations/7/facts/purpose' },
+        'crossref:10.1016/j.xgen.2023.100340': { 'biomedical-data': '/observations/7/facts/purpose' },
+      };
+      const subject = `${work.nativeIdentity?.provider}:${work.nativeIdentity?.nativeId.toLowerCase()}`;
+      for (const claim of work.claims) if (claim.kind === 'topic') {
+        const expected = claimPointers[subject]?.[claim.topic];
+        const qualified = work.evidence.some(e => claim.evidenceIds.includes(e.id) && e.pointer === expected && sources.get(e.id)?.meta.path === 'docs/discovery/go-live/evidence/GL05/source-observations.json' && sources.get(e.id)?.meta.sha256 === '7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0');
+        if (!expected || !qualified) throw Error('gl05-topic-subject');
+      }
+      if (subject.includes('617168725') || subject.includes('03096-x') || subject.includes('192607622') || subject.includes('100340')) for (const claim of work.claims) if (claim.kind === 'health-purpose') {
+        const expected = subject.includes('617168725') || subject.includes('03096-x') ? '/observations/6/facts/purpose' : '/observations/7/facts/purpose';
+        const qualified = work.evidence.find(e => claim.evidenceIds.includes(e.id) && e.pointer === expected && sources.get(e.id)?.meta.sha256 === '7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0');
+        if (!qualified || at(sources.get(qualified.id)!.body, expected) !== claim.text) throw Error('gl05-purpose-subject');
+      }
+    }
     // The qualified institutional-project adapter requires two independently scoped roles:
     // a project page linking the exact repository and a dated center-location observation.
     for (const claim of work.claims) if (claim.kind === 'regional-connection' && claim.subjectRole === 'project-association') {
+      if (work.nativeIdentity?.provider === 'github' && ['617168725', '192607622'].includes(work.nativeIdentity.nativeId)) {
+        const sleep = work.nativeIdentity.nativeId === '617168725', projectIndex = sleep ? 6 : 7, locationIndex = sleep ? 6 : 8, edgeIndex = sleep ? 1 : 2;
+        const project = work.evidence.find(e => claim.affiliationEvidenceIds.includes(e.id) && e.pointer === `/observations/${projectIndex}/facts/purpose`);
+        const location = work.evidence.find(e => claim.geographyEvidenceIds.includes(e.id) && e.pointer === `/observations/${locationIndex}/facts/municipality`);
+        const edge = work.evidence.find(e => claim.affiliationEvidenceIds.includes(e.id) && e.pointer === `/explicit_repository_publication_edges/${edgeIndex}`);
+        if (!project || !location || !edge || !work.relations.some(r => r.predicate === 'repository-cites-work' && r.evidenceIds.includes(edge.id))) throw Error('gl05-project-roles');
+        const p = sources.get(project.id)!, l = sources.get(location.id)!, es = sources.get(edge.id)!;
+        const fixed = '7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0';
+        if (p.meta.path !== 'docs/discovery/go-live/evidence/GL05/source-observations.json' || l.meta.path !== p.meta.path || p.meta.sha256 !== fixed || l.meta.sha256 !== fixed || es.meta.path !== `${gl05Base}connector-observations.json` || es.meta.sha256 !== '37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4' || at(p.body, `/observations/${projectIndex}/facts/project`) !== claim.subjectLabel || at(p.body, `/observations/${projectIndex}/facts/institution`) !== claim.institution || at(l.body, `/observations/${locationIndex}/facts/institution`) !== claim.institution || at(l.body, `/observations/${locationIndex}/facts/municipality`) !== claim.municipality || at(l.body, `/observations/${locationIndex}/facts/state`) !== claim.state || claim.regionalBasis !== 'municipality' || claim.county !== null || claim.campus !== null || claim.asOf.precision !== (sleep ? 'day' : 'month') || claim.asOf.value !== at(p.body, `/observations/${projectIndex}/facts/${sleep ? 'date' : 'publicationMonth'}`) || claim.scope !== 'historical') throw Error('gl05-project-context');
+        if (sleep) {
+          const bytes = await loadBytes(`${gl05Base}regional-contexts.json`);
+          if (await directorySha256(bytes) !== '440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c') throw Error('gl05-project-location');
+          const context: unknown = parseEvidenceJson(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+          if (at(context, '/contexts/1/recordId') !== 'crossref:10.1007/s11517-024-03096-x' || at(context, '/contexts/1/institution') !== claim.institution || at(context, '/contexts/1/municipality') !== claim.municipality) throw Error('gl05-project-location');
+        } else {
+          const bytes = await loadBytes('docs/discovery/qualification/evidence/ror-chop-20261115/body.json');
+          if (await directorySha256(bytes) !== 'd8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893') throw Error('gl05-project-location');
+          const ror: unknown = parseEvidenceJson(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+          if (at(ror, '/locations/0/geonames_details/name') !== claim.municipality || at(ror, '/locations/0/geonames_details/country_subdivision_code') !== claim.state) throw Error('gl05-project-location');
+        }
+        continue;
+      }
       const project = work.evidence.find(e => claim.affiliationEvidenceIds.includes(e.id) && /^\/observations\/(0|[1-9]\d*)\/facts\/purpose$/.test(e.pointer));
       const location = work.evidence.find(e => claim.geographyEvidenceIds.includes(e.id) && /^\/observations\/(0|[1-9]\d*)\/facts\/municipality$/.test(e.pointer));
       if (!project || !location || work.nativeIdentity?.provider !== 'github') throw Error('project-evidence-roles');
@@ -187,6 +260,10 @@ export async function validateDirectorySelection(input: unknown, trustedContext:
       if (!regional || work.nativeIdentity?.provider !== 'crossref' || !work.sourceDate) throw Error('author-context');
       const src = sources.get(regional.id)!; const base = regional.pointer.replace(/\/institution$/, '');
       const context = at(src.body, base) as Record<string, unknown>;
+      if (['10.1007/s11517-024-03096-x', '10.1016/j.xgen.2023.100340'].includes(work.nativeIdentity.nativeId.toLowerCase())) {
+        const index = work.nativeIdentity.nativeId.toLowerCase().endsWith('03096-x') ? 1 : 2;
+        if (src.meta.path !== `${gl05Base}regional-contexts.json` || src.meta.sha256 !== '440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c' || regional.pointer !== `/contexts/${index}/institution` || claim.state !== 'NJ' || claim.scope !== 'historical' || claim.asOf.value !== work.sourceDate.value.value.slice(0, 4)) throw Error('gl05-author-context');
+      }
       const authors = z.array(z.object({ sourceIndex: z.number().int(), name: z.string() }).passthrough()).parse(context.authors);
       const doi = work.nativeIdentity.nativeId.replace(/^https:\/\/doi\.org\//i, '').toLowerCase();
       const identityBinding = entry.bindings.find(b => b.field === '/nativeIdentity/nativeId')!;
@@ -216,7 +293,20 @@ export async function validateDirectorySelection(input: unknown, trustedContext:
     if (!other) throw Error('relation-unreviewed');
     if (!entry) continue;
     const b = entry.bindings.find(b => b.field === `/relations/${i}` && b.transform === 'reviewed-relation')!;
-    const observed = at(sources.get(b.evidenceId)!.body, b.pointer);
+    const relationSource = sources.get(b.evidenceId)!;
+    const observed = at(relationSource.body, b.pointer);
+    const pair = ({
+      '617168725': { index: 1, doi: '10.1007/s11517-024-03096-x', alias: 'akibzaman/SleepBoost' },
+      '192607622': { index: 2, doi: '10.1016/j.xgen.2023.100340', alias: 'AlexsLemonade/OpenPBTA-analysis' },
+    } as Record<string, { index: number; doi: string; alias: string }>)[work.nativeIdentity?.nativeId ?? ''];
+    if (pair) {
+      const bytes = await loadBytes(`${gl05Base}connector-observations.json`);
+      if (await directorySha256(bytes) !== '37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4') throw Error('gl05-relation-source');
+      const connector: unknown = parseEvidenceJson(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+      const base = `/file_observation_batch/files/${pair.index}`, edge = `/explicit_repository_publication_edges/${pair.index}`;
+      if (relationSource.meta.path !== `${gl05Base}connector-observations.json` || relationSource.meta.kind !== 'curated-observation' || relationSource.meta.method !== 'reviewed-observation' || relationSource.meta.observedDate !== '2026-11-16' || b.pointer !== edge || relationSource.meta.sha256 !== '37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4' || work.nativeIdentity?.provider !== 'github' || work.title.value !== pair.alias || other.nativeIdentity?.provider !== 'crossref' || other.nativeIdentity.nativeId.toLowerCase() !== pair.doi || relation.predicate !== 'repository-cites-work' || at(connector, `${base}/permalink`) !== relationSource.meta.sourceUrl || at(connector, `${base}/repository`) !== pair.alias || at(connector, `${base}/tool_success`) !== true || at(connector, `${base}/doi_mentions/0`) !== pair.doi || at(connector, `${edge}/repository`) !== pair.alias || at(connector, `${edge}/doi`) !== pair.doi || at(connector, `${edge}/commit`) !== at(connector, `${base}/commit`) || at(connector, `${edge}/paths/0`) !== at(connector, `${base}/path`)) throw Error('gl05-relation-subject');
+    }
+    if (pair) continue;
     const expected = { fromId: work.id, toId: other.id, predicate: relation.predicate, fromNativeIdentity: work.nativeIdentity && { provider: work.nativeIdentity.provider, namespace: work.nativeIdentity.namespace, nativeId: work.nativeIdentity.nativeId }, toNativeIdentity: other.nativeIdentity && { provider: other.nativeIdentity.provider, namespace: other.nativeIdentity.namespace, nativeId: other.nativeIdentity.nativeId } };
     if (canonicalDirectoryJson(observed) !== canonicalDirectoryJson(expected)) throw Error('relation-subject');
   }

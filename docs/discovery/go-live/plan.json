@@ -1,7 +1,7 @@
 {
   "id": "TVD-GO-LIVE-1",
   "decision": "EX32",
-  "revision": 4,
+  "revision": 5,
   "status": "implementation_in_progress",
   "source_baseline": "60d6bd3aaba90a4970821f41fb2ca0329cbf8d20",
   "authority": "On 16 November 2026 the user authorized implementation beginning GL00 and following accepted dependencies, Terra implementation with independent Sol review, commits and PR updates, and deployment as appropriate. Deployment authority covers the reviewed existing-site GL11 release when its actual readiness conditions are met; it does not accept unimplemented work, permit unrelated infrastructure changes, new paid services or outreach.",
@@ -286,7 +286,7 @@
       "goals": [
         "G02"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "work": "work-packages.md#gl05--make-ordinary-search-and-browsing-useful",
       "acceptance_ids": [
         "GL05-A1",
@@ -479,8 +479,8 @@
   "implementation_baseline": "6ed650156100104e3f00e756e3c3094027c130fb",
   "execution_decision": "EX33",
   "deployment_status": "not_performed_readiness_pending",
-  "next_ready_packages": [
-    "GL03"
-  ],
-  "active_packages": []
+  "next_ready_packages": [],
+  "active_packages": [
+    "GL05"
+  ]
 }

@@ -1,0 +1,312 @@
+{
+  "title": "NJ clinical, imaging and computational-health account leads supplement",
+  "observedDate": "2026-11-16",
+  "status": "private lead-only evidence; not approved health, admission or publication",
+  "publicationAuthorized": false,
+  "method": "At most 20 additional primary sources in a bounded web search. Indexed primary source snippets, no retained body or native GitHub verification. Separate author affiliations, repository linkage and geographic scope; no author-to-owner inference. Source dates per repository and checked date separate.",
+  "accounts": [
+    {
+      "account": "MLBC-lab",
+      "accountUrl": "https://github.com/MLBC-lab",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Rutgers University\u2013Camden research collaborators",
+      "affiliationTimeScope": "2023\u20132026 publications, depending on project; no current employment inferred",
+      "region": {
+        "municipality": "Camden",
+        "county": "Camden",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://camden.rutgers.edu/visit"
+      },
+      "accountLinkSource": "https://research-management.mq.edu.au/ws/portalfiles/portal/333359848/333147144.pdf",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "evidenceAccess": "primary source search index; no GitHub page verification",
+      "sourceObservedDate": "2026-11-16",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/MLBC-lab/iACP-RF",
+          "purpose": "Predict anticancer peptides",
+          "purposeSource": "https://research-management.mq.edu.au/ws/portalfiles/portal/333359848/333147144.pdf",
+          "githubPageChecked": false,
+          "note": "The study lists Iman Dehzangi with Rutgers University, Camden; coauthor is not established as account owner. Source date 2023; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2023",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        },
+        {
+          "url": "https://github.com/MLBC-lab/ExShall-CNN",
+          "purpose": "Explainable medical image segmentation",
+          "purposeSource": "https://www.preprints.org/manuscript/202410.1667",
+          "githubPageChecked": false,
+          "note": "The preprint links the repository; https://www.researchwithrutgers.org/en/publications/exshall-cnn-an-explainable-shallow-convolutional-neural-network-f/ identifies Rutgers Camden Computer Science for the 2025 publication. Source date 2024 preprint; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2024 preprint",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        },
+        {
+          "url": "https://github.com/MLBC-lab/GenReP",
+          "purpose": "Predict TP53 gene responses to pharmaceutical compounds",
+          "purposeSource": "https://www.mdpi.com/1420-3049/31/4/739",
+          "githubPageChecked": false,
+          "note": "The article links repository and Camden-hosted data; https://pubmed.ncbi.nlm.nih.gov/41752517/ lists Rutgers Camden Center for Computational and Integrative Biology. Source date 2026; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2026",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        },
+        {
+          "url": "https://github.com/MLBC-lab/LungClust",
+          "purpose": "Integrate lung cancer gene expression and mutations to identify molecular subtypes",
+          "purposeSource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13371118/",
+          "githubPageChecked": false,
+          "note": "Study lists a Rutgers Camden Computer Science affiliation and links the repository; Rutgers New Brunswick affiliation is separate. Source date 2026; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2026",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        }
+      ]
+    },
+    {
+      "account": "chenyongrowan",
+      "accountUrl": "https://github.com/chenyongrowan",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Rowan University Department of Biological and Biomedical Sciences research",
+      "affiliationTimeScope": "2023 paper; person currently employed and account owner unknown",
+      "region": {
+        "municipality": "Glassboro",
+        "county": "Gloucester",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://www.rowan.edu/about/visiting/west.pdf"
+      },
+      "accountLinkSource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10488287/",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "evidenceAccess": "primary source search index; no GitHub page verification",
+      "sourceObservedDate": "2026-11-16",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/chenyongrowan/scTIGER",
+          "purpose": "Infer case versus control single-cell gene regulatory networks, including prostate cancer",
+          "purposeSource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10488287/",
+          "githubPageChecked": false,
+          "note": "Study links repository. Rowan research record https://rdw.rowan.edu/csm_facpub/312/ identifies article, and https://rdw.rowan.edu/etd/3155/ identifies Madison Dautle at Rowan and Yong Chen as advisor; neither establishes account ownership. Source date 2023; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2023",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        }
+      ]
+    },
+    {
+      "account": "Beemd",
+      "accountUrl": "https://github.com/Beemd",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Rowan University Electrical and Computer Engineering research",
+      "affiliationTimeScope": "2022 article; current roles and account ownership unknown",
+      "region": {
+        "municipality": "Glassboro",
+        "county": "Gloucester",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://www.rowan.edu/about/visiting/west.pdf"
+      },
+      "accountLinkSource": "https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2022.919046/full",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "evidenceAccess": "primary source search index; no GitHub page verification",
+      "sourceObservedDate": "2026-11-16",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/Beemd/Failure-Detection_MedMNIST",
+          "purpose": "Detect failures and quantify uncertainty in deep neural networks for medical imaging",
+          "purposeSource": "https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2022.919046/full",
+          "githubPageChecked": false,
+          "note": "The article identifies Rowan Glassboro Electrical and Computer Engineering authors and links code; other coauthors have other institutions. Source date 2022; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2022",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        }
+      ]
+    },
+    {
+      "account": "faisalahm3d",
+      "accountUrl": "https://github.com/faisalahm3d",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Rutgers University\u2013Camden research collaborators",
+      "affiliationTimeScope": "2025 publication; account owner and current roles unknown",
+      "region": {
+        "municipality": "Camden",
+        "county": "Camden",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://camden.rutgers.edu/visit"
+      },
+      "accountLinkSource": "https://onlinelibrary.wiley.com/doi/pdfdirect/10.1002/prot.26734",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "evidenceAccess": "primary source search index; no GitHub page verification",
+      "sourceObservedDate": "2026-11-16",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/faisalahm3d/DeepPhoPred",
+          "purpose": "Predict microbial phosphorylation; biomedical research lead requiring subject review",
+          "purposeSource": "https://onlinelibrary.wiley.com/doi/pdfdirect/10.1002/prot.26734",
+          "githubPageChecked": false,
+          "note": "Paper links code and lists Rutgers Camden Computer Science and Center for Computational and Integrative Biology affiliations among collaborating institutions; ownership unresolved. Source date 2025; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2025",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        }
+      ]
+    },
+    {
+      "account": "abelavit",
+      "accountUrl": "https://github.com/abelavit",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Rutgers University\u2013Camden research collaborators",
+      "affiliationTimeScope": "2023 preprint; account owner and current roles unknown",
+      "region": {
+        "municipality": "Camden",
+        "county": "Camden",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://camden.rutgers.edu/visit"
+      },
+      "accountLinkSource": "https://assets-eu.researchsquare.com/files/rs-3334706/v1_covered_b4741331-1b41-4bb9-a3b5-0af7377048ad.pdf?c=1701702728",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "evidenceAccess": "primary source search index; no GitHub page verification",
+      "sourceObservedDate": "2026-11-16",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/abelavit/PepCNN",
+          "purpose": "Predict protein\u2013peptide binding with possible cancer and viral infection research relevance",
+          "purposeSource": "https://assets-eu.researchsquare.com/files/rs-3334706/v1_covered_b4741331-1b41-4bb9-a3b5-0af7377048ad.pdf?c=1701702728",
+          "githubPageChecked": false,
+          "note": "Preprint names Iman Dehzangi with Rutgers Camden and links this code. This is an author-project relationship, not proof of account identity. Source date 2023 preprint; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2023 preprint",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        }
+      ]
+    },
+    {
+      "account": "raphael-group",
+      "accountUrl": "https://github.com/raphael-group",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Princeton University research collaborators",
+      "affiliationTimeScope": "2021\u20132025 source dates; current roles and account ownership unknown",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://discovery.ucl.ac.uk/id/eprint/10138101/1/SatasZaccaria_CellSystems_2021.pdf",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "evidenceAccess": "primary source search index; no GitHub page verification",
+      "sourceObservedDate": "2026-11-16",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/raphael-group/decifer",
+          "purpose": "Tumor heterogeneity and evolutionary analysis, including prostate cancer",
+          "purposeSource": "https://discovery.ucl.ac.uk/id/eprint/10138101/1/SatasZaccaria_CellSystems_2021.pdf",
+          "githubPageChecked": false,
+          "note": "Study reports Princeton Computer Science affiliations, links code, and explicitly records some authors present elsewhere. Source date 2021; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2021",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        },
+        {
+          "url": "https://github.com/raphael-group/siid",
+          "purpose": "Integrate spatial transcriptomics, applied to breast and colon cancer tissue",
+          "purposeSource": "https://rcastoragev2.blob.core.windows.net/af70ad98b0e49eabc1a0981da565c80c/nihpp-2025.02.17.638195v1.PMC11870578.pdf",
+          "githubPageChecked": false,
+          "note": "Preprint lists Princeton CS and Ludwig Princeton Branch and links code. Source date 2025 preprint; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2025 preprint",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        },
+        {
+          "url": "https://github.com/raphael-group/GASTON-Mix",
+          "purpose": "Spatial gene expression gradients and domains; tumor microenvironment is an application area",
+          "purposeSource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12261403/",
+          "githubPageChecked": false,
+          "note": "Article links code and discusses brain and tumor microenvironment; verify project affiliation in direct source review. Source date 2025; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2025",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        },
+        {
+          "url": "https://github.com/raphael-group/GASTON",
+          "purpose": "Spatial gene expression modeling applied to breast and colorectal cancer tissue",
+          "purposeSource": "https://www.nature.com/articles/s41592-024-02503-3",
+          "githubPageChecked": false,
+          "note": "Article links code and describes breast and colorectal cancer datasets and Princeton Ludwig funding; previously known lead, not novel discovery. Source date 2025; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2025",
+          "discoveredThisPass": false,
+          "publicationAuthorized": false
+        },
+        {
+          "url": "https://github.com/raphael-group/paste",
+          "purpose": "Align and integrate spatial transcriptomics tissue data",
+          "purposeSource": "https://www.nature.com/articles/s41592-022-01459-6",
+          "githubPageChecked": false,
+          "note": "Publication links code; health relevance is tissue genomics method, not proof of clinical use. Princeton research relationship requires direct review. Source date 2022; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2022",
+          "discoveredThisPass": true,
+          "publicationAuthorized": false
+        }
+      ]
+    },
+    {
+      "account": "akibzaman",
+      "accountUrl": "https://github.com/akibzaman",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Rutgers University\u2013Camden research collaborators",
+      "affiliationTimeScope": "2024 institutional news reports research-era association",
+      "region": {
+        "municipality": "Camden",
+        "county": "Camden",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://camden.rutgers.edu/visit"
+      },
+      "accountLinkSource": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "evidenceAccess": "primary source search index; no GitHub page verification",
+      "sourceObservedDate": "2026-11-16",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/akibzaman/SleepBoost",
+          "purpose": "Automatic sleep stage classification",
+          "purposeSource": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+          "githubPageChecked": false,
+          "note": "Rutgers\u2013Camden names Iman Dehzangi as researcher and links code. Previously retained candidate; author account ownership unknown. Source date 2024; indexed primary observation 2026-11-16. No source body retained.",
+          "sourceDate": "2024",
+          "discoveredThisPass": false,
+          "publicationAuthorized": false
+        }
+      ]
+    }
+  ],
+  "accountOnlyLeads": [],
+  "gaps": [
+    {
+      "county": "Burlington",
+      "status": "No evidenced project-to-account result in this bounded follow-up; prior Mount Laurel seed county remains unresolved."
+    },
+    {
+      "county": "Camden",
+      "status": "Rutgers\u2013Camden collaborative research found; no Cooper-linked GitHub project established."
+    },
+    {
+      "county": "Mercer",
+      "status": "TCNJ assistive-technology repository not established; remaining Princeton leads may be enabling research rather than clinical use."
+    }
+  ],
+  "failures": []
+}

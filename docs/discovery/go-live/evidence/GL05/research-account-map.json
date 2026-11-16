@@ -1,0 +1,2953 @@
+{
+  "schemaVersion": 1,
+  "visibility": "private-research-leads",
+  "publicationAuthorized": false,
+  "inputSources": [
+    {
+      "source": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+      "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836"
+    },
+    {
+      "source": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+      "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe"
+    },
+    {
+      "source": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json",
+      "sha256": "1fa6d08b810260df7f5927c374a4ee8fd930d806e539077e99e3e92e7f34d59b"
+    },
+    {
+      "source": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json",
+      "sha256": "2f4b017d20bbb6821fd45f11d147b8cf0a495adc7d066f96336ad8fb5d00fdff"
+    },
+    {
+      "source": "docs/discovery/go-live/evidence/GL05/root-account-leads.json",
+      "sha256": "86e5d27d76d12bb79663fd9c575820d5439d335e0aad6ebf41088834a18adbbe"
+    }
+  ],
+  "counts": {
+    "accountHandles": 41,
+    "repositories": 47,
+    "personOccurrences": 11,
+    "distinctPeople": null,
+    "regionalCoverage": null
+  },
+  "accounts": [
+    {
+      "key": "abelavit",
+      "url": "https://github.com/abelavit",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/4"
+      ],
+      "repositoryKeys": [
+        "abelavit/pepcnn"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "akibzaman",
+      "url": "https://github.com/akibzaman",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/6"
+      ],
+      "repositoryKeys": [
+        "akibzaman/sleepboost"
+      ],
+      "reconciliation": {
+        "status": "matched-existing-url",
+        "evidence": [
+          "docs/discovery/go-live/execution/GL02-known-project-diagnostic.json#/cases/0/url",
+          "docs/discovery/go-live/execution/GL02-source-inventory.json#/account_leads/0/url",
+          "src/content/discovery-pilot-catalog.json#/records/23/relatedLinks/0/evidence/url",
+          "src/content/discovery-pilot-catalog.json#/records/23/url"
+        ],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "banaiek",
+      "url": "https://github.com/banaiek",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/9"
+      ],
+      "repositoryKeys": [
+        "banaiek/ephaptic_coupling"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "beemd",
+      "url": "https://github.com/beemd",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/2"
+      ],
+      "repositoryKeys": [
+        "beemd/failure-detection_medmnist"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "bioccjw",
+      "url": "https://github.com/bioccjw",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/6"
+      ],
+      "repositoryKeys": [
+        "bioccjw/ctpathway"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "braincogs",
+      "url": "https://github.com/braincogs",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/6"
+      ],
+      "repositoryKeys": [
+        "braincogs/brain_atlas_toolkit"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "brody-lab",
+      "url": "https://github.com/brody-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/10"
+      ],
+      "repositoryKeys": [
+        "brody-lab/decision_dynamics_commitment"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "chenyongrowan",
+      "url": "https://github.com/chenyongrowan",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/1"
+      ],
+      "repositoryKeys": [
+        "chenyongrowan/sctiger"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "clear-ec",
+      "url": "https://github.com/clear-ec",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/3"
+      ],
+      "repositoryKeys": [
+        "clear-ec/clear-ec"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "david-wzhao",
+      "url": "https://github.com/david-wzhao",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/4"
+      ],
+      "repositoryKeys": [
+        "david-wzhao/causalarg"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "deepak8694",
+      "url": "https://github.com/deepak8694",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/5"
+      ],
+      "repositoryKeys": [],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "dsin85691",
+      "url": "https://github.com/dsin85691",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/7"
+      ],
+      "repositoryKeys": [
+        "dsin85691/ssba_for_counterfactuals"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "dvs-lab",
+      "url": "https://github.com/dvs-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/0"
+      ],
+      "repositoryKeys": [],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "dynamicbrainmind",
+      "url": "https://github.com/dynamicbrainmind",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/1"
+      ],
+      "repositoryKeys": [],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "eesi",
+      "url": "https://github.com/eesi",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/3"
+      ],
+      "repositoryKeys": [
+        "eesi/themetagenomics"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "faisalahm3d",
+      "url": "https://github.com/faisalahm3d",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/3"
+      ],
+      "repositoryKeys": [
+        "faisalahm3d/deepphopred"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "felixagbavor",
+      "url": "https://github.com/felixagbavor",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/8"
+      ],
+      "repositoryKeys": [
+        "felixagbavor/bmes_550"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "hna6300",
+      "url": "https://github.com/hna6300",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/4"
+      ],
+      "repositoryKeys": [],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "iclab4dl",
+      "url": "https://github.com/iclab4dl",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/5"
+      ],
+      "repositoryKeys": [
+        "iclab4dl/ggn"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "leiferlab",
+      "url": "https://github.com/leiferlab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5"
+      ],
+      "repositoryKeys": [
+        "leiferlab/pumpprobe",
+        "leiferlab/wormbrain",
+        "leiferlab/wormdatamodel",
+        "leiferlab/wormneuronsegmentation-c"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "malikyousef",
+      "url": "https://github.com/malikyousef",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/0"
+      ],
+      "repositoryKeys": [
+        "malikyousef/mircorrnet"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "marbd11",
+      "url": "https://github.com/marbd11",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/3"
+      ],
+      "repositoryKeys": [
+        "marbd11/ctscan-stroke"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "markymarkymark",
+      "url": "https://github.com/markymarkymark",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/1"
+      ],
+      "repositoryKeys": [
+        "markymarkymark/imscribe"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "mlbc-lab",
+      "url": "https://github.com/mlbc-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0",
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/9"
+      ],
+      "repositoryKeys": [
+        "mlbc-lab/exshall-cnn",
+        "mlbc-lab/genrep",
+        "mlbc-lab/iacp-rf",
+        "mlbc-lab/lungclust"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "mldataanalytics",
+      "url": "https://github.com/mldataanalytics",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/2"
+      ],
+      "repositoryKeys": [
+        "mldataanalytics/pnet"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "mrcalderon",
+      "url": "https://github.com/mrcalderon",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/6"
+      ],
+      "repositoryKeys": [],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "murthylab",
+      "url": "https://github.com/murthylab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0"
+      ],
+      "repositoryKeys": [
+        "murthylab/deepflytrack",
+        "murthylab/flycaiman",
+        "murthylab/glmhmm",
+        "murthylab/leap"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "newilson",
+      "url": "https://github.com/newilson",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/0"
+      ],
+      "repositoryKeys": [
+        "newilson/exercisecestv2"
+      ],
+      "reconciliation": {
+        "status": "matched-existing-url",
+        "evidence": [
+          "docs/discovery/go-live/execution/GL02-exploration-manifest.json#/queries/7/expected_url",
+          "docs/discovery/go-live/execution/GL02-known-project-diagnostic.json#/cases/6/url",
+          "docs/discovery/go-live/execution/GL02-source-inventory.json#/additional_leads/2/project_url"
+        ],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "nickabattista",
+      "url": "https://github.com/nickabattista",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/2"
+      ],
+      "repositoryKeys": [
+        "nickabattista/ib2d"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "ob74",
+      "url": "https://github.com/ob74",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/3"
+      ],
+      "repositoryKeys": [],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "pennchopmicrobiomeprogram",
+      "url": "https://github.com/pennchopmicrobiomeprogram",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/4"
+      ],
+      "repositoryKeys": [
+        "pennchopmicrobiomeprogram/chop_metadata_checker"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "phucngo1711",
+      "url": "https://github.com/phucngo1711",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accountOnlyLeads/0"
+      ],
+      "repositoryKeys": [],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "princetonuniversity",
+      "url": "https://github.com/princetonuniversity",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/1"
+      ],
+      "repositoryKeys": [
+        "princetonuniversity/neuron-graph"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "raphael-group",
+      "url": "https://github.com/raphael-group",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5",
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/8"
+      ],
+      "repositoryKeys": [
+        "raphael-group/decifer",
+        "raphael-group/gaston",
+        "raphael-group/gaston-mix",
+        "raphael-group/paste",
+        "raphael-group/scarlet",
+        "raphael-group/siid"
+      ],
+      "reconciliation": {
+        "status": "matched-existing-url",
+        "evidence": [
+          "docs/discovery/go-live/execution/GL02-known-project-diagnostic.json#/cases/1/url",
+          "docs/discovery/go-live/execution/GL02-source-inventory.json#/account_leads/1/url",
+          "src/content/discovery-pilot-catalog.json#/records/24/relatedLinks/0/evidence/url",
+          "src/content/discovery-pilot-catalog.json#/records/24/url"
+        ],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "ryanefendy95",
+      "url": "https://github.com/ryanefendy95",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/2"
+      ],
+      "repositoryKeys": [],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "sacanlab",
+      "url": "https://github.com/sacanlab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/5"
+      ],
+      "repositoryKeys": [
+        "sacanlab/immunotar"
+      ],
+      "reconciliation": {
+        "status": "matched-existing-url",
+        "evidence": [
+          "docs/discovery/go-live/execution/GL02-known-project-diagnostic.json#/cases/3/url",
+          "docs/discovery/go-live/execution/GL02-source-inventory.json#/account_leads/3/url",
+          "src/content/discovery-pilot-catalog.json#/records/25/url"
+        ],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "shannonpileggi",
+      "url": "https://github.com/shannonpileggi",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/root-account-leads.json#/accounts/0"
+      ],
+      "repositoryKeys": [
+        "shannonpileggi/gtreg"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "singh-lab",
+      "url": "https://github.com/singh-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/7"
+      ],
+      "repositoryKeys": [
+        "singh-lab/pertinint"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "tingtingzhan",
+      "url": "https://github.com/tingtingzhan",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/2"
+      ],
+      "repositoryKeys": [
+        "tingtingzhan/hyper.gam"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "tju-cmc-org",
+      "url": "https://github.com/tju-cmc-org",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/1"
+      ],
+      "repositoryKeys": [
+        "tju-cmc-org/isomirmap"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "wanglabprinceton",
+      "url": "https://github.com/wanglabprinceton",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/4"
+      ],
+      "repositoryKeys": [
+        "wanglabprinceton/accumulating_puffs"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    }
+  ],
+  "repositories": [
+    {
+      "key": "abelavit/pepcnn",
+      "url": "https://github.com/abelavit/pepcnn",
+      "accountKey": "abelavit",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/4/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "akibzaman/sleepboost",
+      "url": "https://github.com/akibzaman/sleepboost",
+      "accountKey": "akibzaman",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/6/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "matched-existing-url",
+        "evidence": [
+          "docs/discovery/go-live/execution/GL02-known-project-diagnostic.json#/cases/0/url",
+          "docs/discovery/go-live/execution/GL02-source-inventory.json#/account_leads/0/url",
+          "src/content/discovery-pilot-catalog.json#/records/23/relatedLinks/0/evidence/url",
+          "src/content/discovery-pilot-catalog.json#/records/23/url"
+        ],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "banaiek/ephaptic_coupling",
+      "url": "https://github.com/banaiek/ephaptic_coupling",
+      "accountKey": "banaiek",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/9/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "beemd/failure-detection_medmnist",
+      "url": "https://github.com/beemd/failure-detection_medmnist",
+      "accountKey": "beemd",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/2/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "bioccjw/ctpathway",
+      "url": "https://github.com/bioccjw/ctpathway",
+      "accountKey": "bioccjw",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/6/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "braincogs/brain_atlas_toolkit",
+      "url": "https://github.com/braincogs/brain_atlas_toolkit",
+      "accountKey": "braincogs",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/6/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "brody-lab/decision_dynamics_commitment",
+      "url": "https://github.com/brody-lab/decision_dynamics_commitment",
+      "accountKey": "brody-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/10/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "chenyongrowan/sctiger",
+      "url": "https://github.com/chenyongrowan/sctiger",
+      "accountKey": "chenyongrowan",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/1/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "clear-ec/clear-ec",
+      "url": "https://github.com/clear-ec/clear-ec",
+      "accountKey": "clear-ec",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/3/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "david-wzhao/causalarg",
+      "url": "https://github.com/david-wzhao/causalarg",
+      "accountKey": "david-wzhao",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/4/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "dsin85691/ssba_for_counterfactuals",
+      "url": "https://github.com/dsin85691/ssba_for_counterfactuals",
+      "accountKey": "dsin85691",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/7/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "eesi/themetagenomics",
+      "url": "https://github.com/eesi/themetagenomics",
+      "accountKey": "eesi",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/3/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "faisalahm3d/deepphopred",
+      "url": "https://github.com/faisalahm3d/deepphopred",
+      "accountKey": "faisalahm3d",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/3/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "felixagbavor/bmes_550",
+      "url": "https://github.com/felixagbavor/bmes_550",
+      "accountKey": "felixagbavor",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/8/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "iclab4dl/ggn",
+      "url": "https://github.com/iclab4dl/ggn",
+      "accountKey": "iclab4dl",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/5/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "leiferlab/pumpprobe",
+      "url": "https://github.com/leiferlab/pumpprobe",
+      "accountKey": "leiferlab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "leiferlab/wormbrain",
+      "url": "https://github.com/leiferlab/wormbrain",
+      "accountKey": "leiferlab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5/repositories/3"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "leiferlab/wormdatamodel",
+      "url": "https://github.com/leiferlab/wormdatamodel",
+      "accountKey": "leiferlab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5/repositories/1"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "leiferlab/wormneuronsegmentation-c",
+      "url": "https://github.com/leiferlab/wormneuronsegmentation-c",
+      "accountKey": "leiferlab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5/repositories/2"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "malikyousef/mircorrnet",
+      "url": "https://github.com/malikyousef/mircorrnet",
+      "accountKey": "malikyousef",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/0/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "marbd11/ctscan-stroke",
+      "url": "https://github.com/marbd11/ctscan-stroke",
+      "accountKey": "marbd11",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/3/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "markymarkymark/imscribe",
+      "url": "https://github.com/markymarkymark/imscribe",
+      "accountKey": "markymarkymark",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/1/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "mlbc-lab/exshall-cnn",
+      "url": "https://github.com/mlbc-lab/exshall-cnn",
+      "accountKey": "mlbc-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0/repositories/1"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "mlbc-lab/genrep",
+      "url": "https://github.com/mlbc-lab/genrep",
+      "accountKey": "mlbc-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0/repositories/2"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "mlbc-lab/iacp-rf",
+      "url": "https://github.com/mlbc-lab/iacp-rf",
+      "accountKey": "mlbc-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "mlbc-lab/lungclust",
+      "url": "https://github.com/mlbc-lab/lungclust",
+      "accountKey": "mlbc-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0/repositories/3",
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/9/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "mldataanalytics/pnet",
+      "url": "https://github.com/mldataanalytics/pnet",
+      "accountKey": "mldataanalytics",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/2/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "murthylab/deepflytrack",
+      "url": "https://github.com/murthylab/deepflytrack",
+      "accountKey": "murthylab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0/repositories/1"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "murthylab/flycaiman",
+      "url": "https://github.com/murthylab/flycaiman",
+      "accountKey": "murthylab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0/repositories/2"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "murthylab/glmhmm",
+      "url": "https://github.com/murthylab/glmhmm",
+      "accountKey": "murthylab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "murthylab/leap",
+      "url": "https://github.com/murthylab/leap",
+      "accountKey": "murthylab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0/repositories/3"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "newilson/exercisecestv2",
+      "url": "https://github.com/newilson/exercisecestv2",
+      "accountKey": "newilson",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/0/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "matched-existing-url",
+        "evidence": [
+          "docs/discovery/go-live/execution/GL02-exploration-manifest.json#/queries/7/expected_url",
+          "docs/discovery/go-live/execution/GL02-known-project-diagnostic.json#/cases/6/url",
+          "docs/discovery/go-live/execution/GL02-source-inventory.json#/additional_leads/2/project_url"
+        ],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "nickabattista/ib2d",
+      "url": "https://github.com/nickabattista/ib2d",
+      "accountKey": "nickabattista",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/2/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "pennchopmicrobiomeprogram/chop_metadata_checker",
+      "url": "https://github.com/pennchopmicrobiomeprogram/chop_metadata_checker",
+      "accountKey": "pennchopmicrobiomeprogram",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/4/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "princetonuniversity/neuron-graph",
+      "url": "https://github.com/princetonuniversity/neuron-graph",
+      "accountKey": "princetonuniversity",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/1/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "raphael-group/decifer",
+      "url": "https://github.com/raphael-group/decifer",
+      "accountKey": "raphael-group",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "raphael-group/gaston",
+      "url": "https://github.com/raphael-group/gaston",
+      "accountKey": "raphael-group",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/3"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "matched-existing-url",
+        "evidence": [
+          "docs/discovery/go-live/execution/GL02-known-project-diagnostic.json#/cases/1/url",
+          "docs/discovery/go-live/execution/GL02-source-inventory.json#/account_leads/1/url",
+          "src/content/discovery-pilot-catalog.json#/records/24/relatedLinks/0/evidence/url",
+          "src/content/discovery-pilot-catalog.json#/records/24/url"
+        ],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "raphael-group/gaston-mix",
+      "url": "https://github.com/raphael-group/gaston-mix",
+      "accountKey": "raphael-group",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/2"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "raphael-group/paste",
+      "url": "https://github.com/raphael-group/paste",
+      "accountKey": "raphael-group",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/4"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "raphael-group/scarlet",
+      "url": "https://github.com/raphael-group/scarlet",
+      "accountKey": "raphael-group",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/8/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "raphael-group/siid",
+      "url": "https://github.com/raphael-group/siid",
+      "accountKey": "raphael-group",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/1"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "sacanlab/immunotar",
+      "url": "https://github.com/sacanlab/immunotar",
+      "accountKey": "sacanlab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/5/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "matched-existing-url",
+        "evidence": [
+          "docs/discovery/go-live/execution/GL02-known-project-diagnostic.json#/cases/3/url",
+          "docs/discovery/go-live/execution/GL02-source-inventory.json#/account_leads/3/url",
+          "src/content/discovery-pilot-catalog.json#/records/25/url"
+        ],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "shannonpileggi/gtreg",
+      "url": "https://github.com/shannonpileggi/gtreg",
+      "accountKey": "shannonpileggi",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/root-account-leads.json#/accounts/0/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "singh-lab/pertinint",
+      "url": "https://github.com/singh-lab/pertinint",
+      "accountKey": "singh-lab",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/7/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "tingtingzhan/hyper.gam",
+      "url": "https://github.com/tingtingzhan/hyper.gam",
+      "accountKey": "tingtingzhan",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/2/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "tju-cmc-org/isomirmap",
+      "url": "https://github.com/tju-cmc-org/isomirmap",
+      "accountKey": "tju-cmc-org",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/1/repositories/0"
+      ],
+      "relevance": [
+        "triage-health-purpose-indicated-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    },
+    {
+      "key": "wanglabprinceton/accumulating_puffs",
+      "url": "https://github.com/wanglabprinceton/accumulating_puffs",
+      "accountKey": "wanglabprinceton",
+      "occurrenceIds": [
+        "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/4/repositories/0"
+      ],
+      "relevance": [
+        "triage-general-method-or-neuroscience-health-purpose-review-required"
+      ],
+      "reconciliation": {
+        "status": "unknown",
+        "evidence": [],
+        "qualification": "Literal URL match only; absence does not establish novelty."
+      }
+    }
+  ],
+  "occurrences": [
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0",
+      "observedDate": "2026-11-16",
+      "accountKey": "mlbc-lab",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Rutgers University–Camden research collaborators",
+      "institutionAccountSource": "https://research-management.mq.edu.au/ws/portalfiles/portal/333359848/333147144.pdf",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "affiliationTimeScope": "2023–2026 publications, depending on project; no current employment inferred",
+      "region": {
+        "municipality": "Camden",
+        "county": "Camden",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://camden.rutgers.edu/visit"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "mlbc-lab/iacp-rf",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0/repositories/0",
+          "institutionRepositorySource": "https://research-management.mq.edu.au/ws/portalfiles/portal/333359848/333147144.pdf",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Predict anticancer peptides",
+          "githubPageChecked": false,
+          "note": "The study lists Iman Dehzangi with Rutgers University, Camden; coauthor is not established as account owner. Source date 2023; indexed primary observation 2026-11-16. No source body retained."
+        },
+        {
+          "repositoryKey": "mlbc-lab/exshall-cnn",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0/repositories/1",
+          "institutionRepositorySource": "https://www.preprints.org/manuscript/202410.1667",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Explainable medical image segmentation",
+          "githubPageChecked": false,
+          "note": "The preprint links the repository; https://www.researchwithrutgers.org/en/publications/exshall-cnn-an-explainable-shallow-convolutional-neural-network-f/ identifies Rutgers Camden Computer Science for the 2025 publication. Source date 2024 preprint; indexed primary observation 2026-11-16. No source body retained."
+        },
+        {
+          "repositoryKey": "mlbc-lab/genrep",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0/repositories/2",
+          "institutionRepositorySource": "https://www.mdpi.com/1420-3049/31/4/739",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Predict TP53 gene responses to pharmaceutical compounds",
+          "githubPageChecked": false,
+          "note": "The article links repository and Camden-hosted data; https://pubmed.ncbi.nlm.nih.gov/41752517/ lists Rutgers Camden Center for Computational and Integrative Biology. Source date 2026; indexed primary observation 2026-11-16. No source body retained."
+        },
+        {
+          "repositoryKey": "mlbc-lab/lungclust",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/0/repositories/3",
+          "institutionRepositorySource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13371118/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Integrate lung cancer gene expression and mutations to identify molecular subtypes",
+          "githubPageChecked": false,
+          "note": "Study lists a Rutgers Camden Computer Science affiliation and links the repository; Rutgers New Brunswick affiliation is separate. Source date 2026; indexed primary observation 2026-11-16. No source body retained."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/1",
+      "observedDate": "2026-11-16",
+      "accountKey": "chenyongrowan",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Rowan University Department of Biological and Biomedical Sciences research",
+      "institutionAccountSource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10488287/",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "affiliationTimeScope": "2023 paper; person currently employed and account owner unknown",
+      "region": {
+        "municipality": "Glassboro",
+        "county": "Gloucester",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://www.rowan.edu/about/visiting/west.pdf"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "chenyongrowan/sctiger",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/1/repositories/0",
+          "institutionRepositorySource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10488287/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Infer case versus control single-cell gene regulatory networks, including prostate cancer",
+          "githubPageChecked": false,
+          "note": "Study links repository. Rowan research record https://rdw.rowan.edu/csm_facpub/312/ identifies article, and https://rdw.rowan.edu/etd/3155/ identifies Madison Dautle at Rowan and Yong Chen as advisor; neither establishes account ownership. Source date 2023; indexed primary observation 2026-11-16. No source body retained."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/2",
+      "observedDate": "2026-11-16",
+      "accountKey": "beemd",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Rowan University Electrical and Computer Engineering research",
+      "institutionAccountSource": "https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2022.919046/full",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "affiliationTimeScope": "2022 article; current roles and account ownership unknown",
+      "region": {
+        "municipality": "Glassboro",
+        "county": "Gloucester",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://www.rowan.edu/about/visiting/west.pdf"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "beemd/failure-detection_medmnist",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/2/repositories/0",
+          "institutionRepositorySource": "https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2022.919046/full",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Detect failures and quantify uncertainty in deep neural networks for medical imaging",
+          "githubPageChecked": false,
+          "note": "The article identifies Rowan Glassboro Electrical and Computer Engineering authors and links code; other coauthors have other institutions. Source date 2022; indexed primary observation 2026-11-16. No source body retained."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/3",
+      "observedDate": "2026-11-16",
+      "accountKey": "faisalahm3d",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Rutgers University–Camden research collaborators",
+      "institutionAccountSource": "https://onlinelibrary.wiley.com/doi/pdfdirect/10.1002/prot.26734",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "affiliationTimeScope": "2025 publication; account owner and current roles unknown",
+      "region": {
+        "municipality": "Camden",
+        "county": "Camden",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://camden.rutgers.edu/visit"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "faisalahm3d/deepphopred",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/3/repositories/0",
+          "institutionRepositorySource": "https://onlinelibrary.wiley.com/doi/pdfdirect/10.1002/prot.26734",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Predict microbial phosphorylation; biomedical research lead requiring subject review",
+          "githubPageChecked": false,
+          "note": "Paper links code and lists Rutgers Camden Computer Science and Center for Computational and Integrative Biology affiliations among collaborating institutions; ownership unresolved. Source date 2025; indexed primary observation 2026-11-16. No source body retained."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/4",
+      "observedDate": "2026-11-16",
+      "accountKey": "abelavit",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Rutgers University–Camden research collaborators",
+      "institutionAccountSource": "https://assets-eu.researchsquare.com/files/rs-3334706/v1_covered_b4741331-1b41-4bb9-a3b5-0af7377048ad.pdf?c=1701702728",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "affiliationTimeScope": "2023 preprint; account owner and current roles unknown",
+      "region": {
+        "municipality": "Camden",
+        "county": "Camden",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://camden.rutgers.edu/visit"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "abelavit/pepcnn",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/4/repositories/0",
+          "institutionRepositorySource": "https://assets-eu.researchsquare.com/files/rs-3334706/v1_covered_b4741331-1b41-4bb9-a3b5-0af7377048ad.pdf?c=1701702728",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Predict protein–peptide binding with possible cancer and viral infection research relevance",
+          "githubPageChecked": false,
+          "note": "Preprint names Iman Dehzangi with Rutgers Camden and links this code. This is an author-project relationship, not proof of account identity. Source date 2023 preprint; indexed primary observation 2026-11-16. No source body retained."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5",
+      "observedDate": "2026-11-16",
+      "accountKey": "raphael-group",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Princeton University research collaborators",
+      "institutionAccountSource": "https://discovery.ucl.ac.uk/id/eprint/10138101/1/SatasZaccaria_CellSystems_2021.pdf",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "affiliationTimeScope": "2021–2025 source dates; current roles and account ownership unknown",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "raphael-group/decifer",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/0",
+          "institutionRepositorySource": "https://discovery.ucl.ac.uk/id/eprint/10138101/1/SatasZaccaria_CellSystems_2021.pdf",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Tumor heterogeneity and evolutionary analysis, including prostate cancer",
+          "githubPageChecked": false,
+          "note": "Study reports Princeton Computer Science affiliations, links code, and explicitly records some authors present elsewhere. Source date 2021; indexed primary observation 2026-11-16. No source body retained."
+        },
+        {
+          "repositoryKey": "raphael-group/siid",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/1",
+          "institutionRepositorySource": "https://rcastoragev2.blob.core.windows.net/af70ad98b0e49eabc1a0981da565c80c/nihpp-2025.02.17.638195v1.PMC11870578.pdf",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Integrate spatial transcriptomics, applied to breast and colon cancer tissue",
+          "githubPageChecked": false,
+          "note": "Preprint lists Princeton CS and Ludwig Princeton Branch and links code. Source date 2025 preprint; indexed primary observation 2026-11-16. No source body retained."
+        },
+        {
+          "repositoryKey": "raphael-group/gaston-mix",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/2",
+          "institutionRepositorySource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12261403/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Spatial gene expression gradients and domains; tumor microenvironment is an application area",
+          "githubPageChecked": false,
+          "note": "Article links code and discusses brain and tumor microenvironment; verify project affiliation in direct source review. Source date 2025; indexed primary observation 2026-11-16. No source body retained."
+        },
+        {
+          "repositoryKey": "raphael-group/gaston",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/3",
+          "institutionRepositorySource": "https://www.nature.com/articles/s41592-024-02503-3",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Spatial gene expression modeling applied to breast and colorectal cancer tissue",
+          "githubPageChecked": false,
+          "note": "Article links code and describes breast and colorectal cancer datasets and Princeton Ludwig funding; previously known lead, not novel discovery. Source date 2025; indexed primary observation 2026-11-16. No source body retained."
+        },
+        {
+          "repositoryKey": "raphael-group/paste",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/5/repositories/4",
+          "institutionRepositorySource": "https://www.nature.com/articles/s41592-022-01459-6",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Align and integrate spatial transcriptomics tissue data",
+          "githubPageChecked": false,
+          "note": "Publication links code; health relevance is tissue genomics method, not proof of clinical use. Princeton research relationship requires direct review. Source date 2022; indexed primary observation 2026-11-16. No source body retained."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/6",
+      "observedDate": "2026-11-16",
+      "accountKey": "akibzaman",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Rutgers University–Camden research collaborators",
+      "institutionAccountSource": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+      "relationshipBasis": "A source-linked research project connects collaborators and repository; no named person is inferred to own the account. See individual repository note and source.",
+      "affiliationTimeScope": "2024 institutional news reports research-era association",
+      "region": {
+        "municipality": "Camden",
+        "county": "Camden",
+        "basis": "County basis in retained GL02 campus inventory; research affiliation does not establish exact project worksite or person location.",
+        "source": "https://camden.rutgers.edu/visit"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "akibzaman/sleepboost",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json#/accounts/6/repositories/0",
+          "institutionRepositorySource": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Automatic sleep stage classification",
+          "githubPageChecked": false,
+          "note": "Rutgers–Camden names Iman Dehzangi as researcher and links code. Previously retained candidate; author account ownership unknown. Source date 2024; indexed primary observation 2026-11-16. No source body retained."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0",
+      "observedDate": "2026-11-16",
+      "accountKey": "murthylab",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Murthy Lab; Princeton University",
+      "institutionAccountSource": "https://murthylab.princeton.edu/links",
+      "relationshipBasis": "Lab identifies its GitHub; individual ownership not asserted. ",
+      "affiliationTimeScope": "undated page observed 2026-11-16; current role not independently verified",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "murthylab/glmhmm",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0/repositories/0",
+          "institutionRepositorySource": "https://murthylab.princeton.edu/links",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "neuroscience behavioral-state model",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "repositoryKey": "murthylab/deepflytrack",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0/repositories/1",
+          "institutionRepositorySource": "https://murthylab.princeton.edu/links",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "deep-network tracking of fly centroids",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "repositoryKey": "murthylab/flycaiman",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0/repositories/2",
+          "institutionRepositorySource": "https://murthylab.princeton.edu/links",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "volumetric calcium-imaging analysis",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "repositoryKey": "murthylab/leap",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/0/repositories/3",
+          "institutionRepositorySource": "https://murthylab.princeton.edu/links",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "animal body-part pose tracking",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/1",
+      "observedDate": "2026-11-16",
+      "accountKey": "princetonuniversity",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Leifer Lab / Princeton Research Computing; Princeton University",
+      "institutionAccountSource": "https://funconn.princeton.edu/",
+      "relationshipBasis": "FunCoNN credits Leifer Lab and Princeton Research Computing; the linked repository is under institutional account. ",
+      "affiliationTimeScope": "undated page observed 2026-11-16; current role not independently verified",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "princetonuniversity/neuron-graph",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/1/repositories/0",
+          "institutionRepositorySource": "https://funconn.princeton.edu/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "functional neural connectivity visualization",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/10",
+      "observedDate": "2026-11-16",
+      "accountKey": "brody-lab",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Brody Lab research; Princeton University",
+      "institutionAccountSource": "https://www.nature.com/articles/s41586-025-09528-4",
+      "relationshipBasis": "Paper links analysis code under account; no personal ownership inferred. 2025 research concerns neural dynamics during perceptual decisions; current individuals require separate verification.",
+      "affiliationTimeScope": "2025 publication",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "brody-lab/decision_dynamics_commitment",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/10/repositories/0",
+          "institutionRepositorySource": "https://www.nature.com/articles/s41586-025-09528-4",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "neural dynamics during perceptual decisions",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/2",
+      "observedDate": "2026-11-16",
+      "accountKey": "nickabattista",
+      "personOccurrence": {
+        "name": "Nick Battista",
+        "role": "source-reported person; role requires source review"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": {
+        "type": "source-person-resource-association",
+        "person": "Nick Battista",
+        "repositoryKey": "nickabattista/ib2d",
+        "source": "https://nickabattista.wixsite.com/home",
+        "qualification": "Lab page reports his GitHub site and project association; account control not authenticated."
+      },
+      "institutionOrLab": "Nick Battista / Bioinspiration Lab; The College of New Jersey",
+      "institutionAccountSource": "https://nickabattista.wixsite.com/home",
+      "relationshipBasis": "Lab page links IB2d under this account; personal identity is supported by the lab page. Nick Battista leads the TCNJ Bioinspiration Lab and is described as creator and contributor of numerical tools.",
+      "affiliationTimeScope": "undated page observed 2026-11-16; current role not independently verified",
+      "region": {
+        "municipality": "Ewing",
+        "county": null,
+        "basis": "municipality only; county unverified",
+        "source": null
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "nickabattista/ib2d",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/2/repositories/0",
+          "institutionRepositorySource": "https://nickabattista.wixsite.com/home",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "fluid-structure interaction for biomechanics and mathematical physiology",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/3",
+      "observedDate": "2026-11-16",
+      "accountKey": "marbd11",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "M. DelRocini, C. Angelini, G. Rasool; Rowan University",
+      "institutionAccountSource": "https://isip.piconepress.com/conferences/ieee_spmb/2020/papers/p01_17.pdf",
+      "relationshipBasis": "Paper links repository; account-holder identity and current affiliations are unknown. 2020 paper lists the three authors at Rowan Electrical and Computer Engineering, Glassboro.",
+      "affiliationTimeScope": "2020 publication",
+      "region": {
+        "municipality": "Glassboro",
+        "county": "Gloucester",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://www.rowan.edu/about/visiting/west.pdf"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "marbd11/ctscan-stroke",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/3/repositories/0",
+          "institutionRepositorySource": "https://isip.piconepress.com/conferences/ieee_spmb/2020/papers/p01_17.pdf",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "machine learning for CT head scan abnormalities",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/4",
+      "observedDate": "2026-11-16",
+      "accountKey": "wanglabprinceton",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Wang lab research; Princeton University",
+      "institutionAccountSource": "https://elifesciences.org/articles/36781v2",
+      "relationshipBasis": "Study links its data repository; account holder and project worksite unknown. 2018 study identifies Princeton Neuroscience Institute as author affiliation.",
+      "affiliationTimeScope": "2018 publication",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "wanglabprinceton/accumulating_puffs",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/4/repositories/0",
+          "institutionRepositorySource": "https://elifesciences.org/articles/36781v2",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "cerebellar contribution to evidence accumulation",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5",
+      "observedDate": "2026-11-16",
+      "accountKey": "leiferlab",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Leifer Lab research; Princeton University",
+      "institutionAccountSource": "https://www.nature.com/articles/s41586-023-06683-4",
+      "relationshipBasis": "Paper links four analysis repositories; do not infer individual ownership. 2023 research reports neural signal propagation and Princeton association; current individual roles require review.",
+      "affiliationTimeScope": "2023 publication",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "leiferlab/pumpprobe",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5/repositories/0",
+          "institutionRepositorySource": "https://www.nature.com/articles/s41586-023-06683-4",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "neural signal propagation analysis",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "repositoryKey": "leiferlab/wormdatamodel",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5/repositories/1",
+          "institutionRepositorySource": "https://www.nature.com/articles/s41586-023-06683-4",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "neural signal propagation analysis",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "repositoryKey": "leiferlab/wormneuronsegmentation-c",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5/repositories/2",
+          "institutionRepositorySource": "https://www.nature.com/articles/s41586-023-06683-4",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "neural signal propagation analysis",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "repositoryKey": "leiferlab/wormbrain",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/5/repositories/3",
+          "institutionRepositorySource": "https://www.nature.com/articles/s41586-023-06683-4",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "neural signal propagation analysis",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/6",
+      "observedDate": "2026-11-16",
+      "accountKey": "braincogs",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Princeton U19 Software Tools; Princeton Neuroscience Institute",
+      "institutionAccountSource": "https://brainmaps.princeton.edu/",
+      "relationshipBasis": "PNI software blog links brain atlas toolkit; account ownership not established. ",
+      "affiliationTimeScope": "undated page observed 2026-11-16; current role not independently verified",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "braincogs/brain_atlas_toolkit",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/6/repositories/0",
+          "institutionRepositorySource": "https://brainmaps.princeton.edu/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "brain atlas hierarchy navigation and visualization",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/7",
+      "observedDate": "2026-11-16",
+      "accountKey": "singh-lab",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Singh Lab research; Princeton University",
+      "institutionAccountSource": "https://www.cs.princeton.edu/~chazelle/pubs/Pertinint20.pdf",
+      "relationshipBasis": "Study links account and repository; person-to-account identity unresolved. 2020 research describes cancer driver gene analysis; current roles unknown.",
+      "affiliationTimeScope": "2020 publication",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "singh-lab/pertinint",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/7/repositories/0",
+          "institutionRepositorySource": "https://www.cs.princeton.edu/~chazelle/pubs/Pertinint20.pdf",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "cancer driver genes with perturbed interactions",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/8",
+      "observedDate": "2026-11-16",
+      "accountKey": "raphael-group",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Raphael group research; Princeton University",
+      "institutionAccountSource": "https://oar.princeton.edu/bitstream/88435/pr1vr80/1/SingleCellTumorPhylogenyInferenceMutationLosses.pdf",
+      "relationshipBasis": "Study links repository; personal account ownership not inferred. SCARLET publication supplies research-era affiliation; current roles unknown.",
+      "affiliationTimeScope": "publication date requires confirmation",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "raphael-group/scarlet",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/8/repositories/0",
+          "institutionRepositorySource": "https://oar.princeton.edu/bitstream/88435/pr1vr80/1/SingleCellTumorPhylogenyInferenceMutationLosses.pdf",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "single-cell tumor phylogeny inference",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/9",
+      "observedDate": "2026-11-16",
+      "accountKey": "banaiek",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Research author group; Princeton University",
+      "institutionAccountSource": "https://www.biorxiv.org/content/10.64898/2026.07.28.741366v1.full",
+      "relationshipBasis": "Preprint links analysis repository; account holder is not established. 2026 preprint lists Princeton Neuroscience Institute affiliation; individual account identity unresolved.",
+      "affiliationTimeScope": "2026 preprint",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "banaiek/ephaptic_coupling",
+          "evidence": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json#/accounts/9/repositories/0",
+          "institutionRepositorySource": "https://www.biorxiv.org/content/10.64898/2026.07.28.741366v1.full",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "neural population coding simulations and analyses",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accountOnlyLeads/0",
+      "observedDate": "2026-11-16",
+      "accountKey": "phucngo1711",
+      "personOccurrence": {
+        "name": "Phuc Ngo",
+        "role": "source-reported researcher or student occurrence; account ownership not established"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel University senior project ROADMAP",
+      "institutionAccountSource": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "relationshipBasis": "Source associates a lab or project with this account; individual ownership unverified",
+      "affiliationTimeScope": "2017–2018 student project; current status unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "unknown",
+        "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [],
+      "reportedProjectPurpose": "Brain tumor and lesion imaging software additions",
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/0",
+      "observedDate": "2026-11-16",
+      "accountKey": "malikyousef",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Jefferson Cancer Biology faculty paper (2021)",
+      "institutionAccountSource": "https://jdc.jefferson.edu/cbfp/182/",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://jdc.jefferson.edu/cbfp/182/"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "malikyousef/mircorrnet",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/0/repositories/0",
+          "institutionRepositorySource": "https://jdc.jefferson.edu/cbfp/182/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Machine learning integration of RNA expression profiles evaluated for cancer",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/1",
+      "observedDate": "2026-11-16",
+      "accountKey": "tju-cmc-org",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Jefferson Computational Medicine Center faculty paper (2021)",
+      "institutionAccountSource": "https://jdc.jefferson.edu/tjucompmedctrfp/38/",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://jdc.jefferson.edu/tjucompmedctrfp/38/"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "tju-cmc-org/isomirmap",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/1/repositories/0",
+          "institutionRepositorySource": "https://jdc.jefferson.edu/tjucompmedctrfp/38/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "RNA-seq isomiR analysis with published cancer atlas profiles",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/2",
+      "observedDate": "2026-11-16",
+      "accountKey": "tingtingzhan",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Jefferson Pharmacology, Physiology, and Cancer Biology faculty paper (2025)",
+      "institutionAccountSource": "https://jdc.jefferson.edu/ppcbfp/39/",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://jdc.jefferson.edu/ppcbfp/39/"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "tingtingzhan/hyper.gam",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/2/repositories/0",
+          "institutionRepositorySource": "https://jdc.jefferson.edu/ppcbfp/39/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Package associated with functional protein biomarkers in single-cell cancer imaging",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/3",
+      "observedDate": "2026-11-16",
+      "accountKey": "eesi",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel-associated research profile; paper dated 2019",
+      "institutionAccountSource": "https://researchdiscovery.drexel.edu/esploro/profile/gideon_simpson/output/postedContent?institution=01DRXU_INST",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://researchdiscovery.drexel.edu/esploro/profile/gideon_simpson/output/postedContent?institution=01DRXU_INST"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "eesi/themetagenomics",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/3/repositories/0",
+          "institutionRepositorySource": "https://researchdiscovery.drexel.edu/esploro/profile/gideon_simpson/output/postedContent?institution=01DRXU_INST",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Microbiome analysis applied to inflammatory bowel disease and oral cancer data",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/4",
+      "observedDate": "2026-11-16",
+      "accountKey": "david-wzhao",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel institutional research repository; author-specific affiliation requires review",
+      "institutionAccountSource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Causal-ARG-A-Causality-guided-Framework-for-Annotating/991021866846304721?institution=01DRXU_INST",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Causal-ARG-A-Causality-guided-Framework-for-Annotating/991021866846304721?institution=01DRXU_INST"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "david-wzhao/causalarg",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/4/repositories/0",
+          "institutionRepositorySource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Causal-ARG-A-Causality-guided-Framework-for-Annotating/991021866846304721?institution=01DRXU_INST",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Annotation of antibiotic resistance gene properties",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/5",
+      "observedDate": "2026-11-16",
+      "accountKey": "iclab4dl",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Temple-hosted research manuscript; author-specific Temple affiliation requires review",
+      "institutionAccountSource": "https://cis.temple.edu/~wu/research/publications/Publication_files/pdf_Revised_manuscript_%20791d9a81-a475-481f-b0d4-4b8e76628630.pdf",
+      "relationshipBasis": "Institutional source points to project code; not proof of account holder identity or local employment",
+      "affiliationTimeScope": "Historical publication or institutional research record; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Institutional source association only; author and development geography require independent verification",
+        "source": "https://cis.temple.edu/~wu/research/publications/Publication_files/pdf_Revised_manuscript_%20791d9a81-a475-481f-b0d4-4b8e76628630.pdf"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "iclab4dl/ggn",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json#/accounts/5/repositories/0",
+          "institutionRepositorySource": "https://cis.temple.edu/~wu/research/publications/Publication_files/pdf_Revised_manuscript_%20791d9a81-a475-481f-b0d4-4b8e76628630.pdf",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Experimental EEG network model evaluated using Temple University Hospital EEG data",
+          "githubPageChecked": false,
+          "note": "Research lead only; no inferred clinical validity, authorship or local work location."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/0",
+      "observedDate": "2026-11-16",
+      "accountKey": "dvs-lab",
+      "personOccurrence": {
+        "name": "David V. Smith",
+        "role": "source-reported researcher or student occurrence; account ownership not established"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Temple University",
+      "institutionAccountSource": "https://liberalarts.temple.edu/sites/liberalarts/files/SmithDV_vita_0.pdf",
+      "relationshipBasis": "Source associates a lab or project with this account; individual ownership unverified",
+      "affiliationTimeScope": "CV dated 2024-10-29 reports Temple appointment from 2023; current role unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Philadelphia, PA; county independently unverified",
+        "source": "https://liberalarts.temple.edu/sites/liberalarts/files/SmithDV_vita_0.pdf"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [],
+      "reportedProjectPurpose": null,
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/1",
+      "observedDate": "2026-11-16",
+      "accountKey": "dynamicbrainmind",
+      "personOccurrence": {
+        "name": "Aaron Kucyi",
+        "role": "source-reported researcher or student occurrence; account ownership not established"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel University",
+      "institutionAccountSource": "https://drexel.edu/~/media/Files/coas2/psychology/faculty-cv/drexel-aaron-kucyi-cv.ashx?la=en",
+      "relationshipBasis": "Source associates a lab or project with this account; individual ownership unverified",
+      "affiliationTimeScope": "CV reports Drexel appointment from 2022; present-day status unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Philadelphia, PA; county independently unverified",
+        "source": "https://drexel.edu/~/media/Files/coas2/psychology/faculty-cv/drexel-aaron-kucyi-cv.ashx?la=en"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [],
+      "reportedProjectPurpose": null,
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/2",
+      "observedDate": "2026-11-16",
+      "accountKey": "ryanefendy95",
+      "personOccurrence": {
+        "name": "Ryan Efendy",
+        "role": "source-reported researcher or student occurrence; account ownership not established"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel University senior project ROADMAP",
+      "institutionAccountSource": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "relationshipBasis": "Source associates a lab or project with this account; individual ownership unverified",
+      "affiliationTimeScope": "2017–2018 student team; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "unknown",
+        "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [],
+      "reportedProjectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/3",
+      "observedDate": "2026-11-16",
+      "accountKey": "ob74",
+      "personOccurrence": {
+        "name": "Omair Bhore",
+        "role": "source-reported researcher or student occurrence; account ownership not established"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel University senior project ROADMAP",
+      "institutionAccountSource": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "relationshipBasis": "Source associates a lab or project with this account; individual ownership unverified",
+      "affiliationTimeScope": "2017–2018 student team; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "unknown",
+        "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [],
+      "reportedProjectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/4",
+      "observedDate": "2026-11-16",
+      "accountKey": "hna6300",
+      "personOccurrence": {
+        "name": "Anh Huynh",
+        "role": "source-reported researcher or student occurrence; account ownership not established"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel University senior project ROADMAP",
+      "institutionAccountSource": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "relationshipBasis": "Source associates a lab or project with this account; individual ownership unverified",
+      "affiliationTimeScope": "2017–2018 student team; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "unknown",
+        "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [],
+      "reportedProjectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/5",
+      "observedDate": "2026-11-16",
+      "accountKey": "deepak8694",
+      "personOccurrence": {
+        "name": "Deepak Yadav",
+        "role": "source-reported researcher or student occurrence; account ownership not established"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel University senior project ROADMAP",
+      "institutionAccountSource": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "relationshipBasis": "Source associates a lab or project with this account; individual ownership unverified",
+      "affiliationTimeScope": "2017–2018 student team; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "unknown",
+        "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [],
+      "reportedProjectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accountOnlyLeads/6",
+      "observedDate": "2026-11-16",
+      "accountKey": "mrcalderon",
+      "personOccurrence": {
+        "name": "Miguel Calderon",
+        "role": "source-reported researcher or student occurrence; account ownership not established"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel University senior project ROADMAP",
+      "institutionAccountSource": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+      "relationshipBasis": "Source associates a lab or project with this account; individual ownership unverified",
+      "affiliationTimeScope": "2017–2018 student team; current role unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "unknown",
+        "source": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [],
+      "reportedProjectPurpose": "Brain lesion and tumor segmentation and MRI visualization for cancer imaging",
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/0",
+      "observedDate": "2026-11-16",
+      "accountKey": "newilson",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Penn CAMIPM",
+      "institutionAccountSource": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": "Philadelphia",
+        "county": null,
+        "basis": "Center page lists Philadelphia address; county not independently sourced",
+        "source": "https://www.med.upenn.edu/CAMIPM/analysis-software/"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "newilson/exercisecestv2",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/0/repositories/0",
+          "institutionRepositorySource": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "CrCEST MRI creatine recovery and exchange maps",
+          "githubPageChecked": false,
+          "note": null
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/1",
+      "observedDate": "2026-11-16",
+      "accountKey": "markymarkymark",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Penn CAMIPM",
+      "institutionAccountSource": "https://www.med.upenn.edu/CAMIPM/imscribe.html",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": "Philadelphia",
+        "county": null,
+        "basis": "Center address on analysis software page",
+        "source": "https://www.med.upenn.edu/CAMIPM/analysis-software/"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "markymarkymark/imscribe",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/1/repositories/0",
+          "institutionRepositorySource": "https://www.med.upenn.edu/CAMIPM/imscribe.html",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "MRI image registration and field-of-view tools",
+          "githubPageChecked": false,
+          "note": "Page names a contact; does not establish that contact owns GitHub account."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/2",
+      "observedDate": "2026-11-16",
+      "accountKey": "mldataanalytics",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Penn Research Laboratory for Machine Learning and Biomedical Data Analytics",
+      "institutionAccountSource": "https://www.med.upenn.edu/machine-learning-biomed-data/functional-network-modeling.html",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Penn institutional lab page; location requires independent check",
+        "source": "https://www.med.upenn.edu/machine-learning-biomed-data/software/"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "mldataanalytics/pnet",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/2/repositories/0",
+          "institutionRepositorySource": "https://www.med.upenn.edu/machine-learning-biomed-data/functional-network-modeling.html",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Functional brain network modeling toolbox",
+          "githubPageChecked": false,
+          "note": null
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/3",
+      "observedDate": "2026-11-16",
+      "accountKey": "clear-ec",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Penn OPTIC Lab challenge",
+      "institutionAccountSource": "https://opticlab.med.upenn.edu/clear-ec-challenge",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Penn OPTIC Lab page; challenge collaboration does not establish development location",
+        "source": "https://opticlab.med.upenn.edu/clear-ec-challenge"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "clear-ec/clear-ec",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/3/repositories/0",
+          "institutionRepositorySource": "https://opticlab.med.upenn.edu/clear-ec-challenge",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Reference corneal endothelial image segmentation and metrics pipeline",
+          "githubPageChecked": false,
+          "note": null
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/4",
+      "observedDate": "2026-11-16",
+      "accountKey": "pennchopmicrobiomeprogram",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Penn MicroBioCode",
+      "institutionAccountSource": "https://www.med.upenn.edu/microbiocode/do%E2%80%99s-and-donts-of-metadata-formatting-part-1",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Penn institutional page; local development not established",
+        "source": "https://www.med.upenn.edu/microbiocode/do%E2%80%99s-and-donts-of-metadata-formatting-part-1"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "pennchopmicrobiomeprogram/chop_metadata_checker",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/4/repositories/0",
+          "institutionRepositorySource": "https://www.med.upenn.edu/microbiocode/do%E2%80%99s-and-donts-of-metadata-formatting-part-1",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Checks metadata used by microbiome research projects",
+          "githubPageChecked": false,
+          "note": "Page names a software engineer, but does not connect the account ownership to that person."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/5",
+      "observedDate": "2026-11-16",
+      "accountKey": "sacanlab",
+      "personOccurrence": {
+        "name": "Ahmet Sacan",
+        "role": "paper-author; account ownership not established"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel University and collaborators",
+      "institutionAccountSource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/ImmunoTar-integrative-prioritization-of-cell-surface-targets/991022028237904721?institution=01DRXU_INST",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Drexel institutional repository reports Drexel affiliation; specific location not independently established",
+        "source": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/ImmunoTar-integrative-prioritization-of-cell-surface-targets/991022028237904721?institution=01DRXU_INST"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "sacanlab/immunotar",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/5/repositories/0",
+          "institutionRepositorySource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/ImmunoTar-integrative-prioritization-of-cell-surface-targets/991022028237904721?institution=01DRXU_INST",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Prioritizes cell surface targets for cancer immunotherapy",
+          "githubPageChecked": false,
+          "note": "Source reports Sacan as Drexel corresponding author and links code; does not establish account ownership or affiliation of every contributor."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/6",
+      "observedDate": "2026-11-16",
+      "accountKey": "bioccjw",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Jefferson Department of Cancer Biology faculty paper",
+      "institutionAccountSource": "https://jdc.jefferson.edu/cbfp/195/",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Faculty paper collection; contributor affiliation and development location require independent verification",
+        "source": "https://jdc.jefferson.edu/cbfp/195/"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "bioccjw/ctpathway",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/6/repositories/0",
+          "institutionRepositorySource": "https://jdc.jefferson.edu/cbfp/195/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Cancer risk pathway enrichment analysis",
+          "githubPageChecked": false,
+          "note": "Source links collaborator code; does not establish account holder is Jefferson-affiliated."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/7",
+      "observedDate": "2026-11-16",
+      "accountKey": "dsin85691",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel-associated preprint",
+      "institutionAccountSource": "https://researchdiscovery.drexel.edu/esploro/outputs/preprint/Towards-Personalized-Treatment-Plan-Geometrical-Model-Agnostic/991022124263004721",
+      "relationshipBasis": "Institutional project page links this repository under the account; account ownership by any person is not established",
+      "affiliationTimeScope": "Source page observed 2026-11-16; current role and development location unverified",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Preprint identifies one Drexel creator; no development location established",
+        "source": "https://researchdiscovery.drexel.edu/esploro/outputs/preprint/Towards-Personalized-Treatment-Plan-Geometrical-Model-Agnostic/991022124263004721"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "dsin85691/ssba_for_counterfactuals",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/7/repositories/0",
+          "institutionRepositorySource": "https://researchdiscovery.drexel.edu/esploro/outputs/preprint/Towards-Personalized-Treatment-Plan-Geometrical-Model-Agnostic/991022124263004721",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Counterfactual explanation approach evaluated including a health dataset",
+          "githubPageChecked": false,
+          "note": "General method with a health application; account-to-person affiliation unresolved."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/8",
+      "observedDate": "2026-11-16",
+      "accountKey": "felixagbavor",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel biomedical engineering course project",
+      "institutionAccountSource": "https://sacan.urcf.drexel.edu/proj/?__route=%2Fdownload&cat=advbcomp&details=1&id=270&ticket=&type=report",
+      "relationshipBasis": "Student course report links project repository; account owner not established",
+      "affiliationTimeScope": "2020-12-08 student project; current status unknown",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Drexel School of Biomedical Engineering listed in course report; county unverified",
+        "source": "https://sacan.urcf.drexel.edu/proj/?__route=%2Fdownload&cat=advbcomp&details=1&id=270&ticket=&type=report"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "felixagbavor/bmes_550",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/8/repositories/0",
+          "institutionRepositorySource": "https://sacan.urcf.drexel.edu/proj/?__route=%2Fdownload&cat=advbcomp&details=1&id=270&ticket=&type=report",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Experimental pulmonary fibrosis CT image processing student project",
+          "githubPageChecked": false,
+          "note": "Historical student research; no clinical performance or current role claim."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/9",
+      "observedDate": "2026-11-16",
+      "accountKey": "mlbc-lab",
+      "personOccurrence": null,
+      "personAccountEdge": null,
+      "personResourceAssociation": null,
+      "institutionOrLab": "Drexel-associated research paper",
+      "institutionAccountSource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Deep-learning-multi-omics-integration-identifies-new/991022180789204721",
+      "relationshipBasis": "Research repository record links source code; account ownership and local contribution unresolved",
+      "affiliationTimeScope": "Research repository record; individual affiliation and current status not established",
+      "region": {
+        "municipality": null,
+        "county": null,
+        "basis": "Drexel research repository record; source-specific regional affiliation requires review",
+        "source": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Deep-learning-multi-omics-integration-identifies-new/991022180789204721"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "mlbc-lab/lungclust",
+          "evidence": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json#/accounts/9/repositories/0",
+          "institutionRepositorySource": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Deep-learning-multi-omics-integration-identifies-new/991022180789204721",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Multi-omics integration for lung cancer subtypes",
+          "githubPageChecked": false,
+          "note": "No clinical use claim."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    },
+    {
+      "id": "docs/discovery/go-live/evidence/GL05/root-account-leads.json#/accounts/0",
+      "observedDate": "2026-11-16",
+      "accountKey": "shannonpileggi",
+      "personOccurrence": {
+        "name": "Shannon Pileggi",
+        "role": "source-reported person; role requires source review"
+      },
+      "personAccountEdge": null,
+      "personResourceAssociation": {
+        "type": "source-person-resource-association",
+        "person": "Shannon Pileggi",
+        "repositoryKey": "shannonpileggi/gtreg",
+        "source": "https://shannonpileggi.github.io/gtreg/",
+        "qualification": "Documentation names author and maintainer; account control not authenticated."
+      },
+      "institutionOrLab": "gtreg clinical-research software; Adelphi Research (historical 2021 self-report)",
+      "institutionAccountSource": "https://shannonpileggi.github.io/gtreg/",
+      "relationshipBasis": "First-party gtreg documentation names Shannon Pileggi as author and maintainer and explicitly links shannonpileggi/gtreg. This supports a named person-to-software association; account control is not authenticated.",
+      "affiliationTimeScope": "2021-02-15 professional self-introduction reports statistician role in Doylestown, PA. The software site observed 2026-11-16 identifies Pileggi as author/maintainer; present-day employment and location unverified.",
+      "region": {
+        "municipality": "Doylestown",
+        "county": null,
+        "basis": "Dated professional self-introduction, not a current employer worksite or residence verification. County not independently sourced here.",
+        "source": "https://www.pipinghotdata.com/posts/2021-02-15-gganimating-a-geographic-introduction/"
+      },
+      "projectWorksite": null,
+      "currentEmployment": null,
+      "repositories": [
+        {
+          "repositoryKey": "shannonpileggi/gtreg",
+          "evidence": "docs/discovery/go-live/evidence/GL05/root-account-leads.json#/accounts/0/repositories/0",
+          "institutionRepositorySource": "https://shannonpileggi.github.io/gtreg/",
+          "namespaceBasis": "URL path only; native account and repository identity unverified",
+          "purpose": "Regulatory tables for clinical research, including adverse-event and patient-characteristic summaries.",
+          "githubPageChecked": false,
+          "note": "Developer documentation directly inspected. Repository native metadata and current professional affiliation remain unverified."
+        }
+      ],
+      "novelty": "unknown; reconcile against catalog and frontier",
+      "publicationAuthorized": false
+    }
+  ]
+}

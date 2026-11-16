@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "frozenBeforeSearchTuning": true,
+  "date": "2026-11-16",
+  "scope": "Prospective GL05 directory tasks are conditional on individually reviewed GL04 admissions. Native identities identify the intended artifacts; they do not admit legacy objects to the new directory. Legacy compatibility is tested separately against the retained pilot catalog and read API.",
+  "sources": [
+    "docs/discovery/go-live/work-packages.md#gl05--make-ordinary-search-and-browsing-useful",
+    "docs/discovery/go-live/architecture.md#search-that-answers-ordinary-questions--gl05",
+    "src/content/discovery-pilot-catalog.json",
+    "docs/discovery/go-live/execution/GL04-source-review.md"
+  ],
+  "identities": {
+    "sleepRepository": "github:617168725",
+    "sleepPublication": "crossref:10.1007/s11517-024-03096-x",
+    "openPbtaRepository": "github:192607622",
+    "openPbtaPublication": "crossref:10.1016/j.xgen.2023.100340",
+    "gastonPublication": "crossref:10.1038/s41592-024-02503-3",
+    "gastonRepository": "github:692249664",
+    "exerciseRepository": "github:760662846"
+  },
+  "tasks": [
+    {
+      "id": "sleep",
+      "queries": [
+        "sleep"
+      ],
+      "require": [
+        "sleepRepository",
+        "sleepPublication"
+      ],
+      "condition": "both admitted",
+      "reason": "SleepBoost title and supported citation"
+    },
+    {
+      "id": "camden-sleep",
+      "queries": [
+        "Camden sleep"
+      ],
+      "require": [
+        "sleepRepository",
+        "sleepPublication"
+      ],
+      "condition": "both admitted with retained citation and dated Camden context",
+      "reason": "one evidenced citation hop; regional affiliation is historical"
+    },
+    {
+      "id": "sleep-ai",
+      "queries": [
+        "sleep AI",
+        "sleep machine learning",
+        "sleep ML"
+      ],
+      "require": [
+        "sleepRepository",
+        "sleepPublication"
+      ],
+      "condition": "both admitted and ensemble classifier topic supported by reviewed evidence",
+      "reason": "sleep and reviewed AI topic, with explanation"
+    },
+    {
+      "id": "camden-county",
+      "queries": [
+        "Camden County"
+      ],
+      "require": [
+        "sleepRepository",
+        "sleepPublication"
+      ],
+      "condition": "both admitted with retained citation and dated Camden context"
+    },
+    {
+      "id": "mercer-county",
+      "queries": [
+        "Mercer County"
+      ],
+      "require": [
+        "gastonPublication"
+      ],
+      "condition": "six-work target: GASTON publication only; repository kind returns no Mercer result in this bounded selection"
+    },
+    {
+      "id": "gloucester-county",
+      "queries": [
+        "Gloucester County"
+      ],
+      "require": [
+        "openPbtaRepository",
+        "openPbtaPublication"
+      ],
+      "condition": "both admitted with retained citation and dated Rowan context"
+    },
+    {
+      "id": "rutgers-camden",
+      "queries": [
+        "Rutgers-Camden",
+        "Rutgers\u2013Camden",
+        "Rutgers Camden",
+        "Rutgers University\u2013Camden"
+      ],
+      "require": [
+        "sleepRepository",
+        "sleepPublication"
+      ],
+      "condition": "both admitted with retained citation and dated Rutgers-Camden context"
+    },
+    {
+      "id": "kind-filter",
+      "queries": [
+        "Camden sleep",
+        "sleep AI",
+        "Camden County",
+        "Gloucester County",
+        "Rutgers-Camden"
+      ],
+      "checks": "Each repository/publication kind filter keeps the corresponding required artifact and excludes the other kind; support records remain separately counted."
+    },
+    {
+      "id": "exact-native",
+      "queries": [
+        "760662846",
+        "10.1038/s41592-024-02503-3",
+        "https://doi.org/10.1038/s41592-024-02503-3",
+        "newilson/ExerciseCESTv2",
+        "https://github.com/newilson/ExerciseCESTv2"
+      ],
+      "checks": "Resolve corresponding admitted artifact by exact identity or URL. Do not require unrelated legacy objects in the new snapshot."
+    },
+    {
+      "id": "ai-substring",
+      "queries": [
+        "brain AI",
+        "HTML ML"
+      ],
+      "checks": "AI and ML are token-aware topics; brain and HTML alone cannot satisfy the acronym. Actual reviewed AI assignments may legitimately match."
+    },
+    {
+      "id": "unrelated-conjunction",
+      "queries": [
+        "ExerciseCESTv2 Mercer County",
+        "SleepBoost Gloucester County",
+        "OpenPBTA Camden County"
+      ],
+      "checks": "No cross-project or cross-county inference; no combination of unrelated neighbors. Return no corresponding named project."
+    },
+    {
+      "id": "counts-reset-order",
+      "queries": [
+        "sleep",
+        "Camden County",
+        ""
+      ],
+      "checks": "Facets and support counts describe the same generation and specified filter semantics; reset restores unfiltered state; empty/invalid input behavior is explicit; ordering is deterministic, match-strength then stable dates and ID for nonempty queries, with unknown dates and withdrawals handled explicitly."
+    }
+  ],
+  "historicalCompatibility": {
+    "source": "src/content/discovery-pilot-catalog.json",
+    "contract": "readDiscoveryPilot",
+    "objects": 28,
+    "directedRepositoryPublicationCitations": 9,
+    "checks": "All native identifiers remain discoverable and each retained citation preserves direction and both endpoint identities under exact identifier searches. This is historical pilot coverage, not automatic admission into the new snapshot."
+  }
+}

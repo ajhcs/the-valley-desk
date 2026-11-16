@@ -1,0 +1,620 @@
+{
+  "schemaVersion": "directory-selection-review-attestation-v1",
+  "id": "GL05:selection-review:sol:1",
+  "reviewedAt": "2026-11-16",
+  "status": "approved_for_source_slice_only",
+  "reviewer": "agent:sol_gl04_review",
+  "operator": "agent:root",
+  "selection": {
+    "path": "docs/discovery/go-live/evidence/GL05/selection.json",
+    "fileSha256": "4d5ce6ece7cf1f58f72502454e5adca0f199ef794f2b273470f1a967c64c050f",
+    "canonicalSha256": "bfdf4e30af54b9b87fe2af85c518a50a47b77ce393c3245107e04dd9ff40f4f7",
+    "allManifestFieldsReviewed": true
+  },
+  "priorState": {
+    "path": "docs/discovery/go-live/evidence/GL04/generations/cfb33800e554f75836f2fcc2c659b3edd37eb97ac66d7b1efd61f5f71bdb3891.json",
+    "sha256": "cfb33800e554f75836f2fcc2c659b3edd37eb97ac66d7b1efd61f5f71bdb3891"
+  },
+  "selectedEvidence": {
+    "docs/discovery/go-live/evidence/GL03/original/G04.json": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+    "docs/discovery/go-live/evidence/GL04/source-observations.json": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-gaston/body.json": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/regional-contexts.json": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+    "docs/discovery/go-live/evidence/GL05/source-observations.json": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/github-sleepboost/body.json": "66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/connector-observations.json": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-sleepboost/body.json": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/github-openpbta/body.json": "168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-openpbta/body.json": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d"
+  },
+  "additionalQualifiedInputs": {
+    "docs/discovery/go-live/evidence/GL03/original/plan.json": "3f83f5d516ea22490c986789b092444a676abf661c0daa85036f6aecadf3b2c0",
+    "docs/discovery/qualification/evidence/ror-chop-20261115/body.json": "d8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/github-sleepboost/observation.json": "fd5942605aa036f2b046ddab44bc3f4d35d736229dd55419f8e90194391d5496",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-sleepboost/observation.json": "c874ed334895c833b3d63bc29bd947058ee11fe2fcbc2933c3c663b3c045c55f",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/github-openpbta/observation.json": "880d03353a4a004d1fa12f484044816f3fdc93a269a7ae2bae4bf5db9049d6fb",
+    "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-openpbta/observation.json": "c756e1aedbfe7f9fa050848f4185a467b508df46fece0f489985ffdaa4d9f41a"
+  },
+  "fieldLevelDecisions": [
+    {
+      "candidateId": "G04",
+      "decision": "correction",
+      "target": {
+        "id": "GL04:work:github:760662846",
+        "revision": 1
+      },
+      "workId": "GL04:work:github:760662846",
+      "revision": 2,
+      "nativeIdentity": {
+        "provider": "github",
+        "namespace": null,
+        "nativeId": "760662846",
+        "evidenceId": "GL04:gid"
+      },
+      "kind": "repository",
+      "title": "newilson/ExerciseCESTv2",
+      "originalUrl": "https://github.com/newilson/ExerciseCESTv2",
+      "description": null,
+      "owner": null,
+      "sourceDate": null,
+      "checkedAt": "2026-11-16",
+      "claimsReviewed": [
+        {
+          "id": "GL04:claim:g04:purpose",
+          "subjectId": "GL04:work:github:760662846",
+          "evidenceIds": [
+            "GL04:purpose"
+          ],
+          "reviewId": "GL05:decision:G04",
+          "kind": "health-purpose",
+          "text": "Processes CrCEST imaging data and produces quantitative maps of creatine recovery and exchange."
+        },
+        {
+          "id": "GL04:claim:g04:region",
+          "subjectId": "GL04:work:github:760662846",
+          "evidenceIds": [
+            "GL04:purpose",
+            "GL04:center"
+          ],
+          "reviewId": "GL05:decision:G04",
+          "kind": "regional-connection",
+          "institution": "University of Pennsylvania",
+          "campus": null,
+          "municipality": "Philadelphia",
+          "state": "PA",
+          "regionalBasis": "municipality",
+          "county": null,
+          "asOf": {
+            "precision": "day",
+            "value": "2026-11-16"
+          },
+          "subjectRole": "project-association",
+          "subjectLabel": "CAMIPM CrCEST processing GUI",
+          "sourceAuthorIndex": null,
+          "affiliationEvidenceIds": [
+            "GL04:purpose",
+            "GL04:center"
+          ],
+          "geographyEvidenceIds": [
+            "GL04:center"
+          ],
+          "scope": "observed",
+          "qualification": "Institutional project association; not evidence of creator identity or code worksite."
+        },
+        {
+          "id": "GL05:claim:G04:medical-imaging",
+          "subjectId": "GL04:work:github:760662846",
+          "evidenceIds": [
+            "GL05:G04:topic:medical-imaging"
+          ],
+          "reviewId": "GL05:decision:G04",
+          "kind": "topic",
+          "topic": "medical-imaging",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relationsReviewed": [],
+      "workSha256ExcludingReviewRefs": "918b824a3a5d0cedc23c9cbeec3b98f24d80e22ba21ec7b68b6ba03ee456cf1b",
+      "receiptSha256": "b2a3e5dbb775c01a6f13bf8143e6f21ddb3c41e69e24bfd363d89b7930e2a9ba"
+    },
+    {
+      "candidateId": "GASTON",
+      "decision": "correction",
+      "target": {
+        "id": "GL04:work:crossref:gaston",
+        "revision": 1
+      },
+      "workId": "GL04:work:crossref:gaston",
+      "revision": 2,
+      "nativeIdentity": {
+        "provider": "crossref",
+        "namespace": null,
+        "nativeId": "10.1038/s41592-024-02503-3",
+        "evidenceId": "GL04:doi"
+      },
+      "kind": "publication",
+      "title": "Mapping the topography of spatial gene expression with interpretable deep learning",
+      "originalUrl": "https://doi.org/10.1038/s41592-024-02503-3",
+      "description": null,
+      "owner": null,
+      "sourceDate": {
+        "value": {
+          "precision": "day",
+          "value": "2025-01-23"
+        },
+        "evidenceId": "GL04:pdate"
+      },
+      "checkedAt": "2026-11-16",
+      "claimsReviewed": [
+        {
+          "id": "GL04:claim:gaston:purpose",
+          "subjectId": "GL04:work:crossref:gaston",
+          "evidenceIds": [
+            "GL04:gastonpurpose"
+          ],
+          "reviewId": "GL05:decision:GASTON",
+          "kind": "health-purpose",
+          "text": "Analyzes spatial gene expression, including tumor microenvironment research."
+        },
+        {
+          "id": "GL04:claim:gaston:region",
+          "subjectId": "GL04:work:crossref:gaston",
+          "evidenceIds": [
+            "GL04:pregion",
+            "GL04:pgeography"
+          ],
+          "reviewId": "GL05:decision:GASTON",
+          "kind": "regional-connection",
+          "institution": "Princeton University",
+          "campus": "Princeton Computer Science main building, 35 Olden Street",
+          "municipality": "Princeton",
+          "state": "NJ",
+          "regionalBasis": "campus",
+          "county": "Mercer",
+          "asOf": {
+            "precision": "year",
+            "value": "2025"
+          },
+          "subjectRole": "author-affiliation",
+          "subjectLabel": "Uthsav Chitra",
+          "sourceAuthorIndex": 0,
+          "affiliationEvidenceIds": [
+            "GL04:pregion"
+          ],
+          "geographyEvidenceIds": [
+            "GL04:pgeography"
+          ],
+          "scope": "historical",
+          "qualification": "Publication author affiliation at publication; not current employment or worksite."
+        },
+        {
+          "id": "GL05:claim:GASTON:machine-learning",
+          "subjectId": "GL04:work:crossref:gaston",
+          "evidenceIds": [
+            "GL05:GASTON:topic:machine-learning"
+          ],
+          "reviewId": "GL05:decision:GASTON",
+          "kind": "topic",
+          "topic": "machine-learning",
+          "vocabularyRevision": "directory-topics-v1"
+        },
+        {
+          "id": "GL05:claim:GASTON:biomedical-data",
+          "subjectId": "GL04:work:crossref:gaston",
+          "evidenceIds": [
+            "GL05:GASTON:topic:biomedical-data"
+          ],
+          "reviewId": "GL05:decision:GASTON",
+          "kind": "topic",
+          "topic": "biomedical-data",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relationsReviewed": [],
+      "workSha256ExcludingReviewRefs": "fe3fc2b9679ebcb1107ab4a20ac119d180485c7035e60322e133173b9ac7b19f",
+      "receiptSha256": "ce43bde2c149aeb8ab9682603bc4c6a67e46232cc11036b8e8b702967471f6c9"
+    },
+    {
+      "candidateId": "sleepboost-repo",
+      "decision": "accept",
+      "target": null,
+      "workId": "GL05:work:github:617168725",
+      "revision": 1,
+      "nativeIdentity": {
+        "provider": "github",
+        "namespace": null,
+        "nativeId": "617168725",
+        "evidenceId": "GL05:sleepboost-repo:id"
+      },
+      "kind": "repository",
+      "title": "akibzaman/SleepBoost",
+      "originalUrl": "https://github.com/akibzaman/SleepBoost",
+      "description": null,
+      "owner": null,
+      "sourceDate": null,
+      "checkedAt": "2026-11-16",
+      "claimsReviewed": [
+        {
+          "id": "GL05:claim:sleepboost-repo:purpose",
+          "subjectId": "GL05:work:github:617168725",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo",
+          "kind": "health-purpose",
+          "text": "A tree-based ensemble model for automatic sleep-stage classification."
+        },
+        {
+          "id": "GL05:claim:sleepboost-repo:region",
+          "subjectId": "GL05:work:github:617168725",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:purpose",
+            "GL05:sleepboost-repo:location",
+            "GL05:sleepboost-repo:edge"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo",
+          "kind": "regional-connection",
+          "institution": "Rutgers University–Camden",
+          "campus": null,
+          "municipality": "Camden",
+          "state": "NJ",
+          "regionalBasis": "municipality",
+          "county": null,
+          "asOf": {
+            "precision": "day",
+            "value": "2024-06-03"
+          },
+          "subjectRole": "project-association",
+          "subjectLabel": "SleepBoost",
+          "sourceAuthorIndex": null,
+          "affiliationEvidenceIds": [
+            "GL05:sleepboost-repo:purpose",
+            "GL05:sleepboost-repo:edge"
+          ],
+          "geographyEvidenceIds": [
+            "GL05:sleepboost-repo:location"
+          ],
+          "scope": "historical",
+          "qualification": "Regional research project association; not account identity, ownership, creator location or current employment."
+        },
+        {
+          "id": "GL05:claim:sleepboost-repo:sleep",
+          "subjectId": "GL05:work:github:617168725",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo",
+          "kind": "topic",
+          "topic": "sleep",
+          "vocabularyRevision": "directory-topics-v1"
+        },
+        {
+          "id": "GL05:claim:sleepboost-repo:machine-learning",
+          "subjectId": "GL05:work:github:617168725",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo",
+          "kind": "topic",
+          "topic": "machine-learning",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relationsReviewed": [
+        {
+          "id": "GL05:relation:sleepboost-repo:publication",
+          "fromId": "GL05:work:github:617168725",
+          "toId": "GL05:work:crossref:sleepboost",
+          "predicate": "repository-cites-work",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:edge"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo"
+        }
+      ],
+      "workSha256ExcludingReviewRefs": "01fe0d1b298c0decc337282dddd777df071fa16309c2e643b7af3251ed505b46",
+      "receiptSha256": "2dec3095e417f50578ba1ccad1f2af14df7297515b2681c99e3d6cfd4688f4e0"
+    },
+    {
+      "candidateId": "sleepboost-publication",
+      "decision": "accept",
+      "target": null,
+      "workId": "GL05:work:crossref:sleepboost",
+      "revision": 1,
+      "nativeIdentity": {
+        "provider": "crossref",
+        "namespace": null,
+        "nativeId": "10.1007/s11517-024-03096-x",
+        "evidenceId": "GL05:sleepboost-publication:id"
+      },
+      "kind": "publication",
+      "title": "SleepBoost: a multi-level tree-based ensemble model for automatic sleep stage classification",
+      "originalUrl": "https://doi.org/10.1007/s11517-024-03096-x",
+      "description": null,
+      "owner": null,
+      "sourceDate": {
+        "value": {
+          "precision": "day",
+          "value": "2024-05-03"
+        },
+        "evidenceId": "GL05:sleepboost-publication:date"
+      },
+      "checkedAt": "2026-11-16",
+      "claimsReviewed": [
+        {
+          "id": "GL05:claim:sleepboost-publication:purpose",
+          "subjectId": "GL05:work:crossref:sleepboost",
+          "evidenceIds": [
+            "GL05:sleepboost-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-publication",
+          "kind": "health-purpose",
+          "text": "A tree-based ensemble model for automatic sleep-stage classification."
+        },
+        {
+          "id": "GL05:claim:sleepboost-publication:region",
+          "subjectId": "GL05:work:crossref:sleepboost",
+          "evidenceIds": [
+            "GL05:sleepboost-publication:affiliation",
+            "GL05:sleepboost-publication:geography"
+          ],
+          "reviewId": "GL05:decision:sleepboost-publication",
+          "kind": "regional-connection",
+          "institution": "Rutgers University–Camden",
+          "campus": "Rutgers University–Camden campus",
+          "municipality": "Camden",
+          "state": "NJ",
+          "regionalBasis": "campus",
+          "county": "Camden",
+          "asOf": {
+            "precision": "year",
+            "value": "2024"
+          },
+          "subjectRole": "author-affiliation",
+          "subjectLabel": "Iman Dehzangi",
+          "sourceAuthorIndex": 3,
+          "affiliationEvidenceIds": [
+            "GL05:sleepboost-publication:affiliation"
+          ],
+          "geographyEvidenceIds": [
+            "GL05:sleepboost-publication:geography"
+          ],
+          "scope": "historical",
+          "qualification": "Author affiliation at publication; not current employment, account identity or code worksite."
+        },
+        {
+          "id": "GL05:claim:sleepboost-publication:sleep",
+          "subjectId": "GL05:work:crossref:sleepboost",
+          "evidenceIds": [
+            "GL05:sleepboost-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-publication",
+          "kind": "topic",
+          "topic": "sleep",
+          "vocabularyRevision": "directory-topics-v1"
+        },
+        {
+          "id": "GL05:claim:sleepboost-publication:machine-learning",
+          "subjectId": "GL05:work:crossref:sleepboost",
+          "evidenceIds": [
+            "GL05:sleepboost-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-publication",
+          "kind": "topic",
+          "topic": "machine-learning",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relationsReviewed": [],
+      "workSha256ExcludingReviewRefs": "7c4c046353fefb817484e9dbc6766cf13c0d8a1cc8c1324d5beb469ddfeed69a",
+      "receiptSha256": "98fe4baa8e85c50f070237fb2874aad97c4bf05f08ac50141562821ca54f2c0d"
+    },
+    {
+      "candidateId": "openpbta-repo",
+      "decision": "accept",
+      "target": null,
+      "workId": "GL05:work:github:192607622",
+      "revision": 1,
+      "nativeIdentity": {
+        "provider": "github",
+        "namespace": null,
+        "nativeId": "192607622",
+        "evidenceId": "GL05:openpbta-repo:id"
+      },
+      "kind": "repository",
+      "title": "AlexsLemonade/OpenPBTA-analysis",
+      "originalUrl": "https://github.com/AlexsLemonade/OpenPBTA-analysis",
+      "description": null,
+      "owner": null,
+      "sourceDate": null,
+      "checkedAt": "2026-11-16",
+      "claimsReviewed": [
+        {
+          "id": "GL05:claim:openpbta-repo:purpose",
+          "subjectId": "GL05:work:github:192607622",
+          "evidenceIds": [
+            "GL05:openpbta-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:openpbta-repo",
+          "kind": "health-purpose",
+          "text": "Open collaborative analysis of pediatric brain tumor data."
+        },
+        {
+          "id": "GL05:claim:openpbta-repo:region",
+          "subjectId": "GL05:work:github:192607622",
+          "evidenceIds": [
+            "GL05:openpbta-repo:purpose",
+            "GL05:openpbta-repo:location",
+            "GL05:openpbta-repo:edge"
+          ],
+          "reviewId": "GL05:decision:openpbta-repo",
+          "kind": "regional-connection",
+          "institution": "Children’s Hospital of Philadelphia",
+          "campus": null,
+          "municipality": "Philadelphia",
+          "state": "PA",
+          "regionalBasis": "municipality",
+          "county": null,
+          "asOf": {
+            "precision": "month",
+            "value": "2022-10"
+          },
+          "subjectRole": "project-association",
+          "subjectLabel": "OpenPBTA",
+          "sourceAuthorIndex": null,
+          "affiliationEvidenceIds": [
+            "GL05:openpbta-repo:purpose",
+            "GL05:openpbta-repo:edge"
+          ],
+          "geographyEvidenceIds": [
+            "GL05:openpbta-repo:location"
+          ],
+          "scope": "historical",
+          "qualification": "Project association dated October 2022; page checked 2026-11-16, not proof of current maintenance or worksite."
+        },
+        {
+          "id": "GL05:claim:openpbta-repo:biomedical-data",
+          "subjectId": "GL05:work:github:192607622",
+          "evidenceIds": [
+            "GL05:openpbta-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:openpbta-repo",
+          "kind": "topic",
+          "topic": "biomedical-data",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relationsReviewed": [
+        {
+          "id": "GL05:relation:openpbta-repo:publication",
+          "fromId": "GL05:work:github:192607622",
+          "toId": "GL05:work:crossref:openpbta",
+          "predicate": "repository-cites-work",
+          "evidenceIds": [
+            "GL05:openpbta-repo:edge"
+          ],
+          "reviewId": "GL05:decision:openpbta-repo"
+        }
+      ],
+      "workSha256ExcludingReviewRefs": "71b132e68bc79fe308a7d49f3de6fa640b393e7c358a7b256c14bb5da66d40f9",
+      "receiptSha256": "8c404d363d8dd8322f8e372ea61d6ee4bf1c9a33a20bdbd7ae41f2392f41123e"
+    },
+    {
+      "candidateId": "openpbta-publication",
+      "decision": "accept",
+      "target": null,
+      "workId": "GL05:work:crossref:openpbta",
+      "revision": 1,
+      "nativeIdentity": {
+        "provider": "crossref",
+        "namespace": null,
+        "nativeId": "10.1016/j.xgen.2023.100340",
+        "evidenceId": "GL05:openpbta-publication:id"
+      },
+      "kind": "publication",
+      "title": "OpenPBTA: The Open Pediatric Brain Tumor Atlas",
+      "originalUrl": "https://doi.org/10.1016/j.xgen.2023.100340",
+      "description": null,
+      "owner": null,
+      "sourceDate": {
+        "value": {
+          "precision": "month",
+          "value": "2023-07"
+        },
+        "evidenceId": "GL05:openpbta-publication:date"
+      },
+      "checkedAt": "2026-11-16",
+      "claimsReviewed": [
+        {
+          "id": "GL05:claim:openpbta-publication:purpose",
+          "subjectId": "GL05:work:crossref:openpbta",
+          "evidenceIds": [
+            "GL05:openpbta-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:openpbta-publication",
+          "kind": "health-purpose",
+          "text": "Open collaborative analysis of pediatric brain tumor data."
+        },
+        {
+          "id": "GL05:claim:openpbta-publication:region",
+          "subjectId": "GL05:work:crossref:openpbta",
+          "evidenceIds": [
+            "GL05:openpbta-publication:affiliation",
+            "GL05:openpbta-publication:geography"
+          ],
+          "reviewId": "GL05:decision:openpbta-publication",
+          "kind": "regional-connection",
+          "institution": "Rowan University",
+          "campus": "Rowan University Glassboro main campus",
+          "municipality": "Glassboro",
+          "state": "NJ",
+          "regionalBasis": "campus",
+          "county": "Gloucester",
+          "asOf": {
+            "precision": "year",
+            "value": "2023"
+          },
+          "subjectRole": "author-affiliation",
+          "subjectLabel": "Stephanie J. Spielman",
+          "sourceAuthorIndex": 2,
+          "affiliationEvidenceIds": [
+            "GL05:openpbta-publication:affiliation"
+          ],
+          "geographyEvidenceIds": [
+            "GL05:openpbta-publication:geography"
+          ],
+          "scope": "historical",
+          "qualification": "Author affiliation at publication; not current employment, account identity or code worksite."
+        },
+        {
+          "id": "GL05:claim:openpbta-publication:biomedical-data",
+          "subjectId": "GL05:work:crossref:openpbta",
+          "evidenceIds": [
+            "GL05:openpbta-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:openpbta-publication",
+          "kind": "topic",
+          "topic": "biomedical-data",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relationsReviewed": [],
+      "workSha256ExcludingReviewRefs": "919d21e6f2d332e4432c0061316a611f48ebf0427c1089312ce78a1ed59cfd96",
+      "receiptSha256": "ae22d98fbb713821964d7d0ee6aea3c2c4e32bd1858bfce51ce6e22a5e1b4b67"
+    }
+  ],
+  "counts": {
+    "priorWorksCorrectedForTopics": 2,
+    "newWorkAdmissions": 4,
+    "resultingWorks": 6,
+    "repositoryToPublicationRelations": 2,
+    "peopleCount": null,
+    "verifiedProjectGroupCount": null
+  },
+  "independentJudgments": [
+    "Exact retained native GitHub/Crossref IDs, row/field pointers, URLs, kinds and publication date precision agree with qualified captures and receipts. Description and owner fields remain absent. No account is equated to an author.",
+    "Indexed primary Rutgers announcement independently confirms SleepBoost, ensemble sleep-stage classification, exact repository URL, June3 2024 and Iman Dehzangi at Rutgers-Camden. Native publication occurrence3 is Iman; the GitHub User is not resolved to any author. No refused direct route was retried.",
+    "Indexed primary PubMed37492101 independently maps occurrence2 Stephanie J. Spielman to Rowan. Native Crossref name/index, all other source authors and empty affiliation arrays remain unchanged and distinct from regional context.",
+    "Direct primary ALSF OpenPBTA page confirms pediatric brain-tumor analysis and ALSF/CHOP D3B participation. The page explicitly says published October2022 and contains stale manuscript-stage text. The fixed repository claim uses historical2022-10, distinct from checked2026-11-16, and excludes current maintenance/worksite. The qualified ROR city is institution context only.",
+    "Existing G04 medical-imaging and GASTON machine-learning/biomedical-data topics follow independently reviewed primary Penn/Princeton facts. Their revision2 changes add topics and review material without changing original work facts or dates.",
+    "Both repository-to-paper citations bind exact retained connector observations and immutable permalinks. No reverse code-availability, coauthorship, account control or project group is inferred."
+  ],
+  "sourceUseBoundary": "Only reviewed factual metadata, short purpose/topic judgments, dated scoped regional associations and safe original links. No new source body, abstract, README, code, contact, biography, image or profile reuse is granted.",
+  "authorityBoundary": "Root must separately pin this immutable actual review artifact and entire canonical selection in trusted PR-controlled code. Candidate/model assertions, names, confidence, receipts and self-rehashed manifests alone cannot authorize publication. Same-user modification of trusted code remains outside this boundary. Roles identify authorized agent workflow responsibility, not human benchmark annotation or cryptographic person authentication.",
+  "limits": [
+    "Source-slice approval only: no GL05 A1-A5, search/facet/ranking correctness, API/HTML acceptance, release readiness, production activation or deployment is granted.",
+    "Four admissions are repository/publication work objects, not four independent projects or people. No popularity, complete biography or paper-absence prerequisite was applied.",
+    "OpenPBTA is archived in retained native metadata. The lean DTO makes no active-maintenance claim; supported archival status remains a launch presentation obligation when exposed.",
+    "SleepBoost repository: historical2024-06-03 project association, county null. Publication author3: historical2024 Rutgers-Camden/county. OpenPBTA repository: historical2022-10 CHOP project association, county null. Publication author2: historical2023 Rowan/Gloucester. Related search must retain these exact roles.",
+    "OpenPBTA source date2023-07 is the Crossref published month; it is not an assertion of first online publication or an invented day.",
+    "The old28 objects, nine citations, three regional contexts, GL04 selection/attestation/state/archive and GL03 held/failed source evidence remain unchanged. This approval does not promote all nine legacy pairs or close GL09 breadth.",
+    "All wider PA/NJ account/person/repository maps remain private candidates outside this publication approval. Counts do not establish health eligibility, current employment, account ownership, geography completeness or novelty."
+  ],
+  "diagnosticEvidence": {
+    "path": "/workspace/build/builderbob/tvd-gl05-20261116/sol/source-review-probes.initial.json",
+    "sha256": "ff47e78458e1ad7922011417c2c3645cab2bccd703d425edc4d9275c66339609",
+    "cases": 18,
+    "scope": "Independent positive/source/authority/adverse tests use diagnostic trust for semantic guards, never a publication grant."
+  },
+  "repairedSourceFinding": "OpenPBTA primary publication October2022 was initially represented as observed2026 association. Both observation entries and public claim now preserve historical2022-10, separate checked2026-11-16 and exclude maintenance/worksite renewal."
+}
