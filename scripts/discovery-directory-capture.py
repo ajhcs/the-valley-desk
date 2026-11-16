@@ -37,11 +37,24 @@ def capture(batch,request_id):
         if sha(Path(name).read_bytes())!=digest: raise Withheld('method-drift')
     plan=json.loads((batch/'plan.json').read_text())
     manifest=json.loads((batch/'request-manifest.json').read_text())
+    source_paths={
+        'GL03-request-manifest-v1':('docs/discovery/go-live/execution/GL03-request-manifest.json','docs/discovery/go-live/execution/GL03-source-preflight.md'),
+        'GL03-supplemental-request-v2':('docs/discovery/go-live/execution/GL03-supplemental-request-manifest.json','docs/discovery/go-live/execution/GL03-supplemental-preflight.md')}
+    if manifest.get('id') not in source_paths: raise Withheld('unknown-manifest')
+    manifest_source,preflight_source=source_paths[manifest['id']]
+    if sha((batch/'request-manifest.json').read_bytes())!=methods.get(manifest_source) or sha((batch/'preflight.md').read_bytes())!=methods.get(preflight_source): raise Withheld('copied-scope-drift')
     if sha(canonical(methods).encode())!=plan['approvedScopeSha256']: raise Withheld('scope-drift')
     pages=[p for p in plan['pages'] if p['id']==request_id]
     definitions=[p for p in manifest['requests'] if p['id']==request_id]
     if len(pages)!=1 or len(definitions)!=1: raise Withheld('unplanned-request')
     page=pages[0];definition=definitions[0]
+    # Supplemental qualification carries the closed original batch's charges and holds.
+    # These exact files are included in the frozen scope; no provider refusal bypass.
+    for prior in manifest.get('prior_receipts',[]):
+        native=Path(prior['path']).read_bytes()
+        if sha(native)!=prior['sha256']: raise Withheld('prior-receipt-drift')
+        previous=json.loads(native)['receipt']
+        if prior['provider']==page['provider'] and previous['status'] in ('refused','rate-limited'): raise Withheld('prior-provider-held')
     if page['url']!=definition['url']: raise Withheld('request-drift')
     parsed=urlsplit(page['url'])
     if parsed.scheme!='https' or parsed.hostname not in ('api.github.com','api.crossref.org') or parsed.port not in (None,443) or parsed.username or parsed.password or parsed.fragment: raise Withheld('request-drift')
@@ -67,7 +80,7 @@ def capture(batch,request_id):
         if response.status!=200:
             receipt['status']='rate-limited' if response.status==429 else 'refused' if response.status in (401,403) or 300<=response.status<400 else 'unavailable'
             raise Withheld('http-'+str(response.status))
-        for name in ('content-type','content-encoding','content-length','link'):
+        for name in ('content-type','content-encoding','content-length') + (() if definition.get('continuation_policy')=='opaque_unknown' else ('link',)):
             if sum(k.lower()==name for k,_ in response.getheaders())>1: raise Withheld('duplicate-header')
         encoding=response.getheader('Content-Encoding','identity').strip().lower()
         mime=response.getheader('Content-Type','').strip().lower()
@@ -84,7 +97,7 @@ def capture(batch,request_id):
         if length is not None and int(length)!=len(body): raise Withheld('incomplete-body')
         try: body.decode('utf-8',errors='strict');receipt['utf8']='valid'
         except UnicodeDecodeError: receipt['utf8']='invalid';raise Withheld('utf8')
-        result=node('scripts/discovery-directory-inspect.mjs',{'bodyBase64':base64.b64encode(body).decode(),'requestManifest':manifest,'requestId':request_id,'page':page,'permit':permit,'manifestSha256':permit['manifestSha256'],'linkHeader':response.getheader('Link'),'observedDate':utc()[:10],'parserSha256':page['parserSha256']},timeout=remaining())
+        result=node('scripts/discovery-directory-inspect.mjs',{'bodyBase64':base64.b64encode(body).decode(),'requestManifest':manifest,'requestId':request_id,'page':page,'permit':permit,'manifestSha256':permit['manifestSha256'],'linkHeader':None if definition.get('continuation_policy')=='opaque_unknown' else response.getheader('Link'),'observedDate':utc()[:10],'parserSha256':page['parserSha256']},timeout=remaining())
         packet=result['packet'];audit.update(result['summary'])
         receipt.update(status='received',nativeBodySha256=packet['nativeBodySha256'],projectionSha256=packet['projectionSha256'],packetSha256=sha(canonical(packet).encode()),parserRevision=page['parserRevision'],parserSha256=page['parserSha256'])
     except Exception as error:

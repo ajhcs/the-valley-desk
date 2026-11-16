@@ -88,17 +88,18 @@ export function inspect(bytes,definition,page,permit,manifestSha,header,observed
    pointers={nativeId:point+'/id',title:point+'/full_name',url:point+'/html_url',ownerType:point+'/owner/type',archived:point+'/archived',fork:point+'/fork',sourceVersion:null,sourceDates:dates.map(d=>({field:d.field,pointer:point+'/'+d.field}))};
   }else{
    keys(row,['DOI','title','type','published','URL']);nativeId=str(row.DOI);if(!/^10\.\d{4,9}\/\S+$/.test(nativeId)||!Array.isArray(row.title)||!row.title.length||row.title.length>5||row.title.some(t=>typeof t!=='string'))fail('publication-identity');
-   title=str(row.title[0]);if(!['journal-article','proceedings-article','book-chapter','dissertation','report'].includes(row.type))fail('publication-identity');link=str(row.URL);if(url(link).hostname!=='doi.org'||decodeURIComponent(new URL(link).pathname.slice(1)).toLowerCase()!==nativeId.toLowerCase())fail('publication-identity');dates=published(row.published);
+   title=str(row.title[0]);if(definition.parameters.filter==='type:journal-article'&&row.type!=='journal-article')fail('publication-identity');if(!['journal-article','proceedings-article','book-chapter','dissertation','report'].includes(row.type))fail('publication-identity');link=str(row.URL);if(url(link).hostname!=='doi.org'||decodeURIComponent(new URL(link).pathname.slice(1)).toLowerCase()!==nativeId.toLowerCase())fail('publication-identity');dates=published(row.published);
    pointers={nativeId:point+'/DOI',title:point+'/title/0',url:point+'/URL',ownerType:null,archived:null,fork:null,sourceVersion:null,sourceDates:dates.map(d=>({field:d.field,pointer:point+'/published/date-parts/0'}))};
   }
   const frontier={schemaVersion:'discovery-directory-private-frontier-v1',id:'GL03:lead:'+sha(definition.provider+'\n'+nativeId.toLowerCase()),revision:1,source:{kind:'collection-lead',provider:definition.provider,sourceId:page.sourceId,scopeId:page.scopeId,pageReceiptId:receiptId,requestSha256:permit.requestSha256,representationSha256:nativeBodySha256,leadIndex:index,lead:{nativeId,kind:'artifact',displayName:title,artifactKind:definition.provider==='github'?'repository':'publication',sourceStage:definition.provider==='github'?'baseline':'publication',sourceDates:dates,relatedAccounts:[],unresolvedPeople:[],publicationAuthorized:false}},disposition:'pending',duplicateOf:null,reason:null,publicationAuthorized:false};
   return {nativeId,kind:definition.provider==='github'?'repository':'publication',title,url:link,pointers,ownerType,archived,fork,frontier};
  });
  const ids=facts.map(f=>f.nativeId.toLowerCase());if(new Set(ids).size!==ids.length)fail('duplicate-native-identity');
- const next=continuation(header,definition,rows.length,incomplete,total),state=next.state;
+ // This separately qualified one-page policy never interprets or follows Link.
+ const next=definition.continuation_policy==='opaque_unknown'?{state:'unknown',nextUrl:null}:continuation(header,definition,rows.length,incomplete,total),state=next.state;
  const request={method:page.method,url:next.nextUrl,accept:page.accept,encoding:page.encoding,userAgent:page.userAgent,githubApiVersion:page.githubApiVersion,maxBytes:page.maxBytes,timeoutMs:page.timeoutMs,redirects:page.redirects};
  const packet=DirectoryFactPacketSchema.parse({schemaVersion:'directory-factual-page-v1',publicationAuthorized:false,receiptId,pageId:page.id,manifestSha256:manifestSha,qualificationSha256:page.qualificationSha256,requestSha256:permit.requestSha256,nativeBodySha256,parserSha256:parserSha,parserRevision:page.parserRevision,observedDate,continuation:state,nextRequestSha256:next.nextUrl?sha(canonical(request)):null,providerIncomplete:incomplete,facts,projectionSha256:sha(canonical(facts))});
- return {packet,summary:{itemCount:facts.length,providerTotal:total,providerIncomplete:incomplete,continuation:state,rawBodyRetained:false,bodyProjectionReproducible:false}};
+ return {packet,summary:{itemCount:facts.length,providerTotal:total,providerIncomplete:incomplete,continuation:state,continuationPolicy:definition.continuation_policy??'strict_link',rawBodyRetained:false,bodyProjectionReproducible:false}};
 }
 if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url){
  try{
