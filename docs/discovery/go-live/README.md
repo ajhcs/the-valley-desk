@@ -51,12 +51,32 @@ audit and secret scan passed. The full regression preceded the final narrowly
 scoped refinements; their latest code was tested separately. Updated-head CI is
 tracked on PR30, and no exact release-head pass is inferred.
 
-GL04 is the next package. All eight leads need claim, relevance, region and rights
-review. The public catalog still contains the original 28 records. No Worker,
-route, scheduler, production configuration, remote migration, source enrollment
-or release changed. Broader Organization inventory qualification and regional
-coverage remain GL09 work. GL11 readiness remains open; deployment is authorized
-within its scope but has not occurred.
+GL04 is accepted for the PR-reviewed snapshot workflow. Its first generation
+contains two reviewed works: a paperless-route CrCEST MRI repository and a
+standalone GASTON publication. Seven GL03 leads and three failed scopes remain
+held and traceable. The builder binds the entire selection to independently
+reviewed source approval, checks native/observational source roles, and preserves
+immutable prior generations for corrections and removals. Native-identity
+suppression prevents re-admission under another internal ID.
+
+The versioned API and script-free HTML use only generated public artifacts. Their
+new flag is off by default; old `/discover` and `/api/discovery-pilot` behavior
+remains separate. The existing 28-record snapshot, nine citations and three
+historical regional contexts are unchanged. See [GL04 acceptance](execution/GL04-acceptance.json),
+[Sol review](execution/GL04-sol-review.md) and
+[operator workflow](execution/GL04-operator-workflow.md).
+
+Source commit `30737e` passed 1,519 application/Watch/Discovery tests (including
+21 focused GL04 tests), seven PDF regressions, build/typecheck, local smoke,
+audit with zero reported vulnerabilities, and secret scan. All 665 retained
+runtime inputs stayed unchanged. Ten actual loopback workerd HTTP checks passed;
+this is local integration evidence, not a deployed or human-reader result.
+Updated-head CI remains separately tracked on PR30.
+
+GL05 is next. Ordinary search, product navigation, creator views, upkeep, broader
+source/county coverage, reader validation and release remain GL05–GL11 work.
+No production configuration, scheduler, remote migration, source enrollment or
+release changed. Deployment remains authorized when GL11 readiness is met.
 
 ## Product decisions
 

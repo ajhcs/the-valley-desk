@@ -1,0 +1,17 @@
+{
+  "baseline": "8375b65af71b23f5f7259287780b57e9f55a9478",
+  "baselineTrackedFiles": 1179,
+  "changedExistingPaths": [
+    "docs/discovery/go-live/README.md",
+    "docs/discovery/go-live/plan.json",
+    "package.json",
+    "worker.js"
+  ],
+  "unchangedExistingPaths": 1175,
+  "unexpectedChanges": [],
+  "original31PackageObjectsMPAcceptanceModelsNativeRecordsAndHistoricalReceiptsPreserved": true,
+  "oldCatalogRecords": 28,
+  "oldCitations": 9,
+  "oldRegionalContexts": 3,
+  "note": "Worker and test/build script wiring are scoped new behavior; active go-live status documents change. No old source record/model/historical receipt is rewritten."
+}

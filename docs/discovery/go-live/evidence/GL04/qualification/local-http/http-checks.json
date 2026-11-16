@@ -1,0 +1,106 @@
+{
+  "scope": "Actual loopback local workerd HTTP, minimal config; no database/cron/credentials/source collection/deploy",
+  "requests": [
+    {
+      "path": "/api/discovery/v1/works",
+      "method": "GET",
+      "status": 200,
+      "bytes": 7367,
+      "sha256": "def8422b241844c63f6a549a76404c4f5e0ec06a0d09c0c712e4fc3fac025249",
+      "contentType": "application/json; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    },
+    {
+      "path": "/api/discovery/v1/works/GL04%3Awork%3Acrossref%3Agaston",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4314,
+      "sha256": "2a2533d0fbd0e12788783ec28ace77f3a0247b002ae37f9b0132f30f864d3549",
+      "contentType": "application/json; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    },
+    {
+      "path": "/discover/work/GL04%3Awork%3Acrossref%3Agaston",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4257,
+      "sha256": "5046b63c69bb29ef091d69ad76b10e7de4447cb126c62439e0a6e2142db4a95a",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    },
+    {
+      "path": "/discover/work/GL04%3Awork%3Acrossref%3Agaston",
+      "method": "HEAD",
+      "status": 200,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    },
+    {
+      "path": "/api/discovery/v1/works/GL04%3Awork%3Agithub%3A760662846",
+      "method": "GET",
+      "status": 200,
+      "bytes": 3066,
+      "sha256": "1ac3889e289e78cae1868efcdbb6fcda2249364bf2dd135d4a2141948d0d38cf",
+      "contentType": "application/json; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    },
+    {
+      "path": "/discover/work/GL04%3Awork%3Agithub%3A760662846",
+      "method": "GET",
+      "status": 200,
+      "bytes": 2808,
+      "sha256": "0dc6183aef8deff42bc4030fc6b048ca7ad230d201b2c2bf8429e4dec09c4e30",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    },
+    {
+      "path": "/discover/work/GL04%3Awork%3Agithub%3A760662846",
+      "method": "HEAD",
+      "status": 200,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    },
+    {
+      "path": "/discover/works",
+      "method": "GET",
+      "status": 200,
+      "bytes": 2081,
+      "sha256": "b059dcf03d2beaee92ad4396f10370538520a36a8dc5242ae2f21e97d5c4f2af",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    },
+    {
+      "path": "/api/discovery/v1/works?q=x&q=y",
+      "method": "GET",
+      "status": 400,
+      "bytes": 34,
+      "sha256": "7f2000300f4a4a9883c11fe60d37b2c64c5135cf848232e0ff7d872d85b07d11",
+      "contentType": "application/json; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    },
+    {
+      "path": "/api/discovery/v1/works",
+      "method": "POST",
+      "status": 405,
+      "bytes": 39,
+      "sha256": "a5f3b1537d2507fc86985be6af312368daf95345a386f63409e88b8078843075",
+      "contentType": "application/json; charset=utf-8",
+      "cacheControl": "no-store",
+      "robots": "noindex"
+    }
+  ],
+  "checksPassed": true
+}

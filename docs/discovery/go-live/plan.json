@@ -1,7 +1,7 @@
 {
   "id": "TVD-GO-LIVE-1",
   "decision": "EX32",
-  "revision": 3,
+  "revision": 4,
   "status": "implementation_in_progress",
   "source_baseline": "60d6bd3aaba90a4970821f41fb2ca0329cbf8d20",
   "authority": "On 16 November 2026 the user authorized implementation beginning GL00 and following accepted dependencies, Terra implementation with independent Sol review, commits and PR updates, and deployment as appropriate. Deployment authority covers the reviewed existing-site GL11 release when its actual readiness conditions are met; it does not accept unimplemented work, permit unrelated infrastructure changes, new paid services or outreach.",
@@ -229,7 +229,7 @@
         "G04",
         "G05"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "work": "work-packages.md#gl04--review-lean-records-and-build-the-public-projection",
       "acceptance_ids": [
         "GL04-A1",
@@ -238,8 +238,42 @@
         "GL04-A4",
         "GL04-A5"
       ],
-      "acceptance": null,
-      "findings": []
+      "acceptance": {
+        "recorded_at": "2026-11-16T23:19:41.640269+00:00",
+        "scope": "PR-reviewed snapshot workflow and bounded two-record source slice; new API/HTML remain default-off; not broad coverage, reader validation, dynamic WP14/WP16 admission or release readiness",
+        "reviewer": "Sol",
+        "review": "execution/GL04-sol-review.md",
+        "receipt": "execution/GL04-acceptance.json",
+        "source_baseline": "8375b65af71b23f5f7259287780b57e9f55a9478",
+        "source_commit": "30737eab81bcb24937c886b60cd57ad23de00af5"
+      },
+      "findings": [],
+      "followups": [
+        {
+          "package": "GL05",
+          "work": "Extend the bounded own-record literal query to reviewed topics, aliases, explanations and ordinary reader search tasks; the current reader is not GL05 acceptance."
+        },
+        {
+          "package": "GL06",
+          "work": "Build product navigation, cards and presentation on the reviewed snapshot while preserving legacy compatibility."
+        },
+        {
+          "package": "GL08",
+          "work": "Rehearse operational corrections/removal and latest-tombstone rollback reconciliation; GL04 qualifies local PR state transitions, not a deployed operating process."
+        },
+        {
+          "package": "GL09",
+          "work": "Review held candidates and broaden supported source/county routes. Standalone GASTON admission adds no independent-discovery credit; two works do not establish regional breadth."
+        },
+        {
+          "package": "GL10",
+          "work": "Perform actual reader/browser/accessibility/performance validation; agent code and loopback checks are not intended-user observations."
+        },
+        {
+          "package": "GL11",
+          "work": "Use existing deployment authority only after exact release-head CI, compatibility, configuration, monitoring and rollback readiness."
+        }
+      ]
     },
     {
       "id": "GL05",

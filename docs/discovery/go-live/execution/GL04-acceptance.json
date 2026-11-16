@@ -1,0 +1,259 @@
+{
+  "id": "TVD-GL04-1",
+  "recorded_at": "2026-11-16T23:19:41.640269+00:00",
+  "disposition": "accepted_pr_reviewed_snapshot_workflow_and_two_record_slice",
+  "owner": "Terra",
+  "integration_owner": "Orchestrator",
+  "reviewer": "Sol",
+  "acceptor": "Orchestrator",
+  "depends_on": [
+    "GL01",
+    "GL03"
+  ],
+  "source_commit": "30737eab81bcb24937c886b60cd57ad23de00af5",
+  "criteria": {
+    "GL04-A1": "accepted_with_declared_PR_authority_source_and_local_integration_limits",
+    "GL04-A2": "accepted_with_declared_PR_authority_source_and_local_integration_limits",
+    "GL04-A3": "accepted_with_declared_PR_authority_source_and_local_integration_limits",
+    "GL04-A4": "accepted_with_declared_PR_authority_source_and_local_integration_limits",
+    "GL04-A5": "accepted_with_declared_PR_authority_source_and_local_integration_limits"
+  },
+  "outputs": {
+    "docs/discovery/go-live/evidence/GL04/generation-state.json": "cfb33800e554f75836f2fcc2c659b3edd37eb97ac66d7b1efd61f5f71bdb3891",
+    "docs/discovery/go-live/evidence/GL04/source-observations.json": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+    "docs/discovery/go-live/evidence/GL04/generation-report.json": "f90a0bc57a057d7a22025f9127cbf6e8fec545cdb4363d334ac5101459533ade",
+    "docs/discovery/go-live/evidence/GL04/frontier-crosswalk.json": "818985509a3be3835260e1dccbf06c2aafd3cbf070eeb2011000b30d109ed984",
+    "docs/discovery/go-live/evidence/GL04/selection.json": "fcaf8f90f81cadea09451680b939f2a0963fb014559808b284cb30b98bde7e18",
+    "docs/discovery/go-live/evidence/GL04/generations/cfb33800e554f75836f2fcc2c659b3edd37eb97ac66d7b1efd61f5f71bdb3891.json": "cfb33800e554f75836f2fcc2c659b3edd37eb97ac66d7b1efd61f5f71bdb3891",
+    "docs/discovery/go-live/evidence/GL04/qualification/source-ci.json": "4614aa95fb682dcae143851432403d105657c9a976a3e6093632ac085a0ebf29",
+    "docs/discovery/go-live/evidence/GL04/qualification/validation-summary.json": "886c9cd1dadc5fa89992363aa00e24a15952b077c23e43566ed7a58b26784cfa",
+    "docs/discovery/go-live/evidence/GL04/qualification/runtime-inputs.json": "e23537f2a8a79dc4b45a0b274e5f9b3b46b4fd3f5230c3177d448ca28609c840",
+    "docs/discovery/go-live/evidence/GL04/qualification/preservation.json": "5d596a447c124f8f69021eb3420b35100a8783034dd3361e488a58bc498559a1",
+    "docs/discovery/go-live/evidence/GL04/qualification/local-http/publication.html": "5046b63c69bb29ef091d69ad76b10e7de4447cb126c62439e0a6e2142db4a95a",
+    "docs/discovery/go-live/evidence/GL04/qualification/local-http/repository.json": "1ac3889e289e78cae1868efcdbb6fcda2249364bf2dd135d4a2141948d0d38cf",
+    "docs/discovery/go-live/evidence/GL04/qualification/local-http/http-checks.json": "e77b797d98539fa59b9a9f39f6711f4c08d4b8dd5d5dbac6131909b42346dd05",
+    "docs/discovery/go-live/evidence/GL04/qualification/local-http/list.html": "b059dcf03d2beaee92ad4396f10370538520a36a8dc5242ae2f21e97d5c4f2af",
+    "docs/discovery/go-live/evidence/GL04/qualification/local-http/works.json": "def8422b241844c63f6a549a76404c4f5e0ec06a0d09c0c712e4fc3fac025249",
+    "docs/discovery/go-live/evidence/GL04/qualification/local-http/repository.html": "0dc6183aef8deff42bc4030fc6b048ca7ad230d201b2c2bf8429e4dec09c4e30",
+    "docs/discovery/go-live/evidence/GL04/qualification/local-http/publication.json": "2a2533d0fbd0e12788783ec28ace77f3a0247b002ae37f9b0132f30f864d3549",
+    "docs/discovery/go-live/execution/GL04-operator-workflow.md": "a0786397fb3c768c0ee05440bc885e5b3ed16b7519b2a4df2372e5bcb6e9d7a0",
+    "docs/discovery/go-live/execution/GL04-sol-review.md": "754bfe5c06519c70876911988e0c9fd11dc8446aa263ec18814aa435bd6f9c43",
+    "docs/discovery/go-live/execution/GL04-implementation.md": "0d251cf5975540d5f3cba1164a3ff1a7b1c8b6f1710357ab64e11a1200fd7976",
+    "docs/discovery/go-live/execution/GL04-selection-review.json": "b490c497a550618fb3fb2b30726e9b40f8e0f44aeea7dea637d7c92883b09f91",
+    "docs/discovery/go-live/execution/GL04-source-review.md": "95b315c5a09d1b66ef7e3b92038534cd0927d794421fba04cc5a250f7d8c2d66",
+    "docs/discovery/go-live/README.md": "c388049d51e4c0229f2245997d0e302e35a7aa4cf7509a3dfc89bd3ae1ec77ae",
+    "docs/discovery/go-live/plan.json": "c4d9483a2b31a2e418340c6391ef03d006898f4794c7400aa075ebe4aecbb4b0",
+    "package.json": "2b4334a7b7fc27e03006659a273ff0d2ea9e83213a7a165225f789eef969697f",
+    "worker.js": "e5ea7416ece210a8f0ac7528025a0207043c11983dc639660404925c4965698c",
+    "scripts/build-discovery-directory.mjs": "260cd22bc0e847b64ae1c5e112e5a30be89e13c70ef1110ce03cb7b10bc16623",
+    "src/content/discovery-directory-catalog.json": "7a853a6b467f2f96e97dc8fb3d5c2d550f5c82453de795343cd6bbd037594fe4",
+    "src/content/discovery-directory-removals.json": "74324ad77caf0400f7ff5cfd022f6658af87ff9ff856602294d4cee0a369095e",
+    "src/ingest/discovery-directory.ts": "c90a5796e24bd40bd2121cb5d11fc4b29fadbab141b19263f12567057d082711",
+    "src/ingest/discovery-directory-http.ts": "81cb088e18f0bc961ea3ae56bf07ebc5cfc83d3cbb5c9235b8ec44d4ed92a38c",
+    "src/ingest/discovery-directory-page.ts": "e5a8eaa0587cfb13046bbdb048a06111315bda9ec97d94b69babf43c74173bb7",
+    "src/ingest/discovery-directory-runtime.ts": "c90a6d3616884521d187034ec688a7ebd9f6b4ac9b37fbb1bc8e8f346d2116be",
+    "src/ingest/discovery/directory-review.ts": "474e25353ec96a2889be467e7f6a2b5437e260dd5f14031a1d30c3cf29ddef51",
+    "src/ingest/discovery/directory-review-authority.ts": "aa42f266405c00a8913301bffd2722892f8e38f2a4ce4ddaa87599f0909ab6f3",
+    "test/discovery-directory-read.test.ts": "3306c631220dfa36adf4ac5d57941232d118ca6ca05658c56a10e2e70837bbc1",
+    "test/discovery-directory-review.test.ts": "3139a2ae6e0c1508bb3ec350ed740fe34a6d338d81e445a24e6147cf63d08c74",
+    "test/discovery-directory-http.test.ts": "2e5b74d7887d1ae1e7a51a7b78af6d04c635c35a3dd9f010fe483240ce01d88f",
+    "test/discovery-directory-routing.test.ts": "24d5afa380c0d0b3de37ce39d8f250abe044067caeda7fae161830b513ccc7a1",
+    "test/discovery-directory-builder.test.ts": "7a992db6d7293a284235b5f4d4e4ea74d4b5a662ba05042e90d97dfe7eb5d253"
+  },
+  "source_selection": {
+    "path": "docs/discovery/go-live/evidence/GL04/selection.json",
+    "canonicalSha256": "0e790590fd6d58c71320fb6935f7316115257c2afa7a7efdee9d9c7d429856a3",
+    "reviewArtifact": "docs/discovery/go-live/execution/GL04-selection-review.json",
+    "reviewArtifactSha256": "b490c497a550618fb3fb2b30726e9b40f8e0f44aeea7dea637d7c92883b09f91",
+    "snapshotVersion": "sha256:aeba2dd1c3eb252d1435a2ac7d986cc0ee3904405394acdc0a14a19ebb23a781"
+  },
+  "scope": {
+    "approvedWorks": 2,
+    "repositoryWorks": 1,
+    "publicationWorks": 1,
+    "supportOnlyObjectsInProjection": 0,
+    "verifiedProjectGroupCount": null,
+    "peopleCountAdvertised": false,
+    "GL03CapturedLeadsPreserved": 8,
+    "GL03LeadsAcceptedIntoSnapshot": 1,
+    "GL03LeadsHeld": 7,
+    "failedSourceScopesHeld": 3,
+    "newNativeProviderRequests": 0,
+    "sourceEnrollment": false,
+    "newDirectoryFlagInProductionConfig": false,
+    "publicMutationEndpoint": false,
+    "generalWP14WP16Accepted": false,
+    "sourceNativeResponseReplayClaim": false,
+    "priorSourceRecordsChanged": 0
+  },
+  "validation": {
+    "sourceCommit": "30737eab81bcb24937c886b60cd57ad23de00af5",
+    "runtimeInputCount": 665,
+    "inputDrift": [],
+    "commands": {
+      "tests": {
+        "argv": [
+          "npm",
+          "test"
+        ],
+        "exitCode": 0,
+        "applicationTests": 939,
+        "watchTests": 146,
+        "discoveryTests": 434,
+        "totalTests": 1519,
+        "failures": 0,
+        "skips": 0,
+        "cancellations": 0
+      },
+      "pdf": {
+        "argv": [
+          "npm",
+          "run",
+          "test:policy-pdf"
+        ],
+        "exitCode": 0,
+        "tests": 7
+      },
+      "build": {
+        "argv": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exitCode": 0
+      },
+      "smoke": {
+        "argv": [
+          "npm",
+          "run",
+          "ops:smoke"
+        ],
+        "exitCode": 0,
+        "scope": "isolated local D1 only"
+      },
+      "audit": {
+        "argv": [
+          "npm",
+          "audit",
+          "--audit-level=high"
+        ],
+        "exitCode": 0,
+        "vulnerabilities": 0
+      },
+      "secretScan": {
+        "argv": [
+          "npm",
+          "run",
+          "secret-scan"
+        ],
+        "exitCode": 0
+      }
+    },
+    "focusedTests": {
+      "tests": 21,
+      "note": "Included in the full Discovery suite, not an additive count."
+    },
+    "actualLoopbackHttp": {
+      "requests": 10,
+      "passed": true,
+      "capturedResults": "local-http/http-checks.json",
+      "providerRequests": 0,
+      "databaseCronCredentialsOrServiceBindings": false,
+      "serverStopped": true
+    },
+    "privateLogs": {
+      ".discovery-work/gl04/root/tests.log": "6a2e38f15a286e49f137b89ff9cb31089bd3a6b334022e172f35f26d106543b0",
+      ".discovery-work/gl04/root/pdf.log": "4be6534502902b0c5a2806080e7e66259adfa75cb66ade721e5433fd886a1fd2",
+      ".discovery-work/gl04/root/build.log": "c83f4a0db02ddb34beee6cee33bae50a305078b80bf3a0752417d6c708978a0b",
+      ".discovery-work/gl04/root/smoke.log": "e987b52e0ed62bc3cc862fb061d25e8a2c1db21ed53fb2cef6eacfc718165101",
+      ".discovery-work/gl04/root/audit.log": "6d8c5c8f3d7684adb070417bd608d01ae90aa3dc26a65af03ffda4955f38d9a3",
+      ".discovery-work/gl04/root/secrets.log": "3211d7037787ed381b2bfcb90f19157a1dcc7e2c6c27d82aa58b898f6c7ad5a4",
+      ".discovery-work/gl04/root/focused.log": "20ea8aeb5aa87dec083cbc1e877e8c90847f12d3fa2590c3ad81236f5c26a76d"
+    },
+    "limits": [
+      "Local code/contract and selected-source qualification only.",
+      "Source observations, engineering tests and agent judgments are not human benchmark labels, clinical validity, source-census recall or intended-user observations.",
+      "No deployment, source enrollment, recurring collection, remote migration or public mutation."
+    ]
+  },
+  "independentChecks": {
+    "semanticAndAuthority": 34,
+    "lifecycle": 16,
+    "syntheticDirectedRelations": 5,
+    "generatedAPIHTML": 13,
+    "actualWorker": 7,
+    "copiedProductionCLI": 7,
+    "focusedRegisteredTests": 21,
+    "note": "These checks overlap and are not an additive total. Exact private evidence hashes are in GL04-sol-review.md."
+  },
+  "preservation": {
+    "baseline": "8375b65af71b23f5f7259287780b57e9f55a9478",
+    "baselineTrackedFiles": 1179,
+    "changedExistingPaths": [
+      "docs/discovery/go-live/README.md",
+      "docs/discovery/go-live/plan.json",
+      "package.json",
+      "worker.js"
+    ],
+    "unchangedExistingPaths": 1175,
+    "unexpectedChanges": [],
+    "original31PackageObjectsMPAcceptanceModelsNativeRecordsAndHistoricalReceiptsPreserved": true,
+    "oldCatalogRecords": 28,
+    "oldCitations": 9,
+    "oldRegionalContexts": 3,
+    "note": "Worker and test/build script wiring are scoped new behavior; active go-live status documents change. No old source record/model/historical receipt is rewritten."
+  },
+  "sourceCI": [
+    {
+      "conclusion": "success",
+      "databaseId": 43971934815,
+      "event": "pull_request",
+      "headSha": "30737eab81bcb24937c886b60cd57ad23de00af5",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 43971926688,
+      "event": "push",
+      "headSha": "30737eab81bcb24937c886b60cd57ad23de00af5",
+      "status": "completed"
+    }
+  ],
+  "latestQualificationHeadCI": "not yet pushed at acceptance; tracked separately on PR30, no final-head pass claimed",
+  "followups": [
+    {
+      "package": "GL05",
+      "work": "Extend the bounded own-record literal query to reviewed topics, aliases, explanations and ordinary reader search tasks; the current reader is not GL05 acceptance."
+    },
+    {
+      "package": "GL06",
+      "work": "Build product navigation, cards and presentation on the reviewed snapshot while preserving legacy compatibility."
+    },
+    {
+      "package": "GL08",
+      "work": "Rehearse operational corrections/removal and latest-tombstone rollback reconciliation; GL04 qualifies local PR state transitions, not a deployed operating process."
+    },
+    {
+      "package": "GL09",
+      "work": "Review held candidates and broaden supported source/county routes. Standalone GASTON admission adds no independent-discovery credit; two works do not establish regional breadth."
+    },
+    {
+      "package": "GL10",
+      "work": "Perform actual reader/browser/accessibility/performance validation; agent code and loopback checks are not intended-user observations."
+    },
+    {
+      "package": "GL11",
+      "work": "Use existing deployment authority only after exact release-head CI, compatibility, configuration, monitoring and rollback readiness."
+    }
+  ],
+  "authorityLimit": "Ordinary authorized agent/operator PR review with fixed trusted source-code anchors; not cryptographic human identity or benchmark annotation. A same-user actor able to edit trusted code is outside this boundary.",
+  "phase_note": "After immutable source approval and independent code/API/archive review, root updated only source-notes phase wording, active plan/README status, workflow/crosswalk and qualification evidence. The exact approved selection, source attestation and 665 frozen runtime inputs remain unchanged. The qualifying source commit and code bytes remain separate from the documentation-only acceptance commit.",
+  "deployment_authorized": true,
+  "deployment_performed": false,
+  "GL05_accepted": false,
+  "GL08_accepted": false,
+  "GL09_accepted": false,
+  "GL10_accepted": false,
+  "GL11_accepted": false,
+  "benchmark_credit": 0
+}
