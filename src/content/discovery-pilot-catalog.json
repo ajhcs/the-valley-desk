@@ -1,0 +1,1063 @@
+{
+  "schemaVersion": "discovery-pilot-catalog-v1",
+  "catalogVersion": "2026-11-16",
+  "selectionSha256": "80f9593bee2349b68d62174d116fbdef97f08cc9e5aff3205e12da330b33759f",
+  "records": [
+    {
+      "id": "crossref:10.1038/s41592-021-01185-5",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1038/s41592-021-01185-5",
+      "title": "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data",
+      "url": "https://doi.org/10.1038/s41592-021-01185-5",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Matthew Cieslak",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2021-06-21",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:36.343883+00:00",
+        "sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1093/bib/bbaa381",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1093/bib/bbaa381",
+      "title": "DeepCNV: a deep learning approach for authenticating copy number variations",
+      "url": "https://doi.org/10.1093/bib/bbaa381",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Joseph T Glessner",
+          "affiliations": [
+            "Center for Applied Genomics, Department of Human Genetics, Children's Hospital of Philadelphia, Philadelphia, PA 19104, USA",
+            "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2021-01-12",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Center for Applied Genomics, Department of Human Genetics, Children's Hospital of Philadelphia, Philadelphia, PA 19104, USA",
+          "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbib%2Fbbaa381&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:53.522302+00:00",
+        "sha256": "c872b5519aafb30bcea68fa95f5d13c01f4c3c9856da41c96b1191aa9312c6f5",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1093/bioinformatics/btae114",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1093/bioinformatics/btae114",
+      "title": "AutoGVP: a dockerized workflow integrating ClinVar and InterVar germline sequence variant classification",
+      "url": "https://doi.org/10.1093/bioinformatics/btae114",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Jung Kim",
+          "affiliations": [
+            "Division of Cancer Epidemiology and Genetics, National Cancer Institute , Rockville, MD 20850, United States"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Ammar S Naqvi",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2024-02-29",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Division of Cancer Epidemiology and Genetics, National Cancer Institute , Rockville, MD 20850, United States",
+          "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+          "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtae114&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:43.204851+00:00",
+        "sha256": "569acef5e4d899696d3fd4816ec40dff855a537d29072b2e5f28623484a600c5",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1093/bioinformatics/btaf060",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1093/bioinformatics/btaf060",
+      "title": "ImmunoTar—integrative prioritization of cell surface targets for cancer immunotherapy",
+      "url": "https://doi.org/10.1093/bioinformatics/btaf060",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Rawan Shraim",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+            "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2025-02-11",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+          "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtaf060&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:46.649753+00:00",
+        "sha256": "9bbce87a075fdc5e99f1df14d5d90cc6679161d4655e15b4971892640edf5857",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1117/1.jmi.5.1.011018",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1117/1.jmi.5.1.011018",
+      "title": "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome",
+      "url": "https://doi.org/10.1117/1.jmi.5.1.011018",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Christos Davatzikos",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2018-01-11",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Univ. of Pennsylvania"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1117%2F1.JMI.5.1.011018&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:39.778177+00:00",
+        "sha256": "b291ed6c35fc31625450ddf2868318fa5335917da42fa90deb614f608c146153",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1186/1471-2105-15-248",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1186/1471-2105-15-248",
+      "title": "Clinical phenotype-based gene prioritization: an initial study using semantic similarity and the human phenotype ontology",
+      "url": "https://doi.org/10.1186/1471-2105-15-248",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Aaron J Masino",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2014-07-21",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1186%2F1471-2105-15-248&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:50.086545+00:00",
+        "sha256": "c8b85b4e14f01d6e2d42b6ad6dfdcbc673ade3440163be11088cf4562158e23e",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "github:128938343",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "128938343",
+      "title": "CBICA/CaPTk",
+      "url": "https://github.com/CBICA/CaPTk",
+      "owner": {
+        "id": "35823615",
+        "name": "CBICA",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2023-12-09T00:42:42Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2018-04-10T13:36:31Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-10-07T07:58:11Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/CBICA/CaPTk",
+        "observedAt": "2026-11-15T21:17:47.138094+00:00",
+        "sha256": "28e58fd68f32470d292fb471056e05dc647923771710e2a595b74c614f1cc6cb",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1117/1.jmi.5.1.011018",
+          "targetTitle": "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome",
+          "url": "https://doi.org/10.1117/1.jmi.5.1.011018",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/CBICA/CaPTk/blob/cce88180d3159546a057b32ca9b4172d3ee2624d/Readme.md",
+            "observedAt": "2026-11-15T21:05:10Z",
+            "sha256": "595b0a8157c0b6a9f5e381ac11597a0f598b64b4963ab73a9ac656bd880dd82d",
+            "pointer": "/explicit_repository_publication_edges/1",
+            "filePointer": "/file_observation_batch/files/4",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:156589095",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "156589095",
+      "title": "PennLINC/qsiprep",
+      "url": "https://github.com/PennLINC/qsiprep",
+      "owner": {
+        "id": "61955309",
+        "name": "PennLINC",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2026-11-12T18:26:45Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2018-11-07T18:14:12Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-11T21:13:26Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/PennLINC/qsiprep",
+        "observedAt": "2026-11-15T21:17:46.825485+00:00",
+        "sha256": "89e4ccc7d089c3b5d5d117ad722869ab5ad186f07cfead7a6da53e8d550663aa",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1038/s41592-021-01185-5",
+          "targetTitle": "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data",
+          "url": "https://doi.org/10.1038/s41592-021-01185-5",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/PennLINC/qsiprep/blob/ae8ab16930309d77a44f7970028b3c6642c1aae7/README.rst",
+            "observedAt": "2026-11-15T21:05:10Z",
+            "sha256": "595b0a8157c0b6a9f5e381ac11597a0f598b64b4963ab73a9ac656bd880dd82d",
+            "pointer": "/explicit_repository_publication_edges/0",
+            "filePointer": "/file_observation_batch/files/1",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:15715626",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "15715626",
+      "title": "chop-dbhi/phenomantics",
+      "url": "https://github.com/chop-dbhi/phenomantics",
+      "owner": {
+        "id": "709892",
+        "name": "chop-dbhi",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2014-04-01T16:14:48Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2014-01-07T20:22:47Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2023-06-05T08:04:07Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/chop-dbhi/phenomantics",
+        "observedAt": "2026-11-15T21:47:04.040098+00:00",
+        "sha256": "8a596641421dde32216c5e72bf8b888585f49f05591a174dfdc46003c3abc51e",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "github:285885136",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "285885136",
+      "title": "CAG-CNV/DeepCNV",
+      "url": "https://github.com/CAG-CNV/DeepCNV",
+      "owner": {
+        "id": "31705609",
+        "name": "CAG-CNV",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2023-02-20T14:48:51Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2020-08-07T17:27:31Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2025-12-18T06:00:27Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/CAG-CNV/DeepCNV",
+        "observedAt": "2026-11-15T21:47:07.581522+00:00",
+        "sha256": "53d72608db59186ec039ce148849be824d9885f8794eae47578c67a879a36f86",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "github:525946788",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "525946788",
+      "title": "diskin-lab-chop/AutoGVP",
+      "url": "https://github.com/diskin-lab-chop/AutoGVP",
+      "owner": {
+        "id": "53345105",
+        "name": "diskin-lab-chop",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2026-11-02T18:19:30Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2022-08-17T20:40:15Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-02T15:37:31Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/diskin-lab-chop/AutoGVP",
+        "observedAt": "2026-11-15T21:46:57.046730+00:00",
+        "sha256": "241b804429fd3e6100194f614b35a7d53ad73e2b7a3b514355d5518f112152ab",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "github:734388793",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "734388793",
+      "title": "sacanlab/immunotar",
+      "url": "https://github.com/sacanlab/immunotar",
+      "owner": {
+        "id": "18205643",
+        "name": "sacanlab",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2025-04-18T15:37:22Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2023-12-21T14:58:44Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-07-10T18:11:31Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/sacanlab/immunotar",
+        "observedAt": "2026-11-15T21:47:00.549064+00:00",
+        "sha256": "07ba93cbf37cfd428c63dac74176c50cea7986f80c2fc23f1051a47132da6c74",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "ror:00b30xv10",
+      "kind": "organization",
+      "provider": "ror",
+      "nativeId": "https://ror.org/00b30xv10",
+      "title": "University of Pennsylvania",
+      "url": "https://ror.org/00b30xv10",
+      "owner": null,
+      "authors": [],
+      "sourceDate": {
+        "label": "Registry modified",
+        "value": "2026-07-20",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "registry-reported-location",
+        "reportedLocations": [
+          "Philadelphia, United States"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.ror.org/v2/organizations/00b30xv10",
+        "observedAt": "2026-11-15T20:34:21.093705+00:00",
+        "sha256": "3f61195d95153df4cd882655b5397e0e50823c2daa2332b107b7bb61dc4823c6",
+        "useBasis": {
+          "label": "ROR API metadata CC0",
+          "url": "https://ror.org/about/terms/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/names/1/value"
+        },
+        {
+          "field": "url",
+          "pointer": "/id"
+        },
+        {
+          "field": "reportedLocations",
+          "pointer": "/locations"
+        },
+        {
+          "field": "modifiedDate",
+          "pointer": "/admin/last_modified/date"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "ror:01z7r7q48",
+      "kind": "organization",
+      "provider": "ror",
+      "nativeId": "https://ror.org/01z7r7q48",
+      "title": "Children's Hospital of Philadelphia",
+      "url": "https://ror.org/01z7r7q48",
+      "owner": null,
+      "authors": [],
+      "sourceDate": {
+        "label": "Registry modified",
+        "value": "2024-12-11",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "registry-reported-location",
+        "reportedLocations": [
+          "Philadelphia, United States"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.ror.org/v2/organizations/01z7r7q48",
+        "observedAt": "2026-11-15T20:40:43.711663+00:00",
+        "sha256": "d8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893",
+        "useBasis": {
+          "label": "ROR API metadata CC0",
+          "url": "https://ror.org/about/terms/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/names/1/value"
+        },
+        {
+          "field": "url",
+          "pointer": "/id"
+        },
+        {
+          "field": "reportedLocations",
+          "pointer": "/locations"
+        },
+        {
+          "field": "modifiedDate",
+          "pointer": "/admin/last_modified/date"
+        }
+      ],
+      "relatedLinks": []
+    }
+  ]
+}

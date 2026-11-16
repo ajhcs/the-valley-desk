@@ -9,6 +9,10 @@ Local implementation progress and reviewed package receipts are recorded in
 [discovery implementation](docs/discovery/README.md). Deployment is outside the
 current implementation scope.
 
+The current delivery amendment is a [metadata-and-link pilot](docs/discovery/metadata-link-pilot-plan.md):
+a finite directory with original-source links and dated provenance. Optional
+full-text reuse and independent benchmark review have separate gates.
+
 Product source. Human news + agent feed. Delaware Valley / Greater Philadelphia healthcare technology.
 
 Owner: Cole Lyons (co-founder). Engineering: Knox. Product: Reed. Brand: Mira. CEO: Vale.

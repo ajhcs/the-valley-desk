@@ -23,6 +23,7 @@ import { createCatalogNavigationBoundary, reloadActiveCatalogDocument, sameOrigi
 
 const WatchDirectoryPage = lazyRouteComponent(() => import("./ui/watch/WatchDirectoryPage"), "WatchDirectoryPage");
 const WatchDetailPage = lazyRouteComponent(() => import("./ui/watch/WatchDetailPage"), "WatchDetailPage");
+const DiscoveryPilotPage = lazyRouteComponent(() => import("./ui/discovery/DiscoveryPilotPage"), "DiscoveryPilotPage");
 const catalogNavigation = createCatalogNavigationBoundary(typeof window === "undefined" ? "/" : window.location.pathname);
 
 const rootRoute = createRootRoute({
@@ -50,6 +51,8 @@ const opsRoute = createRoute({
   component: OpsPage,
 });
 const policyRoute = createRoute({ getParentRoute: () => rootRoute, path: "/policy", component: PolicyBaselinePage });
+const discoveryPilotRoute = createRoute({ getParentRoute: () => rootRoute, path: "/discover", wrapInSuspense: true,
+  pendingComponent: () => <p role="status">Loading the research directory…</p>, component: DiscoveryPilotPage });
 
 const labIndexRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -117,6 +120,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   opsRoute,
   policyRoute,
+  discoveryPilotRoute,
   ...section("/news", "news"),
   ...section("/events", "event"),
   ...section("/voices", "voice"),

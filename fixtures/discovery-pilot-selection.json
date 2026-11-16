@@ -1,0 +1,1050 @@
+{
+  "schemaVersion": "discovery-pilot-selection-v1",
+  "version": "2026-11-16",
+  "sources": {
+    "github-qsiprep-20261115": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/github-publications-20261115/github-qsiprep/body.json",
+      "requestUrl": "https://api.github.com/repos/PennLINC/qsiprep",
+      "observedAt": "2026-11-15T21:17:46.825485+00:00",
+      "sha256": "89e4ccc7d089c3b5d5d117ad722869ab5ad186f07cfead7a6da53e8d550663aa",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-captk-20261115": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/github-publications-20261115/github-captk/body.json",
+      "requestUrl": "https://api.github.com/repos/CBICA/CaPTk",
+      "observedAt": "2026-11-15T21:17:47.138094+00:00",
+      "sha256": "28e58fd68f32470d292fb471056e05dc647923771710e2a595b74c614f1cc6cb",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-autogvp-expansion-20261115": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/github-autogvp/body.json",
+      "requestUrl": "https://api.github.com/repos/diskin-lab-chop/AutoGVP",
+      "observedAt": "2026-11-15T21:46:57.046730+00:00",
+      "sha256": "241b804429fd3e6100194f614b35a7d53ad73e2b7a3b514355d5518f112152ab",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-immunotar-expansion-20261115": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/github-immunotar/body.json",
+      "requestUrl": "https://api.github.com/repos/sacanlab/immunotar",
+      "observedAt": "2026-11-15T21:47:00.549064+00:00",
+      "sha256": "07ba93cbf37cfd428c63dac74176c50cea7986f80c2fc23f1051a47132da6c74",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-phenomantics-expansion-20261115": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/github-phenomantics/body.json",
+      "requestUrl": "https://api.github.com/repos/chop-dbhi/phenomantics",
+      "observedAt": "2026-11-15T21:47:04.040098+00:00",
+      "sha256": "8a596641421dde32216c5e72bf8b888585f49f05591a174dfdc46003c3abc51e",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "github-deepcnv-expansion-20261115": {
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/github-deepcnv/body.json",
+      "requestUrl": "https://api.github.com/repos/CAG-CNV/DeepCNV",
+      "observedAt": "2026-11-15T21:47:07.581522+00:00",
+      "sha256": "53d72608db59186ec039ce148849be824d9885f8794eae47578c67a879a36f86",
+      "useBasis": {
+        "label": "GitHub public repository metadata and API terms",
+        "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+      }
+    },
+    "crossref-qsiprep-expansion-20261115": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/crossref-qsiprep/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-15T21:46:36.343883+00:00",
+      "sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-captk-main-expansion-20261115": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/crossref-captk-main/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1117%2F1.JMI.5.1.011018&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-15T21:46:39.778177+00:00",
+      "sha256": "b291ed6c35fc31625450ddf2868318fa5335917da42fa90deb614f608c146153",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-autogvp-expansion-20261115": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/crossref-autogvp/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtae114&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-15T21:46:43.204851+00:00",
+      "sha256": "569acef5e4d899696d3fd4816ec40dff855a537d29072b2e5f28623484a600c5",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-immunotar-expansion-20261115": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/crossref-immunotar/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtaf060&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-15T21:46:46.649753+00:00",
+      "sha256": "9bbce87a075fdc5e99f1df14d5d90cc6679161d4655e15b4971892640edf5857",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-phenomantics-expansion-20261115": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/crossref-phenomantics/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1186%2F1471-2105-15-248&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-15T21:46:50.086545+00:00",
+      "sha256": "c8b85b4e14f01d6e2d42b6ad6dfdcbc673ade3440163be11088cf4562158e23e",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "crossref-deepcnv-expansion-20261115": {
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/crossref-expansion-20261115/crossref-deepcnv/body.json",
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbib%2Fbbaa381&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-15T21:46:53.522302+00:00",
+      "sha256": "c872b5519aafb30bcea68fa95f5d13c01f4c3c9856da41c96b1191aa9312c6f5",
+      "useBasis": {
+        "label": "Crossref factual bibliographic metadata guidance",
+        "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+      }
+    },
+    "ror-penn-20261115": {
+      "provider": "ror",
+      "bodyPath": "docs/discovery/qualification/evidence/ror-penn-20261115/body.json",
+      "requestUrl": "https://api.ror.org/v2/organizations/00b30xv10",
+      "observedAt": "2026-11-15T20:34:21.093705+00:00",
+      "sha256": "3f61195d95153df4cd882655b5397e0e50823c2daa2332b107b7bb61dc4823c6",
+      "useBasis": {
+        "label": "ROR API metadata CC0",
+        "url": "https://ror.org/about/terms/"
+      }
+    },
+    "ror-chop-20261115": {
+      "provider": "ror",
+      "bodyPath": "docs/discovery/qualification/evidence/ror-chop-20261115/body.json",
+      "requestUrl": "https://api.ror.org/v2/organizations/01z7r7q48",
+      "observedAt": "2026-11-15T20:40:43.711663+00:00",
+      "sha256": "d8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893",
+      "useBasis": {
+        "label": "ROR API metadata CC0",
+        "url": "https://ror.org/about/terms/"
+      }
+    }
+  },
+  "records": [
+    {
+      "kind": "repository",
+      "id": "github:156589095",
+      "fields": {
+        "nativeId": {
+          "value": 156589095,
+          "source": "github-qsiprep-20261115",
+          "pointer": "/id"
+        },
+        "title": {
+          "value": "PennLINC/qsiprep",
+          "source": "github-qsiprep-20261115",
+          "pointer": "/full_name"
+        },
+        "url": {
+          "value": "https://github.com/PennLINC/qsiprep",
+          "source": "github-qsiprep-20261115",
+          "pointer": "/html_url"
+        },
+        "ownerName": {
+          "value": "PennLINC",
+          "source": "github-qsiprep-20261115",
+          "pointer": "/owner/login"
+        },
+        "ownerId": {
+          "value": 61955309,
+          "source": "github-qsiprep-20261115",
+          "pointer": "/owner/id"
+        },
+        "ownerKind": {
+          "value": "Organization",
+          "source": "github-qsiprep-20261115",
+          "pointer": "/owner/type"
+        },
+        "createdAt": {
+          "value": "2018-11-07T18:14:12Z",
+          "source": "github-qsiprep-20261115",
+          "pointer": "/created_at"
+        },
+        "updatedAt": {
+          "value": "2026-11-11T21:13:26Z",
+          "source": "github-qsiprep-20261115",
+          "pointer": "/updated_at"
+        },
+        "pushedAt": {
+          "value": "2026-11-12T18:26:45Z",
+          "source": "github-qsiprep-20261115",
+          "pointer": "/pushed_at"
+        }
+      }
+    },
+    {
+      "kind": "repository",
+      "id": "github:128938343",
+      "fields": {
+        "nativeId": {
+          "value": 128938343,
+          "source": "github-captk-20261115",
+          "pointer": "/id"
+        },
+        "title": {
+          "value": "CBICA/CaPTk",
+          "source": "github-captk-20261115",
+          "pointer": "/full_name"
+        },
+        "url": {
+          "value": "https://github.com/CBICA/CaPTk",
+          "source": "github-captk-20261115",
+          "pointer": "/html_url"
+        },
+        "ownerName": {
+          "value": "CBICA",
+          "source": "github-captk-20261115",
+          "pointer": "/owner/login"
+        },
+        "ownerId": {
+          "value": 35823615,
+          "source": "github-captk-20261115",
+          "pointer": "/owner/id"
+        },
+        "ownerKind": {
+          "value": "Organization",
+          "source": "github-captk-20261115",
+          "pointer": "/owner/type"
+        },
+        "createdAt": {
+          "value": "2018-04-10T13:36:31Z",
+          "source": "github-captk-20261115",
+          "pointer": "/created_at"
+        },
+        "updatedAt": {
+          "value": "2026-10-07T07:58:11Z",
+          "source": "github-captk-20261115",
+          "pointer": "/updated_at"
+        },
+        "pushedAt": {
+          "value": "2023-12-09T00:42:42Z",
+          "source": "github-captk-20261115",
+          "pointer": "/pushed_at"
+        }
+      }
+    },
+    {
+      "kind": "repository",
+      "id": "github:525946788",
+      "fields": {
+        "nativeId": {
+          "value": 525946788,
+          "source": "github-autogvp-expansion-20261115",
+          "pointer": "/id"
+        },
+        "title": {
+          "value": "diskin-lab-chop/AutoGVP",
+          "source": "github-autogvp-expansion-20261115",
+          "pointer": "/full_name"
+        },
+        "url": {
+          "value": "https://github.com/diskin-lab-chop/AutoGVP",
+          "source": "github-autogvp-expansion-20261115",
+          "pointer": "/html_url"
+        },
+        "ownerName": {
+          "value": "diskin-lab-chop",
+          "source": "github-autogvp-expansion-20261115",
+          "pointer": "/owner/login"
+        },
+        "ownerId": {
+          "value": 53345105,
+          "source": "github-autogvp-expansion-20261115",
+          "pointer": "/owner/id"
+        },
+        "ownerKind": {
+          "value": "Organization",
+          "source": "github-autogvp-expansion-20261115",
+          "pointer": "/owner/type"
+        },
+        "createdAt": {
+          "value": "2022-08-17T20:40:15Z",
+          "source": "github-autogvp-expansion-20261115",
+          "pointer": "/created_at"
+        },
+        "updatedAt": {
+          "value": "2026-11-02T15:37:31Z",
+          "source": "github-autogvp-expansion-20261115",
+          "pointer": "/updated_at"
+        },
+        "pushedAt": {
+          "value": "2026-11-02T18:19:30Z",
+          "source": "github-autogvp-expansion-20261115",
+          "pointer": "/pushed_at"
+        }
+      }
+    },
+    {
+      "kind": "repository",
+      "id": "github:734388793",
+      "fields": {
+        "nativeId": {
+          "value": 734388793,
+          "source": "github-immunotar-expansion-20261115",
+          "pointer": "/id"
+        },
+        "title": {
+          "value": "sacanlab/immunotar",
+          "source": "github-immunotar-expansion-20261115",
+          "pointer": "/full_name"
+        },
+        "url": {
+          "value": "https://github.com/sacanlab/immunotar",
+          "source": "github-immunotar-expansion-20261115",
+          "pointer": "/html_url"
+        },
+        "ownerName": {
+          "value": "sacanlab",
+          "source": "github-immunotar-expansion-20261115",
+          "pointer": "/owner/login"
+        },
+        "ownerId": {
+          "value": 18205643,
+          "source": "github-immunotar-expansion-20261115",
+          "pointer": "/owner/id"
+        },
+        "ownerKind": {
+          "value": "Organization",
+          "source": "github-immunotar-expansion-20261115",
+          "pointer": "/owner/type"
+        },
+        "createdAt": {
+          "value": "2023-12-21T14:58:44Z",
+          "source": "github-immunotar-expansion-20261115",
+          "pointer": "/created_at"
+        },
+        "updatedAt": {
+          "value": "2026-07-10T18:11:31Z",
+          "source": "github-immunotar-expansion-20261115",
+          "pointer": "/updated_at"
+        },
+        "pushedAt": {
+          "value": "2025-04-18T15:37:22Z",
+          "source": "github-immunotar-expansion-20261115",
+          "pointer": "/pushed_at"
+        }
+      }
+    },
+    {
+      "kind": "repository",
+      "id": "github:15715626",
+      "fields": {
+        "nativeId": {
+          "value": 15715626,
+          "source": "github-phenomantics-expansion-20261115",
+          "pointer": "/id"
+        },
+        "title": {
+          "value": "chop-dbhi/phenomantics",
+          "source": "github-phenomantics-expansion-20261115",
+          "pointer": "/full_name"
+        },
+        "url": {
+          "value": "https://github.com/chop-dbhi/phenomantics",
+          "source": "github-phenomantics-expansion-20261115",
+          "pointer": "/html_url"
+        },
+        "ownerName": {
+          "value": "chop-dbhi",
+          "source": "github-phenomantics-expansion-20261115",
+          "pointer": "/owner/login"
+        },
+        "ownerId": {
+          "value": 709892,
+          "source": "github-phenomantics-expansion-20261115",
+          "pointer": "/owner/id"
+        },
+        "ownerKind": {
+          "value": "Organization",
+          "source": "github-phenomantics-expansion-20261115",
+          "pointer": "/owner/type"
+        },
+        "createdAt": {
+          "value": "2014-01-07T20:22:47Z",
+          "source": "github-phenomantics-expansion-20261115",
+          "pointer": "/created_at"
+        },
+        "updatedAt": {
+          "value": "2023-06-05T08:04:07Z",
+          "source": "github-phenomantics-expansion-20261115",
+          "pointer": "/updated_at"
+        },
+        "pushedAt": {
+          "value": "2014-04-01T16:14:48Z",
+          "source": "github-phenomantics-expansion-20261115",
+          "pointer": "/pushed_at"
+        }
+      }
+    },
+    {
+      "kind": "repository",
+      "id": "github:285885136",
+      "fields": {
+        "nativeId": {
+          "value": 285885136,
+          "source": "github-deepcnv-expansion-20261115",
+          "pointer": "/id"
+        },
+        "title": {
+          "value": "CAG-CNV/DeepCNV",
+          "source": "github-deepcnv-expansion-20261115",
+          "pointer": "/full_name"
+        },
+        "url": {
+          "value": "https://github.com/CAG-CNV/DeepCNV",
+          "source": "github-deepcnv-expansion-20261115",
+          "pointer": "/html_url"
+        },
+        "ownerName": {
+          "value": "CAG-CNV",
+          "source": "github-deepcnv-expansion-20261115",
+          "pointer": "/owner/login"
+        },
+        "ownerId": {
+          "value": 31705609,
+          "source": "github-deepcnv-expansion-20261115",
+          "pointer": "/owner/id"
+        },
+        "ownerKind": {
+          "value": "Organization",
+          "source": "github-deepcnv-expansion-20261115",
+          "pointer": "/owner/type"
+        },
+        "createdAt": {
+          "value": "2020-08-07T17:27:31Z",
+          "source": "github-deepcnv-expansion-20261115",
+          "pointer": "/created_at"
+        },
+        "updatedAt": {
+          "value": "2025-12-18T06:00:27Z",
+          "source": "github-deepcnv-expansion-20261115",
+          "pointer": "/updated_at"
+        },
+        "pushedAt": {
+          "value": "2023-02-20T14:48:51Z",
+          "source": "github-deepcnv-expansion-20261115",
+          "pointer": "/pushed_at"
+        }
+      }
+    },
+    {
+      "kind": "publication",
+      "id": "crossref:10.1038/s41592-021-01185-5",
+      "fields": {
+        "nativeId": {
+          "value": "10.1038/s41592-021-01185-5",
+          "source": "crossref-qsiprep-expansion-20261115",
+          "pointer": "/message/items/0/DOI"
+        },
+        "title": {
+          "value": [
+            "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data"
+          ],
+          "source": "crossref-qsiprep-expansion-20261115",
+          "pointer": "/message/items/0/title"
+        },
+        "url": {
+          "value": "https://doi.org/10.1038/s41592-021-01185-5",
+          "source": "crossref-qsiprep-expansion-20261115",
+          "pointer": "/message/items/0/URL"
+        },
+        "publicationType": {
+          "value": "journal-article",
+          "source": "crossref-qsiprep-expansion-20261115",
+          "pointer": "/message/items/0/type"
+        },
+        "publishedDateParts": {
+          "value": [
+            [
+              2021,
+              6,
+              21
+            ]
+          ],
+          "source": "crossref-qsiprep-expansion-20261115",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        "authors": [
+          {
+            "value": {
+              "ORCID": "https://orcid.org/0000-0002-1931-4734",
+              "authenticated-orcid": false,
+              "given": "Matthew",
+              "family": "Cieslak",
+              "sequence": "first",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            },
+            "source": "crossref-qsiprep-expansion-20261115",
+            "pointer": "/message/items/0/author/0"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "publication",
+      "id": "crossref:10.1117/1.jmi.5.1.011018",
+      "fields": {
+        "nativeId": {
+          "value": "10.1117/1.jmi.5.1.011018",
+          "source": "crossref-captk-main-expansion-20261115",
+          "pointer": "/message/items/0/DOI"
+        },
+        "title": {
+          "value": [
+            "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome"
+          ],
+          "source": "crossref-captk-main-expansion-20261115",
+          "pointer": "/message/items/0/title"
+        },
+        "url": {
+          "value": "https://doi.org/10.1117/1.jmi.5.1.011018",
+          "source": "crossref-captk-main-expansion-20261115",
+          "pointer": "/message/items/0/URL"
+        },
+        "publicationType": {
+          "value": "journal-article",
+          "source": "crossref-captk-main-expansion-20261115",
+          "pointer": "/message/items/0/type"
+        },
+        "publishedDateParts": {
+          "value": [
+            [
+              2018,
+              1,
+              11
+            ]
+          ],
+          "source": "crossref-captk-main-expansion-20261115",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        "authors": [
+          {
+            "value": {
+              "given": "Christos",
+              "family": "Davatzikos",
+              "sequence": "first",
+              "affiliation": [
+                {
+                  "name": "Univ. of Pennsylvania"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            },
+            "source": "crossref-captk-main-expansion-20261115",
+            "pointer": "/message/items/0/author/0"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "publication",
+      "id": "crossref:10.1093/bioinformatics/btae114",
+      "fields": {
+        "nativeId": {
+          "value": "10.1093/bioinformatics/btae114",
+          "source": "crossref-autogvp-expansion-20261115",
+          "pointer": "/message/items/0/DOI"
+        },
+        "title": {
+          "value": [
+            "AutoGVP: a dockerized workflow integrating ClinVar and InterVar germline sequence variant classification"
+          ],
+          "source": "crossref-autogvp-expansion-20261115",
+          "pointer": "/message/items/0/title"
+        },
+        "url": {
+          "value": "https://doi.org/10.1093/bioinformatics/btae114",
+          "source": "crossref-autogvp-expansion-20261115",
+          "pointer": "/message/items/0/URL"
+        },
+        "publicationType": {
+          "value": "journal-article",
+          "source": "crossref-autogvp-expansion-20261115",
+          "pointer": "/message/items/0/type"
+        },
+        "publishedDateParts": {
+          "value": [
+            [
+              2024,
+              2,
+              29
+            ]
+          ],
+          "source": "crossref-autogvp-expansion-20261115",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        "authors": [
+          {
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-6274-2841",
+              "authenticated-orcid": false,
+              "given": "Jung",
+              "family": "Kim",
+              "sequence": "first",
+              "affiliation": [
+                {
+                  "name": "Division of Cancer Epidemiology and Genetics, National Cancer Institute , Rockville, MD 20850, United States"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            },
+            "source": "crossref-autogvp-expansion-20261115",
+            "pointer": "/message/items/0/author/0"
+          },
+          {
+            "value": {
+              "given": "Ammar S",
+              "family": "Naqvi",
+              "sequence": "additional",
+              "affiliation": [
+                {
+                  "name": "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                },
+                {
+                  "name": "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            },
+            "source": "crossref-autogvp-expansion-20261115",
+            "pointer": "/message/items/0/author/1"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "publication",
+      "id": "crossref:10.1093/bioinformatics/btaf060",
+      "fields": {
+        "nativeId": {
+          "value": "10.1093/bioinformatics/btaf060",
+          "source": "crossref-immunotar-expansion-20261115",
+          "pointer": "/message/items/0/DOI"
+        },
+        "title": {
+          "value": [
+            "ImmunoTar—integrative prioritization of cell surface targets for cancer immunotherapy"
+          ],
+          "source": "crossref-immunotar-expansion-20261115",
+          "pointer": "/message/items/0/title"
+        },
+        "url": {
+          "value": "https://doi.org/10.1093/bioinformatics/btaf060",
+          "source": "crossref-immunotar-expansion-20261115",
+          "pointer": "/message/items/0/URL"
+        },
+        "publicationType": {
+          "value": "journal-article",
+          "source": "crossref-immunotar-expansion-20261115",
+          "pointer": "/message/items/0/type"
+        },
+        "publishedDateParts": {
+          "value": [
+            [
+              2025,
+              2,
+              11
+            ]
+          ],
+          "source": "crossref-immunotar-expansion-20261115",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        "authors": [
+          {
+            "value": {
+              "ORCID": "https://orcid.org/0009-0005-5350-3386",
+              "authenticated-orcid": false,
+              "given": "Rawan",
+              "family": "Shraim",
+              "sequence": "first",
+              "affiliation": [
+                {
+                  "name": "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+                  "place": [
+                    "United States"
+                  ]
+                },
+                {
+                  "name": "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,",
+                  "place": [
+                    "United States"
+                  ]
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            },
+            "source": "crossref-immunotar-expansion-20261115",
+            "pointer": "/message/items/0/author/0"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "publication",
+      "id": "crossref:10.1186/1471-2105-15-248",
+      "fields": {
+        "nativeId": {
+          "value": "10.1186/1471-2105-15-248",
+          "source": "crossref-phenomantics-expansion-20261115",
+          "pointer": "/message/items/0/DOI"
+        },
+        "title": {
+          "value": [
+            "Clinical phenotype-based gene prioritization: an initial study using semantic similarity and the human phenotype ontology"
+          ],
+          "source": "crossref-phenomantics-expansion-20261115",
+          "pointer": "/message/items/0/title"
+        },
+        "url": {
+          "value": "https://doi.org/10.1186/1471-2105-15-248",
+          "source": "crossref-phenomantics-expansion-20261115",
+          "pointer": "/message/items/0/URL"
+        },
+        "publicationType": {
+          "value": "journal-article",
+          "source": "crossref-phenomantics-expansion-20261115",
+          "pointer": "/message/items/0/type"
+        },
+        "publishedDateParts": {
+          "value": [
+            [
+              2014,
+              7,
+              21
+            ]
+          ],
+          "source": "crossref-phenomantics-expansion-20261115",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        "authors": [
+          {
+            "value": {
+              "given": "Aaron J",
+              "family": "Masino",
+              "sequence": "first",
+              "affiliation": [],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            },
+            "source": "crossref-phenomantics-expansion-20261115",
+            "pointer": "/message/items/0/author/0"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "publication",
+      "id": "crossref:10.1093/bib/bbaa381",
+      "fields": {
+        "nativeId": {
+          "value": "10.1093/bib/bbaa381",
+          "source": "crossref-deepcnv-expansion-20261115",
+          "pointer": "/message/items/0/DOI"
+        },
+        "title": {
+          "value": [
+            "DeepCNV: a deep learning approach for authenticating copy number variations"
+          ],
+          "source": "crossref-deepcnv-expansion-20261115",
+          "pointer": "/message/items/0/title"
+        },
+        "url": {
+          "value": "https://doi.org/10.1093/bib/bbaa381",
+          "source": "crossref-deepcnv-expansion-20261115",
+          "pointer": "/message/items/0/URL"
+        },
+        "publicationType": {
+          "value": "journal-article",
+          "source": "crossref-deepcnv-expansion-20261115",
+          "pointer": "/message/items/0/type"
+        },
+        "publishedDateParts": {
+          "value": [
+            [
+              2021,
+              1,
+              12
+            ]
+          ],
+          "source": "crossref-deepcnv-expansion-20261115",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        "authors": [
+          {
+            "value": {
+              "ORCID": "https://orcid.org/0000-0001-5131-2811",
+              "authenticated-orcid": false,
+              "given": "Joseph T",
+              "family": "Glessner",
+              "sequence": "first",
+              "affiliation": [
+                {
+                  "name": "Center for Applied Genomics, Department of Human Genetics, Children's Hospital of Philadelphia, Philadelphia, PA 19104, USA"
+                },
+                {
+                  "name": "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+                }
+              ],
+              "role": [
+                {
+                  "vocabulary": "crossref",
+                  "role": "author"
+                }
+              ]
+            },
+            "source": "crossref-deepcnv-expansion-20261115",
+            "pointer": "/message/items/0/author/0"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "organization",
+      "id": "ror:00b30xv10",
+      "fields": {
+        "nativeId": {
+          "value": "https://ror.org/00b30xv10",
+          "source": "ror-penn-20261115",
+          "pointer": "/id"
+        },
+        "title": {
+          "value": "University of Pennsylvania",
+          "source": "ror-penn-20261115",
+          "pointer": "/names/1/value"
+        },
+        "url": {
+          "value": "https://ror.org/00b30xv10",
+          "source": "ror-penn-20261115",
+          "pointer": "/id"
+        },
+        "reportedLocations": {
+          "value": [
+            {
+              "geonames_details": {
+                "continent_code": "NA",
+                "continent_name": "North America",
+                "country_code": "US",
+                "country_name": "United States",
+                "country_subdivision_code": "PA",
+                "country_subdivision_name": "Pennsylvania",
+                "lat": 39.95238,
+                "lng": -75.16362,
+                "name": "Philadelphia"
+              },
+              "geonames_id": 4560349
+            }
+          ],
+          "source": "ror-penn-20261115",
+          "pointer": "/locations"
+        },
+        "modifiedDate": {
+          "value": "2026-07-20",
+          "source": "ror-penn-20261115",
+          "pointer": "/admin/last_modified/date"
+        }
+      }
+    },
+    {
+      "kind": "organization",
+      "id": "ror:01z7r7q48",
+      "fields": {
+        "nativeId": {
+          "value": "https://ror.org/01z7r7q48",
+          "source": "ror-chop-20261115",
+          "pointer": "/id"
+        },
+        "title": {
+          "value": "Children's Hospital of Philadelphia",
+          "source": "ror-chop-20261115",
+          "pointer": "/names/1/value"
+        },
+        "url": {
+          "value": "https://ror.org/01z7r7q48",
+          "source": "ror-chop-20261115",
+          "pointer": "/id"
+        },
+        "reportedLocations": {
+          "value": [
+            {
+              "geonames_details": {
+                "continent_code": "NA",
+                "continent_name": "North America",
+                "country_code": "US",
+                "country_name": "United States",
+                "country_subdivision_code": "PA",
+                "country_subdivision_name": "Pennsylvania",
+                "lat": 39.95238,
+                "lng": -75.16362,
+                "name": "Philadelphia"
+              },
+              "geonames_id": 4560349
+            }
+          ],
+          "source": "ror-chop-20261115",
+          "pointer": "/locations"
+        },
+        "modifiedDate": {
+          "value": "2024-12-11",
+          "source": "ror-chop-20261115",
+          "pointer": "/admin/last_modified/date"
+        }
+      }
+    }
+  ],
+  "observations": {
+    "github-derived": {
+      "bodyPath": "docs/discovery/qualification/evidence/github-publications-20261115/github-tool-observations.json",
+      "sha256": "595b0a8157c0b6a9f5e381ac11597a0f598b64b4963ab73a9ac656bd880dd82d"
+    }
+  },
+  "relationships": [
+    {
+      "fromId": "github:156589095",
+      "toId": "crossref:10.1038/s41592-021-01185-5",
+      "relation": "cites-publication",
+      "edge": {
+        "observation": "github-derived",
+        "pointer": "/explicit_repository_publication_edges/0",
+        "value": {
+          "repository": "PennLINC/qsiprep",
+          "commit": "ae8ab16930309d77a44f7970028b3c6642c1aae7",
+          "paths": [
+            "README.rst",
+            "CITATION.cff"
+          ],
+          "doi": "10.1038/s41592-021-01185-5"
+        }
+      },
+      "file": {
+        "observation": "github-derived",
+        "pointer": "/file_observation_batch/files/1",
+        "value": {
+          "repository": "PennLINC/qsiprep",
+          "commit": "ae8ab16930309d77a44f7970028b3c6642c1aae7",
+          "path": "README.rst",
+          "permalink": "https://github.com/PennLINC/qsiprep/blob/ae8ab16930309d77a44f7970028b3c6642c1aae7/README.rst",
+          "tool_success": true,
+          "unicode_length": 3123,
+          "raw_body_persisted": false,
+          "contacts_present_in_tool_response": false,
+          "doi_mentions": [
+            "10.1038/s41592-021-01185-5",
+            "10.5281/zenodo.14187327"
+          ]
+        }
+      },
+      "observedAt": {
+        "observation": "github-derived",
+        "pointer": "/file_observation_batch/ended_at_utc",
+        "value": "2026-11-15 21:05:10 UTC"
+      }
+    },
+    {
+      "fromId": "github:128938343",
+      "toId": "crossref:10.1117/1.jmi.5.1.011018",
+      "relation": "cites-publication",
+      "edge": {
+        "observation": "github-derived",
+        "pointer": "/explicit_repository_publication_edges/1",
+        "value": {
+          "repository": "CBICA/CaPTk",
+          "commit": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+          "paths": [
+            "Readme.md",
+            "README.txt"
+          ],
+          "doi": "10.1117/1.JMI.5.1.011018"
+        }
+      },
+      "file": {
+        "observation": "github-derived",
+        "pointer": "/file_observation_batch/files/4",
+        "value": {
+          "repository": "CBICA/CaPTk",
+          "commit": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+          "path": "Readme.md",
+          "permalink": "https://github.com/CBICA/CaPTk/blob/cce88180d3159546a057b32ca9b4172d3ee2624d/Readme.md",
+          "tool_success": true,
+          "unicode_length": 5001,
+          "raw_body_persisted": false,
+          "contacts_present_in_tool_response": true,
+          "doi_mentions": [
+            "10.1117/1.JMI.5.1.011018"
+          ]
+        }
+      },
+      "observedAt": {
+        "observation": "github-derived",
+        "pointer": "/file_observation_batch/ended_at_utc",
+        "value": "2026-11-15 21:05:10 UTC"
+      }
+    }
+  ]
+}

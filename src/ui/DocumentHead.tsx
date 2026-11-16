@@ -48,6 +48,21 @@ export function DocumentHead() {
   const searchStr = useRouterState({ select: (s) => s.location.searchStr });
   const watchSnapshot = useSyncExternalStore(watchHeadStore.subscribe, watchHeadStore.getSnapshot, watchHeadStore.getServerSnapshot);
   useEffect(() => {
+    if (/^\/discover\/?$/.test(pathname)) {
+      const title = `Health-tech research · ${SITE}`;
+      const description = "A selected metadata-and-link research directory. Source-reported affiliations are historical; current employment is not established.";
+      const url = publicUrl("/discover", publicOrigin());
+      document.title = title;
+      upsertMeta("name", "description", description);
+      upsertMeta("name", "robots", "noindex");
+      for (const [key, value] of Object.entries({ title, description, url, type: "website", site_name: SITE })) upsertMeta("property", `og:${key}`, value);
+      upsertMeta("name", "twitter:title", title);
+      upsertMeta("name", "twitter:description", description);
+      upsertLink("canonical", url);
+      upsertOrRemoveLink("prev"); upsertOrRemoveLink("next");
+      document.head.querySelectorAll('meta[property^="article:"],script[type="application/ld+json"],link[rel="alternate"][type="application/rss+xml"],link[rel="alternate"][type="application/json"]').forEach(el => el.remove());
+      return;
+    }
     const watchRoute = parseWatchPageRoute(pathname, searchStr);
     if (watchRoute) {
       const head = watchSnapshot?.key === watchRoute.key ? watchSnapshot.head : watchPageHead({ route: watchRoute, status: watchRoute.status });

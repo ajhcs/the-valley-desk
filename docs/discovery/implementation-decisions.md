@@ -990,3 +990,32 @@ The full npm test chain passed 1401 executed tests; seven PDF regressions, build
 The user authorized advancing the reviewed plans with subagents. Sol implemented the exact-frame private edit consumer and dedicated invalidation capability, Terra investigated real institutional leads and independently tested D1 behavior, and Astra challenged source-frame, authority, history coverage and rollback. Root scoped the change, corrected migration metadata and ran full qualification. [The contract and evidence plan](wp12-edit-invalidation-plan.md) preserves all-old-copy coverage, stale-write suppression, bounded inventory, permitted historical content and existing admission/catalog bridges. Native deletion, unmapped qualification samples, cross-frame continuity, external operator revocation and WP14/WP16 public visibility remain held. No full AC-WP12-06 acceptance is claimed.
 
 [Four institutional leads](qualification/institutional-expansion-20261116.md) remain unqualified for access, rights, query, privacy or format reasons. Policy research is not a native WP06 capture; no target page body was retained and no acquisition, case, reviewer or quota count changed. The source index and empty not_frozen corpus are unchanged. Native model and all 91 frozen handoff entries remain unchanged. There is no source enrollment, human enrollment, admission, remote migration or deployment.
+
+## EX28 — Metadata-and-link pilot; separate richer reuse and benchmark validation
+
+**Status:** User-authorized scope/dependency amendment; implementation and verification tracked in the separate MP00–MP04 ledger.
+
+The user explicitly requested a metadata-and-link pilot, optional full-text reuse,
+and benchmark review as a separate workstream. The [active pilot plan](metadata-link-pilot-plan.md)
+supersedes the near-term delivery sequence for this finite intermediate product.
+It uses existing retained factual metadata and supported outbound relationships,
+under their recorded published API/license basis. Missing authenticated benchmark
+permission statements, full-text redistribution grants and WP03 freeze are no
+longer universal pilot-entry requirements. Source restrictions still apply to
+the selected fields and intended use; this is not a blanket reuse grant.
+
+The original automated admission/projection contracts retain their entry gates.
+The pilot accepts no original work package, creates no benchmark labels or human
+authority, and changes no empirical threshold. It renders a separate read-only
+projection rather than admitting candidates through the private catalog bridge.
+Historical source affiliations, organization-account owners and publication
+authors remain distinct; current employment and work-creation location are not
+inferred. Fourteen listings are neither fourteen independent projects nor proof
+of regional coverage. Full-text and forum reuse can be added independently where
+their actual terms and intended uses are established.
+
+Terra owns source-field and use-basis selection, Sol owns deterministic offline
+projection/query/API, the orchestrator owns UI/Worker integration and delivery,
+and Astra independently challenges the amendment and implementation. Public
+activation is disabled by default. No deployment, remote migration, production
+collector, actual human enrollment or sealed corpus freeze is authorized here.

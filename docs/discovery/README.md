@@ -1,8 +1,16 @@
 # Discovery implementation
 
+The active near-term delivery is the [metadata-and-link pilot](metadata-link-pilot-plan.md),
+authorized in EX28. Its finite read-only directory has a separate acceptance
+ledger in [execution.json](execution.json). Full-text reuse is optional;
+WP03 benchmark annotation/freeze remains a separate validation workstream.
+Neither is a universal prerequisite for the pilot. Public activation and deployment
+remain separately gated and are not authorized in this task.
+
 The accepted foundation implements discovery contracts, private catalog and
 evidence persistence, provenance, scoped removal, bounded collection and evaluation
-tooling. Public discovery routes and reader interfaces are still future packages.
+tooling. The complete automated catalog and reader journeys remain future packages;
+the separately scoped pilot does not accept those packages.
 No deployment or remote migration has occurred.
 
 WP05–WP11 are accepted after independent tests, transaction challenges and
@@ -238,6 +246,11 @@ hashes and limits. The PDF bootstrap's missing `ensurepip` failure and subsequen
 hash-verified local wheel provisioning are retained in that evidence directory.
 
 ## Continue from the accepted dependencies
+
+EX28 supersedes the near-term sequence below for the metadata-and-link pilot:
+MP00 → MP01 → MP02 → MP03, with MP04 release held. The following sequence
+continues to govern the original automated admission and complete-system work;
+it is not a stop on pilot implementation. Original package statuses are retained.
 
 1. Complete WP12's real installation/version/access/rights/response qualification
    and native edit/deletion-to-current-claim consumer; complete WP13's actual

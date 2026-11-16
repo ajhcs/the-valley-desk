@@ -35,6 +35,8 @@ import { publicFeaturesFromEnv } from "./src/lib/public-features.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
 import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, interruptOperationalAlertRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
 import { conditionStateForSourceState, SOURCE_FRESHNESS_SLO_MS } from "./src/lib/operational-status.ts";
+import { handleDiscoveryPilot } from "./src/ingest/discovery-pilot.ts";
+import { handleDiscoveryPilotPage } from "./src/ingest/discovery-pilot-page.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -664,6 +666,9 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method.toUpperCase();
+
+  if (/^\/api\/discovery-pilot\/?$/.test(path)) return handleDiscoveryPilot(request, env);
+  if (/^\/discover\/?$/.test(path)) return handleDiscoveryPilotPage(request, env, origin, nonce);
 
   if (path === "/api/health") {
     return handlePublicHealth(request, env);

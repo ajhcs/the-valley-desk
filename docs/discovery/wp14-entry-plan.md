@@ -1,5 +1,10 @@
 # WP14 entry handoff
 
+EX28 amendment: the [metadata-and-link pilot](metadata-link-pilot-plan.md) is a
+separate authorized finite read-only projection. The WP03/rubric stop below
+continues to apply to this original automated admission contract; it does not
+block pilot MP01–MP03. The pilot does not accept WP14 or supply benchmark labels.
+
 **Preparation proposal only; WP14 deferred pending WP03, not accepted.** Sol
 owns preparation; Astra independently reviews; the orchestrator accepts packages.
 Inspected baseline: `84b801bd0905e2759e6ee6afca1c2f4e4088f910`, 2026-11-15.
