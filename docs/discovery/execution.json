@@ -523,7 +523,7 @@
       "notes": ""
     }
   ],
-  "updated_at": "2026-11-16T02:19:07.437116+00:00",
+  "updated_at": "2026-11-16T03:57:42.651699+00:00",
   "amendments": [
     {
       "id": "EX06",
@@ -826,6 +826,26 @@
         "WP23"
       ],
       "thresholds_changed": false
+    },
+    {
+      "id": "EX28",
+      "path": "metadata-link-pilot-plan.md",
+      "status": "authorized_metadata_link_pilot_implementation",
+      "affects": [
+        "WP03",
+        "WP12",
+        "WP13",
+        "WP14",
+        "WP15",
+        "WP16",
+        "WP17",
+        "WP18",
+        "WP23",
+        "WP24",
+        "WP30"
+      ],
+      "thresholds_changed": false,
+      "dependency_scope_changed": "separate finite metadata/link pilot MP00-MP04; original automated admission and benchmark gates retained"
     }
   ],
   "next_ready_packages": [],
@@ -842,8 +862,105 @@
   "delivery": {
     "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
     "pr_state": "draft",
-    "reviewed_code_commit": "a60ba78179cc8b6be904bf606f10cf178bb64ed2",
+    "reviewed_code_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
     "code_ci_run": null,
-    "code_ci": "EX27 local qualification passed 1,407 executed tests,7PDF,build,local smoke,audit0,secret on619 stable inputs. Delivered-head CI tracked on PR30. WP12/WP13/WP03 remain in_progress; no deployment."
+    "code_ci": "EX28 local pilot qualification: 1,431 tests,7PDF,build,local smoke,audit0,secret and browser checks passed on629 stable inputs. Exact delivered-head CI is tracked on PR30 before handoff completion. MP00-MP03 acceptance is local only; MP04 remains held. Original WP03/WP12/WP13 and empirical benchmark gates are unchanged."
+  },
+  "pilot": {
+    "decision": "EX28",
+    "plan": "metadata-link-pilot-plan.md",
+    "scope": "finite_metadata_and_original_source_links",
+    "benchmark_required_for_pilot": false,
+    "full_text_required_for_pilot": false,
+    "deployment_authorized": false,
+    "flag": "DISCOVERY_PILOT_ENABLED",
+    "default_enabled": false,
+    "packages": [
+      {
+        "id": "MP00",
+        "status": "accepted",
+        "dependencies": [],
+        "acceptance": {
+          "scope": "reviewed EX28 scope/dependency amendment only",
+          "reviewer": "Astra",
+          "implementation_qualified": false
+        }
+      },
+      {
+        "id": "MP01",
+        "status": "accepted",
+        "dependencies": [
+          "MP00"
+        ],
+        "acceptance": {
+          "scope": "retained factual selection and deterministic projection; local only",
+          "reviewer": "Astra; independent Terra source comparison",
+          "records": 14,
+          "source_bodies": 14,
+          "derived_observations": 1,
+          "directed_citations": 2,
+          "benchmark_credit": 0,
+          "full_text_included": false
+        }
+      },
+      {
+        "id": "MP02",
+        "status": "accepted",
+        "dependencies": [
+          "MP01"
+        ],
+        "acceptance": {
+          "recorded_at": "2026-11-16T03:57:42.651699+00:00",
+          "scope": "local finite metadata/link software qualification only",
+          "receipt": "receipts/metadata-link-pilot.json",
+          "source_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
+          "reviewer": "Astra; Terra source/browser checks; orchestrator integration",
+          "benchmark_accepted": false,
+          "deployment_authorized": false
+        }
+      },
+      {
+        "id": "MP03",
+        "status": "accepted",
+        "dependencies": [
+          "MP01",
+          "MP02"
+        ],
+        "acceptance": {
+          "recorded_at": "2026-11-16T03:57:42.651699+00:00",
+          "scope": "local finite metadata/link software qualification only",
+          "receipt": "receipts/metadata-link-pilot.json",
+          "source_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
+          "reviewer": "Astra; Terra source/browser checks; orchestrator integration",
+          "benchmark_accepted": false,
+          "deployment_authorized": false
+        }
+      },
+      {
+        "id": "MP04",
+        "status": "not_started",
+        "dependencies": [
+          "MP03",
+          "explicit_release_authorization"
+        ],
+        "acceptance": null,
+        "hold": "Public activation and deployment require separate explicit authorization and concrete release review."
+      }
+    ],
+    "benchmark_status": "WP03_not_frozen_E01-E06_not_run",
+    "full_text_reuse": "optional_source_specific",
+    "release_status": "not_authorized",
+    "qualification_receipt": "receipts/metadata-link-pilot.json",
+    "counts": {
+      "records": 14,
+      "repositories": 6,
+      "publications": 6,
+      "organization_backgrounds": 2,
+      "directed_repository_citations": 2
+    },
+    "local_preview_route": "/discover",
+    "source_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
+    "active_packages": [],
+    "next_gate": "MP04: separately authorized public release review; deployment remains prohibited"
   }
 }

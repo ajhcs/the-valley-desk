@@ -61,7 +61,7 @@ Do not enable the flag in `wrangler.jsonc` or invoke deployment for this preview
 - Filter **Repositories**: six records, including two supported outbound
   publication citations. Each citation exposes its commit-pinned repository
   evidence link. Other relationships are withheld.
-- Search **CaPTk**, filter **Publications**: the selected metadata names Penn
+- Search **Cancer imaging phenomics**, filter **Publications**: the selected metadata names Penn
   without supplying a city. The UI does not fill that gap from another record.
 - Sort by source date: repository push, publication and registry modification
   dates retain their own labels. Partial dates retain their precision and sort
