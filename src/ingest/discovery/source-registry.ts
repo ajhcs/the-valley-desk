@@ -3,6 +3,8 @@ import { DiscoveryId, DiscoveryInstant } from '../../content/discovery-schema';
 import {
   DiscoveryRepresentationInput,
   type DiscoveryCapabilityResolver,
+  DiscoveryForumSupportSnapshot,
+  type DiscoveryForumSupportResolver,
 } from '../../content/discovery-evidence';
 import {
   canonicalDiscoveryEvidenceJson as canonical,
@@ -1319,6 +1321,20 @@ export function createDiscoverySourceRegistry(
       ],
     };
   }
+  async function composeSourceChangeGuard(input: {operationId:string;snapshot:unknown}) {
+    const op=DiscoveryId.parse(input.operationId), binding=DiscoveryForumSupportSnapshot.parse(snapshot(input.snapshot));
+    const row=await source(binding.sourceId), s=row.value;
+    if (!row.active || !row.qualification_id || s.revision!==binding.sourceRevision || s.installation!==binding.installation || s.scopeId!==binding.scopeId ||
+        !refEq(s.configuration,binding.configuration) || !refEq(s.enrollment,binding.enrollment) || !refEq(s.permission,binding.permission) || !refEq(s.rights,binding.rights) ||
+        !refEq(s.parser,binding.parser) || !refEq(s.normalizer,binding.normalizer) || !refEq(s.accessDecision,binding.policy))
+      return fail('permission-denied','discovery-source-support-current-binding');
+    await assertIntegrity(s,row.qualification_id);
+    const generationGuard=(suffix:string)=>assertions(`${op}:${suffix}:generation`,
+      'EXISTS(SELECT 1 FROM discovery_source_heads WHERE source_id=? AND revision=? AND generation=? AND active=1 AND qualification_id=?)',
+      [s.id,s.revision,row.generation,row.qualification_id]);
+    return {before:[sourceGuard(`${op}:support-before`,s,'collection',row.qualification_id),generationGuard('before')],
+      after:[sourceGuard(`${op}:support-after`,s,'collection',row.qualification_id),generationGuard('after'),clearGuard(`${op}:support-before`),clearGuard(`${op}:support-after`)]};
+  }
   async function readBudget(id: string) {
     const row = await sql(
       'SELECT requests,reserved_bytes AS reservedBytes,retained_bytes AS retainedBytes,pages,items FROM discovery_source_budgets WHERE id=?',
@@ -1335,6 +1351,7 @@ export function createDiscoverySourceRegistry(
   }
   function createEvidenceStore(evidenceOptions: {
     resolveCapability: DiscoveryCapabilityResolver;
+    resolveForumSupport?: DiscoveryForumSupportResolver;
     now?: () => string;
   }) {
     return createDiscoveryEvidenceStore(db, {
@@ -1342,6 +1359,8 @@ export function createDiscoverySourceRegistry(
       now,
       resolveIssuedSourceRequest,
       composeCaptureGuard,
+      resolveForumSupport: evidenceOptions.resolveForumSupport,
+      composeSourceChangeGuard,
     });
   }
   async function resolveRetainedRepresentation(ref: {
@@ -1416,6 +1435,7 @@ export function createDiscoverySourceRegistry(
     resolvePlan,
     resolveIssuedSourceRequest,
     composeCaptureGuard,
+    composeSourceChangeGuard,
     readBudget,
     createEvidenceStore,
     createTransport,

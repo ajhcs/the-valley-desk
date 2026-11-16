@@ -7,6 +7,10 @@ import {
 } from '../content/discovery-schema';
 import {
   DiscoveryIssuedSourceRequest,
+  DiscoveryForumSupportSnapshot,
+  DiscoveryForumEditInput,
+  type DiscoveryForumSupportResolver,
+  type DiscoverySourceChangeGuard,
   DISCOVERY_EVIDENCE_READ_LIMITS,
   type DiscoveryIssuedSourceRequestResolver,
   DiscoveryEvidenceControl,
@@ -216,6 +220,7 @@ const capabilitySchema = z
       'private-note',
       'refresh-failure',
       'revoke',
+      'invalidate-source-support',
     ]),
     targetId: DiscoveryId,
     operationId: DiscoveryId,
@@ -243,6 +248,8 @@ export function createDiscoveryEvidenceStore(
     resolveCapability: DiscoveryCapabilityResolver;
     resolveIssuedSourceRequest?: DiscoveryIssuedSourceRequestResolver;
     composeCaptureGuard?: DiscoveryEvidenceCaptureGuard;
+    resolveForumSupport?: DiscoveryForumSupportResolver;
+    composeSourceChangeGuard?: DiscoverySourceChangeGuard;
     now?: () => string;
   },
 ) {
@@ -1137,6 +1144,7 @@ export function createDiscoveryEvidenceStore(
           origin: rep.origin,
         },
         refs: [dependency('representation', v.representation)],
+        plan: { sourceSupportRepresentation: v.representation, sourceSupportSelector: v.selector },
       };
     });
   }
@@ -1349,6 +1357,114 @@ export function createDiscoveryEvidenceStore(
       };
     });
   }
+  /** Removal-only current-support invalidation. No editorial decision or erasure. */
+  async function invalidateSourceSupport(rawContext: DiscoveryMutationContext, raw: unknown) {
+    const ctx = DiscoveryMutationContext.parse(snapshot(rawContext)), value = DiscoveryForumEditInput.parse(snapshot(raw));
+    const result = await mutate('source-change', 'invalidate-source-support', ctx, value, async () => {
+      if (!options.resolveForumSupport || !options.composeSourceChangeGuard) throw new DiscoveryEvidenceConflict('discovery-source-support-resolver-required');
+      const resolve = async (receiptId: string) => { const result=DiscoveryForumSupportSnapshot.parse(snapshot(await options.resolveForumSupport!(receiptId, value.postId))); if (result.receiptId!==receiptId || result.postId!==value.postId) throw new DiscoveryEvidenceConflict('discovery-source-support-receipt-binding'); return result; };
+      const prior = await resolve(value.priorReceiptId), current = await resolve(value.currentReceiptId);
+      const binding = (v: typeof prior) => ({sourceId:v.sourceId, sourceRevision:v.sourceRevision, installation:v.installation, scopeId:v.scopeId,
+        configuration:v.configuration, enrollment:v.enrollment, permission:v.permission, rights:v.rights, parser:v.parser,
+        normalizer:v.normalizer, policy:v.policy, topicId:v.topicId, postId:v.postId});
+      if (!same(binding(prior),binding(current)) || !same(value.policy,current.policy) || prior.postId !== value.postId ||
+          current.postVersion <= prior.postVersion || Date.parse(current.updatedAt) < Date.parse(prior.updatedAt))
+        throw new DiscoveryEvidenceConflict('discovery-source-support-edit-binding');
+      const bindingKey = await hash(binding(current));
+      const old = await content('representation',prior.representation), fresh = await content('representation',current.representation);
+      const checkBody = async (entry: typeof prior, body: Record<string,unknown>) => {
+        const scope = body.materialScope as Record<string,unknown>;
+        const post = pointerValue(body.structured,entry.postPointer) as Record<string,unknown>;
+        if (!scope || scope.kind !== 'source-response' || scope.sourceId !== entry.sourceId || scope.installation !== entry.installation || scope.scopeId !== entry.scopeId ||
+            !same(body.configuration,entry.configuration) || !same(body.enrollment,entry.enrollment) || !same(body.permission,entry.permission) || !same(body.rights,entry.rights) || !same(body.parser,entry.parser) || !same(body.normalizer,entry.normalizer) ||
+            body.originalBytesSha256 !== entry.representationSha256 || post.id !== entry.postId || post.topic_id !== entry.topicId || post.version !== entry.postVersion || post.updated_at !== entry.updatedAt ||
+            await hash(post) !== entry.postSha256) throw new DiscoveryEvidenceConflict('discovery-source-support-body-binding');
+        const capturedAt=DiscoveryInstant.parse(body.capturedAt);
+        if (Date.parse(entry.updatedAt)>Date.parse(capturedAt)) throw new DiscoveryEvidenceConflict('discovery-source-support-future-edit');
+        return capturedAt;
+      };
+      const oldAt = await checkBody(prior,old), currentAt = await checkBody(current,fresh);
+      if (!(Date.parse(currentAt)>Date.parse(oldAt)) || Date.parse(currentAt)>Date.parse(now())) throw new DiscoveryEvidenceConflict('discovery-source-support-observation-order');
+      const sourceHead=await sql('SELECT revision,generation,active,qualification_id FROM discovery_source_heads WHERE source_id=?',[current.sourceId]).first<{revision:number;generation:number;active:number;qualification_id:string|null}>();
+      if (!sourceHead || !sourceHead.active || !sourceHead.qualification_id || sourceHead.revision!==current.sourceRevision) throw new DiscoveryEvidenceConflict('discovery-source-support-current-frame');
+      const watermark = await sql('SELECT version,captured_at,source_generation,qualification_id FROM discovery_source_support_watermarks WHERE binding_key=?',[bindingKey]).first<{version:number;captured_at:string;source_generation:number;qualification_id:string}>();
+      if (watermark && (watermark.source_generation!==sourceHead.generation || watermark.qualification_id!==sourceHead.qualification_id)) throw new DiscoveryEvidenceConflict('discovery-source-support-cross-generation');
+      if (watermark && (watermark.version >= current.postVersion || Date.parse(watermark.captured_at)>=Date.parse(currentAt))) throw new DiscoveryEvidenceConflict('discovery-source-support-stale-watermark');
+      // ALL captures for this source, including captures lacking WP07 page settlement.
+      const inventory = (await sql(`SELECT r.id,r.revision,r.content_sha256 AS sha256,p.source_revision,pg.id AS receipt_id
+        FROM discovery_source_captures c JOIN discovery_source_plans p ON p.id=c.plan_id
+        JOIN discovery_evidence_revisions r ON r.kind='representation' AND r.id=c.representation_id AND r.revision=c.representation_revision
+        LEFT JOIN discovery_collection_pages pg ON pg.representation_id=r.id AND pg.representation_revision=r.revision
+        WHERE p.source_id=? ORDER BY r.id,r.revision LIMIT 129`,[current.sourceId]).all<{
+          id:string;revision:number;sha256:string;source_revision:number;receipt_id:string|null
+        }>()).results ?? [];
+      if (!inventory.length || inventory.length>128 || new Set(inventory.map(r=>canonicalDiscoveryEvidenceJson([r.id,r.revision]))).size!==inventory.length)
+        throw new DiscoveryEvidenceConflict('discovery-source-support-inventory-bound');
+      const targets:{representation:{id:string;revision:number};postPointer:string;postVersion:number}[]=[];
+      const unmapped:{id:string;revision:number}[]=[];
+      const refs:Ref[]=[dependency('policy',value.policy)]; let byteCount=0;
+      for (const item of inventory) {
+        const state = await readRevision('representation',item.id,item.revision);
+        if (!state || state.contentSha256!==item.sha256) throw new DiscoveryEvidenceConflict('discovery-source-support-inventory-integrity');
+        if (!state.usable) continue; // Already unusable ancestry cannot support any current claim/new evidence.
+        const body = state.content as Record<string,unknown>;
+        byteCount += new TextEncoder().encode(canonicalDiscoveryEvidenceJson(body)).byteLength;
+        if (byteCount>4194304) throw new DiscoveryEvidenceConflict('discovery-source-support-inventory-bound');
+        refs.push(dependency('representation',{id:item.id,revision:item.revision}));
+        if (item.source_revision!==current.sourceRevision) throw new DiscoveryEvidenceConflict('discovery-source-support-cross-configuration');
+        const posts = (body.structured as any)?.post_stream?.posts;
+        const matches = Array.isArray(posts) ? posts.filter((post:any)=>post?.id===current.postId) : [];
+        if (!matches.length) {
+          const uses=await sql(`SELECT count(*) AS n FROM discovery_evidence_edges WHERE source_kind='representation' AND source_id=? AND source_revision=? AND dependent_kind='evidence'`,[item.id,item.revision]).first<{n:number}>();
+          if ((uses?.n??0)>0) throw new DiscoveryEvidenceConflict('discovery-source-support-unmapped-history');
+          unmapped.push({id:item.id,revision:item.revision});
+          continue;
+        }
+        if (matches.length!==1 || !item.receipt_id) throw new DiscoveryEvidenceConflict('discovery-source-support-unmapped-history');
+        const entry=await resolve(item.receipt_id); await checkBody(entry,body);
+        if (!same(binding(entry),binding(current)) || !same(entry.representation,{id:item.id,revision:item.revision}) || entry.postVersion>current.postVersion ||
+            (entry.postVersion===current.postVersion && entry.postSha256!==current.postSha256)) throw new DiscoveryEvidenceConflict('discovery-source-support-history-conflict');
+        if (entry.postVersion<current.postVersion) targets.push({representation:{id:item.id,revision:item.revision},postPointer:entry.postPointer,postVersion:entry.postVersion});
+      }
+      if (!targets.some(t=>same(t.representation,prior.representation))) throw new DiscoveryEvidenceConflict('discovery-source-support-prior-uncovered');
+      const composed=await options.composeSourceChangeGuard({operationId:ctx.operationId,snapshot:current});
+      const roots=`SELECT e.id,e.revision, json_extract(e.payload_json,'$.selector.kind') AS selector_kind FROM discovery_evidence_contents e JOIN json_each(?) t
+        WHERE e.kind='evidence' AND NOT EXISTS(SELECT 1 FROM discovery_evidence_invalidations done WHERE done.kind=e.kind AND done.id=e.id AND done.revision=e.revision) AND json_extract(e.payload_json,'$.representation.id')=json_extract(t.value,'$.representation.id')
+        AND json_extract(e.payload_json,'$.representation.revision')=json_extract(t.value,'$.representation.revision')
+        AND (json_extract(e.payload_json,'$.selector.kind')='text-span' OR json_extract(e.payload_json,'$.selector.pointer')=''
+          OR json_extract(e.payload_json,'$.selector.pointer')=json_extract(t.value,'$.postPointer')
+          OR instr(json_extract(e.payload_json,'$.selector.pointer'),json_extract(t.value,'$.postPointer')||'/')=1
+          OR instr(json_extract(t.value,'$.postPointer'),json_extract(e.payload_json,'$.selector.pointer')||'/')=1)`;
+      const targetsJson=canonicalDiscoveryEvidenceJson(targets);
+      const closure=`WITH RECURSIVE roots AS (${roots}), affected(kind,id,revision) AS (
+        SELECT 'evidence',id,revision FROM roots UNION SELECT e.dependent_kind,e.dependent_id,e.dependent_revision FROM discovery_evidence_edges e
+        JOIN affected a ON e.source_kind=a.kind AND e.source_id=a.id AND e.source_revision=a.revision)`;
+      return {content:{...value,kind:'native-post-edit',binding:binding(current),bindingKey,prior,current,oldCapturedAt:oldAt,currentCapturedAt:currentAt,
+          inventory:inventory.map(({id,revision,sha256})=>({id,revision,sha256})),targets},refs,
+        expectedHeads:[dependency('policy',value.policy)],captureComposition:composed,
+        plan:{sourceSupport:{bindingKey,sourceId:current.sourceId,sourceRevision:current.sourceRevision,postId:current.postId,
+          configuration:current.configuration,installation:current.installation,scopeId:current.scopeId,topicId:current.topicId,
+          sourceGeneration:sourceHead.generation,qualificationId:sourceHead.qualification_id,
+          currentVersion:current.postVersion,currentCapturedAt:currentAt,currentPostSha256:current.postSha256,
+          currentRepresentation:current.representation,currentPostPointer:current.postPointer,
+          expectedVersion:watermark?.version??null,unmapped,inventory:inventory.map(({id,revision,sha256})=>({id,revision,sha256})),targets}},
+        extra:op=>[
+          sql(`INSERT INTO discovery_source_support_events(operation_id,binding_key,root_count,conservative_count)
+            SELECT ?,?,(SELECT count(*) FROM (${roots})),(SELECT count(*) FROM (${roots}) WHERE selector_kind='text-span') WHERE ${pending}`,
+            [op,bindingKey,targetsJson,targetsJson,op]),
+          sql(`${closure} INSERT INTO discovery_evidence_invalidations SELECT kind,id,revision,? FROM affected a WHERE
+            NOT EXISTS(SELECT 1 FROM discovery_evidence_invalidations i WHERE i.kind=a.kind AND i.id=a.id AND i.revision=a.revision) AND ${pending}`,[targetsJson,op,op]),
+          sql(`INSERT INTO discovery_source_support_watermarks(binding_key,source_id,source_revision,installation,scope_id,configuration_id,configuration_revision,topic_id,post_id,version,captured_at,post_sha256,operation_id,representation_id,representation_revision,post_pointer,source_generation,qualification_id)
+            SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? WHERE ${pending} ON CONFLICT(binding_key) DO UPDATE SET version=excluded.version,captured_at=excluded.captured_at,post_sha256=excluded.post_sha256,operation_id=excluded.operation_id,representation_id=excluded.representation_id,representation_revision=excluded.representation_revision,post_pointer=excluded.post_pointer,source_generation=excluded.source_generation,qualification_id=excluded.qualification_id`,
+            [bindingKey,current.sourceId,current.sourceRevision,current.installation,current.scopeId,current.configuration.id,current.configuration.revision,current.topicId,current.postId,current.postVersion,currentAt,current.postSha256,op,current.representation.id,current.representation.revision,current.postPointer,sourceHead.generation,sourceHead.qualification_id,op]),
+          sql(`UPDATE discovery_evidence_state SET invalidation_epoch=invalidation_epoch+1 WHERE ${pending}`,[op])],
+      };
+    });
+    const counts=await sql('SELECT root_count,conservative_count FROM discovery_source_support_events WHERE operation_id=?',[ctx.operationId]).first<{root_count:number;conservative_count:number}>();
+    if (!counts) throw new DiscoveryEvidenceConflict('discovery-source-support-missing-ack');
+    return {...result,affectedEvidenceCount:counts.root_count,conservativeSpanCount:counts.conservative_count,
+      currentClaimScope:'existing-exact-source-frame-support-only' as const,publicVisibilityIntegration:'requires-WP16' as const,deletionVerified:false as const};
+  }
   async function distinctOriginCount(raw: unknown[]): Promise<number> {
     const refs = z.array(RevisionRef).min(1).max(128).parse(snapshot(raw));
     const origins = new Set<string>();
@@ -1378,6 +1494,7 @@ export function createDiscoveryEvidenceStore(
     appendPrivateNote,
     recordRefreshFailure,
     revokeRetention,
+    invalidateSourceSupport,
     readRevision,
     distinctOriginCount,
   };

@@ -86,3 +86,18 @@ export type ArtifactVersionsCannotCrossArtifactSubtypes = Expect<Equal<
   true extends CanAssignEndpointPair<Extract<DiscoveryRelation, { kind: 'artifact-version' }>, RepositoryEndpoint, PublicationEndpoint> ? true : false,
   false
 >>;
+
+
+// Compile-only use of the removal-only consumer: context defaults stay optional;
+// callers cannot supply editorial actions or string native post identities.
+export function discoverySourceSupportInputContract(
+  consumer: ReturnType<typeof import('../../src/ingest/discovery/forum-currentness').createDiscoveryForumCurrentnessConsumer>,
+) {
+  const context = { operationId: 'fixture:edit', expectedRevision: null, capabilityToken: 'fixture-only' };
+  const input = { id: 'fixture:source-change', revision: 1, priorReceiptId: 'fixture:prior', currentReceiptId: 'fixture:current', postId: 42, policy: { id: 'fixture:policy', revision: 1 } };
+  void consumer.consumeEdit(context, input);
+  // @ts-expect-error Native post identity must be a number.
+  void consumer.consumeEdit(context, { ...input, postId: '42' });
+  // @ts-expect-error Editorial decision actions are not operation input.
+  void consumer.consumeEdit(context, { ...input, action: 'decision' });
+}

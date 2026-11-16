@@ -28,6 +28,7 @@ export const DISCOVERY_EVIDENCE_KINDS = [
   'private-note',
   'refresh-failure',
   'revocation',
+  'source-change',
 ] as const;
 export const DiscoveryEvidenceKind = z.enum(DISCOVERY_EVIDENCE_KINDS);
 export type DiscoveryEvidenceKind = z.infer<typeof DiscoveryEvidenceKind>;
@@ -406,7 +407,8 @@ export type DiscoveryCapabilityAction =
   | 'decision'
   | 'private-note'
   | 'refresh-failure'
-  | 'revoke';
+  | 'revoke'
+  | 'invalidate-source-support';
 // Implemented by a trusted server integration. Fixture resolvers do not authenticate
 // real reviewers. Never populate this receipt from an HTTP body or model output.
 export type DiscoveryVerifiedCapability = {
@@ -436,3 +438,24 @@ export const DISCOVERY_EVIDENCE_READ_LIMITS = {
   maxAncestors: 512,
   maxAncestorContentBytes: 4194304,
 } as const;
+
+/** Trusted retained native-post binding; no body text or claimed editorial truth. */
+export const DiscoveryForumSupportSnapshot = z.object({
+  receiptId: DiscoveryId, sourceId: DiscoveryId, sourceRevision: Revision,
+  installation: DiscoveryId, scopeId: DiscoveryId, configuration: RevisionRef,
+  enrollment: RevisionRef, permission: RevisionRef, rights: RevisionRef, parser: RevisionRef,
+  normalizer: RevisionRef, policy: RevisionRef, topicId: Revision, postId: Revision,
+  representation: RevisionRef, representationSha256: z.string().regex(/^[a-f0-9]{64}$/),
+  committedAt: DiscoveryInstant, postVersion: Revision,
+  postPointer: z.string().regex(/^\/post_stream\/posts\/(?:0|[1-9][0-9]*)$/),
+  postSha256: z.string().regex(/^[a-f0-9]{64}$/), updatedAt: DiscoveryInstant,
+}).strict();
+export type DiscoveryForumSupportSnapshot = z.infer<typeof DiscoveryForumSupportSnapshot>;
+export const DiscoveryForumEditInput = z.object({
+  id: DiscoveryId, revision: Revision, priorReceiptId: DiscoveryId, currentReceiptId: DiscoveryId,
+  postId: Revision, policy: RevisionRef,
+}).strict();
+export type DiscoveryForumEditInput = z.input<typeof DiscoveryForumEditInput>;
+export type DiscoveryForumSupportResolver = (receiptId: string, postId: number) => Promise<DiscoveryForumSupportSnapshot>;
+export type DiscoverySourceChangeGuard = (input: { operationId: string; snapshot: DiscoveryForumSupportSnapshot }) =>
+  Promise<{ before: import('../ingest/persistence').D1StatementLike[]; after: import('../ingest/persistence').D1StatementLike[] }>;

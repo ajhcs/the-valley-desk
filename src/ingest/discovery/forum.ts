@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DiscoveryForumSupportSnapshot } from '../../content/discovery-evidence';
 import { parseFragment, type DefaultTreeAdapterTypes } from 'parse5';
 import { DiscoveryId, DiscoveryInstant, RevisionRef, makeDiscoveryDate } from '../../content/discovery-schema';
 import { isCalendarDay } from '../../content/watch-schema';
@@ -494,8 +495,26 @@ export function createDiscoveryForumAdapter(options: DiscoveryForumResolvers) {
         result.draft.providerLimited !== page.providerLimited || result.draft.terminal !== page.terminal || result.draft.nextCheckpoint !== page.proposedCheckpoint) return fail('replay-receipt');
     return {...result, replayed: true as const, provenance: {...result.provenance, receiptId, representation: page.representation}};
   }
+  async function supportSnapshot(receiptId: string, postId: number) {
+    DiscoveryId.parse(receiptId); positive.parse(postId);
+    const entry = await retainedPage(receiptId);
+    if (entry.s.topicId === null) return fail('support-topic-required');
+    // Recompute and bind the complete durable page, never open its consumed plan.
+    await replay(receiptId);
+    const topic = entry.body as Topic, index = topic.post_stream.posts.findIndex(post => post.id === postId);
+    const post = topic.post_stream.posts[index];
+    if (!post) return fail('support-post-unmapped');
+    const source = entry.s.value;
+    return DiscoveryForumSupportSnapshot.parse({receiptId, sourceId: source.id, sourceRevision: source.revision,
+      installation: source.installation, scopeId: source.scopeId, configuration: source.configuration,
+      enrollment: source.enrollment, permission: source.permission, rights: source.rights, parser: source.parser,
+      normalizer: source.normalizer, policy: source.accessDecision, topicId: topic.id, postId,
+      representation: entry.page.representation, representationSha256: entry.page.representationSha256,
+      committedAt: entry.page.committedAt,
+      postVersion: post.version, postPointer: `/post_stream/posts/${index}`, postSha256: await digest(encode(canonical(post))), updatedAt: post.updated_at});
+  }
   const parse = async (input: DiscoveryCollectionParseInput) => (await inspect(input)).draft;
-  return {provider: 'forum' as const, family: DISCOVERY_FORUM_FAMILY, parser: parse, parse, inspect, replay, topicSourceId, topicPlan,
+  return {provider: 'forum' as const, family: DISCOVERY_FORUM_FAMILY, parser: parse, parse, inspect, replay, supportSnapshot, topicSourceId, topicPlan,
     async categoryPlan(sourceId: string, page = 0, parentReceiptId?: string) {
       const s = await source(sourceId);
       if (s.topicId !== null || !Number.isSafeInteger(page) || page < 0 || page >= s.scope.maxPages) return fail('category-plan');
