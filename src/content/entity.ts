@@ -1,3 +1,4 @@
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 
 /** Reed lock. Tag ingest and search only. Never a publish trigger.
@@ -42,9 +43,9 @@ export const Entity = z.object({
   parentId: z.string().optional(),
   geo: z.string().optional(),
   role: z.string().optional(),
-  url: z.string().url().optional(),
+  url: legacyUrl().optional(),
   /** Official logo or portrait used in compact entity disclosure cards. */
-  image: z.string().url().optional(),
+  image: legacyUrl().optional(),
   /** Attached org ids. For affiliates that are not a child of one parent and not a merge. */
   orgs: z.array(z.string()).optional(),
   /** Other hospital id that shares this campus. */

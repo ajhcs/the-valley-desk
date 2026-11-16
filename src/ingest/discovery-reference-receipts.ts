@@ -1,3 +1,4 @@
+import { legacyUtcDatetime } from "../lib/schema-compat";
 import { z } from "zod";
 import { assessDiscoveryReferenceReadiness, discoveryEvaluationDigest } from "./discovery-evaluation";
 import type { DiscoveryReceiptVerifier, ReceiptExpectation } from "./discovery-evaluation";
@@ -9,11 +10,11 @@ const Purpose = z.enum(["reviewer-authority", "evidence", "permission", "samplin
 export const DiscoveryAuthenticatedReceipt = z.object({
   schemaVersion: z.literal("discovery-authenticated-receipt-v1"), id: Id, authorityId: Id,
   purpose: Purpose, subjectId: Id, principalId: Id.nullable(), contentSha256: Hash,
-  issuedAt: z.string().datetime(), expiresAt: z.string().datetime(),
+  issuedAt: legacyUtcDatetime(), expiresAt: legacyUtcDatetime(),
 }).strict();
 export type DiscoveryAuthenticatedReceipt = z.infer<typeof DiscoveryAuthenticatedReceipt>;
 export const DiscoveryReceiptAuthority = z.object({ id: Id, purposes: z.array(Purpose).min(1).max(11),
-  principals: z.array(Id.nullable()).min(1).max(100), validFrom: z.string().datetime(), validUntil: z.string().datetime(),
+  principals: z.array(Id.nullable()).min(1).max(100), validFrom: legacyUtcDatetime(), validUntil: legacyUtcDatetime(),
   revoked: z.boolean(),
 }).strict();
 export type DiscoveryReceiptAuthority = z.infer<typeof DiscoveryReceiptAuthority>;

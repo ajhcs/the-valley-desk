@@ -1,3 +1,4 @@
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import type { ContentItem } from "../content/schema";
 import registryDoc from "../../fixtures/product-watch.json";
@@ -9,7 +10,7 @@ const ProductUse = z.object({
   product: z.string(),
   aliases: z.array(z.string()).min(1),
   orgIds: z.array(z.string()).min(1),
-  evidenceUrl: z.string().url(),
+  evidenceUrl: legacyUrl(),
   evidenceType: z.enum(["official-newsroom", "official-product-page", "repository", "peer-reviewed"]),
   lastVerifiedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   confidence: z.number().min(0).max(1),

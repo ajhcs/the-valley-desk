@@ -1,3 +1,4 @@
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from 'zod';
 import {
   DISCOVERY_SCHEMA_VERSION,
@@ -43,9 +44,7 @@ const refs = z
     (a) => new Set(a.map((r) => `${r.kind}:${r.id}`)).size === a.length,
     'duplicate reference',
   );
-const endpoint = z
-  .string()
-  .url()
+const endpoint = legacyUrl()
   .max(2048)
   .refine((s) => {
     const url = new URL(s);

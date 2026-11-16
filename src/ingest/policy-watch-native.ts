@@ -21,10 +21,10 @@ export const NativePolicyCapture = z.object({
 }).strict();
 export type NativePolicyCapture = z.infer<typeof NativePolicyCapture>;
 function object(value: unknown): Record<string, unknown> {
-  return z.record(z.unknown()).parse(value);
+  return z.record(z.string(), z.unknown()).parse(value);
 }
 function rows(value: unknown, maximum = 200): Record<string, unknown>[] {
-  return z.array(z.record(z.unknown())).max(maximum).parse(value);
+  return z.array(z.record(z.string(), z.unknown())).max(maximum).parse(value);
 }
 function nativeUrl(input: PolicyCaptureInput, hosts: string[]) {
   const url = new URL(PolicyCaptureInput.parse(input).sourceUrl);

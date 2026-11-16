@@ -1,9 +1,10 @@
+import { legacyUtcDatetime } from "../lib/schema-compat";
 import { z } from "zod";
 import { DISCOVERY_PROVIDERS, DISCOVERY_COUNTY_KEYS, DiscoveryId as Id, DiscoverySubject, ProviderIdentity, RevisionRef } from "../content/discovery-schema";
 
 const Text = z.string().trim().min(1).max(4000);
 const Hash = z.string().regex(/^[a-f0-9]{64}$/);
-const Instant = z.string().datetime();
+const Instant = legacyUtcDatetime();
 const Ref = z.object({ id: Id, sha256: Hash }).strict();
 const Label = z.enum(["eligible", "ineligible", "ambiguous"]);
 const Dimension = z.enum(["supported", "refuted", "ambiguous"]);

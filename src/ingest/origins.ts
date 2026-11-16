@@ -1,3 +1,4 @@
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import originsDoc from "../../fixtures/origins-first-wave.json";
 
@@ -9,10 +10,10 @@ const SourceStatus = z.enum(["enabled", "disabled", "misconfigured"]);
 const RssSource = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
-  url: z.string().url(),
-  fallbacks: z.array(z.string().url()).optional(),
+  url: legacyUrl(),
+  fallbacks: z.array(legacyUrl()).optional(),
   htmlFallbacks: z.array(z.object({
-    url: z.string().url(),
+    url: legacyUrl(),
     adapter: z.literal("cooper-newsroom"),
   })).optional(),
   /**
@@ -21,7 +22,7 @@ const RssSource = z.object({
    * the health system before the editor can publish them.
    */
   independentFallbacks: z.array(z.object({
-    url: z.string().url(),
+    url: legacyUrl(),
     adapter: z.literal("cooper-independent"),
   })).optional(),
   kind: z.literal("news"),
@@ -34,7 +35,7 @@ const RssSource = z.object({
 const EventSource = z.object({
   id: z.string().min(1),
   origin: z.string().min(1),
-  url: z.string().url(),
+  url: legacyUrl(),
   orgs: z.array(z.string().min(1)).min(1),
   adapter: z.enum(["dvhimss-rest", "njdvhimss-page"]),
   status: SourceStatus.default("enabled"),
@@ -46,7 +47,7 @@ const LinkedInOrigin = z.object({
   kind: z.enum(["organization", "person"]),
   person: z.string().min(1),
   orgs: z.array(z.string().min(1)),
-  url: z.string().url(),
+  url: legacyUrl(),
   region: Region,
 });
 
@@ -55,7 +56,7 @@ const XOrigin = z.object({
   kind: z.enum(["organization", "person"]),
   person: z.string().min(1),
   orgs: z.array(z.string().min(1)),
-  url: z.string().url(),
+  url: legacyUrl(),
   region: Region,
   verifiedAt: z.string().optional(),
 });

@@ -26,20 +26,20 @@
     "ops:smoke": "node --import tsx/esm scripts/ops-smoke.mjs",
     "secret-scan": "node scripts/secret-scan.mjs",
     "test:discovery:types": "tsc --project tsconfig.discovery-contracts.json",
-    "test:discovery": "npm run test:discovery:types && node --import tsx/esm --test --test-concurrency=1 test/discovery-contracts.test.ts test/discovery-evaluation.test.ts test/discovery-identities.test.ts test/discovery-evidence.test.ts test/discovery-transport.test.ts test/discovery-collection.test.ts test/discovery-collector.test.ts test/discovery-github.test.ts test/discovery-reference-receipts.test.ts test/discovery-pubmed.test.ts test/discovery-reference-signatures.test.ts test/regional-publications.test.ts test/discovery-crossref.test.ts test/discovery-reference-cli.test.ts test/discovery-arxiv.test.ts test/discovery-reference-case-binding.test.ts test/discovery-forum.test.ts test/discovery-institutional.test.ts test/discovery-reference-label-binding.test.ts test/discovery-human-review.test.ts test/discovery-review-structure.test.ts",
+    "test:discovery": "npm run test:discovery:types && node --import tsx/esm --test --test-concurrency=1 test/discovery-contracts.test.ts test/discovery-evaluation.test.ts test/discovery-identities.test.ts test/discovery-evidence.test.ts test/discovery-transport.test.ts test/discovery-collection.test.ts test/discovery-collector.test.ts test/discovery-github.test.ts test/discovery-reference-receipts.test.ts test/discovery-pubmed.test.ts test/discovery-reference-signatures.test.ts test/regional-publications.test.ts test/discovery-crossref.test.ts test/discovery-reference-cli.test.ts test/discovery-arxiv.test.ts test/discovery-reference-case-binding.test.ts test/discovery-forum.test.ts test/discovery-institutional.test.ts test/discovery-reference-label-binding.test.ts test/discovery-human-review.test.ts test/discovery-review-structure.test.ts test/discovery-dependency-security.test.ts",
     "discovery:reference:intake": "node --import tsx/esm scripts/discovery-reference-intake.mjs",
     "discovery:review": "node --import tsx/esm scripts/discovery-human-review.mjs"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.170.31",
-    "fast-xml-parser": "^5.11.1",
+    "fast-xml-parser": "5.12.0",
     "ical.js": "2.2.1",
     "jose": "6.2.12",
     "parse5": "8.0.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "robots-parser": "3.0.1",
-    "zod": "^3.25.76"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -49,8 +49,8 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2",
-    "vite": "^8.2.2",
-    "wrangler": "^4.143.1"
+    "vite": "8.2.4",
+    "wrangler": "4.153.0"
   },
   "overrides": {
     "sharp": "0.35.5",

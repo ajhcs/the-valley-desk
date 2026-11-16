@@ -1,3 +1,4 @@
+import { legacyOffsetDatetime } from "../lib/schema-compat";
 import { redactRegionalContactEmails } from "./regional-privacy";
 import { z } from "zod";
 import { XMLValidator } from "fast-xml-parser";
@@ -58,7 +59,7 @@ export function publicationSearchUrl(scope: QualifiedPublicationScope, rawPlan: 
 export async function projectPubMedMetadata(xml: string, ids: readonly string[], scope: QualifiedPublicationScope, observedAt: string) {
   if (!qualifiedScopes.has(scope) || new Set(ids).size !== ids.length || ids.length > 5 || ids.some(id => !/^[1-9]\d{0,9}$/.test(id)))
     throw new Error("invalid-publication-binding");
-  z.string().datetime({ offset: true }).parse(observedAt);
+  legacyOffsetDatetime().parse(observedAt);
   if (new TextEncoder().encode(xml).length > BYTE_CAP || /<!ENTITY|<!DOCTYPE[^>]*\[/i.test(xml)) throw new Error("unsafe-publication-xml");
   // Permit only the external NLM PubMed DTD declaration. It is removed, never loaded or resolved.
   const declarations = xml.match(/<!DOCTYPE[^>]*>/gi) ?? [];

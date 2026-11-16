@@ -21,7 +21,7 @@ export async function parseFederalRegisterSnapshot(input: SnapshotInput): Promis
       source.desk !== "policy" || source.jurisdiction !== "federal" || source.family !== "regulation" ||
       endpoint.hostname !== "www.federalregister.gov" || endpoint.pathname !== "/api/v1/documents.json")
       throw Error("federal-register-source-conflict");
-    const envelope = z.object({ results: z.array(z.record(z.unknown())).max(1000),
+    const envelope = z.object({ results: z.array(z.record(z.string(), z.unknown())).max(1000),
       next_page_url: z.string().nullable().optional() }).passthrough().parse(JSON.parse(input.body));
     const observations: WatchObservation[] = [], seen = new Set<string>();
     let rejectedItems = 0;
@@ -55,9 +55,9 @@ export async function parseFederalRegisterSnapshot(input: SnapshotInput): Promis
 export async function stageCollectedPolicyObservations(db: D1DatabaseLike, observations: WatchObservation[], now: Date,
   publishVerified = false) {
   for (const observation of observations) {
-    const payload = z.object({ nativeCapture: z.record(z.unknown()) }).strict().parse(observation.payload);
+    const payload = z.object({ nativeCapture: z.record(z.string(), z.unknown()) }).strict().parse(observation.payload);
     const capture = NativePolicyCapture.parse({ ...payload.nativeCapture,
-      source: { ...z.record(z.unknown()).parse(payload.nativeCapture.source), retrievedAt: observation.fetchedAt } });
+      source: { ...z.record(z.string(), z.unknown()).parse(payload.nativeCapture.source), retrievedAt: observation.fetchedAt } });
     if (capture.source.sourceId !== observation.sourceId || capture.source.sourceUrl !== observation.sourceUrl ||
       capture.source.retrievedAt !== observation.fetchedAt ||
       await policyIdentityKey(capture.identity) !== observation.externalKey) throw Error("native-policy-observation-conflict");

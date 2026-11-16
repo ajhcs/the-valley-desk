@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { z } from "zod";
+import { acceptsLegacyUtcDatetime, acceptsLegacyUrl, legacyUtcDatetime, legacyOffsetDatetime, legacyUrl } from "../src/lib/schema-compat.ts";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import {
   AiItem, BriefingItem, ContentCatalog, ContentItem, EventItem, InterviewItem,
   Kind, NewsItem, PolicyItem, Region, SourceKind, Status, VoiceItem,
@@ -30,39 +33,49 @@ const variants = {
 };
 const kindNames = ["news", "event", "voice", "policy", "ai", "briefing", "interview"];
 
-// Zod 3 has no public full-schema visitor. Keep this adapter small and fail on
-// new node kinds; never serialize refinement function source or schema internals wholesale.
-function describeSchema(schema: z.ZodTypeAny): unknown {
+// A finite Zod 4 visitor compares the current and frozen declaration shapes.
+// Refinement bodies are not serialized; behavioral matrices below exercise them.
+// Fail on unknown checks rather than silently dropping a newly added constraint.
+function describeChecks(schema: z.ZodType): unknown[] {
+  return (schema._zod.def.checks ?? []).map(check => {
+    const def = check._zod.def as unknown as Record<string, unknown>;
+    if (def.check === "custom" && def.fn === acceptsLegacyUrl) return { check: "string_format", format: "url", pattern: null, flags: null, offset: undefined, local: undefined, precision: undefined };
+    if (def.check === "custom" && def.fn === acceptsLegacyUtcDatetime) return { check: "legacy-utc-datetime" };
+    if (def.check === "custom") return { check: "custom" };
+    if (def.check === "min_length") return { check: def.check, minimum: def.minimum };
+    if (def.check === "max_length") return { check: def.check, maximum: def.maximum };
+    if (def.check === "length_equals") return { check: def.check, length: def.length };
+    if (def.check === "string_format") {
+      if (!["url", "datetime", "regex"].includes(String(def.format))) throw new Error(`Unreviewed v1 format: ${def.format}`);
+      // Only the identified default UTC datetime has a compatibility validator;
+      // its acceptance/output is fixed independently by the Zod 3 golden below.
+      if (def.format === "datetime" && def.offset === false && def.local === false && def.precision === null) return { check: "legacy-utc-datetime" };
+      return { check: def.check, format: def.format, pattern: def.pattern instanceof RegExp ? def.pattern.source : null,
+        flags: def.pattern instanceof RegExp ? def.pattern.flags : null,
+        offset: def.offset, local: def.local, precision: def.precision };
+    }
+    throw new Error(`Unreviewed v1 check: ${def.check}`);
+  });
+}
+function describeSchema(schema: z.ZodType): unknown {
+  const checks = describeChecks(schema);
   if (schema instanceof z.ZodObject) {
-    return {
-      type: "object", unknownKeys: schema._def.unknownKeys,
-      catchall: describeSchema(schema._def.catchall),
+    return { type: "object", checks, unknownKeys: schema._zod.def.catchall ? "explicit-catchall" : "strip",
+      catchall: schema._zod.def.catchall ? describeSchema(schema._zod.def.catchall as z.ZodType) : null,
       fields: Object.fromEntries(Object.entries(schema.shape).sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, value]) => [key, describeSchema(value as z.ZodTypeAny)])),
-    };
+        .map(([key, value]) => [key, describeSchema(value as z.ZodType)])) };
   }
-  if (schema instanceof z.ZodDiscriminatedUnion) {
-    return { type: "discriminatedUnion", discriminator: schema.discriminator, options: schema.options.map(describeSchema) };
-  }
-  if (schema instanceof z.ZodEffects) {
-    return { type: "effect", effect: schema._def.effect.type, inner: describeSchema(schema.innerType()) };
-  }
-  if (schema instanceof z.ZodOptional) return { type: "optional", inner: describeSchema(schema.unwrap()) };
-  if (schema instanceof z.ZodDefault) {
-    return { type: "default", value: schema._def.defaultValue(), inner: describeSchema(schema.removeDefault()) };
-  }
-  if (schema instanceof z.ZodArray) {
-    return {
-      type: "array", min: schema._def.minLength, max: schema._def.maxLength,
-      exact: schema._def.exactLength, item: describeSchema(schema.element),
-    };
-  }
-  if (schema instanceof z.ZodString) return { type: "string", checks: schema._def.checks, coerce: schema._def.coerce };
-  if (schema instanceof z.ZodEnum) return { type: "enum", values: schema.options };
-  if (schema instanceof z.ZodLiteral) return { type: "literal", value: schema.value };
-  if (schema instanceof z.ZodBoolean) return { type: "boolean", coerce: schema._def.coerce };
-  if (schema instanceof z.ZodNever) return { type: "never" };
-  throw new Error(`Unreviewed v1 schema node: ${schema._def.typeName}`);
+  if (schema instanceof z.ZodDiscriminatedUnion) return { type: "discriminatedUnion", checks,
+    discriminator: schema._zod.def.discriminator, options: schema.options.map(option => describeSchema(option as z.ZodType)) };
+  if (schema instanceof z.ZodOptional) return { type: "optional", checks, inner: describeSchema(schema.unwrap()) };
+  if (schema instanceof z.ZodDefault) return { type: "default", checks, value: schema._zod.def.defaultValue, inner: describeSchema(schema.unwrap()) };
+  if (schema instanceof z.ZodArray) return { type: "array", checks, item: describeSchema(schema.element as z.ZodType) };
+  if (schema instanceof z.ZodString) return { type: "string", checks };
+  if (schema instanceof z.ZodEnum) return { type: "enum", checks, values: schema.options };
+  if (schema instanceof z.ZodLiteral) return { type: "literal", checks, value: schema.value };
+  if (schema instanceof z.ZodBoolean) return { type: "boolean", checks };
+  if (schema instanceof z.ZodNever) return { type: "never", checks };
+  throw new Error(`Unreviewed v1 schema node: ${schema._zod.def.type}`);
 }
 
 function fixture<K extends ContentItem["kind"]>(kind: K): Extract<ContentItem, { kind: K }> {
@@ -92,11 +105,16 @@ function outcome(schema: z.ZodTypeAny, value: unknown) {
   const result = schema.safeParse(value);
   return result.success
     ? { success: true, data: result.data }
-    : { success: false, issues: result.error.issues.map(({ code, path, message }) => ({ code, path, message })) };
+    : { success: false, issues: result.error.issues.map(issue => {
+      // Format checker codes/messages changed in v4. Preserve their rejection,
+      // exact field path and all non-format refinements in this comparison.
+      if ((issue.code === "invalid_format" && issue.format === "url") || (issue.code === "custom" && issue.message === "Invalid url")) return { code: "legacy-url", path: issue.path };
+      if ((issue.code === "invalid_format" && issue.format === "datetime") || (issue.code === "custom" && issue.message === "Invalid datetime")) return { code: "legacy-datetime", path: issue.path };
+      return { code: issue.code, path: issue.path, message: issue.message };
+    }) };
 }
 
 function enumPaths(schema: z.ZodTypeAny, path: Path = []): Array<{ path: Path; values: string[] }> {
-  if (schema instanceof z.ZodEffects) return enumPaths(schema.innerType(), path);
   if (schema instanceof z.ZodOptional) return enumPaths(schema.unwrap(), path);
   if (schema instanceof z.ZodDefault) return enumPaths(schema.removeDefault(), path);
   if (schema instanceof z.ZodArray) return enumPaths(schema.element, [...path, 0]);
@@ -105,6 +123,50 @@ function enumPaths(schema: z.ZodTypeAny, path: Path = []): Array<{ path: Path; v
   }
   return schema instanceof z.ZodEnum ? [{ path, values: [...schema.options] }] : [];
 }
+
+// Captured using an isolated published Zod 3.25.76 package before comparison.
+// This independent baseline prevents two schemas moving together onto v4 from
+// concealing an acceptance/default/output change. Library error wording is not a contract.
+const zod3Golden = JSON.parse(readFileSync(new URL("./fixtures/watch-legacy/zod3-semantics.json", import.meta.url), "utf8"));
+const goldenHash = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+function taggedValue(value: unknown): unknown {
+  if (value === undefined) return ["undefined"];
+  if (value === null) return ["null"];
+  if (Array.isArray(value)) return ["array", value.map(taggedValue)];
+  if (typeof value === "object") return ["object", Object.keys(value).sort().map(key => [key, taggedValue((value as Record<string, unknown>)[key])])];
+  return [typeof value, value];
+}
+function semanticOutcome(value: unknown) {
+  const result = ContentItem.safeParse(value);
+  return result.success ? { success: true, data: taggedValue(result.data) } : { success: false };
+}
+test("Zod 4 retains independently captured Zod 3 legacy acceptance and normalized output", () => {
+  assert.equal(goldenHash(readFileSync(new URL("./fixtures/watch-legacy/v1-schema.ts", import.meta.url))), zod3Golden.schemaFileSha256);
+  assert.equal(goldenHash(readFileSync(new URL("./fixtures/watch-legacy/items.ts", import.meta.url))), zod3Golden.itemsFileSha256);
+  const replacements = [undefined, null, false, 42, "", " ", "x", "xy", {}, [], ["synthetic"]];
+  for (const item of syntheticV1Items) {
+    const outcomes = pathsOf(item).flatMap(path => replacements.map(replacement => semanticOutcome(withValue(item, path, replacement))));
+    const expected = zod3Golden.matrix.find((row: { kind: string }) => row.kind === item.kind);
+    assert.ok(expected, item.kind); assert.equal(outcomes.length, expected.caseCount, item.kind);
+    assert.equal(goldenHash(JSON.stringify(outcomes)), expected.sha256, item.kind);
+  }
+  for (const edge of zod3Golden.edges) {
+    const item = fixture("news"), candidate = edge.field === "updatedAt" ? { ...item, updatedAt: edge.input } : { ...item, source: { ...item.source, url: edge.input } };
+    const outcome = semanticOutcome(candidate);
+    assert.deepEqual(outcome.success ? { success: true, sha256: goldenHash(JSON.stringify(outcome.data)) } : { success: false }, edge.outcome, `${edge.field}: ${edge.input}`);
+  }
+});
+
+test("compatibility helpers retain independently captured UTC, offset and raw URL boundaries", () => {
+  const schemas = { utc: legacyUtcDatetime(), offset: legacyOffsetDatetime(), url: legacyUrl() };
+  for (const [kind, schema] of Object.entries(schemas)) {
+    for (const edge of zod3Golden.helperEdges[kind]) {
+      const result = schema.safeParse(edge.input);
+      assert.deepEqual(result.success ? { success: true, value: result.data } : { success: false }, edge.outcome, `${kind}: ${JSON.stringify(edge.input)}`);
+    }
+    for (const value of [undefined, null, false, 0, {}, []]) assert.equal(schema.safeParse(value).success, false, kind);
+  }
+});
 
 test("Watch cannot widen any v1 variant, nested field, constraint, default, or feed envelope", () => {
   assert.deepEqual(Object.keys(variants), Object.keys(FrozenV1Variants));

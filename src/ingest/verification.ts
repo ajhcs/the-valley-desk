@@ -1,3 +1,4 @@
+import { legacyUtcDatetime } from "../lib/schema-compat";
 import { z } from "zod";
 import { looksInstructionLike } from "./untrusted-text";
 import { containsExact, validateClaimLedger, type ClaimLedger } from "./claim-ledger";
@@ -38,7 +39,7 @@ export const VerificationObjection = z.object({
 export const VerificationResult = z.object({
   approved: z.boolean(),
   objections: z.array(VerificationObjection).max(12).default([]),
-  verifiedAt: z.string().datetime().default(() => new Date().toISOString()),
+  verifiedAt: legacyUtcDatetime().default(() => new Date().toISOString()),
 });
 
 export type VerificationResult = z.infer<typeof VerificationResult>;

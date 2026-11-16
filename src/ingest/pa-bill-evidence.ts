@@ -1,6 +1,7 @@
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 
-const TextVersion = z.object({ printer: z.string(), url: z.string().url(), textDate: z.string().nullable() });
+const TextVersion = z.object({ printer: z.string(), url: legacyUrl(), textDate: z.string().nullable() });
 const Evidence = z.object({
   bill: z.string(), session: z.string(), current: TextVersion.nullable(),
   history: z.array(TextVersion), action: z.string(), actionAt: z.string().nullable(), blocker: z.string().nullable(),

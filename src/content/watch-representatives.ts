@@ -106,7 +106,7 @@ function officeNaturalKey(office: Office): string {
 }
 export async function representativeOfficeKey(input: unknown): Promise<string> {
   const office = z.object({ jurisdictionId: WatchId, bodyId: WatchId,
-    officeType: RepresentativeOffice.innerType().shape.officeType,
+    officeType: RepresentativeOffice.shape.officeType,
     district: z.object({ type: z.enum(["district", "at-large"]), id: WatchId }) }).parse(input);
   return tupleKey("office-v1", [office.jurisdictionId, office.bodyId, office.officeType, office.district.type, office.district.id]);
 }
@@ -257,15 +257,15 @@ export const RepresentativeQuery = z.object({ jurisdiction: RepresentativeJurisd
 }).strict();
 const MembershipState = z.enum(["verified-current", "verified-historical", "observed-current", "last-known"]);
 const PublicRole = z.object({ id: WatchId, bodyId: WatchId, bodyName: Label,
-  role: RepresentativeCommitteeRole.innerType().shape.role, state: MembershipState,
+  role: RepresentativeCommitteeRole.shape.role, state: MembershipState,
   validFrom: CalendarDay, validTo: CalendarDay.nullable(), evidenceIds: UniqueIds }).strict();
 const PublicMember = z.object({ personId: WatchId, membershipId: WatchId, displayName: Label,
-  role: RepresentativeMembership.innerType().shape.role, party: Label.nullable(), officialProfileUrl: HttpsUrl.nullable(),
+  role: RepresentativeMembership.shape.role, party: Label.nullable(), officialProfileUrl: HttpsUrl.nullable(),
   state: MembershipState, ...ObservedPeriodFields,
   committeeRoles: z.array(PublicRole).max(100), evidenceIds: UniqueIds }).strict().superRefine(observedPeriod);
 export const PublicRepresentativeOffice = z.object({ id: WatchId, jurisdiction: RepresentativeJurisdiction,
-  jurisdictionId: WatchId, bodyId: WatchId, bodyName: Label, officeType: RepresentativeOffice.innerType().shape.officeType,
-  district: RepresentativeOffice.innerType().shape.district, officialLookupUrl: HttpsUrl,
+  jurisdictionId: WatchId, bodyId: WatchId, bodyName: Label, officeType: RepresentativeOffice.shape.officeType,
+  district: RepresentativeOffice.shape.district, officialLookupUrl: HttpsUrl,
   state: z.enum(["verified-membership", "verified-vacancy", "partially-verified", "unverified"]),
   seats: z.object({ capacity: z.number().int().min(1).max(50), verifiedFilled: z.number().int().nonnegative(),
     verifiedVacant: z.number().int().nonnegative(), unverified: z.number().int().nonnegative(),

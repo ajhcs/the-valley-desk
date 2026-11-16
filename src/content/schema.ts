@@ -1,3 +1,4 @@
+import { legacyUtcDatetime, legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 
 export const Region = z.enum(["PA", "NJ", "DE", "regional", "federal"]);
@@ -16,7 +17,7 @@ export const Kind = z.enum([
 export const IMPACT_PUBLISH_KINDS = ["news", "policy", "ai", "interview"] as const;
 export type ImpactPublishKind = (typeof IMPACT_PUBLISH_KINDS)[number];
 
-export const HttpsUrl = z.string().url().refine((value) => {
+export const HttpsUrl = legacyUrl().refine((value) => {
   try {
     return new URL(value).protocol === "https:";
   } catch {
@@ -28,7 +29,7 @@ export const Source = z.object({
   kind: SourceKind,
   origin: z.string(),
   url: HttpsUrl.optional(),
-  fetchedAt: z.string().datetime().optional(),
+  fetchedAt: legacyUtcDatetime().optional(),
   externalId: z.string().optional(),
 });
 
@@ -55,8 +56,8 @@ const Base = z.object({
   dek: z.string(),
   body: z.string(),
   status: Status,
-  publishedAt: z.string().datetime().optional(),
-  updatedAt: z.string().datetime(),
+  publishedAt: legacyUtcDatetime().optional(),
+  updatedAt: legacyUtcDatetime(),
   topics: z.array(z.string()),
   orgs: z.array(z.string()),
   region: Region,
@@ -74,7 +75,7 @@ const Base = z.object({
   featured: z.boolean().default(false),
   annotations: z.array(Annotation).optional(),
   /** When the facts were last verified against the cited source. ISO UTC. */
-  verifiedAt: z.string().datetime().optional(),
+  verifiedAt: legacyUtcDatetime().optional(),
   /** True when the item is high-stakes and rests on a single cited source. */
   singleSource: z.boolean().optional(),
 });
@@ -84,13 +85,13 @@ export const NewsItem = Base.extend({
   relatedEventIds: z.array(z.string()),
   relatedVoiceIds: z.array(z.string()),
   /** Go-live clock. ISO UTC. Newsroom wall is America/New_York. Not publishedAt. */
-  clockAt: z.string().datetime().optional(),
+  clockAt: legacyUtcDatetime().optional(),
 });
 
 export const EventItem = Base.extend({
   kind: z.literal("event"),
-  startsAt: z.string().datetime(),
-  endsAt: z.string().datetime().optional(),
+  startsAt: legacyUtcDatetime(),
+  endsAt: legacyUtcDatetime().optional(),
   timezone: z.string(),
   venue: z.string().optional(),
   city: z.string().optional(),
@@ -102,7 +103,7 @@ export const EventItem = Base.extend({
   healthSystemRelevance: z.string().optional(),
   relatedOrgIds: z.array(z.string()).optional(),
   relatedProductIds: z.array(z.string()).optional(),
-  registrationDeadline: z.string().datetime().optional(),
+  registrationDeadline: legacyUtcDatetime().optional(),
   partner: z.enum([
     "dvhimss",
     "njhimss",
@@ -148,7 +149,7 @@ export const PolicyItem = Base.extend({
       "introduced", "committee", "hearing", "amended", "passed", "enacted", "floor-action",
       "proposed-rule", "final-rule", "guidance", "enforcement",
     ]),
-    developmentAt: z.string().datetime(),
+    developmentAt: legacyUtcDatetime(),
     historyUrl: HttpsUrl.optional(),
     textUrl: HttpsUrl.optional(),
   }).optional(),
@@ -177,13 +178,13 @@ export const AiItem = Base.extend({
   kind: z.literal("ai"),
   vendor: z.string(),
   product: z.string(),
-  announcedAt: z.string().datetime(),
+  announcedAt: legacyUtcDatetime(),
 });
 
 export const BriefingItem = Base.extend({
   kind: z.literal("briefing"),
-  windowStart: z.string().datetime(),
-  windowEnd: z.string().datetime(),
+  windowStart: legacyUtcDatetime(),
+  windowEnd: legacyUtcDatetime(),
   itemIds: z.array(z.string()),
 });
 

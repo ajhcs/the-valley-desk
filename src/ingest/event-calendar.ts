@@ -1,3 +1,4 @@
+import { legacyUrl } from "../lib/schema-compat";
 import ICAL from "ical.js";
 import { z } from "zod";
 import { EventItem, type ContentItem } from "../content/schema";
@@ -9,7 +10,7 @@ import type { D1DatabaseLike, D1StatementLike } from "./persistence";
 
 const MAX_EVENTS=500, MAX_MAINTENANCE_EVENTS=5000, MAX_FEED_BYTES=2_000_000;
 const Text=z.string().max(8000);
-export const CalendarPayload=z.object({id:z.string().min(1).max(500),title:Text,description:Text,location:Text,url:z.string().url(),
+export const CalendarPayload=z.object({id:z.string().min(1).max(500),title:Text,description:Text,location:Text,url:legacyUrl(),
   timeKind:z.enum(["timed","date-only","time-tbd"]),start:z.string(),end:z.string().nullable(),
   status:z.enum(["CONFIRMED","TENTATIVE","CANCELLED"])}).strict();
 type CalendarPayload=z.infer<typeof CalendarPayload>;

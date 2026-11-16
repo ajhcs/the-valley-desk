@@ -1,3 +1,4 @@
+import { legacyOffsetDatetime } from "../lib/schema-compat";
 import { z } from "zod";
 import { isCalendarDay } from "../content/watch-schema";
 import { REGIONAL_CHANNELS, RegionalInventory, permittedPublicUrl, regionalPublicUrlProjection } from "./regional-contracts";
@@ -6,7 +7,7 @@ import { SOURCE_RUN_STATES } from "./source-health";
 import type { PersistedSourceHealth } from "./source-health";
 
 const Id = z.string().regex(/^[a-z][a-z0-9-]+$/).max(200);
-const Instant = z.string().datetime({ offset: true }).refine(value => isCalendarDay(value.slice(0, 10)));
+const Instant = legacyOffsetDatetime().refine(value => isCalendarDay(value.slice(0, 10)));
 const Configurations = ["configured", "inventory-only", "planned", "disabled"] as const;
 const distinct = <T>(rows: T[]) => new Set(rows).size === rows.length;
 const Query = z.object({

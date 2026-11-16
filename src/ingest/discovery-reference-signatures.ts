@@ -1,10 +1,11 @@
+import { legacyUtcDatetime } from "../lib/schema-compat";
 import { z } from "zod";
 import { DiscoveryAuthenticatedReceipt as Receipt, DiscoveryReceiptAuthority as Authority, assessDiscoveryReferenceIntake } from "./discovery-reference-receipts";
 import type { DiscoveryTrustedReceiptStore } from "./discovery-reference-receipts";
 import { discoveryEvaluationDigest } from "./discovery-evaluation";
 
 const Id = z.string().min(1).max(200);
-const Instant = z.string().datetime();
+const Instant = legacyUtcDatetime();
 const Hex = z.string().regex(/^[a-f0-9]+$/);
 const Roles = z.enum(["receipt", "authority"]);
 const Pin = z.object({ id: Id, algorithm: z.literal("Ed25519"), spkiHex: Hex.length(88),

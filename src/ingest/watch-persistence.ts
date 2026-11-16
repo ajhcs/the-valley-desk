@@ -69,7 +69,7 @@ async function parseDeliveryRow(row: PublicRow, deliveryAsOf: string): Promise<W
     if (new TextEncoder().encode(row.manifest_json).byteLength > WATCH_DELIVERY_MANIFEST_BYTES) throw new Error("manifest size");
     const manifest = WatchDeliveryManifest.parse(JSON.parse(row.manifest_json));
     if (await sha256(canonicalJson(manifest)) !== row.manifest_sha256) throw new Error("manifest checksum");
-    const values = z.record(z.union([z.literal(0), z.literal(1)])).parse(JSON.parse(row.group_validity ?? "null"));
+    const values = z.record(z.string(), z.union([z.literal(0), z.literal(1)])).parse(JSON.parse(row.group_validity ?? "null"));
     delivered = await shapeWatchDelivery(record, manifest, new Map(Object.entries(values).map(([key, value]) => [key, value === 1])), deliveryAsOf);
   } catch { throw new WatchStorageError("watch-projection-invalid", 503); }
   if (!delivered) throw new WatchStorageError("watch-evidence-changed", 409);

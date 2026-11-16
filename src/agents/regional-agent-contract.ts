@@ -1,10 +1,12 @@
+import { legacyOffsetDatetime } from "../lib/schema-compat";
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import { REGIONAL_CHANNELS } from "../ingest/regional-contracts";
 import { SOURCE_RUN_STATES } from "../ingest/source-health";
 export { RegionalDiscoveryQuery, RegionalDiscoveryRecordQuery, RegionalDiscoveryResult, RegionalDiscoveryRecordResult } from "../ingest/regional-discovery-view";
 export { RegionalSourceReadQuery } from "../ingest/regional-read-view";
 const Id = z.string().regex(/^[a-z][a-z0-9-]+$/).max(200);
-const Instant = z.string().datetime({ offset: true });
+const Instant = legacyOffsetDatetime();
 const nullableInstant = Instant.nullable();
 const no = z.literal(false), count = z.number().int().nonnegative();
 const Cursor = z.object({ snapshotId: z.string().regex(/^[a-f0-9]{64}$/), afterSourceId: Id, filterKey: z.string().max(5000) }).strict();
@@ -22,13 +24,13 @@ export const RegionalAgentResult = z.object({
   registrationGapMeaning: z.string().max(300), freshnessBasis: z.string().max(300),
   results: z.array(z.object({ sourceId: Id, institutionId: Id, institutionName: z.string().min(2).max(200),
     institutionScopeDeclaration: z.enum(["core", "edge", "unverified", "configured-monitor-set", "inventory-only"]),
-    channel: z.enum(REGIONAL_CHANNELS), url: z.string().url().max(2048),
+    channel: z.enum(REGIONAL_CHANNELS), url: legacyUrl().max(2048),
     configuration: z.enum(["configured", "inventory-only", "planned", "disabled"]),
     freshnessAtSnapshot: z.enum(["unknown", "fresh", "stale", "not-active"]), sourceState: z.enum(SOURCE_RUN_STATES).nullable(),
     lastCheckedAt: nullableInstant, lastSuccessAt: nullableInstant,
     warning: z.enum([...SOURCE_RUN_STATES, "invalid-health-timestamps"]).nullable(), sourcePublishedAt: z.null(),
     evidenceBasis: z.enum(["registry-configuration", "inventory-citation-declarations"]), evidenceVerifiedByThisAdapter: no,
-    citations: z.array(z.object({ evidenceId: Id, sourceUrl: z.string().url().max(2048), observedAt: Instant,
+    citations: z.array(z.object({ evidenceId: Id, sourceUrl: legacyUrl().max(2048), observedAt: Instant,
       sourcePublishedAt: nullableInstant, representationSha256: z.string().regex(/^[a-f0-9]{64}$/) }).strict()).max(100),
   }).strict()).max(50), nextCursor: Cursor.nullable(),
 }).strict();

@@ -1,3 +1,4 @@
+import { legacyUrl } from "../lib/schema-compat";
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 import { z } from "zod";
 import { CanonicalInstant, canonicalJson, sha256 } from "../content/watch-schema";
@@ -10,7 +11,7 @@ export const REPRESENTATIVE_RAW_MAX_BYTES = 1_000_000;
 export const SENATE_ROSTER_URL = "https://www.senate.gov/general/contact_information/senators_cfm.xml";
 const Member = z.object({ first_name: z.string().min(1).max(160), last_name: z.string().min(1).max(160),
   state: z.string().regex(/^[A-Z]{2}$/), party: z.string().min(1).max(20), bioguide_id: z.string().regex(/^[A-Z][0-9]{6}$/),
-  website: z.string().url(), email: z.string().optional(), class: z.string().min(1).max(30) });
+  website: legacyUrl(), email: z.string().optional(), class: z.string().min(1).max(30) });
 function senateLink(value: string) {
   const url = new URL(value);
   if (url.protocol !== "https:" || url.username || url.password || url.port || !(url.hostname === "senate.gov" || url.hostname.endsWith(".senate.gov")))

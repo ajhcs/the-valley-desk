@@ -1,3 +1,4 @@
+import { legacyUtcDatetime, legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 
 export const WatchId = z.string().min(1).max(240).regex(/^[A-Za-z0-9][A-Za-z0-9._:-]*$/);
@@ -5,13 +6,13 @@ export const Sha256 = z.string().regex(/^[a-f0-9]{64}$/);
 export const MAX_PUBLIC_WATCH_BYTES = 150_000;
 const Text = z.string().min(1).max(6000).refine(value => value.trim() === value, "Text must be trimmed");
 const Label = Text.pipe(z.string().max(240));
-export const HttpsUrl = z.string().max(2048).url().refine(value => {
+export const HttpsUrl = legacyUrl().max(2048).refine(value => {
   try {
     const url = new URL(value);
     return url.protocol === "https:" && !url.username && !url.password && (!url.port || url.port === "443");
   } catch { return false; }
 }, "Public links must use credential-free HTTPS");
-export const CanonicalInstant = z.string().datetime().refine(value => {
+export const CanonicalInstant = legacyUtcDatetime().refine(value => {
   const date = new Date(value);
   return !value.startsWith("0000-") && Number.isFinite(date.getTime()) && date.toISOString() === value;
 }, "Use a real canonical UTC instant with milliseconds");
