@@ -79,24 +79,40 @@ directory contains six reviewed works. Ordinary topic/institution/county search,
 facets, match explanations and stable pagination use one generated snapshot;
 the historical 28-object read surface remains separate.
 
-Parallel Terra discovery and the four user-supplied institution collections now feed a
-[regional research map](evidence/GL05/regional-import-20261117/research-network.md):
-220 account URL keys, 2,841 catalog candidate repository keys, 3,306 repository-shaped
-URL leads across the full queue, and 4,803 source observations. The Cooper graph
-retains 637 source-scoped nodes and 820 reported relationships. These units do not
-count verified people, eligible health work or institutional ownership. Delaware
-connections remain neighboring context under the user's retained DVRPC geography.
-The original 41-account map and 68-account Jefferson merge remain provenance
-checkpoints. Metadata-only offline replays reproduce all four supplied packages;
-no article bodies, abstracts, contacts or supplied source scripts are reused.
-[Discovery follow-through](execution/GL05-discovery-follow-through.md) connects this
+Parallel Terra discovery and the six user-supplied institution collections now feed an
+[expanded regional research map](evidence/GL05/regional-expansion-20261117/research-network.md):
+259 account URL keys, 3,274 account/native-catalog repository candidate keys and
+4,411 distinct repository-shaped URL leads excluding Drexel broad-check-only
+observations. Including the broad checks gives 5,534 URL leads. The queue contains
+9,275 observations; the Cooper graph retains 637 source-scoped nodes and 820
+reported relationships. These units do not count verified people, eligible health
+work or institutional ownership. Delaware connections remain neighboring context
+under the retained nine-county DVRPC geography.
+
+The original 41-account map, Jefferson intake and four-institution federation remain
+immutable provenance checkpoints. Drexel adds 435 catalog rows, 336 project
+associations, student/course and publication-review queues, plus 2,197 explicitly
+separate broad root checks. Villanova adds 17 account URLs, 66 repository paths
+and two separate non-GitHub code resources. Forks, external copies, historical
+roles and unavailable originals retain their reported qualifications. Metadata-only
+offline sanitizers preserve original research packages and retain source-identifier
+queries in citations; article bodies, abstracts, contacts and supplied scripts are
+not reused. See the [expansion review](execution/GL05-expansion-sol-review.md) and
+[supplemental acceptance](execution/GL05-expansion-acceptance.json).
+[Discovery follow-through](execution/GL05-discovery-follow-through.md) connects the
 queue to repeatable bounded acquisition and lean reviewed admissions.
 
-Full core regression passed 1,550 tests. Later intake and integration refinements
-passed 63 focused tests (overlapping the full core run), four offline replay checks,
-two local sanitizer QA tests, final build/typecheck and secret scan. Source commit
-`352258d` passed push and PR CI. The latest intake/qualification head has separate
-CI pending; the 1,550 local count is not a claim of a final-intake-head full run.
+The previous core run passed 1,550 tests; its later four-source intake passed 63
+focused checks. Both push and PR CI subsequently passed source `e5b5091` and
+qualification head `c23cc18`. These are historical results for those revisions.
+The Drexel/Villanova source `f6b33a0` passed the full current Discovery suite
+(479 tests, including three new expansion tests), four local sanitizer QA
+checks, portable snapshot freshness checks, build/typecheck and secret scan.
+Application/Watch and PDF checks were not repeated locally for this metadata-only
+expansion. New-head CI remains separately tracked on PR30.
+See [expansion acceptance](execution/GL05-expansion-acceptance.json) and
+[independent review](execution/GL05-expansion-sol-review.md). The source-identifier
+citation defect found in review is repaired and its original finding is retained.
 GL06–GL11 still own the front door, creator journeys, upkeep, broader coverage,
 reader validation and release. GL06 and GL08 can proceed concurrently after GL05.
 No production configuration, scheduler, remote migration, source enrollment or

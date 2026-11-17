@@ -1,7 +1,7 @@
 {
   "id": "TVD-GO-LIVE-1",
   "decision": "EX32",
-  "revision": 6,
+  "revision": 7,
   "status": "implementation_in_progress",
   "source_baseline": "60d6bd3aaba90a4970821f41fb2ca0329cbf8d20",
   "authority": "On 16 November 2026 the user authorized implementation beginning GL00 and following accepted dependencies, Terra implementation with independent Sol review, commits and PR updates, and deployment as appropriate. Deployment authority covers the reviewed existing-site GL11 release when its actual readiness conditions are met; it does not accept unimplemented work, permit unrelated infrastructure changes, new paid services or outreach.",
@@ -335,6 +335,16 @@
           "package": "GL11",
           "work": "Require exact release-head CI, configuration, operations and rollback readiness before using existing deployment authority."
         }
+      ],
+      "private_intake_supplements": [
+        {
+          "id": "TVD-GL05-EXPANSION-1",
+          "source_commit": "f6b33a0659abc6e535f1cb947ff375357cd29dbe",
+          "receipt": "execution/GL05-expansion-acceptance.json",
+          "review": "execution/GL05-expansion-sol-review.md",
+          "scope": "Reviewed private Drexel/Villanova metadata intake and six-source lead federation; public admissions, source-route qualification and release remain separate.",
+          "map": "evidence/GL05/regional-expansion-20261117/research-network.md"
+        }
       ]
     },
     {
@@ -541,6 +551,24 @@
       "reviewer": "Sol",
       "acceptance_criteria_unchanged": true,
       "evidence": "execution/GL05-regional-sol-review.md"
+    },
+    {
+      "id": "GL05-D03",
+      "status": "reviewed_private_intake_adaptation",
+      "reason": "The user supplied the Drexel and Villanova research tasks for incorporation.",
+      "choice": "Version the existing federation, preserve its observations and graph, and add metadata-only source records with portable pre-parse receipts. Keep broad root checks separate from project-evidence leads; retain non-GitHub code resources, student/personal work, reported forks/copies, historical roles and failures without identity, ownership or healthcare inference. Use this expanded private queue for GL07/GL08 and actual GL09 coverage work. No public directory admission, full-text reuse or source-route qualification is granted.",
+      "affects": [
+        "GL03",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "owner": "Terra / Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true,
+      "evidence": "execution/GL05-expansion-sol-review.md",
+      "receipt": "execution/GL05-expansion-acceptance.json"
     }
   ],
   "planning_review": {
