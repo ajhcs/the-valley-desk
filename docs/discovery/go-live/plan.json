@@ -692,7 +692,8 @@
         "GL08"
       ],
       "summary": "Replace per-work captures and per-collection build scripts with one reusable adapter and one queue builder. Add a compact list projection with separate detail retrieval before the catalog passes about 20 works.",
-      "status": "not_started"
+      "status": "private_preview_in_review",
+      "implementation": "execution/GL06-GL08-directory-review.md"
     },
     {
       "step": 4,
@@ -701,7 +702,9 @@
       ],
       "scope_addition": true,
       "summary": "Build a private candidate review interface with filters, evidence links and review states whose decisions the snapshot builder consumes. Keep it out of the public Worker.",
-      "status": "not_started"
+      "status": "local_implementation_in_review",
+      "implementation": "execution/GL06-GL08-directory-review.md",
+      "screening_method": "execution/GL08-terra-screening.md"
     },
     {
       "step": 5,
@@ -710,7 +713,8 @@
         "GL08"
       ],
       "summary": "Build compact cards and search on one renderer and admit reviewed works in batches. Switch the homepage to discovery once the catalog is large enough to browse; step 2 sets that size.",
-      "status": "not_started"
+      "status": "directory_implementation_in_review",
+      "implementation": "execution/GL06-GL08-directory-review.md"
     },
     {
       "step": 6,

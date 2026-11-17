@@ -1,60 +1,270 @@
-import {DirectorySnapshotSchema, type DirectoryWork} from '../content/discovery-directory';
-import {directoryPathId, validatedDirectoryRelease, DIRECTORY_RESPONSE_BYTE_LIMIT, type DirectoryEnvironment} from './discovery-directory-http';
+import type {DirectorySnapshot, DirectoryWork} from '../content/discovery-directory';
+import {
+  directoryPathId, validatedDirectoryRelease, DIRECTORY_RESPONSE_BYTE_LIMIT, type DirectoryEnvironment,
+} from './discovery-directory-http';
 import {parseDirectoryQuery, readDirectoryDetail, readDirectoryList} from './discovery-directory';
 import type {DirectorySearchResult, DirectoryQuery} from './discovery-directory-search';
+import {directoryPageStyle} from './discovery-directory-page-style';
+import {directoryInstitutionHref, directorySourceAccount} from './discovery-directory-journeys';
 
-const esc=(s:string)=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
-const link=(href:string,label:string)=>`<a href="${esc(href)}" rel="noreferrer noopener">${esc(label)}</a>`;
-const detail=(id:string)=>`/discover/work/${encodeURIComponent(id)}`;
-const methods={'provider-metadata':'Retained provider metadata','primary-web-rendering':'Primary source observation','primary-indexed-rendering':'Indexed primary source observation','reviewed-observation':'Reviewed factual observation'} as const;
-function workHtml(work:DirectoryWork, snapshot:ReturnType<typeof DirectorySnapshotSchema.parse>, full:boolean):string{
-  const health=work.claims.filter(c=>c.kind==='health-purpose'), regions=work.claims.filter(c=>c.kind==='regional-connection');
-  return `<article data-work-id="${esc(work.id)}"><h2>${full?esc(work.title.value):link(detail(work.id),work.title.value)}</h2><p>${esc(work.kind)} · ${link(work.url.value,'Open original source')}</p>${health.map(c=>`<p>${esc(c.text)}</p>`).join('')}${regions.map(c=>`<p data-claim-kind="regional-connection">${esc(c.subjectRole==='author-affiliation'?'Publication author '+c.subjectLabel+' — affiliation':'Project connection')}: ${esc([c.institution,c.campus,c.municipality,c.county?c.county+' County':null,c.state].filter(Boolean).join(' · '))} (${esc(c.asOf.value)}). ${esc(c.qualification)}</p>`).join('')}${work.owner?`<p>Source account: ${esc(work.owner.name)} (${esc(work.owner.kind)}).</p>`:''}${work.sourceDate?`<p>Source date: <time>${esc(work.sourceDate.value.value)}</time> (${esc(work.sourceDate.value.precision)}).</p>`:''}<p>Checked <time>${esc(work.checkedAt)}</time>.</p>${work.relations.map(r=>{const target=snapshot.works.find(w=>w.id===r.toId)!;return `<p data-relation="${esc(r.predicate)}">${esc(r.predicate==='repository-cites-work'?'Repository cites publication':'Publication links repository')}: ${link(detail(target.id),target.title.value)}</p>`;}).join('')}${full?`<details><summary>Sources and review</summary><ul>${work.evidence.map(e=>`<li data-evidence-id="${esc(e.id)}">${link(e.sourceUrl,'Original evidence source')} · ${esc(e.method==='reviewed-observation'&&e.pointer.startsWith('/packet/facts/')?'Reviewed metadata observation; original response not retained':methods[e.method])} · observed ${esc(e.observedDate)}<br>Retained observation ${esc(e.observationSha256)} · field ${esc(e.pointer)}</li>`).join('')}</ul></details>`:''}</article>`;
-}
+const catalogPath = '/discover/works';
+const esc = (value: string) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+const link = (href: string, label: string) => `<a href="${esc(href)}" rel="noreferrer noopener">${esc(label)}</a>`;
+const detailPath = (id: string) => `/discover/work/${encodeURIComponent(id)}`;
+const reportIssue = (id: string) => link(
+  `mailto:leads@thevalleydesk.org?subject=Research%20listing%20correction&body=${encodeURIComponent(`Work ID: ${id}`)}`,
+  'Report an issue',
+);
+const breakableTitle = (title: string) => esc(title).replaceAll('/', '/<wbr>');
+const time = (value: string) => `<time>${esc(value)}</time>`;
+const kindLabels = {repository: 'Repository', publication: 'Publication', preprint: 'Preprint', project: 'Project', discussion: 'Discussion'};
+const topicLabels: Record<string, string> = {
+  'machine-learning': 'AI / machine learning', 'medical-imaging': 'Medical imaging',
+  'clinical-informatics': 'Clinical informatics', 'biomedical-data': 'Biomedical data',
+  'assistive-technology': 'Assistive technology', 'public-health': 'Public health', sleep: 'Sleep',
+};
+const methods = {
+  'provider-metadata': 'Retained provider metadata',
+  'primary-web-rendering': 'Primary source observation',
+  'primary-indexed-rendering': 'Indexed primary source observation',
+  'reviewed-observation': 'Reviewed factual observation',
+};
+type Region = Extract<DirectoryWork['claims'][number], {kind: 'regional-connection'}>;
+type Match = DirectorySearchResult['matches'][number];
+type WorkIndex = ReadonlyMap<string, DirectoryWork>;
 
-const topicLabels: Record<string,string> = {'machine-learning':'AI / machine learning','medical-imaging':'Medical imaging','clinical-informatics':'Clinical informatics','biomedical-data':'Biomedical data','assistive-technology':'Assistive technology','public-health':'Public health','sleep':'Sleep'};
-function searchForm(query:DirectoryQuery,facets:DirectorySearchResult['facets']):string {
-  const select=(name:'kind'|'topic'|'county'|'institution',label:string)=>{
-    const selected=query[name]??'', values=[...facets[name]];
-    if(selected&&!values.some(v=>v.value===selected))values.push({value:selected,count:0});
-    return `<label for="research-${name}">${label}</label><select id="research-${name}" name="${name}"><option value="">All ${label.toLowerCase()}</option>${values.map(v=>`<option value="${esc(v.value)}"${selected===v.value?' selected':''}>${esc(name==='topic'?(topicLabels[v.value]??v.value):name==='county'?v.value+' County':v.value)} (${v.count})</option>`).join('')}</select>`;
+function originalAction(work: DirectoryWork): string {
+  const labels = {
+    repository: 'Open repository', publication: 'Read publication', preprint: 'Read preprint',
+    project: 'Open project', discussion: 'Open discussion',
   };
-  // Empty selects are omitted by the request parser; a submitted form never carries a stale cursor.
-  return `<form method="get" action="/discover/works"><label for="research-query">Search research</label><input id="research-query" name="q" value="${esc(query.q)}" aria-describedby="research-search-help"><p id="research-search-help">Try sleep AI, Camden County, Rutgers-Camden, a repository name or a DOI. Terms can match one directly linked work. County describes a supported research association.</p>${select('topic','Topics')}${select('institution','Institutions')}${select('county','Counties')}${select('kind','Kinds')}<label for="research-sort">Order</label><select id="research-sort" name="sort">${[['relevance','Best match'],['title-asc','Title'],['source-date-desc','Source date (unknown last)']].map(([value,label])=>`<option value="${value}"${query.sort===value?' selected':''}>${label}</option>`).join('')}</select><input type="hidden" name="limit" value="${query.limit}"><button type="submit">Search</button> ${link('/discover/works','Reset filters')}</form><p>Each facet counts works after the other selected filters; linked evidence may support a match. Dates and affiliations retain their source scope.</p>`;
-}
-function matchExplanation(work:DirectoryWork,result:DirectorySearchResult,snapshot:ReturnType<typeof DirectorySnapshotSchema.parse>):string {
-  if(!result.query.q.trim()&&!result.query.kind&&!result.query.topic&&!result.query.county&&!result.query.institution)return '';
-  const reason=result.matches.find(m=>m.workId===work.id);if(!reason)return '';
-  const claimLabels=reason.claimIds.flatMap(id=>snapshot.works.flatMap(w=>w.claims.filter(c=>c.id===id).map(c=>c.kind==='topic'?(topicLabels[c.topic]??c.topic):c.kind==='regional-connection'?[c.institution,c.county?c.county+' County':c.municipality].filter(Boolean).join(' · '):'Research purpose')));
-  const supporting=snapshot.works.find(w=>w.id===reason.sourceWorkId);
-  return `<p data-match-basis="${reason.basis}">${reason.basis==='related'&&supporting?`Match uses a directly linked work: ${link(detail(supporting.id),supporting.title.value)}. `:'Match in this work. '}${esc([...new Set(claimLabels)].join('; '))}${reason.predicate?` · ${esc(reason.predicate==='repository-cites-work'?'Evidence: repository cites publication.':'Evidence: publication links repository.')}`:''}</p>`;
+  return link(work.url.value, labels[work.kind]);
 }
 
-export async function handleDiscoveryDirectoryPage(request:Request,env:DirectoryEnvironment,snapshotInput:unknown,removalInput:unknown):Promise<Response>{
-  const head=request.method==='HEAD';
-  const reply=(status:number,title:string,body:string,extra:Record<string,string>={})=>{
-    const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${esc(title)} · The Valley Desk</title></head><body><header><a href="/">The Valley Desk</a></header><main><h1>${esc(title)}</h1>${body}</main></body></html>`;
-    if(new TextEncoder().encode(html).byteLength>DIRECTORY_RESPONSE_BYTE_LIMIT)return new Response(head?null:'Research directory unavailable',{status:503,headers:{'content-type':'text/plain; charset=utf-8','cache-control':'no-store','cdn-cache-control':'no-store','x-robots-tag':'noindex'}});
-    return new Response(head?null:html,{status,headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','cdn-cache-control':'no-store','x-robots-tag':'noindex',...extra}});
+function regionHtml(claim: Region, detail: boolean): string {
+  const who = {
+    'author-affiliation': `Publication author ${claim.subjectLabel} — affiliation`,
+    'project-association': 'Project connection',
+    'account-association': 'Source account connection',
+    work: 'Work connection',
   };
-  if(env.DISCOVERY_DIRECTORY_ENABLED!=='true')return reply(404,'Not found','');
-  if(request.method!=='GET'&&!head)return reply(405,'Method not allowed','',{allow:'GET, HEAD'});
-  let release:ReturnType<typeof validatedDirectoryRelease>;
-  try{release=validatedDirectoryRelease(snapshotInput,removalInput);}catch{return reply(503,'Research directory unavailable','');}
-  const url=new URL(request.url),match=/^\/discover\/work\/([^/]+)$/.exec(url.pathname);
-  if(match){
-    let id;
-    try{if(url.search)throw Error('query');id=directoryPathId(match[1]);}catch{return reply(400,'Unsupported request','');}
-    if(release.removals.removedIds.includes(id))return reply(410,'Listing removed',`<p>${link('/discover/works','Browse research')}</p>`);
-    const work=readDirectoryDetail(release.snapshot,id);
-    return work?reply(200,work.title.value,`${workHtml(work,release.snapshot,true)}<p>${link('/discover/works','Browse research')}</p>`):reply(404,'Not found','');
+  const institutionHref = detail && claim.institution ? directoryInstitutionHref(claim.institution) : null;
+  const institution = claim.institution
+    ? institutionHref ? link(institutionHref, claim.institution) : esc(claim.institution)
+    : null;
+  // Keep the campus when it is the observed basis of the connection.
+  const campus = detail || claim.regionalBasis === 'campus' || (!claim.municipality && !claim.county) ? claim.campus : null;
+  const locality = [campus, claim.municipality, claim.county ? `${claim.county} County` : null, claim.state]
+    .flatMap(value => value ? [esc(value)] : []);
+  const place = [institution, ...locality].filter(Boolean).join(' · ');
+  return `<div class="region" data-claim-kind="regional-connection">
+    <p><strong>${esc(who[claim.subjectRole])}</strong> · ${place} · ${time(claim.asOf.value)}</p>
+    <p class="qualifier">${esc(claim.qualification)}</p>
+  </div>`;
+}
+
+function datesHtml(work: DirectoryWork): string {
+  const date = work.sourceDate?.value;
+  return `<p class="dates">${date ? `<span>Source date: ${time(date.value)} (${esc(date.precision)})</span>` : ''}
+    <span>Checked ${time(work.checkedAt)}</span></p>`;
+}
+
+function matchExplanation(match: Match | undefined, works: WorkIndex): string {
+  if (!match) return '';
+  const result = works.get(match.workId), supporting = works.get(match.sourceWorkId);
+  const claimLabels = match.claimIds.flatMap(id => {
+    // The result and one directly related work can supply different terms.
+    const claim = result?.claims.find(c => c.id === id) ?? supporting?.claims.find(c => c.id === id);
+    if (!claim) return [];
+    if (claim.kind === 'topic') return [topicLabels[claim.topic] ?? claim.topic];
+    if (claim.kind === 'regional-connection') return [[claim.institution,
+      claim.county ? `${claim.county} County` : claim.municipality].filter(Boolean).join(' · ')];
+    return ['Research purpose'];
+  }).filter(Boolean);
+  const basis = match.basis === 'related' && supporting
+    ? `Match uses a directly linked work: ${link(detailPath(supporting.id), supporting.title.value)}.`
+    : 'Match in this work.';
+  const predicate = match.predicate === 'repository-cites-work' ? 'Evidence: repository cites publication.'
+    : match.predicate === 'work-links-repository' ? 'Evidence: publication links repository.' : '';
+  return `<p class="match" data-match-basis="${match.basis}">${basis}
+    ${esc([...new Set(claimLabels)].join('; '))} ${predicate}</p>`;
+}
+
+function workCard(work: DirectoryWork, explanation: string): string {
+  const purpose = work.claims.find(c => c.kind === 'health-purpose');
+  const region = work.claims.find(c => c.kind === 'regional-connection');
+  return `<article class="card" data-work-id="${esc(work.id)}">
+    <p class="kind">${kindLabels[work.kind]}</p>
+    <h3><a href="${esc(detailPath(work.id))}">${breakableTitle(work.title.value)}</a></h3>
+    ${purpose ? `<p class="purpose">${esc(purpose.text)}</p>` : ''}
+    ${region ? regionHtml(region, false) : ''}
+    ${datesHtml(work)}
+    ${explanation}
+    <p class="actions">${originalAction(work)} ${link(detailPath(work.id), 'Details and sources')}</p>
+  </article>`;
+}
+
+function workDetail(work: DirectoryWork, works: WorkIndex): string {
+  const purposes = work.claims.filter(c => c.kind === 'health-purpose');
+  const regions = work.claims.filter(c => c.kind === 'regional-connection');
+  const topics = work.claims.filter(c => c.kind === 'topic').map(c => topicLabels[c.topic] ?? c.topic);
+  const account = directorySourceAccount(work);
+  const relations = work.relations.map(relation => {
+    const target = works.get(relation.toId)!;
+    const label = relation.predicate === 'repository-cites-work' ? 'Repository cites publication' : 'Publication links repository';
+    return `<li data-relation="${esc(relation.predicate)}">${label}: ${link(detailPath(target.id), target.title.value)}</li>`;
+  });
+  return `<article class="detail" data-work-id="${esc(work.id)}">
+    <p class="kind">${kindLabels[work.kind]} ${topics.map(topic => `<span>${esc(topic)}</span>`).join('')}</p>
+    ${purposes.map(claim => `<p class="purpose">${esc(claim.text)}</p>`).join('')}
+    <p class="actions">${originalAction(work)} ${reportIssue(work.id)}</p>
+    ${datesHtml(work)}
+    ${work.owner ? `<p class="owner">Source account: ${esc(work.owner.name)} (${esc(work.owner.kind)}).</p>` : ''}
+    ${account ? `<p class="owner">GitHub namespace: ${link(account.href, account.login)} · observed ${time(account.observedDate)}</p>` : ''}
+    <section aria-labelledby="regional-heading">
+      <h2 id="regional-heading">Regional connection</h2>
+      ${regions.map(region => regionHtml(region, true)).join('')}
+    </section>
+    ${relations.length ? `<section aria-labelledby="related-heading"><h2 id="related-heading">Related works</h2><ul>${relations.join('')}</ul></section>` : ''}
+    <details class="source-disclosure"><summary>Sources and review</summary>
+      <ul>${work.evidence.map(evidence => {
+        const method = evidence.method === 'reviewed-observation' && evidence.pointer.startsWith('/packet/facts/')
+          ? 'Reviewed metadata observation; original response not retained' : methods[evidence.method];
+        return `<li data-evidence-id="${esc(evidence.id)}">${link(evidence.sourceUrl, 'Original evidence source')} · ${esc(method)}
+          · observed ${time(evidence.observedDate)}<br>
+          <span class="muted">Retained observation <code>${esc(evidence.observationSha256)}</code> · field <code>${esc(evidence.pointer)}</code></span></li>`;
+      }).join('')}</ul>
+      <h2>Review references</h2>
+      <ul class="muted">${work.reviewRefs.map(review => `<li>${esc(review.id)} · <code>${esc(review.receiptSha256)}</code></li>`).join('')}</ul>
+    </details>
+  </article>`;
+}
+
+function searchForm(query: DirectoryQuery, facets: DirectorySearchResult['facets']): string {
+  const select = (name: 'kind' | 'topic' | 'county' | 'institution', label: string, anyLabel: string) => {
+    const selected = query[name] ?? '';
+    const values = [...facets[name]];
+    if (selected && !values.some(v => v.value === selected)) values.push({value: selected, count: 0});
+    return `<div><label for="research-${name}">${label}</label><select id="research-${name}" name="${name}">
+      <option value="">${anyLabel}</option>${values.map(({value, count}) => {
+        const display = name === 'topic' ? topicLabels[value] ?? value
+          : name === 'county' ? `${value} County`
+          : name === 'kind' ? kindLabels[value as DirectoryWork['kind']] ?? value : value;
+        return `<option value="${esc(value)}"${selected === value ? ' selected' : ''}>${esc(display)} (${count})</option>`;
+      }).join('')}</select></div>`;
+  };
+  const selectedFilters = [query.topic, query.institution, query.county, query.kind].filter(Boolean).length;
+  const sortChanged = query.sort !== 'relevance';
+  const option = ([value, title]: string[]) => `<option value="${value}"${query.sort === value ? ' selected' : ''}>${title}</option>`;
+  // The cursor belongs only to pagination. Submitting starts a new search.
+  return `<form class="search-panel" method="get" action="${catalogPath}" aria-label="Research search">
+    <label for="research-query">Search research</label>
+    <div class="search-row">
+      <input id="research-query" type="search" name="q" value="${esc(query.q)}" maxlength="200" aria-describedby="research-search-help">
+      <button type="submit">Search</button>
+    </div>
+    <p class="help" id="research-search-help">Try sleep AI, Camden County, Rutgers-Camden, a repository name or a DOI.</p>
+    <details class="filter-disclosure"${selectedFilters || sortChanged ? ' open' : ''}>
+      <summary>Filters and sort${selectedFilters ? ` (${selectedFilters} selected)` : ''}</summary>
+      <div class="filter-grid">
+        ${select('topic', 'Topic', 'Any topic')}${select('institution', 'Institution', 'Any institution')}
+        ${select('county', 'County', 'Any county')}${select('kind', 'Work type', 'Any work type')}
+        <div><label for="research-sort">Sort by</label><select id="research-sort" name="sort">${[
+          ['relevance', 'Best match'], ['title-asc', 'Title'], ['source-date-desc', 'Source date (unknown last)'],
+        ].map(option).join('')}</select></div>
+      </div>
+      <p class="help">Each facet counts works after the other selected filters. County reflects a documented association.</p>
+      <p class="actions filter-actions"><button type="submit">Apply filters</button> ${link(catalogPath, 'Reset filters')}</p>
+    </details>
+    <input type="hidden" name="limit" value="${query.limit}">
+  </form>`;
+}
+
+function resultsHtml(result: DirectorySearchResult, works: WorkIndex, url: URL): string {
+  const {query} = result;
+  const showReasons = !!(query.q.trim() || query.kind || query.topic || query.county || query.institution);
+  const matches = new Map(result.matches.map(reason => [reason.workId, reason]));
+  const next = new URL(url);
+  if (result.nextAfter) next.searchParams.set('after', result.nextAfter);
+  const summary = `${result.matchingWorks} matching works in this selected catalog (${result.totalWorks} works total).`;
+  return `<section class="results" aria-labelledby="results-title">
+    <div class="result-summary"><h2 id="results-title">Results</h2><p class="muted">${summary}</p></div>
+    ${result.items.length ? `<div class="cards">${result.items.map(work =>
+      workCard(work, showReasons ? matchExplanation(matches.get(work.id), works) : '')).join('')}</div>`
+      : result.totalWorks ? `<div class="empty"><p><strong>No matching works.</strong></p><p>Try fewer terms or ${link(catalogPath, 'reset filters')}.</p></div>`
+        : '<div class="empty"><p><strong>No works are listed yet.</strong></p></div>'}
+    ${result.nextAfter ? `<nav class="pagination" aria-label="Results pages">${link(next.pathname + next.search, 'Next page')}</nav>` : ''}
+    ${result.supportItems.length ? `<aside class="related" aria-labelledby="related-evidence">
+      <h2 id="related-evidence">Related evidence used</h2>
+      <ul>${result.supportItems.map(work => `<li>${link(detailPath(work.id), work.title.value)}</li>`).join('')}</ul>
+    </aside>` : ''}
+  </section>`;
+}
+
+const indexWorks = (snapshot: DirectorySnapshot) => new Map(snapshot.works.map(work => [work.id, work]));
+const headers = {'cache-control': 'no-store', 'cdn-cache-control': 'no-store', 'x-robots-tag': 'noindex'};
+const browseBack = `<div class="detail-back">${link(catalogPath, '← Browse research')}</div>`;
+
+export async function handleDiscoveryDirectoryPage(
+  request: Request, env: DirectoryEnvironment, snapshotInput: unknown, removalInput: unknown,
+): Promise<Response> {
+  const head = request.method === 'HEAD';
+  const enabled = env.DISCOVERY_DIRECTORY_ENABLED === 'true';
+  const reply = (status: number, title: string, body: string, extra: Record<string, string> = {}, beforeTitle = '') => {
+    const html = `<!doctype html><html lang="en"><head><meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+      <title>${esc(title)} · The Valley Desk</title><style>${directoryPageStyle}</style></head><body>
+      <a class="skip" href="#research-main">Skip to main content</a>
+      <header class="masthead"><div class="shell"><a class="wordmark" href="/">The Valley Desk</a>
+        ${enabled ? `<nav aria-label="Directory"><a class="section-link" href="${catalogPath}">Research</a></nav>` : ''}
+      </div></header>
+      <main class="shell" id="research-main" tabindex="-1">${beforeTitle}<h1>${breakableTitle(title)}</h1>${body}</main>
+      </body></html>`;
+    if (new TextEncoder().encode(html).byteLength > DIRECTORY_RESPONSE_BYTE_LIMIT) {
+      return new Response(head ? null : 'Research directory unavailable', {status: 503, headers: {...headers, 'content-type': 'text/plain; charset=utf-8'}});
+    }
+    return new Response(head ? null : html, {status, headers: {...headers, 'content-type': 'text/html; charset=utf-8', ...extra}});
+  };
+  if (!enabled) return reply(404, 'Not found', '');
+  if (request.method !== 'GET' && !head) return reply(405, 'Method not allowed', '', {allow: 'GET, HEAD'});
+  let release: ReturnType<typeof validatedDirectoryRelease>;
+  try {
+    release = validatedDirectoryRelease(snapshotInput, removalInput);
+  } catch {
+    return reply(503, 'Research directory unavailable', '');
   }
-  if(!/^\/discover\/works\/?$/.test(url.pathname))return reply(404,'Not found','');
+  const url = new URL(request.url);
+  const match = /^\/discover\/work\/([^/]+)$/.exec(url.pathname);
+  if (match) {
+    let id;
+    try {
+      if (url.search) throw Error('query');
+      id = directoryPathId(match[1]);
+    } catch {
+      return reply(400, 'Unsupported request', '');
+    }
+    if (release.removals.removedIds.includes(id)) return reply(410, 'Listing removed', `<p class="intro">${link(catalogPath, 'Browse research')}</p>`);
+    const work = readDirectoryDetail(release.snapshot, id);
+    return work
+      ? reply(200, work.title.value, workDetail(work, indexWorks(release.snapshot)), {}, browseBack)
+      : reply(404, 'Not found', '');
+  }
+  if (!/^\/discover\/works\/?$/.test(url.pathname)) return reply(404, 'Not found', '');
   let query;
-  try{query=parseDirectoryQuery(url.searchParams);}catch{return reply(400,'Unsupported filters',`<p>${link('/discover/works','Reset filters')}</p>`);}
-  try{
-    const result=await readDirectoryList(release.snapshot,query);
-    const next=new URL(url);if(result.nextAfter)next.searchParams.set('after',result.nextAfter);
-    return reply(200,'Health-tech research',`${searchForm(query,result.facets)}<p>${result.matchingWorks} matching works in this selected catalog (${result.totalWorks} works total).</p>${result.items.length?result.items.map(w=>workHtml(w,release.snapshot,false)+matchExplanation(w,result,release.snapshot)).join(''):`<p>No matching works. Try fewer terms or ${link('/discover/works','reset filters')}.</p>`}${result.supportItems.length?`<aside aria-label="Related evidence"><h2>Related evidence used</h2><p>${result.supportItems.length} related works support this page; these are separate from its search results.</p><ul>${result.supportItems.map(w=>`<li>${link(detail(w.id),w.title.value)}</li>`).join('')}</ul></aside>`:''}${result.nextAfter?`<p>${link(next.pathname+next.search,'Next page')}</p>`:''}`);
-  }catch(error){return error instanceof Error&&error.message.startsWith('directory-cursor-')?reply(409,'Search changed',`<p>${link('/discover/works','Restart search')}</p>`):reply(503,'Research directory unavailable','');}
+  try {
+    query = parseDirectoryQuery(url.searchParams);
+  } catch {
+    return reply(400, 'Unsupported filters', `<p class="intro">${link(catalogPath, 'Reset filters')}</p>`);
+  }
+  try {
+    const result = await readDirectoryList(release.snapshot, query);
+    return reply(200, 'Health-tech research', `
+      <p class="intro">Search selected research, code and projects with documented connections to Greater Philadelphia.</p>
+      ${searchForm(query, result.facets)}${resultsHtml(result, indexWorks(release.snapshot), url)}`);
+  } catch (error) {
+    return error instanceof Error && error.message.startsWith('directory-cursor-')
+      ? reply(409, 'Search changed', `<p class="intro">${link(catalogPath, 'Restart search')}</p>`)
+      : reply(503, 'Research directory unavailable', '');
+  }
 }

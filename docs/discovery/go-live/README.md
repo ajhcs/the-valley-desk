@@ -180,6 +180,15 @@ or 3.99 minutes per admission-ready listing. This is a result for the sampled
 cohort. No works were admitted publicly. See the [yield review](execution/GL08-yield-review.md)
 and [results receipt](execution/GL08-yield-results.json).
 
+Steps 3–5 now have a private review UI and draft builder, responsive catalog
+cards, a compact API and separate detail. GL07 institution and source account
+links are included. The homepage cutover and public admission batch are still
+pending. The [local workflow](execution/GL06-GL08-directory-review.md) gives the
+review and preview commands. The [Terra method](execution/GL08-terra-screening.md)
+prioritizes exact-work evidence while keeping every lead in the review. The
+[first matched pilot](execution/GL08-terra-pilot-results.md) did not demonstrate
+a speed or accuracy gain.
+
 ## Product decisions
 
 | ID | Decision and consequence |

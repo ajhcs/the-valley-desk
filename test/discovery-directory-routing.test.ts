@@ -7,8 +7,25 @@ const current=JSON.parse(readFileSync('src/content/discovery-directory-catalog.j
 const env=(flag:unknown=undefined)=>({PUBLIC_ORIGIN:'https://thevalleydesk.org',DISCOVERY_DIRECTORY_ENABLED:flag,ASSETS:{fetch:async()=>{throw Error('Directory must not load assets');}},VALLEY_DESK_DB:new Proxy({},{get(){throw Error('Directory must not query a database');}})});
 const invoke=(path:string,flag:unknown=undefined,method='GET')=>worker.fetch(new Request('https://thevalleydesk.org'+path,{method}),env(flag),{});
 test('actual Worker directory routes close by default without database/assets/source access',async()=>{
- for(const flag of [undefined,false,true,'false','TRUE',' true '])for(const path of ['/api/discovery/v1/works','/api/discovery/v1/works/unknown','/discover/works','/discover/work/unknown']){
+ for(const flag of [undefined,false,true,'false','TRUE',' true '])for(const path of ['/api/discovery/v1/works','/api/discovery/v1/works?view=compact','/api/discovery/v1/works/unknown','/discover/works','/discover/work/unknown']){
   for(const method of ['GET','HEAD','POST']){const response=await invoke(path,flag,method);assert.equal(response.status,404);assert.equal(response.headers.get('cache-control'),'no-store');const body=await response.text();assert.ok(!body.includes('ExerciseCEST'));assert.ok(!body.includes('snapshotVersion'));if(method==='HEAD')assert.equal(body,'');}
+ }
+});
+
+test('actual Worker serves smaller compact cards with detail links for the same reviewed snapshot',async()=>{
+ const full=await invoke('/api/discovery/v1/works','true');
+ const compact=await invoke('/api/discovery/v1/works?view=compact','true');
+ assert.equal(full.status,200);assert.equal(compact.status,200);
+ const fullText=await full.text(),compactText=await compact.text();
+ assert.ok(Buffer.byteLength(compactText)<Buffer.byteLength(fullText));
+ const list=JSON.parse(compactText), original=JSON.parse(fullText);
+ assert.equal(list.schemaVersion,'discovery-directory-list-compact-v1');
+ assert.equal(list.snapshotVersion,original.snapshotVersion);
+ assert.deepEqual(list.items.map((work:any)=>work.id),original.items.map((work:any)=>work.id));
+ for(const item of list.items){
+  const detail=await invoke(item.detailHref,'true');
+  assert.equal(detail.status,200);
+  assert.deepEqual((await detail.json() as any).work,current.works.find((work:any)=>work.id===item.id));
  }
 });
 test('enabled actual Worker serves the reviewed API and script-free detail HTML',async()=>{
