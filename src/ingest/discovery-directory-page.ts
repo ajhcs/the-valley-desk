@@ -53,8 +53,8 @@ function regionHtml(claim: Region, detail: boolean): string {
   const institution = claim.institution
     ? institutionHref ? link(institutionHref, claim.institution) : esc(claim.institution)
     : null;
-  // The detailed record carries the precise campus. Prefer the stated municipality or county on a card.
-  const campus = detail || (!claim.municipality && !claim.county) ? claim.campus : null;
+  // Keep the campus when it is the observed basis of the connection.
+  const campus = detail || claim.regionalBasis === 'campus' || (!claim.municipality && !claim.county) ? claim.campus : null;
   const locality = [campus, claim.municipality, claim.county ? `${claim.county} County` : null, claim.state]
     .flatMap(value => value ? [esc(value)] : []);
   const place = [institution, ...locality].filter(Boolean).join(' · ');

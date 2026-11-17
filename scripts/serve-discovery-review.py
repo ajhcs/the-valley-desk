@@ -3,13 +3,17 @@ from argparse import ArgumentParser
 from contextlib import closing
 from datetime import date
 from hashlib import sha256
+from hmac import compare_digest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
 from pathlib import Path
 import re
+from secrets import token_urlsafe
 import sqlite3
 import stat
+from tempfile import NamedTemporaryFile
+from threading import Lock
 from urllib.parse import parse_qsl, urlsplit
 
 PRIVATE_ROOT = Path('/workspace/build/builderbob')
@@ -26,6 +30,8 @@ NATIVE_ID = re.compile(r'[1-9][0-9]{0,19}')
 MAX_INPUT_BYTES = 8 * 1024 * 1024
 MAX_CANDIDATES = 2000
 MAX_DECISION_BYTES = 16 * 1024
+DESCRIPTION_CONTROLS = re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\ud800-\udfff]')
+ACCESS_TOKEN = re.compile(r'[A-Za-z0-9_-]{43}')
 
 
 def require(condition, error):
@@ -116,14 +122,38 @@ def private_envelope(value):
     return isinstance(value, dict) and value.get('visibility') == 'private' and value.get('publicationAuthorized') is False
 
 
-def evidence_row(native_id, locator, fact, observed_date, criteria):
+def local_locator(value):
+    if not nonempty(value, 2000) or '\\' in value:
+        return False
+    path = value.split('#', 1)[0]
+    for prefix in (str(PRIVATE_ROOT) + '/', 'docs/discovery/'):
+        if path.startswith(prefix):
+            return all(part not in ('', '.', '..') for part in path[len(prefix):].split('/'))
+    return False
+
+
+def evidence_row(native_id, locator, fact, observed_date, criteria, *, local_ref=None):
     require(locator is None or https(locator), 'evidence-url')
+    require(local_ref is None or (locator is None and local_locator(local_ref)), 'evidence-local-locator')
     require(nonempty(fact, 1000) and day(observed_date), 'evidence-fact-or-date')
     require(isinstance(criteria, list) and 0 < len(criteria) <= len(CRITERIA)
             and all(item in CRITERIA for item in criteria) and len(criteria) == len(set(criteria)), 'evidence-criteria')
     row = {'locator': locator, 'fact': fact, 'observedDate': observed_date,
            'criteria': [criterion for criterion in CRITERIA if criterion in criteria]}
+    if local_ref is not None:
+        row['localLocator'] = local_ref
     return {'id': 'sha256:' + digest(json_bytes([native_id, row])), **row}
+
+
+def observation_url(observation, native_id):
+    require(isinstance(observation, dict), 'queue-observations')
+    repository = observation.get('fullName')
+    require(isinstance(repository, str) and REPOSITORY.fullmatch(repository)
+            and repository.split('/')[1] not in ('.', '..') and observation.get('nativeId') == native_id,
+            'queue-identity')
+    url = observation.get('originalUrl')
+    require(url == f'https://github.com/{repository}', 'queue-original-url')
+    return url
 
 
 def canonical_candidate(candidate):
@@ -131,25 +161,26 @@ def canonical_candidate(candidate):
     native_id = candidate.get('nativeId')
     require(isinstance(native_id, str) and NATIVE_ID.fullmatch(native_id), 'queue-native-id')
     observations = candidate.get('observations')
-    require(isinstance(observations, list) and observations and isinstance(observations[0], dict), 'queue-observations')
+    require(isinstance(observations, list) and observations, 'queue-observations')
+    aliases = list(dict.fromkeys(observation_url(row, native_id) for row in observations))
     first = observations[0]
-    repository = first.get('fullName')
-    require(isinstance(repository, str) and REPOSITORY.fullmatch(repository)
-            and repository.split('/')[1] not in ('.', '..') and first.get('nativeId') == native_id, 'queue-identity')
-    url = first.get('originalUrl')
-    require(url == f'https://github.com/{repository}', 'queue-original-url')
     description = first.get('description')
-    require(description is None or nonempty(description, 500), 'queue-description')
+    require(description is None or (isinstance(description, str) and not DESCRIPTION_CONTROLS.search(description)
+            and len(description.encode('utf-16-le')) <= 4000), 'queue-description')
     observed_at = first.get('observedAt')
     require(isinstance(observed_at, str) and day(observed_at[:10]), 'queue-observation-date')
     require(type(first.get('fork')) is bool and type(first.get('archived')) is bool, 'queue-flags')
     facts = 'Retained GitHub metadata identifies this repository and its original link.'
     criteria = ['originalLink']
-    if description is not None:
-        facts += ' Repository description: ' + description
+    summary = ' '.join(description.split()) if description else ''
+    if summary:
+        prefix = facts + ' Repository description: '
+        room = 1000 - len(prefix)
+        facts = prefix + (summary if len(summary) <= room else summary[:room - 1] + '…')
         criteria.extend(('usefulPurpose', 'healthRelevance'))
-    metadata = evidence_row(native_id, url, facts, observed_at[:10], criteria)
-    return {'nativeId': native_id, 'repository': repository, 'originalUrl': url, 'description': description,
+    metadata = evidence_row(native_id, aliases[0], facts, observed_at[:10], criteria)
+    return {'nativeId': native_id, 'repository': first['fullName'], 'originalUrl': aliases[0],
+            'observedAliases': aliases, 'description': description,
             'fork': first['fork'], 'archived': first['archived'], 'evidence': [metadata]}
 
 
@@ -174,6 +205,7 @@ def select_evidence(candidate, criteria, evidence_refs):
 
 
 def make_listing(candidate, listing, evidence, *, prefilled=False):
+    require(len(candidate['observedAliases']) == 1, 'listing-identity-needs-review')
     keys = ('title', 'purpose', 'healthRelevance', 'regionalBasis')
     bound = ('nativeId', 'originalUrl', 'lastCheckedDate', 'sources')
     require(fields(listing, keys + bound if prefilled else keys), 'prepared-listing-required')
@@ -226,8 +258,8 @@ class Review:
             self.initialize_ledger()
         else:
             require(self.ledger.exists(), 'ledger-missing')
-            with closing(sqlite3.connect(self.ledger.as_uri() + '?mode=ro', uri=True)) as db:
-                db.execute('PRAGMA trusted_schema = OFF')
+            with closing(self.connect(read_only=True)) as db:
+                db.execute('BEGIN')
                 self.check_binding(db)
 
     def load_prefill(self, path):
@@ -250,11 +282,11 @@ class Review:
             for note in notes:
                 require(fields(note, ('locator', 'fact', 'observedDate', 'criteria')), 'prefill-evidence')
                 locator = note['locator']
-                require(https(locator) or (isinstance(locator, str) and
-                        (locator.startswith(str(PRIVATE_ROOT) + '/') or locator.startswith('docs/discovery/'))),
-                        'prefill-evidence-locator')
-                refs.append(attach(candidate, evidence_row(native_id, locator if https(locator) else None,
-                            note['fact'], note['observedDate'], note['criteria'])))
+                external = https(locator)
+                require(external or local_locator(locator), 'prefill-evidence-locator')
+                refs.append(attach(candidate, evidence_row(native_id, locator if external else None,
+                            note['fact'], note['observedDate'], note['criteria'],
+                            local_ref=None if external else locator)))
             record = {'criteria': row.get('criteria'), 'reason': row.get('reason'), 'evidenceRefs': refs,
                       'decision': row.get('decision'), 'revision': 0}
             if 'preparedListing' in row:
@@ -284,8 +316,9 @@ class Review:
                                                note['observedDate'], note['criteria']))
         return packet_hash
 
-    def connect(self):
-        db = sqlite3.connect(self.ledger, timeout=4)
+    def connect(self, *, read_only=False):
+        mode = 'ro' if read_only else 'rw'
+        db = sqlite3.connect(self.ledger.as_uri() + '?mode=' + mode, uri=True, timeout=4)
         db.execute('PRAGMA trusted_schema = OFF')
         return db
 
@@ -299,18 +332,20 @@ class Review:
             db.execute('BEGIN IMMEDIATE')
             if db.execute('PRAGMA user_version').fetchone()[0] == 0:
                 require(not db.execute("SELECT 1 FROM sqlite_master WHERE type='table'").fetchone(), 'ledger-schema')
-                db.execute('CREATE TABLE context (roster_hash TEXT NOT NULL)')
-                db.execute('INSERT INTO context VALUES (?)', (self.roster_hash,))
+                db.execute('CREATE TABLE context (roster_hash TEXT NOT NULL, context_hash TEXT NOT NULL)')
+                db.execute('INSERT INTO context VALUES (?, ?)', (self.roster_hash, self.context_hash))
                 db.execute('''CREATE TABLE decisions (
                     native_id TEXT NOT NULL, revision INTEGER NOT NULL CHECK (revision > 0),
                     data TEXT NOT NULL, PRIMARY KEY (native_id, revision))''')
-                db.execute('PRAGMA user_version = 1')
+                db.execute('PRAGMA user_version = 2')
             self.check_binding(db)
 
     def check_binding(self, db):
-        require(db.execute('PRAGMA user_version').fetchone() == (1,)
-                and db.execute('SELECT roster_hash FROM context').fetchall() == [(self.roster_hash,)],
+        require(db.execute('PRAGMA user_version').fetchone() == (2,), 'ledger-context-schema')
+        require(db.execute('SELECT roster_hash FROM context').fetchall() == [(self.roster_hash,)],
                 'ledger-roster-mismatch')
+        require(db.execute('SELECT context_hash FROM context').fetchall() == [(self.context_hash,)],
+                'ledger-context-mismatch')
 
     def validate_record(self, candidate, record):
         require(fields(record, ('criteria', 'reason', 'evidenceRefs', 'decision', 'revision'), ('preparedListing',))
@@ -327,20 +362,18 @@ class Review:
 
     def latest(self):
         records = dict(self.prefill)
-        if self.ledger.exists():
-            with closing(sqlite3.connect(self.ledger.as_uri() + '?mode=ro', uri=True)) as db:
-                db.execute('PRAGMA trusted_schema = OFF')
-                db.execute('BEGIN')
-                self.check_binding(db)
-                rows = db.execute('''SELECT d.native_id, d.revision, d.data FROM decisions d JOIN
-                    (SELECT native_id, MAX(revision) revision FROM decisions GROUP BY native_id) head
-                    ON d.native_id = head.native_id AND d.revision = head.revision''')
-                for native_id, revision, raw in rows:
-                    candidate = self.candidates.get(native_id)
-                    require(candidate is not None, 'ledger-native-id')
-                    record = self.validate_record(candidate, decode_json(raw))
-                    require(record['revision'] == revision, 'ledger-revision')
-                    records[native_id] = record
+        with closing(self.connect(read_only=True)) as db:
+            db.execute('BEGIN')
+            self.check_binding(db)
+            rows = db.execute('''SELECT d.native_id, d.revision, d.data FROM decisions d JOIN
+                (SELECT native_id, MAX(revision) revision FROM decisions GROUP BY native_id) head
+                ON d.native_id = head.native_id AND d.revision = head.revision''')
+            for native_id, revision, raw in rows:
+                candidate = self.candidates.get(native_id)
+                require(candidate is not None, 'ledger-native-id')
+                record = self.validate_record(candidate, decode_json(raw))
+                require(record['revision'] == revision, 'ledger-revision')
+                records[native_id] = record
         return records
 
     def save(self, payload):
@@ -388,6 +421,32 @@ class Review:
         return {**header, 'decisions': rows}
 
 
+class OperatorAccess:
+    def __init__(self):
+        self.bootstrap = token_urlsafe(32)
+        self.session = None
+        self.lock = Lock()
+
+    def redeem(self, access):
+        if not isinstance(access, str) or not ACCESS_TOKEN.fullmatch(access):
+            return None
+        with self.lock:
+            if self.bootstrap is None or not compare_digest(self.bootstrap, access):
+                return None
+            self.session = token_urlsafe(32)
+            self.bootstrap = None
+            return self.session
+
+    def permits(self, values):
+        if values is None or len(values) != 1:
+            return False
+        scheme, _, token = values[0].partition(' ')
+        if scheme != 'Bearer' or not ACCESS_TOKEN.fullmatch(token):
+            return False
+        with self.lock:
+            return self.session is not None and compare_digest(self.session, token)
+
+
 class Handler(BaseHTTPRequestHandler):
     def setup(self):
         self.request.settimeout(5)
@@ -423,6 +482,8 @@ class Handler(BaseHTTPRequestHandler):
         if not self.authorized_origin():
             return self.send_payload(403, {'error': 'disallowed-origin'})
         if self.path == '/api/review':
+            if not self.server.access.permits(self.headers.get_all('Authorization')):
+                return self.send_payload(401, {'error': 'operator-session-required'})
             try:
                 payload = self.server.review.output()
             except (ValueError, sqlite3.Error):
@@ -438,8 +499,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self.authorized_origin(write=True):
             return self.send_payload(403, {'error': 'disallowed-origin'})
-        if self.path != '/api/decisions':
+        if self.path not in ('/api/session', '/api/decisions'):
             return self.send_payload(404, {'error': 'not-found'})
+        if self.path == '/api/decisions' and not self.server.access.permits(self.headers.get_all('Authorization')):
+            return self.send_payload(401, {'error': 'operator-session-required'})
         lengths = self.headers.get_all('Content-Length') or []
         if self.headers.get_all('Transfer-Encoding') or len(lengths) != 1 or not re.fullmatch(r'[0-9]{1,8}', lengths[0]):
             return self.send_payload(400, {'error': 'invalid-body-length'})
@@ -451,7 +514,13 @@ class Handler(BaseHTTPRequestHandler):
         try:
             body = self.rfile.read(length)
             require(len(body) == length, 'invalid-body-length')
-            result = self.server.review.save(decode_json(body))
+            payload = decode_json(body)
+            if self.path == '/api/session':
+                token = self.server.access.redeem(payload['access']) if fields(payload, ('access',)) else None
+                if token is None:
+                    return self.send_payload(401, {'error': 'invalid-operator-access'})
+                return self.send_payload(200, {'token': token})
+            result = self.server.review.save(payload)
         except (json.JSONDecodeError, UnicodeError, RecursionError):
             return self.send_payload(400, {'error': 'invalid-json'})
         except TimeoutError:
@@ -468,6 +537,7 @@ def local_server(review, port):
     try:
         server.assets = {route: ((ASSET_ROOT / name).read_bytes(), mime) for route, (name, mime) in ASSETS.items()}
         server.review = review
+        server.access = OperatorAccess()
         server.server_bind()
         server.server_activate()
     except BaseException:
@@ -483,7 +553,7 @@ def main():
     parser.add_argument('--ledger', required=True)
     parser.add_argument('--prefill')
     parser.add_argument('--evidence')
-    parser.add_argument('--port', type=int, default=8789)
+    parser.add_argument('--port', type=int, default=0)
     args = parser.parse_args()
     try:
         review = Review(args.queue, args.ledger, args.prefill, args.evidence, initialize=args.action == 'serve')
@@ -491,8 +561,12 @@ def main():
             print(json_bytes(review.output(export=True)).decode())
         else:
             review.latest()
-            with local_server(review, args.port) as server:
-                print(f'Private review at http://127.0.0.1:{server.server_port}/', flush=True)
+            with local_server(review, args.port) as server, NamedTemporaryFile(
+                mode='w', encoding='utf-8', prefix='review-access-', suffix='.txt', dir=review.ledger.parent,
+            ) as access_file:
+                access_file.write(f'http://127.0.0.1:{server.server_port}/#access={server.access.bootstrap}\n')
+                access_file.flush()
+                print(f'Private review launch URL is in {access_file.name}', flush=True)
                 server.serve_forever()
     except (ValueError, OSError, sqlite3.Error) as error:
         parser.exit(1, f'Review unavailable: {error}\n')

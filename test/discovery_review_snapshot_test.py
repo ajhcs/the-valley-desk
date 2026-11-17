@@ -67,6 +67,25 @@ class AdmissionPreviewTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'evidence-binding'):
             self.build()
 
+    def test_preserves_bound_local_reference(self):
+        note = evidence_row('123', None, 'Local observation', '2026-11-17', ['usefulPurpose'],
+                            local_ref='docs/discovery/retained.md#L23')
+        self.row['evidence'].append(note)
+        self.row['evidenceRefs'].append(note['id'])
+        draft = self.build()['drafts'][0]
+        self.assertEqual(draft['evidence'][-1]['localLocator'], note['localLocator'])
+        self.assertEqual(draft['listing']['sources'], [self.row['originalUrl']])
+        note['localLocator'] = 'docs/discovery/different.md#L23'
+        with self.assertRaisesRegex(ValueError, 'evidence-binding'):
+            self.build()
+
+    def test_eligible_draft_requires_one_observed_github_url(self):
+        observations = self.queue['result']['candidates'][0]['observations']
+        observations.append({**observations[0], 'fullName': 'test/renamed',
+                             'originalUrl': 'https://github.com/test/renamed'})
+        with self.assertRaisesRegex(ValueError, 'listing-identity-needs-review'):
+            self.build()
+
     def test_requires_linked_regional_source_for_eligible(self):
         url = self.row['originalUrl']
         keys = [key for key in self.row['criteria'] if key != 'datedRegionalBasis']

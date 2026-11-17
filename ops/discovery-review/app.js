@@ -17,6 +17,37 @@ let selectedId = null;
 let page = 0;
 let saving = false;
 
+const sessionKey = "valleyDeskReviewSession";
+
+async function reviewFetch(path, options = {}) {
+  const fragment = new URLSearchParams(location.hash.slice(1));
+  if (fragment.has("access")) {
+    const access = fragment.get("access");
+    history.replaceState(null, "", location.pathname + location.search);
+    sessionStorage.removeItem(sessionKey);
+    const response = await fetch("/api/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ access }),
+    });
+    if (!response.ok) throw new Error("access");
+    const session = await response.json();
+    if (typeof session.token !== "string" || !session.token) throw new Error("access");
+    sessionStorage.setItem(sessionKey, session.token);
+  }
+  const token = sessionStorage.getItem(sessionKey);
+  if (!token) throw new Error("access");
+  const response = await fetch(path, {
+    ...options,
+    headers: { ...options.headers, Authorization: `Bearer ${token}` },
+  });
+  if (response.status === 401) {
+    sessionStorage.removeItem(sessionKey);
+    throw new Error("access");
+  }
+  return response;
+}
+
 function node(tag, { className, text, attrs = {} } = {}, children = []) {
   const element = document.createElement(tag);
   if (className) element.className = className;
@@ -102,7 +133,7 @@ function selectCandidate(candidate) {
   selectedId = candidate.nativeId;
   renderQueue();
   renderDetail(candidate);
-  get("detail-heading").focus({ preventScroll: !matchMedia("(max-width: 670px)").matches });
+  get("detail-heading").focus();
 }
 
 function selectField(name, options, initial) {
@@ -139,7 +170,7 @@ function evidenceField(candidate, draft) {
     list.append(node("li", {}, [
       node("label", {}, [box, node("span", { text: evidence.fact })]),
       node("div", { className: "evidence-source" }, [
-        source ?? node("span", { text: "Local record", className: "muted" }),
+        source ?? node("span", { text: evidence.localLocator ?? "Local record", className: "muted" }),
         node("span", { text: scope.join(" · "), className: "muted" }),
       ]),
     ]));
@@ -241,8 +272,13 @@ function renderDetail(candidate) {
     ]),
     node("p", { text: candidate.description || "No repository description", className: "detail-description" }),
   ]);
-  const original = externalLink(candidate.originalUrl, "Open original repository", "original-link");
+  const original = externalLink(candidate.originalUrl, "Open observed repository", "original-link");
   if (original) header.append(original);
+  const aliases = (candidate.observedAliases ?? []).filter((url) => url !== candidate.originalUrl);
+  if (aliases.length) {
+    header.append(node("p", { text: "Observed repository addresses differ. Verify the current link before marking admission-ready.", className: "muted" }),
+      node("ul", {}, aliases.map((url) => node("li", {}, [externalLink(url, url)]))));
+  }
 
   const form = node("form", { className: "review-form" });
   const criterionField = node("fieldset", { className: "field-group" }, [
@@ -300,6 +336,10 @@ function renderDetail(candidate) {
       setFeedback(`Select evidence for ${missing.map((name) => criteria[name].toLowerCase()).join(", ")}.`, true);
       return;
     }
+    if (state === "eligible" && aliases.length) {
+      setFeedback("Verify the current repository link before marking admission-ready.", true);
+      return;
+    }
     if (!decision.reason) {
       setFeedback("Enter a decision note.", true);
       note.focus();
@@ -313,7 +353,7 @@ function renderDetail(candidate) {
     setFeedback("Saving decision…");
     renderQueue();
     try {
-      const response = await fetch("/api/decisions", {
+      const response = await reviewFetch("/api/decisions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nativeId: candidate.nativeId, ...decision }),
@@ -335,7 +375,7 @@ function renderDetail(candidate) {
         selectCandidate(next);
       } else {
         renderDetail(candidate);
-        get("detail-heading").focus({ preventScroll: true });
+        get("detail-heading").focus();
       }
       get("detail").querySelector(".save-feedback").textContent = `Saved as ${states[result.decision.decision]}.`;
     } catch {
@@ -355,7 +395,7 @@ async function loadQueue() {
   get("retry").hidden = true;
   get("results-count").textContent = "Loading review queue…";
   try {
-    const response = await fetch("/api/review", { cache: "no-store" });
+    const response = await reviewFetch("/api/review", { cache: "no-store" });
     if (!response.ok) throw new Error("queue");
     const data = await response.json();
     candidates = data.candidates.map((candidate) => ({
@@ -364,9 +404,11 @@ async function loadQueue() {
     }));
     renderTotals();
     renderQueue();
-  } catch {
+  } catch (error) {
     get("results-count").textContent = "Queue unavailable.";
-    get("queue-error").textContent = "Could not load the review queue. Check that the local review server is running.";
+    get("queue-error").textContent = error.message === "access"
+      ? "Open the URL in the server’s private launch file. To get a new link, restart the server."
+      : "Could not load the review queue. Check that the local review server is running.";
     get("queue-error").hidden = false;
     get("retry").hidden = false;
   }

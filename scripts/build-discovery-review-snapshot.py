@@ -85,7 +85,10 @@ def build_preview(envelope, queue_hash, review, review_hash, baseline, baseline_
         notes = row['evidence']
         refs = row['evidenceRefs']
         if [note['id'] for note in notes] != refs or any(
-            note != REVIEW['evidence_row'](native_id, note['locator'], note['fact'], note['observedDate'], note['criteria'])
+            note != REVIEW['evidence_row'](
+                native_id, note['locator'], note['fact'], note['observedDate'], note['criteria'],
+                local_ref=note.get('localLocator'),
+            )
             for note in notes
         ):
             raise ValueError('evidence-binding')
