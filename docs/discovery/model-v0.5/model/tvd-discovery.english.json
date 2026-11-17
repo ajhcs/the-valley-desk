@@ -1,0 +1,149 @@
+{
+  "version": "foundation-1.0",
+  "source_sha256": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+  "terms": {
+    "T_CREATOR_INDEX": {
+      "namespace": "TVD.Concept",
+      "revision": "0.4",
+      "label": "creator index",
+      "definition": "Continuing identities of people and organizations.",
+      "kind": "resource",
+      "part_of_speech": "noun",
+      "approved_forms": [
+        "creator index"
+      ]
+    },
+    "T_WORK_CATALOG": {
+      "namespace": "TVD.Concept",
+      "revision": "0.4",
+      "label": "work catalog",
+      "definition": "Durable repositories, publications and supported relationships.",
+      "kind": "resource",
+      "part_of_speech": "noun",
+      "approved_forms": [
+        "work catalog"
+      ]
+    },
+    "T_PORTAL": {
+      "namespace": "TVD.Concept",
+      "revision": "0.4",
+      "label": "portal",
+      "definition": "Reader presentation of connected regional healthcare work.",
+      "kind": "resource",
+      "part_of_speech": "noun",
+      "approved_forms": [
+        "portal"
+      ]
+    },
+    "T_DISCOVER": {
+      "namespace": "TVD.Concept",
+      "revision": "0.4",
+      "label": "Discover",
+      "definition": "Find candidate repositories within registered source scope.",
+      "kind": "function",
+      "part_of_speech": "verb",
+      "approved_forms": [
+        "Discover"
+      ]
+    }
+  },
+  "elements": {
+    "IDX_ENTITY": {
+      "kind": "resource",
+      "term": "T_CREATOR_INDEX",
+      "native_name": "TVD_Concept::tvd::creatorIndex"
+    },
+    "C_CATALOG": {
+      "kind": "resource",
+      "term": "T_WORK_CATALOG",
+      "native_name": "TVD_Concept::tvd::workCatalog"
+    },
+    "VIEW_PORTAL": {
+      "kind": "resource",
+      "term": "T_PORTAL",
+      "native_name": "TVD_Concept::tvd::portal"
+    },
+    "F_DISCOVER": {
+      "kind": "function",
+      "term": "T_DISCOVER",
+      "native_name": "TVD_Concept::discoverRegionalWork"
+    }
+  },
+  "relations": [],
+  "use_cases": {},
+  "allocations": {},
+  "capabilities": {},
+  "english": {
+    "version": "english-1.0",
+    "revision": "0.4r5",
+    "rules": [
+      "ASD-STE100-1.11",
+      "CSE-TERM-POS"
+    ],
+    "terms": {
+      "T_CREATOR_INDEX": "642bc98ff317f5b62755ce2a2d8513860507c64970fa14747a0693f4293d0c49",
+      "T_WORK_CATALOG": "420af7d9ff91476e3d1769280c23bb93843c2822952815c7680b70cdfff39e16",
+      "T_PORTAL": "840ebb2ccf45b343beb4fee4de7d4ebc29d8e5d47fb732f3f11aed74b416d1a0",
+      "T_DISCOVER": "267b203857bab66c02ea184fb837976e82f6bc691f963bdd8a8c351951d7f3a8"
+    },
+    "views": {
+      "V_IDX_ENTITY": {
+        "element": "IDX_ENTITY",
+        "document": "description",
+        "uses": [
+          {
+            "term": "T_CREATOR_INDEX",
+            "slot": "noun",
+            "start": 4,
+            "end": 17
+          }
+        ],
+        "preserved": [],
+        "text_sha256": "d83e3ed1929dbdb3c39cf79aed44bd81700e0fea2a51c08b62a353dfed21b8ec"
+      },
+      "V_C_CATALOG": {
+        "element": "C_CATALOG",
+        "document": "description",
+        "uses": [
+          {
+            "term": "T_WORK_CATALOG",
+            "slot": "noun",
+            "start": 4,
+            "end": 16
+          }
+        ],
+        "preserved": [],
+        "text_sha256": "979e07012501f11785f13762ac255afe290bbec3182b47d564101be2df7850c4"
+      },
+      "V_VIEW_PORTAL": {
+        "element": "VIEW_PORTAL",
+        "document": "description",
+        "uses": [
+          {
+            "term": "T_PORTAL",
+            "slot": "noun",
+            "start": 4,
+            "end": 10
+          }
+        ],
+        "preserved": [],
+        "text_sha256": "de3a4cefd31688ac2fee0ff6fd8990b1b4ce42edcd504bd2651f9a13729337cc"
+      },
+      "V_F_DISCOVER": {
+        "element": "F_DISCOVER",
+        "document": "description",
+        "uses": [
+          {
+            "term": "T_DISCOVER",
+            "slot": "verb",
+            "start": 0,
+            "end": 8
+          }
+        ],
+        "preserved": [],
+        "text_sha256": "416758923aa137b1ef565da732dfcb57710955767608aaa09ffd2b3ddaa6a606"
+      }
+    },
+    "phrases": {}
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "purpose": "Derived factual connector observations; not native HTTP receipts or provider bodies.",
+  "head_observation": {
+    "started_at_utc": "2026-11-16 16:18:38 UTC",
+    "ended_at_utc": "2026-11-16 16:18:40 UTC",
+    "method": "GitHub connector fetch branch endpoint; selected branch and commit facts only",
+    "heads": [
+      {"repository":"PennLINC/aslprep","branch":"main","commit":"48a418cf92b57c5c66502286d2847fd742cbbd48","tool_success":true,"started_at_utc":"2026-11-16 16:18:38 UTC","ended_at_utc":"2026-11-16 16:18:39 UTC"},
+      {"repository":"mlcommons/GaNDLF","branch":"master","commit":"3f9b7726925be0f97a8a0eb108c8f35b19ff50dd","tool_success":true,"started_at_utc":"2026-11-16 16:18:39 UTC","ended_at_utc":"2026-11-16 16:18:39 UTC"},
+      {"repository":"CBICA/HistoReg","branch":"master","commit":"5f7290781ae519b5ae930e85be594576576df853","tool_success":true,"started_at_utc":"2026-11-16 16:18:39 UTC","ended_at_utc":"2026-11-16 16:18:40 UTC"},
+      {"repository":"PennLINC/ModelArray","branch":"main","commit":"b38bb2582d38e82040e25aa5b08c98161287411a","tool_success":true,"started_at_utc":"2026-11-16 16:18:40 UTC","ended_at_utc":"2026-11-16 16:18:40 UTC"}
+    ]
+  },
+  "file_observation_batch": {
+    "started_at_utc":"2026-11-16 16:18:32 UTC",
+    "ended_at_utc":"2026-11-16 16:18:33 UTC",
+    "method":"GitHub connector fetch_file at explicit commit with specified line bounds; tool-delivered text, no HTTP receipt or raw body retained",
+    "files":[
+      {"repository":"PennLINC/aslprep","commit":"48a418cf92b57c5c66502286d2847fd742cbbd48","path":"CITATION.cff","permalink":"https://github.com/PennLINC/aslprep/blob/48a418cf92b57c5c66502286d2847fd742cbbd48/CITATION.cff","tool_success":true,"doi_mentions":["10.1038/s41592-022-01458-7"],"blob_sha":"dedd04e385f00037519077b584e7407eb1d283b2","lines":[7,10],"started_at_utc":"2026-11-16 16:18:32 UTC","ended_at_utc":"2026-11-16 16:18:32 UTC","raw_body_persisted":false},
+      {"repository":"mlcommons/GaNDLF","commit":"3f9b7726925be0f97a8a0eb108c8f35b19ff50dd","path":"README.md","permalink":"https://github.com/mlcommons/GaNDLF/blob/3f9b7726925be0f97a8a0eb108c8f35b19ff50dd/README.md","tool_success":true,"doi_mentions":["10.1038/s44172-023-00066-3"],"blob_sha":"89c69c375f7c5a983b6bee664366f29806f224a2","lines":[42,65],"started_at_utc":"2026-11-16 16:18:32 UTC","ended_at_utc":"2026-11-16 16:18:32 UTC","raw_body_persisted":false},
+      {"repository":"CBICA/HistoReg","commit":"5f7290781ae519b5ae930e85be594576576df853","path":"README.md","permalink":"https://github.com/CBICA/HistoReg/blob/5f7290781ae519b5ae930e85be594576576df853/README.md","tool_success":true,"doi_mentions":["10.3390/app11041892"],"blob_sha":"e44568bd4e0724a525544435bd2dfbcc066965a8","lines":[12,27],"started_at_utc":"2026-11-16 16:18:32 UTC","ended_at_utc":"2026-11-16 16:18:33 UTC","raw_body_persisted":false},
+      {"repository":"PennLINC/ModelArray","commit":"b38bb2582d38e82040e25aa5b08c98161287411a","path":"README.Rmd","permalink":"https://github.com/PennLINC/ModelArray/blob/b38bb2582d38e82040e25aa5b08c98161287411a/README.Rmd","tool_success":true,"doi_mentions":["10.1016/j.neuroimage.2023.120037"],"blob_sha":"403c9bc7c66ba109edd6a1fda7405db1f15876d7","lines":[106,110],"started_at_utc":"2026-11-16 16:18:33 UTC","ended_at_utc":"2026-11-16 16:18:33 UTC","raw_body_persisted":false}
+    ]
+  },
+  "explicit_repository_publication_edges":[
+    {"repository":"PennLINC/aslprep","commit":"48a418cf92b57c5c66502286d2847fd742cbbd48","paths":["CITATION.cff"],"doi":"10.1038/s41592-022-01458-7"},
+    {"repository":"mlcommons/GaNDLF","commit":"3f9b7726925be0f97a8a0eb108c8f35b19ff50dd","paths":["README.md"],"doi":"10.1038/s44172-023-00066-3"},
+    {"repository":"CBICA/HistoReg","commit":"5f7290781ae519b5ae930e85be594576576df853","paths":["README.md"],"doi":"10.3390/app11041892"},
+    {"repository":"PennLINC/ModelArray","commit":"b38bb2582d38e82040e25aa5b08c98161287411a","paths":["README.Rmd"],"doi":"10.1016/j.neuroimage.2023.120037"}
+  ],
+  "development_exposed":true,
+  "actual_reference_case_count":0,
+  "actual_human_reviewer_count":0
+}

@@ -1,0 +1,620 @@
+{
+  "generator": "zod-3.25.76 isolated published npm package",
+  "schemaFileSha256": "3ed62ec15742127c2a6dc905e466d46bf448a77b7406694909b847a4e36fdffc",
+  "itemsFileSha256": "a900b7ae9332583af3f1358c2928dbb267c3f2a340183712379810dbeabd9b0e",
+  "encoding": "tagged JSON values; sorted object keys; undefined keys preserved; failed outcome excludes library-specific diagnostic text",
+  "matrix": [
+    {
+      "kind": "news",
+      "caseCount": 495,
+      "sha256": "85f661e7e3a09c2ce2b8ad7a06e2c83c60f0cf2046a0800037b4cd71db6cbe51"
+    },
+    {
+      "kind": "event",
+      "caseCount": 660,
+      "sha256": "c3bab98731e508ba40354cc4b067dde8e4adf3039f2b038bee8e16527ee076f4"
+    },
+    {
+      "kind": "voice",
+      "caseCount": 495,
+      "sha256": "346e23949ddfd0cfb1bdc90dfecb7304d50d57452cffbb526750e33c659685b2"
+    },
+    {
+      "kind": "policy",
+      "caseCount": 759,
+      "sha256": "c49aa388f1b30964f0428505a2a112e192ed4aaff848b3b023aac91c78940353"
+    },
+    {
+      "kind": "ai",
+      "caseCount": 473,
+      "sha256": "cb6cde87f42a0a10dc21689fd03776d635c1c6e7c2c522aa86c33f36ae907309"
+    },
+    {
+      "kind": "briefing",
+      "caseCount": 484,
+      "sha256": "fb0cf1bb4bdf7f7536fbd90adfd45ee5c787ec32e5ef80fa12132e9557be3a39"
+    },
+    {
+      "kind": "interview",
+      "caseCount": 473,
+      "sha256": "d235a456792f71b95cbcce180af9f50d77b06a139c6337a979d738b4559bbedf"
+    }
+  ],
+  "edges": [
+    {
+      "field": "updatedAt",
+      "input": "2026-09-12T12:00Z",
+      "outcome": {
+        "success": true,
+        "sha256": "19e7532a6d8f7a045ef395895ef76ebd2a9ec5cb1e5e9bf0455225763c494def"
+      }
+    },
+    {
+      "field": "updatedAt",
+      "input": "2026-09-12T12:00:00Z",
+      "outcome": {
+        "success": true,
+        "sha256": "00348495b3ba73a57384969007ba2d3eed2aef5af369cbbeabbe6559509100b8"
+      }
+    },
+    {
+      "field": "updatedAt",
+      "input": "2026-09-12T12:00:00.123456Z",
+      "outcome": {
+        "success": true,
+        "sha256": "2d8c3486923cf2e4d1279bfd8d18b3a831e4e0d5bd7e4aa5578bc319c74e154d"
+      }
+    },
+    {
+      "field": "updatedAt",
+      "input": "2026-09-12T12:00:00+00:00",
+      "outcome": {
+        "success": false
+      }
+    },
+    {
+      "field": "updatedAt",
+      "input": "2026-09-12T12:00:00",
+      "outcome": {
+        "success": false
+      }
+    },
+    {
+      "field": "updatedAt",
+      "input": "2026-02-30T12:00:00Z",
+      "outcome": {
+        "success": false
+      }
+    },
+    {
+      "field": "updatedAt",
+      "input": "0000-01-01T00:00:00Z",
+      "outcome": {
+        "success": true,
+        "sha256": "a03eecb42d2d498779038501414a1297e18c1db2cf9fa92eb51cfe647932d5ec"
+      }
+    },
+    {
+      "field": "source.url",
+      "input": "https://source.invalid/x",
+      "outcome": {
+        "success": true,
+        "sha256": "7c692d997fc8e3070fe609255f64e51d248a82417b68038ceb6206fcb663b4a4"
+      }
+    },
+    {
+      "field": "source.url",
+      "input": " https://source.invalid/x ",
+      "outcome": {
+        "success": true,
+        "sha256": "018d68a033d28182fddee16fa04d05400a451b86409ec78121cf8342e10f968d"
+      }
+    },
+    {
+      "field": "source.url",
+      "input": "https://USER:pass@source.invalid/x",
+      "outcome": {
+        "success": true,
+        "sha256": "665aafd43ce738ea66a360776234eeb0239e10da0d2a914f4be97d8b5f775a24"
+      }
+    },
+    {
+      "field": "source.url",
+      "input": "http://source.invalid/x",
+      "outcome": {
+        "success": false
+      }
+    },
+    {
+      "field": "source.url",
+      "input": "mailto:synthetic@example.invalid",
+      "outcome": {
+        "success": false
+      }
+    },
+    {
+      "field": "source.url",
+      "input": "/relative",
+      "outcome": {
+        "success": false
+      }
+    }
+  ],
+  "helperEdges": {
+    "utc": [
+      {
+        "input": "2026-09-12T12:00Z",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00Z"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00:00Z"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00.123456Z",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00:00.123456Z"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00+00:00",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00+0530",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00+05:30",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00+99:99",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00-9999",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00+05",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12 12:00:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-02-30T12:00:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-02-29T12:00:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2024-02-29T12:00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "2024-02-29T12:00:00Z"
+        }
+      },
+      {
+        "input": "1900-02-29T12:00:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2000-02-29T12:00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "2000-02-29T12:00:00Z"
+        }
+      },
+      {
+        "input": "0000-01-01T00:00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "0000-01-01T00:00:00Z"
+        }
+      },
+      {
+        "input": "0000-02-29T00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "0000-02-29T00:00Z"
+        }
+      },
+      {
+        "input": "2026-00-12T12:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-13-12T12:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-00T12:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-31T12:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T24:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T23:60Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T23:59:60Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00.1Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:0Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00.Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00Z\n",
+        "outcome": {
+          "success": false
+        }
+      }
+    ],
+    "offset": [
+      {
+        "input": "2026-09-12T12:00Z",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00Z"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00:00Z"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00.123456Z",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00:00.123456Z"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00+00:00",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00:00+00:00"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00+0530",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00+0530"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00+05:30",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00+05:30"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00+99:99",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00:00+99:99"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00-9999",
+        "outcome": {
+          "success": true,
+          "value": "2026-09-12T12:00:00-9999"
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00+05",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12 12:00:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-02-30T12:00:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-02-29T12:00:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2024-02-29T12:00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "2024-02-29T12:00:00Z"
+        }
+      },
+      {
+        "input": "1900-02-29T12:00:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2000-02-29T12:00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "2000-02-29T12:00:00Z"
+        }
+      },
+      {
+        "input": "0000-01-01T00:00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "0000-01-01T00:00:00Z"
+        }
+      },
+      {
+        "input": "0000-02-29T00:00Z",
+        "outcome": {
+          "success": true,
+          "value": "0000-02-29T00:00Z"
+        }
+      },
+      {
+        "input": "2026-00-12T12:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-13-12T12:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-00T12:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-31T12:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T24:00Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T23:60Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T23:59:60Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00.1Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:0Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00:00.Z",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "2026-09-12T12:00Z\n",
+        "outcome": {
+          "success": false
+        }
+      }
+    ],
+    "url": [
+      {
+        "input": "https://source.invalid/x",
+        "outcome": {
+          "success": true,
+          "value": "https://source.invalid/x"
+        }
+      },
+      {
+        "input": " https://source.invalid/x ",
+        "outcome": {
+          "success": true,
+          "value": " https://source.invalid/x "
+        }
+      },
+      {
+        "input": "https://source.invalid/a\tb",
+        "outcome": {
+          "success": true,
+          "value": "https://source.invalid/a\tb"
+        }
+      },
+      {
+        "input": "https://source.invalid/a\nb",
+        "outcome": {
+          "success": true,
+          "value": "https://source.invalid/a\nb"
+        }
+      },
+      {
+        "input": "https://source.invalid/a\rb",
+        "outcome": {
+          "success": true,
+          "value": "https://source.invalid/a\rb"
+        }
+      },
+      {
+        "input": "http://source.invalid/x",
+        "outcome": {
+          "success": true,
+          "value": "http://source.invalid/x"
+        }
+      },
+      {
+        "input": "mailto:synthetic@example.invalid",
+        "outcome": {
+          "success": true,
+          "value": "mailto:synthetic@example.invalid"
+        }
+      },
+      {
+        "input": "javascript:alert(1)",
+        "outcome": {
+          "success": true,
+          "value": "javascript:alert(1)"
+        }
+      },
+      {
+        "input": "file:///workspace/fixture",
+        "outcome": {
+          "success": true,
+          "value": "file:///workspace/fixture"
+        }
+      },
+      {
+        "input": "urn:fixture:value",
+        "outcome": {
+          "success": true,
+          "value": "urn:fixture:value"
+        }
+      },
+      {
+        "input": "https://USER:pass@source.invalid/x",
+        "outcome": {
+          "success": true,
+          "value": "https://USER:pass@source.invalid/x"
+        }
+      },
+      {
+        "input": "https://EXAMPLE.invalid:443",
+        "outcome": {
+          "success": true,
+          "value": "https://EXAMPLE.invalid:443"
+        }
+      },
+      {
+        "input": "/relative",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "not a URL",
+        "outcome": {
+          "success": false
+        }
+      },
+      {
+        "input": "",
+        "outcome": {
+          "success": false
+        }
+      }
+    ]
+  }
+}

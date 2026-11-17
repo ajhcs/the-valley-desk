@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { DatabaseSync, type StatementSync } from "node:sqlite";
 import { dirname, join } from "node:path";
-import { test } from "node:test";
+import { beforeEach, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   SOCIAL_EVIDENCE_PATH,
@@ -26,6 +26,12 @@ import { VoiceItem } from "../src/content/schema.ts";
 import worker from "../worker.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const FIXTURE_NOW = "2026-08-28T13:00:00.000Z";
+
+// Intake checks the wall clock; keep it aligned with the retained packet fixtures.
+beforeEach((context) => {
+  context.mock.timers.enable({ apis: ["Date"], now: new Date(FIXTURE_NOW) });
+});
 
 async function sha256(value: string) {
   const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
@@ -674,8 +680,7 @@ test("collector failure streak signals pause after three new failed runs and ign
   sqlite.close();
 });
 
-test("scheduled automation passes D1 to the social consumer and persists its review candidate", async (context) => {
-  context.mock.timers.enable({ apis: ["Date"], now: new Date("2026-08-28T13:00:00.000Z") });
+test("scheduled automation passes D1 to the social consumer and persists its review candidate", async () => {
   const { sqlite, db } = database();
   const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
     method: "POST",
@@ -729,8 +734,7 @@ test("scheduled automation passes D1 to the social consumer and persists its rev
   assert.equal((await ingestSocialEvidence(db, new Date())).items.length, 0);
 });
 
-test("Worker scheduled entrypoint consumes a social packet through the default automation wiring", async (testContext) => {
-  testContext.mock.timers.enable({ apis: ["Date"], now: new Date("2026-08-28T13:00:00.000Z") });
+test("Worker scheduled entrypoint consumes a social packet through the default automation wiring", async () => {
   const { sqlite, db } = database();
   const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
     method: "POST",
@@ -989,6 +993,38 @@ test("an exact publicly verified executive profile becomes a role-grounded Voice
   const roleTarget = manifest.targets.find((target) => target.roleId === "role-test");
   assert.equal(roleTarget?.verificationSource, "executive-ledger");
   assert.equal(roleTarget?.active, false);
+});
+
+test("social intake preserves exact observation and posting freshness boundaries", async () => {
+  const now = Date.parse(FIXTURE_NOW);
+  const day = 24 * 60 * 60_000;
+  const cases = [
+    { field: "observedAt", offset: -60 * day, status: 202 },
+    { field: "observedAt", offset: -60 * day - 1, status: 422, error: "observed_at_invalid" },
+    { field: "observedAt", offset: 10 * 60_000, status: 202 },
+    { field: "observedAt", offset: 10 * 60_000 + 1, status: 422, error: "observed_at_invalid" },
+    { field: "postedAt", offset: day, status: 202 },
+    { field: "postedAt", offset: day + 1, status: 422, error: "posted_at_invalid" },
+  ] as const;
+  for (const boundary of cases) {
+    const { sqlite, db } = database();
+    try {
+      const evidence = packet();
+      evidence.post[boundary.field] = new Date(now + boundary.offset).toISOString();
+      const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
+        method: "POST",
+        headers: { authorization: "Bearer social-secret", "content-type": "application/json" },
+        body: JSON.stringify(evidence),
+      }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
+      const body = await response.json();
+      assert.equal(response.status, boundary.status, JSON.stringify({ boundary, body }));
+      if (boundary.status === 422) assert.equal(body.error, boundary.error);
+      assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM social_evidence_packets").get() as { count: number }).count,
+        boundary.status === 202 ? 1 : 0, "rejected timestamps must not persist packets");
+    } finally {
+      sqlite.close();
+    }
+  }
 });
 
 test("social endpoint rejects platform mismatches and oversized payloads", async () => {

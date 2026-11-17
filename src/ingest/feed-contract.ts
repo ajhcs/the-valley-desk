@@ -1,3 +1,4 @@
+import { legacyUtcDatetime } from "../lib/schema-compat";
 /**
  * Machine-readable feed. Same ContentItem envelope as the site store.
  * Humans get the two-rail homepage. Agents GET this document.
@@ -20,7 +21,7 @@ import { isDeliverySafe } from "../content/publication";
 export const FeedDocument = z.object({
   product: z.literal("the-valley-desk"),
   version: z.literal("1"),
-  generatedAt: z.string().datetime(),
+  generatedAt: legacyUtcDatetime(),
   items: z.array(ContentItem),
 });
 

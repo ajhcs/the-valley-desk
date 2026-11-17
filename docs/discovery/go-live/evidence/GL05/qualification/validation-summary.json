@@ -1,0 +1,121 @@
+{
+  "sourceBaseline": "1fafc0156a8bac7fe248d5891ed28f3a1ddc8a21",
+  "coreSourceCommit": "352258dbb9a35ebe7364286d21aa912dd69f2067",
+  "intakeSourceCommit": "e5b50915a3af48dcbfd015fd4f3640db8a272b17",
+  "fullCoreRegression": {
+    "application": 939,
+    "watch": 146,
+    "discovery": 465,
+    "total": 1550,
+    "failures": 0,
+    "skips": 0,
+    "cancellations": 0
+  },
+  "finalTargetedIntegration": {
+    "tests": 63,
+    "failures": 0,
+    "includesCoreOverlaps": true,
+    "newPrivateImportTests": 11
+  },
+  "sourceQa": {
+    "localTests": 2,
+    "failures": 0,
+    "requiresLocalOriginalSnapshots": true
+  },
+  "offlineSourceReplay": {
+    "institutions": [
+      "Jefferson",
+      "Penn",
+      "Cooper",
+      "ChristianaCare"
+    ],
+    "allByteExact": true,
+    "suppliedScriptsExecuted": false,
+    "newProviderRequests": 0
+  },
+  "build": {
+    "exitCode": 0,
+    "note": "Final code typecheck and production build passed; existing large frontend chunk warning remains GL10 performance work."
+  },
+  "pdf": {
+    "tests": 7,
+    "exitCode": 0
+  },
+  "smoke": {
+    "exitCode": 0,
+    "scope": "isolated local D1 only"
+  },
+  "audit": {
+    "vulnerabilities": 0,
+    "dependenciesChanged": false
+  },
+  "secretScan": {
+    "exitCode": 0
+  },
+  "loopbackHttp": {
+    "requests": 17,
+    "passed": true,
+    "serverStopped": true,
+    "scope": "actual local workerd; source, DB, cron and credentials absent; no deployed or human-reader claim"
+  },
+  "coreFrozenInputs": {
+    "count": 731,
+    "unexpectedDrift": [],
+    "privateMapRefinement": "Four private map inputs were revised during unrelated regression work, followed by six focused tests, freshness and typecheck; the full Discovery run includes the final six map tests. Both input manifests and the exact change record are retained.",
+    "intakeExtension": "The later package.json changes only add new offline freshness checks and two private import test files; old test commands and all public source/runtime bytes remain exact. The extensions were tested separately with 63 integrated cases; the 1550 count is not represented as a final-intake-head full run."
+  },
+  "privateLogs": {
+    ".discovery-work/gl05/root/tests.log": "132036608ae8ac931c23b0dec8d139c1eb22739cadb7b02bee324e34d7d333a0",
+    ".discovery-work/gl05/root/build.log": "89ac163c340a554525c9ece69e38e99e59188af5ef24dab6159084db3ad0e84a",
+    ".discovery-work/gl05/root/build-final.log": "6eaff557b87decd31e417acf18202feeaf7b48939fb4d82e021d33c235a147b1",
+    ".discovery-work/gl05/root/smoke.log": "151fc1126a3340c681850ccd5dc7687a9b9d0fa645ea8afc4bd5ef4d19310391",
+    ".discovery-work/gl05/root/pdf.log": "59709c92d50c1aed92bc81369a97b223b0683b0b170428a385ed06aa434949b3",
+    ".discovery-work/gl05/root/audit.log": "6d8c5c8f3d7684adb070417bd608d01ae90aa3dc26a65af03ffda4955f38d9a3",
+    ".discovery-work/gl05/root/secrets-all-intakes.log": "ab3800d068ba92f4bb273e3d352c4d2cd9c591cf2c55bf824409dee4c26007b5",
+    ".discovery-work/gl05/root/map-final.log": "49af29a4b6fed1334b45bb8b982dbe0c2093585573570381ba872e36a1255537",
+    ".discovery-work/gl05/root/import-final-tests.log": "6ac9813bc60117ee59ce3379ed089b96fd5b3034e556a3cb45743797e98a3d1e",
+    ".discovery-work/gl05/root/final-integrated.log": "2167c03a7d4470cfe103eb2a1035be45a56035e7cc224b753178424a6791c19f",
+    ".discovery-work/gl05/root/sourceqa-final.log": "fa15e82c5070d9987365b06ac36e1c9cb9006a17a95762310883b73008d6a8ff",
+    ".discovery-work/gl05/root/jefferson-replay-final.log": "9f518ed1091b3a9f965918565e6984178073cb31b5843e235e8fbc0657df31de",
+    ".discovery-work/gl05/root/penn-replay-final.log": "6b0020982d03a93acb4c960b8c93baee525b341dd179a480cc8886b111cd8404",
+    ".discovery-work/gl05/root/cooper-replay-final.log": "1163de01093f2846109d14b3564e633720e7c3cc67af41112568ea207ed50d13",
+    ".discovery-work/gl05/root/christiana-replay-final.log": "04502580c9bc9364cc862547bb25e1740274431c10247209d0330858e4147552",
+    ".discovery-work/gl05/root/federation-check.log": "208bb0c6eac31d81113d071ac382ea87e4cab2506a8386262c85ae16e6640477"
+  },
+  "coreSourceCI": [
+    {
+      "conclusion": "success",
+      "databaseId": 43983521264,
+      "event": "pull_request",
+      "headSha": "352258dbb9a35ebe7364286d21aa912dd69f2067",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 43983513666,
+      "event": "push",
+      "headSha": "352258dbb9a35ebe7364286d21aa912dd69f2067",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 43983094129,
+      "event": "pull_request",
+      "headSha": "e5fb2a19526609d95b1fa335095f483f26ac6eda",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 43983087625,
+      "event": "push",
+      "headSha": "e5fb2a19526609d95b1fa335095f483f26ac6eda",
+      "status": "completed"
+    }
+  ],
+  "latestIntakeHeadCI": "pending after push; no final-head pass claimed",
+  "limits": [
+    "Local code, exact supplied-snapshot transformation and scoped source review only.",
+    "No regional completeness, current employment, account ownership, clinical validity, separate human benchmark or intended-reader acceptance follows.",
+    "All large research imports remain private candidate observations and references; six individually approved public works remain default-off."
+  ]
+}

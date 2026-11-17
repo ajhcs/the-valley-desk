@@ -1,0 +1,17 @@
+{
+  "package": "WP05",
+  "amendment": "EX09",
+  "disposition": "accepted_as_part_of_wp06",
+  "accepted_at": "2026-11-14T02:32:17.715352+00:00",
+  "original_receipt": "WP05.json",
+  "qualifying_receipt": "WP06.json",
+  "original_store_sha256": "a91e848e2be895a50c7723b6b0ccd82af6cc69d0aec29d2e0ac8d32c4b277423",
+  "amended_store_sha256": "b366224eb46276f5143df0fc0df2b9b9ea546b98c363863fb0e0cdab96ce3ea6",
+  "preserved_snapshot": ".discovery-work/wp05/accepted-candidate/manifest.json",
+  "change": "Trusted source-response capture composer adds current registry predicates before evidence writes and settlement after operation insertion inside the existing D1 batch; detached inputs/arrays, whole rollback and replay without double-settlement.",
+  "validation": "Original 13 WP05 tests and 21 WP06 tests pass in final npm test; independent Astra actualD1 rollback/quarantine probes pass.",
+  "limits": [
+    "Original WP05 acceptance and hashes remain historical, unchanged.",
+    "This acknowledges an evidence revision, not a SourcePage or checkpoint. WP07 must provide that atomic extension."
+  ]
+}

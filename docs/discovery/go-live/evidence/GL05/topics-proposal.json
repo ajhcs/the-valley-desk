@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "GL05-topics-proposal-v1",
+  "status": "proposed, not approval or public projection",
+  "vocabulary": "directory-topics-v1",
+  "aliases": {
+    "ai": [
+      "machine-learning"
+    ],
+    "ml": [
+      "machine-learning"
+    ]
+  },
+  "rule": "Alias expands query only; machine-learning is assigned by reviewed work-specific evidence, not inferred from local institution or all biomedical work.",
+  "assignments": [
+    {
+      "provider": "github",
+      "nativeId": "617168725",
+      "topics": [
+        "sleep",
+        "machine-learning"
+      ],
+      "sourcePath": "docs/discovery/qualification/evidence/pilot-counties-20261116/github-sleepboost/body.json",
+      "sourceSha256": "66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56",
+      "pointer": "/description",
+      "basis": "Source description identifies a tree-based ensemble for automatic sleep-stage classification."
+    },
+    {
+      "provider": "crossref",
+      "nativeId": "10.1007/s11517-024-03096-x",
+      "topics": [
+        "sleep",
+        "machine-learning"
+      ],
+      "sourcePath": "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-sleepboost/body.json",
+      "sourceSha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+      "pointer": "/message/items/0/title/0",
+      "basis": "Source title identifies tree-based ensemble sleep-stage classification."
+    },
+    {
+      "provider": "github",
+      "nativeId": "192607622",
+      "topics": [
+        "biomedical-data"
+      ],
+      "sourcePath": "docs/discovery/qualification/evidence/pilot-counties-20261116/github-openpbta/body.json",
+      "sourceSha256": "168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867",
+      "pointer": "/description",
+      "basis": "Names the analysis repository for the Open Pediatric Brain Tumor Atlas; independent project page supplies context."
+    },
+    {
+      "provider": "crossref",
+      "nativeId": "10.1016/j.xgen.2023.100340",
+      "topics": [
+        "biomedical-data"
+      ],
+      "sourcePath": "docs/discovery/qualification/evidence/pilot-counties-20261116/crossref-openpbta/body.json",
+      "sourceSha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+      "pointer": "/message/items/0/title/0",
+      "basis": "Identifies OpenPBTA; independent project page supplies research-data context."
+    },
+    {
+      "provider": "github",
+      "nativeId": "760662846",
+      "topics": [
+        "medical-imaging"
+      ],
+      "sourcePath": "docs/discovery/go-live/evidence/GL05/source-observations.json",
+      "sourceSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+      "pointer": "/observations/3/facts/medicalImaging",
+      "basis": "Specific CrCEST MRI processing."
+    },
+    {
+      "provider": "crossref",
+      "nativeId": "10.1038/s41592-024-02503-3",
+      "topics": [
+        "machine-learning",
+        "biomedical-data"
+      ],
+      "sourcePath": "docs/discovery/go-live/evidence/GL05/source-observations.json",
+      "sourceSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+      "pointer": "/observations/2/facts",
+      "basis": "Princeton institutional record describes deep-learning analysis of spatial gene-expression data."
+    }
+  ],
+  "notes": [
+    "No publication prerequisite for repository eligibility.",
+    "Topics are subject to Sol review and exact output/claim binding; current snapshot corrections need revision increment and trusted prior state."
+  ]
+}

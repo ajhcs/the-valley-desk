@@ -1,3 +1,4 @@
+import { legacyUtcDatetime, legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import linkedinTargets from "../../fixtures/linkedin-notification-targets.json";
 import type { ContentItem, NewsItem, VoiceItem } from "../content/schema";
@@ -14,12 +15,12 @@ export const SOCIAL_EVIDENCE_SCHEMA_VERSION = 1;
 export const SOCIAL_EVIDENCE_MAX_BYTES = 96 * 1024;
 export const SOCIAL_EVIDENCE_MAX_BATCH = 25;
 
-const HttpsUrl = z.string().url().refine((value) => new URL(value).protocol === "https:");
+const HttpsUrl = legacyUrl().refine((value) => new URL(value).protocol === "https:");
 const LinkedSource = z.object({
   url: HttpsUrl,
   title: z.string().max(300).optional(),
   publisher: z.string().max(200).optional(),
-  publishedAt: z.string().datetime().optional(),
+  publishedAt: legacyUtcDatetime().optional(),
   exactPassages: z.array(z.string().max(3000)).max(12).default([]),
 });
 const Packet = z.object({
@@ -36,8 +37,8 @@ const Packet = z.object({
   post: z.object({
     text: z.string().max(20000).default(""),
     headline: z.string().max(500).optional(),
-    postedAt: z.string().datetime().optional(),
-    observedAt: z.string().datetime(),
+    postedAt: legacyUtcDatetime().optional(),
+    observedAt: legacyUtcDatetime(),
     language: z.string().max(20).optional(),
   }),
   attachments: z.array(z.object({
@@ -81,8 +82,8 @@ const CollectorRun = z.object({
   runId: z.string().min(1).max(120),
   manifestVersion: z.string().min(1).max(120),
   manifestHash: z.string().regex(/^[a-f0-9]{64}$/),
-  startedAt: z.string().datetime(),
-  finishedAt: z.string().datetime(),
+  startedAt: legacyUtcDatetime(),
+  finishedAt: legacyUtcDatetime(),
   outcome: z.enum(["success", "partial", "failed"]),
   accountsChecked: z.number().int().min(0).max(10_000).default(0),
   postsSeen: z.number().int().min(0).max(50_000).default(0),
@@ -90,9 +91,9 @@ const CollectorRun = z.object({
   duplicates: z.number().int().min(0).max(50_000).default(0),
   failures: z.number().int().min(0).max(10_000).default(0),
   platforms: z.object({
-    linkedin: CollectorPlatformReport.default({}),
-    x: CollectorPlatformReport.default({}),
-  }).default({ linkedin: {}, x: {} }),
+    linkedin: CollectorPlatformReport.prefault({}),
+    x: CollectorPlatformReport.prefault({}),
+  }).prefault({ linkedin: {}, x: {} }),
   failureReasons: z.array(z.string().max(500)).max(20).default([]),
 });
 export type SocialCollectorRun = z.infer<typeof CollectorRun>;

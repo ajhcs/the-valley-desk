@@ -1,0 +1,49 @@
+{
+  "contract": "arxiv-base-version-v1",
+  "accepted": [
+    {
+      "input": "2401.00001v1",
+      "baseId": "2401.00001",
+      "version": 1
+    },
+    {
+      "input": "https://arxiv.org/abs/2401.00001v2",
+      "baseId": "2401.00001",
+      "version": 2
+    },
+    {
+      "input": "arXiv:0704.0001v1",
+      "baseId": "0704.0001",
+      "version": 1
+    },
+    {
+      "input": "cs.SE/9901002v1",
+      "baseId": "cs/9901002",
+      "version": 1
+    },
+    {
+      "input": "http://arxiv.org/abs/cs/9901002v1",
+      "baseId": "cs/9901002",
+      "version": 1
+    },
+    {
+      "input": "2401.00001",
+      "baseId": "2401.00001",
+      "version": null
+    }
+  ],
+  "unsupported": [
+    "2400.00001v1",
+    "2401.00000v1",
+    "1412.00001v1",
+    "1501.0001v1",
+    "2401.00001v0",
+    "2401.00001v01",
+    "https://arxiv.org/abs/2401.00001v1?x=1",
+    "https://user@arxiv.org/abs/2401.00001v1",
+    "https://arxiv.org:443/abs/2401.00001v1",
+    "astro-ph.CO/0001001v1",
+    "cs/0704001v1",
+    "cs/9106001v1"
+  ]
+}

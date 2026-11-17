@@ -1,35 +1,36 @@
+import { legacyUtcDatetime, legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import policyBaselineJson from "../../fixtures/policy-baseline-v1.json";
 import type { D1DatabaseLike } from "./persistence";
 
-const HttpsUrl = z.string().url().refine((value) => value.startsWith("https://"));
+const HttpsUrl = legacyUrl().refine((value) => value.startsWith("https://"));
 const Baseline = z.object({
   schemaVersion: z.literal(1),
-  asOf: z.string().datetime(),
+  asOf: legacyUtcDatetime(),
   source: z.string().min(1),
   instruments: z.array(z.object({
     id: z.string().min(1), instrumentId: z.string().regex(/^(?:HB|SB) \d+$/),
     versionId: z.string().regex(/^PN \d+$/),
     stage: z.enum(["introduced", "committee", "hearing", "amended", "passed", "enacted"]),
-    developmentAt: z.string().datetime(), title: z.string().min(1),
+    developmentAt: legacyUtcDatetime(), title: z.string().min(1),
     canonicalUrl: HttpsUrl, textUrl: HttpsUrl, evidenceSpans: z.array(z.string().min(3)).min(1),
   })),
   advocacy: z.array(z.object({
     id: z.string().min(1), instrumentId: z.string().min(1), organization: z.string().min(1),
     position: z.enum(["support", "oppose", "concerns", "neutral"]),
-    publishedAt: z.string().datetime(), sourceUrl: HttpsUrl,
+    publishedAt: legacyUtcDatetime(), sourceUrl: HttpsUrl,
     evidenceSpans: z.array(z.string().min(3)).min(1), provenance: z.array(z.string().min(1)).min(1),
   })),
   supportingEvidence: z.array(z.object({
-    id: z.string().min(1), title: z.string().min(1), publishedAt: z.string().datetime(),
+    id: z.string().min(1), title: z.string().min(1), publishedAt: legacyUtcDatetime(),
     sourceUrl: HttpsUrl, artifactSha256: z.string().regex(/^[a-f0-9]{64}$/),
     pageEvidence: z.array(z.object({ pageNumber: z.number().int().positive(), evidenceSpans: z.array(z.string().min(3)).min(1) })).min(1),
     provenance: z.array(z.string().min(1)).min(1),
   })),
   benchmarks: z.array(z.object({
     id: z.string().min(1), instrumentId: z.string().regex(/^(?:HB|SB) \d+$/),
-    firstPublicAt: z.string().datetime(), correspondenceAt: z.string().datetime(),
-    detectedAt: z.string().datetime().nullable(), briefOrBlockerAt: z.string().datetime().nullable(),
+    firstPublicAt: legacyUtcDatetime(), correspondenceAt: legacyUtcDatetime(),
+    detectedAt: legacyUtcDatetime().nullable(), briefOrBlockerAt: legacyUtcDatetime().nullable(),
     missReason: z.string().min(1).nullable(), sourceUrls: z.array(HttpsUrl).min(1),
   })),
 });

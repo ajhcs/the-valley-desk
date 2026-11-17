@@ -1,0 +1,56 @@
+{
+  "provider": "github",
+  "name": "historeg",
+  "url": "https://api.github.com/repos/CBICA/HistoReg",
+  "method": "GET",
+  "started_at_utc": "2026-11-16T16:18:33.468198+00:00",
+  "transport": "standalone-public-IP-pinned-HTTPS",
+  "wp06_transport": false,
+  "anonymous": true,
+  "authentication_sent": false,
+  "proxy_used": false,
+  "redirects_followed": 0,
+  "byte_cap": 48000,
+  "outer_deadline_seconds": 25,
+  "request_headers": {
+    "User-Agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+    "Accept-Encoding": "identity",
+    "Accept": "application/vnd.github+json",
+    "Connection": "close",
+    "X-GitHub-Api-Version": "2022-11-28"
+  },
+  "body_retained": true,
+  "rights_scope": "User-authorized bounded public factual source qualification; no article/code/contact-body redistribution or production enrollment.",
+  "dns_public_addresses": [
+    "140.82.114.6"
+  ],
+  "selected_public_ip": "140.82.114.6",
+  "tls_version": "TLSv1.3",
+  "status": 200,
+  "link_header_present": false,
+  "response_headers": {
+    "date": "Mon, 16 Nov 2026 16:18:33 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"04743b6dbc2510c512b6d4f5a7726f71148988944af8c494bc840c6a99185315\"",
+    "last-modified": "Mon, 19 Oct 2026 07:39:31 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "57",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-reset": "1794849505",
+    "content-length": "5961"
+  },
+  "received_bytes": 5961,
+  "body_sha256": "ccdc403dbb9f602924300506c4000fa4a252412bc54f780cc86588cf771b06ba",
+  "response_complete": true,
+  "native_identity": {
+    "repository_id": 163997867,
+    "alias": "CBICA/HistoReg",
+    "owner_id": 35823615
+  },
+  "preflight_source_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+  "preflight": "Strict entire-payload JSON/material gate before persistence, plus exact requested DOI/cardinality/selected fields or public organization-owned repository identity. No projection or body rewriting.",
+  "body_path": ".discovery-work/pilot-expansion/root/captures/github-historeg/body.json",
+  "ended_at_utc": "2026-11-16T16:18:33.795004+00:00",
+  "elapsed_seconds": 0.327
+}

@@ -1,0 +1,466 @@
+{
+  "contracts": [
+    {
+      "id": "P01",
+      "name": "Health-tech admission",
+      "model_id": "F_RELEVANCE",
+      "historical_guarantee": "Admitted work has a documented healthcare purpose and a technology, informatics or health-AI contribution.",
+      "assumption": "A_FACTS",
+      "implementation_packages": [
+        "WP14"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P02",
+      "name": "Regional role admission",
+      "model_id": "F_QUALIFY",
+      "historical_guarantee": "An admitted regional work claim requires an affirmative regional creator-role decision.",
+      "assumption": "A_GEO",
+      "implementation_packages": [
+        "WP14"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P03",
+      "name": "Temporal attribution",
+      "model_id": "F_RESOLVE",
+      "historical_guarantee": "Dated attribution uses half-open intervals; an expired or unknown-current assertion cannot establish current presence.",
+      "assumption": "A_TIME",
+      "implementation_packages": [
+        "WP04",
+        "WP17",
+        "WP21"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P04",
+      "name": "Publication authority",
+      "model_id": "F_REVIEW",
+      "historical_guarantee": "Model output alone cannot authorize a public work claim.",
+      "assumption": "A_AUTHORITY",
+      "implementation_packages": [
+        "WP14",
+        "WP15",
+        "WP22"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P05",
+      "name": "Independent source channels",
+      "model_id": "F_DISCOVER",
+      "historical_guarantee": "Each admitted source class can qualify independently of source platform.",
+      "assumption": "A_PROVIDER",
+      "implementation_packages": [
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P06",
+      "name": "No repository prerequisite",
+      "model_id": "F_PUBLISH",
+      "historical_guarantee": "A valid publication, preprint or discussion does not require a repository or project grouping.",
+      "assumption": "A_FACTS",
+      "implementation_packages": [
+        "WP04",
+        "WP18",
+        "WP30"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P07",
+      "name": "No name-only identity merge",
+      "model_id": "F_RESOLVE",
+      "historical_guarantee": "A matching name is insufficient for an identity merge.",
+      "assumption": "A_IDENTITY",
+      "implementation_packages": [
+        "WP04",
+        "WP14"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P08",
+      "name": "Typed identities",
+      "model_id": "F_RESOLVE",
+      "historical_guarantee": "Person, account and organization identities cannot be silently merged across kinds.",
+      "assumption": "A_IDENTITY",
+      "implementation_packages": [
+        "WP04"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P09",
+      "name": "Replay idempotence",
+      "model_id": "F_CAPTURE",
+      "historical_guarantee": "Replaying the same stable source identity does not create another identity in the retained set.",
+      "assumption": "A_KEYS",
+      "implementation_packages": [
+        "WP04",
+        "WP05",
+        "WP07"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P10",
+      "name": "Evidence retention",
+      "model_id": "F_REFRESH",
+      "historical_guarantee": "A failed refresh preserves retained evidence and cannot establish a new healthy observation.",
+      "assumption": "A_STORAGE",
+      "implementation_packages": [
+        "WP05",
+        "WP21"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P11",
+      "name": "Evidence-head guard",
+      "model_id": "F_PUBLISH",
+      "historical_guarantee": "A current public projection cannot commit against a different retained evidence head.",
+      "assumption": "A_ATOMIC",
+      "implementation_packages": [
+        "WP16"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P12",
+      "name": "Supported relation endpoints",
+      "model_id": "F_LINK",
+      "historical_guarantee": "A public relation requires an admitted relation and available admitted endpoints.",
+      "assumption": "A_FACTS",
+      "implementation_packages": [
+        "WP04",
+        "WP14",
+        "WP16"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P13",
+      "name": "Reuse claims",
+      "model_id": "F_DISPLAY",
+      "historical_guarantee": "Unknown or restricted license evidence cannot create an unrestricted-reuse claim.",
+      "assumption": "A_FACTS",
+      "implementation_packages": [
+        "WP14",
+        "WP18"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P14",
+      "name": "Public field projection",
+      "model_id": "F_DISPLAY",
+      "historical_guarantee": "Public display is restricted to admitted public fields; internal candidate fields stay outside the projection.",
+      "assumption": "A_SCHEMA",
+      "implementation_packages": [
+        "WP16",
+        "WP19",
+        "WP22"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P15",
+      "name": "Query admission",
+      "model_id": "F_SEARCH",
+      "historical_guarantee": "Every query result belongs to the admitted snapshot and satisfies the selected filters.",
+      "assumption": "A_SNAPSHOT",
+      "implementation_packages": [
+        "WP17"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P16",
+      "name": "Filter algebra",
+      "model_id": "F_SEARCH",
+      "historical_guarantee": "OR within a selected facet and AND across facets are deterministic, commutative and idempotent.",
+      "assumption": "A_QUERY",
+      "implementation_packages": [
+        "WP17"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P17",
+      "name": "Strict total ordering",
+      "model_id": "F_SORT",
+      "historical_guarantee": "The declared sort key gives a strict total order when stable tie identities are distinct.",
+      "assumption": "A_KEYS",
+      "implementation_packages": [
+        "WP17"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P18",
+      "name": "Sort transitivity",
+      "model_id": "F_SORT",
+      "historical_guarantee": "The lexicographic comparator is transitive for all declared integer key coordinates.",
+      "assumption": "A_ORDER",
+      "implementation_packages": [
+        "WP17"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P19",
+      "name": "Date integrity",
+      "model_id": "F_SORT",
+      "historical_guarantee": "Changing ingestion time alone cannot improve a source-event-date sort key. Unknown dates remain explicit.",
+      "assumption": "A_TIME",
+      "implementation_packages": [
+        "WP04",
+        "WP17"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P20",
+      "name": "Cursor binding",
+      "model_id": "F_SEARCH",
+      "historical_guarantee": "A continuation is rejected when its snapshot, normalized query or sort mode changes.",
+      "assumption": "A_SNAPSHOT",
+      "implementation_packages": [
+        "WP17"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P21",
+      "name": "Pagination partition",
+      "model_id": "F_SEARCH",
+      "historical_guarantee": "Positive-size keyset pages partition a fixed finite ordered snapshot without duplicates or omissions.",
+      "assumption": "A_SNAPSHOT",
+      "implementation_packages": [
+        "WP17"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P22",
+      "name": "Request budget",
+      "model_id": "F_DISCOVER",
+      "historical_guarantee": "A guarded atomic request counter cannot exceed its declared run budget.",
+      "assumption": "A_ATOMIC",
+      "implementation_packages": [
+        "WP06",
+        "WP07"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P23",
+      "name": "Byte budget",
+      "model_id": "F_CAPTURE",
+      "historical_guarantee": "A guarded append cannot retain more than its declared byte budget.",
+      "assumption": "A_ATOMIC",
+      "implementation_packages": [
+        "WP06",
+        "WP07"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P24",
+      "name": "Conditional round-robin fairness",
+      "model_id": "F_COVERAGE",
+      "historical_guarantee": "Every member of a fixed nonempty eligible source cohort has a slot in one complete round.",
+      "assumption": "A_FAIRNESS",
+      "implementation_packages": [
+        "WP07"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P25",
+      "name": "Nonvacuous coverage",
+      "model_id": "F_COVERAGE",
+      "historical_guarantee": "An empty enrollment or an incomplete, failed or truncated check set cannot claim completed enrolled-scope coverage.",
+      "assumption": "A_COVERAGE",
+      "implementation_packages": [
+        "WP21",
+        "WP24"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P26",
+      "name": "Cohort accounting",
+      "model_id": "F_COVERAGE",
+      "historical_guarantee": "Within one retained cohort, published membership is contained in admitted membership and captured membership.",
+      "assumption": "A_COVERAGE",
+      "implementation_packages": [
+        "WP21",
+        "WP24"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P27",
+      "name": "Project grouping",
+      "model_id": "F_GROUP",
+      "historical_guarantee": "A project relationship needs admitted relationship evidence; shared titles alone cannot establish grouping.",
+      "assumption": "A_IDENTITY",
+      "implementation_packages": [
+        "WP04",
+        "WP14"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P28",
+      "name": "Policy-head guard",
+      "model_id": "F_PUBLISH",
+      "historical_guarantee": "A changed geography, relevance or review-policy head invalidates current-projection status until readmission.",
+      "assumption": "A_ATOMIC",
+      "implementation_packages": [
+        "WP16",
+        "WP17",
+        "WP21"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P29",
+      "name": "Lifecycle safety",
+      "model_id": "F_REFRESH",
+      "historical_guarantee": "All states reachable under the declared abstract transitions preserve admission and retained-evidence invariants.",
+      "assumption": "A_TRANSITIONS",
+      "implementation_packages": [
+        "WP07",
+        "WP21",
+        "WP23"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P30",
+      "name": "Operational paths",
+      "model_id": "F_INTERPRET",
+      "historical_guarantee": "The explicit finite workflows retain typed declarations, consistent obligations and supported completion paths, including holds.",
+      "assumption": "A_TRANSITIONS",
+      "implementation_packages": [
+        "WP02",
+        "WP23",
+        "WP30"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P31",
+      "name": "Exact nine-county policy",
+      "model_id": "F_QUALIFY",
+      "historical_guarantee": "The admitted county relation is exactly the selected nine-county set; unknown or outside keys cannot satisfy membership.",
+      "assumption": "A_GEO",
+      "implementation_packages": [
+        "WP01",
+        "WP14"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    },
+    {
+      "id": "P32",
+      "name": "Corroboration deduplication",
+      "model_id": "F_CAPTURE",
+      "historical_guarantee": "Repeating evidence from the same admitted provenance origin cannot increase the distinct-origin set.",
+      "assumption": "A_ORIGIN",
+      "implementation_packages": [
+        "WP05",
+        "WP06"
+      ],
+      "verification_package": "WP23",
+      "implementation_status": "not_run"
+    }
+  ],
+  "empirical_gates": [
+    {
+      "id": "E01",
+      "owner_package": "WP24",
+      "preparation_package": "WP03",
+      "status": "not_run",
+      "postdeployment_package": null
+    },
+    {
+      "id": "E02",
+      "owner_package": "WP24",
+      "preparation_package": "WP03",
+      "status": "not_run",
+      "postdeployment_package": null
+    },
+    {
+      "id": "E03",
+      "owner_package": "WP24",
+      "preparation_package": "WP03",
+      "status": "not_run",
+      "postdeployment_package": null
+    },
+    {
+      "id": "E04",
+      "owner_package": "WP24",
+      "preparation_package": "WP03",
+      "status": "not_run",
+      "postdeployment_package": null
+    },
+    {
+      "id": "E05",
+      "owner_package": "WP24",
+      "preparation_package": "WP03",
+      "status": "not_run",
+      "postdeployment_package": null
+    },
+    {
+      "id": "E06",
+      "owner_package": "WP24",
+      "preparation_package": "WP03",
+      "status": "not_run",
+      "postdeployment_package": "WP27"
+    }
+  ]
+}

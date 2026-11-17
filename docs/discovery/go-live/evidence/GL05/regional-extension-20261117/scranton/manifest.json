@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "regional-source-intake-manifest-v1",
+  "batch": "scranton",
+  "sourceThreadId": "01a1e721-bf8d-7f02-a268-da73e3fbdd9a",
+  "inputs": {
+    "README.md": {
+      "sha256": "bf5ccb2794e85d3abc80d7fb5667cd9be6c0ca36c947eb4c12d78829ae2d0880",
+      "bytes": 2977
+    },
+    "build-inventory.py": {
+      "sha256": "0e46cfab6c6b3cdc663d2b9655111425010471715968337a6334e20ed7259ba1",
+      "bytes": 31645
+    },
+    "findings.md": {
+      "sha256": "0ef6751502c6e4d65167c67f024e8c45ac4ebfeb46a59c2ef30814e5b684f5ae",
+      "bytes": 14048
+    },
+    "labs-and-people.csv": {
+      "sha256": "7a9893b874c4f0a7f816eb917aba393f1f0bf14904b0f19b3b7c84496ae018b5",
+      "bytes": 9270
+    },
+    "repositories.csv": {
+      "sha256": "5cf19df7fe10c176fcf67cebe451c0b06b147e231ee8134c446cb412d1d96bad",
+      "bytes": 16424
+    },
+    "research-trails.csv": {
+      "sha256": "7b67a3c703bc25c5f89a1fbdd93b621a1cb4392f67f1979f23106b6510e73441",
+      "bytes": 4529
+    },
+    "search-notes.md": {
+      "sha256": "3f911e18aec0a51c8766ea77c4251bb3d533c34b62468f4e1dfa4975ddc131ad",
+      "bytes": 9630
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "6b057179edae602b63699e6c3b25f419b44f874d9143f0a3b468c024f4341f85",
+      "bytes": 90429
+    }
+  },
+  "recordCount": 104,
+  "metadataPolicies": {
+    "README.md": [
+      "reportedQualification"
+    ],
+    "build-inventory.py": [],
+    "findings.md": [
+      "reportedQualification"
+    ],
+    "labs-and-people.csv": [
+      "name",
+      "type",
+      "relationship_to_scranton",
+      "research_area",
+      "github_status",
+      "evidence_url",
+      "qualification",
+      "urlDisposition"
+    ],
+    "repositories.csv": [
+      "id",
+      "repository",
+      "url",
+      "connection_class",
+      "scranton_connection",
+      "subject",
+      "public_content_status",
+      "evidence_urls",
+      "qualification",
+      "researched_date",
+      "urlDisposition"
+    ],
+    "research-trails.csv": [
+      "id",
+      "trail",
+      "evidence_urls",
+      "result",
+      "attribution_limit"
+    ],
+    "search-notes.md": [
+      "reportedQualification"
+    ]
+  },
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "publicationAuthorized": false
+}

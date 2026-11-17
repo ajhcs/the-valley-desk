@@ -1,0 +1,56 @@
+{
+  "provider": "github",
+  "name": "modelarray",
+  "url": "https://api.github.com/repos/PennLINC/ModelArray",
+  "method": "GET",
+  "started_at_utc": "2026-11-16T16:18:37.220744+00:00",
+  "transport": "standalone-public-IP-pinned-HTTPS",
+  "wp06_transport": false,
+  "anonymous": true,
+  "authentication_sent": false,
+  "proxy_used": false,
+  "redirects_followed": 0,
+  "byte_cap": 48000,
+  "outer_deadline_seconds": 25,
+  "request_headers": {
+    "User-Agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+    "Accept-Encoding": "identity",
+    "Accept": "application/vnd.github+json",
+    "Connection": "close",
+    "X-GitHub-Api-Version": "2022-11-28"
+  },
+  "body_retained": true,
+  "rights_scope": "User-authorized bounded public factual source qualification; no article/code/contact-body redistribution or production enrollment.",
+  "dns_public_addresses": [
+    "140.82.114.6"
+  ],
+  "selected_public_ip": "140.82.114.6",
+  "tls_version": "TLSv1.3",
+  "status": 200,
+  "link_header_present": false,
+  "response_headers": {
+    "date": "Mon, 16 Nov 2026 16:18:37 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"445409f6ac02ae298182704fb486b40277f392e4ebc3d372ebc6b455cf5e8d99\"",
+    "last-modified": "Tue, 04 Aug 2026 17:35:46 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "56",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-reset": "1794849505",
+    "content-length": "6345"
+  },
+  "received_bytes": 6345,
+  "body_sha256": "9356adef4b7651849c9beebc48d848ea13620158f4e88a1afbd6575c9e4f65fa",
+  "response_complete": true,
+  "native_identity": {
+    "repository_id": 390797198,
+    "alias": "PennLINC/ModelArray",
+    "owner_id": 61955309
+  },
+  "preflight_source_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+  "preflight": "Strict entire-payload JSON/material gate before persistence, plus exact requested DOI/cardinality/selected fields or public organization-owned repository identity. No projection or body rewriting.",
+  "body_path": ".discovery-work/pilot-expansion/root/captures/github-modelarray/body.json",
+  "ended_at_utc": "2026-11-16T16:18:37.542800+00:00",
+  "elapsed_seconds": 0.322
+}

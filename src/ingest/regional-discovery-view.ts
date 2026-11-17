@@ -1,3 +1,4 @@
+import { legacyOffsetDatetime } from "../lib/schema-compat";
 import { redactRegionalContactEmails } from "./regional-privacy";
 import { z } from "zod";
 import { isCalendarDay } from "../content/watch-schema";
@@ -8,7 +9,7 @@ import { looksInstructionLike } from "./untrusted-text";
 import { qualifyPublicationScope } from "./regional-publications";
 
 const Id = z.string().regex(/^[a-z][a-z0-9-]+$/).max(200);
-const Instant = z.string().datetime({ offset: true }).refine(value => isCalendarDay(value.slice(0, 10)));
+const Instant = legacyOffsetDatetime().refine(value => isCalendarDay(value.slice(0, 10)));
 const Day = z.string().refine(isCalendarDay);
 const Hash = z.string().regex(/^[a-f0-9]{64}$/);
 const Pointer = z.string().max(2048).refine(value => regionalPublicUrlProjection(value) === value);

@@ -1,0 +1,57 @@
+{
+  "provider": "github",
+  "name": "sleepboost",
+  "url": "https://api.github.com/repos/akibzaman/SleepBoost",
+  "method": "GET",
+  "started_at_utc": "2026-11-16T17:39:38.043107+00:00",
+  "transport": "standalone-public-IP-pinned-HTTPS",
+  "wp06_transport": false,
+  "anonymous": true,
+  "authentication_sent": false,
+  "proxy_used": false,
+  "redirects_followed": 0,
+  "byte_cap": 48000,
+  "outer_deadline_seconds": 25,
+  "request_headers": {
+    "User-Agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+    "Accept-Encoding": "identity",
+    "Accept": "application/vnd.github+json",
+    "Connection": "close",
+    "X-GitHub-Api-Version": "2022-11-28"
+  },
+  "body_retained": true,
+  "rights_scope": "User-authorized bounded public factual source qualification; no article/code/contact-body redistribution or production enrollment.",
+  "dns_public_addresses": [
+    "140.82.114.6"
+  ],
+  "selected_public_ip": "140.82.114.6",
+  "tls_version": "TLSv1.3",
+  "status": 200,
+  "link_header_present": false,
+  "response_headers": {
+    "date": "Mon, 16 Nov 2026 17:39:38 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"a6490fedfdd6420bb09f75e92d644c344a2b30be6a58cd4edc55e1707775d479\"",
+    "last-modified": "Sun, 11 Oct 2026 16:34:47 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "57",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-reset": "1794854370",
+    "content-length": "5453"
+  },
+  "received_bytes": 5453,
+  "body_sha256": "66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56",
+  "response_complete": true,
+  "native_identity": {
+    "repository_id": 617168725,
+    "alias": "akibzaman/SleepBoost",
+    "owner_id": 55422467,
+    "owner_type": "User"
+  },
+  "preflight_source_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+  "preflight": "Strict entire-payload JSON/material gate before persistence, plus exact requested DOI/cardinality/selected fields or public repository and explicit requested account-owner identity. No projection or body rewriting.",
+  "body_path": ".discovery-work/county-expansion/root/captures/github-sleepboost/body.json",
+  "ended_at_utc": "2026-11-16T17:39:38.372429+00:00",
+  "elapsed_seconds": 0.329
+}

@@ -1,0 +1,849 @@
+{
+  "basis": "The 101-item planning list accepted by the user for this repository handoff, 2026-11-13. This is a concise trace index, not a verbatim transcript. Detailed intent is retained in requirements, architecture, evidence and package specifications.",
+  "items": [
+    {
+      "item": 1,
+      "title": "Make the goal useful discovery",
+      "work_packages": [
+        "WP01",
+        "WP18",
+        "WP24"
+      ]
+    },
+    {
+      "item": 2,
+      "title": "Use the existing model as the starting point",
+      "work_packages": [
+        "WP00",
+        "WP02"
+      ]
+    },
+    {
+      "item": 3,
+      "title": "Keep the geographic boundary precise",
+      "work_packages": [
+        "WP01",
+        "WP02",
+        "WP14"
+      ]
+    },
+    {
+      "item": 4,
+      "title": "Define health technology narrowly enough to be useful",
+      "work_packages": [
+        "WP01",
+        "WP03",
+        "WP14"
+      ]
+    },
+    {
+      "item": 5,
+      "title": "Separate current regional presence from regional work history",
+      "work_packages": [
+        "WP01",
+        "WP02",
+        "WP04",
+        "WP18"
+      ]
+    },
+    {
+      "item": 6,
+      "title": "Require independent discovery across the agreed sources",
+      "work_packages": [
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP24"
+      ]
+    },
+    {
+      "item": 7,
+      "title": "Serve three initial audiences",
+      "work_packages": [
+        "WP01",
+        "WP18",
+        "WP24"
+      ]
+    },
+    {
+      "item": 8,
+      "title": "Keep basic discovery freely accessible",
+      "work_packages": [
+        "WP01",
+        "WP25",
+        "WP29"
+      ]
+    },
+    {
+      "item": 9,
+      "title": "Operate within a real cost model",
+      "work_packages": [
+        "WP01",
+        "WP25"
+      ]
+    },
+    {
+      "item": 10,
+      "title": "Reduce the competing editorial scope",
+      "work_packages": [
+        "WP01",
+        "WP19",
+        "WP28"
+      ]
+    },
+    {
+      "item": 11,
+      "title": "Define success beyond traffic",
+      "work_packages": [
+        "WP03",
+        "WP24",
+        "WP25"
+      ]
+    },
+    {
+      "item": 12,
+      "title": "Define the system boundary",
+      "work_packages": [
+        "WP01",
+        "WP02"
+      ]
+    },
+    {
+      "item": 13,
+      "title": "Create one requirements-to-evidence map",
+      "work_packages": [
+        "WP02",
+        "WP23",
+        "WP24"
+      ]
+    },
+    {
+      "item": 14,
+      "title": "Repair the model's remaining interface gaps before parallel implementation",
+      "work_packages": [
+        "WP02"
+      ]
+    },
+    {
+      "item": 15,
+      "title": "Expand the operational scenarios",
+      "work_packages": [
+        "WP02",
+        "WP03",
+        "WP23"
+      ]
+    },
+    {
+      "item": 16,
+      "title": "Retain the present application architecture",
+      "work_packages": [
+        "WP00",
+        "WP02",
+        "WP04"
+      ]
+    },
+    {
+      "item": 17,
+      "title": "Reconcile the implementation baseline before coding",
+      "work_packages": [
+        "WP00"
+      ]
+    },
+    {
+      "item": 18,
+      "title": "Give the orchestrating engineer responsibility for integration",
+      "work_packages": [
+        "WP00",
+        "WP23",
+        "WP27"
+      ]
+    },
+    {
+      "item": 19,
+      "title": "Make every subagent assignment bounded and reviewable",
+      "work_packages": [
+        "WP00",
+        "WP23"
+      ]
+    },
+    {
+      "item": 20,
+      "title": "Use skills for specific deliverables",
+      "work_packages": [
+        "WP00",
+        "WP02",
+        "WP23"
+      ]
+    },
+    {
+      "item": 21,
+      "title": "Reuse libraries deliberately",
+      "work_packages": [
+        "WP00",
+        "WP02",
+        "WP20",
+        "WP23"
+      ]
+    },
+    {
+      "item": 22,
+      "title": "Require evidence with every implementation handoff",
+      "work_packages": [
+        "WP00",
+        "WP23"
+      ]
+    },
+    {
+      "item": 23,
+      "title": "Build a typed identity store",
+      "work_packages": [
+        "WP04"
+      ]
+    },
+    {
+      "item": 24,
+      "title": "Use provider identities rather than names as keys",
+      "work_packages": [
+        "WP04",
+        "WP05"
+      ]
+    },
+    {
+      "item": 25,
+      "title": "Make identity merges reversible",
+      "work_packages": [
+        "WP04",
+        "WP14",
+        "WP21"
+      ]
+    },
+    {
+      "item": 26,
+      "title": "Separate continuing work from its artifacts",
+      "work_packages": [
+        "WP04",
+        "WP18"
+      ]
+    },
+    {
+      "item": 27,
+      "title": "Model affiliations and contributions separately",
+      "work_packages": [
+        "WP04",
+        "WP14"
+      ]
+    },
+    {
+      "item": 28,
+      "title": "Support partial and uncertain dates",
+      "work_packages": [
+        "WP04",
+        "WP17"
+      ]
+    },
+    {
+      "item": 29,
+      "title": "Build the evidence record before classification",
+      "work_packages": [
+        "WP05",
+        "WP06"
+      ]
+    },
+    {
+      "item": 30,
+      "title": "Make decisions claim-specific",
+      "work_packages": [
+        "WP05",
+        "WP14"
+      ]
+    },
+    {
+      "item": 31,
+      "title": "Extend rights records to every artifact",
+      "work_packages": [
+        "WP02",
+        "WP04",
+        "WP14",
+        "WP18"
+      ]
+    },
+    {
+      "item": 32,
+      "title": "Use immutable decision and projection revisions",
+      "work_packages": [
+        "WP05",
+        "WP16"
+      ]
+    },
+    {
+      "item": 33,
+      "title": "Make publication atomic",
+      "work_packages": [
+        "WP16",
+        "WP23"
+      ]
+    },
+    {
+      "item": 34,
+      "title": "Publish through explicit allowlists",
+      "work_packages": [
+        "WP16",
+        "WP19",
+        "WP22"
+      ]
+    },
+    {
+      "item": 35,
+      "title": "Plan retention and removal together",
+      "work_packages": [
+        "WP05",
+        "WP21",
+        "WP22"
+      ]
+    },
+    {
+      "item": 36,
+      "title": "Use additive, resumable migrations",
+      "work_packages": [
+        "WP04",
+        "WP26"
+      ]
+    },
+    {
+      "item": 37,
+      "title": "Create a qualified source registry",
+      "work_packages": [
+        "WP06",
+        "WP24"
+      ]
+    },
+    {
+      "item": 38,
+      "title": "Define one acquisition interface",
+      "work_packages": [
+        "WP02",
+        "WP06"
+      ]
+    },
+    {
+      "item": 39,
+      "title": "Validate complete request construction",
+      "work_packages": [
+        "WP06",
+        "WP22"
+      ]
+    },
+    {
+      "item": 40,
+      "title": "Implement access and budgets in the transport layer",
+      "work_packages": [
+        "WP06",
+        "WP07"
+      ]
+    },
+    {
+      "item": 41,
+      "title": "Make collection resumable and fenced",
+      "work_packages": [
+        "WP07"
+      ]
+    },
+    {
+      "item": 42,
+      "title": "Implement the modeled fairness rule concretely",
+      "work_packages": [
+        "WP07",
+        "WP23"
+      ]
+    },
+    {
+      "item": 43,
+      "title": "Extend GitHub collection around durable identity",
+      "work_packages": [
+        "WP08"
+      ]
+    },
+    {
+      "item": 44,
+      "title": "Generalize publication discovery beyond the current bounded path",
+      "work_packages": [
+        "WP09"
+      ]
+    },
+    {
+      "item": 45,
+      "title": "Add Crossref as an independent metadata route",
+      "work_packages": [
+        "WP10"
+      ]
+    },
+    {
+      "item": 46,
+      "title": "Add arXiv discovery without a repository prerequisite",
+      "work_packages": [
+        "WP11"
+      ]
+    },
+    {
+      "item": 47,
+      "title": "Qualify an actual forum installation",
+      "work_packages": [
+        "WP12",
+        "WP24"
+      ]
+    },
+    {
+      "item": 48,
+      "title": "Build institutional and association discovery",
+      "work_packages": [
+        "WP13"
+      ]
+    },
+    {
+      "item": 49,
+      "title": "Keep an extension path for other sources",
+      "work_packages": [
+        "WP06",
+        "WP13",
+        "WP29"
+      ]
+    },
+    {
+      "item": 50,
+      "title": "Run creator-first and artifact-first discovery",
+      "work_packages": [
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP24"
+      ]
+    },
+    {
+      "item": 51,
+      "title": "Keep coverage accounting honest",
+      "work_packages": [
+        "WP21",
+        "WP24"
+      ]
+    },
+    {
+      "item": 52,
+      "title": "Implement an explicit relevance gate",
+      "work_packages": [
+        "WP14"
+      ]
+    },
+    {
+      "item": 53,
+      "title": "Use models to assist bounded interpretation",
+      "work_packages": [
+        "WP05",
+        "WP14",
+        "WP22"
+      ]
+    },
+    {
+      "item": 54,
+      "title": "Build the review interface as part of the product",
+      "work_packages": [
+        "WP14",
+        "WP15"
+      ]
+    },
+    {
+      "item": 55,
+      "title": "Manage editorial capacity explicitly",
+      "work_packages": [
+        "WP15",
+        "WP21",
+        "WP25"
+      ]
+    },
+    {
+      "item": 56,
+      "title": "Build corrections and suggestions through the same controls",
+      "work_packages": [
+        "WP15",
+        "WP16",
+        "WP21"
+      ]
+    },
+    {
+      "item": 57,
+      "title": "Distinguish freshness, status, and truth",
+      "work_packages": [
+        "WP05",
+        "WP16",
+        "WP21"
+      ]
+    },
+    {
+      "item": 58,
+      "title": "Introduce a separate discovery API",
+      "work_packages": [
+        "WP17"
+      ]
+    },
+    {
+      "item": 59,
+      "title": "Freeze query normalization and limits",
+      "work_packages": [
+        "WP02",
+        "WP17"
+      ]
+    },
+    {
+      "item": 60,
+      "title": "Specify facet behavior exactly",
+      "work_packages": [
+        "WP17"
+      ]
+    },
+    {
+      "item": 61,
+      "title": "Start with an explainable ranking rule",
+      "work_packages": [
+        "WP02",
+        "WP17",
+        "WP24"
+      ]
+    },
+    {
+      "item": 62,
+      "title": "Represent search snapshots through immutable revisions",
+      "work_packages": [
+        "WP16",
+        "WP17"
+      ]
+    },
+    {
+      "item": 63,
+      "title": "Resolve withdrawal during pagination explicitly",
+      "work_packages": [
+        "WP16",
+        "WP17",
+        "WP21"
+      ]
+    },
+    {
+      "item": 64,
+      "title": "Keep current-read checks coherent",
+      "work_packages": [
+        "WP16",
+        "WP17",
+        "WP23"
+      ]
+    },
+    {
+      "item": 65,
+      "title": "Begin with conservative caching",
+      "work_packages": [
+        "WP17",
+        "WP19",
+        "WP22"
+      ]
+    },
+    {
+      "item": 66,
+      "title": "Build indexed search around public revisions",
+      "work_packages": [
+        "WP17"
+      ]
+    },
+    {
+      "item": 67,
+      "title": "Replace the homepage's organizing structure",
+      "work_packages": [
+        "WP18"
+      ]
+    },
+    {
+      "item": 68,
+      "title": "Update navigation and routing together",
+      "work_packages": [
+        "WP18",
+        "WP19"
+      ]
+    },
+    {
+      "item": 69,
+      "title": "Design results for comparison",
+      "work_packages": [
+        "WP18",
+        "WP20"
+      ]
+    },
+    {
+      "item": 70,
+      "title": "Make work details answer the whole question",
+      "work_packages": [
+        "WP18",
+        "WP24"
+      ]
+    },
+    {
+      "item": 71,
+      "title": "Make people and organization pages useful on their own",
+      "work_packages": [
+        "WP18",
+        "WP24"
+      ]
+    },
+    {
+      "item": 72,
+      "title": "Use project pages only when grouping is evidenced",
+      "work_packages": [
+        "WP04",
+        "WP14",
+        "WP18"
+      ]
+    },
+    {
+      "item": 73,
+      "title": "Make the next action specific and accurate",
+      "work_packages": [
+        "WP18",
+        "WP24"
+      ]
+    },
+    {
+      "item": 74,
+      "title": "Publish a concise methodology and coverage page",
+      "work_packages": [
+        "WP18",
+        "WP21"
+      ]
+    },
+    {
+      "item": 75,
+      "title": "Make search behavior usable in every state",
+      "work_packages": [
+        "WP18",
+        "WP20"
+      ]
+    },
+    {
+      "item": 76,
+      "title": "Give direct pages and crawlers consistent information",
+      "work_packages": [
+        "WP19"
+      ]
+    },
+    {
+      "item": 77,
+      "title": "Treat accessibility as release work",
+      "work_packages": [
+        "WP20"
+      ]
+    },
+    {
+      "item": 78,
+      "title": "Set and measure performance budgets",
+      "work_packages": [
+        "WP20",
+        "WP25"
+      ]
+    },
+    {
+      "item": 79,
+      "title": "Preserve compatibility deliberately",
+      "work_packages": [
+        "WP19",
+        "WP26",
+        "WP28"
+      ]
+    },
+    {
+      "item": 80,
+      "title": "Keep privacy and exposed interfaces bounded",
+      "work_packages": [
+        "WP15",
+        "WP22"
+      ]
+    },
+    {
+      "item": 81,
+      "title": "Instrument the complete processing chain",
+      "work_packages": [
+        "WP05",
+        "WP06",
+        "WP07",
+        "WP21"
+      ]
+    },
+    {
+      "item": 82,
+      "title": "Provide operational controls before broad enrollment",
+      "work_packages": [
+        "WP21",
+        "WP26",
+        "WP27"
+      ]
+    },
+    {
+      "item": 83,
+      "title": "Refine and rerun the formal checks after model changes",
+      "work_packages": [
+        "WP02",
+        "WP23"
+      ]
+    },
+    {
+      "item": 84,
+      "title": "Translate contracts into independent implementation tests",
+      "work_packages": [
+        "WP23"
+      ]
+    },
+    {
+      "item": 85,
+      "title": "Test real storage behavior and concurrency",
+      "work_packages": [
+        "WP16",
+        "WP17",
+        "WP23",
+        "WP26"
+      ]
+    },
+    {
+      "item": 86,
+      "title": "Wire tests into the actual CI commands",
+      "work_packages": [
+        "WP23"
+      ]
+    },
+    {
+      "item": 87,
+      "title": "Freeze an independent evaluation set before tuning",
+      "work_packages": [
+        "WP03"
+      ]
+    },
+    {
+      "item": 88,
+      "title": "Set explicit attribution and relevance gates",
+      "work_packages": [
+        "WP03",
+        "WP24"
+      ]
+    },
+    {
+      "item": 89,
+      "title": "Measure discovery against an independent reference",
+      "work_packages": [
+        "WP03",
+        "WP24"
+      ]
+    },
+    {
+      "item": 90,
+      "title": "Qualify every required source route",
+      "work_packages": [
+        "WP06",
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP24"
+      ]
+    },
+    {
+      "item": 91,
+      "title": "Validate the reader outcome directly",
+      "work_packages": [
+        "WP03",
+        "WP20",
+        "WP24"
+      ]
+    },
+    {
+      "item": 92,
+      "title": "Make E06 the correspondence gate",
+      "work_packages": [
+        "WP23",
+        "WP24",
+        "WP27"
+      ]
+    },
+    {
+      "item": 93,
+      "title": "Run an operating pilot before promising service levels",
+      "work_packages": [
+        "WP25"
+      ]
+    },
+    {
+      "item": 94,
+      "title": "Rehearse migration, restore, and rollback",
+      "work_packages": [
+        "WP26"
+      ]
+    },
+    {
+      "item": 95,
+      "title": "Release a precisely identified candidate",
+      "work_packages": [
+        "WP27"
+      ]
+    },
+    {
+      "item": 96,
+      "title": "Execute the work in nine dependent increments",
+      "work_packages": [
+        "WP00",
+        "WP23",
+        "WP27"
+      ]
+    },
+    {
+      "item": 97,
+      "title": "Use a complete vertical slice early",
+      "work_packages": [
+        "WP30"
+      ]
+    },
+    {
+      "item": 98,
+      "title": "Parallelize only after the shared contracts settle",
+      "work_packages": [
+        "WP00",
+        "WP02"
+      ]
+    },
+    {
+      "item": 99,
+      "title": "Adapt through recorded evidence",
+      "work_packages": [
+        "WP00",
+        "WP02",
+        "WP23",
+        "WP24"
+      ]
+    },
+    {
+      "item": 100,
+      "title": "Defer features until their need is demonstrated",
+      "work_packages": [
+        "WP29"
+      ]
+    },
+    {
+      "item": 101,
+      "title": "Define completion by the full service",
+      "work_packages": [
+        "WP24",
+        "WP25",
+        "WP26",
+        "WP27"
+      ]
+    }
+  ]
+}

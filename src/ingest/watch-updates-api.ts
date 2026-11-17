@@ -34,7 +34,7 @@ async function shape(row: Row, at: string): Promise<WatchPublicRecord> {
     Sha256.parse(row.payload_sha256); Sha256.parse(row.manifest_sha256);
     if (await sha256(canonicalJson(record)) !== row.payload_sha256 || await sha256(canonicalJson(manifest)) !== row.manifest_sha256)
       throw new Error("checksum");
-    const validity = z.record(z.union([z.literal(0), z.literal(1)])).parse(JSON.parse(row.group_validity));
+    const validity = z.record(z.string(), z.union([z.literal(0), z.literal(1)])).parse(JSON.parse(row.group_validity));
     const delivered = await shapeWatchDelivery(record, manifest, new Map(Object.entries(validity).map(([key, value]) => [key, value === 1])), at);
     if (!delivered || delivered.id !== row.subject_id) throw new Error("held");
     return delivered;

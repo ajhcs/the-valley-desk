@@ -1,0 +1,58 @@
+{
+  "policy_document_receipts": [
+    {
+      "url": "https://api.ror.org/robots.txt",
+      "at": "2026-11-15T20:27:38.257937+00:00",
+      "method": "GET",
+      "cap": 48000,
+      "purpose": "policy-access-documents-only",
+      "redirects": 0,
+      "status": 403,
+      "location": null,
+      "bodyRetained": false
+    },
+    {
+      "url": "https://ror.readme.io/docs/rest-api.md",
+      "at": "2026-11-15T20:27:38.675449+00:00",
+      "method": "GET",
+      "cap": 48000,
+      "purpose": "policy-access-documents-only",
+      "redirects": 0,
+      "status": 200,
+      "contentType": "text/markdown; charset=utf-8",
+      "contentLength": null,
+      "location": null,
+      "bytesRead": 5240,
+      "truncated": false,
+      "sha256": "ce2dc960521588798293c566224cab184662ebf55fa4161b0d613ce8c58ab9c8"
+    },
+    {
+      "url": "https://www.med.upenn.edu/robots.txt",
+      "at": "2026-11-15T20:27:39.073301+00:00",
+      "method": "GET",
+      "cap": 48000,
+      "purpose": "policy-access-documents-only",
+      "redirects": 0,
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "contentLength": "706",
+      "location": null,
+      "bytesRead": 706,
+      "truncated": false,
+      "sha256": "067c4f76b2610f68032f9fe0f473c19f86eaff8cc4f61fb1440250ae01cf6208"
+    }
+  ],
+  "license_document_receipt": {
+    "url": "https://ror.readme.io/docs/data-dump.md",
+    "at": "2026-11-15T20:28:15.966915+00:00",
+    "method": "GET",
+    "cap": 48000,
+    "purpose": "policy-access-documents-only",
+    "redirects": 0,
+    "status": 200,
+    "contentType": "text/markdown; charset=utf-8",
+    "bytesRead": 5555,
+    "truncated": false,
+    "sha256": "7e84217e1b44aacef9945d99bf842d59f6cc66e33fd690024dd566be1f7bde12"
+  }
+}

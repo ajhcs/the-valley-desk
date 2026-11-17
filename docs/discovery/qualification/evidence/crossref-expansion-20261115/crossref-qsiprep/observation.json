@@ -1,0 +1,53 @@
+{
+  "provider": "crossref",
+  "name": "qsiprep",
+  "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+  "method": "GET",
+  "started_at_utc": "2026-11-15T21:46:36.015698+00:00",
+  "transport": "standalone-public-IP-pinned-HTTPS",
+  "wp06_transport": false,
+  "anonymous": true,
+  "authentication_sent": false,
+  "proxy_used": false,
+  "redirects_followed": 0,
+  "byte_cap": 48000,
+  "outer_deadline_seconds": 25,
+  "request_headers": {
+    "User-Agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+    "Accept-Encoding": "identity",
+    "Accept": "application/json",
+    "Connection": "close"
+  },
+  "body_retained": true,
+  "rights_scope": "User-authorized bounded public factual source qualification; no article/code/contact-body redistribution or production enrollment.",
+  "dns_public_addresses": [
+    "100.51.192.124",
+    "18.232.36.41",
+    "3.222.149.176",
+    "44.218.25.202"
+  ],
+  "selected_public_ip": "100.51.192.124",
+  "tls_version": "TLSv1.3",
+  "status": 200,
+  "link_header_present": false,
+  "response_headers": {
+    "date": "Sun, 15 Nov 2026 21:46:36 GMT",
+    "content-type": "application/json",
+    "x-rate-limit-limit": "1",
+    "x-rate-limit-interval": "1s",
+    "x-concurrency-limit": "1",
+    "x-api-pool": "public-array"
+  },
+  "received_bytes": 7503,
+  "body_sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+  "response_complete": true,
+  "native_identity": {
+    "doi": "10.1038/s41592-021-01185-5",
+    "canonical_doi": "10.1038/s41592-021-01185-5"
+  },
+  "preflight_source_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+  "preflight": "Strict entire-payload JSON/material gate before persistence, plus exact requested DOI/cardinality/selected fields or public organization-owned repository identity. No projection or body rewriting.",
+  "body_path": ".discovery-work/source-qualification/crossref-expansion/root/captures/crossref-qsiprep/body.json",
+  "ended_at_utc": "2026-11-15T21:46:36.343883+00:00",
+  "elapsed_seconds": 0.328
+}

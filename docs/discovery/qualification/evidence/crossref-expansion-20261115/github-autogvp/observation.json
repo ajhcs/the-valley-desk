@@ -1,0 +1,56 @@
+{
+  "provider": "github",
+  "name": "autogvp",
+  "url": "https://api.github.com/repos/diskin-lab-chop/AutoGVP",
+  "method": "GET",
+  "started_at_utc": "2026-11-15T21:46:56.749178+00:00",
+  "transport": "standalone-public-IP-pinned-HTTPS",
+  "wp06_transport": false,
+  "anonymous": true,
+  "authentication_sent": false,
+  "proxy_used": false,
+  "redirects_followed": 0,
+  "byte_cap": 48000,
+  "outer_deadline_seconds": 25,
+  "request_headers": {
+    "User-Agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+    "Accept-Encoding": "identity",
+    "Accept": "application/vnd.github+json",
+    "Connection": "close",
+    "X-GitHub-Api-Version": "2022-11-28"
+  },
+  "body_retained": true,
+  "rights_scope": "User-authorized bounded public factual source qualification; no article/code/contact-body redistribution or production enrollment.",
+  "dns_public_addresses": [
+    "140.82.114.6"
+  ],
+  "selected_public_ip": "140.82.114.6",
+  "tls_version": "TLSv1.3",
+  "status": 200,
+  "link_header_present": false,
+  "response_headers": {
+    "date": "Sun, 15 Nov 2026 21:46:56 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"21efa7698ce8566491bee9a209d867f0e667cc04ea1dd3f591a0a172a54082ce\"",
+    "last-modified": "Mon, 02 Nov 2026 15:37:31 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "56",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-reset": "1794780431",
+    "content-length": "6409"
+  },
+  "received_bytes": 6409,
+  "body_sha256": "241b804429fd3e6100194f614b35a7d53ad73e2b7a3b514355d5518f112152ab",
+  "response_complete": true,
+  "native_identity": {
+    "repository_id": 525946788,
+    "alias": "diskin-lab-chop/AutoGVP",
+    "owner_id": 53345105
+  },
+  "preflight_source_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+  "preflight": "Strict entire-payload JSON/material gate before persistence, plus exact requested DOI/cardinality/selected fields or public organization-owned repository identity. No projection or body rewriting.",
+  "body_path": ".discovery-work/source-qualification/crossref-expansion/root/captures/github-autogvp/body.json",
+  "ended_at_utc": "2026-11-15T21:46:57.046730+00:00",
+  "elapsed_seconds": 0.298
+}

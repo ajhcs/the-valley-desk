@@ -1,0 +1,44 @@
+{
+  "package": "WP04",
+  "disposition": "accepted",
+  "accepted_at": "2026-11-14T00:44:25.177210+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "owner": "Sol",
+  "reviewer": "Astra",
+  "authority": "orchestrating engineer after independent Astra review, root code/SQL inspection, and integrated runtime checks",
+  "scope": "Additive private catalog persistence, source identities, versioned observations, typed relations, temporal helpers and local transaction integrity; no public admission.",
+  "review": "../reviews/wp04-astra.md",
+  "outputs": {
+    "src/content/discovery-catalog.ts": "06732d425a2e8934afe4c3b599994554bb4a33d8887e5670975009473caf9683",
+    "src/ingest/discovery-store.ts": "889df95001abd95023afc9f3323dcd8c48bf54ee1e77da42f331a7d3c3d6424f",
+    "migrations/0041_discovery_catalog.sql": "de141d4f4a342747905d69c27629c7a2102097118604336628ba67a35a63cd8d",
+    "test/discovery-identities.test.ts": "68cee4aefc58e3b014cd9256ecdcc9d665a1ac1e4fcffb867b14e255cb550bcd",
+    "test/fixtures/discovery-d1/wrangler.jsonc": "09fb2382d6eacc70562601e1ad91bff271d205a641d3691a1b1aa16acb6bb500",
+    "test/types/discovery-contracts.ts": "c31db0c6d0838f779dac84f3d443851113fa5c7c29313b450c4818e66edc020f",
+    "docs/discovery/reviews/wp04-sol.md": "c11334cdff19da0a7ac1e59814508ffa60d40ad7f6fa4bed55845a470bb388c1",
+    "docs/discovery/reviews/wp04-astra.md": "e1779ef1b088e3e83f6a443e2a7aee386ad43d2f0e808474c300e48f30623c85"
+  },
+  "acceptance_criteria": {
+    "AC-WP04-01": "accepted; owner real-D1 case and independent challenge recorded in linked reviews",
+    "AC-WP04-02": "accepted; owner real-D1 case and independent challenge recorded in linked reviews",
+    "AC-WP04-03": "accepted; owner real-D1 case and independent challenge recorded in linked reviews",
+    "AC-WP04-04": "accepted; owner real-D1 case and independent challenge recorded in linked reviews",
+    "AC-WP04-05": "accepted; owner real-D1 case and independent challenge recorded in linked reviews",
+    "AC-WP04-06": "accepted; owner real-D1 case and independent challenge recorded in linked reviews"
+  },
+  "validation": {
+    "owner_ac_suite": "7/7",
+    "independent_extended_local_d1": "9/9",
+    "integrated_npm_test": 1120,
+    "build": "pass",
+    "ops_smoke": "pass",
+    "secret_scan": "pass",
+    "integration_input_files_unchanged": 489
+  },
+  "limits": [
+    "Evidence/decision anchors do not authenticate a reviewer or prove source truth.",
+    "Currentness helper does not admit a profile or invent employment end dates.",
+    "WP05 must implement evidence/rights removal; WP14/WP16 must implement authenticated admission and complete public dependency transactions.",
+    "Dependency audit remains a release blocker; no deployment or remote migration."
+  ]
+}

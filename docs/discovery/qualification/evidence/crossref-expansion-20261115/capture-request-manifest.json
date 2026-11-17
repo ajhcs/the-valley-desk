@@ -1,0 +1,202 @@
+{
+  "purpose": "Bounded user-authorized factual source investigation; no production/source authority or corpus labels.",
+  "crossrefScopeQualification": "pending code verification; URLs constructed by unchanged reviewed endpoint constructor",
+  "requests": [
+    {
+      "name": "qsiprep",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-qsiprep",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1038/s41592-021-01185-5"
+      },
+      "template": {
+        "id": "endpoint:crossref-fixed-qsiprep",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1038/s41592-021-01185-5",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1038/s41592-021-01185-5",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "captk-main",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-captk-main",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1117/1.JMI.5.1.011018"
+      },
+      "template": {
+        "id": "endpoint:crossref-fixed-captk-main",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1117/1.JMI.5.1.011018",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1117%2F1.JMI.5.1.011018&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1117/1.jmi.5.1.011018",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "autogvp",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-autogvp",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1093/bioinformatics/btae114"
+      },
+      "template": {
+        "id": "endpoint:crossref-fixed-autogvp",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1093/bioinformatics/btae114",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtae114&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1093/bioinformatics/btae114",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "immunotar",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-immunotar",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1093/bioinformatics/btaf060"
+      },
+      "template": {
+        "id": "endpoint:crossref-fixed-immunotar",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1093/bioinformatics/btaf060",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtaf060&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1093/bioinformatics/btaf060",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "phenomantics",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-phenomantics",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1186/1471-2105-15-248"
+      },
+      "template": {
+        "id": "endpoint:crossref-fixed-phenomantics",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1186/1471-2105-15-248",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1186%2F1471-2105-15-248&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1186/1471-2105-15-248",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "deepcnv",
+      "provider": "crossref",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-deepcnv",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1093/bib/bbaa381"
+      },
+      "template": {
+        "id": "endpoint:crossref-fixed-deepcnv",
+        "origin": "https://api.crossref.org",
+        "path": "/v1/works",
+        "fixed": {
+          "filter": "doi:10.1093/bib/bbaa381",
+          "select": "DOI,title,type,author,published,URL,publisher,relation,license",
+          "rows": "1"
+        },
+        "parameters": {},
+        "required": []
+      },
+      "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbib%2Fbbaa381&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "doiCanonical": "10.1093/bib/bbaa381",
+      "sourceKind": "provider-selected-factual-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "autogvp",
+      "provider": "github",
+      "url": "https://api.github.com/repos/diskin-lab-chop/AutoGVP",
+      "alias": "diskin-lab-chop/AutoGVP",
+      "id": 525946788,
+      "ownerId": 53345105,
+      "sourceKind": "public-organization-repository-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "immunotar",
+      "provider": "github",
+      "url": "https://api.github.com/repos/sacanlab/immunotar",
+      "alias": "sacanlab/immunotar",
+      "id": 734388793,
+      "ownerId": 18205643,
+      "sourceKind": "public-organization-repository-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "phenomantics",
+      "provider": "github",
+      "url": "https://api.github.com/repos/chop-dbhi/phenomantics",
+      "alias": "chop-dbhi/phenomantics",
+      "id": 15715626,
+      "ownerId": 709892,
+      "sourceKind": "public-organization-repository-metadata",
+      "maxBytes": 48000
+    },
+    {
+      "name": "deepcnv",
+      "provider": "github",
+      "url": "https://api.github.com/repos/CAG-CNV/DeepCNV",
+      "alias": "CAG-CNV/DeepCNV",
+      "id": 285885136,
+      "ownerId": 31705609,
+      "sourceKind": "public-organization-repository-metadata",
+      "maxBytes": 48000
+    }
+  ]
+}

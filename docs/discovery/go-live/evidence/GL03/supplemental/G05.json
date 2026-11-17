@@ -1,0 +1,158 @@
+{
+  "receipt": {
+    "schemaVersion": "directory-native-receipt-v1",
+    "id": "GL03:receipt:G05",
+    "pageId": "G05",
+    "manifestSha256": "3375cde742dd1a2b0b8bc30ea11889d03db4e62c405c7384e02d164fe149752c",
+    "sourceId": "GL03:github",
+    "scopeId": "GL03:G05",
+    "installation": "github-public",
+    "qualificationSha256": "58afc782d0f402d364351e1b32e504eaba5d51f6e79445c00199c8618f2f479a",
+    "requestSha256": "916b49937f40d1839ca90432d6f5e9579e859270d0fc7ef0aac204251722ea9f",
+    "issuedAt": "2026-11-16T21:34:59.109Z",
+    "completedAt": "2026-11-16T21:34:59.641Z",
+    "status": "received",
+    "httpStatus": 200,
+    "responseBytes": 5087,
+    "contentEncoding": "identity",
+    "contentType": "application/json",
+    "utf8": "valid",
+    "redirects": 0,
+    "nativeBodySha256": "2d55cf767d258eb393a79aa4203324084fba17aa5aac06e8cc2e508915549fc6",
+    "projectionSha256": "729e90ce47d79a160f0d74cf80cb3df5b4aa835266d8824714a37992ed1b914e",
+    "packetSha256": "64417e572aee062c19b03a73d8381bf76e645fc2c5d10dee7eb6b903267e848a",
+    "parserRevision": "GL03:parser:2",
+    "parserSha256": "f314c8fbdb5ed0b49a262933daf1b945f48f2bb44eb1b40f5aa3a5d182d839fb"
+  },
+  "packet": {
+    "schemaVersion": "directory-factual-page-v1",
+    "publicationAuthorized": false,
+    "receiptId": "GL03:receipt:G05",
+    "pageId": "G05",
+    "manifestSha256": "3375cde742dd1a2b0b8bc30ea11889d03db4e62c405c7384e02d164fe149752c",
+    "qualificationSha256": "58afc782d0f402d364351e1b32e504eaba5d51f6e79445c00199c8618f2f479a",
+    "requestSha256": "916b49937f40d1839ca90432d6f5e9579e859270d0fc7ef0aac204251722ea9f",
+    "nativeBodySha256": "2d55cf767d258eb393a79aa4203324084fba17aa5aac06e8cc2e508915549fc6",
+    "parserSha256": "f314c8fbdb5ed0b49a262933daf1b945f48f2bb44eb1b40f5aa3a5d182d839fb",
+    "parserRevision": "GL03:parser:2",
+    "observedDate": "2026-11-16",
+    "continuation": "unknown",
+    "nextRequestSha256": null,
+    "providerIncomplete": false,
+    "facts": [
+      {
+        "nativeId": "568171465",
+        "kind": "repository",
+        "title": "akibzaman/akibzaman",
+        "url": "https://github.com/akibzaman/akibzaman",
+        "pointers": {
+          "nativeId": "/0/id",
+          "title": "/0/full_name",
+          "url": "/0/html_url",
+          "ownerType": "/0/owner/type",
+          "archived": "/0/archived",
+          "fork": "/0/fork",
+          "sourceVersion": null,
+          "sourceDates": [
+            {
+              "field": "created_at",
+              "pointer": "/0/created_at"
+            },
+            {
+              "field": "updated_at",
+              "pointer": "/0/updated_at"
+            },
+            {
+              "field": "pushed_at",
+              "pointer": "/0/pushed_at"
+            }
+          ]
+        },
+        "ownerType": "User",
+        "archived": false,
+        "fork": false,
+        "frontier": {
+          "schemaVersion": "discovery-directory-private-frontier-v1",
+          "id": "GL03:lead:9b222f40d0ddb093ba7bd2e6bc509b8f69554c972355d9202e6f821309682f13",
+          "revision": 1,
+          "source": {
+            "kind": "collection-lead",
+            "provider": "github",
+            "sourceId": "GL03:github",
+            "scopeId": "GL03:G05",
+            "pageReceiptId": "GL03:receipt:G05",
+            "requestSha256": "916b49937f40d1839ca90432d6f5e9579e859270d0fc7ef0aac204251722ea9f",
+            "representationSha256": "2d55cf767d258eb393a79aa4203324084fba17aa5aac06e8cc2e508915549fc6",
+            "leadIndex": 0,
+            "lead": {
+              "nativeId": "568171465",
+              "kind": "artifact",
+              "displayName": "akibzaman/akibzaman",
+              "artifactKind": "repository",
+              "sourceStage": "baseline",
+              "sourceDates": [
+                {
+                  "field": "created_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2022-11-19T17:12:41Z",
+                    "lowerEpochMs": 1668877961000,
+                    "upperEpochMs": 1668877961001
+                  }
+                },
+                {
+                  "field": "updated_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2022-11-19T17:12:41Z",
+                    "lowerEpochMs": 1668877961000,
+                    "upperEpochMs": 1668877961001
+                  }
+                },
+                {
+                  "field": "pushed_at",
+                  "date": {
+                    "precision": "instant",
+                    "value": "2022-11-19T17:12:42Z",
+                    "lowerEpochMs": 1668877962000,
+                    "upperEpochMs": 1668877962001
+                  }
+                }
+              ],
+              "relatedAccounts": [],
+              "unresolvedPeople": [],
+              "publicationAuthorized": false
+            }
+          },
+          "disposition": "pending",
+          "duplicateOf": null,
+          "reason": null,
+          "publicationAuthorized": false
+        }
+      }
+    ],
+    "projectionSha256": "729e90ce47d79a160f0d74cf80cb3df5b4aa835266d8824714a37992ed1b914e"
+  },
+  "audit": {
+    "requestId": "G05",
+    "anonymous": true,
+    "redirectsFollowed": 0,
+    "retries": 0,
+    "rawBodyRetained": false,
+    "wp06TransportExercised": false,
+    "parserSourceSha256": "f314c8fbdb5ed0b49a262933daf1b945f48f2bb44eb1b40f5aa3a5d182d839fb",
+    "selectedPublicIp": "140.82.113.6",
+    "tlsVersion": "TLSv1.3",
+    "itemCount": 1,
+    "providerTotal": null,
+    "providerIncomplete": false,
+    "continuation": "unknown",
+    "continuationPolicy": "opaque_unknown",
+    "bodyProjectionReproducible": false
+  },
+  "settled": {
+    "outcome": "unknown",
+    "inserted": 1,
+    "pending": 0
+  }
+}

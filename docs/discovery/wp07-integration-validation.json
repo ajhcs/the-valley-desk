@@ -1,0 +1,212 @@
+{
+  "id": "TVD-DISCOVERY-WP07-INTEGRATION-1",
+  "recorded_at": "2026-11-14T03:52:27.340984+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "disposition": "local_wp07_checks_passed_release_remains_unqualified",
+  "checkout": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113",
+  "branch": "codex/discovery-implementation-20261113",
+  "checks": {
+    "npm_test": {
+      "exit_code": 0,
+      "tests": 1193,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 110
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "independent_wp07_suite": {
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "stable_input_count": 16,
+      "database": "actual isolated local D1, migrations 0001-0044"
+    },
+    "independent_astra_suite": {
+      "passed": 21,
+      "failed": 0,
+      "stable_input_count": 19,
+      "database": "actual isolated local D1, migrations 0001-0044"
+    },
+    "focused_collector_suite": {
+      "passed": 6,
+      "failed": 0,
+      "scope": "synthetic store doubles and actual transport boundary with injected egress"
+    },
+    "wp06_under_0044": {
+      "passed": 21,
+      "failed": 0,
+      "stable_input_count": 14,
+      "original_test_unchanged": true
+    },
+    "migration_safety": {
+      "checks_passed": 6,
+      "scope": "duplicate source leases reject whole migration; both preserved; unambiguous migration succeeds; future duplicates denied; no automatic round"
+    },
+    "build": {
+      "exit_code": 0,
+      "typecheck": "pass",
+      "warning": "existing main bundle exceeds 500 kB"
+    },
+    "local_ops_smoke": {
+      "exit_code": 0,
+      "scope": "fake bindings and closed injected egress; smoke mock does not establish D1 atomicity"
+    },
+    "secret_scan": {
+      "exit_code": 0,
+      "files": 778,
+      "scope": "repository tracked and nonignored untracked files, including final review and acceptance documents; script allowlists and file exclusions preserved"
+    },
+    "final_input_files_matched": 535,
+    "test_count_note": "Independent/focused suites overlap npm test; counts are not additive."
+  },
+  "outputs": {
+    "src/ingest/discovery/collection-contract.ts": "9fb85d794584a99724ff02db4fbe63713411b2cd66bbd79ea0e827b9832e0ba0",
+    "src/ingest/discovery/collection-store.ts": "f800b375f5e86e1f4764c8bb2bc9de69fff33cc419f2e77443e0fa115e720084",
+    "src/ingest/discovery/collector.ts": "abfcf200a6dcbbb0f562efb40ecf6b05a529091f2bf590b5c69c5202f448bb6f",
+    "migrations/0044_discovery_collection.sql": "94c84e6421620087b92919ee8550949d22922f4b679138257d1a2f96ee1f83fd",
+    "test/discovery-collection.test.ts": "374c343130becc7d94cafd1b62c16c6a3c8c1e27bed817eb43b76bbfd213e26a",
+    "test/discovery-collector.test.ts": "17aa23678b3965c215cd30753e9429950e8e938f9b996de2dfcea3361577591d",
+    "package.json": "3e34704f4434aef08541fcc3bea799cd00ef44deffaf5f183dee82f3d5b40ecb",
+    "src/lib/ops.ts": "dcc0a1e83a3992889fde331f2d0bd942c3f71a9fb4cf7ae90ec22ca751dcb2d7",
+    "docs/discovery/reviews/wp07-sol.md": "7383133ddecc462e032ea954ec381c1baa63b6b66b33991242d324015d85abc5",
+    "docs/discovery/reviews/wp07-terra.md": "f390d12e6219beb90fe1c330a35ce64feb6ebeb8920872c264f3225f718c42b7",
+    "docs/discovery/reviews/wp07-tests-sol.md": "7c215ad1d73b08232ddf1c719c025af14e1c91b9db2b1cfceefc2f60d2f9bae1",
+    "docs/discovery/reviews/wp07-astra.md": "59483053833c52cc28ba8d011becc14f7a12d0cc90e19f519e98714320a72872",
+    "docs/discovery/reviews/wp07-orchestrator.md": "b2356b3b33dafc0e000e4c1bde0c8632982c659fc15e58f110c6e153f3ca0c9d",
+    "docs/discovery/wp07-evidence-plan.md": "4e0067639a44ddf1832b84490de266d25678757ec193776c8d1fc8e8715ce5de"
+  },
+  "artifacts": {
+    ".discovery-work/wp07/root-final/input-sha256.json": "e28b7ca16c39ee6a2878a46ffedfc3884109f4eea2fb039394a3e340a4a9ffdf",
+    ".discovery-work/wp07/root-final/input-check.json": "339779b582ab8bfa68c5285dfd72e7193ae1a944d08b0cb62cdda4d5989f78d0",
+    ".discovery-work/wp07/root-final/npm-test.log": "5f0082d476b088276bb8bec08e85172af4046d0b8fc13d6c48357c5c1a3a9146",
+    ".discovery-work/wp07/root-final/build.log": "ffbc370d168f4d0155a0936680176a4df489f30faf42a5fc7b6d0125f974c014",
+    ".discovery-work/wp07/root-final/ops-smoke.log": "efaca9c416af3645864406f4a5c3efa9223f4e0927cc6494eb2ec34bd314ef6f",
+    ".discovery-work/wp07/root-final/frozen-manifests.json": "4e0f74507b31ea4a250790e73d8cca85e9473acbac9ccdc0e2c89ee693c358c3",
+    ".discovery-work/wp07-tests-sol/run-4-frozen.log": "8ec6d3be122338f36df991ddfee3db3aa2a0ad3e432bf53c31bc3bc2946f1349",
+    ".discovery-work/wp07-tests-sol/runs/2026-11-14T03-41-13-061Z-3399727/local-d1-results.json": "c9ea6fc045c655e5b171fb0bafd544aa6ef4821855d76860c01ba09cb78c1cef",
+    ".discovery-work/wp07-tests-sol/runs/2026-11-14T03-41-13-061Z-3399727/inputs-before.json": "46f3ed66741002453a7a3d2785ef5b031ff989f686cf2c9d5bdbd53b8bf1b246",
+    ".discovery-work/wp07-tests-sol/runs/2026-11-14T03-41-13-061Z-3399727/inputs-after.json": "46f3ed66741002453a7a3d2785ef5b031ff989f686cf2c9d5bdbd53b8bf1b246",
+    ".discovery-work/wp07-astra/final-review.json": "8e84ff6b510d532b52f24e00d31e20511ba2e0e94b775ea8c75111bf2e0f918b",
+    ".discovery-work/wp07-astra/probes-v14.test.ts": "bf191682097e24d11fe6c812583dc37300c2eb60b9ee99f3d8fb38de4ff60f4d",
+    ".discovery-work/wp07-astra/probes-v14.log": "271b57de364e252029b206721c9a18e662d9abb26b30a1237779e42c8483e5f6",
+    ".discovery-work/wp07-astra/probes-v14-inputs-before.json": "7b34852886de1575b38dc65770d7856c9e64c9f003eadc89994b5972f0570413",
+    ".discovery-work/wp07-astra/probes-v14-inputs-after.json": "7b34852886de1575b38dc65770d7856c9e64c9f003eadc89994b5972f0570413",
+    ".discovery-work/wp07-terra/collector-test-v2.log": "86d20cdbedae03eb29c64fb0ba49fbfcc81b83297642c25561b9485e0715f0be",
+    ".discovery-work/wp07/compat/qualification.log": "4182b967bc8e38423c7f6e25adf528552fcabf08c9c1209329f1de591a309050",
+    ".discovery-work/wp07/compat/wp06-with-0044.test.ts": "c3a8a8d35e914fac0ca356be0da482f7ae546e3b50f33329a397e2b8bfed7d84",
+    ".discovery-work/wp07/compat-runs/2026-11-14T03-32-24-294Z-3359952/local-d1-results.json": "71fcb33a9f301b82129f25f981038643762157b43c2e9a6fd50093ea07217084",
+    ".discovery-work/wp07/migration-probe-final/run.mts": "78b62e867846237aad85ce35f2af210a9d1192427c078ceee0cf042c785966f4",
+    ".discovery-work/wp07/migration-probe-final/run.log": "55b099b0bfea564fab6f82776b4d6cda10cd2e0e240f7b03c798bf5cb8f19e60",
+    ".discovery-work/wp07/migration-probe-final/result.json": "e555d0319e07fbcda4d4d3b8841572c77352302676768f2dfe0611a3a70d4aee",
+    ".discovery-work/wp07-tests-sol/runs/2026-11-14T03-40-02-211Z-3394613/loop-timeline.json": "0baf755c8ef1caa2f0a8f4ae4faf7ea3de82d4997afe168a2ce0f4c6aa35dce1",
+    ".discovery-work/wp07/root-final/secret-scan-final.log": "022494c05a006841f048c670f8f8ed982e9c59f00bef4301d0918189501e266a",
+    ".discovery-work/wp07/root-final/secret-scan-documents.log": "022494c05a006841f048c670f8f8ed982e9c59f00bef4301d0918189501e266a"
+  },
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "exit_code": 0,
+      "environment": "Node22.23.2; env -i; unchanged HOME; workspace TMPDIR/XDG/npm caches; WRANGLER_SEND_METRICS=false"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "ops:smoke"
+      ],
+      "exit_code": 0,
+      "scope": "fake local config, isolated persistence, injected closed egress"
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        ".discovery-work/wp07/compat/wp06-with-0044.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx/esm",
+        ".discovery-work/wp07/migration-probe-final/run.mts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        ".discovery-work/wp07/root-final/inputs.py",
+        "check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "secret-scan"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "lockfile_sha256": "f90749d123fe5d553057a037188af6a827367aa6bc427e84ccc25a3c4218fe05",
+  "dependency_audit": "dependency-audit.json; unchanged lockfile; no new audit or remediation claimed",
+  "frozen_handoff_manifest_entries_verified": 70,
+  "frozen_model_manifest_entries_verified": 21,
+  "native_model_inputs_changed": false,
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "deployment_performed": false,
+  "production_state_changed": false,
+  "limitations": [
+    "All source acquisition, permissions, capability resolution, parser outputs and egress are synthetic. No actual provider access, legal sufficiency, reviewer authentication or regional coverage is established.",
+    "Private normalized leads and DiscoveryCollectionPageReceipt do not create catalog subjects, EvidenceRevision references, shared SourcePage observations, admission or public freshness. WP14 must supply the materialization bridge.",
+    "Fairness is conditional on continued dispatch and eventual lease recovery over a fixed selected round. A finished scheduling round, empty selected set or historical health timestamp is not complete source coverage.",
+    "One page attempt is allowed per selected round slot, with no automatic retry or round creation. Lost uncommitted tokens/handles require later authorized work; uncertain dispatch stays charged. Inventory expiry requires a new explicit cohort.",
+    "D1 transaction admission is distinct from the physical commit instant and external socket send. An in-flight mutation can commit after caller timeout. Synchronous parser CPU is not preempted; late results cannot start further work.",
+    "Scoped logical removal does not erase physical memory, backups or Time Travel; restore reconciliation remains WP26. Integrity checks do not defend against coherent unrestricted database rewrite.",
+    "No provider activation, scheduler, public route, remote migration, deployment, commit or dependency change occurred. WP03 has zero real reference cases; E01-E06 remain not_run; WP14 remains dependent on WP03.",
+    "The unchanged lockfile retains four high advisories, seven total; later packages and operating gates remain unqualified. Eleven legacy regional tests omitted by existing scripts are not included in reported test totals."
+  ],
+  "retained_diagnostics": {
+    "astra": ".discovery-work/wp07-astra/probes-v1.log through probes-v14.log; failed, mixed-input and final runs preserved",
+    "independent_sol": ".discovery-work/wp07-tests-sol/run-1-core.log, run-2-expanded.log, run-3-loop-diagnostic.log, run-4-frozen.log; corresponding per-run manifests retained",
+    "migration": ".discovery-work/wp07/migration-probe/ historical SQL33c1af5d; final SQL94c84e64 separately verified",
+    "loop_fixture": "1000ms continuation deadline returned uncertain at2501.7ms while its same in-flight commit succeeded at2939.8ms; loop fixture alone changed to60000ms; dedicated short-expiry tests unchanged",
+    "classification": "Disabled at issuance is durable failure/disabled; preclaim revoked source is skipped without send. Repeated expired continuation retains timed-out cause; nonexpired restart-required is tested separately."
+  },
+  "accepted_package": "WP07",
+  "accepted_at": "2026-11-14T03:53:34.282509+00:00"
+}

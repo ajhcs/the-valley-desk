@@ -1,0 +1,19 @@
+{
+  "id": "DVRPC_9",
+  "revision": "2026-11-13",
+  "selection": "Accepted by the user in this conversation.",
+  "county_keys": [
+    "PA:Bucks",
+    "PA:Chester",
+    "PA:Delaware",
+    "PA:Montgomery",
+    "PA:Philadelphia",
+    "NJ:Burlington",
+    "NJ:Camden",
+    "NJ:Gloucester",
+    "NJ:Mercer"
+  ],
+  "meaning": "Documented professional presence or work attribution in a selected county, with a dated relationship basis. No residential-location claim is implied.",
+  "source": "https://www.dvrpc.org/about/",
+  "unknown_location": "hold regional eligibility; do not infer from an ambiguous city string or account location alone."
+}

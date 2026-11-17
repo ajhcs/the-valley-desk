@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "intake": "penn",
+  "verification": "Offline sanitizer replay matched retained outputs byte-for-byte; supplied source archive checksum matched; consumed source files unchanged across source QA.",
+  "publicationAuthorized": false,
+  "files": {
+    "accounts.json": {
+      "sha256": "d02ae11d10d1508b02d45cc09c3554a6c249764d751a6fb1d3b73bee4374f673",
+      "bytes": 71288
+    },
+    "manifest.json": {
+      "sha256": "2c4ae09e6520070628689d40f59217ea7bdd9ad623096f0f7b82cf3d8f976d49",
+      "bytes": 2026
+    },
+    "projects.json": {
+      "sha256": "bc86be1b4e2f837f955079c36ad844860c2891cc8e04acc6313dc7984dc56a4d",
+      "bytes": 136429
+    },
+    "repositories.json": {
+      "sha256": "e493bd871a80ff6110abbde48b98fb9a889e886c348ab436d1a9436c9139762e",
+      "bytes": 2612478
+    },
+    "status.json": {
+      "sha256": "0e3dda9a82b0ebf334fc474f0754053b1d3582e4642ff596983b6b18dac643cf",
+      "bytes": 194416
+    },
+    "supplemental-evidence.json": {
+      "sha256": "ee00ebdf54b71b0cf56c4fa9b24e3ada9847befceab0e95baa49ebea3d94c276",
+      "bytes": 137653
+    }
+  }
+}

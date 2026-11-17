@@ -1,0 +1,188 @@
+{
+  "recordedAt": "2026-11-17T13:48:41.225242+00:00",
+  "sourceCommit": "497bb7eb9f3285d95c0eb9a5cc38793684fb6540",
+  "sourceBaseline": "6ba5dee23eae8a24b18c282c46d6af955616c5c4",
+  "runtime": "Node.js v22.23.2 through existing isolated workspace-backed wrapper",
+  "focusedTests": {
+    "tests": 27,
+    "newAdditionsTests": 3,
+    "failures": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "sourceQa": {
+    "tests": 12,
+    "failures": 0,
+    "requiresLocalOriginalPackages": true
+  },
+  "offlineReplays": {
+    "batches": [
+      "incubators",
+      "wistar",
+      "public-health"
+    ],
+    "byteExact": true,
+    "originalFilesVerified": 33
+  },
+  "snapshotFreshness": {
+    "checks": 8,
+    "exitCode": 0
+  },
+  "productionBuild": {
+    "exitCode": 0,
+    "typeScript": true,
+    "existingLargeChunkWarning": "GL10 performance work"
+  },
+  "secretScan": {
+    "exitCode": 0
+  },
+  "independentReview": "docs/discovery/go-live/execution/GL05-additions-sol-review.md",
+  "sourceUrlSemantics": {
+    "selectedSafeOriginalUrlOccurrencesRetained": 2303,
+    "missing": 0,
+    "composedMetadataUrlOccurrences": 3903
+  },
+  "dataQuality": {
+    "workflow": "analyze-data-quality (scoped lineage and grain check)",
+    "controllingSource": "Final source-linked CSVs for reported findings; intermediate seeds/checks/query coverage are separate overlapping stages.",
+    "grain": "Source-scoped record and URL key, not unique people, labs or eligible work.",
+    "duplicateExportPopulations": {
+      "unreviewed-account-leads.csv": 259,
+      "unreviewed-repository-leads.csv": 3274,
+      "unreviewed-all-repository-url-leads.csv": 5534
+    },
+    "duplicateExportMembershipAndObservationIdsExact": true,
+    "compactLineageRecords": 3,
+    "bulkCopiedExportsReimported": 0,
+    "filteredProfiles": 492,
+    "rawProfileHitsImported": 0,
+    "biographiesRetained": false,
+    "reportedSourceAssertionsRemainUnreviewed": true
+  },
+  "artifacts": {
+    "docs/discovery/go-live/README.md": {
+      "sha256": "68713b2b53964e4d783e617779630d5f29ab80dd9f8bc2d938fd8f9f7b8a2fd7",
+      "bytes": 19023
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/incubators/manifest.json": {
+      "sha256": "df70954076844b11ad6010e2cb58a3be4d8504cc9b209d9a7575438cf9d82c76",
+      "bytes": 3314
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/incubators/source-assertions.json": {
+      "sha256": "97b8d195e2104532756c1ad90746d9cd9e8196cf7c90465a3eda0da71c207a9e",
+      "bytes": 241770
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/public-health/manifest.json": {
+      "sha256": "26a05fd8503aad69224b92e73dc9494342309abc7538abee8b6fba05b104d4bc",
+      "bytes": 4173
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/public-health/source-assertions.json": {
+      "sha256": "182e32519c9faafdef5d404c3520a19ed37f9a03644930c9a8b6354a0ec38d72",
+      "bytes": 1128610
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/qualification-queue.json": {
+      "sha256": "0b42218b9aff7964f63e0031b590eec2030274c696462c8262c58661cb11108a",
+      "bytes": 17686461
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/research-network.json": {
+      "sha256": "e987ab6ba4304b850421c8d45eaa74b1f180b9ff6be41971389f39e14f9b5cea",
+      "bytes": 1822824
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/research-network.md": {
+      "sha256": "c506c82696cd3dbf549cb805ec8a27caf97f40307827f7aca821c552711e160f",
+      "bytes": 245831
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/wistar/manifest.json": {
+      "sha256": "5ced19b9335805863006e09276b9ba3c2e92b92c8c936f84582275a6d039f31e",
+      "bytes": 2185
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/wistar/source-assertions.json": {
+      "sha256": "35a11078927b447bb6e52fcad681c37c38470781f02ba3793cf96c1c6663a682",
+      "bytes": 92630
+    },
+    "docs/discovery/go-live/execution/GL05-additions-integration.md": {
+      "sha256": "15d801d12f3e8a9b5304248d883554e5a47335ee2b5b25fd374408a0c359b991",
+      "bytes": 855
+    },
+    "docs/discovery/go-live/execution/GL05-additions-sol-review.md": {
+      "sha256": "d6ced364c880d20ef41691adfe44754a1d491089019cfbf986466df3b050cf1e",
+      "bytes": 9347
+    },
+    "docs/discovery/go-live/execution/GL05-discovery-follow-through.md": {
+      "sha256": "eadffe5067d9460fdd0cc985995d680f44a63c96f24bff716aa2fe930a65d313",
+      "bytes": 14235
+    },
+    "docs/discovery/go-live/execution/GL05-incubator-intake.md": {
+      "sha256": "69f48a3efb9b6829330965abbc14c3313cbd218c897e575ec38a953a2128be11",
+      "bytes": 1733
+    },
+    "docs/discovery/go-live/execution/GL05-public-health-intake.md": {
+      "sha256": "71ce8ab58055a9083d545bb586ad9f02847eafbefe612185c1e427ca296f5f5e",
+      "bytes": 2354
+    },
+    "docs/discovery/go-live/execution/GL05-wistar-intake.md": {
+      "sha256": "45a2537f99496f94fd4f9fc6e7e265caa0d447fbc422fd6e04e43fb54969a129",
+      "bytes": 1634
+    },
+    "package.json": {
+      "sha256": "86bf893cdb49643f631f54937a7583f0b166a57537fcbb0292ba425e4e67e927",
+      "bytes": 8367
+    },
+    "scripts/build-research-network-additions.mjs": {
+      "sha256": "909fe2544e9eb980da45f877a2362157b1dd7c26e5e459b606057953946968e7",
+      "bytes": 8760
+    },
+    "scripts/sanitize-incubator-intake.py": {
+      "sha256": "a712e6c538e790b3d6dafe8fe0553694ebd1994e21bb11faae18f8c3e926aedf",
+      "bytes": 9897
+    },
+    "scripts/sanitize-public-health-intake.py": {
+      "sha256": "2860b715af2c2a3c1a5bcdf3d5a390549887730b7c954dfdc2e2fc55405d2d9f",
+      "bytes": 9009
+    },
+    "scripts/sanitize-wistar-intake.py": {
+      "sha256": "d5bc6206380bd08b4a39863bed179e7dee5be9369048323e04e0f1b69eccb8bc",
+      "bytes": 7415
+    },
+    "src/ingest/discovery/research-network-additions.ts": {
+      "sha256": "d17b413aa66769e137d130ddee451c3e7b46e05635e25884623af1e4a47b8d2d",
+      "bytes": 16057
+    },
+    "test/discovery-research-network-additions.test.ts": {
+      "sha256": "2ce14ee84a48e44923341bd4ca764f996f1f238320b2a8fea3854d61908a26f5",
+      "bytes": 3786
+    },
+    "test/sourceqa/test_incubator_intake.py": {
+      "sha256": "533bc860a79e83ac591cb47e5e97eefb9e4351660d086076ee1b7fd225387449",
+      "bytes": 3780
+    },
+    "test/sourceqa/test_public_health_intake.py": {
+      "sha256": "36a3e413f55020063f45a50cfeb8cb08a98ba6434555e810be4f5a2a66a5eced",
+      "bytes": 3988
+    },
+    "test/sourceqa/test_wistar_intake.py": {
+      "sha256": "77422cbc19602760d7e5235c815d5a4e4526730d926bfb0e31e709a2071fbf06",
+      "bytes": 3891
+    }
+  },
+  "artifactsScope": "Receipts identify Git source commit 497bb7eb9f3285d95c0eb9a5cc38793684fb6540. The subsequent qualification commit updates go-live README and plan, with code/data unchanged.",
+  "notRerunLocally": [
+    "full application suite",
+    "Watch suite",
+    "whole Discovery suite",
+    "PDF regressions",
+    "smoke",
+    "dependency audit"
+  ],
+  "ci": {
+    "sourceBaseline": "6ba5dee23eae8a24b18c282c46d6af955616c5c4",
+    "push": "success",
+    "pullRequest": "success",
+    "newHead": "pending_not_release_accepted"
+  },
+  "limits": [
+    "Source labels remain reported and unreviewed; checks do not establish ownership, identity, worksite, health purpose, regional coverage or current target content.",
+    "A supplied-file hash records retained bytes, not independent authenticity or publication approval.",
+    "No source requests, supplied scripts, public admissions, human-benchmark credit or deployment."
+  ]
+}

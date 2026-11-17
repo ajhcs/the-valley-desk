@@ -1,0 +1,88 @@
+{
+  "id": "TVD-GL05-EXPANSION-1",
+  "recorded_at": "2026-11-17T02:16:21.610689+00:00",
+  "disposition": "accepted_private_metadata_intake_only",
+  "source_commit": "f6b33a0659abc6e535f1cb947ff375357cd29dbe",
+  "baseline": "c23cc18fcf2d820f8a8d93feb96e15e441855135",
+  "owner": "Terra",
+  "reviewer": "Sol",
+  "acceptor": "Orchestrator",
+  "review": "execution/GL05-expansion-sol-review.md",
+  "validation": "evidence/GL05/regional-expansion-20261117/qualification/validation-summary.json",
+  "active_map": "evidence/GL05/regional-expansion-20261117/research-network.md",
+  "original_GL05_acceptance_changed": false,
+  "criteria": {
+    "metadataAndLinksOnly": "accepted",
+    "sourceReceiptsAndOriginalPreservation": "accepted",
+    "closedSchemaAndNonAuthorizingClaims": "accepted",
+    "countsAndSeparateBroadCheckUnits": "accepted",
+    "originalObservationsAndGraphPreserved": "accepted",
+    "safeCitationTargetsPreserved": "accepted_after_repair",
+    "independentReviewAndCurrentSoftwareChecks": "accepted"
+  },
+  "counts": {
+    "accounts": 259,
+    "repositoryCandidateIndex": 3274,
+    "distinctRepositoryUrlLeads": 5534,
+    "distinctRepositoryUrlLeadsExcludingBroadChecks": 4411,
+    "nativeRepositories": 231,
+    "observations": 9275,
+    "cooperNodes": 637,
+    "cooperEdges": 820,
+    "drexelBroadRootChecks": 2197,
+    "villanovaExternalResources": 2
+  },
+  "newSourceRecords": 4472,
+  "source_details": {
+    "drexel": {
+      "repositoryRows": 435,
+      "accountContexts": 25,
+      "projectAssociations": 336,
+      "reportedProjectRoots": 310,
+      "studentAssociations": 147,
+      "broadRootChecks": 2197,
+      "originalFilesVerified": 274
+    },
+    "villanova": {
+      "accountUrls": 17,
+      "repositoryPaths": 66,
+      "externalCodeResources": 2
+    }
+  },
+  "source_claims": {
+    "distinctPeople": null,
+    "eligibleNewHealthWorks": null,
+    "newNativeRepositoryIds": 0,
+    "newlyDiscoveredWorks": null,
+    "countyCoverageComplete": false,
+    "remoteTargetsReverified": false,
+    "publicationAuthorized": false
+  },
+  "geography": {
+    "primary": "nine-county DVRPC",
+    "delawareConnections": "neighboring context; no primary-region expansion",
+    "institutionNamesDoNotLocateEveryPersonOrProject": true
+  },
+  "source_requests": 0,
+  "suppliedScriptsExecuted": false,
+  "articleBodyAbstractProfileOrContactReuse": false,
+  "publicReviewedWorks": 6,
+  "benchmarkCredit": 0,
+  "deploymentPerformed": false,
+  "releaseAccepted": false,
+  "followups": [
+    "GL06 compact front door and result projection",
+    "GL07 supported account/institution and creator journeys",
+    "GL08 finite account enumeration, reusable source qualification and lean review batches from this queue",
+    "GL09 actual geography and miss audits after GL08",
+    "GL10 real reader, browser, accessibility and performance validation",
+    "GL11 exact release-head operational readiness"
+  ],
+  "final_receipt_review": {
+    "reviewer": "Sol",
+    "disposition": "PASS after correction",
+    "finding": "The initial semantic receipt was captured before the follow-through document changed, leaving its prior-file-change list inconsistent with the source-commit preservation receipt.",
+    "resolution": "Reconciled both intentional paths and added explicit baseline, source commit and stage scope. All 21 source artifact receipts were independently checked against working bytes and f6b33a0 Git objects.",
+    "remainingBlockers": []
+  }
+}

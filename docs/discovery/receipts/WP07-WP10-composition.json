@@ -1,0 +1,32 @@
+{
+  "disposition": "accepted_local_read_only_composition",
+  "accepted_at": "2026-11-15T18:46:44.246107+00:00",
+  "packages": [
+    "WP07",
+    "WP10"
+  ],
+  "original_receipts_preserved": true,
+  "decision": "EX14",
+  "shared_outputs": {
+    "src/ingest/discovery/collection-contract.ts": "3032623e521689913af54cf5fb78d151ab974ca3f75dd51065433f5fed8c66ce",
+    "src/ingest/discovery/collection-store.ts": "9b64742715a50203d694f1f98c55ce5a41927caddf12595020e34571e4e46f96"
+  },
+  "change": "Add resolveChainPage(chainId,ordinal) using existing indexed collection rows and resolvePage integrity/removal checks. No migration, write capability or expired-plan revival.",
+  "validation": {
+    "all_enumerated_tests": 1296,
+    "wp07_store_and_collector_and_wp06_contracts": "pass in completed bounded groups",
+    "three_page_lookup_mapping_and_corruption": "pass in10Crossref tests",
+    "astra_shared_review": "pass",
+    "input_drift": []
+  },
+  "limits": [
+    "Local implementation acceptance only. No real provider enrollment, access/rights qualification, pacing or E04 route qualification.",
+    "Private leads and retained replay only; no public SourcePage/catalog admission or current employment/regional claim.",
+    "Restricted DOI, URL, JSON/field and48kB parser subset may reject legitimate provider metadata; typed failures/gaps remain explicit.",
+    "Conservative cursor expiry and accepted WP07 loop checks can stop early; no whole-query or regional recall guarantee.",
+    "WP03 actual trust, permitted evidence, independent humans, corpus/recall/sampling/history and accountable freeze remain absent; zero real cases and E01-E06 not_run.",
+    "Dependency audit remains release/CI blocker: four high,seven total; unchanged lockfile.",
+    "Native model and frozen handoff unchanged; no new native proof, operational validation or release claim.",
+    "No merge, remote migration, provider activation, service registration, publication or deployment."
+  ]
+}

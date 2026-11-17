@@ -1,0 +1,1282 @@
+{
+  "id": "TVD-ENGINEERING-HANDOFF-1.0",
+  "status": "planning_only",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "model_revision": "TVD-CONCEPT-0.4",
+  "model_sha256": "2db650c71d7a8703ff01b814e1db84629b33c9de99b702e2d90bad30235387a9",
+  "authority": "Metadata indexes delivery work; SysML remains authoritative for existing modeled semantics. ARCHITECTURE.md records proposed refinements, which WP02 must reconcile before implementation. No package is authorized to execute in this documentation task.",
+  "roles": {
+    "Sol": "gpt-6.1-sol",
+    "Terra": "gpt-6.1-terra",
+    "Astra": "gpt-6-astra",
+    "orchestrator": "integration, scope and engineering acceptance; editorial and operational authority are separate"
+  },
+  "work_packages": [
+    {
+      "id": "WP00",
+      "title": "Reconcile baseline and establish orchestration",
+      "phase": "I01",
+      "owner": "Astra",
+      "reviewer": "Sol",
+      "depends_on": [],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP00.md",
+      "scope_items": [
+        2,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        96,
+        98,
+        99
+      ],
+      "requirements": [
+        "R15",
+        "R17"
+      ],
+      "formal_contracts": [],
+      "acceptance_criteria": [
+        "AC-WP00-01",
+        "AC-WP00-02",
+        "AC-WP00-03",
+        "AC-WP00-04",
+        "AC-WP00-05"
+      ]
+    },
+    {
+      "id": "WP01",
+      "title": "Product, geography, relevance and business policy",
+      "phase": "I01",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP00"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP01.md",
+      "scope_items": [
+        1,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        12
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R18"
+      ],
+      "formal_contracts": [
+        "P31"
+      ],
+      "acceptance_criteria": [
+        "AC-WP01-01",
+        "AC-WP01-02",
+        "AC-WP01-03",
+        "AC-WP01-04",
+        "AC-WP01-05"
+      ]
+    },
+    {
+      "id": "WP02",
+      "title": "Model refinements and shared interface contracts",
+      "phase": "I01",
+      "owner": "Astra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP01"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP02.md",
+      "scope_items": [
+        2,
+        3,
+        5,
+        12,
+        13,
+        14,
+        15,
+        16,
+        20,
+        21,
+        31,
+        38,
+        59,
+        61,
+        83,
+        98,
+        99
+      ],
+      "requirements": [
+        "R01",
+        "R03",
+        "R05",
+        "R10",
+        "R11",
+        "R17"
+      ],
+      "formal_contracts": [
+        "P30"
+      ],
+      "acceptance_criteria": [
+        "AC-WP02-01",
+        "AC-WP02-02",
+        "AC-WP02-03",
+        "AC-WP02-04",
+        "AC-WP02-05"
+      ]
+    },
+    {
+      "id": "WP03",
+      "title": "Independent reference corpus and evaluation freeze",
+      "phase": "I01",
+      "owner": "Astra",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP02"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP03.md",
+      "scope_items": [
+        4,
+        11,
+        15,
+        87,
+        88,
+        89,
+        91
+      ],
+      "requirements": [
+        "R02",
+        "R17"
+      ],
+      "formal_contracts": [],
+      "acceptance_criteria": [
+        "AC-WP03-01",
+        "AC-WP03-02",
+        "AC-WP03-03",
+        "AC-WP03-04",
+        "AC-WP03-05"
+      ]
+    },
+    {
+      "id": "WP04",
+      "title": "Typed catalog, identities, dates and additive schema",
+      "phase": "I02",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP02"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP04.md",
+      "scope_items": [
+        5,
+        16,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        31,
+        36,
+        72
+      ],
+      "requirements": [
+        "R01",
+        "R03",
+        "R05"
+      ],
+      "formal_contracts": [
+        "P03",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P12",
+        "P19",
+        "P27"
+      ],
+      "acceptance_criteria": [
+        "AC-WP04-01",
+        "AC-WP04-02",
+        "AC-WP04-03",
+        "AC-WP04-04",
+        "AC-WP04-05",
+        "AC-WP04-06"
+      ]
+    },
+    {
+      "id": "WP05",
+      "title": "Evidence, provenance, claims and decision history",
+      "phase": "I02",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP04"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP05.md",
+      "scope_items": [
+        24,
+        29,
+        30,
+        32,
+        35,
+        53,
+        57,
+        81
+      ],
+      "requirements": [
+        "R04",
+        "R05",
+        "R09"
+      ],
+      "formal_contracts": [
+        "P09",
+        "P10",
+        "P32"
+      ],
+      "acceptance_criteria": [
+        "AC-WP05-01",
+        "AC-WP05-02",
+        "AC-WP05-03",
+        "AC-WP05-04",
+        "AC-WP05-05",
+        "AC-WP05-06"
+      ]
+    },
+    {
+      "id": "WP06",
+      "title": "Source registry, transport, credentials and budgets",
+      "phase": "I03",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP02",
+        "WP05"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP06.md",
+      "scope_items": [
+        29,
+        37,
+        38,
+        39,
+        40,
+        49,
+        81,
+        90
+      ],
+      "requirements": [
+        "R04",
+        "R06",
+        "R07",
+        "R16"
+      ],
+      "formal_contracts": [
+        "P22",
+        "P23",
+        "P32"
+      ],
+      "acceptance_criteria": [
+        "AC-WP06-01",
+        "AC-WP06-02",
+        "AC-WP06-03",
+        "AC-WP06-04",
+        "AC-WP06-05",
+        "AC-WP06-06"
+      ]
+    },
+    {
+      "id": "WP07",
+      "title": "Durable collection, checkpoints and fair scheduling",
+      "phase": "I03",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP07.md",
+      "scope_items": [
+        40,
+        41,
+        42,
+        81
+      ],
+      "requirements": [
+        "R07",
+        "R16"
+      ],
+      "formal_contracts": [
+        "P09",
+        "P22",
+        "P23",
+        "P24",
+        "P29"
+      ],
+      "acceptance_criteria": [
+        "AC-WP07-01",
+        "AC-WP07-02",
+        "AC-WP07-03",
+        "AC-WP07-04",
+        "AC-WP07-05",
+        "AC-WP07-06"
+      ]
+    },
+    {
+      "id": "WP08",
+      "title": "Independent GitHub acquisition",
+      "phase": "I03",
+      "owner": "Sol",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP08.md",
+      "scope_items": [
+        6,
+        43,
+        50,
+        90
+      ],
+      "requirements": [
+        "R06"
+      ],
+      "formal_contracts": [
+        "P05"
+      ],
+      "acceptance_criteria": [
+        "AC-WP08-01",
+        "AC-WP08-02",
+        "AC-WP08-03",
+        "AC-WP08-04",
+        "AC-WP08-05",
+        "AC-WP08-06"
+      ]
+    },
+    {
+      "id": "WP09",
+      "title": "Independent PubMed acquisition",
+      "phase": "I03",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP09.md",
+      "scope_items": [
+        6,
+        44,
+        50,
+        90
+      ],
+      "requirements": [
+        "R06"
+      ],
+      "formal_contracts": [
+        "P05"
+      ],
+      "acceptance_criteria": [
+        "AC-WP09-01",
+        "AC-WP09-02",
+        "AC-WP09-03",
+        "AC-WP09-04",
+        "AC-WP09-05",
+        "AC-WP09-06"
+      ]
+    },
+    {
+      "id": "WP10",
+      "title": "Independent Crossref acquisition",
+      "phase": "I03",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP10.md",
+      "scope_items": [
+        6,
+        45,
+        50,
+        90
+      ],
+      "requirements": [
+        "R06"
+      ],
+      "formal_contracts": [
+        "P05"
+      ],
+      "acceptance_criteria": [
+        "AC-WP10-01",
+        "AC-WP10-02",
+        "AC-WP10-03",
+        "AC-WP10-04",
+        "AC-WP10-05",
+        "AC-WP10-06"
+      ]
+    },
+    {
+      "id": "WP11",
+      "title": "Independent arXiv acquisition",
+      "phase": "I03",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP11.md",
+      "scope_items": [
+        6,
+        46,
+        50,
+        90
+      ],
+      "requirements": [
+        "R06"
+      ],
+      "formal_contracts": [
+        "P05"
+      ],
+      "acceptance_criteria": [
+        "AC-WP11-01",
+        "AC-WP11-02",
+        "AC-WP11-03",
+        "AC-WP11-04",
+        "AC-WP11-05",
+        "AC-WP11-06"
+      ]
+    },
+    {
+      "id": "WP12",
+      "title": "Qualified public forum acquisition",
+      "phase": "I03",
+      "owner": "Sol",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP12.md",
+      "scope_items": [
+        6,
+        47,
+        50,
+        90
+      ],
+      "requirements": [
+        "R06"
+      ],
+      "formal_contracts": [
+        "P05"
+      ],
+      "acceptance_criteria": [
+        "AC-WP12-01",
+        "AC-WP12-02",
+        "AC-WP12-03",
+        "AC-WP12-04",
+        "AC-WP12-05",
+        "AC-WP12-06"
+      ]
+    },
+    {
+      "id": "WP13",
+      "title": "Institutional, association and independent creator discovery",
+      "phase": "I03",
+      "owner": "Sol",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP06"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP13.md",
+      "scope_items": [
+        6,
+        48,
+        49,
+        50,
+        90
+      ],
+      "requirements": [
+        "R06"
+      ],
+      "formal_contracts": [
+        "P05"
+      ],
+      "acceptance_criteria": [
+        "AC-WP13-01",
+        "AC-WP13-02",
+        "AC-WP13-03",
+        "AC-WP13-04",
+        "AC-WP13-05",
+        "AC-WP13-06"
+      ]
+    },
+    {
+      "id": "WP14",
+      "title": "Deterministic admission and authenticated review API",
+      "phase": "I04",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP03",
+        "WP05",
+        "WP06"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP14.md",
+      "scope_items": [
+        3,
+        4,
+        25,
+        27,
+        30,
+        31,
+        52,
+        53,
+        54,
+        72
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R08"
+      ],
+      "formal_contracts": [
+        "P01",
+        "P02",
+        "P04",
+        "P07",
+        "P12",
+        "P13",
+        "P27",
+        "P31"
+      ],
+      "acceptance_criteria": [
+        "AC-WP14-01",
+        "AC-WP14-02",
+        "AC-WP14-03",
+        "AC-WP14-04",
+        "AC-WP14-05",
+        "AC-WP14-06"
+      ]
+    },
+    {
+      "id": "WP15",
+      "title": "Review workspace and suggestion or correction intake",
+      "phase": "I04",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP14",
+        "WP16"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP15.md",
+      "scope_items": [
+        54,
+        55,
+        56,
+        80
+      ],
+      "requirements": [
+        "R08",
+        "R12",
+        "R14"
+      ],
+      "formal_contracts": [
+        "P04"
+      ],
+      "acceptance_criteria": [
+        "AC-WP15-01",
+        "AC-WP15-02",
+        "AC-WP15-03",
+        "AC-WP15-04"
+      ]
+    },
+    {
+      "id": "WP16",
+      "title": "Atomic publication, projections and invalidation",
+      "phase": "I05",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP05",
+        "WP14"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP16.md",
+      "scope_items": [
+        32,
+        33,
+        34,
+        56,
+        57,
+        62,
+        63,
+        64,
+        85
+      ],
+      "requirements": [
+        "R09",
+        "R11",
+        "R14"
+      ],
+      "formal_contracts": [
+        "P11",
+        "P12",
+        "P14",
+        "P28"
+      ],
+      "acceptance_criteria": [
+        "AC-WP16-01",
+        "AC-WP16-02",
+        "AC-WP16-03",
+        "AC-WP16-04",
+        "AC-WP16-05",
+        "AC-WP16-06"
+      ]
+    },
+    {
+      "id": "WP17",
+      "title": "Exact discovery query, snapshots and public API",
+      "phase": "I05",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP16"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP17.md",
+      "scope_items": [
+        28,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        85
+      ],
+      "requirements": [
+        "R10",
+        "R11"
+      ],
+      "formal_contracts": [
+        "P03",
+        "P15",
+        "P16",
+        "P17",
+        "P18",
+        "P19",
+        "P20",
+        "P21",
+        "P28"
+      ],
+      "acceptance_criteria": [
+        "AC-WP17-01",
+        "AC-WP17-02",
+        "AC-WP17-03",
+        "AC-WP17-04",
+        "AC-WP17-05",
+        "AC-WP17-06",
+        "AC-WP17-07",
+        "AC-WP17-08"
+      ]
+    },
+    {
+      "id": "WP18",
+      "title": "Home, work, people, organization and project journeys",
+      "phase": "I06",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP17"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP18.md",
+      "scope_items": [
+        1,
+        5,
+        7,
+        26,
+        31,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75
+      ],
+      "requirements": [
+        "R03",
+        "R05",
+        "R10",
+        "R12"
+      ],
+      "formal_contracts": [
+        "P06",
+        "P13"
+      ],
+      "acceptance_criteria": [
+        "AC-WP18-01",
+        "AC-WP18-02",
+        "AC-WP18-03",
+        "AC-WP18-04",
+        "AC-WP18-05"
+      ]
+    },
+    {
+      "id": "WP19",
+      "title": "Worker routing, crawlers, metadata and legacy compatibility",
+      "phase": "I06",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP17",
+        "WP18"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP19.md",
+      "scope_items": [
+        10,
+        34,
+        65,
+        68,
+        76,
+        79
+      ],
+      "requirements": [
+        "R12",
+        "R15"
+      ],
+      "formal_contracts": [
+        "P14"
+      ],
+      "acceptance_criteria": [
+        "AC-WP19-01",
+        "AC-WP19-02",
+        "AC-WP19-03",
+        "AC-WP19-04"
+      ]
+    },
+    {
+      "id": "WP20",
+      "title": "Accessibility, performance and interaction qualification",
+      "phase": "I06",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP15",
+        "WP18",
+        "WP19"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP20.md",
+      "scope_items": [
+        21,
+        69,
+        75,
+        77,
+        78,
+        91
+      ],
+      "requirements": [
+        "R12",
+        "R13"
+      ],
+      "formal_contracts": [],
+      "acceptance_criteria": [
+        "AC-WP20-01",
+        "AC-WP20-02",
+        "AC-WP20-03",
+        "AC-WP20-04"
+      ]
+    },
+    {
+      "id": "WP21",
+      "title": "Refresh, coverage, corrections and operator controls",
+      "phase": "I07",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP07",
+        "WP14",
+        "WP15",
+        "WP16",
+        "WP17"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP21.md",
+      "scope_items": [
+        25,
+        35,
+        51,
+        55,
+        56,
+        57,
+        63,
+        74,
+        81,
+        82
+      ],
+      "requirements": [
+        "R07",
+        "R11",
+        "R14",
+        "R16"
+      ],
+      "formal_contracts": [
+        "P03",
+        "P10",
+        "P25",
+        "P26",
+        "P28",
+        "P29"
+      ],
+      "acceptance_criteria": [
+        "AC-WP21-01",
+        "AC-WP21-02",
+        "AC-WP21-03",
+        "AC-WP21-04",
+        "AC-WP21-05"
+      ]
+    },
+    {
+      "id": "WP22",
+      "title": "Authorization, privacy and hostile input qualification",
+      "phase": "I08",
+      "owner": "Astra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP06",
+        "WP14",
+        "WP15",
+        "WP17",
+        "WP19",
+        "WP21"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP22.md",
+      "scope_items": [
+        34,
+        35,
+        39,
+        53,
+        65,
+        80
+      ],
+      "requirements": [
+        "R08",
+        "R09",
+        "R16"
+      ],
+      "formal_contracts": [
+        "P04",
+        "P14"
+      ],
+      "acceptance_criteria": [
+        "AC-WP22-01",
+        "AC-WP22-02",
+        "AC-WP22-03",
+        "AC-WP22-04",
+        "AC-WP22-05",
+        "AC-WP22-06"
+      ]
+    },
+    {
+      "id": "WP23",
+      "title": "Formal correspondence, integration and actual CI coverage",
+      "phase": "I08",
+      "owner": "Astra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP02",
+        "WP04",
+        "WP05",
+        "WP06",
+        "WP07",
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP14",
+        "WP15",
+        "WP16",
+        "WP17",
+        "WP18",
+        "WP19",
+        "WP20",
+        "WP21",
+        "WP22",
+        "WP30"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP23.md",
+      "scope_items": [
+        13,
+        15,
+        18,
+        19,
+        20,
+        21,
+        22,
+        33,
+        42,
+        64,
+        83,
+        84,
+        85,
+        86,
+        92,
+        96,
+        99
+      ],
+      "requirements": [
+        "R04",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R17"
+      ],
+      "formal_contracts": [
+        "P29",
+        "P30"
+      ],
+      "acceptance_criteria": [
+        "AC-WP23-01",
+        "AC-WP23-02",
+        "AC-WP23-03",
+        "AC-WP23-04",
+        "AC-WP23-05"
+      ]
+    },
+    {
+      "id": "WP24",
+      "title": "Whole-goal empirical acceptance E01 to E06",
+      "phase": "I08",
+      "owner": "Astra",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP03",
+        "WP08",
+        "WP09",
+        "WP10",
+        "WP11",
+        "WP12",
+        "WP13",
+        "WP20",
+        "WP21",
+        "WP22",
+        "WP23"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP24.md",
+      "scope_items": [
+        1,
+        6,
+        7,
+        11,
+        13,
+        37,
+        47,
+        50,
+        51,
+        61,
+        70,
+        71,
+        73,
+        88,
+        89,
+        90,
+        91,
+        92,
+        99,
+        101
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R06",
+        "R10",
+        "R12",
+        "R13",
+        "R14",
+        "R17"
+      ],
+      "formal_contracts": [
+        "P25",
+        "P26"
+      ],
+      "acceptance_criteria": [
+        "AC-WP24-01",
+        "AC-WP24-02",
+        "AC-WP24-03",
+        "AC-WP24-04",
+        "AC-WP24-05",
+        "AC-WP24-06"
+      ],
+      "required_exit_disposition": "preproduction_qualified; postdeployment readback belongs to WP27"
+    },
+    {
+      "id": "WP25",
+      "title": "Operating pilot, capacity and business sustainability",
+      "phase": "I08",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP21",
+        "WP24"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP25.md",
+      "scope_items": [
+        8,
+        9,
+        11,
+        55,
+        78,
+        93,
+        101
+      ],
+      "requirements": [
+        "R18"
+      ],
+      "formal_contracts": [],
+      "acceptance_criteria": [
+        "AC-WP25-01",
+        "AC-WP25-02",
+        "AC-WP25-03",
+        "AC-WP25-04",
+        "AC-WP25-05"
+      ],
+      "required_exit_disposition": "release_ready; completed negative study is not an accepted release prerequisite"
+    },
+    {
+      "id": "WP26",
+      "title": "Migration, restart, restore and rollback rehearsal",
+      "phase": "I09",
+      "owner": "Sol",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP04",
+        "WP16",
+        "WP19",
+        "WP21",
+        "WP22",
+        "WP23"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP26.md",
+      "scope_items": [
+        36,
+        79,
+        82,
+        85,
+        94,
+        101
+      ],
+      "requirements": [
+        "R15",
+        "R16"
+      ],
+      "formal_contracts": [],
+      "acceptance_criteria": [
+        "AC-WP26-01",
+        "AC-WP26-02",
+        "AC-WP26-03",
+        "AC-WP26-04",
+        "AC-WP26-05",
+        "AC-WP26-06",
+        "AC-WP26-07"
+      ]
+    },
+    {
+      "id": "WP27",
+      "title": "Exact-candidate release and public operational acceptance",
+      "phase": "I09",
+      "owner": "Astra",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP24",
+        "WP25",
+        "WP26"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP27.md",
+      "scope_items": [
+        18,
+        82,
+        92,
+        95,
+        96,
+        101
+      ],
+      "requirements": [
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "formal_contracts": [],
+      "acceptance_criteria": [
+        "AC-WP27-01",
+        "AC-WP27-02",
+        "AC-WP27-03",
+        "AC-WP27-04",
+        "AC-WP27-05",
+        "AC-WP27-06"
+      ],
+      "required_exit_disposition": "operationally_accepted after exact-candidate public readback"
+    },
+    {
+      "id": "WP28",
+      "title": "Conditional legacy retirement and consumer transition",
+      "phase": "AFTER",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "WP27"
+      ],
+      "status": "deferred",
+      "required_for_core_release": false,
+      "document": "work-packages/WP28.md",
+      "scope_items": [
+        10,
+        79
+      ],
+      "requirements": [
+        "R15",
+        "R18"
+      ],
+      "formal_contracts": [],
+      "acceptance_criteria": [
+        "AC-WP28-01",
+        "AC-WP28-02",
+        "AC-WP28-03",
+        "AC-WP28-04"
+      ]
+    },
+    {
+      "id": "WP29",
+      "title": "Deferred expansion and funding experiments",
+      "phase": "AFTER",
+      "owner": "Terra",
+      "reviewer": "Astra",
+      "depends_on": [
+        "WP25",
+        "WP27"
+      ],
+      "status": "deferred",
+      "required_for_core_release": false,
+      "document": "work-packages/WP29.md",
+      "scope_items": [
+        8,
+        49,
+        100
+      ],
+      "requirements": [
+        "R18"
+      ],
+      "formal_contracts": [],
+      "acceptance_criteria": [
+        "AC-WP29-01",
+        "AC-WP29-02",
+        "AC-WP29-03",
+        "AC-WP29-04"
+      ]
+    },
+    {
+      "id": "WP30",
+      "title": "Early complete cross-source vertical slice",
+      "phase": "SLICE",
+      "owner": "Astra",
+      "reviewer": "Terra",
+      "depends_on": [
+        "WP08",
+        "WP09",
+        "WP13",
+        "WP15",
+        "WP17",
+        "WP18"
+      ],
+      "status": "not_started",
+      "required_for_core_release": true,
+      "document": "work-packages/WP30.md",
+      "scope_items": [
+        97
+      ],
+      "requirements": [
+        "R03",
+        "R12"
+      ],
+      "formal_contracts": [
+        "P06",
+        "P30"
+      ],
+      "acceptance_criteria": [
+        "AC-WP30-01",
+        "AC-WP30-02",
+        "AC-WP30-03",
+        "AC-WP30-04",
+        "AC-WP30-05",
+        "AC-WP30-06"
+      ]
+    }
+  ]
+}

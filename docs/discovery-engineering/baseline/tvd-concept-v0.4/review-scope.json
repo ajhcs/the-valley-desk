@@ -1,0 +1,528 @@
+{
+  "version": "concept-review-1.0",
+  "project": {
+    "id": "TVD_COMPLETE_DISCOVERY",
+    "name": "Philadelphia health-tech discovery",
+    "question": "Can regional people and work be discovered, qualified, connected, found, sorted and understood across independent sources?",
+    "boundary": "Nine-county DVRPC health-tech discovery, explicit mathematical contracts and an implementation plan. No application or operational change.",
+    "basis": "DIRECTION"
+  },
+  "sources": {
+    "DIRECTION": "d37b58f7d2bc70baeed077b86923613ee78eeb54b51f41155fc40c60ed1f7039",
+    "DESIGN": "7ad2c26d59d0bf458480e16b425e35ca14cac53a0fa89639c3c8d52f111d7de0"
+  },
+  "topics": {
+    "focus": {
+      "applicability": "included",
+      "rationale": "Retain health-tech, health-informatics and health-AI scope, independent source paths and deferred patents."
+    },
+    "identity": {
+      "applicability": "included",
+      "rationale": "Discover regional people and organizations; retain project, artifact and account identities and dated regional roles."
+    },
+    "evidence": {
+      "applicability": "included",
+      "rationale": "Retain evidence capture, eligibility, review and typed public delivery."
+    },
+    "support": {
+      "applicability": "included",
+      "rationale": "Retain source registry and operator review roles without assigning a new external party."
+    },
+    "lifecycle": {
+      "applicability": "included",
+      "rationale": "Retain refresh failures, ambiguity and legacy compatibility during transition."
+    },
+    "evaluation": {
+      "applicability": "included",
+      "rationale": "Plan checks for repository discovery, links, attribution, refresh and compatibility."
+    },
+    "physical_facilities": {
+      "applicability": "excluded",
+      "rationale": "This increment proposes no physical equipment, facility or host change."
+    },
+    "patent_implementation": {
+      "applicability": "excluded",
+      "rationale": "The user deferred patent collection, pages and release obligations."
+    },
+    "discovery": {
+      "applicability": "included",
+      "rationale": "Independent code, paper, preprint, forum and institutional discovery; bidirectional creator/work exploration."
+    },
+    "presentation": {
+      "applicability": "included",
+      "rationale": "Explicit find, sort and display functions with stable snapshots and supported user-facing claims."
+    },
+    "proof": {
+      "applicability": "included",
+      "rationale": "Retain formal obligations and separate empirical evidence requirements."
+    }
+  },
+  "expectations": {
+    "N_DISCOVER": {
+      "topic": "focus",
+      "kind": "element",
+      "element": "N_DISCOVER",
+      "element_kind": "need",
+      "native_name": "TVD_Concept::discoverLocalWork"
+    },
+    "N_TRACE": {
+      "topic": "identity",
+      "kind": "element",
+      "element": "N_TRACE",
+      "element_kind": "need",
+      "native_name": "TVD_Concept::traceCreatorsAndEvidence"
+    },
+    "SYS_TVD": {
+      "topic": "focus",
+      "kind": "element",
+      "element": "SYS_TVD",
+      "element_kind": "system",
+      "native_name": "TVD_Concept::tvd"
+    },
+    "VIEW_PORTAL": {
+      "topic": "focus",
+      "kind": "element",
+      "element": "VIEW_PORTAL",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::tvd::portal"
+    },
+    "IDX_ENTITY": {
+      "topic": "identity",
+      "kind": "element",
+      "element": "IDX_ENTITY",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::tvd::creatorIndex"
+    },
+    "REC_OCCURRENCE": {
+      "topic": "identity",
+      "kind": "element",
+      "element": "REC_OCCURRENCE",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::tvd::occurrenceStore"
+    },
+    "C_CATALOG": {
+      "topic": "identity",
+      "kind": "element",
+      "element": "C_CATALOG",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::tvd::workCatalog"
+    },
+    "C_REGISTRY": {
+      "topic": "support",
+      "kind": "element",
+      "element": "C_REGISTRY",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::tvd::sourceRegistry"
+    },
+    "C_EVIDENCE": {
+      "topic": "evidence",
+      "kind": "element",
+      "element": "C_EVIDENCE",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::tvd::evidenceStore"
+    },
+    "C_REVIEW": {
+      "topic": "evidence",
+      "kind": "element",
+      "element": "C_REVIEW",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::tvd::reviewQueue"
+    },
+    "A_OPERATOR": {
+      "topic": "support",
+      "kind": "element",
+      "element": "A_OPERATOR",
+      "element_kind": "actor",
+      "native_name": "TVD_Concept::operator"
+    },
+    "F_DISCOVER": {
+      "topic": "focus",
+      "kind": "element",
+      "element": "F_DISCOVER",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::discoverRegionalWork"
+    },
+    "F_CAPTURE": {
+      "topic": "evidence",
+      "kind": "element",
+      "element": "F_CAPTURE",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::captureEvidence"
+    },
+    "F_QUALIFY": {
+      "topic": "evidence",
+      "kind": "element",
+      "element": "F_QUALIFY",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::qualifyWork"
+    },
+    "F_RESOLVE": {
+      "topic": "identity",
+      "kind": "element",
+      "element": "F_RESOLVE",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::resolveCreators"
+    },
+    "F_LINK": {
+      "topic": "identity",
+      "kind": "element",
+      "element": "F_LINK",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::linkPublications"
+    },
+    "F_REVIEW": {
+      "topic": "evidence",
+      "kind": "element",
+      "element": "F_REVIEW",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::reviewCandidates"
+    },
+    "F_PUBLISH": {
+      "topic": "evidence",
+      "kind": "element",
+      "element": "F_PUBLISH",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::publishCatalog"
+    },
+    "F_REFRESH": {
+      "topic": "lifecycle",
+      "kind": "element",
+      "element": "F_REFRESH",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::refreshRecords"
+    },
+    "F_ARCHIVE": {
+      "topic": "lifecycle",
+      "kind": "element",
+      "element": "F_ARCHIVE",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::preserveLegacyAccess"
+    },
+    "T_SCOPE": {
+      "topic": "focus",
+      "kind": "relation",
+      "relation_kind": "addresses",
+      "from": "F_QUALIFY",
+      "to": "N_DISCOVER"
+    },
+    "T_TRACE": {
+      "topic": "identity",
+      "kind": "relation",
+      "relation_kind": "addresses",
+      "from": "F_LINK",
+      "to": "N_TRACE"
+    },
+    "T_CAPTURE": {
+      "topic": "evidence",
+      "kind": "relation",
+      "relation_kind": "allocated_to",
+      "from": "F_CAPTURE",
+      "to": "C_EVIDENCE"
+    },
+    "T_REVIEW": {
+      "topic": "evidence",
+      "kind": "relation",
+      "relation_kind": "allocated_to",
+      "from": "F_REVIEW",
+      "to": "C_REVIEW"
+    },
+    "T_SUPPORT": {
+      "topic": "support",
+      "kind": "relation",
+      "relation_kind": "participates_in",
+      "from": "A_OPERATOR",
+      "to": "S_AMBIGUOUS"
+    },
+    "T_DISCOVER": {
+      "topic": "support",
+      "kind": "relation",
+      "relation_kind": "allocated_to",
+      "from": "F_DISCOVER",
+      "to": "C_REGISTRY"
+    },
+    "W_FIRST": {
+      "topic": "lifecycle",
+      "kind": "walk",
+      "scenario": "S_FIRST",
+      "functions": [
+        "F_DISCOVER",
+        "F_CAPTURE",
+        "F_QUALIFY",
+        "F_RESOLVE",
+        "F_REVIEW",
+        "F_PUBLISH",
+        "F_BROWSE"
+      ]
+    },
+    "W_LINK": {
+      "topic": "lifecycle",
+      "kind": "walk",
+      "scenario": "S_PAPER",
+      "functions": [
+        "F_CAPTURE",
+        "F_LINK",
+        "F_REVIEW",
+        "F_PUBLISH"
+      ]
+    },
+    "W_HOLD": {
+      "topic": "lifecycle",
+      "kind": "walk",
+      "scenario": "S_AMBIGUOUS",
+      "functions": [
+        "F_CAPTURE",
+        "F_QUALIFY",
+        "F_RESOLVE",
+        "F_REVIEW"
+      ]
+    },
+    "W_REFRESH": {
+      "topic": "lifecycle",
+      "kind": "walk",
+      "scenario": "S_REFRESH",
+      "functions": [
+        "F_REFRESH",
+        "F_CAPTURE",
+        "F_REVIEW",
+        "F_PUBLISH"
+      ]
+    },
+    "W_LEGACY": {
+      "topic": "lifecycle",
+      "kind": "walk",
+      "scenario": "S_LEGACY",
+      "functions": [
+        "F_ARCHIVE",
+        "F_BROWSE"
+      ]
+    },
+    "E_DISCOVERY": {
+      "topic": "evaluation",
+      "kind": "evidence_plan",
+      "evidence": "E_DISCOVERY",
+      "target": "F_DISCOVER",
+      "purpose": "verification"
+    },
+    "E_ATTRIBUTION": {
+      "topic": "evaluation",
+      "kind": "evidence_plan",
+      "evidence": "E_ATTRIBUTION",
+      "target": "F_RESOLVE",
+      "purpose": "verification"
+    },
+    "E_LINKS": {
+      "topic": "evaluation",
+      "kind": "evidence_plan",
+      "evidence": "E_LINKS",
+      "target": "F_LINK",
+      "purpose": "verification"
+    },
+    "E_REFRESH": {
+      "topic": "evaluation",
+      "kind": "evidence_plan",
+      "evidence": "E_REFRESH",
+      "target": "F_REFRESH",
+      "purpose": "verification"
+    },
+    "E_COMPAT": {
+      "topic": "evaluation",
+      "kind": "evidence_plan",
+      "evidence": "E_COMPAT",
+      "target": "F_ARCHIVE",
+      "purpose": "verification"
+    },
+    "E_UX": {
+      "topic": "evaluation",
+      "kind": "evidence_plan",
+      "evidence": "E_UX",
+      "target": "F_BROWSE",
+      "purpose": "validation"
+    },
+    "R_REVIEWER": {
+      "topic": "support",
+      "kind": "element",
+      "element": "R_REVIEWER",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::operator::reviewRole"
+    },
+    "T_REVIEW_ROLE": {
+      "topic": "support",
+      "kind": "relation",
+      "relation_kind": "allocated_to",
+      "from": "F_REVIEW",
+      "to": "R_REVIEWER"
+    },
+    "F_FIND_PEOPLE": {
+      "topic": "identity",
+      "kind": "element",
+      "element": "F_FIND_PEOPLE",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::discoverRegionalCreators"
+    },
+    "F_RELEVANCE": {
+      "topic": "evidence",
+      "kind": "element",
+      "element": "F_RELEVANCE",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::assessHealthTechRelevance"
+    },
+    "F_GROUP": {
+      "topic": "identity",
+      "kind": "element",
+      "element": "F_GROUP",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::connectProjects"
+    },
+    "F_SEARCH": {
+      "topic": "presentation",
+      "kind": "element",
+      "element": "F_SEARCH",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::findWork"
+    },
+    "F_SORT": {
+      "topic": "presentation",
+      "kind": "element",
+      "element": "F_SORT",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::sortResults"
+    },
+    "F_DISPLAY": {
+      "topic": "presentation",
+      "kind": "element",
+      "element": "F_DISPLAY",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::presentWork"
+    },
+    "F_COVERAGE": {
+      "topic": "discovery",
+      "kind": "element",
+      "element": "F_COVERAGE",
+      "element_kind": "function",
+      "native_name": "TVD_Concept::measureSourceCoverage"
+    },
+    "X_GITHUB": {
+      "topic": "discovery",
+      "kind": "element",
+      "element": "X_GITHUB",
+      "element_kind": "system",
+      "native_name": "TVD_Concept::github"
+    },
+    "X_PUBLICATIONS": {
+      "topic": "discovery",
+      "kind": "element",
+      "element": "X_PUBLICATIONS",
+      "element_kind": "system",
+      "native_name": "TVD_Concept::publicationProviders"
+    },
+    "X_COMMUNITIES": {
+      "topic": "discovery",
+      "kind": "element",
+      "element": "X_COMMUNITIES",
+      "element_kind": "system",
+      "native_name": "TVD_Concept::communities"
+    },
+    "X_INSTITUTIONAL": {
+      "topic": "discovery",
+      "kind": "element",
+      "element": "X_INSTITUTIONAL",
+      "element_kind": "system",
+      "native_name": "TVD_Concept::institutionalSources"
+    },
+    "C_SEARCH": {
+      "topic": "presentation",
+      "kind": "element",
+      "element": "C_SEARCH",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::tvd::searchIndex"
+    },
+    "C_COVERAGE": {
+      "topic": "discovery",
+      "kind": "element",
+      "element": "C_COVERAGE",
+      "element_kind": "element",
+      "native_name": "TVD_Concept::tvd::coverageRegister"
+    },
+    "R_MULTI_SOURCE": {
+      "topic": "discovery",
+      "kind": "element",
+      "element": "R_MULTI_SOURCE",
+      "element_kind": "requirement",
+      "native_name": "TVD_Concept::IndependentDiscoverySources"
+    },
+    "R_QUERY": {
+      "topic": "presentation",
+      "kind": "element",
+      "element": "R_QUERY",
+      "element_kind": "requirement",
+      "native_name": "TVD_Concept::DeterministicQueryDelivery"
+    },
+    "R_COVERAGE": {
+      "topic": "proof",
+      "kind": "element",
+      "element": "R_COVERAGE",
+      "element_kind": "requirement",
+      "native_name": "TVD_Concept::ScopedCoverageClaims"
+    },
+    "R_PROJECTS": {
+      "topic": "identity",
+      "kind": "element",
+      "element": "R_PROJECTS",
+      "element_kind": "requirement",
+      "native_name": "TVD_Concept::SupportedProjectGrouping"
+    },
+    "W_WHO": {
+      "topic": "discovery",
+      "kind": "walk",
+      "scenario": "S_FIRST",
+      "functions": [
+        "F_FIND_PEOPLE",
+        "F_RESOLVE",
+        "F_QUALIFY"
+      ]
+    },
+    "W_INDEPENDENT": {
+      "topic": "discovery",
+      "kind": "walk",
+      "scenario": "S_INDEPENDENT",
+      "functions": [
+        "F_DISCOVER",
+        "F_CAPTURE",
+        "F_RELEVANCE",
+        "F_QUALIFY",
+        "F_REVIEW",
+        "F_PUBLISH",
+        "F_DISPLAY"
+      ]
+    },
+    "W_FORUM": {
+      "topic": "discovery",
+      "kind": "walk",
+      "scenario": "S_FORUM",
+      "functions": [
+        "F_DISCOVER",
+        "F_CAPTURE",
+        "F_RESOLVE",
+        "F_RELEVANCE",
+        "F_QUALIFY",
+        "F_REVIEW",
+        "F_DISPLAY"
+      ]
+    },
+    "W_PRESENT": {
+      "topic": "presentation",
+      "kind": "walk",
+      "scenario": "S_FIRST",
+      "functions": [
+        "F_SEARCH",
+        "F_SORT",
+        "F_DISPLAY",
+        "F_COVERAGE"
+      ]
+    }
+  },
+  "allocation_bounds": {
+    "functions": {},
+    "resources": {}
+  }
+}

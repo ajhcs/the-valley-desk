@@ -1,3 +1,4 @@
+import { legacyUtcDatetime, legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import { ContentItem } from "../content/schema";
 import { evidenceHash } from "./policy-pdf";
@@ -18,9 +19,9 @@ export const POLICY_GROUPS = ["federal", "PA", "NJ", "DE", "local"] as const;
 const Digest = z.string().regex(/^[a-f0-9]{64}$/);
 const Id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$/);
 const Label = z.string().trim().min(1).max(500);
-const Stamp = z.string().datetime();
+const Stamp = legacyUtcDatetime();
 const NullableLabel = Label.nullable();
-const SourceUrl = z.string().url().refine((value) => {
+const SourceUrl = legacyUrl().refine((value) => {
   try {
     const url = new URL(value);
     return url.protocol === "https:" && !url.username && !url.password;
@@ -60,7 +61,7 @@ export type EvaluationConfiguration = z.infer<typeof EvaluationConfiguration>;
 
 const Expected = z.object({
   disposition: z.enum(["review", "hold", "drop"]),
-  identity: z.record(Label).refine((value) => Object.keys(value).length <= 12),
+  identity: z.record(z.string(), Label).refine((value) => Object.keys(value).length <= 12),
   dates: z.array(z.discriminatedUnion("precision", [
     z.object({ field: Label, precision: z.literal("instant"), value: Stamp }).strict(),
     z.object({ field: Label, precision: z.literal("day"), value: z.string().date() }).strict(),

@@ -1,0 +1,33 @@
+{
+  "sourceThreadId": "01a1e6ca-3fad-7261-a42e-96fb0216e57b",
+  "inputSha256": {
+    "accounts.csv": "1ff9c89dfc49deda8f9d9a957cf8c904c8bf096aeb0369b4aa8e98d90cb74e45",
+    "public-repositories.csv": "1c37b5ff6b327ce7024aa64f4271d682d2aa8bc66f0c6c6c7620f1ab07ee0d2f",
+    "researcher-projects.csv": "e8b6bf506cd71608cfc1aa4eda596bc1b5742b3890c8b130e211c410583c20a0",
+    "project-link-checks.csv": "2975f14ca5013419b7183e9bf3ccf050cab0a396561340c799829b62d6357ccd",
+    "snapshot-status.csv": "a4a2265ed183b323de9c8d6375ba1bf09be41e8d982a2cfaa6c3e5cde8674a57",
+    "excluded-leads.csv": "31c9679d700de3a0e7c08a3105d95db01286989214eab3cad022c49887e44fc3",
+    "round2-accounts-added.csv": "0756804379e9429adbc890f827dd856b7f18c02f2fa4c39010c0a5ee5ac34542",
+    "round2-account-status.csv": "3aff54d6e8cbd80296c9ba90b8da113a1b9108c266ed941f3cc2da0c9f6f2216",
+    "round2-projects-added.csv": "fca9a546c96929aa09edc86fa895b2389cf484715f3e93afdbd34776baa8c559",
+    "round2-project-evidence.csv": "6fa5550e1b8c6372a958eef29ce3c65b976b296cf0654bccef23ec4aba5d83ef",
+    "round2-project-link-checks.csv": "82d1eec16d75733d4dfcdfb1f761d426a81ced0e4313a7b0de0356d282001920",
+    "round2-fork-parent-checks.csv": "9d94b73386fd0ba1711cda16b79f3e0c363610b5e05c9b23a712e1107d6ff2d5",
+    "README.md": "414c282c229110bfcea5f97af4fb151c748b35f9d56fd7ba869f9bdb20a111b0"
+  },
+  "sourceArchiveSha256": "65d95e73f2c31229dd9c28c8d91eb47212d4c17ba09580f03fa96227eb33b1e9",
+  "archiveChecksumFileSha256": "425e973871ad5a7bae9c078956f58444749161e8e87e6249ba3d8a99286da309",
+  "sourceArchiveChecksumVerified": true,
+  "sourceRoot": "/workspace/worktrees/builderbob/thevalleydesk/work/penn-biomedical-github-inventory-20261117",
+  "publicationAuthorized": false,
+  "identity": "URL only, not native GitHub IDs",
+  "networkRequests": 0,
+  "sourceScriptsExecuted": false,
+  "counts": {
+    "accounts": 86,
+    "repositoryObservations": 2516,
+    "projectPathObservations": 170,
+    "statusObservations": 412,
+    "supplementalEvidenceRows": 239
+  }
+}

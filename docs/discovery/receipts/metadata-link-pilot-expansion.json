@@ -1,0 +1,320 @@
+{
+  "id": "TVD-METADATA-LINK-PILOT-EXPANSION-1",
+  "decision": "EX30",
+  "baseline_commit": "29d55f325625bca1316e53c5c2a7e4200dd7431c",
+  "recorded_at": "2026-11-16T16:48:20.033457+00:00",
+  "reviewed_code_commit": "84bb755e48b9985707e8ccfa5b9241d11b93d8bc",
+  "disposition": "four_new_pairs_locally_qualified_no_public_activation",
+  "amended_pilot_packages_locally_accepted": [
+    "MP01",
+    "MP02",
+    "MP03"
+  ],
+  "public_release_MP04_accepted": false,
+  "original_package_ledger_unchanged": true,
+  "scope": {
+    "records": 22,
+    "repositories": 10,
+    "publications": 10,
+    "organization_background_records": 2,
+    "native_source_bodies": 22,
+    "directed_repository_publication_citations": 6,
+    "projected_authorship_entries_not_distinct_people": 289,
+    "non_null_source_descriptions": 8,
+    "native_selected_field_pointers": 449,
+    "derived_observation_refs": 18,
+    "new_source_acquisitions": 8,
+    "new_retained_native_bodies": 8,
+    "new_repository_publication_pairs": 4,
+    "new_connector_citation_files": 4,
+    "new_human_reviewers": 0,
+    "new_benchmark_cases": 0,
+    "full_text_included": false,
+    "live_collection": false,
+    "D1_writes": false,
+    "feature_flag": "DISCOVERY_PILOT_ENABLED",
+    "default_enabled": false,
+    "API_schema_version": "discovery-pilot-v2",
+    "regional_meaning": "Dated author/Philadelphia selection evidence; no current employment, repository work-location or person identity inference; three new Crossref affiliation arrays remain empty."
+  },
+  "validation": {
+    "commands": [
+      {
+        "name": "tests",
+        "argv": [
+          "npm",
+          "test"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "pdf",
+        "argv": [
+          "npm",
+          "run",
+          "test:policy-pdf"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build",
+        "argv": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "smoke",
+        "argv": [
+          "npm",
+          "run",
+          "ops:smoke"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "audit",
+        "argv": [
+          "npm",
+          "audit",
+          "--audit-level=high",
+          "--json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "secret",
+        "argv": [
+          "npm",
+          "run",
+          "secret-scan"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "suite_counts": [
+      939,
+      146,
+      357
+    ],
+    "executed_tests": 1442,
+    "failures": 0,
+    "skips": 0,
+    "cancellations": 0,
+    "PDF_regressions": 7,
+    "audit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "focused_pilot_and_routing_tests": 35,
+    "Astra_independent_projection_groups": 8,
+    "Astra_browser_assertions": 50,
+    "root_browser_assertions": 48,
+    "root_postbuild_Worker_bundle_groups": 3,
+    "Terra_static_comparison_checks": 768,
+    "counts_overlap": true,
+    "scope": "Native-byte factual projection, separately observed source citations and local Node/Worker/browser verification. No benchmark accuracy, regional completeness, current employment, clinical validity or production qualification."
+  },
+  "runtime_input_manifest": {
+    "path": ".discovery-work/pilot-expansion/root/final/input-sha256.json",
+    "sha256": "73cc2b69a74ba12bb8eb12aacd6df7ba03744cc0cfa7215456cb6f5eb9ced19f",
+    "count": 630,
+    "drift": []
+  },
+  "runtime_outputs": {
+    "fixtures/discovery-pilot-selection.json": "7ee18850cfd44d4a3023aad7b1ebf8f2e15ff233ea8ada4c529630b2470270cc",
+    "src/content/discovery-pilot-catalog.json": "d06f2340276625b412db38c632db422b98429baeedd74309ebc1ce0b5e8ec1ad",
+    "src/ui/discovery/DiscoveryPilotPage.tsx": "58565119028b34a4fc8b54bd539418ae666d471004140d50242d48b3a87cb473",
+    "src/ui/discovery/pilot-presentation.ts": "defb84cfdec70b926a526074991375a5b5313cfb34a5ab18d47b893d72202b8f",
+    "test/discovery-pilot-routing.test.ts": "e9fd15ff79c57404ddd034b6836945f3a91f48206158a21ac7808a37dab9125e",
+    "test/discovery-pilot.test.ts": "615119747ae3116f147bdf86adb937d8e2755a7f8102b33516fc1cf11ce18d8c"
+  },
+  "new_source_material_outputs": {
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/capture-driver.py": "2ac2dae11497ecf50c99508d8df95c39aedc271159e2d65707179aa3609e69cd",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/capture-summary.json": "0953f42d361940df8417bfb4f3219f845107f00e795e1421265f8744000133a6",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/capture-used.py": "1e4f4d30aea24ee71ca980e5232e0d1a2404b458cfe6a9a0f4af1cf3fc542e76",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/connector-observations.json": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-aslprep/body.json": "43129723e1e8cf08767afcafdd135a8966f2ab822e2f088a2b94b29dc483fc57",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-aslprep/observation.json": "1f9d97b707cdea0f9624e861beb82e67282db122c18eff6657f42d518f293f73",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-gandlf/body.json": "cbb844b117bbbb82f8919656e98963415166c82e5082a884500fd01ca09de26f",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-gandlf/observation.json": "a85d2767de06985c4c2d71751c7a15f81a1d7a9ff40b574a2cfa812b52cc7adf",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-historeg/body.json": "0d596c2e75f0bec984945876a8d653f1fddfbc3d599d96f039106f886e0fc39f",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-historeg/observation.json": "ff57c0c436828721b98f13e4872ba65ed98fe94e892400b15db1a094fc98edc4",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-modelarray/body.json": "4a70e90e49b1782c67f20182a68126b697fce4783ef4ca7542df852966e88699",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-modelarray/observation.json": "c3574345dd994060c6a13cad703295045cd913baf269331bebf4ba2c64bfe11e",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-aslprep/body.json": "4d177083b862c4003c92b5b452669f0546b18b563fd3aec69c38e7eaec9e9e85",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-aslprep/observation.json": "12a7ffb4129c2732927501bd7cbec8281db34b42443bcf6ef7b26088e731a7f3",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-gandlf/body.json": "92a0e397ae33a29be804ebb9ea65bfce2b9b86f54b09da76d65e6276aeb71857",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-gandlf/observation.json": "9a240014e95d4f2032aa045174bf2df3d877b6daaacf160292e282f054d08a0f",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-historeg/body.json": "ccdc403dbb9f602924300506c4000fa4a252412bc54f780cc86588cf771b06ba",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-historeg/observation.json": "c2a01de3a9a1e2318f8cec1ccef1a67c76e967ea48a76648b750f306f61d1596",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-modelarray/body.json": "9356adef4b7651849c9beebc48d848ea13620158f4e88a1afbd6575c9e4f65fa",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-modelarray/observation.json": "c577bad32414c8529cf0d2da923c281645bc218f84860493ad8592e7cbf63d93",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/material-index.json": "6be18f1d100cbb852d72274fbde42cdcbb8cbd71db3e3c3d49e301d621432cea",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/request-generator.mjs": "eaff8cf65c37104303e19ca9fdd6c4d1f2a4e7cef25dd445fe1eb7201667e1eb",
+    "docs/discovery/qualification/evidence/pilot-expansion-20261116/requests.json": "eeff7e5957b6bfacfc5fa86fc35087bd10fcbce2fc21ec1802694621efa7c219"
+  },
+  "outputs": {
+    "docs/discovery/README.md": "5801809603be56c29d8e2475b0ffcaa0171e3bd6d8804915a042d7f6bd3d397b",
+    "docs/discovery/execution.json": "283486aeb17e43cfc062fbe2f69f888ef1fabb99ab62b53dd6e8227f037c65cb",
+    "docs/discovery/implementation-decisions.md": "8715fb7c0629de3c91e259ef77c3d7065f3ab223c272ba8cf94e00f67749b48b",
+    "docs/discovery/metadata-link-pilot-plan.md": "028f07efe410850cec3025ff41784b8d8c6fd73e9e030a0d4a9f05e63dd0d63a",
+    "docs/discovery/metadata-link-pilot-preview.md": "59c92fb8f23655f5edf3eb81f34aad8ed85881cfcfe4474eddab2b19140b7181",
+    "docs/discovery/metadata-link-pilot-sources.md": "b79eed152fb54cbdf64fb6a0b818475bb9097286092a55876230a92d4d652971",
+    "docs/discovery/metadata-link-pilot-expansion.md": "dd29edbddf6be3b857886dad0a1f20c37999b68057eb68ad2c9d24b0b2494e8e",
+    "docs/discovery/qualification/pilot-expansion-20261116.md": "4414ce99cdb358406cdd9b75a6d5ef44164e569e19a4b31ab593b095b0e53251",
+    "docs/discovery/reviews/metadata-link-pilot-expansion-astra.md": "2139871a9eed1b1730f3994e06a4d6964cec3f7014c233b6bd484e2e0e7c4757"
+  },
+  "private_artifacts": {
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/01-desktop-22.png": "9687ab61b68a0c89ce75caec8a67656b416d019d65b74ac4022d11c9a3eba31d",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/01-desktop-22.txt": "54b4b5d3359112685732c94b1bf15aef9346519eb93d2f3140de84c799813904",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/02-aslprep-roster.png": "61e5716014fd00a18f324441b207b7d5536e1cead96ff5d8f5aa2ac496859d15",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/02-aslprep-roster.txt": "5bafe0b4e87836a550416b57f7b78aabc331662d24bb283693e03504962fc86f",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/03-gandlf-repository.png": "99ae5ba43812e7df72e98a060041826da5b6bea1f5acc3b603a969fc691a6813",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/03-gandlf-repository.txt": "b43577e705d6eb022caaf242f690f83cb73e8e5410a57daff361149c690dabf7",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/04-consortium-search.png": "70361b74bf1e8a9029c7f962fdd6da5ea97230bdefbb00916f54769197bf86f5",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/04-consortium-search.txt": "7ff0e7ff162d2c6453efa24f9ced38f388ec20fa0496a369240e9856b31065af",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/05-mobile-entry.png": "bd8beba77f6edfe5d0593f4b674b9d367bff16fc0eaf4a13d080e8389c2c8e2f",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/05-mobile-entry.txt": "54b4b5d3359112685732c94b1bf15aef9346519eb93d2f3140de84c799813904",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/06-mobile-historeg.png": "4e36bb378d0186b0e0c8bdced9b96bb5b49e96cf268d55325fbdddf10cd85a96",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/06-mobile-historeg.txt": "d307f45a76164d2b17b6f46eb6d4d766a2cbaef0aba01b9796eac1eb194f0a28",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/07-mobile-modelarray.png": "4a58a170d0aec0fc69d6f377723a6d48e8c481a117bff7709a81434d504edd63",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/07-mobile-modelarray.txt": "92b4973dea2a086cc03c2305fa679250a8e74c9a77d19688a1b035983c657176",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/baseline-document-hashes.json": "a54795ffdfe5ef7f35fdcb7268863520b4a024823d540b915cb6c20949ffd0fb",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/01-desktop-22.png": "a72747dca249330d45433320e4d48f47806751da9eb3b228c60c38cfd88657f7",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/01-desktop-22.txt": "54b4b5d3359112685732c94b1bf15aef9346519eb93d2f3140de84c799813904",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/02-aslprep-roster.png": "61e5716014fd00a18f324441b207b7d5536e1cead96ff5d8f5aa2ac496859d15",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/02-aslprep-roster.txt": "5bafe0b4e87836a550416b57f7b78aabc331662d24bb283693e03504962fc86f",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/03-gandlf-repository.png": "99ae5ba43812e7df72e98a060041826da5b6bea1f5acc3b603a969fc691a6813",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/03-gandlf-repository.txt": "b43577e705d6eb022caaf242f690f83cb73e8e5410a57daff361149c690dabf7",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/04-consortium-search.png": "70361b74bf1e8a9029c7f962fdd6da5ea97230bdefbb00916f54769197bf86f5",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/04-consortium-search.txt": "7ff0e7ff162d2c6453efa24f9ced38f388ec20fa0496a369240e9856b31065af",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/05-mobile-entry.png": "bd8beba77f6edfe5d0593f4b674b9d367bff16fc0eaf4a13d080e8389c2c8e2f",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/05-mobile-entry.txt": "54b4b5d3359112685732c94b1bf15aef9346519eb93d2f3140de84c799813904",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/06-mobile-historeg.png": "4e36bb378d0186b0e0c8bdced9b96bb5b49e96cf268d55325fbdddf10cd85a96",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/06-mobile-historeg.txt": "d307f45a76164d2b17b6f46eb6d4d766a2cbaef0aba01b9796eac1eb194f0a28",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/07-mobile-modelarray.png": "4a58a170d0aec0fc69d6f377723a6d48e8c481a117bff7709a81434d504edd63",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/07-mobile-modelarray.txt": "92b4973dea2a086cc03c2305fa679250a8e74c9a77d19688a1b035983c657176",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser-initial-navigation-harness/browser.log": "1a0e86d1b3c5c0732b59fb00e7d702ad5b5c9bb8a86d9466c05f1e7d3daaaa87",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser.json": "b657910d79c194cf1705176445bf3f3fc85143a40ab2185fa68339a767718723",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser.log": "a28d382004a309cca4a07424d1d428cca8cbc0a7cd3c86af16a31c3f828b90f6",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/browser.mjs": "59dd1c5f1e05ba36222b28bc401e0883e03129d7ced22e752fed4eb13d7c1709",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/citation-verification.json": "6b68e424cdba4ecc068f98b1aa19368bc9f50aad30831f4e6126421a8f47069f",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/native-inspection.json": "f4c37120cd55bfc1d8d996b2dd9bed383aea79556fa172105b2f7a52d83902ef",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/offline-preflight.json": "d7ab233c02973217afece8c75b8ed34c120bf756f944451969ba492cc55dc217",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/projection-probes-node18-harness-failure.log": "77b821ba0c51d59251d607be1afc0922bce651f3b1a8e3027113f8bafe6293ea",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/projection-probes-node22.json": "b466bb21398d285b63d574cecbbdf3e16b2f01ab0698edff698e333272d887f8",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/projection-probes-node22.log": "b466bb21398d285b63d574cecbbdf3e16b2f01ab0698edff698e333272d887f8",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/projection-probes.json": "b466bb21398d285b63d574cecbbdf3e16b2f01ab0698edff698e333272d887f8",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/projection-probes.log": "077bb403997ba51d61c4308742053cbe8d509a4f30c35f6c0d6007ef79fd446d",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/projection-probes.mjs": "d10335e3a1dcf1fa55aa7daab5334732e43e87d5021e3d35faba08c4b07f4bf9",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/protected-history.json": "43b1e5b5589edb28e918c55e1efc502f31b32be77498dd45c9b21b677c908364",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/protected-history.py": "0395c4d0ce76438181807b2199495e8afe660ec6b17edc982204fffeaf43802f",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/regional-source-verification.json": "ebcc10c14b2ac8f75c29f060088a692ce4194a4a1ecaec3bb331934155712dee",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/01-desktop-after-skip.png": "8494f0ca733d01fa96e9536ed95e96ffbf6eeae0f8997f61cfba6a38af6e1950",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/01-desktop.png": "fb0f8465f085588ccc686eac7e59fc8a091475be08da8d5445e5024e4c1a1276",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/02-historeg.png": "6699c620ce00bc6a5a271478081a435fa312320d12298501a5981a5e40ac3f0c",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/03-mobile.png": "e4df3beb868cf8374e804cd2e0103cb234501892bc1e46c7957f4cf22f50fd2a",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/browser-initial-failure.json": "5235cb6377ec961f97a10f546b591ab3a0429882cd91a696bf545e9a795453b7",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/browser-initial-no-toggle-wait.mjs": "27c88c9d6fc1e5019eb2a44b091ae1244bece8ee6dd455353201c90c3e3e656f",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/browser-result.json": "c808b87a774664f419ad85c043e9ffdac2f7490a13d6b1fe6492240cd837162f",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/browser.mjs": "725ff7b073d1064c1420ddcdde47fbe8165efc61874cefbb9dd27aa46f9313b3",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/regional-corroboration.json": "408d509a3eed88881f9f7ba1237dae8c90d4d38a6c3d981ad1067076b32bfd94",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/root/worker-bundle.mjs": "d96c3ae213bc4a4de7505fe6c548298cf44e10de5d3f439bdb744075850c507c",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/terra/compare.py": "9566ecb0280615db35b61115809d58924b155e17b018a4bb7bf700c09161e19d",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/terra/comparison-log.json": "c15b21b4e196f38335f7d3833648c94fdfeb7bcfb361ded9085ecc12607d96a5",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/terra/connector-observations.json": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/terra/proposal.md": "83b60e4f3098c11aa4192468cf1ad4e99986aeea71411dd3171b9b087650f109",
+    ".discovery-work/pilot-expansion/sol/adversarial-observations-tests.log": "a04970093935ec6208504836a19ea393418b153a4df52e73d082051142db53b1",
+    ".discovery-work/pilot-expansion/sol/baseline-pilot-tests.log": "6fbf34a8d0557a751b8609e7c913dd9115bb5cc8e3fc5f19e9b0a72a92d8b532",
+    ".discovery-work/pilot-expansion/sol/baseline-preservation-tests.log": "c719398d9cbf6616914ecff992ac24e2076c736b4f1cc601b2ea72757a5575e8",
+    ".discovery-work/pilot-expansion/sol/expanded-pilot-tests.log": "18d47e7c183ee4fe427351f3417802df4d4519a7e869452dddf9f1152d86a935",
+    ".discovery-work/pilot-expansion/sol/expanded-routing-tests.log": "09dd2f5d5af2b2d13f8ffef8cc566763deb65dc1e1d299db331a0801488a990c",
+    ".discovery-work/pilot-expansion/sol/typecheck.log": "8096a1cdf4a03a83d5c0f167a9106deb1075fc86d38e42ad1a235b3988c172d6",
+    ".discovery-work/pilot-expansion/root/final/tests-final.log": "67dd1988831cf8a48bc2e370ae35739349ee07f00590960e891dddffedea3ae7",
+    ".discovery-work/pilot-expansion/root/final/pdf-final.log": "5175430adc8f493504c2c0f5f5b9f9dd5876f1414b9634fd75b385767ba9c09a",
+    ".discovery-work/pilot-expansion/root/final/build-final.log": "ef903174248322ddc00972f6e3b2a136a4b3a89a1843a86424df41d46a8fb9df",
+    ".discovery-work/pilot-expansion/root/final/smoke-final.log": "6f2b1ce4ded06d22448711ff81a7cb30ce46e875a4aaece29459cb64107853c8",
+    ".discovery-work/pilot-expansion/root/final/audit-final.log": "d04ff73073bfcca2d06bfef3ca46173bfba16cd7ae37d6c1de342054ae6c56e1",
+    ".discovery-work/pilot-expansion/root/final/secret-final.log": "eafa45431fc6b305d0086cf1127c9b6e3d8fe4a012a14262748d20455af4b4e9",
+    ".discovery-work/pilot-expansion/root/final/input-sha256.json": "73cc2b69a74ba12bb8eb12aacd6df7ba03744cc0cfa7215456cb6f5eb9ced19f",
+    ".discovery-work/pilot-expansion/root/final/validation.json": "369dce5d09c9281e19aed84edb4a857cbe1f4a5afc92f135ab18a84a105c3eaf",
+    ".discovery-work/pilot-expansion/root/final/validate.py": "a9702be9dcc8fc852fd93f70f355ddf70b83e75059645472053f003c0519f6a2",
+    ".discovery-work/pilot-expansion/root/final/worker-postbuild.log": "bd52c499f7812980b528011dcd62afba55916ee939bd369707315b6ba7353bce",
+    ".discovery-work/pilot-expansion/root/finalize.py": "6d83f8a973f5368e500cc81fc0b9ac6183492b9acf6cd284707067312a9fabaf",
+    ".discovery-work/pilot-expansion/root/frozen-check.json": "81ec8b817ee75de63e959a75ce9e7e7a40e57ea3adf4aaf6e13b2ca2aad89748",
+    ".discovery-work/pilot-expansion/root/historical-files.json": "559ca1febc2de3efcc0bf1c6d0050dd7e8a379e8c94fa20d21b1aab1cb655a8b",
+    ".discovery-work/pilot-expansion/root/focused-final.log": "e31ed8e64ae98842f9c438191224341acc679346cb1c9d85cf1869ba6a0f1a6d",
+    ".discovery-work/pilot-expansion/root/worker-preview.log": "44b46c064231fcc628972a0fe8bf669bfc1c24a162d29b27079852023b8e1056",
+    ".discovery-work/pilot-expansion/root/expand-selection.py": "9bc3e978f8c0bf3427b68b2475bc442508d2bb1facffd58349319a8aec509a3f",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/final-metadata-reconciliation-20261116.json": "457e7e3d5aff437ff7db98592359052ac7744682a8ee25f80b3aa66659144dc7",
+    "/workspace/build/builderbob/tvd-pilot-expansion-20261116/astra/final-metadata-check.py": "b3cb17f1a256497f701be75d614f0330ca386ec0f0f71129b3e4b15146faa02d",
+    ".discovery-work/pilot-expansion/root/final/documentation-secret.log": "858405df28ce58c8fc37b6c72199c536bcd41447a5aca3c9ab93ab0df8aa12e9",
+    ".discovery-work/pilot-expansion/root/final/documentation-links.json": "5a836c490b8073bc0674b35bc0682899a40c8e21c8ef4d34813d3d2e2dbbb788"
+  },
+  "unchanged_frozen_inputs": {
+    "docs/discovery-engineering/HANDOFF-MANIFEST.json": {
+      "entries": 70,
+      "mismatches": []
+    },
+    "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json": {
+      "entries": 21,
+      "mismatches": []
+    },
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": {
+      "sha256": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+      "unchanged": true
+    },
+    "docs/discovery/interface-contracts.md": {
+      "sha256": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+      "unchanged": true
+    },
+    "docs/discovery/model-v0.5/validation/receipt.json": {
+      "sha256": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e",
+      "unchanged": true
+    },
+    "docs/discovery/reference-manifest.json": {
+      "sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+      "unchanged": true
+    },
+    "docs/discovery/qualification/wp03-material-index.json": {
+      "sha256": "0abd5620c51a93bff55e78a8a7b7c7c2bb938c1b15a4ef191bd38109d639562b",
+      "unchanged": true
+    }
+  },
+  "unchanged_historical_files": {
+    "path": ".discovery-work/pilot-expansion/root/historical-files.json",
+    "count": 149,
+    "sha256": "559ca1febc2de3efcc0bf1c6d0050dd7e8a379e8c94fa20d21b1aab1cb655a8b"
+  },
+  "original_record_objects_preserved": 14,
+  "benchmark": {
+    "actual_cases": 0,
+    "actual_human_reviewers": 0,
+    "manifest_status": "not_frozen",
+    "WP03_accepted": false,
+    "empirical_gates": "E01-E06_not_run",
+    "required_for_pilot": false
+  },
+  "delivered_head_CI": {
+    "tracking": "https://github.com/ajhcs/the-valley-desk/pull/30",
+    "required_before_handoff_completion": true,
+    "recorded_separately_from_local_results": true
+  },
+  "remaining": [
+    "MP04 separately authorized activation/release review and explicit deployment authorization.",
+    "Broader geographic/institution/source coverage; this Philadelphia-centered sample is not a regional census.",
+    "Current creator profiles and independently supported additional relationships.",
+    "WP03 independent annotation, sampling and benchmark freeze remain separate.",
+    "Optional richer reuse and software-use rights remain source-specific.",
+    "Other-browser, broader accessibility/performance and production operation remain unqualified."
+  ],
+  "merge": false,
+  "deployment": false
+}

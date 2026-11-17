@@ -1,0 +1,606 @@
+{
+  "schemaVersion": "christiana-source-assertions-v1",
+  "sourceId": "christianacare-github-research-20261117",
+  "snapshotDate": "2026-11-17",
+  "publicationAuthorized": false,
+  "coverage": {
+    "networkUniqueGithubLinks": 28,
+    "networkRepositoryLinks": 15,
+    "networkAccountLinks": 13,
+    "csvAccounts": 18,
+    "status": "source-reported bounded research; no current people count"
+  },
+  "qualifications": [
+    "Nine-county DVRPC is primary; Delaware ChristianaCare is neighboring context. Collaborators require independent regional assessment.",
+    "Institutional account reported zero public repositories at snapshot; private repositories were not surveyed.",
+    "No personal GitHub for a current ChristianaCare researcher was independently verified in the source search.",
+    "Kern former research assistant role was September 2009 to August 2011; his present work is not attributed to ChristianaCare.",
+    "AI4Birth link reflects prior data-consortium membership, not established authorship of the later paper.",
+    "External project participation does not establish ChristianaCare account or code ownership.",
+    "All records are source-reported, without fresh verification; source references preserve claim context."
+  ],
+  "accounts": [
+    {
+      "id": "christianacare",
+      "handle": "ChristianaCare",
+      "url": "https://github.com/ChristianaCare",
+      "reportedLabel": "ChristianaCare",
+      "relationship": "institution",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "neighbor-context",
+      "evidenceUrls": [
+        "https://github.com/ChristianaCare"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L2"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "kernco",
+      "handle": "kernco",
+      "url": "https://github.com/kernco",
+      "reportedLabel": "Colin Kern",
+      "relationship": "former researcher",
+      "timeScope": "historical-2009-2011",
+      "regionPolicy": "neighbor-context",
+      "evidenceUrls": [
+        "https://animalscience.ucdavis.edu/sites/g/files/dgvnsk446/files/postdocs/kern_colin/kern_colin_cv.pdf"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L3"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "goldsteinepi",
+      "handle": "goldsteinepi",
+      "url": "https://github.com/goldsteinepi",
+      "reportedLabel": "Neal Goldstein",
+      "relationship": "former researcher and collaborator",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://researchdiscovery.drexel.edu/esploro/profile/neal_goldstein"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L4"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "healthylaife",
+      "handle": "healthylaife",
+      "url": "https://github.com/healthylaife",
+      "reportedLabel": "healthy lAife",
+      "relationship": "partner lab",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://raw.githubusercontent.com/mlresearch/v259/main/assets/fayyaz25a/fayyaz25a.pdf"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L5"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "jlywebster",
+      "handle": "jlywebster",
+      "url": "https://github.com/jlywebster",
+      "reportedLabel": "Jessica Lynn Webster",
+      "relationship": "research collaborator",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://doi.org/10.1017/ice.2025.10356"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L6"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "binod-acharya",
+      "handle": "Binod-Acharya",
+      "url": "https://github.com/Binod-Acharya",
+      "reportedLabel": "Binod Acharya",
+      "relationship": "research collaborator",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0262958"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L7"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "auslanderlab",
+      "handle": "AuslanderLab",
+      "url": "https://github.com/AuslanderLab",
+      "reportedLabel": "Auslander Lab",
+      "relationship": "partner lab",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://pubmed.ncbi.nlm.nih.gov/41193244/"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L8"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "auslandernoam",
+      "handle": "AuslanderNoam",
+      "url": "https://github.com/AuslanderNoam",
+      "reportedLabel": "Noam Auslander",
+      "relationship": "research collaborator",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://zenodo.org/records/19485537"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L9"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "bryantduong",
+      "handle": "bryantduong",
+      "url": "https://github.com/bryantduong",
+      "reportedLabel": "Bryant Duong",
+      "relationship": "research collaborator",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://bryantduong.github.io/"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L10"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "avisrilab",
+      "handle": "avisrilab",
+      "url": "https://github.com/avisrilab",
+      "reportedLabel": "Srivastava Lab",
+      "relationship": "partner institution lab",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://www.wistar.org/our-scientists/avi-srivastava/"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L11"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "paulhager",
+      "handle": "paulhager",
+      "url": "https://github.com/paulhager",
+      "reportedLabel": "Paul Hager",
+      "relationship": "research collaborator",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC11405275/"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L12"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "shenhav-lab",
+      "handle": "Shenhav-Lab",
+      "url": "https://github.com/Shenhav-Lab",
+      "reportedLabel": "Shenhav Lab",
+      "relationship": "research collaborator lab",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://www.nature.com/articles/s41587-026-03303-0"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L13"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "cbica",
+      "handle": "CBICA",
+      "url": "https://github.com/CBICA",
+      "reportedLabel": "CBICA",
+      "relationship": "research collaborator center",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC13377092/"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L14"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "fets-ai",
+      "handle": "FETS-AI",
+      "url": "https://github.com/FETS-AI",
+      "reportedLabel": "FeTS",
+      "relationship": "research initiative",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC9722782/"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L15"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "hrmoradi",
+      "handle": "hrmoradi",
+      "url": "https://github.com/hrmoradi",
+      "reportedLabel": "Hamidreza Moradi",
+      "relationship": "research collaborator",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0282587"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L16"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "clinical3po",
+      "handle": "Clinical3PO",
+      "url": "https://github.com/Clinical3PO",
+      "reportedLabel": "Clinical3PO",
+      "relationship": "external research platform",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC6277956/"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L17"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "pugtgyosuky",
+      "handle": "PugtgYosuky",
+      "url": "https://github.com/PugtgYosuky",
+      "reportedLabel": "PugtgYosuky",
+      "relationship": "data consortium project",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://doi.org/10.1038/s41746-026-02384-0"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L18"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "christianacaretest",
+      "handle": "ChristianaCareTest",
+      "url": "https://github.com/ChristianaCareTest",
+      "reportedLabel": "ChristianaCareTest",
+      "relationship": "unverified institutional lead",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "neighbor-context",
+      "evidenceUrls": [
+        "https://github.com/ChristianaCareTest"
+      ],
+      "sourceRefs": [
+        "github-accounts.csv#L19"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    }
+  ],
+  "projects": [
+    {
+      "id": "healthylaife/fhir",
+      "url": "https://github.com/healthylaife/fhir",
+      "reportedConnectionType": "multi_institution_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://dsi.udel.edu/faculty/",
+        "https://raw.githubusercontent.com/mlresearch/v259/main/assets/fayyaz25a/fayyaz25a.pdf"
+      ],
+      "sourceRefs": [
+        "research-network.md#L41"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "goldsteinepi/sepsis",
+      "url": "https://github.com/goldsteinepi/sepsis",
+      "reportedConnectionType": "former_staff_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://doi.org/10.1017/ice.2025.10356",
+        "https://zenodo.org/records/4701677",
+        "https://researchdiscovery.drexel.edu/esploro/profile/neal_goldstein",
+        "https://research.christianacare.org/ireach/people/neal-goldstein-ph-d-mbi/"
+      ],
+      "sourceRefs": [
+        "research-network.md#L42"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "jlywebster/cdiff_ccmlm",
+      "url": "https://github.com/jlywebster/cdiff_ccmlm",
+      "reportedConnectionType": "coauthored_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://doi.org/10.1017/ice.2025.10356",
+        "https://zenodo.org/records/4701677",
+        "https://researchdiscovery.drexel.edu/esploro/profile/neal_goldstein",
+        "https://research.christianacare.org/ireach/people/neal-goldstein-ph-d-mbi/"
+      ],
+      "sourceRefs": [
+        "research-network.md#L42"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "binod-acharya/nepal-suicide",
+      "url": "https://github.com/Binod-Acharya/Nepal-Suicide",
+      "reportedConnectionType": "coauthored_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://research.christianacare.org/ireach/people/keshab-subedi-ms-msc/",
+        "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0262958"
+      ],
+      "sourceRefs": [
+        "research-network.md#L43"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "avisrilab/bagpiper",
+      "url": "https://github.com/avisrilab/bagpiper",
+      "reportedConnectionType": "institutional_partnership_second_degree_lead",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://www.wistar.org/our-scientists/avi-srivastava/",
+        "https://www.wistar.org/research-discoveries/christianacare-hfgccri-partnership/"
+      ],
+      "sourceRefs": [
+        "research-network.md#L48"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "paulhager/mimic-clinical-decision-making-analysis",
+      "url": "https://github.com/paulhager/MIMIC-Clinical-Decision-Making-Analysis",
+      "reportedConnectionType": "coauthored_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://christianacare.org/us/en/for-health-professionals/departments/medicine",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC11405275/"
+      ],
+      "sourceRefs": [
+        "research-network.md#L52"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "paulhager/mimic-clinical-decision-making-dataset",
+      "url": "https://github.com/paulhager/MIMIC-Clinical-Decision-Making-Dataset",
+      "reportedConnectionType": "coauthored_study_dataset",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://christianacare.org/us/en/for-health-professionals/departments/medicine",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC11405275/"
+      ],
+      "sourceRefs": [
+        "research-network.md#L52"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "paulhager/mimic-clinical-decision-making-framework",
+      "url": "https://github.com/paulhager/MIMIC-Clinical-Decision-Making-Framework",
+      "reportedConnectionType": "coauthored_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://christianacare.org/us/en/for-health-professionals/departments/medicine",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC11405275/"
+      ],
+      "sourceRefs": [
+        "research-network.md#L52"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "shenhav-lab/visionary-ai-hdp",
+      "url": "https://github.com/Shenhav-Lab/Visionary-AI-HDP",
+      "reportedConnectionType": "coauthored_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://www.nature.com/articles/s41587-026-03303-0",
+        "https://cims.nyu.edu/people/profiles/SHENHAV_Liat.html"
+      ],
+      "sourceRefs": [
+        "research-network.md#L53"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "cbica/ai-guided-radiation-dose-escalation",
+      "url": "https://github.com/CBICA/AI-guided-radiation-dose-escalation",
+      "reportedConnectionType": "coauthored_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC13377092/",
+        "https://news.christianacare.org/2026/06/a-smarter-way-to-target-brain-cancer/"
+      ],
+      "sourceRefs": [
+        "research-network.md#L57"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "cbica/brainmage",
+      "url": "https://github.com/CBICA/BrainMaGe",
+      "reportedConnectionType": "coauthored_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC9722782/",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC7597856/"
+      ],
+      "sourceRefs": [
+        "research-network.md#L58"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "hrmoradi/therapeutics",
+      "url": "https://github.com/hrmoradi/Therapeutics",
+      "reportedConnectionType": "coauthored_study_code",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0282587"
+      ],
+      "sourceRefs": [
+        "research-network.md#L62"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "kernco/functional-annotation",
+      "url": "https://github.com/kernco/functional-annotation",
+      "reportedConnectionType": "former_staff_unrelated_pipeline",
+      "timeScope": "historical-2009-2011-former-role",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://animalscience.ucdavis.edu/sites/g/files/dgvnsk446/files/postdocs/kern_colin/kern_colin_cv.pdf",
+        "https://data.faang.org/api/fire_api/analysis/UCD_SOP_processing_and_analyzing_equine_ChIP_data_20191030.pdf"
+      ],
+      "sourceRefs": [
+        "research-network.md#L63"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "clinical3po/platform",
+      "url": "https://github.com/Clinical3PO/Platform",
+      "reportedConnectionType": "external_site_pilot",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC6277956/"
+      ],
+      "sourceRefs": [
+        "research-network.md#L64"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    },
+    {
+      "id": "pugtgyosuky/ai4birth",
+      "url": "https://github.com/PugtgYosuky/AI4Birth",
+      "reportedConnectionType": "prior_data_consortium_membership_only",
+      "timeScope": "snapshot-2026-11-17",
+      "regionPolicy": "collaborator-lead-assess-independently",
+      "evidenceUrls": [
+        "https://doi.org/10.1038/s41746-026-02384-0"
+      ],
+      "sourceRefs": [
+        "research-network.md#L65"
+      ],
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false
+    }
+  ]
+}

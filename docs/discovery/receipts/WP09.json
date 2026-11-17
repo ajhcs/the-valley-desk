@@ -1,0 +1,139 @@
+{
+  "package": "WP09",
+  "disposition": "accepted",
+  "recorded_at": "2026-11-15T18:11:38.967956+00:00",
+  "accepted_at": "2026-11-15T18:13:45.401366+00:00",
+  "source_revision": "90f9867cad2befe5b43fdb11fb347165fb8d9c38",
+  "source_state": "reviewed code commit with final acceptance documentation added after qualification; outputs bind exact tested bytes",
+  "depends_on": [
+    "WP06"
+  ],
+  "composition_dependency": "WP07",
+  "owner": "Sol",
+  "independent_test_author": "Terra",
+  "reviewer": "Astra",
+  "authority": "orchestrating engineer after fixes, independent probes and final integration",
+  "design_decision": "../implementation-decisions.md#ex12--pubmed-search-and-metadata-are-separate-durable-scopes",
+  "scope": "Private independent PubMed two-source search/fetch acquisition with evidence-bound geography/scope, immutable receipt/batch commitments, separate budgets and truthful gaps; local implementation only.",
+  "reviews": [
+    "../reviews/wp09-sol.md",
+    "../reviews/wp09-terra.md",
+    "../reviews/wp09-astra.md",
+    "../reviews/wp09-orchestrator.md"
+  ],
+  "integration": "../wp09-integration-validation.json",
+  "outputs": {
+    "src/ingest/discovery/pubmed.ts": "c21d7c9bfd4b4c458ac70fdf248f3a870b08180d92e8f9f79eef04f962a4a478",
+    "test/discovery-pubmed.test.ts": "2aab1f2be743093f30c32c2a4c294c780dfd7a3a5da8f2a7e3361604af6ea0fd",
+    "src/ingest/discovery-reference-signatures.ts": "fdf45e6995a0e2d4e1675600d34254d36caeb9c0c52e3c683153ce5668e7b9d0",
+    "test/discovery-reference-signatures.test.ts": "c49168738fe629a1140a848744b48662339ec8ded3524a427f792499843d6830",
+    "package.json": "350bbcc7bdaca0fc2a3ec3f0360dc8cddbfc66d8786a4dee28db253249bf01e5",
+    "docs/discovery/wp09-evidence-plan.md": "dddc7c9d3134be6da8985444c328358991fff898d4a8965b00c0127210514d51",
+    "docs/discovery/reviews/wp09-sol.md": "38764245e76e49d06d2992bef18a3361c815d81f835c9218eaa3e396e485ba86",
+    "docs/discovery/reviews/wp09-terra.md": "571a30abcd14b6fa10e24e7b28a17c5d1d7e4bbe1a25fa18a8574a17cdd6722d",
+    "docs/discovery/reviews/wp09-astra.md": "6330e881f443fb38c3b18413fde8c5053e1cf65ddc8671a0ffc9d6362caf7cc6",
+    "docs/discovery/reviews/wp09-orchestrator.md": "c98435dbcfa2da5d0625117a3673f54172a724a32212348cb68e9395be2b91ce",
+    "docs/discovery/wp03-signed-intake.md": "5b0fe8a78fef7dc998a179fc1475039779709b18d0bd0386a95b73c49aad5e12",
+    "docs/discovery/reviews/wp03-sol-signatures.md": "e88b3ab74eeb64fdf7bb922f995119dc67ce16dd920ae8012345645c3f96ed23",
+    "docs/discovery/reviews/wp03-terra-signatures.md": "4165db484de79a61badeb8d1a8dda70efc8c0142c650aa4423148fb96477aa9e",
+    "docs/discovery/reviews/wp03-astra-signatures.md": "918a447f7f7fa3c08a32b373bf47cabca75e5cef02dc81cd9b310ffaebf1a8c2",
+    "docs/discovery/evaluation-protocol.md": "0e2f437fe749de69e97e8755ae7ec527a752abd295e03fc3ee3c81a1c9f84c81",
+    "test/fixtures/discovery-sources/pubmed/README.md": "04402f197fa31186602c02f6c2361c0290fd02cbdac32ac78c778d90ee4f3d50",
+    "test/fixtures/discovery-sources/pubmed/efetch.xml": "30f9700af06ceedd5f086849de60ee5c100fae5454fb4f6159c277785408feae",
+    "test/fixtures/discovery-sources/pubmed/efetch-corrected.xml": "653dcca889c1bdaa32fed76fe03afd2fbc59e56547f8a9bea639aef9c83b62b0",
+    "test/fixtures/discovery-sources/pubmed/scope.json": "d620cbafa3bdefeb380c33716034843910f8f81101fab50c55b54d07e67620ec",
+    "test/fixtures/discovery-sources/pubmed/esearch.json": "bcfe10f7c30b50c4846f5de9e043c67ab39146a209ebe3bec6bc787f0b08abfd",
+    "test/fixtures/discovery-sources/pubmed/hostile-entity.xml": "6f795c83f635d07bd7938e92cb77bc0d12b1bd2e310e2e7d83c5a502c778399f",
+    "test/fixtures/discovery-sources/pubmed/mixed-title.xml": "f8b4244a9e99a1e3bc0a1309554b5cf8c202e767650e27ee08d8a030681cf6b7"
+  },
+  "acceptance_criteria": {
+    "AC-WP09-01": "pass_local: actual D1 separately qualified search/fetch commits paper-only private lead/raw/page without repository or project prerequisites.",
+    "AC-WP09-02": "pass_local: legacy Wistar restrictions preserved; generalized separately hash-bound institution/literal/window and canonical nine-county address evidence; Maryland/Delaware/substring negatives.",
+    "AC-WP09-03": "pass_local: per-author publication-bound affiliation remains historical candidate; no person merge/current employment or public admission.",
+    "AC-WP09-04": "pass_local: unrequested/repeated IDs fail, missing IDs stay incomplete; same-ID parent callback swap/changeoffset/window/corrupt/removed parent cannot rebind deterministic fetch source.",
+    "AC-WP09-05": "pass_local: year/month precision preserved; entities/foreign namespaces/mixed reordering rejected; unknown date/contact displays redacted; corrections yield new versions under PMID.",
+    "AC-WP09-06": "pass_local: interrupted search/fetch budget exhaustion stays incomplete with zero unauthorized send; explicit same-source revision/budget-window/cohort renewal resumes without refund. Provider diagnostic warnings/errors cannot become clean empty inventory."
+  },
+  "validation": {
+    "enumerated_tests": {
+      "status": "all_passed_across_segmented_runs",
+      "tests": 1267,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 184
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "interrupted_npm_test": {
+      "exit_code": 143,
+      "termination": "SIGTERM; no assertion failure observed; cause unverified",
+      "completed_primary": 937,
+      "completed_watch": 146,
+      "completed_discovery_before_wp06": 153
+    },
+    "remaining_test_groups": {
+      "exit_code": 0,
+      "tests": 31,
+      "scope": "WP06 transport21 plus legacy Wistar10"
+    },
+    "independent_pubmed_regional": {
+      "passed": 14,
+      "pubmed_cases": 3,
+      "existing_regional_contract_cases": 11,
+      "failed": 0,
+      "inputs_unchanged": true
+    },
+    "astra_pubmed": {
+      "checks": 40,
+      "passed": 40,
+      "method": "6 geography,17 adapter,17 query diagnostics; independent probes rerun by root"
+    },
+    "wp03_signatures": {
+      "new_tests": 19,
+      "combined_preparation_tests": 57,
+      "astra_checks": 16,
+      "real_reference_cases": 0,
+      "freeze_issued": false
+    },
+    "legacy_wistar": {
+      "tests": 10,
+      "status": "pass_in_final_discovery_command",
+      "remaining_omitted_legacy_test_files": 10
+    },
+    "ci_code_commit": {
+      "sha": "90f9867cad2befe5b43fdb11fb347165fb8d9c38",
+      "run_id": 43744284777,
+      "tests_pdf_build_smoke": "pass",
+      "audit": "failure",
+      "ci_secret_scan": "skipped",
+      "overall": "failure"
+    },
+    "build": {
+      "exit_code": 0,
+      "warning": "existing main chunk exceeds500kB"
+    },
+    "local_ops_smoke": {
+      "exit_code": 0,
+      "scope": "fake isolated local bindings and closed egress"
+    },
+    "stable_inputs": 561,
+    "secret_scan": {
+      "exit_code": 0,
+      "files": 827,
+      "scope": "tracked and nonignored untracked files including final acceptance/review documents; existing script exclusions retained"
+    },
+    "count_note": "Independent/probe/compatibility checks overlap npm totals and are not additive."
+  },
+  "limits": [
+    "Local implementation uses synthetic source/evidence permissions, capabilities and provider responses; no live PubMed qualification, access/rights or E01-E06 success is established.",
+    "Metadata batch completion covers only the exact requested PMIDs. Search/inventory completion, provider-wide pacing and complete geographic discovery remain separate; warnings/errors fail before empty completion.",
+    "Conservative XML vocabulary, mixed-content, byte and field bounds may reject valid provider metadata. Partial dates remain partial, current employment and person identity unknown. Raw/inspect metadata needs WP14 materialization.",
+    "WP03 signatures verify integrity under supplied operator pins only. Real trust enrollment, current policy selection, trusted clock/anti-rollback, source permissions, independent humans, corpus and sealed freeze remain absent. Revocation is a replaceable expiring snapshot with no maximum TTL.",
+    "All shared runtime/schema/migration and old Wistar bytes are unchanged. Native model inputs are unchanged; no new native proof is claimed. Existing uncertainty, external-egress and logical-erasure/backup limits remain.",
+    "Fresh audit still reports4high/7total under unchanged lockfile. PR remains draft; ten old legacy test files remain omitted. No audit gate suppression, merge, provider activation, remote migration or deployment."
+  ],
+  "accepted_snapshot": ".discovery-work/wp09/accepted-candidate/manifest.json"
+}

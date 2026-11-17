@@ -1,0 +1,735 @@
+{
+  "id": "TVD-GO-LIVE-1",
+  "decision": "EX32",
+  "revision": 10,
+  "status": "implementation_in_progress",
+  "source_baseline": "60d6bd3aaba90a4970821f41fb2ca0329cbf8d20",
+  "authority": "On 16 November 2026 the user authorized implementation beginning GL00 and following accepted dependencies, Terra implementation with independent Sol review, commits and PR updates, and deployment as appropriate. Deployment authority covers the reviewed existing-site GL11 release when its actual readiness conditions are met; it does not accept unimplemented work, permit unrelated infrastructure changes, new paid services or outreach.",
+  "implementation_authorized_by_this_task": true,
+  "deployment_authorized": true,
+  "public_pilot_phase_required": false,
+  "benchmark_required_for_scoped_launch": false,
+  "full_text_required": false,
+  "linked_publication_required": false,
+  "complete_person_profile_required": false,
+  "geography": [
+    "PA:Bucks",
+    "PA:Chester",
+    "PA:Delaware",
+    "PA:Montgomery",
+    "PA:Philadelphia",
+    "NJ:Burlington",
+    "NJ:Camden",
+    "NJ:Gloucester",
+    "NJ:Mercer"
+  ],
+  "priorities": [
+    {
+      "id": "G01",
+      "title": "Discovery front door"
+    },
+    {
+      "id": "G02",
+      "title": "Ordinary search"
+    },
+    {
+      "id": "G03",
+      "title": "Useful results"
+    },
+    {
+      "id": "G04",
+      "title": "Who and next steps"
+    },
+    {
+      "id": "G05",
+      "title": "Regional breadth"
+    },
+    {
+      "id": "G06",
+      "title": "Maintenance and corrections"
+    },
+    {
+      "id": "G07",
+      "title": "Reader and operational readiness"
+    }
+  ],
+  "cross_cutting_requirement": "Broad discovery of supported work beyond prominent institutions, journals and news; personal and paperless repositories are eligible.",
+  "documents": {
+    "README": "README.md",
+    "work-packages": "work-packages.md",
+    "architecture": "architecture.md",
+    "coverage": "coverage.md",
+    "operations": "operations.md",
+    "adaptation": "adaptation.md",
+    "validation": "validation.md",
+    "review": "review.md"
+  },
+  "packages": [
+    {
+      "id": "GL00",
+      "title": "Scope and launch baseline",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [],
+      "goals": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07"
+      ],
+      "status": "accepted",
+      "work": "work-packages.md#gl00--reconcile-scope-operating-baseline-and-launch-authority",
+      "acceptance_ids": [
+        "GL00-A1",
+        "GL00-A2",
+        "GL00-A3",
+        "GL00-A4",
+        "GL00-A5"
+      ],
+      "acceptance": {
+        "recorded_at": "2026-11-16T19:59:11.898778+00:00",
+        "scope": "GL00 source/runtime inventory and launch-scope baseline only",
+        "reviewer": "Sol",
+        "review": "execution/GL00-sol-review.md",
+        "receipt": "execution/GL00-acceptance.json",
+        "source_baseline": "6ed650156100104e3f00e756e3c3094027c130fb"
+      },
+      "findings": []
+    },
+    {
+      "id": "GL01",
+      "title": "Lean records and claim contracts",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL00"
+      ],
+      "goals": [
+        "G02",
+        "G03",
+        "G04"
+      ],
+      "status": "accepted",
+      "work": "work-packages.md#gl01--freeze-the-minimum-useful-record-and-claim-contracts",
+      "acceptance_ids": [
+        "GL01-A1",
+        "GL01-A2",
+        "GL01-A3",
+        "GL01-A4",
+        "GL01-A5"
+      ],
+      "acceptance": {
+        "recorded_at": "2026-11-16T20:35:54.744290+00:00",
+        "scope": "locally qualified structural work/snapshot and private-frontier contracts; no publication/admission authority",
+        "source_commit": "2ba42446f6b7c8f943a39a5d6c2d109d0d12dd50",
+        "owner": "Terra",
+        "reviewer": "Sol",
+        "review": "execution/GL01-sol-review.md",
+        "receipt": "execution/GL01-acceptance.json"
+      },
+      "findings": []
+    },
+    {
+      "id": "GL02",
+      "title": "Broad source inventory and exploration design",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL00"
+      ],
+      "goals": [
+        "G05"
+      ],
+      "status": "accepted",
+      "work": "work-packages.md#gl02--design-discovery-for-breadth",
+      "acceptance_ids": [
+        "GL02-A1",
+        "GL02-A2",
+        "GL02-A3",
+        "GL02-A4",
+        "GL02-A5"
+      ],
+      "acceptance": {
+        "recorded_at": "2026-11-16T20:20:41.419363+00:00",
+        "scope": "GL02 source inventory and pre-collection exploration design only",
+        "owner": "Terra",
+        "reviewer": "Sol",
+        "review": "execution/GL02-sol-review.md",
+        "receipt": "execution/GL02-acceptance.json"
+      },
+      "findings": []
+    },
+    {
+      "id": "GL03",
+      "title": "Bounded acquisition and discovery frontier",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL01",
+        "GL02"
+      ],
+      "goals": [
+        "G05"
+      ],
+      "status": "accepted",
+      "work": "work-packages.md#gl03--acquire-candidates-with-a-durable-bounded-frontier",
+      "acceptance_ids": [
+        "GL03-A1",
+        "GL03-A2",
+        "GL03-A3",
+        "GL03-A4",
+        "GL03-A5"
+      ],
+      "acceptance": {
+        "recorded_at": "2026-11-16T21:46:46.402908+00:00",
+        "scope": "Finite two-plan private operator acquisition procedure; no public admission, recurring enrollment, regional completeness or release readiness",
+        "reviewer": "Sol",
+        "review": "execution/GL03-sol-review.md",
+        "receipt": "execution/GL03-acceptance.json",
+        "source_baseline": "3ad7cb310ea033ce09ccc03721177ce9a97a43c3",
+        "source_commits": [
+          "451834385340591aef6a6f96c3947d70f74919f2",
+          "ed87e93924ec9e02f8d20d6cfa30b767bae6605f"
+        ]
+      },
+      "findings": [],
+      "followups": [
+        {
+          "package": "GL04",
+          "work": "Review all eight private leads for purpose, health relevance, dated regional evidence, permitted fields and publication authority; same-name repository and biological-networks publication remain unsupported."
+        },
+        {
+          "package": "GL09",
+          "work": "Preserve G01/G02/C01 failures and scope holds; independently qualify Organization census, account continuation and broader source/county coverage before further collection."
+        },
+        {
+          "package": "GL08",
+          "work": "Retain the explicit operator batch boundary; recurring collection and a general cross-batch service are not accepted by GL03."
+        },
+        {
+          "package": "GL11",
+          "work": "Exact release-head CI and remaining launch readiness are required before deployment under existing authority."
+        }
+      ]
+    },
+    {
+      "id": "GL04",
+      "title": "Reviewed admission and public projection",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL01",
+        "GL03"
+      ],
+      "goals": [
+        "G03",
+        "G04",
+        "G05"
+      ],
+      "status": "accepted",
+      "work": "work-packages.md#gl04--review-lean-records-and-build-the-public-projection",
+      "acceptance_ids": [
+        "GL04-A1",
+        "GL04-A2",
+        "GL04-A3",
+        "GL04-A4",
+        "GL04-A5"
+      ],
+      "acceptance": {
+        "recorded_at": "2026-11-16T23:19:41.640269+00:00",
+        "scope": "PR-reviewed snapshot workflow and bounded two-record source slice; new API/HTML remain default-off; not broad coverage, reader validation, dynamic WP14/WP16 admission or release readiness",
+        "reviewer": "Sol",
+        "review": "execution/GL04-sol-review.md",
+        "receipt": "execution/GL04-acceptance.json",
+        "source_baseline": "8375b65af71b23f5f7259287780b57e9f55a9478",
+        "source_commit": "30737eab81bcb24937c886b60cd57ad23de00af5"
+      },
+      "findings": [],
+      "followups": [
+        {
+          "package": "GL05",
+          "work": "Extend the bounded own-record literal query to reviewed topics, aliases, explanations and ordinary reader search tasks; the current reader is not GL05 acceptance."
+        },
+        {
+          "package": "GL06",
+          "work": "Build product navigation, cards and presentation on the reviewed snapshot while preserving legacy compatibility."
+        },
+        {
+          "package": "GL08",
+          "work": "Rehearse operational corrections/removal and latest-tombstone rollback reconciliation; GL04 qualifies local PR state transitions, not a deployed operating process."
+        },
+        {
+          "package": "GL09",
+          "work": "Review held candidates and broaden supported source/county routes. Standalone GASTON admission adds no independent-discovery credit; two works do not establish regional breadth."
+        },
+        {
+          "package": "GL10",
+          "work": "Perform actual reader/browser/accessibility/performance validation; agent code and loopback checks are not intended-user observations."
+        },
+        {
+          "package": "GL11",
+          "work": "Use existing deployment authority only after exact release-head CI, compatibility, configuration, monitoring and rollback readiness."
+        }
+      ]
+    },
+    {
+      "id": "GL05",
+      "title": "Search, browse and ordering",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL04"
+      ],
+      "goals": [
+        "G02"
+      ],
+      "status": "accepted",
+      "work": "work-packages.md#gl05--make-ordinary-search-and-browsing-useful",
+      "acceptance_ids": [
+        "GL05-A1",
+        "GL05-A2",
+        "GL05-A3",
+        "GL05-A4",
+        "GL05-A5"
+      ],
+      "acceptance": {
+        "recorded_at": "2026-11-17T01:05:12.152618+00:00",
+        "scope": "Bounded six-work search/facets/ranking and source-linked private research intake/federation; no broad public admission, geographic completeness, intended-reader or release acceptance",
+        "source_commit": "e5b50915a3af48dcbfd015fd4f3640db8a272b17",
+        "core_source_commit": "352258dbb9a35ebe7364286d21aa912dd69f2067",
+        "owner": "Terra",
+        "reviewer": "Sol",
+        "review": "execution/GL05-sol-review.md",
+        "supplemental_reviews": [
+          "execution/GL05-jefferson-sol-review.md",
+          "execution/GL05-regional-sol-review.md"
+        ],
+        "receipt": "execution/GL05-acceptance.json"
+      },
+      "findings": [],
+      "followups": [
+        {
+          "package": "GL06",
+          "work": "Build the discovery front door and compact public list projection; test page bytes before a broad admitted cohort and expose supported archival status."
+        },
+        {
+          "package": "GL07",
+          "work": "Use qualified account/institution journeys and source-scoped reported relationships; never merge people by names or propagate collaborator ownership."
+        },
+        {
+          "package": "GL08",
+          "work": "Consume the saved regional account/project queue through finite source qualification and reusable reviewed batch adapters, lean admissions and corrections."
+        },
+        {
+          "package": "GL09",
+          "work": "Audit actual county/source breadth and missed work after GL08, using institutional roster/account enumeration plus project/publication references. Preserve neighboring Delaware labels."
+        },
+        {
+          "package": "GL10",
+          "work": "Run actual reader, browser, accessibility and performance qualification; agent/source/code checks are separate evidence."
+        },
+        {
+          "package": "GL11",
+          "work": "Require exact release-head CI, configuration, operations and rollback readiness before using existing deployment authority."
+        }
+      ],
+      "private_intake_supplements": [
+        {
+          "id": "TVD-GL05-EXPANSION-1",
+          "source_commit": "f6b33a0659abc6e535f1cb947ff375357cd29dbe",
+          "receipt": "execution/GL05-expansion-acceptance.json",
+          "review": "execution/GL05-expansion-sol-review.md",
+          "scope": "Reviewed private Drexel/Villanova metadata intake and six-source lead federation; public admissions, source-route qualification and release remain separate.",
+          "map": "evidence/GL05/regional-expansion-20261117/research-network.md"
+        },
+        {
+          "id": "TVD-GL05-EXTENSION-1",
+          "source_commit": "d7e764d11ff6792ac96b4a7ea4135429f5523136",
+          "receipt": "execution/GL05-extension-acceptance.json",
+          "review": "execution/GL05-extension-sol-review.md",
+          "scope": "Six additional private metadata intakes and twelve-batch source-linked URL federation; no public admissions, source-route qualification, geographic completeness or release.",
+          "map": "evidence/GL05/regional-extension-20261117/research-network.md"
+        },
+        {
+          "id": "TVD-GL05-ADDITIONS-1",
+          "source_commit": "497bb7eb9f3285d95c0eb9a5cc38793684fb6540",
+          "receipt": "execution/GL05-additions-acceptance.json",
+          "review": "execution/GL05-additions-sol-review.md",
+          "scope": "Three private source collections, verified earlier-map export lineage and fifteen-batch URL federation; no public admissions, source-route or regional-coverage acceptance.",
+          "map": "evidence/GL05/regional-additions-20261117/research-network.md"
+        }
+      ]
+    },
+    {
+      "id": "GL06",
+      "title": "Homepage, navigation and compact results",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL04",
+        "GL05"
+      ],
+      "goals": [
+        "G01",
+        "G03"
+      ],
+      "status": "not_started",
+      "work": "work-packages.md#gl06--make-discovery-the-front-door-and-results-compact",
+      "acceptance_ids": [
+        "GL06-A1",
+        "GL06-A2",
+        "GL06-A3",
+        "GL06-A4",
+        "GL06-A5"
+      ],
+      "acceptance": null,
+      "findings": []
+    },
+    {
+      "id": "GL07",
+      "title": "Work, account, creator and institution journeys",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL04",
+        "GL06"
+      ],
+      "goals": [
+        "G04"
+      ],
+      "status": "not_started",
+      "work": "work-packages.md#gl07--add-lean-detail-and-creatorinstitution-paths",
+      "acceptance_ids": [
+        "GL07-A1",
+        "GL07-A2",
+        "GL07-A3",
+        "GL07-A4",
+        "GL07-A5"
+      ],
+      "acceptance": null,
+      "findings": []
+    },
+    {
+      "id": "GL08",
+      "title": "Maintenance, corrections and suggestions",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL04"
+      ],
+      "goals": [
+        "G06"
+      ],
+      "status": "not_started",
+      "work": "work-packages.md#gl08--make-additions-corrections-and-upkeep-manageable",
+      "acceptance_ids": [
+        "GL08-A1",
+        "GL08-A2",
+        "GL08-A3",
+        "GL08-A4",
+        "GL08-A5"
+      ],
+      "acceptance": null,
+      "findings": []
+    },
+    {
+      "id": "GL09",
+      "title": "Regional breadth and miss audit",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL02",
+        "GL03",
+        "GL04",
+        "GL08"
+      ],
+      "goals": [
+        "G05"
+      ],
+      "status": "not_started",
+      "work": "work-packages.md#gl09--demonstrate-breadth-and-investigate-misses",
+      "acceptance_ids": [
+        "GL09-A1",
+        "GL09-A2",
+        "GL09-A3",
+        "GL09-A4",
+        "GL09-A5"
+      ],
+      "acceptance": null,
+      "findings": []
+    },
+    {
+      "id": "GL10",
+      "title": "Reader, accessibility and technical qualification",
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL05",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "goals": [
+        "G07"
+      ],
+      "status": "not_started",
+      "work": "work-packages.md#gl10--verify-useful-journeys-and-technical-quality",
+      "acceptance_ids": [
+        "GL10-A1",
+        "GL10-A2",
+        "GL10-A3",
+        "GL10-A4",
+        "GL10-A5"
+      ],
+      "acceptance": null,
+      "findings": []
+    },
+    {
+      "id": "GL11",
+      "title": "Exact-candidate go-live and operational acceptance",
+      "owner": "Orchestrator",
+      "reviewer": "Sol",
+      "depends_on": [
+        "GL10"
+      ],
+      "goals": [
+        "G01",
+        "G07"
+      ],
+      "status": "not_started",
+      "work": "work-packages.md#gl11--prepare-and-execute-direct-go-live",
+      "acceptance_ids": [
+        "GL11-A1",
+        "GL11-A2",
+        "GL11-A3",
+        "GL11-A4",
+        "GL11-A5"
+      ],
+      "acceptance": null,
+      "findings": []
+    }
+  ],
+  "original_package_acceptance_changed": false,
+  "original_model_or_benchmark_changed": false,
+  "decisions": [
+    {
+      "id": "GL01-D01",
+      "status": "independently_reviewed_bounded_adaptation",
+      "reason": "Freeze a lean work-level public contract and separate private frontier now. Optional creator/professional links, first-seen/archive/fork and correction presentation extensions require real consumer/source needs, not a complete graph before useful listing.",
+      "choice": "Reuse existing private CollectionLead under a strict non-public frontier wrapper. Keep public schemas independent of ingest imports. Any later optional public fields need a reviewed version before GL04/GL06/GL07/GL08 emit them.",
+      "affects": [
+        "GL03",
+        "GL04",
+        "GL06",
+        "GL07",
+        "GL08"
+      ],
+      "owner": "Terra",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true
+    },
+    {
+      "id": "GL05-D01",
+      "status": "authorized_execution_adaptation",
+      "reason": "The user requested substantially more leads and a better map of institutions, labs, people and GitHub resources during GL05.",
+      "choice": "Run parallel PA/NJ private source-linked account discovery and deterministic normalization alongside search. Keep the 41-handle/47-repository lead roster separate from the six-work approved directory. GL06 and GL08 may proceed concurrently after GL05; GL08 consumes the queue through newly qualified finite account enumeration and reusable reviewed source adapters. GL09 still requires GL08 and actual geographic/miss evidence.",
+      "affects": [
+        "GL02",
+        "GL03",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "owner": "Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true,
+      "evidence": "execution/GL05-research-map.md",
+      "follow_through": "execution/GL05-discovery-follow-through.md"
+    },
+    {
+      "id": "GL05-D02",
+      "status": "reviewed_private_intake_adaptation",
+      "reason": "The user supplied four research collections and explicitly retained the nine-county DVRPC primary geography with neighboring leads labelled.",
+      "choice": "Preserve original research packages, sanitize only metadata and links, and federate source observations into a private account/repository and relationship index. Preserve publication/project mentions separately from account-catalog candidates and keep source-scoped people, failed/zero states and temporal affiliations. No imported report authorizes public admission or a provider-qualified source route.",
+      "affects": [
+        "GL03",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "owner": "Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true,
+      "evidence": "execution/GL05-regional-sol-review.md"
+    },
+    {
+      "id": "GL05-D03",
+      "status": "reviewed_private_intake_adaptation",
+      "reason": "The user supplied the Drexel and Villanova research tasks for incorporation.",
+      "choice": "Version the existing federation, preserve its observations and graph, and add metadata-only source records with portable pre-parse receipts. Keep broad root checks separate from project-evidence leads; retain non-GitHub code resources, student/personal work, reported forks/copies, historical roles and failures without identity, ownership or healthcare inference. Use this expanded private queue for GL07/GL08 and actual GL09 coverage work. No public directory admission, full-text reuse or source-route qualification is granted.",
+      "affects": [
+        "GL03",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "owner": "Terra / Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true,
+      "evidence": "execution/GL05-expansion-sol-review.md",
+      "receipt": "execution/GL05-expansion-acceptance.json"
+    },
+    {
+      "id": "GL05-D04",
+      "status": "reviewed_private_intake_adaptation",
+      "reason": "The user supplied SJU, PCOM, Widener, Scranton, Lehigh and Rowan research collections.",
+      "choice": "Retain source-specific metadata, relationship and coverage records under a uniform private contract with independent field policies and pinned receipts. Keep primary and neighboring context, dates, copies, student work and negative states explicit. Project safe metadata URL references without asserting aliases or public eligibility. GL06/GL08 readiness and all downstream dependencies remain unchanged.",
+      "affects": [
+        "GL03",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "owner": "Terra / Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true,
+      "evidence": "execution/GL05-extension-sol-review.md",
+      "receipt": "execution/GL05-extension-acceptance.json"
+    },
+    {
+      "id": "GL05-D05",
+      "status": "reviewed_private_intake_adaptation",
+      "reason": "The user supplied PABC/BioLabs and broader discovery, Wistar, and Philadelphia public-health research collections.",
+      "choice": "Retain reported findings and source qualifications under independent closed intake policies. Verify recycled Valley Desk exports against their original snapshot and retain only compact lineage records. Keep profile hints, intermediate seeds and final inventories at their own grains without treating them as independent confirmations. Governing DVRPC boundary, lean public admission and remaining dependency/release gates remain unchanged.",
+      "affects": [
+        "GL03",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "owner": "Terra / Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true,
+      "evidence": "execution/GL05-additions-sol-review.md",
+      "receipt": "execution/GL05-additions-acceptance.json"
+    },
+    {
+      "id": "GL06-D01",
+      "status": "user_directed_sequencing_pending_independent_review",
+      "reason": "On 17 November 2026 the user reviewed the fifteen-collection queue and accepted a reordered sequence. Of about 7,277 repository keys, 1,609 carry a description, 2,747 a last-push date and 231 a native ID; about 2,145 appear only in the Drexel collection and 899 only in Lehigh, Scranton or Christiana. The six-work catalog averages about 4.5 KB per record against a 128,000-byte response bound. These are counts read from the queue and catalog, not a qualified yield or a tested page size.",
+      "choice": "Follow execution_sequence. Enrich the primary-region queue through one qualified provider metadata route and measure admission yield on about 100 leads before building a review interface or changing the homepage. Add a private candidate review interface as a GL08 scope addition, distinct from GL08's correction and upkeep work. Build GL06 cards and search on one renderer and switch the homepage once the admitted catalog is large enough to browse. Pause new collection intake except gap-driven searches. This supersedes the concurrent GL06/GL08 start in GL05-D01; package dependencies and acceptance criteria are unchanged. It grants no acquisition request scope, source enrollment or release.",
+      "affects": [
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09",
+        "GL10",
+        "GL11"
+      ],
+      "owner": "Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true
+    }
+  ],
+  "planning_review": {
+    "status": "reviewed_plan_only",
+    "path": "review.md",
+    "reviewer": "Astra",
+    "implementation_evidence": "not_run",
+    "release_acceptance": false,
+    "scope": "Historical EX32 planning revision; not execution acceptance."
+  },
+  "implementation_baseline": "6ed650156100104e3f00e756e3c3094027c130fb",
+  "execution_decision": "EX33",
+  "deployment_status": "not_performed_readiness_pending",
+  "next_ready_packages": [
+    "GL08"
+  ],
+  "active_packages": [],
+  "execution_sequence": [
+    {
+      "step": 1,
+      "packages": [
+        "GL08"
+      ],
+      "summary": "Qualify one provider metadata route and enrich the primary-region queue with native ID, description, fork/archived state and dates; deduplicate by native ID. Neighboring-context leads stay searchable internally and are not enriched in this pass.",
+      "requires": "Approved finite account roster, request scope and budget before any network request.",
+      "status": "not_started"
+    },
+    {
+      "step": 2,
+      "packages": [
+        "GL08"
+      ],
+      "summary": "Review about 100 enriched leads against the lean listing rule; record the eligible fraction and minutes per admission.",
+      "status": "not_started"
+    },
+    {
+      "step": 3,
+      "packages": [
+        "GL06",
+        "GL08"
+      ],
+      "summary": "Replace per-work captures and per-collection build scripts with one reusable adapter and one queue builder. Add a compact list projection with separate detail retrieval before the catalog passes about 20 works.",
+      "status": "not_started"
+    },
+    {
+      "step": 4,
+      "packages": [
+        "GL08"
+      ],
+      "scope_addition": true,
+      "summary": "Build a private candidate review interface with filters, evidence links and review states whose decisions the snapshot builder consumes. Keep it out of the public Worker.",
+      "status": "not_started"
+    },
+    {
+      "step": 5,
+      "packages": [
+        "GL06",
+        "GL08"
+      ],
+      "summary": "Build compact cards and search on one renderer and admit reviewed works in batches. Switch the homepage to discovery once the catalog is large enough to browse; step 2 sets that size.",
+      "status": "not_started"
+    },
+    {
+      "step": 6,
+      "packages": [
+        "GL07",
+        "GL08"
+      ],
+      "summary": "Add institution and creator journeys that retain uncertainty, then the report path, corrections, removals and the upkeep rehearsal.",
+      "status": "not_started"
+    },
+    {
+      "step": 7,
+      "packages": [
+        "GL09",
+        "GL10",
+        "GL11"
+      ],
+      "summary": "Audit coverage and resume discovery only where the admitted set shows gaps, starting with Burlington and the outer Pennsylvania counties. Then validate on the real catalog and release.",
+      "status": "not_started"
+    }
+  ],
+  "housekeeping": [
+    {
+      "id": "H01",
+      "summary": "Move retained evidence out of the product PR so code and tests can be reviewed.",
+      "status": "open"
+    },
+    {
+      "id": "H02",
+      "summary": "Ignore or relocate the six untracked Penn intake JSON files at the checkout root.",
+      "status": "open"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "baseline": "3ad7cb310ea033ce09ccc03721177ce9a97a43c3",
+  "baseline_tracked_files": 1138,
+  "existing_paths_changed": [
+    ".github/workflows/ci.yml",
+    "docs/discovery/go-live/README.md",
+    "docs/discovery/go-live/plan.json",
+    "package.json"
+  ],
+  "unexpected_changes": [],
+  "unchanged_existing_paths": 1134,
+  "all_prior_runtime_modules_native_records_models_historical_receipts_31_packages_and_MP_unchanged": true
+}

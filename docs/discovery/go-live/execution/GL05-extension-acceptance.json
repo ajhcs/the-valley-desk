@@ -1,0 +1,91 @@
+{
+  "id": "TVD-GL05-EXTENSION-1",
+  "recorded_at": "2026-11-17T02:56:46.498111+00:00",
+  "disposition": "accepted_private_metadata_intake_only",
+  "source_commit": "d7e764d11ff6792ac96b4a7ea4135429f5523136",
+  "baseline": "f9780d810c9e9f2a94104e9c1d361efbe2ab18c2",
+  "owner": "Terra",
+  "reviewer": "Sol",
+  "acceptor": "Orchestrator",
+  "review": "execution/GL05-extension-sol-review.md",
+  "validation": "evidence/GL05/regional-extension-20261117/qualification/validation-summary.json",
+  "active_map": "evidence/GL05/regional-extension-20261117/research-network.md",
+  "original_GL05_acceptance_changed": false,
+  "original_six_source_acceptance_changed": false,
+  "counts": {
+    "accounts": 420,
+    "repositoryCandidateIndex": 4877,
+    "distinctRepositoryUrlLeads": 7199,
+    "distinctRepositoryUrlLeadsExcludingBroadChecks": 6077,
+    "nativeRepositories": 231,
+    "observations": 17665,
+    "cooperNodes": 637,
+    "cooperEdges": 820,
+    "newSourceRecords": 3261,
+    "sourceRecordsByBatch": {
+      "sju": 254,
+      "pcom": 853,
+      "widener": 21,
+      "scranton": 104,
+      "lehigh": 1442,
+      "rowan": 587
+    }
+  },
+  "projectedSecondaryUrlOccurrences": 5129,
+  "inheritedSourceRecordsPinned": 4472,
+  "source_claims": {
+    "distinctPeople": null,
+    "eligibleNewHealthWorks": null,
+    "newNativeRepositoryIds": 0,
+    "newlyDiscoveredWorks": null,
+    "countyCoverageComplete": false,
+    "remoteTargetsReverified": false,
+    "publicationAuthorized": false
+  },
+  "geography": {
+    "primary": "nine-county DVRPC",
+    "neighboring": [
+      "Delaware-based ChristianaCare context",
+      "Scranton",
+      "Lehigh Valley"
+    ],
+    "sourceSpecificContexts": [
+      "PCOM Philadelphia versus Georgia",
+      "SJU historical University of the Sciences versus Lancaster",
+      "Rowan/CMSRU/Cooper/Coriell and Zhu/Tulane temporal or partner context"
+    ],
+    "institutionNamesDoNotLocateEveryPersonOrProject": true
+  },
+  "resolvedFindings": [
+    "Self-declared metadata policies and incomplete fields replaced with independent supported-batch contracts and pinned manifests.",
+    "Metadata URL references remain discoverable separately from the primary paper/source URL without asserted aliases or catalog promotion.",
+    "PCOM clipped-note citation loss repaired with full-cell safe URL projection and truncation flags.",
+    "Unsupported batches rejected by both exported validators.",
+    "Node receipt hashing moved out of browser-compiled shared source; actual production build passes."
+  ],
+  "publicReviewedWorks": 6,
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "articleBodyAbstractBiographyOrContactReuse": false,
+  "benchmarkCredit": 0,
+  "deploymentPerformed": false,
+  "releaseAccepted": false,
+  "nextReadyPackages": [
+    "GL06",
+    "GL08"
+  ],
+  "followups": [
+    "GL06 compact front door and result projection",
+    "GL07 source-scoped creator/account/institution journeys after dependencies",
+    "GL08 reusable finite source qualification, enumeration and lean admissions from this queue",
+    "GL09 actual primary-region geography/miss audit after GL08",
+    "GL10 reader/browser/accessibility/performance validation",
+    "GL11 exact-head CI and operational release readiness"
+  ],
+  "finalReceiptReview": {
+    "reviewer": "Sol",
+    "disposition": "PASS",
+    "scope": "33 source-commit artifact receipts, staged qualification links, count arithmetic, current test scope and unchanged original acceptance/dependency/release gates.",
+    "remainingBlockers": []
+  }
+}

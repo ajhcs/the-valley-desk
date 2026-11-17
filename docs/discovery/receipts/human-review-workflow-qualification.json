@@ -1,0 +1,233 @@
+{
+  "id": "TVD-WP03-HUMAN-REVIEW-WORKFLOW-1",
+  "recorded_at": "2026-11-15T22:49:39.947121+00:00",
+  "decision": "EX24",
+  "disposition": "local_workflow_engineering_review_pass_corpus_incomplete",
+  "reviewed_code_commit": "41d306e95ce4bcf0872bb2d223fc6016a87eb98a",
+  "scope": "Offline source-preparation, authenticated single-recipient dispatch, detached unsigned/signed return checks and paired adjudication handoff; no actual human review or freeze.",
+  "roles": {
+    "Sol": "Core workflow, CLI, existing guard reuse and native compatibility tests.",
+    "Terra": "Operating procedure, eight-field rubric, blank worksheet and independent structural/signature fixture checks.",
+    "Astra": "Independent native Ed25519, context/mutation, filesystem, sampling/exposure, documentation and actual preparation review.",
+    "orchestrator": "Pre-annotation structural gate, independent structural tests, actual private draft preparation, stringent review and final qualification."
+  },
+  "corrections": [
+    "Snapshot manifest/packets/returns before asynchronous verification; preserve the exact authenticated content.",
+    "Reuse native account subject schema and include neutral source identity/revision/observation metadata.",
+    "Refuse paired handoff when a target already has integrated annotations; preserve full sets through native adjudication.",
+    "Keep real human identity/blinding, rubric text mapping and same-context replay in accountable external records.",
+    "Two Terra exposure negatives originally failed incidental schema validation. Corrected valid reasons and explicit schema/finding assertions now reach the intended guards; earlier claims are superseded and logs retained."
+  ],
+  "operations": [
+    "prepare",
+    "dispatch",
+    "check-return",
+    "verify-return",
+    "adjudication-handoff"
+  ],
+  "dispatch_partitions": {
+    "development": "authenticated selected source/uses/authority and exact family/selection context",
+    "challenge": "same selected-context prerequisites",
+    "heldout": "complete 360/60-per-route structure; authenticated frame/assembly/history/exposures/all-case family-selection; separation/freshness",
+    "recall": "at least 100 canonical candidate units, independent assembly/history and all-case family-selection; later human eligibility required",
+    "audit": "held for WP24"
+  },
+  "actual_preparation": {
+    "tasks": 8,
+    "project_groups": 6,
+    "organization_background_groups": 2,
+    "acquisition_records": 16,
+    "distinct_bodies": 14,
+    "reviewer_slots_blank": 16,
+    "label_cells_null": 128,
+    "reference_case_credit": 0,
+    "dispatch_permitted": false,
+    "manifest_status": "not_frozen",
+    "actual_reference_cases": 0,
+    "actual_human_reviewers": 0,
+    "strict_reference_manifest_unchanged": true,
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "request_sha256": "ca60309d8afc7ba812619362286c6bf2ae76f98bf05e65c5ff7f3a588a291535",
+    "blocked_drafts_sha256": "776e4ad564f2fd66919a69aaadceef957ae660093d133385f05f71984f146678",
+    "limitations": "Task grouping is organization for preparation only; not authenticated case, source identity, family or partition assignment."
+  },
+  "source_acquisitions": 16,
+  "distinct_native_body_hashes": 14,
+  "project_groups": 6,
+  "organization_background_groups": 2,
+  "actual_source_index_sha256": "0abd5620c51a93bff55e78a8a7b7c7c2bb938c1b15a4ef191bd38109d639562b",
+  "actual_reference_cases": 0,
+  "actual_human_reviewers": 0,
+  "actual_trust_enrollment": "none",
+  "validation": {
+    "commands": [
+      {
+        "name": "discovery-final",
+        "command": [
+          "npm",
+          "run",
+          "test:discovery"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "pdf-final",
+        "command": [
+          "npm",
+          "run",
+          "test:policy-pdf"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build-final",
+        "command": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "smoke-final",
+        "command": [
+          "npm",
+          "run",
+          "ops:smoke"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "secret-final",
+        "command": [
+          "npm",
+          "run",
+          "secret-scan"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "discovery_including_types": {
+      "tests": 308,
+      "pass": 308,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "PDF_regressions": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "build": "pass",
+    "local_synthetic_smoke": "pass",
+    "secret_scan": "pass",
+    "Astra_independent_groups": 22,
+    "Astra_native_regressions": 21,
+    "root_structural_groups": 7,
+    "Terra": "Corrected five signed qualification groups and nominal/negative pinned-verifier assertions pass; these are not human authority.",
+    "count_semantics": "Independent/native/root groups overlap the integrated suite; counts are not summed as unique coverage.",
+    "runtime_input_count": 612,
+    "prior_unchanged_input_count": 605,
+    "runtime_input_drift": [],
+    "broader_application_tests": "Historical broader suites retained; this task freshly runs all enumerated discovery tests and global build/PDF/smoke/secret checks."
+  },
+  "runtime_outputs": {
+    "package.json": "92f9cf0b252212b4871adfcd5851450cae1f44c25b76f70a216eff88cfc73b61",
+    "scripts/discovery-human-review.mjs": "67cba60b220c0d8f969afa659f65ed3b69f3123e1ea2e7e8cf23ad23b2d9825a",
+    "scripts/discovery-reference-intake.mjs": "9b54b20e8af4669a2f2162628b2951d694f085008d755a2d8a9b83aa19f1f498",
+    "src/ingest/discovery-evaluation.ts": "a704db36e2e628cfeda90670bb2a8c931f2d0ac2203faf26dc2a5fe1b405045d",
+    "src/ingest/discovery-human-review.ts": "abca2b11a698cec94ec1f13e0f26602f84075e67e008a7ad85181f47a6d9a414",
+    "test/discovery-human-review.test.ts": "471f2203d1da1d4883ef1575b267858777356b5fa0ead6406015941a9900d6aa",
+    "test/discovery-review-structure.test.ts": "68d470837727b2e3558cc44338cfc1517d480ee896a841b2c55c4fb8acc314a8"
+  },
+  "outputs": {
+    "docs/discovery/human-review/operating-procedure.md": "72cfa10b9d7c5cdd972413620298bdff61e96baae72106897d7beb00bc1aef8c",
+    "docs/discovery/human-review/rubric.md": "c5efa458f570d7f951b4f4055642a29f230688f4eeb29115a8416ecd63b1e26a",
+    "docs/discovery/human-review/tooling.md": "b016aaaacd97987bef3f7fef8a70e175021776e68da69a7c5d271d4496675e48",
+    "docs/discovery/human-review/worksheet.md": "795d2518d26ba8d993b6bd6a352d746cd5e66af40a9e0c06ebe1f74272ea04c1",
+    "docs/discovery/reviews/wp03-human-astra.md": "73d67eb67eb1e90eba7d58a27fbb4faf237bb45788af7db8c8073aa8f6ca974f",
+    "docs/discovery/README.md": "042ae4b7ebe140756d761610283322cdcb6c077619968f21c75759c6f0cffe43",
+    "docs/discovery/implementation-decisions.md": "0e00aab9fdf52fb4c8f2358e549ca0d29b6beb19ef0975f64b5009c17653f941",
+    "docs/discovery/validation-environments.md": "ccf5386f4bfe8fe9a160c2bc54f17e004b03a15f9cf97e1f8e8e76204466a329"
+  },
+  "private_artifacts": {
+    ".discovery-work/wp03-human/root/discovery-final.log": "a3eafa612ce9d169caf19db3a3428cff04a52895df7c6ca568dbc164d5c7d1d5",
+    ".discovery-work/wp03-human/root/pdf-final.log": "923de3dc0fa494cb998f05b06eb12435ec639d2b87da07f2d4408b25ea46fa7d",
+    ".discovery-work/wp03-human/root/build-final.log": "cd53f5cd2726f3dc830ce9bb12312e6aece67f9c484c217f86104dde57f9862d",
+    ".discovery-work/wp03-human/root/smoke-final.log": "72b654f9ad371f2ec0e5f1599690869eb36fbf8ff3afe7b97ac8a283fc231ceb",
+    ".discovery-work/wp03-human/root/secret-final.log": "948f3eea7503c6ffbf632d79c4706f476b7570bdfad787531967e594726c7ed6",
+    ".discovery-work/wp03-human/root/input-sha256.json": "e8e478ac0869ff0528dcc65674e579d5ae7966ee2a65fa046dfc7d1db2226897",
+    ".discovery-work/wp03-human/root/validation.json": "7c4d8577f9f0ca972400ec45a4111d259bcab70bd7e0a1530910c15f31724464",
+    ".discovery-work/wp03-human/root/artifact-checks.json": "2d2121e52a2571b5a1933a96619f09b62f4654f51fb90e83150ec1a89acefcc8",
+    ".discovery-work/wp03-human/root/prepare-real.py": "87f74506ee83121732a5b0445325b6305deda4bfe351e87eff4a4bb53c285dbf",
+    ".discovery-work/wp03-human/root/preparation/request.json": "ca60309d8afc7ba812619362286c6bf2ae76f98bf05e65c5ff7f3a588a291535",
+    ".discovery-work/wp03-human/root/preparation/blocked-drafts.json": "776e4ad564f2fd66919a69aaadceef957ae660093d133385f05f71984f146678",
+    ".discovery-work/wp03-human/root/preparation/checks.json": "29b6e57bfaf59508f76d8c0aef4d3a3e72138ccfca412b91cdd146dfd27fe97d",
+    ".discovery-work/wp03-human/root/terra-checks.log": "75d3b6302d91c9bd4482921c6477876d9bdb29e1292472ec89548abdc4645fc3",
+    ".discovery-work/wp03-human/astra/final-independent.log": "3105b21a6319c307ab7f93eb3102734b6c849c3a4e531fda826902c7d68d1332",
+    ".discovery-work/wp03-human/astra/final-native.log": "cd9ecc27c4aae656964b7f54abca14b325ae547c73116770b8ad40ec9ce45cfc",
+    ".discovery-work/wp03-human/astra/final-structure.log": "830d716d8978bce8325630b6312741917eeafa2bf4bbf7d20bbe870a98a00bd6",
+    ".discovery-work/wp03-human/astra/final-preparation-check.json": "662a3db9bfe1fa4cc1e479cba58faa63fb906274ad13d81267a6fbb435931238",
+    ".discovery-work/wp03-human/astra/adversarial-race-before.log": "b400cfd96a8d04072f35456b9b0070bc5404b3ac829acc5ca36681d7e008f799",
+    ".discovery-work/wp03-human/astra/freshness-before-integration.log": "71e1ff0feba6297d55cbba2ede1dd0d31d05f50a2da84ccc8f368ab6623fe101",
+    ".discovery-work/wp03-human/terra/independent.ts": "56e8d5d6d367fbb7d333d34ab1023d7231fed4f0966ac8d89d28f4cb10eab795",
+    ".discovery-work/wp03-human/terra/qualification.ts": "6866fd203fc62043571b32109b94b222d9e1da0cdc29b678b5604ed091ccce43",
+    ".discovery-work/wp03-human/terra/qualification-corrected.log": "81341b352a3276636313171cf2e30eefcb06e4392f85e5a1164cd182ade529c3",
+    ".discovery-work/wp03-human/terra/independent-rerun.log": "29809097eff46d533529ca64d24b71138c94d719ddb59ae30db833a7d7551cd5"
+  },
+  "runtime_input_manifest": {
+    "path": ".discovery-work/wp03-human/root/input-sha256.json",
+    "sha256": "e8e478ac0869ff0528dcc65674e579d5ae7966ee2a65fa046dfc7d1db2226897",
+    "count": 612
+  },
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "frozen_manifests": [
+    {
+      "manifest": "docs/discovery-engineering/HANDOFF-MANIFEST.json",
+      "entries": 70,
+      "mismatches": []
+    },
+    {
+      "manifest": "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json",
+      "entries": 21,
+      "mismatches": []
+    }
+  ],
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "manifest_status": "not_frozen",
+  "freeze_issued": false,
+  "WP03_accepted": false,
+  "WP14_dependency_satisfied": false,
+  "empirical_gates": "E01-E06_not_run",
+  "prior_exact_head_CI": {
+    "head": "71d9caf001480e8b1ae29790c9d20ffbdcc0d1b0",
+    "run_id": 43767530086,
+    "run_number": 171,
+    "conclusion": "failure",
+    "tests_PDF_build_smoke": "success",
+    "npm_audit": "failure",
+    "secret_scan": "skipped",
+    "observed_this_task": true
+  },
+  "limits": [
+    "No actual reviewer identities, conflicts, blinding, permissions or sampling facts established by fictional keys or passing tests.",
+    "The actual eight groups remain blocked development preparation, not heldout/recall eligibility or quota credit.",
+    "Actual trusted statements, independent humans/labels/adjudication, reviewed complete fresh frames/history and separately authenticated corpus freeze remain missing.",
+    "Existing unchanged-lockfile dependency-audit blocker remains; new exact-head CI tracked separately."
+  ],
+  "external_source_requests": 0,
+  "actual_reviewer_dispatches": 0,
+  "external_outreach": false,
+  "signing_or_enrollment_of_actual_trust": false,
+  "deployment": false,
+  "production_activation": false,
+  "merge": false
+}

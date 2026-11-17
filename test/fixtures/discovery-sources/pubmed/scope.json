@@ -1,0 +1,41 @@
+{
+  "id": "scope:pubmed-example",
+  "revision": 1,
+  "institutionLiteral": "Example Institute",
+  "locationLiteral": "Philadelphia",
+  "county": "PA:Philadelphia",
+  "searchLiteral": "Example Institute",
+  "startDay": "2024-01-01",
+  "endDay": "2024-03-01",
+  "pageSize": 5,
+  "maxOffset": 100,
+  "denominator": "Candidate PMIDs indexed under the frozen affiliation literal and publication date window; not all regional research.",
+  "institution": {
+    "id": "inst-example",
+    "name": "Example Institute",
+    "kind": "research-institute",
+    "existingInstitutionId": null,
+    "officialHosts": [
+      "example-institute.edu"
+    ],
+    "regionalScope": "core",
+    "evidenceIds": [
+      "ev-example-location"
+    ],
+    "owner": "fixture-owner"
+  },
+  "evidence": {
+    "id": "ev-example-location",
+    "url": "https://example-institute.edu/about",
+    "observedAt": "2024-03-02T00:00:00Z",
+    "sourcePublishedAt": null,
+    "representationSha256": "1fbfe134918154ce43790cb145c66fe0907bebf77c332b3bb84f830d38441723",
+    "quote": "Example Institute, Philadelphia, PA provides research services.",
+    "representation": "normalized-text"
+  },
+  "retained": {
+    "url": "https://example-institute.edu/about",
+    "observedAt": "2024-03-02T00:00:00Z",
+    "body": "Example Institute, Philadelphia, PA provides research services."
+  }
+}

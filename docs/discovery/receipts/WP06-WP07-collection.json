@@ -1,0 +1,48 @@
+{
+  "package": "WP06",
+  "amendment": "EX10",
+  "disposition": "accepted_as_part_of_wp07",
+  "accepted_at": "2026-11-14T03:53:34.282509+00:00",
+  "original_receipt": "WP06.json",
+  "qualifying_receipt": "WP07.json",
+  "preserved_snapshot": ".discovery-work/wp06/accepted-candidate/manifest.json",
+  "change": "Migration0044 enforces one source lease and ties collection-plan request admission to the current bound slot/claim/fence. Existing accepted WP05/WP06 runtime files remain unchanged; duplicate preexisting leases reject the whole migration without choosing an owner.",
+  "preserved_runtime_and_test_hashes": {
+    "src/ingest/discovery/runtime-contract.ts": "fc2d2d85c30d462a3dee68a80dfc452cfcdd330bce1c42599d578e084b8566fc",
+    "src/ingest/discovery/source-registry.ts": "d30741724aed9ad051c689f91edcaa49649aad2e3c55c8757d5b019f9b42ffa9",
+    "src/ingest/discovery/endpoint.ts": "c68b45e9f1bda9d4ee86a13876a963a75ed9c420ac25a00f1c5567bd64c055dc",
+    "src/ingest/discovery/transport.ts": "2776bf5ea043300ddd984456e69957248f199a3a70cd5332f1c8a637907fdd6c",
+    "src/ingest/discovery/adapter.ts": "187236b801bf0191e894ff65552fca63352f6c1907f2ff6a57eac5a03ca993ad",
+    "migrations/0043_discovery_registry.sql": "733332e836bfe0c3c0dba2d5af343529e7f783aa4a0274b63e9518a02bf28b89",
+    "src/ingest/discovery-evidence-store.ts": "b366224eb46276f5143df0fc0df2b9b9ea546b98c363863fb0e0cdab96ce3ea6",
+    "test/discovery-transport.test.ts": "8ed479d609ea1e3886b2ece5111170ad7d1326450123ae21492f60a989af0b37"
+  },
+  "migration": {
+    "path": "migrations/0044_discovery_collection.sql",
+    "sha256": "94c84e6421620087b92919ee8550949d22922f4b679138257d1a2f96ee1f83fd"
+  },
+  "integration_stamp": {
+    "path": "src/lib/ops.ts",
+    "change": "SCHEMA_VERSION 0043 to0044 only versus accepted WP06",
+    "sha256": "dcc0a1e83a3992889fde331f2d0bd942c3f71a9fb4cf7ae90ec22ca751dcb2d7"
+  },
+  "validation": {
+    "wp06_tests_under_0001_0044": 21,
+    "stable_inputs": 14,
+    "migration_safety_checks": 6,
+    "root_npm_tests": 1193
+  },
+  "artifacts": {
+    ".discovery-work/wp07/compat/qualification.log": "4182b967bc8e38423c7f6e25adf528552fcabf08c9c1209329f1de591a309050",
+    ".discovery-work/wp07/compat/wp06-with-0044.test.ts": "c3a8a8d35e914fac0ca356be0da482f7ae546e3b50f33329a397e2b8bfed7d84",
+    ".discovery-work/wp07/compat-runs/2026-11-14T03-32-24-294Z-3359952/local-d1-results.json": "71fcb33a9f301b82129f25f981038643762157b43c2e9a6fd50093ea07217084",
+    ".discovery-work/wp07/migration-probe-final/run.mts": "78b62e867846237aad85ce35f2af210a9d1192427c078ceee0cf042c785966f4",
+    ".discovery-work/wp07/migration-probe-final/run.log": "55b099b0bfea564fab6f82776b4d6cda10cd2e0e240f7b03c798bf5cb8f19e60",
+    ".discovery-work/wp07/migration-probe-final/result.json": "e555d0319e07fbcda4d4d3b8841572c77352302676768f2dfe0611a3a70d4aee"
+  },
+  "limits": [
+    "Original WP06 receipt and original test are unchanged historical evidence. The compatibility copy changes only imports, retained input locations and migration upper bound.",
+    "All calls, identities and capabilities remain synthetic. Existing duplicate leases need separately reviewed operational reconciliation before any future remote migration; this local probe deleted only its synthetic duplicate.",
+    "No source activation, production migration, deployed behavior or public freshness is established."
+  ]
+}

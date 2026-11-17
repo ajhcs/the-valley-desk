@@ -1,0 +1,397 @@
+{
+  "title": "New Jersey research and account leads",
+  "observedDate": "2026-11-16",
+  "status": "private leads only; no admission or publication",
+  "publicationAuthorized": false,
+  "method": "Bounded primary source search index observations; source links are retained, not native GitHub checks. Prior county inventory reused. Campus or institutional geography never locates an individual or project. Source dates separate from observation date. No fulltext, source bodies, profiles, or code retained.",
+  "accounts": [
+    {
+      "account": "murthylab",
+      "accountUrl": "https://github.com/murthylab",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Murthy Lab; Princeton University",
+      "affiliationTimeScope": "undated page observed 2026-11-16; current role not independently verified",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://murthylab.princeton.edu/links",
+      "relationshipBasis": "Lab identifies its GitHub; individual ownership not asserted. ",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "undated page observed 2026-11-16; current role not independently verified",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/murthylab/GLMHMM",
+          "purpose": "neuroscience behavioral-state model",
+          "purposeSource": "https://murthylab.princeton.edu/links",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "url": "https://github.com/murthylab/DeepFlyTrack",
+          "purpose": "deep-network tracking of fly centroids",
+          "purposeSource": "https://murthylab.princeton.edu/links",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "url": "https://github.com/murthylab/FlyCaImAn",
+          "purpose": "volumetric calcium-imaging analysis",
+          "purposeSource": "https://murthylab.princeton.edu/links",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "url": "https://github.com/murthylab/leap",
+          "purpose": "animal body-part pose tracking",
+          "purposeSource": "https://murthylab.princeton.edu/links",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "PrincetonUniversity",
+      "accountUrl": "https://github.com/PrincetonUniversity",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Leifer Lab / Princeton Research Computing; Princeton University",
+      "affiliationTimeScope": "undated page observed 2026-11-16; current role not independently verified",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://funconn.princeton.edu/",
+      "relationshipBasis": "FunCoNN credits Leifer Lab and Princeton Research Computing; the linked repository is under institutional account. ",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "undated page observed 2026-11-16; current role not independently verified",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/PrincetonUniversity/neuron-graph",
+          "purpose": "functional neural connectivity visualization",
+          "purposeSource": "https://funconn.princeton.edu/",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "nickabattista",
+      "accountUrl": "https://github.com/nickabattista",
+      "accountType": null,
+      "person": "Nick Battista",
+      "institutionOrLab": "Nick Battista / Bioinspiration Lab; The College of New Jersey",
+      "affiliationTimeScope": "undated page observed 2026-11-16; current role not independently verified",
+      "region": {
+        "municipality": "Ewing",
+        "county": null,
+        "basis": "municipality only; county unverified",
+        "source": null
+      },
+      "accountLinkSource": "https://nickabattista.wixsite.com/home",
+      "relationshipBasis": "Lab page links IB2d under this account; personal identity is supported by the lab page. Nick Battista leads the TCNJ Bioinspiration Lab and is described as creator and contributor of numerical tools.",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "undated page observed 2026-11-16; current role not independently verified",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/nickabattista/IB2d",
+          "purpose": "fluid-structure interaction for biomechanics and mathematical physiology",
+          "purposeSource": "https://nickabattista.wixsite.com/home",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "marbd11",
+      "accountUrl": "https://github.com/marbd11",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "M. DelRocini, C. Angelini, G. Rasool; Rowan University",
+      "affiliationTimeScope": "2020 publication",
+      "region": {
+        "municipality": "Glassboro",
+        "county": "Gloucester",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://www.rowan.edu/about/visiting/west.pdf"
+      },
+      "accountLinkSource": "https://isip.piconepress.com/conferences/ieee_spmb/2020/papers/p01_17.pdf",
+      "relationshipBasis": "Paper links repository; account-holder identity and current affiliations are unknown. 2020 paper lists the three authors at Rowan Electrical and Computer Engineering, Glassboro.",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "2020 publication",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/marbd11/ctscan-stroke",
+          "purpose": "machine learning for CT head scan abnormalities",
+          "purposeSource": "https://isip.piconepress.com/conferences/ieee_spmb/2020/papers/p01_17.pdf",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "wanglabprinceton",
+      "accountUrl": "https://github.com/wanglabprinceton",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Wang lab research; Princeton University",
+      "affiliationTimeScope": "2018 publication",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://elifesciences.org/articles/36781v2",
+      "relationshipBasis": "Study links its data repository; account holder and project worksite unknown. 2018 study identifies Princeton Neuroscience Institute as author affiliation.",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "2018 publication",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/wanglabprinceton/accumulating_puffs",
+          "purpose": "cerebellar contribution to evidence accumulation",
+          "purposeSource": "https://elifesciences.org/articles/36781v2",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "leiferlab",
+      "accountUrl": "https://github.com/leiferlab",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Leifer Lab research; Princeton University",
+      "affiliationTimeScope": "2023 publication",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://www.nature.com/articles/s41586-023-06683-4",
+      "relationshipBasis": "Paper links four analysis repositories; do not infer individual ownership. 2023 research reports neural signal propagation and Princeton association; current individual roles require review.",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "2023 publication",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/leiferlab/pumpprobe",
+          "purpose": "neural signal propagation analysis",
+          "purposeSource": "https://www.nature.com/articles/s41586-023-06683-4",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "url": "https://github.com/leiferlab/wormdatamodel",
+          "purpose": "neural signal propagation analysis",
+          "purposeSource": "https://www.nature.com/articles/s41586-023-06683-4",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "url": "https://github.com/leiferlab/wormneuronsegmentation-c",
+          "purpose": "neural signal propagation analysis",
+          "purposeSource": "https://www.nature.com/articles/s41586-023-06683-4",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        },
+        {
+          "url": "https://github.com/leiferlab/wormbrain",
+          "purpose": "neural signal propagation analysis",
+          "purposeSource": "https://www.nature.com/articles/s41586-023-06683-4",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "BrainCOGS",
+      "accountUrl": "https://github.com/BrainCOGS",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Princeton U19 Software Tools; Princeton Neuroscience Institute",
+      "affiliationTimeScope": "undated page observed 2026-11-16; current role not independently verified",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://brainmaps.princeton.edu/",
+      "relationshipBasis": "PNI software blog links brain atlas toolkit; account ownership not established. ",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "undated page observed 2026-11-16; current role not independently verified",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/BrainCOGS/brain_atlas_toolkit",
+          "purpose": "brain atlas hierarchy navigation and visualization",
+          "purposeSource": "https://brainmaps.princeton.edu/",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "Singh-Lab",
+      "accountUrl": "https://github.com/Singh-Lab",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Singh Lab research; Princeton University",
+      "affiliationTimeScope": "2020 publication",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://www.cs.princeton.edu/~chazelle/pubs/Pertinint20.pdf",
+      "relationshipBasis": "Study links account and repository; person-to-account identity unresolved. 2020 research describes cancer driver gene analysis; current roles unknown.",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "2020 publication",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/Singh-Lab/PertInInt",
+          "purpose": "cancer driver genes with perturbed interactions",
+          "purposeSource": "https://www.cs.princeton.edu/~chazelle/pubs/Pertinint20.pdf",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "raphael-group",
+      "accountUrl": "https://github.com/raphael-group",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Raphael group research; Princeton University",
+      "affiliationTimeScope": "publication date requires confirmation",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://oar.princeton.edu/bitstream/88435/pr1vr80/1/SingleCellTumorPhylogenyInferenceMutationLosses.pdf",
+      "relationshipBasis": "Study links repository; personal account ownership not inferred. SCARLET publication supplies research-era affiliation; current roles unknown.",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "publication date requires confirmation",
+      "discoveredThisPass": false,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/raphael-group/scarlet",
+          "purpose": "single-cell tumor phylogeny inference",
+          "purposeSource": "https://oar.princeton.edu/bitstream/88435/pr1vr80/1/SingleCellTumorPhylogenyInferenceMutationLosses.pdf",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "banaiek",
+      "accountUrl": "https://github.com/banaiek",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Research author group; Princeton University",
+      "affiliationTimeScope": "2026 preprint",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://www.biorxiv.org/content/10.64898/2026.07.28.741366v1.full",
+      "relationshipBasis": "Preprint links analysis repository; account holder is not established. 2026 preprint lists Princeton Neuroscience Institute affiliation; individual account identity unresolved.",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "2026 preprint",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/banaiek/ephaptic_coupling",
+          "purpose": "neural population coding simulations and analyses",
+          "purposeSource": "https://www.biorxiv.org/content/10.64898/2026.07.28.741366v1.full",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    },
+    {
+      "account": "Brody-Lab",
+      "accountUrl": "https://github.com/Brody-Lab",
+      "accountType": null,
+      "person": null,
+      "institutionOrLab": "Brody Lab research; Princeton University",
+      "affiliationTimeScope": "2025 publication",
+      "region": {
+        "municipality": "Princeton",
+        "county": "Mercer",
+        "basis": "institution campus/site only; project worksite and person location unknown",
+        "source": "https://orpa.princeton.edu/institutional-information"
+      },
+      "accountLinkSource": "https://www.nature.com/articles/s41586-025-09528-4",
+      "relationshipBasis": "Paper links analysis code under account; no personal ownership inferred. 2025 research concerns neural dynamics during perceptual decisions; current individuals require separate verification.",
+      "sourceAccess": "primary search index rendering",
+      "sourceDate": "2025 publication",
+      "discoveredThisPass": true,
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/Brody-Lab/decision_dynamics_commitment",
+          "purpose": "neural dynamics during perceptual decisions",
+          "purposeSource": "https://www.nature.com/articles/s41586-025-09528-4",
+          "githubPageChecked": false,
+          "note": "Link and purpose from indexed primary source; GitHub native metadata and owner identity unverified."
+        }
+      ]
+    }
+  ],
+  "accountOnlyLeads": [],
+  "gaps": [
+    {
+      "county": "Burlington",
+      "seed": "Rowan College at Burlington County Mount Laurel",
+      "status": "county unverified; no account-to-project link found",
+      "source": "https://rcbc.edu/mount-laurel"
+    },
+    {
+      "county": "Camden",
+      "seed": "Rutgers-Camden and Cooper Medical School biomedical imaging core",
+      "status": "campus seed and imaging core found; no qualified account link found",
+      "source": "https://cmsru.rowan.edu/research/cores-and-shared-services/biomedical-imaging-core.html"
+    },
+    {
+      "county": "Mercer",
+      "seed": "TCNJ Bioinspiration Lab",
+      "status": "county of specific unit unverified; lab site gives TCNJ only",
+      "source": "https://nickabattista.wixsite.com/home"
+    }
+  ],
+  "failures": [
+    {
+      "url": "https://compmem.princeton.edu/resources/",
+      "outcome": "browser open HTTP 502; indexed result indicated a lab GitHub but account target unresolved; no retry"
+    }
+  ]
+}

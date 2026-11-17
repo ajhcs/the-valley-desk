@@ -1,0 +1,92 @@
+[
+  {
+    "source": "docs/discovery/interface-contracts.md",
+    "extraction": "All prose/headings/table cells; fenced TypeScript/pseudocode handled by dedicated contract/model checks, not lexical prose budgets.",
+    "argv": [
+      "python3",
+      "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/scripts/prose.py",
+      "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/final-freeze/interface-contracts-prose.txt",
+      "--kind",
+      "description",
+      "--sentence-words",
+      "70",
+      "--paragraph-words",
+      "200",
+      "--document-words",
+      "3500",
+      "--json"
+    ],
+    "exit": 0,
+    "report": {
+      "checker_version": "prose-1.0",
+      "claim_scope": "selected_lexical_prose_budgets",
+      "counts": {
+        "paragraphs": 64,
+        "sentences": 216,
+        "words": 2541
+      },
+      "diagnostic_limits": {
+        "findings": 100,
+        "snippet_characters": 240
+      },
+      "file": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/final-freeze/interface-contracts-prose.txt",
+      "findings": [],
+      "findings_truncated": false,
+      "kind": "description",
+      "limits": {
+        "document_words": 3500,
+        "paragraph_words": 200,
+        "sentence_words": 70
+      },
+      "returned_findings": 0,
+      "status": "pass",
+      "text_sha256": "7ed85302cb9ec9a599064c6fdc5fec02b725b6a1dbaa087de328c110fab8a9d1",
+      "total_findings": 0
+    }
+  },
+  {
+    "source": "docs/discovery/model-v0.5/README.md",
+    "extraction": "All prose/headings/table cells; fenced TypeScript/pseudocode handled by dedicated contract/model checks, not lexical prose budgets.",
+    "argv": [
+      "python3",
+      "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/scripts/prose.py",
+      "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/README-prose.txt",
+      "--kind",
+      "description",
+      "--sentence-words",
+      "70",
+      "--paragraph-words",
+      "200",
+      "--document-words",
+      "3500",
+      "--json"
+    ],
+    "exit": 0,
+    "report": {
+      "checker_version": "prose-1.0",
+      "claim_scope": "selected_lexical_prose_budgets",
+      "counts": {
+        "paragraphs": 53,
+        "sentences": 90,
+        "words": 787
+      },
+      "diagnostic_limits": {
+        "findings": 100,
+        "snippet_characters": 240
+      },
+      "file": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/wp02-successor/README-prose.txt",
+      "findings": [],
+      "findings_truncated": false,
+      "kind": "description",
+      "limits": {
+        "document_words": 3500,
+        "paragraph_words": 200,
+        "sentence_words": 70
+      },
+      "returned_findings": 0,
+      "status": "pass",
+      "text_sha256": "a109c55e4334cf080da7d04d0d1f606a2dab66d672639bbbd3d7af84c99f1efb",
+      "total_findings": 0
+    }
+  }
+]

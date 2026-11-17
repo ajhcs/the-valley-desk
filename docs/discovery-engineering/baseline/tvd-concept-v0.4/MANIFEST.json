@@ -1,0 +1,112 @@
+{
+  "revision": "TVD-CONCEPT-0.4",
+  "source_directory": "/workspace/worktrees/builderbob/thevalleydesk/work/tvd-concept-v0.4",
+  "selection": "Frozen authored model, independent check scopes, historical receipt, selected proof drivers and finite inputs. No source-site bodies, credentials, caches, environments or new proof outputs.",
+  "files": [
+    {
+      "path": "model/tvd-discovery.sysml",
+      "sha256": "2db650c71d7a8703ff01b814e1db84629b33c9de99b702e2d90bad30235387a9",
+      "bytes": 86916
+    },
+    {
+      "path": "model/tvd-discovery.english.json",
+      "sha256": "28078defd1f833b6ec83d894a2857e090f92e637468bca91a925f90ecebb1a85",
+      "bytes": 4101
+    },
+    {
+      "path": "proof-scope.json",
+      "sha256": "679e824c2f26273caac2474648a2b2aee3d234d3af2ce4d715033bdeb54ebb2b",
+      "bytes": 11846
+    },
+    {
+      "path": "proof-scope.sha256",
+      "sha256": "c652c2a6744a39f52a1756828841137b576bec4518d805a6bdd43244901ace6b",
+      "bytes": 65
+    },
+    {
+      "path": "review-scope.json",
+      "sha256": "993756f3200e59790a7e0488fe85edd33d90f645ab504b4004982fb7d9aeb319",
+      "bytes": 14448
+    },
+    {
+      "path": "review-scope.sha256",
+      "sha256": "c43757a3e9717248926a77c78efb8036e8aac38865b1b858f5a5c33eba39a5b5",
+      "bytes": 65
+    },
+    {
+      "path": "model-contract-scope.json",
+      "sha256": "3697971f003a8dc636177ad173e8a048be40d39ed31e99769f5a3b0abf74d653",
+      "bytes": 2009
+    },
+    {
+      "path": "model-contract-scope.sha256",
+      "sha256": "4b9d588442319ad1100ea318a68ee9a0effd52483df4b906965b5682171fad71",
+      "bytes": 65
+    },
+    {
+      "path": "validation/receipt.json",
+      "sha256": "fae78fac5d0be62980c5361589e7e92f43f3a1320ba3db88f9eeb6698f3c5d3f",
+      "bytes": 9356
+    },
+    {
+      "path": "requirements-proof.txt",
+      "sha256": "f17c4cd2125bcce9a1ec20619f060fa53928c0d092fbe73432fb2659e578887a",
+      "bytes": 98
+    },
+    {
+      "path": "tools/verify_mathematics.py",
+      "sha256": "b76b596d0e7086c7aae019abbf0026cd6a2e8cec7c6eb90cd27d6100624584c0",
+      "bytes": 23417
+    },
+    {
+      "path": "tools/verify_controls.py",
+      "sha256": "446848b6d8c32dbda15c9205e170d33dac4fc68286571965ac487fe29ac94dfe",
+      "bytes": 3337
+    },
+    {
+      "path": "tools/check_record_scope.py",
+      "sha256": "3c55e636efb9d27cdbb00cc6a9088c927e580c8c0c55e3d26a20f08b08b71ca5",
+      "bytes": 1763
+    },
+    {
+      "path": "proofs/finite-model.json",
+      "sha256": "bc4fbfe1baba6ad0c1ca6bbda01b634aee9b206eb47f6ec3da80f515cdf94827",
+      "bytes": 12081
+    },
+    {
+      "path": "proofs/finite-manifest.json",
+      "sha256": "4bfa3185f9eede45385f82910f207f96e4d82cf725fe43325721a1e81cf51b75",
+      "bytes": 279
+    },
+    {
+      "path": "proofs/function-flow.json",
+      "sha256": "3add418f1a3826457522c1114e836113eb1c63bb891597a41ace27f1809dca7b",
+      "bytes": 19214
+    },
+    {
+      "path": "proofs/native-bindings.json",
+      "sha256": "e8b068b058f7129f85eb46aa2bc07b74c181442caf4b92dc2071f85b367ec9b2",
+      "bytes": 7171
+    },
+    {
+      "path": "evidence/accepted-direction.md",
+      "sha256": "d37b58f7d2bc70baeed077b86923613ee78eeb54b51f41155fc40c60ed1f7039",
+      "bytes": 959
+    },
+    {
+      "path": "evidence/design-policy.md",
+      "sha256": "7ad2c26d59d0bf458480e16b425e35ca14cac53a0fa89639c3c8d52f111d7de0",
+      "bytes": 1922
+    },
+    {
+      "path": "evidence/geography-policy.json",
+      "sha256": "c1308298ff89b0e8f511704fcd8e3a73287e6bb6ac8fffedd9d743cdc275aa0f",
+      "bytes": 639
+    },
+    {
+      "path": "evidence/source-research.json",
+      "sha256": "45cbbc0bf7ee5e8910c4f748af9ddce994ec257842553084a5601b0e96f51b82",
+      "bytes": 7334
+    }
+  ]
+}

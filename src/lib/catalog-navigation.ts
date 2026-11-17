@@ -1,5 +1,5 @@
 function separateReadSurface(pathname: string) {
-  return /^\/(?:policy-watch|technology-watch)(?:\/|$)/.test(pathname) || /^\/policy\/?$/.test(pathname);
+  return /^\/(?:policy-watch|technology-watch)(?:\/|$)/.test(pathname) || /^\/(?:policy|discover)\/?$/.test(pathname);
 }
 
 export function catalogDependentPath(pathname: string) {

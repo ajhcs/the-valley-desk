@@ -1,0 +1,513 @@
+{
+  "id": "TVD-DISCOVERY-WP11-INTEGRATION-1",
+  "recorded_at": "2026-11-15T19:17:22.031027+00:00",
+  "reviewed_code_commit": "e0a24309459a690b4cdd3e17c9c70f50700b092e",
+  "entry_revision": "dcb2b10744fcac6bcfed26953de93c14f478b70c",
+  "checkout": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113",
+  "branch": "codex/discovery-implementation-20261113",
+  "disposition": "accepted_local_implementation",
+  "checks": {
+    "enumerated_tests": {
+      "status": "all_passed_across_completed_bounded_groups",
+      "tests": 1318,
+      "primary": 937,
+      "watch_launch": 146,
+      "discovery": 235,
+      "groups": {
+        "primary-final-a": {
+          "tests": 552,
+          "pass": 552,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "primary-final-b": {
+          "tests": 385,
+          "pass": 385,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "watch-final": {
+          "tests": 146,
+          "pass": 146,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-collection": {
+          "tests": 33,
+          "pass": 33,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-core": {
+          "tests": 116,
+          "pass": 116,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-crossref": {
+          "tests": 10,
+          "pass": 10,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-transport": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-providers": {
+          "tests": 34,
+          "pass": 34,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        },
+        "discovery-arxiv": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0
+        }
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "all_explicit_discovery_files_executed": 16,
+    "discovery_typecheck": "pass",
+    "application_typecheck_and_build": "pass; existing chunk exceeds500kB",
+    "mandatory_pdf": {
+      "tests": 7,
+      "status": "pass"
+    },
+    "isolated_local_ops_smoke": "pass",
+    "secret_scan": "pass; final committed document scan also performed separately",
+    "input_count": 584,
+    "input_drift": [],
+    "post_qualification_fixture_cleanup": [
+      {
+        "path": "test/fixtures/discovery-sources/arxiv/v1.xml",
+        "beforeSha256": "225122b0d0a27b43ba6d8783e5605bbaeca5f8941b7ccd47db56b8f09634823a",
+        "afterSha256": "07ce51b39ae2330e1705c976305b99805963e58fea22590f36a0540895017c9f",
+        "onlyBlankLineIndentationChanged": true,
+        "trimmedNamespaceAwareTreeEqual": true
+      },
+      {
+        "path": "test/fixtures/discovery-sources/arxiv/unversioned.xml",
+        "beforeSha256": "32b6ddaf4adb26480b7b384ed4656a9af12db23b327ee2ec9d9200f052ad5417",
+        "afterSha256": "3881849491177ee1d368137a8f8ce92957a881da7f73fb430609acb6d0834a4b",
+        "onlyBlankLineIndentationChanged": true,
+        "trimmedNamespaceAwareTreeEqual": true
+      },
+      {
+        "path": "test/fixtures/discovery-sources/arxiv/foreign-entry.xml",
+        "beforeSha256": "302410e5f7ab64467f2a5de32e5f0c5f0a5f03be6e52e46aa8997088a7536e1f",
+        "afterSha256": "2c970493c2b4587b526d19c1e63f5fa9d1f60a986bf78ff1faabe84f303f4e81",
+        "onlyBlankLineIndentationChanged": true,
+        "trimmedNamespaceAwareTreeEqual": true
+      }
+    ],
+    "terra_wp11": {
+      "tests": 21,
+      "actual_d1": true,
+      "included_in_discovery": true,
+      "strict_standalone_typecheck": "pass"
+    },
+    "astra_wp11": {
+      "independent_snapshot_probes": 41,
+      "additional_actual_d1_initial_offset_guard": 1,
+      "status": "pass; root reran final probes; not added to1318"
+    },
+    "wp03_case_selection": {
+      "permanent_signed_test": 1,
+      "descriptor_context_source_mutations": 20,
+      "astra_additional_checks": 9,
+      "old_authentic_selections_rejected": 561,
+      "fully_fictional_cases": 561,
+      "fully_fictional_signed_receipts": 5057,
+      "actual_cases": 0,
+      "freeze_issued": false,
+      "mandatory_re_attestation": true
+    },
+    "dependency_audit": {
+      "exit_code": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 1,
+        "moderate": 2,
+        "high": 4,
+        "critical": 0,
+        "total": 7
+      }
+    }
+  },
+  "outputs": {
+    "src/ingest/discovery/arxiv.ts": "ab65fd6911543c551c401b8a4bc63a3d305149f65315e62c8ac962ec24cb92ce",
+    "src/ingest/discovery-evaluation.ts": "cf088cfa1d8f36f69884abb6e7fa954f568005e5ca563cc6ceb405944af23a8d",
+    "test/discovery-arxiv.test.ts": "ab5c19d7fd1e06fa5920ef8e908b62b7027e82dcb0cfd563793fa5f571cf01ca",
+    "test/discovery-reference-case-binding.test.ts": "990c4b4f5f8d8319bd72ebe0b659aa556d1d206fa1af6b86cdc57e75984681b8",
+    "package.json": "4969f7120131f1a05ee1853b3b0ec12adc90723922a186b43a6c04208c71953a",
+    "docs/discovery/implementation-decisions.md": "8a836737f6b3c69d01d56ae4b099cf1c7dacd8f309824dfa838c5e75f72a3b0d",
+    "docs/discovery/wp11-evidence-plan.md": "34c880a98507cf6b42e8a79f4f5f1e1677c0086befce15c0276598f3e12552d0",
+    "docs/discovery/wp03-case-selection-binding.md": "1f937b091059423587fcd495a3798e51305e7f91fe84eaca1fad4cf850e5166e",
+    "docs/discovery/evaluation-protocol.md": "a425bd109e9526da7bc36603596ee28a5313944de0904745f952c451d6cdd082",
+    "test/fixtures/discovery-sources/arxiv/v2.xml": "227e476e82352d74f4fef998bcb7fbdda17ef65cd2f2ae63ddc5b2415b2847cd",
+    "test/fixtures/discovery-sources/arxiv/README.md": "0ae94aad6c32e8dc1ce526796ce4a24da3c994f9809e8f26c2530570c96881d1",
+    "test/fixtures/discovery-sources/arxiv/v1.xml": "07ce51b39ae2330e1705c976305b99805963e58fea22590f36a0540895017c9f",
+    "test/fixtures/discovery-sources/arxiv/identifier-truth-table.json": "6e57b49acae38aec824ee62fcbf9f2956fec0086941ac0bd48bd1d9b885ad945",
+    "test/fixtures/discovery-sources/arxiv/unversioned.xml": "3881849491177ee1d368137a8f8ce92957a881da7f73fb430609acb6d0834a4b",
+    "test/fixtures/discovery-sources/arxiv/foreign-entry.xml": "2c970493c2b4587b526d19c1e63f5fa9d1f60a986bf78ff1faabe84f303f4e81",
+    "test/fixtures/discovery-sources/arxiv/scope.json": "ba1b6da53d4ad59ea69d26c0750c36f9bbbc61685bb815a0efb4dacf2cdb73bd",
+    "test/fixtures/discovery-sources/arxiv/unknown-license.xml": "f02b2d5ffc2eb670ec8f8217fb9fecc4d448913acf014239af476c7124dee652",
+    "test/fixtures/discovery-sources/arxiv/hostile-entity.xml": "36063b049c2a79b79496cb5226ef7914744456e3f84803b38f4b25adffbd3901",
+    "docs/discovery/reviews/wp11-sol.md": "7ab0177d58e0ebb438f2041071e41698c34c32595343929f8022f06f45acad43",
+    "docs/discovery/reviews/wp11-terra.md": "a85e91c7aa402d6d724e29a8421c87ab8283e2405568c434a8a1272d14460d09",
+    "docs/discovery/reviews/wp11-astra.md": "389a857b3e2d64c58503ecd650ec5ffb115cb7eeeee5747f2657130db3fc50f0",
+    "docs/discovery/reviews/wp11-orchestrator.md": "b82eff1e8fe04cc2f63d310c637180f2eef1ddb89107c77c86d18ce02bb96753",
+    "docs/discovery/reviews/wp03-sol-case-binding.md": "178f98b8dad2a16eda54117a7bfa132e0c7ce066c4ab028c3cac73ae6e1f77ea",
+    "docs/discovery/reviews/wp03-terra-case-binding.md": "6d45ec9a80d91cb5cdd22530b23964b7906e5a6f1970c31a6c8eb30692568ef5",
+    "docs/discovery/reviews/wp03-astra-case-binding.md": "6e36bcfedc889f0b4babb91b7e9d1d2ae1ef912ab3e1adf556af105ac6875226"
+  },
+  "artifacts": {
+    ".discovery-work/wp11/root-final/completed-groups.json": "52a7a6da61679224a1ff1643eda41ffcf9f24e94a2e2217d1897f447624cd090",
+    ".discovery-work/wp11/root-final/types.log": "8096a1cdf4a03a83d5c0f167a9106deb1075fc86d38e42ad1a235b3988c172d6",
+    ".discovery-work/wp11/root-final/fixture-cleanup-files.json": "49ae5238bf6f6bdd73dceb0b80e73b477e866d93eb052205f692753cad5d4a9b",
+    ".discovery-work/wp11/root-final/astra-rerun.json": "0aaf795aa62127b11e3c7e60debcf9c49d265a4971753374ebe99818684d2aa3",
+    ".discovery-work/wp11/root-final/primary-final-a.log": "1f78723143e4a02b667244dd8d6a37b8997c7065b26f02d057d5e97d4b734962",
+    ".discovery-work/wp11/root-final/fixture-cleanup-result.json": "8180f6ec2fb5d42841f05ab941548346925722b32ee0ad7e8d3b89a23c98cdfb",
+    ".discovery-work/wp11/root-final/astra-case-binding.log": "4ace1f499453bf91e0e5b68b2da1f4bc4a792fd11571765877b3c03976f0c120",
+    ".discovery-work/wp11/root-final/primary-final-a.json": "583950df033d86d47c18020d3155902de11150ea483ff952e975fdcb134f34cd",
+    ".discovery-work/wp11/root-final/input-sha256.json": "b99285675653d95108409ed13825a0535ce088e75d362785580ade774f0e69a0",
+    ".discovery-work/wp11/root-final/audit-current.json": "8a841b09983c4f961e412f062c75959092f4d7ccc4fcdf1b243097cf3a2a0b06",
+    ".discovery-work/wp11/root-final/record-acceptance.py": "088582b34a0384082e50d6824ddabfa92488ecbccd62d43638417fdbc94adf63",
+    ".discovery-work/wp11/root-final/build.log": "10e518e03a0f2b604d836e31e88cfa0479020175440858dee6170600c2f39e4b",
+    ".discovery-work/wp11/root-final/final-checks.json": "56934ed0ea8182d1864cbeb59d46250f6c0ca07dae9b307c3f151fe1d3df9e4c",
+    ".discovery-work/wp11/root-final/discovery-arxiv.log": "b02694a4dec6d7351f6d2602c435297789e8a20971add431e6d484ea96a93723",
+    ".discovery-work/wp11/root-final/primary-final-b.json": "1108131cb08552b21d6c49aa4103e7262ff82f21bc20a26a9122e59b4c47ea8c",
+    ".discovery-work/wp11/root-final/run-final-regression.py": "c4acdfb87e329a3afb589a754f22fd1b91d0e9f76c97d0bf248f05bba453d4ed",
+    ".discovery-work/wp11/root-final/ops-smoke.log": "4f5afd5e496772a645d1fefff0d7a003945f2601033c02b95e7f0109290b4ad3",
+    ".discovery-work/wp11/root-final/prior-head-ci.json": "6e98c2f39542db38f6160c9a5ca927afb0a06a622c23acfbe76ea3537f674ba3",
+    ".discovery-work/wp11/root-final/watch-final.json": "22da5a1d2c2fe417abca3d455299ac5dbce937f21497af16b52379b66dca585a",
+    ".discovery-work/wp11/root-final/secret-scan-candidate.log": "0fb44562bdf1d4fc92285b6e9a8e8151081e339c9d094d915cf500d768897c45",
+    ".discovery-work/wp11/root-final/primary-final-b.log": "f8b0c29af709f4c7f213115fd5ec80bee4c3476d15b639e6ec5b0bd54b93e485",
+    ".discovery-work/wp11/root-final/audit-result.json": "8ad5d5ea4b4b31e5565eed66b63222a8071e3cb93ccc1b67eb0d090b3b5bff3d",
+    ".discovery-work/wp11/root-final/discovery-core.log": "56a185fdd1b3528be4806f5750b5dc97392b4eda7f602dce65ac3676b9b56ccf",
+    ".discovery-work/wp11/root-final/pdf.log": "425568560c2963071f91f0e3326146437d4cd4335867125ffd44f58d639a1d86",
+    ".discovery-work/wp11/root-final/astra-arxiv.log": "338af3f2f23e41cc49b82fc69d968b18f89abfd9ea82bc0cb90f1e7bd10bc197",
+    ".discovery-work/wp11/root-final/frozen-manifests.json": "4e0f74507b31ea4a250790e73d8cca85e9473acbac9ccdc0e2c89ee693c358c3",
+    ".discovery-work/wp11/root-final/watch-final.log": "e1b6104531520fb8bfa70088d3acad8bda000208d8046f21eb2782bd38654968",
+    ".discovery-work/wp11/root-final/native-model-inputs.json": "884b9e4d23a053b89ab98ad185b841485121579266229345e7d23e716b9bf2b6",
+    ".discovery-work/wp11/root-final/discovery-collection.log": "eff09d2c4b130862bfab82f6cd02f92e67bf8c0cb1ad3c3f498c1f690bb33577",
+    ".discovery-work/wp11/root-final/fixture-cleanup.log": "05ace2b0ca0f055b47a87bacb2436ec1b183908da7a1dbfed12f8dd11f7f042f",
+    ".discovery-work/wp11/root-final/discovery-crossref.log": "aac8a4c284124279045bf0d5565c0c2af40d07a6d65e26a584b037569e7e329a",
+    ".discovery-work/wp11/root-final/discovery-transport.log": "5c78cbf50dd2f23c2c996b46b14dd39e945b8d887b0f02fc57eba661747580f3",
+    ".discovery-work/wp11/root-final/fixture-cleanup-before-import-fix.log": "d968bd1630353f2215bf32a0cd44672a361457c6324621c41bb09a990b89bb50",
+    ".discovery-work/wp11/root-final/discovery-providers.log": "6963fd49a6f4abfc7705a64eb003f7e8f38cd15af8bc650c75e627eef41593d1",
+    ".discovery-work/wp11/root-final/inputs.py": "b8dbd8e58c9d249ac883a0de1e22f10e481fe60a80efbdcca66476ce39f97085",
+    ".discovery-work/wp11/root-final/input-sha256-qualified.json": "2a454e6f9283d9c832b0eac1c8dd25fb4d988bc0bcab95b8475c043f8cb2e1a9",
+    ".discovery-work/wp11-terra/final-rate.tap": "0c4f54e3e88645de8a0ccdd128d5954d393e12e7ae2f6caf023944e94b279a5a",
+    ".discovery-work/wp11-terra/final-identifier.tap": "84fe65d1f3d34280652c53fe9543249d00485ad7d7b475e383555ba9419c73f3",
+    ".discovery-work/wp11-terra/final-chain.tap": "085145132b6dcf257aee3901a4cefa893ab668dea1c22f396a62dc7fd0a4aa11",
+    ".discovery-work/wp11-terra/final-versions.tap": "a665c86cbaf1ed056e804502aab2b8e798d1c7862722a3dc5e134c9408c9a600",
+    ".discovery-work/wp11-terra/final-xml.tap": "0c118952142be53c5a1a055dda71fd9d4249493527f3237d08de53d00d60b1ed",
+    ".discovery-work/wp11-terra/final-caps.tap": "3f9c46d1f3a8f2d873389b6d5517df72f98af24e20a5d20cdf663ada975aae54",
+    ".discovery-work/wp11-terra/final-before.sha256": "b6ae08d02797e245d39ab895540ae0d24ebb2573a1832b278492df10e8e71dfe",
+    ".discovery-work/wp11-terra/final-after.sha256": "b6ae08d02797e245d39ab895540ae0d24ebb2573a1832b278492df10e8e71dfe",
+    ".discovery-work/wp11-terra/final-typecheck.tap": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".discovery-work/wp11-astra/adapter-final2.log": "338af3f2f23e41cc49b82fc69d968b18f89abfd9ea82bc0cb90f1e7bd10bc197",
+    ".discovery-work/wp11-astra/case-binding-permanent.log": "7b9f0c532bf1b9d59c85f75e9a16259c138b751928afbad087a7855a16b8cebc",
+    ".discovery-work/wp11-astra/case-binding-independent.log": "4ace1f499453bf91e0e5b68b2da1f4bc4a792fd11571765877b3c03976f0c120",
+    ".discovery-work/wp11-astra/initial-offset.log": "1c97ddfd5616f17b8c1ac65140391e4c6d513026b98fb97a144fc65f96e59e8e"
+  },
+  "commands": [
+    {
+      "name": "discovery-collection",
+      "files": [
+        "test/discovery-collection.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-collection.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-core",
+      "files": [
+        "test/discovery-contracts.test.ts",
+        "test/discovery-evaluation.test.ts",
+        "test/discovery-identities.test.ts",
+        "test/discovery-evidence.test.ts",
+        "test/discovery-reference-receipts.test.ts",
+        "test/discovery-reference-signatures.test.ts",
+        "test/discovery-reference-cli.test.ts",
+        "test/discovery-reference-case-binding.test.ts",
+        "test/regional-publications.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-contracts.test.ts",
+        "test/discovery-evaluation.test.ts",
+        "test/discovery-identities.test.ts",
+        "test/discovery-evidence.test.ts",
+        "test/discovery-reference-receipts.test.ts",
+        "test/discovery-reference-signatures.test.ts",
+        "test/discovery-reference-cli.test.ts",
+        "test/discovery-reference-case-binding.test.ts",
+        "test/regional-publications.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-crossref",
+      "files": [
+        "test/discovery-crossref.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-crossref.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-transport",
+      "files": [
+        "test/discovery-transport.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-transport.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-providers",
+      "files": [
+        "test/discovery-collector.test.ts",
+        "test/discovery-github.test.ts",
+        "test/discovery-pubmed.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-collector.test.ts",
+        "test/discovery-github.test.ts",
+        "test/discovery-pubmed.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "discovery-arxiv",
+      "files": [
+        "test/discovery-arxiv.test.ts"
+      ],
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/discovery-arxiv.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        ".discovery-work/wp11/run.sh",
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/theme.test.ts",
+        "test/query-contracts.test.ts",
+        "test/cloudflare-ops.test.ts",
+        "test/ops-jwt.test.ts",
+        "test/brand-prod.test.ts",
+        "test/events-ingest.test.ts",
+        "test/news-extraction.test.ts",
+        "test/pagination.test.ts",
+        "test/executive-intelligence.test.ts",
+        "test/leadership-health-repair.test.ts",
+        "test/leadership-markup-capture.test.ts",
+        "test/leadership-dom-preview.test.ts",
+        "test/retained-leadership-evaluator.test.ts",
+        "test/leadership-dom-production.test.ts",
+        "test/leadership-contract-preparation.test.ts",
+        "test/ops-diagnostic-correctness.test.ts",
+        "test/ops-recovery-ordering.test.ts",
+        "test/ops-incident-replay.test.ts",
+        "test/leadership-source-quality.test.ts",
+        "test/editor-scheduler-coverage.test.ts",
+        "test/editor-lanes.test.ts",
+        "test/editor-model-resilience.test.ts",
+        "test/official-source-discovery.test.ts"
+      ],
+      "exit_code": 0,
+      "seconds": 24.12
+    },
+    {
+      "command": [
+        ".discovery-work/wp11/run.sh",
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-concurrency=1",
+        "test/policy-detail-audit.test.ts",
+        "test/policy-background.test.ts",
+        "test/policy-pdf-integration.test.ts",
+        "test/signal-verification.test.ts",
+        "test/social-evidence.test.ts",
+        "test/watch-legacy-contracts.test.ts",
+        "test/watch-contracts.test.ts",
+        "test/watch-model-evaluation.test.ts",
+        "test/watch-persistence.test.ts",
+        "test/watch-d1.test.ts",
+        "test/watch-adapters.test.ts",
+        "test/watch-representatives.test.ts",
+        "test/news-event-filters.test.ts",
+        "test/news-event-crawler.test.ts",
+        "test/watch-ui-contracts.test.ts",
+        "test/watch-delivery.test.ts",
+        "test/watch-routing.test.ts",
+        "test/editor-cache-provenance.test.ts",
+        "test/watch-review-packets.test.ts",
+        "test/regional-evidence.test.ts",
+        "test/regional-contracts.test.ts",
+        "test/regional-coverage.test.ts",
+        "test/regional-read-view.test.ts",
+        "test/regional-evidence-review-api.test.ts"
+      ],
+      "exit_code": 0,
+      "seconds": 20.5
+    },
+    {
+      "command": [
+        ".discovery-work/wp11/run.sh",
+        "npm",
+        "run",
+        "test:watch-launch"
+      ],
+      "exit_code": 0,
+      "seconds": 22.56
+    },
+    {
+      "name": "types",
+      "command": [
+        "npm",
+        "run",
+        "test:discovery:types"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "pdf",
+      "command": [
+        "npm",
+        "run",
+        "test:policy-pdf"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "ops-smoke",
+      "command": [
+        "npm",
+        "run",
+        "ops:smoke"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "environment": "sanitized pinned workspace Node22.23.2; unchanged HOME; workspace-only TMP/XDG/npm caches; telemetryoff; actual localD1 envFiles:[],persist:false,remoteBindings:false; closed synthetic egress",
+  "input_manifest": ".discovery-work/wp11/root-final/input-sha256.json",
+  "input_manifest_sha256": "b99285675653d95108409ed13825a0535ce088e75d362785580ade774f0e69a0",
+  "runtime_qualification_manifest": ".discovery-work/wp11/root-final/input-sha256-qualified.json",
+  "runtime_qualification_manifest_sha256": "2a454e6f9283d9c832b0eac1c8dd25fb4d988bc0bcab95b8475c043f8cb2e1a9",
+  "lockfile_sha256": "f90749d123fe5d553057a037188af6a827367aa6bc427e84ccc25a3c4218fe05",
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "native_model_inputs_changed": false,
+  "frozen_manifests": [
+    {
+      "manifest": "docs/discovery-engineering/HANDOFF-MANIFEST.json",
+      "entries": 70,
+      "mismatches": []
+    },
+    {
+      "manifest": "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json",
+      "entries": 21,
+      "mismatches": []
+    }
+  ],
+  "prior_head_ci": {
+    "head": "dcb2b10744fcac6bcfed26953de93c14f478b70c",
+    "run_id": 43748738007,
+    "job_id": 132917734218,
+    "conclusion": "failure",
+    "tests": "success",
+    "pdf": "success",
+    "build": "success",
+    "smoke": "success",
+    "audit": "failure",
+    "ci_secret_scan": "skipped",
+    "observed_this_turn": true
+  },
+  "pr_url": "https://github.com/ajhcs/the-valley-desk/pull/30",
+  "pr_state": "draft",
+  "deployment_performed": false,
+  "production_state_changed": false,
+  "limits": [
+    "Local implementation acceptance only; no actual arXiv access/rights/retention, recurring pacing or E04 qualification.",
+    "Private leads and proposed identity/version/DOI/license/status relations; no SourcePage/catalog/person/regional/current-employment admission or peer-review upgrade.",
+    "Restricted identifier/Atom/text/48kB subset can reject legitimate provider metadata. Unversioned remains version unknown; no inferred v1.",
+    "Offset completion is bounded observed traversal, not an immutable snapshot or provider/regional recall; equal-total membership churn can evade detection.",
+    "WP03 v2 requires accountable re-attestation of legacy partial selection receipts; no automatic signing/migration or legacy fallback.",
+    "Case-selection attestation is not a signed whole manifest or freeze. Real trust, rights, independent humans, sources, corpus, recall, sampling/history and accountable freeze remain absent.",
+    "Actual manifest remains zero cases, blocked/not_frozen; E01-E06 not_run.",
+    "Unchanged lockfile retains four high/seven total advisories; release/CI audit blocked.",
+    "Native model and frozen handoff unchanged; no new native proof or operational validation claim.",
+    "No merge, deployment, remote migration, real enrollment, source publication, service or scheduler activation."
+  ]
+}

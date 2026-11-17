@@ -1,3 +1,4 @@
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import coverageDoc from "../../fixtures/coverage-pack-v1.json";
 import linkedInInventoryDoc from "../../fixtures/linkedin-notification-targets.json";
@@ -33,7 +34,7 @@ export const FIRST_WAVE_COVERED_SHORT_NAMES = [
   "St. Luke's",
 ] as const;
 
-const HttpsUrl = z.string().url().refine((value) => {
+const HttpsUrl = legacyUrl().refine((value) => {
   try {
     const parsed = new URL(value);
     return parsed.protocol === "https:" && !parsed.username && !parsed.password;

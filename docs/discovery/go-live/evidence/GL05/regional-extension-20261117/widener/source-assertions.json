@@ -1,0 +1,401 @@
+{
+  "schemaVersion": "regional-source-intake-v1",
+  "batch": "widener",
+  "visibility": "private",
+  "publicationAuthorized": false,
+  "sourceThreadId": "01a1e720-cc2d-7980-9585-3722406659a0",
+  "records": [
+    {
+      "id": "widener:repositories.csv#row=2",
+      "kind": "repository",
+      "url": "https://github.com/alikhogali/Covidapp",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=2",
+      "metadata": {
+        "repository": "alikhogali/Covidapp",
+        "github_url": "https://github.com/alikhogali/Covidapp",
+        "relationship": "Widener student project",
+        "project": "COVID news and symptom checker",
+        "account_owner": "personal student account",
+        "public_content": "source code",
+        "source_1": "https://www.widener.edu/events/sciences-student-projects-day",
+        "source_2": "https://github.com/alikhogali/Covidapp/blob/master/README.md",
+        "attribution_notes": "Khogali and Oomen; Yoon advised. README says 70% complete. Not established as a named biomedical-lab repository.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=3",
+      "kind": "repository",
+      "url": "https://github.com/alikhogali/Covid19app",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=3",
+      "metadata": {
+        "repository": "alikhogali/Covid19app",
+        "github_url": "https://github.com/alikhogali/Covid19app",
+        "relationship": "Widener student project",
+        "project": "COVID news and symptom checker",
+        "account_owner": "personal student account",
+        "public_content": "ZIP containing source code",
+        "source_1": "https://www.widener.edu/events/sciences-student-projects-day",
+        "source_2": "https://www.wayup.com/profile/Ali-Khogali-78bb5b5547/",
+        "attribution_notes": "Six Java files in ZIP matched files in Covidapp; same project, not another independent project.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=4",
+      "kind": "repository",
+      "url": "https://github.com/sawsimeon/MLSF-PDL1",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=4",
+      "metadata": {
+        "repository": "sawsimeon/MLSF-PDL1",
+        "github_url": "https://github.com/sawsimeon/MLSF-PDL1",
+        "relationship": "collaborator research",
+        "project": "Cancer drug-discovery modeling",
+        "account_owner": "external collaborator account",
+        "public_content": "study code",
+        "source_1": "https://pubmed.ncbi.nlm.nih.gov/38280715/",
+        "source_2": "https://www.widener.edu/news/noteworthy/engineering-professor-and-international-collaborators-publish-artificial-intelligence-enabled-cancer",
+        "attribution_notes": "Widener NanoBio director Sachin Patil coauthored; external collaborator hosts the repository.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=5",
+      "kind": "repository",
+      "url": "https://github.com/mahdiaarabi/QSAR-Kinase-Inhibitor",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=5",
+      "metadata": {
+        "repository": "mahdiaarabi/QSAR-Kinase-Inhibitor",
+        "github_url": "https://github.com/mahdiaarabi/QSAR-Kinase-Inhibitor",
+        "relationship": "Widener researcher personal project",
+        "project": "Kinase inhibitor property prediction",
+        "account_owner": "personal faculty account",
+        "public_content": "source and data",
+        "source_1": "https://www.widener.edu/about/faculty-directory/mahdi-matt-aarabi",
+        "source_2": "https://www.linkedin.com/in/mahdi--aarabi",
+        "attribution_notes": "Aarabi is Widener faculty; project date and lab ownership were not established.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=6",
+      "kind": "repository",
+      "url": "https://github.com/mahdiaarabi/Molecular-Property-Data-Pipeline",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=6",
+      "metadata": {
+        "repository": "mahdiaarabi/Molecular-Property-Data-Pipeline",
+        "github_url": "https://github.com/mahdiaarabi/Molecular-Property-Data-Pipeline",
+        "relationship": "Widener researcher personal project",
+        "project": "Molecular property data analysis",
+        "account_owner": "personal faculty account",
+        "public_content": "source and data",
+        "source_1": "https://www.widener.edu/about/faculty-directory/mahdi-matt-aarabi",
+        "source_2": "https://www.linkedin.com/in/mahdi--aarabi",
+        "attribution_notes": "Aarabi is Widener faculty; project date and lab ownership were not established.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=7",
+      "kind": "repository",
+      "url": "https://github.com/makiafausta-netizen/Semi-Autonomous-Electric-Wheelchair",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=7",
+      "metadata": {
+        "repository": "makiafausta-netizen/Semi-Autonomous-Electric-Wheelchair",
+        "github_url": "https://github.com/makiafausta-netizen/Semi-Autonomous-Electric-Wheelchair",
+        "relationship": "Widener student project",
+        "project": "Semi-autonomous wheelchair",
+        "account_owner": "personal student account",
+        "public_content": "documentation and images",
+        "source_1": "https://www.widener.edu/news/noteworthy/2025-surca-symposium-winners",
+        "source_2": "https://github.com/makiafausta-netizen/Semi-Autonomous-Electric-Wheelchair",
+        "attribution_notes": "Makia project advised by Song. README says full robot source is not public; lab ownership not established.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=8",
+      "kind": "repository",
+      "url": "https://github.com/makiafausta-netizen/Semi-autonomous-wheelchair-project",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=8",
+      "metadata": {
+        "repository": "makiafausta-netizen/Semi-autonomous-wheelchair-project",
+        "github_url": "https://github.com/makiafausta-netizen/Semi-autonomous-wheelchair-project",
+        "relationship": "Widener student project",
+        "project": "Semi-autonomous wheelchair",
+        "account_owner": "personal student account",
+        "public_content": "portfolio HTML and images",
+        "source_1": "https://www.widener.edu/news/noteworthy/2025-surca-symposium-winners",
+        "source_2": "https://makiafausta-netizen.github.io/Semi-autonomous-wheelchair-project/",
+        "attribution_notes": "Same wheelchair effort; portfolio source, not robot control implementation.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=9",
+      "kind": "repository",
+      "url": "https://github.com/makiafausta-netizen/Semi_Autonomous_Mobility_System",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=9",
+      "metadata": {
+        "repository": "makiafausta-netizen/Semi_Autonomous_Mobility_System",
+        "github_url": "https://github.com/makiafausta-netizen/Semi_Autonomous_Mobility_System",
+        "relationship": "Widener student project",
+        "project": "Semi-autonomous wheelchair",
+        "account_owner": "personal student account",
+        "public_content": "portfolio HTML",
+        "source_1": "https://www.widener.edu/news/noteworthy/2025-surca-symposium-winners",
+        "source_2": "https://github.com/makiafausta-netizen/Semi_Autonomous_Mobility_System",
+        "attribution_notes": "Same wheelchair effort; portfolio source, not robot control implementation.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=10",
+      "kind": "repository",
+      "url": "https://github.com/makiafausta-netizen/Semi_autonomous-wheelchair-portfolio",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=10",
+      "metadata": {
+        "repository": "makiafausta-netizen/Semi_autonomous-wheelchair-portfolio",
+        "github_url": "https://github.com/makiafausta-netizen/Semi_autonomous-wheelchair-portfolio",
+        "relationship": "Widener student project",
+        "project": "Semi-autonomous wheelchair",
+        "account_owner": "personal student account",
+        "public_content": "portfolio HTML and images",
+        "source_1": "https://www.widener.edu/news/noteworthy/2025-surca-symposium-winners",
+        "source_2": "https://github.com/makiafausta-netizen/Semi_autonomous-wheelchair-portfolio",
+        "attribution_notes": "Same wheelchair effort; portfolio source, not robot control implementation.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=11",
+      "kind": "repository",
+      "url": "https://github.com/binodthapachhetry/JustInTimeAdaptiveIntervention",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=11",
+      "metadata": {
+        "repository": "binodthapachhetry/JustInTimeAdaptiveIntervention",
+        "github_url": "https://github.com/binodthapachhetry/JustInTimeAdaptiveIntervention",
+        "relationship": "collaborator research",
+        "project": "PHIRE spinal cord injury mobile health",
+        "account_owner": "external collaborator account",
+        "public_content": "study code",
+        "source_1": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0223762",
+        "source_2": "https://github.com/binodthapachhetry/JustInTimeAdaptiveIntervention",
+        "attribution_notes": "Amir Mohammad Amiri listed Widener and Temple affiliations and contributed software; repository owned by collaborator.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=12",
+      "kind": "repository",
+      "url": "https://github.com/Paras-Jain20/EMT_Epigenetic_Decay",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=12",
+      "metadata": {
+        "repository": "Paras-Jain20/EMT_Epigenetic_Decay",
+        "github_url": "https://github.com/Paras-Jain20/EMT_Epigenetic_Decay",
+        "relationship": "collaborator research",
+        "project": "Cancer-related epithelial-mesenchymal cell state",
+        "account_owner": "external collaborator account",
+        "public_content": "study simulation code and data",
+        "source_1": "https://pubmed.ncbi.nlm.nih.gov/36628532/",
+        "source_2": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9832289/",
+        "attribution_notes": "Widener authors Corbo, Mohammad, and Toneff; repository owned by first author Paras Jain, affiliated with Indian Institute of Science.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=13",
+      "kind": "repository",
+      "url": "https://github.com/ReidTPowell/Organoid-analysis",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=13",
+      "metadata": {
+        "repository": "ReidTPowell/Organoid-analysis",
+        "github_url": "https://github.com/ReidTPowell/Organoid-analysis",
+        "relationship": "collaborator research",
+        "project": "Breast tumor organoid drug screening",
+        "account_owner": "external collaborator account",
+        "public_content": "study code and data",
+        "source_1": "https://www.nature.com/articles/s41467-021-24545-3",
+        "source_2": "https://github.com/ReidTPowell/Organoid-analysis",
+        "attribution_notes": "Then-Widener author Toneff contributed cell line; external coauthor Powell developed analysis; some workflows require Pipeline Pilot.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=14",
+      "kind": "repository",
+      "url": "https://github.com/Xiang-HF-Zhang/Dichotomous-of-innate-immune-landscape",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=14",
+      "metadata": {
+        "repository": "Xiang-HF-Zhang/Dichotomous-of-innate-immune-landscape",
+        "github_url": "https://github.com/Xiang-HF-Zhang/Dichotomous-of-innate-immune-landscape",
+        "relationship": "collaborator research",
+        "project": "Breast cancer immunology",
+        "account_owner": "external collaborator account",
+        "public_content": "study analysis code and data",
+        "source_1": "https://www.nature.com/articles/s41556-019-0373-7",
+        "source_2": "https://github.com/Xiang-HF-Zhang/Dichotomous-of-innate-immune-landscape",
+        "attribution_notes": "Widener-affiliated Toneff and Walker were coauthors; repository belongs to external Zhang group.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:repositories.csv#row=15",
+      "kind": "repository",
+      "url": "https://github.com/Schwabelab/HSC_in_HCC",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=15",
+      "metadata": {
+        "repository": "Schwabelab/HSC_in_HCC",
+        "github_url": "https://github.com/Schwabelab/HSC_in_HCC",
+        "relationship": "collaborator research",
+        "project": "Liver cancer cell analysis",
+        "account_owner": "external collaborator organization",
+        "public_content": "study analysis code and data",
+        "source_1": "https://www.nature.com/articles/s41586-022-05289-6",
+        "source_2": "https://www.widener.edu/about/faculty-directory/likang-chin",
+        "attribution_notes": "Coauthor LiKang Chin listed Widener as present address; source ownership and study location are external or not established.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:README.md#L15",
+      "kind": "account",
+      "url": "https://github.com/widener-nanobio-lab",
+      "nativeId": null,
+      "sourceRef": "README.md#L15",
+      "metadata": {
+        "reportedQualification": "Possible NanoBio organization; ownership unconfirmed; zero public repositories and members observed."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:README.md#L17",
+      "kind": "account",
+      "url": "https://github.com/DanielvdSpoel",
+      "nativeId": null,
+      "sourceRef": "README.md#L17",
+      "metadata": {
+        "reportedQualification": "Former exchange student; NanoBio software repository not found; other repositories are not automatically lab output."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:README.md#L27",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "README.md#L27",
+      "metadata": {
+        "reportedQualification": "Six Java files reportedly matched across Covidapp and Covid19app; same project reported, distinct repository identities retained; not clinically evaluated."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:README.md#L38",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "README.md#L38",
+      "metadata": {
+        "reportedQualification": "Four wheelchair repositories describe one effort; checked trees had documentation and portfolio materials, no wheelchair-control or ROS implementation; lab ownership not established."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:README.md#L51",
+      "kind": "repository",
+      "url": "https://github.com/mahdiaarabi/On-the-fly-Crystal",
+      "nativeId": null,
+      "sourceRef": "README.md#L51",
+      "metadata": {
+        "reportedQualification": "Adjacent general chemistry; paper predates Widener appointment and identifies Texas Tech."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:README.md#L65",
+      "kind": "source-observation",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "README.md#L65",
+      "metadata": {
+        "reportedQualification": "Toneff affiliations are historical publication-time context; current Widener affiliation is not asserted; collaborator repositories are externally hosted."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "widener:README.md#L82",
+      "kind": "account",
+      "url": "https://github.com/crdandre",
+      "nativeId": null,
+      "sourceRef": "README.md#L82",
+      "metadata": {
+        "reportedQualification": "Drexel biomechanics account; related Widener collaboration does not establish identified repositories as Widener work."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    }
+  ],
+  "coverage": {
+    "fileRowCounts": {
+      "repositories.csv": 14
+    },
+    "scope": "source-reported Widener relationships; no ownership inference",
+    "reportObservationCount": 7
+  },
+  "qualifications": [
+    "Source-reported, unreviewed snapshot; identities, affiliations, ownership, availability and relevance require independent review.",
+    "Native identifiers are unavailable; reported matching copies and redirects are unverified and do not merge identities.",
+    "No clinical validation or publication authorization is established.",
+    "Four wheelchair repositories and two COVID app repositories are not six independent projects.",
+    "Historical affiliations and external collaborator hosting do not establish Widener ownership."
+  ]
+}

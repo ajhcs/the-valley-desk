@@ -1,0 +1,79 @@
+{
+  "previousSnapshotVersion": null,
+  "snapshotVersion": "sha256:aeba2dd1c3eb252d1435a2ac7d986cc0ee3904405394acdc0a14a19ebb23a781",
+  "added": [
+    "GL04:work:crossref:gaston",
+    "GL04:work:github:760662846"
+  ],
+  "removed": [],
+  "revised": [],
+  "workCount": 2,
+  "supportObjectCount": 0,
+  "projectGroupCount": null,
+  "changes": [
+    {
+      "candidateId": "G04",
+      "decision": "accept",
+      "workId": "GL04:work:github:760662846"
+    },
+    {
+      "candidateId": "GASTON",
+      "decision": "accept",
+      "workId": "GL04:work:crossref:gaston"
+    },
+    {
+      "candidateId": "G03-0",
+      "decision": "hold",
+      "workId": null
+    },
+    {
+      "candidateId": "G03-1",
+      "decision": "hold",
+      "workId": null
+    },
+    {
+      "candidateId": "G03-2",
+      "decision": "hold",
+      "workId": null
+    },
+    {
+      "candidateId": "G03-3",
+      "decision": "hold",
+      "workId": null
+    },
+    {
+      "candidateId": "G03-4",
+      "decision": "hold",
+      "workId": null
+    },
+    {
+      "candidateId": "G05",
+      "decision": "hold",
+      "workId": null
+    },
+    {
+      "candidateId": "C02",
+      "decision": "hold",
+      "workId": null
+    },
+    {
+      "candidateId": "scope-G01",
+      "decision": "hold",
+      "workId": null
+    },
+    {
+      "candidateId": "scope-G02",
+      "decision": "hold",
+      "workId": null
+    },
+    {
+      "candidateId": "scope-C01",
+      "decision": "hold",
+      "workId": null
+    }
+  ],
+  "nextPriorState": {
+    "path": "docs/discovery/go-live/evidence/GL04/generations/cfb33800e554f75836f2fcc2c659b3edd37eb97ac66d7b1efd61f5f71bdb3891.json",
+    "sha256": "cfb33800e554f75836f2fcc2c659b3edd37eb97ac66d7b1efd61f5f71bdb3891"
+  }
+}

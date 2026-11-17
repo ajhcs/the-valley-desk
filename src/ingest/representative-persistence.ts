@@ -1,3 +1,4 @@
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import { AcceptedFactRecord, EvidenceReference, CanonicalInstant, WatchId, Sha256, canonicalJson, sha256, acceptedFactDigest } from "../content/watch-schema";
 import { RepresentativeQuery, RepresentativeSnapshotAcceptance, resolveRepresentativeDirectory, queryRepresentatives,
@@ -5,10 +6,10 @@ import { RepresentativeQuery, RepresentativeSnapshotAcceptance, resolveRepresent
 import type { RepresentativeResolutionContext } from "../content/watch-representatives";
 import type { D1DatabaseLike, D1StatementLike } from "./persistence";
 
-const Snapshot = RepresentativeSnapshotAcceptance.innerType();
-const Observation = z.object({ id: WatchId, sourceId: WatchId, sourceUrl: z.string().url(), parserVersion: z.string().min(1).max(200),
+const Snapshot = RepresentativeSnapshotAcceptance;
+const Observation = z.object({ id: WatchId, sourceId: WatchId, sourceUrl: legacyUrl(), parserVersion: z.string().min(1).max(200),
   representation: z.string().max(500_000) }).strict();
-const ProposedFact = AcceptedFactRecord.innerType().omit({ verification: true }).strict();
+const ProposedFact = z.object(AcceptedFactRecord.shape).omit({ verification: true }).strict();
 export const RepresentativeDraft = z.object({ id: WatchId, expectedRevision: z.number().int().nonnegative().safe(),
   scope: Snapshot.shape.scope, rosterFactId: WatchId, facts: z.array(z.union([ProposedFact, AcceptedFactRecord])).min(2).max(4000),
   evidence: z.array(EvidenceReference).min(1).max(4000), observations: z.array(Observation).min(1).max(4000) }).strict();

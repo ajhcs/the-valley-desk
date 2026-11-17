@@ -1,0 +1,240 @@
+{
+  "id": "TVD-GITHUB-PUBLICATION-QUALIFICATION-20261115",
+  "recorded_at": "2026-11-15T21:30:26.901702+00:00",
+  "entry_revision": "509283c93a799baf1d9d5578ae25e8752ca15fba",
+  "reviewed_code_commit": "1600ee8db50b912b100179968bcf9f1f5122658c",
+  "decision": "EX22",
+  "disposition": "bounded_manual_metadata_evidence_and_local_retention_correction_accepted_WP03_incomplete",
+  "source_workers": [
+    "Sol",
+    "Terra"
+  ],
+  "independent_review": "Astra; orchestrator adjudication",
+  "scope": "Two fixed public GitHub repositories and their explicitly linked publications;manual factual research and local source-retention repair. No source enrollment,recurring collection,public admission or deployment.",
+  "new_native_materials": {
+    "repository_records": 2,
+    "publication_metadata_records": 2,
+    "total_new": 4,
+    "all_staged_native_representations": 6,
+    "strict_reference_case_count": 0,
+    "actual_human_reviewer_count": 0,
+    "development_exposed": true
+  },
+  "source_results": {
+    "GitHub": {
+      "manual_factual_metadata_scope": "pass_two_exact_native_public_organization_owned_repository_responses",
+      "direct_GETs": 4,
+      "initial_outcomes": [
+        "200bodydiscarded_capture_method_SSH_false_positive",
+        "403rate_limit_remaining0"
+      ],
+      "final_outcomes": "Two HTTP 200 responses after the observed reset; 6,303 and 6,227 bytes; rate remaining 58 and 57.",
+      "authentication_proxy_or_deliberate_address_bypass": false,
+      "API_version_requested_and_observed": "2022-11-28",
+      "native_repository_baseline_payload": "pass_actual_D1_offline_replay_synthetic_authority",
+      "source_enrollment_or_native_WP06_transport": "not_established",
+      "README_CITATION_publication_join": "Explicit citation edges verified manually; adapter extraction is unimplemented."
+    },
+    "Crossref": {
+      "manual_factual_metadata_scope": "pass_two_exact_provider_selected_work_list_responses",
+      "exploratory_singleton_GETs": 2,
+      "singletons_qualified_for_portability": false,
+      "selected_work_list_GETs": 3,
+      "selected_outcomes": [
+        "2007503bytes_QSIPrep",
+        "2005056bytes_CaPTk2018",
+        "429technical_overview_no_body_no_retry"
+      ],
+      "429observation": "Post hoc transcription; original timestamps, headers and Retry-After unknown.",
+      "native_work_list_payload": "pass_offline_actual_D1_replay_under_synthetic_scope",
+      "actual_DOI_filter_select_request_grammar": "unsupported_current_WP10",
+      "abstract_fulltext_redisplay": "held_no_article_specific_grant",
+      "missing_safe_rate_pagination_headers": "unknown_not_absent"
+    },
+    "regional_and_relevance": {
+      "purpose": "Diffusion MRI preprocessing and cancer image analysis supply a health-technology candidate basis.",
+      "geography": "Separate publication sources report Philadelphia work-time affiliations; not inferred from ROR headquarters or the QSIPrep Crossref body.",
+      "outside_or_multiaffiliated_authors": "preserved",
+      "current_employment_individual_code_authorship_clinical_effectiveness": "not_established",
+      "family_independence": "Unassigned; an exact shared author name is a possible cross-project connection."
+    }
+  },
+  "privacy_correction": {
+    "pre_fix_defects": "Independent actual-D1 probes reproduced raw contact retention in GitHub/Crossref and raw abstract retention in Crossref.",
+    "scope": "strict_whole_payload_JSON_preflight_before_projection_and_raw_capture",
+    "covers": [
+      "decodedduplicatekeys",
+      "malformedUnicode_and_lossynumericforms",
+      "knowncontact_credential_keys_and_values_in_unknownfields",
+      "original_and_three_decoded_URI_entity_variants",
+      "route_known_exactcanonical_repositorySSHexception",
+      "nullcredentialslots_nonnull_temp_clone_token_rejection",
+      "nonemptyCrossrefabstract_fulltext_rejection"
+    ],
+    "limits": "Bounded rules; not universal PII detection or licensing adjudication."
+  },
+  "validation": {
+    "provider_suite": {
+      "tests": 39,
+      "pass": 39,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "Terra_independent_actual_D1": {
+      "tests": 16,
+      "pass": 16,
+      "fail": 0,
+      "includes": "Four unchanged native payloads; fixed GitHub endpoint shapes; synthetic Crossref query bindings."
+    },
+    "Astra": "17 outcome probes, five additional material-key negatives, four native payload positives and two opaque clone-token negatives; overlapping native positives are not added twice.",
+    "PDF_regressions": {
+      "tests": 7,
+      "pass": 7
+    },
+    "types_build_local_smoke": "pass",
+    "secret_scan": "pass: 955 tracked and nonignored untracked files",
+    "all_enumerated_tests": "Prior full-suite evidence is historical; it was not freshly rerun for this increment.",
+    "post_test_cosmetic_change": {
+      "change": "remove exactly one trailing LF after final newline; all other bytes identical",
+      "tested_sha256": "21b5da1f72b8ffeb9332cc0e97a3ccefc79db438d83c15eeb26b050f84597982",
+      "delivery_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+      "tested_bytes": 8811,
+      "delivery_bytes": 8810
+    },
+    "post_cosmetic_discovery_types": "pass",
+    "deployment": "not_performed"
+  },
+  "runtime_outputs": {
+    "src/ingest/discovery/metadata-preflight.ts": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+    "src/ingest/discovery/github.ts": "cba11068ec3ac9cfbb0dcfd916aa6d189baa8082c2bbbb532a7907cab5cf91f2",
+    "src/ingest/discovery/crossref.ts": "52851636db2d65095821816c356e27e1f7b12def7a65c884909df279c4328faa",
+    "test/discovery-github.test.ts": "557d6cd821569905bb1702b1da3874c10383d58d3ac75fe2372d7f7665962e0c",
+    "test/discovery-crossref.test.ts": "206e6b1ea43df0163cc88af03ffb818ae164a8c8ab2b8f7b223243d9171cc975"
+  },
+  "outputs": {
+    "docs/discovery/README.md": "441b1dedc3a7a5d1b14551850b5059f678516cb04747fab25c5768c70cb71e7f",
+    "docs/discovery/execution.json": "9e29c3502f36d21223e8a44b3cb1cd80881b0d952ea75fbca88d5dfd4138ad92",
+    "docs/discovery/implementation-decisions.md": "8705780663d522bfc9a54d3b7fb05eb24e399825d62ee737247bf7e6fc6def38",
+    "docs/discovery/validation-environments.md": "7bee7664a9c9d02b5d0246dc5653710d73c1b6df6c3520cb561ee182a300bc32",
+    "docs/discovery/qualification/README.md": "b305739a5be12aa404e1bc3c0716c0fa2335234006556beb5fdbb114c26319dd",
+    "docs/discovery/qualification/wp03-material-index.json": "dd9a0a0d4716e56e1410a33327e0161a2d2d674c68e8fb60e24b361f6ffe543d",
+    "docs/discovery/qualification/wp03-real-material.md": "6a30218dcc07a9b7cc8393de6891a1020f29d59c82e5e4b28018cfb6e35574ff",
+    "docs/discovery/qualification/github-publication-qualification.md": "bd0b09fa50337a3a59be43a8071f73bd8e20e9f7d24c6fc4c6063c4d35baf382",
+    "docs/discovery/qualification/github-repository-assessment.md": "9df331237bee8f54e36e585954a97c897652be1cff978711e2a737d4ad29b8f3",
+    "docs/discovery/qualification/linked-publication-assessment.md": "6979dad3b6840fbe71f9f99a744be7b5922816a0a41b6856aa1f3d24b97f410a",
+    "docs/discovery/qualification/github-publication-astra-review.md": "06d69301bb9af2df693d2d7fdb3d79b973b84875c7ec5473c6465b327decd5d7",
+    "docs/discovery/qualification/evidence/github-publications-20261115/capture-crossref-future-unexecuted.py": "0c57541ce28c5ee6d46d73738f1d2762d08f4cebc4b107be125d68d1c0e97419",
+    "docs/discovery/qualification/evidence/github-publications-20261115/capture-crossref-used.py": "5574bee51a5d766759c8777be144164171543e660fefc33b64c1d192d427ac1d",
+    "docs/discovery/qualification/evidence/github-publications-20261115/capture-github-after-reset-used.py": "76f984e5642caec8e36c9f5b31ce9b64900a48e23dd24c6636b1b86815ed5b11",
+    "docs/discovery/qualification/evidence/github-publications-20261115/crossref-captk-main/body.json": "b291ed6c35fc31625450ddf2868318fa5335917da42fa90deb614f608c146153",
+    "docs/discovery/qualification/evidence/github-publications-20261115/crossref-captk-main/observation.json": "05c465e75cae56878023a3dbbaf90ee97cd314b9a58d3c916a772582cbf9388d",
+    "docs/discovery/qualification/evidence/github-publications-20261115/crossref-qsiprep/body.json": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+    "docs/discovery/qualification/evidence/github-publications-20261115/crossref-qsiprep/observation.json": "6706e761e93b156ee6393c8361db3993fdb73aed392e345e6d4545c5d24e73f7",
+    "docs/discovery/qualification/evidence/github-publications-20261115/crossref-technical-429-posthoc.json": "40e077f27b0fd18d8ed0d03528bad4fd552aef9896d4b67fd6bc88aa55cf016b",
+    "docs/discovery/qualification/evidence/github-publications-20261115/github-access-observations.json": "fe874cb5184b195d3de80aeadbd64ac8fb54a009b0bdf8fb4331272861f5b2c1",
+    "docs/discovery/qualification/evidence/github-publications-20261115/github-captk/body.json": "28e58fd68f32470d292fb471056e05dc647923771710e2a595b74c614f1cc6cb",
+    "docs/discovery/qualification/evidence/github-publications-20261115/github-captk/observation.json": "b4b27d01205fb9dfd083ba49cd82070286fc9697308843ec42d739d80fa48f2e",
+    "docs/discovery/qualification/evidence/github-publications-20261115/github-qsiprep/body.json": "89e4ccc7d089c3b5d5d117ad722869ab5ad186f07cfead7a6da53e8d550663aa",
+    "docs/discovery/qualification/evidence/github-publications-20261115/github-qsiprep/observation.json": "3fbe5e7283faf18c12f530c7a44e68c75358276672a4653cf5c37d2d0928ece5",
+    "docs/discovery/qualification/evidence/github-publications-20261115/github-tool-observations.json": "595b0a8157c0b6a9f5e381ac11597a0f598b64b4963ab73a9ac656bd880dd82d"
+  },
+  "private_artifacts": {
+    ".discovery-work/source-qualification/github-publications/root/providers-final.log": "e07ee012caa648e74edf68548d1ed1ccf0d30eb9a09964a9996aeb810e0b7bd4",
+    ".discovery-work/source-qualification/github-publications/root/types-final.log": "8096a1cdf4a03a83d5c0f167a9106deb1075fc86d38e42ad1a235b3988c172d6",
+    ".discovery-work/source-qualification/github-publications/root/pdf-final.log": "5160e4f4ed175909304ae5716fff2715c5bd8c8f1f6bea256153bfc62bb0910c",
+    ".discovery-work/source-qualification/github-publications/root/build-final.log": "559e1aec8d52be644cbfd19f56b38cbe693bf836eb6687910ca5de407c35625a",
+    ".discovery-work/source-qualification/github-publications/root/smoke-final.log": "206a9f05def50aaba8cb8bed83c0be96634c2e07f2bb83228b735bce930d461b",
+    ".discovery-work/source-qualification/github-publications/root/validation.json": "a74d5181f9d82e4459ea614cd3375fb442c63cb9446ed60d4b5415957edaf634",
+    ".discovery-work/source-qualification/github-publications/root/input-sha256.json": "d54fa474654c6e5a1956bb969a6073181b18a9c2bda6c353b6a9fe6e2fdd5eae",
+    ".discovery-work/source-qualification/github-publications/root/delivery-input-sha256.json": "68a050a30c64d90f1976b23e17727dbecee631366d09b9a3dfe4b853c358e623",
+    ".discovery-work/source-qualification/github-publications/root/artifact-checks.json": "c38e0439f4dda538f300be115b042ece0275ddd36e939b5ea6db5bbb038dfb9d",
+    ".discovery-work/source-qualification/github-publications/root/whitespace-equivalence.json": "44e52c8614ff7bb2b7d43300f96203e706c0e02e0223edce79b78ff5c56a003e",
+    ".discovery-work/source-qualification/github-publications/root/metadata-preflight-tested-21b.ts": "21b5da1f72b8ffeb9332cc0e97a3ccefc79db438d83c15eeb26b050f84597982",
+    ".discovery-work/source-qualification/github-publications/root/metadata-preflight-acquisition-b2fd.ts": "b2fdcb2fdcd91546693969cb660be958d2cf6a37e066ea5b9c021ae353a4e462",
+    ".discovery-work/source-qualification/github-publications/terra/privacy-final-stable.log": "0c615ea390b57406e708aadc181374d8fd2458eea0780cf5f12a5baef4b60ab6",
+    ".discovery-work/source-qualification/github-publications/terra/privacy-final-stable-hashes-before.txt": "2d45015e15ac74b40aae90fd4fdb3a070642c81720c44789491c4e3c3b485f98",
+    ".discovery-work/source-qualification/github-publications/terra/privacy-final-stable-hashes-after.txt": "2d45015e15ac74b40aae90fd4fdb3a070642c81720c44789491c4e3c3b485f98",
+    ".discovery-work/source-qualification/github-publications/astra/before-fix-node22-tests.log": "f2cbff91418a3beacd33384743a8d5030b56c04678c09cf0ee53fd3ea9c54099",
+    ".discovery-work/source-qualification/github-publications/astra/preflight-probes.json": "eef30ffee7c948fb2400521729c8eb252f5e26cd092072fc29a6a41f13bb38f4",
+    ".discovery-work/source-qualification/github-publications/astra/final-helper-check.json": "b0b27e94ed582a9ebef503f5505ce5a114116bd2883bb8496fdce39e14601652",
+    ".discovery-work/source-qualification/github-publications/astra/github-native-review.json": "2c768d329fc7803060bcb192e0839ce3eb91d5729785c2a3ccffd30fa0f219cf",
+    ".discovery-work/source-qualification/github-publications/root/secret-final.log": "5b0fa755caf784c8e5ca7f9ebf795a243c8ce3fed7345a929e55616a2f8fce26",
+    ".discovery-work/source-qualification/github-publications/root/method-formatting.json": "c884a88742c2f6a31780ded20ab6808f66204403bc29988525a4dce066e478a8",
+    ".discovery-work/source-qualification/github-publications/root/portable-original-capture-crossref-future-unexecuted.py": "13d97aaac5309ef6878e968b912734ef12e40e6a468c03272318d3350c0727bd",
+    ".discovery-work/source-qualification/github-publications/root/portable-original-capture-github-after-reset-used.py": "39d3e0c9ada5ea8475b888e179beb47192469cfd374e14f79fa11fae667f6577"
+  },
+  "runtime_inputs": {
+    "tested_count": 608,
+    "tested_manifest": ".discovery-work/source-qualification/github-publications/root/input-sha256.json",
+    "tested_manifest_sha256": "d54fa474654c6e5a1956bb969a6073181b18a9c2bda6c353b6a9fe6e2fdd5eae",
+    "delivery_manifest": ".discovery-work/source-qualification/github-publications/root/delivery-input-sha256.json",
+    "delivery_manifest_sha256": "68a050a30c64d90f1976b23e17727dbecee631366d09b9a3dfe4b853c358e623",
+    "changes_from_preceding_scope": [
+      "src/ingest/discovery/metadata-preflight.ts",
+      "src/ingest/discovery/github.ts",
+      "src/ingest/discovery/crossref.ts",
+      "test/discovery-github.test.ts",
+      "test/discovery-crossref.test.ts"
+    ],
+    "prior_unchanged_input_count": 603
+  },
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "frozen_manifests": [
+    {
+      "manifest": "docs/discovery-engineering/HANDOFF-MANIFEST.json",
+      "entries": 70,
+      "mismatches": []
+    },
+    {
+      "manifest": "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json",
+      "entries": 21,
+      "mismatches": []
+    }
+  ],
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "reference_manifest_status": "not_frozen",
+  "freeze_issued": false,
+  "WP03_accepted": false,
+  "WP14_dependency_satisfied": false,
+  "empirical_gates": "E01-E06_not_run",
+  "prior_head_CI": {
+    "head": "509283c93a799baf1d9d5578ae25e8752ca15fba",
+    "run_id": 43761150929,
+    "run_number": 167,
+    "conclusion": "failure",
+    "tests_PDF_build_smoke": "success",
+    "npm_audit": "failure",
+    "secret_scan": "skipped",
+    "observed_this_task": true
+  },
+  "limits": [
+    "Agent/source reviews are not independent human reference labels or actual authenticated WP03 authority.",
+    "Source-specific rights cover bounded metadata research;article/code/contact/body redistribution is separate.",
+    "Family/partition/sampling review and complete independent corpus remain outstanding.",
+    "The unchanged lockfile retains the recorded four high/seven total audit advisories; no green CI or release claim."
+  ],
+  "deployment_performed": false,
+  "production_state_changed": false,
+  "metadata_finalized_at": "2026-11-15T21:33:42.410143+00:00",
+  "method_delivery_formatting": [
+    {
+      "portable_path": "docs/discovery/qualification/evidence/github-publications-20261115/capture-crossref-future-unexecuted.py",
+      "original_private_path": ".discovery-work/source-qualification/github-publications/root/portable-original-capture-crossref-future-unexecuted.py",
+      "original_sha256": "13d97aaac5309ef6878e968b912734ef12e40e6a468c03272318d3350c0727bd",
+      "portable_sha256": "0c57541ce28c5ee6d46d73738f1d2762d08f4cebc4b107be125d68d1c0e97419",
+      "change": "Trailing whitespace/extra EOF blank line removed; Python AST unchanged. Original method snapshot retained privately; native bodies and observations unchanged."
+    },
+    {
+      "portable_path": "docs/discovery/qualification/evidence/github-publications-20261115/capture-github-after-reset-used.py",
+      "original_private_path": ".discovery-work/source-qualification/github-publications/root/portable-original-capture-github-after-reset-used.py",
+      "original_sha256": "39d3e0c9ada5ea8475b888e179beb47192469cfd374e14f79fa11fae667f6577",
+      "portable_sha256": "76f984e5642caec8e36c9f5b31ce9b64900a48e23dd24c6636b1b86815ed5b11",
+      "change": "Trailing whitespace/extra EOF blank line removed; Python AST unchanged. Original method snapshot retained privately; native bodies and observations unchanged."
+    }
+  ]
+}

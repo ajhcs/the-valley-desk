@@ -1,0 +1,10 @@
+{
+  "fixtureOnly": true,
+  "observedResponseLinkExamples": {
+    "terminal": null,
+    "enrolledNext": "<https://api.github.com/orgs/synthetic-org/repos?page=2&per_page=30>; rel=\"next\"",
+    "foreignOriginDenied": "<https://unqualified.example/repos?page=2>; rel=\"next\"",
+    "foreignQueryDenied": "<https://api.github.com/search/repositories?page=2&per_page=30&q=unreviewed>; rel=\"next\""
+  },
+  "notice": "Actual collection obtains this metadata from transport; this fixture cannot authorize collection or manufacture a committed receipt."
+}

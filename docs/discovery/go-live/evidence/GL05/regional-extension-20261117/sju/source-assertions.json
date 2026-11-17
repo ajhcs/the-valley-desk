@@ -1,0 +1,4451 @@
+{
+  "schemaVersion": "regional-source-intake-v1",
+  "batch": "sju",
+  "visibility": "private",
+  "publicationAuthorized": false,
+  "sourceThreadId": "01a1e6fd-d1df-70d0-82ac-d13f41472461",
+  "records": [
+    {
+      "id": "sju:accounts.csv:row=2",
+      "kind": "account",
+      "url": "https://github.com/zhijunlilab",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=2",
+      "metadata": {
+        "account": "zhijunlilab",
+        "account_type": "Lab-labeled account",
+        "identified_as": "Zhijun Li Lab",
+        "connection": "Historical USciences lab research",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4590260/",
+        "limits": "Current institutional control and activity unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=3",
+      "kind": "account",
+      "url": "https://github.com/rrchaudhari",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=3",
+      "metadata": {
+        "account": "rrchaudhari",
+        "account_type": "Researcher account",
+        "identified_as": "Rajan Chaudhari",
+        "connection": "PyMine developer at USciences during study",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4590260/",
+        "limits": "Present affiliation not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=4",
+      "kind": "account",
+      "url": "https://github.com/asaghafi",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=4",
+      "metadata": {
+        "account": "asaghafi",
+        "account_type": "Researcher account",
+        "identified_as": "Abolfazl Saghafi",
+        "connection": "SJU-affiliated EGAIN author and former USciences collaborator",
+        "evidence_urls": "https://www.techscience.com/cmc/v88n2/67689/html; https://pmc.ncbi.nlm.nih.gov/articles/PMC8844938/",
+        "limits": "EGAIN is general imputation software.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=5",
+      "kind": "account",
+      "url": "https://github.com/kr0401",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=5",
+      "metadata": {
+        "account": "kr0401",
+        "account_type": "Researcher account",
+        "identified_as": "Kevin Regan",
+        "connection": "USciences splice-prediction researcher",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8844938/",
+        "limits": "Present affiliation not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=6",
+      "kind": "account",
+      "url": "https://github.com/mooreprestonb",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=6",
+      "metadata": {
+        "account": "mooreprestonb",
+        "account_type": "Researcher account",
+        "identified_as": "Preston B. Moore",
+        "connection": "SJU West Center director",
+        "evidence_urls": "https://directory.sju.edu/preston-moore; https://github.com/mooreprestonb/cm3d",
+        "limits": "Personal account; does not establish institutional ownership of all code.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=7",
+      "kind": "account",
+      "url": "https://github.com/artemisDiscovery",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=7",
+      "metadata": {
+        "account": "artemisDiscovery",
+        "account_type": "Researcher/company account",
+        "identified_as": "Randy Zauhar",
+        "connection": "USciences and SJU-affiliated author",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880490/; https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/",
+        "limits": "2023 paper gives Artemis Discovery as his then-present address; current affiliation not assumed.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=8",
+      "kind": "account",
+      "url": "https://github.com/jruhym",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=8",
+      "metadata": {
+        "account": "jruhym",
+        "account_type": "Researcher account",
+        "identified_as": "Andrew Heim",
+        "connection": "SJU-associated 5-HT2A study author",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/",
+        "limits": "Personal account; publication lists a different present address.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=9",
+      "kind": "account",
+      "url": "https://github.com/grevera",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=9",
+      "metadata": {
+        "account": "grevera",
+        "account_type": "Researcher account",
+        "identified_as": "George Grevera",
+        "connection": "Named contributor to Penn CAVASS",
+        "evidence_urls": "https://github.com/MedicalImageProcessingGroup/cavass/commit/ec430ff3; https://pubmed.ncbi.nlm.nih.gov/17786517/",
+        "limits": "Penn repository; present employment not assumed.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=10",
+      "kind": "account",
+      "url": "https://github.com/ggrevera",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=10",
+      "metadata": {
+        "account": "ggrevera",
+        "account_type": "Researcher account",
+        "identified_as": "George Grevera",
+        "connection": "Named contributor to Penn CAVASS",
+        "evidence_urls": "https://github.com/MedicalImageProcessingGroup/cavass/commit/3b1b0698; https://pubmed.ncbi.nlm.nih.gov/17786517/",
+        "limits": "Penn repository; present employment not assumed.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=11",
+      "kind": "account",
+      "url": "https://github.com/LiyuanLiu1989",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=11",
+      "metadata": {
+        "account": "LiyuanLiu1989",
+        "account_type": "Researcher account",
+        "identified_as": "Liyuan Liu",
+        "connection": "SJU healthcare AI researcher",
+        "evidence_urls": "https://directory.sju.edu/liyuan-liu; https://liyuanliu1989.github.io/LiyuanLiu.github.io/",
+        "limits": "No biomedical research repository owned by the account was verified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=12",
+      "kind": "account",
+      "url": "https://github.com/Andy-Ring",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=12",
+      "metadata": {
+        "account": "Andy-Ring",
+        "account_type": "Former lab member",
+        "identified_as": "Andrew Ring",
+        "connection": "Janetopoulos Lab 2017-2020",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf",
+        "limits": "Listed research repositories were created after lab appointment.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=13",
+      "kind": "account",
+      "url": "https://github.com/chvtk",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=13",
+      "metadata": {
+        "account": "chvtk",
+        "account_type": "Former faculty account",
+        "identified_as": "Chantal Koechli",
+        "connection": "USciences biology instructor in 2020",
+        "evidence_urls": "https://seaphages.org/faculty/619/; https://github.com/chvtk",
+        "limits": "Earlier Cornell and Beloit work must not be attributed to USciences.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=14",
+      "kind": "account",
+      "url": "https://github.com/USciences-Biology",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=14",
+      "metadata": {
+        "account": "USciences-Biology",
+        "account_type": "Course organization",
+        "identified_as": "USciences biology course materials",
+        "connection": "BS350 teaching organization",
+        "evidence_urls": "https://github.com/USciences-Biology/Getting_Started_BS350/blob/master/GettingStartedinBS350.Rmd; https://seaphages.org/faculty/619/",
+        "limits": "Organization control and research-lab status not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=15",
+      "kind": "account",
+      "url": "https://github.com/mattkmostrom",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=15",
+      "metadata": {
+        "account": "mattkmostrom",
+        "account_type": "External collaborator",
+        "identified_as": "Matthew Mostrom",
+        "connection": "Spectro-lammps credits Preston Moore as coauthor",
+        "evidence_urls": "https://github.com/mattkmostrom/spectro-lammps; https://digitalcommons.usf.edu/etd/8569/",
+        "limits": "SJU membership not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=16",
+      "kind": "account",
+      "url": "https://github.com/vladimirck",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=16",
+      "metadata": {
+        "account": "vladimirck",
+        "account_type": "External contributor",
+        "identified_as": "Vladimir Perez",
+        "connection": "Contributed makefile to CM3D",
+        "evidence_urls": "https://github.com/mooreprestonb/cm3d/commit/00dcb09717566b102a45b6e5c680a9ea785d1c3b",
+        "limits": "SJU affiliation not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=17",
+      "kind": "account",
+      "url": "https://github.com/asaez0713",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=17",
+      "metadata": {
+        "account": "asaez0713",
+        "account_type": "External contributor",
+        "identified_as": "Identity not independently established",
+        "connection": "Contributed files to MDPython",
+        "evidence_urls": "https://github.com/mooreprestonb/MDPython/commit/50685d0e56c2e9b386fe0e5d81b520d4cced023e",
+        "limits": "Do not infer full identity or SJU affiliation from handle.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=18",
+      "kind": "account",
+      "url": "https://github.com/compMathUPRH",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=18",
+      "metadata": {
+        "account": "compMathUPRH",
+        "account_type": "External organization",
+        "identified_as": "UPR Humacao collaborators",
+        "connection": "Hosts Wolffia",
+        "evidence_urls": "https://prem.uprh.edu/img/annual/program2012.pdf",
+        "limits": "Moore coauthored abstract and contributed ideas; SJU ownership unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=19",
+      "kind": "account",
+      "url": "https://github.com/MedicalImageProcessingGroup",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=19",
+      "metadata": {
+        "account": "MedicalImageProcessingGroup",
+        "account_type": "External organization",
+        "identified_as": "Penn Medical Image Processing Group",
+        "connection": "Hosts CAVASS with Grevera contributions",
+        "evidence_urls": "https://github.com/MedicalImageProcessingGroup/cavass/commit/ec430ff3; https://pubmed.ncbi.nlm.nih.gov/17786517/",
+        "limits": "Not an SJU organization.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=20",
+      "kind": "account",
+      "url": "https://github.com/npnl",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=20",
+      "metadata": {
+        "account": "npnl",
+        "account_type": "External organization",
+        "identified_as": "External neuroimaging group",
+        "connection": "Hosts stroke consortium resources",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8675421/",
+        "limits": "Not an SJU lab; Thielman individual code roles unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=21",
+      "kind": "account",
+      "url": "https://github.com/pks1207",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=21",
+      "metadata": {
+        "account": "pks1207",
+        "account_type": "External account",
+        "identified_as": "External regional brain-age repository owner",
+        "connection": "Hosts code linked by Thielman-coauthored paper",
+        "evidence_urls": "https://doi.org/10.1016/J.LANDIG.2025.100942",
+        "limits": "Repository credits Gilsoon Park for model construction; account identity not independently assigned.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=22",
+      "kind": "account",
+      "url": "https://github.com/miyamot0",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=22",
+      "metadata": {
+        "account": "miyamot0",
+        "account_type": "External collaborator",
+        "identified_as": "Shawn Gilroy",
+        "connection": "Hosts FastTalker repositories linked by McCleery coauthored preprint",
+        "evidence_urls": "https://testing.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf",
+        "limits": "Not established as SJU lab account.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=23",
+      "kind": "account",
+      "url": "https://github.com/DONGGUANLIANG",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=23",
+      "metadata": {
+        "account": "DONGGUANLIANG",
+        "account_type": "External collaborator",
+        "identified_as": "Guanliang Dong",
+        "connection": "Hosts DIST breast MRI model modules",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12796758/",
+        "limits": "External collaborator credited for software.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=24",
+      "kind": "account",
+      "url": "https://github.com/TheJacksonLaboratory",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=24",
+      "metadata": {
+        "account": "TheJacksonLaboratory",
+        "account_type": "External organization",
+        "identified_as": "The Jackson Laboratory",
+        "connection": "Hosts melanoma study analysis",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11875961/",
+        "limits": "Kaster code contribution not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=25",
+      "kind": "account",
+      "url": "https://github.com/cfangyen",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=25",
+      "metadata": {
+        "account": "cfangyen",
+        "account_type": "External collaborator",
+        "identified_as": "Christopher Fang-Yen",
+        "connection": "Hosts WorMotel code linked by 2017 SJU-coauthored sleep study",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5241116/; https://pubmed.ncbi.nlm.nih.gov/31292211/",
+        "limits": "Penn collaborator; exact revision and SJU coauthor code contribution unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=26",
+      "kind": "account",
+      "url": "https://github.com/Ellison-Lab",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=26",
+      "metadata": {
+        "account": "Ellison-Lab",
+        "account_type": "External lab",
+        "identified_as": "Ellison Lab",
+        "connection": "Hosts Drosophila study fork",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12728734/",
+        "limits": "External owner; SJU code contribution unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=27",
+      "kind": "account",
+      "url": "https://github.com/tjstanek",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=27",
+      "metadata": {
+        "account": "tjstanek",
+        "account_type": "External account",
+        "identified_as": "Parent repository owner",
+        "connection": "Hosts parent of genomics analysis fork",
+        "evidence_urls": "https://github.com/Ellison-Lab/4genomes_Felement",
+        "limits": "Parent and fork contents differ.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=28",
+      "kind": "account",
+      "url": "https://github.com/thomaslab-MHRP-Bioinformatics",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=28",
+      "metadata": {
+        "account": "thomaslab-MHRP-Bioinformatics",
+        "account_type": "External organization",
+        "identified_as": "Thomas Lab",
+        "connection": "Hosts single-cell marker reference",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12122806/",
+        "limits": "External reference, not paper analysis code.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=29",
+      "kind": "account",
+      "url": "https://github.com/mdmamunalamin",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=29",
+      "metadata": {
+        "account": "mdmamunalamin",
+        "account_type": "External study author",
+        "identified_as": "Md Mamun Al-Amin",
+        "connection": "Hosts neurodevelopmental study analysis",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13426339/",
+        "limits": "SJU coauthor is associated through manuscript review and revision; no named SJU lab established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=30",
+      "kind": "account",
+      "url": "https://github.com/SEA-PHAGES",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=30",
+      "metadata": {
+        "account": "SEA-PHAGES",
+        "account_type": "External organization",
+        "identified_as": "SEA-PHAGES",
+        "connection": "Hosts Starterator used in SJU phage study",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9584339/",
+        "limits": "Shared tool, not SJU lab account.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=31",
+      "kind": "account",
+      "url": "https://github.com/cdshaffer",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=31",
+      "metadata": {
+        "account": "cdshaffer",
+        "account_type": "External maintainer",
+        "identified_as": "Chris Shaffer",
+        "connection": "Hosts Starterator development version",
+        "evidence_urls": "https://github.com/SEA-PHAGES/starterator",
+        "limits": "Specific paper version-to-repository mapping unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=32",
+      "kind": "account",
+      "url": "https://github.com/mulberrysymbols",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=32",
+      "metadata": {
+        "account": "mulberrysymbols",
+        "account_type": "External organization",
+        "identified_as": "Mulberry Symbols",
+        "connection": "Hosts communication symbols referenced by trial",
+        "evidence_urls": "https://www.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf",
+        "limits": "Shared asset, not SJU trial code.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=33",
+      "kind": "account",
+      "url": "https://github.com/colvars",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=33",
+      "metadata": {
+        "account": "colvars",
+        "account_type": "External organization",
+        "identified_as": "Collective Variables project",
+        "connection": "Zauhar reported a software issue",
+        "evidence_urls": "https://tcbg.illinois.edu/Research/namd/mailing_list/namd-l.2017-2018/0215.html",
+        "limits": "Issue report does not establish SJU source authorship.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=34",
+      "kind": "account",
+      "url": "https://github.com/schaedem",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=34",
+      "metadata": {
+        "account": "schaedem",
+        "account_type": "External collaborator",
+        "identified_as": "Marie Schaedel",
+        "connection": "Hosts Cornell Chazy study analysis",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12442353/",
+        "limits": "Koechli is a collaborator; this 2025 paper identifies Cornell affiliation.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=35",
+      "kind": "account",
+      "url": "https://github.com/seb369",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=35",
+      "metadata": {
+        "account": "seb369",
+        "account_type": "External collaborator",
+        "identified_as": "Sam Barnett",
+        "connection": "Hosts stable-isotope example material",
+        "evidence_urls": "https://pubmed.ncbi.nlm.nih.gov/34799453/; https://github.com/seb369/HR-SIP_example",
+        "limits": "Tutorial is not established as study code from USciences.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=36",
+      "kind": "account",
+      "url": "https://github.com/jordancaraballo",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=36",
+      "metadata": {
+        "account": "jordancaraballo",
+        "account_type": "Unconfirmed lead",
+        "identified_as": "Jordan Caraballo-Vega",
+        "connection": "Hosts functionalizedCellulose",
+        "evidence_urls": "https://github.com/jordancaraballo/functionalizedCellulose; https://prem.uprh.edu/img/annual/program2023.pdf",
+        "limits": "Acknowledged Preston Moore identity not independently resolved.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:accounts.csv:row=37",
+      "kind": "account",
+      "url": "https://github.com/jonbarnum",
+      "nativeId": null,
+      "sourceRef": "accounts.csv#row=37",
+      "metadata": {
+        "account": "jonbarnum",
+        "account_type": "Excluded adjacent account",
+        "identified_as": "Jonathan Barnum",
+        "connection": "Former Pennsylvania College of Health Sciences student",
+        "evidence_urls": "https://www.linkedin.com/in/jonathan-barnum",
+        "limits": "No lab, biomedical research project, or institutional repository connection verified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=2",
+      "kind": "repository",
+      "url": "https://github.com/zhijunlilab/PyMine",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=2",
+      "metadata": {
+        "relationship": "sju_study_or_method",
+        "group": "Zhijun Li Lab",
+        "repository": "zhijunlilab/PyMine",
+        "people": "Zhijun Li; Rajan Chaudhari",
+        "description": "PyMOL drug-discovery visualization plugin",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4590260/; https://directory.sju.edu/zhijun-li",
+        "limits": "Lab-labeled historical USciences project; current activity and institutional account control not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=3",
+      "kind": "repository",
+      "url": "https://github.com/rrchaudhari/PyMine",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=3",
+      "metadata": {
+        "relationship": "sju_study_or_method",
+        "group": "Zhijun Li Lab",
+        "repository": "rrchaudhari/PyMine",
+        "people": "Rajan Chaudhari; Zhijun Li",
+        "description": "Developer-hosted PyMine repository",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4590260/",
+        "limits": "Developer personal repository; institutional ownership not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=4",
+      "kind": "repository",
+      "url": "https://github.com/asaghafi/EGAIN",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=4",
+      "metadata": {
+        "relationship": "sju_study_or_method",
+        "group": "Biomedical data science",
+        "repository": "asaghafi/EGAIN",
+        "people": "Abolfazl Saghafi",
+        "description": "General missing-data imputation",
+        "evidence_urls": "https://www.techscience.com/cmc/v88n2/67689/html",
+        "limits": "SJU-associated software; general methodology rather than a specific clinical product.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=5",
+      "kind": "repository",
+      "url": "https://github.com/kr0401/LSTM_Splice",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=5",
+      "metadata": {
+        "relationship": "sju_study_or_method",
+        "group": "Genomics and splicing",
+        "repository": "kr0401/LSTM_Splice",
+        "people": "Kevin Regan; Abolfazl Saghafi; Zhijun Li",
+        "description": "RNA splice-junction prediction",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8844938/",
+        "limits": "Historical USciences project on Regan personal account.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=6",
+      "kind": "repository",
+      "url": "https://github.com/mooreprestonb/cm3d",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=6",
+      "metadata": {
+        "relationship": "sju_study_or_method",
+        "group": "West Center",
+        "repository": "mooreprestonb/cm3d",
+        "people": "Preston Moore",
+        "description": "Molecular dynamics engine",
+        "evidence_urls": "https://www.sju.edu/research/facilities-labs/west-center; https://pmc.ncbi.nlm.nih.gov/articles/PMC2902560/",
+        "limits": "Repository credits Moore and University of Pennsylvania for 1997-2000 copyright; exact published-study revision unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=7",
+      "kind": "repository",
+      "url": "https://github.com/artemisDiscovery/shapeSignaturesX2",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=7",
+      "metadata": {
+        "relationship": "sju_study_or_method",
+        "group": "West Center",
+        "repository": "artemisDiscovery/shapeSignaturesX2",
+        "people": "Randy Zauhar",
+        "description": "Shape Signatures drug-screening implementation",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880490/; https://www.sju.edu/research/facilities-labs/west-center",
+        "limits": "Same method as USciences research; exact version used in the paper unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=8",
+      "kind": "repository",
+      "url": "https://github.com/artemisDiscovery/smart007",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=8",
+      "metadata": {
+        "relationship": "sju_study_or_method",
+        "group": "West Center",
+        "repository": "artemisDiscovery/smart007",
+        "people": "Randy Zauhar",
+        "description": "SMART molecular surface generator",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880490/; https://www.sju.edu/research/facilities-labs/west-center",
+        "limits": "Related to West Center method; exact version used in the paper unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=9",
+      "kind": "repository",
+      "url": "https://github.com/jruhym/jNotebooksForMD",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=9",
+      "metadata": {
+        "relationship": "sju_study_or_method",
+        "group": "Wallach neuropharmacology",
+        "repository": "jruhym/jNotebooksForMD",
+        "people": "Andrew Heim; Jason Wallach",
+        "description": "Notebook used in a 5-HT2A study",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/; https://github.com/jruhym/jNotebooksForMD/blob/trunk/pocket-ligandInteractionTimeSeriesHeatmap.ipynb",
+        "limits": "Researcher-hosted collaborative repository; Heim present address at publication was elsewhere.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=10",
+      "kind": "repository",
+      "url": "https://github.com/MedicalImageProcessingGroup/cavass",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=10",
+      "metadata": {
+        "relationship": "sju_study_or_method",
+        "group": "Medical image processing",
+        "repository": "MedicalImageProcessingGroup/cavass",
+        "people": "George Grevera",
+        "description": "Collaborative medical-image analysis software",
+        "evidence_urls": "https://pubmed.ncbi.nlm.nih.gov/17786517/; https://github.com/MedicalImageProcessingGroup/cavass/commit/ec430ff3; https://github.com/MedicalImageProcessingGroup/cavass/commit/3b1b0698",
+        "limits": "Penn group hosts the project; newer CAVASS-DL code in this repository not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=11",
+      "kind": "repository",
+      "url": "https://github.com/mooreprestonb/mdarmsd",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=11",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "West Center",
+        "repository": "mooreprestonb/mdarmsd",
+        "people": "Preston Moore",
+        "description": "Per-residue analysis of AMBER trajectories",
+        "evidence_urls": "https://github.com/mooreprestonb; https://directory.sju.edu/preston-moore",
+        "limits": "No specific SJU biomedical study use verified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=12",
+      "kind": "repository",
+      "url": "https://github.com/mooreprestonb/MDPython",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=12",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "West Center",
+        "repository": "mooreprestonb/MDPython",
+        "people": "Preston Moore",
+        "description": "Python molecular dynamics",
+        "evidence_urls": "https://github.com/mooreprestonb; https://github.com/mattkmostrom/spectro-lammps",
+        "limits": "Collaborator contributions visible; specific biomedical study use unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=13",
+      "kind": "repository",
+      "url": "https://github.com/mooreprestonb/mdmpi",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=13",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "West Center",
+        "repository": "mooreprestonb/mdmpi",
+        "people": "Preston Moore",
+        "description": "Parallel molecular dynamics experiments",
+        "evidence_urls": "https://github.com/mooreprestonb; https://directory.sju.edu/preston-moore",
+        "limits": "No specific SJU biomedical study use verified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=14",
+      "kind": "repository",
+      "url": "https://github.com/mooreprestonb/ProcessLammpsCode",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=14",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "West Center",
+        "repository": "mooreprestonb/ProcessLammpsCode",
+        "people": "Preston Moore",
+        "description": "LAMMPS output processing",
+        "evidence_urls": "https://github.com/mooreprestonb; https://directory.sju.edu/preston-moore",
+        "limits": "No specific SJU biomedical study use verified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=15",
+      "kind": "repository",
+      "url": "https://github.com/mooreprestonb/Analysis",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=15",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "West Center",
+        "repository": "mooreprestonb/Analysis",
+        "people": "Preston Moore",
+        "description": "Molecular dynamics and trajectory-analysis scripts",
+        "evidence_urls": "https://github.com/mooreprestonb; https://directory.sju.edu/preston-moore",
+        "limits": "No specific SJU biomedical study use verified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=16",
+      "kind": "repository",
+      "url": "https://github.com/mooreprestonb/xmov",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=16",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "West Center",
+        "repository": "mooreprestonb/xmov",
+        "people": "Preston Moore",
+        "description": "Molecular dynamics trajectory visualization",
+        "evidence_urls": "https://github.com/mooreprestonb; https://directory.sju.edu/preston-moore",
+        "limits": "No specific SJU biomedical study use verified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=17",
+      "kind": "repository",
+      "url": "https://github.com/mooreprestonb/partfunc",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=17",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "West Center",
+        "repository": "mooreprestonb/partfunc",
+        "people": "Preston Moore",
+        "description": "Partition function calculations",
+        "evidence_urls": "https://github.com/mooreprestonb; https://directory.sju.edu/preston-moore",
+        "limits": "Specific research and healthcare application unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=18",
+      "kind": "repository",
+      "url": "https://github.com/artemisDiscovery/SwiftTENSUR",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=18",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "Zauhar later work",
+        "repository": "artemisDiscovery/SwiftTENSUR",
+        "people": "Randy Zauhar",
+        "description": "Molecular surface generation",
+        "evidence_urls": "https://github.com/artemisDiscovery; https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/",
+        "limits": "2024 repository on Artemis-branded account; no specific SJU project link established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=19",
+      "kind": "repository",
+      "url": "https://github.com/artemisDiscovery/SwiftTENSURTools",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=19",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "Zauhar later work",
+        "repository": "artemisDiscovery/SwiftTENSURTools",
+        "people": "Randy Zauhar",
+        "description": "Molecular surface generation tools",
+        "evidence_urls": "https://github.com/artemisDiscovery; https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/",
+        "limits": "2024 repository on Artemis-branded account; no specific SJU project link established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=20",
+      "kind": "repository",
+      "url": "https://github.com/artemisDiscovery/SwiftMC33Lib",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=20",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "Zauhar later work",
+        "repository": "artemisDiscovery/SwiftMC33Lib",
+        "people": "Randy Zauhar",
+        "description": "Marching-cubes wrapper",
+        "evidence_urls": "https://github.com/artemisDiscovery; https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/",
+        "limits": "2024 repository on Artemis-branded account; no specific SJU project link established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=21",
+      "kind": "repository",
+      "url": "https://github.com/artemisDiscovery/MathTools",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=21",
+      "metadata": {
+        "relationship": "researcher_related",
+        "group": "Zauhar later work",
+        "repository": "artemisDiscovery/MathTools",
+        "people": "Randy Zauhar",
+        "description": "General math utilities",
+        "evidence_urls": "https://github.com/artemisDiscovery; https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/",
+        "limits": "2024 repository on Artemis-branded account; no specific SJU project link established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=22",
+      "kind": "repository",
+      "url": "https://github.com/mattkmostrom/spectro-lammps",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=22",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "West Center collaborators",
+        "repository": "mattkmostrom/spectro-lammps",
+        "people": "Matthew Mostrom; Andres Saez; Preston Moore",
+        "description": "Molecular spectroscopy simulations",
+        "evidence_urls": "https://github.com/mattkmostrom/spectro-lammps; https://digitalcommons.usf.edu/etd/8569/",
+        "limits": "Collaborator-hosted; README credits Moore; institutional ownership unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=23",
+      "kind": "repository",
+      "url": "https://github.com/compMathUPRH/wolffia",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=23",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "West Center collaborators",
+        "repository": "compMathUPRH/wolffia",
+        "people": "Preston Moore; Jose Sotero Esteva",
+        "description": "Molecular dynamics graphical interface",
+        "evidence_urls": "https://prem.uprh.edu/img/annual/program2012.pdf; https://prem.uprh.edu/research/prem2009-15/annual2013.pdf",
+        "limits": "UPR-hosted; Moore coauthored abstract and supplied suggestions; code authorship unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=24",
+      "kind": "repository",
+      "url": "https://github.com/npnl/ENIGMA-Wrapper-Scripts",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=24",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Stroke rehabilitation",
+        "repository": "npnl/ENIGMA-Wrapper-Scripts",
+        "people": "Gregory Thielman",
+        "description": "ENIGMA consortium processing scripts",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8675421/",
+        "limits": "External consortium resource named in coauthored paper; personal use and code authorship unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=25",
+      "kind": "repository",
+      "url": "https://github.com/npnl/PALS",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=25",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Stroke rehabilitation",
+        "repository": "npnl/PALS",
+        "people": "Gregory Thielman",
+        "description": "Stroke lesion analysis toolbox",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8675421/",
+        "limits": "External consortium resource; personal use and code authorship unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=26",
+      "kind": "repository",
+      "url": "https://github.com/npnl/braindrles",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=26",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Stroke rehabilitation",
+        "repository": "npnl/braindrles",
+        "people": "Gregory Thielman",
+        "description": "Crowdsourced lesion-segmentation quality control",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8675421/",
+        "limits": "External consortium resource; personal use and code authorship unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=27",
+      "kind": "repository",
+      "url": "https://github.com/npnl/ATLAS",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=27",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Stroke rehabilitation",
+        "repository": "npnl/ATLAS",
+        "people": "Gregory Thielman",
+        "description": "Stroke lesion dataset and project resources",
+        "evidence_urls": "https://www.nature.com/articles/s41597-022-01401-7",
+        "limits": "External repository linked by coauthored dataset paper; no code authorship established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=28",
+      "kind": "repository",
+      "url": "https://github.com/npnl/isles_2022",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=28",
+      "metadata": {
+        "relationship": "external_tool",
+        "group": "Stroke rehabilitation",
+        "repository": "npnl/isles_2022",
+        "people": "Gregory Thielman",
+        "description": "ATLAS challenge starter notebook",
+        "evidence_urls": "https://github.com/npnl/isles_2022; https://www.nature.com/articles/s41597-022-01401-7",
+        "limits": "Indirect through coauthored ATLAS dataset; no evidence Thielman developed or ran challenge code.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=29",
+      "kind": "repository",
+      "url": "https://github.com/pks1207/regional_Brain_age",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=29",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Stroke rehabilitation",
+        "repository": "pks1207/regional_Brain_age",
+        "people": "Gregory Thielman; Gilsoon Park",
+        "description": "Regional brain-age modeling",
+        "evidence_urls": "https://doi.org/10.1016/J.LANDIG.2025.100942; https://github.com/pks1207/regional_Brain_age",
+        "limits": "External project linked by coauthored paper; repository credits Park for model construction and training.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=30",
+      "kind": "repository",
+      "url": "https://github.com/miyamot0/FastTalker",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=30",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Kinney Center autism communication",
+        "repository": "miyamot0/FastTalker",
+        "people": "Joseph McCleery; Shawn Gilroy",
+        "description": "Augmentative communication software",
+        "evidence_urls": "https://testing.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf",
+        "limits": "Collaborator-hosted; not established as an SJU lab repository.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=31",
+      "kind": "repository",
+      "url": "https://github.com/miyamot0/FastTalkerSkiaSharp",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=31",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Kinney Center autism communication",
+        "repository": "miyamot0/FastTalkerSkiaSharp",
+        "people": "Joseph McCleery; Shawn Gilroy",
+        "description": "Augmentative communication software",
+        "evidence_urls": "https://testing.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf",
+        "limits": "Collaborator-hosted; not established as an SJU lab repository.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=32",
+      "kind": "repository",
+      "url": "https://github.com/DONGGUANLIANG/-main-module-of-DIST",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=32",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Breast cancer imaging",
+        "repository": "DONGGUANLIANG/-main-module-of-DIST",
+        "people": "Liyuan Liu; Guanliang Dong",
+        "description": "Breast MRI model modules",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12796758/",
+        "limits": "External collaborator credited with software; repository does not establish complete training pipeline.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=33",
+      "kind": "repository",
+      "url": "https://github.com/TheJacksonLaboratory/PDX-melanoma-integrated-analysis",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=33",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Melanoma collaboration",
+        "repository": "TheJacksonLaboratory/PDX-melanoma-integrated-analysis",
+        "people": "Jessica Kaster",
+        "description": "Patient-derived melanoma model analysis",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11875961/; https://pubmed.ncbi.nlm.nih.gov/39700408/",
+        "limits": "Jackson Laboratory host; individual Kaster code contribution and current SJU affiliation unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=34",
+      "kind": "repository",
+      "url": "https://github.com/cfangyen/wormotel",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=34",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Sleep genetics",
+        "repository": "cfangyen/wormotel",
+        "people": "Matthew Nelson; Christopher Fang-Yen",
+        "description": "WorMotel behavior-analysis software",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5241116/; https://pubmed.ncbi.nlm.nih.gov/31292211/; https://pmc.ncbi.nlm.nih.gov/articles/PMC5484621/",
+        "limits": "2017 SJU coauthored study links repository as image-analysis software; exact revision and Nelson code authorship unverified. Separate 2019 study used system.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=35",
+      "kind": "repository",
+      "url": "https://github.com/Ellison-Lab/4genomes_Felement",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=35",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Drosophila genomics",
+        "repository": "Ellison-Lab/4genomes_Felement",
+        "people": "Kacie Kershaw; Kathryn Karpinski",
+        "description": "Analysis and commands for chromosome study",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12728734/",
+        "limits": "Rutgers-hosted fork linked in study; SJU coauthors code contribution unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=36",
+      "kind": "repository",
+      "url": "https://github.com/tjstanek/4genomes_Felement",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=36",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Drosophila genomics",
+        "repository": "tjstanek/4genomes_Felement",
+        "people": "Kacie Kershaw; Kathryn Karpinski",
+        "description": "Parent repository for related F-element analysis",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12728734/; https://github.com/Ellison-Lab/4genomes_Felement",
+        "limits": "Parent of paper-linked fork; repositories have different contents.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=37",
+      "kind": "repository",
+      "url": "https://github.com/thomaslab-MHRP-Bioinformatics/scRNA-seq_annotation_resources",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=37",
+      "metadata": {
+        "relationship": "external_tool",
+        "group": "HIV research",
+        "repository": "thomaslab-MHRP-Bioinformatics/scRNA-seq_annotation_resources",
+        "people": "Taisuke Izumi; Akshara Narahari",
+        "description": "Single-cell marker reference",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12122806/; https://doi.org/10.6084/m9.figshare.c.7074125",
+        "limits": "External annotation reference; study analysis code is separately deposited on Figshare.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=38",
+      "kind": "repository",
+      "url": "https://github.com/mdmamunalamin/bangladeshikid6-7",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=38",
+      "metadata": {
+        "relationship": "external_study",
+        "group": "Child neurodevelopment",
+        "repository": "mdmamunalamin/bangladeshikid6-7",
+        "people": "Syed Zaheed Kamal; Md Mamun Al-Amin",
+        "description": "Neurodevelopmental MRI analysis",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13426339/",
+        "limits": "External lead author hosts code; SJU coauthor contributed manuscript review and revision; no named SJU lab link.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=39",
+      "kind": "repository",
+      "url": "https://github.com/SEA-PHAGES/starterator",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=39",
+      "metadata": {
+        "relationship": "external_tool",
+        "group": "Phage genomics",
+        "repository": "SEA-PHAGES/starterator",
+        "people": "SJU phage-study authors",
+        "description": "Phage genome annotation tool",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9584339/; https://github.com/SEA-PHAGES/starterator",
+        "limits": "External tool used by SJU study; no SJU authorship established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=40",
+      "kind": "repository",
+      "url": "https://github.com/cdshaffer/starterator",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=40",
+      "metadata": {
+        "relationship": "external_tool",
+        "group": "Phage genomics",
+        "repository": "cdshaffer/starterator",
+        "people": "SJU phage-study authors",
+        "description": "Starterator development version",
+        "evidence_urls": "https://github.com/SEA-PHAGES/starterator; https://pmc.ncbi.nlm.nih.gov/articles/PMC9584339/",
+        "limits": "External development version linked by project; exact version used by study not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=41",
+      "kind": "repository",
+      "url": "https://github.com/mulberrysymbols/mulberry-symbols",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=41",
+      "metadata": {
+        "relationship": "external_tool",
+        "group": "Autism communication",
+        "repository": "mulberrysymbols/mulberry-symbols",
+        "people": "Joseph McCleery; Shawn Gilroy",
+        "description": "Shared communication-symbol asset",
+        "evidence_urls": "https://www.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf",
+        "limits": "External referenced asset; not trial source code or SJU lab output.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=42",
+      "kind": "repository",
+      "url": "https://github.com/colvars/colvars",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=42",
+      "metadata": {
+        "relationship": "external_tool",
+        "group": "Zauhar external issue",
+        "repository": "colvars/colvars",
+        "people": "Randy Zauhar",
+        "description": "Collective-variable software",
+        "evidence_urls": "https://tcbg.illinois.edu/Research/namd/mailing_list/namd-l.2017-2018/0215.html",
+        "limits": "External software; historical issue report by Zauhar only, not evidence of SJU code authorship.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=43",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/miRAssist",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=43",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/miRAssist",
+        "people": "Andrew Ring",
+        "description": "MicroRNA target prioritization",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://pubmed.ncbi.nlm.nih.gov/42779862/",
+        "limits": "Created after 2017-2020 USciences appointment; not established as Janetopoulos Lab output.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=44",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/kpy-pathway-organization",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=44",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/kpy-pathway-organization",
+        "people": "Andrew Ring",
+        "description": "Pathway analysis",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://github.com/Andy-Ring/kpy-pathway-organization",
+        "limits": "Later repository; SJU lab origin not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=45",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/DESeq2-Shiny-App",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=45",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/DESeq2-Shiny-App",
+        "people": "Andrew Ring",
+        "description": "RNA sequencing analysis app",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://github.com/Andy-Ring/Shiny-App-Suite",
+        "limits": "Later repository; SJU lab origin not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=46",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/RNAseq-Tutorial",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=46",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/RNAseq-Tutorial",
+        "people": "Andrew Ring",
+        "description": "RNA sequencing tutorial",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://github.com/Andy-Ring/RNAseq-Tutorial",
+        "limits": "Later repository; SJU lab origin not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=47",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/Shiny-App-Suite",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=47",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/Shiny-App-Suite",
+        "people": "Andrew Ring",
+        "description": "Research analysis app suite",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://github.com/Andy-Ring/Shiny-App-Suite",
+        "limits": "Later repository; SJU lab origin not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=48",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/Cell-Growth-Curve-Analysis-Tool",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=48",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/Cell-Growth-Curve-Analysis-Tool",
+        "people": "Andrew Ring",
+        "description": "Cell growth curve analysis app",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://github.com/Andy-Ring/Shiny-App-Suite",
+        "limits": "Later repository; SJU lab origin not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=49",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/Dose-Response-Shiny-App",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=49",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/Dose-Response-Shiny-App",
+        "people": "Andrew Ring",
+        "description": "Dose-response analysis app",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://github.com/Andy-Ring/Shiny-App-Suite",
+        "limits": "Later repository; SJU lab origin not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=50",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/Immunoblot-Analysis-Tool",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=50",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/Immunoblot-Analysis-Tool",
+        "people": "Andrew Ring",
+        "description": "Immunoblot analysis app",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://github.com/Andy-Ring/Shiny-App-Suite",
+        "limits": "Later repository; SJU lab origin not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=51",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/Organoid-Measurement-App",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=51",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/Organoid-Measurement-App",
+        "people": "Andrew Ring",
+        "description": "Organoid measurement app",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://github.com/Andy-Ring/Organoid-Measurement-App",
+        "limits": "Later repository; SJU lab origin not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=52",
+      "kind": "repository",
+      "url": "https://github.com/Andy-Ring/mitoxy-ccrcc",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=52",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former Janetopoulos Lab member",
+        "repository": "Andy-Ring/mitoxy-ccrcc",
+        "people": "Andrew Ring",
+        "description": "Analysis files and figures",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf; https://github.com/Andy-Ring/mitoxy-ccrcc",
+        "limits": "Later repository with limited project documentation; SJU lab origin not established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=53",
+      "kind": "repository",
+      "url": "https://github.com/chvtk/Wearables_DataCleaning",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=53",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former USciences biology faculty",
+        "repository": "chvtk/Wearables_DataCleaning",
+        "people": "Chantal Koechli",
+        "description": "Public smartphone human-activity dataset cleaning",
+        "evidence_urls": "https://seaphages.org/faculty/619/; https://github.com/chvtk/Wearables_DataCleaning/commit/3dc094a273dbfd51c05ac8bcb5d0a660df2caca7",
+        "limits": "2018 analysis predates USciences appointment; no original clinical study established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=54",
+      "kind": "repository",
+      "url": "https://github.com/chvtk/Fungal_SIP",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=54",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former USciences biology faculty",
+        "repository": "chvtk/Fungal_SIP",
+        "people": "Chantal Koechli",
+        "description": "Soil microbiology and isotope-probing analysis",
+        "evidence_urls": "https://www.osti.gov/servlets/purl/1864319; https://seaphages.org/faculty/619/",
+        "limits": "Paper and code are Cornell-affiliated research before USciences appointment.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=55",
+      "kind": "repository",
+      "url": "https://github.com/chvtk/Chazy",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=55",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former USciences biology faculty",
+        "repository": "chvtk/Chazy",
+        "people": "Chantal Koechli",
+        "description": "Soil characteristics and microbial RNA analysis",
+        "evidence_urls": "https://github.com/chvtk/Chazy/commit/5f0dc8dd7134cd06e75854b9d725034a1086f4b9; https://seaphages.org/faculty/619/",
+        "limits": "Earlier research; connection to a specific USciences paper unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=56",
+      "kind": "repository",
+      "url": "https://github.com/chvtk/RNA_SIP",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=56",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former USciences biology faculty",
+        "repository": "chvtk/RNA_SIP",
+        "people": "Chantal Koechli",
+        "description": "Empty repository",
+        "evidence_urls": "https://seaphages.org/faculty/619/; https://github.com/chvtk/RNA_SIP",
+        "limits": "Empty; no functional research code established.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=57",
+      "kind": "repository",
+      "url": "https://github.com/schaedem/chazy_sip",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=57",
+      "metadata": {
+        "relationship": "former_member_other_work",
+        "group": "Former USciences biology faculty collaborators",
+        "repository": "schaedem/chazy_sip",
+        "people": "Chantal Koechli; Marie Schaedel",
+        "description": "Cornell study analysis code",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12442353/",
+        "limits": "2025 Cornell collaboration; Koechli credited with experiment design and data collection; distinct from chvtk/Chazy.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=58",
+      "kind": "repository",
+      "url": "https://github.com/seb369/HR-SIP_example",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=58",
+      "metadata": {
+        "relationship": "external_tool",
+        "group": "Former USciences biology faculty collaborators",
+        "repository": "seb369/HR-SIP_example",
+        "people": "Chantal Koechli; Samuel Barnett",
+        "description": "Stable-isotope-probing examples",
+        "evidence_urls": "https://pubmed.ncbi.nlm.nih.gov/34799453/; https://github.com/seb369/HR-SIP_example",
+        "limits": "Tutorial by collaborators; not shown to be code for the USciences-affiliated paper or authored by Koechli.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=59",
+      "kind": "repository",
+      "url": "https://github.com/USciences-Biology/Getting_Started_BS350",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=59",
+      "metadata": {
+        "relationship": "teaching",
+        "group": "USciences biology course",
+        "repository": "USciences-Biology/Getting_Started_BS350",
+        "people": "Chantal Koechli",
+        "description": "BS350 course setup materials",
+        "evidence_urls": "https://github.com/USciences-Biology/Getting_Started_BS350/blob/master/GettingStartedinBS350.Rmd; https://seaphages.org/faculty/619/",
+        "limits": "Teaching materials; administrative ownership of organization unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=60",
+      "kind": "repository",
+      "url": "https://github.com/USciences-Biology/getting-started-in-bs-350-chvtk",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=60",
+      "metadata": {
+        "relationship": "teaching",
+        "group": "USciences biology course",
+        "repository": "USciences-Biology/getting-started-in-bs-350-chvtk",
+        "people": "Chantal Koechli",
+        "description": "BS350 classroom copy",
+        "evidence_urls": "https://github.com/USciences-Biology/Getting_Started_BS350/blob/master/GettingStartedinBS350.Rmd; https://seaphages.org/faculty/619/",
+        "limits": "Teaching copy; not established as lab research.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=61",
+      "kind": "repository",
+      "url": "https://github.com/USciences-Biology/getting-started-in-bs-350-dflannelly10",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=61",
+      "metadata": {
+        "relationship": "teaching",
+        "group": "USciences biology course",
+        "repository": "USciences-Biology/getting-started-in-bs-350-dflannelly10",
+        "people": "Chantal Koechli",
+        "description": "BS350 classroom copy",
+        "evidence_urls": "https://github.com/USciences-Biology/Getting_Started_BS350/blob/master/GettingStartedinBS350.Rmd; https://seaphages.org/faculty/619/",
+        "limits": "Teaching copy; account identity and institutional control unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=62",
+      "kind": "repository",
+      "url": "https://github.com/USciences-Biology/getting-started-in-bs-350-mrflannelly",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=62",
+      "metadata": {
+        "relationship": "teaching",
+        "group": "USciences biology course",
+        "repository": "USciences-Biology/getting-started-in-bs-350-mrflannelly",
+        "people": "Chantal Koechli",
+        "description": "BS350 classroom copy",
+        "evidence_urls": "https://github.com/USciences-Biology/Getting_Started_BS350/blob/master/GettingStartedinBS350.Rmd; https://seaphages.org/faculty/619/",
+        "limits": "Teaching copy; account identity and institutional control unverified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=63",
+      "kind": "repository",
+      "url": "https://github.com/chvtk/getting-started-in-bs-350-chvtk",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=63",
+      "metadata": {
+        "relationship": "teaching",
+        "group": "USciences biology course",
+        "repository": "chvtk/getting-started-in-bs-350-chvtk",
+        "people": "Chantal Koechli",
+        "description": "Personal BS350 classroom copy",
+        "evidence_urls": "https://github.com/USciences-Biology/Getting_Started_BS350/blob/master/GettingStartedinBS350.Rmd; https://seaphages.org/faculty/619/",
+        "limits": "Teaching copy; not established as lab research.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=64",
+      "kind": "repository",
+      "url": "https://github.com/chvtk/Rcourse",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=64",
+      "metadata": {
+        "relationship": "teaching",
+        "group": "Former USciences biology faculty",
+        "repository": "chvtk/Rcourse",
+        "people": "Chantal Koechli",
+        "description": "Statistics teaching workshops",
+        "evidence_urls": "https://github.com/chvtk/Rcourse; https://seaphages.org/faculty/619/",
+        "limits": "Repository describes Beloit teaching workshops; not USciences research.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:repositories.csv:row=65",
+      "kind": "repository",
+      "url": "https://github.com/jordancaraballo/functionalizedCellulose",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=65",
+      "metadata": {
+        "relationship": "lead_unconfirmed",
+        "group": "West Center collaborators",
+        "repository": "jordancaraballo/functionalizedCellulose",
+        "people": "Preston Moore identity unconfirmed",
+        "description": "Cellulose and protein simulation scripts",
+        "evidence_urls": "https://github.com/jordancaraballo/functionalizedCellulose; https://prem.uprh.edu/img/annual/program2019.pdf; https://prem.uprh.edu/img/annual/program2023.pdf",
+        "limits": "Acknowledges Preston Moore UPENN; crosswalk to SJU Preston B. Moore and code role not independently verified.",
+        "snapshot_utc": "2026-11-17",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=2",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=2",
+      "metadata": {
+        "group": "Zhijun Li Lab",
+        "finding": "Historical lab-labeled GitHub and study code found",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4590260/; https://directory.sju.edu/zhijun-li",
+        "limits": "PyMine on zhijunlilab and original developer accounts; current lab-account activity unknown.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=3",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=3",
+      "metadata": {
+        "group": "West Center for Computational Chemistry and Drug Design",
+        "finding": "Faculty research accounts and software found",
+        "evidence_urls": "https://www.sju.edu/research/facilities-labs/west-center; https://directory.sju.edu/preston-moore",
+        "limits": "CM3D and Shape Signatures/SMART have evidence linking methods to the center; no separately controlled West Center organization verified.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=4",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=4",
+      "metadata": {
+        "group": "Saghafi biomedical data science",
+        "finding": "Researcher account and study code found",
+        "evidence_urls": "https://www.techscience.com/cmc/v88n2/67689/html; https://pmc.ncbi.nlm.nih.gov/articles/PMC8844938/",
+        "limits": "EGAIN and LSTM_Splice; no separate named SJU lab established.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=5",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=5",
+      "metadata": {
+        "group": "Wallach neuropharmacology",
+        "finding": "Study-linked collaborator account found",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/",
+        "limits": "Heim-hosted custom notebook; no Wallach Lab account verified.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=6",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=6",
+      "metadata": {
+        "group": "Grevera medical image processing",
+        "finding": "Researcher accounts and external collaboration found",
+        "evidence_urls": "https://pubmed.ncbi.nlm.nih.gov/17786517/; https://github.com/MedicalImageProcessingGroup/cavass",
+        "limits": "Two Grevera contributor accounts; Penn hosts CAVASS.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=7",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=7",
+      "metadata": {
+        "group": "Patricia Leahy Research Lab",
+        "finding": "External collaborations and tools found",
+        "evidence_urls": "https://directory.sju.edu/gregory-thielman; https://pmc.ncbi.nlm.nih.gov/articles/PMC8675421/",
+        "limits": "No lab-owned GitHub verified; repository-specific relationships vary.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=8",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=8",
+      "metadata": {
+        "group": "Kinney Center autism communication research",
+        "finding": "External collaborator repositories found",
+        "evidence_urls": "https://testing.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf; https://www.sju.edu/kinney/research/meet-researchers",
+        "limits": "FastTalker hosted by collaborator; no Kinney-owned GitHub verified.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=9",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=9",
+      "metadata": {
+        "group": "Liyuan Liu healthcare AI",
+        "finding": "Personal account and external collaborator code found",
+        "evidence_urls": "https://directory.sju.edu/liyuan-liu; https://pmc.ncbi.nlm.nih.gov/articles/PMC12796758/",
+        "limits": "No healthcare research repository on her own account verified.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=10",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=10",
+      "metadata": {
+        "group": "Janetopoulos Lab",
+        "finding": "Former lab member personal account found",
+        "evidence_urls": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf",
+        "limits": "Andrew Ring repositories listed in inventory postdate lab appointment; not verified as lab work.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=11",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=11",
+      "metadata": {
+        "group": "Chantal Koechli USciences biology",
+        "finding": "Faculty personal account and classroom organization found",
+        "evidence_urls": "https://seaphages.org/faculty/619/; https://github.com/USciences-Biology/Getting_Started_BS350/blob/master/GettingStartedinBS350.Rmd",
+        "limits": "Research and wearable data repositories predate or lack direct link to USciences; biology organization is teaching material.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=12",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=12",
+      "metadata": {
+        "group": "Tudor Lab sleep research",
+        "finding": "No sufficiently attributable public account found",
+        "evidence_urls": "https://tudorlab.com/",
+        "limits": "Bounded faculty and student search; pseudonymous or private accounts may exist.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=13",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=13",
+      "metadata": {
+        "group": "Nelson sleep genetics",
+        "finding": "External software linked directly by SJU-coauthored study",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5241116/; https://pubmed.ncbi.nlm.nih.gov/31292211/",
+        "limits": "2017 paper links external WorMotel software; exact revision and SJU code authorship unverified.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=14",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=14",
+      "metadata": {
+        "group": "Bhatt biology group",
+        "finding": "No sufficiently attributable lab-owned public account found",
+        "evidence_urls": "https://www.sju.edu/departments/biology/research",
+        "limits": "Bounded search; not proof no repository exists.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=15",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=15",
+      "metadata": {
+        "group": "Braverman biology and phage research",
+        "finding": "External tools found; no lab-owned account verified",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9584339/; https://www.sju.edu/departments/biology/research",
+        "limits": "Starterator is external; genomics coauthors must be attributed to their specific papers.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=16",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=16",
+      "metadata": {
+        "group": "Sensational Kids Lab / Pediatric Sensory Lab",
+        "finding": "No sufficiently attributable lab-owned public account found",
+        "evidence_urls": "https://www.sju.edu/departments/occupational-therapy/facilities; https://directory.sju.edu/kelly-otchet",
+        "limits": "Facility and faculty checked; not proof no repository exists.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=17",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=17",
+      "metadata": {
+        "group": "Industrial Pharmacy Laboratory",
+        "finding": "No sufficiently attributable lab-owned public account found",
+        "evidence_urls": "https://www.sju.edu/research/facilities-labs",
+        "limits": "Bounded search; not proof no repository exists.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=18",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=18",
+      "metadata": {
+        "group": "BTE rehabilitation facilities",
+        "finding": "No sufficiently attributable lab-owned public account found",
+        "evidence_urls": "https://www.sju.edu/research/facilities-labs",
+        "limits": "Bounded search; not proof no repository exists.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=19",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=19",
+      "metadata": {
+        "group": "Lancaster nursing and health programs",
+        "finding": "No sufficiently attributable lab research repository found",
+        "evidence_urls": "https://www.sju.edu/history-mission; https://www.jrcnmt.org/programs/pennsylvania-college-of-health-sciences/",
+        "limits": "Former student account found without research-lab tie; private repositories may exist.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=20",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=20",
+      "metadata": {
+        "group": "Melanoma collaboration",
+        "finding": "External study code found",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11875961/; https://pubmed.ncbi.nlm.nih.gov/39700408/",
+        "limits": "Jessica Kaster SJU and Wistar affiliations in publication; no named SJU lab or her code contribution established.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=21",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=21",
+      "metadata": {
+        "group": "HIV collaboration",
+        "finding": "External study resource found",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12122806/",
+        "limits": "SJU-affiliated researchers contributed functional assays; marker resource external and study code is on Figshare.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:labs-checked.csv:row=22",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "labs-checked.csv#row=22",
+      "metadata": {
+        "group": "Drosophila genomics collaboration",
+        "finding": "External study repository found",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12728734/",
+        "limits": "SJU-affiliated Kacie Kershaw and Kathryn Karpinski; code contribution unverified.",
+        "snapshot_utc": "2026-11-17"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=2",
+      "kind": "availability",
+      "url": "https://digitalcommons.usf.edu/etd/8569/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=2",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://digitalcommons.usf.edu/etd/8569/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=3",
+      "kind": "availability",
+      "url": "https://directory.sju.edu/gregory-thielman",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=3",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://directory.sju.edu/gregory-thielman",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=4",
+      "kind": "availability",
+      "url": "https://directory.sju.edu/kelly-otchet",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=4",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://directory.sju.edu/kelly-otchet",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=5",
+      "kind": "availability",
+      "url": "https://directory.sju.edu/liyuan-liu",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=5",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://directory.sju.edu/liyuan-liu",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=6",
+      "kind": "availability",
+      "url": "https://directory.sju.edu/preston-moore",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=6",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://directory.sju.edu/preston-moore",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=7",
+      "kind": "availability",
+      "url": "https://directory.sju.edu/zhijun-li",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=7",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://directory.sju.edu/zhijun-li",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=8",
+      "kind": "availability",
+      "url": "https://doi.org/10.1016/J.LANDIG.2025.100942",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=8",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://linkinghub.elsevier.com/retrieve/pii/S2589750025001244",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=9",
+      "kind": "availability",
+      "url": "https://doi.org/10.6084/m9.figshare.c.7074125",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=9",
+      "metadata": {
+        "status": "202",
+        "disposition": "http_success_non_200",
+        "final_url": "https://figshare.com/collections/Data_and_code_repository_for_Single-cell_analyses_identify_monocyte_gene_expression_profiles_that_influence_HIV-1_reservoir_size_in_acutely_treated_cohorts_/7074125",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=10",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=10",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=11",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/Cell-Growth-Curve-Analysis-Tool",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=11",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/Cell-Growth-Curve-Analysis-Tool",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=12",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/DESeq2-Shiny-App",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=12",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/DESeq2-Shiny-App",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=13",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/Dose-Response-Shiny-App",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=13",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/Dose-Response-Shiny-App",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=14",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/Immunoblot-Analysis-Tool",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=14",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/Immunoblot-Analysis-Tool",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=15",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/Organoid-Measurement-App",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=15",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/Organoid-Measurement-App",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=16",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/RNAseq-Tutorial",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=16",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/RNAseq-Tutorial",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=17",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/Shiny-App-Suite",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=17",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/Shiny-App-Suite",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=18",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/kpy-pathway-organization",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=18",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/kpy-pathway-organization",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=19",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/miRAssist",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=19",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/miRAssist",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=20",
+      "kind": "availability",
+      "url": "https://github.com/Andy-Ring/mitoxy-ccrcc",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=20",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Andy-Ring/mitoxy-ccrcc",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=21",
+      "kind": "availability",
+      "url": "https://github.com/DONGGUANLIANG/-main-module-of-DIST",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=21",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/DONGGUANLIANG/-main-module-of-DIST",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=22",
+      "kind": "availability",
+      "url": "https://github.com/Ellison-Lab/4genomes_Felement",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=22",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/Ellison-Lab/4genomes_Felement",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=23",
+      "kind": "availability",
+      "url": "https://github.com/LiyuanLiu1989",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=23",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/LiyuanLiu1989",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=24",
+      "kind": "availability",
+      "url": "https://github.com/MedicalImageProcessingGroup/cavass",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=24",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/MedicalImageProcessingGroup/cavass",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=25",
+      "kind": "availability",
+      "url": "https://github.com/MedicalImageProcessingGroup/cavass/commit/3b1b0698",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=25",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/MedicalImageProcessingGroup/cavass/commit/3b1b0698",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=26",
+      "kind": "availability",
+      "url": "https://github.com/MedicalImageProcessingGroup/cavass/commit/ec430ff3",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=26",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/MedicalImageProcessingGroup/cavass/commit/ec430ff3",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=27",
+      "kind": "availability",
+      "url": "https://github.com/SEA-PHAGES/starterator",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=27",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/SEA-PHAGES/starterator",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=28",
+      "kind": "availability",
+      "url": "https://github.com/TheJacksonLaboratory/PDX-melanoma-integrated-analysis",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=28",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/TheJacksonLaboratory/PDX-melanoma-integrated-analysis",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=29",
+      "kind": "availability",
+      "url": "https://github.com/USciences-Biology",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=29",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/USciences-Biology",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=30",
+      "kind": "availability",
+      "url": "https://github.com/USciences-Biology/Getting_Started_BS350",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=30",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/USciences-Biology/Getting_Started_BS350",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=31",
+      "kind": "availability",
+      "url": "https://github.com/USciences-Biology/Getting_Started_BS350/blob/master/GettingStartedinBS350.Rmd",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=31",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/USciences-Biology/Getting_Started_BS350/blob/master/GettingStartedinBS350.Rmd",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=32",
+      "kind": "availability",
+      "url": "https://github.com/USciences-Biology/getting-started-in-bs-350-chvtk",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=32",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/USciences-Biology/getting-started-in-bs-350-chvtk",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=33",
+      "kind": "availability",
+      "url": "https://github.com/USciences-Biology/getting-started-in-bs-350-dflannelly10",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=33",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/USciences-Biology/getting-started-in-bs-350-dflannelly10",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=34",
+      "kind": "availability",
+      "url": "https://github.com/USciences-Biology/getting-started-in-bs-350-mrflannelly",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=34",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/USciences-Biology/getting-started-in-bs-350-mrflannelly",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=35",
+      "kind": "availability",
+      "url": "https://github.com/artemisDiscovery",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=35",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/artemisDiscovery",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=36",
+      "kind": "availability",
+      "url": "https://github.com/artemisDiscovery/MathTools",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=36",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/artemisDiscovery/MathTools",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=37",
+      "kind": "availability",
+      "url": "https://github.com/artemisDiscovery/SwiftMC33Lib",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=37",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/artemisDiscovery/SwiftMC33Lib",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=38",
+      "kind": "availability",
+      "url": "https://github.com/artemisDiscovery/SwiftTENSUR",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=38",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/artemisDiscovery/SwiftTENSUR",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=39",
+      "kind": "availability",
+      "url": "https://github.com/artemisDiscovery/SwiftTENSURTools",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=39",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/artemisDiscovery/SwiftTENSURTools",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=40",
+      "kind": "availability",
+      "url": "https://github.com/artemisDiscovery/shapeSignaturesX2",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=40",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/artemisDiscovery/shapeSignaturesX2",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=41",
+      "kind": "availability",
+      "url": "https://github.com/artemisDiscovery/smart007",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=41",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/artemisDiscovery/smart007",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=42",
+      "kind": "availability",
+      "url": "https://github.com/asaghafi/EGAIN",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=42",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/asaghafi/EGAIN",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=43",
+      "kind": "availability",
+      "url": "https://github.com/cdshaffer/starterator",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=43",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/cdshaffer/starterator",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=44",
+      "kind": "availability",
+      "url": "https://github.com/cfangyen/wormotel",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=44",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/cfangyen/wormotel",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=45",
+      "kind": "availability",
+      "url": "https://github.com/chvtk",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=45",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/chvtk",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=46",
+      "kind": "availability",
+      "url": "https://github.com/chvtk/Chazy",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=46",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/chvtk/Chazy",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=47",
+      "kind": "availability",
+      "url": "https://github.com/chvtk/Chazy/commit/5f0dc8dd7134cd06e75854b9d725034a1086f4b9",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=47",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/chvtk/Chazy/commit/5f0dc8dd7134cd06e75854b9d725034a1086f4b9",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=48",
+      "kind": "availability",
+      "url": "https://github.com/chvtk/Fungal_SIP",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=48",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/chvtk/Fungal_SIP",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=49",
+      "kind": "availability",
+      "url": "https://github.com/chvtk/RNA_SIP",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=49",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/chvtk/RNA_SIP",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=50",
+      "kind": "availability",
+      "url": "https://github.com/chvtk/Rcourse",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=50",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/chvtk/Rcourse",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=51",
+      "kind": "availability",
+      "url": "https://github.com/chvtk/Wearables_DataCleaning",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=51",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/chvtk/Wearables_DataCleaning",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=52",
+      "kind": "availability",
+      "url": "https://github.com/chvtk/Wearables_DataCleaning/commit/3dc094a273dbfd51c05ac8bcb5d0a660df2caca7",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=52",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/chvtk/Wearables_DataCleaning/commit/3dc094a273dbfd51c05ac8bcb5d0a660df2caca7",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=53",
+      "kind": "availability",
+      "url": "https://github.com/chvtk/getting-started-in-bs-350-chvtk",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=53",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/chvtk/getting-started-in-bs-350-chvtk",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=54",
+      "kind": "availability",
+      "url": "https://github.com/colvars/colvars",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=54",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/colvars/colvars",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=55",
+      "kind": "availability",
+      "url": "https://github.com/compMathUPRH/wolffia",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=55",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/compMathUPRH/wolffia",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=56",
+      "kind": "availability",
+      "url": "https://github.com/ggrevera",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=56",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/ggrevera",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=57",
+      "kind": "availability",
+      "url": "https://github.com/grevera",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=57",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/grevera",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=58",
+      "kind": "availability",
+      "url": "https://github.com/jordancaraballo/functionalizedCellulose",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=58",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/jordancaraballo/functionalizedCellulose",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=59",
+      "kind": "availability",
+      "url": "https://github.com/jruhym",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=59",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/jruhym",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=60",
+      "kind": "availability",
+      "url": "https://github.com/jruhym/jNotebooksForMD",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=60",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/jruhym/jNotebooksForMD",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=61",
+      "kind": "availability",
+      "url": "https://github.com/jruhym/jNotebooksForMD/blob/trunk/pocket-ligandInteractionTimeSeriesHeatmap.ipynb",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=61",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/jruhym/jNotebooksForMD/blob/trunk/pocket-ligandInteractionTimeSeriesHeatmap.ipynb",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=62",
+      "kind": "availability",
+      "url": "https://github.com/kr0401/LSTM_Splice",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=62",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/kr0401/LSTM_Splice",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=63",
+      "kind": "availability",
+      "url": "https://github.com/mattkmostrom/spectro-lammps",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=63",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mattkmostrom/spectro-lammps",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=64",
+      "kind": "availability",
+      "url": "https://github.com/mdmamunalamin/bangladeshikid6-7",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=64",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mdmamunalamin/bangladeshikid6-7",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=65",
+      "kind": "availability",
+      "url": "https://github.com/miyamot0/FastTalker",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=65",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/miyamot0/FastTalker",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=66",
+      "kind": "availability",
+      "url": "https://github.com/miyamot0/FastTalkerSkiaSharp",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=66",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/miyamot0/FastTalkerSkiaSharp",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=67",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=67",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=68",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/Analysis",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=68",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/Analysis",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=69",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/MDPython",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=69",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/MDPython",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=70",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/MDPython/commit/50685d0e56c2e9b386fe0e5d81b520d4cced023e",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=70",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/MDPython/commit/50685d0e56c2e9b386fe0e5d81b520d4cced023e",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=71",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/ProcessLammpsCode",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=71",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/ProcessLammpsCode",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=72",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/cm3d",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=72",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/cm3d",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=73",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/cm3d/commit/00dcb09717566b102a45b6e5c680a9ea785d1c3b",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=73",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/cm3d/commit/00dcb09717566b102a45b6e5c680a9ea785d1c3b",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=74",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/mdarmsd",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=74",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/mdarmsd",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=75",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/mdmpi",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=75",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/mdmpi",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=76",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/partfunc",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=76",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/partfunc",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=77",
+      "kind": "availability",
+      "url": "https://github.com/mooreprestonb/xmov",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=77",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mooreprestonb/xmov",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=78",
+      "kind": "availability",
+      "url": "https://github.com/mulberrysymbols/mulberry-symbols",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=78",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/mulberrysymbols/mulberry-symbols",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=79",
+      "kind": "availability",
+      "url": "https://github.com/npnl/ATLAS",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=79",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/npnl/ATLAS",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=80",
+      "kind": "availability",
+      "url": "https://github.com/npnl/ENIGMA-Wrapper-Scripts",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=80",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/npnl/ENIGMA-Wrapper-Scripts",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=81",
+      "kind": "availability",
+      "url": "https://github.com/npnl/PALS",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=81",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/npnl/PALS",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=82",
+      "kind": "availability",
+      "url": "https://github.com/npnl/braindrles",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=82",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/npnl/braindrles",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=83",
+      "kind": "availability",
+      "url": "https://github.com/npnl/isles_2022",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=83",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/npnl/isles_2022",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=84",
+      "kind": "availability",
+      "url": "https://github.com/pks1207/regional_Brain_age",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=84",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/pks1207/regional_Brain_age",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=85",
+      "kind": "availability",
+      "url": "https://github.com/rrchaudhari/PyMine",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=85",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/rrchaudhari/PyMine",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=86",
+      "kind": "availability",
+      "url": "https://github.com/schaedem/chazy_sip",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=86",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/schaedem/chazy_sip",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=87",
+      "kind": "availability",
+      "url": "https://github.com/seb369/HR-SIP_example",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=87",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/seb369/HR-SIP_example",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=88",
+      "kind": "availability",
+      "url": "https://github.com/thomaslab-MHRP-Bioinformatics/scRNA-seq_annotation_resources",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=88",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/thomaslab-MHRP-Bioinformatics/scRNA-seq_annotation_resources",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=89",
+      "kind": "availability",
+      "url": "https://github.com/tjstanek/4genomes_Felement",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=89",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/tjstanek/4genomes_Felement",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=90",
+      "kind": "availability",
+      "url": "https://github.com/zhijunlilab",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=90",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/zhijunlilab",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=91",
+      "kind": "availability",
+      "url": "https://github.com/zhijunlilab/PyMine",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=91",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://github.com/zhijunlilab/PyMine",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=92",
+      "kind": "availability",
+      "url": "https://liyuanliu1989.github.io/LiyuanLiu.github.io/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=92",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://liyuanliu1989.github.io/LiyuanLiu.github.io/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=93",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=93",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10724237/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=94",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11875961/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=94",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11875961/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=95",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12122806/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=95",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12122806/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=96",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12442353/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=96",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12442353/",
+        "checked_at_utc": "2026-11-17T01:34:17+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=97",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12728734/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=97",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12728734/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=98",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12796758/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=98",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12796758/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=99",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13426339/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=99",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13426339/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=100",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2902560/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=100",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2902560/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=101",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880490/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=101",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880490/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=102",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4590260/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=102",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4590260/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=103",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5241116/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=103",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5241116/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=104",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5484621/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=104",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5484621/",
+        "checked_at_utc": "2026-11-17T01:34:17+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=105",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8675421/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=105",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8675421/",
+        "checked_at_utc": "2026-11-17T01:34:17+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=106",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8844938/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=106",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8844938/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=107",
+      "kind": "availability",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9584339/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=107",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9584339/",
+        "checked_at_utc": "2026-11-17T01:34:17+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=108",
+      "kind": "availability",
+      "url": "https://prem.uprh.edu/img/annual/program2012.pdf",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=108",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://prem.uprh.edu/img/annual/program2012.pdf",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=109",
+      "kind": "availability",
+      "url": "https://prem.uprh.edu/img/annual/program2019.pdf",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=109",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://prem.uprh.edu/img/annual/program2019.pdf",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=110",
+      "kind": "availability",
+      "url": "https://prem.uprh.edu/img/annual/program2023.pdf",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=110",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://prem.uprh.edu/img/annual/program2023.pdf",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=111",
+      "kind": "availability",
+      "url": "https://prem.uprh.edu/research/prem2009-15/annual2013.pdf",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=111",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://prem.uprh.edu/research/prem2009-15/annual2013.pdf",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=112",
+      "kind": "availability",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/17786517/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=112",
+      "metadata": {
+        "status": "203",
+        "disposition": "http_success_non_200",
+        "final_url": "https://pubmed.ncbi.nlm.nih.gov/17786517/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=113",
+      "kind": "availability",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/31292211/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=113",
+      "metadata": {
+        "status": "203",
+        "disposition": "http_success_non_200",
+        "final_url": "https://pubmed.ncbi.nlm.nih.gov/31292211/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=114",
+      "kind": "availability",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/34799453/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=114",
+      "metadata": {
+        "status": "203",
+        "disposition": "http_success_non_200",
+        "final_url": "https://pubmed.ncbi.nlm.nih.gov/34799453/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=115",
+      "kind": "availability",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/39700408/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=115",
+      "metadata": {
+        "status": "203",
+        "disposition": "http_success_non_200",
+        "final_url": "https://pubmed.ncbi.nlm.nih.gov/39700408/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=116",
+      "kind": "availability",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42779862/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=116",
+      "metadata": {
+        "status": "203",
+        "disposition": "http_success_non_200",
+        "final_url": "https://pubmed.ncbi.nlm.nih.gov/42779862/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=117",
+      "kind": "availability",
+      "url": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=117",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://rx.uga.edu/wp-content/uploads/2025/01/CV_AndrewRing_UGA.pdf",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=118",
+      "kind": "availability",
+      "url": "https://salus.edu/about/drexel-integration.html",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=118",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://salus.edu/about/drexel-integration.html",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=119",
+      "kind": "availability",
+      "url": "https://seaphages.org/faculty/619/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=119",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://seaphages.org/faculty/619/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=120",
+      "kind": "availability",
+      "url": "https://tcbg.illinois.edu/Research/namd/mailing_list/namd-l.2017-2018/0215.html",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=120",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://tcbg.illinois.edu/Research/namd/mailing_list/namd-l.2017-2018/0215.html",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=121",
+      "kind": "availability",
+      "url": "https://testing.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=121",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://testing.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=122",
+      "kind": "availability",
+      "url": "https://tudorlab.com/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=122",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://tudorlab.com/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=123",
+      "kind": "availability",
+      "url": "https://www.jrcnmt.org/programs/pennsylvania-college-of-health-sciences/",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=123",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.jrcnmt.org/programs/pennsylvania-college-of-health-sciences/",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=124",
+      "kind": "availability",
+      "url": "https://www.linkedin.com/in/jonathan-barnum",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=124",
+      "metadata": {
+        "status": "999",
+        "disposition": "http_other",
+        "final_url": "https://www.linkedin.com/in/jonathan-barnum",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=125",
+      "kind": "availability",
+      "url": "https://www.nature.com/articles/s41597-022-01401-7",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=125",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.nature.com/articles/s41597-022-01401-7",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=126",
+      "kind": "availability",
+      "url": "https://www.osti.gov/servlets/purl/1864319",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=126",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.osti.gov/servlets/purl/1864319",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=127",
+      "kind": "availability",
+      "url": "https://www.sju.edu/departments/biology/research",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=127",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.sju.edu/departments/biology/research",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=128",
+      "kind": "availability",
+      "url": "https://www.sju.edu/departments/occupational-therapy/facilities",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=128",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.sju.edu/departments/occupational-therapy/facilities",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=129",
+      "kind": "availability",
+      "url": "https://www.sju.edu/history-mission",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=129",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.sju.edu/history-mission",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=130",
+      "kind": "availability",
+      "url": "https://www.sju.edu/kinney/research/meet-researchers",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=130",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.sju.edu/kinney/research/meet-researchers",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=131",
+      "kind": "availability",
+      "url": "https://www.sju.edu/research/facilities-labs",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=131",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.sju.edu/research/facilities-labs",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=132",
+      "kind": "availability",
+      "url": "https://www.sju.edu/research/facilities-labs/west-center",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=132",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.sju.edu/research/facilities-labs/west-center",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=133",
+      "kind": "availability",
+      "url": "https://www.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=133",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.smallnstats.com/preprints/gilroyDelayedInterventionStart2023.pdf",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "sju:link-checks.csv:row=134",
+      "kind": "availability",
+      "url": "https://www.techscience.com/cmc/v88n2/67689/html",
+      "nativeId": null,
+      "sourceRef": "link-checks.csv#row=134",
+      "metadata": {
+        "status": "200",
+        "disposition": "http_ok",
+        "final_url": "https://www.techscience.com/cmc/v88n2/67689/html",
+        "checked_at_utc": "2026-11-17T01:33:10+00:00",
+        "primaryUrlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    }
+  ],
+  "coverage": {
+    "perFileRowCounts": {
+      "accounts.csv": 36,
+      "repositories.csv": 64,
+      "labs-checked.csv": 21,
+      "link-checks.csv": 133
+    }
+  },
+  "qualifications": [
+    "All metadata is source-reported and unreviewed; labels do not establish identity, ownership, current role, health relevance or availability.",
+    "The inventory is a best-effort public snapshot, not a census; repository records include external collaborators, teaching, historical work and unconfirmed leads.",
+    "University of the Sciences is a historical predecessor in Philadelphia; Lancaster is a separate campus context. Institution names do not establish individual or project geography.",
+    "Lab labels and accounts do not establish institutional ownership; historical affiliation does not establish a current role. Source link checks are time-specific and do not establish evidentiary support."
+  ]
+}

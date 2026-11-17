@@ -1,0 +1,131 @@
+{
+  "contexts": [
+    {
+      "recordId": "crossref:10.1038/s41592-024-02503-3",
+      "publicationSourceSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+      "publicationYear": 2025,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Uthsav Chitra"
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Benjamin J. Raphael"
+        }
+      ],
+      "institution": "Princeton University",
+      "campus": "Princeton Computer Science main building, 35 Olden Street",
+      "municipality": "Princeton",
+      "county": "Mercer",
+      "affiliationSources": [
+        {
+          "url": "https://www.nature.com/articles/s41592-024-02503-3",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        }
+      ],
+      "countySources": [
+        {
+          "url": "https://www.cs.princeton.edu/contact-us",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        },
+        {
+          "url": "https://nj.gov/www.nj.gov/treasury/unclaimed-property/pdf/counties/MERCER.pdf",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        },
+        {
+          "url": "https://orpa.princeton.edu/institutional-information",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "notes": [
+        "The published affiliation is Princeton Computer Science; campus and county evidence associates the department's main building with Mercer County, not an individual's worksite or where code was written."
+      ]
+    },
+    {
+      "recordId": "crossref:10.1007/s11517-024-03096-x",
+      "publicationSourceSha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+      "publicationYear": 2024,
+      "authors": [
+        {
+          "sourceIndex": 3,
+          "name": "Iman Dehzangi"
+        }
+      ],
+      "institution": "Rutgers University–Camden",
+      "campus": "Rutgers University–Camden campus",
+      "municipality": "Camden",
+      "county": "Camden",
+      "affiliationSources": [
+        {
+          "url": "https://link.springer.com/article/10.1007/s11517-024-03096-x",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        },
+        {
+          "url": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        },
+        {
+          "url": "https://www.researchwithrutgers.org/en/publications/correction-to-sleepboost-a-multi-level-tree-based-ensemble-model-/",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        }
+      ],
+      "countySources": [
+        {
+          "url": "https://camden.rutgers.edu/visit",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        },
+        {
+          "url": "https://www.camdencounty.com/your-government/municipalities-camden-county/",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "notes": [
+        "The GitHub User owner is separate from the institutional affiliation; no institutional ownership is inferred.",
+        "The publisher's correction changed the author's first name from Imam to Iman; the retained Crossref response already says Iman."
+      ]
+    },
+    {
+      "recordId": "crossref:10.1016/j.xgen.2023.100340",
+      "publicationSourceSha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+      "publicationYear": 2023,
+      "authors": [
+        {
+          "sourceIndex": 2,
+          "name": "Stephanie J. Spielman"
+        }
+      ],
+      "institution": "Rowan University",
+      "campus": "Rowan University Glassboro main campus",
+      "municipality": "Glassboro",
+      "county": "Gloucester",
+      "affiliationSources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/37492101/",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        }
+      ],
+      "countySources": [
+        {
+          "url": "https://www.rowan.edu/about/visiting/west.pdf",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "notes": [
+        "OpenPBTA is a multi-institution collaboration; Rowan affiliation does not establish Rowan ownership or origin of the repository, or independent Penn or CHOP laboratory coverage.",
+        "The historical analysis repository is archived, no longer accepts contributions, and points to a successor."
+      ]
+    }
+  ]
+}

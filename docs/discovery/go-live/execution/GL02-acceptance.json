@@ -1,0 +1,58 @@
+{
+  "id": "TVD-GL02-1",
+  "recorded_at": "2026-11-16T20:20:41.419363+00:00",
+  "disposition": "accepted_pre_collection_design_only",
+  "owner": "Terra",
+  "reviewer": "Sol",
+  "acceptor": "Orchestrator",
+  "depends_on": [
+    "GL00"
+  ],
+  "criteria": {
+    "GL02-A1": "accepted_with_declared_source_qualification_and_diagnostic_limits",
+    "GL02-A2": "accepted_with_declared_source_qualification_and_diagnostic_limits",
+    "GL02-A3": "accepted_with_declared_source_qualification_and_diagnostic_limits",
+    "GL02-A4": "accepted_with_declared_source_qualification_and_diagnostic_limits",
+    "GL02-A5": "accepted_with_declared_source_qualification_and_diagnostic_limits"
+  },
+  "outputs": {
+    "docs/discovery/go-live/execution/GL02-exploration-manifest.json": "0259cae7e08f236fa67b3fb23a5ba07f009fabdb3f0cf024ae52336b283c9917",
+    "docs/discovery/go-live/execution/GL02-known-project-diagnostic.json": "6b694800c29e2d10c8820c1d1fb06b0c00e331e2b561f269f75f92799730df48",
+    "docs/discovery/go-live/execution/GL02-sol-review.md": "1f1a5d2f88f47745d60549c25a231c24975a584824754d300dad5a1672e5bb41",
+    "docs/discovery/go-live/execution/GL02-source-inventory.json": "e262f273d73e7a2e3a721ea68ea85a8de86a14303f4df8cd95fb670956078aa3",
+    "docs/discovery/go-live/execution/GL02-source-methods.md": "377eb976b25d5a11f6e50eed1b64618eb28102ed6ad178765434870216c9207b"
+  },
+  "private_artifacts": {
+    ".discovery-work/go-live-implementation/root/GL02/check-harness-note.txt": "7512b0846f64ce1e00d43a49f8eb5d38edb71348be715a318e2af688b4e81e33",
+    ".discovery-work/go-live-implementation/root/GL02/check-result.json": "38b9e0fa76b162b4fb512c2436e6b73e78babd4af6f4356aec988c8b6cea0195",
+    ".discovery-work/go-live-implementation/root/GL02/check.py": "e052b7a2007269edb0b4f8e95cefe3ddf0a6a0e649e1c3133fef12ee7485fd48",
+    ".discovery-work/go-live-implementation/root/GL02/reviewed-inputs/GL02-exploration-manifest.json": "66bcd6837cee7a5bcbf1f18cd10464ca886afbf13292d9676aea9d7c2374c704",
+    ".discovery-work/go-live-implementation/root/GL02/reviewed-inputs/GL02-known-project-diagnostic.json": "6b694800c29e2d10c8820c1d1fb06b0c00e331e2b561f269f75f92799730df48",
+    ".discovery-work/go-live-implementation/root/GL02/reviewed-inputs/GL02-source-inventory.json": "e262f273d73e7a2e3a721ea68ea85a8de86a14303f4df8cd95fb670956078aa3",
+    ".discovery-work/go-live-implementation/root/GL02/reviewed-inputs/GL02-source-methods.md": "e5fd09a5b276b9c3e17ecc9d2eafb1a96a60c2ad5205bdbc0f5c1bb802a169ed",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL02/design-review.initial.json": "1f8fe1523a5b3dde0c386e099b76c4aa3692db9a0247cc903fc26941140b94f5",
+    "/workspace/build/builderbob/tvd-go-live-implementation-20261116/sol/GL02/design-review.json": "aa24d372c73fd357a786d99c930ab590f74cb4d62b8205ba7eb29fe7f95e9b4e"
+  },
+  "scope": {
+    "county_entries": 9,
+    "initial_account_leads": 4,
+    "factual_source_observations": 10,
+    "diagnostic_cases": 7,
+    "actual_diagnostic_results": "unrun",
+    "new_native_source_captures": 0,
+    "new_public_records": 0,
+    "source_enrollment": false,
+    "GL03_accepted": false,
+    "GL09_accepted": false
+  },
+  "caps": "120 aggregate requests, 35/provider, 3 concurrency, 48000-byte strictest response bound, 25s outer, identity encoding, zero redirect/retry, first probe\u22645 records/one page; see frozen manifest for all limits",
+  "known_gaps": [
+    "Burlington and other project-specific eligibility remain unresolved; do not infer no eligible work.",
+    "D07 confirms a Penn software-page discovery path, not new regional breadth or public admission.",
+    "Each new exact source method needs policy/request/retention preflight and a bounded actual probe before broader collection."
+  ],
+  "phase_note": "Sol reviewed frozen design inputs copied privately above. Root then changed only accepted status/header and linked this acceptance; no source facts or bounds changed.",
+  "deployment_authorized": true,
+  "deployment_performed": false,
+  "benchmark_credit": 0
+}

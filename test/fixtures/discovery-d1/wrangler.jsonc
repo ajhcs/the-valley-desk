@@ -1,0 +1,10 @@
+{
+  "name": "discovery-offline-d1-test",
+  "compatibility_date": "2026-11-01",
+  "send_metrics": false,
+  "d1_databases": [{
+    "binding": "DISCOVERY_TEST_DB",
+    "database_name": "discovery-offline-only",
+    "database_id": "00000000-0000-0000-0000-000000000041"
+  }]
+}

@@ -1,0 +1,28 @@
+{
+  "package": "WP03",
+  "recorded_at": "2026-11-15T22:49:39.947121+00:00",
+  "decision": "EX24",
+  "disposition": "local_workflow_prepared_independent_human_review_still_required",
+  "reviewed_code_commit": "41d306e95ce4bcf0872bb2d223fc6016a87eb98a",
+  "qualification_receipt": "human-review-workflow-qualification.json",
+  "qualification_receipt_sha256": "163b67bbee7130a54e8affb0bfe0aff5fa9ffa4b99382aeee0232e632adfe64e",
+  "workflow_engineering_review": "pass",
+  "blocked_preparation_tasks": 8,
+  "blank_reviewer_slots": 16,
+  "null_label_cells": 128,
+  "reference_case_credit": 0,
+  "actual_reference_cases": 0,
+  "actual_human_reviewers": 0,
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "manifest_status": "not_frozen",
+  "freeze_issued": false,
+  "package_accepted": false,
+  "WP14_dependency_satisfied": false,
+  "empirical_gates": "E01-E06_not_run",
+  "remaining": [
+    "Accountable owner/steward and two actually distinct authorized human reviewers, conflicts, controlled distribution and external assignment/replay ledger.",
+    "Source-specific evidence and permitted fetch/retain/annotate/evaluate statements, exact rubric text mapping and actual trust enrollment.",
+    "Reviewed case/family/selection/exposure records, complete fresh independent heldout/recall frames and audit plan.",
+    "Actual blinded first annotations, preserved disagreements, accountable adjudication and separate authenticated freeze."
+  ]
+}

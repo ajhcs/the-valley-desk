@@ -1,0 +1,11 @@
+# GL05 private public-health discovery intake
+
+This offline intake records the supplied November 16, 2026 research snapshot as private, source-reported and unreviewed discovery material. It authorizes no publication, external requests, source activation, or deployment. Source thread: `01a1e757-1efe-79c2-b387-58adc9b5cccc`.
+
+The retained envelope has 1,388 observations: 170 source-linked inventory rows, 171 seed rows, 492 unreviewed profile leads, one unavailable lead, 164 source URL checks, 202 query-coverage rows, 15 count observations, 171 seed-validation observations, and two concise README observations. These are overlapping observations, not counts of distinct labs, projects, or people. The 5,287 unfiltered profile hits are not imported. The manifest hashes every original file, including raw search results and supplied programs; those programs were not executed.
+
+The PHL-2 account self-identifies as the Philadelphia Public Health Laboratory and lists a city contact, but independent city linkage was not identified; official ownership remains unconfirmed. The citywide CityOfPhiladelphia account is distinct from the laboratory, and Community Health Explorer's reported city health collaboration is project-specific. Code for Philly is a community organization. Regional company presence and global accounts do not establish local code. Profile names, locations and companies are self-reported hints, not proof of identity, current employment or worksite. No profile biography, source body, or contact information is retained.
+
+The finite 202-query sweep has search and saturation limits; two broad searches used date partitions. Blocked or unavailable checks do not establish absence, and a successful HEAD response does not establish attribution. The nine-county DVRPC region remains the governing primary geography; Newark, Delaware is neighboring context. Source assertions and checks are historical reports, not live verification.
+
+Run `python3 scripts/sanitize-public-health-intake.py --check` to replay against retained outputs, and `python3 test/sourceqa/test_public_health_intake.py -v` for source-dependent QA. Both require the original source directory. To write a fresh copy, use `--output` with a new absolute directory under `/workspace` outside the source tree; existing paths, traversal and symlink paths are rejected.

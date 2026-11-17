@@ -1,0 +1,168 @@
+{
+  "id": "TVD-WP12-EDIT-INVALIDATION-1",
+  "decision": "EX27",
+  "recorded_at": "2026-11-16T02:19:07.437116+00:00",
+  "reviewed_code_commit": "a60ba78179cc8b6be904bf606f10cf178bb64ed2",
+  "disposition": "local_private_edit_component_qualified_full_packages_incomplete",
+  "validation": {
+    "commands": [
+      {
+        "name": "tests",
+        "argv": [
+          "npm",
+          "test"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "pdf",
+        "argv": [
+          "npm",
+          "run",
+          "test:policy-pdf"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build",
+        "argv": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "smoke",
+        "argv": [
+          "npm",
+          "run",
+          "ops:smoke"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "audit",
+        "argv": [
+          "npm",
+          "audit",
+          "--audit-level=high",
+          "--json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "secret",
+        "argv": [
+          "npm",
+          "run",
+          "secret-scan"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "suite_counts": [
+      939,
+      146,
+      322
+    ],
+    "executed_tests": 1407,
+    "failures": 0,
+    "skips": 0,
+    "PDF_regressions": 7,
+    "audit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "Astra_independent_D1_groups": 10,
+    "Terra_independent_D1_groups": 4,
+    "Terra_installation_isolation": 1,
+    "scope": "Synthetic authority and local actual D1 only; independent counts overlap integrated tests."
+  },
+  "runtime_input_manifest": {
+    "path": ".discovery-work/wp12-edit/root/final/input-sha256.json",
+    "sha256": "a5b98affd39b6d7d0a8d3292f2f5e6f39f2a9df9fde57e5e9eee06488f16003b",
+    "count": 619,
+    "drift": []
+  },
+  "runtime_outputs": {
+    "migrations/0045_discovery_source_support.sql": "eccbd341c0cf15b9e47781d740e5c54588321e03cad041d9306747effa12622d",
+    "package.json": "68d7f23a5db2d9d2af3de948f17dd23edd243b07a3dd3664177f8ff30d34f68f",
+    "src/content/discovery-evidence.ts": "92247c2ddec4153b8555d91984390e7eb5fcb54f881bc12140a0425fa908fde5",
+    "src/ingest/discovery-evidence-store.ts": "e9f12f31adfe9c30c3e2d7b723e6685c3f534ca3a1147009461bd17f2c147c1d",
+    "src/ingest/discovery/forum-currentness.ts": "c96db147ad1abe1e2c308a3b839ac0fadd7aedc72a4e63a4c1f32e7b1dfaa691",
+    "src/ingest/discovery/forum.ts": "27ebce1d0842c97df32e9a08c4c8577aacf9825825af701fedd45ee55f6cf6ac",
+    "src/ingest/discovery/source-registry.ts": "05e902ab18a236584f8dd6c2242d47739c5f54ba6e12740519fba04ba52b158e",
+    "src/lib/ops.ts": "5db4de1353b479b4142d3ddcf80ac7f9844d0f86b13a4a0a9c481abdb693ab8e",
+    "test/discovery-forum-currentness.test.ts": "48350a9440925fea75c9bcaa12ec28fdbc90082cda7e50beecdf72d1e0cf5fa8",
+    "test/helpers/discovery-forum-currentness-fixture.ts": "a99ed681278270f90c7682dde6c6f5e8a684bf5c4cd8e2b42e059665602a4a99",
+    "test/types/discovery-contracts.ts": "ea6f2d22f92ed93cefce39b65a33c102c71748c6cfc2e9af578a93571ebdd50b"
+  },
+  "outputs": {
+    "docs/discovery/wp12-edit-invalidation-plan.md": "786f714b57ac5d3bb95c137dd3e776dcd499d0f5f7273854a0b205137ecb6568",
+    "docs/discovery/implementation-decisions.md": "4f25a37f709e158f7b7d1e359876848b2daf9d8c117ab177acdab4ce804f9f3a",
+    "docs/discovery/qualification/institutional-expansion-20261116.md": "bf5fdcba268cd2cbcb11a54ecb0c7db8e8c777f04fc8bb8e0227ff48d7401db7",
+    "docs/discovery/reviews/wp12-edit-invalidation-astra.md": "7ede7641a0fc3f3550b9bb785d2c94973f19b45f8378e7268faa97886fe80736"
+  },
+  "private_artifacts": {
+    ".discovery-work/wp12-edit/root/final/tests-final.log": "aa55f881ac4eb01e925ae7f21785d521d44ee9749df5a66c66e790ad062e579a",
+    ".discovery-work/wp12-edit/root/final/pdf-final.log": "debf7ef8c929997fafe94a716a4a96d7ff390cb27ed8188d335769a1c0849afe",
+    ".discovery-work/wp12-edit/root/final/build-final.log": "34981686279e172c96dd98181b833228e57719b4e4be4867c94a3d0f2f46db11",
+    ".discovery-work/wp12-edit/root/final/smoke-final.log": "2aae039cdb350ca4aa9a719bcb3c3e9a8dc2a838f271a5ffb6a557f74d84804b",
+    ".discovery-work/wp12-edit/root/final/audit-final.log": "d04ff73073bfcca2d06bfef3ca46173bfba16cd7ae37d6c1de342054ae6c56e1",
+    ".discovery-work/wp12-edit/root/final/secret-final.log": "8fabd24feb7cd8c830a92a3b54e375e47b9f028801e675f4472f2de9c6468fbb",
+    ".discovery-work/wp12-edit/root/final/input-sha256.json": "a5b98affd39b6d7d0a8d3292f2f5e6f39f2a9df9fde57e5e9eee06488f16003b",
+    ".discovery-work/wp12-edit/root/final/validation.json": "369dce5d09c9281e19aed84edb4a857cbe1f4a5afc92f135ab18a84a105c3eaf",
+    ".discovery-work/wp12-edit/root/tests-final.log": "6ecd1ff75efd5afbad29962fc275991714e322476b66cb8e0a3bc53d5ffb18ce",
+    ".discovery-work/wp12-edit/astra/review-result.json": "770fd788ba70840ce8aa311710846942649d4c261553bd5ceae1eb1768ed639e",
+    ".discovery-work/wp12-lifecycle/terra/independent-final.tap": "f5ff2dbbb7e195afdd7bc77897ed916d9649773d6af6d78ef97252613ba03865",
+    ".discovery-work/wp12-lifecycle/terra/isolation.tap": "542e29956f5bd9a3909a36b02dd9cd0d44bee931bdbaff928bc43e348da5f1e9",
+    ".discovery-work/institutional-expansion/terra/robots-observations.md": "9959fae10304f23550bd5c12ba9f7e10c783ce99eb156491adda19d0d92c40af",
+    ".discovery-work/wp12-edit/astra/type-and-ops-reconciliation.json": "173a3303b3c00bd4225cb1576d2f4fbbb6bcbfa9d511301995b2ee8aae46b998"
+  },
+  "frozen_manifests": [
+    {
+      "path": "docs/discovery-engineering/HANDOFF-MANIFEST.json",
+      "entries": 70,
+      "mismatches": []
+    },
+    {
+      "path": "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json",
+      "entries": 21,
+      "mismatches": []
+    }
+  ],
+  "native_model_files": {
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e"
+  },
+  "reference_manifest_sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+  "source_index_sha256": "0abd5620c51a93bff55e78a8a7b7c7c2bb938c1b15a4ef191bd38109d639562b",
+  "source_acquisition_records": 16,
+  "distinct_native_bodies": 14,
+  "actual_reference_cases": 0,
+  "actual_human_reviewers": 0,
+  "new_qualified_institutional_sources": 0,
+  "new_target_source_body_captures": 0,
+  "manifest_status": "not_frozen",
+  "WP12_accepted": false,
+  "WP13_accepted": false,
+  "WP03_accepted": false,
+  "WP14_dependency_satisfied": false,
+  "empirical_gates": "E01-E06_not_run",
+  "holds": [
+    "Native deletion/private proofs and full AC-WP12-06 remain unimplemented.",
+    "Qualification captures with selected posts and no genuine page binding hold the operation.",
+    "Source revision/configuration/generation/qualification continuity outside the exact frame holds.",
+    "128-capture/4MiB inventory limits are not recurring operating-capacity qualification.",
+    "External operator authenticity/revocation remains the existing trusted-resolver boundary.",
+    "WP14 admission/WP16 visibility and actual source/human/trust permissions remain unqualified."
+  ],
+  "deployment": false,
+  "merge": false
+}

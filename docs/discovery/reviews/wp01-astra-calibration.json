@@ -1,0 +1,457 @@
+{
+  "schema": "discovery-policy-independent-calibration/1",
+  "reviewer": "Astra",
+  "created_at": "2026-11-14T00:04:00.353948+00:00",
+  "independence": "Classified all fixture cases from the policy and cases before opening Terra classifications. No real external-truth or editorial authority claim.",
+  "policy_sha256": "14b1eb460b10127fdc344ed4f074a1f0d2e80321405b47ce4edb0088c7cfc525",
+  "fixture_sha256": "064e3ebef20da04443b382e3293efba1c3a692609ab1c0cc85967a597c48304a",
+  "policy_version": "discovery-policy-v1",
+  "as_of": "2026-11-13",
+  "status": "independent_classification_frozen_before_comparison",
+  "labels_meaning": "Eligibility/review/exclusion under synthetic facts only; publication still requires authenticated authority and valid dependencies. not_assessed is not a negative claim.",
+  "cases": [
+    {
+      "id": "county-01",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_individual_optional",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Exact eligible state/county key, dated substantive health-data contribution and organization identity support work; no person profile is inferred."
+    },
+    {
+      "id": "county-02",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_individual_optional",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Exact eligible state/county key, dated substantive health-data contribution and organization identity support work; no person profile is inferred."
+    },
+    {
+      "id": "county-03",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_individual_optional",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Exact eligible state/county key, dated substantive health-data contribution and organization identity support work; no person profile is inferred."
+    },
+    {
+      "id": "county-04",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_individual_optional",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Exact eligible state/county key, dated substantive health-data contribution and organization identity support work; no person profile is inferred."
+    },
+    {
+      "id": "county-05",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_individual_optional",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Exact eligible state/county key, dated substantive health-data contribution and organization identity support work; no person profile is inferred."
+    },
+    {
+      "id": "county-06",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_individual_optional",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Exact eligible state/county key, dated substantive health-data contribution and organization identity support work; no person profile is inferred."
+    },
+    {
+      "id": "county-07",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_individual_optional",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Exact eligible state/county key, dated substantive health-data contribution and organization identity support work; no person profile is inferred."
+    },
+    {
+      "id": "county-08",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_individual_optional",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Exact eligible state/county key, dated substantive health-data contribution and organization identity support work; no person profile is inferred."
+    },
+    {
+      "id": "county-09",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_individual_optional",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Exact eligible state/county key, dated substantive health-data contribution and organization identity support work; no person profile is inferred."
+    },
+    {
+      "id": "outside-same-name",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "outside",
+      "regional_work": "ineligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "supported",
+      "policy_disposition": "exclude_regional_work",
+      "rationale": "PA:Mercer is not NJ:Mercer. An explicit nonmember key cannot qualify regional work."
+    },
+    {
+      "id": "outside-delaware",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "outside",
+      "regional_work": "ineligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "supported",
+      "policy_disposition": "exclude_regional_work",
+      "rationale": "NJ:Delaware is not PA:Delaware and is absent from the accepted key set; this synthetic key supplies no valid local county."
+    },
+    {
+      "id": "unknown-state",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "unknown",
+      "regional_work": "review",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "supported",
+      "policy_disposition": "hold_geography",
+      "rationale": "Mercer without a state cannot resolve eligible NJ:Mercer versus noneligible PA:Mercer."
+    },
+    {
+      "id": "move-in",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "outside_at_creation",
+      "regional_work": "ineligible",
+      "current_regional_creator": "eligible",
+      "historical_regional_creator": "not_required",
+      "display_rights": "metadata_supported",
+      "identity": "supported",
+      "policy_disposition": "eligible_current_creator_context_only_work",
+      "rationale": "Verified current Bucks professional position supports a current creator; 2022 work was created in Allegheny before the 2023 move and cannot count as regional work."
+    },
+    {
+      "id": "move-out",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported_at_creation",
+      "regional_work": "eligible",
+      "current_regional_creator": "ineligible",
+      "historical_regional_creator": "eligible",
+      "display_rights": "metadata_supported",
+      "identity": "supported",
+      "policy_disposition": "eligible_work_historical_creator",
+      "rationale": "Camden work in 2022 remains regional after relocation; current verified Allegheny presence excludes a current regional profile."
+    },
+    {
+      "id": "partial-date-move",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "unknown_at_creation",
+      "regional_work": "review",
+      "current_regional_creator": "review",
+      "historical_regional_creator": "eligible_since_move_with_no_current_inference",
+      "display_rights": "metadata_supported",
+      "identity": "supported",
+      "policy_disposition": "hold_work_timing_and_current_profile",
+      "rationale": "Year-only 2022 spans the July move. The contribution could be nonlocal or local; a verified historical move alone does not establish current presence in 2026."
+    },
+    {
+      "id": "residence-only",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "no_local_professional_basis",
+      "regional_work": "ineligible",
+      "current_regional_creator": "ineligible",
+      "historical_regional_creator": "not_supported",
+      "display_rights": "not_stated",
+      "identity": "supported",
+      "policy_disposition": "exclude_current_regional_profile",
+      "rationale": "Residential Chester address is not professional presence; professional practice is in Allegheny. Do not publish the home address."
+    },
+    {
+      "id": "independent-no-work",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "current_professional_presence",
+      "regional_work": "not_applicable",
+      "current_regional_creator": "eligible",
+      "historical_regional_creator": "not_required",
+      "display_rights": "profile_supported",
+      "identity": "supported",
+      "policy_disposition": "eligible_current_creator",
+      "rationale": "Verified Mercer professional practice plus substantive medical-interoperability explanation qualifies the independent profile without employer, repository or indexed work."
+    },
+    {
+      "id": "paper-no-repo",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "work_and_creator_role_supported",
+      "policy_disposition": "eligible_work_metadata",
+      "rationale": "Technical clinical decision-support evaluation with dated Philadelphia contribution qualifies independently of a repository."
+    },
+    {
+      "id": "forum-no-repo",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported_author_contribution",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "account_supported_person_unresolved",
+      "policy_disposition": "eligible_work_metadata_hold_person_join",
+      "rationale": "Supported forum work, account and substantive local author contribution can qualify work. Missing person identity stays unresolved and creates no person profile."
+    },
+    {
+      "id": "clinical-routine",
+      "healthtech_relevance": "not_supported_technical",
+      "regional_contribution": "local_source_only",
+      "regional_work": "ineligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "supported",
+      "identity": "supported",
+      "policy_disposition": "exclude_relevance",
+      "rationale": "Routine clinical advice typed with a word processor lacks a substantive technical contribution."
+    },
+    {
+      "id": "generic-ai",
+      "healthtech_relevance": "not_supported_healthcare",
+      "regional_contribution": "supported",
+      "regional_work": "ineligible",
+      "current_regional_creator": "ineligible_for_this_catalog",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "supported",
+      "policy_disposition": "exclude_relevance",
+      "rationale": "Local generic image modeling without healthcare purpose is outside health-technology scope."
+    },
+    {
+      "id": "unclear-purpose",
+      "healthtech_relevance": "unknown_healthcare",
+      "regional_contribution": "supported",
+      "regional_work": "review",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "supported",
+      "policy_disposition": "hold_relevance",
+      "rationale": "Segmentation has a technical basis but unspecified application; missing healthcare purpose is unresolved rather than proof of no healthcare purpose."
+    },
+    {
+      "id": "unknown-rights",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported",
+      "regional_work": "eligible_substantively",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "unknown_text_figures_and_metadata",
+      "identity": "organization_supported",
+      "policy_disposition": "hold_all_unqualified_material",
+      "rationale": "Regional/relevance qualifications remain true but public access grants no display permission, including metadata whose authority is expressly unknown."
+    },
+    {
+      "id": "name-collision",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "supported_organization_contribution",
+      "regional_work": "eligible",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "organization_supported_person_join_ambiguous",
+      "policy_disposition": "eligible_work_metadata_hold_person_join",
+      "rationale": "Organization authorship/local contribution support the paper. Neither same-name Alex Kim can be joined without separate evidence."
+    },
+    {
+      "id": "adoption-only",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "no_local_creator_evidence",
+      "regional_work": "ineligible_on_supplied_evidence",
+      "current_regional_creator": "not_assessed",
+      "historical_regional_creator": "not_assessed",
+      "display_rights": "metadata_supported",
+      "identity": "supported",
+      "policy_disposition": "exclude_regional_work",
+      "rationale": "Adoption by a local hospital is not creator contribution; the nonlocal product cannot qualify via adoption alone."
+    },
+    {
+      "id": "unknown-end",
+      "healthtech_relevance": "supported",
+      "regional_contribution": "historical_professional_presence",
+      "regional_work": "not_applicable",
+      "current_regional_creator": "review",
+      "historical_regional_creator": "eligible",
+      "display_rights": "profile_supported",
+      "identity": "supported",
+      "policy_disposition": "historical_profile_only_current_unresolved",
+      "rationale": "A supported 2020 role and 2021 observation support a dated historic profile; unknown end and stale observation cannot prove current status."
+    }
+  ],
+  "initial_findings": [
+    {
+      "id": "ASTRA-WP01-F01",
+      "severity": "clarification",
+      "finding": "The forum case supports account/work and author contribution but no person identity. The rubric permits work without an optional person join; preserve that distinction explicitly in WP02 typed creator/account contracts."
+    },
+    {
+      "id": "ASTRA-WP01-F02",
+      "severity": "authority_check",
+      "finding": "AC-WP01-05 requires an accountable editorial capacity decision. The draft records a delegated planning priority and acknowledges no actual hours/staffing; orchestrator must cite existing user delegation before treating that criterion as accepted. Agent-only editorial authority would be insufficient."
+    },
+    {
+      "id": "ASTRA-WP01-F03",
+      "severity": "boundary",
+      "finding": "Calibration is synthetic development review only. No E01-E03 or population accuracy/recall/human agreement result can be inferred."
+    }
+  ],
+  "comparison": {
+    "compared_at": "2026-11-14T00:05:00.554618+00:00",
+    "initial_astra_artifact_sha256": "93705fe064b6f72e3db585c51206e178f097c241f7a0a29c4f17b8df8a03609e",
+    "initial_case_labels_unchanged": true,
+    "terra_artifact_sha256": "43c1d3d71e7f2ae6c9a56da985f12441a952bfbbe9708f6e269e9538078489b8",
+    "method": "After independently saving all 26 Astra labels, read Terra labels and compare semantic gate outcomes and individual dimensions; enum spelling differences are not agreement statistics.",
+    "status": "adjudication_pending",
+    "disagreements": [
+      {
+        "case_id": "adoption-only",
+        "astra_initial": "regional_work=ineligible_on_supplied_evidence; exclude_regional_work",
+        "terra_initial": "regional_work=review; hold_creator_geography; reason says unknown creator location",
+        "issue": "The fixture explicitly says developed elsewhere, yet no local creator contribution is evidenced. Both prohibit current regional publication; review versus exclusion and known nonlocal development versus unresolved possible local contribution need a common state definition.",
+        "proposed_resolution": "Separate evidence state from eligibility: original development elsewhere is known; a local creator contribution remains unsupported; regional eligibility is false on supplied evidence, and any continuing candidate is held for creator-role review. Do not assert that no local contribution can ever exist."
+      },
+      {
+        "case_id": "residence-only",
+        "astra_initial": "regional_work=ineligible",
+        "terra_initial": "regional_work=not_applicable",
+        "proposed_resolution": "Use not_applicable for work: the fixture targets a person profile and supplies no specific work. Keep current regional creator ineligible and residential address excluded. This narrows an overbroad Astra label."
+      },
+      {
+        "case_id": "generic-ai",
+        "astra_initial": "current_regional_creator=ineligible_for_this_catalog",
+        "terra_initial": "current_person=unknown",
+        "proposed_resolution": "Use not_assessed/unknown for the person. The artifact lacks healthcare purpose; the case does not establish the whole professional history. Artifact relevance remains negative. This narrows an overbroad Astra label."
+      }
+    ],
+    "agreement_scope": "All supplied positive nine-county admissions, same-name county exclusions, unresolved state, move-in/move-out distinction, partial-date hold, independent creator, repository-free paper/forum, relevance negatives/ambiguity, unknown rights hold, unsupported person join, and unknown-current status have consistent intended catalog visibility. No empirical or human agreement rate claimed.",
+    "acceptance_criteria": [
+      {
+        "id": "AC-WP01-01",
+        "reviewer_disposition": "satisfied_for_synthetic_policy_matrix",
+        "basis": "Nine exact eligible county cases, nonmember state/county pairs and unresolved state retained; no real geography truth evaluation."
+      },
+      {
+        "id": "AC-WP01-02",
+        "reviewer_disposition": "satisfied_for_synthetic_temporal_policy",
+        "basis": "Move-in/move-out paths separate current profile from creation-time regional work; partial-date and unknown-end cases retain uncertainty."
+      },
+      {
+        "id": "AC-WP01-03",
+        "reviewer_disposition": "pending_adjudication_and_freeze",
+        "basis": "Independent labels retained for 26 source-diverse synthetic cases; material taxonomy distinction and two Astra scope corrections require recorded resolution."
+      },
+      {
+        "id": "AC-WP01-04",
+        "reviewer_disposition": "satisfied_as_local_planning_policy",
+        "basis": "Free discovery and evidence-based admission/ranking maintained; monitoring deferred until actual demand and a separately scoped decision; no billing approval implied."
+      },
+      {
+        "id": "AC-WP01-05",
+        "reviewer_disposition": "conditional_on_existing_user_delegation_evidence",
+        "basis": "Policy describes discovery-first planning priority while preserving consumers and explicitly unknown staffing/caps. Root must verify existing delegation; this is not authority for real editorial actions."
+      }
+    ]
+  },
+  "final_readback": {
+    "created_at": "2026-11-14T00:06:58.186001+00:00",
+    "status": "independent_review_complete_recommend_acceptance",
+    "package_acceptance_authority": "orchestrator; reviewer does not change execution.json",
+    "policy_sha256": "e23b6752d5b648c05edffa192807084e50e5fb224ba1511f5323a55ad4e81eee",
+    "fixture_sha256": "064e3ebef20da04443b382e3293efba1c3a692609ab1c0cc85967a597c48304a",
+    "terra_adjudication_receipt_sha256": "654b6024a6a53582dc06537de282484248f122e2c19f3549420e3c359c498b09",
+    "checks": [
+      "Initial policy/fixture/Terra-label hashes match independently frozen Astra evidence.",
+      "All 26 original case IDs and classifications remain retained; fixture bytes unchanged.",
+      "Read all revised policy paragraphs and all adjudication resolutions against original fixture facts.",
+      "All four resolutions preserve evidence state, target scope and public gating; no unresolved blocking policy ambiguity."
+    ],
+    "adjudication_resolutions_accepted": [
+      "adoption-only",
+      "residence-only",
+      "generic-ai",
+      "forum-no-repo"
+    ],
+    "initial_findings_disposition": {
+      "ASTRA-WP01-F01": "resolved: explicit forum local creator-role evidence requirement and no account-person equivalence",
+      "ASTRA-WP01-F02": "resolved for bounded planning: root supplied existing user delegation for website/business plus current implementation authorization; actual staffing/caps and editorial operations remain held",
+      "ASTRA-WP01-F03": "retained evidence boundary: synthetic development judgments do not satisfy E01-E03"
+    },
+    "acceptance_criteria": [
+      {
+        "id": "AC-WP01-01",
+        "disposition": "satisfied",
+        "evidence": "Policy exact county set plus county-01..09, outside-same-name/outside-delaware and unknown-state; synthetic interpretation only."
+      },
+      {
+        "id": "AC-WP01-02",
+        "disposition": "satisfied",
+        "evidence": "move-in/move-out, partial-date-move, unknown-end and independent reviewer explanations preserve temporal meanings."
+      },
+      {
+        "id": "AC-WP01-03",
+        "disposition": "satisfied_for_policy_development_calibration",
+        "evidence": "26 independently classified source-diverse synthetic cases; originals retained, three disagreements resolved and forum boundary clarified; final candidate hashes frozen in this readback."
+      },
+      {
+        "id": "AC-WP01-04",
+        "disposition": "satisfied_for_planning_policy",
+        "evidence": "Free basic discovery; paid monitoring deferred until demonstrated demand, sustainable delivery and separate scope. No paid action accepted."
+      },
+      {
+        "id": "AC-WP01-05",
+        "disposition": "satisfied_for_delegated_new_planning_priority",
+        "evidence": "User website/business delegation quoted in policy; discovery-first new planning with existing consumers preserved. Actual people, hours, spend caps and pilot remain WP25 inputs."
+      }
+    ],
+    "remaining_holds": [
+      "Actual provider/rights qualification, accountable editorial operations, independent reference labels and reader recruitment are not executed.",
+      "Actual staffing/funding/capacity and recurring pilot remain unresolved.",
+      "E01-E03 remain not_run; no empirical performance or real editorial admission follows."
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "package": "WP14",
+  "disposition": "entry_handoff_reviewed_implementation_not_started",
+  "recorded_at": "2026-11-15T20:10:01.478358+00:00",
+  "full_package_accepted": false,
+  "blocked_by": [
+    "WP03"
+  ],
+  "implementation_started": false,
+  "owner": "Sol",
+  "independent_reviewer": "Astra",
+  "outputs": {
+    "docs/discovery/wp14-entry-plan.md": "ba5077459103f0941138262cd38813932b612db1e44971a7d9f4b8dcff511bb8",
+    "docs/discovery/reviews/wp14-astra-entry.md": "16a65257c31cf5e87a2b47730447ccbed76db22d57903dec5374a36a5281e4e0"
+  },
+  "method": "source/document inspection only",
+  "implementation_tests": "not_run",
+  "authority_and_store_extensions": "proposed only; no migration/routes/rules/authority implemented",
+  "user_direction": "Continue in order; no WP03 waiver.",
+  "limits": [
+    "WP03 still has zero real cases, no independent human trust/corpus/recall/freeze; all old label purposes require actual re-review and authenticated re-attestation.",
+    "WP14 remains not_started and gated on WP03; its handoff contains proposals and planned not_run tests, not new endpoint/rule/authority/migration code.",
+    "Native model and frozen handoff unchanged; E01-E06 not_run, no empirical relevance/recall or clinical/current-local truth claim."
+  ]
+}

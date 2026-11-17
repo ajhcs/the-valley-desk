@@ -1,0 +1,215 @@
+{
+  "schemaVersion": "wp03-preparation-v1",
+  "createdAt": "2026-11-14T00:37:35.805539+00:00",
+  "status": "preparation_complete_independently_reviewed",
+  "wp03Acceptance": "not_accepted",
+  "corpusStatus": "not_frozen",
+  "actualCases": 0,
+  "actualReviewers": 0,
+  "empiricalEvidence": "E01-E05 not_run",
+  "author": "Astra",
+  "independentReviewer": "Terra; local preparation findings resolved, no empirical/package acceptance",
+  "files": {
+    "docs/discovery/evaluation-protocol.md": "90a5fc87cd442ae4908b6aa0a02420bd93ce9f9862855ff6e9a904c6d9e16b9c",
+    "docs/discovery/reference-manifest.json": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+    "src/ingest/discovery-evaluation.ts": "83623ecabaf0080212b6a936f9ed0da868435f6b5050af2f1dd2b566404264c3",
+    "test/discovery-evaluation.test.ts": "193c17542036e336441fdb404f5b1d43796175c2c5f212cedc4ebc76a1bfd06b"
+  },
+  "inputs": {
+    "docs/discovery-policy.md": "25319e1e02733267dd5102b7c795f533088cede5be09eb7e9f79a036ae90df23",
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "src/content/discovery-schema.ts": "b238472e67d4a2911bf139576290a174f7f61531b5c22294e2dcfbd00780b53e",
+    "docs/discovery-engineering/work-packages/WP03.md": "3670864a880d8ef89c027b3b3a5d06cdb9ea3c330660956184d0020608bf71de",
+    "docs/discovery-engineering/EVIDENCE.md": "caca9da3f47c7c331d5c20b7f4b989492aeb449c0b908916cef8a2fe7efd86ed"
+  },
+  "design": {
+    "heldout": 360,
+    "heldoutPerPrimaryRoute": 60,
+    "routes": [
+      "github",
+      "pubmed",
+      "crossref",
+      "arxiv",
+      "forum",
+      "institutional"
+    ],
+    "minimumIndependentRecall": 100,
+    "minimumIndependentAdmittedAudit": 100,
+    "interval": "Wilson two-sided nominal 95%",
+    "z": 1.96,
+    "precisionGate": [
+      0.95,
+      0.9
+    ],
+    "recallGate": [
+      0.8,
+      0.7
+    ],
+    "criticalErrorsAllowed": 0,
+    "familySeparation": "People/project/origin families stay on one side of development/heldout boundary. Distinct heldout works may share creator/project. Only canonical case/origin-equivalent duplicates collapse quota. Recall/audit overlap permitted by sampling design.",
+    "auditTiming": "WP03 freezes selection procedure only; actual >=100 independent admitted audit and actual frame/interval occur in WP24.",
+    "precisionPopulation": "Audited admitted items only; candidate prediction precision separate without E02 gate. Published recall unavailable unless publication observations explicitly supplied.",
+    "metricCohorts": "Explicit admitted-audit, recall-roster, candidate-evaluation; overlap allowed; each denominator scoped independently."
+  },
+  "verification": {
+    "node": "22.23.2",
+    "environment": "env -i; HOME unchanged; selected workspace Node22 PATH; workspace TMPDIR/XDG_CACHE_HOME; no inherited credentials; WRANGLER_SEND_METRICS=false for tests",
+    "testCommand": [
+      "node",
+      "--import",
+      "tsx/esm",
+      "--test",
+      "--test-concurrency=1",
+      "test/discovery-evaluation.test.ts"
+    ],
+    "testResult": {
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typecheckCommand": [
+      "node",
+      "node_modules/typescript/bin/tsc",
+      "--ignoreConfig",
+      "--noEmit",
+      "--strict",
+      "--noUnusedLocals",
+      "--noUnusedParameters",
+      "--target",
+      "ES2022",
+      "--module",
+      "esnext",
+      "--moduleResolution",
+      "bundler",
+      "--skipLibCheck",
+      "src/ingest/discovery-evaluation.ts"
+    ],
+    "typecheckExit": 0,
+    "ci": "not_run; root owns registration and integration"
+  },
+  "failureHistory": [
+    {
+      "check": "initial targeted typecheck",
+      "exit": 1,
+      "message": "TS5112: tsconfig.json is present but will not be loaded if files are specified on commandline. Use --ignoreConfig to skip this error.",
+      "resolution": "Reran targeted compiler with --ignoreConfig; exit 0. No source change to hide the failure."
+    },
+    {
+      "check": "Terra independent review reproductions",
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-name-pattern=current exposure|candidate-only critical",
+        "test/discovery-evaluation.test.ts"
+      ],
+      "exit": 1,
+      "failed": 2,
+      "observed": [
+        "Exposed recall case sharing heldout person family returned ready_for_accountable_freeze_review instead of blocked",
+        "Candidate-only row returned criticalIdentityGate=true without a public-output audit"
+      ],
+      "resolution": "Current exposures now resolve IDs and compare full family keys; unknown exposure IDs block. Critical identity gate remains false/not_evaluated because these metrics do not authenticate public audit."
+    },
+    {
+      "check": "Terra transitive exposure reproduction",
+      "command": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "--test",
+        "--test-name-pattern=transitive exposure",
+        "test/discovery-evaluation.test.ts"
+      ],
+      "exit": 1,
+      "failed": 1,
+      "observed": "Exposed recall A linked through audit B to heldout C returned readiness because exposure checked direct keys only.",
+      "resolution": "All-case connected components now drive split and exposure checks, canonical quota counting, and retained history keys; same three-case regression passes."
+    }
+  ],
+  "acceptanceCriteria": {
+    "AC-WP03-01": "incomplete: quota/leakage tooling tested; actual 360-case corpus absent",
+    "AC-WP03-02": "incomplete: fictional conflicting labels preserved in tests; independent human annotations/adjudication absent",
+    "AC-WP03-03": "incomplete: independence/count checks tested; actual eligible recall roster absent",
+    "AC-WP03-04": "local synthetic calculation evidence only: 95/100 lower bound 0.8882480347 fails; ambiguous positives and transitive clusters handled conservatively; empirical denominators absent",
+    "AC-WP03-05": "local refusal mechanism and change procedure implemented; authenticated sealed history and accountable fresh freeze absent"
+  },
+  "missingInputs": [
+    "Accepted final WP02 identity/provenance interfaces",
+    "Permitted independently assembled source evidence and complete sampling frames/time windows",
+    "Exactly 360 canonical heldout cases, 60 per primary route, with eligible/ineligible/ambiguous examples",
+    "Two accountable authenticated independent human reviewers and adjudication records",
+    "Real evidence/rights/blinding/history receipt resolver and accountable sealed freeze",
+    "Separate authorized reader recruitment, access and E01-E05 evaluation scope",
+    "Reviewed audit selection procedure now; actual admitted frame/interval and >=100 independent audited items in WP24",
+    "Development/heldout family separation and at least100 independently assembled eligible canonical recall cases; remaining clustering disposition"
+  ],
+  "limits": [
+    "No real source collection, participant contact, provider call, service, package install or deployment performed.",
+    "Test-generated 561-case dataset and receipt resolver are fictional checker fixtures only and never enter checked-in manifest.",
+    "Hash and schema checks authenticate no external evidence or source truth.",
+    "Readiness always returns not_frozen; complete synthetic fixture reaches review readiness only.",
+    "Connected-family collapse is conservative; remaining dependence or purposive sampling cannot support regional population inference.",
+    "Full repository checks and CI registration are root-owned; targeted checks only in this slice."
+  ],
+  "previousPreparationFiles": {
+    "docs/discovery/evaluation-protocol.md": "9470e3edc707cdd3bfedc876a72d8aa3309e5889fc6dd64a7f795282d1f2cfcb",
+    "docs/discovery/reference-manifest.json": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+    "src/ingest/discovery-evaluation.ts": "a7436b7d77e898ea69bd997768044286799c490831a3428edeb1f8d32a130410",
+    "test/discovery-evaluation.test.ts": "09a333d73546a97078c740f4acafdf053ea18b757fa97dcf0277908fff2cbb94"
+  },
+  "rootReviewCorrections": [
+    {
+      "finding": "Initial validator required actual admitted audit data before WP03 freeze, creating WP03/admission dependency cycle.",
+      "resolution": "Replaced actual audit sampling requirement with versioned frame definition, selection method, interval rule, minimum100 and procedure receipt; no actual audit rows needed for preparation readiness. E02 threshold/minimum unchanged."
+    },
+    {
+      "finding": "Initial all-five-partition separation and whole-creator/project quota collapse were stricter than handoff.",
+      "resolution": "Restrict split leakage check to development/heldout. Permit distinct works with shared creator/project within heldout; permit designed recall/audit overlap. Canonical origin-equivalent copies still collapse. Statistical clustering reported separately."
+    },
+    {
+      "finding": "Initial precision counted all predicted positives, allowing unadmitted model proposals to reach an E02-looking numerical gate.",
+      "resolution": "Admission precision uses admitted rows. Candidate precision has no E02 gate; ambiguous admitted items never true positives. Captured/admitted/published recall separate; missing publication observations return unavailable."
+    }
+  ],
+  "rootCorrectedFilesBeforeTerraReview": {
+    "docs/discovery/evaluation-protocol.md": "825fd2f603d41bdab0747f2e53a2beea8fced75143c9e73ae1d184b3cee3959f",
+    "docs/discovery/reference-manifest.json": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+    "src/ingest/discovery-evaluation.ts": "43cb55f8da8c4593ac197be99e56cd62519b1a35c4c62e5950dd1474ee38d36c",
+    "test/discovery-evaluation.test.ts": "ace90824675add47cfbddc8c06008af03b6d6f1c624c7ce228c8f0cd34141323"
+  },
+  "terraReviewCorrections": [
+    {
+      "finding": "Current exposure checked only exact heldout case IDs; alternative exposed family member evaded freshness guard.",
+      "resolution": "Compare all known exposed case family/subject/native/byte keys to heldout; refuse unknown exposure IDs; regression passes."
+    },
+    {
+      "finding": "Candidate-only zero-error observations could imply critical identity gate passed.",
+      "resolution": "Gate always false/not_evaluated in this preparation helper; counts remain descriptive until qualified external public-output audit."
+    },
+    {
+      "finding": "Mixed metric rows lacked explicit audit versus recall membership, allowing denominator contamination.",
+      "resolution": "Required strict per-row admitted-audit/recall-roster/candidate-evaluation membership with allowed overlap. Each metric filters its own cohort; mixed-cohort regression and missing-cohort refusal pass. Cluster effects assessed per metric cohort."
+    },
+    {
+      "finding": "Indirect family exposure via intermediate non-heldout case evaded direct-key comparison.",
+      "resolution": "Use full connected components for exposure/split/history. Resolve origin-equivalent canonical counts across intermediates. Retained three-case failure and regressions for transitive exposure, split leakage and duplicate quota."
+    },
+    {
+      "finding": "admitted-audit membership with admitted:false silently omitted selected rows.",
+      "resolution": "Reject inconsistent audit membership; admitted means admission at defined sampling observation. Later withdrawn/unresolved item remains admitted-at-selection, with conservative truth/publication status, never denominator deletion. Test added."
+    }
+  ],
+  "preTransitiveFixFiles": {
+    "docs/discovery/evaluation-protocol.md": "90a5fc87cd442ae4908b6aa0a02420bd93ce9f9862855ff6e9a904c6d9e16b9c",
+    "docs/discovery/reference-manifest.json": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+    "src/ingest/discovery-evaluation.ts": "83623ecabaf0080212b6a936f9ed0da868435f6b5050af2f1dd2b566404264c3",
+    "test/discovery-evaluation.test.ts": "193c17542036e336441fdb404f5b1d43796175c2c5f212cedc4ebc76a1bfd06b"
+  },
+  "independentReview": {
+    "path": "docs/discovery/reviews/wp03-terra.md",
+    "sha256": "bfebced815a9aabd73269fa633434789220b3f0f4a2c0ed41af2b5552b2128f3",
+    "status": "local_preparation_findings_resolved"
+  }
+}

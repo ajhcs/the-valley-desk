@@ -1,0 +1,44 @@
+{
+  "id": "TVD-DISCOVERY-DEPENDENCY-AUDIT-1",
+  "recorded_at": "2026-11-14T00:32:11.165685+00:00",
+  "command": "npm audit --audit-level=high",
+  "exit_code": 1,
+  "lock_sha256": "f90749d123fe5d553057a037188af6a827367aa6bc427e84ccc25a3c4218fe05",
+  "lock_unchanged_from_source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "counts": {
+    "total": 7,
+    "low": 1,
+    "moderate": 2,
+    "high": 4,
+    "critical": 0
+  },
+  "installed_versions": {
+    "fast-xml-parser": "5.11.1",
+    "seroval": "1.6.3",
+    "undici": "7.29.1",
+    "miniflare": "5.20260926.1-alpha",
+    "wrangler": "4.143.1",
+    "vite": "8.2.2",
+    "zod": "3.25.76"
+  },
+  "report_path": ".discovery-work/evidence/npm-audit.log",
+  "report_sha256": "da295a21568f67dd699667b9c5b3cc0c3cc06721746f8ac6d7f83904391c9683",
+  "disposition": "Release qualification blocked; no audit fix or package/lock upgrade performed in foundation increment. Local package evidence is separate from dependency-security acceptance.",
+  "next_work": {
+    "owners": [
+      "WP22 Astra",
+      "WP23 Astra",
+      "orchestrator"
+    ],
+    "actions": [
+      "Review affected call paths and current primary advisories before selecting precise upgrades.",
+      "Qualify compatible fixes for XML parser, serialization, Vite and Wrangler/Miniflare/Undici against exact lock and full tests.",
+      "Plan and qualify Zod major-version compatibility or an equivalent reviewed remedy; npm reports a breaking-version fix. Do not suppress the audit gate.",
+      "Rerun audit and complete required regressions after the selected remediation."
+    ]
+  },
+  "limits": [
+    "Registry advisory matching; not a completed attack-path analysis or evidence of exploitation.",
+    "No deployment, public source ingestion or production changes."
+  ]
+}

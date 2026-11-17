@@ -1,0 +1,90 @@
+{
+  "sourceCommit": "30737eab81bcb24937c886b60cd57ad23de00af5",
+  "runtimeInputCount": 665,
+  "inputDrift": [],
+  "commands": {
+    "tests": {
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "applicationTests": 939,
+      "watchTests": 146,
+      "discoveryTests": 434,
+      "totalTests": 1519,
+      "failures": 0,
+      "skips": 0,
+      "cancellations": 0
+    },
+    "pdf": {
+      "argv": [
+        "npm",
+        "run",
+        "test:policy-pdf"
+      ],
+      "exitCode": 0,
+      "tests": 7
+    },
+    "build": {
+      "argv": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exitCode": 0
+    },
+    "smoke": {
+      "argv": [
+        "npm",
+        "run",
+        "ops:smoke"
+      ],
+      "exitCode": 0,
+      "scope": "isolated local D1 only"
+    },
+    "audit": {
+      "argv": [
+        "npm",
+        "audit",
+        "--audit-level=high"
+      ],
+      "exitCode": 0,
+      "vulnerabilities": 0
+    },
+    "secretScan": {
+      "argv": [
+        "npm",
+        "run",
+        "secret-scan"
+      ],
+      "exitCode": 0
+    }
+  },
+  "focusedTests": {
+    "tests": 21,
+    "note": "Included in the full Discovery suite, not an additive count."
+  },
+  "actualLoopbackHttp": {
+    "requests": 10,
+    "passed": true,
+    "capturedResults": "local-http/http-checks.json",
+    "providerRequests": 0,
+    "databaseCronCredentialsOrServiceBindings": false,
+    "serverStopped": true
+  },
+  "privateLogs": {
+    ".discovery-work/gl04/root/tests.log": "6a2e38f15a286e49f137b89ff9cb31089bd3a6b334022e172f35f26d106543b0",
+    ".discovery-work/gl04/root/pdf.log": "4be6534502902b0c5a2806080e7e66259adfa75cb66ade721e5433fd886a1fd2",
+    ".discovery-work/gl04/root/build.log": "c83f4a0db02ddb34beee6cee33bae50a305078b80bf3a0752417d6c708978a0b",
+    ".discovery-work/gl04/root/smoke.log": "e987b52e0ed62bc3cc862fb061d25e8a2c1db21ed53fb2cef6eacfc718165101",
+    ".discovery-work/gl04/root/audit.log": "6d8c5c8f3d7684adb070417bd608d01ae90aa3dc26a65af03ffda4955f38d9a3",
+    ".discovery-work/gl04/root/secrets.log": "3211d7037787ed381b2bfcb90f19157a1dcc7e2c6c27d82aa58b898f6c7ad5a4",
+    ".discovery-work/gl04/root/focused.log": "20ea8aeb5aa87dec083cbc1e877e8c90847f12d3fa2590c3ad81236f5c26a76d"
+  },
+  "limits": [
+    "Local code/contract and selected-source qualification only.",
+    "Source observations, engineering tests and agent judgments are not human benchmark labels, clinical validity, source-census recall or intended-user observations.",
+    "No deployment, source enrollment, recurring collection, remote migration or public mutation."
+  ]
+}

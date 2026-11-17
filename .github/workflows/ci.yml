@@ -20,6 +20,8 @@ jobs:
           python-version: "3.12"
       - name: Hash-locked PDF extraction tools
         run: npm run policy:pdf:bootstrap
+      - name: Private acquisition test workspace
+        run: sudo install -d -m 0700 -o "$USER" -g "$(id -gn)" /workspace/build/builderbob
       - name: Tests
         run: npm test
       - name: Mandatory official PDF byte regressions

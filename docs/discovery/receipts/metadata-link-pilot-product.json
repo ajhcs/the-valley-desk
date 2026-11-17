@@ -1,0 +1,309 @@
+{
+  "id": "TVD-METADATA-LINK-PILOT-PRODUCT-1",
+  "decision": "EX29",
+  "baseline_commit": "4c87611fe79ecbd3ee2e32e5fd4bf06d8bd61375",
+  "recorded_at": "2026-11-16T15:27:35.498998+00:00",
+  "reviewed_code_commit": "2f013debf1e499e072830f7a820fe416db3b3cfc",
+  "disposition": "product_review_repairs_locally_qualified_no_public_activation",
+  "amended_pilot_packages_locally_accepted": [
+    "MP01",
+    "MP02",
+    "MP03"
+  ],
+  "public_release_MP04_accepted": false,
+  "original_package_ledger_unchanged": true,
+  "scope": {
+    "records": 14,
+    "repositories": 6,
+    "publications": 6,
+    "organization_background_records": 2,
+    "native_source_bodies": 14,
+    "directed_repository_publication_citations": 2,
+    "projected_authorship_entries_not_distinct_people": 109,
+    "non_null_source_descriptions": 4,
+    "native_selected_field_pointers": 209,
+    "derived_observation_refs": 6,
+    "new_source_acquisitions": 0,
+    "new_human_reviewers": 0,
+    "new_benchmark_cases": 0,
+    "full_text_included": false,
+    "live_collection": false,
+    "D1_writes": false,
+    "feature_flag": "DISCOVERY_PILOT_ENABLED",
+    "default_enabled": false,
+    "search_context": "own metadata plus at most one validated citation neighbor; no role or geography transfer"
+  },
+  "validation": {
+    "commands": [
+      {
+        "name": "tests",
+        "argv": [
+          "npm",
+          "test"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "pdf",
+        "argv": [
+          "npm",
+          "run",
+          "test:policy-pdf"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build",
+        "argv": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "smoke",
+        "argv": [
+          "npm",
+          "run",
+          "ops:smoke"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "audit",
+        "argv": [
+          "npm",
+          "audit",
+          "--audit-level=high",
+          "--json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "secret",
+        "argv": [
+          "npm",
+          "run",
+          "secret-scan"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "suite_counts": [
+      939,
+      146,
+      352
+    ],
+    "executed_tests": 1437,
+    "failures": 0,
+    "skips": 0,
+    "cancellations": 0,
+    "PDF_regressions": 7,
+    "audit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "Astra_independent_core_groups": 9,
+    "Astra_retained_Worker_bundle_groups": 3,
+    "root_postbuild_Worker_bundle_groups": 3,
+    "root_browser_assertions": 25,
+    "counts_overlap": true,
+    "scope": "Fresh desktop/mobile product audit and local Node/Worker/browser verification; no benchmark accuracy, current employment, clinical validity, regional completeness or production qualification."
+  },
+  "runtime_input_manifest": {
+    "path": ".discovery-work/pilot-product/root/final/input-sha256.json",
+    "sha256": "a01b7866daf3e7ab6ca5738e5b69a97f00609ab7b1542c5335bddf7eacd6717c",
+    "count": 630,
+    "drift": []
+  },
+  "runtime_outputs": {
+    "fixtures/discovery-pilot-selection.json": "8e2acdc85a34bf26901eab25990d24ced2ac4370b88f1de957dcbc216612f314",
+    "scripts/build-discovery-pilot.mjs": "f8bd8c48da0949ae651104aa85bcdb62cd620cb9cf8280efcf63df2f9a8dd4c6",
+    "src/content/discovery-pilot-catalog.json": "944ac5615298dd09b4f509b6e0e8981324ada90e6ef8edae83da086d6abf91d9",
+    "src/content/discovery-pilot.ts": "083339acaa5ae85a013fdde534e026236ab1358fddac32592d5a30e774fa8fb4",
+    "src/ingest/discovery-pilot.ts": "00bc586723ea26cc0fa75335ff8a101e0ad0674f8314365b242fa5159e2e5fd2",
+    "src/ui/discovery/DiscoveryPilotPage.tsx": "86238acb2a0780217e59b306c956387b0a01bd1cf53bc87d4da98598377e5480",
+    "src/ui/discovery/discovery-pilot.css": "5e3b4b9fbddfc68acd76dd350957184d2128523cc29812bbf2262a2c9231ea1a",
+    "src/ui/discovery/pilot-presentation.ts": "850f188ea56be1a1cea3b4d5faa7198343e6c54e7e1194569d81be7957b2304a",
+    "test/discovery-pilot.test.ts": "cea5b36ebacbf1bde42ed69b5ee09ce2276c0622f73a7f83025a4428bb346c43"
+  },
+  "outputs": {
+    "docs/discovery/README.md": "0d31b55165e51f7abd7ad09608c170fd6b168bcb9a55fe4134ada6dea85c4799",
+    "docs/discovery/execution.json": "ec04d38befab78666562458ee78265faad8be70ab2ee229d0aabdeb92ba2e9b4",
+    "docs/discovery/implementation-decisions.md": "52f97c67c1dd53ff5e5ba4a95dbb2f7ea6ce90021ec95d89cd9c85fbc1e66b74",
+    "docs/discovery/metadata-link-pilot-plan.md": "c2c7e584c55e3ef88315dec7175210846c242f9a2233c866cb261954c9771d66",
+    "docs/discovery/metadata-link-pilot-preview.md": "5de9d1398f1a53a38d49c092ded114ff6e237c29eecfa8c1a2cd8bcf457a4e96",
+    "docs/discovery/metadata-link-pilot-sources.md": "5ca2728c39412ed8d553224b2db367215b31e2d4e66dd93d7e957989ed45d5d6",
+    "docs/discovery/metadata-link-pilot-product-review.md": "3787408795ffd56495fac69d91e939ba98dde496b2abe5b1e1b762a9857e77cf",
+    "docs/discovery/reviews/metadata-link-pilot-product-astra.md": "9f54f72ee5eaf19c2129cc00b078f560f673b32b121bdf7e147f5f2e7e16535a"
+  },
+  "private_artifacts": {
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/01-desktop-entry.png": "f5d7cd08494760d319cd42cf9bc655e4a63f2b4c9f17a675819344b55e0c8601",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/01-desktop-entry.txt": "c25efc4fd790cd20ef479ea7cdbc77c4553617cbe615d1413ddeb2589dbfa43d",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/02-search-mri.png": "79089b4157341a0047628f8c1dd985444ae06a7a8ade5702492dc90f154e2a41",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/02-search-mri.txt": "68b3c274b4301b27233f9548d207f3eaf3e052255b04b24b11b8964458895662",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/03-captk-publication-miss.png": "4da4452f979b2a177c458cf08f9972f73233375ce23aad7af6675a21205b7ec4",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/03-captk-publication-miss.txt": "59f6d6dd16526b335a2446a48815d808d89bbc8380ceb7714afe8110abdc7699",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/04-captk-repository.png": "ddbf3d919b65ae64802d1398b2d0bd597ab770809c14eb49dd3c4d4e3b83bb55",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/04-captk-repository.txt": "b0b2f19da6ae0f6186af8f5a1e28fbf646587c680b29be7a9498c0c111ecef1a",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/05-provenance-expanded.png": "9f44c5abd184cde2de5e67cce4e6b1c9f3623ce1ef3e147753a0d98375abb30e",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/05-provenance-expanded.txt": "24e1e23b7a1c4f4909ebb523e2c6eac0b08710c4fece294abaff05f1a4d5c17c",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/06-person-search-miss.png": "109496557e377f28df2c81c01acd7d3ffbcae626470853d0ef13b19b838c2531",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/06-person-search-miss.txt": "59f6d6dd16526b335a2446a48815d808d89bbc8380ceb7714afe8110abdc7699",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/07-autogvp-authors-affiliations.png": "a8816526c2c227cee9896dfbd16c60cc3fb7d674c9ba06a23f10b2976844439d",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/07-autogvp-authors-affiliations.txt": "d58cff27e5434971f5df80eea0211b9d0737c257c6871c0362367b77ff47f3fd",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/08-autogvp-expanded-authors.png": "44b30d438ffaf039ca1ba892204183784be2383ce314afe82545903f4fdfa582",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/08-autogvp-expanded-authors.txt": "add3990dfa21077b6657a93f8dd1859bb586dd64d248e72b63b5a8df218983b9",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/09-mobile-entry.png": "07e246f7440113102b349de4606b5b4ca351fd04a86e6a9613b6cb0c0fa7d120",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/09-mobile-entry.txt": "c25efc4fd790cd20ef479ea7cdbc77c4553617cbe615d1413ddeb2589dbfa43d",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/10-mobile-first-result.png": "3d8ba17393d908534a79545490bc1cc31480a8edebd98fddec9e7ac60751853f",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/10-mobile-first-result.txt": "c25efc4fd790cd20ef479ea7cdbc77c4553617cbe615d1413ddeb2589dbfa43d",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/11-mobile-citation.png": "01f30a2e0b614f0ab3f74d6687f3166ee0c5b01ccf2aec701c915d0c02bedcdc",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/11-mobile-citation.txt": "b0b2f19da6ae0f6186af8f5a1e28fbf646587c680b29be7a9498c0c111ecef1a",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/12-source-action-intercepted.png": "36b41aca70cc54c10f25f74ae2f50ea02d14da766777e93800cf32de16e257ed",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/12-source-action-intercepted.txt": "36c362b60754d7872746f72dbad702fbb73c26699826b09ea6b8ee1815657b47",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/captures.json": "0a5547a8d7504ecb9e366874ee73e5bbc923c9c7c47d1e9bb4f9984642e2658a",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/descriptions.json": "3a0ab224c13331665e5f1e9514ceb2fd44aaf07e48dae442096e95b366201609",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/01-desktop-entry.png": "29c122cfd173b8e4eb80f5868de449f46d2aeb5f03ecca5197bd7c176d72f89d",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/01-desktop-entry.txt": "e9c8fd81d74483e6c814f1bbd81b2fbc5ee211687502bae1874f09e425cf65e3",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/02-captk-paper-found.png": "575707b32c3c362ccb3666b3a2af170a6ef43ec6929d34987d8a2b1969f32ae3",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/02-captk-paper-found.txt": "b1afda74ea1ec4e2f49303667dc523a1976ccf3bb894319ad0205fef75e015b4",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/03-captk-local-repository.png": "06530712d92e869366f0d9160caf14a5f99c4289d6a50f0dba65c9e13a86500f",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/03-captk-local-repository.txt": "d8a1686d5b874abfcf9409f68486defd2f7e9223d8e326b55e5e7eabb8367a1f",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/04-person-found.png": "5b21f2777be18f140cb1f8e1ec50c98d7c192e8ad5f38ce1042f3e8fb94b6ece",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/04-person-found.txt": "b189b960755c14e2f5796f02aec58a80be5293b9d6574825da0c0394928e2531",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/05-mobile-entry.png": "127a2b331f932230d002bc402c2bf932ce99938ce90cc8bafb60279df462eb5f",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/05-mobile-entry.txt": "e9c8fd81d74483e6c814f1bbd81b2fbc5ee211687502bae1874f09e425cf65e3",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/06-mobile-named-affiliation.png": "28c5a2ef54742e6662f59be5bfb1f99e5c9168f1d415df7e549876911aeb4edf",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/06-mobile-named-affiliation.txt": "9439633fb35614bb3ee12e20d13cc4a4d4918b7664a2f202e6d70f963609c075",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/07-full-named-author-list.png": "dbffbdebf9becaba2f039d1fd31ac05c60e40980627bd3290b03ecabc83463d2",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/07-full-named-author-list.txt": "88c80df60ff241ce12b55fdadd0b8cce1f2451eb8bece621eb9f8fd153c1bd53",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/08-final-mobile-entry.png": "3aae1e03a7b049f2a0db66468cc96a115c0079e39d316902a57313cb7553b963",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/08-final-mobile-entry.txt": "e9c8fd81d74483e6c814f1bbd81b2fbc5ee211687502bae1874f09e425cf65e3",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/09-final-desktop-entry.png": "87975408fc755f132ba49016998346c6314c5814874f8bbe8d24a603b99b8506",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/09-final-desktop-entry.txt": "e9c8fd81d74483e6c814f1bbd81b2fbc5ee211687502bae1874f09e425cf65e3",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/10-inconsistent-context-rejected.png": "503f7d2dfa777ff8a3dcda2c943d90b4106acab25b21a3c21e93af53f7c4175a",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/10-inconsistent-context-rejected.txt": "b6ec99efb0d793f71b4d2a328c245187346cf21809534c9ad4e77641ecabab49",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/11-mri-repository-found.png": "43c2e814360abf89223376388be589cf140d5c7889f014f24e70f344fcf12ffe",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/11-mri-repository-found.txt": "9990c089a77e5ccbb998b20f4702986ff123a0ed0f7f0f958085c4fd5194fd98",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/12-final-mobile-compact-row.png": "c476d946fa3114d69a7d3d396c9efda1323a05b1ab6d17ad64fc30262dca7dcb",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/13-final-mobile-about-open.png": "ee880162a8e8b3b668171441b745def93d448d0cdb226fda42c259fbbabe2528",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/captures.json": "9684a8188f565a45def8a92ad6bc287539845f991f466db0ee1d3b84bff83de7",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/core-probes-initial-author-assumption.log": "fb1c1c16457f96c92fa286c25614b661ae2f68ea08be61358fbc1ed167363f36",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/core-probes.log": "f29cde3857860ee07618110319e905afd336e1f17d2f4bfe0c768b0a4fe0ac2f",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/core-probes.mjs": "11a7e2ff8a2a395f328c42ba8c15579ed44644897598d5d7b7340130d3c03d5c",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/final-mobile.json": "aa3d22abc49ff09e19c6029b266e2c5a756f87673691a47898d723737c047a6f",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/final-mobile.mjs": "5d4bc98446e6057475f4eacca97d578437b7ce0d06a138d1790e4d657cf4d7b2",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/review-result.json": "028956b153102be349e948f913aabf1e188c28c3bee30a5b30ac4b71f932f3e7",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/reviewed-input-sha256.json": "d2f6a3b832a5132eac43826ca2b2a3e89980bc52e302d68bcc15d0b0b6610e81",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/session.mjs": "3bdcb8c1008d121d98e19cdf0c3d8057a8efa34deef2b7583d9d594f91ae099f",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/worker.log": "73e5ec53e7ad8b275e54d3f716bb2dcbf5d05c908af6a77858bc0c1b68037a7e",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/product-review.md": "6be4763da7b6038d6cb49bc2bd333b3dd7e74857b4eb12e8a094d8d915313482",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/session.mjs": "6816bad0762de5aa7ecdb4bd8b2b2af2e9d7b2532edb6002a48d7c07a77a16ff",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/01-desktop.png": "96a26980b6259a762ad30ae92668683a415ce43fd0d2c6ace4a306630abff7ee",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/02-repositories.png": "fe4792d61564792d7328dd093c416f93be97de35c88f34ae4fd1d09ddb35c710",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/03-captk-paper-search.png": "0dad1cfe627871fdcfb871d02c1a251f1770321b664454a6eb4799a2833a6228",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/04-naqvi.png": "a7522a4bc28b27698c90024cf9d37a82747cd811a4d6c00642e3c16d8d5c82f9",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/05-mobile.png": "1869ff0bbb3280af90a546d650033bd662c25179dadb9940f46abd73c7805554",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after/01-desktop.png": "f6b6519b74de5dde854e4157857f5990e884b0b40b1db7e3fc1ed07881249c36",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after/02-repositories.png": "6c6f557bab2ca5a84dd7a3073050086a75d0601e2e4f3369c3fbb0a0829e573d",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after/03-captk-paper-search.png": "9a250e3fc18a5354ee37dd29c20affb74f6c99ff4d8a86e3a83673ba53edf7f0",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after/04-naqvi.png": "d6514be603d4b1369e3e4dc875ef834622f21e6b30e12a7381cb806306eebc55",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after/05-mobile.png": "128f5eaaf4ab6d15add2ac1cdd3c790f690c37483ecb9dbfd58de32d5d283133",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after/after.json": "1f7aa13e609583648d0199b722828cb9b527e90cbde40227a8fe8eda4141e331",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-before-compact-row/01-desktop.png": "450b67c16205578abf8c1829255efc2a58c969da90bffd44db73d6e34048ae5a",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-before-compact-row/02-repositories.png": "0408ccd5f3351f6621f4d34ba2335135f6c5d206cc9060a46f666650e3ead64d",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-before-compact-row/03-captk-paper-search.png": "dbe80fa410b50df4727d6fe22739be8df377b8dc9d6014d3675808828c539198",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-before-compact-row/04-naqvi.png": "43625d61f24241bcf603ca774c4075cbdccc55dd67e4c581b5a7c0a123b1ef69",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-before-compact-row/05-mobile.png": "71ded204a108788b3c39594385c9483ef24689e4f86e8726f2e1d082d6a824c9",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-before-compact-row/after.json": "0bc0a72521275477b81e176addaac928a5c65782c7198e2c41cdee7ac3ae77dc",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-first-pass/01-desktop.png": "4bf59cfc342312dd0572f85ac6158af3e06675a3fd54760b950619efd796ad79",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-first-pass/02-repositories.png": "46e90519f9325b5c7a20c89a2f69a3adb95fe3856f6dd98dbc86c95cded5b947",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-first-pass/03-captk-paper-search.png": "04c7b44abda50a43d8015d97279f745015cb67ec155753abab59d102dc383341",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-first-pass/04-naqvi.png": "e5a44e3f620ae4d764c5bbe4815646aaa9183e55f3a1aba96d4d8e5bb5927f92",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-first-pass/05-mobile.png": "488174bd9dfce4efe6b13206297fe881eda8028f4df29a796e40f393df87a034",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/after-first-pass/after.json": "330eb3699d27e9c528e2f00959606572a38f0b0ad77fec8371d7b0e1a2d46b52",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/before.json": "2bbc1aa20d2bc04ead362d88792eafff435562d8c4175e7afd2188577c184265",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/capture-after.mjs": "612cd36e89f59477a06fe805ad393d6a0610c58a4cbaf415ff7407756ecfa9e1",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/capture-before.mjs": "3bf2e5a4e26d7c03b71c457d8ab2e8f5de6e4dc05cbf749858c474d1ebff68c3",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/mobile-final.png": "128f5eaaf4ab6d15add2ac1cdd3c790f690c37483ecb9dbfd58de32d5d283133",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/verification.json": "77b05e5aa65587978966a2886dfab6855fdcb9abebcac947fa8d772779d4bc5d",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/root/verify-after.mjs": "d49d23cc24cbaf7914afcd72d782856502d64787037a782c221937e3a4502fe8",
+    ".discovery-work/pilot-product/root/final/tests-final.log": "3a019fd7f19add5daaf438b20ea5dbef496f48a5c92bed8dc8801ab8d28e0902",
+    ".discovery-work/pilot-product/root/final/pdf-final.log": "6f22c17d743b3dade38ceec4009009d72f867fe48bd82389d2f2efa2d74af63e",
+    ".discovery-work/pilot-product/root/final/build-final.log": "d59845443ab517dd757a0261467b461460d92a1c7965af96e3f39fe65a7149ae",
+    ".discovery-work/pilot-product/root/final/smoke-final.log": "c69931ed305c86c5e0c80727936fbf7c70947b6ce806bf895c13ef7bf96ae9d4",
+    ".discovery-work/pilot-product/root/final/audit-final.log": "d04ff73073bfcca2d06bfef3ca46173bfba16cd7ae37d6c1de342054ae6c56e1",
+    ".discovery-work/pilot-product/root/final/secret-final.log": "56ec74c6892f43286e1479975a8d78b735a49337e89db01001781fd47d249f28",
+    ".discovery-work/pilot-product/root/final/input-sha256.json": "a01b7866daf3e7ab6ca5738e5b69a97f00609ab7b1542c5335bddf7eacd6717c",
+    ".discovery-work/pilot-product/root/final/validation.json": "369dce5d09c9281e19aed84edb4a857cbe1f4a5afc92f135ab18a84a105c3eaf",
+    ".discovery-work/pilot-product/root/final/validate.py": "4ec3dd624c1a779960c4b5a15e308d4daff360e0ef8f671610ec74eec72c0039",
+    ".discovery-work/pilot-product/root/final/worker-postbuild.log": "2d191f2204aa76fdbcd0019331aada9d9cfd2fd1864e9937aeea5b29e2b13833",
+    ".discovery-work/pilot-product/root/final/receipt-harness-initial.json": "08d3653d982a46624e9e1db7b6e5680149860c48fdebefeb67c59a062b83e6ac",
+    ".discovery-work/pilot-product/root/finalize.py": "d06154ead372620f940dd7b2aca0fa061da05bd8534524ab00be155da7be4ceb",
+    ".discovery-work/pilot-product/root/frozen-check.json": "81ec8b817ee75de63e959a75ce9e7e7a40e57ea3adf4aaf6e13b2ca2aad89748",
+    "/workspace/build/builderbob/metadata-pilot-astra/worker.mjs": "5f7e0898abbedfa606ee6b857ccfda5dbb15e3eb46dba67901464a090eb1f7ea",
+    "/workspace/build/builderbob/tvd-pilot-product-review-20261116/astra/fixed/ex29-metadata-reconciliation.json": "737d4cd75a2656644e08ff1b5401bfe7d12c46c2af9765dba5594b06c77bec00",
+    ".discovery-work/pilot-product/root/final/documentation-secret.log": "e59e95a3307b9fb52ceffdac790d2ddaba0eb2c6dc6591762520672f2d90b2ad",
+    ".discovery-work/pilot-product/root/final/documentation-links.json": "4ed6231f009c5c3eb2e39d71f4a2b4c426766527daac69f7b99935dcb8b60d61"
+  },
+  "unchanged_frozen_inputs": {
+    "docs/discovery-engineering/HANDOFF-MANIFEST.json": {
+      "entries": 70,
+      "mismatches": []
+    },
+    "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json": {
+      "entries": 21,
+      "mismatches": []
+    },
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": {
+      "sha256": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+      "unchanged": true
+    },
+    "docs/discovery/interface-contracts.md": {
+      "sha256": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+      "unchanged": true
+    },
+    "docs/discovery/model-v0.5/validation/receipt.json": {
+      "sha256": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e",
+      "unchanged": true
+    },
+    "docs/discovery/reference-manifest.json": {
+      "sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+      "unchanged": true
+    },
+    "docs/discovery/qualification/wp03-material-index.json": {
+      "sha256": "0abd5620c51a93bff55e78a8a7b7c7c2bb938c1b15a4ef191bd38109d639562b",
+      "unchanged": true
+    }
+  },
+  "benchmark": {
+    "actual_cases": 0,
+    "actual_human_reviewers": 0,
+    "manifest_status": "not_frozen",
+    "WP03_accepted": false,
+    "empirical_gates": "E01-E06_not_run",
+    "required_for_pilot": false
+  },
+  "delivered_head_CI": {
+    "tracking": "https://github.com/ajhcs/the-valley-desk/pull/30",
+    "required_before_handoff_completion": true,
+    "recorded_separately_from_local_results": true
+  },
+  "remaining": [
+    "MP04 separately authorized release/activation review; no deployment.",
+    "Additional source coverage and reviewed citation relations; only two edges represented.",
+    "Current creator profiles, individual contribution and actual work-creation locations remain unestablished.",
+    "WP03 independent annotation and benchmark freeze remain separate.",
+    "Optional full-text/README/forum/media reuse remains source-specific.",
+    "Further mobile site-header, sorting-label and record-address polish.",
+    "Other-browser, broader accessibility/performance and production operation remain unqualified."
+  ],
+  "merge": false,
+  "deployment": false
+}

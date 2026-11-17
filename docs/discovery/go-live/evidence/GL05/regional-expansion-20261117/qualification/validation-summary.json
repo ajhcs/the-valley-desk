@@ -1,0 +1,139 @@
+{
+  "recordedAt": "2026-11-17T02:16:21.610689+00:00",
+  "sourceCommit": "f6b33a0659abc6e535f1cb947ff375357cd29dbe",
+  "baseline": "c23cc18fcf2d820f8a8d93feb96e15e441855135",
+  "runtime": "Node.js v22.23.2 with existing isolated wrapper; workspace-backed temp/config/cache",
+  "commands": [
+    {
+      "command": "bash .discovery-work/wp12/run.sh npm run test:discovery",
+      "exitCode": 0,
+      "tests": {
+        "tests": 479,
+        "pass": 479,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "scope": "All Discovery tests, portable new expansion and prior snapshot freshness checks, and Discovery contract types; application and Watch suites were not rerun locally for this metadata-only expansion."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 TMPDIR=$PWD/.discovery-work/tmp python3 -m unittest discover -s test/sourceqa -p test_drexel_sanitizer.py -v",
+      "exitCode": 0,
+      "tests": 3,
+      "requiresLocalOriginalSource": true
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 TMPDIR=$PWD/.discovery-work/tmp python3 -m unittest discover -s test -p test_villanova_intake.py -v",
+      "exitCode": 0,
+      "tests": 1,
+      "requiresLocalOriginalSource": true
+    },
+    {
+      "command": "bash .discovery-work/wp12/run.sh npm run build",
+      "exitCode": 0,
+      "scope": "Production bundle and TypeScript build; existing frontend chunk-size warning remains GL10 work."
+    },
+    {
+      "command": "bash .discovery-work/wp12/run.sh npm run secret-scan",
+      "exitCode": 0
+    }
+  ],
+  "artifacts": {
+    "docs/discovery/go-live/evidence/GL05/regional-expansion-20261117/draft-transitions.json": {
+      "sha256": "5acd73d11854d0acc48a93fdbc8d40369f690a48e2012f113dc43fb53bf83829",
+      "bytes": 1722
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-expansion-20261117/drexel-v3/manifest.json": {
+      "sha256": "f6a507822db7765913677bcd271680acbf5981dc49cc899a713e450e16da42a7",
+      "bytes": 28229
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-expansion-20261117/drexel-v3/source-assertions.json": {
+      "sha256": "12b87c306fccb6f469169006c994dc7371347ddb3c519dd156792e3c921be580",
+      "bytes": 4163400
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-expansion-20261117/qualification-queue.json": {
+      "sha256": "bae3720eeb8aa4a01f4b6d0b35923c4f3fb321c7b87020cfdcf9858f335afc79",
+      "bytes": 13186107
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-expansion-20261117/research-network.json": {
+      "sha256": "6eca9df3495507c77fb3973586fd51f7e386533ec47f970af15337be93357897",
+      "bytes": 1153555
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-expansion-20261117/research-network.md": {
+      "sha256": "0e03768943819a3dac5f904f2b2703a2bd30313766af83f305ae0930ee0d2ec7",
+      "bytes": 6536
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-expansion-20261117/villanova/manifest.json": {
+      "sha256": "d985cd1c933917ec7de978cd4e866200f74b21bc93bc10e4e52591e8578bc4c5",
+      "bytes": 464
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-expansion-20261117/villanova/source-assertions.json": {
+      "sha256": "8f321776b4f806f950cdd3e305ccdf57b5470abce2a1dc86094e82349dbb7210",
+      "bytes": 73283
+    },
+    "docs/discovery/go-live/execution/GL05-drexel-intake.md": {
+      "sha256": "bfd555c87075789cad9aa9b3d9f939d4c82844a29c68c2485e4b3e4c4a391fa6",
+      "bytes": 3320
+    },
+    "docs/discovery/go-live/execution/GL05-expansion-integration.md": {
+      "sha256": "6037381195542d4ab9f53f1dac72a974f87c07b012096f418e54c12071bc1bf6",
+      "bytes": 978
+    },
+    "docs/discovery/go-live/execution/GL05-expansion-sol-review.md": {
+      "sha256": "bfa7a37cd19a22aa2a84e59528c029d643652444c6e6b15b6ee513885452cec6",
+      "bytes": 7137
+    },
+    "docs/discovery/go-live/execution/GL05-villanova-intake.md": {
+      "sha256": "adaf9328c5c3fe4e7e07a4fa4f6f011792fef975457cf820a20b7bb699eaac6f",
+      "bytes": 1774
+    },
+    "scripts/build-research-network-expansion.mjs": {
+      "sha256": "bf8341e4a099d45aee670fc765f4868d01b2e4d430daba94964ade62c46bfcb9",
+      "bytes": 11210
+    },
+    "scripts/sanitize-drexel-intake.py": {
+      "sha256": "4495c1e48b062434601d5d00cd706c5f846b7353b72d69fe5280fa48fc376cef",
+      "bytes": 9488
+    },
+    "scripts/sanitize-villanova-intake.py": {
+      "sha256": "92ba4201a9178a4db69d5a4af381bf31064c72be2501c2193aa4da674cd0b888",
+      "bytes": 10318
+    },
+    "src/ingest/discovery/research-network-expansion.ts": {
+      "sha256": "8c388884260a76bd4aa332d1b5948d60c5e6aeaa0321534ae24a4103b0aecb05",
+      "bytes": 8175
+    },
+    "test/discovery-research-network-expansion.test.ts": {
+      "sha256": "a4d6ec0c5aba68f14f2def6ea83396e09c96ef9c4a7ec0093ac1a719930e4815",
+      "bytes": 3223
+    },
+    "test/sourceqa/test_drexel_sanitizer.py": {
+      "sha256": "7f98a674be2c2b1cc9e2dd19767d0dc3468ac7f932bc541ae4f54ccbbb28dde4",
+      "bytes": 4145
+    },
+    "test/test_villanova_intake.py": {
+      "sha256": "acba1b9a419df0d67e20d308fb8574f44fdc65c87dddec8177f4c63f26cdd36b",
+      "bytes": 1902
+    },
+    "package.json": {
+      "sha256": "f56523f521d51597b934b5da1b417b3121ba27699470dab953ad4e66fa8d90be",
+      "bytes": 7711
+    },
+    "docs/discovery/go-live/execution/GL05-discovery-follow-through.md": {
+      "sha256": "d96e5e0c7e04a159bda5cacd647c154f22b99e1876f2084e856fc8d750a932fb",
+      "bytes": 10902
+    }
+  },
+  "semantics": {
+    "priorObservationsExact": 4803,
+    "sourceRecordsExact": 4472,
+    "repairedCitationFieldsExact": 39,
+    "cooperNodesExact": 637,
+    "cooperEdgesExact": 820
+  },
+  "limits": [
+    "Software acceptance does not verify remote citation targets, source assertions, current roles, ownership, health purpose, regional completeness or source permission for new capture.",
+    "No supplied scripts executed, no new source network requests, no human-benchmark credit and no public admissions.",
+    "Historical full-core 1550-test evidence is separate from this current Discovery run and is not added to it."
+  ]
+}

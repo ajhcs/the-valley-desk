@@ -1,0 +1,184 @@
+{
+  "schemaVersion": "directory-frontier-review-crosswalk-v1",
+  "selectionCanonicalSha256": "0e790590fd6d58c71320fb6935f7316115257c2afa7a7efdee9d9c7d429856a3",
+  "scope": "Read-only private review view; capture frontier and publicationAuthorized:false remain immutable. Actual public output is controlled by the separately pinned reviewed selection.",
+  "captureCandidates": [
+    {
+      "reviewCandidateId": "G03-0",
+      "captureFrontierId": "GL03:lead:7d9233f765c1d81c5790d9fc40905ebd6d300fb8ec2729b9b66b3613c3bba666",
+      "provider": "github",
+      "nativeId": "271411305",
+      "retainedCapture": {
+        "path": "docs/discovery/go-live/evidence/GL03/original/G03.json",
+        "sha256": "15ef3d91d477a7ade4b2b02cae40ce73d9eeb86e9b59967ebb65f7467d1c9676",
+        "factPointer": "/packet/facts/0",
+        "receiptId": "GL03:receipt:G03",
+        "scopeId": "GL03:G03"
+      },
+      "captureDisposition": "pending",
+      "capturePublicationAuthorized": false,
+      "reviewDecision": "hold",
+      "reviewReceiptId": "GL04:decision:G03-0",
+      "publicWorkId": null
+    },
+    {
+      "reviewCandidateId": "G03-1",
+      "captureFrontierId": "GL03:lead:42dbafb416cfec8254495e259d116b3744fedb67a858298529e5f2513dcab1b7",
+      "provider": "github",
+      "nativeId": "255676995",
+      "retainedCapture": {
+        "path": "docs/discovery/go-live/evidence/GL03/original/G03.json",
+        "sha256": "15ef3d91d477a7ade4b2b02cae40ce73d9eeb86e9b59967ebb65f7467d1c9676",
+        "factPointer": "/packet/facts/1",
+        "receiptId": "GL03:receipt:G03",
+        "scopeId": "GL03:G03"
+      },
+      "captureDisposition": "pending",
+      "capturePublicationAuthorized": false,
+      "reviewDecision": "hold",
+      "reviewReceiptId": "GL04:decision:G03-1",
+      "publicWorkId": null
+    },
+    {
+      "reviewCandidateId": "G03-2",
+      "captureFrontierId": "GL03:lead:1467152e4978c107d619077da582d67b2cf0779b06a2d46cc386760130e49c1a",
+      "provider": "github",
+      "nativeId": "314719188",
+      "retainedCapture": {
+        "path": "docs/discovery/go-live/evidence/GL03/original/G03.json",
+        "sha256": "15ef3d91d477a7ade4b2b02cae40ce73d9eeb86e9b59967ebb65f7467d1c9676",
+        "factPointer": "/packet/facts/2",
+        "receiptId": "GL03:receipt:G03",
+        "scopeId": "GL03:G03"
+      },
+      "captureDisposition": "pending",
+      "capturePublicationAuthorized": false,
+      "reviewDecision": "hold",
+      "reviewReceiptId": "GL04:decision:G03-2",
+      "publicWorkId": null
+    },
+    {
+      "reviewCandidateId": "G03-3",
+      "captureFrontierId": "GL03:lead:a2590895c3b7c8fa0684056c0288871eb8c505772201c36626e60885c9b96ce9",
+      "provider": "github",
+      "nativeId": "586355542",
+      "retainedCapture": {
+        "path": "docs/discovery/go-live/evidence/GL03/original/G03.json",
+        "sha256": "15ef3d91d477a7ade4b2b02cae40ce73d9eeb86e9b59967ebb65f7467d1c9676",
+        "factPointer": "/packet/facts/3",
+        "receiptId": "GL03:receipt:G03",
+        "scopeId": "GL03:G03"
+      },
+      "captureDisposition": "pending",
+      "capturePublicationAuthorized": false,
+      "reviewDecision": "hold",
+      "reviewReceiptId": "GL04:decision:G03-3",
+      "publicWorkId": null
+    },
+    {
+      "reviewCandidateId": "G03-4",
+      "captureFrontierId": "GL03:lead:4ebd6d5c26cd4ba6b49d986d0c7c1f1e8adfe34385d5177a67bf54b02b5877fd",
+      "provider": "github",
+      "nativeId": "870305377",
+      "retainedCapture": {
+        "path": "docs/discovery/go-live/evidence/GL03/original/G03.json",
+        "sha256": "15ef3d91d477a7ade4b2b02cae40ce73d9eeb86e9b59967ebb65f7467d1c9676",
+        "factPointer": "/packet/facts/4",
+        "receiptId": "GL03:receipt:G03",
+        "scopeId": "GL03:G03"
+      },
+      "captureDisposition": "pending",
+      "capturePublicationAuthorized": false,
+      "reviewDecision": "hold",
+      "reviewReceiptId": "GL04:decision:G03-4",
+      "publicWorkId": null
+    },
+    {
+      "reviewCandidateId": "G04",
+      "captureFrontierId": "GL03:lead:083a17b7780f98534ba8a88129f8ab834c6cfc078184af4ef28f05b204af986f",
+      "provider": "github",
+      "nativeId": "760662846",
+      "retainedCapture": {
+        "path": "docs/discovery/go-live/evidence/GL03/original/G04.json",
+        "sha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+        "factPointer": "/packet/facts/0",
+        "receiptId": "GL03:receipt:G04",
+        "scopeId": "GL03:G04"
+      },
+      "captureDisposition": "pending",
+      "capturePublicationAuthorized": false,
+      "reviewDecision": "accept",
+      "reviewReceiptId": "GL04:decision:G04",
+      "publicWorkId": "GL04:work:github:760662846"
+    },
+    {
+      "reviewCandidateId": "G05",
+      "captureFrontierId": "GL03:lead:9b222f40d0ddb093ba7bd2e6bc509b8f69554c972355d9202e6f821309682f13",
+      "provider": "github",
+      "nativeId": "568171465",
+      "retainedCapture": {
+        "path": "docs/discovery/go-live/evidence/GL03/supplemental/G05.json",
+        "sha256": "4913512de5f645c174ef444668ae6e2ae5b227b47c40f5d83aa61596f6c841af",
+        "factPointer": "/packet/facts/0",
+        "receiptId": "GL03:receipt:G05",
+        "scopeId": "GL03:G05"
+      },
+      "captureDisposition": "pending",
+      "capturePublicationAuthorized": false,
+      "reviewDecision": "hold",
+      "reviewReceiptId": "GL04:decision:G05",
+      "publicWorkId": null
+    },
+    {
+      "reviewCandidateId": "C02",
+      "captureFrontierId": "GL03:lead:8f87c6292f15728df5f05acc7a6c1ef009391b799cba8b49d4b3020ea873b4c5",
+      "provider": "crossref",
+      "nativeId": "10.3934/nhm.2011.6.647",
+      "retainedCapture": {
+        "path": "docs/discovery/go-live/evidence/GL03/supplemental/C02.json",
+        "sha256": "12f46ec9fe10749e7c1edc6fcc97c5b91f697493aa3855745240d14a527a3c48",
+        "factPointer": "/packet/facts/0",
+        "receiptId": "GL03:receipt:C02",
+        "scopeId": "GL03:C02"
+      },
+      "captureDisposition": "pending",
+      "capturePublicationAuthorized": false,
+      "reviewDecision": "hold",
+      "reviewReceiptId": "GL04:decision:C02",
+      "publicWorkId": null
+    }
+  ],
+  "failedScopes": [
+    {
+      "requestId": "G01",
+      "path": "docs/discovery/go-live/evidence/GL03/original/G01.json",
+      "sha256": "2387e4f3c4e7942f14b3ef17201010c30def0443f26ec6ef56d2e7b43c8d7d63",
+      "status": "malformed",
+      "reviewDecision": "hold",
+      "failureCode": "link"
+    },
+    {
+      "requestId": "G02",
+      "path": "docs/discovery/go-live/evidence/GL03/original/G02.json",
+      "sha256": "1838ca92a0e94cbc2306174643bbaae9ffe570b846e5b3b26c79c888c37b8ee3",
+      "status": "malformed",
+      "reviewDecision": "hold",
+      "failureCode": "field-census"
+    },
+    {
+      "requestId": "C01",
+      "path": "docs/discovery/go-live/evidence/GL03/original/C01.json",
+      "sha256": "ad8fc876f23bd71fbc8bb16cf29a93d874f0363a44c07c15ea1304e346783984",
+      "status": "malformed",
+      "reviewDecision": "hold",
+      "failureCode": "publication-identity"
+    }
+  ],
+  "counts": {
+    "capturedCandidates": 8,
+    "acceptedFromCapture": 1,
+    "heldFromCapture": 7,
+    "failedScopesHeld": 3,
+    "additionalReviewedPublication": "GASTON (existing retained corpus; historic discovery repository-linked)"
+  }
+}

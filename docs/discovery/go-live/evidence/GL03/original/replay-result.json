@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "GL03-replay-check-v1",
+  "scope": "retained fact packets and private journal only; no native body reconstruction",
+  "pages": 5,
+  "candidates": 6,
+  "candidatesSha256": "f93dcf32b4d6e4db11a23df261f4231bfbcf55f765fb1115e5182e201ee798e5",
+  "outcomes": [
+    {
+      "page": "G01",
+      "outcome": "malformed",
+      "inserted": 0,
+      "pending": 0
+    },
+    {
+      "page": "G02",
+      "outcome": "malformed",
+      "inserted": 0,
+      "pending": 0
+    },
+    {
+      "page": "G03",
+      "outcome": "capped",
+      "inserted": 5,
+      "pending": 0
+    },
+    {
+      "page": "C01",
+      "outcome": "malformed",
+      "inserted": 0,
+      "pending": 0
+    },
+    {
+      "page": "G04",
+      "outcome": "complete",
+      "inserted": 1,
+      "pending": 0
+    }
+  ],
+  "reopened": true,
+  "noNetwork": true
+}

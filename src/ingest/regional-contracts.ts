@@ -1,10 +1,12 @@
+import { legacyOffsetDatetime } from "../lib/schema-compat";
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import { isCalendarDay } from "../content/watch-schema";
 import { regionalHtmlElements, regionalQuoteContainsElement } from "./regional-html";
 
 export const REGIONAL_CHANNELS = ["news", "research", "people", "github", "conference"] as const;
 export type RegionalChannel = typeof REGIONAL_CHANNELS[number];
-const Instant = z.string().datetime({ offset: true }).refine(value => isCalendarDay(value.slice(0, 10)), "real observation day required");
+const Instant = legacyOffsetDatetime().refine(value => isCalendarDay(value.slice(0, 10)), "real observation day required");
 const Day = z.string().refine(isCalendarDay, "real calendar day required");
 const Id = z.string().regex(/^[a-z][a-z0-9-]+$/);
 function sensitiveUrlParameters(url: URL, depth = 0): boolean {
@@ -32,7 +34,7 @@ export function permittedPublicUrl(value: string, allowedHosts?: readonly string
       (!allowedHosts || allowedHosts.includes(host));
   } catch { return false; }
 }
-const PublicUrl = z.string().max(2048).url().refine(value => permittedPublicUrl(value), "public credential-free HTTPS required");
+const PublicUrl = legacyUrl().max(2048).refine(value => permittedPublicUrl(value), "public credential-free HTTPS required");
 export const RegionalEvidence = z.object({
   id: Id, url: PublicUrl, observedAt: Instant, sourcePublishedAt: Instant.nullable(),
   representationSha256: z.string().regex(/^[a-f0-9]{64}$/),

@@ -1,0 +1,112 @@
+[
+  {
+    "provider": "crossref",
+    "name": "autogvp",
+    "status": 200,
+    "received_bytes": 6401,
+    "body_sha256": "569acef5e4d899696d3fd4816ec40dff855a537d29072b2e5f28623484a600c5",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:46:43.004342+00:00",
+    "ended_at_utc": "2026-11-15T21:46:43.204851+00:00"
+  },
+  {
+    "provider": "crossref",
+    "name": "captk-main",
+    "status": 200,
+    "received_bytes": 5056,
+    "body_sha256": "b291ed6c35fc31625450ddf2868318fa5335917da42fa90deb614f608c146153",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:46:39.569570+00:00",
+    "ended_at_utc": "2026-11-15T21:46:39.778177+00:00"
+  },
+  {
+    "provider": "crossref",
+    "name": "deepcnv",
+    "status": 200,
+    "received_bytes": 3305,
+    "body_sha256": "c872b5519aafb30bcea68fa95f5d13c01f4c3c9856da41c96b1191aa9312c6f5",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:46:53.313233+00:00",
+    "ended_at_utc": "2026-11-15T21:46:53.522302+00:00"
+  },
+  {
+    "provider": "crossref",
+    "name": "immunotar",
+    "status": 200,
+    "received_bytes": 4714,
+    "body_sha256": "9bbce87a075fdc5e99f1df14d5d90cc6679161d4655e15b4971892640edf5857",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:46:46.430836+00:00",
+    "ended_at_utc": "2026-11-15T21:46:46.649753+00:00"
+  },
+  {
+    "provider": "crossref",
+    "name": "phenomantics",
+    "status": 200,
+    "received_bytes": 1716,
+    "body_sha256": "c8b85b4e14f01d6e2d42b6ad6dfdcbc673ade3440163be11088cf4562158e23e",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:46:49.874589+00:00",
+    "ended_at_utc": "2026-11-15T21:46:50.086545+00:00"
+  },
+  {
+    "provider": "crossref",
+    "name": "qsiprep",
+    "status": 200,
+    "received_bytes": 7503,
+    "body_sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:46:36.015698+00:00",
+    "ended_at_utc": "2026-11-15T21:46:36.343883+00:00"
+  },
+  {
+    "provider": "github",
+    "name": "autogvp",
+    "status": 200,
+    "received_bytes": 6409,
+    "body_sha256": "241b804429fd3e6100194f614b35a7d53ad73e2b7a3b514355d5518f112152ab",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:46:56.749178+00:00",
+    "ended_at_utc": "2026-11-15T21:46:57.046730+00:00"
+  },
+  {
+    "provider": "github",
+    "name": "deepcnv",
+    "status": 200,
+    "received_bytes": 5966,
+    "body_sha256": "53d72608db59186ec039ce148849be824d9885f8794eae47578c67a879a36f86",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:47:07.267548+00:00",
+    "ended_at_utc": "2026-11-15T21:47:07.581522+00:00"
+  },
+  {
+    "provider": "github",
+    "name": "immunotar",
+    "status": 200,
+    "received_bytes": 6029,
+    "body_sha256": "07ba93cbf37cfd428c63dac74176c50cea7986f80c2fc23f1051a47132da6c74",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:47:00.271931+00:00",
+    "ended_at_utc": "2026-11-15T21:47:00.549064+00:00"
+  },
+  {
+    "provider": "github",
+    "name": "phenomantics",
+    "status": 200,
+    "received_bytes": 6323,
+    "body_sha256": "8a596641421dde32216c5e72bf8b888585f49f05591a174dfdc46003c3abc51e",
+    "body_retained": true,
+    "failure_code": null,
+    "started_at_utc": "2026-11-15T21:47:03.775809+00:00",
+    "ended_at_utc": "2026-11-15T21:47:04.040098+00:00"
+  }
+]

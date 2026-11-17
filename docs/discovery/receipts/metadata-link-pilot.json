@@ -1,0 +1,236 @@
+{
+  "id": "TVD-METADATA-LINK-PILOT-1",
+  "decision": "EX28",
+  "recorded_at": "2026-11-16T03:59:29.809653+00:00",
+  "reviewed_code_commit": "77fab963271407b32753fb0b7bcb407c1d72b885",
+  "disposition": "finite_metadata_link_pilot_locally_qualified_no_public_activation",
+  "pilot_packages_locally_accepted": [
+    "MP00",
+    "MP01",
+    "MP02",
+    "MP03"
+  ],
+  "public_release_MP04_accepted": false,
+  "original_package_ledger_unchanged": true,
+  "scope": {
+    "records": 14,
+    "repositories": 6,
+    "publications": 6,
+    "organization_background_records": 2,
+    "native_source_bodies": 14,
+    "derived_observation_records": 1,
+    "directed_repository_publication_citations": 2,
+    "new_source_acquisitions": 0,
+    "new_human_reviewers": 0,
+    "new_benchmark_cases": 0,
+    "full_text_included": false,
+    "live_collection": false,
+    "D1_writes": false,
+    "feature_flag": "DISCOVERY_PILOT_ENABLED",
+    "default_enabled": false
+  },
+  "validation": {
+    "commands": [
+      {
+        "name": "tests",
+        "argv": [
+          "npm",
+          "test"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "pdf",
+        "argv": [
+          "npm",
+          "run",
+          "test:policy-pdf"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build",
+        "argv": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "smoke",
+        "argv": [
+          "npm",
+          "run",
+          "ops:smoke"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "audit",
+        "argv": [
+          "npm",
+          "audit",
+          "--audit-level=high",
+          "--json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "secret",
+        "argv": [
+          "npm",
+          "run",
+          "secret-scan"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "suite_counts": [
+      939,
+      146,
+      346
+    ],
+    "executed_tests": 1431,
+    "failures": 0,
+    "skips": 0,
+    "cancellations": 0,
+    "PDF_regressions": 7,
+    "audit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "Sol_focused_tests": 19,
+    "root_routing_tests": 5,
+    "Astra_independent_Node_groups": 15,
+    "Astra_browser_checks": 12,
+    "Astra_response_boundary_checks": 4,
+    "Terra_independent_Node_groups": 3,
+    "root_browser_checks": 26,
+    "counts_overlap": true,
+    "scope": "Actual retained metadata projection; local Worker/Node/browser verification. No benchmark accuracy, current employment, clinical validity, regional completeness or production qualification."
+  },
+  "runtime_input_manifest": {
+    "path": ".discovery-work/metadata-pilot/root/final/input-sha256.json",
+    "sha256": "9a940ff91d90e2f00958016e5cde3477418cf8eba29ee0541b77a208a9683077",
+    "count": 629,
+    "drift": []
+  },
+  "runtime_outputs": {
+    "fixtures/discovery-pilot-selection.json": "882fabb9061f9b042facab3231428eb9bb3f87479936126ea1fa07e0a8544fce",
+    "package.json": "78cf6973354b1cff584d6b99e7c9a83c64d680eff0cd1d7f2b62fd80591bd8b4",
+    "scripts/build-discovery-pilot.mjs": "0ab4f0a9774baebe1e3b45d7d989fe98dc7a02bdaea408819fc288248d2e962f",
+    "src/content/discovery-pilot-catalog.json": "a9dc24d0616f9edd1283cd6de7523c48ff085a4ea73d122bba18507abcae6f99",
+    "src/content/discovery-pilot.ts": "c6f199723c95be064d6fcbf98306193efa1f834bf9c156782683a0f5ebe47466",
+    "src/ingest/discovery-pilot-page.ts": "7b949166d152b6ead967cac65d0a31e733dc72fed488b8e1bb8609b90136aadc",
+    "src/ingest/discovery-pilot.ts": "eb46505661c955a30abd07e93c1ee77f53f3d80546496509cdb07882573e98de",
+    "src/lib/catalog-navigation.ts": "7efcc4baa323627dee4bf1806bb2ed2592630cf5a5af5ff116c2217f944b1254",
+    "src/router.tsx": "0736c6bfea97d47183f9a2c525d5cbf181c7399912ddf562d97afc2b71c6999b",
+    "src/ui/DocumentHead.tsx": "fc81093f76f6e49e747e6f76ee0183401fba0479975682014bbff44fe8d58948",
+    "src/ui/discovery/DiscoveryPilotPage.tsx": "a09174e3db0dd8867b45a2972623e8d1502e6ef5b2de2747c69d01af1c4545f0",
+    "src/ui/discovery/discovery-pilot.css": "dede99ea5fcdf34ca63ed7bd9542cb1418dec4888565278d6557b019a2941ede",
+    "test/discovery-pilot-routing.test.ts": "438ee953a0afd2ae7da8ac9f4a82983a352d7e2896cc0ac8ffaaa93489ce9b80",
+    "test/discovery-pilot.test.ts": "648f6d0eaa5b68b18fd0642e276abbfc7948f501c15e91e845268a38f01ccde7",
+    "worker.js": "5d1f05d9ba3346d0c4e35f317f44223a28627d3e662a8c06f084ce616339b840"
+  },
+  "outputs": {
+    "README.md": "dd96a0272af1ee3f077bca160049ee96bf330f7fe38a7e2b88ef1de5f9ec9320",
+    "docs/discovery/README.md": "ed374bfe84c6ef13d715b80549f8d6162050b8cadd883a4c3102bda39d2f9f0d",
+    "docs/discovery/execution.json": "3f9c08222bda2eb82f347aacd2c26ad0164de772ae99a628c3e1fea58be7c976",
+    "docs/discovery/implementation-decisions.md": "bbe754f1db32e7e6b7939887898ac51d18109b78717386c361a8152fd44eb2ba",
+    "docs/discovery/wp14-entry-plan.md": "b3be293ab78b40405109aa8a6ed88d65909d20b8ec6ea7932ce9299be560bfb2",
+    "docs/discovery/metadata-link-pilot-plan.md": "8fb509d7850eb0b31de942d2a3862310fd0bb9125758da79e6ef9af69abd4c23",
+    "docs/discovery/metadata-link-pilot-preview.md": "625fe53bd696cb83c535475c42c24df2b3ab66f82cda69e96a0d2197ad64b6c5",
+    "docs/discovery/metadata-link-pilot-sources.md": "a35a4a4cd2027c14f4b88c8defe95d4a9eb8b54df278f9ce2ffc5e9d78b1f3db",
+    "docs/discovery/metadata-link-pilot-qualification.md": "70c2efe4e95d7f32b2e5fe5ee31f5b73bcf3fe513182284504af16e43ab8f838",
+    "docs/discovery/reviews/metadata-link-pilot-astra.md": "351d26aa83aded28d2450eb745755e87eb507f0905afa31abdb7f17a193c0945"
+  },
+  "private_artifacts": {
+    ".discovery-work/metadata-pilot/root/final/tests-final.log": "d8cc556a3ea179443a6c508522843b7396411e941498bbd155173074bd240c0f",
+    ".discovery-work/metadata-pilot/root/final/pdf-final.log": "debf7ef8c929997fafe94a716a4a96d7ff390cb27ed8188d335769a1c0849afe",
+    ".discovery-work/metadata-pilot/root/final/build-final.log": "3e58016b929f1137773ae5b32b7cfc75344c4c9da07d1a71f5ea840dd3bdd2eb",
+    ".discovery-work/metadata-pilot/root/final/smoke-final.log": "5ef157dc1dbe46c52bebe8e8b460749e80946b91a49f681bfd2e33d2fbcd157d",
+    ".discovery-work/metadata-pilot/root/final/audit-final.log": "d04ff73073bfcca2d06bfef3ca46173bfba16cd7ae37d6c1de342054ae6c56e1",
+    ".discovery-work/metadata-pilot/root/final/secret-final.log": "dcb44ffb752d2f32d9e66951a59b07b2c8349f2421b846083e2c1f91993d6b74",
+    ".discovery-work/metadata-pilot/root/final/input-sha256.json": "9a940ff91d90e2f00958016e5cde3477418cf8eba29ee0541b77a208a9683077",
+    ".discovery-work/metadata-pilot/root/final/validation.json": "369dce5d09c9281e19aed84edb4a857cbe1f4a5afc92f135ab18a84a105c3eaf",
+    ".discovery-work/metadata-pilot/root/frozen-check.json": "81ec8b817ee75de63e959a75ce9e7e7a40e57ea3adf4aaf6e13b2ca2aad89748",
+    ".discovery-work/metadata-pilot/root/initial-routing-assertion.json": "88cae4d485b943295c28e1a5d529ca056a2f68c9a6fd3c2a43900d3d9bab1754",
+    ".discovery-work/pilot-sol/focused-final.log": "b027a23d1f4832125df5f97443ebd6738b5391421a94ac1a81f90fcc341a40e6",
+    ".discovery-work/metadata-pilot/terra/verify-selection.py": "308eae11873a8fe780e607fb1c7e6c7cfec765aac040b7ed39cb9c2da9478aa1",
+    ".discovery-work/metadata-pilot/terra/verify-selection.log": "8bdd576b1abd7e477118346309da3675c1a95ef0173e4443052f46fddbf86a4e",
+    ".discovery-work/metadata-pilot/terra/projection-revised.tap": "473df320221e23d82ed3599b61acdc234b8be9015f2025f40507a467a2808f7b",
+    "/workspace/build/builderbob/tvd-metadata-pilot-20261116/browser-check.mjs": "c5b01996439b8c56f3f3853fecc33a29a66fc213af77d0ccebb801c894c23c3a",
+    "/workspace/build/builderbob/tvd-metadata-pilot-20261116/browser-result.json": "0c999550b92a863345afbfe246512611dba5d4fd7d1b83740d59f65c7d490534",
+    "/workspace/build/builderbob/tvd-metadata-pilot-20261116/browser-failure-initial-label.json": "42fd9cf962cd79ee7e8b310795c8f618607c57f179f3afaeb1630c8e86fc736b",
+    "/workspace/build/builderbob/tvd-metadata-pilot-20261116/desktop.png": "daf8528902b9d8ba3931a7c0eac9370392572fc322a409922541828f0f092783",
+    "/workspace/build/builderbob/tvd-metadata-pilot-20261116/mobile.png": "07e246f7440113102b349de4606b5b4ca351fd04a86e6a9613b6cb0c0fa7d120",
+    "/workspace/build/builderbob/tvd-metadata-pilot-20261116/terra/affiliation.mjs": "65ec99e1759fa229d21fc793380e083d77f008de8559f5d8fb8c4c38747c6d66",
+    "/workspace/build/builderbob/tvd-metadata-pilot-20261116/terra/affiliation.log": "4eb6cdba036c8efacf74dac1fdb528e269223529a12d9d25e6d4e3ea8c9057da",
+    "/workspace/build/builderbob/metadata-pilot-astra/adversarial.mjs": "39eded958f1f414514c973e0692a3b9555180bc0d14ea39f4158e985c0bdd22f",
+    "/workspace/build/builderbob/metadata-pilot-astra/final-frozen.log": "c734e69651a5ff6090f667f3b9429e03a787796baf23512389756d94ca17058f",
+    "/workspace/build/builderbob/metadata-pilot-astra/worker.mjs": "5f7e0898abbedfa606ee6b857ccfda5dbb15e3eb46dba67901464a090eb1f7ea",
+    "/workspace/build/builderbob/metadata-pilot-astra/worker-initial-schema-sentinel.log": "93a06a4feced2bcd8542c5795d4d6fb36053b44a6913c1b0408b17b70068ad41",
+    "/workspace/build/builderbob/metadata-pilot-astra/browser.json": "c4982ea2459b721a2d32609c010946827484516b2d4f35d6f9cf175e4503fd0e",
+    "/workspace/build/builderbob/metadata-pilot-astra/browser-boundaries.json": "d754dc4fd8218d51efd24da506190233d356df3dc6008d53f68f5e8f3985a05e",
+    "/workspace/build/builderbob/metadata-pilot-astra/reviewed-input-sha256.json": "51a4d0dbd7f2145153f029be37ce3920e96d38919a4c3dfbe7972e38cd18450a",
+    "/workspace/build/builderbob/metadata-pilot-astra/root-freeze-reconciliation.json": "544b8ccf09af9a2f4c1a8ec4079962228b2dc07eb9aed73db20b20c4a31a5687"
+  },
+  "unchanged_frozen_inputs": {
+    "docs/discovery-engineering/HANDOFF-MANIFEST.json": {
+      "entries": 70,
+      "mismatches": []
+    },
+    "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json": {
+      "entries": 21,
+      "mismatches": []
+    },
+    "docs/discovery/model-v0.5/model/tvd-discovery.sysml": {
+      "sha256": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+      "unchanged": true
+    },
+    "docs/discovery/interface-contracts.md": {
+      "sha256": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+      "unchanged": true
+    },
+    "docs/discovery/model-v0.5/validation/receipt.json": {
+      "sha256": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e",
+      "unchanged": true
+    },
+    "docs/discovery/reference-manifest.json": {
+      "sha256": "b2be80fdca1e427bee22b7af9b1621ee44516c98f25247ba6afe4446f2244433",
+      "unchanged": true
+    },
+    "docs/discovery/qualification/wp03-material-index.json": {
+      "sha256": "0abd5620c51a93bff55e78a8a7b7c7c2bb938c1b15a4ef191bd38109d639562b",
+      "unchanged": true
+    }
+  },
+  "benchmark": {
+    "actual_cases": 0,
+    "actual_human_reviewers": 0,
+    "manifest_status": "not_frozen",
+    "WP03_accepted": false,
+    "empirical_gates": "E01-E06_not_run",
+    "required_for_pilot": false
+  },
+  "delivered_head_CI": {
+    "tracking": "https://github.com/ajhcs/the-valley-desk/pull/30",
+    "required_before_handoff_completion": true,
+    "recorded_separately_from_local_results": true
+  },
+  "remaining": [
+    "MP04 public activation/release review and explicit deployment authorization.",
+    "Optional full-text/README/forum/media reuse remains source-specific.",
+    "WP03 independent human annotation, family/exposure review, recall/held-out sampling and freeze remain separate.",
+    "Original automated admission/current-claim/public-projection/recovery work remains incomplete.",
+    "Current employment, individual software authorship, actual work-creation location and nine-county completeness are not established.",
+    "Other browsers, broader accessibility/performance and production operations remain unqualified."
+  ],
+  "merge": false,
+  "deployment": false
+}

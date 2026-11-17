@@ -1,0 +1,87 @@
+{
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+    "total-results": 1,
+    "items": [
+      {
+        "DOI": "10.1234/Synthetic.Work",
+        "type": "journal-article",
+        "title": [
+          "Corrected synthetic year-only study"
+        ],
+        "author": [
+          {
+            "given": "Alex",
+            "family": "Same",
+            "affiliation": [
+              {
+                "name": "Example Institute, Philadelphia, PA"
+              }
+            ]
+          },
+          {
+            "given": "Alex",
+            "family": "Same"
+          }
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2024
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2024,
+              2
+            ]
+          ]
+        },
+        "indexed": {
+          "date-parts": [
+            [
+              2026,
+              11,
+              15
+            ]
+          ],
+          "date-time": "2026-11-15T00:00:00Z"
+        },
+        "deposited": {
+          "date-parts": [
+            [
+              2025,
+              5,
+              1
+            ]
+          ]
+        },
+        "license": [
+          {
+            "URL": "https://creativecommons.org/licenses/by/4.0/",
+            "content-version": "vor",
+            "start": {
+              "date-parts": [
+                [
+                  2024,
+                  2
+                ]
+              ]
+            }
+          }
+        ],
+        "URL": "https://doi.org/10.1234/synthetic.work",
+        "update-to": [
+          {
+            "DOI": "10.1234/prior-work",
+            "type": "correction"
+          }
+        ]
+      }
+    ]
+  }
+}

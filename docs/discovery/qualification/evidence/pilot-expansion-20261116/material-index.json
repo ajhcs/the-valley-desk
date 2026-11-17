@@ -1,0 +1,98 @@
+{
+  "purpose": "EX30 pilot-only development material; native metadata and separately derived citation facts, no benchmark/human credit.",
+  "native_acquisitions": 8,
+  "distinct_native_bodies": 8,
+  "derived_connector_observations": 1,
+  "actual_reference_cases": 0,
+  "actual_human_reviewers": 0,
+  "materials": [
+    {
+      "id": "crossref-aslprep-20261116",
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-aslprep/body.json",
+      "observationPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-aslprep/observation.json",
+      "sha256": "43129723e1e8cf08767afcafdd135a8966f2ab822e2f088a2b94b29dc483fc57",
+      "bytes": 16889,
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-022-01458-7&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T16:18:41.279225+00:00",
+      "development_exposed": true
+    },
+    {
+      "id": "crossref-gandlf-20261116",
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-gandlf/body.json",
+      "observationPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-gandlf/observation.json",
+      "sha256": "cbb844b117bbbb82f8919656e98963415166c82e5082a884500fd01ca09de26f",
+      "bytes": 7677,
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs44172-023-00066-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T16:18:45.006552+00:00",
+      "development_exposed": true
+    },
+    {
+      "id": "crossref-historeg-20261116",
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-historeg/body.json",
+      "observationPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-historeg/observation.json",
+      "sha256": "0d596c2e75f0bec984945876a8d653f1fddfbc3d599d96f039106f886e0fc39f",
+      "bytes": 3076,
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.3390%2Fapp11041892&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T16:18:48.664101+00:00",
+      "development_exposed": true
+    },
+    {
+      "id": "crossref-modelarray-20261116",
+      "provider": "crossref",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-modelarray/body.json",
+      "observationPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/crossref-modelarray/observation.json",
+      "sha256": "4a70e90e49b1782c67f20182a68126b697fce4783ef4ca7542df852966e88699",
+      "bytes": 3540,
+      "requestUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.neuroimage.2023.120037&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "observedAt": "2026-11-16T16:18:52.337394+00:00",
+      "development_exposed": true
+    },
+    {
+      "id": "github-aslprep-20261116",
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-aslprep/body.json",
+      "observationPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-aslprep/observation.json",
+      "sha256": "4d177083b862c4003c92b5b452669f0546b18b563fd3aec69c38e7eaec9e9e85",
+      "bytes": 6160,
+      "requestUrl": "https://api.github.com/repos/PennLINC/aslprep",
+      "observedAt": "2026-11-16T16:18:26.249121+00:00",
+      "development_exposed": true
+    },
+    {
+      "id": "github-gandlf-20261116",
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-gandlf/body.json",
+      "observationPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-gandlf/observation.json",
+      "sha256": "92a0e397ae33a29be804ebb9ea65bfce2b9b86f54b09da76d65e6276aeb71857",
+      "bytes": 6490,
+      "requestUrl": "https://api.github.com/repos/mlcommons/GaNDLF",
+      "observedAt": "2026-11-16T16:18:30.041556+00:00",
+      "development_exposed": true
+    },
+    {
+      "id": "github-historeg-20261116",
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-historeg/body.json",
+      "observationPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-historeg/observation.json",
+      "sha256": "ccdc403dbb9f602924300506c4000fa4a252412bc54f780cc86588cf771b06ba",
+      "bytes": 5961,
+      "requestUrl": "https://api.github.com/repos/CBICA/HistoReg",
+      "observedAt": "2026-11-16T16:18:33.795004+00:00",
+      "development_exposed": true
+    },
+    {
+      "id": "github-modelarray-20261116",
+      "provider": "github",
+      "bodyPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-modelarray/body.json",
+      "observationPath": "docs/discovery/qualification/evidence/pilot-expansion-20261116/github-modelarray/observation.json",
+      "sha256": "9356adef4b7651849c9beebc48d848ea13620158f4e88a1afbd6575c9e4f65fa",
+      "bytes": 6345,
+      "requestUrl": "https://api.github.com/repos/PennLINC/ModelArray",
+      "observedAt": "2026-11-16T16:18:37.542800+00:00",
+      "development_exposed": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "regional-source-intake-manifest-v1",
+  "batch": "widener",
+  "sourceThreadId": "01a1e720-cc2d-7980-9585-3722406659a0",
+  "inputs": {
+    "README.md": {
+      "sha256": "1cc26a3abbe11a551da1c3a1a867ebdeb95cba9c10b070258d912c0aad2a02c5",
+      "bytes": 19016
+    },
+    "repositories.csv": {
+      "sha256": "c89f565d7a63432666cf079476b3f1385adec83b941892a8c8c05ababc85deae",
+      "bytes": 6158
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "27e658376e3c437a2e65d1548bd9001d83667538bc03edb1d9ef0d72727faa29",
+      "bytes": 18883
+    }
+  },
+  "recordCount": 21,
+  "metadataPolicies": {
+    "README.md": [
+      "reportedQualification"
+    ],
+    "repositories.csv": [
+      "repository",
+      "github_url",
+      "relationship",
+      "project",
+      "account_owner",
+      "public_content",
+      "source_1",
+      "source_2",
+      "attribution_notes",
+      "urlDisposition"
+    ]
+  },
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "publicationAuthorized": false
+}

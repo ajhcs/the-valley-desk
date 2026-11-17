@@ -1,0 +1,20 @@
+{
+  "baseline": "c23cc18fcf2d820f8a8d93feb96e15e441855135",
+  "sourceCommit": "f6b33a0659abc6e535f1cb947ff375357cd29dbe",
+  "priorTrackedFiles": 1299,
+  "intentionallyUpdatedPriorFiles": [
+    "docs/discovery/go-live/execution/GL05-discovery-follow-through.md",
+    "package.json"
+  ],
+  "allOtherPriorTrackedContentUnchanged": true,
+  "drexelOriginalFilesVerified": 274,
+  "villanovaOriginalReportUnchanged": true,
+  "unrelatedRootJsonPreserved": {
+    "accounts.json": "d02ae11d10d1508b02d45cc09c3554a6c249764d751a6fb1d3b73bee4374f673",
+    "manifest.json": "2c4ae09e6520070628689d40f59217ea7bdd9ad623096f0f7b82cf3d8f976d49",
+    "projects.json": "bc86be1b4e2f837f955079c36ad844860c2891cc8e04acc6313dc7984dc56a4d",
+    "repositories.json": "e493bd871a80ff6110abbde48b98fb9a889e886c348ab436d1a9436c9139762e",
+    "status.json": "0e3dda9a82b0ebf334fc474f0754053b1d3582e4642ff596983b6b18dac643cf",
+    "supplemental-evidence.json": "ee00ebdf54b71b0cf56c4fa9b24e3ada9847befceab0e95baa49ebea3d94c276"
+  }
+}

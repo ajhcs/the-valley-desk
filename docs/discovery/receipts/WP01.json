@@ -1,0 +1,50 @@
+{
+  "package": "WP01",
+  "disposition": "accepted",
+  "accepted_at": "2026-11-14T00:08:21.204517+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "owner": "Terra",
+  "reviewer": "Astra",
+  "authority": "orchestrating engineer under explicit user delegation of website/business and implementation",
+  "scope": "Policy v1 and synthetic development calibration; no real editorial admission, empirical or operating-capacity acceptance.",
+  "review": "../reviews/wp01-astra-calibration.json",
+  "acceptance_criteria": [
+    {
+      "id": "AC-WP01-01",
+      "disposition": "satisfied",
+      "evidence": "Policy exact county set plus county-01..09, outside-same-name/outside-delaware and unknown-state; synthetic interpretation only."
+    },
+    {
+      "id": "AC-WP01-02",
+      "disposition": "satisfied",
+      "evidence": "move-in/move-out, partial-date-move, unknown-end and independent reviewer explanations preserve temporal meanings."
+    },
+    {
+      "id": "AC-WP01-03",
+      "disposition": "satisfied_for_policy_development_calibration",
+      "evidence": "26 independently classified source-diverse synthetic cases; originals retained, three disagreements resolved and forum boundary clarified; final candidate hashes frozen in this readback."
+    },
+    {
+      "id": "AC-WP01-04",
+      "disposition": "satisfied_for_planning_policy",
+      "evidence": "Free basic discovery; paid monitoring deferred until demonstrated demand, sustainable delivery and separate scope. No paid action accepted."
+    },
+    {
+      "id": "AC-WP01-05",
+      "disposition": "satisfied_for_delegated_new_planning_priority",
+      "evidence": "User website/business delegation quoted in policy; discovery-first new planning with existing consumers preserved. Actual people, hours, spend caps and pilot remain WP25 inputs."
+    }
+  ],
+  "outputs": {
+    "docs/discovery-policy.md": "25319e1e02733267dd5102b7c795f533088cede5be09eb7e9f79a036ae90df23",
+    "fixtures/discovery-policy-v1.json": "b0918024ec71a287555c7e4e9ed117481dc2d65086479cde8af38240aa6b505b",
+    "docs/discovery/reviews/wp01-terra-calibration.json": "654b6024a6a53582dc06537de282484248f122e2c19f3549420e3c359c498b09",
+    "docs/discovery/reviews/wp01-astra-calibration.json": "bd8791be8e03368aa55c62da89919dca87d930fa2be8b19539dbca8e5923add5"
+  },
+  "freeze_change": "Only title/acceptance status and linked receipt changed after reviewed candidate; semantic policy and case inputs retained. Prior hashes preserved in independent review and scratch history.",
+  "limitations": [
+    "Actual provider/rights qualification, accountable editorial operations, independent reference labels and reader recruitment are not executed.",
+    "Actual staffing/funding/capacity and recurring pilot remain unresolved.",
+    "E01-E03 remain not_run; no empirical performance or real editorial admission follows."
+  ]
+}

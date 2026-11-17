@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "christiana-intake-manifest-v1",
+  "date": "2026-11-17",
+  "status": "offline source-reported intake; publication unauthorized",
+  "inputs": {
+    "README.md": {
+      "sha256": "3ffe78651e85b78f9bc1758d46411b0cdf9b41d55796b16065f23cc29f9bac4b",
+      "bytes": 1223
+    },
+    "research-network.md": {
+      "sha256": "5729ac71f5b5c6db510d5bd55149955cb561536103368715129f3e16f93f5dbf",
+      "bytes": 11022
+    },
+    "research-census-and-method.md": {
+      "sha256": "9a7d976510c1b0595aee5d711e90a35abccc51f75026bd17a8a37e77c8ceb30f",
+      "bytes": 9997
+    },
+    "github-accounts.csv": {
+      "sha256": "5bf8bff757efce735e5f45e22c309d7e93f9898664d21f6b46fa0b2b106fa294",
+      "bytes": 3745
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "c6eeb87a5513a1accf24a6faacecba93ceb8bab48d742726fcf9bdfc2b4e908b",
+      "bytes": 21535
+    }
+  }
+}

@@ -1,0 +1,334 @@
+{
+  "policy_version": "discovery-policy-v1",
+  "reviewer": "Terra",
+  "review_type": "agent_authored_synthetic_initial_classification",
+  "status": "awaiting_independent_review_and_adjudication",
+  "disagreements": null,
+  "resolutions": null,
+  "cases": [
+    {
+      "case_id": "county-01",
+      "identity": "organization_supported_optional_people_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Exact eligible county and dated organization contribution; optional individual joins remain absent."
+    },
+    {
+      "case_id": "county-02",
+      "identity": "organization_supported_optional_people_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Exact eligible county and dated organization contribution; optional individual joins remain absent."
+    },
+    {
+      "case_id": "county-03",
+      "identity": "organization_supported_optional_people_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Exact eligible county and dated organization contribution; optional individual joins remain absent."
+    },
+    {
+      "case_id": "county-04",
+      "identity": "organization_supported_optional_people_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Exact eligible county and dated organization contribution; optional individual joins remain absent."
+    },
+    {
+      "case_id": "county-05",
+      "identity": "organization_supported_optional_people_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Exact eligible county and dated organization contribution; optional individual joins remain absent."
+    },
+    {
+      "case_id": "county-06",
+      "identity": "organization_supported_optional_people_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Exact eligible county and dated organization contribution; optional individual joins remain absent."
+    },
+    {
+      "case_id": "county-07",
+      "identity": "organization_supported_optional_people_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Exact eligible county and dated organization contribution; optional individual joins remain absent."
+    },
+    {
+      "case_id": "county-08",
+      "identity": "organization_supported_optional_people_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Exact eligible county and dated organization contribution; optional individual joins remain absent."
+    },
+    {
+      "case_id": "county-09",
+      "identity": "organization_supported_optional_people_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Exact eligible county and dated organization contribution; optional individual joins remain absent."
+    },
+    {
+      "case_id": "outside-same-name",
+      "identity": "organization_supported",
+      "geography": "outside",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "ineligible",
+      "publication": "hold_outside_scope",
+      "reason": "PA:Mercer is not NJ:Mercer."
+    },
+    {
+      "case_id": "outside-delaware",
+      "identity": "organization_supported",
+      "geography": "outside",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "ineligible",
+      "publication": "hold_outside_scope",
+      "reason": "NJ:Delaware is not PA:Delaware."
+    },
+    {
+      "case_id": "unknown-state",
+      "identity": "creator_supported",
+      "geography": "unknown",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "unknown",
+      "regional_work": "review",
+      "publication": "hold_geography",
+      "reason": "County without state does not establish an exact key."
+    },
+    {
+      "case_id": "move-in",
+      "identity": "person_supported",
+      "geography": "current_in_scope_creation_outside",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "eligible",
+      "regional_work": "ineligible_context_only",
+      "publication": "person_eligible_work_context_only",
+      "reason": "Current person and work at creation are separate; older work is excluded from regional counts."
+    },
+    {
+      "case_id": "move-out",
+      "identity": "person_supported",
+      "geography": "current_outside_creation_in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "ineligible_historical",
+      "regional_work": "eligible",
+      "publication": "work_eligible_subject_to_authorized_decision",
+      "reason": "Local creation persists historically; no current regional person claim."
+    },
+    {
+      "case_id": "partial-date-move",
+      "identity": "person_supported",
+      "geography": "creation_uncertain_across_move",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "unknown",
+      "regional_work": "review",
+      "publication": "hold_creation_geography",
+      "reason": "A year spans both sides of the move; no invented contribution day."
+    },
+    {
+      "case_id": "residence-only",
+      "identity": "person_supported",
+      "geography": "residence_in_scope_professional_outside",
+      "relevance": "positive",
+      "rights": "unknown",
+      "current_person": "ineligible",
+      "regional_work": "not_applicable",
+      "publication": "hold_outside_scope",
+      "reason": "Residence does not establish professional regional presence; do not publish residential address."
+    },
+    {
+      "case_id": "independent-no-work",
+      "identity": "person_supported",
+      "geography": "current_in_scope",
+      "relevance": "positive",
+      "rights": "profile_display_supported",
+      "current_person": "eligible",
+      "regional_work": "not_applicable",
+      "publication": "person_eligible_subject_to_authorized_decision",
+      "reason": "Reviewed public professional evidence suffices without employer or indexed artifact."
+    },
+    {
+      "case_id": "paper-no-repo",
+      "identity": "work_and_role_supported",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "unknown",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Paper is independently eligible without a repository."
+    },
+    {
+      "case_id": "forum-no-repo",
+      "identity": "account_supported_person_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "unknown",
+      "regional_work": "eligible",
+      "publication": "eligible_subject_to_authorized_decision",
+      "reason": "Account and work remain distinct from an unproven person; no repository needed."
+    },
+    {
+      "case_id": "clinical-routine",
+      "identity": "organization_supported",
+      "geography": "in_scope",
+      "relevance": "negative",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "ineligible",
+      "publication": "hold_relevance",
+      "reason": "Healthcare purpose exists but incidental computing is not substantive technology."
+    },
+    {
+      "case_id": "generic-ai",
+      "identity": "creator_supported",
+      "geography": "in_scope",
+      "relevance": "negative",
+      "rights": "metadata_display_supported",
+      "current_person": "unknown",
+      "regional_work": "ineligible",
+      "publication": "hold_relevance",
+      "reason": "Generic AI alone does not establish healthcare purpose."
+    },
+    {
+      "case_id": "unclear-purpose",
+      "identity": "creator_supported",
+      "geography": "in_scope",
+      "relevance": "unknown",
+      "rights": "metadata_display_supported",
+      "current_person": "unknown",
+      "regional_work": "review",
+      "publication": "hold_relevance",
+      "reason": "Healthcare purpose is not evidenced; do not infer either clinical use or its absence."
+    },
+    {
+      "case_id": "unknown-rights",
+      "identity": "organization_supported",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "display_unknown",
+      "current_person": "not_applicable",
+      "regional_work": "eligible",
+      "publication": "hold_display_authority",
+      "reason": "Relevance and geography qualify independently of unresolved display permission."
+    },
+    {
+      "case_id": "name-collision",
+      "identity": "organization_supported_person_unresolved",
+      "geography": "in_scope",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "unknown",
+      "regional_work": "eligible",
+      "publication": "work_eligible_person_join_held",
+      "reason": "Organization-authored work stands; name alone cannot merge or link people."
+    },
+    {
+      "case_id": "adoption-only",
+      "identity": "organization_supported",
+      "geography": "local_adoption_only",
+      "relevance": "positive",
+      "rights": "metadata_display_supported",
+      "current_person": "not_applicable",
+      "regional_work": "review",
+      "publication": "hold_creator_geography",
+      "reason": "Local use does not prove local creation; unknown creator location needs review."
+    },
+    {
+      "case_id": "unknown-end",
+      "identity": "person_supported",
+      "geography": "historical_in_scope_current_unknown",
+      "relevance": "positive",
+      "rights": "profile_display_supported",
+      "current_person": "review",
+      "regional_work": "not_applicable",
+      "publication": "hold_current_person",
+      "reason": "An unknown end and old observation do not prove current professional presence."
+    }
+  ],
+  "adjudication": {
+    "date": "2026-11-14",
+    "status": "resolved_pending_final_independent_readback",
+    "authority": "Orchestrator adjudication; both initial agent classifications remain unchanged. Synthetic classifications are not human editorial admissions.",
+    "initial_artifact_sha256": {
+      "policy_sha256": "14b1eb460b10127fdc344ed4f074a1f0d2e80321405b47ce4edb0088c7cfc525",
+      "fixture_sha256": "064e3ebef20da04443b382e3293efba1c3a692609ab1c0cc85967a597c48304a",
+      "terra_review_sha256": "43c1d3d71e7f2ae6c9a56da985f12441a952bfbbe9708f6e269e9538078489b8"
+    },
+    "review_basis": "Astra classified all fixture cases independently before opening Terra labels; see wp01-astra-calibration.json comparison.",
+    "resolutions": [
+      {
+        "case_id": "adoption-only",
+        "terra_initial": "regional_work=review; reason unknown creator location",
+        "astra_initial": "regional_work=ineligible_on_supplied_evidence",
+        "resolution": "Original development elsewhere is supported. A substantive local creator contribution is unsupported. Regional eligibility is false on supplied evidence; a continuing candidate may be held for local creator-role review. Lack of evidence is not proof no contribution exists. Terra initial reason was imprecise."
+      },
+      {
+        "case_id": "residence-only",
+        "terra_initial": "regional_work=not_applicable",
+        "astra_initial": "regional_work=ineligible",
+        "resolution": "Work is not applicable: no particular work is supplied. Current regional person remains ineligible on supplied professional-location evidence; do not publish residence."
+      },
+      {
+        "case_id": "generic-ai",
+        "terra_initial": "current_person=unknown",
+        "astra_initial": "current_regional_creator=ineligible_for_this_catalog",
+        "resolution": "Person is unknown/not assessed. This artifact is irrelevant, but the case does not establish the whole professional history."
+      },
+      {
+        "case_id": "forum-no-repo",
+        "resolution": "Work and account may qualify when the substantive local creator role is independently supported; unresolved person identity does not become an account-person join."
+      }
+    ],
+    "adjudicated_policy_sha256": "e23b6752d5b648c05edffa192807084e50e5fb224ba1511f5323a55ad4e81eee",
+    "fixture_unchanged_sha256": "064e3ebef20da04443b382e3293efba1c3a692609ab1c0cc85967a597c48304a",
+    "freeze_scope": "Policy v1 candidate and 26 synthetic fixture cases, pending final independent readback and orchestrator acceptance; not empirical validation or authority for publication."
+  }
+}

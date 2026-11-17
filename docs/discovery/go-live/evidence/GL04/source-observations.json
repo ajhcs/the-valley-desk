@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "GL04-curated-source-observations-v1",
+  "observedDate": "2026-11-16",
+  "purpose": "Minimal derived source observations for proposed source review; not source bodies or public authorization.",
+  "observations": [
+    {
+      "id": "GL04:observation:camipm-software",
+      "sourceUrl": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+      "access": "primary-web-rendering",
+      "sourceSection": "Analysis Software / CrCEST processing GUI",
+      "facts": {
+        "project": "CrCEST processing GUI",
+        "purpose": "Processes CrCEST imaging data and produces quantitative maps of creatine recovery and exchange.",
+        "projectRepositoryUrl": "https://github.com/newilson/ExerciseCESTv2",
+        "institutionalContext": "CAMIPM analysis software page identifies listed software as developed in-house."
+      },
+      "use": "Curated factual paraphrase and project link for internal review; no HTML, README, code or contact details retained.",
+      "limits": [
+        "Not a claim of clinical effectiveness, code creation location, person identity or paper absence."
+      ]
+    },
+    {
+      "id": "GL04:observation:camipm-center",
+      "sourceUrl": "https://www.med.upenn.edu/CAMIPM/",
+      "access": "primary-web-rendering",
+      "sourceSection": "Home and center location",
+      "facts": {
+        "center": "Center for Advanced Metabolic Imaging in Precision Medicine",
+        "institution": "Perelman School of Medicine, University of Pennsylvania",
+        "municipality": "Philadelphia",
+        "state": "PA",
+        "location": "422 Curie Boulevard, Philadelphia"
+      },
+      "use": "Dated center location and institutional context for project association; no source body retained.",
+      "limits": [
+        "Not an individual worksite, present employment or author-account identity."
+      ]
+    },
+    {
+      "id": "GL04:observation:philadelphia-county",
+      "sourceUrl": "https://www.phila.gov/media/20260112120301/2026HMP_seconddraft.pdf",
+      "access": "primary-indexed-rendering",
+      "sourceSection": "City geography",
+      "facts": {
+        "municipality": "Philadelphia",
+        "county": "Philadelphia",
+        "state": "PA",
+        "relationship": "City and county share boundaries."
+      },
+      "use": "Geographic mapping; no PDF or body retained.",
+      "limits": [
+        "Mapping alone does not establish where any work was performed."
+      ]
+    },
+    {
+      "id": "GL04:observation:gaston-purpose",
+      "sourceUrl": "https://collaborate.princeton.edu/en/publications/mapping-the-topography-of-spatial-gene-expression-with-interpreta/",
+      "access": "primary-web-rendering",
+      "sourceSection": "Publication description and DOI",
+      "facts": {
+        "doi": "10.1038/s41592-024-02503-3",
+        "purpose": "Analyzes spatial gene expression, including tumor microenvironment research."
+      },
+      "use": "Curated factual paraphrase for internal review, no article text retained.",
+      "limits": [
+        "Institutional publication record; it does not establish an individual worksite or clinical effectiveness."
+      ]
+    }
+  ],
+  "admission": "none; requires exact evidence/authority review and shared contract."
+}

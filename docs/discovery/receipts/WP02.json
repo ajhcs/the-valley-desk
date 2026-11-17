@@ -1,0 +1,45 @@
+{
+  "package": "WP02",
+  "disposition": "accepted",
+  "accepted_at": "2026-11-14T00:39:08.531957+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "owner": "Astra",
+  "reviewer": "Sol",
+  "authority": "orchestrating engineer after independent review and exact-byte readback",
+  "scope": "Shared model/interface definitions and executable pure contracts; no real editorial authority, provider truth or full publication/recovery implementation.",
+  "review": "../reviews/wp02-sol.md",
+  "model_receipt": "../model-v0.5/validation/receipt.json",
+  "model_sha256": "49dfd2946f5fb78615a0bd59c60f883ddaa8463bf791a8e58c41317fc8d67817",
+  "interface_sha256": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+  "acceptance_criteria": {
+    "AC-WP02-01": "Represented and reviewed: four native target subtypes and strict TypeScript target union admit creator-without-work and evidence-backed relationship; expected revisions/dependencies and authority records are explicit. Actual authenticated review remains downstream.",
+    "AC-WP02-02": "Represented and tested: version/material rights matrix covers paper/forum text, code, data and weights with independent unknown/allow/deny reuse. RF02 couples exact key and permission; schemas establish shape only.",
+    "AC-WP02-03": "Specified and bounded-model checked: full18-kind vector, coupled complete-vector compare/ABA rejection, guard-raise SQL pseudocode and race cases. External restore incarnation invalidates old continuations. Actual D1 rollback/concurrency remain WP16/WP23.",
+    "AC-WP02-04": "Specified and pure-helper tested: primary coherent observation/no-store sequence, immutable rows and normalized query, material changes/expiry return410restart, future/mismatched context400. Model256 flag combinations checked; HTTP/read implementation remains WP17.",
+    "AC-WP02-05": "All six named synthetic provider fixtures parsed in9 passing tests. Stable IDs/version, independent creator/artifact and distinct forum account represented without repository prerequisite. No source qualification or fact validation."
+  },
+  "outputs": {
+    "docs/discovery/interface-contracts.md": "c80b8a6efa3d4a4cf4f024590723d3a9b13ce408bfc136bd72458b7ec41f44ae",
+    "docs/discovery/model-v0.5/validation/receipt.json": "b7859e6ca2e41a0743ce575a3cab8cc80b1fb8aaf95a3d87bc2178c63ce5ac6e",
+    "docs/discovery/reviews/wp02-sol.md": "498fcdc716a852438d006971b44a9870bb70a24c2cf603f42b203fcaad7e7d4c",
+    "src/content/discovery-schema.ts": "b238472e67d4a2911bf139576290a174f7f61531b5c22294e2dcfbd00780b53e",
+    "src/ingest/discovery/source-contract.ts": "ee6e59565c85e6391b843c1047e39ee686f94e5ef716984eaafc0c9fb11a671b",
+    "test/discovery-contracts.test.ts": "d02ac45d7837cd2d0f2947fcaebb8d13fa29c78cd0c97e50d7f4e2f5bcd3a4ae"
+  },
+  "limits": [
+    "Historical P09 proves provider/nativeId only; full installation/kind tuple is separately checked as RF09.",
+    "Historical P11/P28 guard abstract evidence/policy heads; RF03 adds vector assumptions, not real atomic SQL.",
+    "Record checker is a post-parse selected field/type inspection, not a parser or general semantic equivalence proof.",
+    "Finite native binding preserves authored mappings; native execution remains unsupported and transformation correctness unevaluated.",
+    "Concrete Zod tests, D1/API behavior, provider rights/access, external facts, reader acceptance and operations require their own evidence.",
+    "No deployment, source enrollment, host package or persistent service change occurred."
+  ],
+  "empirical_gates": {
+    "E01": "not_run",
+    "E02": "not_run",
+    "E03": "not_run",
+    "E04": "not_run",
+    "E05": "not_run",
+    "E06": "not_run"
+  }
+}

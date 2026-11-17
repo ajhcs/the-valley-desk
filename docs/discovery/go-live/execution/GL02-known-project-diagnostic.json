@@ -1,0 +1,77 @@
+{
+  "id": "GL02-diagnostic-v1",
+  "frozen_on": "2026-11-16",
+  "status": "unrun",
+  "purpose": "Curated directional miss check; not representative benchmark, independent labels, enrollment or regional recall. Prior exposed examples do not demonstrate novel breadth.",
+  "cases": [
+    {
+      "id": "D01",
+      "lead": "akibzaman/SleepBoost",
+      "path": "User account and dated Rutgers project/publication",
+      "url": "https://github.com/akibzaman/SleepBoost",
+      "expected": "Find User-owned repository and retain separately sourced Camden affiliation; do not equate account with author.",
+      "paperless_route": "pending: test project-specific purpose and regional evidence without relying on publication; no assertion that a paper is absent.",
+      "status": "pending"
+    },
+    {
+      "id": "D02",
+      "lead": "raphael-group/GASTON",
+      "path": "institution/organization and publication",
+      "url": "https://github.com/raphael-group/GASTON",
+      "expected": "Find historical Princeton CS association; no institution ownership inference.",
+      "status": "pending"
+    },
+    {
+      "id": "D03",
+      "lead": "AlexsLemonade/OpenPBTA-analysis",
+      "path": "collaboration publication and archived repository",
+      "url": "https://github.com/AlexsLemonade/OpenPBTA-analysis",
+      "expected": "Keep archived and directed historical Rowan collaborator association, not Rowan ownership.",
+      "status": "pending"
+    },
+    {
+      "id": "D04",
+      "lead": "sacanlab/immunotar",
+      "path": "publication-to-code",
+      "url": "https://github.com/sacanlab/immunotar",
+      "expected": "Preserve publication-to-repository direction and source-specific reuse limits.",
+      "status": "pending"
+    },
+    {
+      "id": "D05",
+      "lead": null,
+      "path": "independent standalone preprint",
+      "expected": "No specific eligible case verified; seek in P2 and freeze in a future diagnostic before tuning.",
+      "status": "unknown"
+    },
+    {
+      "id": "D06",
+      "lead": null,
+      "path": "Burlington or non-Philadelphia PA paperless project",
+      "expected": "No project-specific health and dated regional basis verified yet; seek via institutional/account routes and freeze later.",
+      "status": "unknown"
+    },
+    {
+      "id": "D07",
+      "lead": "newilson/ExerciseCESTv2",
+      "path": "Independent institutional project/software page to repository",
+      "source": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+      "regional_source": "https://www.med.upenn.edu/CAMIPM/",
+      "url": "https://github.com/newilson/ExerciseCESTv2",
+      "expected_discovery": "Starting at CAMIPM software page, find the linked repository and retain source-directed relation and MRI processing purpose without consulting a publication.",
+      "admission_expectation": "Pending actual source and field-use qualification and independent review of identity, durable link, supported regional basis and essential fields; do not assume account owner type, actual development location or current activity.",
+      "paperless_route": "Exercise the admission pathway without publication evidence if its essential claims are independently supported. This is not an assertion that a paper does not exist.",
+      "evidence_status": "Institutional page and center address observed directly 2026-11-16; no repository endpoint, README or native API captured.",
+      "status": "pending"
+    }
+  ],
+  "assessment_states": [
+    "found",
+    "missed",
+    "ineligible",
+    "unknown",
+    "refused",
+    "pending"
+  ],
+  "independent_review": "Sol checks eligible misses and evidence; repairs or blockers recorded before launch."
+}

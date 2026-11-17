@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "GL05-curated-source-observations-v1",
+  "observedDate": "2026-11-16",
+  "status": "draft for source and independent review; no admission or release",
+  "observations": [
+    {
+      "id": "GL05:obs:sleepboost-project",
+      "sourceUrl": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+      "access": "prior-reviewed-primary-indexed-rendering",
+      "sourceSection": "2024 research announcement",
+      "facts": {
+        "project": "SleepBoost",
+        "purpose": "Tree-based ensemble research model for automatic sleep-stage classification.",
+        "institution": "Rutgers University–Camden",
+        "association": "The Rutgers–Camden announcement identifies the research and a department-affiliated coauthor."
+      },
+      "limits": [
+        "Historical project/author association, not repository ownership, account-person identity, current employment or code worksite.",
+        "Direct open of this announcement previously returned 403; retained prior indexed primary observation only."
+      ]
+    },
+    {
+      "id": "GL05:obs:openpbta-project",
+      "sourceUrl": "https://www.alexslemonade.org/childhood-cancer-data-lab/openpbta",
+      "access": "primary-web-rendering",
+      "sourceSection": "OpenPBTA project overview",
+      "facts": {
+        "project": "OpenPBTA",
+        "purpose": "Open collaborative analysis of pediatric brain tumor data.",
+        "institution": "Children’s Hospital of Philadelphia",
+        "association": "The October 2022 project page identifies ALSF Data Lab and CHOP Center for Data-Driven Discovery in Biomedicine with the project.",
+        "publicationMonth": "2022-10"
+      },
+      "limits": [
+        "Historical project association; page checked 2026-11-16 and later publication header does not establish current maintenance.",
+        "Multi-institution collaboration; no Rowan ownership, lab worksite or contributor location inferred."
+      ]
+    },
+    {
+      "id": "GL05:obs:gaston-topics",
+      "sourceUrl": "https://collaborate.princeton.edu/en/publications/mapping-the-topography-of-spatial-gene-expression-with-interpreta/",
+      "access": "primary-web-rendering",
+      "sourceSection": "Publication project and research description",
+      "facts": {
+        "nativeId": "10.1038/s41592-024-02503-3",
+        "machineLearning": "The publication describes an unsupervised deep-learning algorithm.",
+        "biomedicalData": "The work analyzes spatial gene-expression data, including tumor microenvironment research."
+      },
+      "limits": [
+        "Research application only; no evidence of clinical effectiveness."
+      ]
+    },
+    {
+      "id": "GL05:obs:g04-topic",
+      "sourceUrl": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+      "access": "primary-web-rendering",
+      "sourceSection": "CrCEST processing GUI",
+      "facts": {
+        "nativeId": "760662846",
+        "medicalImaging": "The software processes creatine CEST MRI data."
+      },
+      "limits": [
+        "Research imaging method; not clinical effectiveness or a worksite claim."
+      ]
+    },
+    {
+      "id": "GL05:obs:controller-hold",
+      "sourceUrl": "https://controller.phila.gov/philadelphia-reports/covid19-fiscal-impact/",
+      "access": "primary-indexed-rendering",
+      "sourceSection": "Fiscal-impact report and software citation",
+      "facts": {
+        "sourceLinkedAlias": "PhiladelphiaController/COVID19-forecaster",
+        "purpose": "The identified report concerns tax revenue impacts of COVID-19 and links software used in that analysis."
+      },
+      "limits": [
+        "The prior GL03 alias differs; native identity continuity has not been verified. A fiscal-impact analysis alone does not establish substantive health-tech purpose. Hold candidate."
+      ]
+    },
+    {
+      "id": "GL05:obs:chop-block",
+      "sourceUrl": "https://www.chop.edu/news/first-its-kind-open-analysis-platform-pediatric-brain-tumors-provides-robust-data-resource",
+      "access": "primary-web-direct",
+      "status": "refused-http-403",
+      "facts": {},
+      "limits": [
+        "Stopped after refusal; no retry, body retention or bypass. The separate ALSF first-party project page remains independently observed."
+      ]
+    },
+    {
+      "id": "GL05:generated:sleep-project",
+      "sourceUrl": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+      "access": "reviewed-observation",
+      "sourceSection": "Prior indexed primary research announcement and existing Rutgers/Camden county source context",
+      "facts": {
+        "project": "SleepBoost",
+        "purpose": "A tree-based ensemble model for automatic sleep-stage classification.",
+        "institution": "Rutgers University–Camden",
+        "municipality": "Camden",
+        "state": "NJ",
+        "date": "2024-06-03"
+      },
+      "limits": [
+        "Project and author affiliation, not account-person identity or code worksite.",
+        "Earlier direct access was refused; no retry."
+      ]
+    },
+    {
+      "id": "GL05:generated:open-project",
+      "sourceUrl": "https://www.alexslemonade.org/childhood-cancer-data-lab/openpbta",
+      "access": "primary-web-rendering",
+      "sourceSection": "Project overview and separately qualified ROR city metadata",
+      "facts": {
+        "project": "OpenPBTA",
+        "purpose": "Open collaborative analysis of pediatric brain tumor data.",
+        "institution": "Children’s Hospital of Philadelphia",
+        "publicationMonth": "2022-10"
+      },
+      "limits": [
+        "CHOP is a project participant and city-level institutional association; no lab worksite or exclusive ownership.",
+        "Page states publication October 2022; 2026-11-16 is the observation date. A later May 2023 publication header and stale manuscript wording do not renew the maintenance claim."
+      ]
+    },
+    {
+      "id": "GL05:generated:chop-city",
+      "sourceUrl": "https://api.ror.org/v2/organizations/01z7r7q48",
+      "access": "reviewed-observation",
+      "sourceSection": "Prior qualified 2026-11-15 ROR organization record, reviewed 2026-11-16",
+      "facts": {
+        "institution": "Children’s Hospital of Philadelphia",
+        "municipality": "Philadelphia",
+        "state": "PA"
+      },
+      "limits": [
+        "City-level organization location only; no particular unit or worksite is inferred."
+      ]
+    },
+    {
+      "id": "GL05:generated:sleep-edge",
+      "sourceUrl": "https://github.com/akibzaman/SleepBoost/blob/0ad7794aa201698f362562f86d2e191c969b9ab5/README.md",
+      "access": "reviewed-observation",
+      "sourceSection": "Prior connector observation of exact repository→publication citation; no file body retained",
+      "facts": {
+        "relation": {
+          "fromId": "GL05:work:github:617168725",
+          "toId": "GL05:work:crossref:sleepboost",
+          "predicate": "repository-cites-work",
+          "fromNativeIdentity": {
+            "provider": "github",
+            "namespace": null,
+            "nativeId": "617168725"
+          },
+          "toNativeIdentity": {
+            "provider": "crossref",
+            "namespace": null,
+            "nativeId": "10.1007/s11517-024-03096-x"
+          }
+        },
+        "sourceObservation": "docs/discovery/qualification/evidence/pilot-counties-20261116/connector-observations.json"
+      },
+      "limits": [
+        "Does not imply reverse link, coauthorship or institutional ownership."
+      ]
+    },
+    {
+      "id": "GL05:generated:open-edge",
+      "sourceUrl": "https://github.com/AlexsLemonade/OpenPBTA-analysis/blob/e854738b57b16c3725673ad63b4ffd20ec48ad19/README.md",
+      "access": "reviewed-observation",
+      "sourceSection": "Prior connector observation of exact repository→publication citation; no file body retained",
+      "facts": {
+        "relation": {
+          "fromId": "GL05:work:github:192607622",
+          "toId": "GL05:work:crossref:openpbta",
+          "predicate": "repository-cites-work",
+          "fromNativeIdentity": {
+            "provider": "github",
+            "namespace": null,
+            "nativeId": "192607622"
+          },
+          "toNativeIdentity": {
+            "provider": "crossref",
+            "namespace": null,
+            "nativeId": "10.1016/j.xgen.2023.100340"
+          }
+        },
+        "sourceObservation": "docs/discovery/qualification/evidence/pilot-counties-20261116/connector-observations.json"
+      },
+      "limits": [
+        "Does not imply reverse link, coauthorship or institutional ownership."
+      ]
+    }
+  ],
+  "reuse": "Factual paraphrases, safe original links, observation method and date only; no HTML, README, article, abstract or contact body retained."
+}

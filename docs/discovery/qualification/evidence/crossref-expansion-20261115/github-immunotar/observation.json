@@ -1,0 +1,56 @@
+{
+  "provider": "github",
+  "name": "immunotar",
+  "url": "https://api.github.com/repos/sacanlab/immunotar",
+  "method": "GET",
+  "started_at_utc": "2026-11-15T21:47:00.271931+00:00",
+  "transport": "standalone-public-IP-pinned-HTTPS",
+  "wp06_transport": false,
+  "anonymous": true,
+  "authentication_sent": false,
+  "proxy_used": false,
+  "redirects_followed": 0,
+  "byte_cap": 48000,
+  "outer_deadline_seconds": 25,
+  "request_headers": {
+    "User-Agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+    "Accept-Encoding": "identity",
+    "Accept": "application/vnd.github+json",
+    "Connection": "close",
+    "X-GitHub-Api-Version": "2022-11-28"
+  },
+  "body_retained": true,
+  "rights_scope": "User-authorized bounded public factual source qualification; no article/code/contact-body redistribution or production enrollment.",
+  "dns_public_addresses": [
+    "140.82.114.6"
+  ],
+  "selected_public_ip": "140.82.114.6",
+  "tls_version": "TLSv1.3",
+  "status": 200,
+  "link_header_present": false,
+  "response_headers": {
+    "date": "Sun, 15 Nov 2026 21:47:00 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"7eb6221bd763114b1f2dab7677e5ea0335dba33a37dde14a0ee81fe6d29f7be2\"",
+    "last-modified": "Fri, 10 Jul 2026 18:11:31 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "55",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-reset": "1794780431",
+    "content-length": "6029"
+  },
+  "received_bytes": 6029,
+  "body_sha256": "07ba93cbf37cfd428c63dac74176c50cea7986f80c2fc23f1051a47132da6c74",
+  "response_complete": true,
+  "native_identity": {
+    "repository_id": 734388793,
+    "alias": "sacanlab/immunotar",
+    "owner_id": 18205643
+  },
+  "preflight_source_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+  "preflight": "Strict entire-payload JSON/material gate before persistence, plus exact requested DOI/cardinality/selected fields or public organization-owned repository identity. No projection or body rewriting.",
+  "body_path": ".discovery-work/source-qualification/crossref-expansion/root/captures/github-immunotar/body.json",
+  "ended_at_utc": "2026-11-15T21:47:00.549064+00:00",
+  "elapsed_seconds": 0.277
+}

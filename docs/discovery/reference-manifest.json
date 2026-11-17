@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "discovery-reference-v1",
+  "status": "not_frozen",
+  "revision": { "id": "discovery-reference", "revision": 1 },
+  "policy": { "id": "discovery-policy", "revision": 1 },
+  "rubric": { "id": "discovery-reference-rubric", "revision": 1 },
+  "design": "wp03-evaluation-design-v1",
+  "createdAt": "2026-11-14T00:00:00Z",
+  "reviewers": [],
+  "sources": [],
+  "sampling": { "heldout": null, "recall": null, "audit": null },
+  "history": null,
+  "cases": []
+}

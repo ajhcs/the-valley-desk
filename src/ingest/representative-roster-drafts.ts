@@ -18,8 +18,8 @@ const NJ_URL = "https://pub.njleg.state.nj.us/leg-databases/2026data/DB2026_TEXT
 /** Parse an offline standard-library CSV extraction; the original archive is
  * retained separately and its exact digest travels with the representation. */
 export function prepareNjRosterCaptures(input: unknown, sourceId: string, observedAt: string): RepresentativeRosterCapture[] {
-  const extracted = z.object({ rawSha256: Sha256, tables: z.object({ "ROSTER.TXT": z.array(z.record(z.string().nullable())).min(1).max(150),
-    "LEGBIO.TXT": z.array(z.record(z.string().nullable())).min(1).max(150) }).strict() }).strict().parse(input);
+  const extracted = z.object({ rawSha256: Sha256, tables: z.object({ "ROSTER.TXT": z.array(z.record(z.string(), z.string().nullable())).min(1).max(150),
+    "LEGBIO.TXT": z.array(z.record(z.string(), z.string().nullable())).min(1).max(150) }).strict() }).strict().parse(input);
   const biographies = new Map(extracted.tables["LEGBIO.TXT"].map(row => [row["Roster Key"], row]));
   if (biographies.size !== extracted.tables["LEGBIO.TXT"].length) throw Error("representative-duplicate-biography");
   return (["S", "A"] as const).map(chamber => Capture.parse({ sourceId, sourceUrl: NJ_URL, observedAt,

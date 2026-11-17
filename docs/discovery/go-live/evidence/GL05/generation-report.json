@@ -1,0 +1,54 @@
+{
+  "previousSnapshotVersion": "sha256:aeba2dd1c3eb252d1435a2ac7d986cc0ee3904405394acdc0a14a19ebb23a781",
+  "snapshotVersion": "sha256:84f91f17dee42c875953911357b453d43e3dfb8b7b2bfae15948703481abae8d",
+  "added": [
+    "GL05:work:crossref:openpbta",
+    "GL05:work:crossref:sleepboost",
+    "GL05:work:github:192607622",
+    "GL05:work:github:617168725"
+  ],
+  "removed": [],
+  "revised": [
+    "GL04:work:crossref:gaston",
+    "GL04:work:github:760662846"
+  ],
+  "workCount": 6,
+  "supportObjectCount": 0,
+  "projectGroupCount": null,
+  "changes": [
+    {
+      "candidateId": "G04",
+      "decision": "correction",
+      "workId": "GL04:work:github:760662846"
+    },
+    {
+      "candidateId": "GASTON",
+      "decision": "correction",
+      "workId": "GL04:work:crossref:gaston"
+    },
+    {
+      "candidateId": "sleepboost-repo",
+      "decision": "accept",
+      "workId": "GL05:work:github:617168725"
+    },
+    {
+      "candidateId": "sleepboost-publication",
+      "decision": "accept",
+      "workId": "GL05:work:crossref:sleepboost"
+    },
+    {
+      "candidateId": "openpbta-repo",
+      "decision": "accept",
+      "workId": "GL05:work:github:192607622"
+    },
+    {
+      "candidateId": "openpbta-publication",
+      "decision": "accept",
+      "workId": "GL05:work:crossref:openpbta"
+    }
+  ],
+  "nextPriorState": {
+    "path": "docs/discovery/go-live/evidence/GL05/generations/6149a74e0293121195a7374f77a79c6a91af5960d6d8e9914da38e415e10ad72.json",
+    "sha256": "6149a74e0293121195a7374f77a79c6a91af5960d6d8e9914da38e415e10ad72"
+  }
+}

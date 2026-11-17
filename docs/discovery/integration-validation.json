@@ -1,0 +1,83 @@
+{
+  "id": "TVD-DISCOVERY-FOUNDATION-INTEGRATION-1",
+  "recorded_at": "2026-11-14T00:44:25.177210+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "checkout": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113",
+  "branch": "codex/discovery-implementation-20261113",
+  "disposition": "local_foundation_checks_passed_dependency_audit_failed",
+  "checks": {
+    "npm test": {
+      "exit_code": 0,
+      "tests": 1120,
+      "passed": 1120,
+      "failed": 0,
+      "skipped": 0,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 37
+      }
+    },
+    "npm run test:policy-pdf": {
+      "exit_code": 0,
+      "tests": 7,
+      "passed": 7
+    },
+    "npm run build": {
+      "exit_code": 0,
+      "warning": "Bundle chunk-size warning remains; no performance acceptance implied."
+    },
+    "npm run ops:smoke": {
+      "exit_code": 0,
+      "scope": "Fake local D1 bindings, migrations and mocked automation; no production scheduler."
+    },
+    "npm run secret-scan": {
+      "exit_code": 0,
+      "scope": "Tracked and nonignored untracked files; ignored scratch evidence outside scan scope.",
+      "final_scan_files": 740
+    },
+    "npm audit --audit-level=high": {
+      "exit_code": 1,
+      "high": 4,
+      "total": 7,
+      "disposition": "release_blocker"
+    }
+  },
+  "runtime": "Node22.23.2; Python3.12.3; pinned PDF wheels; locked npm dependencies unchanged",
+  "environment": "Sanitized env -i; original HOME preserved; TMPDIR/XDG/npm caches on task workspace; Wrangler telemetry disabled.",
+  "integration_input_files": 489,
+  "input_drift": [],
+  "artifacts": {
+    ".discovery-work/evidence/integration-inputs.json": "51dc8e7dfc6ec7d5a4658d952f195e675e5a38ff489246669952b81775356538",
+    ".discovery-work/evidence/integration-tests.log": "c2d6e9a946ad2827a8db1f43e6e5b2009ca24f249504f379ca84749219669132",
+    ".discovery-work/evidence/integration-build.log": "7fbe7068f1f4c9b2f9be4f09b48e5621c9b12b7d7ec0792831da6c13f016bba6",
+    ".discovery-work/evidence/ops-smoke.log": "776035f883df509e5943c9d7b96efdf6ab5d5b9a78c49b5f6253be0604ec6c66",
+    ".discovery-work/evidence/secret-scan.log": "ace0d575190860a3685be9ec11c191662104afca1144f70944d543285f9f721a",
+    ".discovery-work/evidence/pdf-tests.log": "133239c3867d312d73458c081d02bd5b05326b7683234d2dac73b7a4c1c4481a",
+    ".discovery-work/evidence/npm-audit.log": "da295a21568f67dd699667b9c5b3cc0c3cc06721746f8ac6d7f83904391c9683",
+    ".discovery-work/evidence/secret-scan-final.log": "8e308e0b6b129baf09a5638431e6dd6209a80b88806186f5b232628e77f1404a",
+    ".discovery-work/evidence/final-consistency.json": "c75548ab56b8d90174a5a8b4c99e435f08170deb44e8b032cd56381c5943b89a"
+  },
+  "accepted_packages": [
+    "WP00",
+    "WP01",
+    "WP02",
+    "WP04"
+  ],
+  "partial_packages": [
+    "WP03"
+  ],
+  "deployment_performed": false,
+  "production_state_changed": false,
+  "limitations": [
+    "Local engineering acceptance is not full CI/release readiness: audit failed.",
+    "The 11 legacy regional tests omitted by original package scripts are inventoried in WP00; this result covers the actual wired npm command plus new discovery tests.",
+    "No provider enrollment, real editorial admissions, real corpus freeze, reader study, public discovery routes or deployment.",
+    "Historical planning model and source checkout preserved; modifications remain local in this separate implementation checkout."
+  ],
+  "final_readback": {
+    "status": "pass",
+    "scope": "Accepted package output hashes, dependency ordering, unchanged integration inputs, frozen handoff preservation, active README links and unchanged lockfile. No code changed after integrated checks.",
+    "implementation_readme_sha256": "2de8485497e981ea36fb14ac8c82b9186bcf9047af49701550ded03fcdbc2be4"
+  }
+}

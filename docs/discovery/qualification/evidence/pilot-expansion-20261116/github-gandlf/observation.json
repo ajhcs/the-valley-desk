@@ -1,0 +1,56 @@
+{
+  "provider": "github",
+  "name": "gandlf",
+  "url": "https://api.github.com/repos/mlcommons/GaNDLF",
+  "method": "GET",
+  "started_at_utc": "2026-11-16T16:18:29.674061+00:00",
+  "transport": "standalone-public-IP-pinned-HTTPS",
+  "wp06_transport": false,
+  "anonymous": true,
+  "authentication_sent": false,
+  "proxy_used": false,
+  "redirects_followed": 0,
+  "byte_cap": 48000,
+  "outer_deadline_seconds": 25,
+  "request_headers": {
+    "User-Agent": "TheValleyDesk-SourceQualification/0.1 (+https://thevalleydesk.org)",
+    "Accept-Encoding": "identity",
+    "Accept": "application/vnd.github+json",
+    "Connection": "close",
+    "X-GitHub-Api-Version": "2022-11-28"
+  },
+  "body_retained": true,
+  "rights_scope": "User-authorized bounded public factual source qualification; no article/code/contact-body redistribution or production enrollment.",
+  "dns_public_addresses": [
+    "140.82.114.6"
+  ],
+  "selected_public_ip": "140.82.114.6",
+  "tls_version": "TLSv1.3",
+  "status": 200,
+  "link_header_present": false,
+  "response_headers": {
+    "date": "Mon, 16 Nov 2026 16:18:29 GMT",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"0857d1115c67a95808fccf386da30650b43e334eaff2e82965aec899fa98a402\"",
+    "last-modified": "Sat, 07 Nov 2026 20:57:18 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "58",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-reset": "1794849505",
+    "content-length": "6490"
+  },
+  "received_bytes": 6490,
+  "body_sha256": "92a0e397ae33a29be804ebb9ea65bfce2b9b86f54b09da76d65e6276aeb71857",
+  "response_complete": true,
+  "native_identity": {
+    "repository_id": 342691278,
+    "alias": "mlcommons/GaNDLF",
+    "owner_id": 67760141
+  },
+  "preflight_source_sha256": "b4413ea62e3a00b5bf7fb3365da0207c6919f36fb65558612fb6bf0aab8cf52b",
+  "preflight": "Strict entire-payload JSON/material gate before persistence, plus exact requested DOI/cardinality/selected fields or public organization-owned repository identity. No projection or body rewriting.",
+  "body_path": ".discovery-work/pilot-expansion/root/captures/github-gandlf/body.json",
+  "ended_at_utc": "2026-11-16T16:18:30.041556+00:00",
+  "elapsed_seconds": 0.368
+}

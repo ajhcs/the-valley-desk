@@ -1,0 +1,1245 @@
+{
+  "purpose": "Subordinate unannotated material staging index; not the WP03 reference manifest or an authority schema.",
+  "status": "not_frozen",
+  "staged_material_count": 16,
+  "actual_reference_case_count": 0,
+  "actual_human_reviewer_count": 0,
+  "actual_trust_enrollment": "none",
+  "freeze": "none",
+  "materials": [
+    {
+      "local_material_locator": "ror-penn-20261115",
+      "source": {
+        "provider": "Research Organization Registry (ROR)",
+        "native_organization_id": "https://ror.org/00b30xv10",
+        "source_url": "https://api.ror.org/v2/organizations/00b30xv10",
+        "reported_name": "University of Pennsylvania",
+        "reported_status": "active",
+        "reported_location_text": "Philadelphia, Pennsylvania, United States",
+        "reported_record_modified_date": "2026-07-20",
+        "source_fact_scope": "Organization registry metadata as reported by ROR; no person, employment, health-technology relevance, county or creator labels inferred."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T20:34:20.635527+00:00",
+        "observed_at_utc": "2026-11-15T20:34:21.093705+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 2123,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "3f61195d95153df4cd882655b5397e0e50823c2daa2332b107b7bb61dc4823c6",
+        "portable_native_body_path": "evidence/ror-penn-20261115/body.json",
+        "portable_observation_path": "evidence/ror-penn-20261115/observation.json",
+        "transport": "standalone-pinned-native-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "observation_receipt_scope": "Local acquisition observation only; not an authenticated WP03 evidence or permission statement."
+      },
+      "rights_basis": {
+        "basis": "ROR published CC0 dedication for all ROR IDs and API metadata; one-record native retention authorized within this task.",
+        "official_terms_url": "https://ror.org/about/terms/",
+        "supporting_official_data_documentation_url": "https://ror.readme.io/docs/data-dump",
+        "assessment_paths": [
+          "institution-source-assessment.md",
+          "astra-source-review.md",
+          "wp03-evidence-entry-review.md"
+        ],
+        "scope": "The exact retained ROR JSON IDs and organization metadata only.",
+        "restrictions": [
+          "No linked institutional or Wikipedia web page was acquired or licensed by this capture. The separate CHOP ROR API record fetch is explicitly recorded; it grants no rights to external pages.",
+          "No ROR website assets, logos, third-party page bodies or person records are included in this rights basis.",
+          "No continuing collection, source enrollment, publication or real operator trust enrollment is established.",
+          "Published license evidence and task authorization do not replace authenticated WP03 permission assertions or accountable review."
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation and review agents inspected the native material for source/parser qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "native_wp13_html_adapter": "unsupported: the captured representation is application/json, not institutional HTML",
+        "native_json_mapping_review": "separate WP13 review required; this staging entry does not assert parser qualification",
+        "next_inputs": [
+          "Independent native-byte/hash and source-format review with no HTML conversion or substituted representation.",
+          "Accountable rights-purpose and provenance review, with authenticated evidence/permission statements under actual separately enrolled trust if entering WP03.",
+          "Accepted rubric and actual independent human reviewers, blinded first annotations, preserved disagreements and accountable adjudication.",
+          "Reviewed family/origin assignments and exposure history; do not treat this development-exposed material as untouched heldout truth.",
+          "Independent sampling frames and the complete required corpus, followed by accountable freeze review."
+        ]
+      }
+    },
+    {
+      "local_material_locator": "ror-chop-20261115",
+      "source": {
+        "provider": "Research Organization Registry (ROR)",
+        "native_organization_id": "https://ror.org/01z7r7q48",
+        "source_url": "https://api.ror.org/v2/organizations/01z7r7q48",
+        "reported_name": "Children's Hospital of Philadelphia",
+        "reported_status": "active",
+        "reported_location_text": "Philadelphia, Pennsylvania, United States",
+        "reported_record_modified_date": "2024-12-11",
+        "source_fact_scope": "Organization registry metadata as reported by ROR; reported healthcare organization type is not health-technology work, person, employment, county or creator truth."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T20:40:43.249369+00:00",
+        "observed_at_utc": "2026-11-15T20:40:43.711663+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 1426,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "d8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893",
+        "portable_native_body_path": "evidence/ror-chop-20261115/body.json",
+        "portable_observation_path": "evidence/ror-chop-20261115/observation.json",
+        "transport": "standalone-pinned-native-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "observation_receipt_scope": "Local acquisition observation only; not an authenticated WP03 evidence or permission statement.",
+        "selection_scope": "One explicitly authorized fixed-ID GET; ID selected from the prior Penn registry relationship. No automatic traversal, linked-page acquisition or bulk collection."
+      },
+      "rights_basis": {
+        "basis": "ROR published CC0 dedication for all ROR IDs and API metadata; this second fixed-record native retention authorized within this task.",
+        "official_terms_url": "https://ror.org/about/terms/",
+        "supporting_official_data_documentation_url": "https://ror.readme.io/docs/data-dump",
+        "assessment_paths": [
+          "institution-source-assessment.md",
+          "astra-source-review.md",
+          "wp03-evidence-entry-review.md"
+        ],
+        "scope": "The exact retained ROR JSON IDs and organization metadata only.",
+        "restrictions": [
+          "No linked institutional or Wikipedia web page was acquired or licensed by this capture. The separate CHOP ROR API record fetch is explicitly recorded; it grants no rights to external pages.",
+          "No ROR website assets, logos, third-party page bodies or person records are included in this rights basis.",
+          "No continuing collection, source enrollment, publication or real operator trust enrollment is established.",
+          "Published license evidence and task authorization do not replace authenticated WP03 permission assertions or accountable review."
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation and review agents inspected the native material for source/parser qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "native_wp13_html_adapter": "unsupported: the captured representation is application/json, not institutional HTML",
+        "native_json_mapping_review": "separate WP13 review required; this staging entry does not assert parser qualification",
+        "next_inputs": [
+          "Independent native-byte/hash and source-format review with no HTML conversion or substituted representation.",
+          "Accountable rights-purpose and provenance review, with authenticated evidence/permission statements under actual separately enrolled trust if entering WP03.",
+          "Accepted rubric and actual independent human reviewers, blinded first annotations, preserved disagreements and accountable adjudication.",
+          "Reviewed family/origin assignments and exposure history; do not treat this development-exposed material as untouched heldout truth.",
+          "Independent sampling frames and the complete required corpus, followed by accountable freeze review."
+        ]
+      }
+    },
+    {
+      "local_material_locator": "github-qsiprep-20261115",
+      "material_kind": "native_public_repository_metadata",
+      "source": {
+        "provider": "GitHub",
+        "native_repository_id": "156589095",
+        "source_url": "https://api.github.com/repos/PennLINC/qsiprep",
+        "reported_name": "PennLINC/qsiprep",
+        "reported_owner": {
+          "id": "61955309",
+          "login": "PennLINC",
+          "type": "Organization"
+        },
+        "reported_dates": {
+          "created_at": "2018-11-07T18:14:12Z",
+          "updated_at": "2026-11-11T21:13:26Z",
+          "pushed_at": "2026-11-12T18:26:45Z"
+        },
+        "citation_file_snapshot": {
+          "commit": "ae8ab16930309d77a44f7970028b3c6642c1aae7",
+          "paths": [
+            "README.rst",
+            "CITATION.cff"
+          ],
+          "observation": "separate GitHub connector file/ref observations; commit is not a field of the native repository response"
+        },
+        "source_fact_scope": "Public repository facts and organization-owner relationship; no person, actual-unit, county, current-employment or clinical truth inferred."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:17:46.393559+00:00",
+        "observed_at_utc": "2026-11-15T21:17:46.825485+00:00",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "received_bytes": 6303,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "89e4ccc7d089c3b5d5d117ad722869ab5ad186f07cfead7a6da53e8d550663aa",
+        "portable_native_body_path": "evidence/github-publications-20261115/github-qsiprep/body.json",
+        "portable_observation_path": "evidence/github-publications-20261115/github-qsiprep/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "observation_receipt_scope": "Local acquisition observation only; not an authenticated WP03 evidence or permission statement. Native GET followed observed rate-reset, without authentication/proxy or deliberate IP manipulation."
+      },
+      "rights_basis": {
+        "basis": "Bounded public factual repository research under GitHub API/research terms; software-body licenses evaluated separately.",
+        "official_terms_url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+        "research_policy_url": "https://docs.github.com/en/site-policy/acceptable-use-policies/github-acceptable-use-policies",
+        "scope": "Exact reviewed nonpersonal public repository metadata for this public qualification assessment. No blanket commercial README/code/article/body redisplay or ongoing enrollment.",
+        "assessment_paths": [
+          "github-repository-assessment.md",
+          "github-publication-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation/review agents inspected these sources and native representations for source qualification and raw-retention repairs.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "linkage": {
+        "publication_doi": "10.1038/s41592-021-01185-5",
+        "publication_pmid": "34155395",
+        "basis": "Explicit DOI citation in exact-commit README/CITATION files, independently matched to publication identity.",
+        "automated_README_CITATION_join_implemented": false,
+        "linked_project_family": "unassigned; possible cross-project person connection requires review"
+      },
+      "format_and_handoff": {
+        "native_repository_baseline_format": "supported_in_offline_actual_D1_replay_under_synthetic_authority",
+        "source_registry_enrollment": "none",
+        "manual_dossier": "github-publication-qualification.md",
+        "actual_individual_creator_geography_or_relevance_labels": "none"
+      }
+    },
+    {
+      "local_material_locator": "github-captk-20261115",
+      "material_kind": "native_public_repository_metadata",
+      "source": {
+        "provider": "GitHub",
+        "native_repository_id": "128938343",
+        "source_url": "https://api.github.com/repos/CBICA/CaPTk",
+        "reported_name": "CBICA/CaPTk",
+        "reported_owner": {
+          "id": "35823615",
+          "login": "CBICA",
+          "type": "Organization"
+        },
+        "reported_dates": {
+          "created_at": "2018-04-10T13:36:31Z",
+          "updated_at": "2026-10-07T07:58:11Z",
+          "pushed_at": "2023-12-09T00:42:42Z"
+        },
+        "citation_file_snapshot": {
+          "commit": "cce88180d3159546a057b32ca9b4172d3ee2624d",
+          "paths": [
+            "Readme.md",
+            "README.txt"
+          ],
+          "observation": "separate GitHub connector file/ref observations; commit is not a field of the native repository response"
+        },
+        "source_fact_scope": "Public repository facts and organization-owner relationship; no person, actual-unit, county, current-employment or clinical truth inferred."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:17:46.851888+00:00",
+        "observed_at_utc": "2026-11-15T21:17:47.138094+00:00",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "received_bytes": 6227,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "28e58fd68f32470d292fb471056e05dc647923771710e2a595b74c614f1cc6cb",
+        "portable_native_body_path": "evidence/github-publications-20261115/github-captk/body.json",
+        "portable_observation_path": "evidence/github-publications-20261115/github-captk/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "observation_receipt_scope": "Local acquisition observation only; not an authenticated WP03 evidence or permission statement. Native GET followed observed rate-reset, without authentication/proxy or deliberate IP manipulation."
+      },
+      "rights_basis": {
+        "basis": "Bounded public factual repository research under GitHub API/research terms; software-body licenses evaluated separately.",
+        "official_terms_url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+        "research_policy_url": "https://docs.github.com/en/site-policy/acceptable-use-policies/github-acceptable-use-policies",
+        "scope": "Exact reviewed nonpersonal public repository metadata for this public qualification assessment. No blanket commercial README/code/article/body redisplay or ongoing enrollment.",
+        "assessment_paths": [
+          "github-repository-assessment.md",
+          "github-publication-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation/review agents inspected these sources and native representations for source qualification and raw-retention repairs.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "linkage": {
+        "publication_doi": "10.1117/1.jmi.5.1.011018",
+        "publication_pmid": "29340286",
+        "basis": "Explicit DOI citation in exact-commit README/CITATION files, independently matched to publication identity.",
+        "automated_README_CITATION_join_implemented": false,
+        "linked_project_family": "unassigned; possible cross-project person connection requires review"
+      },
+      "format_and_handoff": {
+        "native_repository_baseline_format": "supported_in_offline_actual_D1_replay_under_synthetic_authority",
+        "source_registry_enrollment": "none",
+        "manual_dossier": "github-publication-qualification.md",
+        "actual_individual_creator_geography_or_relevance_labels": "none"
+      }
+    },
+    {
+      "local_material_locator": "crossref-qsiprep-20261115",
+      "material_kind": "native_provider_selected_bibliographic_work_list",
+      "source": {
+        "provider": "Crossref",
+        "native_doi": "10.1038/s41592-021-01185-5",
+        "canonical_doi": "10.1038/s41592-021-01185-5",
+        "pmid_from_separate_publication_review": "34155395",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense&rows=1",
+        "reported_title": [
+          "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data"
+        ],
+        "reported_published_date_parts": [
+          [
+            2021,
+            6,
+            21
+          ]
+        ],
+        "reported_author_count": 42,
+        "source_fact_scope": "Bibliographic facts as reported by Crossref. QSIPrep has no affiliation entries; CaPTk has institution names only. City/unit evidence is separately reviewed publication evidence, not these native fields. No correction/retraction status, clinical or current-employment truth established."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:06:38.057658+00:00",
+        "observed_at_utc": "2026-11-15T21:06:38.285850+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 7503,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+        "portable_native_body_path": "evidence/github-publications-20261115/crossref-qsiprep/body.json",
+        "portable_observation_path": "evidence/github-publications-20261115/crossref-qsiprep/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "selection": "Provider-native DOI filter and factual-field select; no local projection or substituted envelope.",
+        "limitations": "Safe rate/pagination headers and negotiated TLS version were not recorded; unknown, not absent. Original DOI-filter/select request is outside current WP10 scope grammar."
+      },
+      "rights_basis": {
+        "basis": "Crossref reusable factual bibliographic metadata policy; no abstract/full-text material in the provider-selected body.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual bibliographic representation only; no abstract, full text, images, contact data or linked website rights inferred.",
+        "assessment_paths": [
+          "linked-publication-assessment.md",
+          "github-publication-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation/review agents inspected these sources and native representations for source qualification and raw-retention repairs.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "native_work_list_payload": "accepted_with_exact_bytes_in_offline_actual_D1_replay_under_synthetic_request_scope",
+        "original_DOI_filter_select_request": "unsupported_current_WP10_query_binding",
+        "source_registry_enrollment": "none",
+        "manual_dossier": "github-publication-qualification.md",
+        "actual_human_geography_creator_or_relevance_labels": "none"
+      }
+    },
+    {
+      "local_material_locator": "crossref-captk-main-20261115",
+      "material_kind": "native_provider_selected_bibliographic_work_list",
+      "source": {
+        "provider": "Crossref",
+        "native_doi": "10.1117/1.jmi.5.1.011018",
+        "canonical_doi": "10.1117/1.jmi.5.1.011018",
+        "pmid_from_separate_publication_review": "29340286",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1117%2F1.JMI.5.1.011018&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense&rows=1",
+        "reported_title": [
+          "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome"
+        ],
+        "reported_published_date_parts": [
+          [
+            2018,
+            1,
+            11
+          ]
+        ],
+        "reported_author_count": 25,
+        "source_fact_scope": "Bibliographic facts as reported by Crossref. QSIPrep has no affiliation entries; CaPTk has institution names only. City/unit evidence is separately reviewed publication evidence, not these native fields. No correction/retraction status, clinical or current-employment truth established."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:06:38.310929+00:00",
+        "observed_at_utc": "2026-11-15T21:06:38.462171+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 5056,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "b291ed6c35fc31625450ddf2868318fa5335917da42fa90deb614f608c146153",
+        "portable_native_body_path": "evidence/github-publications-20261115/crossref-captk-main/body.json",
+        "portable_observation_path": "evidence/github-publications-20261115/crossref-captk-main/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "wp06_registry_authority_qualification": "not_established",
+        "selection": "Provider-native DOI filter and factual-field select; no local projection or substituted envelope.",
+        "limitations": "Safe rate/pagination headers and negotiated TLS version were not recorded; unknown, not absent. Original DOI-filter/select request is outside current WP10 scope grammar."
+      },
+      "rights_basis": {
+        "basis": "Crossref reusable factual bibliographic metadata policy; no abstract/full-text material in the provider-selected body.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual bibliographic representation only; no abstract, full text, images, contact data or linked website rights inferred.",
+        "assessment_paths": [
+          "linked-publication-assessment.md",
+          "github-publication-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Implementation/review agents inspected these sources and native representations for source qualification and raw-retention repairs.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "native_work_list_payload": "accepted_with_exact_bytes_in_offline_actual_D1_replay_under_synthetic_request_scope",
+        "original_DOI_filter_select_request": "unsupported_current_WP10_query_binding",
+        "source_registry_enrollment": "none",
+        "manual_dossier": "github-publication-qualification.md",
+        "actual_human_geography_creator_or_relevance_labels": "none"
+      }
+    },
+    {
+      "local_material_locator": "crossref-qsiprep-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "Crossref",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "native_doi": "10.1038/s41592-021-01185-5",
+        "canonical_doi": "10.1038/s41592-021-01185-5",
+        "reported_title": [
+          "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data"
+        ],
+        "reported_published_date_parts": [
+          [
+            2021,
+            6,
+            21
+          ]
+        ],
+        "reported_author_count": 42,
+        "source_fact_scope": "Factual bibliographic metadata only. Publication-time units, regional contribution and current employment require separate evidence review; no clinical effectiveness claim."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:46:36.015698+00:00",
+        "observed_at_utc": "2026-11-15T21:46:36.343883+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 7503,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/crossref-qsiprep/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/crossref-qsiprep/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Crossref factual bibliographic metadata policy; provider-selected original body contains no abstracts/full text.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual metadata for this bounded source investigation. Article, code, contact, image and linked-page rights are separate.",
+        "assessment_paths": [
+          "crossref-expansion-source-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "accepted_local_fixed_DOI_request_parser_retention_contract",
+        "scope_id": "crossref-scope:00a2b25d80780d72e4e72a47462db14a794aa8b856d80014d090c33a9084ef61",
+        "scope_sha256": "00a2b25d80780d72e4e72a47462db14a794aa8b856d80014d090c33a9084ef61",
+        "exact_observed_URL_matches_qualified_constructor": true,
+        "native_body_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none"
+      },
+      "same_work_and_body_as_prior_locator": "crossref-qsiprep-20261115"
+    },
+    {
+      "local_material_locator": "crossref-captk-main-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "Crossref",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1117%2F1.JMI.5.1.011018&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "native_doi": "10.1117/1.jmi.5.1.011018",
+        "canonical_doi": "10.1117/1.jmi.5.1.011018",
+        "reported_title": [
+          "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome"
+        ],
+        "reported_published_date_parts": [
+          [
+            2018,
+            1,
+            11
+          ]
+        ],
+        "reported_author_count": 25,
+        "source_fact_scope": "Factual bibliographic metadata only. Publication-time units, regional contribution and current employment require separate evidence review; no clinical effectiveness claim."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:46:39.569570+00:00",
+        "observed_at_utc": "2026-11-15T21:46:39.778177+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 5056,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "b291ed6c35fc31625450ddf2868318fa5335917da42fa90deb614f608c146153",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/crossref-captk-main/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/crossref-captk-main/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Crossref factual bibliographic metadata policy; provider-selected original body contains no abstracts/full text.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual metadata for this bounded source investigation. Article, code, contact, image and linked-page rights are separate.",
+        "assessment_paths": [
+          "crossref-expansion-source-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "accepted_local_fixed_DOI_request_parser_retention_contract",
+        "scope_id": "crossref-scope:92f74ffe2f3759f8dc5d5ae9f6e61b8170d41bc6eebb1b7c90b5c793a6bdb7d2",
+        "scope_sha256": "92f74ffe2f3759f8dc5d5ae9f6e61b8170d41bc6eebb1b7c90b5c793a6bdb7d2",
+        "exact_observed_URL_matches_qualified_constructor": true,
+        "native_body_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none"
+      },
+      "same_work_and_body_as_prior_locator": "crossref-captk-main-20261115"
+    },
+    {
+      "local_material_locator": "crossref-autogvp-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "Crossref",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtae114&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "native_doi": "10.1093/bioinformatics/btae114",
+        "canonical_doi": "10.1093/bioinformatics/btae114",
+        "reported_title": [
+          "AutoGVP: a dockerized workflow integrating ClinVar and InterVar germline sequence variant classification"
+        ],
+        "reported_published_date_parts": [
+          [
+            2024,
+            2,
+            29
+          ]
+        ],
+        "reported_author_count": 14,
+        "source_fact_scope": "Factual bibliographic metadata only. Publication-time units, regional contribution and current employment require separate evidence review; no clinical effectiveness claim."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:46:43.004342+00:00",
+        "observed_at_utc": "2026-11-15T21:46:43.204851+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 6401,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "569acef5e4d899696d3fd4816ec40dff855a537d29072b2e5f28623484a600c5",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/crossref-autogvp/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/crossref-autogvp/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Crossref factual bibliographic metadata policy; provider-selected original body contains no abstracts/full text.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual metadata for this bounded source investigation. Article, code, contact, image and linked-page rights are separate.",
+        "assessment_paths": [
+          "crossref-expansion-source-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "accepted_local_fixed_DOI_request_parser_retention_contract",
+        "scope_id": "crossref-scope:e80ee744df4eac3a6b8423c0676db348a0f702e472c21085f53f4c956d8166c5",
+        "scope_sha256": "e80ee744df4eac3a6b8423c0676db348a0f702e472c21085f53f4c956d8166c5",
+        "exact_observed_URL_matches_qualified_constructor": true,
+        "native_body_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none"
+      }
+    },
+    {
+      "local_material_locator": "crossref-immunotar-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "Crossref",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtaf060&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "native_doi": "10.1093/bioinformatics/btaf060",
+        "canonical_doi": "10.1093/bioinformatics/btaf060",
+        "reported_title": [
+          "ImmunoTar\u2014integrative prioritization of cell surface targets for cancer immunotherapy"
+        ],
+        "reported_published_date_parts": [
+          [
+            2025,
+            2,
+            11
+          ]
+        ],
+        "reported_author_count": 9,
+        "source_fact_scope": "Factual bibliographic metadata only. Publication-time units, regional contribution and current employment require separate evidence review; no clinical effectiveness claim."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:46:46.430836+00:00",
+        "observed_at_utc": "2026-11-15T21:46:46.649753+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 4714,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "9bbce87a075fdc5e99f1df14d5d90cc6679161d4655e15b4971892640edf5857",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/crossref-immunotar/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/crossref-immunotar/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Crossref factual bibliographic metadata policy; provider-selected original body contains no abstracts/full text.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual metadata for this bounded source investigation. Article, code, contact, image and linked-page rights are separate.",
+        "assessment_paths": [
+          "crossref-expansion-source-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "accepted_local_fixed_DOI_request_parser_retention_contract",
+        "scope_id": "crossref-scope:7dc1088ced618243fca6803bb43be67d1edbd71ad6e6213bd57945c9a288c110",
+        "scope_sha256": "7dc1088ced618243fca6803bb43be67d1edbd71ad6e6213bd57945c9a288c110",
+        "exact_observed_URL_matches_qualified_constructor": true,
+        "native_body_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none"
+      }
+    },
+    {
+      "local_material_locator": "crossref-phenomantics-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "Crossref",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1186%2F1471-2105-15-248&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "native_doi": "10.1186/1471-2105-15-248",
+        "canonical_doi": "10.1186/1471-2105-15-248",
+        "reported_title": [
+          "Clinical phenotype-based gene prioritization: an initial study using semantic similarity and the human phenotype ontology"
+        ],
+        "reported_published_date_parts": [
+          [
+            2014,
+            7,
+            21
+          ]
+        ],
+        "reported_author_count": 9,
+        "source_fact_scope": "Factual bibliographic metadata only. Publication-time units, regional contribution and current employment require separate evidence review; no clinical effectiveness claim."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:46:49.874589+00:00",
+        "observed_at_utc": "2026-11-15T21:46:50.086545+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 1716,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "c8b85b4e14f01d6e2d42b6ad6dfdcbc673ade3440163be11088cf4562158e23e",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/crossref-phenomantics/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/crossref-phenomantics/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Crossref factual bibliographic metadata policy; provider-selected original body contains no abstracts/full text.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual metadata for this bounded source investigation. Article, code, contact, image and linked-page rights are separate.",
+        "assessment_paths": [
+          "crossref-expansion-source-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "accepted_local_fixed_DOI_request_parser_retention_contract",
+        "scope_id": "crossref-scope:17bf9cdec0e14b8602d9ef7e1e9c98f55f3250d3f78d4e1ed7721f13abcb53f4",
+        "scope_sha256": "17bf9cdec0e14b8602d9ef7e1e9c98f55f3250d3f78d4e1ed7721f13abcb53f4",
+        "exact_observed_URL_matches_qualified_constructor": true,
+        "native_body_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none"
+      }
+    },
+    {
+      "local_material_locator": "crossref-deepcnv-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "Crossref",
+        "source_url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbib%2Fbbaa381&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "native_doi": "10.1093/bib/bbaa381",
+        "canonical_doi": "10.1093/bib/bbaa381",
+        "reported_title": [
+          "DeepCNV: a deep learning approach for authenticating copy number variations"
+        ],
+        "reported_published_date_parts": [
+          [
+            2021,
+            1,
+            12
+          ]
+        ],
+        "reported_author_count": 10,
+        "source_fact_scope": "Factual bibliographic metadata only. Publication-time units, regional contribution and current employment require separate evidence review; no clinical effectiveness claim."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:46:53.313233+00:00",
+        "observed_at_utc": "2026-11-15T21:46:53.522302+00:00",
+        "http_status": 200,
+        "content_type": "application/json",
+        "received_bytes": 3305,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "c872b5519aafb30bcea68fa95f5d13c01f4c3c9856da41c96b1191aa9312c6f5",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/crossref-deepcnv/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/crossref-deepcnv/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Crossref factual bibliographic metadata policy; provider-selected original body contains no abstracts/full text.",
+        "official_terms_url": "https://www.crossref.org/documentation/retrieve-metadata/",
+        "scope": "Exact factual metadata for this bounded source investigation. Article, code, contact, image and linked-page rights are separate.",
+        "assessment_paths": [
+          "crossref-expansion-source-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "accepted_local_fixed_DOI_request_parser_retention_contract",
+        "scope_id": "crossref-scope:2c131f455e90a0a1f6eb3f88f8fb7483d3aabcaeed71bf83a98be9f8ffbb5fcf",
+        "scope_sha256": "2c131f455e90a0a1f6eb3f88f8fb7483d3aabcaeed71bf83a98be9f8ffbb5fcf",
+        "exact_observed_URL_matches_qualified_constructor": true,
+        "native_body_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none"
+      }
+    },
+    {
+      "local_material_locator": "github-autogvp-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "GitHub",
+        "source_url": "https://api.github.com/repos/diskin-lab-chop/AutoGVP",
+        "native_repository_id": "525946788",
+        "reported_name": "diskin-lab-chop/AutoGVP",
+        "reported_owner": {
+          "id": "53345105",
+          "login": "diskin-lab-chop",
+          "type": "Organization"
+        },
+        "reported_dates": {
+          "created_at": "2022-08-17T20:40:15Z",
+          "updated_at": "2026-11-02T15:37:31Z",
+          "pushed_at": "2026-11-02T18:19:30Z"
+        },
+        "separately_observed_citation_snapshot": {
+          "commit": "8645aa708046a3d86417ce0d8b542071857e875f",
+          "readme_paths": [
+            "README.md"
+          ],
+          "explicit_root_README_DOI": true,
+          "historical_alias": null
+        },
+        "source_fact_scope": "Public repository and organization-account facts only; no person, individual creator, local-employment or clinical label."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:46:56.749178+00:00",
+        "observed_at_utc": "2026-11-15T21:46:57.046730+00:00",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "received_bytes": 6409,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "241b804429fd3e6100194f614b35a7d53ad73e2b7a3b514355d5518f112152ab",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/github-autogvp/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/github-autogvp/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Bounded factual metadata research under GitHub API/research terms; code and documentation redistribution are separately unqualified.",
+        "official_terms_url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+        "scope": "Reviewed nonpersonal public repository metadata for this qualification assessment, not a code/article/README redistribution grant.",
+        "observed_api_license_hint": null,
+        "separate_software_terms": {
+          "path": null,
+          "derived_terms": "No standard license filename in complete pinned Git tree or license statement identified in consulted README files. API license null is not a grant.",
+          "redistribution_permission": "not established"
+        },
+        "assessment_paths": [
+          "crossref-expansion-repository-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "public_fixed_repository_baseline_format",
+        "native_body_and_exact_URL_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none",
+        "publication_doi_from_separate_source_review": "10.1093/bioinformatics/btae114",
+        "join_direction": "repository-and-publication"
+      }
+    },
+    {
+      "local_material_locator": "github-immunotar-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "GitHub",
+        "source_url": "https://api.github.com/repos/sacanlab/immunotar",
+        "native_repository_id": "734388793",
+        "reported_name": "sacanlab/immunotar",
+        "reported_owner": {
+          "id": "18205643",
+          "login": "sacanlab",
+          "type": "Organization"
+        },
+        "reported_dates": {
+          "created_at": "2023-12-21T14:58:44Z",
+          "updated_at": "2026-07-10T18:11:31Z",
+          "pushed_at": "2025-04-18T15:37:22Z"
+        },
+        "separately_observed_citation_snapshot": {
+          "commit": "e99cb6aa1d3ab53730fcfb47003e2fdcc5ab5bbc",
+          "readme_paths": [
+            "README.md"
+          ],
+          "explicit_root_README_DOI": false,
+          "historical_alias": null
+        },
+        "source_fact_scope": "Public repository and organization-account facts only; no person, individual creator, local-employment or clinical label."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:47:00.271931+00:00",
+        "observed_at_utc": "2026-11-15T21:47:00.549064+00:00",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "received_bytes": 6029,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "07ba93cbf37cfd428c63dac74176c50cea7986f80c2fc23f1051a47132da6c74",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/github-immunotar/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/github-immunotar/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Bounded factual metadata research under GitHub API/research terms; code and documentation redistribution are separately unqualified.",
+        "official_terms_url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+        "scope": "Reviewed nonpersonal public repository metadata for this qualification assessment, not a code/article/README redistribution grant.",
+        "observed_api_license_hint": null,
+        "separate_software_terms": {
+          "path": "DESCRIPTION",
+          "blob_sha": "3b6dcd2fdb2d08bdcc93c4d0f64c27bac1ce4279",
+          "url": "https://github.com/sacanlab/immunotar/blob/e99cb6aa1d3ab53730fcfb47003e2fdcc5ab5bbc/DESCRIPTION",
+          "derived_terms": "Free noncommercial use; redistribution and commercial use require contact with authors. No contact details retained.",
+          "redistribution_permission": "not established"
+        },
+        "assessment_paths": [
+          "crossref-expansion-repository-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "public_fixed_repository_baseline_format",
+        "native_body_and_exact_URL_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none",
+        "publication_doi_from_separate_source_review": "10.1093/bioinformatics/btaf060",
+        "join_direction": "publication-to-repository; reverse explicit DOI not observed"
+      }
+    },
+    {
+      "local_material_locator": "github-phenomantics-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "GitHub",
+        "source_url": "https://api.github.com/repos/chop-dbhi/phenomantics",
+        "native_repository_id": "15715626",
+        "reported_name": "chop-dbhi/phenomantics",
+        "reported_owner": {
+          "id": "709892",
+          "login": "chop-dbhi",
+          "type": "Organization"
+        },
+        "reported_dates": {
+          "created_at": "2014-01-07T20:22:47Z",
+          "updated_at": "2023-06-05T08:04:07Z",
+          "pushed_at": "2014-04-01T16:14:48Z"
+        },
+        "separately_observed_citation_snapshot": {
+          "commit": "0c222f717c4382cd61dc8f054b3e191184cd31cc",
+          "readme_paths": [
+            "README.md",
+            "apps/genesis_aws/README.md"
+          ],
+          "explicit_root_README_DOI": false,
+          "historical_alias": "cbmi/phenomantics"
+        },
+        "source_fact_scope": "Public repository and organization-account facts only; no person, individual creator, local-employment or clinical label."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:47:03.775809+00:00",
+        "observed_at_utc": "2026-11-15T21:47:04.040098+00:00",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "received_bytes": 6323,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "8a596641421dde32216c5e72bf8b888585f49f05591a174dfdc46003c3abc51e",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/github-phenomantics/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/github-phenomantics/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Bounded factual metadata research under GitHub API/research terms; code and documentation redistribution are separately unqualified.",
+        "official_terms_url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+        "scope": "Reviewed nonpersonal public repository metadata for this qualification assessment, not a code/article/README redistribution grant.",
+        "observed_api_license_hint": null,
+        "separate_software_terms": {
+          "path": null,
+          "derived_terms": "No standard license filename in complete pinned Git tree or license statement identified in consulted README files. API license null is not a grant.",
+          "redistribution_permission": "not established"
+        },
+        "assessment_paths": [
+          "crossref-expansion-repository-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "public_fixed_repository_baseline_format",
+        "native_body_and_exact_URL_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none",
+        "publication_doi_from_separate_source_review": "10.1186/1471-2105-15-248",
+        "join_direction": "publication-to-repository; reverse explicit DOI not observed"
+      }
+    },
+    {
+      "local_material_locator": "github-deepcnv-expansion-20261115",
+      "material_kind": "native_factual_metadata_acquisition",
+      "source": {
+        "provider": "GitHub",
+        "source_url": "https://api.github.com/repos/CAG-CNV/DeepCNV",
+        "native_repository_id": "285885136",
+        "reported_name": "CAG-CNV/DeepCNV",
+        "reported_owner": {
+          "id": "31705609",
+          "login": "CAG-CNV",
+          "type": "Organization"
+        },
+        "reported_dates": {
+          "created_at": "2020-08-07T17:27:31Z",
+          "updated_at": "2025-12-18T06:00:27Z",
+          "pushed_at": "2023-02-20T14:48:51Z"
+        },
+        "separately_observed_citation_snapshot": {
+          "commit": "47bc7dbea9dc4d835feef7607b0477ad7a9210ba",
+          "readme_paths": [
+            "DeepCNV_Seqv2/readme.txt",
+            "DeepCNVv2/readme.txt",
+            "README.md"
+          ],
+          "explicit_root_README_DOI": false,
+          "historical_alias": null
+        },
+        "source_fact_scope": "Public repository and organization-account facts only; no person, individual creator, local-employment or clinical label."
+      },
+      "capture": {
+        "method": "GET",
+        "started_at_utc": "2026-11-15T21:47:07.267548+00:00",
+        "observed_at_utc": "2026-11-15T21:47:07.581522+00:00",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "received_bytes": 5966,
+        "response_complete": true,
+        "redirects_followed": 0,
+        "body_sha256": "53d72608db59186ec039ce148849be824d9885f8794eae47578c67a879a36f86",
+        "portable_native_body_path": "evidence/crossref-expansion-20261115/github-deepcnv/body.json",
+        "portable_observation_path": "evidence/crossref-expansion-20261115/github-deepcnv/observation.json",
+        "transport": "standalone-public-IP-pinned-HTTPS",
+        "wp06_transport_exercised": false,
+        "observation_receipt_scope": "Native standalone acquisition observation; not an authenticated WP03 evidence/permission statement. Local adapter request compatibility is separately verified."
+      },
+      "rights_basis": {
+        "basis": "Bounded factual metadata research under GitHub API/research terms; code and documentation redistribution are separately unqualified.",
+        "official_terms_url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+        "scope": "Reviewed nonpersonal public repository metadata for this qualification assessment, not a code/article/README redistribution grant.",
+        "observed_api_license_hint": null,
+        "separate_software_terms": {
+          "path": null,
+          "derived_terms": "No standard license filename in complete pinned Git tree or license statement identified in consulted README files. API license null is not a grant.",
+          "redistribution_permission": "not established"
+        },
+        "assessment_paths": [
+          "crossref-expansion-repository-assessment.md",
+          "crossref-request-astra-review.md"
+        ],
+        "authenticated_wp03_evidence_receipt": null,
+        "authenticated_wp03_permission_receipt": null
+      },
+      "evaluation_controls": {
+        "development_exposed": true,
+        "exposure_reason": "Source/implementation/review agents inspected actual representations and linked project evidence for qualification.",
+        "untouched_heldout_claim_permitted": false,
+        "family_origin_assignment": "unassigned",
+        "family_partition_assignment": "unassigned",
+        "human_annotations": [],
+        "human_adjudication": null,
+        "human_reviewers": [],
+        "trust_enrollment": "none",
+        "strict_reference_manifest_membership": "none",
+        "reference_case_or_sampling_denominator_credit": 0,
+        "status": "not_frozen"
+      },
+      "format_and_handoff": {
+        "request_profile": "public_fixed_repository_baseline_format",
+        "native_body_and_exact_URL_replay": "pass_actual_D1_with_synthetic_local_authority",
+        "external_source_enrollment": "none",
+        "publication_doi_from_separate_source_review": "10.1093/bib/bbaa381",
+        "join_direction": "publication-to-repository; reverse explicit DOI not observed"
+      }
+    }
+  ],
+  "independence_note": "Six project dossiers and their repository, paper, preprint, account and institution evidence may share people/origins. Exact name overlaps include Sharon J Diskin and Christos Davatzikos; Phenomantics has a historical alias. All family/origin/partition assignments remain unreviewed and all material development-exposed. Sixteen acquisitions/fourteen body hashes supply zero reference-case or independent denominator credit.",
+  "distinct_native_body_count": 14,
+  "count_semantics": "staged_material_count counts acquisition records, including two canonical-request recaptures of earlier body bytes. Distinct body count is not independent case/family or eligible population size.",
+  "project_dossier_count": 6
+}

@@ -1,3 +1,4 @@
+import { legacyOffsetDatetime } from "../lib/schema-compat";
 import { z } from "zod";
 import { isCalendarDay } from "./watch-schema";
 import { RegionalInventory, permittedPublicUrl, regionalPublicUrlProjection } from "../ingest/regional-contracts";
@@ -15,7 +16,7 @@ export const CORE_REGIONAL_MONITOR_IDS = Object.freeze([
 ] as const);
 
 const Id = z.string().regex(/^[a-z][a-z0-9-]+$/).max(200);
-const Instant = z.string().datetime({ offset: true }).refine(value => isCalendarDay(value.slice(0, 10)));
+const Instant = legacyOffsetDatetime().refine(value => isCalendarDay(value.slice(0, 10)));
 const PublicUrl = z.string().max(2048).refine(value => permittedPublicUrl(value));
 const unique = <T>(values: T[]) => new Set(values).size === values.length;
 const Relation = z.enum(["newsroom-serves-institution", "repository-includes-institutional-work", "institution-links-repository"]);

@@ -1,0 +1,57 @@
+{
+  "package": "WP05",
+  "disposition": "accepted",
+  "recorded_at": "2026-11-14T01:38:29.683887+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "owner": "Sol",
+  "reviewer": "Astra",
+  "independent_test_author": "Terra",
+  "authority": "orchestrating engineer after independent Astra review, Terra acceptance tests, root code/SQL challenge and final integrated checks",
+  "scope": "Private evidence/provenance/decision history, scoped logical removal, integrity quarantine and source-response intake seam. No source activation, public admission or deployment.",
+  "design_amendment": "../implementation-decisions.md#ex08--evidence-ownership-and-first-acquisition",
+  "review": "../reviews/wp05-astra.md",
+  "outputs": {
+    "src/content/discovery-evidence.ts": "463bd9800f627302f32dc181ffdc86832532afad8b703fc4cd8c717fd4f7d5a6",
+    "src/ingest/discovery-evidence-store.ts": "a91e848e2be895a50c7723b6b0ccd82af6cc69d0aec29d2e0ac8d32c4b277423",
+    "migrations/0042_discovery_evidence.sql": "e8fd2e35521450de9b1baf3f6b126d561cd53bde0e280d02b66745a4101d5231",
+    "test/discovery-evidence.test.ts": "ebcdaf88f289c2e4fc26ef1611fa9a56328eeab9b69c7eebe40ffeb87d7b9580",
+    "docs/discovery/reviews/wp05-sol.md": "187d46c802d218f27384479ef85b82cfcd9bdcddcbdd7288e73f45ee40026808",
+    "docs/discovery/reviews/wp05-terra.md": "215fa4c0054ffdc6d3a85f6370488a3f8020d024e2d888996933bfd0d243e1ea",
+    "docs/discovery/reviews/wp05-astra.md": "4e323fdbf00c7e9ff81ce940ead33bf6f7a03e9a6fcc1a6dae6a978acd18e387"
+  },
+  "acceptance_criteria": {
+    "AC-WP05-01": "Verified exact old/new representation hashes and literal historical evidence; original bytes differ from normalized text.",
+    "AC-WP05-02": "Invalid quotes, UTF16 boundaries, typed JSON pointers, lossy/duplicate JSON and mismatched source binding fail with unchanged D1 tables.",
+    "AC-WP05-03": "Durable idempotent replay, explicit unchanged-byte observation, tombstoned/quarantined current availability, no old-key or new-grant resurrection.",
+    "AC-WP05-04": "Three mirrors count once; actual retirement/complete member transfer/split invalidates dependent decisions; provisional source-response provenance cannot count as reviewed origin.",
+    "AC-WP05-05": "Contradictory claims and corrected decision history retained with policy/evidence digests, exact scope, authenticated-capability fixture binding and one head change.",
+    "AC-WP05-06": "Failed refresh does not renew health; scoped removal erases all owned revisions and unused rationales, preserves unrelated material, works after expiry and denies regrants."
+  },
+  "validation": {
+    "npm_test": {
+      "exit_code": 0,
+      "tests": 1133,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 50
+      },
+      "failed": 0,
+      "skipped": 0
+    },
+    "independent_wp05_suite": "13/13 including parent",
+    "build": "pass; existing chunk-size warning",
+    "local_ops_smoke": "pass; fake bindings and injected fetch only",
+    "secret_scan": "pass;749 tracked and untracked files",
+    "input_files_unchanged": 522
+  },
+  "limits": [
+    "Capability and issued-request resolvers are synthetic in tests; no real authentication, provider permission or legal sufficiency is established.",
+    "WP06 must implement actual registry qualification, lease/budget/issued-request predicates in the same retention transaction; WP07 must compose one atomic raw/observation/page/checkpoint commit.",
+    "WP14 must implement selector-to-reviewed-origin adjudication, requalification after grant renewal and the catalog/public removal bridge.",
+    "Quarantine verifies stored hashes and transform consistency within one bounded SQL read; it does not resist coherent unrestricted database rewrite or prove source truth.",
+    "Removal is logical current-DB removal with explicitly permitted minimal audit metadata; WP26 owns backup/restore reconciliation.",
+    "Four high advisories in unchanged lockfile remain a release blocker; E01-E06 not run; no deployment."
+  ],
+  "accepted_at": "2026-11-14T01:38:56.900973+00:00"
+}

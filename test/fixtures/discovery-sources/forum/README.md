@@ -1,0 +1,1 @@
+Wholly authored synthetic Discourse-shaped profiles, never acquired forum data. The parser family is a narrow strict public shape, not universal/native API compatibility. Actual installation/version/access/rights remain unqualified. Removal proposals confer no write or source-change authority; admitted-current-claim integration remains WP14.

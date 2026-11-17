@@ -1,0 +1,164 @@
+{
+  "package": "WP07",
+  "disposition": "accepted",
+  "recorded_at": "2026-11-14T03:52:27.340984+00:00",
+  "accepted_at": "2026-11-14T03:53:34.282509+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "source_state": "local uncommitted working tree identified by outputs and retained input manifest",
+  "depends_on": [
+    "WP06"
+  ],
+  "dependency_receipt": "WP06.json",
+  "dependency_requalification": "WP06-WP07-collection.json",
+  "owner": "Sol collection store/contracts/migration; Terra collector",
+  "reviewer": "Astra",
+  "independent_test_author": "Separate Sol agent",
+  "authority": "orchestrating engineer after independent review, actual D1 challenges and final integrated checks",
+  "scope": "Private fixed-round collection, one-attempt slots, linked fenced leases, trusted bounded provisional parsing, atomic raw/lead/page/checkpoint/health/accounting commit, restart replay and typed scoped gaps.",
+  "design_amendment": "../implementation-decisions.md#ex10--durable-collection-composition-and-bounded-round-policy",
+  "reviews": [
+    "../reviews/wp07-sol.md",
+    "../reviews/wp07-terra.md",
+    "../reviews/wp07-tests-sol.md",
+    "../reviews/wp07-astra.md",
+    "../reviews/wp07-orchestrator.md"
+  ],
+  "verification_plan": "../wp07-evidence-plan.md",
+  "integration": "../wp07-integration-validation.json",
+  "outputs": {
+    "src/ingest/discovery/collection-contract.ts": "9fb85d794584a99724ff02db4fbe63713411b2cd66bbd79ea0e827b9832e0ba0",
+    "src/ingest/discovery/collection-store.ts": "f800b375f5e86e1f4764c8bb2bc9de69fff33cc419f2e77443e0fa115e720084",
+    "src/ingest/discovery/collector.ts": "abfcf200a6dcbbb0f562efb40ecf6b05a529091f2bf590b5c69c5202f448bb6f",
+    "migrations/0044_discovery_collection.sql": "94c84e6421620087b92919ee8550949d22922f4b679138257d1a2f96ee1f83fd",
+    "test/discovery-collection.test.ts": "374c343130becc7d94cafd1b62c16c6a3c8c1e27bed817eb43b76bbfd213e26a",
+    "test/discovery-collector.test.ts": "17aa23678b3965c215cd30753e9429950e8e938f9b996de2dfcea3361577591d",
+    "package.json": "3e34704f4434aef08541fcc3bea799cd00ef44deffaf5f183dee82f3d5b40ecb",
+    "src/lib/ops.ts": "dcc0a1e83a3992889fde331f2d0bd942c3f71a9fb4cf7ae90ec22ca751dcb2d7",
+    "docs/discovery/reviews/wp07-sol.md": "7383133ddecc462e032ea954ec381c1baa63b6b66b33991242d324015d85abc5",
+    "docs/discovery/reviews/wp07-terra.md": "f390d12e6219beb90fe1c330a35ce64feb6ebeb8920872c264f3225f718c42b7",
+    "docs/discovery/reviews/wp07-tests-sol.md": "7c215ad1d73b08232ddf1c719c025af14e1c91b9db2b1cfceefc2f60d2f9bae1",
+    "docs/discovery/reviews/wp07-astra.md": "59483053833c52cc28ba8d011becc14f7a12d0cc90e19f519e98714320a72872",
+    "docs/discovery/reviews/wp07-orchestrator.md": "b2356b3b33dafc0e000e4c1bde0c8632982c659fc15e58f110c6e153f3ca0c9d",
+    "docs/discovery/wp07-evidence-plan.md": "4e0067639a44ddf1832b84490de266d25678757ec193776c8d1fc8e8715ce5de"
+  },
+  "acceptance_criteria": {
+    "AC-WP07-01": {
+      "status": "pass",
+      "evidence": [
+        "Sol atomicPage/crashReplay/contiguous",
+        "Astra 1/7/16"
+      ],
+      "observation": "Raw bytes, private leads, receipt, checkpoint, health success, cursor and accounting commit together; lost acknowledgment replays after factory restart with stable identities and no new fetch/debit."
+    },
+    "AC-WP07-02": {
+      "status": "pass",
+      "evidence": [
+        "Sol fairness/abandonedFairness/skipCas",
+        "Astra 4/6/13"
+      ],
+      "observation": "Fixed A/B/C slots advance once despite repeated A failure; new enrollment joins a later round; expired claimed slots record a gap and advance without another attempt in that slot."
+    },
+    "AC-WP07-03": {
+      "status": "pass",
+      "evidence": [
+        "Sol parseTakeover/preAdmission/skipCas",
+        "Astra 6/8/15"
+      ],
+      "observation": "Atomic linked collection/source leases and final SQL guards deny stale parse writes, orphan-plan admission, stale skip and stopped-scope mutations."
+    },
+    "AC-WP07-04": {
+      "status": "pass",
+      "evidence": [
+        "Sol incompletePages/emptyTerminal/chains/contiguous",
+        "Astra 2/17/21"
+      ],
+      "observation": "Empty nonterminal, missing terminal, rejected/truncated rows and repeated token cannot complete; receipt corruption is withheld; typed persistent-expiry and restart-required gaps remain accurate."
+    },
+    "AC-WP07-05": {
+      "status": "pass",
+      "evidence": [
+        "Sol reservationRace/uncertainty/rollback",
+        "Astra 5/7/14"
+      ],
+      "observation": "Two real closed transports race the final request allowance in actual D1; budgets stay bounded, uncertain requests stay charged, replay does not resend and settlement rolls back atomically or occurs once."
+    },
+    "AC-WP07-06": {
+      "status": "pass",
+      "evidence": [
+        "Sol disable/removal/preAdmission/strictCapabilities",
+        "Astra 8/9/11/15"
+      ],
+      "observation": "Disable at issuance records failure/disabled; preclaim revocation skips without send. Last-good evidence is retained while permitted; exact scoped withdrawal removes copied payloads. Current completion is guarded separately from historical health."
+    }
+  },
+  "validation": {
+    "npm_test": {
+      "exit_code": 0,
+      "tests": 1193,
+      "groups": {
+        "primary": 937,
+        "watch_launch": 146,
+        "discovery": 110
+      },
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "independent_wp07_suite": {
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "stable_input_count": 16,
+      "database": "actual isolated local D1, migrations 0001-0044"
+    },
+    "independent_astra_suite": {
+      "passed": 21,
+      "failed": 0,
+      "stable_input_count": 19,
+      "database": "actual isolated local D1, migrations 0001-0044"
+    },
+    "focused_collector_suite": {
+      "passed": 6,
+      "failed": 0,
+      "scope": "synthetic store doubles and actual transport boundary with injected egress"
+    },
+    "wp06_under_0044": {
+      "passed": 21,
+      "failed": 0,
+      "stable_input_count": 14,
+      "original_test_unchanged": true
+    },
+    "migration_safety": {
+      "checks_passed": 6,
+      "scope": "duplicate source leases reject whole migration; both preserved; unambiguous migration succeeds; future duplicates denied; no automatic round"
+    },
+    "build": {
+      "exit_code": 0,
+      "typecheck": "pass",
+      "warning": "existing main bundle exceeds 500 kB"
+    },
+    "local_ops_smoke": {
+      "exit_code": 0,
+      "scope": "fake bindings and closed injected egress; smoke mock does not establish D1 atomicity"
+    },
+    "secret_scan": {
+      "exit_code": 0,
+      "files": 778,
+      "scope": "repository tracked and nonignored untracked files, including final review and acceptance documents; script allowlists and file exclusions preserved"
+    },
+    "final_input_files_matched": 535,
+    "test_count_note": "Independent/focused suites overlap npm test; counts are not additive."
+  },
+  "limits": [
+    "All source acquisition, permissions, capability resolution, parser outputs and egress are synthetic. No actual provider access, legal sufficiency, reviewer authentication or regional coverage is established.",
+    "Private normalized leads and DiscoveryCollectionPageReceipt do not create catalog subjects, EvidenceRevision references, shared SourcePage observations, admission or public freshness. WP14 must supply the materialization bridge.",
+    "Fairness is conditional on continued dispatch and eventual lease recovery over a fixed selected round. A finished scheduling round, empty selected set or historical health timestamp is not complete source coverage.",
+    "One page attempt is allowed per selected round slot, with no automatic retry or round creation. Lost uncommitted tokens/handles require later authorized work; uncertain dispatch stays charged. Inventory expiry requires a new explicit cohort.",
+    "D1 transaction admission is distinct from the physical commit instant and external socket send. An in-flight mutation can commit after caller timeout. Synchronous parser CPU is not preempted; late results cannot start further work.",
+    "Scoped logical removal does not erase physical memory, backups or Time Travel; restore reconciliation remains WP26. Integrity checks do not defend against coherent unrestricted database rewrite.",
+    "No provider activation, scheduler, public route, remote migration, deployment, commit or dependency change occurred. WP03 has zero real reference cases; E01-E06 remain not_run; WP14 remains dependent on WP03.",
+    "The unchanged lockfile retains four high advisories, seven total; later packages and operating gates remain unqualified. Eleven legacy regional tests omitted by existing scripts are not included in reported test totals."
+  ],
+  "accepted_snapshot": ".discovery-work/wp07/accepted-candidate/manifest.json"
+}

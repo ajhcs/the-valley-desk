@@ -1,0 +1,46 @@
+{
+  "id": "TVD-LOCAL-BASELINE-VALIDATION-1",
+  "recorded_at": "2026-11-14T00:10:09.340902+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "runtime": "Node 22.23.2; Python3.12.3; exact hash-locked PDF wheels",
+  "initial_tests": {
+    "tests": 936,
+    "pass": 928,
+    "fail": 8,
+    "cause": "Expired fixed test observations at real wall clock; production correctly rejected stale input."
+  },
+  "repair": "Per-test Date mock aligned to retained fixture; six boundary cases exercise unchanged freshness gates. Root reviewed actual diff and handler error diagnosis.",
+  "repaired_tests": {
+    "primary": {
+      "tests": 937,
+      "pass": 937,
+      "fail": 0,
+      "skipped": 0
+    },
+    "posttest_watch_launch": {
+      "tests": 146,
+      "pass": 146,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "policy_pdf": {
+    "tests": 7,
+    "pass": 7
+  },
+  "setup_exception": "Standard venv/pip bootstrap unavailable due to ensurepip. Workspace venv --without-pip and exact locked wheel extraction used; failure and hash evidence retained.",
+  "artifacts": {
+    ".discovery-work/evidence/baseline-tests.log": "6a793e050eae18d5f151bff2b873dc3af78d532408c168d6cf2615f872d0fe4a",
+    ".discovery-work/evidence/baseline-tests-repaired.log": "d5cecfd73c24d174006e8bf792b15170a28bc0a32c252cd13804b2f5f3185025",
+    ".discovery-work/evidence/pdf-tests.log": "133239c3867d312d73458c081d02bd5b05326b7683234d2dac73b7a4c1c4481a",
+    ".discovery-work/evidence/pdf-bootstrap-initial.log": "f06a1833e7dd59fb8329fc7665cbcd5e4f27afb7c81cf411057555b29ec87705",
+    ".discovery-work/evidence/pdf-runtime-provisioning.json": "5762aada290cdbbfd7ae9194bc831c66d79ee657e05a5bd543f39810c4f747fa",
+    "test/social-evidence.test.ts": "dd9d6344ee2383ca6ab49476c64eeb0057ca4d4eb0484ae8e610f894a324ee67",
+    "docs/discovery/reviews/baseline-social-tests-sol.md": "29aad9488eb13b12e1837db01f6924c5d11dfaff58158f2a6a4ab33267c3d3da"
+  },
+  "limits": [
+    "Existing enumerated suites only; 11 omitted regional tests recorded in WP00 review, not counted.",
+    "No successor discovery checks, production calls, deployment, provider qualification, or empirical goal validation.",
+    "Build, ops smoke and dependency audit pending integration candidate."
+  ]
+}

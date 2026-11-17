@@ -1,5 +1,19 @@
 # The Valley Desk
 
+The [regional discovery engineering handoff](docs/discovery-engineering/README.md)
+defines the planned healthcare technology catalog, work packages, dependencies,
+Sol/Terra/Astra assignments, and acceptance gates. It is planning documentation;
+the application behavior described below remains the current implementation.
+
+Local implementation progress and reviewed package receipts are recorded in
+[discovery implementation](docs/discovery/README.md). EX33 authorizes deployment of the ready existing-site candidate after GL11
+checks; no deployment has occurred.
+
+The current product direction is the [direct go-live plan](docs/discovery/go-live/README.md):
+an internal-first, publicly accessible regional health-tech index with broad discovery,
+lean sourced records and useful links. Its GL00–GL11 implementation begins with the reviewed GL00 baseline under EX33. Existing metadata-and-link code remains the qualified foundation;
+optional full-text reuse and independent benchmark review stay separate.
+
 Product source. Human news + agent feed. Delaware Valley / Greater Philadelphia healthcare technology.
 
 Owner: Cole Lyons (co-founder). Engineering: Knox. Product: Reed. Brand: Mira. CEO: Vale.

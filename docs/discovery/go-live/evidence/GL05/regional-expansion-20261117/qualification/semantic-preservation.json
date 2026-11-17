@@ -1,0 +1,339 @@
+{
+  "previousObservationsExact": 4803,
+  "previousNodesExact": 637,
+  "previousEdgesExact": 820,
+  "newSourceRecordsExact": 4472,
+  "repairedCitationsMatchRawCsvAndComposition": [
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 5
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 6
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 21
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 22
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 23
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 24
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 25
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 26
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 27
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 28
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 29
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 30
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 118
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "projects",
+      "sourceRef": {
+        "file": "project-evidence-candidates.csv",
+        "row": 309
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 5
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 6
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 21
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 22
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 23
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 24
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 25
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 26
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 27
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 28
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 29
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 30
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentAssociations",
+      "sourceRef": {
+        "file": "student-inclusive-evidence.csv",
+        "row": 118
+      },
+      "field": "evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 5
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 6
+      },
+      "field": "project_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 21
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 22
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 23
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 24
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 25
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 26
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 27
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 28
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 29
+      },
+      "field": "affiliation_evidence_urls"
+    },
+    {
+      "group": "studentVerified",
+      "sourceRef": {
+        "file": "student-verified-projects.csv",
+        "row": 30
+      },
+      "field": "affiliation_evidence_urls"
+    }
+  ],
+  "counts": {
+    "accounts": 259,
+    "repositoryCandidateIndex": 3274,
+    "distinctRepositoryUrlLeads": 5534,
+    "distinctRepositoryUrlLeadsExcludingBroadChecks": 4411,
+    "nativeRepositories": 231,
+    "observations": 9275,
+    "cooperNodes": 637,
+    "cooperEdges": 820,
+    "drexelBroadRootChecks": 2197,
+    "villanovaExternalResources": 2
+  },
+  "priorTrackedFilesChanged": [
+    "docs/discovery/go-live/execution/GL05-discovery-follow-through.md",
+    "package.json"
+  ],
+  "baseline": "c23cc18fcf2d820f8a8d93feb96e15e441855135",
+  "sourceCommit": "f6b33a0659abc6e535f1cb947ff375357cd29dbe",
+  "scope": "Source-commit reconciliation; earlier in-memory citation/source-record probe was captured before the follow-through documentation update."
+}

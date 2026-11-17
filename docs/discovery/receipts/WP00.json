@@ -1,0 +1,30 @@
+{
+  "package": "WP00",
+  "disposition": "accepted",
+  "accepted_at": "2026-11-14T00:04:39.489943+00:00",
+  "source_revision": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+  "authority": "orchestrating engineer under user-authorized local implementation",
+  "scope": "Baseline, preservation, ownership, constraints and isolated local validation setup; no operational or empirical acceptance.",
+  "owner": "Astra",
+  "reviewer": "Sol",
+  "review": "../reviews/wp00-sol.md",
+  "outputs": {
+    "baseline-receipt.json": "0ca616951917e752f718850ef4ac4d277ebf0affe98335766eecde2fc9f3e382",
+    "decision-register.md": "bebe283ddfbd06f4b359fe2eaa38dc443f1f6ceb8f7be8252333e66ee092acf5",
+    "ownership.md": "ed7f798b4f457afa523b49fbaa34c28b307f7c6c18394c34dc788547a78b1e09",
+    "validation-environments.md": "5fcd324b15b8100c00dcdd0d8607dc5d8321c44762ec5caf0a4ce5a17c99c42c",
+    "reviews/wp00-sol.md": "0a0157057122fc13cb4db84f446c64dc7f4305b2d00ed161c8b5126924981588"
+  },
+  "acceptance_criteria": {
+    "AC-WP00-01": "accepted after independent Sol review and orchestrator inspection",
+    "AC-WP00-02": "accepted after independent Sol review and orchestrator inspection",
+    "AC-WP00-03": "accepted after independent Sol review and orchestrator inspection",
+    "AC-WP00-04": "accepted after independent Sol review and orchestrator inspection",
+    "AC-WP00-05": "accepted after independent Sol review and orchestrator inspection"
+  },
+  "limitations": [
+    "Deployed revision/configuration unverified; production note unavailable.",
+    "No application or model results asserted by WP00.",
+    "Provider enrollment, real editorial actions, human evaluation, operating pilot and deployment remain separate."
+  ]
+}

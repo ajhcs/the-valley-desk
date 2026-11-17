@@ -1,0 +1,25 @@
+# GL03 bounded source results
+
+**16 November 2026; independent review complete for bounded acquisition; see [Sol review](GL03-sol-review.md).** Seven one-page native probes were executed by root in two separately frozen qualification batches: five GitHub and two Crossref requests. Four returned accepted private fact packets containing **eight leads: seven repositories and one publication**. Three returned HTTP 200 but failed inspection and produced no packet. No 403 or 429 was recorded. These counts are scoped observations, not public admissions, regional coverage, a benchmark, or an assertion that any candidate is eligible. The [initial preflight](GL03-source-preflight.md) and [supplemental preflight](GL03-supplemental-preflight.md) specify the distinct methods and limits.
+
+| Probe | Actual disposition | Consequence |
+| --- | --- | --- |
+| G01 | HTTP 200; malformed `link`; no packet | User account enumeration remains incomplete. The Link and exact cause were not retained and are unknown. |
+| G02 | HTTP 200; malformed `field-census`; no packet | Organization enumeration remains incomplete. The rejected field and exact cause are unknown. |
+| G03 | HTTP 200; five repository facts; capped, continuation `more` | Topical search yielded a bounded first page. Search terms do not establish regional association or health relevance; no continuation was collected. |
+| C01 | HTTP 200; malformed `publication-identity`; no packet | The offending type/value and exact cause are unknown; no work can be inferred from this failure. |
+| G04 | HTTP 200; one repository fact; fixed-repository scope complete | The D07 route identified `newilson/ExerciseCESTv2`. The separately observed CAMIPM software page links that repository; project facts, rights and regional basis still require GL04 review. Fixed lookup completion is not account enumeration or admission. |
+| G05 | HTTP 200; one User-owned repository fact; continuation `unknown` | `akibzaman/akibzaman` is a same-name repository. Its research purpose is not established. The opaque-Link method intentionally leaves enumeration incomplete even if no further page exists. |
+| C02 | HTTP 200; one publication fact; capped | DOI `10.3934/nhm.2011.6.647`, *A model for biological dynamic networks*. Health relevance and regional connection remain unverified. The journal-article filter is limited to this query; it is not a service-wide exclusion of preprints. |
+
+The G01, G02 and C01 failures remain held observations; the later distinct probes do not repair or retrospectively establish their discarded content. G05 and C02 were new scopes with one result each, not automatic retries. Account pagination is not complete, Crossref publication search is not exhausted, and the first topical query's provider ranking and capped pages do not support a completeness or regional-recall claim. All nine county coverage remains unmeasured here. No source was activated or enrolled for recurring operation, no source body was retained, and no output authorized publication.
+
+## Evidence and replay limits
+
+Root's private original and supplemental receipts, selected fact packets, manifests, plans and replay results bind actual request outcomes and are retained in `docs/discovery/go-live/evidence/GL03/` for the private repository. Native body digests in successful receipts commit to transient source bytes; they do **not** retain those bytes or let an independent reviewer replay the original source-to-packet transformation. Facts-array and whole-packet digests identify different retained artifacts. Failed attempts have no retained packet or native-body digest. Sol's independent evidence review passed within the limits in the final review.
+
+The retained-packet and private-journal replay checks report the original five pages and six candidates, plus the supplemental two pages and two candidates; both reopened without network access. This checks the retained results and replay/idempotence boundary, not the truth of provider metadata or reconstruction of discarded source bodies.
+
+## GL04 handoff
+
+All eight leads remain private and pending individual review. Verify project-specific purpose and health relevance, safe source links, dated regional basis, identity and relationship direction, and field-use authority before any admission. Hold or exclude `akibzaman/akibzaman` if adequate project purpose cannot be established; do not infer it from the account's other work. Hold C02's publication until health and regional evidence is independently supported. Check G03 items individually rather than treating query text as proof. G04's CAMIPM linkage supplies a paperless discovery route, not proof that no paper exists or that the account belongs to a particular person. Preserve unsupported claims as unresolved, source access failures and pagination gaps as incomplete, and the original three failures as separate observations. GL09 should report actual route outcomes and unknowns rather than generalize this small batch to the region.

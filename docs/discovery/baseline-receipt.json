@@ -1,0 +1,841 @@
+{
+  "schema": "tvd-discovery-baseline-receipt/1",
+  "package": "WP00",
+  "recorded_at": "2026-11-14T00:00:14.942097+00:00",
+  "owner": "Astra",
+  "independent_reviewer": "Sol",
+  "review_status": "pending",
+  "acceptance_authority": "orchestrator; owner does not accept WP00",
+  "authorization": {
+    "scope": "Local implementation requested by user; WP00 evidence only in this receipt. No deployment, provider acquisition, source enrollment, external mutations, host packages, or persistent services.",
+    "instruction_resolution": "User implementation request supersedes historical planning-only statements. Frozen handoff remains unchanged. docs/discovery/execution.json is the active package status authority."
+  },
+  "source": {
+    "checkout": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113",
+    "branch": "codex/discovery-implementation-20261113",
+    "head": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+    "expected_handoff_head": "c8b36d7e9b27376bf121d9d6670c500a25c62423",
+    "matches_handoff": true,
+    "working_tree_observed_at": "2026-11-14T00:00:14.276391+00:00",
+    "porcelain_inventory": [
+      " M .gitignore",
+      " M README.md",
+      "?? docs/discovery-engineering/ARCHITECTURE.md",
+      "?? docs/discovery-engineering/EVIDENCE.md",
+      "?? docs/discovery-engineering/EXECUTION.md",
+      "?? docs/discovery-engineering/HANDOFF-MANIFEST.json",
+      "?? docs/discovery-engineering/INPUTS-AND-RISKS.md",
+      "?? docs/discovery-engineering/README.md",
+      "?? docs/discovery-engineering/REQUIREMENTS.md",
+      "?? docs/discovery-engineering/SCOPE.md",
+      "?? docs/discovery-engineering/VALIDATION.md",
+      "?? docs/discovery-engineering/baseline/README.md",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/evidence/accepted-direction.md",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/evidence/design-policy.md",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/evidence/geography-policy.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/evidence/source-research.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/model-contract-scope.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/model-contract-scope.sha256",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/model/tvd-discovery.english.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/model/tvd-discovery.sysml",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proof-scope.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proof-scope.sha256",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proofs/finite-manifest.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proofs/finite-model.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proofs/function-flow.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proofs/native-bindings.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/requirements-proof.txt",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/review-scope.json",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/review-scope.sha256",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/tools/check_record_scope.py",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/tools/verify_controls.py",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/tools/verify_mathematics.py",
+      "?? docs/discovery-engineering/baseline/tvd-concept-v0.4/validation/receipt.json",
+      "?? docs/discovery-engineering/plan.json",
+      "?? docs/discovery-engineering/prose-validation.json",
+      "?? docs/discovery-engineering/requirements-index.json",
+      "?? docs/discovery-engineering/scope.json",
+      "?? docs/discovery-engineering/validation-history/01-initial-metadata.json",
+      "?? docs/discovery-engineering/validation-history/02-initial-prose.json",
+      "?? docs/discovery-engineering/validation.json",
+      "?? docs/discovery-engineering/verification-index.json",
+      "?? docs/discovery-engineering/work-packages/WP00.md",
+      "?? docs/discovery-engineering/work-packages/WP01.md",
+      "?? docs/discovery-engineering/work-packages/WP02.md",
+      "?? docs/discovery-engineering/work-packages/WP03.md",
+      "?? docs/discovery-engineering/work-packages/WP04.md",
+      "?? docs/discovery-engineering/work-packages/WP05.md",
+      "?? docs/discovery-engineering/work-packages/WP06.md",
+      "?? docs/discovery-engineering/work-packages/WP07.md",
+      "?? docs/discovery-engineering/work-packages/WP08.md",
+      "?? docs/discovery-engineering/work-packages/WP09.md",
+      "?? docs/discovery-engineering/work-packages/WP10.md",
+      "?? docs/discovery-engineering/work-packages/WP11.md",
+      "?? docs/discovery-engineering/work-packages/WP12.md",
+      "?? docs/discovery-engineering/work-packages/WP13.md",
+      "?? docs/discovery-engineering/work-packages/WP14.md",
+      "?? docs/discovery-engineering/work-packages/WP15.md",
+      "?? docs/discovery-engineering/work-packages/WP16.md",
+      "?? docs/discovery-engineering/work-packages/WP17.md",
+      "?? docs/discovery-engineering/work-packages/WP18.md",
+      "?? docs/discovery-engineering/work-packages/WP19.md",
+      "?? docs/discovery-engineering/work-packages/WP20.md",
+      "?? docs/discovery-engineering/work-packages/WP21.md",
+      "?? docs/discovery-engineering/work-packages/WP22.md",
+      "?? docs/discovery-engineering/work-packages/WP23.md",
+      "?? docs/discovery-engineering/work-packages/WP24.md",
+      "?? docs/discovery-engineering/work-packages/WP25.md",
+      "?? docs/discovery-engineering/work-packages/WP26.md",
+      "?? docs/discovery-engineering/work-packages/WP27.md",
+      "?? docs/discovery-engineering/work-packages/WP28.md",
+      "?? docs/discovery-engineering/work-packages/WP29.md",
+      "?? docs/discovery-engineering/work-packages/WP30.md",
+      "?? docs/discovery-policy.md",
+      "?? docs/discovery/README.md",
+      "?? docs/discovery/execution.json"
+    ],
+    "inventory_limit": "Timestamped pre-WP00 snapshot; orchestration and parallel authorized document edits may occur later. This receipt does not claim a clean checkout.",
+    "origin_kind": "Local canonical repository; not the GitHub upstream",
+    "origin": "/workspace/repos/builderbob/thevalleydesk",
+    "origin_comparison": "Local origin HEAD/main differ from selected source; preserved without fetch/reset/merge. See retained command output.",
+    "upstream_url": "https://github.com/ajhcs/the-valley-desk.git",
+    "upstream_comparison": "GitHub HEAD and refs/heads/main both equal selected source c8b36d7e9b27376bf121d9d6670c500a25c62423 at commands[6].observed_at. No reference or worktree changed.",
+    "files": [
+      {
+        "path": "README.md",
+        "sha256": "792f6a6b17a40e1d7de4fb38e5bea69737fa0ee9a9d98e7f27f7979606dfb13a",
+        "bytes": 22658
+      },
+      {
+        "path": "AGENTS.md",
+        "sha256": "7b84fa3e4fc1013094f1927c8a9b2d9d6d86c399edc8a96af5825fb83e5ff3b7",
+        "bytes": 839
+      },
+      {
+        "path": ".ruler/AGENTS.md",
+        "sha256": "f54f6c6cb602df43314a40842e133e25a64f4446dec4f4c970735ee8b84b7cf4",
+        "bytes": 774
+      },
+      {
+        "path": "docs/OPERATIONS.md",
+        "sha256": "05622d3e153f0002c7db01e0226140dc647f55249006898bdff91b36a4112223",
+        "bytes": 34425
+      },
+      {
+        "path": "package.json",
+        "sha256": "b0e575a95aaf1cecf0b9253f82ad7df78470fa2bd4724b8bf2c7cf4cc5f6cb96",
+        "bytes": 4176
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "f90749d123fe5d553057a037188af6a827367aa6bc427e84ccc25a3c4218fe05",
+        "bytes": 127229
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "sha256": "16a27f5ea9941522f8a1ed1f8983c367bb477893a3b37429ec48b120ecd271cd",
+        "bytes": 865
+      },
+      {
+        "path": "wrangler.jsonc",
+        "sha256": "5049c10be1fc55c21aaff893dda0c5706e399e9ea08bdeb9b8dd6c58f7158c30",
+        "bytes": 1893
+      },
+      {
+        "path": "worker.js",
+        "sha256": "19ad105a6505e362b26904cf3f39753b8ab5a23c10194ccc95022951b8d31cdc",
+        "bytes": 43717
+      },
+      {
+        "path": "src/ingest/regional-contracts.ts",
+        "sha256": "5f351e7108bd0c81f3377484c6fe925cb1fb5134c20ec1e56738434d25f61be9",
+        "bytes": 17224
+      },
+      {
+        "path": "src/ingest/regional-coverage.ts",
+        "sha256": "8ab41a64b92823c419f900afd3e490f1acf71d3da65ea711e5e97db3f5a761d1",
+        "bytes": 6366
+      },
+      {
+        "path": "src/lib/public-features.ts",
+        "sha256": "957ba398ba70c9b6472a1a295a8c9b3903bbc8a9b21ab09e7ab87d794df9475f",
+        "bytes": 1004
+      },
+      {
+        "path": "scripts/ops-smoke.mjs",
+        "sha256": "56602b2e9d0ec1484af0157e99f791f7675d3040b4f723a5439c99d1a16df7d6",
+        "bytes": 3443
+      },
+      {
+        "path": "scripts/policy-pdf-runtime.mjs",
+        "sha256": "f333554c524e4db83aae4e782bbbce6de116b2a4addafff0f636953025e34004",
+        "bytes": 683
+      },
+      {
+        "path": "scripts/build-feed.mjs",
+        "sha256": "933eee79c9942682e367ef0ff9b87eaa31a9759784f56d13d06f490382ba8996",
+        "bytes": 6169
+      },
+      {
+        "path": "scripts/secret-scan.mjs",
+        "sha256": "4c4400746b50ab01cc708eb6ce31a6e1108c4a0ce0b88aaad4c4a9c1a737e360",
+        "bytes": 1858
+      }
+    ],
+    "migrations": [
+      {
+        "path": "migrations/0001_automation.sql",
+        "sha256": "522de911135b3566209565d7103654fa44df25e9aeb5999db6906f11d5c7be94"
+      },
+      {
+        "path": "migrations/0002_review_audit.sql",
+        "sha256": "4c79838453024df0c5f199f3dea065d4ace26c83976aded26ccb8dff17aac197"
+      },
+      {
+        "path": "migrations/0003_editor_publication.sql",
+        "sha256": "ebcdb9488cf5677f0d0e5ebe65e875e013987ffea14881ca8d1e394b94ad4ba3"
+      },
+      {
+        "path": "migrations/0004_source_reconciliation.sql",
+        "sha256": "3589503a70d0d90d60e41e9bdb9099e70d40abaa8b57c07a26c2fbc34b12ba85"
+      },
+      {
+        "path": "migrations/0005_publication_invariants.sql",
+        "sha256": "63fd4eaef323b37f79b64d919d72f9d957e67b7157ff3706c466ef3fa76408c8"
+      },
+      {
+        "path": "migrations/0006_editor_model_attempts.sql",
+        "sha256": "e6b4c495a765f0a2db1fd255db93d8993cdb482174baa59ff4bf042ba0d34c12"
+      },
+      {
+        "path": "migrations/0007_publication_identity.sql",
+        "sha256": "ea6839a21e4d6d2262ab187d623f693de21d416a2289755ca780cc730cc9766b"
+      },
+      {
+        "path": "migrations/0008_source_reliability.sql",
+        "sha256": "f052abac49df88b73063a3ebceed6f678501a6abce3846433066777e2113fbb7"
+      },
+      {
+        "path": "migrations/0009_snapshot_completeness.sql",
+        "sha256": "6878c3ffe4792440feeedf4799a75216950360036e0a9df0fb9cc29ccad17fc8"
+      },
+      {
+        "path": "migrations/0010_email_discoveries.sql",
+        "sha256": "1dce8848054f9a4595c44c6129e52347055be2b4c4fbc30f321cd5d5b56c08e5"
+      },
+      {
+        "path": "migrations/0011_news_article_extractions.sql",
+        "sha256": "0f30d46755c27fbd09ed4eb97012a3309c81e3eb91912095870c26e3423ad694"
+      },
+      {
+        "path": "migrations/0012_executive_intelligence.sql",
+        "sha256": "c97615cb12e31bc2fe669aea3429aa68ab310aea59300badc2b8146bb187543f"
+      },
+      {
+        "path": "migrations/0013_executive_verification.sql",
+        "sha256": "1f1a2d70d36d5df62ba801219fd9827a339f7025906fe440f53f63e9539dd36a"
+      },
+      {
+        "path": "migrations/0014_editor_review_verification.sql",
+        "sha256": "30842640fba3c1e82213ac1cdb6c41a28bdb2d1a14b43cd6e5b2acfa385b0e61"
+      },
+      {
+        "path": "migrations/0015_signals_alerts.sql",
+        "sha256": "5cc5fe8096d84469efb2bacdec3d739fc282a06ddbf5ee74bc91fa1117f5c1b7"
+      },
+      {
+        "path": "migrations/0016_operational_alert_recovery.sql",
+        "sha256": "1002da1c6acd1a601ae4711465fa08371f2f8587cd7a29aa0b6bfae7265ba349"
+      },
+      {
+        "path": "migrations/0017_executive_enrollment.sql",
+        "sha256": "4935ac5cd8ac823377fb7a01610c845f07786f6cb33d5aa672d7bf5aab9dbe31"
+      },
+      {
+        "path": "migrations/0018_signal_pointer_verification.sql",
+        "sha256": "f5fa289d6370b1088f284927aacc8b4881be4f9562fd858491965b75e0e531e6"
+      },
+      {
+        "path": "migrations/0019_official_source_discovery.sql",
+        "sha256": "343f90dd8091b449ea3aa2ce6d0b17857440b4d1c7f92fe6cb6e3446d3110289"
+      },
+      {
+        "path": "migrations/0020_official_source_retry_provenance.sql",
+        "sha256": "9a5b23e8fbebab39839c3a7d97db4be45cd72dc54d16000d74b6b6d5b86fcbad"
+      },
+      {
+        "path": "migrations/0021_social_evidence_packets.sql",
+        "sha256": "55febdf36348bba01dd6f2731e294c0205fb5a86f61070881a95b780dd438955"
+      },
+      {
+        "path": "migrations/0022_source_health_backoff.sql",
+        "sha256": "18449730455d67286447e5399bb40fee3a56c5cdaf82c833aad829da921d8686"
+      },
+      {
+        "path": "migrations/0023_social_collector_runs.sql",
+        "sha256": "2ca43c36998a518ff33065b0050bb26e38bdb8eccd98a284b094f92f4b52a0a7"
+      },
+      {
+        "path": "migrations/0024_social_lifecycle.sql",
+        "sha256": "bca18d162cbd4b2f29176a5e819d0734e75ac7cbffaa74a5300595ef44a7cafe"
+      },
+      {
+        "path": "migrations/0025_operational_alert_context.sql",
+        "sha256": "de56a0c58f1130dafbf75e6f12d18d446582c97b1e66edcdefc08ef644149eb3"
+      },
+      {
+        "path": "migrations/0026_source_health_attribution.sql",
+        "sha256": "0e3efec45211e2f87478d85a5a0b76e727717e1b25ffd337676776a57e22a517"
+      },
+      {
+        "path": "migrations/0027_policy_intelligence_hardening.sql",
+        "sha256": "27ebc48bdcbe2e428b0ec88fdfa17ac7b7c18fd566c3c6d24b1f96d27607c57e"
+      },
+      {
+        "path": "migrations/0028_policy_pdf_review.sql",
+        "sha256": "179ced42fad59b1c2c0a90ccca2a7ece0eb69aab94b5e944c20c2f451e5ecfaa"
+      },
+      {
+        "path": "migrations/0029_watch_public_revisions.sql",
+        "sha256": "0c8779563855cf1660b8cd68b25f156e2163964402f6bacff6e80bb414457ffe"
+      },
+      {
+        "path": "migrations/0030_watch_delivery_dependencies.sql",
+        "sha256": "cb15e65a26eac1ca8a947ced187e735c9a2299bab5f3a9dc1c49f21c4e21f93e"
+      },
+      {
+        "path": "migrations/0031_watch_collection.sql",
+        "sha256": "d93c4d66b5d7097919d91998380c6ff86ed3b6ff7281ad16db2004840efee221"
+      },
+      {
+        "path": "migrations/0032_watch_representatives.sql",
+        "sha256": "bb3c50e5f5bd43921696870e00242f5d7f11576b157d53de2eb92a1102eb35a8"
+      },
+      {
+        "path": "migrations/0033_watch_technology_drafts.sql",
+        "sha256": "bf2c616140e943f9b8b74433e0732de8bb751b99e0cc83467e8d5ffacc51b1fd"
+      },
+      {
+        "path": "migrations/0034_watch_editorial_workflow.sql",
+        "sha256": "628e67ae38393a0b2e8aa653af8d9de7720be00224c68a8a5fb2c12fbe14e796"
+      },
+      {
+        "path": "migrations/0035_policy_watch_workflow.sql",
+        "sha256": "dcce093bd87d8a37dc03d92a13a4c9ab50cebbd3035a97c8a9eb0d29094225cf"
+      },
+      {
+        "path": "migrations/0036_event_calendar.sql",
+        "sha256": "bac73145a9196747b5b647a5e0f6b619a7186ffb29043e36693447abe72f76c6"
+      },
+      {
+        "path": "migrations/0037_representative_raw_retention.sql",
+        "sha256": "bebfa24b650bbc49d01a649c0d98e8ae2f36e9d5596e42a4cfdc80f68d2c297f"
+      },
+      {
+        "path": "migrations/0038_watch_source_rule_dispatch.sql",
+        "sha256": "ae948185378866d44d1b7431786ec184648016dca1d7fe5ba95b50732a1fe9e3"
+      },
+      {
+        "path": "migrations/0039_source_delivery_freshness.sql",
+        "sha256": "28fe9a3176610befc4b937f9df2de59e3e29c473bb85d5b310e00391dce23a3e"
+      },
+      {
+        "path": "migrations/0040_leadership_markup_captures.sql",
+        "sha256": "45f9da175d634d842e6da982f1dfd2ec0221a2cc9630489fabd83d43f7a03981"
+      }
+    ]
+  },
+  "runtime": {
+    "status": "unverified",
+    "deployed_revision": null,
+    "deployed_health_observation": "not_run",
+    "reason": "WP00 remains read-only local/source-metadata scope. No deployed-health request or private runtime inspection was made.",
+    "source_runtime_equivalence": "not established",
+    "private_production_runbook": {
+      "path": "/home/plumbob/.codex/memories/plumbob-server/the-valley-desk-prod.md",
+      "exists": false,
+      "replacement": "docs/OPERATIONS.md plus README Local verification and inspected package/scripts, authorized by current local implementation assignment for isolated synthetic validation only",
+      "resolution_owner": "orchestrator with accountable operating owner",
+      "hold": "Production/provider-connected runtime, production configuration reconciliation, deployment, remote/production migrations, enrollment and service changes remain held."
+    }
+  },
+  "storage": {
+    "verification_command_index": 8,
+    "required_mount": "/workspace",
+    "fallback": "none",
+    "evidence_location": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work",
+    "native_codex_state": "unchanged",
+    "provisioning_owner": "orchestrator; empty local development/preproduction/cache/tmp/evidence directories do not constitute a deployed environment"
+  },
+  "environment": {
+    "default_node": "v18.19.1; unsuitable for CI/smoke",
+    "selected_node": "/workspace/build/builderbob/runtimes/node-v22.23.2-linux-x64/bin/node",
+    "selected_node_version": "v22.23.2",
+    "ci_node_major": "22",
+    "python": "Python 3.12.3",
+    "installation_and_checks": "not run by WP00 owner; orchestrator owns qualified local setup and subsequent results"
+  },
+  "historical_formal_claim_ledger": {
+    "revision": "TVD-CONCEPT-0.4",
+    "receipt_status_reported": "pass_for_declared_formal_contracts_and_documentary_scope",
+    "receipt_review_reported": "Self-review; no independent agent was requested.",
+    "historical_only": true,
+    "hash_verification_only": true,
+    "current_proof_reproduction": "not_run; WP02 owns fresh scratch reproduction",
+    "counts_reported": {
+      "formal_obligation_families": 32,
+      "symbolic_lemmas": 74,
+      "solver_input_replays": 74,
+      "reachable_abstract_states": 320,
+      "abstract_transitions": 2348,
+      "negative_controls": 30,
+      "workflow_elements": 63,
+      "documentary_relations": 52,
+      "retained_concept_expectations": 60,
+      "native_record_fields": 44,
+      "native_specialization_checks": 7,
+      "implementation_increments": 9,
+      "empirical_gates": 6,
+      "diagrams": 3
+    },
+    "hashes": {
+      "model/tvd-discovery.sysml": "2db650c71d7a8703ff01b814e1db84629b33c9de99b702e2d90bad30235387a9",
+      "proof-scope.json": "679e824c2f26273caac2474648a2b2aee3d234d3af2ce4d715033bdeb54ebb2b",
+      "review-scope.json": "993756f3200e59790a7e0488fe85edd33d90f645ab504b4004982fb7d9aeb319",
+      "model-contract-scope.json": "3697971f003a8dc636177ad173e8a048be40d39ed31e99769f5a3b0abf74d653",
+      "validation/receipt.json": "fae78fac5d0be62980c5361589e7e92f43f3a1320ba3db88f9eeb6698f3c5d3f",
+      "MANIFEST.json": "6e5a05c18af741435e6c2c6901bdadaa9f74516e7ad1d90b357ef3deb6cc989e"
+    },
+    "assumptions": {
+      "A_FACTS": "The decision inputs mean what their evidence and reviewer assert. Mathematical consistency does not establish their truth.",
+      "A_GEO": "The user-selected county set is authoritative. Professional-location and creator-role evidence are correctly interpreted and dated.",
+      "A_TIME": "Source times and intervals have been normalized correctly. Freshness policy is explicit; an unknown end date is not proof of a current relationship.",
+      "A_AUTHORITY": "Human or deterministic-rule authority is authenticated outside the mathematical gate. The model-output role has no such authority.",
+      "A_PROVIDER": "Source access and enrollment are qualified per installation. An API description does not establish actual regional coverage or complete metadata.",
+      "A_IDENTITY": "Admitted equivalence and relationship evidence is correctly adjudicated. Names and similarity are discovery leads only.",
+      "A_KEYS": "Canonical provider/native identifiers and stable tie identities are correctly assigned; persistent uniqueness guards reject collisions.",
+      "A_STORAGE": "The storage implementation preserves committed immutable evidence and distinguishes observations from source failures.",
+      "A_ATOMIC": "The modeled guard and mutation occur atomically, or an equivalent transaction/CAS guard protects the implementation.",
+      "A_SCHEMA": "The selected public-field allowlist and field-level evidence admission are correct and enforced by the eventual projection.",
+      "A_SNAPSHOT": "A result snapshot is immutable, finite and canonically identified. The actual normalized query is compared, not only a collision-prone digest.",
+      "A_QUERY": "Facet values and query terms have already been normalized according to the selected exact matching rules.",
+      "A_ORDER": "Sort coordinates use exact integers and the selected direction. Stable tie identity is unique within the snapshot.",
+      "A_FAIRNESS": "The eligible cohort and cursor order are fixed for the round, dispatch continues, and each attempt advances the cursor. Permanent outages do not imply delivery.",
+      "A_COVERAGE": "Counts refer to the same declared source scope, window or candidate cohort. They do not describe an unknown global population.",
+      "A_TRANSITIONS": "Only the explicitly declared abstract transitions occur. Correspondence to native descriptions and future code requires separate review and tests.",
+      "A_ORIGIN": "Provenance-origin equivalence is correctly assigned. Distinct URLs do not themselves establish independent sources."
+    },
+    "assumption_disposition": "Preserved verbatim; implementation/external-truth discharge not evaluated by WP00. WP02/WP23/WP24 must assign and verify dispositions.",
+    "limits": [
+      "Guarantees apply to explicit rules, domains and assumptions.",
+      "Qualified evidence inputs and atomic operations are assumptions requiring implementation and empirical checks.",
+      "Native function/type correspondence does not establish transformation correctness or arbitrary native execution.",
+      "Source coverage is scoped to enrolled sources and retained cohorts, not the entire regional population.",
+      "The implementation plan is prepared after formal checks; it is not implemented or released."
+    ],
+    "empirical_gates": {
+      "E01": {
+        "status": "not_run",
+        "name": "Creator and regional truth"
+      },
+      "E02": {
+        "status": "not_run",
+        "name": "Health-tech relevance"
+      },
+      "E03": {
+        "status": "not_run",
+        "name": "Discovery recall and coverage"
+      },
+      "E04": {
+        "status": "not_run",
+        "name": "Provider qualification"
+      },
+      "E05": {
+        "status": "not_run",
+        "name": "Reader usefulness"
+      },
+      "E06": {
+        "status": "not_run",
+        "name": "Implementation correspondence"
+      }
+    }
+  },
+  "frozen_manifest_checks": [
+    {
+      "path": "docs/discovery-engineering/HANDOFF-MANIFEST.json",
+      "sha256": "c23fcc9c37cc160936482b5af7b7da4a6fe55be0082a4c946953545e4a62111a",
+      "files_checked": 70,
+      "mismatches": [],
+      "result": "pass",
+      "method": "For each files[] entry: SHA-256 and byte length of manifest-relative file must equal sha256 and bytes. No historical program executed."
+    },
+    {
+      "path": "docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json",
+      "sha256": "6e5a05c18af741435e6c2c6901bdadaa9f74516e7ad1d90b357ef3deb6cc989e",
+      "files_checked": 21,
+      "mismatches": [],
+      "result": "pass",
+      "method": "For each files[] entry: SHA-256 and byte length of manifest-relative file must equal sha256 and bytes. No historical program executed."
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "observed_at": "2026-11-14T00:00:14.273541+00:00",
+      "exit_code": 0,
+      "stdout": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "observed_at": "2026-11-14T00:00:14.274120+00:00",
+      "exit_code": 0,
+      "stdout": "c8b36d7e9b27376bf121d9d6670c500a25c62423\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "observed_at": "2026-11-14T00:00:14.274614+00:00",
+      "exit_code": 0,
+      "stdout": "codex/discovery-implementation-20261113\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "observed_at": "2026-11-14T00:00:14.276391+00:00",
+      "exit_code": 0,
+      "stdout": " M .gitignore\n M README.md\n?? docs/discovery-engineering/ARCHITECTURE.md\n?? docs/discovery-engineering/EVIDENCE.md\n?? docs/discovery-engineering/EXECUTION.md\n?? docs/discovery-engineering/HANDOFF-MANIFEST.json\n?? docs/discovery-engineering/INPUTS-AND-RISKS.md\n?? docs/discovery-engineering/README.md\n?? docs/discovery-engineering/REQUIREMENTS.md\n?? docs/discovery-engineering/SCOPE.md\n?? docs/discovery-engineering/VALIDATION.md\n?? docs/discovery-engineering/baseline/README.md\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/MANIFEST.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/evidence/accepted-direction.md\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/evidence/design-policy.md\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/evidence/geography-policy.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/evidence/source-research.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/model-contract-scope.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/model-contract-scope.sha256\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/model/tvd-discovery.english.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/model/tvd-discovery.sysml\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proof-scope.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proof-scope.sha256\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proofs/finite-manifest.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proofs/finite-model.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proofs/function-flow.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/proofs/native-bindings.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/requirements-proof.txt\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/review-scope.json\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/review-scope.sha256\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/tools/check_record_scope.py\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/tools/verify_controls.py\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/tools/verify_mathematics.py\n?? docs/discovery-engineering/baseline/tvd-concept-v0.4/validation/receipt.json\n?? docs/discovery-engineering/plan.json\n?? docs/discovery-engineering/prose-validation.json\n?? docs/discovery-engineering/requirements-index.json\n?? docs/discovery-engineering/scope.json\n?? docs/discovery-engineering/validation-history/01-initial-metadata.json\n?? docs/discovery-engineering/validation-history/02-initial-prose.json\n?? docs/discovery-engineering/validation.json\n?? docs/discovery-engineering/verification-index.json\n?? docs/discovery-engineering/work-packages/WP00.md\n?? docs/discovery-engineering/work-packages/WP01.md\n?? docs/discovery-engineering/work-packages/WP02.md\n?? docs/discovery-engineering/work-packages/WP03.md\n?? docs/discovery-engineering/work-packages/WP04.md\n?? docs/discovery-engineering/work-packages/WP05.md\n?? docs/discovery-engineering/work-packages/WP06.md\n?? docs/discovery-engineering/work-packages/WP07.md\n?? docs/discovery-engineering/work-packages/WP08.md\n?? docs/discovery-engineering/work-packages/WP09.md\n?? docs/discovery-engineering/work-packages/WP10.md\n?? docs/discovery-engineering/work-packages/WP11.md\n?? docs/discovery-engineering/work-packages/WP12.md\n?? docs/discovery-engineering/work-packages/WP13.md\n?? docs/discovery-engineering/work-packages/WP14.md\n?? docs/discovery-engineering/work-packages/WP15.md\n?? docs/discovery-engineering/work-packages/WP16.md\n?? docs/discovery-engineering/work-packages/WP17.md\n?? docs/discovery-engineering/work-packages/WP18.md\n?? docs/discovery-engineering/work-packages/WP19.md\n?? docs/discovery-engineering/work-packages/WP20.md\n?? docs/discovery-engineering/work-packages/WP21.md\n?? docs/discovery-engineering/work-packages/WP22.md\n?? docs/discovery-engineering/work-packages/WP23.md\n?? docs/discovery-engineering/work-packages/WP24.md\n?? docs/discovery-engineering/work-packages/WP25.md\n?? docs/discovery-engineering/work-packages/WP26.md\n?? docs/discovery-engineering/work-packages/WP27.md\n?? docs/discovery-engineering/work-packages/WP28.md\n?? docs/discovery-engineering/work-packages/WP29.md\n?? docs/discovery-engineering/work-packages/WP30.md\n?? docs/discovery-policy.md\n?? docs/discovery/README.md\n?? docs/discovery/execution.json\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "observed_at": "2026-11-14T00:00:14.276992+00:00",
+      "exit_code": 0,
+      "stdout": "/workspace/repos/builderbob/thevalleydesk\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "--symref",
+        "origin",
+        "HEAD",
+        "refs/heads/main"
+      ],
+      "observed_at": "2026-11-14T00:00:14.279263+00:00",
+      "exit_code": 0,
+      "stdout": "ref: refs/heads/codex/valley-desk-hardening\tHEAD\n29e6a4e32fbccf79127815768bc322f0c3eb22fe\tHEAD\n2ae7ba31e73656d920d1a9a98c0b571aa6834f18\trefs/heads/main\nref: refs/remotes/origin/main\trefs/remotes/origin/HEAD\n428213e52f72753863e8d5fecbabcff4466e5f2f\trefs/remotes/origin/HEAD\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "--symref",
+        "https://github.com/ajhcs/the-valley-desk.git",
+        "HEAD",
+        "refs/heads/main"
+      ],
+      "observed_at": "2026-11-14T00:00:14.710790+00:00",
+      "exit_code": 0,
+      "stdout": "ref: refs/heads/main\tHEAD\nc8b36d7e9b27376bf121d9d6670c500a25c62423\tHEAD\nc8b36d7e9b27376bf121d9d6670c500a25c62423\trefs/heads/main\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "bob-admin",
+        "capabilities"
+      ],
+      "observed_at": "2026-11-14T00:00:14.728029+00:00",
+      "exit_code": 0,
+      "stdout": "{\"capabilities\":[{\"effect\":\"list the fixed interface\",\"inputs\":[],\"operation\":\"capabilities\",\"privileged\":false,\"routine\":true},{\"effect\":\"verify the approved mount and physical identity without writes\",\"inputs\":[],\"operation\":\"workspace-status\",\"privileged\":false,\"routine\":true},{\"effect\":\"mount only /workspace via the existing fstab entry after fixed identity and mountpoint checks\",\"inputs\":[],\"operation\":\"workspace-mount\",\"privileged\":true,\"routine\":true},{\"effect\":\"create only missing fixed builderbob directories below approved category roots and verify ownership/modes\",\"inputs\":[],\"operation\":\"workspace-prepare\",\"privileged\":true,\"routine\":true}],\"detail\":\"\",\"operation\":\"capabilities\",\"outcome\":\"ok\",\"policy_ref\":\"builderbob-operator-amendment-1\",\"reason\":\"OK\",\"schema\":\"bob-admin-result-v1\",\"target\":\"local\",\"version\":\"builderbob-autonomy-v1.1-candidate\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "bob-admin",
+        "workspace-status"
+      ],
+      "observed_at": "2026-11-14T00:00:14.745945+00:00",
+      "exit_code": 0,
+      "stdout": "{\"detail\":\"\",\"device\":{\"device\":\"/dev/nvme1n1p1\",\"major_minor\":\"259:1\",\"model\":\"Samsung SSD 990 PRO 2TB\",\"parent\":\"nvme1n1\",\"partition\":\"nvme1n1p1\",\"partuuid\":\"0b7f0877-8d9e-44e4-9089-3cf97b1944c9\",\"serial\":\"S7L9NS0L303989X\",\"uuid\":\"dcb87552-b22f-411c-bd86-4e2da80f1c6f\",\"wwn\":\"eui.00253843614122d4\"},\"mount\":{\"fstype\":\"ext4\",\"major_minor\":\"259:1\",\"mount_id\":\"50\",\"options\":[\"nodev\",\"nosuid\",\"relatime\",\"rw\"],\"root\":\"/\",\"source\":\"/dev/nvme1n1p1\",\"target\":\"/workspace\"},\"operation\":\"workspace-status\",\"outcome\":\"ok\",\"policy_ref\":\"builderbob-operator-amendment-1\",\"reason\":\"OK\",\"schema\":\"bob-admin-result-v1\",\"target\":\"/workspace\",\"version\":\"builderbob-autonomy-v1.1-candidate\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "id",
+        "-un"
+      ],
+      "observed_at": "2026-11-14T00:00:14.747967+00:00",
+      "exit_code": 0,
+      "stdout": "builderbob\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "observed_at": "2026-11-14T00:00:14.756594+00:00",
+      "exit_code": 0,
+      "stdout": "v18.19.1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "npm",
+        "--version"
+      ],
+      "observed_at": "2026-11-14T00:00:14.936103+00:00",
+      "exit_code": 0,
+      "stdout": "9.2.0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "--version"
+      ],
+      "observed_at": "2026-11-14T00:00:14.936627+00:00",
+      "exit_code": 0,
+      "stdout": "Python 3.12.3\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/workspace/build/builderbob/runtimes/node-v22.23.2-linux-x64/bin/node",
+        "--version"
+      ],
+      "observed_at": "2026-11-14T00:00:14.938550+00:00",
+      "exit_code": 0,
+      "stdout": "v22.23.2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "test",
+        "-e",
+        "/home/plumbob/.codex/memories/plumbob-server/the-valley-desk-prod.md"
+      ],
+      "observed_at": "2026-11-14T00:00:14.940520+00:00",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-WP00-01",
+      "owner_disposition": "evidence_ready_for_review",
+      "evidence": [
+        "source",
+        "commands[0:7]"
+      ],
+      "limit": "Both local origin and GitHub upstream are retained separately; dirty handoff and orchestration files preserved."
+    },
+    {
+      "id": "AC-WP00-02",
+      "owner_disposition": "evidence_ready_for_review",
+      "evidence": [
+        "runtime"
+      ],
+      "limit": "Deployed revision unavailable; no actual divergence or equivalence claimed. Reconcile source and served revision when a permitted observation exists."
+    },
+    {
+      "id": "AC-WP00-03",
+      "owner_disposition": "evidence_ready_for_review",
+      "evidence": [
+        "runtime.private_production_runbook",
+        "storage",
+        "commands[7:9]",
+        "commands[14]"
+      ],
+      "limit": "Storage verified; exact missing production note remains an operational hold. Local documentation/fixture work may continue."
+    },
+    {
+      "id": "AC-WP00-04",
+      "owner_disposition": "evidence_ready_for_review",
+      "evidence": [
+        "docs/discovery/ownership.md",
+        "docs/discovery/decision-register.md",
+        "docs/discovery/execution.json"
+      ],
+      "limit": "31 package allocations retained; independent review and orchestrator acceptance remain pending."
+    },
+    {
+      "id": "AC-WP00-05",
+      "owner_disposition": "evidence_ready_for_review",
+      "evidence": [
+        "historical_formal_claim_ledger",
+        "frozen_manifest_checks"
+      ],
+      "limit": "Byte checks preserve history; no fresh formal, implementation, provider or empirical pass claimed."
+    }
+  ],
+  "document_checks": {
+    "observed_at": "2026-11-14T00:02:34.884354+00:00",
+    "ownership_rows": "31 rows compared with plan.json owner/reviewer/dependencies; all match and reviewers differ from owners",
+    "receipt_structure": "JSON parsed; all five ACs, six not_run gates and 17 preserved assumptions present",
+    "prose": [
+      {
+        "document": "docs/discovery/ownership.md",
+        "argv": [
+          "python3",
+          "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/scripts/prose.py",
+          "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/tmp/wp00-ownership.md.txt",
+          "--kind",
+          "description",
+          "--sentence-words",
+          "60",
+          "--paragraph-words",
+          "150",
+          "--document-words",
+          "1600",
+          "--json"
+        ],
+        "exit_code": 0,
+        "report": {
+          "checker_version": "prose-1.0",
+          "claim_scope": "selected_lexical_prose_budgets",
+          "counts": {
+            "paragraphs": 230,
+            "sentences": 251,
+            "words": 1036
+          },
+          "diagnostic_limits": {
+            "findings": 100,
+            "snippet_characters": 240
+          },
+          "file": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/tmp/wp00-ownership.md.txt",
+          "findings": [],
+          "findings_truncated": false,
+          "kind": "description",
+          "limits": {
+            "document_words": 1600,
+            "paragraph_words": 150,
+            "sentence_words": 60
+          },
+          "returned_findings": 0,
+          "status": "pass",
+          "text_sha256": "40152f877c865d7f357d9f94411aa2288af5dc3af48bb2563e752a55fae73f1f",
+          "total_findings": 0
+        },
+        "extraction": "Markdown retained literally; table cells separated as passages, no cells omitted. Explicit documentation budgets are lexical checks only."
+      },
+      {
+        "document": "docs/discovery/decision-register.md",
+        "argv": [
+          "python3",
+          "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/scripts/prose.py",
+          "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/tmp/wp00-decision-register.md.txt",
+          "--kind",
+          "description",
+          "--sentence-words",
+          "60",
+          "--paragraph-words",
+          "150",
+          "--document-words",
+          "1600",
+          "--json"
+        ],
+        "exit_code": 0,
+        "report": {
+          "checker_version": "prose-1.0",
+          "claim_scope": "selected_lexical_prose_budgets",
+          "counts": {
+            "paragraphs": 43,
+            "sentences": 71,
+            "words": 620
+          },
+          "diagnostic_limits": {
+            "findings": 100,
+            "snippet_characters": 240
+          },
+          "file": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/tmp/wp00-decision-register.md.txt",
+          "findings": [],
+          "findings_truncated": false,
+          "kind": "description",
+          "limits": {
+            "document_words": 1600,
+            "paragraph_words": 150,
+            "sentence_words": 60
+          },
+          "returned_findings": 0,
+          "status": "pass",
+          "text_sha256": "8e3fb488a8a5aaef574e282b443e1db1e5401e0acffe92cb87dfdce12fa3ade5",
+          "total_findings": 0
+        },
+        "extraction": "Markdown retained literally; table cells separated as passages, no cells omitted. Explicit documentation budgets are lexical checks only."
+      },
+      {
+        "document": "docs/discovery/validation-environments.md",
+        "argv": [
+          "python3",
+          "/home/builderbob/.codex/plugins/cache/cse-local/computable-systems-engineering/0.2.0-alpha.8/scripts/prose.py",
+          "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/tmp/wp00-validation-environments.md.txt",
+          "--kind",
+          "description",
+          "--sentence-words",
+          "60",
+          "--paragraph-words",
+          "150",
+          "--document-words",
+          "1600",
+          "--json"
+        ],
+        "exit_code": 0,
+        "report": {
+          "checker_version": "prose-1.0",
+          "claim_scope": "selected_lexical_prose_budgets",
+          "counts": {
+            "paragraphs": 53,
+            "sentences": 96,
+            "words": 939
+          },
+          "diagnostic_limits": {
+            "findings": 100,
+            "snippet_characters": 240
+          },
+          "file": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/tmp/wp00-validation-environments.md.txt",
+          "findings": [],
+          "findings_truncated": false,
+          "kind": "description",
+          "limits": {
+            "document_words": 1600,
+            "paragraph_words": 150,
+            "sentence_words": 60
+          },
+          "returned_findings": 0,
+          "status": "pass",
+          "text_sha256": "8ea7658dc4a63fde509d478f137492d903b1fb92e79d033ce085a445690ab842",
+          "total_findings": 0
+        },
+        "extraction": "Markdown retained literally; table cells separated as passages, no cells omitted. Explicit documentation budgets are lexical checks only."
+      }
+    ]
+  }
+}

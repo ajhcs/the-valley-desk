@@ -1,0 +1,2014 @@
+{
+  "schemaVersion": "regional-source-intake-v1",
+  "batch": "scranton",
+  "visibility": "private",
+  "publicationAuthorized": false,
+  "sourceThreadId": "01a1e721-bf8d-7f02-a268-da73e3fbdd9a",
+  "records": [
+    {
+      "id": "scranton:repositories.csv#row=2",
+      "kind": "repository",
+      "url": "https://github.com/ahgomaa/TaqreeRx",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=2",
+      "metadata": {
+        "id": "R001",
+        "repository": "ahgomaa/TaqreeRx",
+        "url": "https://github.com/ahgomaa/TaqreeRx",
+        "connection_class": "scranton_faculty_project",
+        "scranton_connection": "Ahmed Gomaa, Scranton faculty",
+        "subject": "Arabic clinical documentation AI",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://www.scranton.edu/faculty/gomaa/taqreerx.pdf | https://www.scranton.edu/faculty/gomaa/index.shtml",
+        "qualification": "Individual account; simulated-encounter proof of concept; not an established lab organization or clinical validation.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=3",
+      "kind": "repository",
+      "url": "https://github.com/Camber27/MSI-R-Tutorial",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=3",
+      "metadata": {
+        "id": "R002",
+        "repository": "Camber27/MSI-R-Tutorial",
+        "url": "https://github.com/Camber27/MSI-R-Tutorial",
+        "connection_class": "historical_scranton_research",
+        "scranton_connection": "Cameron Shedlock and Katherine Stumpo, Scranton Chemistry at publication",
+        "subject": "Mass-spectrometry imaging tutorial",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8762469/",
+        "qualification": "2022 paper directly links repository; current status of historical group not established.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=4",
+      "kind": "repository",
+      "url": "https://github.com/jmgraham30/symbiontmodeler",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=4",
+      "metadata": {
+        "id": "R003",
+        "repository": "jmgraham30/symbiontmodeler",
+        "url": "https://github.com/jmgraham30/symbiontmodeler",
+        "connection_class": "scranton_lab_collaboration",
+        "scranton_connection": "Michael Hague Lab and Jason Graham",
+        "subject": "Host-microbe population modeling",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://haguelab.com/ | https://pmc.ncbi.nlm.nih.gov/articles/PMC12358320/",
+        "qualification": "Lab website directly links repository; faculty-owned account; biology adjacent to healthcare.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=5",
+      "kind": "repository",
+      "url": "https://github.com/jmgraham30/wlbc_simulations",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=5",
+      "metadata": {
+        "id": "R004",
+        "repository": "jmgraham30/wlbc_simulations",
+        "url": "https://github.com/jmgraham30/wlbc_simulations",
+        "connection_class": "scranton_lab_collaboration",
+        "scranton_connection": "Graham, Klobusicky and Hague",
+        "subject": "Research reproduction scripts",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12358320/",
+        "qualification": "2025 paper links analysis scripts and reports Scranton support; individual account.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=6",
+      "kind": "repository",
+      "url": "https://github.com/jmgraham30/Metabolism_final_R_scripts",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=6",
+      "metadata": {
+        "id": "R005",
+        "repository": "jmgraham30/Metabolism_final_R_scripts",
+        "url": "https://github.com/jmgraham30/Metabolism_final_R_scripts",
+        "connection_class": "scranton_lab_collaboration",
+        "scranton_connection": "Graham and Hague",
+        "subject": "Insect host metabolism research",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13622693/ | https://pubmed.ncbi.nlm.nih.gov/42818839/",
+        "qualification": "2026 source was a preprint when checked; biological research, not a clinical system.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=7",
+      "kind": "repository",
+      "url": "https://github.com/sgalen/Parasite-bird-mortality",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=7",
+      "metadata": {
+        "id": "R006",
+        "repository": "sgalen/Parasite-bird-mortality",
+        "url": "https://github.com/sgalen/Parasite-bird-mortality",
+        "connection_class": "scranton_faculty_research",
+        "scranton_connection": "Spencer Galen, Scranton Biology",
+        "subject": "Avian health and parasite ecology",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9006019/ | https://www.scranton.edu/academics/provost/profiles/award-winners/2026/galen.shtml",
+        "qualification": "Repository describes a Galen bird mortality analysis; article lists Scranton affiliation.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=8",
+      "kind": "repository",
+      "url": "https://github.com/JomaMinoza/Biomarker-Discovery-for-Classification-Melanoma-Metastatic-Progression-using-Transfer-Learning",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=8",
+      "metadata": {
+        "id": "R007",
+        "repository": "JomaMinoza/Biomarker-Discovery-for-Classification-Melanoma-Metastatic-Progression-using-Transfer-Learning",
+        "url": "https://github.com/JomaMinoza/Biomarker-Discovery-for-Classification-Melanoma-Metastatic-Progression-using-Transfer-Learning",
+        "connection_class": "historical_scranton_coauthored_paper",
+        "scranton_connection": "Gerard Dumancas coauthored final article while affiliated with Scranton",
+        "subject": "Cancer gene-expression machine learning",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9777873/ | https://doi.org/10.5281/zenodo.4781962 | https://www.ncat.edu/news/2024/10/new-roles-in-honors-college.php",
+        "qualification": "External collaborator owns code; archive predates Scranton appointment; Dumancas credited methodology and review, not software; left Scranton in 2024.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=9",
+      "kind": "repository",
+      "url": "https://github.com/konswells1/Haemosporidian-abundance-occupancy-relationships",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=9",
+      "metadata": {
+        "id": "R008",
+        "repository": "konswells1/Haemosporidian-abundance-occupancy-relationships",
+        "url": "https://github.com/konswells1/Haemosporidian-abundance-occupancy-relationships",
+        "connection_class": "external_collaborator_project",
+        "scranton_connection": "Scranton-affiliated Galen is a paper coauthor",
+        "subject": "Avian parasite ecology",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://onlinelibrary.wiley.com/doi/full/10.1111/jbi.15015",
+        "qualification": "Paper links project code; external collaborator account.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=10",
+      "kind": "repository",
+      "url": "https://github.com/konswells1/Global-haemosporidian-prevalence",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=10",
+      "metadata": {
+        "id": "R009",
+        "repository": "konswells1/Global-haemosporidian-prevalence",
+        "url": "https://github.com/konswells1/Global-haemosporidian-prevalence",
+        "connection_class": "external_collaborator_project",
+        "scranton_connection": "Scranton-affiliated Galen is a paper coauthor",
+        "subject": "Avian infection ecology",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://www.heatherskeen.com/uploads/1/3/3/2/133237024/fecchio_geb_2021.pdf | https://www.academia.edu/115402414/Global_drivers_of_avian_haemosporidian_infections_vary_across_zoogeographical_regions",
+        "qualification": "External collaborator repository; published paper identifies coauthor affiliation, manuscript names code.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=11",
+      "kind": "repository",
+      "url": "https://github.com/smcnew/Peru_GDM",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=11",
+      "metadata": {
+        "id": "R010",
+        "repository": "smcnew/Peru_GDM",
+        "url": "https://github.com/smcnew/Peru_GDM",
+        "connection_class": "external_collaborator_project",
+        "scranton_connection": "Scranton-affiliated Galen is a paper coauthor",
+        "subject": "Host-parasite ecology",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://static1.squarespace.com/static/5ba01ddbcc8fedfc087b400c/t/609e965fe6ac7d0069059893/1621005920260/McNew_2021.pdf",
+        "qualification": "Paper names Scranton affiliation and repository; external account.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=12",
+      "kind": "repository",
+      "url": "https://github.com/kspeeriful/Microbiomes_and_Habitat_Loss_Brazil",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=12",
+      "metadata": {
+        "id": "R011",
+        "repository": "kspeeriful/Microbiomes_and_Habitat_Loss_Brazil",
+        "url": "https://github.com/kspeeriful/Microbiomes_and_Habitat_Loss_Brazil",
+        "connection_class": "external_collaborator_project",
+        "scranton_connection": "Scranton-affiliated Galen is a paper coauthor",
+        "subject": "Microbial ecology",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9723575/ | https://api.datacite.org/dois/10.5281/zenodo.6796123",
+        "qualification": "Paper cites archive; archive metadata points to external GitHub release.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=13",
+      "kind": "repository",
+      "url": "https://github.com/shane-novit9/hyper-health",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=13",
+      "metadata": {
+        "id": "R012",
+        "repository": "shane-novit9/hyper-health",
+        "url": "https://github.com/shane-novit9/hyper-health",
+        "connection_class": "scranton_student_thesis",
+        "scranton_connection": "Shane Novitsky, Scranton 2023 thesis",
+        "subject": "EHR transaction prototype",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://github.com/shane-novit9/hyper-health | https://digitalservices.scranton.edu/digital/collection/p15111coll1/id/1372/rec/1",
+        "qualification": "README explicitly identifies Scranton thesis and prototype limitations; no lab or Gomaa advising connection established.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=14",
+      "kind": "repository",
+      "url": "https://github.com/ridham0065/hospital-readmission-analysis",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=14",
+      "metadata": {
+        "id": "R013",
+        "repository": "ridham0065/hospital-readmission-analysis",
+        "url": "https://github.com/ridham0065/hospital-readmission-analysis",
+        "connection_class": "individual_self_report",
+        "scranton_connection": "Author self-reports Scranton health-informatics education",
+        "subject": "Hospital readmission analytics",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://github.com/ridham0065/hospital-readmission-analysis",
+        "qualification": "Personal portfolio; no university sponsorship or lab connection verified.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=15",
+      "kind": "repository",
+      "url": "https://github.com/ridham0065/rx-gap-finder",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=15",
+      "metadata": {
+        "id": "R014",
+        "repository": "ridham0065/rx-gap-finder",
+        "url": "https://github.com/ridham0065/rx-gap-finder",
+        "connection_class": "individual_self_report",
+        "scranton_connection": "Author self-reports Scranton health-informatics education",
+        "subject": "Pharmacy reimbursement analytics",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://github.com/ridham0065/rx-gap-finder",
+        "qualification": "Personal portfolio; no university sponsorship or lab connection verified.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=16",
+      "kind": "repository",
+      "url": "https://github.com/jagjeetmakker/hedis-quality-analysis",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=16",
+      "metadata": {
+        "id": "R015",
+        "repository": "jagjeetmakker/hedis-quality-analysis",
+        "url": "https://github.com/jagjeetmakker/hedis-quality-analysis",
+        "connection_class": "individual_self_report",
+        "scranton_connection": "Author self-reports Scranton education",
+        "subject": "Healthcare quality analytics",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://www.linkedin.com/in/jagjeet-singh-analytics | https://github.com/jagjeetmakker/hedis-quality-analysis",
+        "qualification": "Personal project; not established as a Scranton lab or course project.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=17",
+      "kind": "repository",
+      "url": "https://github.com/navya0009/Community-Health-Systems-Services-Analysis-Monroe-County-NY",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=17",
+      "metadata": {
+        "id": "R016",
+        "repository": "navya0009/Community-Health-Systems-Services-Analysis-Monroe-County-NY",
+        "url": "https://github.com/navya0009/Community-Health-Systems-Services-Analysis-Monroe-County-NY",
+        "connection_class": "student_project_self_report",
+        "scranton_connection": "README describes a Scranton MBA-related project",
+        "subject": "Community health analytics",
+        "public_content_status": "documentation_only",
+        "evidence_urls": "https://github.com/navya0009/Community-Health-Systems-Services-Analysis-Monroe-County-NY",
+        "qualification": "Repository root had README, license and ignore file; analysis code not established.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=18",
+      "kind": "repository",
+      "url": "https://github.com/jmgraham30/biomath_2024",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=18",
+      "metadata": {
+        "id": "R017",
+        "repository": "jmgraham30/biomath_2024",
+        "url": "https://github.com/jmgraham30/biomath_2024",
+        "connection_class": "faculty_teaching",
+        "scranton_connection": "Scranton faculty Jason Graham",
+        "subject": "Biomathematics course",
+        "public_content_status": "public_code_or_teaching_material",
+        "evidence_urls": "https://biomath2024.netlify.app/",
+        "qualification": "Course page directly links repository; instructional work.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=19",
+      "kind": "repository",
+      "url": "https://github.com/jmgraham30/TopicsInBiomath",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=19",
+      "metadata": {
+        "id": "R018",
+        "repository": "jmgraham30/TopicsInBiomath",
+        "url": "https://github.com/jmgraham30/TopicsInBiomath",
+        "connection_class": "faculty_teaching",
+        "scranton_connection": "Scranton faculty Jason Graham",
+        "subject": "Biomathematics course materials",
+        "public_content_status": "public_code_or_teaching_material",
+        "evidence_urls": "https://github.com/jmgraham30/TopicsInBiomath | https://sites.google.com/site/jasonmgrahamus/home",
+        "qualification": "README identifies course materials; no lab research ownership claim.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=20",
+      "kind": "repository",
+      "url": "https://github.com/jmgraham30/tib_code_2024",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=20",
+      "metadata": {
+        "id": "R019",
+        "repository": "jmgraham30/tib_code_2024",
+        "url": "https://github.com/jmgraham30/tib_code_2024",
+        "connection_class": "faculty_teaching",
+        "scranton_connection": "Scranton faculty Jason Graham",
+        "subject": "Biomathematics teaching code",
+        "public_content_status": "public_code_or_teaching_material",
+        "evidence_urls": "https://github.com/jmgraham30/tib_code_2024 | https://sites.google.com/site/jasonmgrahamus/home",
+        "qualification": "Course-related code; specific lab affiliation not established.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=21",
+      "kind": "repository",
+      "url": "https://github.com/jmgraham30/quantneuro_data",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=21",
+      "metadata": {
+        "id": "R020",
+        "repository": "jmgraham30/quantneuro_data",
+        "url": "https://github.com/jmgraham30/quantneuro_data",
+        "connection_class": "faculty_teaching",
+        "scranton_connection": "Scranton faculty Jason Graham",
+        "subject": "Neuroscience teaching datasets",
+        "public_content_status": "public_code_or_teaching_material",
+        "evidence_urls": "https://github.com/jmgraham30/quantneuro_data | https://sites.google.com/site/jasonmgrahamus/home",
+        "qualification": "README describes simulated and real teaching datasets and notes some preparation scripts were not run end to end.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=22",
+      "kind": "repository",
+      "url": "https://github.com/jmgraham30/MaldiNB2",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=22",
+      "metadata": {
+        "id": "R021",
+        "repository": "jmgraham30/MaldiNB2",
+        "url": "https://github.com/jmgraham30/MaldiNB2",
+        "connection_class": "faculty_lead_unverified",
+        "scranton_connection": "Scranton faculty Jason Graham account",
+        "subject": "Mass spectrometry",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://github.com/jmgraham30/MaldiNB2 | https://sites.google.com/site/jasonmgrahamus/home",
+        "qualification": "Description and files indicate MALDI work; specific publication or lab relationship unverified.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=23",
+      "kind": "repository",
+      "url": "https://github.com/jmgraham30/turelli_2022_model",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=23",
+      "metadata": {
+        "id": "R022",
+        "repository": "jmgraham30/turelli_2022_model",
+        "url": "https://github.com/jmgraham30/turelli_2022_model",
+        "connection_class": "faculty_lead_unverified",
+        "scranton_connection": "Scranton faculty Jason Graham account",
+        "subject": "Mathematical biology model",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://github.com/jmgraham30/turelli_2022_model | https://sites.google.com/site/jasonmgrahamus/home",
+        "qualification": "Relevant-looking personal repository; specific Hague Lab or publication relationship unverified.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=24",
+      "kind": "repository",
+      "url": "https://github.com/sgalen/Leucocytozoon_Species_Delimitation_2018",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=24",
+      "metadata": {
+        "id": "R023",
+        "repository": "sgalen/Leucocytozoon_Species_Delimitation_2018",
+        "url": "https://github.com/sgalen/Leucocytozoon_Species_Delimitation_2018",
+        "connection_class": "pre_scranton_research",
+        "scranton_connection": "Spencer Galen prior-career work",
+        "subject": "Avian parasite biology",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://link.springer.com/article/10.1186/s12862-018-1242-x",
+        "qualification": "2018 paper predates Galen's Scranton appointment; not Scranton-authored output.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=25",
+      "kind": "repository",
+      "url": "https://github.com/prichtsmeier/phonfarmlab",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=25",
+      "metadata": {
+        "id": "R024",
+        "repository": "prichtsmeier/phonfarmlab",
+        "url": "https://github.com/prichtsmeier/phonfarmlab",
+        "connection_class": "external_collaborator_lab",
+        "scranton_connection": "Peter Richtsmeier coauthored a Warker study",
+        "subject": "Speech development",
+        "public_content_status": "empty_repository",
+        "evidence_urls": "https://www.tandfonline.com/doi/abs/10.1080/15475441.2024.2372246 | https://cas.okstate.edu/communication_sciences_and_disorders/about_us/research",
+        "qualification": "Oklahoma State lab repository was empty when checked; not code for Warker study.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=26",
+      "kind": "repository",
+      "url": "https://github.com/rbcavanaugh/aphasia-tech-map",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=26",
+      "metadata": {
+        "id": "R025",
+        "repository": "rbcavanaugh/aphasia-tech-map",
+        "url": "https://github.com/rbcavanaugh/aphasia-tech-map",
+        "connection_class": "external_index",
+        "scranton_connection": "Map lists Scranton faculty Laura Chapman on an aphasia project",
+        "subject": "Aphasia research index",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://rbcavanaugh.github.io/aphasia-tech-map/list_view.html | https://www.scranton.edu/directory/profiles/health-and-human-performance/laura-chapman.shtml",
+        "qualification": "External index; not established as source code for Chapman's project.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=27",
+      "kind": "repository",
+      "url": "https://github.com/rbcavanaugh/mainconcept",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=27",
+      "metadata": {
+        "id": "R026",
+        "repository": "rbcavanaugh/mainconcept",
+        "url": "https://github.com/rbcavanaugh/mainconcept",
+        "connection_class": "external_collaborator_network",
+        "scranton_connection": "Chapman to shared project to Javad Anjum to coauthor Sarah Grace Dalton",
+        "subject": "Aphasia discourse assessment",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2025.1574453/full | https://talkbank.org/aphasia/discourse/MainConcepts/index.html",
+        "qualification": "External two-hop connection; Dalton co-developed app; no evidence Chapman or Anjum authored or used it; README calls it beta.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=28",
+      "kind": "repository",
+      "url": "https://github.com/rbcavanaugh/coreLexicon",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=28",
+      "metadata": {
+        "id": "R027",
+        "repository": "rbcavanaugh/coreLexicon",
+        "url": "https://github.com/rbcavanaugh/coreLexicon",
+        "connection_class": "external_collaborator_network",
+        "scranton_connection": "Chapman to shared project to Javad Anjum to coauthor Sarah Grace Dalton",
+        "subject": "Aphasia discourse assessment",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2025.1574453/full | https://talkbank.org/aphasia/discourse/CoreLexicon/",
+        "qualification": "External two-hop connection; not established as Scranton software; README calls it beta.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=29",
+      "kind": "repository",
+      "url": "https://github.com/XinBiostats/MetaVision3D",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=29",
+      "metadata": {
+        "id": "R028",
+        "repository": "XinBiostats/MetaVision3D",
+        "url": "https://github.com/XinBiostats/MetaVision3D",
+        "connection_class": "external_alumni_work",
+        "scranton_connection": "Scranton alumnus Cameron Shedlock coauthored a later Florida paper",
+        "subject": "Brain metabolite imaging",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://news.scranton.edu/articles/2022/06/news-grad2022-honorsprogram.shtml | https://pmc.ncbi.nlm.nih.gov/articles/PMC12065415/",
+        "qualification": "University of Florida project after graduation; paper links repository.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=30",
+      "kind": "repository",
+      "url": "https://github.com/XinBiostats/SAMI",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=30",
+      "metadata": {
+        "id": "R029",
+        "repository": "XinBiostats/SAMI",
+        "url": "https://github.com/XinBiostats/SAMI",
+        "connection_class": "external_alumni_work",
+        "scranton_connection": "Scranton alumnus Cameron Shedlock coauthored a later Florida paper",
+        "subject": "Spatial multiomics imaging",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://news.scranton.edu/articles/2022/06/news-grad2022-honorsprogram.shtml | https://www.nature.com/articles/s41467-025-59487-7",
+        "qualification": "University of Florida project after graduation; paper links repository.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=31",
+      "kind": "repository",
+      "url": "https://github.com/GE-Bio/PhenoMol",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=31",
+      "metadata": {
+        "id": "R030",
+        "repository": "GE-Bio/PhenoMol",
+        "url": "https://github.com/GE-Bio/PhenoMol",
+        "connection_class": "external_two_hop_lead",
+        "scranton_connection": "Crowell coauthored 2024 abstract with Gregory Freisinger, who coauthored a separate 2026 study",
+        "subject": "Fitness and health data analysis",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://asbweb.org/wp-content/uploads/ASB2024OralThematicAbstractBook.pdf | https://pmc.ncbi.nlm.nih.gov/articles/PMC13036016/",
+        "qualification": "External tool used in a different study; Crowell is not an author of that study and no Scranton project use was established.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=32",
+      "kind": "repository",
+      "url": "https://github.com/danielstrombom/SLFS",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=32",
+      "metadata": {
+        "id": "R031",
+        "repository": "danielstrombom/SLFS",
+        "url": "https://github.com/danielstrombom/SLFS",
+        "connection_class": "external_out_of_scope_collaboration",
+        "scranton_connection": "Scranton mathematician Graham is a coauthor and software contributor",
+        "subject": "Agricultural ecology",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0307754",
+        "qualification": "External Lafayette collaborator repository; outside primary healthcare scope.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=33",
+      "kind": "repository",
+      "url": "https://github.com/swarm-lab/swaRm",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=33",
+      "metadata": {
+        "id": "R032",
+        "repository": "swarm-lab/swaRm",
+        "url": "https://github.com/swarm-lab/swaRm",
+        "connection_class": "external_lab_broad_lead",
+        "scranton_connection": "Graham is listed as a visiting scholar at NJIT Swarm Lab",
+        "subject": "Collective behavior research",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://theswarmlab.com/",
+        "qualification": "NJIT lab; visiting status does not establish contribution to this repository.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=34",
+      "kind": "repository",
+      "url": "https://github.com/swarm-lab/teachR",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=34",
+      "metadata": {
+        "id": "R033",
+        "repository": "swarm-lab/teachR",
+        "url": "https://github.com/swarm-lab/teachR",
+        "connection_class": "external_lab_broad_lead",
+        "scranton_connection": "Graham is listed as a visiting scholar at NJIT Swarm Lab",
+        "subject": "Teaching software",
+        "public_content_status": "public_code_or_teaching_material",
+        "evidence_urls": "https://theswarmlab.com/",
+        "qualification": "NJIT lab; Graham's contribution to this repository not established.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=35",
+      "kind": "repository",
+      "url": "https://github.com/rbcavanaugh/pnt",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=35",
+      "metadata": {
+        "id": "R034",
+        "repository": "rbcavanaugh/pnt",
+        "url": "https://github.com/rbcavanaugh/pnt",
+        "connection_class": "external_topical_lead",
+        "scranton_connection": "Connected by the external Aphasia Tech Map topic",
+        "subject": "Aphasia assessment",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://rbcavanaugh.github.io/aphasia-tech-map/list_view.html",
+        "qualification": "Not a verified Scranton project or Chapman collaboration.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=36",
+      "kind": "repository",
+      "url": "https://github.com/rbcavanaugh/acom",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=36",
+      "metadata": {
+        "id": "R035",
+        "repository": "rbcavanaugh/acom",
+        "url": "https://github.com/rbcavanaugh/acom",
+        "connection_class": "external_topical_lead",
+        "scranton_connection": "Connected by the external Aphasia Tech Map author and topic",
+        "subject": "Aphasia assessment",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://www.mghihp.edu/sites/default/files/2025-03/cavanaugh-cv-ihp-3.7.2025.pdf",
+        "qualification": "Not a verified Scranton project or Chapman collaboration.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=37",
+      "kind": "repository",
+      "url": "https://github.com/AIE-London/speechfirst",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=37",
+      "metadata": {
+        "id": "R036",
+        "repository": "AIE-London/speechfirst",
+        "url": "https://github.com/AIE-London/speechfirst",
+        "connection_class": "external_topical_lead",
+        "scranton_connection": "Listed by the external Aphasia Tech Map",
+        "subject": "Speech-language application",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://rbcavanaugh.github.io/aphasia-tech-map/list_view.html",
+        "qualification": "UCL-related project; original Capgemini-AIE URL redirects; no Scranton relationship established.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=38",
+      "kind": "repository",
+      "url": "https://github.com/TalkBank/Windows-CLAN",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=38",
+      "metadata": {
+        "id": "R037",
+        "repository": "TalkBank/Windows-CLAN",
+        "url": "https://github.com/TalkBank/Windows-CLAN",
+        "connection_class": "third_party_tool",
+        "scranton_connection": "Used in a separate paper coauthored by Chapman's collaborator Anjum",
+        "subject": "Language research software",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2025.1574453/full | https://talkbank.org/0info/software.html",
+        "qualification": "Generic third-party software, not project-specific Scranton code.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=39",
+      "kind": "repository",
+      "url": "https://github.com/TalkBank/OSX-CLAN",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=39",
+      "metadata": {
+        "id": "R038",
+        "repository": "TalkBank/OSX-CLAN",
+        "url": "https://github.com/TalkBank/OSX-CLAN",
+        "connection_class": "third_party_tool",
+        "scranton_connection": "Used in a separate paper coauthored by Chapman's collaborator Anjum",
+        "subject": "Language research software",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2025.1574453/full | https://talkbank.org/0info/software.html",
+        "qualification": "Generic third-party software, not project-specific Scranton code.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=40",
+      "kind": "repository",
+      "url": "https://github.com/aphasia-apps/mainConcept",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=40",
+      "metadata": {
+        "id": "R039",
+        "repository": "aphasia-apps/mainConcept",
+        "url": "https://github.com/aphasia-apps/mainConcept",
+        "connection_class": "external_pointer",
+        "scranton_connection": "External collaborator network through Dalton",
+        "subject": "Aphasia discourse assessment",
+        "public_content_status": "pointer_only",
+        "evidence_urls": "https://github.com/aphasia-apps/mainConcept | https://talkbank.org/aphasia/discourse/MainConcepts/index.html",
+        "qualification": "README points to rbcavanaugh/mainconcept; retain as cited alias, not a separate implementation.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=41",
+      "kind": "repository",
+      "url": "https://github.com/aphasia-apps/coreLexicon",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=41",
+      "metadata": {
+        "id": "R040",
+        "repository": "aphasia-apps/coreLexicon",
+        "url": "https://github.com/aphasia-apps/coreLexicon",
+        "connection_class": "external_pointer",
+        "scranton_connection": "External collaborator network through Dalton",
+        "subject": "Aphasia discourse assessment",
+        "public_content_status": "pointer_only",
+        "evidence_urls": "https://github.com/aphasia-apps/coreLexicon | https://talkbank.org/aphasia/discourse/CoreLexicon/",
+        "qualification": "README points to rbcavanaugh/coreLexicon; retain as cited alias, not a separate implementation.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:repositories.csv#row=42",
+      "kind": "repository",
+      "url": "https://github.com/computationalUncertaintyLab/Watermelon_Meow_Meow",
+      "nativeId": null,
+      "sourceRef": "repositories.csv#row=42",
+      "metadata": {
+        "id": "R041",
+        "repository": "computationalUncertaintyLab/Watermelon_Meow_Meow",
+        "url": "https://github.com/computationalUncertaintyLab/Watermelon_Meow_Meow",
+        "connection_class": "external_alumni_work",
+        "scranton_connection": "Thomas McAndrew is a Scranton alumnus with later Lehigh affiliation",
+        "subject": "Public health education",
+        "public_content_status": "public_code",
+        "evidence_urls": "https://www.tandfonline.com/doi/pdf/10.1080/10511970.2024.2315143?download=true",
+        "qualification": "Lehigh work; Scranton degree alone does not make the project Scranton research.",
+        "researched_date": "2026-11-16",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=2",
+      "kind": "source-observation",
+      "url": "https://haguelab.com/",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=2",
+      "metadata": {
+        "name": "Hague Lab / Michael Hague",
+        "type": "lab",
+        "relationship_to_scranton": "Scranton Biology",
+        "research_area": "Host-microbe biology",
+        "github_status": "Lab links faculty-owned repository",
+        "evidence_url": "https://haguelab.com/",
+        "qualification": "Direct lab-to-code evidence; no lab-owned organization established.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=3",
+      "kind": "source-observation",
+      "url": "https://sites.google.com/site/jasonmgrahamus/home",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=3",
+      "metadata": {
+        "name": "Jason M. Graham",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Mathematics",
+        "research_area": "Mathematical biology",
+        "github_status": "Individual account jmgraham30",
+        "evidence_url": "https://sites.google.com/site/jasonmgrahamus/home",
+        "qualification": "Account also contains teaching, forks and uncertain leads.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=4",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/directory/profiles/mathematics/joseph-klobusicky.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=4",
+      "metadata": {
+        "name": "Joseph Klobusicky",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Mathematics",
+        "research_area": "Mathematical biology",
+        "github_status": "No additional biomedical GitHub established",
+        "evidence_url": "https://www.scranton.edu/directory/profiles/mathematics/joseph-klobusicky.shtml",
+        "qualification": "Coauthor of 2025 Hague-Graham study.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=5",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/academics/provost/profiles/award-winners/2026/galen.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=5",
+      "metadata": {
+        "name": "Spencer Galen",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Biology",
+        "research_area": "Parasite biology",
+        "github_status": "Individual account sgalen",
+        "evidence_url": "https://www.scranton.edu/academics/provost/profiles/award-winners/2026/galen.shtml",
+        "qualification": "Separate pre-Scranton, Scranton-affiliated and external collaborator work.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=6",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/faculty/gomaa/index.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=6",
+      "metadata": {
+        "name": "Ahmed Gomaa",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Operations and Analytics",
+        "research_area": "Health informatics",
+        "github_status": "Individual account ahgomaa",
+        "evidence_url": "https://www.scranton.edu/faculty/gomaa/index.shtml",
+        "qualification": "TaqreeRx is a healthcare proof of concept.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=7",
+      "kind": "source-observation",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8762469/",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=7",
+      "metadata": {
+        "name": "Katherine Stumpo / Stumpo group",
+        "type": "historical_group",
+        "relationship_to_scranton": "Scranton Chemistry at 2022 publication",
+        "research_area": "Mass-spectrometry imaging",
+        "github_status": "Study code hosted under Camber27",
+        "evidence_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8762469/",
+        "qualification": "Current status at Scranton was not established.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=8",
+      "kind": "source-observation",
+      "url": "https://news.scranton.edu/articles/2022/06/news-grad2022-honorsprogram.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=8",
+      "metadata": {
+        "name": "Cameron Shedlock",
+        "type": "alumnus",
+        "relationship_to_scranton": "Scranton student at 2022 publication",
+        "research_area": "Mass-spectrometry imaging",
+        "github_status": "Camber27; later Florida collaborator code",
+        "evidence_url": "https://news.scranton.edu/articles/2022/06/news-grad2022-honorsprogram.shtml",
+        "qualification": "Later Florida papers are not Scranton projects.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=9",
+      "kind": "source-observation",
+      "url": "https://www.ncat.edu/news/2024/10/new-roles-in-honors-college.php",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=9",
+      "metadata": {
+        "name": "Gerard Dumancas",
+        "type": "former_faculty",
+        "relationship_to_scranton": "Scranton Chemistry at 2022 publication; moved in 2024",
+        "research_area": "Chemometrics and health AI",
+        "github_status": "2022 melanoma paper links external collaborator code",
+        "evidence_url": "https://www.ncat.edu/news/2024/10/new-roles-in-honors-college.php",
+        "qualification": "Paper credits methodology/review; external authors credited software.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=10",
+      "kind": "source-observation",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9777873/",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=10",
+      "metadata": {
+        "name": "Jose Marie Antonio Minoza",
+        "type": "external_collaborator",
+        "relationship_to_scranton": "Coauthor of 2022 paper with Scranton-affiliated Dumancas",
+        "research_area": "Cancer machine learning",
+        "github_status": "JomaMinoza account",
+        "evidence_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9777873/",
+        "qualification": "External author and repository owner; archived code predates 2022 Scranton affiliation.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=11",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/directory/profiles/psychology/jill-warker.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=11",
+      "metadata": {
+        "name": "Jill Warker / Language and Memory Lab",
+        "type": "lab",
+        "relationship_to_scranton": "Scranton Psychology",
+        "research_area": "Language and cognitive science",
+        "github_status": "Study code on OSF; no GitHub established",
+        "evidence_url": "https://www.scranton.edu/directory/profiles/psychology/jill-warker.shtml",
+        "qualification": "2024/2025 speech-errors study has publisher-linked OSF data and R code.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=12",
+      "kind": "source-observation",
+      "url": "https://cas.okstate.edu/communication_sciences_and_disorders/about_us/research",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=12",
+      "metadata": {
+        "name": "Peter Richtsmeier / Phon Farm Lab",
+        "type": "external_lab",
+        "relationship_to_scranton": "Warker's Oklahoma State coauthor",
+        "research_area": "Speech development",
+        "github_status": "prichtsmeier/phonfarmlab empty",
+        "evidence_url": "https://cas.okstate.edu/communication_sciences_and_disorders/about_us/research",
+        "qualification": "External lab, not Scranton-owned; study's code is linked on OSF.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=13",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/directory/profiles/health-and-human-performance/laura-chapman.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=13",
+      "metadata": {
+        "name": "Laura Chapman",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Health and Human Performance",
+        "research_area": "Aphasia and language disorders",
+        "github_status": "No project-specific GitHub established",
+        "evidence_url": "https://www.scranton.edu/directory/profiles/health-and-human-performance/laura-chapman.shtml",
+        "qualification": "External Aphasia Tech Map lists her as project investigator.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=14",
+      "kind": "source-observation",
+      "url": "https://rbcavanaugh.github.io/aphasia-tech-map/list_view.html",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=14",
+      "metadata": {
+        "name": "Javad Anjum",
+        "type": "external_collaborator",
+        "relationship_to_scranton": "Listed with Chapman on an aphasia project",
+        "research_area": "Aphasia research",
+        "github_status": "No Scranton project GitHub established",
+        "evidence_url": "https://rbcavanaugh.github.io/aphasia-tech-map/list_view.html",
+        "qualification": "Separate Georgia paper with Dalton must not be attributed to Chapman.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=15",
+      "kind": "source-observation",
+      "url": "https://talkbank.org/aphasia/discourse/MainConcepts/index.html",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=15",
+      "metadata": {
+        "name": "Sarah Grace Dalton",
+        "type": "external_collaborator",
+        "relationship_to_scranton": "Coauthor with Anjum on separate study",
+        "research_area": "Aphasia assessment",
+        "github_status": "External apps mainconcept and coreLexicon",
+        "evidence_url": "https://talkbank.org/aphasia/discourse/MainConcepts/index.html",
+        "qualification": "Two-hop relationship; apps are not established Scranton output.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=16",
+      "kind": "source-observation",
+      "url": "https://rbcavanaugh.github.io/aphasia-tech-map/",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=16",
+      "metadata": {
+        "name": "Robert Cavanaugh",
+        "type": "external_researcher",
+        "relationship_to_scranton": "External index includes Chapman's project",
+        "research_area": "Aphasia technology",
+        "github_status": "rbcavanaugh account",
+        "evidence_url": "https://rbcavanaugh.github.io/aphasia-tech-map/",
+        "qualification": "Indexing a study is not evidence of project authorship.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=17",
+      "kind": "source-observation",
+      "url": "https://news.scranton.edu/faculty-news.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=17",
+      "metadata": {
+        "name": "Yibai Li",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Operations and Analytics",
+        "research_area": "AI and informatics",
+        "github_status": "No PsyCogMetrics GitHub established",
+        "evidence_url": "https://news.scranton.edu/faculty-news.shtml",
+        "qualification": "Coauthor with Gomaa and separate PsyCogMetrics paper.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=18",
+      "kind": "source-observation",
+      "url": "https://arxiv.org/abs/2603.13126",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=18",
+      "metadata": {
+        "name": "Xiaobing Li",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton author on cited publications",
+        "research_area": "AI and informatics",
+        "github_status": "No PsyCogMetrics GitHub established",
+        "evidence_url": "https://arxiv.org/abs/2603.13126",
+        "qualification": "Do not substitute third-party dependencies for project code.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=19",
+      "kind": "source-observation",
+      "url": "https://arxiv.org/abs/2603.13126",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=19",
+      "metadata": {
+        "name": "Zhiye Jin / PsyCogMetrics",
+        "type": "external_collaborator",
+        "relationship_to_scranton": "Collaborator with Scranton authors",
+        "research_area": "AI psychometrics",
+        "github_status": "No project GitHub established",
+        "evidence_url": "https://arxiv.org/abs/2603.13126",
+        "qualification": "Zenodo record listed a poster image rather than source code when checked.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=20",
+      "kind": "source-observation",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11964697/",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=20",
+      "metadata": {
+        "name": "Michael Crowell",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Physical Therapy at 2025 publication",
+        "research_area": "Rehabilitation and movement",
+        "github_status": "No project GitHub established",
+        "evidence_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11964697/",
+        "qualification": "External collaborator's unrelated later code is a two-hop lead only.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=21",
+      "kind": "source-observation",
+      "url": "https://asbweb.org/wp-content/uploads/ASB2024OralThematicAbstractBook.pdf",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=21",
+      "metadata": {
+        "name": "Gregory Freisinger",
+        "type": "external_collaborator",
+        "relationship_to_scranton": "Coauthor of 2024 abstract with Crowell",
+        "research_area": "Biomechanics",
+        "github_status": "Separate external study identifies PhenoMol",
+        "evidence_url": "https://asbweb.org/wp-content/uploads/ASB2024OralThematicAbstractBook.pdf",
+        "qualification": "No proof PhenoMol was used in the Crowell study.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=22",
+      "kind": "source-observation",
+      "url": "https://github.com/shane-novit9/hyper-health",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=22",
+      "metadata": {
+        "name": "Shane Novitsky",
+        "type": "historical_student",
+        "relationship_to_scranton": "Scranton 2023 software engineering thesis",
+        "research_area": "EHR technology",
+        "github_status": "shane-novit9/hyper-health",
+        "evidence_url": "https://github.com/shane-novit9/hyper-health",
+        "qualification": "Student-owned proof of concept; no lab relationship established.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=23",
+      "kind": "source-observation",
+      "url": "https://github.com/ridham0065/hospital-readmission-analysis",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=23",
+      "metadata": {
+        "name": "Ridham Patel",
+        "type": "individual_self_report",
+        "relationship_to_scranton": "Self-reported Scranton health informatics education",
+        "research_area": "Healthcare analytics",
+        "github_status": "ridham0065 account",
+        "evidence_url": "https://github.com/ridham0065/hospital-readmission-analysis",
+        "qualification": "No university lab or sponsored project relationship verified.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=24",
+      "kind": "source-observation",
+      "url": "https://www.linkedin.com/in/jagjeet-singh-analytics",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=24",
+      "metadata": {
+        "name": "Jagjeet Singh",
+        "type": "individual_self_report",
+        "relationship_to_scranton": "Self-reported Scranton education",
+        "research_area": "Healthcare quality analytics",
+        "github_status": "jagjeetmakker account",
+        "evidence_url": "https://www.linkedin.com/in/jagjeet-singh-analytics",
+        "qualification": "No university lab or sponsored project relationship verified.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=25",
+      "kind": "source-observation",
+      "url": "https://github.com/navya0009/Community-Health-Systems-Services-Analysis-Monroe-County-NY",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=25",
+      "metadata": {
+        "name": "Navya / navya0009",
+        "type": "individual_self_report",
+        "relationship_to_scranton": "README describes Scranton MBA project",
+        "research_area": "Community health analytics",
+        "github_status": "Repository contained documentation only when checked",
+        "evidence_url": "https://github.com/navya0009/Community-Health-Systems-Services-Analysis-Monroe-County-NY",
+        "qualification": "Independent identity and actual analysis code not established.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=26",
+      "kind": "source-observation",
+      "url": "https://sites.google.com/view/scrantonbiopsychologylab",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=26",
+      "metadata": {
+        "name": "Patrick Orr / Scranton Biopsychology Lab",
+        "type": "lab",
+        "relationship_to_scranton": "Scranton Psychology",
+        "research_area": "Psychology and neuroscience",
+        "github_status": "No GitHub established in targeted search",
+        "evidence_url": "https://sites.google.com/view/scrantonbiopsychologylab",
+        "qualification": "Not evidence of absence.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=27",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/directory/profiles/biology/jong-hyun-son.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=27",
+      "metadata": {
+        "name": "Jong-Hyun Son",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Biology",
+        "research_area": "Neuroscience",
+        "github_status": "No GitHub established in targeted search",
+        "evidence_url": "https://www.scranton.edu/directory/profiles/biology/jong-hyun-son.shtml",
+        "qualification": "Not evidence of absence.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=28",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/directory/profiles/biology/amelia-randich.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=28",
+      "metadata": {
+        "name": "Amelia Randich",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Biology",
+        "research_area": "Molecular microbiology",
+        "github_status": "No GitHub established in targeted search",
+        "evidence_url": "https://www.scranton.edu/directory/profiles/biology/amelia-randich.shtml",
+        "qualification": "A pre-Scranton acknowledgement in an outside study is not lab code authorship.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=29",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/faculty/waldeckr/index.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=29",
+      "metadata": {
+        "name": "Robert Waldeck",
+        "type": "researcher",
+        "relationship_to_scranton": "University faculty research page",
+        "research_area": "Neuroscience",
+        "github_status": "No GitHub established in targeted search",
+        "evidence_url": "https://www.scranton.edu/faculty/waldeckr/index.shtml",
+        "qualification": "Current appointment needs refresh; not evidence of absence.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=30",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/faculty/squire/research.html",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=30",
+      "metadata": {
+        "name": "Maria Squire",
+        "type": "researcher",
+        "relationship_to_scranton": "University faculty research page",
+        "research_area": "Bone microarchitecture",
+        "github_status": "No GitHub established in targeted search",
+        "evidence_url": "https://www.scranton.edu/faculty/squire/research.html",
+        "qualification": "Current appointment needs refresh; not evidence of absence.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=31",
+      "kind": "source-observation",
+      "url": "https://news.scranton.edu/articles/2020/02/fac-venezia.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=31",
+      "metadata": {
+        "name": "Andrew Venezia",
+        "type": "researcher",
+        "relationship_to_scranton": "University neuroscience and health research",
+        "research_area": "Exercise and cognition",
+        "github_status": "No GitHub established in targeted search",
+        "evidence_url": "https://news.scranton.edu/articles/2020/02/fac-venezia.shtml",
+        "qualification": "Historical profile; current appointment needs refresh.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=32",
+      "kind": "source-observation",
+      "url": "https://news.scranton.edu/articles/2024/10/news-faculty-nsf-grant-driver.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=32",
+      "metadata": {
+        "name": "Ashley Driver",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Biology",
+        "research_area": "Neurodevelopment",
+        "github_status": "No GitHub established in targeted search",
+        "evidence_url": "https://news.scranton.edu/articles/2024/10/news-faculty-nsf-grant-driver.shtml",
+        "qualification": "Not evidence of absence.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=33",
+      "kind": "source-observation",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13272008/",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=33",
+      "metadata": {
+        "name": "Joseph Brague",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Biology",
+        "research_area": "Neuroscience",
+        "github_status": "Study code reported available on request",
+        "evidence_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13272008/",
+        "qualification": "Do not attribute third-party software used in the article to the study.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=34",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/directory/profiles/biology/marc-seid.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=34",
+      "metadata": {
+        "name": "Marc Seid",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Biology",
+        "research_area": "Neuroscience",
+        "github_status": "No GitHub established in targeted search",
+        "evidence_url": "https://www.scranton.edu/directory/profiles/biology/marc-seid.shtml",
+        "qualification": "Not evidence of absence.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=35",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/directory/profiles/biology/vincent-farallo.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=35",
+      "metadata": {
+        "name": "Vincent Farallo",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Biology",
+        "research_area": "Physiology",
+        "github_status": "No GitHub established in targeted search",
+        "evidence_url": "https://www.scranton.edu/directory/profiles/biology/vincent-farallo.shtml",
+        "qualification": "Being cited by a paper is not code authorship.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=36",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/academics/provost/profiles/2026-new-faculty/sannino-2026-new-faculty.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=36",
+      "metadata": {
+        "name": "David Sannino",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Biology appointment in 2026",
+        "research_area": "Microbiology",
+        "github_status": "No Scranton project GitHub established",
+        "evidence_url": "https://www.scranton.edu/academics/provost/profiles/2026-new-faculty/sannino-2026-new-faculty.shtml",
+        "qualification": "Earlier external work is not automatically Scranton work.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=37",
+      "kind": "source-observation",
+      "url": "https://www.scranton.edu/academics/provost/profiles/2026-new-faculty/brice-2026-new-faculty.shtml",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=37",
+      "metadata": {
+        "name": "Collin Brice",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton appointment in 2026",
+        "research_area": "Communication sciences",
+        "github_status": "Prior external studies link OSF materials",
+        "evidence_url": "https://www.scranton.edu/academics/provost/profiles/2026-new-faculty/brice-2026-new-faculty.shtml",
+        "qualification": "2025 and early-2026 cited papers list University of Cincinnati affiliation; software code not verified.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=38",
+      "kind": "source-observation",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12638352/",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=38",
+      "metadata": {
+        "name": "Bryan Burnham",
+        "type": "faculty",
+        "relationship_to_scranton": "Scranton Psychology at publication",
+        "research_area": "Attention and cognition",
+        "github_status": "Data and code available from author on request",
+        "evidence_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12638352/",
+        "qualification": "No public project repository established.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:labs-and-people.csv#row=39",
+      "kind": "source-observation",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6249345/",
+      "nativeId": null,
+      "sourceRef": "labs-and-people.csv#row=39",
+      "metadata": {
+        "name": "Emily Hopkins",
+        "type": "researcher",
+        "relationship_to_scranton": "Scranton Psychology at 2018 publication",
+        "research_area": "Cognitive science",
+        "github_status": "Paper links OSF materials",
+        "evidence_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6249345/",
+        "qualification": "Code contents not established; current affiliation needs refresh.",
+        "urlDisposition": "retained"
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=2",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=2",
+      "metadata": {
+        "id": "T001",
+        "trail": "Ahmed Gomaa -> Scranton-hosted TaqreeRx paper -> ahgomaa/TaqreeRx",
+        "evidence_urls": "https://www.scranton.edu/faculty/gomaa/taqreerx.pdf",
+        "result": "Direct healthcare AI repository",
+        "attribution_limit": "Faculty personal account; proof of concept."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=3",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=3",
+      "metadata": {
+        "id": "T002",
+        "trail": "Hague Lab -> lab website -> jmgraham30/symbiontmodeler",
+        "evidence_urls": "https://haguelab.com/",
+        "result": "Direct lab-to-repository link",
+        "attribution_limit": "Repository is on Graham's individual account."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=4",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=4",
+      "metadata": {
+        "id": "T003",
+        "trail": "Graham + Klobusicky + Hague -> 2025 paper -> symbiontmodeler and wlbc_simulations",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12358320/",
+        "result": "Two research repositories",
+        "attribution_limit": "Biological modeling rather than clinical software."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=5",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=5",
+      "metadata": {
+        "id": "T004",
+        "trail": "Stumpo + Shedlock -> mass-spectrometry tutorial -> Camber27/MSI-R-Tutorial",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8762469/",
+        "result": "Historical Scranton-affiliated code",
+        "attribution_limit": "Current group status not established."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=6",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=6",
+      "metadata": {
+        "id": "T005",
+        "trail": "Dumancas -> 2022 melanoma paper -> Zenodo 4781962 -> JomaMinoza repository",
+        "evidence_urls": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9777873/ | https://doi.org/10.5281/zenodo.4781962",
+        "result": "Scranton-affiliated coauthored paper and external code",
+        "attribution_limit": "2021 code archive predates Scranton appointment; Dumancas not credited for software."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=7",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=7",
+      "metadata": {
+        "id": "T006",
+        "trail": "Warker -> speech-errors paper -> OSF 24gfu data and R code",
+        "evidence_urls": "https://www.tandfonline.com/doi/abs/10.1080/15475441.2024.2372246",
+        "result": "Publisher-reported code on OSF",
+        "attribution_limit": "OSF individual files not inspected; no GitHub mirror established."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=8",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=8",
+      "metadata": {
+        "id": "T007",
+        "trail": "Warker -> coauthor Richtsmeier -> Oklahoma State Phon Farm Lab -> prichtsmeier/phonfarmlab",
+        "evidence_urls": "https://www.tandfonline.com/doi/abs/10.1080/15475441.2024.2372246 | https://cas.okstate.edu/communication_sciences_and_disorders/about_us/research",
+        "result": "External lab GitHub",
+        "attribution_limit": "Repository was empty; not the Warker study's OSF code."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=9",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=9",
+      "metadata": {
+        "id": "T008",
+        "trail": "Chapman -> eye-tracking project -> Aphasia Tech Map -> external map GitHub",
+        "evidence_urls": "https://rbcavanaugh.github.io/aphasia-tech-map/list_view.html | https://github.com/rbcavanaugh/aphasia-tech-map",
+        "result": "External index includes Scranton faculty project",
+        "attribution_limit": "Map repository is not project software."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=10",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=10",
+      "metadata": {
+        "id": "T009",
+        "trail": "Chapman -> shared eye study -> Anjum -> separate 2025 paper with Dalton -> Dalton/Cavanaugh aphasia apps",
+        "evidence_urls": "https://rbcavanaugh.github.io/aphasia-tech-map/list_view.html | https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2025.1574453/full | https://talkbank.org/aphasia/discourse/MainConcepts/index.html",
+        "result": "External mainConcept and coreLexicon repositories",
+        "attribution_limit": "Two-hop connection; no evidence Chapman/Anjum authored or used these apps."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=11",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=11",
+      "metadata": {
+        "id": "T010",
+        "trail": "Shedlock -> Scranton 2022 degree -> Florida MetaVision3D paper -> XinBiostats/MetaVision3D",
+        "evidence_urls": "https://news.scranton.edu/articles/2022/06/news-grad2022-honorsprogram.shtml | https://pmc.ncbi.nlm.nih.gov/articles/PMC12065415/",
+        "result": "External alumni research code",
+        "attribution_limit": "University of Florida project after Scranton."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=12",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=12",
+      "metadata": {
+        "id": "T011",
+        "trail": "Shedlock -> Scranton 2022 degree -> Florida SAMI paper -> XinBiostats/SAMI",
+        "evidence_urls": "https://news.scranton.edu/articles/2022/06/news-grad2022-honorsprogram.shtml | https://www.nature.com/articles/s41467-025-59487-7",
+        "result": "External alumni research code",
+        "attribution_limit": "University of Florida project after Scranton."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=13",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=13",
+      "metadata": {
+        "id": "T012",
+        "trail": "Gomaa -> coauthors Yibai Li and Xiaobing Li -> PsyCogMetrics paper -> Zenodo record",
+        "evidence_urls": "https://www.scranton.edu/faculty/gomaa/publications.shtml | https://arxiv.org/abs/2603.13126 | https://zenodo.org/records/17063383",
+        "result": "Scranton-linked AI research lead",
+        "attribution_limit": "No project GitHub established; Zenodo API listed only a poster image."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=14",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=14",
+      "metadata": {
+        "id": "T013",
+        "trail": "Galen -> coauthored study -> external collaborator repository",
+        "evidence_urls": "https://onlinelibrary.wiley.com/doi/full/10.1111/jbi.15015 | https://pmc.ncbi.nlm.nih.gov/articles/PMC9723575/",
+        "result": "Several external biological research repositories",
+        "attribution_limit": "Coauthorship does not establish ownership or software contribution for every repository."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=15",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=15",
+      "metadata": {
+        "id": "T014",
+        "trail": "Patel -> readmission-analysis README -> Rx Gap Finder",
+        "evidence_urls": "https://github.com/ridham0065/hospital-readmission-analysis | https://github.com/ridham0065/rx-gap-finder",
+        "result": "Additional personal healthcare analytics repository",
+        "attribution_limit": "Scranton education is self-reported; no lab connection established."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=16",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=16",
+      "metadata": {
+        "id": "T015",
+        "trail": "Crowell -> 2024 abstract with Freisinger -> Freisinger separate 2026 article -> PhenoMol",
+        "evidence_urls": "https://asbweb.org/wp-content/uploads/ASB2024OralThematicAbstractBook.pdf | https://pmc.ncbi.nlm.nih.gov/articles/PMC13036016/",
+        "result": "External two-hop project",
+        "attribution_limit": "Crowell is not an author of the 2026 article; no proof of PhenoMol use in his study."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:research-trails.csv#row=17",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "research-trails.csv#row=17",
+      "metadata": {
+        "id": "T016",
+        "trail": "Graham -> 2024 external collaborator paper -> danielstrombom/SLFS",
+        "evidence_urls": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0307754",
+        "result": "Externally owned project-specific code",
+        "attribution_limit": "Agricultural ecology, outside the primary healthcare scope."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:search-notes.md#L53",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "search-notes.md#L53",
+      "metadata": {
+        "reportedQualification": "Outside nine-county DVRPC; neighboring context only, no primary regional admission."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:search-notes.md#L16",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "search-notes.md#L16",
+      "metadata": {
+        "reportedQualification": "Chemistry subagent returned an automated safety restriction and no final report; other tracks contributed findings."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:search-notes.md#L28",
+      "kind": "availability",
+      "url": "https://osf.io/24gfu/",
+      "nativeId": null,
+      "sourceRef": "search-notes.md#L28",
+      "metadata": {
+        "reportedQualification": "Publisher reports data and R code; OSF access failed, files not inspected."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:findings.md#L58",
+      "kind": "availability",
+      "url": "https://github.com/prichtsmeier/phonfarmlab",
+      "nativeId": null,
+      "sourceRef": "findings.md#L58",
+      "metadata": {
+        "reportedQualification": "Empty when checked; not the Warker study OSF archive."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:findings.md#L70",
+      "kind": "relationship",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "findings.md#L70",
+      "metadata": {
+        "reportedQualification": "Shedlock later Florida collaborations are not Scranton lab repositories."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:findings.md#L74",
+      "kind": "availability",
+      "url": "https://zenodo.org/records/17063383",
+      "nativeId": null,
+      "sourceRef": "findings.md#L74",
+      "metadata": {
+        "reportedQualification": "Project GitHub not found; Zenodo API listed a poster image, not source code."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:findings.md#L50",
+      "kind": "source-observation",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "findings.md#L50",
+      "metadata": {
+        "reportedQualification": "Avian disease ecology is not automatically health technology."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:findings.md#L87",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "findings.md#L87",
+      "metadata": {
+        "reportedQualification": "Targeted searches did not establish public GitHub for listed labs and people; not an absence claim."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    },
+    {
+      "id": "scranton:README.md#L20",
+      "kind": "coverage",
+      "url": null,
+      "nativeId": null,
+      "sourceRef": "README.md#L20",
+      "metadata": {
+        "reportedQualification": "Availability may change; some OSF records could not be opened; reported code was not independently inspected."
+      },
+      "publicationAuthorized": false,
+      "reviewState": "source_reported_unreviewed"
+    }
+  ],
+  "coverage": {
+    "fileRowCounts": {
+      "repositories.csv": 41,
+      "labs-and-people.csv": 38,
+      "research-trails.csv": 16
+    },
+    "scope": "neighboring context; no primary admission",
+    "reportObservationCount": 9
+  },
+  "qualifications": [
+    "Source-reported, unreviewed snapshot; identities, affiliations, ownership, availability and relevance require independent review.",
+    "Native identifiers are unavailable; reported matching copies and redirects are unverified and do not merge identities.",
+    "No clinical validation or publication authorization is established.",
+    "Scranton is outside the DVRPC nine-county primary geography; neighboring context only.",
+    "Student, personal and paperless leads may be retained; biological or avian research is not automatically health technology.",
+    "Automated safety restriction blocked the chemistry subagent; this intake did not retry that research."
+  ]
+}

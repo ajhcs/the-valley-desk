@@ -1,3 +1,4 @@
+import { legacyUrl } from "../lib/schema-compat";
 import { z } from "zod";
 import { logOps } from "../lib/ops";
 import type { ModelResponseDiagnostic } from "./model-response-diagnostics";
@@ -37,7 +38,7 @@ export const OFFICIAL_SOURCE_SCHEMA_VERSION = 1;
 export const OFFICIAL_SOURCE_RELEVANCE_PROMPT_VERSION = "tvd-official-source-relevance-v4";
 export const OFFICIAL_SOURCE_RELEVANCE_MODEL = DEFAULT_EDITOR_MODEL;
 
-const HttpsUrl = z.string().url().refine((value) => {
+const HttpsUrl = legacyUrl().refine((value) => {
   try {
     const url = new URL(value);
     return url.protocol === "https:" && !url.username && !url.password;

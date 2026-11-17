@@ -1,0 +1,5767 @@
+{
+  "schemaVersion": "discovery-pilot-catalog-v3",
+  "catalogVersion": "2026-11-16-counties-regional-context-1",
+  "selectionSha256": "189b2ad80f084732e4332fd60356827e7b669d89fc700bee20a911fe1ad10a27",
+  "records": [
+    {
+      "id": "crossref:10.1007/s11517-024-03096-x",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1007/s11517-024-03096-x",
+      "title": "SleepBoost: a multi-level tree-based ensemble model for automatic sleep stage classification",
+      "description": null,
+      "url": "https://doi.org/10.1007/s11517-024-03096-x",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Akib Zaman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Shiu Kumar",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Swakkhar Shatabda",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Iman Dehzangi",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Alok Sharma",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2024-05-03",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1007%2Fs11517-024-03096-x&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T17:39:53.209871+00:00",
+        "sha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1016/j.neuroimage.2023.120037",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1016/j.neuroimage.2023.120037",
+      "title": "ModelArray: An R package for statistical analysis of fixel-wise data",
+      "description": null,
+      "url": "https://doi.org/10.1016/j.neuroimage.2023.120037",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Chenying Zhao",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Tinashe M. Tapera",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Joëlle Bagautdinova",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Josiane Bourque",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Sydney Covitz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Raquel E. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Ruben C. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Bart Larsen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Kahini Mehta",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Steven L. Meisler",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Kristin Murtha",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "John Muschelli",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "David R. Roalf",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Valerie J. Sydnor",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Alessandra M. Valcarcel",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Russell T. Shinohara",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Matthew Cieslak",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Theodore D. Satterthwaite",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2023-05",
+        "precision": "month"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.neuroimage.2023.120037&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T16:18:52.337394+00:00",
+        "sha256": "4a70e90e49b1782c67f20182a68126b697fce4783ef4ca7542df852966e88699",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1016/j.xgen.2023.100340",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1016/j.xgen.2023.100340",
+      "title": "OpenPBTA: The Open Pediatric Brain Tumor Atlas",
+      "description": null,
+      "url": "https://doi.org/10.1016/j.xgen.2023.100340",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Joshua A. Shapiro",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Krutika S. Gaonkar",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Stephanie J. Spielman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Candace L. Savonen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Chante J. Bethell",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Run Jin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Komal S. Rathi",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Yuankun Zhu",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Laura E. Egolf",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Bailey K. Farrow",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Daniel P. Miller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Yang Yang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Tejaswi Koganti",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Nighat Noureen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Mateusz P. Koptyra",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Nhat Duong",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Mariarita Santi",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Jung Kim",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Shannon Robins",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Phillip B. Storm",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Stephen C. Mack",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 21,
+          "name": "Jena V. Lilly",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Hongbo M. Xie",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Payal Jain",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Pichai Raman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 25,
+          "name": "Brian R. Rood",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 26,
+          "name": "Rishi R. Lulla",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 27,
+          "name": "Javad Nazarian",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 28,
+          "name": "Adam A. Kraya",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 29,
+          "name": "Zalman Vaksman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 30,
+          "name": "Allison P. Heath",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 31,
+          "name": "Cassie Kline",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 32,
+          "name": "Laura Scolaro",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 33,
+          "name": "Angela N. Viaene",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 34,
+          "name": "Xiaoyan Huang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 35,
+          "name": "Gregory P. Way",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 36,
+          "name": "Steven M. Foltz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 37,
+          "name": "Bo Zhang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 38,
+          "name": "Anna R. Poetsch",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 39,
+          "name": "Sabine Mueller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 40,
+          "name": "Brian M. Ennis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 41,
+          "name": "Michael Prados",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 42,
+          "name": "Sharon J. Diskin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 43,
+          "name": "Siyuan Zheng",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 44,
+          "name": "Yiran Guo",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 45,
+          "name": "Shrivats Kannan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 46,
+          "name": "Angela J. Waanders",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 47,
+          "name": "Ashley S. Margol",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 48,
+          "name": "Meen Chul Kim",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 49,
+          "name": "Derek Hanson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 50,
+          "name": "Nicholas Van Kuren",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 51,
+          "name": "Jessica Wong",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 52,
+          "name": "Rebecca S. Kaufman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 53,
+          "name": "Noel Coleman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 54,
+          "name": "Christopher Blackden",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 55,
+          "name": "Kristina A. Cole",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 56,
+          "name": "Jennifer L. Mason",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 57,
+          "name": "Peter J. Madsen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 58,
+          "name": "Carl J. Koschmann",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 59,
+          "name": "Douglas R. Stewart",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 60,
+          "name": "Eric Wafula",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 61,
+          "name": "Miguel A. Brown",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 62,
+          "name": "Adam C. Resnick",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 63,
+          "name": "Casey S. Greene",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 64,
+          "name": "Jo Lynne Rokita",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 65,
+          "name": "Jaclyn N. Taroni",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2023-07",
+        "precision": "month"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.xgen.2023.100340&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T17:39:49.588333+00:00",
+        "sha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
+        },
+        {
+          "field": "authors/25",
+          "pointer": "/message/items/0/author/25"
+        },
+        {
+          "field": "authors/26",
+          "pointer": "/message/items/0/author/26"
+        },
+        {
+          "field": "authors/27",
+          "pointer": "/message/items/0/author/27"
+        },
+        {
+          "field": "authors/28",
+          "pointer": "/message/items/0/author/28"
+        },
+        {
+          "field": "authors/29",
+          "pointer": "/message/items/0/author/29"
+        },
+        {
+          "field": "authors/30",
+          "pointer": "/message/items/0/author/30"
+        },
+        {
+          "field": "authors/31",
+          "pointer": "/message/items/0/author/31"
+        },
+        {
+          "field": "authors/32",
+          "pointer": "/message/items/0/author/32"
+        },
+        {
+          "field": "authors/33",
+          "pointer": "/message/items/0/author/33"
+        },
+        {
+          "field": "authors/34",
+          "pointer": "/message/items/0/author/34"
+        },
+        {
+          "field": "authors/35",
+          "pointer": "/message/items/0/author/35"
+        },
+        {
+          "field": "authors/36",
+          "pointer": "/message/items/0/author/36"
+        },
+        {
+          "field": "authors/37",
+          "pointer": "/message/items/0/author/37"
+        },
+        {
+          "field": "authors/38",
+          "pointer": "/message/items/0/author/38"
+        },
+        {
+          "field": "authors/39",
+          "pointer": "/message/items/0/author/39"
+        },
+        {
+          "field": "authors/40",
+          "pointer": "/message/items/0/author/40"
+        },
+        {
+          "field": "authors/41",
+          "pointer": "/message/items/0/author/41"
+        },
+        {
+          "field": "authors/42",
+          "pointer": "/message/items/0/author/42"
+        },
+        {
+          "field": "authors/43",
+          "pointer": "/message/items/0/author/43"
+        },
+        {
+          "field": "authors/44",
+          "pointer": "/message/items/0/author/44"
+        },
+        {
+          "field": "authors/45",
+          "pointer": "/message/items/0/author/45"
+        },
+        {
+          "field": "authors/46",
+          "pointer": "/message/items/0/author/46"
+        },
+        {
+          "field": "authors/47",
+          "pointer": "/message/items/0/author/47"
+        },
+        {
+          "field": "authors/48",
+          "pointer": "/message/items/0/author/48"
+        },
+        {
+          "field": "authors/49",
+          "pointer": "/message/items/0/author/49"
+        },
+        {
+          "field": "authors/50",
+          "pointer": "/message/items/0/author/50"
+        },
+        {
+          "field": "authors/51",
+          "pointer": "/message/items/0/author/51"
+        },
+        {
+          "field": "authors/52",
+          "pointer": "/message/items/0/author/52"
+        },
+        {
+          "field": "authors/53",
+          "pointer": "/message/items/0/author/53"
+        },
+        {
+          "field": "authors/54",
+          "pointer": "/message/items/0/author/54"
+        },
+        {
+          "field": "authors/55",
+          "pointer": "/message/items/0/author/55"
+        },
+        {
+          "field": "authors/56",
+          "pointer": "/message/items/0/author/56"
+        },
+        {
+          "field": "authors/57",
+          "pointer": "/message/items/0/author/57"
+        },
+        {
+          "field": "authors/58",
+          "pointer": "/message/items/0/author/58"
+        },
+        {
+          "field": "authors/59",
+          "pointer": "/message/items/0/author/59"
+        },
+        {
+          "field": "authors/60",
+          "pointer": "/message/items/0/author/60"
+        },
+        {
+          "field": "authors/61",
+          "pointer": "/message/items/0/author/61"
+        },
+        {
+          "field": "authors/62",
+          "pointer": "/message/items/0/author/62"
+        },
+        {
+          "field": "authors/63",
+          "pointer": "/message/items/0/author/63"
+        },
+        {
+          "field": "authors/64",
+          "pointer": "/message/items/0/author/64"
+        },
+        {
+          "field": "authors/65",
+          "pointer": "/message/items/0/author/65"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1038/s41592-021-01185-5",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1038/s41592-021-01185-5",
+      "title": "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data",
+      "description": null,
+      "url": "https://doi.org/10.1038/s41592-021-01185-5",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Matthew Cieslak",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Philip A. Cook",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Xiaosong He",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Fang-Cheng Yeh",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Thijs Dhollander",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Azeez Adebimpe",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Geoffrey K. Aguirre",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Danielle S. Bassett",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Richard F. Betzel",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Josiane Bourque",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Laura M. Cabral",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Christos Davatzikos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "John A. Detre",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Eric Earl",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Mark A. Elliott",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Shreyas Fadnavis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Damien A. Fair",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Will Foran",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Panagiotis Fotiadis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Eleftherios Garyfallidis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Barry Giesbrecht",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 21,
+          "name": "Ruben C. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Raquel E. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Max B. Kelz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Anisha Keshavan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 25,
+          "name": "Bart S. Larsen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 26,
+          "name": "Beatriz Luna",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 27,
+          "name": "Allyson P. Mackey",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 28,
+          "name": "Michael P. Milham",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 29,
+          "name": "Desmond J. Oathes",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 30,
+          "name": "Anders Perrone",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 31,
+          "name": "Adam R. Pines",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 32,
+          "name": "David R. Roalf",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 33,
+          "name": "Adam Richie-Halford",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 34,
+          "name": "Ariel Rokem",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 35,
+          "name": "Valerie J. Sydnor",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 36,
+          "name": "Tinashe M. Tapera",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 37,
+          "name": "Ursula A. Tooley",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 38,
+          "name": "Jean M. Vettel",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 39,
+          "name": "Jason D. Yeatman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 40,
+          "name": "Scott T. Grafton",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 41,
+          "name": "Theodore D. Satterthwaite",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2021-06-21",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:36.343883+00:00",
+        "sha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
+        },
+        {
+          "field": "authors/25",
+          "pointer": "/message/items/0/author/25"
+        },
+        {
+          "field": "authors/26",
+          "pointer": "/message/items/0/author/26"
+        },
+        {
+          "field": "authors/27",
+          "pointer": "/message/items/0/author/27"
+        },
+        {
+          "field": "authors/28",
+          "pointer": "/message/items/0/author/28"
+        },
+        {
+          "field": "authors/29",
+          "pointer": "/message/items/0/author/29"
+        },
+        {
+          "field": "authors/30",
+          "pointer": "/message/items/0/author/30"
+        },
+        {
+          "field": "authors/31",
+          "pointer": "/message/items/0/author/31"
+        },
+        {
+          "field": "authors/32",
+          "pointer": "/message/items/0/author/32"
+        },
+        {
+          "field": "authors/33",
+          "pointer": "/message/items/0/author/33"
+        },
+        {
+          "field": "authors/34",
+          "pointer": "/message/items/0/author/34"
+        },
+        {
+          "field": "authors/35",
+          "pointer": "/message/items/0/author/35"
+        },
+        {
+          "field": "authors/36",
+          "pointer": "/message/items/0/author/36"
+        },
+        {
+          "field": "authors/37",
+          "pointer": "/message/items/0/author/37"
+        },
+        {
+          "field": "authors/38",
+          "pointer": "/message/items/0/author/38"
+        },
+        {
+          "field": "authors/39",
+          "pointer": "/message/items/0/author/39"
+        },
+        {
+          "field": "authors/40",
+          "pointer": "/message/items/0/author/40"
+        },
+        {
+          "field": "authors/41",
+          "pointer": "/message/items/0/author/41"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1038/s41592-022-01458-7",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1038/s41592-022-01458-7",
+      "title": "ASLPrep: a platform for processing of arterial spin labeled MRI and quantification of regional brain perfusion",
+      "description": null,
+      "url": "https://doi.org/10.1038/s41592-022-01458-7",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Azeez Adebimpe",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Maxwell Bertolero",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Sudipto Dolui",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Matthew Cieslak",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Kristin Murtha",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Erica B. Baller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Bradley Boeve",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Adam Boxer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Ellyn R. Butler",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Phil Cook",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Stan Colcombe",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Sydney Covitz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Christos Davatzikos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Diego G. Davila",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Mark A. Elliott",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Matthew W. Flounders",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Alexandre R. Franco",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Raquel E. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Ruben C. Gur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Basma Jaber",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Corey McMillian",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 21,
+          "name": "the ALLFTD Consortium",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Liana Apostolova",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Brian Appleby",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Sami Barmada",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 25,
+          "name": "Yvette Bordelon",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 26,
+          "name": "Hugo Botha",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 27,
+          "name": "Adam L. Boxer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 28,
+          "name": "Andrea Bozoki",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 29,
+          "name": "Danielle Brushaber",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 30,
+          "name": "David Clark",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 31,
+          "name": "Giovanni Coppola",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 32,
+          "name": "Ryan Darby",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 33,
+          "name": "Dennis Dickson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 34,
+          "name": "Kimiko Domoto-Reilly",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 35,
+          "name": "Kelley Faber",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 36,
+          "name": "Anne Fagan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 37,
+          "name": "Julie A. Fields",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 38,
+          "name": "Tatiana Foroud",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 39,
+          "name": "Leah K. Forsberg",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 40,
+          "name": "Daniel Geschwind",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 41,
+          "name": "Jill Goldman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 42,
+          "name": "Douglas R. Galasko",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 43,
+          "name": "Ralitza Gavrilova",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 44,
+          "name": "Tania Gendron",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 45,
+          "name": "Jonathon Graff-Radford",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 46,
+          "name": "Neill Graff-Radford",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 47,
+          "name": "Ian M. Grant",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 48,
+          "name": "Murray Grossman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 49,
+          "name": "Matthew Hall",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 50,
+          "name": "Eric Huang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 51,
+          "name": "Hilary W. Heuer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 52,
+          "name": "Ging-Yuek Robin Hsiung",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 53,
+          "name": "Edward D. Huey",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 54,
+          "name": "David Irwin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 55,
+          "name": "David T. Jones",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 56,
+          "name": "Kejal Kantarci",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 57,
+          "name": "Daniel Kaufer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 58,
+          "name": "Diana Kerwin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 59,
+          "name": "David Knopman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 60,
+          "name": "John Kornak",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 61,
+          "name": "Joel Kramer",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 62,
+          "name": "Walter Kremers",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 63,
+          "name": "Maria Lapid",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 64,
+          "name": "Argentina Lario Lago",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 65,
+          "name": "Gabriel Leger",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 66,
+          "name": "Peter Ljubenkov",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 67,
+          "name": "Irene Litvan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 68,
+          "name": "Diane Lucente",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 69,
+          "name": "Ian R. Mackenzie",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 70,
+          "name": "Joseph C. Masdeu",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 71,
+          "name": "Scott McGinnis",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 72,
+          "name": "Mario Mendez",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 73,
+          "name": "Carly Mester",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 74,
+          "name": "Bruce L. Miller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 75,
+          "name": "Chiadi Onyike",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 76,
+          "name": "M. Belen Pascual",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 77,
+          "name": "Leonard Petrucelli",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 78,
+          "name": "Peter Pressman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 79,
+          "name": "Rosa Rademakers",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 80,
+          "name": "Vijay Ramanan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 81,
+          "name": "E. Marisa Ramos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 82,
+          "name": "Meghana Rao",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 83,
+          "name": "Katya Rascovsky",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 84,
+          "name": "Katherine P. Rankin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 85,
+          "name": "Aaron Ritter",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 86,
+          "name": "Erik D. Roberson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 87,
+          "name": "Julio Rojas-Martinez",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 88,
+          "name": "Howard J. Rosen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 89,
+          "name": "Rodolfo Savica",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 90,
+          "name": "William Seeley",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 91,
+          "name": "Jeremy Syrjanen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 92,
+          "name": "Adam M. Staffaroni",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 93,
+          "name": "M. Carmela Tartaglia",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 94,
+          "name": "Jack Taylor",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 95,
+          "name": "Lawren VandeVrede",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 96,
+          "name": "Sandra Weintraub",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 97,
+          "name": "Bonnie Wong",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 98,
+          "name": "Zbigniew Wszolek",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 99,
+          "name": "Michael Milham",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 100,
+          "name": "Henk J. M. M. Mutsaerts",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 101,
+          "name": "Desmond J. Oathes",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 102,
+          "name": "Christopher A. Olm",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 103,
+          "name": "Jeffrey S. Phillips",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 104,
+          "name": "Will Tackett",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 105,
+          "name": "David R. Roalf",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 106,
+          "name": "Howard Rosen",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 107,
+          "name": "Tinashe M. Tapera",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 108,
+          "name": "M. Dylan Tisdall",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 109,
+          "name": "Dale Zhou",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 110,
+          "name": "Oscar Esteban",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 111,
+          "name": "Russell A. Poldrack",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 112,
+          "name": "John A. Detre",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 113,
+          "name": "Theodore D. Satterthwaite",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2022-06",
+        "precision": "month"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-022-01458-7&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T16:18:41.279225+00:00",
+        "sha256": "43129723e1e8cf08767afcafdd135a8966f2ab822e2f088a2b94b29dc483fc57",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
+        },
+        {
+          "field": "authors/25",
+          "pointer": "/message/items/0/author/25"
+        },
+        {
+          "field": "authors/26",
+          "pointer": "/message/items/0/author/26"
+        },
+        {
+          "field": "authors/27",
+          "pointer": "/message/items/0/author/27"
+        },
+        {
+          "field": "authors/28",
+          "pointer": "/message/items/0/author/28"
+        },
+        {
+          "field": "authors/29",
+          "pointer": "/message/items/0/author/29"
+        },
+        {
+          "field": "authors/30",
+          "pointer": "/message/items/0/author/30"
+        },
+        {
+          "field": "authors/31",
+          "pointer": "/message/items/0/author/31"
+        },
+        {
+          "field": "authors/32",
+          "pointer": "/message/items/0/author/32"
+        },
+        {
+          "field": "authors/33",
+          "pointer": "/message/items/0/author/33"
+        },
+        {
+          "field": "authors/34",
+          "pointer": "/message/items/0/author/34"
+        },
+        {
+          "field": "authors/35",
+          "pointer": "/message/items/0/author/35"
+        },
+        {
+          "field": "authors/36",
+          "pointer": "/message/items/0/author/36"
+        },
+        {
+          "field": "authors/37",
+          "pointer": "/message/items/0/author/37"
+        },
+        {
+          "field": "authors/38",
+          "pointer": "/message/items/0/author/38"
+        },
+        {
+          "field": "authors/39",
+          "pointer": "/message/items/0/author/39"
+        },
+        {
+          "field": "authors/40",
+          "pointer": "/message/items/0/author/40"
+        },
+        {
+          "field": "authors/41",
+          "pointer": "/message/items/0/author/41"
+        },
+        {
+          "field": "authors/42",
+          "pointer": "/message/items/0/author/42"
+        },
+        {
+          "field": "authors/43",
+          "pointer": "/message/items/0/author/43"
+        },
+        {
+          "field": "authors/44",
+          "pointer": "/message/items/0/author/44"
+        },
+        {
+          "field": "authors/45",
+          "pointer": "/message/items/0/author/45"
+        },
+        {
+          "field": "authors/46",
+          "pointer": "/message/items/0/author/46"
+        },
+        {
+          "field": "authors/47",
+          "pointer": "/message/items/0/author/47"
+        },
+        {
+          "field": "authors/48",
+          "pointer": "/message/items/0/author/48"
+        },
+        {
+          "field": "authors/49",
+          "pointer": "/message/items/0/author/49"
+        },
+        {
+          "field": "authors/50",
+          "pointer": "/message/items/0/author/50"
+        },
+        {
+          "field": "authors/51",
+          "pointer": "/message/items/0/author/51"
+        },
+        {
+          "field": "authors/52",
+          "pointer": "/message/items/0/author/52"
+        },
+        {
+          "field": "authors/53",
+          "pointer": "/message/items/0/author/53"
+        },
+        {
+          "field": "authors/54",
+          "pointer": "/message/items/0/author/54"
+        },
+        {
+          "field": "authors/55",
+          "pointer": "/message/items/0/author/55"
+        },
+        {
+          "field": "authors/56",
+          "pointer": "/message/items/0/author/56"
+        },
+        {
+          "field": "authors/57",
+          "pointer": "/message/items/0/author/57"
+        },
+        {
+          "field": "authors/58",
+          "pointer": "/message/items/0/author/58"
+        },
+        {
+          "field": "authors/59",
+          "pointer": "/message/items/0/author/59"
+        },
+        {
+          "field": "authors/60",
+          "pointer": "/message/items/0/author/60"
+        },
+        {
+          "field": "authors/61",
+          "pointer": "/message/items/0/author/61"
+        },
+        {
+          "field": "authors/62",
+          "pointer": "/message/items/0/author/62"
+        },
+        {
+          "field": "authors/63",
+          "pointer": "/message/items/0/author/63"
+        },
+        {
+          "field": "authors/64",
+          "pointer": "/message/items/0/author/64"
+        },
+        {
+          "field": "authors/65",
+          "pointer": "/message/items/0/author/65"
+        },
+        {
+          "field": "authors/66",
+          "pointer": "/message/items/0/author/66"
+        },
+        {
+          "field": "authors/67",
+          "pointer": "/message/items/0/author/67"
+        },
+        {
+          "field": "authors/68",
+          "pointer": "/message/items/0/author/68"
+        },
+        {
+          "field": "authors/69",
+          "pointer": "/message/items/0/author/69"
+        },
+        {
+          "field": "authors/70",
+          "pointer": "/message/items/0/author/70"
+        },
+        {
+          "field": "authors/71",
+          "pointer": "/message/items/0/author/71"
+        },
+        {
+          "field": "authors/72",
+          "pointer": "/message/items/0/author/72"
+        },
+        {
+          "field": "authors/73",
+          "pointer": "/message/items/0/author/73"
+        },
+        {
+          "field": "authors/74",
+          "pointer": "/message/items/0/author/74"
+        },
+        {
+          "field": "authors/75",
+          "pointer": "/message/items/0/author/75"
+        },
+        {
+          "field": "authors/76",
+          "pointer": "/message/items/0/author/76"
+        },
+        {
+          "field": "authors/77",
+          "pointer": "/message/items/0/author/77"
+        },
+        {
+          "field": "authors/78",
+          "pointer": "/message/items/0/author/78"
+        },
+        {
+          "field": "authors/79",
+          "pointer": "/message/items/0/author/79"
+        },
+        {
+          "field": "authors/80",
+          "pointer": "/message/items/0/author/80"
+        },
+        {
+          "field": "authors/81",
+          "pointer": "/message/items/0/author/81"
+        },
+        {
+          "field": "authors/82",
+          "pointer": "/message/items/0/author/82"
+        },
+        {
+          "field": "authors/83",
+          "pointer": "/message/items/0/author/83"
+        },
+        {
+          "field": "authors/84",
+          "pointer": "/message/items/0/author/84"
+        },
+        {
+          "field": "authors/85",
+          "pointer": "/message/items/0/author/85"
+        },
+        {
+          "field": "authors/86",
+          "pointer": "/message/items/0/author/86"
+        },
+        {
+          "field": "authors/87",
+          "pointer": "/message/items/0/author/87"
+        },
+        {
+          "field": "authors/88",
+          "pointer": "/message/items/0/author/88"
+        },
+        {
+          "field": "authors/89",
+          "pointer": "/message/items/0/author/89"
+        },
+        {
+          "field": "authors/90",
+          "pointer": "/message/items/0/author/90"
+        },
+        {
+          "field": "authors/91",
+          "pointer": "/message/items/0/author/91"
+        },
+        {
+          "field": "authors/92",
+          "pointer": "/message/items/0/author/92"
+        },
+        {
+          "field": "authors/93",
+          "pointer": "/message/items/0/author/93"
+        },
+        {
+          "field": "authors/94",
+          "pointer": "/message/items/0/author/94"
+        },
+        {
+          "field": "authors/95",
+          "pointer": "/message/items/0/author/95"
+        },
+        {
+          "field": "authors/96",
+          "pointer": "/message/items/0/author/96"
+        },
+        {
+          "field": "authors/97",
+          "pointer": "/message/items/0/author/97"
+        },
+        {
+          "field": "authors/98",
+          "pointer": "/message/items/0/author/98"
+        },
+        {
+          "field": "authors/99",
+          "pointer": "/message/items/0/author/99"
+        },
+        {
+          "field": "authors/100",
+          "pointer": "/message/items/0/author/100"
+        },
+        {
+          "field": "authors/101",
+          "pointer": "/message/items/0/author/101"
+        },
+        {
+          "field": "authors/102",
+          "pointer": "/message/items/0/author/102"
+        },
+        {
+          "field": "authors/103",
+          "pointer": "/message/items/0/author/103"
+        },
+        {
+          "field": "authors/104",
+          "pointer": "/message/items/0/author/104"
+        },
+        {
+          "field": "authors/105",
+          "pointer": "/message/items/0/author/105"
+        },
+        {
+          "field": "authors/106",
+          "pointer": "/message/items/0/author/106"
+        },
+        {
+          "field": "authors/107",
+          "pointer": "/message/items/0/author/107"
+        },
+        {
+          "field": "authors/108",
+          "pointer": "/message/items/0/author/108"
+        },
+        {
+          "field": "authors/109",
+          "pointer": "/message/items/0/author/109"
+        },
+        {
+          "field": "authors/110",
+          "pointer": "/message/items/0/author/110"
+        },
+        {
+          "field": "authors/111",
+          "pointer": "/message/items/0/author/111"
+        },
+        {
+          "field": "authors/112",
+          "pointer": "/message/items/0/author/112"
+        },
+        {
+          "field": "authors/113",
+          "pointer": "/message/items/0/author/113"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1038/s41592-024-02503-3",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1038/s41592-024-02503-3",
+      "title": "Mapping the topography of spatial gene expression with interpretable deep learning",
+      "description": null,
+      "url": "https://doi.org/10.1038/s41592-024-02503-3",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Uthsav Chitra",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Brian J. Arnold",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Hirak Sarkar",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Kohei Sanno",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Cong Ma",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Sereno Lopez-Darwin",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Benjamin J. Raphael",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2025-01-23",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T17:39:45.966987+00:00",
+        "sha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1038/s44172-023-00066-3",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1038/s44172-023-00066-3",
+      "title": "GaNDLF: the generally nuanced deep learning framework for scalable end-to-end clinical workflows",
+      "description": null,
+      "url": "https://doi.org/10.1038/s44172-023-00066-3",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Sarthak Pati",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Siddhesh P. Thakur",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "İbrahim Ethem Hamamcı",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Ujjwal Baid",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Bhakti Baheti",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Megh Bhalerao",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Orhun Güley",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Sofia Mouchtaris",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "David Lang",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Spyridon Thermos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Karol Gotkowski",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Camila González",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Caleb Grenko",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Alexander Getka",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Brandon Edwards",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Micah Sheller",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Junwen Wu",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Deepthi Karkada",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Ravi Panchumarthy",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Vinayak Ahluwalia",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Chunrui Zou",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 21,
+          "name": "Vishnu Bashyam",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Yuemeng Li",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Babak Haghighi",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Rhea Chitalia",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 25,
+          "name": "Shahira Abousamra",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 26,
+          "name": "Tahsin M. Kurc",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 27,
+          "name": "Aimilia Gastounioti",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 28,
+          "name": "Sezgin Er",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 29,
+          "name": "Mark Bergman",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 30,
+          "name": "Joel H. Saltz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 31,
+          "name": "Yong Fan",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 32,
+          "name": "Prashant Shah",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 33,
+          "name": "Anirban Mukhopadhyay",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 34,
+          "name": "Sotirios A. Tsaftaris",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 35,
+          "name": "Bjoern Menze",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 36,
+          "name": "Christos Davatzikos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 37,
+          "name": "Despina Kontos",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 38,
+          "name": "Alexandros Karargyris",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 39,
+          "name": "Renato Umeton",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 40,
+          "name": "Peter Mattson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 41,
+          "name": "Spyridon Bakas",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2023-05-16",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs44172-023-00066-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T16:18:45.006552+00:00",
+        "sha256": "cbb844b117bbbb82f8919656e98963415166c82e5082a884500fd01ca09de26f",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
+        },
+        {
+          "field": "authors/25",
+          "pointer": "/message/items/0/author/25"
+        },
+        {
+          "field": "authors/26",
+          "pointer": "/message/items/0/author/26"
+        },
+        {
+          "field": "authors/27",
+          "pointer": "/message/items/0/author/27"
+        },
+        {
+          "field": "authors/28",
+          "pointer": "/message/items/0/author/28"
+        },
+        {
+          "field": "authors/29",
+          "pointer": "/message/items/0/author/29"
+        },
+        {
+          "field": "authors/30",
+          "pointer": "/message/items/0/author/30"
+        },
+        {
+          "field": "authors/31",
+          "pointer": "/message/items/0/author/31"
+        },
+        {
+          "field": "authors/32",
+          "pointer": "/message/items/0/author/32"
+        },
+        {
+          "field": "authors/33",
+          "pointer": "/message/items/0/author/33"
+        },
+        {
+          "field": "authors/34",
+          "pointer": "/message/items/0/author/34"
+        },
+        {
+          "field": "authors/35",
+          "pointer": "/message/items/0/author/35"
+        },
+        {
+          "field": "authors/36",
+          "pointer": "/message/items/0/author/36"
+        },
+        {
+          "field": "authors/37",
+          "pointer": "/message/items/0/author/37"
+        },
+        {
+          "field": "authors/38",
+          "pointer": "/message/items/0/author/38"
+        },
+        {
+          "field": "authors/39",
+          "pointer": "/message/items/0/author/39"
+        },
+        {
+          "field": "authors/40",
+          "pointer": "/message/items/0/author/40"
+        },
+        {
+          "field": "authors/41",
+          "pointer": "/message/items/0/author/41"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1093/bib/bbaa381",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1093/bib/bbaa381",
+      "title": "DeepCNV: a deep learning approach for authenticating copy number variations",
+      "description": null,
+      "url": "https://doi.org/10.1093/bib/bbaa381",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Joseph T Glessner",
+          "affiliations": [
+            "Center for Applied Genomics, Department of Human Genetics, Children's Hospital of Philadelphia, Philadelphia, PA 19104, USA",
+            "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Xiurui Hou",
+          "affiliations": [
+            "Department of Computer Science, New Jersey Institute of Technology, Newark, NJ 07102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Cheng Zhong",
+          "affiliations": [
+            "Department of Computer Science, New Jersey Institute of Technology, Newark, NJ 07102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Jie Zhang",
+          "affiliations": [
+            "Adobe Inc., San Jose, CA 95110, USA"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Munir Khan",
+          "affiliations": [
+            "Center for Applied Genomics, Department of Human Genetics, Children's Hospital of Philadelphia, Philadelphia, PA 19104, USA",
+            "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Fabian Brand",
+          "affiliations": [
+            "University of Bonn, 53113 Bonn, Germany"
+          ]
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Peter Krawitz",
+          "affiliations": [
+            "University of Bonn, 53113 Bonn, Germany"
+          ]
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Patrick M A Sleiman",
+          "affiliations": [
+            "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Hakon Hakonarson",
+          "affiliations": [
+            "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA"
+          ]
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Zhi Wei",
+          "affiliations": [
+            "Department of Computer Science, New Jersey Institute of Technology, Newark, NJ 07102, USA"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2021-01-12",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Center for Applied Genomics, Department of Human Genetics, Children's Hospital of Philadelphia, Philadelphia, PA 19104, USA",
+          "Perelman School of Medicine, Department of Pediatrics, University of Pennsylvania, Philadelphia, PA 19102, USA",
+          "Department of Computer Science, New Jersey Institute of Technology, Newark, NJ 07102, USA",
+          "Adobe Inc., San Jose, CA 95110, USA",
+          "University of Bonn, 53113 Bonn, Germany"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbib%2Fbbaa381&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:53.522302+00:00",
+        "sha256": "c872b5519aafb30bcea68fa95f5d13c01f4c3c9856da41c96b1191aa9312c6f5",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1093/bioinformatics/btae114",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1093/bioinformatics/btae114",
+      "title": "AutoGVP: a dockerized workflow integrating ClinVar and InterVar germline sequence variant classification",
+      "description": null,
+      "url": "https://doi.org/10.1093/bioinformatics/btae114",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Jung Kim",
+          "affiliations": [
+            "Division of Cancer Epidemiology and Genetics, National Cancer Institute , Rockville, MD 20850, United States"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Ammar S Naqvi",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Ryan J Corbett",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Rebecca S Kaufman",
+          "affiliations": [
+            "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Zalman Vaksman",
+          "affiliations": [
+            "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Miguel A Brown",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Daniel P Miller",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Saksham Phul",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Zhuangzhuang Geng",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Phillip B Storm",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Adam C Resnick",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Douglas R Stewart",
+          "affiliations": [
+            "Division of Cancer Epidemiology and Genetics, National Cancer Institute , Rockville, MD 20850, United States"
+          ]
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Jo Lynne Rokita",
+          "affiliations": [
+            "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States"
+          ]
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Sharon J Diskin",
+          "affiliations": [
+            "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+            "Department of Pediatrics, University of Pennsylvania , Philadelphia, PA 19104, United States"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2024-02-29",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Division of Cancer Epidemiology and Genetics, National Cancer Institute , Rockville, MD 20850, United States",
+          "Center for Data-Driven Discovery in Biomedicine, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+          "Division of Neurosurgery, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+          "Department of Bioinformatics and Health Informatics, Children’s Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+          "Division of Oncology, Children's Hospital of Philadelphia , Philadelphia, PA 19104, United States",
+          "Department of Pediatrics, University of Pennsylvania , Philadelphia, PA 19104, United States"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtae114&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:43.204851+00:00",
+        "sha256": "569acef5e4d899696d3fd4816ec40dff855a537d29072b2e5f28623484a600c5",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1093/bioinformatics/btaf060",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1093/bioinformatics/btaf060",
+      "title": "ImmunoTar—integrative prioritization of cell surface targets for cancer immunotherapy",
+      "description": null,
+      "url": "https://doi.org/10.1093/bioinformatics/btaf060",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Rawan Shraim",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+            "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Brian Mooney",
+          "affiliations": [
+            "Department of Molecular Oncology, BC Cancer Research Institute , Vancouver, BC V5Z 0B4,",
+            "Canada’s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,"
+          ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Karina L Conkrite",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Amber K Hamilton",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Gregg B Morin",
+          "affiliations": [
+            "Canada’s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,",
+            "Department of Medical Genetics, University of British Columbia , Vancouver, BC V6T 1Z4,"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Poul H Sorensen",
+          "affiliations": [
+            "Department of Molecular Oncology, BC Cancer Research Institute , Vancouver, BC V5Z 0B4,",
+            "Department of Pathology and Laboratory Medicine, University of British Columbia , Vancouver, BC V6T 1Z4,"
+          ]
+        },
+        {
+          "sourceIndex": 6,
+          "name": "John M Maris",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+            "Department of Pediatrics, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,",
+            "Abramson Family Cancer Research Institute, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Sharon J Diskin",
+          "affiliations": [
+            "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+            "Department of Pediatrics, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,",
+            "Abramson Family Cancer Research Institute, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,"
+          ]
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Ahmet Sacan",
+          "affiliations": [
+            "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2025-02-11",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Division of Oncology and Center for Childhood Cancer Research, Children’s Hospital of Philadelphia , Philadelphia, PA 19104,",
+          "School of Biomedical Engineering, Science and Health System, Drexel University , Philadelphia, PA 19104,",
+          "Department of Molecular Oncology, BC Cancer Research Institute , Vancouver, BC V5Z 0B4,",
+          "Canada’s Michael Smith Genome Sciences Centre, BC Cancer Research Institute , Vancouver, BC V5Z 4S6,",
+          "Department of Medical Genetics, University of British Columbia , Vancouver, BC V6T 1Z4,",
+          "Department of Pathology and Laboratory Medicine, University of British Columbia , Vancouver, BC V6T 1Z4,",
+          "Department of Pediatrics, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,",
+          "Abramson Family Cancer Research Institute, Perelman School of Medicine, University of Pennsylvania , Philadelphia, PA 19104,"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtaf060&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:46.649753+00:00",
+        "sha256": "9bbce87a075fdc5e99f1df14d5d90cc6679161d4655e15b4971892640edf5857",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1117/1.jmi.5.1.011018",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1117/1.jmi.5.1.011018",
+      "title": "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome",
+      "description": null,
+      "url": "https://doi.org/10.1117/1.jmi.5.1.011018",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Christos Davatzikos",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Saima Rathore",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Spyridon Bakas",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Sarthak Pati",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Mark Bergman",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Ratheesh Kalarot",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Patmaa Sridharan",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Aimilia Gastounioti",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Nariman Jahani",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 9,
+          "name": "Eric Cohen",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 10,
+          "name": "Hamed Akbari",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 11,
+          "name": "Birkan Tunc",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 12,
+          "name": "Jimit Doshi",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 13,
+          "name": "Drew Parker",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 14,
+          "name": "Michael Hsieh",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 15,
+          "name": "Aristeidis Sotiras",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 16,
+          "name": "Hongming Li",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 17,
+          "name": "Yangming Ou",
+          "affiliations": [
+            "Massachusetts General Hospital"
+          ]
+        },
+        {
+          "sourceIndex": 18,
+          "name": "Robert K. Doot",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 19,
+          "name": "Michel Bilello",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 20,
+          "name": "Yong Fan",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 21,
+          "name": "Russell T. Shinohara",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 22,
+          "name": "Paul Yushkevich",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 23,
+          "name": "Ragini Verma",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        },
+        {
+          "sourceIndex": 24,
+          "name": "Despina Kontos",
+          "affiliations": [
+            "Univ. of Pennsylvania"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2018-01-11",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Univ. of Pennsylvania",
+          "Massachusetts General Hospital"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1117%2F1.JMI.5.1.011018&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:39.778177+00:00",
+        "sha256": "b291ed6c35fc31625450ddf2868318fa5335917da42fa90deb614f608c146153",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        },
+        {
+          "field": "authors/9",
+          "pointer": "/message/items/0/author/9"
+        },
+        {
+          "field": "authors/10",
+          "pointer": "/message/items/0/author/10"
+        },
+        {
+          "field": "authors/11",
+          "pointer": "/message/items/0/author/11"
+        },
+        {
+          "field": "authors/12",
+          "pointer": "/message/items/0/author/12"
+        },
+        {
+          "field": "authors/13",
+          "pointer": "/message/items/0/author/13"
+        },
+        {
+          "field": "authors/14",
+          "pointer": "/message/items/0/author/14"
+        },
+        {
+          "field": "authors/15",
+          "pointer": "/message/items/0/author/15"
+        },
+        {
+          "field": "authors/16",
+          "pointer": "/message/items/0/author/16"
+        },
+        {
+          "field": "authors/17",
+          "pointer": "/message/items/0/author/17"
+        },
+        {
+          "field": "authors/18",
+          "pointer": "/message/items/0/author/18"
+        },
+        {
+          "field": "authors/19",
+          "pointer": "/message/items/0/author/19"
+        },
+        {
+          "field": "authors/20",
+          "pointer": "/message/items/0/author/20"
+        },
+        {
+          "field": "authors/21",
+          "pointer": "/message/items/0/author/21"
+        },
+        {
+          "field": "authors/22",
+          "pointer": "/message/items/0/author/22"
+        },
+        {
+          "field": "authors/23",
+          "pointer": "/message/items/0/author/23"
+        },
+        {
+          "field": "authors/24",
+          "pointer": "/message/items/0/author/24"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.1186/1471-2105-15-248",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.1186/1471-2105-15-248",
+      "title": "Clinical phenotype-based gene prioritization: an initial study using semantic similarity and the human phenotype ontology",
+      "description": null,
+      "url": "https://doi.org/10.1186/1471-2105-15-248",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Aaron J Masino",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Elizabeth T Dechene",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Matthew C Dulik",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 3,
+          "name": "Alisha Wilkens",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Nancy B Spinner",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Ian D Krantz",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Jeffrey W Pennington",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 7,
+          "name": "Peter N Robinson",
+          "affiliations": []
+        },
+        {
+          "sourceIndex": 8,
+          "name": "Peter S White",
+          "affiliations": []
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2014-07-21",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.1186%2F1471-2105-15-248&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-15T21:46:50.086545+00:00",
+        "sha256": "c8b85b4e14f01d6e2d42b6ad6dfdcbc673ade3440163be11088cf4562158e23e",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        },
+        {
+          "field": "authors/6",
+          "pointer": "/message/items/0/author/6"
+        },
+        {
+          "field": "authors/7",
+          "pointer": "/message/items/0/author/7"
+        },
+        {
+          "field": "authors/8",
+          "pointer": "/message/items/0/author/8"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "crossref:10.3390/app11041892",
+      "kind": "publication",
+      "provider": "crossref",
+      "nativeId": "10.3390/app11041892",
+      "title": "Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration",
+      "description": null,
+      "url": "https://doi.org/10.3390/app11041892",
+      "owner": null,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Ludovic Venet",
+          "affiliations": [
+            "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 1,
+          "name": "Sarthak Pati",
+          "affiliations": [
+            "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 2,
+          "name": "Michael D. Feldman",
+          "affiliations": [
+            "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 3,
+          "name": "MacLean P. Nasrallah",
+          "affiliations": [
+            "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 4,
+          "name": "Paul Yushkevich",
+          "affiliations": [
+            "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        },
+        {
+          "sourceIndex": 5,
+          "name": "Spyridon Bakas",
+          "affiliations": [
+            "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA",
+            "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+          ]
+        }
+      ],
+      "sourceDate": {
+        "label": "Published",
+        "value": "2021-02-21",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "publication-reported-affiliation",
+        "reportedLocations": [
+          "Center for Biomedical Image Computing &amp; Analytics, University of Pennsylvania, Philadelphia, PA 19104, USA",
+          "Department of Radiology, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA",
+          "Department of Pathology &amp; Laboratory Medicine, Perelman School of Medicine, University of Pennsylvania, Philadelphia, PA 19104, USA"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.crossref.org/v1/works?filter=doi%3A10.3390%2Fapp11041892&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+        "observedAt": "2026-11-16T16:18:48.664101+00:00",
+        "sha256": "0d596c2e75f0bec984945876a8d653f1fddfbc3d599d96f039106f886e0fc39f",
+        "useBasis": {
+          "label": "Crossref factual bibliographic metadata guidance",
+          "url": "https://www.crossref.org/documentation/retrieve-metadata/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/message/items/0/DOI"
+        },
+        {
+          "field": "title",
+          "pointer": "/message/items/0/title"
+        },
+        {
+          "field": "url",
+          "pointer": "/message/items/0/URL"
+        },
+        {
+          "field": "publicationType",
+          "pointer": "/message/items/0/type"
+        },
+        {
+          "field": "publishedDateParts",
+          "pointer": "/message/items/0/published/date-parts"
+        },
+        {
+          "field": "authors/0",
+          "pointer": "/message/items/0/author/0"
+        },
+        {
+          "field": "authors/1",
+          "pointer": "/message/items/0/author/1"
+        },
+        {
+          "field": "authors/2",
+          "pointer": "/message/items/0/author/2"
+        },
+        {
+          "field": "authors/3",
+          "pointer": "/message/items/0/author/3"
+        },
+        {
+          "field": "authors/4",
+          "pointer": "/message/items/0/author/4"
+        },
+        {
+          "field": "authors/5",
+          "pointer": "/message/items/0/author/5"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "github:128938343",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "128938343",
+      "title": "CBICA/CaPTk",
+      "description": "Cancer Imaging Phenomics Toolkit (CaPTk) is a software platform to perform image analysis and predictive modeling tasks. Documentation: https://cbica.github.io/CaPTk",
+      "url": "https://github.com/CBICA/CaPTk",
+      "owner": {
+        "id": "35823615",
+        "name": "CBICA",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2023-12-09T00:42:42Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2018-04-10T13:36:31Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-10-07T07:58:11Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/CBICA/CaPTk",
+        "observedAt": "2026-11-15T21:17:47.138094+00:00",
+        "sha256": "28e58fd68f32470d292fb471056e05dc647923771710e2a595b74c614f1cc6cb",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1117/1.jmi.5.1.011018",
+          "targetNativeId": "10.1117/1.jmi.5.1.011018",
+          "targetTitle": "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome",
+          "url": "https://doi.org/10.1117/1.jmi.5.1.011018",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/CBICA/CaPTk/blob/cce88180d3159546a057b32ca9b4172d3ee2624d/Readme.md",
+            "observedAt": "2026-11-15T21:05:10Z",
+            "sha256": "595b0a8157c0b6a9f5e381ac11597a0f598b64b4963ab73a9ac656bd880dd82d",
+            "pointer": "/explicit_repository_publication_edges/1",
+            "filePointer": "/file_observation_batch/files/4",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:156589095",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "156589095",
+      "title": "PennLINC/qsiprep",
+      "description": "Preprocessing of diffusion MRI",
+      "url": "https://github.com/PennLINC/qsiprep",
+      "owner": {
+        "id": "61955309",
+        "name": "PennLINC",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2026-11-12T18:26:45Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2018-11-07T18:14:12Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-11T21:13:26Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/PennLINC/qsiprep",
+        "observedAt": "2026-11-15T21:17:46.825485+00:00",
+        "sha256": "89e4ccc7d089c3b5d5d117ad722869ab5ad186f07cfead7a6da53e8d550663aa",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1038/s41592-021-01185-5",
+          "targetNativeId": "10.1038/s41592-021-01185-5",
+          "targetTitle": "QSIPrep: an integrative platform for preprocessing and reconstructing diffusion MRI data",
+          "url": "https://doi.org/10.1038/s41592-021-01185-5",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/PennLINC/qsiprep/blob/ae8ab16930309d77a44f7970028b3c6642c1aae7/README.rst",
+            "observedAt": "2026-11-15T21:05:10Z",
+            "sha256": "595b0a8157c0b6a9f5e381ac11597a0f598b64b4963ab73a9ac656bd880dd82d",
+            "pointer": "/explicit_repository_publication_edges/0",
+            "filePointer": "/file_observation_batch/files/1",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:15715626",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "15715626",
+      "title": "chop-dbhi/phenomantics",
+      "description": "Multiple projects related to variant prioritization using phenotype semantic similarity",
+      "url": "https://github.com/chop-dbhi/phenomantics",
+      "owner": {
+        "id": "709892",
+        "name": "chop-dbhi",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2014-04-01T16:14:48Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2014-01-07T20:22:47Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2023-06-05T08:04:07Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/chop-dbhi/phenomantics",
+        "observedAt": "2026-11-15T21:47:04.040098+00:00",
+        "sha256": "8a596641421dde32216c5e72bf8b888585f49f05591a174dfdc46003c3abc51e",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "github:163997867",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "163997867",
+      "title": "CBICA/HistoReg",
+      "description": "Framework for registration of sequential digitized histology slices",
+      "url": "https://github.com/CBICA/HistoReg",
+      "owner": {
+        "id": "35823615",
+        "name": "CBICA",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2022-03-24T10:50:45Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2019-01-03T16:36:06Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-10-19T07:39:31Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/CBICA/HistoReg",
+        "observedAt": "2026-11-16T16:18:33.795004+00:00",
+        "sha256": "ccdc403dbb9f602924300506c4000fa4a252412bc54f780cc86588cf771b06ba",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.3390/app11041892",
+          "targetNativeId": "10.3390/app11041892",
+          "targetTitle": "Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration",
+          "url": "https://doi.org/10.3390/app11041892",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/CBICA/HistoReg/blob/5f7290781ae519b5ae930e85be594576576df853/README.md",
+            "observedAt": "2026-11-16T16:18:33Z",
+            "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+            "pointer": "/explicit_repository_publication_edges/2",
+            "filePointer": "/file_observation_batch/files/2",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:192607622",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "192607622",
+      "title": "AlexsLemonade/OpenPBTA-analysis",
+      "description": "The analysis repository for the Open Pediatric Brain Tumor Atlas Project",
+      "url": "https://github.com/AlexsLemonade/OpenPBTA-analysis",
+      "owner": {
+        "id": "29661525",
+        "name": "AlexsLemonade",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2023-06-21T16:24:54Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2019-06-18T20:23:45Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-08-04T19:20:58Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/AlexsLemonade/OpenPBTA-analysis",
+        "observedAt": "2026-11-16T17:39:34.618464+00:00",
+        "sha256": "168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1016/j.xgen.2023.100340",
+          "targetNativeId": "10.1016/j.xgen.2023.100340",
+          "targetTitle": "OpenPBTA: The Open Pediatric Brain Tumor Atlas",
+          "url": "https://doi.org/10.1016/j.xgen.2023.100340",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/AlexsLemonade/OpenPBTA-analysis/blob/e854738b57b16c3725673ad63b4ffd20ec48ad19/README.md",
+            "observedAt": "2026-11-16T17:42:05Z",
+            "sha256": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4",
+            "pointer": "/explicit_repository_publication_edges/2",
+            "filePointer": "/file_observation_batch/files/2",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:256420694",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "256420694",
+      "title": "PennLINC/aslprep",
+      "description": "Preprocessing of arterial spin labeling (ASL) data",
+      "url": "https://github.com/PennLINC/aslprep",
+      "owner": {
+        "id": "61955309",
+        "name": "PennLINC",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2026-11-11T13:01:48Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2020-04-17T06:27:25Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-11T14:01:50Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/PennLINC/aslprep",
+        "observedAt": "2026-11-16T16:18:26.249121+00:00",
+        "sha256": "4d177083b862c4003c92b5b452669f0546b18b563fd3aec69c38e7eaec9e9e85",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1038/s41592-022-01458-7",
+          "targetNativeId": "10.1038/s41592-022-01458-7",
+          "targetTitle": "ASLPrep: a platform for processing of arterial spin labeled MRI and quantification of regional brain perfusion",
+          "url": "https://doi.org/10.1038/s41592-022-01458-7",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/PennLINC/aslprep/blob/48a418cf92b57c5c66502286d2847fd742cbbd48/CITATION.cff",
+            "observedAt": "2026-11-16T16:18:33Z",
+            "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+            "pointer": "/explicit_repository_publication_edges/0",
+            "filePointer": "/file_observation_batch/files/0",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:285885136",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "285885136",
+      "title": "CAG-CNV/DeepCNV",
+      "description": "DeepCNV: A Deep Learning Approach for Authenticating Copy Number Variants",
+      "url": "https://github.com/CAG-CNV/DeepCNV",
+      "owner": {
+        "id": "31705609",
+        "name": "CAG-CNV",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2023-02-20T14:48:51Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2020-08-07T17:27:31Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2025-12-18T06:00:27Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/CAG-CNV/DeepCNV",
+        "observedAt": "2026-11-15T21:47:07.581522+00:00",
+        "sha256": "53d72608db59186ec039ce148849be824d9885f8794eae47578c67a879a36f86",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "github:342691278",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "342691278",
+      "title": "mlcommons/GaNDLF",
+      "description": "A generalizable application framework for segmentation, regression, and classification using PyTorch",
+      "url": "https://github.com/mlcommons/GaNDLF",
+      "owner": {
+        "id": "67760141",
+        "name": "mlcommons",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2025-08-16T00:44:57Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2021-02-26T20:20:06Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-07T20:57:18Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/mlcommons/GaNDLF",
+        "observedAt": "2026-11-16T16:18:30.041556+00:00",
+        "sha256": "92a0e397ae33a29be804ebb9ea65bfce2b9b86f54b09da76d65e6276aeb71857",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1038/s44172-023-00066-3",
+          "targetNativeId": "10.1038/s44172-023-00066-3",
+          "targetTitle": "GaNDLF: the generally nuanced deep learning framework for scalable end-to-end clinical workflows",
+          "url": "https://doi.org/10.1038/s44172-023-00066-3",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/mlcommons/GaNDLF/blob/3f9b7726925be0f97a8a0eb108c8f35b19ff50dd/README.md",
+            "observedAt": "2026-11-16T16:18:33Z",
+            "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+            "pointer": "/explicit_repository_publication_edges/1",
+            "filePointer": "/file_observation_batch/files/1",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:390797198",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "390797198",
+      "title": "PennLINC/ModelArray",
+      "description": "ModelArray: an R package for statistical analysis of fixel-wise data and beyond",
+      "url": "https://github.com/PennLINC/ModelArray",
+      "owner": {
+        "id": "61955309",
+        "name": "PennLINC",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2026-10-18T03:21:56Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2021-07-29T17:07:32Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-08-04T17:35:46Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/PennLINC/ModelArray",
+        "observedAt": "2026-11-16T16:18:37.542800+00:00",
+        "sha256": "9356adef4b7651849c9beebc48d848ea13620158f4e88a1afbd6575c9e4f65fa",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1016/j.neuroimage.2023.120037",
+          "targetNativeId": "10.1016/j.neuroimage.2023.120037",
+          "targetTitle": "ModelArray: An R package for statistical analysis of fixel-wise data",
+          "url": "https://doi.org/10.1016/j.neuroimage.2023.120037",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/PennLINC/ModelArray/blob/b38bb2582d38e82040e25aa5b08c98161287411a/README.Rmd",
+            "observedAt": "2026-11-16T16:18:33Z",
+            "sha256": "624d382d82b754b4235d8305628b61e19c22de8efa8610d71da1ff6bc2517a63",
+            "pointer": "/explicit_repository_publication_edges/3",
+            "filePointer": "/file_observation_batch/files/3",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:525946788",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "525946788",
+      "title": "diskin-lab-chop/AutoGVP",
+      "description": null,
+      "url": "https://github.com/diskin-lab-chop/AutoGVP",
+      "owner": {
+        "id": "53345105",
+        "name": "diskin-lab-chop",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2026-11-02T18:19:30Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2022-08-17T20:40:15Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-02T15:37:31Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/diskin-lab-chop/AutoGVP",
+        "observedAt": "2026-11-15T21:46:57.046730+00:00",
+        "sha256": "241b804429fd3e6100194f614b35a7d53ad73e2b7a3b514355d5518f112152ab",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "github:617168725",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "617168725",
+      "title": "akibzaman/SleepBoost",
+      "description": "A Multi-Level Tree-based Ensemble Model for Automatic Sleep Stage Classification",
+      "url": "https://github.com/akibzaman/SleepBoost",
+      "owner": {
+        "id": "55422467",
+        "name": "akibzaman",
+        "kind": "User"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2025-05-14T03:44:45Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2023-03-21T20:41:23Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-10-11T16:34:47Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/akibzaman/SleepBoost",
+        "observedAt": "2026-11-16T17:39:38.372429+00:00",
+        "sha256": "66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1007/s11517-024-03096-x",
+          "targetNativeId": "10.1007/s11517-024-03096-x",
+          "targetTitle": "SleepBoost: a multi-level tree-based ensemble model for automatic sleep stage classification",
+          "url": "https://doi.org/10.1007/s11517-024-03096-x",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/akibzaman/SleepBoost/blob/0ad7794aa201698f362562f86d2e191c969b9ab5/README.md",
+            "observedAt": "2026-11-16T17:42:05Z",
+            "sha256": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4",
+            "pointer": "/explicit_repository_publication_edges/1",
+            "filePointer": "/file_observation_batch/files/1",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:692249664",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "692249664",
+      "title": "raphael-group/GASTON",
+      "description": "GASTON: deep learning algorithm learns \"topography\" of a tissue slice from spatial transcriptomics data",
+      "url": "https://github.com/raphael-group/GASTON",
+      "owner": {
+        "id": "5168500",
+        "name": "raphael-group",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2025-12-01T19:58:23Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2023-09-15T23:13:14Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-11-05T00:43:37Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/raphael-group/GASTON",
+        "observedAt": "2026-11-16T17:39:30.886621+00:00",
+        "sha256": "85084be70321c48775e6d48e1801370bfff34208b2a4f194aca37e771c75ff45",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": [
+        {
+          "targetId": "crossref:10.1038/s41592-024-02503-3",
+          "targetNativeId": "10.1038/s41592-024-02503-3",
+          "targetTitle": "Mapping the topography of spatial gene expression with interpretable deep learning",
+          "url": "https://doi.org/10.1038/s41592-024-02503-3",
+          "relation": "cites-publication",
+          "evidence": {
+            "url": "https://github.com/raphael-group/GASTON/blob/79577c45111b3442b808c8e620711b822965493b/README.md",
+            "observedAt": "2026-11-16T17:42:05Z",
+            "sha256": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4",
+            "pointer": "/explicit_repository_publication_edges/0",
+            "filePointer": "/file_observation_batch/files/0",
+            "method": "derived-connector-observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "github:734388793",
+      "kind": "repository",
+      "provider": "github",
+      "nativeId": "734388793",
+      "title": "sacanlab/immunotar",
+      "description": null,
+      "url": "https://github.com/sacanlab/immunotar",
+      "owner": {
+        "id": "18205643",
+        "name": "sacanlab",
+        "kind": "Organization"
+      },
+      "authors": [],
+      "sourceDate": {
+        "label": "Repository pushed",
+        "value": "2025-04-18T15:37:22Z",
+        "precision": "instant"
+      },
+      "additionalDates": [
+        {
+          "label": "Repository created",
+          "value": "2023-12-21T14:58:44Z",
+          "precision": "instant"
+        },
+        {
+          "label": "Repository updated",
+          "value": "2026-07-10T18:11:31Z",
+          "precision": "instant"
+        }
+      ],
+      "geography": {
+        "basis": "not-established",
+        "reportedLocations": [],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.github.com/repos/sacanlab/immunotar",
+        "observedAt": "2026-11-15T21:47:00.549064+00:00",
+        "sha256": "07ba93cbf37cfd428c63dac74176c50cea7986f80c2fc23f1051a47132da6c74",
+        "useBasis": {
+          "label": "GitHub public repository metadata and API terms",
+          "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#h-api-terms"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/full_name"
+        },
+        {
+          "field": "url",
+          "pointer": "/html_url"
+        },
+        {
+          "field": "description",
+          "pointer": "/description"
+        },
+        {
+          "field": "ownerId",
+          "pointer": "/owner/id"
+        },
+        {
+          "field": "ownerName",
+          "pointer": "/owner/login"
+        },
+        {
+          "field": "ownerKind",
+          "pointer": "/owner/type"
+        },
+        {
+          "field": "pushedAt",
+          "pointer": "/pushed_at"
+        },
+        {
+          "field": "createdAt",
+          "pointer": "/created_at"
+        },
+        {
+          "field": "updatedAt",
+          "pointer": "/updated_at"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "ror:00b30xv10",
+      "kind": "organization",
+      "provider": "ror",
+      "nativeId": "https://ror.org/00b30xv10",
+      "title": "University of Pennsylvania",
+      "description": null,
+      "url": "https://ror.org/00b30xv10",
+      "owner": null,
+      "authors": [],
+      "sourceDate": {
+        "label": "Registry modified",
+        "value": "2026-07-20",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "registry-reported-location",
+        "reportedLocations": [
+          "Philadelphia, United States"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.ror.org/v2/organizations/00b30xv10",
+        "observedAt": "2026-11-15T20:34:21.093705+00:00",
+        "sha256": "3f61195d95153df4cd882655b5397e0e50823c2daa2332b107b7bb61dc4823c6",
+        "useBasis": {
+          "label": "ROR API metadata CC0",
+          "url": "https://ror.org/about/terms/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/names/1/value"
+        },
+        {
+          "field": "url",
+          "pointer": "/id"
+        },
+        {
+          "field": "reportedLocations",
+          "pointer": "/locations"
+        },
+        {
+          "field": "modifiedDate",
+          "pointer": "/admin/last_modified/date"
+        }
+      ],
+      "relatedLinks": []
+    },
+    {
+      "id": "ror:01z7r7q48",
+      "kind": "organization",
+      "provider": "ror",
+      "nativeId": "https://ror.org/01z7r7q48",
+      "title": "Children's Hospital of Philadelphia",
+      "description": null,
+      "url": "https://ror.org/01z7r7q48",
+      "owner": null,
+      "authors": [],
+      "sourceDate": {
+        "label": "Registry modified",
+        "value": "2024-12-11",
+        "precision": "day"
+      },
+      "additionalDates": [],
+      "geography": {
+        "basis": "registry-reported-location",
+        "reportedLocations": [
+          "Philadelphia, United States"
+        ],
+        "county": null
+      },
+      "source": {
+        "url": "https://api.ror.org/v2/organizations/01z7r7q48",
+        "observedAt": "2026-11-15T20:40:43.711663+00:00",
+        "sha256": "d8deea480e21c142e38bbc13fb0b0842364c4cdf8621be57f958a2d51c130893",
+        "useBasis": {
+          "label": "ROR API metadata CC0",
+          "url": "https://ror.org/about/terms/"
+        }
+      },
+      "provenance": [
+        {
+          "field": "nativeId",
+          "pointer": "/id"
+        },
+        {
+          "field": "title",
+          "pointer": "/names/1/value"
+        },
+        {
+          "field": "url",
+          "pointer": "/id"
+        },
+        {
+          "field": "reportedLocations",
+          "pointer": "/locations"
+        },
+        {
+          "field": "modifiedDate",
+          "pointer": "/admin/last_modified/date"
+        }
+      ],
+      "relatedLinks": []
+    }
+  ],
+  "regionalContexts": [
+    {
+      "recordId": "crossref:10.1038/s41592-024-02503-3",
+      "publicationSourceSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+      "publicationYear": 2025,
+      "authors": [
+        {
+          "sourceIndex": 0,
+          "name": "Uthsav Chitra"
+        },
+        {
+          "sourceIndex": 6,
+          "name": "Benjamin J. Raphael"
+        }
+      ],
+      "institution": "Princeton University",
+      "campus": "Princeton Computer Science main building, 35 Olden Street",
+      "municipality": "Princeton",
+      "county": "Mercer",
+      "affiliationSources": [
+        {
+          "url": "https://www.nature.com/articles/s41592-024-02503-3",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        }
+      ],
+      "countySources": [
+        {
+          "url": "https://www.cs.princeton.edu/contact-us",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        },
+        {
+          "url": "https://nj.gov/www.nj.gov/treasury/unclaimed-property/pdf/counties/MERCER.pdf",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        },
+        {
+          "url": "https://orpa.princeton.edu/institutional-information",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "notes": [
+        "The published affiliation is Princeton Computer Science; campus and county evidence associates the department's main building with Mercer County, not an individual's worksite or where code was written."
+      ],
+      "provenance": {
+        "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+        "pointer": "/contexts/0",
+        "method": "derived-regional-selection-observation"
+      }
+    },
+    {
+      "recordId": "crossref:10.1007/s11517-024-03096-x",
+      "publicationSourceSha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+      "publicationYear": 2024,
+      "authors": [
+        {
+          "sourceIndex": 3,
+          "name": "Iman Dehzangi"
+        }
+      ],
+      "institution": "Rutgers University–Camden",
+      "campus": "Rutgers University–Camden campus",
+      "municipality": "Camden",
+      "county": "Camden",
+      "affiliationSources": [
+        {
+          "url": "https://link.springer.com/article/10.1007/s11517-024-03096-x",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        },
+        {
+          "url": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        },
+        {
+          "url": "https://www.researchwithrutgers.org/en/publications/correction-to-sleepboost-a-multi-level-tree-based-ensemble-model-/",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        }
+      ],
+      "countySources": [
+        {
+          "url": "https://camden.rutgers.edu/visit",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        },
+        {
+          "url": "https://www.camdencounty.com/your-government/municipalities-camden-county/",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "notes": [
+        "The GitHub User owner is separate from the institutional affiliation; no institutional ownership is inferred.",
+        "The publisher's correction changed the author's first name from Imam to Iman; the retained Crossref response already says Iman."
+      ],
+      "provenance": {
+        "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+        "pointer": "/contexts/1",
+        "method": "derived-regional-selection-observation"
+      }
+    },
+    {
+      "recordId": "crossref:10.1016/j.xgen.2023.100340",
+      "publicationSourceSha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+      "publicationYear": 2023,
+      "authors": [
+        {
+          "sourceIndex": 2,
+          "name": "Stephanie J. Spielman"
+        }
+      ],
+      "institution": "Rowan University",
+      "campus": "Rowan University Glassboro main campus",
+      "municipality": "Glassboro",
+      "county": "Gloucester",
+      "affiliationSources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/37492101/",
+          "observedDate": "2026-11-16",
+          "method": "primary-indexed-rendering"
+        }
+      ],
+      "countySources": [
+        {
+          "url": "https://www.rowan.edu/about/visiting/west.pdf",
+          "observedDate": "2026-11-16",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "notes": [
+        "OpenPBTA is a multi-institution collaboration; Rowan affiliation does not establish Rowan ownership or origin of the repository, or independent Penn or CHOP laboratory coverage.",
+        "The historical analysis repository is archived, no longer accepts contributions, and points to a successor."
+      ],
+      "provenance": {
+        "sha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+        "pointer": "/contexts/2",
+        "method": "derived-regional-selection-observation"
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "receipt": {
+    "schemaVersion": "directory-native-receipt-v1",
+    "id": "GL03:receipt:C01",
+    "pageId": "C01",
+    "manifestSha256": "1c090798c63eb9d03f7ee66dea1ebf0d2e53b59cc4f0c1f9f81c3807f085a7dc",
+    "sourceId": "GL03:crossref",
+    "scopeId": "GL03:C01",
+    "installation": "crossref-public",
+    "qualificationSha256": "150e5e8b64ba266c8f8504eb112b63d6432e255ae7ea1e8209b1ef6d8d995210",
+    "requestSha256": "2d66e17fb872f3a492676316356d979128439e69ea06240ad7b3fcb5d026afb7",
+    "issuedAt": "2026-11-16T21:20:31.346Z",
+    "completedAt": "2026-11-16T21:20:31.871Z",
+    "status": "malformed",
+    "httpStatus": 200,
+    "responseBytes": 1330,
+    "contentEncoding": "identity",
+    "contentType": "application/json",
+    "utf8": "valid",
+    "redirects": 0,
+    "nativeBodySha256": null,
+    "projectionSha256": null,
+    "packetSha256": null,
+    "parserRevision": null,
+    "parserSha256": null
+  },
+  "packet": null,
+  "audit": {
+    "requestId": "C01",
+    "anonymous": true,
+    "redirectsFollowed": 0,
+    "retries": 0,
+    "rawBodyRetained": false,
+    "wp06TransportExercised": false,
+    "parserSourceSha256": "71ab9258b85353c327118438bdad40496d8e2c68cb7356799ab49d5dec63f801",
+    "selectedPublicIp": "100.51.192.124",
+    "tlsVersion": "TLSv1.3",
+    "failureCode": "publication-identity"
+  },
+  "settled": {
+    "outcome": "malformed",
+    "inserted": 0,
+    "pending": 0
+  }
+}

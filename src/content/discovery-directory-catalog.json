@@ -1,0 +1,934 @@
+{
+  "schemaVersion": "discovery-directory-snapshot-v1",
+  "version": "sha256:84f91f17dee42c875953911357b453d43e3dfb8b7b2bfae15948703481abae8d",
+  "works": [
+    {
+      "schemaVersion": "discovery-directory-work-v1",
+      "id": "GL04:work:crossref:gaston",
+      "revision": 2,
+      "kind": "publication",
+      "nativeIdentity": {
+        "provider": "crossref",
+        "namespace": null,
+        "nativeId": "10.1038/s41592-024-02503-3",
+        "evidenceId": "GL04:doi"
+      },
+      "title": {
+        "value": "Mapping the topography of spatial gene expression with interpretable deep learning",
+        "evidenceId": "GL04:ptitle"
+      },
+      "url": {
+        "value": "https://doi.org/10.1038/s41592-024-02503-3",
+        "evidenceId": "GL04:purl"
+      },
+      "description": null,
+      "owner": null,
+      "sourceDate": {
+        "value": {
+          "precision": "day",
+          "value": "2025-01-23"
+        },
+        "evidenceId": "GL04:pdate"
+      },
+      "checkedAt": "2026-11-16",
+      "evidence": [
+        {
+          "id": "GL04:doi",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+          "pointer": "/message/items/0/DOI",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL04:ptitle",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+          "pointer": "/message/items/0/title/0",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL04:purl",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+          "pointer": "/message/items/0/URL",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL04:pdate",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-024-02503-3&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "4b7bc56e489a9b0924dc7edd6d2e8ee2f0af6ebcd813aea9d95cd1701e53ec13",
+          "pointer": "/message/items/0/published/date-parts/0",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL04:gastonpurpose",
+          "sourceUrl": "https://collaborate.princeton.edu/en/publications/mapping-the-topography-of-spatial-gene-expression-with-interpreta/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+          "pointer": "/observations/3/facts/purpose",
+          "method": "primary-web-rendering"
+        },
+        {
+          "id": "GL04:pregion",
+          "sourceUrl": "https://www.nature.com/articles/s41592-024-02503-3",
+          "observedDate": "2026-11-16",
+          "observationSha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+          "pointer": "/contexts/0/institution",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL04:pgeography",
+          "sourceUrl": "https://orpa.princeton.edu/institutional-information",
+          "observedDate": "2026-11-16",
+          "observationSha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+          "pointer": "/contexts/0/county",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL05:GASTON:topic:machine-learning",
+          "sourceUrl": "https://collaborate.princeton.edu/en/publications/mapping-the-topography-of-spatial-gene-expression-with-interpreta/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+          "pointer": "/observations/2/facts/machineLearning",
+          "method": "primary-web-rendering"
+        },
+        {
+          "id": "GL05:GASTON:topic:biomedical-data",
+          "sourceUrl": "https://collaborate.princeton.edu/en/publications/mapping-the-topography-of-spatial-gene-expression-with-interpreta/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+          "pointer": "/observations/2/facts/biomedicalData",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "reviewRefs": [
+        {
+          "id": "GL05:decision:GASTON",
+          "receiptSha256": "ce43bde2c149aeb8ab9682603bc4c6a67e46232cc11036b8e8b702967471f6c9"
+        }
+      ],
+      "claims": [
+        {
+          "id": "GL04:claim:gaston:purpose",
+          "subjectId": "GL04:work:crossref:gaston",
+          "evidenceIds": [
+            "GL04:gastonpurpose"
+          ],
+          "reviewId": "GL05:decision:GASTON",
+          "kind": "health-purpose",
+          "text": "Analyzes spatial gene expression, including tumor microenvironment research."
+        },
+        {
+          "id": "GL04:claim:gaston:region",
+          "subjectId": "GL04:work:crossref:gaston",
+          "evidenceIds": [
+            "GL04:pregion",
+            "GL04:pgeography"
+          ],
+          "reviewId": "GL05:decision:GASTON",
+          "kind": "regional-connection",
+          "institution": "Princeton University",
+          "campus": "Princeton Computer Science main building, 35 Olden Street",
+          "municipality": "Princeton",
+          "state": "NJ",
+          "regionalBasis": "campus",
+          "county": "Mercer",
+          "asOf": {
+            "precision": "year",
+            "value": "2025"
+          },
+          "subjectRole": "author-affiliation",
+          "subjectLabel": "Uthsav Chitra",
+          "sourceAuthorIndex": 0,
+          "affiliationEvidenceIds": [
+            "GL04:pregion"
+          ],
+          "geographyEvidenceIds": [
+            "GL04:pgeography"
+          ],
+          "scope": "historical",
+          "qualification": "Publication author affiliation at publication; not current employment or worksite."
+        },
+        {
+          "id": "GL05:claim:GASTON:machine-learning",
+          "subjectId": "GL04:work:crossref:gaston",
+          "evidenceIds": [
+            "GL05:GASTON:topic:machine-learning"
+          ],
+          "reviewId": "GL05:decision:GASTON",
+          "kind": "topic",
+          "topic": "machine-learning",
+          "vocabularyRevision": "directory-topics-v1"
+        },
+        {
+          "id": "GL05:claim:GASTON:biomedical-data",
+          "subjectId": "GL04:work:crossref:gaston",
+          "evidenceIds": [
+            "GL05:GASTON:topic:biomedical-data"
+          ],
+          "reviewId": "GL05:decision:GASTON",
+          "kind": "topic",
+          "topic": "biomedical-data",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "schemaVersion": "discovery-directory-work-v1",
+      "id": "GL04:work:github:760662846",
+      "revision": 2,
+      "kind": "repository",
+      "nativeIdentity": {
+        "provider": "github",
+        "namespace": null,
+        "nativeId": "760662846",
+        "evidenceId": "GL04:gid"
+      },
+      "title": {
+        "value": "newilson/ExerciseCESTv2",
+        "evidenceId": "GL04:gtitle"
+      },
+      "url": {
+        "value": "https://github.com/newilson/ExerciseCESTv2",
+        "evidenceId": "GL04:gurl"
+      },
+      "description": null,
+      "owner": null,
+      "sourceDate": null,
+      "checkedAt": "2026-11-16",
+      "evidence": [
+        {
+          "id": "GL04:gid",
+          "sourceUrl": "https://api.github.com/repos/newilson/ExerciseCESTv2",
+          "observedDate": "2026-11-16",
+          "observationSha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+          "pointer": "/packet/facts/0/nativeId",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL04:gtitle",
+          "sourceUrl": "https://api.github.com/repos/newilson/ExerciseCESTv2",
+          "observedDate": "2026-11-16",
+          "observationSha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+          "pointer": "/packet/facts/0/title",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL04:gurl",
+          "sourceUrl": "https://api.github.com/repos/newilson/ExerciseCESTv2",
+          "observedDate": "2026-11-16",
+          "observationSha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e",
+          "pointer": "/packet/facts/0/url",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL04:purpose",
+          "sourceUrl": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+          "pointer": "/observations/0/facts/purpose",
+          "method": "primary-web-rendering"
+        },
+        {
+          "id": "GL04:center",
+          "sourceUrl": "https://www.med.upenn.edu/CAMIPM/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "e82351a686e36240604e1a10720b9971f789810caeea3bf1ea6565413b5325e6",
+          "pointer": "/observations/1/facts/municipality",
+          "method": "primary-web-rendering"
+        },
+        {
+          "id": "GL05:G04:topic:medical-imaging",
+          "sourceUrl": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+          "pointer": "/observations/3/facts/medicalImaging",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "reviewRefs": [
+        {
+          "id": "GL05:decision:G04",
+          "receiptSha256": "b2a3e5dbb775c01a6f13bf8143e6f21ddb3c41e69e24bfd363d89b7930e2a9ba"
+        }
+      ],
+      "claims": [
+        {
+          "id": "GL04:claim:g04:purpose",
+          "subjectId": "GL04:work:github:760662846",
+          "evidenceIds": [
+            "GL04:purpose"
+          ],
+          "reviewId": "GL05:decision:G04",
+          "kind": "health-purpose",
+          "text": "Processes CrCEST imaging data and produces quantitative maps of creatine recovery and exchange."
+        },
+        {
+          "id": "GL04:claim:g04:region",
+          "subjectId": "GL04:work:github:760662846",
+          "evidenceIds": [
+            "GL04:purpose",
+            "GL04:center"
+          ],
+          "reviewId": "GL05:decision:G04",
+          "kind": "regional-connection",
+          "institution": "University of Pennsylvania",
+          "campus": null,
+          "municipality": "Philadelphia",
+          "state": "PA",
+          "regionalBasis": "municipality",
+          "county": null,
+          "asOf": {
+            "precision": "day",
+            "value": "2026-11-16"
+          },
+          "subjectRole": "project-association",
+          "subjectLabel": "CAMIPM CrCEST processing GUI",
+          "sourceAuthorIndex": null,
+          "affiliationEvidenceIds": [
+            "GL04:purpose",
+            "GL04:center"
+          ],
+          "geographyEvidenceIds": [
+            "GL04:center"
+          ],
+          "scope": "observed",
+          "qualification": "Institutional project association; not evidence of creator identity or code worksite."
+        },
+        {
+          "id": "GL05:claim:G04:medical-imaging",
+          "subjectId": "GL04:work:github:760662846",
+          "evidenceIds": [
+            "GL05:G04:topic:medical-imaging"
+          ],
+          "reviewId": "GL05:decision:G04",
+          "kind": "topic",
+          "topic": "medical-imaging",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "schemaVersion": "discovery-directory-work-v1",
+      "id": "GL05:work:crossref:openpbta",
+      "revision": 1,
+      "kind": "publication",
+      "nativeIdentity": {
+        "provider": "crossref",
+        "namespace": null,
+        "nativeId": "10.1016/j.xgen.2023.100340",
+        "evidenceId": "GL05:openpbta-publication:id"
+      },
+      "title": {
+        "value": "OpenPBTA: The Open Pediatric Brain Tumor Atlas",
+        "evidenceId": "GL05:openpbta-publication:title"
+      },
+      "url": {
+        "value": "https://doi.org/10.1016/j.xgen.2023.100340",
+        "evidenceId": "GL05:openpbta-publication:url"
+      },
+      "description": null,
+      "owner": null,
+      "sourceDate": {
+        "value": {
+          "precision": "month",
+          "value": "2023-07"
+        },
+        "evidenceId": "GL05:openpbta-publication:date"
+      },
+      "checkedAt": "2026-11-16",
+      "evidence": [
+        {
+          "id": "GL05:openpbta-publication:id",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.xgen.2023.100340&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+          "pointer": "/message/items/0/DOI",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:openpbta-publication:title",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.xgen.2023.100340&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+          "pointer": "/message/items/0/title/0",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:openpbta-publication:url",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.xgen.2023.100340&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+          "pointer": "/message/items/0/URL",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:openpbta-publication:date",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1016%2Fj.xgen.2023.100340&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "87029a1329fcf87d11a740057de736cfee7c4b6e0cd67c0f00d8217a7c41aa3d",
+          "pointer": "/message/items/0/published/date-parts/0",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:openpbta-publication:purpose",
+          "sourceUrl": "https://www.alexslemonade.org/childhood-cancer-data-lab/openpbta",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+          "pointer": "/observations/7/facts/purpose",
+          "method": "primary-web-rendering"
+        },
+        {
+          "id": "GL05:openpbta-publication:affiliation",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37492101/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+          "pointer": "/contexts/2/institution",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL05:openpbta-publication:geography",
+          "sourceUrl": "https://www.rowan.edu/about/visiting/west.pdf",
+          "observedDate": "2026-11-16",
+          "observationSha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+          "pointer": "/contexts/2/county",
+          "method": "reviewed-observation"
+        }
+      ],
+      "reviewRefs": [
+        {
+          "id": "GL05:decision:openpbta-publication",
+          "receiptSha256": "ae22d98fbb713821964d7d0ee6aea3c2c4e32bd1858bfce51ce6e22a5e1b4b67"
+        }
+      ],
+      "claims": [
+        {
+          "id": "GL05:claim:openpbta-publication:purpose",
+          "subjectId": "GL05:work:crossref:openpbta",
+          "evidenceIds": [
+            "GL05:openpbta-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:openpbta-publication",
+          "kind": "health-purpose",
+          "text": "Open collaborative analysis of pediatric brain tumor data."
+        },
+        {
+          "id": "GL05:claim:openpbta-publication:region",
+          "subjectId": "GL05:work:crossref:openpbta",
+          "evidenceIds": [
+            "GL05:openpbta-publication:affiliation",
+            "GL05:openpbta-publication:geography"
+          ],
+          "reviewId": "GL05:decision:openpbta-publication",
+          "kind": "regional-connection",
+          "institution": "Rowan University",
+          "campus": "Rowan University Glassboro main campus",
+          "municipality": "Glassboro",
+          "state": "NJ",
+          "regionalBasis": "campus",
+          "county": "Gloucester",
+          "asOf": {
+            "precision": "year",
+            "value": "2023"
+          },
+          "subjectRole": "author-affiliation",
+          "subjectLabel": "Stephanie J. Spielman",
+          "sourceAuthorIndex": 2,
+          "affiliationEvidenceIds": [
+            "GL05:openpbta-publication:affiliation"
+          ],
+          "geographyEvidenceIds": [
+            "GL05:openpbta-publication:geography"
+          ],
+          "scope": "historical",
+          "qualification": "Author affiliation at publication; not current employment, account identity or code worksite."
+        },
+        {
+          "id": "GL05:claim:openpbta-publication:biomedical-data",
+          "subjectId": "GL05:work:crossref:openpbta",
+          "evidenceIds": [
+            "GL05:openpbta-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:openpbta-publication",
+          "kind": "topic",
+          "topic": "biomedical-data",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "schemaVersion": "discovery-directory-work-v1",
+      "id": "GL05:work:crossref:sleepboost",
+      "revision": 1,
+      "kind": "publication",
+      "nativeIdentity": {
+        "provider": "crossref",
+        "namespace": null,
+        "nativeId": "10.1007/s11517-024-03096-x",
+        "evidenceId": "GL05:sleepboost-publication:id"
+      },
+      "title": {
+        "value": "SleepBoost: a multi-level tree-based ensemble model for automatic sleep stage classification",
+        "evidenceId": "GL05:sleepboost-publication:title"
+      },
+      "url": {
+        "value": "https://doi.org/10.1007/s11517-024-03096-x",
+        "evidenceId": "GL05:sleepboost-publication:url"
+      },
+      "description": null,
+      "owner": null,
+      "sourceDate": {
+        "value": {
+          "precision": "day",
+          "value": "2024-05-03"
+        },
+        "evidenceId": "GL05:sleepboost-publication:date"
+      },
+      "checkedAt": "2026-11-16",
+      "evidence": [
+        {
+          "id": "GL05:sleepboost-publication:id",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1007%2Fs11517-024-03096-x&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+          "pointer": "/message/items/0/DOI",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:sleepboost-publication:title",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1007%2Fs11517-024-03096-x&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+          "pointer": "/message/items/0/title/0",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:sleepboost-publication:url",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1007%2Fs11517-024-03096-x&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+          "pointer": "/message/items/0/URL",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:sleepboost-publication:date",
+          "sourceUrl": "https://api.crossref.org/v1/works?filter=doi%3A10.1007%2Fs11517-024-03096-x&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7fd215c83d699ba8c7b7161c97bdc99cb7d468320069884e213a0021be129a42",
+          "pointer": "/message/items/0/published/date-parts/0",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:sleepboost-publication:purpose",
+          "sourceUrl": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+          "pointer": "/observations/6/facts/purpose",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL05:sleepboost-publication:affiliation",
+          "sourceUrl": "https://link.springer.com/article/10.1007/s11517-024-03096-x",
+          "observedDate": "2026-11-16",
+          "observationSha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+          "pointer": "/contexts/1/institution",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL05:sleepboost-publication:geography",
+          "sourceUrl": "https://www.camdencounty.com/your-government/municipalities-camden-county/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "440b35651460bb97d5bba29b4db32f20c01c0edcfa8fdd01fd522f2c59be0e1c",
+          "pointer": "/contexts/1/county",
+          "method": "reviewed-observation"
+        }
+      ],
+      "reviewRefs": [
+        {
+          "id": "GL05:decision:sleepboost-publication",
+          "receiptSha256": "98fe4baa8e85c50f070237fb2874aad97c4bf05f08ac50141562821ca54f2c0d"
+        }
+      ],
+      "claims": [
+        {
+          "id": "GL05:claim:sleepboost-publication:purpose",
+          "subjectId": "GL05:work:crossref:sleepboost",
+          "evidenceIds": [
+            "GL05:sleepboost-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-publication",
+          "kind": "health-purpose",
+          "text": "A tree-based ensemble model for automatic sleep-stage classification."
+        },
+        {
+          "id": "GL05:claim:sleepboost-publication:region",
+          "subjectId": "GL05:work:crossref:sleepboost",
+          "evidenceIds": [
+            "GL05:sleepboost-publication:affiliation",
+            "GL05:sleepboost-publication:geography"
+          ],
+          "reviewId": "GL05:decision:sleepboost-publication",
+          "kind": "regional-connection",
+          "institution": "Rutgers University–Camden",
+          "campus": "Rutgers University–Camden campus",
+          "municipality": "Camden",
+          "state": "NJ",
+          "regionalBasis": "campus",
+          "county": "Camden",
+          "asOf": {
+            "precision": "year",
+            "value": "2024"
+          },
+          "subjectRole": "author-affiliation",
+          "subjectLabel": "Iman Dehzangi",
+          "sourceAuthorIndex": 3,
+          "affiliationEvidenceIds": [
+            "GL05:sleepboost-publication:affiliation"
+          ],
+          "geographyEvidenceIds": [
+            "GL05:sleepboost-publication:geography"
+          ],
+          "scope": "historical",
+          "qualification": "Author affiliation at publication; not current employment, account identity or code worksite."
+        },
+        {
+          "id": "GL05:claim:sleepboost-publication:sleep",
+          "subjectId": "GL05:work:crossref:sleepboost",
+          "evidenceIds": [
+            "GL05:sleepboost-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-publication",
+          "kind": "topic",
+          "topic": "sleep",
+          "vocabularyRevision": "directory-topics-v1"
+        },
+        {
+          "id": "GL05:claim:sleepboost-publication:machine-learning",
+          "subjectId": "GL05:work:crossref:sleepboost",
+          "evidenceIds": [
+            "GL05:sleepboost-publication:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-publication",
+          "kind": "topic",
+          "topic": "machine-learning",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "schemaVersion": "discovery-directory-work-v1",
+      "id": "GL05:work:github:192607622",
+      "revision": 1,
+      "kind": "repository",
+      "nativeIdentity": {
+        "provider": "github",
+        "namespace": null,
+        "nativeId": "192607622",
+        "evidenceId": "GL05:openpbta-repo:id"
+      },
+      "title": {
+        "value": "AlexsLemonade/OpenPBTA-analysis",
+        "evidenceId": "GL05:openpbta-repo:title"
+      },
+      "url": {
+        "value": "https://github.com/AlexsLemonade/OpenPBTA-analysis",
+        "evidenceId": "GL05:openpbta-repo:url"
+      },
+      "description": null,
+      "owner": null,
+      "sourceDate": null,
+      "checkedAt": "2026-11-16",
+      "evidence": [
+        {
+          "id": "GL05:openpbta-repo:id",
+          "sourceUrl": "https://api.github.com/repos/AlexsLemonade/OpenPBTA-analysis",
+          "observedDate": "2026-11-16",
+          "observationSha256": "168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867",
+          "pointer": "/id",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:openpbta-repo:title",
+          "sourceUrl": "https://api.github.com/repos/AlexsLemonade/OpenPBTA-analysis",
+          "observedDate": "2026-11-16",
+          "observationSha256": "168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867",
+          "pointer": "/full_name",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:openpbta-repo:url",
+          "sourceUrl": "https://api.github.com/repos/AlexsLemonade/OpenPBTA-analysis",
+          "observedDate": "2026-11-16",
+          "observationSha256": "168d20ed54b06459fa13791f65d6a7b828d0fbdff5a4aa21c221423fca641867",
+          "pointer": "/html_url",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:openpbta-repo:purpose",
+          "sourceUrl": "https://www.alexslemonade.org/childhood-cancer-data-lab/openpbta",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+          "pointer": "/observations/7/facts/purpose",
+          "method": "primary-web-rendering"
+        },
+        {
+          "id": "GL05:openpbta-repo:location",
+          "sourceUrl": "https://api.ror.org/v2/organizations/01z7r7q48",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+          "pointer": "/observations/8/facts/municipality",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL05:openpbta-repo:edge",
+          "sourceUrl": "https://github.com/AlexsLemonade/OpenPBTA-analysis/blob/e854738b57b16c3725673ad63b4ffd20ec48ad19/README.md",
+          "observedDate": "2026-11-16",
+          "observationSha256": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4",
+          "pointer": "/explicit_repository_publication_edges/2",
+          "method": "reviewed-observation"
+        }
+      ],
+      "reviewRefs": [
+        {
+          "id": "GL05:decision:openpbta-repo",
+          "receiptSha256": "8c404d363d8dd8322f8e372ea61d6ee4bf1c9a33a20bdbd7ae41f2392f41123e"
+        }
+      ],
+      "claims": [
+        {
+          "id": "GL05:claim:openpbta-repo:purpose",
+          "subjectId": "GL05:work:github:192607622",
+          "evidenceIds": [
+            "GL05:openpbta-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:openpbta-repo",
+          "kind": "health-purpose",
+          "text": "Open collaborative analysis of pediatric brain tumor data."
+        },
+        {
+          "id": "GL05:claim:openpbta-repo:region",
+          "subjectId": "GL05:work:github:192607622",
+          "evidenceIds": [
+            "GL05:openpbta-repo:purpose",
+            "GL05:openpbta-repo:location",
+            "GL05:openpbta-repo:edge"
+          ],
+          "reviewId": "GL05:decision:openpbta-repo",
+          "kind": "regional-connection",
+          "institution": "Children’s Hospital of Philadelphia",
+          "campus": null,
+          "municipality": "Philadelphia",
+          "state": "PA",
+          "regionalBasis": "municipality",
+          "county": null,
+          "asOf": {
+            "precision": "month",
+            "value": "2022-10"
+          },
+          "subjectRole": "project-association",
+          "subjectLabel": "OpenPBTA",
+          "sourceAuthorIndex": null,
+          "affiliationEvidenceIds": [
+            "GL05:openpbta-repo:purpose",
+            "GL05:openpbta-repo:edge"
+          ],
+          "geographyEvidenceIds": [
+            "GL05:openpbta-repo:location"
+          ],
+          "scope": "historical",
+          "qualification": "Project association dated October 2022; page checked 2026-11-16, not proof of current maintenance or worksite."
+        },
+        {
+          "id": "GL05:claim:openpbta-repo:biomedical-data",
+          "subjectId": "GL05:work:github:192607622",
+          "evidenceIds": [
+            "GL05:openpbta-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:openpbta-repo",
+          "kind": "topic",
+          "topic": "biomedical-data",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relations": [
+        {
+          "id": "GL05:relation:openpbta-repo:publication",
+          "fromId": "GL05:work:github:192607622",
+          "toId": "GL05:work:crossref:openpbta",
+          "predicate": "repository-cites-work",
+          "evidenceIds": [
+            "GL05:openpbta-repo:edge"
+          ],
+          "reviewId": "GL05:decision:openpbta-repo"
+        }
+      ]
+    },
+    {
+      "schemaVersion": "discovery-directory-work-v1",
+      "id": "GL05:work:github:617168725",
+      "revision": 1,
+      "kind": "repository",
+      "nativeIdentity": {
+        "provider": "github",
+        "namespace": null,
+        "nativeId": "617168725",
+        "evidenceId": "GL05:sleepboost-repo:id"
+      },
+      "title": {
+        "value": "akibzaman/SleepBoost",
+        "evidenceId": "GL05:sleepboost-repo:title"
+      },
+      "url": {
+        "value": "https://github.com/akibzaman/SleepBoost",
+        "evidenceId": "GL05:sleepboost-repo:url"
+      },
+      "description": null,
+      "owner": null,
+      "sourceDate": null,
+      "checkedAt": "2026-11-16",
+      "evidence": [
+        {
+          "id": "GL05:sleepboost-repo:id",
+          "sourceUrl": "https://api.github.com/repos/akibzaman/SleepBoost",
+          "observedDate": "2026-11-16",
+          "observationSha256": "66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56",
+          "pointer": "/id",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:sleepboost-repo:title",
+          "sourceUrl": "https://api.github.com/repos/akibzaman/SleepBoost",
+          "observedDate": "2026-11-16",
+          "observationSha256": "66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56",
+          "pointer": "/full_name",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:sleepboost-repo:url",
+          "sourceUrl": "https://api.github.com/repos/akibzaman/SleepBoost",
+          "observedDate": "2026-11-16",
+          "observationSha256": "66ac1e79e4baa723868870d08ad89c52222fee65064d26787281ed8af40f7c56",
+          "pointer": "/html_url",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL05:sleepboost-repo:purpose",
+          "sourceUrl": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+          "pointer": "/observations/6/facts/purpose",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL05:sleepboost-repo:location",
+          "sourceUrl": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+          "observedDate": "2026-11-16",
+          "observationSha256": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+          "pointer": "/observations/6/facts/municipality",
+          "method": "reviewed-observation"
+        },
+        {
+          "id": "GL05:sleepboost-repo:edge",
+          "sourceUrl": "https://github.com/akibzaman/SleepBoost/blob/0ad7794aa201698f362562f86d2e191c969b9ab5/README.md",
+          "observedDate": "2026-11-16",
+          "observationSha256": "37f75ca9f45528b9943afd2774a59fc592ac7b983cebfa6d2f106c6205c534c4",
+          "pointer": "/explicit_repository_publication_edges/1",
+          "method": "reviewed-observation"
+        }
+      ],
+      "reviewRefs": [
+        {
+          "id": "GL05:decision:sleepboost-repo",
+          "receiptSha256": "2dec3095e417f50578ba1ccad1f2af14df7297515b2681c99e3d6cfd4688f4e0"
+        }
+      ],
+      "claims": [
+        {
+          "id": "GL05:claim:sleepboost-repo:purpose",
+          "subjectId": "GL05:work:github:617168725",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo",
+          "kind": "health-purpose",
+          "text": "A tree-based ensemble model for automatic sleep-stage classification."
+        },
+        {
+          "id": "GL05:claim:sleepboost-repo:region",
+          "subjectId": "GL05:work:github:617168725",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:purpose",
+            "GL05:sleepboost-repo:location",
+            "GL05:sleepboost-repo:edge"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo",
+          "kind": "regional-connection",
+          "institution": "Rutgers University–Camden",
+          "campus": null,
+          "municipality": "Camden",
+          "state": "NJ",
+          "regionalBasis": "municipality",
+          "county": null,
+          "asOf": {
+            "precision": "day",
+            "value": "2024-06-03"
+          },
+          "subjectRole": "project-association",
+          "subjectLabel": "SleepBoost",
+          "sourceAuthorIndex": null,
+          "affiliationEvidenceIds": [
+            "GL05:sleepboost-repo:purpose",
+            "GL05:sleepboost-repo:edge"
+          ],
+          "geographyEvidenceIds": [
+            "GL05:sleepboost-repo:location"
+          ],
+          "scope": "historical",
+          "qualification": "Regional research project association; not account identity, ownership, creator location or current employment."
+        },
+        {
+          "id": "GL05:claim:sleepboost-repo:sleep",
+          "subjectId": "GL05:work:github:617168725",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo",
+          "kind": "topic",
+          "topic": "sleep",
+          "vocabularyRevision": "directory-topics-v1"
+        },
+        {
+          "id": "GL05:claim:sleepboost-repo:machine-learning",
+          "subjectId": "GL05:work:github:617168725",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:purpose"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo",
+          "kind": "topic",
+          "topic": "machine-learning",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relations": [
+        {
+          "id": "GL05:relation:sleepboost-repo:publication",
+          "fromId": "GL05:work:github:617168725",
+          "toId": "GL05:work:crossref:sleepboost",
+          "predicate": "repository-cites-work",
+          "evidenceIds": [
+            "GL05:sleepboost-repo:edge"
+          ],
+          "reviewId": "GL05:decision:sleepboost-repo"
+        }
+      ]
+    }
+  ]
+}

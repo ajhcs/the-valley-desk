@@ -1,3 +1,4 @@
+import { legacyUtcDatetime } from "../lib/schema-compat";
 import bundledSnapshot from "../../fixtures/regional-discovery-read-snapshot-v1.json";
 import { z } from "zod";
 import { REGIONAL_CHANNELS } from "./regional-contracts";
@@ -12,9 +13,9 @@ const hash = async (value: string) => Array.from(new Uint8Array(await crypto.sub
   .map(byte => byte.toString(16).padStart(2, "0")).join("");
 const Id = z.string().regex(/^[a-z][a-z0-9-]+$/).max(200);
 const Tool = z.object({ name: z.enum(["regional_source_inventory", "regional_discovery_candidates", "regional_discovery_record"]),
-  title: z.string().max(100), description: z.string().max(1000), inputSchema: z.record(z.unknown()), outputSchema: z.record(z.unknown()),
+  title: z.string().max(100), description: z.string().max(1000), inputSchema: z.record(z.string(), z.unknown()), outputSchema: z.record(z.string(), z.unknown()),
   annotations: z.object({ readOnlyHint: z.literal(true), destructiveHint: z.literal(false), idempotentHint: z.literal(true), openWorldHint: z.literal(false) }).strict() }).strict();
-const Data = z.object({ schemaVersion: z.literal(1), preparedAt: z.string().datetime(), provenancePolicy: z.string().max(600),
+const Data = z.object({ schemaVersion: z.literal(1), preparedAt: legacyUtcDatetime(), provenancePolicy: z.string().max(600),
   tools: z.array(Tool).length(3), inventoryResult: RegionalAgentResult,
   inventoryInstitutionIds: z.array(Id).max(500), inventoryGaps: z.array(z.object({ institutionId: Id,
     channel: z.enum(REGIONAL_CHANNELS) }).strict()).max(2500),

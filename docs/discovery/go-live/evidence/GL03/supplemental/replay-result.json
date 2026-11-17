@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "GL03-replay-check-v1",
+  "scope": "retained fact packets and private journal only; no native body reconstruction",
+  "pages": 2,
+  "candidates": 2,
+  "candidatesSha256": "bafe0521e4ac697b1c985cdd481f69682bcd87c4e56307f1e1c7bd1c5a0ef07e",
+  "outcomes": [
+    {
+      "page": "G05",
+      "outcome": "unknown",
+      "inserted": 1,
+      "pending": 0
+    },
+    {
+      "page": "C02",
+      "outcome": "capped",
+      "inserted": 1,
+      "pending": 0
+    }
+  ],
+  "reopened": true,
+  "noNetwork": true
+}

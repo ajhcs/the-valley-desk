@@ -1,0 +1,50 @@
+{
+  "title": "Additional professional account lead from a primary software site and dated self-report",
+  "observedDate": "2026-11-16",
+  "status": "private source-linked lead; no admission or current employment verification",
+  "publicationAuthorized": false,
+  "method": "Root directly opened first-party software documentation and a dated author blog. Retained factual notes and links only, no page, code, contact or profile body. Unrelated broker search results were not used.",
+  "accounts": [
+    {
+      "account": "shannonpileggi",
+      "accountUrl": "https://github.com/shannonpileggi",
+      "accountType": null,
+      "person": "Shannon Pileggi",
+      "institutionOrLab": "gtreg clinical-research software; Adelphi Research (historical 2021 self-report)",
+      "affiliationTimeScope": "2021-02-15 professional self-introduction reports statistician role in Doylestown, PA. The software site observed 2026-11-16 identifies Pileggi as author/maintainer; present-day employment and location unverified.",
+      "region": {
+        "municipality": "Doylestown",
+        "county": null,
+        "basis": "Dated professional self-introduction, not a current employer worksite or residence verification. County not independently sourced here.",
+        "source": "https://www.pipinghotdata.com/posts/2021-02-15-gganimating-a-geographic-introduction/"
+      },
+      "accountLinkSource": "https://shannonpileggi.github.io/gtreg/",
+      "sourceAccess": "primary-web-rendering",
+      "sourceDate": "2021-02-15 (professional place/role); software documentation date unspecified",
+      "relationshipBasis": "First-party gtreg documentation names Shannon Pileggi as author and maintainer and explicitly links shannonpileggi/gtreg. This supports a named person-to-software association; account control is not authenticated.",
+      "publicationAuthorized": false,
+      "repositories": [
+        {
+          "url": "https://github.com/shannonpileggi/gtreg",
+          "purpose": "Regulatory tables for clinical research, including adverse-event and patient-characteristic summaries.",
+          "purposeSource": "https://shannonpileggi.github.io/gtreg/",
+          "githubPageChecked": false,
+          "note": "Developer documentation directly inspected. Repository native metadata and current professional affiliation remain unverified."
+        }
+      ]
+    }
+  ],
+  "accountOnlyLeads": [],
+  "gaps": [
+    {
+      "county": "Bucks",
+      "status": "Doylestown historical professional lead found; county and current role still require scoped corroboration."
+    }
+  ],
+  "failures": [
+    {
+      "url": "https://www.pipinghotdata.com/about.html",
+      "outcome": "Browser tool could not access URL; no about-page facts used or retry attempted."
+    }
+  ]
+}

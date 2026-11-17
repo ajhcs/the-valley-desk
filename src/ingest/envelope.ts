@@ -1,9 +1,10 @@
+import { legacyUtcDatetime } from "../lib/schema-compat";
 import { z } from "zod";
 import { ContentItem } from "../content/schema";
 
 export const IngestBatch = z.object({
   adapter: z.string(),
-  fetchedAt: z.string().datetime(),
+  fetchedAt: legacyUtcDatetime(),
   items: z.array(ContentItem),
 });
 

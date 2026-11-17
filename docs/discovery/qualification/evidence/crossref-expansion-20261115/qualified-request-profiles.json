@@ -1,0 +1,105 @@
+{
+  "recorded_at": "2026-11-15T21:56:40.214Z",
+  "purpose": "Derived local request-profile verification; not source authority, corpus labels or a production enrollment.",
+  "source": "src/ingest/discovery/crossref.ts",
+  "sourceSha256": "23669936ae6ef8a7a25ccf5edb3055d581bd25920222c22c54beb40a6735f6ea",
+  "materialScope": "factual metadata",
+  "results": [
+    {
+      "name": "qsiprep",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-qsiprep",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1038/s41592-021-01185-5"
+      },
+      "scopeId": "crossref-scope:00a2b25d80780d72e4e72a47462db14a794aa8b856d80014d090c33a9084ef61",
+      "scopeSha256": "00a2b25d80780d72e4e72a47462db14a794aa8b856d80014d090c33a9084ef61",
+      "canonicalDoi": "10.1038/s41592-021-01185-5",
+      "qualifiedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalObservedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1038%2Fs41592-021-01185-5&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalBodySha256": "dca78ff56815ca067e4a98e1ca3253f20d79636b572267f1255250f5a24bcbfc",
+      "result": "pass_exact_canonical_fixed_DOI_profile"
+    },
+    {
+      "name": "captk-main",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-captk-main",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1117/1.JMI.5.1.011018"
+      },
+      "scopeId": "crossref-scope:92f74ffe2f3759f8dc5d5ae9f6e61b8170d41bc6eebb1b7c90b5c793a6bdb7d2",
+      "scopeSha256": "92f74ffe2f3759f8dc5d5ae9f6e61b8170d41bc6eebb1b7c90b5c793a6bdb7d2",
+      "canonicalDoi": "10.1117/1.jmi.5.1.011018",
+      "qualifiedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1117%2F1.JMI.5.1.011018&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalObservedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1117%2F1.JMI.5.1.011018&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalBodySha256": "b291ed6c35fc31625450ddf2868318fa5335917da42fa90deb614f608c146153",
+      "result": "pass_exact_canonical_fixed_DOI_profile"
+    },
+    {
+      "name": "autogvp",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-autogvp",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1093/bioinformatics/btae114"
+      },
+      "scopeId": "crossref-scope:e80ee744df4eac3a6b8423c0676db348a0f702e472c21085f53f4c956d8166c5",
+      "scopeSha256": "e80ee744df4eac3a6b8423c0676db348a0f702e472c21085f53f4c956d8166c5",
+      "canonicalDoi": "10.1093/bioinformatics/btae114",
+      "qualifiedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtae114&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalObservedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtae114&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalBodySha256": "569acef5e4d899696d3fd4816ec40dff855a537d29072b2e5f28623484a600c5",
+      "result": "pass_exact_canonical_fixed_DOI_profile"
+    },
+    {
+      "name": "immunotar",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-immunotar",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1093/bioinformatics/btaf060"
+      },
+      "scopeId": "crossref-scope:7dc1088ced618243fca6803bb43be67d1edbd71ad6e6213bd57945c9a288c110",
+      "scopeSha256": "7dc1088ced618243fca6803bb43be67d1edbd71ad6e6213bd57945c9a288c110",
+      "canonicalDoi": "10.1093/bioinformatics/btaf060",
+      "qualifiedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtaf060&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalObservedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbioinformatics%2Fbtaf060&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalBodySha256": "9bbce87a075fdc5e99f1df14d5d90cc6679161d4655e15b4971892640edf5857",
+      "result": "pass_exact_canonical_fixed_DOI_profile"
+    },
+    {
+      "name": "phenomantics",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-phenomantics",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1186/1471-2105-15-248"
+      },
+      "scopeId": "crossref-scope:17bf9cdec0e14b8602d9ef7e1e9c98f55f3250d3f78d4e1ed7721f13abcb53f4",
+      "scopeSha256": "17bf9cdec0e14b8602d9ef7e1e9c98f55f3250d3f78d4e1ed7721f13abcb53f4",
+      "canonicalDoi": "10.1186/1471-2105-15-248",
+      "qualifiedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1186%2F1471-2105-15-248&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalObservedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1186%2F1471-2105-15-248&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalBodySha256": "c8b85b4e14f01d6e2d42b6ad6dfdcbc673ade3440163be11088cf4562158e23e",
+      "result": "pass_exact_canonical_fixed_DOI_profile"
+    },
+    {
+      "name": "deepcnv",
+      "scopeInput": {
+        "declaredId": "scope:crossref-fixed-deepcnv",
+        "revision": 1,
+        "queryKind": "fixed-doi",
+        "doiLiteral": "10.1093/bib/bbaa381"
+      },
+      "scopeId": "crossref-scope:2c131f455e90a0a1f6eb3f88f8fb7483d3aabcaeed71bf83a98be9f8ffbb5fcf",
+      "scopeSha256": "2c131f455e90a0a1f6eb3f88f8fb7483d3aabcaeed71bf83a98be9f8ffbb5fcf",
+      "canonicalDoi": "10.1093/bib/bbaa381",
+      "qualifiedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbib%2Fbbaa381&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalObservedEndpoint": "https://api.crossref.org/v1/works?filter=doi%3A10.1093%2Fbib%2Fbbaa381&rows=1&select=DOI%2Ctitle%2Ctype%2Cauthor%2Cpublished%2CURL%2Cpublisher%2Crelation%2Clicense",
+      "originalBodySha256": "c872b5519aafb30bcea68fa95f5d13c01f4c3c9856da41c96b1191aa9312c6f5",
+      "result": "pass_exact_canonical_fixed_DOI_profile"
+    }
+  ]
+}

@@ -1,0 +1,268 @@
+{
+  "id": "GL03-supplemental-request-v2",
+  "date": "2026-11-16",
+  "state": "draft_no_requests_independent_review_required",
+  "scope": "Two fresh qualification experiments; never replay G01/C01 or infer their rejected contents.",
+  "requests": [
+    {
+      "id": "G05",
+      "provider": "github",
+      "kind": "account_user",
+      "method": "GET",
+      "url": "https://api.github.com/users/akibzaman/repos?type=owner&sort=full_name&direction=asc&per_page=1&page=1",
+      "parameters": {
+        "type": "owner",
+        "sort": "full_name",
+        "direction": "asc",
+        "per_page": "1",
+        "page": "1"
+      },
+      "expected_owner_type": "User",
+      "expected_owner_id": "55422467",
+      "page": 1,
+      "maximum_items": 1,
+      "state": "pending_new_method_and_inspector_independent_review",
+      "continuation": "opaque_unknown: discard Link regardless of presence, never follow; enumeration always incomplete",
+      "continuation_policy": "opaque_unknown"
+    },
+    {
+      "id": "C02",
+      "provider": "crossref",
+      "kind": "publication_search",
+      "method": "GET",
+      "url": "https://api.crossref.org/works?query=Rutgers%20Camden%20sleep&rows=1&select=DOI,title,type,published,URL&filter=type:journal-article",
+      "parameters": {
+        "query": "Rutgers Camden sleep",
+        "rows": "1",
+        "select": "DOI,title,type,published,URL",
+        "filter": "type:journal-article"
+      },
+      "expected_owner_type": null,
+      "expected_owner_id": null,
+      "page": 1,
+      "maximum_items": 1,
+      "state": "pending_new_method_and_inspector_independent_review",
+      "continuation": "one-page only; no continuation request in this batch"
+    }
+  ],
+  "github_preflight_key_census": {
+    "id": "github-repository-response-key-census",
+    "basis": "Prior historical SleepBoost native metadata body; keys only, not qualification of current response",
+    "repository_keys": [
+      "allow_forking",
+      "archive_url",
+      "archived",
+      "assignees_url",
+      "blobs_url",
+      "branches_url",
+      "clone_url",
+      "collaborators_url",
+      "comments_url",
+      "commits_url",
+      "compare_url",
+      "contents_url",
+      "contributors_url",
+      "created_at",
+      "default_branch",
+      "deployments_url",
+      "description",
+      "disabled",
+      "downloads_url",
+      "events_url",
+      "fork",
+      "forks",
+      "forks_count",
+      "forks_url",
+      "full_name",
+      "git_commits_url",
+      "git_refs_url",
+      "git_tags_url",
+      "git_url",
+      "has_discussions",
+      "has_downloads",
+      "has_issues",
+      "has_pages",
+      "has_projects",
+      "has_pull_requests",
+      "has_wiki",
+      "homepage",
+      "hooks_url",
+      "html_url",
+      "id",
+      "is_template",
+      "issue_comment_url",
+      "issue_events_url",
+      "issues_url",
+      "keys_url",
+      "labels_url",
+      "language",
+      "languages_url",
+      "license",
+      "merges_url",
+      "milestones_url",
+      "mirror_url",
+      "name",
+      "network_count",
+      "node_id",
+      "notifications_url",
+      "open_issues",
+      "open_issues_count",
+      "owner",
+      "private",
+      "pull_request_creation_policy",
+      "pulls_url",
+      "pushed_at",
+      "releases_url",
+      "size",
+      "ssh_url",
+      "stargazers_count",
+      "stargazers_url",
+      "statuses_url",
+      "subscribers_count",
+      "subscribers_url",
+      "subscription_url",
+      "svn_url",
+      "tags_url",
+      "teams_url",
+      "temp_clone_token",
+      "topics",
+      "trees_url",
+      "updated_at",
+      "url",
+      "visibility",
+      "watchers",
+      "watchers_count",
+      "web_commit_signoff_required"
+    ],
+    "nested_keys": {
+      "owner": [
+        "avatar_url",
+        "events_url",
+        "followers_url",
+        "following_url",
+        "gists_url",
+        "gravatar_id",
+        "html_url",
+        "id",
+        "login",
+        "node_id",
+        "organizations_url",
+        "received_events_url",
+        "repos_url",
+        "site_admin",
+        "starred_url",
+        "subscriptions_url",
+        "type",
+        "url",
+        "user_view_type"
+      ],
+      "license": [
+        "key",
+        "name",
+        "node_id",
+        "spdx_id",
+        "url"
+      ]
+    },
+    "search_additional_item_keys": [
+      "score",
+      "text_matches"
+    ],
+    "search_root_keys": [
+      "total_count",
+      "incomplete_results",
+      "items"
+    ],
+    "warning": "Each value and nested member must pass privacy/material inspection; unknown keys fail closed; text_matches must be absent or empty. Historical key census is not current provider schema."
+  },
+  "headers": {
+    "github": {
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "Accept-Encoding": "identity",
+      "User-Agent": "The-Valley-Desk-Discovery-GL03"
+    },
+    "crossref": {
+      "Accept": "application/json",
+      "Accept-Encoding": "identity",
+      "User-Agent": "The-Valley-Desk-Discovery-GL03"
+    }
+  },
+  "limits": {
+    "new_attempts": 2,
+    "combined_attempts_max": 7,
+    "github_attempts_max": 5,
+    "crossref_attempts_max": 2,
+    "max_new_leads": 2,
+    "total_selected_leads_max": 8,
+    "philadelphia_planning_allocation_max": 6,
+    "camden_planning_allocation_max": 2,
+    "mercer_planning_allocation_max": 0,
+    "note": "County allocations are budget labels for lead paths, not verified geography; actual support remains unknown. GL02 per-county and aggregate ceilings still apply.",
+    "same_frozen_transport_as_v1": "one page, one item, 48000 decoded bytes, 25s, identity, no redirects, no retries; serial root-only"
+  },
+  "prior_batch": {
+    "receipt_file_sha256": {
+      "G01": "2387e4f3c4e7942f14b3ef17201010c30def0443f26ec6ef56d2e7b43c8d7d63",
+      "G02": "1838ca92a0e94cbc2306174643bbaae9ffe570b846e5b3b26c79c888c37b8ee3",
+      "G03": "15ef3d91d477a7ade4b2b02cae40ce73d9eeb86e9b59967ebb65f7467d1c9676",
+      "C01": "ad8fc876f23bd71fbc8bb16cf29a93d874f0363a44c07c15ea1304e346783984",
+      "G04": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e"
+    },
+    "plan_file_sha256": "3f83f5d516ea22490c986789b092444a676abf661c0daa85036f6aecadf3b2c0",
+    "methods_file_sha256": "1168afbc6d09abeba10726b5d81d169d0bffa5fc74dd4b1b8b46d4d0340a61ee",
+    "request_manifest_file_sha256": "6f6ca254180f24dd86dad478290acdefe148d8410b6615e94e4458c487e5579e",
+    "preflight_file_sha256": "12633e4c6ab6089870e774e8de961bf047035e29812f4430c685f2f36c6ccf27",
+    "parser_sha256": "71ab9258b85353c327118438bdad40496d8e2c68cb7356799ab49d5dec63f801",
+    "capture_sha256": "3269fa6661b3e43de0b80353cf72ca7f9a388069b6a6258a1123aafce84af3be",
+    "journal_sha256": "e10824268e32d85dd8b07d6c3a3f78b5960372c24c580218ec999b90c81a9aca",
+    "outcomes": {
+      "G01": "malformed/link, no packet",
+      "G02": "malformed/field-census, no packet",
+      "C01": "malformed/publication-identity, no packet",
+      "G03": "received five, capped, continuation more",
+      "G04": "received one, fixed scope complete"
+    },
+    "attempts": 5,
+    "github_attempts": 4,
+    "crossref_attempts": 1,
+    "selected_facts": 6,
+    "provider_refusals_403_or_429": 0,
+    "provider_holds": [],
+    "replay_result_file_sha256": "a2924ba73884a9711f7eb6a234c1bcf1d7456d257c0a3e0c7630f0eeb8761837"
+  },
+  "activation": "none; no public admission, source enrollment, continuation execution or recurring operation",
+  "binding": "Root freezes new plan/code hashes after implementation; Sol independently reviews exact method and new plan before first request. Reject reused IDs or previous issued pages. Sender verifies every prior receipt hash before issuance and refuses if any prior receipt from same provider has refused or rate-limited outcome.",
+  "prior_receipts": [
+    {
+      "id": "G01",
+      "provider": "github",
+      "path": "/workspace/build/builderbob/tvd-gl03-20261116/root/batch/G01.json",
+      "sha256": "2387e4f3c4e7942f14b3ef17201010c30def0443f26ec6ef56d2e7b43c8d7d63"
+    },
+    {
+      "id": "G02",
+      "provider": "github",
+      "path": "/workspace/build/builderbob/tvd-gl03-20261116/root/batch/G02.json",
+      "sha256": "1838ca92a0e94cbc2306174643bbaae9ffe570b846e5b3b26c79c888c37b8ee3"
+    },
+    {
+      "id": "G03",
+      "provider": "github",
+      "path": "/workspace/build/builderbob/tvd-gl03-20261116/root/batch/G03.json",
+      "sha256": "15ef3d91d477a7ade4b2b02cae40ce73d9eeb86e9b59967ebb65f7467d1c9676"
+    },
+    {
+      "id": "C01",
+      "provider": "crossref",
+      "path": "/workspace/build/builderbob/tvd-gl03-20261116/root/batch/C01.json",
+      "sha256": "ad8fc876f23bd71fbc8bb16cf29a93d874f0363a44c07c15ea1304e346783984"
+    },
+    {
+      "id": "G04",
+      "provider": "github",
+      "path": "/workspace/build/builderbob/tvd-gl03-20261116/root/batch/G04.json",
+      "sha256": "cf0509a6e8793e368f4ff06f9deadf5e167c485acaa8894ccbef348629759a9e"
+    }
+  ]
+}

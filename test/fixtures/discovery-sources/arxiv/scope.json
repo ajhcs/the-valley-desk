@@ -1,0 +1,17 @@
+{
+  "declaredId": "scope:arxiv-synthetic",
+  "revision": 1,
+  "categories": [
+    "cs.AI",
+    "physics.med-ph"
+  ],
+  "terms": [
+    "healthcare"
+  ],
+  "startDay": "2024-01-01",
+  "endDay": "2024-03-01",
+  "pageSize": 2,
+  "maxPages": 3,
+  "maxItems": 5,
+  "denominator": "Only arXiv candidates matching this frozen category/quoted term/submission-date query; no regional or health-tech recall claim."
+}
