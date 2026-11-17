@@ -1,0 +1,2116 @@
+{
+  "schemaVersion": "villanova-source-assertions-v1",
+  "sourceId": "villanova-health-github-research-20261116",
+  "snapshotDate": "2026-11-16",
+  "publicationAuthorized": false,
+  "coverage": {
+    "reportedGithubUrls": 83,
+    "accounts": 17,
+    "repositoryPaths": 66,
+    "externalCodeResources": 2,
+    "labBrandedAccounts": 5,
+    "status": "bounded source report"
+  },
+  "qualifications": [
+    "Inventory is a bounded historical search, not a current census; missing findings do not establish absence.",
+    "The five lab-branded accounts are distinct from personal, collaborator, consortium and capstone accounts.",
+    "No current employment, account ownership, repository authorship, project worksite, or county is independently verified by this intake.",
+    "General yeast biology, neuroscience and quantitative methods require separate healthcare-purpose review.",
+    "An author acknowledgement, third-party tool citation, or intended release does not establish project authorship or public code.",
+    "A researcher affiliation does not attribute every personal account repository to Villanova.",
+    "No source network access, fresh account lookup, native redirect validation, or article-body extraction occurred."
+  ],
+  "accounts": [
+    {
+      "id": "andchen2026",
+      "url": "https://github.com/andChen2026",
+      "sourceRefs": [
+        "README.md#L60"
+      ],
+      "evidenceUrls": [
+        "https://www.wayup.com/profile/Andrew-Chen-7459404b07/"
+      ],
+      "reportedSections": [
+        "Biological and Environmental Systems Engineering"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "andChen2026",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    },
+    {
+      "id": "berrygrant",
+      "url": "https://github.com/berrygrant",
+      "sourceRefs": [
+        "README.md#L50"
+      ],
+      "evidenceUrls": [
+        "https://zenodo.org/records/18704505"
+      ],
+      "reportedSections": [
+        "Language Use and Variation Lab: cognitive neuroscience and EEG"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "berrygrant",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    },
+    {
+      "id": "cfxiong",
+      "url": "https://github.com/cfxiong",
+      "sourceRefs": [
+        "README.md#L41"
+      ],
+      "evidenceUrls": [
+        "https://cfxiong.github.io/data-lab/",
+        "https://cfxiong.github.io/team/team-1/"
+      ],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "cfxiong",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    },
+    {
+      "id": "computingx-lab",
+      "url": "https://github.com/computingx-lab",
+      "sourceRefs": [
+        "README.md#L19"
+      ],
+      "evidenceUrls": [
+        "https://computingx-lab.github.io/",
+        "https://www.villanova.edu/university/engineering/about-us/news-events/2025/villanova-engineering-welcomes-7-new-faculty-members.html"
+      ],
+      "reportedSections": [
+        "ComputingX Lab: healthcare AI"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "computingx-lab",
+      "reportedAccountType": "lab-branded",
+      "reportedContext": null
+    },
+    {
+      "id": "danao523",
+      "url": "https://github.com/DanaO523",
+      "sourceRefs": [
+        "README.md#L72"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/biology/research-scholarship.html",
+        "https://doi.org/10.1126/science.adj4503"
+      ],
+      "reportedSections": [
+        "Dana Opulente: microbial genomics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "DanaO523",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    },
+    {
+      "id": "luv-lab",
+      "url": "https://github.com/LUV-Lab",
+      "sourceRefs": [
+        "README.md#L46"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/psychological-brain-sciences/research-scholarship.html"
+      ],
+      "reportedSections": [
+        "Language Use and Variation Lab: cognitive neuroscience and EEG"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "LUV-Lab",
+      "reportedAccountType": "lab-branded",
+      "reportedContext": null
+    },
+    {
+      "id": "nathanielrgreene",
+      "url": "https://github.com/nathanielrgreene",
+      "sourceRefs": [
+        "README.md#L68"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/psychological-brain-sciences/research-scholarship.html"
+      ],
+      "reportedSections": [
+        "MIND Lab: memory and cognitive aging"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "nathanielrgreene",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    },
+    {
+      "id": "optical-brain-imaging-lab",
+      "url": "https://github.com/Optical-Brain-Imaging-Lab",
+      "sourceRefs": [
+        "README.md#L11"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/villanova/engineering/research/Faculty/biomedical-signals-systems-analysis.html"
+      ],
+      "reportedSections": [
+        "BEACON or BEACONS: biomedical sensing and brain imaging"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "Optical-Brain-Imaging-Lab",
+      "reportedAccountType": "lab-branded",
+      "reportedContext": null
+    },
+    {
+      "id": "pelegkremer-jpg",
+      "url": "https://github.com/pelegkremer-jpg",
+      "sourceRefs": [
+        "README.md#L64"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/scholarship/centers/cbest/research-scholarship/research.html",
+        "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2026EF008834"
+      ],
+      "reportedSections": [
+        "Kremer Lab: environmental and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "pelegkremer-jpg",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    },
+    {
+      "id": "shashwatmaharjan",
+      "url": "https://github.com/shashwatmaharjan",
+      "sourceRefs": [
+        "README.md#L119"
+      ],
+      "evidenceUrls": [
+        "https://www.m4l-lab.com/people"
+      ],
+      "reportedSections": [
+        "Researcher accounts without a linked Villanova project repository"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "shashwatmaharjan",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    },
+    {
+      "id": "slovenskys",
+      "url": "https://github.com/slovenskys",
+      "sourceRefs": [
+        "README.md#L120"
+      ],
+      "evidenceUrls": [
+        "https://research.jefferson.edu/labs/researcher/wu-laboratory/team.html"
+      ],
+      "reportedSections": [
+        "Researcher accounts without a linked Villanova project repository"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "slovenskys",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": "No public repositories observed at snapshot"
+    },
+    {
+      "id": "villanova-transportation",
+      "url": "https://github.com/villanova-transportation",
+      "sourceRefs": [
+        "README.md#L35"
+      ],
+      "evidenceUrls": [
+        "https://cfxiong.github.io/data-lab/"
+      ],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "villanova-transportation",
+      "reportedAccountType": "lab-branded",
+      "reportedContext": null
+    },
+    {
+      "id": "vu-aacd",
+      "url": "https://github.com/VU-AACD",
+      "sourceRefs": [
+        "README.md#L107"
+      ],
+      "evidenceUrls": [
+        "https://give.villanova.edu/communicating-with-frankie-a-nova-solution"
+      ],
+      "reportedSections": [
+        "Augmentative communication capstone"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "VU-AACD",
+      "reportedAccountType": "capstone",
+      "reportedContext": null
+    },
+    {
+      "id": "vu-detail",
+      "url": "https://github.com/VU-DETAIL",
+      "sourceRefs": [
+        "README.md#L26"
+      ],
+      "evidenceUrls": [
+        "https://vu-detail.github.io/artifact"
+      ],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "VU-DETAIL",
+      "reportedAccountType": "lab-branded",
+      "reportedContext": null
+    },
+    {
+      "id": "weiyu-luo",
+      "url": "https://github.com/Weiyu-Luo",
+      "sourceRefs": [
+        "README.md#L41"
+      ],
+      "evidenceUrls": [
+        "https://cfxiong.github.io/data-lab/",
+        "https://cfxiong.github.io/team/team-1/"
+      ],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "Weiyu-Luo",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    },
+    {
+      "id": "ziyu-s",
+      "url": "https://github.com/Ziyu-S",
+      "sourceRefs": [
+        "README.md#L58"
+      ],
+      "evidenceUrls": [
+        "https://pubs.acs.org/jcisd8/article/66/3/1742/5080243/Graph-Based-Deep-Learning-Models-for-Predicting"
+      ],
+      "reportedSections": [
+        "Biological and Environmental Systems Engineering"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "Ziyu-S",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    },
+    {
+      "id": "zjiaqi2018",
+      "url": "https://github.com/zjiaqi2018",
+      "sourceRefs": [
+        "README.md#L121"
+      ],
+      "evidenceUrls": [
+        "https://personal.math.ubc.ca/~jfeng/Publications/PDFs/25_PRF.pdf"
+      ],
+      "reportedSections": [
+        "Researcher accounts without a linked Villanova project repository"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "handle": "zjiaqi2018",
+      "reportedAccountType": "person-or-other-source-reported",
+      "reportedContext": null
+    }
+  ],
+  "projects": [
+    {
+      "id": "andchen2026/nirs-processing",
+      "url": "https://github.com/andChen2026/NIRS-Processing",
+      "sourceRefs": [
+        "README.md#L60"
+      ],
+      "evidenceUrls": [
+        "https://www.wayup.com/profile/Andrew-Chen-7459404b07/"
+      ],
+      "reportedSections": [
+        "Biological and Environmental Systems Engineering"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "Huppert Lab research; Villanova connection not established",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "berrygrant/eeg-pipeline",
+      "url": "https://github.com/berrygrant/eeg-pipeline",
+      "sourceRefs": [
+        "README.md#L50"
+      ],
+      "evidenceUrls": [
+        "https://zenodo.org/records/18704505"
+      ],
+      "reportedSections": [
+        "Language Use and Variation Lab: cognitive neuroscience and EEG"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "berrygrant/eeg_corpus_scripts",
+      "url": "https://github.com/berrygrant/EEG_Corpus_Scripts",
+      "sourceRefs": [
+        "README.md#L50"
+      ],
+      "evidenceUrls": [
+        "https://zenodo.org/records/18704505"
+      ],
+      "reportedSections": [
+        "Language Use and Variation Lab: cognitive neuroscience and EEG"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "berrygrant/phontrast",
+      "url": "https://github.com/berrygrant/phontrast",
+      "sourceRefs": [
+        "README.md#L50"
+      ],
+      "evidenceUrls": [
+        "https://zenodo.org/records/18704505"
+      ],
+      "reportedSections": [
+        "Language Use and Variation Lab: cognitive neuroscience and EEG"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "climate-cafe/niehs-ehlc_data_harmonization",
+      "url": "https://github.com/Climate-CAFE/NIEHS-EHLC_Data_Harmonization",
+      "sourceRefs": [
+        "README.md#L91"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC13347659/"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "public copy; original NIEHS URL reported 404; official move and byte identity unverified",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "computingx-lab/clinical-asr-llm-evaluation",
+      "url": "https://github.com/computingx-lab/Clinical-ASR-LLM-Evaluation",
+      "sourceRefs": [
+        "README.md#L21"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "ComputingX Lab: healthcare AI"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "computingx-lab/computingx-lab.github.io",
+      "url": "https://github.com/computingx-lab/computingx-lab.github.io",
+      "sourceRefs": [
+        "README.md#L22"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "ComputingX Lab: healthcare AI"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "computingx-lab/dac-2026-sdc",
+      "url": "https://github.com/computingx-lab/dac-2026-SDC",
+      "sourceRefs": [
+        "README.md#L22"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "ComputingX Lab: healthcare AI"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "computingx-lab/dotsim",
+      "url": "https://github.com/computingx-lab/DotSim",
+      "sourceRefs": [
+        "README.md#L22"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "ComputingX Lab: healthcare AI"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "danao523/danao523.github.io",
+      "url": "https://github.com/DanaO523/DanaO523.github.io",
+      "sourceRefs": [
+        "README.md#L72"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/biology/research-scholarship.html",
+        "https://doi.org/10.1126/science.adj4503"
+      ],
+      "reportedSections": [
+        "Dana Opulente: microbial genomics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "danao523/nitrogengrowthvariation",
+      "url": "https://github.com/DanaO523/NitrogenGrowthVariation",
+      "sourceRefs": [
+        "README.md#L72"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/biology/research-scholarship.html",
+        "https://doi.org/10.1126/science.adj4503"
+      ],
+      "reportedSections": [
+        "Dana Opulente: microbial genomics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "danao523/phenomics",
+      "url": "https://github.com/DanaO523/Phenomics",
+      "sourceRefs": [
+        "README.md#L72"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/biology/research-scholarship.html",
+        "https://doi.org/10.1126/science.adj4503"
+      ],
+      "reportedSections": [
+        "Dana Opulente: microbial genomics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "danao523/tooltime",
+      "url": "https://github.com/DanaO523/ToolTime",
+      "sourceRefs": [
+        "README.md#L72"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/biology/research-scholarship.html",
+        "https://doi.org/10.1126/science.adj4503"
+      ],
+      "reportedSections": [
+        "Dana Opulente: microbial genomics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "danao523/traitassociations",
+      "url": "https://github.com/DanaO523/TraitAssociations",
+      "sourceRefs": [
+        "README.md#L72"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/biology/research-scholarship.html",
+        "https://doi.org/10.1126/science.adj4503"
+      ],
+      "reportedSections": [
+        "Dana Opulente: microbial genomics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "2018 study predates reported Villanova affiliation",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "danao523/y1000project",
+      "url": "https://github.com/DanaO523/Y1000Project",
+      "sourceRefs": [
+        "README.md#L72"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/biology/research-scholarship.html",
+        "https://doi.org/10.1126/science.adj4503"
+      ],
+      "reportedSections": [
+        "Dana Opulente: microbial genomics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "dongning-ma/molehd",
+      "url": "https://github.com/dongning-ma/MoleHD",
+      "sourceRefs": [
+        "README.md#L28"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "MoleHD author-hosted version; same reported project, no account identity merge",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "inform-africa/ai-viral-lineage-classification",
+      "url": "https://github.com/INFORM-Africa/AI-viral-lineage-classification",
+      "sourceRefs": [
+        "README.md#L85"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC12007369/"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "jgigantino31/fnirs",
+      "url": "https://github.com/Jgigantino31/fNIRS",
+      "sourceRefs": [
+        "README.md#L13"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/engineering/faculty-research/sports-and-performance/research/Functional-Near-Infrared-Spectroscopy.html"
+      ],
+      "reportedSections": [
+        "BEACON or BEACONS: biomedical sensing and brain imaging"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "reported source project for lab fork",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "kgfitzgerald/marcviz",
+      "url": "https://github.com/kgfitzgerald/MARCviz",
+      "sourceRefs": [
+        "README.md#L90"
+      ],
+      "evidenceUrls": [
+        "https://www.cambridge.org/core/journals/research-synthesis-methods/article/metaanalytic-rain-cloud-plots-improving-evidence-communication-through-data-visualization-design-principles/DC2CD035C188A51B3E974115EA4314B9"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "kyletdavid/yeastconvergence2025",
+      "url": "https://github.com/KyleTDavid/YeastConvergence2025",
+      "sourceRefs": [
+        "README.md#L100"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC12167968/"
+      ],
+      "reportedSections": [
+        "Additional yeast research collaborations"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "older YeastConvergence2024 URL reported redirect; native equivalence unverified",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "kyletdavid/yeastmacroecology2023",
+      "url": "https://github.com/KyleTDavid/YeastMacroecology2023",
+      "sourceRefs": [
+        "README.md#L99"
+      ],
+      "evidenceUrls": [
+        "https://doi.org/10.1073/pnas.2316031121"
+      ],
+      "reportedSections": [
+        "Additional yeast research collaborations"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "luv-lab/luv-lab.github.io",
+      "url": "https://github.com/LUV-Lab/luv-lab.github.io",
+      "sourceRefs": [
+        "README.md#L49"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "Language Use and Variation Lab: cognitive neuroscience and EEG"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "luv-lab/luv_lab_training",
+      "url": "https://github.com/LUV-Lab/LUV_Lab_Training",
+      "sourceRefs": [
+        "README.md#L48"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "Language Use and Variation Lab: cognitive neuroscience and EEG"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "mcharrison95/code_for_yeast_drug_res",
+      "url": "https://github.com/mcharrison95/code_for_yeast_drug_res",
+      "sourceRefs": [
+        "README.md#L84"
+      ],
+      "evidenceUrls": [
+        "https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1012091"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "mcharrison95/rf_for_ml_gal_paper",
+      "url": "https://github.com/mcharrison95/RF_for_ML_GAL_paper",
+      "sourceRefs": [
+        "README.md#L97"
+      ],
+      "evidenceUrls": [
+        "https://shenxlab.com/pdfs/2024_Harrison_PNAS.pdf"
+      ],
+      "reportedSections": [
+        "Additional yeast research collaborations"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "nathanielrgreene/cognitive-aging-modeling",
+      "url": "https://github.com/nathanielrgreene/cognitive-aging-modeling",
+      "sourceRefs": [
+        "README.md#L68"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/psychological-brain-sciences/research-scholarship.html"
+      ],
+      "reportedSections": [
+        "MIND Lab: memory and cognitive aging"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "fork of tutorial project predating Greene Villanova appointment",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "nathanielrgreene/mindlab-site",
+      "url": "https://github.com/nathanielrgreene/mindlab-site",
+      "sourceRefs": [
+        "README.md#L68"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/psychological-brain-sciences/research-scholarship.html"
+      ],
+      "reportedSections": [
+        "MIND Lab: memory and cognitive aging"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "omrichfield/pace-pbpk-monte-carlo__public",
+      "url": "https://github.com/omrichfield/PACE-PBPK-Monte-Carlo__public",
+      "sourceRefs": [
+        "README.md#L86"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC11102454/",
+        "https://doi.org/10.5281/zenodo.10999309"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "optical-brain-imaging-lab/.github",
+      "url": "https://github.com/Optical-Brain-Imaging-Lab/.github",
+      "sourceRefs": [
+        "README.md#L14"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "BEACON or BEACONS: biomedical sensing and brain imaging"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "profile configuration, not research project",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "optical-brain-imaging-lab/fnirs",
+      "url": "https://github.com/Optical-Brain-Imaging-Lab/fNIRS",
+      "sourceRefs": [
+        "README.md#L13"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/engineering/faculty-research/sports-and-performance/research/Functional-Near-Infrared-Spectroscopy.html"
+      ],
+      "reportedSections": [
+        "BEACON or BEACONS: biomedical sensing and brain imaging"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "reported fork of Jgigantino31/fNIRS",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "pb0316/q-hero",
+      "url": "https://github.com/pb0316/Q-HERO",
+      "sourceRefs": [
+        "README.md#L82"
+      ],
+      "evidenceUrls": [
+        "https://pubs.acs.org/doi/10.1021/acs.jcim.6c00390"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "pelegkremer-jpg/robert-et-al",
+      "url": "https://github.com/pelegkremer-jpg/Robert-et-al",
+      "sourceRefs": [
+        "README.md#L64"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/scholarship/centers/cbest/research-scholarship/research.html",
+        "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2026EF008834"
+      ],
+      "reportedSections": [
+        "Kremer Lab: environmental and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "peterbchi/cnvselectr",
+      "url": "https://github.com/peterbchi/CNVSelectR",
+      "sourceRefs": [
+        "README.md#L76"
+      ],
+      "evidenceUrls": [
+        "https://pubmed.ncbi.nlm.nih.gov/34341836/",
+        "https://academic.oup.com/mbe/article/37/11/3353/5867919"
+      ],
+      "reportedSections": [
+        "Peter Chi: historical Villanova statistical genetics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "peterbchi/evolclustr",
+      "url": "https://github.com/peterbchi/evolclustR",
+      "sourceRefs": [
+        "README.md#L76"
+      ],
+      "evidenceUrls": [
+        "https://pubmed.ncbi.nlm.nih.gov/34341836/",
+        "https://academic.oup.com/mbe/article/37/11/3353/5867919"
+      ],
+      "reportedSections": [
+        "Peter Chi: historical Villanova statistical genetics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "sarahjhamilton/open3d_eit_data",
+      "url": "https://github.com/sarahjhamilton/open3D_EIT_data",
+      "sourceRefs": [
+        "README.md#L88"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC10028616/"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "data and supporting files; complete reconstruction software unverified",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "stephenrho/cognitive-aging-modeling",
+      "url": "https://github.com/stephenrho/cognitive-aging-modeling",
+      "sourceRefs": [
+        "README.md#L68"
+      ],
+      "evidenceUrls": [
+        "https://www.villanova.edu/university/liberal-arts-sciences/programs/psychological-brain-sciences/research-scholarship.html"
+      ],
+      "reportedSections": [
+        "MIND Lab: memory and cognitive aging"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "tutorial project predating Greene Villanova appointment",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "sukeniklab/dsk2_transient_helices",
+      "url": "https://github.com/sukeniklab/Dsk2_transient_helices",
+      "sourceRefs": [
+        "README.md#L83"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC11952510/"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "thaparahul/molehd",
+      "url": "https://github.com/ThapaRahul/MoleHD",
+      "sourceRefs": [
+        "README.md#L28"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "MoleHD author-hosted version; same reported project, no account identity merge",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "the-lab-labella/rscu_calculation_analysis",
+      "url": "https://github.com/The-Lab-LaBella/RSCU_Calculation_Analysis",
+      "sourceRefs": [
+        "README.md#L98"
+      ],
+      "evidenceUrls": [
+        "https://doi.org/10.1093/g3journal/jkae207"
+      ],
+      "reportedSections": [
+        "Additional yeast research collaborations"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "villanova-transportation/complete-trip-data",
+      "url": "https://github.com/villanova-transportation/Complete-Trip-Data",
+      "sourceRefs": [
+        "README.md#L42"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "villanova-transportation/complete-trip-data-explorer",
+      "url": "https://github.com/villanova-transportation/Complete-Trip-Data-Explorer",
+      "sourceRefs": [
+        "README.md#L42"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "villanova-transportation/heat-mobility",
+      "url": "https://github.com/villanova-transportation/heat-mobility",
+      "sourceRefs": [
+        "README.md#L40"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "villanova-transportation/human-mobility-data-hub",
+      "url": "https://github.com/villanova-transportation/Human-Mobility-Data-Hub",
+      "sourceRefs": [
+        "README.md#L37"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "villanova-transportation/nigeria-mobility-covid19-sajs",
+      "url": "https://github.com/villanova-transportation/Nigeria-mobility-COVID19-SAJS",
+      "sourceRefs": [
+        "README.md#L38"
+      ],
+      "evidenceUrls": [
+        "https://www.scielo.org.za/pdf/sajs/v119n5-6/10.pdf"
+      ],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "villanova-transportation/sars-cov-2-mobility-southafrica",
+      "url": "https://github.com/villanova-transportation/SARS-CoV-2-Mobility-SouthAfrica",
+      "sourceRefs": [
+        "README.md#L39"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "villanova-transportation/transit_equity_credits",
+      "url": "https://github.com/villanova-transportation/Transit_Equity_Credits",
+      "sourceRefs": [
+        "README.md#L42"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "villanova-transportation/villanova-transportation.github.io",
+      "url": "https://github.com/villanova-transportation/villanova-transportation.github.io",
+      "sourceRefs": [
+        "README.md#L42"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "virtualflybrain/drosadultvnsdomains",
+      "url": "https://github.com/VirtualFlyBrain/DrosAdultVNSdomains",
+      "sourceRefs": [
+        "README.md#L87"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC7611823/"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vnuii/yeast-gene-family",
+      "url": "https://github.com/vnuii/yeast-gene-family",
+      "sourceRefs": [
+        "README.md#L101"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC12322030/"
+      ],
+      "reportedSections": [
+        "Additional yeast research collaborations"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-aacd/keyboardseconddisplay",
+      "url": "https://github.com/VU-AACD/KeyboardSecondDisplay",
+      "sourceRefs": [
+        "README.md#L107"
+      ],
+      "evidenceUrls": [
+        "https://give.villanova.edu/communicating-with-frankie-a-nova-solution"
+      ],
+      "reportedSections": [
+        "Augmentative communication capstone"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "student capstone; no verified lab status",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-aacd/philipshue-alexa",
+      "url": "https://github.com/VU-AACD/PhilipsHue-Alexa",
+      "sourceRefs": [
+        "README.md#L107"
+      ],
+      "evidenceUrls": [
+        "https://give.villanova.edu/communicating-with-frankie-a-nova-solution"
+      ],
+      "reportedSections": [
+        "Augmentative communication capstone"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-aacd/ptz-camera-control",
+      "url": "https://github.com/VU-AACD/PTZ-Camera-Control",
+      "sourceRefs": [
+        "README.md#L107"
+      ],
+      "evidenceUrls": [
+        "https://give.villanova.edu/communicating-with-frankie-a-nova-solution"
+      ],
+      "reportedSections": [
+        "Augmentative communication capstone"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-detail/arce",
+      "url": "https://github.com/VU-DETAIL/arce",
+      "sourceRefs": [
+        "README.md#L30"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-detail/axby-vit",
+      "url": "https://github.com/VU-DETAIL/AxBy-ViT",
+      "sourceRefs": [
+        "README.md#L30"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-detail/hd-hub",
+      "url": "https://github.com/VU-DETAIL/HD-Hub",
+      "sourceRefs": [
+        "README.md#L30"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-detail/molehd",
+      "url": "https://github.com/VU-DETAIL/MoleHD",
+      "sourceRefs": [
+        "README.md#L28"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "MoleHD lab-hosted version; same reported project as author-hosted versions",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-detail/perfhd",
+      "url": "https://github.com/VU-DETAIL/PerfHD",
+      "sourceRefs": [
+        "README.md#L30"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-detail/vu-detail",
+      "url": "https://github.com/VU-DETAIL/VU-DETAIL",
+      "sourceRefs": [
+        "README.md#L30"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "vu-detail/vu-detail.github.io",
+      "url": "https://github.com/VU-DETAIL/vu-detail.github.io",
+      "sourceRefs": [
+        "README.md#L30"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "weiyu-luo/sars-cov-2-mobility-southafrica",
+      "url": "https://github.com/Weiyu-Luo/SARS-CoV-2-Mobility-SouthAfrica",
+      "sourceRefs": [
+        "README.md#L39"
+      ],
+      "evidenceUrls": [],
+      "reportedSections": [
+        "NovaMobility Labs: mobility and population health"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "wes-kosater/py-evolclustr",
+      "url": "https://github.com/wes-kosater/Py-evolclustR",
+      "sourceRefs": [
+        "README.md#L76"
+      ],
+      "evidenceUrls": [
+        "https://pubmed.ncbi.nlm.nih.gov/34341836/",
+        "https://academic.oup.com/mbe/article/37/11/3353/5867919"
+      ],
+      "reportedSections": [
+        "Peter Chi: historical Villanova statistical genetics"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "xidongdxi/primary-secondary",
+      "url": "https://github.com/xidongdxi/primary-secondary",
+      "sourceRefs": [
+        "README.md#L89"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC11758265/"
+      ],
+      "reportedSections": [
+        "External repositories for collaborative publications"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "zhaobinxu23/a-continuous-bayesian-model-for-the-simulation-of-sars-cov-2-epidemic",
+      "url": "https://github.com/zhaobinxu23/A-Continuous-Bayesian-Model-for-the-Simulation-of-SARS-CoV-2-Epidemic",
+      "sourceRefs": [
+        "README.md#L59"
+      ],
+      "evidenceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC8869237/"
+      ],
+      "reportedSections": [
+        "Biological and Environmental Systems Engineering"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "ziyu-s/graph_pka",
+      "url": "https://github.com/Ziyu-S/Graph_pKa",
+      "sourceRefs": [
+        "README.md#L29",
+        "README.md#L58"
+      ],
+      "evidenceUrls": [
+        "https://pubs.acs.org/jcisd8/article/66/3/1742/5080243/Graph-Based-Deep-Learning-Models-for-Predicting"
+      ],
+      "reportedSections": [
+        "DETAIL Lab: computing and drug discovery",
+        "Biological and Environmental Systems Engineering"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "zjiaqi2018/levelset",
+      "url": "https://github.com/zjiaqi2018/levelset",
+      "sourceRefs": [
+        "README.md#L121"
+      ],
+      "evidenceUrls": [
+        "https://personal.math.ubc.ca/~jfeng/Publications/PDFs/25_PRF.pdf"
+      ],
+      "reportedSections": [
+        "Researcher accounts without a linked Villanova project repository"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    },
+    {
+      "id": "zjiaqi2018/trace-fem",
+      "url": "https://github.com/zjiaqi2018/trace-fem",
+      "sourceRefs": [
+        "README.md#L121"
+      ],
+      "evidenceUrls": [
+        "https://personal.math.ubc.ca/~jfeng/Publications/PDFs/25_PRF.pdf"
+      ],
+      "reportedSections": [
+        "Researcher accounts without a linked Villanova project repository"
+      ],
+      "nativeId": null,
+      "currentAffiliationVerified": false,
+      "ownershipVerified": false,
+      "publicationAuthorized": false,
+      "reportedRelationship": "source-reported repository association; inspect source references",
+      "healthPurposeStatus": "not independently reviewed",
+      "currentInstitutionalOwnership": null
+    }
+  ],
+  "externalResources": [
+    {
+      "url": "https://gitlab.com/openconnectedmed/clasim/clasim_software_only",
+      "purpose": "medical-device and virtual-patient simulation",
+      "resourceType": "external-code-resource",
+      "sourceRefs": [
+        "README.md#L115"
+      ],
+      "evidenceUrls": [
+        "https://openconnectedmed.org/"
+      ],
+      "nativeId": null,
+      "publicationAuthorized": false
+    },
+    {
+      "url": "https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2021.686201/full#supplementary-material",
+      "purpose": "drug-combination analysis R scripts in supplementary material",
+      "resourceType": "external-code-resource",
+      "sourceRefs": [
+        "README.md#L111"
+      ],
+      "evidenceUrls": [],
+      "nativeId": null,
+      "publicationAuthorized": false
+    }
+  ],
+  "professionalOccurrences": [
+    {
+      "name": "Meltem Izzetoglu",
+      "reportedProfessionalContext": "BEACONS director reported",
+      "sourceRefs": [
+        "README.md#L11"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Ruiyang Qin",
+      "reportedProfessionalContext": "ComputingX director reported",
+      "sourceRefs": [
+        "README.md#L19"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Xun Jiao",
+      "reportedProfessionalContext": "DETAIL director reported",
+      "sourceRefs": [
+        "README.md#L26"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Chenfeng Xiong",
+      "reportedProfessionalContext": "NovaMobility director reported",
+      "sourceRefs": [
+        "README.md#L35",
+        "README.md#L41"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Grant Berry",
+      "reportedProfessionalContext": "LUV director reported",
+      "sourceRefs": [
+        "README.md#L46"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Zuyi Huang",
+      "reportedProfessionalContext": "Biological and Environmental Systems Engineering director reported",
+      "sourceRefs": [
+        "README.md#L56"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Ziyu Song",
+      "reportedProfessionalContext": "graduate researcher reported",
+      "sourceRefs": [
+        "README.md#L29",
+        "README.md#L56",
+        "README.md#L58"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Peter Chi",
+      "reportedProfessionalContext": "historical Villanova researcher; subsequent UC San Diego move reported",
+      "sourceRefs": [
+        "README.md#L74",
+        "README.md#L76"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Dana Opulente",
+      "reportedProfessionalContext": "Villanova biology affiliation reported",
+      "sourceRefs": [
+        "README.md#L70",
+        "README.md#L72",
+        "README.md#L84",
+        "README.md#L95"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Nathaniel Greene",
+      "reportedProfessionalContext": "MIND association reported",
+      "sourceRefs": [
+        "README.md#L68"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Stephen Slovensky",
+      "reportedProfessionalContext": "Villanova association reported by Jefferson roster",
+      "sourceRefs": [
+        "README.md#L120"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Andrew Chen",
+      "reportedProfessionalContext": "earlier Villanova work reported",
+      "sourceRefs": [
+        "README.md#L60"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Peleg Kremer",
+      "reportedProfessionalContext": "Kremer Lab association reported",
+      "sourceRefs": [
+        "README.md#L64"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    },
+    {
+      "name": "Weiyu Luo",
+      "reportedProfessionalContext": "NovaMobility research association reported",
+      "sourceRefs": [
+        "README.md#L39",
+        "README.md#L41"
+      ],
+      "nativeId": null,
+      "currentAffiliation": null,
+      "accountOwnershipEstablished": false,
+      "publicationAuthorized": false
+    }
+  ],
+  "sourceObservations": [
+    {
+      "subject": "slovenskys",
+      "statement": "Source observed zero public repositories during search; later state unverified.",
+      "sourceRefs": [
+        "README.md#L120"
+      ]
+    },
+    {
+      "subject": "YeastConvergence2024",
+      "statement": "Source reports redirect to YeastConvergence2025; not independently verified or treated as native equivalence.",
+      "sourceRefs": [
+        "README.md#L100"
+      ]
+    },
+    {
+      "subject": "NIEHS original environmental-health URL",
+      "statement": "Source reports original URL returned 404; Climate-CAFE copy not verified as official move.",
+      "sourceRefs": [
+        "README.md#L91"
+      ]
+    }
+  ],
+  "citations": [
+    {
+      "url": "https://www.villanova.edu/villanova/engineering/research/Faculty/biomedical-signals-systems-analysis.html",
+      "sourceRef": "README.md#L11"
+    },
+    {
+      "url": "https://www.villanova.edu/university/engineering/faculty-research/sports-and-performance/research/Functional-Near-Infrared-Spectroscopy.html",
+      "sourceRef": "README.md#L13"
+    },
+    {
+      "url": "https://doi.org/10.5281/zenodo.18895021",
+      "sourceRef": "README.md#L15"
+    },
+    {
+      "url": "https://www.nature.com/articles/s41598-026-44459-8",
+      "sourceRef": "README.md#L15"
+    },
+    {
+      "url": "https://computingx-lab.github.io/",
+      "sourceRef": "README.md#L19"
+    },
+    {
+      "url": "https://www.villanova.edu/university/engineering/about-us/news-events/2025/villanova-engineering-welcomes-7-new-faculty-members.html",
+      "sourceRef": "README.md#L19"
+    },
+    {
+      "url": "https://vu-detail.github.io/artifact",
+      "sourceRef": "README.md#L26"
+    },
+    {
+      "url": "https://vu-detail.github.io/publication",
+      "sourceRef": "README.md#L31"
+    },
+    {
+      "url": "https://cfxiong.github.io/data-lab/",
+      "sourceRef": "README.md#L35"
+    },
+    {
+      "url": "https://www.scielo.org.za/pdf/sajs/v119n5-6/10.pdf",
+      "sourceRef": "README.md#L38"
+    },
+    {
+      "url": "https://cfxiong.github.io/data-lab/",
+      "sourceRef": "README.md#L41"
+    },
+    {
+      "url": "https://cfxiong.github.io/team/team-1/",
+      "sourceRef": "README.md#L41"
+    },
+    {
+      "url": "https://www.villanova.edu/university/liberal-arts-sciences/programs/psychological-brain-sciences/research-scholarship.html",
+      "sourceRef": "README.md#L46"
+    },
+    {
+      "url": "https://zenodo.org/records/18704505",
+      "sourceRef": "README.md#L50"
+    },
+    {
+      "url": "https://www.villanova.edu/villanova/engineering/research/Faculty/biological-environmental-systems-engineering/people.html",
+      "sourceRef": "README.md#L56"
+    },
+    {
+      "url": "https://pubs.acs.org/jcisd8/article/66/3/1742/5080243/Graph-Based-Deep-Learning-Models-for-Predicting",
+      "sourceRef": "README.md#L58"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8869237/",
+      "sourceRef": "README.md#L59"
+    },
+    {
+      "url": "https://www.wayup.com/profile/Andrew-Chen-7459404b07/",
+      "sourceRef": "README.md#L60"
+    },
+    {
+      "url": "https://www.villanova.edu/university/liberal-arts-sciences/scholarship/centers/cbest/research-scholarship/research.html",
+      "sourceRef": "README.md#L64"
+    },
+    {
+      "url": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2026EF008834",
+      "sourceRef": "README.md#L64"
+    },
+    {
+      "url": "https://www.villanova.edu/university/liberal-arts-sciences/programs/psychological-brain-sciences/research-scholarship.html",
+      "sourceRef": "README.md#L68"
+    },
+    {
+      "url": "https://www.villanova.edu/university/liberal-arts-sciences/programs/biology/research-scholarship.html",
+      "sourceRef": "README.md#L72"
+    },
+    {
+      "url": "https://doi.org/10.1126/science.adj4503",
+      "sourceRef": "README.md#L72"
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/34341836/",
+      "sourceRef": "README.md#L76"
+    },
+    {
+      "url": "https://academic.oup.com/mbe/article/37/11/3353/5867919",
+      "sourceRef": "README.md#L76"
+    },
+    {
+      "url": "https://pubs.acs.org/doi/10.1021/acs.jcim.6c00390",
+      "sourceRef": "README.md#L82"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11952510/",
+      "sourceRef": "README.md#L83"
+    },
+    {
+      "url": "https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1012091",
+      "sourceRef": "README.md#L84"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12007369/",
+      "sourceRef": "README.md#L85"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11102454/",
+      "sourceRef": "README.md#L86"
+    },
+    {
+      "url": "https://doi.org/10.5281/zenodo.10999309",
+      "sourceRef": "README.md#L86"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7611823/",
+      "sourceRef": "README.md#L87"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10028616/",
+      "sourceRef": "README.md#L88"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11758265/",
+      "sourceRef": "README.md#L89"
+    },
+    {
+      "url": "https://www.cambridge.org/core/journals/research-synthesis-methods/article/metaanalytic-rain-cloud-plots-improving-evidence-communication-through-data-visualization-design-principles/DC2CD035C188A51B3E974115EA4314B9",
+      "sourceRef": "README.md#L90"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13347659/",
+      "sourceRef": "README.md#L91"
+    },
+    {
+      "url": "https://shenxlab.com/pdfs/2024_Harrison_PNAS.pdf",
+      "sourceRef": "README.md#L97"
+    },
+    {
+      "url": "https://doi.org/10.1093/g3journal/jkae207",
+      "sourceRef": "README.md#L98"
+    },
+    {
+      "url": "https://doi.org/10.1073/pnas.2316031121",
+      "sourceRef": "README.md#L99"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12167968/",
+      "sourceRef": "README.md#L100"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12322030/",
+      "sourceRef": "README.md#L101"
+    },
+    {
+      "url": "https://give.villanova.edu/communicating-with-frankie-a-nova-solution",
+      "sourceRef": "README.md#L107"
+    },
+    {
+      "url": "https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2021.686201/full#supplementary-material",
+      "sourceRef": "README.md#L111"
+    },
+    {
+      "url": "https://gitlab.com/openconnectedmed/clasim/clasim_software_only",
+      "sourceRef": "README.md#L115"
+    },
+    {
+      "url": "https://openconnectedmed.org/",
+      "sourceRef": "README.md#L115"
+    },
+    {
+      "url": "https://www.m4l-lab.com/people",
+      "sourceRef": "README.md#L119"
+    },
+    {
+      "url": "https://research.jefferson.edu/labs/researcher/wu-laboratory/team.html",
+      "sourceRef": "README.md#L120"
+    },
+    {
+      "url": "https://personal.math.ubc.ca/~jfeng/Publications/PDFs/25_PRF.pdf",
+      "sourceRef": "README.md#L121"
+    },
+    {
+      "url": "https://www.villanova.edu/villanova/engineering/research/bioengineering-biomedical.html",
+      "sourceRef": "README.md#L127"
+    },
+    {
+      "url": "https://www.villanova.edu/university/engineering/faculty-research/cellular-engineering/researchers.html",
+      "sourceRef": "README.md#L127"
+    },
+    {
+      "url": "https://www.villanova.edu/university/engineering/faculty-research/Affordable-Medical-Technologies.html",
+      "sourceRef": "README.md#L127"
+    },
+    {
+      "url": "https://www.villanova.edu/villanova/engineering/research/Faculty/drugDiscovery/3D.html",
+      "sourceRef": "README.md#L128"
+    },
+    {
+      "url": "https://doi.org/10.1002/bit.27686",
+      "sourceRef": "README.md#L128"
+    },
+    {
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151759",
+      "sourceRef": "README.md#L128"
+    },
+    {
+      "url": "https://www.villanova.edu/university/liberal-arts-sciences/programs/psychological-brain-sciences/research-scholarship.html",
+      "sourceRef": "README.md#L129"
+    },
+    {
+      "url": "https://badsslab.org/research/",
+      "sourceRef": "README.md#L129"
+    },
+    {
+      "url": "https://www.villanova.edu/university/liberal-arts-sciences/programs/biology/research-scholarship.html",
+      "sourceRef": "README.md#L130"
+    },
+    {
+      "url": "https://www.villanova.edu/university/liberal-arts-sciences/programs/chemistry/research-scholarship.html",
+      "sourceRef": "README.md#L130"
+    },
+    {
+      "url": "https://www.villanova.edu/university/nursing/faculty-and-research/centers.html",
+      "sourceRef": "README.md#L131"
+    },
+    {
+      "url": "https://www.villanova.edu/university/nursing/faculty-and-research/studies-groups.html",
+      "sourceRef": "README.md#L131"
+    },
+    {
+      "url": "https://devpost.com/software/nova-8k5r3z",
+      "sourceRef": "README.md#L132"
+    }
+  ]
+}

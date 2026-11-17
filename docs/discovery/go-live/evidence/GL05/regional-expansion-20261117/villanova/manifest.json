@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "villanova-intake-manifest-v1",
+  "date": "2026-11-16",
+  "status": "offline historical source report; publication unauthorized",
+  "inputs": {
+    "README.md": {
+      "sha256": "a2f7be3d83f180a020de88498a6bca0fcaa7d0537c2bde15ca0aa454c13c1b80",
+      "bytes": 26255
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "8f321776b4f806f950cdd3e305ccdf57b5470abce2a1dc86094e82349dbb7210",
+      "bytes": 73283
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "research-intake-draft-transitions-v1",
+  "drafts": [
+    {
+      "draft": "drexel",
+      "files": [
+        {
+          "name": "manifest.json",
+          "sha256": "5fa3f4e4457a2a94cca4bef9b4fac8206cd70127d70d075993f73f0aee82e82d",
+          "bytes": 28229
+        },
+        {
+          "name": "source-assertions.json",
+          "sha256": "86cb8c62330e01b9b675da91f0b3283c9905343e427fe6c899e54fb1f43be5d6",
+          "bytes": 4053480
+        }
+      ],
+      "localArchive": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/gl05/expansion-drafts/drexel",
+      "status": "Unaccepted producer draft preserved locally; active reviewed portable snapshot is drexel-v3."
+    },
+    {
+      "draft": "drexel-v2",
+      "files": [
+        {
+          "name": "manifest.json",
+          "sha256": "7963ebfaef14eda686e82be4d0d7b6e8d9be0abbb9e97a43cd36ddc802fbbd1a",
+          "bytes": 28229
+        },
+        {
+          "name": "source-assertions.json",
+          "sha256": "b9cdf73574fd74e07237c3f94f274b8623eb5e51bcfdf2c238542dfa9ed6f102",
+          "bytes": 4162786
+        }
+      ],
+      "localArchive": "/workspace/worktrees/builderbob/thevalleydesk/tvd-discovery-implementation-20261113/.discovery-work/gl05/expansion-drafts/drexel-v2",
+      "status": "Unaccepted producer draft preserved locally; active reviewed portable snapshot is drexel-v3."
+    }
+  ],
+  "reasons": [
+    "First draft omitted some report correction and classification metadata.",
+    "Second draft dropped source-identifier query parameters and fragments; v3 preserves safe source identifiers and withholds secret-bearing URLs."
+  ],
+  "originalSourceChanged": false
+}
