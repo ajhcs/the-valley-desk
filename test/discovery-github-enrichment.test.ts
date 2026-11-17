@@ -39,6 +39,9 @@ test('binds numeric continuation to observed native owner, preserving frozen que
   assert.throws(() => inspect(bytes([repository()]), 'maker', 1, link(2).replace('api.github.com', 'evil.example')), /link-scope/);
   assert.throws(() => inspect(bytes([repository()]), 'maker', 1, link(3)), /link-sequence/);
   assert.throws(() => inspect(bytes([repository()]), 'maker', 1, link(2).replace('&page=2', '&page=2&page=2')), /link-query/);
+  assert.throws(() => inspect(bytes([repository()]), 'maker', 1, link(3).replace('rel="next"', 'rel="last"')), /link-relations/);
+  assert.throws(() => inspect(bytes([]), 'maker', 1, link(2)), /link-relations/);
+  assert.throws(() => inspect(bytes([repository()]), 'maker', 2, link(1).replace('rel="next"', 'rel="last"')), /link-relations/);
 });
 
 test('holds full unlinked pages, capped inventories and unverified empty owners honestly', () => {
@@ -95,16 +98,25 @@ test('freezes source-bound primary cohort and budgets while excluding neighborin
 
 test('retained projections bind to frozen roster, request, receipt and content digest', () => {
   const sha = (value: string | Uint8Array) => createHash('sha256').update(value).digest('hex');
-  const scope = Buffer.from(JSON.stringify({ roster: [{ login: 'maker', sourceObservationIds: ['primary:source'] }] }));
+  const scope = Buffer.from(JSON.stringify({ schemaVersion: 'github-owned-metadata-v2', roster: [{ login: 'maker', sourceObservationIds: ['primary:source'] }] }));
   const scopeSha256 = sha(scope), receiptId = sha(`${scopeSha256}\nmaker\n1`);
   const projection = { ...inspect(bytes([repository()]), 'maker', 1, null), nativeBodySha256: sha(bytes([repository()])) };
   const packet = { login: 'maker', page: 1, requestUrl: enrichmentUrl('maker', 1), scopeSha256, receiptId,
-    sourceObservationIds: ['primary:source'], rawBodyRetained: false, status: 'received', projection, projectionSha256: sha(canonical(projection)) };
+    sourceObservationIds: ['primary:source'], rawBodyRetained: false, status: 'received', projection, projectionSha256: sha(canonical(projection)),
+    issuedAt: '2026-11-17T15:00:00.000Z', observedAt: '2026-11-17T15:00:01.000Z', httpStatus: 200, responseBytes: 1000 };
   const name = `page-${receiptId}.json`;
-  assert.equal(validateRetainedEnrichmentPage(packet, scope, name), packet);
-  assert.throws(() => validateRetainedEnrichmentPage({ ...packet, projection: { ...projection, repositories: [] } }, scope, name), /receipt-binding/);
-  assert.throws(() => validateRetainedEnrichmentPage({ ...packet, sourceObservationIds: ['lehigh:source'] }, scope, name), /receipt-binding/);
-  assert.throws(() => validateRetainedEnrichmentPage({ ...packet, requestUrl: enrichmentUrl('other', 1) }, scope, name), /receipt-binding/);
+  assert.equal(validateRetainedEnrichmentPage(packet, scope, name, packet), packet);
+  assert.throws(() => validateRetainedEnrichmentPage(packet, scope, name), /receipt-binding/);
+  assert.throws(() => validateRetainedEnrichmentPage({ ...packet, projection: { ...projection, repositories: [] } }, scope, name, packet), /receipt-binding/);
+  assert.throws(() => validateRetainedEnrichmentPage({ ...packet, sourceObservationIds: ['lehigh:source'] }, scope, name, packet), /receipt-binding/);
+  assert.throws(() => validateRetainedEnrichmentPage({ ...packet, requestUrl: enrichmentUrl('other', 1) }, scope, name, packet), /receipt-binding/);
+  for (const patch of [{ originalUrl: 'https://unrelated.example/work' }, { owner: { nativeId: '99', login: 'other', type: 'User' } },
+    { description: 'contact@example.org' }, { extra_email: 'contact@example.org' }, { sourcePointer: '/999' }, { fork: 'false' }]) {
+    const badProjection = { ...projection, repositories: [{ ...projection.repositories[0], ...patch }] };
+    const forged = { ...packet, projection: badProjection, projectionSha256: sha(canonical(badProjection)) };
+    assert.throws(() => validateRetainedEnrichmentPage(forged, scope, name, packet), /receipt-binding/);
+    assert.throws(() => validateRetainedEnrichmentPage(forged, scope, name, forged), /github-enrichment/);
+  }
 });
 
 test('yield sample freezes 100 native IDs without labels or metadata-completeness filters', () => {

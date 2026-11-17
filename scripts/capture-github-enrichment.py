@@ -10,6 +10,7 @@ import hashlib
 import http.client
 import ipaddress
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -104,7 +105,12 @@ def validate_batch(directory):
     return directory, scope, approval
 
 
-def acquire_page(directory, scope, approval, db, account, page, previous_owner):
+def acquire_page(directory, scope, approval, db, account, page, previous_owner, batch_deadline=None):
+    started = time.monotonic()
+    attempt_deadline = min(started + scope['limits']['timeoutMs'] / 1000,
+                           batch_deadline if batch_deadline is not None else float('inf'))
+    if attempt_deadline <= started:
+        return None
     login = account['login']
     # Reconstruct from the frozen route; never request a supplied continuation URL.
     route = f'/users/{login}/repos?' + urlencode({**scope['route']['query'], 'page': page})
@@ -116,7 +122,6 @@ def acquire_page(directory, scope, approval, db, account, page, previous_owner):
         # A durable issued record exists before DNS/TLS/HTTP; uncertain attempts are not resent.
         db.execute('INSERT INTO attempts(login,page,status,receipt) VALUES(?,?,?,NULL)', (login, page, 'issued'))
     issued_at = utc()
-    started = time.monotonic()
     receipt = {'receiptId': receipt_id, 'scopeSha256': sha((directory / 'scope.json').read_bytes()),
                'login': login, 'page': page, 'requestUrl': request_url, 'issuedAt': issued_at,
                'observedAt': issued_at, 'status': 'unknown', 'httpStatus': None,
@@ -128,13 +133,15 @@ def acquire_page(directory, scope, approval, db, account, page, previous_owner):
         raise TimeoutError('deadline')
 
     signal.signal(signal.SIGALRM, deadline)
-    signal.setitimer(signal.ITIMER_REAL, scope['limits']['timeoutMs'] / 1000)
     try:
+        if time.monotonic() >= attempt_deadline:
+            raise TimeoutError('deadline')
+        signal.setitimer(signal.ITIMER_REAL, attempt_deadline - time.monotonic())
         addresses = sorted({entry[4][0] for entry in socket.getaddrinfo('api.github.com', 443, type=socket.SOCK_STREAM)})
         if not addresses or not all(ipaddress.ip_address(address).is_global for address in addresses):
             raise ValueError('nonpublic-dns')
         address = next((value for value in addresses if ipaddress.ip_address(value).version == 4), addresses[0])
-        connection = PinnedConnection(address, scope['limits']['timeoutMs'] / 1000)
+        connection = PinnedConnection(address, max(0.001, attempt_deadline - time.monotonic()))
         connection.request('GET', route, headers={'Accept': scope['route']['accept'], 'Accept-Encoding': 'identity',
                            'User-Agent': 'TheValleyDesk/GL08-metadata (+https://thevalleydesk.org)',
                            'X-GitHub-Api-Version': scope['route']['apiVersion'], 'Connection': 'close'})
@@ -165,7 +172,9 @@ def acquire_page(directory, scope, approval, db, account, page, previous_owner):
             raise ValueError('body-bound')
         envelope = {'login': login, 'page': page, 'previousOwner': previous_owner,
                     'link': response.getheader('Link'), 'bodyBase64': base64.b64encode(body).decode()}
-        remaining = max(0.001, scope['limits']['timeoutMs'] / 1000 - (time.monotonic() - started))
+        remaining = attempt_deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError('deadline')
         process = subprocess.run([approval['nodeBinary'], '--import', 'tsx/esm', 'scripts/discovery-github-enrichment.mjs', 'inspect'],
                                  cwd=ROOT, input=json.dumps(envelope).encode(), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                                  timeout=remaining, check=False)
@@ -193,13 +202,42 @@ def acquire_page(directory, scope, approval, db, account, page, previous_owner):
         if connection:
             connection.close()
         receipt['observedAt'] = utc()
-        if (time.monotonic() - started) * 1000 > scope['limits']['timeoutMs']:
+        if time.monotonic() > attempt_deadline:
             receipt.update(status='unknown', projection=None, failureCode='deadline')
             receipt.pop('projectionSha256', None)
         atomic_json(directory / 'pages' / f'page-{receipt_id}.json', receipt)
         with db:
             db.execute('UPDATE attempts SET status=?,receipt=? WHERE login=? AND page=?',
                        (receipt['status'], json.dumps(receipt), login, page))
+
+
+def reconcile_journal(directory, scope, db):
+    files = {p.name for p in (directory / 'pages').iterdir()}
+    expected = set()
+    rows = db.execute('SELECT login,page,status,receipt FROM attempts').fetchall()
+    if len(rows) > scope['limits']['maxRequests']:
+        raise ValueError('journal-receipt-mismatch')
+    scope_sha = sha((directory / 'scope.json').read_bytes())
+    for login, page, status, receipt in rows:
+        if login not in {account['login'] for account in scope['roster']} or not isinstance(page, int) or not 1 <= page <= scope['limits']['maxPagesPerAccount']:
+            raise ValueError('journal-receipt-mismatch')
+        if status not in ('issued', 'received', 'malformed', 'unavailable', 'unknown', 'refused', 'rate-limited', 'redirect'):
+            raise ValueError('journal-status')
+        if status == 'issued' and receipt is None:
+            continue  # The durable issued charge holds the batch; it is never resent.
+        if not receipt:
+            raise ValueError('journal-receipt-mismatch')
+        value = json.loads(receipt)
+        receipt_id = sha((scope_sha + '\n' + login + '\n' + str(page)).encode())
+        name = f'page-{receipt_id}.json'
+        path = directory / 'pages' / name
+        if (value.get('scopeSha256') != scope_sha or value.get('login') != login or value.get('page') != page or
+                value.get('status') != status or value.get('receiptId') != receipt_id or not path.is_file() or path.is_symlink() or
+                json.loads(path.read_bytes()) != value):
+            raise ValueError('journal-receipt-mismatch')
+        expected.add(name)
+    if files != expected:
+        raise ValueError('journal-receipt-mismatch')
 
 
 def run(directory):
@@ -209,6 +247,8 @@ def run(directory):
     private_directory(pages)
     db_path = directory / 'journal.sqlite'
     if not db_path.exists():
+        if any(pages.iterdir()):
+            raise ValueError('missing-journal-with-receipts')
         os.close(os.open(db_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600))
     stat = db_path.lstat()
     if db_path.is_symlink() or not db_path.is_file() or stat.st_nlink != 1 or stat.st_uid != os.getuid() or stat.st_mode & 0o077:
@@ -221,11 +261,24 @@ def run(directory):
     existing = db.execute("SELECT value FROM meta WHERE key='scope'").fetchone()
     if existing and existing[0] != scope_sha:
         raise ValueError('journal-scope-drift')
+    if existing is None and (any(pages.iterdir()) or db.execute('SELECT count(*) FROM attempts').fetchone()[0]):
+        db.close()
+        raise ValueError('journal-scope-missing')
+    reconcile_journal(directory, scope, db)
     now = time.time()
+    start_row = db.execute("SELECT value FROM meta WHERE key='started'").fetchone()
+    if start_row is None and db.execute('SELECT count(*) FROM attempts').fetchone()[0]:
+        db.close()
+        raise ValueError('journal-start-missing')
+    started = float(start_row[0]) if start_row else now
+    if not math.isfinite(now) or not math.isfinite(started) or started < 0 or started > now:
+        db.close()
+        raise ValueError('journal-clock-invalid')
     with db:
         db.execute("INSERT OR IGNORE INTO meta VALUES('scope',?)", (scope_sha,))
         db.execute("INSERT OR IGNORE INTO meta VALUES('started',?)", (str(now),))
-    started = float(db.execute("SELECT value FROM meta WHERE key='started'").fetchone()[0])
+    maximum = scope['limits']['maxElapsedMs'] / 1000
+    batch_deadline = time.monotonic() + min(maximum, max(0, maximum - (now - started)))
     # Round robin puts one page from each account ahead of a large account's later pages.
     try:
         for page in range(1, scope['limits']['maxPagesPerAccount'] + 1):
@@ -235,7 +288,7 @@ def run(directory):
                     return {'state': 'held', 'requests': len(attempts)}
                 if any(receipt and json.loads(receipt).get('rateLimit', {}).get('x-ratelimit-remaining') == 0 for _, _, _, receipt in attempts):
                     return {'state': 'rate-limit-exhausted', 'requests': len(attempts)}
-                if len(attempts) >= scope['limits']['maxRequests'] or (time.time() - started) * 1000 >= scope['limits']['maxElapsedMs']:
+                if len(attempts) >= scope['limits']['maxRequests'] or time.monotonic() >= batch_deadline:
                     return {'state': 'budget-exhausted', 'requests': len(attempts)}
                 if any(login == account['login'] and p == page for login, p, _, _ in attempts):
                     continue
@@ -243,12 +296,12 @@ def run(directory):
                 if page > 1 and (not prior or prior[0]['projection']['continuation']['state'] != 'more'):
                     continue
                 previous_owner = prior[0]['projection']['owner'] if prior else None
-                result = acquire_page(directory, scope, approval, db, account, page, previous_owner)
+                result = acquire_page(directory, scope, approval, db, account, page, previous_owner, batch_deadline)
                 if result is None:
                     return {'state': 'budget-exhausted', 'requests': len(attempts)}
                 print(json.dumps({'login': account['login'], 'page': page, 'status': result['status'],
                                   'repositories': len(result['projection']['repositories']) if result['projection'] else 0}), flush=True)
-                time.sleep(scope['limits']['minimumDelayMs'] / 1000)
+                time.sleep(min(scope['limits']['minimumDelayMs'] / 1000, max(0, batch_deadline - time.monotonic())))
         return {'state': 'finished', 'requests': db.execute('SELECT count(*) FROM attempts').fetchone()[0]}
     finally:
         db.close()

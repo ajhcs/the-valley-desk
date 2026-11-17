@@ -45,7 +45,7 @@
     "discovery:research-extension:check": "node --import tsx/esm scripts/build-research-network-extension.mjs --check",
     "discovery:research-additions:build": "node --import tsx/esm scripts/build-research-network-additions.mjs",
     "discovery:research-additions:check": "node --import tsx/esm scripts/build-research-network-additions.mjs --check",
-    "test:discovery:github-enrichment": "node --import tsx/esm --test test/discovery-github-enrichment.test.ts && python3 test/github_enrichment_capture_test.py"
+    "test:discovery:github-enrichment": "node --import tsx/esm --test test/discovery-github-enrichment.test.ts && python3 test/github_enrichment_capture_test.py && python3 test/discovery_yield_review_test.py"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.170.31",

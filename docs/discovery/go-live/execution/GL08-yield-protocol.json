@@ -1,0 +1,25 @@
+{
+  "id": "GL08-yield-protocol-20261117-v1",
+  "status": "predeclared_before_labeling",
+  "frozenSampleSha256": "9debf5597b5c1edf752982b998e19f25bd719f1e4269cdadf4df887f9fbe2f66",
+  "measureDefinitions": [
+    "GL08EligibleFraction.json",
+    "GL08MinutesPerAdmissionReady.json"
+  ],
+  "reviewer": "Codex agent; independent review follows initial labeling",
+  "decisions": [
+    "eligible",
+    "rejected",
+    "held"
+  ],
+  "criteria": "For each work, record useful purpose, supported health relevance, dated regional connection and original link as supported, unsupported or unknown, with source evidence and qualified historical wording. All four supported plus a prepared lean listing counts eligible. Generic/non-health work can be rejected; missing or conflicting required evidence is held.",
+  "time": "Capture non-overlapping batch sessions using UTC timestamps, monotonic nanoseconds and the host boot ID. Include evidence reads and decision recording. Exclude setup, code work, independent review and CI by ending a session before such work. Per-lead elapsed remains null for batch-only timing.",
+  "publicAdmissions": 0,
+  "actualPublicMinutesPerAdmission": null,
+  "sourceReviewBudget": {
+    "maxSourceOpens": 60,
+    "maxSearchQueries": 40,
+    "scope": "Only sampled work/evidence; no new account enumeration or public admission. Retain short facts, URLs, observation dates and limitations, not raw source bodies."
+  },
+  "preinspection": "Sample metadata was displayed once for setup before timing; that preparation cost is excluded and disclosed."
+}

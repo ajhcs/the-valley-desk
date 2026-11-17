@@ -1,25 +1,58 @@
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, lstatSync } from 'node:fs';
+import { DatabaseSync } from 'node:sqlite';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { canonicalDiscoveryEvidenceJson as canonical } from '../src/ingest/discovery-evidence-store.ts';
-import { ENRICHMENT_LIMITS, GITHUB_ENRICHMENT_REVISION, enrichmentUrl, inspectGithubEnrichmentPage, buildGithubEnrichmentQueue } from '../src/ingest/discovery/github-enrichment.ts';
+import { ENRICHMENT_LIMITS, GITHUB_ENRICHMENT_REVISION, enrichmentUrl, inspectGithubEnrichmentPage, buildGithubEnrichmentQueue, validateRetainedGithubProjection } from '../src/ingest/discovery/github-enrichment.ts';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
 const mapPath = 'docs/discovery/go-live/evidence/GL05/research-account-map.json';
 const networkPath = 'docs/discovery/go-live/evidence/GL05/regional-additions-20261117/qualification-queue.json';
 const excluded = ['christiana', 'lehigh', 'scranton'];
-export function validateRetainedEnrichmentPage(packet, scopeBytes, name) {
+export function validateRetainedEnrichmentPage(packet, scopeBytes, name, journalPacket) {
   const scope = JSON.parse(scopeBytes), scopeSha = sha256(scopeBytes);
   const account = scope.roster.find(a => a.login === packet.login);
   const receiptId = sha256(`${scopeSha}\n${packet.login}\n${packet.page}`);
-  if (!account || packet.scopeSha256 !== scopeSha || packet.receiptId !== receiptId || name !== `page-${receiptId}.json` ||
+  const allowed = new Set(['receiptId', 'scopeSha256', 'login', 'page', 'requestUrl', 'issuedAt', 'observedAt', 'status', 'httpStatus', 'rawBodyRetained', 'sourceObservationIds', 'projection', 'responseBytes', 'projectionSha256', 'failureCode', 'rateLimit']);
+  const statuses = ['received', 'malformed', 'unavailable', 'unknown', 'rate-limited', 'refused', 'redirect'];
+  if (!journalPacket || canonical(packet) !== canonical(journalPacket) || Object.keys(packet).some(key => !allowed.has(key)) ||
+    !statuses.includes(packet.status) || !account || packet.scopeSha256 !== scopeSha || packet.receiptId !== receiptId || name !== `page-${receiptId}.json` ||
     packet.requestUrl !== enrichmentUrl(account.login, packet.page) || packet.rawBodyRetained !== false ||
     canonical(packet.sourceObservationIds) !== canonical(account.sourceObservationIds)) throw new Error('receipt-binding');
+  for (const date of [packet.issuedAt, packet.observedAt]) if (typeof date !== 'string' || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString() !== date) throw new Error('receipt-binding');
+  if (packet.observedAt < packet.issuedAt || !Number.isSafeInteger(packet.responseBytes) || packet.responseBytes < 0 || packet.responseBytes > ENRICHMENT_LIMITS.maxBytesPerResponse + 1 ||
+    packet.httpStatus !== null && (!Number.isSafeInteger(packet.httpStatus) || packet.httpStatus < 100 || packet.httpStatus > 599)) throw new Error('receipt-binding');
+  if (packet.failureCode !== undefined && (packet.status === 'received' || typeof packet.failureCode !== 'string' || !/^[a-z][a-z0-9:-]{0,99}$/.test(packet.failureCode))) throw new Error('receipt-binding');
+  if (packet.rateLimit !== undefined && (!packet.rateLimit || typeof packet.rateLimit !== 'object' || Array.isArray(packet.rateLimit) ||
+    Object.entries(packet.rateLimit).some(([key, value]) => !['x-ratelimit-remaining', 'x-ratelimit-reset', 'retry-after'].includes(key) || !Number.isSafeInteger(value) || value < 0))) throw new Error('receipt-binding');
   if (packet.status === 'received' && (!packet.projection || packet.projection.publicationAuthorized !== false ||
     packet.projection.rawBodyRetained !== false || !/^[a-f0-9]{64}$/.test(packet.projection.nativeBodySha256) ||
     sha256(canonical(packet.projection)) !== packet.projectionSha256)) throw new Error('receipt-binding');
+  if (packet.status === 'received') {
+    if (packet.httpStatus !== 200 || packet.responseBytes > ENRICHMENT_LIMITS.maxBytesPerResponse) throw new Error('receipt-binding');
+    validateRetainedGithubProjection(packet.projection, account.login, packet.page, scope.schemaVersion);
+  } else if (packet.projection !== null || packet.projectionSha256 !== undefined) throw new Error('receipt-binding');
   return packet;
+}
+
+export function readEnrichmentJournal(directory, scopeBytes, names) {
+  const path = resolve(directory, '..', 'journal.sqlite'), stat = lstatSync(path);
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1 || stat.uid !== process.getuid?.() || (stat.mode & 63) !== 0) throw new Error('receipt-binding');
+  const db = new DatabaseSync(path, { readOnly: true });
+  try {
+    if (db.prepare("SELECT value FROM meta WHERE key='scope'").get()?.value !== sha256(scopeBytes)) throw new Error('receipt-binding');
+    const scope = JSON.parse(scopeBytes), rows = db.prepare('SELECT login,page,status,receipt FROM attempts').all();
+    if (rows.length > scope.limits.maxRequests || rows.length !== names.length) throw new Error('receipt-binding');
+    const packets = new Map();
+    for (const row of rows) {
+      if (typeof row.receipt !== 'string') throw new Error('receipt-binding');
+      const packet = JSON.parse(row.receipt), name = `page-${packet.receiptId}.json`;
+      if (!names.includes(name) || packets.has(name) || packet.login !== row.login || packet.page !== row.page || packet.status !== row.status) throw new Error('receipt-binding');
+      packets.set(name, packet);
+    }
+    return packets;
+  } finally { db.close(); }
 }
 
 export function prepareEnrichmentYieldSample(queue, queueSha256) {
@@ -103,9 +136,12 @@ export function main(args = process.argv.slice(2)) {
     const seenReceipts = new Set();
     for (const directory of args.slice(1)) {
       const scopeBytes = readFileSync(resolve(directory, '..', 'scope.json'));
-      for (const name of readdirSync(directory).filter(n => /^page-[a-f0-9]{64}\.json$/.test(n)).sort()) {
+      const names = readdirSync(directory).sort();
+      if (names.some(name => !/^page-[a-f0-9]{64}\.json$/.test(name))) throw new Error('receipt-binding');
+      const journal = readEnrichmentJournal(directory, scopeBytes, names);
+      for (const name of names) {
         const bytes = readFileSync(resolve(directory, name));
-        const packet = validateRetainedEnrichmentPage(JSON.parse(bytes), scopeBytes, name);
+        const packet = validateRetainedEnrichmentPage(JSON.parse(bytes), scopeBytes, name, journal.get(name));
         if (seenReceipts.has(packet.receiptId)) throw new Error('receipt-binding');
         seenReceipts.add(packet.receiptId);
         provenance.push({ path: resolve(directory, name), sha256: sha256(bytes), status: packet.status });

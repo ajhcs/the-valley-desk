@@ -40,6 +40,7 @@ function continuation(header: string | null, login: string, page: number, owner:
   if (header !== null && (typeof header !== 'string' || header.length > 8192)) return fail('link');
   const expected = new URL(enrichmentUrl(login, page));
   const seen = new Set<string>();
+  const relations = new Map<string, number>();
   const pathKinds = new Set<string>();
   let nextPage: number | null = null;
   for (const part of header?.split(/,\s*(?=<)/) ?? []) {
@@ -62,11 +63,17 @@ function continuation(header: string | null, login: string, page: number, owner:
     }
     const p = url.searchParams.get('page') ?? '';
     if (!/^[1-9]\d*$/.test(p) || !Number.isSafeInteger(Number(p))) return fail('link-page');
+    relations.set(m[2], Number(p));
     if (m[2] === 'next') {
       if (Number(p) !== page + 1) return fail('link-sequence');
       nextPage = Number(p);
     }
   }
+  if (relations.has('first') && relations.get('first') !== 1 ||
+    relations.has('prev') && relations.get('prev') !== page - 1 ||
+    relations.has('last') && relations.get('last')! < page ||
+    relations.has('last') && relations.get('last')! > page && nextPage === null ||
+    nextPage !== null && (count === 0 || relations.has('last') && nextPage > relations.get('last')!)) return fail('link-relations');
   if (nextPage !== null) return {
     state: page === ENRICHMENT_LIMITS.maxPagesPerAccount ? 'page-cap' as const : 'more' as const,
     nextPage: page === ENRICHMENT_LIMITS.maxPagesPerAccount ? null : nextPage,
@@ -113,6 +120,56 @@ export function inspectGithubEnrichmentPage(bytes: Uint8Array, login: string, pa
 export type EnrichmentObservation = EnrichedRepository & {
   receiptId: string; observedAt: string; sourceObservationIds: string[];
 };
+
+// Retained projections cross a second boundary. Their own digest is not evidence
+// that their fields still satisfy the provider/identity/privacy contract.
+export function validateRetainedGithubProjection(input: unknown, login: string, page: number, revision: string) {
+  const root = object(input);
+  const keys = (row: Record<string, unknown>, allowed: string[], required = allowed) => {
+    if (Object.keys(row).some(key => !allowed.includes(key)) || required.some(key => !Object.hasOwn(row, key))) return fail('retained-shape');
+  };
+  keys(root, ['revision', 'owner', 'repositories', 'continuation', 'publicationAuthorized', 'rawBodyRetained', 'nativeBodySha256']);
+  if (!['github-owned-metadata-v1', 'github-owned-metadata-v2'].includes(revision) || root.revision !== revision ||
+    root.publicationAuthorized !== false || root.rawBodyRetained !== false || !/^[a-f0-9]{64}$/.test(String(root.nativeBodySha256))) return fail('retained-shape');
+  decodeDiscoveryMetadataJson(new TextEncoder().encode(JSON.stringify(input)), 'github', code => fail(`retained-${code}`));
+  const nativeId = (value: unknown) => {
+    if (typeof value !== 'string' || !/^[1-9]\d*$/.test(value) || !Number.isSafeInteger(Number(value))) return fail('retained-native-id');
+    return Number(value);
+  };
+  const owner = (value: unknown) => {
+    const row = object(value); keys(row, ['nativeId', 'login', 'type']);
+    nativeId(row.nativeId); enrichmentUrl(text(row.login, 39), 1);
+    if (!['User', 'Organization'].includes(String(row.type))) return fail('retained-owner');
+    return row as unknown as EnrichmentOwner;
+  };
+  const retainedOwner = root.owner === null ? null : owner(root.owner);
+  if (!Array.isArray(root.repositories) || root.repositories.length > ENRICHMENT_LIMITS.perPage) return fail('retained-shape');
+  const rows = root.repositories.map((value, index) => {
+    const row = object(value);
+    keys(row, ['nativeId', 'fullName', 'originalUrl', 'description', 'fork', 'archived', 'createdAt', 'updatedAt', 'pushedAt', 'owner', 'sourcePointer']);
+    const account = owner(row.owner), fullName = text(row.fullName, 140);
+    if (row.sourcePointer !== `/${index}`) return fail('retained-pointer');
+    return { id: nativeId(row.nativeId), name: fullName.split('/')[1], full_name: fullName, html_url: row.originalUrl,
+      url: `https://api.github.com/repos/${fullName}`, private: false, description: row.description,
+      fork: row.fork, archived: row.archived, created_at: row.createdAt, updated_at: row.updatedAt, pushed_at: row.pushedAt,
+      owner: { id: nativeId(account.nativeId), login: account.login, type: account.type } };
+  });
+  const checked = inspectGithubEnrichmentPage(new TextEncoder().encode(JSON.stringify(rows)), login, page, null, retainedOwner);
+  if (rows.length && (!retainedOwner || checked.owner?.nativeId !== retainedOwner.nativeId ||
+    checked.owner.type !== retainedOwner.type || checked.owner.login.toLowerCase() !== retainedOwner.login.toLowerCase())) return fail('retained-owner');
+  const next = object(root.continuation);
+  keys(next, ['state', 'nextPage', 'pathKinds'], ['state', 'nextPage']);
+  if (next.pathKinds !== undefined && (!Array.isArray(next.pathKinds) || next.pathKinds.length > 3 ||
+    new Set(next.pathKinds).size !== next.pathKinds.length || next.pathKinds.some(kind => !['named-account', 'native-user', 'native-organization'].includes(kind)))) return fail('retained-continuation');
+  const more = next.state === 'more', count = rows.length;
+  if (!['more', 'complete', 'unknown', 'page-cap', 'empty-unverified'].includes(String(next.state)) ||
+    more && (next.nextPage !== page + 1 || page >= ENRICHMENT_LIMITS.maxPagesPerAccount || !retainedOwner || count === 0) ||
+    !more && next.nextPage !== null || next.state === 'complete' && (count === 0 || count === ENRICHMENT_LIMITS.perPage || !retainedOwner) ||
+    next.state === 'empty-unverified' && count !== 0 || next.state === 'unknown' && count !== ENRICHMENT_LIMITS.perPage ||
+    next.state === 'page-cap' && (page !== ENRICHMENT_LIMITS.maxPagesPerAccount || count === 0 || !retainedOwner)) return fail('retained-continuation');
+  return input;
+}
+
 export function buildGithubEnrichmentQueue(observations: EnrichmentObservation[]) {
   const byId = new Map<string, EnrichmentObservation[]>();
   for (const observation of observations) {
