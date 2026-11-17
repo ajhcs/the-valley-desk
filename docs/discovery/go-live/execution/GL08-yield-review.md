@@ -26,4 +26,21 @@ cannot establish regional yield, recall or clinical validity. Original native
 responses were transient; source receipts and short source-specific review
 notes identify the evidence and its limits.
 
-Results will be recorded after all 100 decisions and independent challenge.
+The reviewed sample yielded **7 eligible leads out of 100 (7%)**. Another
+26 were rejected and 67 were held. The review clock recorded **27.92 agent
+minutes**, or **3.99 agent minutes per admission-ready listing**. The numerator
+includes screening, evidence reads and recording all decisions, including
+changes after adjudication. Four amendments timed only the recording step.
+Independent challenge time is excluded. Public admissions were zero, so
+minutes per public admission are unmeasured.
+
+The initial review found seven eligible, 31 rejected and 62 held. The independent
+review moved five rejects to held. One documented a clinical demo with an
+unverified regional basis. The other four lacked enough evidence to rule out
+health-tech relevance. The reviewer also strengthened two decisions without
+changing their dispositions. A dated regional basis was unresolved for 65 of
+the 67 held leads. Unknown criteria can overlap.
+
+The [results receipt](GL08-yield-results.json) pins the sample, both sets of
+decisions, timing journal and independent review. The full evidence and private
+listing drafts remain in the workspace.

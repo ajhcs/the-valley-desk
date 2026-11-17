@@ -434,10 +434,11 @@
       ],
       "acceptance": null,
       "findings": [
-        "Initial cohort enriched to 549 native repositories; provider continuation repair verified on two live pages. Incomplete accounts and independent review remain open; corrections/upkeep acceptance is unchanged."
+        "The independent reviewer accepted the adapter for the initial 549-repository cohort after six fixes. Thirteen account inventories remain incomplete or identity-unverified.",
+        "The frozen 100-lead sample yielded 7 eligible, 26 rejected and 67 held. Observed agent review time was 3.99 minutes per admission-ready listing. Corrections and upkeep are still pending."
       ],
       "implementation_owner": "Codex operating as builderbob",
-      "current_increment": "execution/GL08-enrichment-checkpoint.json"
+      "current_increment": "execution/GL08-yield-results.json"
     },
     {
       "id": "GL09",
@@ -669,8 +670,9 @@
       ],
       "summary": "Qualify one provider metadata route and enrich the primary-region queue with native ID, description, fork/archived state and dates; deduplicate by native ID. Neighboring-context leads stay searchable internally and are not enriched in this pass.",
       "requires": "Approved finite account roster, request scope and budget before any network request.",
-      "status": "in_review",
+      "status": "reviewed_initial_cohort",
       "checkpoint": "execution/GL08-enrichment-checkpoint.json",
+      "independent_review": "execution/GL08-independent-review.json",
       "scope": "Initial 41-account cohort only; 549 native repositories. This does not complete primary-region enrichment."
     },
     {
@@ -679,8 +681,9 @@
         "GL08"
       ],
       "summary": "Review about 100 enriched leads against the lean listing rule; record the eligible fraction and minutes per admission.",
-      "status": "not_started",
-      "prepared_sample": "execution/GL08-enrichment-checkpoint.json#/yieldSample"
+      "status": "completed",
+      "prepared_sample": "execution/GL08-enrichment-checkpoint.json#/yieldSample",
+      "result": "execution/GL08-yield-results.json"
     },
     {
       "step": 3,

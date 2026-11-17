@@ -39,8 +39,22 @@
     "focusedTs": 9,
     "capturePython": 12,
     "loggerPython": 6,
-    "retainedQueue": "byte-identical 549-candidate output from all57 original receipts under read-only journal reconciliation",
-    "measurementDefinitions": "Both CSE record/unit checks passed; this is not source-truth or engineering acceptance."
+    "retainedQueue": "byte-identical 549-candidate output from all 57 original receipts under read-only journal reconciliation",
+    "measurementDefinitions": "Both CSE record/unit checks passed; this is not source-truth or engineering acceptance.",
+    "ciAtAcceptedCommit": {
+      "run": "https://github.com/ajhcs/the-valley-desk/actions/runs/44135083610",
+      "passed": [
+        "Full test suite",
+        "Official PDF byte regressions",
+        "Typecheck and production build",
+        "Local D1 migrations and scheduled smoke"
+      ],
+      "failed": "npm audit --audit-level=high",
+      "secretScan": "Passed locally. CI skipped this step after the audit failure.",
+      "baselineAdvisory": "https://github.com/advisories/GHSA-fc5q-39xc-vjpf",
+      "baselineComparison": "The merged baseline and PR head have the same lockfile and returned the same advisory set when audited separately on 17 November 2026.",
+      "remediationStatus": "The advisory lists no patched release. npm lists 4.0.7 as latest and the advisory includes it."
+    }
   },
   "scopeLimits": [
     "No current region-wide or complete account-inventory claim.",
@@ -65,5 +79,6 @@
       "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/accepted-working-tree-hashes.json",
       "sha256": "0f798d368fc5227427e795d7a306fc3f90663da14e8dd5b6aa34d239d92cf6d7"
     }
-  ]
+  ],
+  "acceptedCommit": "1e347cccde1738a410aacbd318153d0382647bd7"
 }
