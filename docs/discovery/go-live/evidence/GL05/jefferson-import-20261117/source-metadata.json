@@ -1,0 +1,3088 @@
+{
+  "schemaVersion": "jefferson-bibliographic-metadata-v1",
+  "sourceSha256": "5739721a00bbe459d060bc3e6afa44e2a00bd1d23d18c25ba92882674443a43c",
+  "observedDate": "2026-11-17",
+  "recordStatus": "Reported bibliographic observations; title/date and identity are unverified and not proof of affiliation, rights, publication eligibility or source capture.",
+  "articles": [
+    {
+      "articleId": "PMC13486667",
+      "pmid": "42420423",
+      "doi": "10.1038/s41386-026-02483-2",
+      "title": "Long-term effects of adolescent risperidone treatment on the mouse cortex.",
+      "reportedFirstPublicationDate": "2026-07-08",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13486667/",
+      "sourcePointer": "/0",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13617667",
+      "pmid": "42807400",
+      "doi": "10.1093/ehjdh/ztag147",
+      "title": "Transportability of an artificial intelligence electrocardiography model for structural heart disease: external validation and recalibration of EchoNext-Mini in MIMIC-IV.",
+      "reportedFirstPublicationDate": "2026-09-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13617667/",
+      "sourcePointer": "/1",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13516553",
+      "pmid": "42646360",
+      "doi": "10.3390/ncrna12040029",
+      "title": "Fraction-Seq: An Integrated Experimental and Computational Workflow for Determining the Localization and Abundance of Small Non-Coding RNAs in Subcellular Compartments.",
+      "reportedFirstPublicationDate": "2026-08-05",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13516553/",
+      "sourcePointer": "/2",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13533388",
+      "pmid": "42678953",
+      "doi": "10.1371/journal.pgen.1012278",
+      "title": "Characterization of METTL3/14-mediated m6A modification in human transcriptome using Nanopore direct RNA sequencing.",
+      "reportedFirstPublicationDate": "2026-09-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13533388/",
+      "sourcePointer": "/3",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12924628",
+      "pmid": "41727340",
+      "doi": "10.1093/noajnl/vdag003",
+      "title": "Single-cell RNA sequencing suggests different progenitor lineages between &lt;i&gt;IDH&lt;/i&gt; mutant and &lt;i&gt;IDH&lt;/i&gt;wt glioma.",
+      "reportedFirstPublicationDate": "2026-01-16",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12924628/",
+      "sourcePointer": "/4",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13183871",
+      "pmid": "41876841",
+      "doi": "10.1038/s43856-026-01530-9",
+      "title": "Thalamic organization differentially contributes to clinical conditions in epilepsy.",
+      "reportedFirstPublicationDate": "2026-03-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13183871/",
+      "sourcePointer": "/5",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13445343",
+      "pmid": "42564634",
+      "doi": "10.1016/j.ahjo.2026.100841",
+      "title": "Predicting diuretic efficiency in critically ill patients with acute decompensated heart failure: External validation of the BAN-ADHF score.",
+      "reportedFirstPublicationDate": "2026-07-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13445343/",
+      "sourcePointer": "/6",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12936415",
+      "pmid": "40915979",
+      "doi": "10.1002/1878-0261.70098",
+      "title": "PARP inhibitors elicit distinct transcriptional programs in homologous recombination competent castration-resistant prostate cancer.",
+      "reportedFirstPublicationDate": "2025-09-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12936415/",
+      "sourcePointer": "/7",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12913780",
+      "pmid": "41617897",
+      "doi": "10.1038/s41598-026-36209-7",
+      "title": "Development of Dirofilaria immitis adult worms in NSG mice, detection of parasite-derived microRNA and comparative analysis of laboratory isolates.",
+      "reportedFirstPublicationDate": "2026-01-30",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12913780/",
+      "sourcePointer": "/8",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13376865",
+      "pmid": "42463717",
+      "doi": "10.1038/s41598-026-51768-5",
+      "title": "Interstitial fluid N-glycans serve as a proxy for serum biomarker discovery in a pilot study.",
+      "reportedFirstPublicationDate": "2026-07-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13376865/",
+      "sourcePointer": "/9",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13233039",
+      "pmid": "42245913",
+      "doi": "10.1038/s44401-026-00100-4",
+      "title": "A multi-agent large language model framework to automatically assess performance of a clinical AI Triage tool.",
+      "reportedFirstPublicationDate": "2026-05-25",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13233039/",
+      "sourcePointer": "/10",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13717691",
+      "pmid": "42959609",
+      "doi": "10.3389/fmicb.2026.1973590",
+      "title": "Archaeal methanogenesis in a deep terrestrial aquifer driven by &lt;i&gt;Methanothermobacter tomskensis&lt;/i&gt; sp. nov.",
+      "reportedFirstPublicationDate": "2026-10-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13717691/",
+      "sourcePointer": "/11",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12125544",
+      "pmid": "40448503",
+      "doi": "10.1093/nar/gkaf444",
+      "title": "CorrAdjust unveils biologically relevant transcriptomic correlations by efficiently eliminating hidden confounders.",
+      "reportedFirstPublicationDate": "2025-05-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12125544/",
+      "sourcePointer": "/12",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12063106",
+      "pmid": "40351834",
+      "doi": "10.1093/noajnl/vdaf058",
+      "title": "What single-cell RNA sequencing taught us about &lt;i&gt;MGMT&lt;/i&gt; expression in glioblastoma.",
+      "reportedFirstPublicationDate": "2025-01-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12063106/",
+      "sourcePointer": "/13",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12070390",
+      "pmid": "40257750",
+      "doi": "10.1093/bioinformatics/btaf182",
+      "title": "Functional protein biomarkers based on distributions of expression levels in single-cell imaging data.",
+      "reportedFirstPublicationDate": "2025-05-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12070390/",
+      "sourcePointer": "/14",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13319756",
+      "pmid": "42031745",
+      "doi": "10.1038/s41531-026-01353-4",
+      "title": "Disruption of the LRRK2 substrate RAB12 facilitates neurotransmission and causes hyperactivity in mice.",
+      "reportedFirstPublicationDate": "2026-04-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13319756/",
+      "sourcePointer": "/15",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13714285",
+      "pmid": "42946784",
+      "doi": "10.1038/s44401-026-00160-6",
+      "title": "FLAT-WHITE: from target trial emulation to federated high-throughput causal machine learning using decentralized real-world data.",
+      "reportedFirstPublicationDate": "2026-10-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13714285/",
+      "sourcePointer": "/16",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13338140",
+      "pmid": "42062541",
+      "doi": "10.1038/s41746-026-02685-4",
+      "title": "Reinforcement learning improves LLM accuracy and reasoning in disease classification from radiology reports.",
+      "reportedFirstPublicationDate": "2026-04-30",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13338140/",
+      "sourcePointer": "/17",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13513128",
+      "pmid": "42653292",
+      "doi": "10.3390/ijms27167288",
+      "title": "Integrative RNA-Seq Analysis Reveals Stress Type-Dependent lncRNA-Centered Co-Expression Networks Across Human Cellular Stress Contexts.",
+      "reportedFirstPublicationDate": "2026-08-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13513128/",
+      "sourcePointer": "/18",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12666352",
+      "pmid": "40833891",
+      "doi": "10.1182/bloodadvances.2025017018",
+      "title": "TLR2 agonism suppresses myeloid leukemogenesis by reprogramming leukemia stem cells.",
+      "reportedFirstPublicationDate": "2025-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12666352/",
+      "sourcePointer": "/19",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12987547",
+      "pmid": "41795468",
+      "doi": "10.1016/j.ajhg.2026.02.006",
+      "title": "Identification of de novo variants from parent-proband duos via long-read sequencing.",
+      "reportedFirstPublicationDate": "2026-03-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12987547/",
+      "sourcePointer": "/20",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12435839",
+      "pmid": "40955663",
+      "doi": "10.1172/jci178446",
+      "title": "Elevated NR2F1 underlies the persistence of invasive disease after treatment of BRAF-mutant melanoma.",
+      "reportedFirstPublicationDate": "2025-07-29",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12435839/",
+      "sourcePointer": "/21",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12607950",
+      "pmid": "41226451",
+      "doi": "10.3390/ijms262110411",
+      "title": "CD5 Expression in CTCL and Its Implications for Anti-CD5 CAR T-Cell Therapy.",
+      "reportedFirstPublicationDate": "2025-10-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12607950/",
+      "sourcePointer": "/22",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13023654",
+      "pmid": "41899903",
+      "doi": "10.3390/bioengineering13030372",
+      "title": "Transcranial Alternating Current Stimulation as an Adjuvant for Nonfluent Aphasia: A Proof-of-Concept Study.",
+      "reportedFirstPublicationDate": "2026-03-23",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13023654/",
+      "sourcePointer": "/23",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12503059",
+      "pmid": "41064474",
+      "doi": "10.1117/1.jmi.12.5.054502",
+      "title": "Machine learning evaluation of pneumonia severity: subgroup performance in the Medical Imaging and Data Resource Center modified radiographic assessment of lung edema mastermind challenge.",
+      "reportedFirstPublicationDate": "2025-09-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12503059/",
+      "sourcePointer": "/24",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13103071",
+      "pmid": "40563038",
+      "doi": "10.1007/s10278-025-01570-y",
+      "title": "An Unsupervised Brain Extraction Quality Control Approach for Efficient Neuro-Oncology Studies.",
+      "reportedFirstPublicationDate": "2025-06-25",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13103071/",
+      "sourcePointer": "/25",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12162103",
+      "pmid": "40460357",
+      "doi": "10.1371/journal.pcbi.1013127",
+      "title": "Tumor microenvironment governs the prognostic landscape of immunotherapy for head and neck squamous cell carcinoma: A computational model-guided analysis.",
+      "reportedFirstPublicationDate": "2025-06-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12162103/",
+      "sourcePointer": "/26",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13728791",
+      "pmid": "42658041",
+      "doi": "10.1158/0008-5472.can-26-1181",
+      "title": "Allele-Specific Mechanisms Guide Salvage Therapy to Overcome Daraxonrasib Resistance in Pancreatic Cancer.",
+      "reportedFirstPublicationDate": "2026-08-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13728791/",
+      "sourcePointer": "/27",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13223677",
+      "pmid": "42208979",
+      "doi": "10.1136/jitc-2025-014290",
+      "title": "Clonal reshaping and clinical outcomes after rechallenge in ICI-associated myocarditis: integrated single-cell and TCR repertoire analysis.",
+      "reportedFirstPublicationDate": "2026-05-28",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13223677/",
+      "sourcePointer": "/28",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12589586",
+      "pmid": "41193428",
+      "doi": "10.1038/s41467-025-64682-7",
+      "title": "Targeting TAZ-TEAD in minimal residual disease enhances the duration of targeted therapy in melanoma models.",
+      "reportedFirstPublicationDate": "2025-11-05",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12589586/",
+      "sourcePointer": "/29",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12305027",
+      "pmid": "40674414",
+      "doi": "10.1073/pnas.2509622122",
+      "title": "Cell-type-informed genotyping of mosaic focal epilepsies reveals cell-autonomous and non-cell-autonomous disease-associated transcriptional programs.",
+      "reportedFirstPublicationDate": "2025-07-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12305027/",
+      "sourcePointer": "/30",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13273452",
+      "pmid": "42318194",
+      "doi": "10.3389/fnins.2026.1833695",
+      "title": "Transcriptional signatures of the cortical morphometric similarity network gradient in left temporal lobe epilepsy with different seizure symptoms.",
+      "reportedFirstPublicationDate": "2026-06-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13273452/",
+      "sourcePointer": "/31",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13225663",
+      "pmid": "42189870",
+      "doi": "10.1371/journal.pcbi.1013488",
+      "title": "Evaluating place cell detection methods in Rats and Humans: Implications for cross-species spatial coding.",
+      "reportedFirstPublicationDate": "2026-05-26",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13225663/",
+      "sourcePointer": "/32",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13198317",
+      "pmid": "42013847",
+      "doi": "10.1016/j.xcrm.2026.102757",
+      "title": "Sex-biased intratumoral microbiome influences tumor molecular and immune landscape and disease outcomes.",
+      "reportedFirstPublicationDate": "2026-04-20",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13198317/",
+      "sourcePointer": "/33",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13554195",
+      "pmid": "42243508",
+      "doi": "10.1038/s42003-026-10407-5",
+      "title": "Patient-specific modeling identifies metabolic interventions for reversing glucose use reprogramming in alcohol-associated hepatitis.",
+      "reportedFirstPublicationDate": "2026-06-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13554195/",
+      "sourcePointer": "/34",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12352162",
+      "pmid": "40823292",
+      "doi": "10.3389/fneur.2025.1627528",
+      "title": "High-gamma and beta bursts in the left supramarginal gyrus can differentiate verbal memory states and performance.",
+      "reportedFirstPublicationDate": "2025-07-31",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12352162/",
+      "sourcePointer": "/35",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13199758",
+      "pmid": "42199731",
+      "doi": "10.1016/j.xops.2026.101199",
+      "title": "Deep Learning and Experimental Validation of BRCA1-Associated Protein-1 Missense Variant Pathogenicity in Uveal Melanoma.",
+      "reportedFirstPublicationDate": "2026-04-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13199758/",
+      "sourcePointer": "/36",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11503960",
+      "pmid": "39464217",
+      "doi": "10.1093/braincomms/fcae367",
+      "title": "Simulated resections and responsive neurostimulator placement can optimize postoperative seizure outcomes when guided by fast ripple networks.",
+      "reportedFirstPublicationDate": "2024-10-14",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11503960/",
+      "sourcePointer": "/37",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12509409",
+      "pmid": "41068925",
+      "doi": "10.1186/s13059-025-03813-1",
+      "title": "Evaluating the potential and limitations of nanopore adaptive sampling for targeted transcriptome sequencing.",
+      "reportedFirstPublicationDate": "2025-10-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12509409/",
+      "sourcePointer": "/38",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12244541",
+      "pmid": "40623107",
+      "doi": "10.1371/journal.pcbi.1012853",
+      "title": "From imaging to computational domains for physics-driven molecular biology simulations: Hindered diffusion in platelet masses.",
+      "reportedFirstPublicationDate": "2025-07-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12244541/",
+      "sourcePointer": "/39",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13724258",
+      "pmid": "42680906",
+      "doi": "10.1038/s41593-026-02419-5",
+      "title": "Whole-exome sequencing in individuals with obsessive-compulsive disorder and chronic tic disorders identifies 36 large-effect risk genes.",
+      "reportedFirstPublicationDate": "2026-09-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13724258/",
+      "sourcePointer": "/40",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13012052",
+      "pmid": "41860961",
+      "doi": "10.1073/pnas.2532814123",
+      "title": "Synthetic lethality between RB-loss and E2F3 inhibition in small cell cancers targeted by pyrimidine synthesis blockade.",
+      "reportedFirstPublicationDate": "2026-03-20",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13012052/",
+      "sourcePointer": "/41",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11911264",
+      "pmid": "40090999",
+      "doi": "10.1007/s10143-025-03450-z",
+      "title": "State-of-the-art for automated machine learning predicts outcomes in poor-grade aneurysmal subarachnoid hemorrhage using routinely measured laboratory &amp; radiological parameters: coagulation parameters and liver function as key prognosticators.",
+      "reportedFirstPublicationDate": "2025-03-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11911264/",
+      "sourcePointer": "/42",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12803577",
+      "pmid": "41334975",
+      "doi": "10.1002/mus.70068",
+      "title": "Healthcare Provider Perspectives of Various Signs and Symptoms for Diagnosing Degenerative Cervical Myelopathy: Results of an International, Multidisciplinary Survey.",
+      "reportedFirstPublicationDate": "2025-12-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12803577/",
+      "sourcePointer": "/43",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13572180",
+      "pmid": "42697072",
+      "doi": "10.1016/j.ebiom.2026.106466",
+      "title": "Discovering repurposable drugs for Alzheimer's disease and related dementias: target trial emulation using decentralised real-world data.",
+      "reportedFirstPublicationDate": "2026-09-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13572180/",
+      "sourcePointer": "/44",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13202545",
+      "pmid": "42205168",
+      "doi": "10.1016/j.gastha.2026.100985",
+      "title": "A Clustering-Based Machine Learning Approach for Mortality Prediction in Gastrointestinal Bleeding: Development and Validation.",
+      "reportedFirstPublicationDate": "2026-04-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13202545/",
+      "sourcePointer": "/45",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12017323",
+      "pmid": "40267183",
+      "doi": "10.1126/sciadv.ado6847",
+      "title": "Genetics- and age-driven neuroimmune and disc changes underscore herniation susceptibility and pain-associated behaviors in SM/J mice.",
+      "reportedFirstPublicationDate": "2025-04-23",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12017323/",
+      "sourcePointer": "/46",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11955872",
+      "pmid": "40077928",
+      "doi": "10.1113/jp287595",
+      "title": "Biophysical modelling of intrinsic cardiac nervous system neuronal electrophysiology based on single-cell transcriptomics.",
+      "reportedFirstPublicationDate": "2025-03-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11955872/",
+      "sourcePointer": "/47",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13451320",
+      "pmid": "42567854",
+      "doi": "10.1038/s41467-026-76325-6",
+      "title": "Heat stress promotes pre-tRNA capping to modulate cap-dependent translation in Saccharomyces cerevisiae.",
+      "reportedFirstPublicationDate": "2026-08-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13451320/",
+      "sourcePointer": "/48",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12096079",
+      "pmid": "40401555",
+      "doi": "10.1093/nar/gkaf425",
+      "title": "m6A modification is incorporated into bacterial mRNA without specific functional benefit.",
+      "reportedFirstPublicationDate": "2025-05-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12096079/",
+      "sourcePointer": "/49",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12514360",
+      "pmid": "40682763",
+      "doi": "10.1002/epi4.70089",
+      "title": "Altered along-the-perivascular space index in functional (psychogenic non-epileptic) seizures: A diffusion tensor imaging study of glymphatic system function.",
+      "reportedFirstPublicationDate": "2025-07-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12514360/",
+      "sourcePointer": "/50",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12969123",
+      "pmid": "41809053",
+      "doi": "10.1016/j.isci.2026.115066",
+      "title": "Stimulation of the medial septum diagonal band of broca rescues learning and memory deficits in &lt;i&gt;Fmr1&lt;/i&gt; KO mice.",
+      "reportedFirstPublicationDate": "2026-02-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12969123/",
+      "sourcePointer": "/51",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13367974",
+      "pmid": "42262868",
+      "doi": "10.1172/jci202867",
+      "title": "Aberrant STAT signaling and T cell dysregulation define a targetable pediatric sepsis endotype.",
+      "reportedFirstPublicationDate": "2026-06-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13367974/",
+      "sourcePointer": "/52",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13240896",
+      "pmid": "42247439",
+      "doi": "10.1371/journal.pgen.1011940",
+      "title": "Chromatin insulators homie and nhomie can interact with distant copies either together or separately, with distinct outcomes for enhancer-promoter interactions.",
+      "reportedFirstPublicationDate": "2026-06-05",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13240896/",
+      "sourcePointer": "/53",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11096318",
+      "pmid": "38750041",
+      "doi": "10.1038/s41597-024-03350-9",
+      "title": "A multi-institutional meningioma MRI dataset for automated multi-sequence image segmentation.",
+      "reportedFirstPublicationDate": "2024-05-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11096318/",
+      "sourcePointer": "/54",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13361962",
+      "pmid": "42450173",
+      "doi": "10.3390/ijms27135905",
+      "title": "CRISPR/Cas9-Based Genome Editing: Understanding Differences in DNA Repair Pathways, Profiles, and Outcomes.",
+      "reportedFirstPublicationDate": "2026-06-30",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13361962/",
+      "sourcePointer": "/55",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11544787",
+      "pmid": "39518054",
+      "doi": "10.3390/cancers16213614",
+      "title": "Radiomics-Based Machine Learning with Natural Gradient Boosting for Continuous Survival Prediction in Glioblastoma.",
+      "reportedFirstPublicationDate": "2024-10-26",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11544787/",
+      "sourcePointer": "/56",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12235502",
+      "pmid": "40628457",
+      "doi": "10.1136/bmj-2024-083542",
+      "title": "Cancer outcomes in women without upfront surgery for ductal carcinoma in situ: observational cohort study.",
+      "reportedFirstPublicationDate": "2025-07-08",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12235502/",
+      "sourcePointer": "/57",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12783015",
+      "pmid": "41506977",
+      "doi": "10.1002/mp.70260",
+      "title": "Clinical test cases for commissioning, QA, and benchmarking of model-based dose calculation algorithms in &lt;sup&gt;1&lt;/sup&gt;⁹&lt;sup&gt;2&lt;/sup&gt;Ir HDR gynecologic tandem and ring brachytherapy.",
+      "reportedFirstPublicationDate": "2026-01-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12783015/",
+      "sourcePointer": "/58",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13162433",
+      "pmid": "41776501",
+      "doi": "10.1186/s12943-026-02622-9",
+      "title": "Clonal dynamics shaped by diverse drug-tolerant persister states in melanoma resistance.",
+      "reportedFirstPublicationDate": "2026-03-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13162433/",
+      "sourcePointer": "/59",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11725888",
+      "pmid": "39739796",
+      "doi": "10.1073/pnas.2411033121",
+      "title": "Molecular mechanism governing the plasticity of use-dependent spike broadening in dorsal root ganglion neurons.",
+      "reportedFirstPublicationDate": "2024-12-31",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11725888/",
+      "sourcePointer": "/60",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13284162",
+      "pmid": "42014445",
+      "doi": "10.1038/s41746-026-02639-w",
+      "title": "Quantifying sleep wake rhythms in the hospital environment with digital technologies.",
+      "reportedFirstPublicationDate": "2026-04-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13284162/",
+      "sourcePointer": "/61",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12646958",
+      "pmid": "41312089",
+      "doi": "10.1038/s44323-025-00056-y",
+      "title": "Daily light exposure habits of youth with migraine: a prospective exploratory study.",
+      "reportedFirstPublicationDate": "2025-11-25",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12646958/",
+      "sourcePointer": "/62",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13558752",
+      "pmid": "42717209",
+      "doi": "10.1038/s41467-026-76232-w",
+      "title": "Th17 effector cytokines induce shared and distinct microglial and endothelial cell responses in a mouse model for post-streptococcal encephalitis.",
+      "reportedFirstPublicationDate": "2026-08-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13558752/",
+      "sourcePointer": "/63",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11872890",
+      "pmid": "40034599",
+      "doi": "10.3389/fonc.2025.1475133",
+      "title": "TriSwinUNETR lobe segmentation model for computing DIR-free CT-ventilation.",
+      "reportedFirstPublicationDate": "2025-02-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11872890/",
+      "sourcePointer": "/64",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13229362",
+      "pmid": "42090425",
+      "doi": "10.1371/journal.pcbi.1014245",
+      "title": "AIEdit: Alignment-free genome assembly polisher trained on spaced seed match patterns.",
+      "reportedFirstPublicationDate": "2026-05-06",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13229362/",
+      "sourcePointer": "/65",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13008497",
+      "pmid": "41713118",
+      "doi": "10.1016/j.jpba.2026.117421",
+      "title": "Bridging the gap: A systematic approach to integrating serum and plasma proteomic datasets for biomarker studies.",
+      "reportedFirstPublicationDate": "2026-02-14",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13008497/",
+      "sourcePointer": "/66",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13250086",
+      "pmid": "41963323",
+      "doi": "10.1038/s41467-026-71386-z",
+      "title": "Planar, spiral, and concentric traveling waves distinguish behavioral states in human memory.",
+      "reportedFirstPublicationDate": "2026-04-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13250086/",
+      "sourcePointer": "/67",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11376429",
+      "pmid": "39147580",
+      "doi": "10.1523/eneuro.0357-23.2024",
+      "title": "Different Sensory Information Is Used for State Estimation when Stationary or Moving.",
+      "reportedFirstPublicationDate": "2024-09-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11376429/",
+      "sourcePointer": "/68",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12518119",
+      "pmid": "40629114",
+      "doi": "10.1038/s41434-025-00548-3",
+      "title": "hafoe: an interactive tool for the analysis of chimeric AAV libraries after random mutagenesis.",
+      "reportedFirstPublicationDate": "2025-07-08",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12518119/",
+      "sourcePointer": "/69",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12580793",
+      "pmid": "40709833",
+      "doi": "10.1158/2159-8290.cd-25-0629",
+      "title": "Off-pore Nucleoporin sPOM121 Transcriptionally Propels β-Catenin-driven Tumor Progression and Immune Escape in Prostate Cancer.",
+      "reportedFirstPublicationDate": "2025-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12580793/",
+      "sourcePointer": "/70",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11327521",
+      "pmid": "39157453",
+      "doi": "10.1016/j.gendis.2023.101190",
+      "title": "Simultaneous detection of methylation and genetic variations of BCR-ABL1 gene by nanopore Cas9-targeted sequencing.",
+      "reportedFirstPublicationDate": "2023-12-06",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11327521/",
+      "sourcePointer": "/71",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12949600",
+      "pmid": "41577565",
+      "doi": "10.1016/j.landig.2025.100942",
+      "title": "Associations between contralesional neuroplasticity and motor impairment through deep learning-derived MRI regional brain age in chronic stroke (ENIGMA): a multicohort, retrospective, observational study.",
+      "reportedFirstPublicationDate": "2026-01-22",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12949600/",
+      "sourcePointer": "/72",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11480806",
+      "pmid": "39226899",
+      "doi": "10.1016/j.ajhg.2024.07.022",
+      "title": "ARID1A-BAF coordinates ZIC2 genomic occupancy for epithelial-to-mesenchymal transition in cranial neural crest specification.",
+      "reportedFirstPublicationDate": "2024-09-02",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11480806/",
+      "sourcePointer": "/73",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11087249",
+      "pmid": "38730319",
+      "doi": "10.1186/s12967-024-05252-1",
+      "title": "Keratin 17 modulates the immune topography of pancreatic cancer.",
+      "reportedFirstPublicationDate": "2024-05-10",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11087249/",
+      "sourcePointer": "/74",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13246957",
+      "pmid": "41965359",
+      "doi": "10.1038/s41467-026-71781-6",
+      "title": "Mechanistic insights into E. coli recovery from growth arrest.",
+      "reportedFirstPublicationDate": "2026-04-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13246957/",
+      "sourcePointer": "/75",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12390878",
+      "pmid": "40459741",
+      "doi": "10.1007/s00234-025-03661-7",
+      "title": "Prediction of etiology and prognosis based on hematoma location of spontaneous intracerebral hemorrhage: a multicenter diagnostic study.",
+      "reportedFirstPublicationDate": "2025-06-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12390878/",
+      "sourcePointer": "/76",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12208316",
+      "pmid": "40480221",
+      "doi": "10.1016/j.xcrm.2025.102154",
+      "title": "Proteogenomic analysis of the CALGB 40601 (Alliance) HER2+ breast cancer neoadjuvant trial reveals resistance biomarkers.",
+      "reportedFirstPublicationDate": "2025-06-05",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12208316/",
+      "sourcePointer": "/77",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12073983",
+      "pmid": "39530262",
+      "doi": "10.1093/brain/awae361",
+      "title": "Multicentre analysis of seizure outcome predicted by removal of high-frequency oscillations.",
+      "reportedFirstPublicationDate": "2025-05-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12073983/",
+      "sourcePointer": "/78",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12331822",
+      "pmid": "40047870",
+      "doi": "10.1007/s00261-025-04858-3",
+      "title": "Enhanced ISUP grade prediction in prostate cancer using multi-center radiomics data.",
+      "reportedFirstPublicationDate": "2025-03-06",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12331822/",
+      "sourcePointer": "/79",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12180539",
+      "pmid": "40381193",
+      "doi": "10.1016/j.celrep.2025.115728",
+      "title": "An integrated proteomics approach identifies phosphorylation sites on viral and host proteins that regulate West Nile virus infection.",
+      "reportedFirstPublicationDate": "2025-05-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12180539/",
+      "sourcePointer": "/80",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10450419",
+      "pmid": "37636077",
+      "doi": "10.1016/j.isci.2023.107472",
+      "title": "Gene signature reveals decreased SOX10-dependent transcripts in malignant cells from immune checkpoint inhibitor-resistant cutaneous melanomas.",
+      "reportedFirstPublicationDate": "2023-07-25",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10450419/",
+      "sourcePointer": "/81",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11020904",
+      "pmid": "38625843",
+      "doi": "10.1371/journal.pdig.0000489",
+      "title": "Biomedical text readability after hypernym substitution with fine-tuned large language models.",
+      "reportedFirstPublicationDate": "2024-04-16",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11020904/",
+      "sourcePointer": "/82",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13183375",
+      "pmid": "42149114",
+      "doi": "10.7554/elife.106134",
+      "title": "Identification and classification of ion channels across the tree of life provide functional insights into understudied CALHM channels.",
+      "reportedFirstPublicationDate": "2026-05-18",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13183375/",
+      "sourcePointer": "/83",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12238412",
+      "pmid": "40628696",
+      "doi": "10.1038/s41467-025-60466-1",
+      "title": "Towards fair decentralized benchmarking of healthcare AI algorithms with the Federated Tumor Segmentation (FeTS) challenge.",
+      "reportedFirstPublicationDate": "2025-07-08",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12238412/",
+      "sourcePointer": "/84",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12698695",
+      "pmid": "41381453",
+      "doi": "10.1038/s41467-025-66028-9",
+      "title": "Structural basis of PANX1 permeation and positive modulation by mefloquine.",
+      "reportedFirstPublicationDate": "2025-12-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12698695/",
+      "sourcePointer": "/85",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11697432",
+      "pmid": "39747214",
+      "doi": "10.1038/s41467-024-55659-z",
+      "title": "Multiparametric MRI along with machine learning predicts prognosis and treatment response in pediatric low-grade glioma.",
+      "reportedFirstPublicationDate": "2025-01-02",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11697432/",
+      "sourcePointer": "/86",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11476060",
+      "pmid": "39410047",
+      "doi": "10.3390/cancers16193430",
+      "title": "Prevalence and Prognostication of CD5+ Mature T-Cell Lymphomas.",
+      "reportedFirstPublicationDate": "2024-10-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11476060/",
+      "sourcePointer": "/87",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13645619",
+      "pmid": "42618785",
+      "doi": "10.1038/s41586-026-10892-y",
+      "title": "A biased allosteric modulator is a molecular glue for β&lt;sub&gt;2&lt;/sub&gt;AR dimerization.",
+      "reportedFirstPublicationDate": "2026-08-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13645619/",
+      "sourcePointer": "/88",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11830021",
+      "pmid": "39955424",
+      "doi": "10.1038/s41746-025-01496-3",
+      "title": "Self supervised artificial intelligence predicts poor outcome from primary cutaneous squamous cell carcinoma at diagnosis.",
+      "reportedFirstPublicationDate": "2025-02-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11830021/",
+      "sourcePointer": "/89",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13230930",
+      "pmid": "41888157",
+      "doi": "10.1038/s41540-026-00651-0",
+      "title": "From FAIR to CURE: guidelines for computational models of biological systems.",
+      "reportedFirstPublicationDate": "2026-03-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13230930/",
+      "sourcePointer": "/90",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12553481",
+      "pmid": "40945510",
+      "doi": "10.1016/j.cub.2025.08.030",
+      "title": "Slit2/Robo1 signaling constrains image stabilization responses to preserve ethologically favorable directional asymmetry.",
+      "reportedFirstPublicationDate": "2025-09-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12553481/",
+      "sourcePointer": "/91",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12726831",
+      "pmid": "41432373",
+      "doi": "10.7554/elife.105782",
+      "title": "Predictive modeling of hematoma expansion from non-contrast computed tomography in spontaneous intracerebral hemorrhage patients.",
+      "reportedFirstPublicationDate": "2025-12-23",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12726831/",
+      "sourcePointer": "/92",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9825369",
+      "pmid": "36611059",
+      "doi": "10.1038/s41598-022-27248-x",
+      "title": "Graph theoretical measures of fast ripple networks improve the accuracy of post-operative seizure outcome prediction.",
+      "reportedFirstPublicationDate": "2023-01-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9825369/",
+      "sourcePointer": "/93",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11997153",
+      "pmid": "40229513",
+      "doi": "10.1038/s41746-025-01592-4",
+      "title": "Leveraging pretrained language models for seizure frequency extraction from epilepsy evaluation reports.",
+      "reportedFirstPublicationDate": "2025-04-14",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11997153/",
+      "sourcePointer": "/94",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11387620",
+      "pmid": "39256052",
+      "doi": "10.26508/lsa.202402938",
+      "title": "Non-redundant roles for the human mRNA decapping cofactor paralogs DCP1a and DCP1b.",
+      "reportedFirstPublicationDate": "2024-09-10",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11387620/",
+      "sourcePointer": "/95",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12047528",
+      "pmid": "40239619",
+      "doi": "10.1016/j.xcrm.2025.102076",
+      "title": "Evolution of the tumor immune landscape during treatment with tebentafusp, a T cell receptor-CD3 bispecific.",
+      "reportedFirstPublicationDate": "2025-04-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12047528/",
+      "sourcePointer": "/96",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12192136",
+      "pmid": "40560895",
+      "doi": "10.1371/journal.pone.0313711",
+      "title": "A rubric for assessing conformance to the Ten Rules for credible practice of modeling and simulation in healthcare.",
+      "reportedFirstPublicationDate": "2025-06-25",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12192136/",
+      "sourcePointer": "/97",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11316452",
+      "pmid": "39110574",
+      "doi": "10.1167/tvst.13.8.11",
+      "title": "Transformer-Based Deep Learning Prediction of 10-Degree Humphrey Visual Field Tests From 24-Degree Data.",
+      "reportedFirstPublicationDate": "2024-08-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11316452/",
+      "sourcePointer": "/98",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11312132",
+      "pmid": "39123378",
+      "doi": "10.3390/cancers16152650",
+      "title": "Genome-Wide Methylation Patterns in Primary Uveal Melanoma: Development of MethylSig-UM, an Epigenomic Prognostic Signature to Improve Patient Stratification.",
+      "reportedFirstPublicationDate": "2024-07-25",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11312132/",
+      "sourcePointer": "/99",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10794619",
+      "pmid": "38239625",
+      "doi": "10.3389/fgeed.2023.1248982",
+      "title": "Computational analysis of cas proteins unlocks new potential in HIV-1 targeted gene therapy.",
+      "reportedFirstPublicationDate": "2024-01-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10794619/",
+      "sourcePointer": "/100",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10212746",
+      "pmid": "37250611",
+      "doi": "10.7759/cureus.39417",
+      "title": "Disaster Triage Skills Training: An Introductory Virtual Simulation for Medical Students.",
+      "reportedFirstPublicationDate": "2023-05-23",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10212746/",
+      "sourcePointer": "/101",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9901399",
+      "pmid": "36688696",
+      "doi": "10.1093/bioinformatics/btad051",
+      "title": "Differential co-expression network analysis with DCoNA reveals isomiR targeting aberrations in prostate cancer.",
+      "reportedFirstPublicationDate": "2023-02-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9901399/",
+      "sourcePointer": "/102",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11608329",
+      "pmid": "39616197",
+      "doi": "10.1038/s41419-024-07165-9",
+      "title": "OPA1 and disease-causing mutants perturb mitochondrial nucleoid distribution.",
+      "reportedFirstPublicationDate": "2024-11-30",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11608329/",
+      "sourcePointer": "/103",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11137182",
+      "pmid": "38818373",
+      "doi": "10.3389/fphar.2024.1394685",
+      "title": "Selective and brain-penetrant ACSS2 inhibitors target breast cancer brain metastatic cells.",
+      "reportedFirstPublicationDate": "2024-05-16",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11137182/",
+      "sourcePointer": "/104",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11438862",
+      "pmid": "39341872",
+      "doi": "10.1038/s41598-024-72994-9",
+      "title": "Nanopore signal deviations from pseudouridine modifications in RNA are sequence-specific: quantification requires dedicated synthetic controls.",
+      "reportedFirstPublicationDate": "2024-09-28",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11438862/",
+      "sourcePointer": "/105",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12340085",
+      "pmid": "40789848",
+      "doi": "10.1038/s41467-025-62342-4",
+      "title": "An RNA modification prevents extended codon-anticodon interactions from facilitating +1 frameshifting.",
+      "reportedFirstPublicationDate": "2025-08-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12340085/",
+      "sourcePointer": "/106",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10570291",
+      "pmid": "37828050",
+      "doi": "10.1038/s42003-023-05380-2",
+      "title": "MAxSIM: multi-angle-crossing structured illumination microscopy with height-controlled mirror for 3D topological mapping of live cells.",
+      "reportedFirstPublicationDate": "2023-10-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10570291/",
+      "sourcePointer": "/107",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11338141",
+      "pmid": "39171288",
+      "doi": "10.1016/j.isci.2024.110549",
+      "title": "Neuromodulatory co-expression in cardiac vagal motor neurons of the dorsal motor nucleus of the vagus.",
+      "reportedFirstPublicationDate": "2024-07-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11338141/",
+      "sourcePointer": "/108",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10033530",
+      "pmid": "36969577",
+      "doi": "10.3389/fphys.2023.1102393",
+      "title": "Longitudinal ultrasound imaging and network modeling in rats reveal sex-dependent suppression of liver regeneration after resection in alcoholic liver disease.",
+      "reportedFirstPublicationDate": "2023-03-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10033530/",
+      "sourcePointer": "/109",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9563764",
+      "pmid": "36229842",
+      "doi": "10.1186/s13073-022-01119-6",
+      "title": "CTpathway: a CrossTalk-based pathway enrichment analysis method for cancer research.",
+      "reportedFirstPublicationDate": "2022-10-13",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9563764/",
+      "sourcePointer": "/110",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10978903",
+      "pmid": "38548902",
+      "doi": "10.1038/s42003-024-06071-2",
+      "title": "The nuclear import receptor Kapβ2 modifies neurotoxicity mediated by poly(GR) in C9orf72-linked ALS/FTD.",
+      "reportedFirstPublicationDate": "2024-03-28",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10978903/",
+      "sourcePointer": "/111",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11770116",
+      "pmid": "39865096",
+      "doi": "10.1038/s41467-025-56348-1",
+      "title": "Genome-wide profiling of tRNA modifications by Induro-tRNAseq reveals coordinated changes.",
+      "reportedFirstPublicationDate": "2025-01-26",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11770116/",
+      "sourcePointer": "/112",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7020508",
+      "pmid": "32054449",
+      "doi": "10.1186/s12859-020-3399-8",
+      "title": "iSeqQC: a tool for expression-based quality control in RNA sequencing.",
+      "reportedFirstPublicationDate": "2020-02-13",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7020508/",
+      "sourcePointer": "/113",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12819146",
+      "pmid": "41174277",
+      "doi": "10.1038/s41594-025-01702-6",
+      "title": "Structural basis for retron co-option of anti-phage ATPase-nuclease.",
+      "reportedFirstPublicationDate": "2025-10-31",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12819146/",
+      "sourcePointer": "/114",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10976937",
+      "pmid": "38343254",
+      "doi": "10.1007/s10278-023-00918-6",
+      "title": "Development of End-to-End AI-Based MRI Image Analysis System for Predicting IDH Mutation Status of Patients with Gliomas: Multicentric Validation.",
+      "reportedFirstPublicationDate": "2024-01-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10976937/",
+      "sourcePointer": "/115",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10801864",
+      "pmid": "38194456",
+      "doi": "10.1073/pnas.2307776121",
+      "title": "A structurally precise mechanism links an epilepsy-associated &lt;i&gt;KCNC2&lt;/i&gt; potassium channel mutation to interneuron dysfunction.",
+      "reportedFirstPublicationDate": "2024-01-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10801864/",
+      "sourcePointer": "/116",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11489592",
+      "pmid": "39424798",
+      "doi": "10.1038/s41467-024-53318-x",
+      "title": "Post-transcriptional methylation of mitochondrial-tRNA differentially contributes to mitochondrial pathology.",
+      "reportedFirstPublicationDate": "2024-10-18",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11489592/",
+      "sourcePointer": "/117",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11865073",
+      "pmid": "40018011",
+      "doi": "10.3389/fnmol.2025.1544971",
+      "title": "Deciphering motor dysfunction and microglial activation in mThy1-&lt;i&gt;α&lt;/i&gt;-synuclein mice: a comprehensive study of behavioral, gene expression, and methylation changes.",
+      "reportedFirstPublicationDate": "2025-02-13",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11865073/",
+      "sourcePointer": "/118",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8927161",
+      "pmid": "35296667",
+      "doi": "10.1038/s41467-022-28801-y",
+      "title": "Targeting SOX10-deficient cells to reduce the dormant-invasive phenotype state in melanoma.",
+      "reportedFirstPublicationDate": "2022-03-16",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8927161/",
+      "sourcePointer": "/119",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9089792",
+      "pmid": "35316210",
+      "doi": "10.1172/jci.insight.156021",
+      "title": "Whole-transcriptome sequencing-based concomitant detection of viral and human genetic determinants of cutaneous lesions.",
+      "reportedFirstPublicationDate": "2022-04-22",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9089792/",
+      "sourcePointer": "/120",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9289370",
+      "pmid": "35860266",
+      "doi": "10.3389/fimmu.2022.912583",
+      "title": "Transcription Factor RUNX3 Mediates Plasticity of ThGM Cells Toward Th1 Phenotype.",
+      "reportedFirstPublicationDate": "2022-07-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9289370/",
+      "sourcePointer": "/121",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9803939",
+      "pmid": "36566592",
+      "doi": "10.1016/j.neo.2022.100869",
+      "title": "Unsupervised machine learning using K-means identifies radiomic subgroups of pediatric low-grade gliomas that correlate with key molecular markers.",
+      "reportedFirstPublicationDate": "2022-12-23",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9803939/",
+      "sourcePointer": "/122",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10874418",
+      "pmid": "38368435",
+      "doi": "10.1038/s41537-024-00443-7",
+      "title": "Temporal changes of gene expression in health, schizophrenia, bipolar disorder, and major depressive disorder.",
+      "reportedFirstPublicationDate": "2024-02-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10874418/",
+      "sourcePointer": "/123",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10587774",
+      "pmid": "37869578",
+      "doi": "10.1093/braincomms/fcad242",
+      "title": "Fast ripples reflect increased excitability that primes epileptiform spikes.",
+      "reportedFirstPublicationDate": "2023-09-08",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10587774/",
+      "sourcePointer": "/124",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12390939",
+      "pmid": "40818383",
+      "doi": "10.1016/j.jacbts.2025.101334",
+      "title": "Integrated Systems Biology Identifies Disruptions in Mitochondrial Function and Metabolism as Key Contributors to HFpEF.",
+      "reportedFirstPublicationDate": "2025-08-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12390939/",
+      "sourcePointer": "/125",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11649116",
+      "pmid": "39621782",
+      "doi": "10.1371/journal.pmed.1004500",
+      "title": "A latent class assessment of healthcare access factors and disparities in breast cancer care timeliness.",
+      "reportedFirstPublicationDate": "2024-12-02",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11649116/",
+      "sourcePointer": "/126",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13183514",
+      "pmid": "42150890",
+      "doi": "10.1002/sim.70593",
+      "title": "Multi-Level Variable Selection Using a BART-Enhanced Mixed-Effects Framework.",
+      "reportedFirstPublicationDate": "2026-05-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13183514/",
+      "sourcePointer": "/127",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11305674",
+      "pmid": "39110491",
+      "doi": "10.7554/elife.94114",
+      "title": "Stem-loop and circle-loop TADs generated by directional pairing of boundary elements have distinct physical and regulatory properties.",
+      "reportedFirstPublicationDate": "2024-08-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11305674/",
+      "sourcePointer": "/128",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9128387",
+      "pmid": "35620169",
+      "doi": "10.1093/braincomms/fcac101",
+      "title": "Graph theoretical measures of fast ripples support the epileptic network hypothesis.",
+      "reportedFirstPublicationDate": "2022-04-20",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9128387/",
+      "sourcePointer": "/129",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12092734",
+      "pmid": "40393985",
+      "doi": "10.1038/s41467-025-59654-w",
+      "title": "An integrative systems-biology approach defines mechanisms of Alzheimer's disease neurodegeneration.",
+      "reportedFirstPublicationDate": "2025-05-20",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12092734/",
+      "sourcePointer": "/130",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7597856",
+      "pmid": "32603860",
+      "doi": "10.1016/j.neuroimage.2020.117081",
+      "title": "Brain extraction on MRI scans in presence of diffuse glioma: Multi-institutional performance evaluation of deep learning methods and robust modality-agnostic training.",
+      "reportedFirstPublicationDate": "2020-06-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7597856/",
+      "sourcePointer": "/131",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10714140",
+      "pmid": "37676710",
+      "doi": "10.1158/2159-8290.cd-23-0306",
+      "title": "Master Transcription Factor Reprogramming Unleashes Selective Translation Promoting Castration Resistance and Immune Evasion in Lethal Prostate Cancer.",
+      "reportedFirstPublicationDate": "2023-12-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10714140/",
+      "sourcePointer": "/132",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12187462",
+      "pmid": "39847453",
+      "doi": "10.1093/neuonc/noaf017",
+      "title": "Genetic ancestry superpopulations show distinct prevalence and outcomes across pediatric central nervous system tumors from the Pediatric Brain Tumor Atlas and Pediatric Neuro-Oncology Consortium.",
+      "reportedFirstPublicationDate": "2025-06-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12187462/",
+      "sourcePointer": "/133",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11302336",
+      "pmid": "38912809",
+      "doi": "10.1128/spectrum.04225-23",
+      "title": "Tracking the prevalence and emergence of SARS-CoV-2 variants of concern using a regional genomic surveillance program.",
+      "reportedFirstPublicationDate": "2024-06-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11302336/",
+      "sourcePointer": "/134",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9722782",
+      "pmid": "36470898",
+      "doi": "10.1038/s41467-022-33407-5",
+      "title": "Federated learning enables big data for rare cancer boundary detection.",
+      "reportedFirstPublicationDate": "2022-12-05",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9722782/",
+      "sourcePointer": "/135",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9641669",
+      "pmid": "36052683",
+      "doi": "10.1242/dev.200413",
+      "title": "Young transposable elements rewired gene regulatory networks in human and chimpanzee hippocampal intermediate progenitors.",
+      "reportedFirstPublicationDate": "2022-10-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9641669/",
+      "sourcePointer": "/136",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10965206",
+      "pmid": "38513170",
+      "doi": "10.1200/po.23.00555",
+      "title": "Plasma Proteome-Based Test for First-Line Treatment Selection in Metastatic Non-Small Cell Lung Cancer.",
+      "reportedFirstPublicationDate": "2024-03-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10965206/",
+      "sourcePointer": "/137",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10957870",
+      "pmid": "38514616",
+      "doi": "10.1038/s41467-024-46281-0",
+      "title": "A cerebro-cerebellar network for learning visuomotor associations.",
+      "reportedFirstPublicationDate": "2024-03-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10957870/",
+      "sourcePointer": "/138",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12702018",
+      "pmid": "41489901",
+      "doi": "10.1016/j.jbc.2025.110857",
+      "title": "DNA-damage dependent isoform switching modulates RIF1 DNA repair complex assembly and phase separation.",
+      "reportedFirstPublicationDate": "2025-10-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12702018/",
+      "sourcePointer": "/139",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8317110",
+      "pmid": "33471076",
+      "doi": "10.1093/bioinformatics/btab016",
+      "title": "IsoMiRmap: fast, deterministic and exhaustive mining of isomiRs from short RNA-seq datasets.",
+      "reportedFirstPublicationDate": "2021-07-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8317110/",
+      "sourcePointer": "/140",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13645755",
+      "pmid": null,
+      "doi": null,
+      "title": "Programmable CAR-engaging particles rewire human CAR T-cell signaling for sustainable ex vivo expansion",
+      "reportedFirstPublicationDate": "2026-01-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13645755/",
+      "sourcePointer": "/141",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9379882",
+      "pmid": "35974082",
+      "doi": "10.1038/s41372-022-01488-1",
+      "title": "Changes in preterm birth during the COVID-19 pandemic by duration of exposure and race and ethnicity.",
+      "reportedFirstPublicationDate": "2022-08-16",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9379882/",
+      "sourcePointer": "/142",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9583861",
+      "pmid": "36275459",
+      "doi": "10.7717/peerj.14205",
+      "title": "isomiRTar: a comprehensive portal of pan-cancer 5'-isomiR targeting.",
+      "reportedFirstPublicationDate": "2022-10-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9583861/",
+      "sourcePointer": "/143",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7729882",
+      "pmid": "33303784",
+      "doi": "10.1038/s41598-020-78344-9",
+      "title": "Arrhythmogenic right ventricular cardiomyopathy in patients with biallelic JUP-associated skin fragility.",
+      "reportedFirstPublicationDate": "2020-12-10",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7729882/",
+      "sourcePointer": "/144",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11171879",
+      "pmid": "38891132",
+      "doi": "10.3390/healthcare12111057",
+      "title": "Clinical Validation of Digital Healthcare Solutions: State of the Art, Challenges and Opportunities.",
+      "reportedFirstPublicationDate": "2024-05-22",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11171879/",
+      "sourcePointer": "/145",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8777025",
+      "pmid": "35071032",
+      "doi": "10.3389/fcimb.2021.749911",
+      "title": "Otitis Media Practice During the COVID-19 Pandemic.",
+      "reportedFirstPublicationDate": "2022-01-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8777025/",
+      "sourcePointer": "/146",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10023659",
+      "pmid": "36932057",
+      "doi": "10.1038/s41398-023-02392-8",
+      "title": "Antipsychotic drug use complicates assessment of gene expression changes associated with schizophrenia.",
+      "reportedFirstPublicationDate": "2023-03-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10023659/",
+      "sourcePointer": "/147",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8105371",
+      "pmid": "33963236",
+      "doi": "10.1038/s41598-021-89114-6",
+      "title": "Comparison of radiomic feature aggregation methods for patients with multiple tumors.",
+      "reportedFirstPublicationDate": "2021-05-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8105371/",
+      "sourcePointer": "/148",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11978521",
+      "pmid": "40074951",
+      "doi": "10.1038/s41592-025-02622-5",
+      "title": "Spotiphy enables single-cell spatial whole transcriptomics across an entire section.",
+      "reportedFirstPublicationDate": "2025-03-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11978521/",
+      "sourcePointer": "/149",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7902049",
+      "pmid": "33633771",
+      "doi": "10.3389/fgene.2020.612840",
+      "title": "Machine Learning Approaches Identify Genes Containing Spatial Information From Single-Cell Transcriptomics Data.",
+      "reportedFirstPublicationDate": "2021-02-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7902049/",
+      "sourcePointer": "/150",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8997573",
+      "pmid": "35406624",
+      "doi": "10.3390/cancers14071848",
+      "title": "HuR Plays a Role in Double-Strand Break Repair in Pancreatic Cancer Cells and Regulates Functional BRCA1-Associated-Ring-Domain-1(BARD1) Isoforms.",
+      "reportedFirstPublicationDate": "2022-04-06",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8997573/",
+      "sourcePointer": "/151",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8560764",
+      "pmid": "34725412",
+      "doi": "10.1038/s41598-021-00894-3",
+      "title": "Accuracy of high-frequency oscillations recorded intraoperatively for classification of epileptogenic regions.",
+      "reportedFirstPublicationDate": "2021-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8560764/",
+      "sourcePointer": "/152",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8574980",
+      "pmid": "34160582",
+      "doi": "10.1093/bib/bbab236",
+      "title": "Consensus clustering of single-cell RNA-seq data by enhancing network affinity.",
+      "reportedFirstPublicationDate": "2021-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8574980/",
+      "sourcePointer": "/153",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11741684",
+      "pmid": "39774334",
+      "doi": "10.1371/journal.pcbi.1012725",
+      "title": "Prioritization of causal genes from genome-wide association studies by Bayesian data integration across loci.",
+      "reportedFirstPublicationDate": "2025-01-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11741684/",
+      "sourcePointer": "/154",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9325761",
+      "pmid": "35882891",
+      "doi": "10.1038/s41598-022-16609-1",
+      "title": "AutoComBat: a generic method for harmonizing MRI-based radiomic features.",
+      "reportedFirstPublicationDate": "2022-07-26",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9325761/",
+      "sourcePointer": "/155",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8213026",
+      "pmid": "34149716",
+      "doi": "10.3389/fimmu.2021.679498",
+      "title": "IFN-β Acts on Monocytes to Ameliorate CNS Autoimmunity by Inhibiting Proinflammatory Cross-Talk Between Monocytes and Th Cells.",
+      "reportedFirstPublicationDate": "2021-06-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8213026/",
+      "sourcePointer": "/156",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11298593",
+      "pmid": "38944122",
+      "doi": "10.1016/j.jbc.2024.107505",
+      "title": "ArcS from Thermococcus kodakarensis transfers L-lysine to preQ&lt;sub&gt;0&lt;/sub&gt; nucleoside derivatives as minimum substrate RNAs.",
+      "reportedFirstPublicationDate": "2024-06-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11298593/",
+      "sourcePointer": "/157",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11305675",
+      "pmid": "39110499",
+      "doi": "10.7554/elife.94070",
+      "title": "Chromosome structure in <i>Drosophila</i> is determined by boundary pairing not loop extrusion.",
+      "reportedFirstPublicationDate": "2024-08-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11305675/",
+      "sourcePointer": "/158",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13431743",
+      "pmid": "38845484",
+      "doi": "10.1002/ana.26952",
+      "title": "Accelerated Aging after Traumatic Brain Injury: An ENIGMA Multi-Cohort Mega-Analysis.",
+      "reportedFirstPublicationDate": "2024-06-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13431743/",
+      "sourcePointer": "/159",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9958017",
+      "pmid": "36828823",
+      "doi": "10.1038/s41392-023-01346-2",
+      "title": "From tuberculosis bedside to bench: UBE2B splicing as a potential biomarker and its regulatory mechanism.",
+      "reportedFirstPublicationDate": "2023-02-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9958017/",
+      "sourcePointer": "/160",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8802214",
+      "pmid": "34742943",
+      "doi": "10.1016/j.neuroimage.2021.118689",
+      "title": "Neurons in the human medial temporal lobe track multiple temporal contexts during episodic memory processing.",
+      "reportedFirstPublicationDate": "2021-11-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8802214/",
+      "sourcePointer": "/161",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9912253",
+      "pmid": "36787103",
+      "doi": "10.1021/acs.iecr.2c03579",
+      "title": "Elucidating the Mechanisms of Dynamic and Robust Control of the Liver Homeostatic Renewal Process: Cell Network Modeling and Analysis.",
+      "reportedFirstPublicationDate": "2023-01-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9912253/",
+      "sourcePointer": "/162",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10696540",
+      "pmid": "36093921",
+      "doi": "10.1088/1361-6560/ac8044",
+      "title": "OpenKBP-Opt: an international and reproducible evaluation of 76 knowledge-based planning pipelines.",
+      "reportedFirstPublicationDate": "2022-09-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10696540/",
+      "sourcePointer": "/163",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9788589",
+      "pmid": "36557195",
+      "doi": "10.3390/metabo12121157",
+      "title": "Genome-Scale Metabolic Modeling Reveals Sequential Dysregulation of Glutathione Metabolism in Livers from Patients with Alcoholic Hepatitis.",
+      "reportedFirstPublicationDate": "2022-11-22",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9788589/",
+      "sourcePointer": "/164",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12728734",
+      "pmid": "41442496",
+      "doi": "10.1093/molbev/msaf304",
+      "title": "Recombination Suppression Drives Expansion of the Drosophila Dot Chromosome.",
+      "reportedFirstPublicationDate": "2025-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12728734/",
+      "sourcePointer": "/165",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11994449",
+      "pmid": "38862616",
+      "doi": "10.1038/s41587-024-02250-y",
+      "title": "Crowd-sourced benchmarking of single-sample tumor subclonal reconstruction.",
+      "reportedFirstPublicationDate": "2024-06-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11994449/",
+      "sourcePointer": "/166",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10446208",
+      "pmid": "37566612",
+      "doi": "10.1371/journal.pcbi.1010727",
+      "title": "VarSCAT: A computational tool for sequence context annotations of genomic variants.",
+      "reportedFirstPublicationDate": "2023-08-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10446208/",
+      "sourcePointer": "/167",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8324857",
+      "pmid": "34355144",
+      "doi": "10.1016/j.isci.2021.102795",
+      "title": "3D single cell scale anatomical map of sex-dependent variability of the rat intrinsic cardiac nervous system.",
+      "reportedFirstPublicationDate": "2021-07-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8324857/",
+      "sourcePointer": "/168",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9975292",
+      "pmid": "36787737",
+      "doi": "10.1016/j.xcrm.2023.100937",
+      "title": "Harnessing transcriptionally driven chromosomal instability adaptation to target therapy-refractory lethal prostate cancer.",
+      "reportedFirstPublicationDate": "2023-02-13",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9975292/",
+      "sourcePointer": "/169",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8352989",
+      "pmid": "34373530",
+      "doi": "10.1038/s41598-021-95561-y",
+      "title": "Validating deep learning inference during chest X-ray classification for COVID-19 screening.",
+      "reportedFirstPublicationDate": "2021-08-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8352989/",
+      "sourcePointer": "/170",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10226438",
+      "pmid": "37247113",
+      "doi": "10.1007/s11548-023-02965-4",
+      "title": "Automated screening of computed tomography using weakly supervised anomaly detection.",
+      "reportedFirstPublicationDate": "2023-05-29",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10226438/",
+      "sourcePointer": "/171",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10956028",
+      "pmid": null,
+      "doi": null,
+      "title": "GaNDLF: the generally nuanced deep learning framework for scalable end-to-end clinical workflows",
+      "reportedFirstPublicationDate": "2023-01-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10956028/",
+      "sourcePointer": "/172",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9770999",
+      "pmid": "36542714",
+      "doi": "10.1126/sciadv.abo2846",
+      "title": "Stabilized COre gene and Pathway Election uncovers pan-cancer shared pathways and a cancer-specific driver.",
+      "reportedFirstPublicationDate": "2022-12-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9770999/",
+      "sourcePointer": "/173",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10313915",
+      "pmid": "37224815",
+      "doi": "10.1016/j.xcrm.2023.101052",
+      "title": "Tumor biology and immune infiltration define primary liver cancer subsets linked to overall survival after immunotherapy.",
+      "reportedFirstPublicationDate": "2023-05-23",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10313915/",
+      "sourcePointer": "/174",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8494410",
+      "pmid": "34621541",
+      "doi": "10.3390/app11167488",
+      "title": "Interactive Machine Learning-Based Multi-Label Segmentation of Solid Tumors and Organs.",
+      "reportedFirstPublicationDate": "2021-08-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8494410/",
+      "sourcePointer": "/175",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11389932",
+      "pmid": "39186798",
+      "doi": "10.1371/journal.pcbi.1012356",
+      "title": "Regression convolutional neural network models implicate peripheral immune regulatory variants in the predisposition to Alzheimer's disease.",
+      "reportedFirstPublicationDate": "2024-08-26",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11389932/",
+      "sourcePointer": "/176",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10199930",
+      "pmid": "37210439",
+      "doi": "10.1038/s41467-023-38595-2",
+      "title": "Membrane compression by synaptic vesicle exocytosis triggers ultrafast endocytosis.",
+      "reportedFirstPublicationDate": "2023-05-20",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10199930/",
+      "sourcePointer": "/177",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9684183",
+      "pmid": "36437938",
+      "doi": "10.3389/fgene.2022.963163",
+      "title": "Intelligence, education level, and risk of Parkinson's disease in European populations: A Mendelian randomization study.",
+      "reportedFirstPublicationDate": "2022-11-10",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9684183/",
+      "sourcePointer": "/178",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11042736",
+      "pmid": "38657076",
+      "doi": "10.1126/sciadv.adl0164",
+      "title": "tRNA anticodon cleavage by target-activated CRISPR-Cas13a effector.",
+      "reportedFirstPublicationDate": "2024-04-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11042736/",
+      "sourcePointer": "/179",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8783204",
+      "pmid": "35098166",
+      "doi": "10.1016/j.xpro.2021.101119",
+      "title": "Fluorescence imaging detection of nanodomain redox signaling events at organellar contacts.",
+      "reportedFirstPublicationDate": "2022-01-20",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8783204/",
+      "sourcePointer": "/180",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10620528",
+      "pmid": "37928725",
+      "doi": "10.3389/fnins.2023.1272514",
+      "title": "Structural-functional coupling abnormalities in temporal lobe epilepsy.",
+      "reportedFirstPublicationDate": "2023-10-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10620528/",
+      "sourcePointer": "/181",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8140596",
+      "pmid": "34055490",
+      "doi": "10.7717/peerj.11458",
+      "title": "miRcorrNet: machine learning-based integration of miRNA and mRNA expression profiles, combined with feature grouping and ranking.",
+      "reportedFirstPublicationDate": "2021-05-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8140596/",
+      "sourcePointer": "/182",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11573350",
+      "pmid": "39556109",
+      "doi": "10.7554/elife.99018",
+      "title": "Electrophysiological dynamics of salience, default mode, and frontoparietal networks during episodic memory formation and recall revealed through multi-experiment iEEG replication.",
+      "reportedFirstPublicationDate": "2024-11-18",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11573350/",
+      "sourcePointer": "/183",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9565167",
+      "pmid": "36191226",
+      "doi": "10.1073/pnas.2207303119",
+      "title": "Mesoscale structure-function relationships in mitochondrial transcriptional condensates.",
+      "reportedFirstPublicationDate": "2022-10-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9565167/",
+      "sourcePointer": "/184",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9852470",
+      "pmid": "36658122",
+      "doi": "10.1038/s41467-023-35858-w",
+      "title": "Semi-quantitative detection of pseudouridine modifications and type I/II hypermodifications in human mRNAs using direct long-read sequencing.",
+      "reportedFirstPublicationDate": "2023-01-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9852470/",
+      "sourcePointer": "/185",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8662697",
+      "pmid": "34899380",
+      "doi": "10.3389/fphys.2021.748962",
+      "title": "A Spatial Model of Hepatic Calcium Signaling and Glucose Metabolism Under Autonomic Control Reveals Functional Consequences of Varying Liver Innervation Patterns Across Species.",
+      "reportedFirstPublicationDate": "2021-11-26",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8662697/",
+      "sourcePointer": "/186",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9645718",
+      "pmid": "36351015",
+      "doi": "10.1126/sciadv.abn2293",
+      "title": "Uncovering the biological basis of control energy: Structural and metabolic correlates of energy inefficiency in temporal lobe epilepsy.",
+      "reportedFirstPublicationDate": "2022-11-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9645718/",
+      "sourcePointer": "/187",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8095192",
+      "pmid": "34017925",
+      "doi": "10.12688/wellcomeopenres.16595.3",
+      "title": "<i>luox</i>: validated reference open-access and open-source web platform for calculating and sharing physiologically relevant quantities for light and lighting.",
+      "reportedFirstPublicationDate": "2021-01-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8095192/",
+      "sourcePointer": "/188",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10770324",
+      "pmid": "38182597",
+      "doi": "10.1038/s41467-023-44630-z",
+      "title": "Tail-tape-fused virion and non-virion RNA polymerases of a thermophilic virus with an extremely long tail.",
+      "reportedFirstPublicationDate": "2024-01-05",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10770324/",
+      "sourcePointer": "/189",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5959832",
+      "pmid": "29725961",
+      "doi": "10.1007/s10278-018-0079-6",
+      "title": "Hello World Deep Learning in Medical Imaging.",
+      "reportedFirstPublicationDate": "2018-06-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5959832/",
+      "sourcePointer": "/190",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10083149",
+      "pmid": "37032417",
+      "doi": "10.1186/s41747-023-00330-3",
+      "title": "Evaluation of techniques to improve a deep learning algorithm for the automatic detection of intracranial haemorrhage on CT head imaging.",
+      "reportedFirstPublicationDate": "2023-04-10",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10083149/",
+      "sourcePointer": "/191",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11149630",
+      "pmid": "38701783",
+      "doi": "10.1016/j.cell.2024.04.009",
+      "title": "FLT3L governs the development of partially overlapping hematopoietic lineages in humans and mice.",
+      "reportedFirstPublicationDate": "2024-05-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11149630/",
+      "sourcePointer": "/192",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9986822",
+      "pmid": "36597777",
+      "doi": "10.15252/embr.202256310",
+      "title": "Multinucleation resets human macrophages for specialized functions at the expense of their identity.",
+      "reportedFirstPublicationDate": "2023-01-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9986822/",
+      "sourcePointer": "/193",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10638097",
+      "pmid": "37948126",
+      "doi": "10.1083/jcb.202206109",
+      "title": "Membrane contact site detection (MCS-DETECT) reveals dual control of rough mitochondria-ER contacts.",
+      "reportedFirstPublicationDate": "2023-11-10",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10638097/",
+      "sourcePointer": "/194",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6095944",
+      "pmid": "30128278",
+      "doi": "10.1016/j.nicl.2018.07.026",
+      "title": "Enhanced co-registration methods to improve intracranial electrode contact localization.",
+      "reportedFirstPublicationDate": "2018-08-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6095944/",
+      "sourcePointer": "/195",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7985454",
+      "pmid": "33768011",
+      "doi": "10.3389/fcimb.2021.593077",
+      "title": "Computational Design of gRNAs Targeting Genetic Variants Across HIV-1 Subtypes for CRISPR-Mediated Antiviral Therapy.",
+      "reportedFirstPublicationDate": "2021-03-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7985454/",
+      "sourcePointer": "/196",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6849479",
+      "pmid": "31484068",
+      "doi": "10.1016/j.celrep.2019.08.008",
+      "title": "White Matter Network Architecture Guides Direct Electrical Stimulation through Optimal State Transitions.",
+      "reportedFirstPublicationDate": "2019-09-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6849479/",
+      "sourcePointer": "/197",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8460807",
+      "pmid": "34556645",
+      "doi": "10.1038/s41467-021-25763-5",
+      "title": "A comprehensive map of alternative polyadenylation in African American and European American lung cancer patients.",
+      "reportedFirstPublicationDate": "2021-09-23",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8460807/",
+      "sourcePointer": "/198",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8143497",
+      "pmid": "33922147",
+      "doi": "10.3390/jpm11050330",
+      "title": "The Quandary of DNA-Based Treatment Assessment in De Novo Metastatic Prostate Cancer in the Era of Precision Oncology.",
+      "reportedFirstPublicationDate": "2021-04-22",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8143497/",
+      "sourcePointer": "/199",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12192951",
+      "pmid": "40567687",
+      "doi": "10.7717/peerj-cs.2920",
+      "title": "A novel brain tumor magnetic resonance imaging dataset (Gazi Brains 2020): initial benchmark results and comprehensive analysis.",
+      "reportedFirstPublicationDate": "2025-06-10",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12192951/",
+      "sourcePointer": "/200",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10173889",
+      "pmid": "37377895",
+      "doi": "10.1158/2767-9764.crc-22-0473",
+      "title": "Decoding the lncRNAome Across Diverse Cellular Stresses Reveals Core p53-effector Pan-cancer Suppressive lncRNAs.",
+      "reportedFirstPublicationDate": "2023-05-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10173889/",
+      "sourcePointer": "/201",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10755723",
+      "pmid": "38162019",
+      "doi": "10.1016/j.isci.2023.108568",
+      "title": "A desmosomal cadherin controls multipotent hair follicle stem cell quiescence and orchestrates regeneration through adhesion signaling.",
+      "reportedFirstPublicationDate": "2023-11-25",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10755723/",
+      "sourcePointer": "/202",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8973303",
+      "pmid": "35370563",
+      "doi": "10.3389/fncel.2022.852245",
+      "title": "Serine/Threonine Protein Phosphatase 2A Regulates the Transport of Axonal Mitochondria.",
+      "reportedFirstPublicationDate": "2022-03-18",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8973303/",
+      "sourcePointer": "/203",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8837823",
+      "pmid": "34971383",
+      "doi": "10.1093/molbev/msab369",
+      "title": "Positive Selection and Enhancer Evolution Shaped Lifespan and Body Mass in Great Apes.",
+      "reportedFirstPublicationDate": "2022-02-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8837823/",
+      "sourcePointer": "/204",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8381822",
+      "pmid": "33131416",
+      "doi": "10.1080/19490976.2020.1820847",
+      "title": "A behavioral model for mapping the genetic architecture of gut-microbiota networks.",
+      "reportedFirstPublicationDate": "2020-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8381822/",
+      "sourcePointer": "/205",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8082292",
+      "pmid": "33937440",
+      "doi": "10.1117/1.jmi.8.3.031905",
+      "title": "Improving performance and generalizability in radiogenomics: a pilot study for prediction of IDH1/2 mutation status in gliomas with multicentric data.",
+      "reportedFirstPublicationDate": "2021-04-29",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8082292/",
+      "sourcePointer": "/206",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10328953",
+      "pmid": "37419921",
+      "doi": "10.1038/s41467-023-39631-x",
+      "title": "Opportunistic detection of type 2 diabetes using deep learning from frontal chest radiographs.",
+      "reportedFirstPublicationDate": "2023-07-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10328953/",
+      "sourcePointer": "/207",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8599856",
+      "pmid": "34428294",
+      "doi": "10.1093/nar/gkab713",
+      "title": "TERA-Seq: true end-to-end sequencing of native RNA molecules for transcriptome characterization.",
+      "reportedFirstPublicationDate": "2021-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8599856/",
+      "sourcePointer": "/208",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6761967",
+      "pmid": "30768150",
+      "doi": "10.1093/bioinformatics/btz109",
+      "title": "Driver network as a biomarker: systematic integration and network modeling of multi-omics data to derive driver signaling pathways for drug combination prediction.",
+      "reportedFirstPublicationDate": "2019-10-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6761967/",
+      "sourcePointer": "/209",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6880934",
+      "pmid": "31693904",
+      "doi": "10.1016/j.celrep.2019.09.071",
+      "title": "Genomic Profiling of Childhood Tumor Patient-Derived Xenograft Models to Enable Rational Clinical Trial Design.",
+      "reportedFirstPublicationDate": "2019-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6880934/",
+      "sourcePointer": "/210",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6161560",
+      "pmid": "30298025",
+      "doi": "10.3389/fpsyt.2018.00443",
+      "title": "Clinical Perspective on Passive Audio Vocal Measurement in the Evaluation of Selective Mutism.",
+      "reportedFirstPublicationDate": "2018-09-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6161560/",
+      "sourcePointer": "/211",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8801812",
+      "pmid": "35111665",
+      "doi": "10.3389/fonc.2021.761359",
+      "title": "Preoperative Contrast-Enhanced MRI in Differentiating Glioblastoma From Low-Grade Gliomas in The Cancer Imaging Archive Database: A Proof-of-Concept Study.",
+      "reportedFirstPublicationDate": "2022-01-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8801812/",
+      "sourcePointer": "/212",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11587069",
+      "pmid": "39584976",
+      "doi": "10.3390/clockssleep6040047",
+      "title": "Thirty-Fifth Annual Meeting of the Society for Light Treatment and Biological Rhythms (SLTBR), 20 June-22 June, Prague, Czech Republic.",
+      "reportedFirstPublicationDate": "2024-11-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11587069/",
+      "sourcePointer": "/213",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6874617",
+      "pmid": "31758077",
+      "doi": "10.1038/s41598-019-53925-5",
+      "title": "Unsupervised machine-learning classification of electrophysiologically active electrodes during human cognitive task performance.",
+      "reportedFirstPublicationDate": "2019-11-22",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6874617/",
+      "sourcePointer": "/214",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9560608",
+      "pmid": "36191044",
+      "doi": "10.1371/journal.pcbi.1010577",
+      "title": "Fast and interpretable consensus clustering via minipatch learning.",
+      "reportedFirstPublicationDate": "2022-10-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9560608/",
+      "sourcePointer": "/215",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8970474",
+      "pmid": "35312684",
+      "doi": "10.1371/journal.pbio.3001503",
+      "title": "The synaptic scaffold protein MPP2 interacts with GABAA receptors at the periphery of the postsynaptic density of glutamatergic synapses.",
+      "reportedFirstPublicationDate": "2022-03-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8970474/",
+      "sourcePointer": "/216",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11358155",
+      "pmid": "39195894",
+      "doi": "10.1038/s44161-023-00392-x",
+      "title": "ATF3 coordinates the survival and proliferation of cardiac macrophages and protects against ischemia-reperfusion injury.",
+      "reportedFirstPublicationDate": "2024-01-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11358155/",
+      "sourcePointer": "/217",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6697415",
+      "pmid": "31368892",
+      "doi": "10.7554/elife.42950",
+      "title": "Multivariate stochastic volatility modeling of neural data.",
+      "reportedFirstPublicationDate": "2019-08-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6697415/",
+      "sourcePointer": "/218",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8860152",
+      "pmid": "35198648",
+      "doi": "10.1093/ofid/ofac037",
+      "title": "Coinfections in Patients With Cancer and COVID-19: A COVID-19 and Cancer Consortium (CCC19) Study.",
+      "reportedFirstPublicationDate": "2022-02-14",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8860152/",
+      "sourcePointer": "/219",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11357984",
+      "pmid": "39195892",
+      "doi": "10.1038/s44161-023-00401-z",
+      "title": "GPR15-mediated T cell recruitment during acute viral myocarditis facilitated virus elimination and improved outcome.",
+      "reportedFirstPublicationDate": "2023-12-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11357984/",
+      "sourcePointer": "/220",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7200598",
+      "pmid": "32066871",
+      "doi": "10.1038/s41436-020-0754-0",
+      "title": "Spinal muscular atrophy diagnosis and carrier screening from genome sequencing data.",
+      "reportedFirstPublicationDate": "2020-02-18",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7200598/",
+      "sourcePointer": "/221",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9531851",
+      "pmid": "36199437",
+      "doi": "10.1109/access.2022.3161471",
+      "title": "CONTROL-CORE: A Framework for Simulation and Design of Closed-Loop Peripheral Neuromodulation Control Systems.",
+      "reportedFirstPublicationDate": "2022-03-22",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9531851/",
+      "sourcePointer": "/222",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7709607",
+      "pmid": "32883935",
+      "doi": "10.4103/ijmm.ijmm_20_303",
+      "title": "Genomic evolution of severe acute respiratory syndrome Coronavirus 2 in India and vaccine impact.",
+      "reportedFirstPublicationDate": "2020-04-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7709607/",
+      "sourcePointer": "/223",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10576517",
+      "pmid": "37841693",
+      "doi": "10.1093/noajnl/vdad119",
+      "title": "Radio-pathomic approaches in pediatric neuro-oncology: Opportunities and challenges.",
+      "reportedFirstPublicationDate": "2023-01-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10576517/",
+      "sourcePointer": "/224",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10580940",
+      "pmid": "37698427",
+      "doi": "10.1128/spectrum.02269-23",
+      "title": "Identifying featured indels associated with SARS-CoV-2 fitness.",
+      "reportedFirstPublicationDate": "2023-09-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10580940/",
+      "sourcePointer": "/225",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8602577",
+      "pmid": "34805215",
+      "doi": "10.3389/fmed.2021.746307",
+      "title": "StainNet: A Fast and Robust Stain Normalization Network.",
+      "reportedFirstPublicationDate": "2021-11-05",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8602577/",
+      "sourcePointer": "/226",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5973981",
+      "pmid": "29736800",
+      "doi": "10.1007/s11548-018-1740-8",
+      "title": "Automatic segmentation of stereoelectroencephalography (SEEG) electrodes post-implantation considering bending.",
+      "reportedFirstPublicationDate": "2018-05-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5973981/",
+      "sourcePointer": "/227",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8691618",
+      "pmid": "34932607",
+      "doi": "10.1371/journal.pone.0261618",
+      "title": "An open-source, lockable mouse wheel for the accessible implementation of time- and distance-limited elective exercise.",
+      "reportedFirstPublicationDate": "2021-12-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8691618/",
+      "sourcePointer": "/228",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8377493",
+      "pmid": "34411910",
+      "doi": "10.1016/j.nicl.2021.102785",
+      "title": "A deep learning algorithm for automatic detection and classification of acute intracranial hemorrhages in head CT scans.",
+      "reportedFirstPublicationDate": "2021-08-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8377493/",
+      "sourcePointer": "/229",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6883333",
+      "pmid": "31765992",
+      "doi": "10.1016/j.isci.2019.11.002",
+      "title": "A Drive to Driven Model of Mapping Intraspecific Interaction Networks.",
+      "reportedFirstPublicationDate": "2019-11-06",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6883333/",
+      "sourcePointer": "/230",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7536825",
+      "pmid": "32972997",
+      "doi": "10.26508/lsa.202000867",
+      "title": "Gene selection for optimal prediction of cell position in tissues from single-cell transcriptomics data.",
+      "reportedFirstPublicationDate": "2020-09-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7536825/",
+      "sourcePointer": "/231",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9837150",
+      "pmid": "36635485",
+      "doi": "10.1038/s42003-022-04303-x",
+      "title": "OxPhos defects cause hypermetabolism and reduce lifespan in cells and in patients with mitochondrial diseases.",
+      "reportedFirstPublicationDate": "2023-01-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9837150/",
+      "sourcePointer": "/232",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9200407",
+      "pmid": "35616527",
+      "doi": "10.7554/elife.76702",
+      "title": "Spontaneous neuronal oscillations in the human insula are hierarchically organized traveling waves.",
+      "reportedFirstPublicationDate": "2022-05-26",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9200407/",
+      "sourcePointer": "/233",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7158140",
+      "pmid": "32290858",
+      "doi": "10.1186/s12976-020-00123-w",
+      "title": "An agent-based model to investigate microbial initiation of Alzheimer's via the olfactory system.",
+      "reportedFirstPublicationDate": "2020-04-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7158140/",
+      "sourcePointer": "/234",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC4364111",
+      "pmid": "25781329",
+      "doi": "10.1371/journal.pone.0121233",
+      "title": "Disease specific productivity of american cancer hospitals.",
+      "reportedFirstPublicationDate": "2015-03-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4364111/",
+      "sourcePointer": "/235",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7394446",
+      "pmid": "32692749",
+      "doi": "10.1371/journal.pcbi.1007504",
+      "title": "Bayesian modelling of high-throughput sequencing assays with malacoda.",
+      "reportedFirstPublicationDate": "2020-07-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7394446/",
+      "sourcePointer": "/236",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7439986",
+      "pmid": "32861268",
+      "doi": "10.1016/j.cmet.2020.08.013",
+      "title": "Metformin Is Associated with Higher Incidence of Acidosis, but Not Mortality, in Individuals with COVID-19 and Pre-existing Type 2 Diabetes.",
+      "reportedFirstPublicationDate": "2020-08-20",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7439986/",
+      "sourcePointer": "/237",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8431826",
+      "pmid": "34244340",
+      "doi": "10.1523/eneuro.0382-20.2021",
+      "title": "Language Tasks and the Network Control Role of the Left Inferior Frontal Gyrus.",
+      "reportedFirstPublicationDate": "2021-09-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8431826/",
+      "sourcePointer": "/238",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC13191901",
+      "pmid": "42169161",
+      "doi": "10.1186/s41512-026-00227-w",
+      "title": "Methods for Evaluating Models, Tests And Biomarkers (MEMTAB): Abstracts from the 7&lt;sup&gt;th&lt;/sup&gt; International Conference, MEMTAB 2025.",
+      "reportedFirstPublicationDate": "2026-05-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13191901/",
+      "sourcePointer": "/239",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7677169",
+      "pmid": "33116311",
+      "doi": "10.1038/s41586-020-2864-x",
+      "title": "Single-cell mutation analysis of clonal evolution in myeloid malignancies.",
+      "reportedFirstPublicationDate": "2020-10-28",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7677169/",
+      "sourcePointer": "/240",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8384417",
+      "pmid": "34382933",
+      "doi": "10.7554/elife.70619",
+      "title": "Loss of &lt;i&gt;N&lt;/i&gt;&lt;sup&gt;1&lt;/sup&gt;-methylation of G37 in tRNA induces ribosome stalling and reprograms gene expression.",
+      "reportedFirstPublicationDate": "2021-08-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8384417/",
+      "sourcePointer": "/241",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10186236",
+      "pmid": "37015818",
+      "doi": "10.1212/wnl.0000000000207219",
+      "title": "Association of Brain Age, Lesion Volume, and Functional Outcome in Patients With Stroke.",
+      "reportedFirstPublicationDate": "2023-04-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10186236/",
+      "sourcePointer": "/242",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7454228",
+      "pmid": "32661416",
+      "doi": "10.1038/s41588-020-0648-8",
+      "title": "The DNA methylation landscape of advanced prostate cancer.",
+      "reportedFirstPublicationDate": "2020-07-13",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7454228/",
+      "sourcePointer": "/243",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10637772",
+      "pmid": "37846664",
+      "doi": "10.7554/elife.82618",
+      "title": "Clinical characteristics, racial inequities, and outcomes in patients with breast cancer and COVID-19: A COVID-19 and cancer consortium (CCC19) cohort study.",
+      "reportedFirstPublicationDate": "2023-10-17",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10637772/",
+      "sourcePointer": "/244",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9088182",
+      "pmid": "35476976",
+      "doi": "10.1016/j.celrep.2022.110737",
+      "title": "Structural basis of TRPV5 regulation by physiological and pathophysiological modulators.",
+      "reportedFirstPublicationDate": "2022-04-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9088182/",
+      "sourcePointer": "/245",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6438764",
+      "pmid": "30131587",
+      "doi": "10.1038/s41380-018-0223-1",
+      "title": "Developmental effects of maternal smoking during pregnancy on the human frontal cortex transcriptome.",
+      "reportedFirstPublicationDate": "2018-08-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6438764/",
+      "sourcePointer": "/246",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10101647",
+      "pmid": "37011100",
+      "doi": "10.1371/journal.pbio.3002070",
+      "title": "BDNF signaling in correlation-dependent structural plasticity in the developing visual system.",
+      "reportedFirstPublicationDate": "2023-04-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10101647/",
+      "sourcePointer": "/247",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7832609",
+      "pmid": "33421384",
+      "doi": "10.1016/j.cmet.2021.01.002",
+      "title": "The Neutrophil-to-Lymphocyte Ratio Determines Clinical Efficacy of Corticosteroid Therapy in Patients with COVID-19.",
+      "reportedFirstPublicationDate": "2021-01-05",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7832609/",
+      "sourcePointer": "/248",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6864089",
+      "pmid": "31745112",
+      "doi": "10.1038/s41598-019-52353-9",
+      "title": "Novel gRNA design pipeline to develop broad-spectrum CRISPR/Cas9 gRNAs for safe targeting of the HIV-1 quasispecies in patients.",
+      "reportedFirstPublicationDate": "2019-11-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6864089/",
+      "sourcePointer": "/249",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7455718",
+      "pmid": "32859890",
+      "doi": "10.1038/s41467-020-18068-6",
+      "title": "Complete chemical structures of human mitochondrial tRNAs.",
+      "reportedFirstPublicationDate": "2020-08-28",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7455718/",
+      "sourcePointer": "/250",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7306179",
+      "pmid": "32433963",
+      "doi": "10.1016/j.celrep.2020.107654",
+      "title": "Zinc Finger RNA-Binding Protein Zn72D Regulates ADAR-Mediated RNA Editing in Neurons.",
+      "reportedFirstPublicationDate": "2020-05-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7306179/",
+      "sourcePointer": "/251",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7896301",
+      "pmid": "33574059",
+      "doi": "10.1073/pnas.2010632118",
+      "title": "The genomics of ecological flexibility, large brains, and long lives in capuchin monkeys revealed with fecalFACS.",
+      "reportedFirstPublicationDate": "2021-02-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7896301/",
+      "sourcePointer": "/252",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12099168",
+      "pmid": null,
+      "doi": null,
+      "title": "Oral Presentations",
+      "reportedFirstPublicationDate": "2025-05-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12099168/",
+      "sourcePointer": "/253",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9113221",
+      "pmid": "35592112",
+      "doi": "10.3389/fnmol.2022.870085",
+      "title": "Proteomic Alterations and Novel Markers of Neurotoxic Reactive Astrocytes in Human Induced Pluripotent Stem Cell Models.",
+      "reportedFirstPublicationDate": "2022-05-03",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9113221/",
+      "sourcePointer": "/254",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7311917",
+      "pmid": "32592657",
+      "doi": "10.1016/j.cmet.2020.06.015",
+      "title": "In-Hospital Use of Statins Is Associated with a Reduced Risk of Mortality among Individuals with COVID-19.",
+      "reportedFirstPublicationDate": "2020-06-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7311917/",
+      "sourcePointer": "/255",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5663707",
+      "pmid": "29089503",
+      "doi": "10.1038/s41598-017-12612-z",
+      "title": "Designing broad-spectrum anti-HIV-1 gRNAs to target patient-derived variants.",
+      "reportedFirstPublicationDate": "2017-10-31",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5663707/",
+      "sourcePointer": "/256",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6760558",
+      "pmid": "30367117",
+      "doi": "10.1038/s41391-018-0103-4",
+      "title": "Distinct transcriptional repertoire of the androgen receptor in ETS fusion-negative prostate cancer.",
+      "reportedFirstPublicationDate": "2018-10-26",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6760558/",
+      "sourcePointer": "/257",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5860204",
+      "pmid": "28968704",
+      "doi": "10.1093/bioinformatics/btx575",
+      "title": "SINCERITIES: inferring gene regulatory networks from time-stamped single cell transcriptional expression profiles.",
+      "reportedFirstPublicationDate": "2018-01-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5860204/",
+      "sourcePointer": "/258",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8675421",
+      "pmid": "32310331",
+      "doi": "10.1002/hbm.25015",
+      "title": "The ENIGMA Stroke Recovery Working Group: Big data neuroimaging to study brain-behavior relationships after stroke.",
+      "reportedFirstPublicationDate": "2020-04-20",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8675421/",
+      "sourcePointer": "/259",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8766434",
+      "pmid": "35042871",
+      "doi": "10.1038/s41523-021-00379-6",
+      "title": "Comparative transcriptional analyses of preclinical models and patient samples reveal MYC and RELA driven expression patterns that define the molecular landscape of IBC.",
+      "reportedFirstPublicationDate": "2022-01-18",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8766434/",
+      "sourcePointer": "/260",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5318995",
+      "pmid": "28220888",
+      "doi": "10.1038/srep41184",
+      "title": "MINTmap: fast and exhaustive profiling of nuclear and mitochondrial tRNA fragments from short RNA-seq data.",
+      "reportedFirstPublicationDate": "2017-02-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5318995/",
+      "sourcePointer": "/261",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7452136",
+      "pmid": "32818921",
+      "doi": "10.1016/j.omtn.2020.07.016",
+      "title": "Safe CRISPR-Cas9 Inhibition of HIV-1 with High Specificity and Broad-Spectrum Activity by Targeting LTR NF-κB Binding Sites.",
+      "reportedFirstPublicationDate": "2020-07-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7452136/",
+      "sourcePointer": "/262",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10359300",
+      "pmid": "37474567",
+      "doi": "10.1038/s41467-023-39539-6",
+      "title": "Genome-wide identification and phenotypic characterization of seizure-associated copy number variations in 741,075 individuals.",
+      "reportedFirstPublicationDate": "2023-07-20",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10359300/",
+      "sourcePointer": "/263",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10699087",
+      "pmid": "38077364",
+      "doi": "10.3389/fimmu.2023.1233680",
+      "title": "A detailed molecular network map and model of the NLRP3 inflammasome.",
+      "reportedFirstPublicationDate": "2023-11-15",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10699087/",
+      "sourcePointer": "/264",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8795687",
+      "pmid": "35095997",
+      "doi": "10.3389/fgene.2021.747931",
+      "title": "Screening and Comprehensive Analysis of Cancer-Associated tRNA-Derived Fragments.",
+      "reportedFirstPublicationDate": "2022-01-14",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8795687/",
+      "sourcePointer": "/265",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5399961",
+      "pmid": "28491280",
+      "doi": "10.12688/f1000research.10569.2",
+      "title": "AR2, a novel automatic muscle artifact reduction software method for ictal EEG interpretation: Validation and comparison of performance with commercially available software.",
+      "reportedFirstPublicationDate": "2017-01-10",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5399961/",
+      "sourcePointer": "/266",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7027561",
+      "pmid": "31908022",
+      "doi": "10.1096/fj.201902521r",
+      "title": "Glucocorticoids rapidly activate cAMP production via G&lt;sub&gt;αs&lt;/sub&gt; to initiate non-genomic signaling that contributes to one-third of their canonical genomic effects.",
+      "reportedFirstPublicationDate": "2019-12-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7027561/",
+      "sourcePointer": "/267",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5704541",
+      "pmid": "29179728",
+      "doi": "10.1186/s13046-017-0638-6",
+      "title": "Site-specific selection reveals selective constraints and functionality of tumor somatic mtDNA mutations.",
+      "reportedFirstPublicationDate": "2017-11-28",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5704541/",
+      "sourcePointer": "/268",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9649437",
+      "pmid": "36280734",
+      "doi": "10.1038/s41588-022-01203-y",
+      "title": "Statistical and functional convergence of common and rare genetic influences on autism at chromosome 16p.",
+      "reportedFirstPublicationDate": "2022-10-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9649437/",
+      "sourcePointer": "/269",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7815703",
+      "pmid": "33488500",
+      "doi": "10.3389/fneur.2020.605696",
+      "title": "Classification of Stereo-EEG Contacts in White Matter vs. Gray Matter Using Recorded Activity.",
+      "reportedFirstPublicationDate": "2021-01-06",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7815703/",
+      "sourcePointer": "/270",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6937139",
+      "pmid": "31533043",
+      "doi": "10.1016/j.celrep.2019.08.035",
+      "title": "A High-Content Screen Identifies TPP1 and Aurora B as Regulators of Axonal Mitochondrial Transport.",
+      "reportedFirstPublicationDate": "2019-09-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6937139/",
+      "sourcePointer": "/271",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5481142",
+      "pmid": "28594818",
+      "doi": "10.1371/journal.pcbi.1005589",
+      "title": "Leveraging functional annotations in genetic risk prediction for human complex diseases.",
+      "reportedFirstPublicationDate": "2017-06-08",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5481142/",
+      "sourcePointer": "/272",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7181671",
+      "pmid": "32332720",
+      "doi": "10.1038/s41467-020-15738-3",
+      "title": "Methylation of Salmonella Typhimurium flagella promotes bacterial adhesion and host cell invasion.",
+      "reportedFirstPublicationDate": "2020-04-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7181671/",
+      "sourcePointer": "/273",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7589345",
+      "pmid": "32681760",
+      "doi": "10.1111/tan.13998",
+      "title": "Genomic characterization of MICA gene using multiple next generation sequencing platforms: A validation study.",
+      "reportedFirstPublicationDate": "2020-08-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7589345/",
+      "sourcePointer": "/274",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC9673247",
+      "pmid": "36407608",
+      "doi": "10.3389/fpls.2022.954929",
+      "title": "Multispecies transcriptomes reveal core fruit development genes.",
+      "reportedFirstPublicationDate": "2022-11-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9673247/",
+      "sourcePointer": "/275",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6838683",
+      "pmid": "31675498",
+      "doi": "10.1016/j.cell.2019.10.010",
+      "title": "Discovery of Human Signaling Systems: Pairing Peptides to G Protein-Coupled Receptors.",
+      "reportedFirstPublicationDate": "2019-10-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6838683/",
+      "sourcePointer": "/276",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7835232",
+      "pmid": "33495439",
+      "doi": "10.1038/s41467-020-20443-2",
+      "title": "Risk variants and polygenic architecture of disruptive behavior disorders in the context of attention-deficit/hyperactivity disorder.",
+      "reportedFirstPublicationDate": "2021-01-25",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7835232/",
+      "sourcePointer": "/277",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7611091",
+      "pmid": "34099918",
+      "doi": "10.1038/s41590-021-00943-z",
+      "title": "Blockade of the co-inhibitory molecule PD-1 unleashes ILC2-dependent antitumor immunity in melanoma.",
+      "reportedFirstPublicationDate": "2021-06-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7611091/",
+      "sourcePointer": "/278",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6432944",
+      "pmid": "30517876",
+      "doi": "10.1016/j.celrep.2018.11.041",
+      "title": "Development and Application of FASA, a Model for Quantifying Fatty Acid Metabolism Using Stable Isotope Labeling.",
+      "reportedFirstPublicationDate": "2018-12-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6432944/",
+      "sourcePointer": "/279",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6715295",
+      "pmid": "31425522",
+      "doi": "10.1371/journal.pcbi.1007293",
+      "title": "TeXP: Deconvolving the effects of pervasive and autonomous transcription of transposable elements.",
+      "reportedFirstPublicationDate": "2019-08-19",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6715295/",
+      "sourcePointer": "/280",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7225359",
+      "pmid": "32457801",
+      "doi": "10.3389/fgene.2020.00439",
+      "title": "\"Mitochondrial Toolbox\" - A Review of Online Resources to Explore Mitochondrial Genomics.",
+      "reportedFirstPublicationDate": "2020-05-08",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7225359/",
+      "sourcePointer": "/281",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC12772631",
+      "pmid": "41493844",
+      "doi": "10.1111/cas.70254",
+      "title": "Abstracts of the 84&lt;sup&gt;th&lt;/sup&gt; Annual Meeting of the Japanese Cancer Association.",
+      "reportedFirstPublicationDate": "2026-01-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12772631/",
+      "sourcePointer": "/282",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6756558",
+      "pmid": "31509524",
+      "doi": "10.1371/journal.pcbi.1007329",
+      "title": "Predicting gene expression in the human malaria parasite Plasmodium falciparum using histone modification, nucleosome positioning, and 3D localization features.",
+      "reportedFirstPublicationDate": "2019-09-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6756558/",
+      "sourcePointer": "/283",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5007296",
+      "pmid": "27558455",
+      "doi": "10.1038/ncomms12493",
+      "title": "Inactivation of TGFβ receptors in stem cells drives cutaneous squamous cell carcinoma.",
+      "reportedFirstPublicationDate": "2016-08-25",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5007296/",
+      "sourcePointer": "/284",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5442648",
+      "pmid": "28535802",
+      "doi": "10.1186/s13059-017-1224-0",
+      "title": "N-BLR, a primate-specific non-coding transcript leads to colorectal cancer invasion and migration.",
+      "reportedFirstPublicationDate": "2017-05-24",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5442648/",
+      "sourcePointer": "/285",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7573742",
+      "pmid": "33134927",
+      "doi": "10.1093/texcom/tgaa035",
+      "title": "Structural Disconnection of the Tool Use Network after Left Hemisphere Stroke Predicts Limb Apraxia Severity.",
+      "reportedFirstPublicationDate": "2020-07-28",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7573742/",
+      "sourcePointer": "/286",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8142518",
+      "pmid": "33980686",
+      "doi": "10.1128/cmr.00183-20",
+      "title": "How To Prepare for the Unexpected: a Public Health Laboratory Response.",
+      "reportedFirstPublicationDate": "2021-05-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8142518/",
+      "sourcePointer": "/287",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6790052",
+      "pmid": "31632631",
+      "doi": "10.1186/s13227-019-0137-2",
+      "title": "Variable levels of drift in tunicate cardiopharyngeal gene regulatory elements.",
+      "reportedFirstPublicationDate": "2019-10-11",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6790052/",
+      "sourcePointer": "/288",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC4447414",
+      "pmid": "26020786",
+      "doi": "10.1371/journal.pcbi.1004096",
+      "title": "Summary of the DREAM8 Parameter Estimation Challenge: Toward Parameter Identification for Whole-Cell Models.",
+      "reportedFirstPublicationDate": "2015-05-28",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4447414/",
+      "sourcePointer": "/289",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11086049",
+      "pmid": null,
+      "doi": null,
+      "title": "Oral Presentations",
+      "reportedFirstPublicationDate": "2024-05-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11086049/",
+      "sourcePointer": "/290",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11156946",
+      "pmid": "38845177",
+      "doi": "10.1002/1878-0261.13683",
+      "title": "EACR 2024: Innovative Cancer Science, 10-13 June 2024, Rotterdam, Netherlands.",
+      "reportedFirstPublicationDate": "2024-06-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11156946/",
+      "sourcePointer": "/291",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6824562",
+      "pmid": "31675377",
+      "doi": "10.1371/journal.pone.0224148",
+      "title": "Integrative proteomic and phosphoproteomic profiling of prostate cell lines.",
+      "reportedFirstPublicationDate": "2019-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6824562/",
+      "sourcePointer": "/292",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10247274",
+      "pmid": null,
+      "doi": null,
+      "title": "2023 Scientific Session of the Society of American Gastrointestinal and Endoscopic Surgeons (SAGES), Montréal, Canada, 19 March–April 1 2023: Posters",
+      "reportedFirstPublicationDate": "2023-06-07",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10247274/",
+      "sourcePointer": "/293",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8516651",
+      "pmid": "34642490",
+      "doi": "10.1038/s41591-021-01498-0",
+      "title": "Anemia prevalence in women of reproductive age in low- and middle-income countries between 2000 and 2018.",
+      "reportedFirstPublicationDate": "2021-10-12",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8516651/",
+      "sourcePointer": "/294",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8687879",
+      "pmid": "34931275",
+      "doi": "10.1007/s10827-021-00801-9",
+      "title": "30th Annual Computational Neuroscience Meeting: CNS*2021-Meeting Abstracts.",
+      "reportedFirstPublicationDate": "2021-12-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8687879/",
+      "sourcePointer": "/295",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8299734",
+      "pmid": "34297318",
+      "doi": "10.1007/s11606-021-06830-5",
+      "title": "Abstracts from the 2021 Annual Meeting of the Society of General Internal Medicine.",
+      "reportedFirstPublicationDate": "2021-07-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8299734/",
+      "sourcePointer": "/296",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7705438",
+      "pmid": "33262485",
+      "doi": "10.1038/s41431-020-00739-z",
+      "title": "Abstracts from the 53rd European Society of Human Genetics (ESHG) Conference: Interactive e-Posters.",
+      "reportedFirstPublicationDate": "2020-12-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7705438/",
+      "sourcePointer": "/297",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC3622181",
+      "pmid": "23580326",
+      "doi": "10.7554/elife.00499",
+      "title": "Overcoming mutation-based resistance to antiandrogens with rational drug design.",
+      "reportedFirstPublicationDate": "2013-04-09",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3622181/",
+      "sourcePointer": "/298",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC5592442",
+      "pmid": null,
+      "doi": null,
+      "title": "26th Annual Computational Neuroscience Meeting (CNS*2017): Part 2",
+      "reportedFirstPublicationDate": "2017-01-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5592442/",
+      "sourcePointer": "/299",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6778823",
+      "pmid": null,
+      "doi": null,
+      "title": "Abstracts from the 51st European Society of Human Genetics Conference: Posters",
+      "reportedFirstPublicationDate": "2019-07-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6778823/",
+      "sourcePointer": "/300",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6840740",
+      "pmid": null,
+      "doi": null,
+      "title": "Program Abstracts from the GSA 2019 Annual Scientific Meeting “Strength in Age—Harnessing the Power of Networks”",
+      "reportedFirstPublicationDate": "2019-11-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6840740/",
+      "sourcePointer": "/301",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC7159716",
+      "pmid": "24085684",
+      "doi": "10.1002/art.38216",
+      "title": "Abstracts of the 2013 Annual Meeting of the American College of Rheumatology. October 25-30, 2013. San Diego, California, USA.",
+      "reportedFirstPublicationDate": "2013-10-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7159716/",
+      "sourcePointer": "/302",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC11533410",
+      "pmid": "39497165",
+      "doi": "10.1186/s40168-024-01941-7",
+      "title": "Nepali oral microbiomes reflect a gradient of lifestyles from traditional to industrialized.",
+      "reportedFirstPublicationDate": "2024-11-04",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11533410/",
+      "sourcePointer": "/303",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8301262",
+      "pmid": "34308405",
+      "doi": "10.1016/j.cvdhj.2020.08.003",
+      "title": "Does Sex Modify an Association of Electrophysiological Substrate with Sudden Cardiac Death? The Atherosclerosis Risk in Communities (ARIC) Study.",
+      "reportedFirstPublicationDate": "2020-09-01",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8301262/",
+      "sourcePointer": "/304",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC10881493",
+      "pmid": "38383456",
+      "doi": "10.1038/s41467-024-45107-3",
+      "title": "Deep phenotyping of post-infectious myalgic encephalomyelitis/chronic fatigue syndrome.",
+      "reportedFirstPublicationDate": "2024-02-21",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10881493/",
+      "sourcePointer": "/305",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC6881308",
+      "pmid": "31798171",
+      "doi": "10.1038/s42003-019-0634-9",
+      "title": "Multi-trait genome-wide association study identifies new loci associated with optic disc parameters.",
+      "reportedFirstPublicationDate": "2019-11-27",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6881308/",
+      "sourcePointer": "/306",
+      "status": "unreviewed"
+    },
+    {
+      "articleId": "PMC8414194",
+      "pmid": "33127161",
+      "doi": "10.1016/j.humimm.2020.10.005",
+      "title": "Increased Indoleamine 2, 3-Dioxygenase expression modulates Th1/Th17/Th22 and Treg pathway in humans with Helicobacter Pylori-Infected gastric mucosa.",
+      "reportedFirstPublicationDate": "2020-10-28",
+      "publicationUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8414194/",
+      "sourcePointer": "/307",
+      "status": "unreviewed"
+    }
+  ]
+}

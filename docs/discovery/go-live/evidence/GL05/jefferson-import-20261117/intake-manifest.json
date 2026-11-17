@@ -1,0 +1,197 @@
+{
+  "schemaVersion": "jefferson-source-intake-v1",
+  "date": "2026-11-17",
+  "inputDirectory": "/workspace/worktrees/builderbob/thevalleydesk/work/jefferson-github-census-20261117-p1MShY",
+  "sourceThread": "01a1e6ca-ab77-7850-8977-7c860e5ed7d3",
+  "verification": "SHA256SUMS checked locally, all listed hashes match; this establishes snapshot consistency, not provider truth. No supplied scripts executed and no network requests.",
+  "files": [
+    {
+      "name": "ACCOUNT-INVENTORY.md",
+      "sha256": "594d29681b24d299321fbeec9b5fabf24d3076e86e76556075c115a7d495167d",
+      "bytes": 33840,
+      "verified": true
+    },
+    {
+      "name": "HANDOFF.md",
+      "sha256": "106317379a5b6b3253ad6d3290411f8314e2ae932ca676b939b369106c35a821",
+      "bytes": 5836,
+      "verified": true
+    },
+    {
+      "name": "README.md",
+      "sha256": "a53938882a722f6c8400d15c101e233ba99cc77ea4a2b6dd38a5d720c19af3cc",
+      "bytes": 14849,
+      "verified": true
+    },
+    {
+      "name": "article_metadata.json",
+      "sha256": "5739721a00bbe459d060bc3e6afa44e2a00bd1d23d18c25ba92882674443a43c",
+      "bytes": 6200531,
+      "verified": true
+    },
+    {
+      "name": "coverage.json",
+      "sha256": "299953b20537a7a17e77fa515264876800ad15fe3ed23983e1d7a2935bd54028",
+      "bytes": 385,
+      "verified": true
+    },
+    {
+      "name": "github-account-inventory.json",
+      "sha256": "cff71600562639323dcfc21108827e1c2761e72908b79ce7447a74907f6e3f4d",
+      "bytes": 128575,
+      "verified": true
+    },
+    {
+      "name": "make_review_queue.py",
+      "sha256": "8dfc25b9f61d8699352d66e2604f86a9249d56169d396f66f4690896c0dc8b94",
+      "bytes": 2299,
+      "verified": true
+    },
+    {
+      "name": "publication_candidates.jsonl",
+      "sha256": "ac1db36c7fc49f4a3ae155a54f945e690bcdc5704014dedc4ad27361ec362f4f",
+      "bytes": 441006,
+      "verified": true
+    },
+    {
+      "name": "scan_europepmc.py",
+      "sha256": "ee97aef0684719279917a9d153e146629ee09e98d9430edfdc9b3a43ebecfcd3",
+      "bytes": 4534,
+      "verified": true
+    },
+    {
+      "name": "unreviewed-publication-links.csv",
+      "sha256": "6f1ffa9a20f3884e7e7cf1426606d7fb758d6d2e06a04e243bcd4b0470da09b2",
+      "bytes": 340452,
+      "verified": true
+    }
+  ],
+  "coverage": {
+    "queries": [
+      {
+        "query": "OPEN_ACCESS:Y AND IN_EPMC:Y AND \"Thomas Jefferson University\" AND \"github.com\"",
+        "reported_hits": 313,
+        "rows_retrieved": 313
+      },
+      {
+        "query": "OPEN_ACCESS:Y AND IN_EPMC:Y AND \"Sidney Kimmel Medical College\" AND \"github.com\"",
+        "reported_hits": 57,
+        "rows_retrieved": 57
+      }
+    ],
+    "unique_pmcids": 308
+  },
+  "counts": {
+    "accountsTotal": 29,
+    "accountsSuccessful": 28,
+    "accountsFailed": 1,
+    "successfulZeroRepositoryAccounts": 1,
+    "repositoryRows": 231,
+    "distinctRepositoryIds": 231,
+    "reportedForks": 81,
+    "reportedArchived": 4,
+    "withheldDescriptions": 0,
+    "bibliographicRecords": 308,
+    "reportedFullTextSuccess": 299,
+    "reportedFullTextFailed": 9,
+    "publicationUrlRows": 504,
+    "uniqueArticleUrlPairs": 504,
+    "sourceLinkOccurrences": 650,
+    "sourcePairsWithMultipleOccurrences": 117,
+    "csvPairsMissingFromSource": 0,
+    "withheldUrls": 14
+  },
+  "duplicateRepositoryIds": [],
+  "duplicateCasefoldAliases": [],
+  "failedFullText": [
+    {
+      "articleId": "PMC10696540",
+      "status": "fulltext-fetch-failed-reported",
+      "sourcePointer": "/jsonl/163"
+    },
+    {
+      "articleId": "PMC11149630",
+      "status": "fulltext-fetch-failed-reported",
+      "sourcePointer": "/jsonl/192"
+    },
+    {
+      "articleId": "PMC6880934",
+      "status": "fulltext-fetch-failed-reported",
+      "sourcePointer": "/jsonl/210"
+    },
+    {
+      "articleId": "PMC9531851",
+      "status": "fulltext-fetch-failed-reported",
+      "sourcePointer": "/jsonl/222"
+    },
+    {
+      "articleId": "PMC7454228",
+      "status": "fulltext-fetch-failed-reported",
+      "sourcePointer": "/jsonl/243"
+    },
+    {
+      "articleId": "PMC9088182",
+      "status": "fulltext-fetch-failed-reported",
+      "sourcePointer": "/jsonl/245"
+    },
+    {
+      "articleId": "PMC6438764",
+      "status": "fulltext-fetch-failed-reported",
+      "sourcePointer": "/jsonl/246"
+    },
+    {
+      "articleId": "PMC7306179",
+      "status": "fulltext-fetch-failed-reported",
+      "sourcePointer": "/jsonl/251"
+    },
+    {
+      "articleId": "PMC7159716",
+      "status": "fulltext-fetch-failed-reported",
+      "sourcePointer": "/jsonl/302"
+    }
+  ],
+  "knownReportedCases": [
+    {
+      "kind": "failed-former-account",
+      "handle": "talexand003",
+      "status": "reported-http-404",
+      "reportedRedirectTarget": "https://github.com/talex-labs/dynamicclampkv3.4",
+      "qualification": "Prior handoff reports redirect; not retested or proof of stable ID."
+    },
+    {
+      "kind": "historical-project-link",
+      "url": "https://github.com/tingtingzhan/hyper.gam",
+      "status": "reported-http-404",
+      "qualification": "Not retried; 404 does not prove deletion."
+    },
+    {
+      "kind": "unrelated-negative",
+      "handle": "JeffersonLab",
+      "url": "https://github.com/JeffersonLab",
+      "qualification": "Report identifies unrelated DOE nuclear-physics facility; do not infer Thomas Jefferson University association."
+    }
+  ],
+  "rules": [
+    "Branded, personal, historical, self-asserted and collaboration labels are leads, not repository-level attribution.",
+    "Forks and general-development projects remain private leads and are not excluded solely for type.",
+    "No abstract, article/full-text content, contact, author list or extracted context is retained.",
+    "No script execution, retry, native acquisition, source enrollment, public admission, deployment or provider access is performed."
+  ],
+  "outputs": [
+    {
+      "name": "source-metadata.json",
+      "sha256": "b3c46a341818e4dce93c0e35db69c443775b8950bb04de1d99681bb62dfd37ea",
+      "bytes": 133088
+    },
+    {
+      "name": "account-evidence.json",
+      "sha256": "319f330be78bc99a21c437aec0ac1f0e1888fa9b1ce09c7d307386c09bcc6035",
+      "bytes": 153759
+    },
+    {
+      "name": "publication-links.json",
+      "sha256": "e36d8693a35adc8a0ef1b8b911f0ba1697f2ce51b379888a8343fc16c8a31ed1",
+      "bytes": 379810
+    }
+  ]
+}

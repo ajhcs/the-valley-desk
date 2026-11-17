@@ -9,3 +9,5 @@ dist
 tmp-shots/
 vale-chat-archive-2026-08-24.md
 .discovery-work/
+/scripts/__pycache__/
+/test/sourceqa/__pycache__/

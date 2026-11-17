@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "intake": "cooper",
+  "verification": "Offline sanitizer replay matched retained outputs byte-for-byte; supplied source archive checksum matched; consumed source files unchanged across source QA.",
+  "publicationAuthorized": false,
+  "files": {
+    "cooper-source-assertions.json": {
+      "sha256": "af7500c57e20d7d8a45b8dba059b278882838367421ca8d8ac861c2151c18bcd",
+      "bytes": 588890
+    }
+  }
+}

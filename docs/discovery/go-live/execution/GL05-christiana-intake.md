@@ -1,0 +1,7 @@
+# GL05 ChristianaCare source intake
+
+The 17 November 2026 research snapshot was sanitized offline into [source assertions](../evidence/GL05/regional-import-20261117/christiana/source-assertions.json), with input and output SHA-256 and byte receipts in the [manifest](../evidence/GL05/regional-import-20261117/christiana/manifest.json). Replay with `python3 scripts/sanitize-christiana-intake.py --check`; `--output` creates a new directory under `/workspace`. Inputs were read without executing source scripts or fetching network resources.
+
+The source contains 28 unique network GitHub links: 15 repository paths and 13 account links. The separate index contains 18 accounts. These are source-reported leads, not verified current people or publication authorization. The nine-county DVRPC region remains primary; ChristianaCare in Delaware is neighboring context, and collaborators can be evaluated independently for core-region links. External collaboration does not establish institutional ownership.
+
+The source reported no public repositories for the institutional account at the snapshot and no verified personal GitHub for a current ChristianaCare researcher in the completed search. Kern's former research assistant role was 2009–2011. AI4Birth records prior consortium participation, not established ChristianaCare authorship of the later paper. The original files remain authoritative for the detailed qualified assertions and are preserved unchanged. No live source validation or publication has occurred.
