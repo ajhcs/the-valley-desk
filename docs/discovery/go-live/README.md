@@ -162,6 +162,18 @@ Two housekeeping items are open: move retained evidence out of the product PR so
 its code can be reviewed, and ignore or relocate the six untracked Penn intake JSON
 files at the checkout root.
 
+Step 1 now has an [initial enrichment checkpoint](execution/GL08-enrichment-checkpoint.json)
+from the merged `8f0ac66` baseline. A frozen 41-account primary-collection seed
+cohort and separate continuation qualification used 57 anonymous requests,
+retaining 549 distinct native repositories privately. Twenty-eight account
+chains reached a validated terminal page; thirteen remain incomplete or
+identity-unverified. GitHub's native-user pagination path was verified for an
+Organization owner after the first parser rejected it. All failed receipts
+remain preserved. A 100-lead sample is frozen, with review and timing fields
+unfilled; no admission yield has been measured. Other primary accounts remain
+queued, neighboring observations and the six-work public catalog are unchanged,
+and independent review is pending. See the [batch preflight](execution/GL08-github-enrichment-preflight.md).
+
 ## Product decisions
 
 | ID | Decision and consequence |

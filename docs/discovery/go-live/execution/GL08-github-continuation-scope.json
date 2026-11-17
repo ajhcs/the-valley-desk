@@ -1,0 +1,114 @@
+{
+  "id": "GL08-github-continuation-qualification-20261117-v2",
+  "schemaVersion": "github-owned-metadata-v2",
+  "status": "operator_frozen_under_user_proceed",
+  "visibility": "private",
+  "publicationAuthorized": false,
+  "baseline": "8f0ac660de0c56db19b52478514ee52051f56efa",
+  "selection": "Separate two-request parser qualification for brody-lab. Original 55 attempts and account holds are preserved; no original attempt is retried or overwritten.",
+  "excludedCollections": [
+    "christiana",
+    "lehigh",
+    "scranton"
+  ],
+  "inputs": [
+    {
+      "path": "docs/discovery/go-live/evidence/GL05/research-account-map.json",
+      "sha256": "1a3eb51039f73812ff29bfa022e8e4648cab0f718ab9357a83eae2e540712e0c"
+    },
+    {
+      "path": "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/qualification-queue.json",
+      "sha256": "0b42218b9aff7964f63e0031b590eec2030274c696462c8262c58661cb11108a"
+    }
+  ],
+  "route": {
+    "method": "GET",
+    "origin": "https://api.github.com",
+    "path": "/users/{login}/repos",
+    "query": {
+      "type": "owner",
+      "sort": "full_name",
+      "direction": "asc",
+      "per_page": 20
+    },
+    "accept": "application/vnd.github+json",
+    "apiVersion": "2022-11-28",
+    "redirects": 0,
+    "retries": 0,
+    "authentication": "anonymous",
+    "concurrency": 1,
+    "identity": "All nonempty page owners must match the frozen login and one observed native account ID/type. Empty inventories without an observed owner remain identity-unverified.",
+    "continuation": "Validate same-route Link relations and immutable native-owner paths; issue only reconstructed frozen-route next pages. A full unlinked page is incomplete."
+  },
+  "limits": {
+    "perPage": 20,
+    "maxPagesPerAccount": 20,
+    "maxRequests": 2,
+    "maxBytesPerResponse": 256000,
+    "timeoutMs": 25000,
+    "maxElapsedMs": 1800000,
+    "minimumDelayMs": 1000,
+    "maxSpendUsd": 0
+  },
+  "stop": [
+    "401/403/429 or redirect: hold entire provider batch",
+    "Transport/inspection failure: hold account without retry",
+    "Global request/time limit: leave unissued pages pending",
+    "Per-account page cap: record incomplete",
+    "No account expansion, source bodies, contacts, recurring collection or public admission"
+  ],
+  "retainedFields": [
+    "nativeId",
+    "fullName",
+    "originalUrl",
+    "description",
+    "fork",
+    "archived",
+    "createdAt",
+    "updatedAt",
+    "pushedAt",
+    "owner.nativeId",
+    "owner.login",
+    "owner.type",
+    "sourcePointer",
+    "receiptId",
+    "observedAt",
+    "sourceObservationIds"
+  ],
+  "roster": [
+    {
+      "login": "brody-lab",
+      "originalUrl": "https://github.com/brody-lab",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/10",
+          "evidenceUrl": "https://www.nature.com/articles/s41586-025-09528-4",
+          "institutionOrLab": "Brody Lab research; Princeton University",
+          "temporalScope": "2025 publication"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/78",
+        "incubators:github-link-check.json:/results/78:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=80",
+        "jefferson:baseline-account:brody-lab",
+        "jefferson:baseline-repo:brody-lab/decision_dynamics_commitment",
+        "public-health:curated-seeds.tsv#row=152",
+        "public-health:curated-seeds.tsv#row=152:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=152:metadata:github_url:0",
+        "public-health:source-linked-inventory.csv#row=151",
+        "public-health:source-linked-inventory.csv#row=151:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=151:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    }
+  ],
+  "priorBatch": {
+    "directory": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp",
+    "attempts": 55,
+    "aggregateRequestsMax": 57,
+    "originalScopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+  }
+}

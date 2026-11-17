@@ -1,0 +1,298 @@
+{
+  "id": "GL08-enrichment-20261117",
+  "status": "in_review",
+  "independentReview": "pending; no Sol acceptance claimed",
+  "implementationOwner": "Codex operating as builderbob",
+  "baseline": "8f0ac660de0c56db19b52478514ee52051f56efa",
+  "sequenceStep": 1,
+  "scope": "Initial 41-account source-linked primary-collection seed cohort. Other primary accounts are not yet enriched. Neighboring-only collection observations are excluded.",
+  "counts": {
+    "rosterAccounts": 41,
+    "requestAttempts": 57,
+    "receivedPages": 45,
+    "nativeRepositories": 549,
+    "nativeObservations": 549,
+    "descriptionsPresent": 344,
+    "latestAccountStates": {
+      "complete": 28,
+      "malformed": 10,
+      "more": 1,
+      "empty-unverified": 1,
+      "unavailable": 1
+    },
+    "publicAdmissions": 0
+  },
+  "qualification": {
+    "originalBatch": {
+      "attempts": 55,
+      "receivedPages": 43,
+      "nativeRepositories": 509,
+      "states": {
+        "malformed": 11,
+        "unavailable": 1
+      },
+      "scope": "GL08-github-enrichment-scope.json"
+    },
+    "continuationRepair": {
+      "scope": "GL08-github-continuation-scope.json",
+      "attempts": 2,
+      "receivedPages": 2,
+      "newNativeRepositories": 40,
+      "observedOwnerType": "Organization",
+      "observedLinkPathKind": "native-user",
+      "result": "Validated native owner ID and exact continuation on real pages 1 and 2. Further pages remain uncollected."
+    },
+    "aggregateRequestCap": 57,
+    "historicalFailures": "GL03 G01/G02/C01 and original GL08 failures preserved. Old code snapshots match their pre-request method pins.",
+    "remainingAcceptance": "Independent review and an approved follow-up for incomplete accounts; no complete primary-region inventory is claimed."
+  },
+  "holds": [
+    {
+      "login": "braincogs",
+      "page": 1,
+      "status": "malformed",
+      "failureCode": "github-enrichment:preflight-contact-content",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "brody-lab",
+      "page": 2,
+      "status": "more",
+      "failureCode": null,
+      "scopeSha256": "8cf13bcef40c09381fcd645db9d610186c4edf849d438aeaff470e799dfe400d"
+    },
+    {
+      "login": "dvs-lab",
+      "page": 1,
+      "status": "malformed",
+      "failureCode": "github-enrichment:link-scope",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "eesi",
+      "page": 1,
+      "status": "malformed",
+      "failureCode": "github-enrichment:link-scope",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "faisalahm3d",
+      "page": 6,
+      "status": "malformed",
+      "failureCode": "github-enrichment:preflight-contact-content",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "hna6300",
+      "page": 1,
+      "status": "empty-unverified",
+      "failureCode": null,
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "leiferlab",
+      "page": 1,
+      "status": "malformed",
+      "failureCode": "github-enrichment:link-scope",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "murthylab",
+      "page": 1,
+      "status": "malformed",
+      "failureCode": "github-enrichment:link-scope",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "pennchopmicrobiomeprogram",
+      "page": 1,
+      "status": "malformed",
+      "failureCode": "github-enrichment:link-scope",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "princetonuniversity",
+      "page": 1,
+      "status": "malformed",
+      "failureCode": "github-enrichment:link-scope",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "raphael-group",
+      "page": 1,
+      "status": "malformed",
+      "failureCode": "github-enrichment:link-scope",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "ryanefendy95",
+      "page": 1,
+      "status": "unavailable",
+      "failureCode": null,
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    },
+    {
+      "login": "singh-lab",
+      "page": 1,
+      "status": "malformed",
+      "failureCode": "github-enrichment:link-scope",
+      "scopeSha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875"
+    }
+  ],
+  "yieldSample": {
+    "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/yield-sample-100.json",
+    "sha256": "9debf5597b5c1edf752982b998e19f25bd719f1e4269cdadf4df887f9fbe2f66",
+    "size": 100,
+    "denominator": 549,
+    "selection": "First 100 SHA-256(seed + newline + native repository ID) values; no topic, description, known-match, fork, archive or account-type filter.",
+    "reviewStatus": "not_started",
+    "eligibleFraction": null,
+    "minutesPerAdmission": null
+  },
+  "preservation": [
+    {
+      "path": "src/content/discovery-directory-catalog.json",
+      "sha256": "9c5f02be7e090a456042edeea2f99166d1f3992a218dcd8f00e48981fa54834f",
+      "matchesMergedBaseline": true
+    },
+    {
+      "path": "src/content/discovery-directory-removals.json",
+      "sha256": "293f62f551e9c6be33815a95bf90294d66ae804abe3426ab7eeae0290a2fbb32",
+      "matchesMergedBaseline": true
+    },
+    {
+      "path": "src/content/discovery-pilot-catalog.json",
+      "sha256": "eade1825e08432413a67f94fb2a1a57dc5d75342e2162cb2bd28e722c1dcbccf",
+      "matchesMergedBaseline": true
+    },
+    {
+      "path": "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/qualification-queue.json",
+      "sha256": "0b42218b9aff7964f63e0031b590eec2030274c696462c8262c58661cb11108a",
+      "matchesMergedBaseline": true
+    },
+    {
+      "path": "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/research-network.json",
+      "sha256": "e987ab6ba4304b850421c8d45eaa74b1f180b9ff6be41971389f39e14f9b5cea",
+      "matchesMergedBaseline": true
+    }
+  ],
+  "privateArtifacts": [
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/scope.json",
+      "sha256": "a8ca08b9ec55e45ebc0689db40481511887fd2275b9bb55fbbf843be59506875",
+      "bytes": 81357
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/approval.json",
+      "sha256": "cffefc34c49a0b92b62e991b264e2dd19be21dd6603a984b7b310f6145f0fc13",
+      "bytes": 1081
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/journal.sqlite",
+      "sha256": "b0db133f8b3282777441fab74d1bd2f235956695fdd02e8eb6c19cc986f772d2",
+      "bytes": 385024
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/combined-queue.json",
+      "sha256": "41022dadb15d3bbd42ada96fc0ff6d2cfeb115184f39679d5d6b8db31aa26325",
+      "bytes": 800404
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/yield-sample-100.json",
+      "sha256": "9debf5597b5c1edf752982b998e19f25bd719f1e4269cdadf4df887f9fbe2f66",
+      "bytes": 160841
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-continuation-20261117-gw7dz7r_/scope.json",
+      "sha256": "8cf13bcef40c09381fcd645db9d610186c4edf849d438aeaff470e799dfe400d",
+      "bytes": 4301
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-continuation-20261117-gw7dz7r_/approval.json",
+      "sha256": "1fa3f4417d27c2ed854589bb0559c86de4cb40c84a14ec8c746b5c4cc58f86c1",
+      "bytes": 1081
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-continuation-20261117-gw7dz7r_/journal.sqlite",
+      "sha256": "ec1dffca68548cbd436feeac2aa436b39e7db08211b07365e570c66aa6006ae8",
+      "bytes": 45056
+    }
+  ],
+  "validation": {
+    "focusedTsTests": 9,
+    "focusedPythonTests": 8,
+    "fullRegression": {
+      "application": 939,
+      "watch": 146,
+      "discovery": 486,
+      "addedTs": 9,
+      "addedPython": 8,
+      "result": "passed",
+      "timing": "Full regression ran during this increment. Final receipt/sample guards and empty-page change subsequently passed the focused 9 TS / 8 Python checks; no application/public inputs changed."
+    },
+    "typecheckAndBuild": "passed, final source",
+    "secretScan": "passed, final documentation/source files",
+    "retainedQueueReplay": "byte-identical 549-candidate output from both private page directories",
+    "preservation": "Public catalog/removals, historical pilot and both fifteen-collection source snapshots match merged 8f0ac66 byte-for-byte.",
+    "notRepeated": "PDF and smoke checks were not rerun locally for private offline tooling; CI remains separate.",
+    "limits": "Local source/guard checks do not establish clinical validity, regional completeness, human review yield, independent acceptance or release."
+  },
+  "deployment": "not performed",
+  "sourceMethods": {
+    "firstBatchDirectory": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/methods",
+    "continuationDirectory": "/workspace/build/builderbob/tvd-gl08-continuation-20261117-gw7dz7r_/methods",
+    "note": "All archived source bytes match their pre-request approval hashes. Final code adds receipt/sample validation and a more conservative empty-page disposition; those changes have focused local tests rather than a new live request."
+  },
+  "codeFiles": [
+    {
+      "path": "src/ingest/discovery/github-enrichment.ts",
+      "sha256": "207e07bc7c9754f694c10b957de72150b04349cd875200d9ff26a50caf171ac2"
+    },
+    {
+      "path": "scripts/discovery-github-enrichment.mjs",
+      "sha256": "6b54b8ec1cfcac7ce5afb2c425b7e4f6abcb88cd9104dad989ebd553d5729e35"
+    },
+    {
+      "path": "scripts/capture-github-enrichment.py",
+      "sha256": "333e00883a1d102b8f6a2bcd3b5b010e7f66d86a42ab81c7e266f2244acc6e5f"
+    },
+    {
+      "path": "test/discovery-github-enrichment.test.ts",
+      "sha256": "7b0ad7f75738243889c96835083bcde15d8bcd86b40e083f157ada318d8f0c43"
+    },
+    {
+      "path": "test/github_enrichment_capture_test.py",
+      "sha256": "55f397edfaeb5fed20e1c1a646aadf5637cc027fcf4568c4ccaae61ab1974f61"
+    }
+  ],
+  "validationLogs": [
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/regression.log",
+      "sha256": "4fa109e19bf5da31aa2f4fb03dca446d9379a788e297d24e309f3ba5378beb91"
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/final-focused.log",
+      "sha256": "63aab24b6e1a8effc4f54044b7773305eaab8d8d5172b2e4499a436c14b6fd43"
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/final-build.log",
+      "sha256": "d7501a3d452e01f7ff368794cfd9d8b7b0dd78b63293212956393193b50ea20d"
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/secret-scan.log",
+      "sha256": "759742fa82d0d9b9b8c278ccb728eb36d3d93f931c559be1a2a315db2686047f"
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/final-secret-scan.log",
+      "sha256": "b9e4a5a321af22305bc89b79e48c13b574aac6d0863b9b5d151cca0bd42989e3"
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/delivery-build.log",
+      "sha256": "3d360190fc792070a70b9f6d2a88dea078583661b42c0ec68b647b3f1a401dea"
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/delivery-secret-scan.log",
+      "sha256": "b9e4a5a321af22305bc89b79e48c13b574aac6d0863b9b5d151cca0bd42989e3"
+    }
+  ]
+}

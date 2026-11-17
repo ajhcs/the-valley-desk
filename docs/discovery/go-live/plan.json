@@ -423,7 +423,7 @@
       "goals": [
         "G06"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "work": "work-packages.md#gl08--make-additions-corrections-and-upkeep-manageable",
       "acceptance_ids": [
         "GL08-A1",
@@ -433,7 +433,11 @@
         "GL08-A5"
       ],
       "acceptance": null,
-      "findings": []
+      "findings": [
+        "Initial cohort enriched to 549 native repositories; provider continuation repair verified on two live pages. Incomplete accounts and independent review remain open; corrections/upkeep acceptance is unchanged."
+      ],
+      "implementation_owner": "Codex operating as builderbob",
+      "current_increment": "execution/GL08-enrichment-checkpoint.json"
     },
     {
       "id": "GL09",
@@ -654,7 +658,9 @@
   "next_ready_packages": [
     "GL08"
   ],
-  "active_packages": [],
+  "active_packages": [
+    "GL08"
+  ],
   "execution_sequence": [
     {
       "step": 1,
@@ -663,7 +669,9 @@
       ],
       "summary": "Qualify one provider metadata route and enrich the primary-region queue with native ID, description, fork/archived state and dates; deduplicate by native ID. Neighboring-context leads stay searchable internally and are not enriched in this pass.",
       "requires": "Approved finite account roster, request scope and budget before any network request.",
-      "status": "not_started"
+      "status": "in_review",
+      "checkpoint": "execution/GL08-enrichment-checkpoint.json",
+      "scope": "Initial 41-account cohort only; 549 native repositories. This does not complete primary-region enrichment."
     },
     {
       "step": 2,
@@ -671,7 +679,8 @@
         "GL08"
       ],
       "summary": "Review about 100 enriched leads against the lean listing rule; record the eligible fraction and minutes per admission.",
-      "status": "not_started"
+      "status": "not_started",
+      "prepared_sample": "execution/GL08-enrichment-checkpoint.json#/yieldSample"
     },
     {
       "step": 3,

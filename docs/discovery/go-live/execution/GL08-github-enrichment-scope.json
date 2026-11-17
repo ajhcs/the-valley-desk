@@ -1,0 +1,1489 @@
+{
+  "id": "GL08-github-enrichment-20261117-v1",
+  "schemaVersion": "github-owned-metadata-v1",
+  "status": "prepared_for_scoped_approval",
+  "visibility": "private",
+  "publicationAuthorized": false,
+  "baseline": "8f0ac660de0c56db19b52478514ee52051f56efa",
+  "selection": "Frozen 41-account source-linked PA/NJ/professional seed cohort already federated in the primary-region queue; not all primary-region accounts or a yield sample.",
+  "excludedCollections": [
+    "christiana",
+    "lehigh",
+    "scranton"
+  ],
+  "inputs": [
+    {
+      "path": "docs/discovery/go-live/evidence/GL05/research-account-map.json",
+      "sha256": "1a3eb51039f73812ff29bfa022e8e4648cab0f718ab9357a83eae2e540712e0c"
+    },
+    {
+      "path": "docs/discovery/go-live/evidence/GL05/regional-additions-20261117/qualification-queue.json",
+      "sha256": "0b42218b9aff7964f63e0031b590eec2030274c696462c8262c58661cb11108a"
+    }
+  ],
+  "route": {
+    "method": "GET",
+    "origin": "https://api.github.com",
+    "path": "/users/{login}/repos",
+    "query": {
+      "type": "owner",
+      "sort": "full_name",
+      "direction": "asc",
+      "per_page": 20
+    },
+    "accept": "application/vnd.github+json",
+    "apiVersion": "2022-11-28",
+    "redirects": 0,
+    "retries": 0,
+    "authentication": "anonymous",
+    "concurrency": 1,
+    "identity": "All nonempty page owners must match the frozen login and one observed native account ID/type. Empty inventories without an observed owner remain identity-unverified.",
+    "continuation": "Validate same-route Link relations and immutable native-owner paths; issue only reconstructed frozen-route next pages. A full unlinked page is incomplete."
+  },
+  "limits": {
+    "perPage": 20,
+    "maxPagesPerAccount": 20,
+    "maxRequests": 55,
+    "maxBytesPerResponse": 256000,
+    "timeoutMs": 25000,
+    "maxElapsedMs": 1800000,
+    "minimumDelayMs": 1000,
+    "maxSpendUsd": 0
+  },
+  "stop": [
+    "401/403/429 or redirect: hold entire provider batch",
+    "Transport/inspection failure: hold account without retry",
+    "Global request/time limit: leave unissued pages pending",
+    "Per-account page cap: record incomplete",
+    "No account expansion, source bodies, contacts, recurring collection or public admission"
+  ],
+  "retainedFields": [
+    "nativeId",
+    "fullName",
+    "originalUrl",
+    "description",
+    "fork",
+    "archived",
+    "createdAt",
+    "updatedAt",
+    "pushedAt",
+    "owner.nativeId",
+    "owner.login",
+    "owner.type",
+    "sourcePointer",
+    "receiptId",
+    "observedAt",
+    "sourceObservationIds"
+  ],
+  "roster": [
+    {
+      "login": "abelavit",
+      "originalUrl": "https://github.com/abelavit",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json",
+          "sha256": "2f4b017d20bbb6821fd45f11d147b8cf0a495adc7d066f96336ad8fb5d00fdff",
+          "pointer": "/accounts/4",
+          "evidenceUrl": "https://assets-eu.researchsquare.com/files/rs-3334706/v1_covered_b4741331-1b41-4bb9-a3b5-0af7377048ad.pdf?c=1701702728",
+          "institutionOrLab": "Rutgers University–Camden research collaborators",
+          "temporalScope": "2023 preprint; account owner and current roles unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:abelavit",
+        "jefferson:baseline-repo:abelavit/pepcnn"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "akibzaman",
+      "originalUrl": "https://github.com/akibzaman",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json",
+          "sha256": "2f4b017d20bbb6821fd45f11d147b8cf0a495adc7d066f96336ad8fb5d00fdff",
+          "pointer": "/accounts/6",
+          "evidenceUrl": "https://graduateschool.camden.rutgers.edu/2024/06/03/data-to-dreams-enhancing-sleep-research/",
+          "institutionOrLab": "Rutgers University–Camden research collaborators",
+          "temporalScope": "2024 institutional news reports research-era association"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:akibzaman",
+        "jefferson:baseline-repo:akibzaman/sleepboost"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "banaiek",
+      "originalUrl": "https://github.com/banaiek",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/9",
+          "evidenceUrl": "https://www.biorxiv.org/content/10.64898/2026.07.28.741366v1.full",
+          "institutionOrLab": "Research author group; Princeton University",
+          "temporalScope": "2026 preprint"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:banaiek",
+        "jefferson:baseline-repo:banaiek/ephaptic_coupling"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "beemd",
+      "originalUrl": "https://github.com/beemd",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json",
+          "sha256": "2f4b017d20bbb6821fd45f11d147b8cf0a495adc7d066f96336ad8fb5d00fdff",
+          "pointer": "/accounts/2",
+          "evidenceUrl": "https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2022.919046/full",
+          "institutionOrLab": "Rowan University Electrical and Computer Engineering research",
+          "temporalScope": "2022 article; current roles and account ownership unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:beemd",
+        "jefferson:baseline-repo:beemd/failure-detection_medmnist",
+        "rowan:matched-accounts.csv#row=8",
+        "rowan:matched-accounts.csv#row=8:metadata:account:0",
+        "rowan:matched-repositories.csv#row=39",
+        "rowan:matched-repositories.csv#row=39:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=34",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=34:metadata:repository:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "bioccjw",
+      "originalUrl": "https://github.com/bioccjw",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/6",
+          "evidenceUrl": "https://jdc.jefferson.edu/cbfp/195/",
+          "institutionOrLab": "Jefferson Department of Cancer Biology faculty paper",
+          "temporalScope": "Source page observed 2026-11-16; current role and development location unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:bioccjw",
+        "jefferson:baseline-repo:bioccjw/ctpathway",
+        "jefferson:publication-link:000193"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "braincogs",
+      "originalUrl": "https://github.com/braincogs",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/6",
+          "evidenceUrl": "https://brainmaps.princeton.edu/",
+          "institutionOrLab": "Princeton U19 Software Tools; Princeton Neuroscience Institute",
+          "temporalScope": "undated page observed 2026-11-16; current role not independently verified"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:braincogs",
+        "jefferson:baseline-repo:braincogs/brain_atlas_toolkit"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "brody-lab",
+      "originalUrl": "https://github.com/brody-lab",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/10",
+          "evidenceUrl": "https://www.nature.com/articles/s41586-025-09528-4",
+          "institutionOrLab": "Brody Lab research; Princeton University",
+          "temporalScope": "2025 publication"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/78",
+        "incubators:github-link-check.json:/results/78:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=80",
+        "jefferson:baseline-account:brody-lab",
+        "jefferson:baseline-repo:brody-lab/decision_dynamics_commitment",
+        "public-health:curated-seeds.tsv#row=152",
+        "public-health:curated-seeds.tsv#row=152:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=152:metadata:github_url:0",
+        "public-health:source-linked-inventory.csv#row=151",
+        "public-health:source-linked-inventory.csv#row=151:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=151:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "chenyongrowan",
+      "originalUrl": "https://github.com/chenyongrowan",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json",
+          "sha256": "2f4b017d20bbb6821fd45f11d147b8cf0a495adc7d066f96336ad8fb5d00fdff",
+          "pointer": "/accounts/1",
+          "evidenceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10488287/",
+          "institutionOrLab": "Rowan University Department of Biological and Biomedical Sciences research",
+          "temporalScope": "2023 paper; person currently employed and account owner unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:chenyongrowan",
+        "jefferson:baseline-repo:chenyongrowan/sctiger",
+        "rowan:account-repository-snapshot.csv#row=10",
+        "rowan:account-repository-snapshot.csv#row=10:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=11",
+        "rowan:account-repository-snapshot.csv#row=11:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=12",
+        "rowan:account-repository-snapshot.csv#row=12:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=13",
+        "rowan:account-repository-snapshot.csv#row=13:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=14",
+        "rowan:account-repository-snapshot.csv#row=14:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=15",
+        "rowan:account-repository-snapshot.csv#row=15:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=16",
+        "rowan:account-repository-snapshot.csv#row=16:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=17",
+        "rowan:account-repository-snapshot.csv#row=17:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=18",
+        "rowan:account-repository-snapshot.csv#row=18:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=19",
+        "rowan:account-repository-snapshot.csv#row=19:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=2",
+        "rowan:account-repository-snapshot.csv#row=20",
+        "rowan:account-repository-snapshot.csv#row=20:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=21",
+        "rowan:account-repository-snapshot.csv#row=21:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=22",
+        "rowan:account-repository-snapshot.csv#row=22:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=23",
+        "rowan:account-repository-snapshot.csv#row=23:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=24",
+        "rowan:account-repository-snapshot.csv#row=24:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=25",
+        "rowan:account-repository-snapshot.csv#row=25:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=26",
+        "rowan:account-repository-snapshot.csv#row=26:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=2:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=3",
+        "rowan:account-repository-snapshot.csv#row=3:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=4",
+        "rowan:account-repository-snapshot.csv#row=4:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=5",
+        "rowan:account-repository-snapshot.csv#row=5:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=6",
+        "rowan:account-repository-snapshot.csv#row=6:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=7",
+        "rowan:account-repository-snapshot.csv#row=7:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=8",
+        "rowan:account-repository-snapshot.csv#row=8:metadata:repository:0",
+        "rowan:account-repository-snapshot.csv#row=9",
+        "rowan:account-repository-snapshot.csv#row=9:metadata:repository:0",
+        "rowan:matched-accounts.csv#row=11",
+        "rowan:matched-accounts.csv#row=11:metadata:account:0",
+        "rowan:matched-accounts.csv#row=11:metadata:association_evidence:0",
+        "rowan:matched-repositories.csv#row=2",
+        "rowan:matched-repositories.csv#row=2:metadata:association_evidence:0",
+        "rowan:matched-repositories.csv#row=2:metadata:repository:0",
+        "rowan:matched-repositories.csv#row=3",
+        "rowan:matched-repositories.csv#row=3:metadata:association_evidence:0",
+        "rowan:matched-repositories.csv#row=3:metadata:repository:0",
+        "rowan:matched-repositories.csv#row=4",
+        "rowan:matched-repositories.csv#row=4:metadata:association_evidence:0",
+        "rowan:matched-repositories.csv#row=4:metadata:repository:0",
+        "rowan:matched-repositories.csv#row=5",
+        "rowan:matched-repositories.csv#row=5:metadata:association_evidence:0",
+        "rowan:matched-repositories.csv#row=5:metadata:repository:0",
+        "rowan:matched-repositories.csv#row=6",
+        "rowan:matched-repositories.csv#row=6:metadata:association_evidence:0",
+        "rowan:matched-repositories.csv#row=6:metadata:repository:0",
+        "rowan:matched-repositories.csv#row=7",
+        "rowan:matched-repositories.csv#row=7:metadata:association_evidence:0",
+        "rowan:matched-repositories.csv#row=7:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=10",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=10:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=11",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=11:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=12",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=12:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=13",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=13:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=14",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=14:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=15",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=15:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=16",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=16:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=17",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=17:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=18",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=18:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=19",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=19:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=2",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=20",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=20:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=21",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=21:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=22",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=22:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=23",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=23:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=24",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=24:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=25",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=25:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=26",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=26:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=2:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=3",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=3:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=4",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=4:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=5",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=5:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=6",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=6:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=7",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=7:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=8",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=8:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=9",
+        "rowan:snapshots/first-pass-20261116/account-repository-snapshot.csv#row=9:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=2",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=2:metadata:association_evidence:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=2:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=3",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=3:metadata:association_evidence:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=3:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=4",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=4:metadata:association_evidence:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=4:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=5",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=5:metadata:association_evidence:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=5:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=6",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=6:metadata:association_evidence:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=6:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=7",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=7:metadata:association_evidence:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=7:metadata:repository:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "clear-ec",
+      "originalUrl": "https://github.com/clear-ec",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/3",
+          "evidenceUrl": "https://opticlab.med.upenn.edu/clear-ec-challenge",
+          "institutionOrLab": "Penn OPTIC Lab challenge",
+          "temporalScope": "Source page observed 2026-11-16; current role and development location unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:clear-ec",
+        "jefferson:baseline-repo:clear-ec/clear-ec",
+        "penn:accounts:accounts.csv:44",
+        "penn:repositories:public-repositories.csv:1691"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "david-wzhao",
+      "originalUrl": "https://github.com/david-wzhao",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json",
+          "sha256": "1fa6d08b810260df7f5927c374a4ee8fd930d806e539077e99e3e92e7f34d59b",
+          "pointer": "/accounts/4",
+          "evidenceUrl": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Causal-ARG-A-Causality-guided-Framework-for-Annotating/991021866846304721?institution=01DRXU_INST",
+          "institutionOrLab": "Drexel institutional research repository; author-specific affiliation requires review",
+          "temporalScope": "Historical publication or institutional research record; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "drexel:projects:project-evidence-candidates.csv:185",
+        "drexel:projects:project-evidence-candidates.csv:207",
+        "drexel:projects:project-evidence-candidates.csv:221",
+        "drexel:statuses:repository-mentions-availability.csv:568",
+        "drexel:statuses:repository-mentions-availability.csv:569",
+        "drexel:statuses:repository-mentions-availability.csv:570",
+        "jefferson:baseline-account:david-wzhao",
+        "jefferson:baseline-repo:david-wzhao/causalarg"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "deepak8694",
+      "originalUrl": "https://github.com/deepak8694",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accountOnlyLeads/5",
+          "evidenceUrl": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+          "institutionOrLab": "Drexel University senior project ROADMAP",
+          "temporalScope": "2017–2018 student team; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:deepak8694"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "dsin85691",
+      "originalUrl": "https://github.com/dsin85691",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/7",
+          "evidenceUrl": "https://researchdiscovery.drexel.edu/esploro/outputs/preprint/Towards-Personalized-Treatment-Plan-Geometrical-Model-Agnostic/991022124263004721",
+          "institutionOrLab": "Drexel-associated preprint",
+          "temporalScope": "Source page observed 2026-11-16; current role and development location unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:dsin85691",
+        "jefferson:baseline-repo:dsin85691/ssba_for_counterfactuals"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "dvs-lab",
+      "originalUrl": "https://github.com/dvs-lab",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accountOnlyLeads/0",
+          "evidenceUrl": "https://liberalarts.temple.edu/sites/liberalarts/files/SmithDV_vita_0.pdf",
+          "institutionOrLab": "Temple University",
+          "temporalScope": "CV dated 2024-10-29 reports Temple appointment from 2023; current role unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/54",
+        "incubators:github-link-check.json:/results/54:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=56",
+        "jefferson:baseline-account:dvs-lab",
+        "public-health:curated-seeds.tsv#row=29",
+        "public-health:curated-seeds.tsv#row=29:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=29:metadata:github_url:0",
+        "public-health:source-linked-inventory.csv#row=29",
+        "public-health:source-linked-inventory.csv#row=29:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=29:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "dynamicbrainmind",
+      "originalUrl": "https://github.com/dynamicbrainmind",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accountOnlyLeads/1",
+          "evidenceUrl": "https://drexel.edu/~/media/Files/coas2/psychology/faculty-cv/drexel-aaron-kucyi-cv.ashx?la=en",
+          "institutionOrLab": "Drexel University",
+          "temporalScope": "CV reports Drexel appointment from 2022; present-day status unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "drexel:accounts:account-repositories.csv:243",
+        "drexel:projects:project-evidence-candidates.csv:168",
+        "drexel:projects:project-evidence-candidates.csv:310",
+        "drexel:repositories:account-repositories.csv:243",
+        "drexel:repositories:account-repositories.csv:244",
+        "drexel:repositories:account-repositories.csv:245",
+        "drexel:repositories:account-repositories.csv:246",
+        "drexel:repositories:account-repositories.csv:247",
+        "drexel:repositories:account-repositories.csv:248",
+        "drexel:repositories:account-repositories.csv:249",
+        "drexel:repositories:account-repositories.csv:250",
+        "drexel:repositories:account-repositories.csv:251",
+        "drexel:repositories:account-repositories.csv:252",
+        "drexel:repositories:account-repositories.csv:253",
+        "drexel:statuses:repository-mentions-availability.csv:728",
+        "drexel:statuses:repository-mentions-availability.csv:729",
+        "drexel:statuses:repository-mentions-availability.csv:730",
+        "drexel:statuses:repository-mentions-availability.csv:731",
+        "drexel:statuses:repository-mentions-availability.csv:732",
+        "drexel:statuses:repository-mentions-availability.csv:733",
+        "drexel:statuses:repository-mentions-availability.csv:734",
+        "drexel:statuses:repository-mentions-availability.csv:735",
+        "drexel:statuses:repository-mentions-availability.csv:736",
+        "drexel:statuses:repository-mentions-availability.csv:737",
+        "drexel:statuses:repository-mentions-availability.csv:738",
+        "incubators:github-link-check.json:/results/44",
+        "incubators:github-link-check.json:/results/44:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=46",
+        "jefferson:baseline-account:dynamicbrainmind",
+        "public-health:curated-seeds.tsv#row=21",
+        "public-health:curated-seeds.tsv#row=21:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=21:metadata:github_url:0",
+        "public-health:source-linked-inventory.csv#row=21",
+        "public-health:source-linked-inventory.csv#row=21:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=21:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "eesi",
+      "originalUrl": "https://github.com/eesi",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json",
+          "sha256": "1fa6d08b810260df7f5927c374a4ee8fd930d806e539077e99e3e92e7f34d59b",
+          "pointer": "/accounts/3",
+          "evidenceUrl": "https://researchdiscovery.drexel.edu/esploro/profile/gideon_simpson/output/postedContent?institution=01DRXU_INST",
+          "institutionOrLab": "Drexel-associated research profile; paper dated 2019",
+          "temporalScope": "Historical publication or institutional research record; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "drexel:accounts:account-repositories.csv:292",
+        "drexel:projects:project-evidence-candidates.csv:151",
+        "drexel:projects:project-evidence-candidates.csv:167",
+        "drexel:projects:project-evidence-candidates.csv:2",
+        "drexel:projects:project-evidence-candidates.csv:200",
+        "drexel:projects:project-evidence-candidates.csv:203",
+        "drexel:projects:project-evidence-candidates.csv:211",
+        "drexel:projects:project-evidence-candidates.csv:212",
+        "drexel:projects:project-evidence-candidates.csv:219",
+        "drexel:projects:project-evidence-candidates.csv:227",
+        "drexel:projects:project-evidence-candidates.csv:243",
+        "drexel:projects:project-evidence-candidates.csv:250",
+        "drexel:projects:project-evidence-candidates.csv:254",
+        "drexel:projects:project-evidence-candidates.csv:259",
+        "drexel:projects:project-evidence-candidates.csv:260",
+        "drexel:projects:project-evidence-candidates.csv:287",
+        "drexel:projects:project-evidence-candidates.csv:6",
+        "drexel:repositories:account-repositories.csv:292",
+        "drexel:repositories:account-repositories.csv:293",
+        "drexel:repositories:account-repositories.csv:294",
+        "drexel:repositories:account-repositories.csv:295",
+        "drexel:repositories:account-repositories.csv:296",
+        "drexel:repositories:account-repositories.csv:297",
+        "drexel:repositories:account-repositories.csv:298",
+        "drexel:repositories:account-repositories.csv:299",
+        "drexel:repositories:account-repositories.csv:300",
+        "drexel:repositories:account-repositories.csv:301",
+        "drexel:repositories:account-repositories.csv:302",
+        "drexel:repositories:account-repositories.csv:303",
+        "drexel:repositories:account-repositories.csv:304",
+        "drexel:repositories:account-repositories.csv:305",
+        "drexel:repositories:account-repositories.csv:306",
+        "drexel:repositories:account-repositories.csv:307",
+        "drexel:repositories:account-repositories.csv:308",
+        "drexel:repositories:account-repositories.csv:309",
+        "drexel:repositories:account-repositories.csv:310",
+        "drexel:repositories:account-repositories.csv:311",
+        "drexel:repositories:account-repositories.csv:312",
+        "drexel:repositories:account-repositories.csv:313",
+        "drexel:repositories:account-repositories.csv:314",
+        "drexel:repositories:account-repositories.csv:315",
+        "drexel:repositories:account-repositories.csv:316",
+        "drexel:repositories:account-repositories.csv:317",
+        "drexel:repositories:account-repositories.csv:318",
+        "drexel:repositories:account-repositories.csv:319",
+        "drexel:repositories:account-repositories.csv:320",
+        "drexel:repositories:account-repositories.csv:321",
+        "drexel:repositories:account-repositories.csv:322",
+        "drexel:repositories:account-repositories.csv:323",
+        "drexel:repositories:account-repositories.csv:324",
+        "drexel:repositories:account-repositories.csv:325",
+        "drexel:repositories:account-repositories.csv:326",
+        "drexel:repositories:account-repositories.csv:327",
+        "drexel:repositories:account-repositories.csv:328",
+        "drexel:repositories:account-repositories.csv:329",
+        "drexel:repositories:account-repositories.csv:330",
+        "drexel:repositories:account-repositories.csv:331",
+        "drexel:repositories:account-repositories.csv:332",
+        "drexel:repositories:account-repositories.csv:333",
+        "drexel:repositories:account-repositories.csv:334",
+        "drexel:repositories:account-repositories.csv:335",
+        "drexel:repositories:account-repositories.csv:336",
+        "drexel:repositories:account-repositories.csv:337",
+        "drexel:repositories:account-repositories.csv:338",
+        "drexel:repositories:account-repositories.csv:339",
+        "drexel:repositories:account-repositories.csv:340",
+        "drexel:repositories:account-repositories.csv:341",
+        "drexel:repositories:account-repositories.csv:342",
+        "drexel:repositories:account-repositories.csv:343",
+        "drexel:repositories:account-repositories.csv:344",
+        "drexel:repositories:account-repositories.csv:345",
+        "drexel:repositories:account-repositories.csv:346",
+        "drexel:repositories:account-repositories.csv:347",
+        "drexel:repositories:account-repositories.csv:348",
+        "drexel:repositories:account-repositories.csv:349",
+        "drexel:repositories:account-repositories.csv:350",
+        "drexel:repositories:account-repositories.csv:351",
+        "drexel:repositories:account-repositories.csv:352",
+        "drexel:repositories:account-repositories.csv:353",
+        "drexel:statuses:repository-mentions-availability.csv:780",
+        "drexel:statuses:repository-mentions-availability.csv:781",
+        "drexel:statuses:repository-mentions-availability.csv:782",
+        "drexel:statuses:repository-mentions-availability.csv:783",
+        "drexel:statuses:repository-mentions-availability.csv:784",
+        "drexel:statuses:repository-mentions-availability.csv:785",
+        "drexel:statuses:repository-mentions-availability.csv:786",
+        "drexel:statuses:repository-mentions-availability.csv:787",
+        "drexel:statuses:repository-mentions-availability.csv:788",
+        "drexel:statuses:repository-mentions-availability.csv:789",
+        "drexel:statuses:repository-mentions-availability.csv:790",
+        "drexel:statuses:repository-mentions-availability.csv:791",
+        "drexel:statuses:repository-mentions-availability.csv:792",
+        "drexel:statuses:repository-mentions-availability.csv:793",
+        "drexel:statuses:repository-mentions-availability.csv:794",
+        "drexel:statuses:repository-mentions-availability.csv:795",
+        "drexel:statuses:repository-mentions-availability.csv:796",
+        "drexel:statuses:repository-mentions-availability.csv:797",
+        "drexel:statuses:repository-mentions-availability.csv:798",
+        "drexel:statuses:repository-mentions-availability.csv:799",
+        "drexel:statuses:repository-mentions-availability.csv:800",
+        "drexel:statuses:repository-mentions-availability.csv:801",
+        "drexel:statuses:repository-mentions-availability.csv:802",
+        "drexel:statuses:repository-mentions-availability.csv:803",
+        "drexel:statuses:repository-mentions-availability.csv:804",
+        "drexel:statuses:repository-mentions-availability.csv:805",
+        "drexel:statuses:repository-mentions-availability.csv:806",
+        "drexel:statuses:repository-mentions-availability.csv:807",
+        "drexel:statuses:repository-mentions-availability.csv:808",
+        "drexel:statuses:repository-mentions-availability.csv:809",
+        "drexel:statuses:repository-mentions-availability.csv:810",
+        "drexel:statuses:repository-mentions-availability.csv:811",
+        "drexel:statuses:repository-mentions-availability.csv:812",
+        "drexel:statuses:repository-mentions-availability.csv:813",
+        "drexel:statuses:repository-mentions-availability.csv:814",
+        "drexel:statuses:repository-mentions-availability.csv:815",
+        "drexel:statuses:repository-mentions-availability.csv:816",
+        "drexel:statuses:repository-mentions-availability.csv:817",
+        "drexel:statuses:repository-mentions-availability.csv:818",
+        "drexel:statuses:repository-mentions-availability.csv:819",
+        "drexel:statuses:repository-mentions-availability.csv:820",
+        "drexel:statuses:repository-mentions-availability.csv:821",
+        "drexel:statuses:repository-mentions-availability.csv:822",
+        "drexel:statuses:repository-mentions-availability.csv:823",
+        "drexel:statuses:repository-mentions-availability.csv:824",
+        "drexel:statuses:repository-mentions-availability.csv:825",
+        "drexel:statuses:repository-mentions-availability.csv:826",
+        "drexel:statuses:repository-mentions-availability.csv:827",
+        "drexel:statuses:repository-mentions-availability.csv:828",
+        "drexel:statuses:repository-mentions-availability.csv:829",
+        "drexel:statuses:repository-mentions-availability.csv:830",
+        "drexel:statuses:repository-mentions-availability.csv:831",
+        "drexel:statuses:repository-mentions-availability.csv:832",
+        "drexel:statuses:repository-mentions-availability.csv:833",
+        "drexel:statuses:repository-mentions-availability.csv:834",
+        "drexel:statuses:repository-mentions-availability.csv:835",
+        "drexel:statuses:repository-mentions-availability.csv:836",
+        "drexel:statuses:repository-mentions-availability.csv:837",
+        "drexel:statuses:repository-mentions-availability.csv:838",
+        "drexel:statuses:repository-mentions-availability.csv:839",
+        "drexel:statuses:repository-mentions-availability.csv:840",
+        "drexel:statuses:repository-mentions-availability.csv:841",
+        "drexel:studentAssociations:student-inclusive-evidence.csv:2",
+        "drexel:studentAssociations:student-inclusive-evidence.csv:6",
+        "drexel:studentVerified:student-verified-projects.csv:2",
+        "drexel:studentVerified:student-verified-projects.csv:6",
+        "jefferson:baseline-account:eesi",
+        "jefferson:baseline-repo:eesi/themetagenomics",
+        "public-health:curated-seeds.tsv#row=23",
+        "public-health:curated-seeds.tsv#row=23:metadata:evidence_url:0",
+        "public-health:curated-seeds.tsv#row=23:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=23:metadata:extracted_urls:1",
+        "public-health:curated-seeds.tsv#row=23:metadata:github_url:0",
+        "public-health:source-link-checks.csv#row=28",
+        "public-health:source-link-checks.csv#row=28:metadata:extracted_urls:0",
+        "public-health:source-link-checks.csv#row=28:metadata:resolved_url:0",
+        "public-health:source-link-checks.csv#row=28:metadata:url:0",
+        "public-health:source-linked-inventory.csv#row=23",
+        "public-health:source-linked-inventory.csv#row=23:metadata:evidence_url:0",
+        "public-health:source-linked-inventory.csv#row=23:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=23:metadata:extracted_urls:1",
+        "public-health:source-linked-inventory.csv#row=23:metadata:github_url:0",
+        "rowan:matched-accounts.csv#row=20",
+        "rowan:matched-accounts.csv#row=20:metadata:account:0",
+        "rowan:matched-repositories.csv#row=79",
+        "rowan:matched-repositories.csv#row=79:metadata:repository:0",
+        "rowan:matched-repositories.csv#row=80",
+        "rowan:matched-repositories.csv#row=80:metadata:repository:0",
+        "rowan:matched-repositories.csv#row=81",
+        "rowan:matched-repositories.csv#row=81:metadata:repository:0",
+        "rowan:matched-repositories.csv#row=82",
+        "rowan:matched-repositories.csv#row=82:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=53",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=53:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=54",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=54:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=55",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=55:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=56",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=56:metadata:repository:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "faisalahm3d",
+      "originalUrl": "https://github.com/faisalahm3d",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json",
+          "sha256": "2f4b017d20bbb6821fd45f11d147b8cf0a495adc7d066f96336ad8fb5d00fdff",
+          "pointer": "/accounts/3",
+          "evidenceUrl": "https://onlinelibrary.wiley.com/doi/pdfdirect/10.1002/prot.26734",
+          "institutionOrLab": "Rutgers University–Camden research collaborators",
+          "temporalScope": "2025 publication; account owner and current roles unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:faisalahm3d",
+        "jefferson:baseline-repo:faisalahm3d/deepphopred"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "felixagbavor",
+      "originalUrl": "https://github.com/felixagbavor",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/8",
+          "evidenceUrl": "https://sacan.urcf.drexel.edu/proj/?__route=%2Fdownload&cat=advbcomp&details=1&id=270&ticket=&type=report",
+          "institutionOrLab": "Drexel biomedical engineering course project",
+          "temporalScope": "2020-12-08 student project; current status unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "drexel:projects:project-evidence-candidates.csv:5",
+        "drexel:statuses:repository-mentions-availability.csv:892",
+        "drexel:studentAssociations:student-inclusive-evidence.csv:5",
+        "drexel:studentVerified:student-verified-projects.csv:5",
+        "jefferson:baseline-account:felixagbavor",
+        "jefferson:baseline-repo:felixagbavor/bmes_550"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "hna6300",
+      "originalUrl": "https://github.com/hna6300",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accountOnlyLeads/4",
+          "evidenceUrl": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+          "institutionOrLab": "Drexel University senior project ROADMAP",
+          "temporalScope": "2017–2018 student team; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:hna6300"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "iclab4dl",
+      "originalUrl": "https://github.com/iclab4dl",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json",
+          "sha256": "1fa6d08b810260df7f5927c374a4ee8fd930d806e539077e99e3e92e7f34d59b",
+          "pointer": "/accounts/5",
+          "evidenceUrl": "https://cis.temple.edu/~wu/research/publications/Publication_files/pdf_Revised_manuscript_%20791d9a81-a475-481f-b0d4-4b8e76628630.pdf",
+          "institutionOrLab": "Temple-hosted research manuscript; author-specific Temple affiliation requires review",
+          "temporalScope": "Historical publication or institutional research record; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:iclab4dl",
+        "jefferson:baseline-repo:iclab4dl/ggn"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "leiferlab",
+      "originalUrl": "https://github.com/leiferlab",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/5",
+          "evidenceUrl": "https://www.nature.com/articles/s41586-023-06683-4",
+          "institutionOrLab": "Leifer Lab research; Princeton University",
+          "temporalScope": "2023 publication"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/77",
+        "incubators:github-link-check.json:/results/77:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=79",
+        "jefferson:baseline-account:leiferlab",
+        "jefferson:baseline-repo:leiferlab/pumpprobe",
+        "jefferson:baseline-repo:leiferlab/wormbrain",
+        "jefferson:baseline-repo:leiferlab/wormdatamodel",
+        "jefferson:baseline-repo:leiferlab/wormneuronsegmentation-c",
+        "public-health:curated-seeds.tsv#row=146",
+        "public-health:curated-seeds.tsv#row=146:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=146:metadata:github_url:0",
+        "public-health:curated-seeds.tsv#row=161:metadata:evidence_url:0",
+        "public-health:curated-seeds.tsv#row=161:metadata:extracted_urls:1",
+        "public-health:source-link-checks.csv#row=85",
+        "public-health:source-link-checks.csv#row=85:metadata:extracted_urls:0",
+        "public-health:source-link-checks.csv#row=85:metadata:resolved_url:0",
+        "public-health:source-link-checks.csv#row=85:metadata:url:0",
+        "public-health:source-linked-inventory.csv#row=145",
+        "public-health:source-linked-inventory.csv#row=145:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=145:metadata:github_url:0",
+        "public-health:source-linked-inventory.csv#row=160:metadata:evidence_url:0",
+        "public-health:source-linked-inventory.csv#row=160:metadata:extracted_urls:1"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "malikyousef",
+      "originalUrl": "https://github.com/malikyousef",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json",
+          "sha256": "1fa6d08b810260df7f5927c374a4ee8fd930d806e539077e99e3e92e7f34d59b",
+          "pointer": "/accounts/0",
+          "evidenceUrl": "https://jdc.jefferson.edu/cbfp/182/",
+          "institutionOrLab": "Jefferson Cancer Biology faculty paper (2021)",
+          "temporalScope": "Historical publication or institutional research record; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:malikyousef",
+        "jefferson:baseline-repo:malikyousef/mircorrnet",
+        "jefferson:publication-link:000316"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "marbd11",
+      "originalUrl": "https://github.com/marbd11",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/3",
+          "evidenceUrl": "https://isip.piconepress.com/conferences/ieee_spmb/2020/papers/p01_17.pdf",
+          "institutionOrLab": "M. DelRocini, C. Angelini, G. Rasool; Rowan University",
+          "temporalScope": "2020 publication"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:marbd11",
+        "jefferson:baseline-repo:marbd11/ctscan-stroke",
+        "rowan:matched-accounts.csv#row=31",
+        "rowan:matched-accounts.csv#row=31:metadata:account:0",
+        "rowan:matched-repositories.csv#row=38",
+        "rowan:matched-repositories.csv#row=38:metadata:repository:0",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=33",
+        "rowan:snapshots/first-pass-20261116/matched-repositories.csv#row=33:metadata:repository:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "markymarkymark",
+      "originalUrl": "https://github.com/markymarkymark",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/1",
+          "evidenceUrl": "https://www.med.upenn.edu/CAMIPM/imscribe.html",
+          "institutionOrLab": "Penn CAMIPM",
+          "temporalScope": "Source page observed 2026-11-16; current role and development location unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:markymarkymark",
+        "jefferson:baseline-repo:markymarkymark/imscribe",
+        "penn:projects:researcher-projects.csv:3",
+        "penn:projects:researcher-projects.csv:70",
+        "penn:projects:researcher-projects.csv:71",
+        "penn:projects:researcher-projects.csv:72",
+        "penn:status:project-link-checks.csv:3",
+        "penn:status:project-link-checks.csv:70",
+        "penn:status:project-link-checks.csv:71",
+        "penn:status:project-link-checks.csv:72",
+        "penn:status:round2-project-link-checks.csv:2",
+        "penn:status:round2-project-link-checks.csv:3",
+        "penn:status:round2-project-link-checks.csv:4",
+        "penn:supplemental-evidence:round2-project-evidence.csv:2",
+        "penn:supplemental-evidence:round2-project-evidence.csv:3",
+        "penn:supplemental-evidence:round2-project-evidence.csv:4",
+        "penn:supplemental-evidence:round2-projects-added.csv:2",
+        "penn:supplemental-evidence:round2-projects-added.csv:3",
+        "penn:supplemental-evidence:round2-projects-added.csv:4"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "mlbc-lab",
+      "originalUrl": "https://github.com/mlbc-lab",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json",
+          "sha256": "2f4b017d20bbb6821fd45f11d147b8cf0a495adc7d066f96336ad8fb5d00fdff",
+          "pointer": "/accounts/0",
+          "evidenceUrl": "https://research-management.mq.edu.au/ws/portalfiles/portal/333359848/333147144.pdf",
+          "institutionOrLab": "Rutgers University–Camden research collaborators",
+          "temporalScope": "2023–2026 publications, depending on project; no current employment inferred"
+        },
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/9",
+          "evidenceUrl": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/Deep-learning-multi-omics-integration-identifies-new/991022180789204721",
+          "institutionOrLab": "Drexel-associated research paper",
+          "temporalScope": "Research repository record; individual affiliation and current status not established"
+        }
+      ],
+      "sourceObservationIds": [
+        "drexel:projects:project-evidence-candidates.csv:165",
+        "drexel:statuses:repository-mentions-availability.csv:1441",
+        "incubators:evidence-link-check-pre-review.json:/results/31",
+        "incubators:evidence-link-check-pre-review.json:/results/31:metadata:reported_final_url:0",
+        "incubators:github-link-check.json:/results/72",
+        "incubators:github-link-check.json:/results/72:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=74",
+        "incubators:supported-links.csv:row=74:metadata:evidence_url_1:0",
+        "jefferson:baseline-account:mlbc-lab",
+        "jefferson:baseline-repo:mlbc-lab/exshall-cnn",
+        "jefferson:baseline-repo:mlbc-lab/genrep",
+        "jefferson:baseline-repo:mlbc-lab/iacp-rf",
+        "jefferson:baseline-repo:mlbc-lab/lungclust"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "mldataanalytics",
+      "originalUrl": "https://github.com/mldataanalytics",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/2",
+          "evidenceUrl": "https://www.med.upenn.edu/machine-learning-biomed-data/functional-network-modeling.html",
+          "institutionOrLab": "Penn Research Laboratory for Machine Learning and Biomedical Data Analytics",
+          "temporalScope": "Source page observed 2026-11-16; current role and development location unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/1",
+        "incubators:github-link-check.json:/results/1:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=3",
+        "jefferson:baseline-account:mldataanalytics",
+        "jefferson:baseline-repo:mldataanalytics/pnet",
+        "penn:accounts:accounts.csv:4",
+        "penn:repositories:public-repositories.csv:100",
+        "penn:repositories:public-repositories.csv:101",
+        "penn:repositories:public-repositories.csv:102",
+        "penn:repositories:public-repositories.csv:103",
+        "penn:repositories:public-repositories.csv:104",
+        "penn:repositories:public-repositories.csv:105",
+        "penn:repositories:public-repositories.csv:106",
+        "penn:repositories:public-repositories.csv:107",
+        "penn:repositories:public-repositories.csv:108",
+        "penn:repositories:public-repositories.csv:93",
+        "penn:repositories:public-repositories.csv:94",
+        "penn:repositories:public-repositories.csv:95",
+        "penn:repositories:public-repositories.csv:96",
+        "penn:repositories:public-repositories.csv:97",
+        "penn:repositories:public-repositories.csv:98",
+        "penn:repositories:public-repositories.csv:99"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "mrcalderon",
+      "originalUrl": "https://github.com/mrcalderon",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accountOnlyLeads/6",
+          "evidenceUrl": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+          "institutionOrLab": "Drexel University senior project ROADMAP",
+          "temporalScope": "2017–2018 student team; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:mrcalderon"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "murthylab",
+      "originalUrl": "https://github.com/murthylab",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/0",
+          "evidenceUrl": "https://murthylab.princeton.edu/links",
+          "institutionOrLab": "Murthy Lab; Princeton University",
+          "temporalScope": "undated page observed 2026-11-16; current role not independently verified"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/76",
+        "incubators:github-link-check.json:/results/76:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=78",
+        "jefferson:baseline-account:murthylab",
+        "jefferson:baseline-repo:murthylab/deepflytrack",
+        "jefferson:baseline-repo:murthylab/flycaiman",
+        "jefferson:baseline-repo:murthylab/glmhmm",
+        "jefferson:baseline-repo:murthylab/leap",
+        "public-health:curated-seeds.tsv#row=148",
+        "public-health:curated-seeds.tsv#row=148:metadata:evidence_url:0",
+        "public-health:curated-seeds.tsv#row=148:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=148:metadata:github_url:0",
+        "public-health:source-link-checks.csv#row=90",
+        "public-health:source-link-checks.csv#row=90:metadata:extracted_urls:0",
+        "public-health:source-link-checks.csv#row=90:metadata:resolved_url:0",
+        "public-health:source-link-checks.csv#row=90:metadata:url:0",
+        "public-health:source-linked-inventory.csv#row=147",
+        "public-health:source-linked-inventory.csv#row=147:metadata:evidence_url:0",
+        "public-health:source-linked-inventory.csv#row=147:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=147:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "newilson",
+      "originalUrl": "https://github.com/newilson",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/0",
+          "evidenceUrl": "https://www.med.upenn.edu/CAMIPM/analysis-software/",
+          "institutionOrLab": "Penn CAMIPM",
+          "temporalScope": "Source page observed 2026-11-16; current role and development location unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:newilson",
+        "jefferson:baseline-repo:newilson/exercisecestv2",
+        "penn:projects:researcher-projects.csv:4",
+        "penn:status:project-link-checks.csv:4"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "nickabattista",
+      "originalUrl": "https://github.com/nickabattista",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/2",
+          "evidenceUrl": "https://nickabattista.wixsite.com/home",
+          "institutionOrLab": "Nick Battista / Bioinspiration Lab; The College of New Jersey",
+          "temporalScope": "undated page observed 2026-11-16; current role not independently verified"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:nickabattista",
+        "jefferson:baseline-repo:nickabattista/ib2d"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "ob74",
+      "originalUrl": "https://github.com/ob74",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accountOnlyLeads/3",
+          "evidenceUrl": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+          "institutionOrLab": "Drexel University senior project ROADMAP",
+          "temporalScope": "2017–2018 student team; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:ob74"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "pennchopmicrobiomeprogram",
+      "originalUrl": "https://github.com/pennchopmicrobiomeprogram",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/4",
+          "evidenceUrl": "https://www.med.upenn.edu/microbiocode/do%E2%80%99s-and-donts-of-metadata-formatting-part-1",
+          "institutionOrLab": "Penn MicroBioCode",
+          "temporalScope": "Source page observed 2026-11-16; current role and development location unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/24",
+        "incubators:github-link-check.json:/results/24:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=26",
+        "jefferson:baseline-account:pennchopmicrobiomeprogram",
+        "jefferson:baseline-repo:pennchopmicrobiomeprogram/chop_metadata_checker",
+        "penn:accounts:accounts.csv:21",
+        "penn:repositories:public-repositories.csv:596",
+        "penn:repositories:public-repositories.csv:597",
+        "penn:repositories:public-repositories.csv:598",
+        "penn:repositories:public-repositories.csv:599",
+        "penn:repositories:public-repositories.csv:600",
+        "penn:repositories:public-repositories.csv:601",
+        "penn:repositories:public-repositories.csv:602",
+        "penn:repositories:public-repositories.csv:603",
+        "penn:repositories:public-repositories.csv:604",
+        "penn:repositories:public-repositories.csv:605",
+        "penn:repositories:public-repositories.csv:606",
+        "penn:repositories:public-repositories.csv:607",
+        "penn:repositories:public-repositories.csv:608",
+        "penn:repositories:public-repositories.csv:609",
+        "penn:repositories:public-repositories.csv:610",
+        "penn:repositories:public-repositories.csv:611",
+        "penn:repositories:public-repositories.csv:612",
+        "penn:repositories:public-repositories.csv:613",
+        "penn:repositories:public-repositories.csv:614",
+        "penn:repositories:public-repositories.csv:615",
+        "penn:repositories:public-repositories.csv:616",
+        "penn:repositories:public-repositories.csv:617",
+        "penn:repositories:public-repositories.csv:618",
+        "penn:repositories:public-repositories.csv:619",
+        "penn:repositories:public-repositories.csv:620",
+        "penn:repositories:public-repositories.csv:621",
+        "penn:repositories:public-repositories.csv:622",
+        "penn:repositories:public-repositories.csv:623",
+        "penn:repositories:public-repositories.csv:624",
+        "penn:repositories:public-repositories.csv:625",
+        "penn:repositories:public-repositories.csv:626",
+        "penn:repositories:public-repositories.csv:627",
+        "penn:repositories:public-repositories.csv:628",
+        "penn:repositories:public-repositories.csv:629",
+        "penn:repositories:public-repositories.csv:630",
+        "public-health:curated-seeds.tsv#row=109",
+        "public-health:curated-seeds.tsv#row=109:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=109:metadata:github_url:0",
+        "public-health:source-linked-inventory.csv#row=108",
+        "public-health:source-linked-inventory.csv#row=108:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=108:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "phucngo1711",
+      "originalUrl": "https://github.com/phucngo1711",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json",
+          "sha256": "1fa6d08b810260df7f5927c374a4ee8fd930d806e539077e99e3e92e7f34d59b",
+          "pointer": "/accountOnlyLeads/0",
+          "evidenceUrl": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+          "institutionOrLab": "Drexel University senior project ROADMAP",
+          "temporalScope": "2017–2018 student project; current status unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "drexel:statuses:repository-mentions-availability.csv:1603",
+        "jefferson:baseline-account:phucngo1711"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "princetonuniversity",
+      "originalUrl": "https://github.com/princetonuniversity",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/1",
+          "evidenceUrl": "https://funconn.princeton.edu/",
+          "institutionOrLab": "Leifer Lab / Princeton Research Computing; Princeton University",
+          "temporalScope": "undated page observed 2026-11-16; current role not independently verified"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:princetonuniversity",
+        "jefferson:baseline-repo:princetonuniversity/neuron-graph",
+        "public-health:curated-seeds.tsv#row=156",
+        "public-health:curated-seeds.tsv#row=156:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=156:metadata:github_url:0",
+        "public-health:source-linked-inventory.csv#row=155",
+        "public-health:source-linked-inventory.csv#row=155:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=155:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "raphael-group",
+      "originalUrl": "https://github.com/raphael-group",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json",
+          "sha256": "2f4b017d20bbb6821fd45f11d147b8cf0a495adc7d066f96336ad8fb5d00fdff",
+          "pointer": "/accounts/5",
+          "evidenceUrl": "https://discovery.ucl.ac.uk/id/eprint/10138101/1/SatasZaccaria_CellSystems_2021.pdf",
+          "institutionOrLab": "Princeton University research collaborators",
+          "temporalScope": "2021–2025 source dates; current roles and account ownership unknown"
+        },
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/8",
+          "evidenceUrl": "https://oar.princeton.edu/bitstream/88435/pr1vr80/1/SingleCellTumorPhylogenyInferenceMutationLosses.pdf",
+          "institutionOrLab": "Raphael group research; Princeton University",
+          "temporalScope": "publication date requires confirmation"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/75",
+        "incubators:github-link-check.json:/results/75:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=77",
+        "jefferson:baseline-account:raphael-group",
+        "jefferson:baseline-repo:raphael-group/decifer",
+        "jefferson:baseline-repo:raphael-group/gaston",
+        "jefferson:baseline-repo:raphael-group/gaston-mix",
+        "jefferson:baseline-repo:raphael-group/paste",
+        "jefferson:baseline-repo:raphael-group/scarlet",
+        "jefferson:baseline-repo:raphael-group/siid"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "ryanefendy95",
+      "originalUrl": "https://github.com/ryanefendy95",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accountOnlyLeads/2",
+          "evidenceUrl": "https://www.cci.drexel.edu/SeniorDesign/2017_2018/Roadmap/Roadmap.html",
+          "institutionOrLab": "Drexel University senior project ROADMAP",
+          "temporalScope": "2017–2018 student team; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:ryanefendy95"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "sacanlab",
+      "originalUrl": "https://github.com/sacanlab",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads.json",
+          "sha256": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+          "pointer": "/accounts/5",
+          "evidenceUrl": "https://researchdiscovery.drexel.edu/esploro/outputs/journalArticle/ImmunoTar-integrative-prioritization-of-cell-surface-targets/991022028237904721?institution=01DRXU_INST",
+          "institutionOrLab": "Drexel University and collaborators",
+          "temporalScope": "Source page observed 2026-11-16; current role and development location unverified"
+        }
+      ],
+      "sourceObservationIds": [
+        "drexel:accounts:account-repositories.csv:409",
+        "drexel:projects:project-evidence-candidates.csv:205",
+        "drexel:repositories:account-repositories.csv:409",
+        "drexel:statuses:repository-mentions-availability.csv:1742",
+        "incubators:github-link-check.json:/results/49",
+        "incubators:github-link-check.json:/results/49:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=51",
+        "jefferson:baseline-account:sacanlab",
+        "jefferson:baseline-repo:sacanlab/immunotar"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "shannonpileggi",
+      "originalUrl": "https://github.com/shannonpileggi",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/root-account-leads.json",
+          "sha256": "86e5d27d76d12bb79663fd9c575820d5439d335e0aad6ebf41088834a18adbbe",
+          "pointer": "/accounts/0",
+          "evidenceUrl": "https://shannonpileggi.github.io/gtreg/",
+          "institutionOrLab": "gtreg clinical-research software; Adelphi Research (historical 2021 self-report)",
+          "temporalScope": "2021-02-15 professional self-introduction reports statistician role in Doylestown, PA. The software site observed 2026-11-16 identifies Pileggi as author/maintainer; present-day employment and location unverified."
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:baseline-account:shannonpileggi",
+        "jefferson:baseline-repo:shannonpileggi/gtreg"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "singh-lab",
+      "originalUrl": "https://github.com/singh-lab",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/7",
+          "evidenceUrl": "https://www.cs.princeton.edu/~chazelle/pubs/Pertinint20.pdf",
+          "institutionOrLab": "Singh Lab research; Princeton University",
+          "temporalScope": "2020 publication"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/79",
+        "incubators:github-link-check.json:/results/79:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=81",
+        "jefferson:baseline-account:singh-lab",
+        "jefferson:baseline-repo:singh-lab/pertinint",
+        "public-health:curated-seeds.tsv#row=154",
+        "public-health:curated-seeds.tsv#row=154:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=154:metadata:github_url:0",
+        "public-health:source-linked-inventory.csv#row=153",
+        "public-health:source-linked-inventory.csv#row=153:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=153:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "tingtingzhan",
+      "originalUrl": "https://github.com/tingtingzhan",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json",
+          "sha256": "1fa6d08b810260df7f5927c374a4ee8fd930d806e539077e99e3e92e7f34d59b",
+          "pointer": "/accounts/2",
+          "evidenceUrl": "https://jdc.jefferson.edu/ppcbfp/39/",
+          "institutionOrLab": "Jefferson Pharmacology, Physiology, and Cancer Biology faculty paper (2025)",
+          "temporalScope": "Historical publication or institutional research record; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "jefferson:account:tingtingzhan",
+        "jefferson:baseline-account:tingtingzhan",
+        "jefferson:baseline-repo:tingtingzhan/charwidth",
+        "jefferson:baseline-repo:tingtingzhan/consec",
+        "jefferson:baseline-repo:tingtingzhan/equiv4",
+        "jefferson:baseline-repo:tingtingzhan/geo",
+        "jefferson:baseline-repo:tingtingzhan/hexexcel",
+        "jefferson:baseline-repo:tingtingzhan/hyper.gam",
+        "jefferson:baseline-repo:tingtingzhan/souschef",
+        "jefferson:native:1356281829",
+        "jefferson:native:1361695802",
+        "jefferson:native:1361891815",
+        "jefferson:native:716674595",
+        "jefferson:native:825055139",
+        "jefferson:native:982436387",
+        "jefferson:publication-link:000026"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "tju-cmc-org",
+      "originalUrl": "https://github.com/tju-cmc-org",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json",
+          "sha256": "1fa6d08b810260df7f5927c374a4ee8fd930d806e539077e99e3e92e7f34d59b",
+          "pointer": "/accounts/1",
+          "evidenceUrl": "https://jdc.jefferson.edu/tjucompmedctrfp/38/",
+          "institutionOrLab": "Jefferson Computational Medicine Center faculty paper (2021)",
+          "temporalScope": "Historical publication or institutional research record; current role unknown"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/65",
+        "incubators:github-link-check.json:/results/65:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=67",
+        "jefferson:account:tju-cmc-org",
+        "jefferson:baseline-account:tju-cmc-org",
+        "jefferson:baseline-repo:tju-cmc-org/analytic_replication_pilot",
+        "jefferson:baseline-repo:tju-cmc-org/corradjust",
+        "jefferson:baseline-repo:tju-cmc-org/fraction-seq",
+        "jefferson:baseline-repo:tju-cmc-org/isomirmap",
+        "jefferson:baseline-repo:tju-cmc-org/mintmap",
+        "jefferson:baseline-repo:tju-cmc-org/mintplates",
+        "jefferson:baseline-repo:tju-cmc-org/off-spotter",
+        "jefferson:baseline-repo:tju-cmc-org/singlecell-dream",
+        "jefferson:baseline-repo:tju-cmc-org/targetingcoronavirus_blog",
+        "jefferson:native:192786368",
+        "jefferson:native:204735363",
+        "jefferson:native:211146161",
+        "jefferson:native:270716572",
+        "jefferson:native:272712694",
+        "jefferson:native:457821690",
+        "jefferson:native:68140578",
+        "jefferson:native:890944246",
+        "jefferson:native:999129020",
+        "jefferson:publication-link:000003",
+        "jefferson:publication-link:000004",
+        "jefferson:publication-link:000023",
+        "jefferson:publication-link:000249",
+        "jefferson:publication-link:000262",
+        "jefferson:publication-link:000427",
+        "jefferson:publication-link:000455",
+        "jefferson:publication-link:000458",
+        "public-health:curated-seeds.tsv#row=40",
+        "public-health:curated-seeds.tsv#row=40:metadata:evidence_url:0",
+        "public-health:curated-seeds.tsv#row=40:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=40:metadata:github_url:0",
+        "public-health:source-link-checks.csv#row=52",
+        "public-health:source-link-checks.csv#row=52:metadata:extracted_urls:0",
+        "public-health:source-link-checks.csv#row=52:metadata:resolved_url:0",
+        "public-health:source-link-checks.csv#row=52:metadata:url:0",
+        "public-health:source-linked-inventory.csv#row=40",
+        "public-health:source-linked-inventory.csv#row=40:metadata:evidence_url:0",
+        "public-health:source-linked-inventory.csv#row=40:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=40:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    },
+    {
+      "login": "wanglabprinceton",
+      "originalUrl": "https://github.com/wanglabprinceton",
+      "evidence": [
+        {
+          "path": "docs/discovery/go-live/evidence/GL05/nj-account-leads.json",
+          "sha256": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+          "pointer": "/accounts/4",
+          "evidenceUrl": "https://elifesciences.org/articles/36781v2",
+          "institutionOrLab": "Wang lab research; Princeton University",
+          "temporalScope": "2018 publication"
+        }
+      ],
+      "sourceObservationIds": [
+        "incubators:github-link-check.json:/results/80",
+        "incubators:github-link-check.json:/results/80:metadata:reported_final_url:0",
+        "incubators:supported-links.csv:row=82",
+        "jefferson:baseline-account:wanglabprinceton",
+        "jefferson:baseline-repo:wanglabprinceton/accumulating_puffs",
+        "public-health:curated-seeds.tsv#row=153",
+        "public-health:curated-seeds.tsv#row=153:metadata:extracted_urls:0",
+        "public-health:curated-seeds.tsv#row=153:metadata:github_url:0",
+        "public-health:source-linked-inventory.csv#row=152",
+        "public-health:source-linked-inventory.csv#row=152:metadata:extracted_urls:0",
+        "public-health:source-linked-inventory.csv#row=152:metadata:github_url:0"
+      ],
+      "regionalEligibility": "unreviewed-source-association; not current employment or project worksite"
+    }
+  ]
+}
