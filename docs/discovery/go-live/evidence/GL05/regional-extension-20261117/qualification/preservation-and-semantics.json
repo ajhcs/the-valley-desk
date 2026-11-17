@@ -1,0 +1,54 @@
+{
+  "baseline": "f9780d810c9e9f2a94104e9c1d361efbe2ab18c2",
+  "priorTrackedFiles": 1322,
+  "intentionalSourceStageChanges": [
+    "docs/discovery/go-live/README.md",
+    "docs/discovery/go-live/execution/GL05-discovery-follow-through.md",
+    "package.json"
+  ],
+  "otherPriorTrackedContentUnchanged": true,
+  "unrelatedRootJsonUnchanged": [
+    "accounts.json",
+    "manifest.json",
+    "projects.json",
+    "repositories.json",
+    "status.json",
+    "supplemental-evidence.json"
+  ],
+  "originalSourceFilesVerified": {
+    "sju": 7,
+    "pcom": 62,
+    "widener": 2,
+    "scranton": 7,
+    "lehigh": 15,
+    "rowan": 21
+  },
+  "originalSourceFileTotal": 114,
+  "sourceRecordsExact": 3261,
+  "priorObservationsExact": 9275,
+  "inheritedSourceRecordsPinned": 4472,
+  "cooperNodesExact": 637,
+  "cooperEdgesExact": 820,
+  "newPrimaryObservations": 3261,
+  "newSecondaryUrlOccurrences": 5129,
+  "counts": {
+    "accounts": 420,
+    "repositoryCandidateIndex": 4877,
+    "distinctRepositoryUrlLeads": 7199,
+    "distinctRepositoryUrlLeadsExcludingBroadChecks": 6077,
+    "nativeRepositories": 231,
+    "observations": 17665,
+    "cooperNodes": 637,
+    "cooperEdges": 820,
+    "newSourceRecords": 3261,
+    "sourceRecordsByBatch": {
+      "sju": 254,
+      "pcom": 853,
+      "widener": 21,
+      "scranton": 104,
+      "lehigh": 1442,
+      "rowan": 587
+    }
+  },
+  "sourceCommit": "d7e764d11ff6792ac96b4a7ea4135429f5523136"
+}

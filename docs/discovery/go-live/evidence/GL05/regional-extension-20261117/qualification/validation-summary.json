@@ -1,0 +1,209 @@
+{
+  "recordedAt": "2026-11-17T02:56:46.498111+00:00",
+  "sourceCommit": "d7e764d11ff6792ac96b4a7ea4135429f5523136",
+  "sourceBaseline": "f9780d810c9e9f2a94104e9c1d361efbe2ab18c2",
+  "runtime": "Node.js v22.23.2 through existing isolated workspace-backed wrapper",
+  "focusedTests": {
+    "tests": 24,
+    "newExtensionTests": 4,
+    "failures": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "sourceQa": {
+    "tests": 13,
+    "failures": 0,
+    "requiresLocalOriginalPackages": true
+  },
+  "offlineReplays": {
+    "batches": [
+      "sju",
+      "pcom",
+      "widener",
+      "scranton",
+      "lehigh",
+      "rowan"
+    ],
+    "byteExact": true,
+    "originalFilesVerified": 114
+  },
+  "snapshotFreshness": {
+    "checks": 7,
+    "exitCode": 0
+  },
+  "productionBuild": {
+    "exitCode": 0,
+    "typeScript": true,
+    "existingLargeChunkWarning": "GL10 performance work",
+    "initialFailure": "TS2591 Node hashing import in browser-compiled source; repaired by script-only receipt helper, with original failure retained locally"
+  },
+  "secretScan": {
+    "exitCode": 0
+  },
+  "independentSolReview": "docs/discovery/go-live/execution/GL05-extension-sol-review.md",
+  "sourceUrlSemantics": {
+    "selectedSafeUrlOccurrencesRetained": 4806,
+    "missing": 0,
+    "previouslyMissingPcomOccurrencesRestored": 233,
+    "previouslyMissingPcomUniqueUrls": 192,
+    "clippedPcomNotesFlagged": 51
+  },
+  "artifacts": {
+    "docs/discovery/go-live/README.md": {
+      "sha256": "a44c8ae703976aa91b8b000cc2f39a88f1add275ec2f33d50e1f11ba4edc96be",
+      "bytes": 18497
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/lehigh/manifest.json": {
+      "sha256": "c1eed70faf2c67f92cc5edcf7fed35706fba0905c6d9404705306eb867bfb2e8",
+      "bytes": 5256
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/lehigh/source-assertions.json": {
+      "sha256": "e573f614b8052b0d3fbf57e5cbe9d5cd3274cfaf75df3584e4f2ca661e383823",
+      "bytes": 1391631
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/pcom/manifest.json": {
+      "sha256": "a1a10654b924d32e79f6afd38eb3a23623a0329733f10a2056ad6ae26c0816d5",
+      "bytes": 10515
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/pcom/source-assertions.json": {
+      "sha256": "cc78e3b5c9350263edd2a95d6b9f2f46fb5498f46558b3b7ec515f96bf47567d",
+      "bytes": 893015
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/qualification-queue.json": {
+      "sha256": "cdf3f01c2125c80c033fd0bbdeb37dc4e40386ddee7bc238cd70307cdbcf0fa7",
+      "bytes": 15990978
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/research-network.json": {
+      "sha256": "7fd3bacf269cca0c5bfb480d9f9a3abea01f84dfce6345b617cffc3872f28510",
+      "bytes": 1494811
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/research-network.md": {
+      "sha256": "75d33c577426df1b2f809cb646ac7e245612cb19608bed76248e759dee1b970a",
+      "bytes": 39319
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/rowan/manifest.json": {
+      "sha256": "81773efe0effe21cdf35f1671da0d7bde1d15af261879a61babd4cc5f09991c0",
+      "bytes": 6277
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/rowan/source-assertions.json": {
+      "sha256": "566eed67cdc354c8d79659fefe22af32288008c3dcb63f74e665db01ae960e40",
+      "bytes": 497104
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/scranton/manifest.json": {
+      "sha256": "f7d4ff08726be245e27a7887e2cae17ff3ec3efda70ccd0ee70d6cdd18b1e571",
+      "bytes": 2245
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/scranton/source-assertions.json": {
+      "sha256": "6b057179edae602b63699e6c3b25f419b44f874d9143f0a3b468c024f4341f85",
+      "bytes": 90429
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/sju/manifest.json": {
+      "sha256": "838d1c4908d0c0b4222e56b39de3e1cab346bbd28d17a5cf77a564540dc42f3d",
+      "bytes": 2134
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/sju/source-assertions.json": {
+      "sha256": "8f09890f70b277e6781b712ee0aba1a5bd6166f9aa1a81afbccfc01b48a74389",
+      "bytes": 173968
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/widener/manifest.json": {
+      "sha256": "e6bbd6c8c4e630f63a28c92b2ab16b8f093747e63d747a526b4131785bca84ca",
+      "bytes": 1034
+    },
+    "docs/discovery/go-live/evidence/GL05/regional-extension-20261117/widener/source-assertions.json": {
+      "sha256": "27e658376e3c437a2e65d1548bd9001d83667538bc03edb1d9ef0d72727faa29",
+      "bytes": 18883
+    },
+    "docs/discovery/go-live/execution/GL05-discovery-follow-through.md": {
+      "sha256": "86af85831a832f2c781d212ac419f6fc7793870fa3a6304e21e198ca27daa8b8",
+      "bytes": 12039
+    },
+    "docs/discovery/go-live/execution/GL05-extension-integration.md": {
+      "sha256": "2ff758694680e0266cf8b81e2507eaf018733ff9fa817111dac9c611d0116e29",
+      "bytes": 929
+    },
+    "docs/discovery/go-live/execution/GL05-extension-sol-review.md": {
+      "sha256": "c63084870fa6db7a70b32a64b90a3bce834f487c91d345162585600f12f26164",
+      "bytes": 9455
+    },
+    "docs/discovery/go-live/execution/GL05-lehigh-rowan-intake.md": {
+      "sha256": "6a6d6924f86d3fb3ff0ff084ac38876af9197b881ed3c28f1c7445580492bc23",
+      "bytes": 2437
+    },
+    "docs/discovery/go-live/execution/GL05-sju-pcom-intake.md": {
+      "sha256": "7aa7df62b6ad0ccc2cb88fd1d26e8ffc38df97d3a5734d9054370aafc599f3ed",
+      "bytes": 2625
+    },
+    "docs/discovery/go-live/execution/GL05-widener-scranton-intake.md": {
+      "sha256": "2ac031817807f736a3a0276737b48cfe9cb8df5aedf73cb5efea69339fa7c073",
+      "bytes": 2545
+    },
+    "package.json": {
+      "sha256": "f9403e2cc70207e958978972574cd532eb40288761cf06484b4643b33b2f2bc6",
+      "bytes": 8039
+    },
+    "scripts/build-research-network-extension.mjs": {
+      "sha256": "aaa5223c7f7c39a49e83c5e8bf031bdbef1cb4d1dcf3caffad883d5748842c83",
+      "bytes": 8935
+    },
+    "scripts/lib/research-network-extension-receipts.mjs": {
+      "sha256": "d1805538fd3b809f0158574069bf3181eae8efa2c48fdff7aa95c149d93b7190",
+      "bytes": 526
+    },
+    "scripts/sanitize-lehigh-rowan-intakes.py": {
+      "sha256": "430545e23532b79acbc7463d531b7b6f97a87fdf7a31ecabd3081bb68d45e750",
+      "bytes": 10536
+    },
+    "scripts/sanitize-sju-pcom-intakes.py": {
+      "sha256": "b8ad3c2ecb70800f35bbf5abf9dd782524c656f07835bbd05da4897b53c33c35",
+      "bytes": 9844
+    },
+    "scripts/sanitize-widener-scranton-intakes.py": {
+      "sha256": "d55d777edef30b0b59fe013cc7c7ec2378ee72c3367aae344d699a1534f8603d",
+      "bytes": 10432
+    },
+    "src/ingest/discovery/research-network-extension.ts": {
+      "sha256": "6648da193792d7849b31598006372464f0db36286e7e3b6d6910e5ac06c62dc1",
+      "bytes": 25003
+    },
+    "test/discovery-research-network-extension.test.ts": {
+      "sha256": "57cd6ccd3c823a250124593d4f1bb0cf59a549dc8ae8fac0f36255b877206ac6",
+      "bytes": 4756
+    },
+    "test/sourceqa/test_lehigh_rowan_intakes.py": {
+      "sha256": "6c0eaeb7336c5836a620930ea5feaa3624a253f8bd2b5d7f39f90979a7ae1cdb",
+      "bytes": 2819
+    },
+    "test/sourceqa/test_sju_pcom_intakes.py": {
+      "sha256": "854cfb30b1a8e9d1a2495c0fb274f33a746973c6edcef63c785f8039a3783a23",
+      "bytes": 4311
+    },
+    "test/sourceqa/test_widener_scranton_intakes.py": {
+      "sha256": "d5b1ee7d99c570a3e8b1d906a131fae2c06f326e68b3957b3e6cf5937e4f4ff5",
+      "bytes": 4188
+    }
+  },
+  "notRerunLocally": [
+    "full application suite",
+    "Watch suite",
+    "whole Discovery suite",
+    "PDF regressions",
+    "smoke",
+    "dependency audit"
+  ],
+  "ci": {
+    "sourceBaseline": "f9780d810c9e9f2a94104e9c1d361efbe2ab18c2",
+    "push": "success",
+    "pullRequest": "success",
+    "newHead": "pending_not_release_accepted"
+  },
+  "limits": [
+    "All source findings remain unreviewed private candidates, not verified people, ownership, health projects or county coverage.",
+    "Source URLs were not re-fetched; this validates preservation of supplied evidence targets, not their current content.",
+    "No source requests, supplied research scripts, public admissions, benchmark credit or deployment."
+  ],
+  "artifactsScope": "Receipts identify Git source commit d7e764d11ff6792ac96b4a7ea4135429f5523136. The subsequent qualification commit updates go-live README and plan; implementation code and source data remain unchanged.",
+  "metadataStageDocumentChanges": [
+    "docs/discovery/go-live/README.md",
+    "docs/discovery/go-live/plan.json"
+  ]
+}

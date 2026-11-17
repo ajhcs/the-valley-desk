@@ -107,7 +107,7 @@ focused research-map/import/federation tests, 13 local source QA tests, all six
 byte-exact replays, seven portable snapshot freshness checks, build/typecheck
 and secret scan. Full application/Watch/Discovery, PDF, smoke and dependency
 audit checks were not repeated locally for this metadata-only extension.
-Updated-head CI remains separate on PR30. Sol's [extension review](execution/GL05-extension-sol-review.md)
+Updated-head CI remains separate on PR30. See the [extension acceptance](execution/GL05-extension-acceptance.json) and [validation receipts](evidence/GL05/regional-extension-20261117/qualification/validation-summary.json). Sol's [extension review](execution/GL05-extension-sol-review.md)
 records the source-policy, clipped-citation and browser-build findings and fixes.
 GL06–GL11 still own the front door, creator journeys, upkeep, broader coverage,
 reader validation and release. GL06 and GL08 can proceed concurrently after GL05.
