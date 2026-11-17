@@ -1,7 +1,7 @@
 {
   "id": "TVD-GO-LIVE-1",
   "decision": "EX32",
-  "revision": 9,
+  "revision": 10,
   "status": "implementation_in_progress",
   "source_baseline": "60d6bd3aaba90a4970821f41fb2ca0329cbf8d20",
   "authority": "On 16 November 2026 the user authorized implementation beginning GL00 and following accepted dependencies, Terra implementation with independent Sol review, commits and PR updates, and deployment as appropriate. Deployment authority covers the reviewed existing-site GL11 release when its actual readiness conditions are met; it does not accept unimplemented work, permit unrelated infrastructure changes, new paid services or outreach.",
@@ -621,6 +621,23 @@
       "acceptance_criteria_unchanged": true,
       "evidence": "execution/GL05-additions-sol-review.md",
       "receipt": "execution/GL05-additions-acceptance.json"
+    },
+    {
+      "id": "GL06-D01",
+      "status": "user_directed_sequencing_pending_independent_review",
+      "reason": "On 17 November 2026 the user reviewed the fifteen-collection queue and accepted a reordered sequence. Of about 7,277 repository keys, 1,609 carry a description, 2,747 a last-push date and 231 a native ID; about 2,145 appear only in the Drexel collection and 899 only in Lehigh, Scranton or Christiana. The six-work catalog averages about 4.5 KB per record against a 128,000-byte response bound. These are counts read from the queue and catalog, not a qualified yield or a tested page size.",
+      "choice": "Follow execution_sequence. Enrich the primary-region queue through one qualified provider metadata route and measure admission yield on about 100 leads before building a review interface or changing the homepage. Add a private candidate review interface as a GL08 scope addition, distinct from GL08's correction and upkeep work. Build GL06 cards and search on one renderer and switch the homepage once the admitted catalog is large enough to browse. Pause new collection intake except gap-driven searches. This supersedes the concurrent GL06/GL08 start in GL05-D01; package dependencies and acceptance criteria are unchanged. It grants no acquisition request scope, source enrollment or release.",
+      "affects": [
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09",
+        "GL10",
+        "GL11"
+      ],
+      "owner": "Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true
     }
   ],
   "planning_review": {
@@ -635,8 +652,84 @@
   "execution_decision": "EX33",
   "deployment_status": "not_performed_readiness_pending",
   "next_ready_packages": [
-    "GL06",
     "GL08"
   ],
-  "active_packages": []
+  "active_packages": [],
+  "execution_sequence": [
+    {
+      "step": 1,
+      "packages": [
+        "GL08"
+      ],
+      "summary": "Qualify one provider metadata route and enrich the primary-region queue with native ID, description, fork/archived state and dates; deduplicate by native ID. Neighboring-context leads stay searchable internally and are not enriched in this pass.",
+      "requires": "Approved finite account roster, request scope and budget before any network request.",
+      "status": "not_started"
+    },
+    {
+      "step": 2,
+      "packages": [
+        "GL08"
+      ],
+      "summary": "Review about 100 enriched leads against the lean listing rule; record the eligible fraction and minutes per admission.",
+      "status": "not_started"
+    },
+    {
+      "step": 3,
+      "packages": [
+        "GL06",
+        "GL08"
+      ],
+      "summary": "Replace per-work captures and per-collection build scripts with one reusable adapter and one queue builder. Add a compact list projection with separate detail retrieval before the catalog passes about 20 works.",
+      "status": "not_started"
+    },
+    {
+      "step": 4,
+      "packages": [
+        "GL08"
+      ],
+      "scope_addition": true,
+      "summary": "Build a private candidate review interface with filters, evidence links and review states whose decisions the snapshot builder consumes. Keep it out of the public Worker.",
+      "status": "not_started"
+    },
+    {
+      "step": 5,
+      "packages": [
+        "GL06",
+        "GL08"
+      ],
+      "summary": "Build compact cards and search on one renderer and admit reviewed works in batches. Switch the homepage to discovery once the catalog is large enough to browse; step 2 sets that size.",
+      "status": "not_started"
+    },
+    {
+      "step": 6,
+      "packages": [
+        "GL07",
+        "GL08"
+      ],
+      "summary": "Add institution and creator journeys that retain uncertainty, then the report path, corrections, removals and the upkeep rehearsal.",
+      "status": "not_started"
+    },
+    {
+      "step": 7,
+      "packages": [
+        "GL09",
+        "GL10",
+        "GL11"
+      ],
+      "summary": "Audit coverage and resume discovery only where the admitted set shows gaps, starting with Burlington and the outer Pennsylvania counties. Then validate on the real catalog and release.",
+      "status": "not_started"
+    }
+  ],
+  "housekeeping": [
+    {
+      "id": "H01",
+      "summary": "Move retained evidence out of the product PR so code and tests can be reviewed.",
+      "status": "open"
+    },
+    {
+      "id": "H02",
+      "summary": "Ignore or relocate the six untracked Penn intake JSON files at the checkout root.",
+      "status": "open"
+    }
+  ]
 }

@@ -117,9 +117,50 @@ PDF, smoke and dependency-audit checks were not repeated locally for this metada
 change. New-head CI remains separate on PR30. See [additions acceptance](execution/GL05-additions-acceptance.json) and [validation receipts](evidence/GL05/regional-additions-20261117/qualification/validation-summary.json). The [additions review](execution/GL05-additions-sol-review.md)
 records source lineage, citation, validation and geography checks and their limits.
 GL06–GL11 still own the front door, creator journeys, upkeep, broader coverage,
-reader validation and release. GL06 and GL08 can proceed concurrently after GL05.
+reader validation and release. Their order now follows the recorded sequence below.
 No production configuration, scheduler, remote migration, source enrollment or
 release changed. Deployment remains authorized when GL11 readiness is met.
+
+## Recorded next sequence
+
+On 17 November 2026 the user accepted a reordered sequence, recorded as GL06-D01
+and `execution_sequence` in [plan.json](plan.json). It supersedes the concurrent
+GL06/GL08 start in GL05-D01. Package dependencies and acceptance criteria are
+unchanged. Sol has not yet reviewed this decision.
+
+The queue is not ready to browse or review. Of about 7,277 repository keys, 1,609
+carry a description, 2,747 a last-push date and 231 a native ID. About 2,145 appear
+only in the Drexel collection and 899 only in Lehigh, Scranton or Christiana. The
+six catalog records average about 4.5 KB against the 128,000-byte response bound.
+These are counts read from the queue and catalog, not a qualified yield or a tested
+page size.
+
+1. **Enrich the primary-region queue (GL08).** Qualify one provider metadata route.
+   Record native ID, description, fork/archived state and dates, and deduplicate by
+   native ID. Neighboring-context leads stay searchable internally. The account
+   roster, request scope and budget need approval before any network request.
+2. **Measure yield (GL08).** Review about 100 enriched leads against the minimum
+   useful listing. Record the eligible fraction and minutes per admission.
+3. **Make admission data-driven (GL06, GL08).** Use one reusable adapter and one
+   queue builder instead of per-work captures and per-collection build scripts. Add
+   a compact list projection with separate detail retrieval before the catalog
+   passes about 20 works.
+4. **Build a private review interface (GL08 scope addition).** Show enriched
+   candidates with filters, evidence links and review states. The snapshot builder
+   consumes its decisions. It stays out of the public Worker and is separate from
+   GL08's correction and upkeep work.
+5. **Build cards and search, and expand the catalog (GL06, GL08).** One renderer
+   owns the directory. Admit reviewed works in batches. Switch the homepage to
+   discovery once the catalog is large enough to browse; step 2 sets that size.
+6. **Complete GL07 and GL08.** Add institution and creator journeys that retain
+   uncertainty, then the report path, corrections, removals and upkeep rehearsal.
+7. **Audit, validate and release (GL09–GL11).** Resume discovery only where the
+   admitted set shows gaps, starting with Burlington and the outer Pennsylvania
+   counties. New collection intake is otherwise paused.
+
+Two housekeeping items are open: move retained evidence out of the product PR so
+its code can be reviewed, and ignore or relocate the six untracked Penn intake JSON
+files at the checkout root.
 
 ## Product decisions
 
