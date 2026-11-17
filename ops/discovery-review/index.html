@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Review queue | The Valley Desk</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#search">Skip to queue filters</a>
+  <header class="masthead">
+    <div class="shell masthead-inner">
+      <span class="wordmark">The Valley Desk</span>
+      <span class="operator-label">Private workspace</span>
+    </div>
+  </header>
+  <main class="shell">
+    <div class="intro">
+      <h1>Discovery review</h1>
+      <p>Screen GitHub leads, check evidence and record decisions for the catalog.</p>
+      <dl id="totals" class="totals" hidden></dl>
+    </div>
+    <section class="filters" aria-label="Queue filters">
+      <label for="search" class="search-field">
+        Search candidates
+        <input id="search" type="search" placeholder="Repository, description or ID" autocomplete="off" spellcheck="false">
+      </label>
+      <label for="status-filter">
+        Review state
+        <select id="status-filter">
+          <option value="all">All states</option>
+          <option value="queued">Queued</option>
+          <option value="held">Held</option>
+          <option value="rejected">Rejected</option>
+          <option value="eligible">Admission-ready</option>
+        </select>
+      </label>
+      <label for="fork-filter">
+        Repository type
+        <select id="fork-filter">
+          <option value="all">All repositories</option>
+          <option value="original">Originals</option>
+          <option value="fork">Forks</option>
+        </select>
+      </label>
+      <button class="secondary" id="clear-filters" type="button">Clear filters</button>
+    </section>
+    <p id="queue-error" class="error" role="alert" hidden></p>
+    <div class="workspace">
+      <section class="panel" aria-labelledby="queue-heading">
+        <div class="panel-header">
+          <h2 id="queue-heading" tabindex="-1">Candidates</h2>
+          <p id="results-count" class="muted" role="status">Loading review queue…</p>
+        </div>
+        <ul class="candidate-list" id="candidate-list"></ul>
+        <nav aria-label="Queue pages" id="pagination" class="pager" hidden>
+          <button class="secondary" id="prev-page" type="button">Previous</button>
+          <span id="page-number"></span>
+          <button class="secondary" id="next-page" type="button">Next</button>
+        </nav>
+        <button class="secondary retry" id="retry" type="button" hidden>Reload queue</button>
+      </section>
+      <section class="detail panel" aria-labelledby="detail-heading" id="detail">
+        <div class="panel-header">
+          <h2 id="detail-heading" tabindex="-1">Review a candidate</h2>
+          <p class="muted">Choose a repository in the queue to see its evidence and record a decision.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+  <noscript><p class="shell error">Enable JavaScript to use the review workspace.</p></noscript>
+</body>
+</html>
