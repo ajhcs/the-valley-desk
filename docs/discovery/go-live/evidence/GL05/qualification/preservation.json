@@ -1,0 +1,35 @@
+{
+  "baseline": "1fafc0156a8bac7fe248d5891ed28f3a1ddc8a21",
+  "baselineTrackedFiles": 1216,
+  "changedExistingPaths": [
+    ".gitignore",
+    "docs/discovery/go-live/README.md",
+    "docs/discovery/go-live/plan.json",
+    "package.json",
+    "scripts/build-discovery-directory.mjs",
+    "src/content/discovery-directory-catalog.json",
+    "src/content/discovery-directory-removals.json",
+    "src/ingest/discovery-directory-page.ts",
+    "src/ingest/discovery-directory.ts",
+    "src/ingest/discovery/directory-review-authority.ts",
+    "src/ingest/discovery/directory-review.ts",
+    "test/discovery-directory-builder.test.ts",
+    "test/discovery-directory-http.test.ts",
+    "test/discovery-directory-routing.test.ts"
+  ],
+  "unchangedExistingPaths": 1202,
+  "unexpectedChanges": [],
+  "original31PackageObjectsAndMPAcceptanceModelsNativeRecordsAndHistoricalReceiptsPreserved": true,
+  "oldCatalogRecords": 28,
+  "oldCitations": 9,
+  "oldRegionalContexts": 3,
+  "GL04SourceEvidenceAttestationAndArchiveUnchanged": true,
+  "untrackedRootJsonPreserved": [
+    "accounts.json",
+    "manifest.json",
+    "projects.json",
+    "repositories.json",
+    "status.json",
+    "supplemental-evidence.json"
+  ]
+}

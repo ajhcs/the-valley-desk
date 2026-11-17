@@ -1,0 +1,313 @@
+{
+  "id": "TVD-GL05-1",
+  "recorded_at": "2026-11-17T01:05:12.152618+00:00",
+  "disposition": "accepted_bounded_search_and_private_source_intake",
+  "owner": "Terra",
+  "integration_owner": "Orchestrator",
+  "reviewer": "Sol",
+  "acceptor": "Orchestrator",
+  "depends_on": [
+    "GL04"
+  ],
+  "source_commit": "e5b50915a3af48dcbfd015fd4f3640db8a272b17",
+  "core_source_commit": "352258dbb9a35ebe7364286d21aa912dd69f2067",
+  "criteria": {
+    "GL05-A1": "accepted_for_declared_local_scope",
+    "GL05-A2": "accepted_for_declared_local_scope",
+    "GL05-A3": "accepted_for_declared_local_scope",
+    "GL05-A4": "accepted_for_declared_local_scope",
+    "GL05-A5": "accepted_for_declared_local_scope"
+  },
+  "source_selection": {
+    "path": "docs/discovery/go-live/evidence/GL05/selection.json",
+    "canonicalSha256": "bfdf4e30af54b9b87fe2af85c518a50a47b77ce393c3245107e04dd9ff40f4f7",
+    "reviewArtifact": "docs/discovery/go-live/execution/GL05-selection-review.json",
+    "reviewArtifactSha256": "c0566029032d7e27df634d7bf63aa26d67f5cfa7254b3dd5f8b3192f78780782",
+    "snapshotVersion": "sha256:84f91f17dee42c875953911357b453d43e3dfb8b7b2bfae15948703481abae8d",
+    "approvedWorks": 6,
+    "directedRelations": 2,
+    "newProviderRequests": 0,
+    "sevenOriginalGL03LeadsAndThreeFailedScopesPreserved": true
+  },
+  "private_intake": {
+    "accountsUrlKeys": 220,
+    "catalogRepositoryCandidateKeys": 2841,
+    "allDistinctRepositoryShapedUrlLeads": 3306,
+    "reportedNativeRepositoryIds": 231,
+    "sourceObservations": 4803,
+    "cooperSourceNodes": 637,
+    "cooperReportedEdges": 820,
+    "distinctPeople": null,
+    "regionalCoverage": null,
+    "newlyDiscoveredWorks": null,
+    "publicationAuthorized": false,
+    "primaryRegion": "nine-county DVRPC",
+    "neighboringRegionLabelPreserved": true,
+    "sourcePackagesPreserved": true,
+    "fullTextAbstractContactOrProfileReuseGranted": false
+  },
+  "validation": {
+    "sourceBaseline": "1fafc0156a8bac7fe248d5891ed28f3a1ddc8a21",
+    "coreSourceCommit": "352258dbb9a35ebe7364286d21aa912dd69f2067",
+    "intakeSourceCommit": "e5b50915a3af48dcbfd015fd4f3640db8a272b17",
+    "fullCoreRegression": {
+      "application": 939,
+      "watch": 146,
+      "discovery": 465,
+      "total": 1550,
+      "failures": 0,
+      "skips": 0,
+      "cancellations": 0
+    },
+    "finalTargetedIntegration": {
+      "tests": 63,
+      "failures": 0,
+      "includesCoreOverlaps": true,
+      "newPrivateImportTests": 11
+    },
+    "sourceQa": {
+      "localTests": 2,
+      "failures": 0,
+      "requiresLocalOriginalSnapshots": true
+    },
+    "offlineSourceReplay": {
+      "institutions": [
+        "Jefferson",
+        "Penn",
+        "Cooper",
+        "ChristianaCare"
+      ],
+      "allByteExact": true,
+      "suppliedScriptsExecuted": false,
+      "newProviderRequests": 0
+    },
+    "build": {
+      "exitCode": 0,
+      "note": "Final code typecheck and production build passed; existing large frontend chunk warning remains GL10 performance work."
+    },
+    "pdf": {
+      "tests": 7,
+      "exitCode": 0
+    },
+    "smoke": {
+      "exitCode": 0,
+      "scope": "isolated local D1 only"
+    },
+    "audit": {
+      "vulnerabilities": 0,
+      "dependenciesChanged": false
+    },
+    "secretScan": {
+      "exitCode": 0
+    },
+    "loopbackHttp": {
+      "requests": 17,
+      "passed": true,
+      "serverStopped": true,
+      "scope": "actual local workerd; source, DB, cron and credentials absent; no deployed or human-reader claim"
+    },
+    "coreFrozenInputs": {
+      "count": 731,
+      "unexpectedDrift": [],
+      "privateMapRefinement": "Four private map inputs were revised during unrelated regression work, followed by six focused tests, freshness and typecheck; the full Discovery run includes the final six map tests. Both input manifests and the exact change record are retained.",
+      "intakeExtension": "The later package.json changes only add new offline freshness checks and two private import test files; old test commands and all public source/runtime bytes remain exact. The extensions were tested separately with 63 integrated cases; the 1550 count is not represented as a final-intake-head full run."
+    },
+    "privateLogs": {
+      ".discovery-work/gl05/root/tests.log": "132036608ae8ac931c23b0dec8d139c1eb22739cadb7b02bee324e34d7d333a0",
+      ".discovery-work/gl05/root/build.log": "89ac163c340a554525c9ece69e38e99e59188af5ef24dab6159084db3ad0e84a",
+      ".discovery-work/gl05/root/build-final.log": "6eaff557b87decd31e417acf18202feeaf7b48939fb4d82e021d33c235a147b1",
+      ".discovery-work/gl05/root/smoke.log": "151fc1126a3340c681850ccd5dc7687a9b9d0fa645ea8afc4bd5ef4d19310391",
+      ".discovery-work/gl05/root/pdf.log": "59709c92d50c1aed92bc81369a97b223b0683b0b170428a385ed06aa434949b3",
+      ".discovery-work/gl05/root/audit.log": "6d8c5c8f3d7684adb070417bd608d01ae90aa3dc26a65af03ffda4955f38d9a3",
+      ".discovery-work/gl05/root/secrets-all-intakes.log": "ab3800d068ba92f4bb273e3d352c4d2cd9c591cf2c55bf824409dee4c26007b5",
+      ".discovery-work/gl05/root/map-final.log": "49af29a4b6fed1334b45bb8b982dbe0c2093585573570381ba872e36a1255537",
+      ".discovery-work/gl05/root/import-final-tests.log": "6ac9813bc60117ee59ce3379ed089b96fd5b3034e556a3cb45743797e98a3d1e",
+      ".discovery-work/gl05/root/final-integrated.log": "2167c03a7d4470cfe103eb2a1035be45a56035e7cc224b753178424a6791c19f",
+      ".discovery-work/gl05/root/sourceqa-final.log": "fa15e82c5070d9987365b06ac36e1c9cb9006a17a95762310883b73008d6a8ff",
+      ".discovery-work/gl05/root/jefferson-replay-final.log": "9f518ed1091b3a9f965918565e6984178073cb31b5843e235e8fbc0657df31de",
+      ".discovery-work/gl05/root/penn-replay-final.log": "6b0020982d03a93acb4c960b8c93baee525b341dd179a480cc8886b111cd8404",
+      ".discovery-work/gl05/root/cooper-replay-final.log": "1163de01093f2846109d14b3564e633720e7c3cc67af41112568ea207ed50d13",
+      ".discovery-work/gl05/root/christiana-replay-final.log": "04502580c9bc9364cc862547bb25e1740274431c10247209d0330858e4147552",
+      ".discovery-work/gl05/root/federation-check.log": "208bb0c6eac31d81113d071ac382ea87e4cab2506a8386262c85ae16e6640477"
+    },
+    "coreSourceCI": [
+      {
+        "conclusion": "success",
+        "databaseId": 43983521264,
+        "event": "pull_request",
+        "headSha": "352258dbb9a35ebe7364286d21aa912dd69f2067",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 43983513666,
+        "event": "push",
+        "headSha": "352258dbb9a35ebe7364286d21aa912dd69f2067",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 43983094129,
+        "event": "pull_request",
+        "headSha": "e5fb2a19526609d95b1fa335095f483f26ac6eda",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 43983087625,
+        "event": "push",
+        "headSha": "e5fb2a19526609d95b1fa335095f483f26ac6eda",
+        "status": "completed"
+      }
+    ],
+    "latestIntakeHeadCI": "pending after push; no final-head pass claimed",
+    "limits": [
+      "Local code, exact supplied-snapshot transformation and scoped source review only.",
+      "No regional completeness, current employment, account ownership, clinical validity, separate human benchmark or intended-reader acceptance follows.",
+      "All large research imports remain private candidate observations and references; six individually approved public works remain default-off."
+    ]
+  },
+  "outputs": {
+    "docs/discovery/go-live/evidence/GL05/topics-proposal.json": "9ea6eb7d6963c502e338e47d6668b4b2449e9f7cd729ddb903e56d3ee1b9e34a",
+    "docs/discovery/go-live/evidence/GL05/pa-account-leads-supplement.json": "1fa6d08b810260df7f5927c374a4ee8fd930d806e539077e99e3e92e7f34d59b",
+    "docs/discovery/go-live/evidence/GL05/generation-state.json": "6149a74e0293121195a7374f77a79c6a91af5960d6d8e9914da38e415e10ad72",
+    "docs/discovery/go-live/evidence/GL05/query-tasks.json": "7a81c2bf9d3393d1faff8edaf5e30f746e303585b2bdae6857df9ceb871ab5a0",
+    "docs/discovery/go-live/evidence/GL05/nj-account-leads.json": "b6ee9d3818263d026b7b3298ac0255b4897e5cf2a112dfa3a245e7962b491cbe",
+    "docs/discovery/go-live/evidence/GL05/pa-account-leads.json": "22c6641d0d830e7149a9e6624d3a796cc3824272afc67abc8ac4e1ed87697836",
+    "docs/discovery/go-live/evidence/GL05/nj-account-leads-supplement.json": "2f4b017d20bbb6821fd45f11d147b8cf0a495adc7d066f96336ad8fb5d00fdff",
+    "docs/discovery/go-live/evidence/GL05/research-account-map.json": "1a3eb51039f73812ff29bfa022e8e4648cab0f718ab9357a83eae2e540712e0c",
+    "docs/discovery/go-live/evidence/GL05/source-observations.json": "7e3328ef54de42c6817e7793a5bf36275b0dc4d47d869fa7b836bb7166089cd0",
+    "docs/discovery/go-live/evidence/GL05/generation-report.json": "f2a3cf0c2b6a472672775d007a6fd45ffebdab289a11d31ed1f188970bfcf10c",
+    "docs/discovery/go-live/evidence/GL05/root-account-leads.json": "86e5d27d76d12bb79663fd9c575820d5439d335e0aad6ebf41088834a18adbbe",
+    "docs/discovery/go-live/evidence/GL05/selection.json": "4d5ce6ece7cf1f58f72502454e5adca0f199ef794f2b273470f1a967c64c050f",
+    "docs/discovery/go-live/evidence/GL05/jefferson-import-20261117/publication-links.json": "e36d8693a35adc8a0ef1b8b911f0ba1697f2ce51b379888a8343fc16c8a31ed1",
+    "docs/discovery/go-live/evidence/GL05/jefferson-import-20261117/intake-manifest.json": "edc3ea466c9680af7c144a98d6b6fddda35440e5a8d1e24ee12b358007207e14",
+    "docs/discovery/go-live/evidence/GL05/jefferson-import-20261117/source-metadata.json": "b3c46a341818e4dce93c0e35db69c443775b8950bb04de1d99681bb62dfd37ea",
+    "docs/discovery/go-live/evidence/GL05/jefferson-import-20261117/combined-account-map.json": "f15f1f17756a2fb367d888730650432ae24497f233346a183dc7623dfc86f3ac",
+    "docs/discovery/go-live/evidence/GL05/jefferson-import-20261117/qualification-queue.json": "ba12f953efc27c8f16515b555800c4c4b5081bd6578be65437ce8ba3305a991d",
+    "docs/discovery/go-live/evidence/GL05/jefferson-import-20261117/account-evidence.json": "319f330be78bc99a21c437aec0ac1f0e1888fa9b1ce09c7d307386c09bcc6035",
+    "docs/discovery/go-live/evidence/GL05/jefferson-import-20261117/combined-map.md": "b50bcbc72a713593b4c00b0c7eee8fd3124a117dcc45c9a3a362702f5ff3b914",
+    "docs/discovery/go-live/evidence/GL05/generations/6149a74e0293121195a7374f77a79c6a91af5960d6d8e9914da38e415e10ad72.json": "6149a74e0293121195a7374f77a79c6a91af5960d6d8e9914da38e415e10ad72",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/qualification-queue.json": "b93204134f6f6a8a16ca168f845b6bad7f25c6d4f50994eb748cc50fa07c6137",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/research-network.json": "425d3cc240e975c6df45812ed3be917d28af730168b13858882a778e4967ed8d",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/research-network.md": "247f6b55eb435a13439a742ad33ad5bd912f12747b674e91030aff0a5fb1677e",
+    "docs/discovery/go-live/evidence/GL05/qualification/source-ci.json": "ebde87abdb365c101a18b668fb413844e6e66ce718dddbfc0b2d8eb135361b12",
+    "docs/discovery/go-live/evidence/GL05/qualification/validation-summary.json": "6d1ebbc0cc8c131b585763998407d64d708edce2b0aa7df7c626716a29a45de9",
+    "docs/discovery/go-live/evidence/GL05/qualification/runtime-inputs.before-private-map-review.json": "53e2cfe3d05249690f1bfebbff400f7057ab1f9933026351e5bd89908801b312",
+    "docs/discovery/go-live/evidence/GL05/qualification/runtime-inputs.json": "4ddea651e323f5c821dcc6525408fc578576b4ed49aa0192d71c69b9b86a3bd5",
+    "docs/discovery/go-live/evidence/GL05/qualification/preservation.json": "d5f95346218f8d9dccda2471a55d06a090f10751bf3e14028e2c248b94ee7988",
+    "docs/discovery/go-live/evidence/GL05/qualification/private-map-review-changes.json": "63f426c0240e969495a40b194fe9aafc8675e42d2de80d205bd5e171b00ba520",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/cooper/sanitized-output-receipt.json": "f624199806d633b5f20ab884477def69b3cf56c953a85ca2f6e83705bb3a1fe6",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/cooper/cooper-source-assertions.json": "af7500c57e20d7d8a45b8dba059b278882838367421ca8d8ac861c2151c18bcd",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/christiana/manifest.json": "37edeb24bedefdc447fdff97ccd935fe7c1ccabebd81d620386a1303d31e5074",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/christiana/source-assertions.json": "c6eeb87a5513a1accf24a6faacecba93ceb8bab48d742726fcf9bdfc2b4e908b",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/penn/sanitized-output-receipt.json": "360a3689bf2014eafaf1cf82b2a0fb7e521ce68bf425b3d40339c176c785b6ab",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/penn/accounts.json": "d02ae11d10d1508b02d45cc09c3554a6c249764d751a6fb1d3b73bee4374f673",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/penn/status.json": "0e3dda9a82b0ebf334fc474f0754053b1d3582e4642ff596983b6b18dac643cf",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/penn/projects.json": "bc86be1b4e2f837f955079c36ad844860c2891cc8e04acc6313dc7984dc56a4d",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/penn/manifest.json": "2c4ae09e6520070628689d40f59217ea7bdd9ad623096f0f7b82cf3d8f976d49",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/penn/supplemental-evidence.json": "ee00ebdf54b71b0cf56c4fa9b24e3ada9847befceab0e95baa49ebea3d94c276",
+    "docs/discovery/go-live/evidence/GL05/regional-import-20261117/penn/repositories.json": "e493bd871a80ff6110abbde48b98fb9a889e886c348ab436d1a9436c9139762e",
+    "docs/discovery/go-live/evidence/GL05/qualification/local-http/http-checks.json": "2d457511afd86e759ccbc555166d63312ef7ee4c44b99636815fc36243451362",
+    "docs/discovery/go-live/evidence/GL05/qualification/local-http/works.json": "ca1cfbc99490d885bd759e6954d84676fef7425ad73e828af1140a4061ae6d41",
+    "docs/discovery/go-live/evidence/GL05/qualification/local-http/camden-search.html": "dd0afa22571095e14fb616506233ffb80b1904d49563e2dc4e16e5dd5c56c132",
+    "docs/discovery/go-live/execution/GL05-search-spec.md": "968c92e8158e011508684789b5031e9fc9bc4ef9cadf12afdeeadf2b154d10a9",
+    "docs/discovery/go-live/execution/GL05-source-review.md": "6dec5396cda061a5caa93eefa19462a64204cdbee98e73930d27a0c820e59b4e",
+    "docs/discovery/go-live/execution/GL05-christiana-intake.md": "12fc16fef67644fcbce7688630f9374f0e23e4e7c4f170a6bc9957c5b2108333",
+    "docs/discovery/go-live/execution/GL05-selection-review.json": "c0566029032d7e27df634d7bf63aa26d67f5cfa7254b3dd5f8b3192f78780782",
+    "docs/discovery/go-live/execution/GL05-pa-map.md": "0ef0fcff510e92f8d43f74d211c8b19366205fdb6ceb45abf735208085e61eae",
+    "docs/discovery/go-live/execution/GL05-regional-integration.md": "e803d83ba7bfb96de37421ba02783a340c3753ed18e95088ea21d29b1aefffcc",
+    "docs/discovery/go-live/execution/GL05-research-map.md": "804ed8b4b96c8509f2c5292d1ba79f87682088946c61ed4ed34d3cfe61e28c6c",
+    "docs/discovery/go-live/execution/GL05-regional-sol-review.md": "c330e09041f67cb4f45769cc3c6c1c4978762843b29928d319cc008fa6bdbcdf",
+    "docs/discovery/go-live/execution/GL05-sol-review.md": "fd8d831fca76d0ca59c4d816406fa084ca6fafa9cb5eb052b58dbcdf18e0baf2",
+    "docs/discovery/go-live/execution/GL05-discovery-follow-through.md": "f1abdf41bf3cff56904f1578bfd11834e85948976c4507e765aec82c4f3f1e5d",
+    "docs/discovery/go-live/execution/GL05-search-sol-review.md": "db6ace4e378298b58cab787a2c2ba207dfec6f8e152f294c3d7e9fba65fd05bc",
+    "docs/discovery/go-live/execution/GL05-jefferson-sol-review.md": "7a35338208b241277a2c662f8c0706b2894e346ebb41920bbfbebf4030621301",
+    "docs/discovery/go-live/execution/GL05-penn-intake.md": "4b4bba8b776b7265d9d9189cde9d2168cf36699ba0f01dcc32cb05b50d4ec201",
+    "docs/discovery/go-live/execution/GL05-nj-map.md": "8a376e15051c06c03691540de7d2c0b63b24ca0c28ecee741aa1dbdf3e5f4457",
+    "docs/discovery/go-live/execution/GL05-nj-map-supplement.md": "bd13270590c2355b2d35fbad825954b75ec0e6a9e92afc69c4efd7fd3434bb75",
+    "docs/discovery/go-live/execution/GL05-cooper-intake.md": "433c3618f72d3531f7d3191827e9cc0822055f5f9ca7fd4c9dad98becf8bd23c",
+    "docs/discovery/go-live/execution/GL05-jefferson-integration.md": "ec824a805b3f02df4fa239aebc749c5553885bf274cdff4e16b74068cd3252c9",
+    "docs/discovery/go-live/execution/GL05-jefferson-source-intake.md": "22ff7253dfaf8a247c4ef452129ef5470c66bba41d4abcda7acafe00c761467e",
+    "docs/discovery/go-live/execution/GL05-pa-map-supplement.md": "ae510700e0d72268a578edb745697acce7488164580f9e558d922887889a017c",
+    "docs/discovery/go-live/README.md": "38c9a04fc0d7a0915d8c754613b26e0dc288a2b1883487082aca9530d0263138",
+    "docs/discovery/go-live/plan.json": "dd9da19d5acdb3df0cdd0d08aea5dab0ed32fe5d3d05277dd37a8584d206d22a",
+    ".gitignore": "6079e1a14bbb4b483550dd044b015a5634e51a79e2195a15bf2227f2a9823451",
+    "package.json": "393b37a2f54d069517deca82e206c269e82fbaefcd3af123fc8ae1cb38aa0593",
+    "scripts/build-discovery-directory.mjs": "b7e716745314a10932992c5523d2d10cd8018626850b72f4c08764e3775ecd03",
+    "scripts/build-research-map-import.mjs": "4a34803d84f2a1474a16edadceaea1d487ff2ca7f9407a7232047d260bfb2859",
+    "scripts/build-research-network.mjs": "5b992abc88605ba15b980b32159364e797513abf87adffb92e32062d068c3576",
+    "scripts/sanitize-jefferson-intake.py": "22bc418b8cd7c8b573f3ffcd3736244400c750fd0e30e6070801cf6ffc75cd60",
+    "scripts/sanitize-penn-intake.py": "bcd33a0fbe162e1686e2db7f024c81560f26fee2192e62f00158527df9d2150c",
+    "scripts/sanitize-cooper-intake.py": "d132266cea95bb110b651de639b4b3921b357a6427dbbdcf2dc6309e95a25606",
+    "scripts/sanitize-christiana-intake.py": "517715b41b9fc9453c51939969097272285b2d05a782c45da6bfce760a4c8f59",
+    "src/ingest/discovery/research-map-import.ts": "567b05362f5b866f73e9bada83e6d1c05fef3a1617ea5243038f566205e866fa",
+    "src/ingest/discovery/research-network-federation.ts": "a6048d95344a2fe70bc57734d98b1e772433c1b457d28bf07cd79ebb3fce3284"
+  },
+  "preservation": {
+    "baseline": "1fafc0156a8bac7fe248d5891ed28f3a1ddc8a21",
+    "baselineTrackedFiles": 1216,
+    "changedExistingPaths": [
+      ".gitignore",
+      "docs/discovery/go-live/README.md",
+      "docs/discovery/go-live/plan.json",
+      "package.json",
+      "scripts/build-discovery-directory.mjs",
+      "src/content/discovery-directory-catalog.json",
+      "src/content/discovery-directory-removals.json",
+      "src/ingest/discovery-directory-page.ts",
+      "src/ingest/discovery-directory.ts",
+      "src/ingest/discovery/directory-review-authority.ts",
+      "src/ingest/discovery/directory-review.ts",
+      "test/discovery-directory-builder.test.ts",
+      "test/discovery-directory-http.test.ts",
+      "test/discovery-directory-routing.test.ts"
+    ],
+    "unchangedExistingPaths": 1202,
+    "unexpectedChanges": [],
+    "original31PackageObjectsAndMPAcceptanceModelsNativeRecordsAndHistoricalReceiptsPreserved": true,
+    "oldCatalogRecords": 28,
+    "oldCitations": 9,
+    "oldRegionalContexts": 3,
+    "GL04SourceEvidenceAttestationAndArchiveUnchanged": true,
+    "untrackedRootJsonPreserved": [
+      "accounts.json",
+      "manifest.json",
+      "projects.json",
+      "repositories.json",
+      "status.json",
+      "supplemental-evidence.json"
+    ]
+  },
+  "followups": [
+    {
+      "package": "GL06",
+      "work": "Build the discovery front door and compact public list projection; test page bytes before a broad admitted cohort and expose supported archival status."
+    },
+    {
+      "package": "GL07",
+      "work": "Use qualified account/institution journeys and source-scoped reported relationships; never merge people by names or propagate collaborator ownership."
+    },
+    {
+      "package": "GL08",
+      "work": "Consume the saved regional account/project queue through finite source qualification and reusable reviewed batch adapters, lean admissions and corrections."
+    },
+    {
+      "package": "GL09",
+      "work": "Audit actual county/source breadth and missed work after GL08, using institutional roster/account enumeration plus project/publication references. Preserve neighboring Delaware labels."
+    },
+    {
+      "package": "GL10",
+      "work": "Run actual reader, browser, accessibility and performance qualification; agent/source/code checks are separate evidence."
+    },
+    {
+      "package": "GL11",
+      "work": "Require exact release-head CI, configuration, operations and rollback readiness before using existing deployment authority."
+    }
+  ],
+  "deployment_authorized": true,
+  "deployment_performed": false,
+  "releaseAccepted": false,
+  "benchmark_credit": 0,
+  "phase_note": "Source-slice and prior generations remain immutable. Core full-regression and later targeted private intake evidence have distinct source/timing scopes. Package acceptance does not publish the large intake, prove geography or replace remaining GL06\u2013GL11 work."
+}

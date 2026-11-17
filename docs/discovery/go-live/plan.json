@@ -1,7 +1,7 @@
 {
   "id": "TVD-GO-LIVE-1",
   "decision": "EX32",
-  "revision": 5,
+  "revision": 6,
   "status": "implementation_in_progress",
   "source_baseline": "60d6bd3aaba90a4970821f41fb2ca0329cbf8d20",
   "authority": "On 16 November 2026 the user authorized implementation beginning GL00 and following accepted dependencies, Terra implementation with independent Sol review, commits and PR updates, and deployment as appropriate. Deployment authority covers the reviewed existing-site GL11 release when its actual readiness conditions are met; it does not accept unimplemented work, permit unrelated infrastructure changes, new paid services or outreach.",
@@ -286,7 +286,7 @@
       "goals": [
         "G02"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "work": "work-packages.md#gl05--make-ordinary-search-and-browsing-useful",
       "acceptance_ids": [
         "GL05-A1",
@@ -295,8 +295,47 @@
         "GL05-A4",
         "GL05-A5"
       ],
-      "acceptance": null,
-      "findings": []
+      "acceptance": {
+        "recorded_at": "2026-11-17T01:05:12.152618+00:00",
+        "scope": "Bounded six-work search/facets/ranking and source-linked private research intake/federation; no broad public admission, geographic completeness, intended-reader or release acceptance",
+        "source_commit": "e5b50915a3af48dcbfd015fd4f3640db8a272b17",
+        "core_source_commit": "352258dbb9a35ebe7364286d21aa912dd69f2067",
+        "owner": "Terra",
+        "reviewer": "Sol",
+        "review": "execution/GL05-sol-review.md",
+        "supplemental_reviews": [
+          "execution/GL05-jefferson-sol-review.md",
+          "execution/GL05-regional-sol-review.md"
+        ],
+        "receipt": "execution/GL05-acceptance.json"
+      },
+      "findings": [],
+      "followups": [
+        {
+          "package": "GL06",
+          "work": "Build the discovery front door and compact public list projection; test page bytes before a broad admitted cohort and expose supported archival status."
+        },
+        {
+          "package": "GL07",
+          "work": "Use qualified account/institution journeys and source-scoped reported relationships; never merge people by names or propagate collaborator ownership."
+        },
+        {
+          "package": "GL08",
+          "work": "Consume the saved regional account/project queue through finite source qualification and reusable reviewed batch adapters, lean admissions and corrections."
+        },
+        {
+          "package": "GL09",
+          "work": "Audit actual county/source breadth and missed work after GL08, using institutional roster/account enumeration plus project/publication references. Preserve neighboring Delaware labels."
+        },
+        {
+          "package": "GL10",
+          "work": "Run actual reader, browser, accessibility and performance qualification; agent/source/code checks are separate evidence."
+        },
+        {
+          "package": "GL11",
+          "work": "Require exact release-head CI, configuration, operations and rollback readiness before using existing deployment authority."
+        }
+      ]
     },
     {
       "id": "GL06",
@@ -466,6 +505,42 @@
       "owner": "Terra",
       "reviewer": "Sol",
       "acceptance_criteria_unchanged": true
+    },
+    {
+      "id": "GL05-D01",
+      "status": "authorized_execution_adaptation",
+      "reason": "The user requested substantially more leads and a better map of institutions, labs, people and GitHub resources during GL05.",
+      "choice": "Run parallel PA/NJ private source-linked account discovery and deterministic normalization alongside search. Keep the 41-handle/47-repository lead roster separate from the six-work approved directory. GL06 and GL08 may proceed concurrently after GL05; GL08 consumes the queue through newly qualified finite account enumeration and reusable reviewed source adapters. GL09 still requires GL08 and actual geographic/miss evidence.",
+      "affects": [
+        "GL02",
+        "GL03",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "owner": "Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true,
+      "evidence": "execution/GL05-research-map.md",
+      "follow_through": "execution/GL05-discovery-follow-through.md"
+    },
+    {
+      "id": "GL05-D02",
+      "status": "reviewed_private_intake_adaptation",
+      "reason": "The user supplied four research collections and explicitly retained the nine-county DVRPC primary geography with neighboring leads labelled.",
+      "choice": "Preserve original research packages, sanitize only metadata and links, and federate source observations into a private account/repository and relationship index. Preserve publication/project mentions separately from account-catalog candidates and keep source-scoped people, failed/zero states and temporal affiliations. No imported report authorizes public admission or a provider-qualified source route.",
+      "affects": [
+        "GL03",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "owner": "Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true,
+      "evidence": "execution/GL05-regional-sol-review.md"
     }
   ],
   "planning_review": {
@@ -479,8 +554,9 @@
   "implementation_baseline": "6ed650156100104e3f00e756e3c3094027c130fb",
   "execution_decision": "EX33",
   "deployment_status": "not_performed_readiness_pending",
-  "next_ready_packages": [],
-  "active_packages": [
-    "GL05"
-  ]
+  "next_ready_packages": [
+    "GL06",
+    "GL08"
+  ],
+  "active_packages": []
 }

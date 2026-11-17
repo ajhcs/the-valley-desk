@@ -1,0 +1,24 @@
+{
+  "changedInputs": {
+    "docs/discovery/go-live/evidence/GL05/research-account-map.json": {
+      "before": "b23f38892bb6344f952a60d760470c4060484814b41f5b616f48e2eea7f84f52",
+      "after": "1a3eb51039f73812ff29bfa022e8e4648cab0f718ab9357a83eae2e540712e0c"
+    },
+    "scripts/build-research-account-map.mjs": {
+      "before": "6e56ff046a5d9a6eb87d2076ae7f16fff1b4c5e62f47ae427aa6da461cd47c15",
+      "after": "865c287ba6983c9e0424aa2e892cbc8a248eb810eb998a057bd60e75582a3e13"
+    },
+    "src/ingest/discovery/research-account-map.ts": {
+      "before": "2f4683f96d0eaead8dec7aff49a41d177b8384353462440f430a417c3b440fc1",
+      "after": "2d155c4af121c16415c0696060dfefe5a4a011b058e09a89f4005deb5004bb36"
+    },
+    "test/discovery-research-account-map.test.ts": {
+      "before": "fb87620d39c0943fe2d27387dd7be0787b22dd10b95db76ec2c6fde2a6052f69",
+      "after": "802c55cd51b72cdeb0ad707d37378ebe69913420c5f672c523d0b749ba74ee99"
+    }
+  },
+  "nonInputReportAlsoChanged": "docs/discovery/go-live/execution/GL05-research-map.md",
+  "reason": "Independent Sol review found duplicate source and invalid calendar acceptance plus lost role/place/access presentation in private map tooling.",
+  "revalidated": "6 focused private-map tests, generated-output check and application typecheck; full regression is still running and its map test file follows these changes.",
+  "publicRuntimeAndSourceChanged": false
+}

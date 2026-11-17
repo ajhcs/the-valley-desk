@@ -1,0 +1,108 @@
+{
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works",
+      "status": 200,
+      "bytes": 29449
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?q=sleep+AI",
+      "status": 200,
+      "bytes": 10890
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?q=Camden+County",
+      "status": 200,
+      "bytes": 11048
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?q=Gloucester+County",
+      "status": 200,
+      "bytes": 10284
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?q=Mercer+County",
+      "status": 200,
+      "bytes": 6357
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?q=Rutgers%2C+The+State+University+of+New+Jersey%2C+Camden",
+      "status": 200,
+      "bytes": 10944
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?q=SleepBoost+Gloucester+County",
+      "status": 200,
+      "bytes": 514
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?q=brain+AI",
+      "status": 200,
+      "bytes": 494
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?county=Camden&kind=repository",
+      "status": 200,
+      "bytes": 10770
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?county=Camden&limit=1",
+      "status": 200,
+      "bytes": 6516
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?county=Camden&limit=1&after=%255B%2522459464cb38e22c58563ff356334f21b0d4795541f189f2f7eeab79b15cd4d8f3%2522%252C%2522directory-search-aliases-v1%2522%252C%2522b3b795c7adecb44a72b065726f1830971332ef473c5f4ac68f176076862d5709%2522%252C%2522GL05%253Awork%253Acrossref%253Asleepboost%2522%255D",
+      "status": 200,
+      "bytes": 11018
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?county=Gloucester&kind=repository",
+      "status": 200,
+      "bytes": 10012
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?county=Gloucester&limit=1",
+      "status": 200,
+      "bytes": 6073
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?county=Gloucester&limit=1&after=%255B%2522459464cb38e22c58563ff356334f21b0d4795541f189f2f7eeab79b15cd4d8f3%2522%252C%2522directory-search-aliases-v1%2522%252C%25224495feb163c7ef856de4f4212663f1923d6210c82fab6bd67a81452f952fe65f%2522%252C%2522GL05%253Awork%253Acrossref%253Aopenpbta%2522%255D",
+      "status": 200,
+      "bytes": 10258
+    },
+    {
+      "method": "GET",
+      "path": "/discover/works?q=Camden+sleep&kind=repository&county=Camden",
+      "status": 200,
+      "bytes": 3919
+    },
+    {
+      "method": "HEAD",
+      "path": "/discover/works?q=sleep+AI",
+      "status": 200,
+      "bytes": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/discovery/v1/works?kind=&kind=repository",
+      "status": 400,
+      "bytes": 34
+    }
+  ],
+  "allPassed": true,
+  "scope": "actual local workerd; no source, database or cron requests; not deployed or human-reader validation"
+}

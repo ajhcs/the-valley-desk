@@ -73,8 +73,32 @@ runtime inputs stayed unchanged. Ten actual loopback workerd HTTP checks passed;
 this is local integration evidence, not a deployed or human-reader result.
 Updated-head CI remains separately tracked on PR30.
 
-GL05 is next. Ordinary search, product navigation, creator views, upkeep, broader
-source/county coverage, reader validation and release remain GL05–GL11 work.
+GL05 is accepted for bounded search, private source intake and federation; all
+acceptance limits and verification timing are recorded in [GL05 acceptance](execution/GL05-acceptance.json). The current
+directory contains six reviewed works. Ordinary topic/institution/county search,
+facets, match explanations and stable pagination use one generated snapshot;
+the historical 28-object read surface remains separate.
+
+Parallel Terra discovery and the four user-supplied institution collections now feed a
+[regional research map](evidence/GL05/regional-import-20261117/research-network.md):
+220 account URL keys, 2,841 catalog candidate repository keys, 3,306 repository-shaped
+URL leads across the full queue, and 4,803 source observations. The Cooper graph
+retains 637 source-scoped nodes and 820 reported relationships. These units do not
+count verified people, eligible health work or institutional ownership. Delaware
+connections remain neighboring context under the user's retained DVRPC geography.
+The original 41-account map and 68-account Jefferson merge remain provenance
+checkpoints. Metadata-only offline replays reproduce all four supplied packages;
+no article bodies, abstracts, contacts or supplied source scripts are reused.
+[Discovery follow-through](execution/GL05-discovery-follow-through.md) connects this
+queue to repeatable bounded acquisition and lean reviewed admissions.
+
+Full core regression passed 1,550 tests. Later intake and integration refinements
+passed 63 focused tests (overlapping the full core run), four offline replay checks,
+two local sanitizer QA tests, final build/typecheck and secret scan. Source commit
+`352258d` passed push and PR CI. The latest intake/qualification head has separate
+CI pending; the 1,550 local count is not a claim of a final-intake-head full run.
+GL06–GL11 still own the front door, creator journeys, upkeep, broader coverage,
+reader validation and release. GL06 and GL08 can proceed concurrently after GL05.
 No production configuration, scheduler, remote migration, source enrollment or
 release changed. Deployment remains authorized when GL11 readiness is met.
 
