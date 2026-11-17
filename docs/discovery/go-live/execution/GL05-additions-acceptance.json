@@ -1,0 +1,93 @@
+{
+  "id": "TVD-GL05-ADDITIONS-1",
+  "recorded_at": "2026-11-17T13:48:41.225242+00:00",
+  "disposition": "accepted_private_metadata_intake_only",
+  "source_commit": "497bb7eb9f3285d95c0eb9a5cc38793684fb6540",
+  "baseline": "6ba5dee23eae8a24b18c282c46d6af955616c5c4",
+  "owner": "Terra",
+  "reviewer": "Sol",
+  "acceptor": "Orchestrator",
+  "review": "execution/GL05-additions-sol-review.md",
+  "validation": "evidence/GL05/regional-additions-20261117/qualification/validation-summary.json",
+  "active_map": "evidence/GL05/regional-additions-20261117/research-network.md",
+  "original_acceptances_changed": false,
+  "counts": {
+    "accounts": 1028,
+    "repositoryCandidateIndex": 4890,
+    "distinctRepositoryUrlLeads": 7249,
+    "distinctRepositoryUrlLeadsExcludingBroadChecks": 6129,
+    "nativeRepositories": 231,
+    "observations": 23356,
+    "cooperNodes": 637,
+    "cooperEdges": 820,
+    "newSourceRecords": 1788,
+    "sourceRecordsByBatch": {
+      "incubators": 309,
+      "wistar": 91,
+      "public-health": 1388
+    }
+  },
+  "projectedSecondaryUrlOccurrences": 3903,
+  "inheritedSourceRecordsPinned": 3261,
+  "ancestorSourceRecordsPinned": 4472,
+  "dataQuality": {
+    "derivedExportPopulations": [
+      259,
+      3274,
+      5534
+    ],
+    "exportMembershipAndObservationIdsVerified": true,
+    "compactLineageRecords": 3,
+    "bulkCopiedExportsReimported": 0,
+    "profileHints": 492,
+    "rawProfileHitsImported": 0,
+    "biographiesRetained": false
+  },
+  "source_claims": {
+    "distinctPeople": null,
+    "eligibleNewHealthWorks": null,
+    "newNativeRepositoryIds": 0,
+    "newlyDiscoveredWorks": null,
+    "countyCoverageComplete": false,
+    "remoteTargetsReverified": false,
+    "publicationAuthorized": false
+  },
+  "geography": {
+    "primary": "nine-county DVRPC",
+    "broaderSourceScopeDoesNotExpandPrimary": true,
+    "neighboringContextsPreserved": true,
+    "membershipDoesNotEstablishLabResidency": true,
+    "selfReportedProfilesDoNotEstablishWorksiteOrCurrentRole": true
+  },
+  "resolvedFindings": [
+    "Wistar actual date/Boolean fields and JSON URL-list validation enforced.",
+    "Broader Greater Philadelphia wording distinguished from primary and neighboring context.",
+    "Follow-through current-input links corrected to additions snapshot."
+  ],
+  "publicReviewedWorks": 6,
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "articleBodyAbstractBiographyOrContactReuse": false,
+  "benchmarkCredit": 0,
+  "deploymentPerformed": false,
+  "releaseAccepted": false,
+  "nextReadyPackages": [
+    "GL06",
+    "GL08"
+  ],
+  "followups": [
+    "GL06 compact front door and results",
+    "GL07 source-scoped creator/institution journeys after dependencies",
+    "GL08 finite source qualification and lean admission batches from explicit links and profile hints",
+    "GL09 admitted primary-region breadth and miss audit after GL08",
+    "GL10 reader/browser/accessibility/performance validation",
+    "GL11 exact-head CI and operational release readiness"
+  ],
+  "finalReceiptReview": {
+    "reviewer": "Sol",
+    "disposition": "PASS",
+    "artifactReceiptsVerifiedAgainstGit": 26,
+    "scope": "Source-stage artifacts, count arithmetic, source lineage, current validation scope and preserved acceptance/dependency/release gates.",
+    "remainingBlockers": []
+  }
+}

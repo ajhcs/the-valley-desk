@@ -1,0 +1,65 @@
+{
+  "baseline": "6ba5dee23eae8a24b18c282c46d6af955616c5c4",
+  "priorTrackedFiles": 1355,
+  "intentionalSourceStageChanges": [
+    "docs/discovery/go-live/README.md",
+    "docs/discovery/go-live/execution/GL05-discovery-follow-through.md",
+    "package.json"
+  ],
+  "allOtherPriorTrackedContentUnchanged": true,
+  "rootUntrackedJsonUnchanged": [
+    "accounts.json",
+    "manifest.json",
+    "projects.json",
+    "repositories.json",
+    "status.json",
+    "supplemental-evidence.json"
+  ],
+  "originalInputFilesVerified": {
+    "incubators": 12,
+    "wistar": 6,
+    "public-health": 15
+  },
+  "originalInputFileTotal": 33,
+  "sourceRecordsExact": 1788,
+  "priorObservationsExact": 17665,
+  "projectedMetadataUrlOccurrences": 3903,
+  "cooperNodesExact": 637,
+  "cooperEdgesExact": 820,
+  "inheritedSourceRecordCount": 3261,
+  "ancestorSourceRecordCount": 4472,
+  "counts": {
+    "accounts": 1028,
+    "repositoryCandidateIndex": 4890,
+    "distinctRepositoryUrlLeads": 7249,
+    "distinctRepositoryUrlLeadsExcludingBroadChecks": 6129,
+    "nativeRepositories": 231,
+    "observations": 23356,
+    "cooperNodes": 637,
+    "cooperEdges": 820,
+    "newSourceRecords": 1788,
+    "sourceRecordsByBatch": {
+      "incubators": 309,
+      "wistar": 91,
+      "public-health": 1388
+    }
+  },
+  "dataQuality": {
+    "workflow": "analyze-data-quality (scoped lineage and grain check)",
+    "controllingSource": "Final source-linked CSVs for reported findings; intermediate seeds/checks/query coverage are separate overlapping stages.",
+    "grain": "Source-scoped record and URL key, not unique people, labs or eligible work.",
+    "duplicateExportPopulations": {
+      "unreviewed-account-leads.csv": 259,
+      "unreviewed-repository-leads.csv": 3274,
+      "unreviewed-all-repository-url-leads.csv": 5534
+    },
+    "duplicateExportMembershipAndObservationIdsExact": true,
+    "compactLineageRecords": 3,
+    "bulkCopiedExportsReimported": 0,
+    "filteredProfiles": 492,
+    "rawProfileHitsImported": 0,
+    "biographiesRetained": false,
+    "reportedSourceAssertionsRemainUnreviewed": true
+  },
+  "sourceCommit": "497bb7eb9f3285d95c0eb9a5cc38793684fb6540"
+}

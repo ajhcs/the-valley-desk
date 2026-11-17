@@ -1,7 +1,7 @@
 {
   "id": "TVD-GO-LIVE-1",
   "decision": "EX32",
-  "revision": 8,
+  "revision": 9,
   "status": "implementation_in_progress",
   "source_baseline": "60d6bd3aaba90a4970821f41fb2ca0329cbf8d20",
   "authority": "On 16 November 2026 the user authorized implementation beginning GL00 and following accepted dependencies, Terra implementation with independent Sol review, commits and PR updates, and deployment as appropriate. Deployment authority covers the reviewed existing-site GL11 release when its actual readiness conditions are met; it does not accept unimplemented work, permit unrelated infrastructure changes, new paid services or outreach.",
@@ -352,6 +352,14 @@
           "review": "execution/GL05-extension-sol-review.md",
           "scope": "Six additional private metadata intakes and twelve-batch source-linked URL federation; no public admissions, source-route qualification, geographic completeness or release.",
           "map": "evidence/GL05/regional-extension-20261117/research-network.md"
+        },
+        {
+          "id": "TVD-GL05-ADDITIONS-1",
+          "source_commit": "497bb7eb9f3285d95c0eb9a5cc38793684fb6540",
+          "receipt": "execution/GL05-additions-acceptance.json",
+          "review": "execution/GL05-additions-sol-review.md",
+          "scope": "Three private source collections, verified earlier-map export lineage and fifteen-batch URL federation; no public admissions, source-route or regional-coverage acceptance.",
+          "map": "evidence/GL05/regional-additions-20261117/research-network.md"
         }
       ]
     },
@@ -595,6 +603,24 @@
       "acceptance_criteria_unchanged": true,
       "evidence": "execution/GL05-extension-sol-review.md",
       "receipt": "execution/GL05-extension-acceptance.json"
+    },
+    {
+      "id": "GL05-D05",
+      "status": "reviewed_private_intake_adaptation",
+      "reason": "The user supplied PABC/BioLabs and broader discovery, Wistar, and Philadelphia public-health research collections.",
+      "choice": "Retain reported findings and source qualifications under independent closed intake policies. Verify recycled Valley Desk exports against their original snapshot and retain only compact lineage records. Keep profile hints, intermediate seeds and final inventories at their own grains without treating them as independent confirmations. Governing DVRPC boundary, lean public admission and remaining dependency/release gates remain unchanged.",
+      "affects": [
+        "GL03",
+        "GL06",
+        "GL07",
+        "GL08",
+        "GL09"
+      ],
+      "owner": "Terra / Orchestrator",
+      "reviewer": "Sol",
+      "acceptance_criteria_unchanged": true,
+      "evidence": "execution/GL05-additions-sol-review.md",
+      "receipt": "execution/GL05-additions-acceptance.json"
     }
   ],
   "planning_review": {

@@ -114,7 +114,7 @@ three-intake additions passed 27 focused research-map/import/federation tests,
 12 source QA tests, three byte-exact source replays, eight portable freshness
 checks, production build/typecheck and secret scan. Full application/Watch/Discovery,
 PDF, smoke and dependency-audit checks were not repeated locally for this metadata-only
-change. New-head CI remains separate on PR30. The [additions review](execution/GL05-additions-sol-review.md)
+change. New-head CI remains separate on PR30. See [additions acceptance](execution/GL05-additions-acceptance.json) and [validation receipts](evidence/GL05/regional-additions-20261117/qualification/validation-summary.json). The [additions review](execution/GL05-additions-sol-review.md)
 records source lineage, citation, validation and geography checks and their limits.
 GL06–GL11 still own the front door, creator journeys, upkeep, broader coverage,
 reader validation and release. GL06 and GL08 can proceed concurrently after GL05.
