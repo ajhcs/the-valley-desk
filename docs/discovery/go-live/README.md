@@ -79,36 +79,43 @@ directory contains six reviewed works. Ordinary topic/institution/county search,
 facets, match explanations and stable pagination use one generated snapshot;
 the historical 28-object read surface remains separate.
 
-Parallel Terra intake and independent Sol review connect twelve supplied batches in
-an [expanded regional map](evidence/GL05/regional-extension-20261117/research-network.md):
-420 account URL keys, 4,877 catalog candidate repository keys and 7,199 distinct
-repository-shaped URL leads (6,077 excluding Drexel broad-check-only observations).
-The 17,665 observations preserve the previous 9,275 and add 3,261 source records
-plus 5,129 projected metadata URL occurrences. Multiple projections from one source
-do not provide independent corroboration. These are private review units, not
-verified people, eligible health projects or completed regional coverage.
+Parallel Terra intake and independent Sol review now connect fifteen source collections
+in the [current regional map](evidence/GL05/regional-additions-20261117/research-network.md):
+1,028 account URL keys, 4,890 catalog candidate repository keys and 7,249 distinct
+repository-shaped URL leads (6,129 excluding Drexel broad-check-only observations).
+The 23,356 observations retain the previous 17,665 exactly and add 1,788 source
+records plus 3,903 projected metadata URL occurrences. These include unreviewed
+profile leads, historical affiliations, external collaborators and general work;
+the counts do not establish distinct people, local labs or eligible health projects.
 
-SJU, PCOM, Widener, Scranton, Lehigh and Rowan extend the previous six-source
-snapshot. Account-only leads, linked publications, student and personal work,
-relationships, content limits and failed/not-found states remain qualified as
-reported. Scranton, Lehigh Valley and Delaware-based neighboring connections do
-not expand the DVRPC boundary. PCOM Georgia, SJU Lancaster and historical or
-mixed Rowan Zhu/Tulane/partner contexts stay individually scoped. An institution
-name does not establish current employment, worksite, county or account control.
+The latest collections cover PABC/BioLabs and broader regional discovery, Wistar,
+and Philadelphia public health. The first collection copies earlier Valley Desk
+exports: their complete memberships and observation IDs were verified and retained
+as three compact lineage records, without reimporting thousands of old leads.
+Repeated projections or exports are not independent corroboration. Wistar's 43
+directory entries are not 43 labs; the public-health source's 492 filtered profiles
+are self-reported hints, and its 5,287 raw hits and profile biographies are excluded.
 
-Prior snapshots and the Cooper graph remain unchanged, with the earlier 4,472
-detailed source records pinned by hash and pointer. [Discovery follow-through](execution/GL05-discovery-follow-through.md)
-connects the queue to bounded acquisition and lean reviewed admissions.
+DVRPC's nine counties remain primary. Broader source Greater Philadelphia wording
+does not expand that boundary; Delaware, Scranton and Lehigh contexts retain their
+labels. PABC membership does not establish lab residency; BioLabs for Advanced
+Therapeutics and B+labs remain distinct. PHL-2's claimed public-health-lab identity
+has no independently established city linkage. Citywide, department, community and
+global-company contexts stay separate from ownership and project worksite.
 
-Earlier core qualification passed 1,550 tests. The Drexel/Villanova source
-`f6b33a0` passed its complete 479-test Discovery suite and both push/PR CI.
-Those results remain historical. The current six-intake extension passed 24
-focused research-map/import/federation tests, 13 local source QA tests, all six
-byte-exact replays, seven portable snapshot freshness checks, build/typecheck
-and secret scan. Full application/Watch/Discovery, PDF, smoke and dependency
-audit checks were not repeated locally for this metadata-only extension.
-Updated-head CI remains separate on PR30. See the [extension acceptance](execution/GL05-extension-acceptance.json) and [validation receipts](evidence/GL05/regional-extension-20261117/qualification/validation-summary.json). Sol's [extension review](execution/GL05-extension-sol-review.md)
-records the source-policy, clipped-citation and browser-build findings and fixes.
+Prior snapshots, all reported native IDs and the Cooper graph remain unchanged.
+Pinned references retain the earlier detailed source records and their ancestors.
+[Discovery follow-through](execution/GL05-discovery-follow-through.md) connects this
+private queue to bounded qualification and lean admissions.
+
+Historical full-suite and CI results retain their original revisions. Both push and
+PR CI passed the previous sources/qualification heads through `6ba5dee`. The latest
+three-intake additions passed 27 focused research-map/import/federation tests,
+12 source QA tests, three byte-exact source replays, eight portable freshness
+checks, production build/typecheck and secret scan. Full application/Watch/Discovery,
+PDF, smoke and dependency-audit checks were not repeated locally for this metadata-only
+change. New-head CI remains separate on PR30. The [additions review](execution/GL05-additions-sol-review.md)
+records source lineage, citation, validation and geography checks and their limits.
 GL06–GL11 still own the front door, creator journeys, upkeep, broader coverage,
 reader validation and release. GL06 and GL08 can proceed concurrently after GL05.
 No production configuration, scheduler, remote migration, source enrollment or

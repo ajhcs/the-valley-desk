@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "regional-source-intake-manifest-v1",
+  "batch": "wistar",
+  "sourceThreadId": "01a1e754-f637-7141-a610-dd146aab4937",
+  "inputs": {
+    "README.md": {
+      "sha256": "95431b5b9cea790aea58e1682d59685c15cdf8ccd74c3d722d9c0f20e4cc6c04",
+      "bytes": 21654
+    },
+    "build_inventory.py": {
+      "sha256": "c9ad6da475fa99a3ed9a880c1bc203efae1258de37ad0dbd291e6157e7d851fb",
+      "bytes": 16304
+    },
+    "render_report.py": {
+      "sha256": "6a7679636abe00285083db11686e541a7fb91afea218d4da8e9b4b0bc3191549",
+      "bytes": 6435
+    },
+    "github-accounts.csv": {
+      "sha256": "c81a4c91be6c0bd23adbf9bd800281668555853b31577d78ea77f1aa8dca089c",
+      "bytes": 10249
+    },
+    "labs-and-people.csv": {
+      "sha256": "a3db2ba82c01a8e4dab7eed52e932fd0941cb442e0cd3c216c815f9c74ca5ed4",
+      "bytes": 8747
+    },
+    "organization-repositories.csv": {
+      "sha256": "bc5bb21e6711631db36e5ba15e77c428bae0ea2be6fbadba7ca01b7d1b142c92",
+      "bytes": 3285
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "35a11078927b447bb6e52fcad681c37c38470781f02ba3793cf96c1c6663a682",
+      "bytes": 92630
+    }
+  },
+  "recordCount": 91,
+  "metadataPolicies": {
+    "github-accounts.csv": [
+      "name_or_identity",
+      "github_login",
+      "account_type",
+      "related_investigator",
+      "github_url",
+      "public_repositories",
+      "evidence_summary",
+      "evidence_url_1",
+      "evidence_url_2",
+      "checked_utc",
+      "sourceUrls",
+      "proseTruncated"
+    ],
+    "labs-and-people.csv": [
+      "investigator",
+      "wistar_profile_url",
+      "lab_organization_accounts",
+      "investigator_accounts",
+      "team_or_project_accounts",
+      "collaboration_or_shared_links",
+      "status",
+      "notes",
+      "sourceUrls",
+      "proseTruncated"
+    ],
+    "organization-repositories.csv": [
+      "github_organization",
+      "repository_name",
+      "github_url",
+      "fork",
+      "archived",
+      "created_utc",
+      "last_push_utc",
+      "checked_utc",
+      "sourceUrls",
+      "proseTruncated"
+    ]
+  },
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "publicationAuthorized": false
+}

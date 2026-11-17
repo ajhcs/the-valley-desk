@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "regional-source-intake-manifest-v1",
+  "batch": "incubators",
+  "sourceThreadId": "01a1e757-a7ce-7eb3-a4bd-3658661471f6",
+  "inputs": {
+    "README.md": {
+      "sha256": "618ea7279c3b1e97de4e58cc9373ad9afa437f76b787587624a9618431dd4a48",
+      "bytes": 4490
+    },
+    "evidence-link-check-pre-review.json": {
+      "sha256": "4a8d4b9f787709d66a60855882f3bc0b8eab59fbf12bbe9f06786c1e7b02cdd3",
+      "bytes": 21801
+    },
+    "github-link-check.json": {
+      "sha256": "3b0f36b23571368d0003f7dfa52e601e881de572241bb27edd2aca58181018d7",
+      "bytes": 17062
+    },
+    "qualification-queue.snapshot.json": {
+      "sha256": "bae3720eeb8aa4a01f4b6d0b35923c4f3fb321c7b87020cfdcf9858f335afc79",
+      "bytes": 13186107
+    },
+    "research-network.snapshot.json": {
+      "sha256": "6eca9df3495507c77fb3973586fd51f7e386533ec47f970af15337be93357897",
+      "bytes": 1153555
+    },
+    "source-snapshot-receipt.json": {
+      "sha256": "49227a05917df5fa96b8d44cb3e2a84979a06d29103de8d4391086dfe727c0e3",
+      "bytes": 944
+    },
+    "supported-links.csv": {
+      "sha256": "b0829d64cfa28d86c6c52e00727e0dbb435937fa64d09164270c856120456371",
+      "bytes": 25236
+    },
+    "supported-links.md": {
+      "sha256": "782ddf4ed52ae8ce9b05efb8f6842a1f13a9d8cda55925156911e4b99c7f0b82",
+      "bytes": 30899
+    },
+    "unreviewed-account-leads.csv": {
+      "sha256": "5085a69ef56381a3c6631dfc3cf41e61e2fcd7ae2eebdae7dea20b5c05f9ac30",
+      "bytes": 45168
+    },
+    "unreviewed-all-repository-url-leads.csv": {
+      "sha256": "800995530fe9d65200037fb3b5daff146679f98be3471a2514287e04b0aafa39",
+      "bytes": 1055453
+    },
+    "unreviewed-repository-leads.csv": {
+      "sha256": "7882748dba217e42c12928d2a2a77c7105ea8505b817b7dff4973fd794da86c2",
+      "bytes": 443059
+    },
+    "verification.json": {
+      "sha256": "7c712c1f567669fd55af9067f989c0a9bb987c1ff42113c13acceb1db7ba6e6b",
+      "bytes": 605
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "97b8d195e2104532756c1ad90746d9cd9e8196cf7c90465a3eda0da71c207a9e",
+      "bytes": 241770
+    }
+  },
+  "recordCount": 309,
+  "metadataPolicies": {
+    "README.md": [
+      "limitation"
+    ],
+    "evidence-link-check-pre-review.json": [
+      "checked_at_utc",
+      "limitation",
+      "method",
+      "reported_final_url",
+      "reported_status"
+    ],
+    "github-link-check.json": [
+      "checked_at_utc",
+      "csv_sha256_at_check",
+      "current_csv_sha256",
+      "limitation",
+      "method",
+      "post_check_change",
+      "reported_final_url",
+      "reported_status"
+    ],
+    "source-snapshot-receipt.json": [
+      "lineage"
+    ],
+    "supported-links.csv": [
+      "entity",
+      "entity_type",
+      "evidence_scope",
+      "evidence_url_1",
+      "evidence_url_2",
+      "evidence_url_3",
+      "group",
+      "qualification",
+      "research_area"
+    ],
+    "unreviewed-account-leads.csv": [
+      "lineage",
+      "reported_raw_count"
+    ],
+    "unreviewed-all-repository-url-leads.csv": [
+      "lineage",
+      "reported_raw_count"
+    ],
+    "unreviewed-repository-leads.csv": [
+      "lineage",
+      "reported_raw_count"
+    ],
+    "verification.json": [
+      "limitation"
+    ]
+  },
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "publicationAuthorized": false
+}

@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "regional-source-intake-manifest-v1",
+  "batch": "public-health",
+  "sourceThreadId": "01a1e757-1efe-79c2-b387-58adc9b5cccc",
+  "inputs": {
+    "README.md": {
+      "sha256": "822bffc744acc87f8b106b3ec1cf6902a6939e75eb5c76aba8512103e5154dd8",
+      "bytes": 4709
+    },
+    "assemble_inventory.py": {
+      "sha256": "8311a4cd30d952d2f799cae778ed8156248149ebd578287b442f50c3ccbe1abe",
+      "bytes": 11271
+    },
+    "check_sources.py": {
+      "sha256": "b95088cb1a527dc18529b84e07cd8f4141167aa1c2f20f6a51006ac1478c0fd1",
+      "bytes": 1644
+    },
+    "complete_profile_search.py": {
+      "sha256": "51b2eb550c7c9680081ff99859eb1346701d0677dfa69fcb389e6372b7bc711b",
+      "bytes": 3018
+    },
+    "counts.json": {
+      "sha256": "e5bcd1db1058e487a5b71f5f9dd0be6a493e06fa26be759c6b67252ba56b265b",
+      "bytes": 558
+    },
+    "curated-seeds.tsv": {
+      "sha256": "b197040f1aa1a73911d54d242d932a98c77c034ceec711a0a707d4580696f9eb",
+      "bytes": 35817
+    },
+    "discover_profiles.py": {
+      "sha256": "c28acbbb16ad45e6e7bcaf93e4e17dff77f8f5a49cc75a0495171829917672ab",
+      "bytes": 3690
+    },
+    "profile-search-raw.json": {
+      "sha256": "eb6e14f78ef9acc385e3f41bde67a7f1a502e6188ec238b6b5cc768a9618e2e5",
+      "bytes": 2109510
+    },
+    "seed-github-validation.json": {
+      "sha256": "85373f5e8bf4ccb7779ad6f662bda87ae281a0a9c23f55ae318dee4a3c628066",
+      "bytes": 41195
+    },
+    "source-link-checks.csv": {
+      "sha256": "a19054de95b607e21b6d659719938087bb91deda5e18803804eb9d8a7e73754d",
+      "bytes": 25048
+    },
+    "source-linked-inventory.csv": {
+      "sha256": "3400d91609a6f3323f5cf2c4589b513cfe3140aa9751111bf24eceeb14ac533c",
+      "bytes": 54505
+    },
+    "source-linked-inventory.md": {
+      "sha256": "f286af5da528207ecf9fed4cbf414ceb20855a3f3f3fdd84a42ceaf6dbe9f974",
+      "bytes": 37578
+    },
+    "unavailable-leads.csv": {
+      "sha256": "d871a36f66f0e40b39c6b1b5f814f639f257f31ae44d06df862ecd0fc4594b99",
+      "bytes": 438
+    },
+    "unreviewed-profile-leads.csv": {
+      "sha256": "f1c97760e22a385e4a72b86e5ef1f401389168c03919d0f3ff7b147c7b03c24f",
+      "bytes": 189796
+    },
+    "validate_seeds.py": {
+      "sha256": "4c4f2b7305d25f092886b7758538ce77ee9ea0cfd42b9287b928df691be1fe67",
+      "bytes": 2182
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "182e32519c9faafdef5d404c3520a19ed37f9a03644930c9a8b6354a0ec38d72",
+      "bytes": 1128610
+    }
+  },
+  "recordCount": 1388,
+  "metadataPolicies": {
+    "source-linked-inventory.csv": [
+      "area",
+      "type",
+      "name",
+      "github_url",
+      "github_object_type",
+      "evidence_url",
+      "evidence_kind",
+      "evidence_note",
+      "availability",
+      "extracted_urls",
+      "metadata_truncated"
+    ],
+    "curated-seeds.tsv": [
+      "area",
+      "type",
+      "name",
+      "github_url",
+      "evidence_url",
+      "evidence_note",
+      "extracted_urls",
+      "metadata_truncated"
+    ],
+    "unreviewed-profile-leads.csv": [
+      "name",
+      "github_url",
+      "github_object_type",
+      "profile_company",
+      "profile_location",
+      "evidence_url",
+      "matched_search_queries",
+      "review_status",
+      "extracted_urls",
+      "metadata_truncated"
+    ],
+    "unavailable-leads.csv": [
+      "area",
+      "type",
+      "name",
+      "github_url",
+      "evidence_url",
+      "evidence_note",
+      "availability_note",
+      "extracted_urls",
+      "metadata_truncated"
+    ],
+    "source-link-checks.csv": [
+      "url",
+      "http_status",
+      "resolved_url",
+      "note",
+      "extracted_urls",
+      "metadata_truncated"
+    ],
+    "README.md": [
+      "note"
+    ],
+    "profile-search-raw.json": [
+      "query",
+      "matches_reported",
+      "returned",
+      "first_page_only"
+    ],
+    "counts.json": [
+      "value"
+    ],
+    "seed-github-validation.json": [
+      "__typename",
+      "login",
+      "name",
+      "location",
+      "nameWithOwner",
+      "isArchived",
+      "isPrivate",
+      "url",
+      "reported_key",
+      "status"
+    ]
+  },
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "publicationAuthorized": false
+}
