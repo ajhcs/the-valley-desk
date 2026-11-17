@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "regional-source-intake-manifest-v1",
+  "batch": "sju",
+  "sourceThreadId": "01a1e6fd-d1df-70d0-82ac-d13f41472461",
+  "inputs": {
+    "README.md": {
+      "sha256": "4b6bbceef4517b1c994aca255b81bca0ce864229677aa6af86b6c38d40b59175",
+      "bytes": 14693
+    },
+    "accounts.csv": {
+      "sha256": "d41578b1776366802af7b1580d3f8e81c2f3f3389f58b72d8a335d347ee5832d",
+      "bytes": 9477
+    },
+    "labs-checked.csv": {
+      "sha256": "488b3301e2ff8ed7791b20d489a205b1aee221f5a071483b3b54b6521c2d93e0",
+      "bytes": 5335
+    },
+    "link-checks.csv": {
+      "sha256": "bcdf482e1481d6c50ebf9dfdf7a93351a8e8846ac25b22173f1bf6e4ccd22386",
+      "bytes": 18491
+    },
+    "repositories.csv": {
+      "sha256": "8eac2f18a8d8e2eeb005f64a51f600b6604cbf8f23c4c879880a21581c25cc85",
+      "bytes": 22557
+    },
+    "source-notes/followup-response.md": {
+      "sha256": "a642945e8e0b064136064066e7177698d23578b28f8f5c8fc7073d3a1ecf9a47",
+      "bytes": 10249
+    },
+    "source-notes/initial-response.md": {
+      "sha256": "d101eafd5abd2fa04cd43a16cffaab3a90ce28d835103af6c444b5c3b8564ca5",
+      "bytes": 8765
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "8f09890f70b277e6781b712ee0aba1a5bd6166f9aa1a81afbccfc01b48a74389",
+      "bytes": 173968
+    }
+  },
+  "recordCount": 254,
+  "metadataPolicies": {
+    "accounts.csv": [
+      "account",
+      "account_type",
+      "identified_as",
+      "connection",
+      "evidence_urls",
+      "limits",
+      "snapshot_utc",
+      "primaryUrlDisposition"
+    ],
+    "repositories.csv": [
+      "relationship",
+      "group",
+      "repository",
+      "people",
+      "description",
+      "evidence_urls",
+      "limits",
+      "snapshot_utc",
+      "primaryUrlDisposition"
+    ],
+    "labs-checked.csv": [
+      "group",
+      "finding",
+      "evidence_urls",
+      "limits",
+      "snapshot_utc"
+    ],
+    "link-checks.csv": [
+      "status",
+      "disposition",
+      "final_url",
+      "checked_at_utc",
+      "primaryUrlDisposition"
+    ]
+  },
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "publicationAuthorized": false
+}

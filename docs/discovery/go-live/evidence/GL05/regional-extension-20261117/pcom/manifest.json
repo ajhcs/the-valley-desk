@@ -1,0 +1,325 @@
+{
+  "schemaVersion": "regional-source-intake-manifest-v1",
+  "batch": "pcom",
+  "sourceThreadId": "01a1e6fd-918f-7ea0-ba48-6199dea9b1b6",
+  "inputs": {
+    "HANDOFF.md": {
+      "sha256": "e3036018fed79b653eb2dc90bcb22ab7d9eee8de8c355127c4bbec1c693cd4a3",
+      "bytes": 4148
+    },
+    "README.md": {
+      "sha256": "c822fa0d388648b68f7a27f3cdf7a19beba6e4155c3975760fbc6d77f0f0228a",
+      "bytes": 14558
+    },
+    "SHA256SUMS": {
+      "sha256": "004a3595f6c58d19db65f03a0f0b94a254674f33226898f4af629a1f6fdcbc82",
+      "bytes": 5357
+    },
+    "__pycache__/author_github_screen.cpython-312.pyc": {
+      "sha256": "6ebdcc0156dc66ce1488576c4b6c41607686c0d3b26f419bbca35e589ae1fdb8",
+      "bytes": 6583
+    },
+    "__pycache__/corpus_github_scan.cpython-312.pyc": {
+      "sha256": "38b0a55e21fd050bbf17e9df9d05e90f883de123e9d06e14a1a011ef2b44d584",
+      "bytes": 6821
+    },
+    "account_snapshot.json": {
+      "sha256": "4dcfa8f6690c9cb03bbe8759d8cff9fec48378b4fa45a5aaa22afdfcc86c2151",
+      "bytes": 14818
+    },
+    "add_library.py": {
+      "sha256": "ad77df8a2f48f5e26027160ba560b1222a40ef21620752a02295fa0e863e5252",
+      "bytes": 5137
+    },
+    "adjudicate_meta_tmp.json": {
+      "sha256": "32ace7cf678379fd4dd1511604b171e7e9cea631793f6f5c762c4bc8c87d15a3",
+      "bytes": 18078
+    },
+    "adjudicate_meta_tmp.py": {
+      "sha256": "0b816e1518d02598a847ead187c38e77e8ab013d90abaaa7cef2bf6c6a7e81ea",
+      "bytes": 1355
+    },
+    "area_a.json": {
+      "sha256": "955ae317820c589216de0e1a9dfbe7f40f3d043d3e79a7f83c5c42a4b8288518",
+      "bytes": 1770
+    },
+    "area_b.json": {
+      "sha256": "7ba8337a856445c64fd1ad4c7a1ac500897273eba42beea94eda173bd70409b1",
+      "bytes": 1271
+    },
+    "area_c.json": {
+      "sha256": "602cc986b4821498ad9d7e55aeec968b3268fe44b690f9892427dbcd6a22784a",
+      "bytes": 1884
+    },
+    "area_d.json": {
+      "sha256": "318ae423677d986ac25d75848b2a51db9689ce529992b38d315f7fb4bdcb9500",
+      "bytes": 2880
+    },
+    "author_adjudication_a.json": {
+      "sha256": "975308ee48eecec4d1d41a51cfaeef839238ba63ba3aeb19223f04872e8b31ea",
+      "bytes": 37148
+    },
+    "author_adjudication_b.json": {
+      "sha256": "70f12bf87b332290259f89f0838d80ceff828658e1a6184dd7819bacf5849dcf",
+      "bytes": 109154
+    },
+    "author_github_area_d.json": {
+      "sha256": "85340e05433d9e6e54c009bb6b6ef4e467f4dee1e330c061a5561c994050a4fc",
+      "bytes": 1197
+    },
+    "author_github_retry.json": {
+      "sha256": "6348e2166f6f03b471d430de7ca27d41b821d2177ade4365ce032e5e303aa277",
+      "bytes": 4549
+    },
+    "author_github_screen.json": {
+      "sha256": "84584ea76df96a2dadfe73e7f14d2a3d01e4d3de84f4c7ad4a2a5c6efc52a9fb",
+      "bytes": 71742
+    },
+    "author_github_screen.py": {
+      "sha256": "d2ae6675bdf49f1acae19bfca05a52f7408e4e789407546f67b4687a02b0406a",
+      "bytes": 3612
+    },
+    "b_metadata.json": {
+      "sha256": "1cd2e4a0d073e9ae5dcdc1b9eeec29c9811fb4a9fa27ca399208d6e806ecfdaa",
+      "bytes": 78425
+    },
+    "build_inventory.py": {
+      "sha256": "7045a5cd9370abb6bcf92fd3afbf2dd496ad113aad7a9133ab243a518d0e9aa7",
+      "bytes": 18547
+    },
+    "check_philly.py": {
+      "sha256": "a23bc1d35713dec3754429edbe1cabd0f66fa54b58b37c6502f13acea9ec9c46",
+      "bytes": 1319
+    },
+    "connected_account_repositories.csv": {
+      "sha256": "2f5168a8beeb2f8b672d22270b23e7aed55f2652110a8cff28d3e0cb38e9e37a",
+      "bytes": 178670
+    },
+    "connections.csv": {
+      "sha256": "0e731484e2a67613870cfb1ddae44380c8ce92bc27a23c94cf36251efa9573fd",
+      "bytes": 9364
+    },
+    "corpus_github_candidates.csv": {
+      "sha256": "e4dae0e45c5e827c5a0dbd3c7f0602d8525575154c2d2a8f5059f3d604425d86",
+      "bytes": 15610
+    },
+    "corpus_github_scan.py": {
+      "sha256": "1ea4ed8d4bcdea3d3adfce313c21b609cc5941fe998376b7e96ba054563d85a3",
+      "bytes": 4120
+    },
+    "corpus_xml_scan.py": {
+      "sha256": "8b906ec2c435ed87f62702d5178c550210c1691a01a03775e1ed5fe20728d40c",
+      "bytes": 3551
+    },
+    "deep_pass_georgia1.json": {
+      "sha256": "cbc51ad119b2b3059f6e5f8af8ce037a9bfca3f1f0da3bdbf7be222f638c733d",
+      "bytes": 7027
+    },
+    "deep_pass_georgia2.json": {
+      "sha256": "197a4743bbf47cafd18a24a9f8bc316d401e15219315a3d2a955bdacade8c539",
+      "bytes": 6764
+    },
+    "deep_pass_philly1.json": {
+      "sha256": "9c37adc96f925f7cc982ad5d461c276c8131e9dce221a94b2990e227b05fa0a3",
+      "bytes": 7242
+    },
+    "deep_pass_philly2.json": {
+      "sha256": "828458a7d26f478fc89d4b9f77ca2a0d45f6d9c2ab4d09cb10b261a367d2c729",
+      "bytes": 3436
+    },
+    "deep_pass_philly3.json": {
+      "sha256": "0a2b28f003ad064778262e27457433c5540bf5c2a44d77372ae2bc007cf9d864",
+      "bytes": 4896
+    },
+    "deep_pass_south.json": {
+      "sha256": "172f0c56e958aab1c4242faeb0e840101e76483cda1b7245c4d400e0969afb1e",
+      "bytes": 8524
+    },
+    "extra_network.json": {
+      "sha256": "87bd98cb0583736e5c9cd36c0315f7879fee5dcb07a5e4573247324450bbb4a7",
+      "bytes": 6113
+    },
+    "gdovin_network.json": {
+      "sha256": "2a64f4b04c67ab0e6285659c3680ed2cb2741a938931bc1bdefd8228d2750814",
+      "bytes": 5001
+    },
+    "georgia_a_m.json": {
+      "sha256": "4f91dd7c56407f7051eccf474d2bc3d643a0542da125ba9eb478b76e015b6d8d",
+      "bytes": 12569
+    },
+    "georgia_n_z.json": {
+      "sha256": "552e7155336317e6e53e70f24299410f99b30e6703e3bccc924aef4868837bb1",
+      "bytes": 12623
+    },
+    "github_search_extra.json": {
+      "sha256": "e6b2a8b256220f7efa3d08ba7289cd0d2c718c538cec8f96b1fd6565eb2dcfae",
+      "bytes": 3939
+    },
+    "hatcher_retina.json": {
+      "sha256": "02526d4748c7282209850335915e5b15bbacd001521f81fe22a4a4f80a3c5bff",
+      "bytes": 6128
+    },
+    "more_pcom_papers.json": {
+      "sha256": "ef607173cb4054dd0a0bb8afaf1945de651a003bf7cf2ce2a0970640ed4e969a",
+      "bytes": 3092
+    },
+    "network_edges.csv": {
+      "sha256": "ced7f17636fcb525c7599b99f39afcde95cb3313744fbed432086b7f4087dc31",
+      "bytes": 18083
+    },
+    "network_snowball.json": {
+      "sha256": "b79cb60b5d44b6ba8401871aa1101dc3e48b9575f895713edf5770d87c0ee2ea",
+      "bytes": 24711
+    },
+    "open_access_corpus_results.jsonl": {
+      "sha256": "0f9dfe3e54ae41dfa2ff53e185fb5ba5c564a0edc7c788c1439f97014522847d",
+      "bytes": 199376
+    },
+    "open_access_corpus_scope.json": {
+      "sha256": "29b3cdd3b331138f9de375913a49d19f995fbd222cfa4c80a8a17f4716b83411",
+      "bytes": 226
+    },
+    "open_access_corpus_summary.json": {
+      "sha256": "22657ba8f47cd56a508dd0a0639052c15d1cf564d68a9856bc378954195e5cff",
+      "bytes": 2252
+    },
+    "open_access_corpus_v2_results.jsonl": {
+      "sha256": "84566731073f4aaa5ed1a574ad7dbd01172c5ea6724edb2b70c1337de77e9d52",
+      "bytes": 327886
+    },
+    "open_access_corpus_xml_results.jsonl": {
+      "sha256": "b02e0108236566d1d26b88b4ea37990e91dee54ba844fc02b944f582207283c5",
+      "bytes": 323000
+    },
+    "other_research.json": {
+      "sha256": "abcd1bda3a04d749c6f2564e9aaa3277d90818f73e81662c841015e6de4b9c58",
+      "bytes": 36638
+    },
+    "paperpass.py": {
+      "sha256": "6842403cf3f366c06c3d1dbe1105013a9ceaf9b8f0e637717ad302455d434b79",
+      "bytes": 1857
+    },
+    "people_screened.csv": {
+      "sha256": "84c4fe64745b7e06403ee212acf4350ff98eac40dd5235388391b2b42322aaf3",
+      "bytes": 177986
+    },
+    "pharmacy.json": {
+      "sha256": "983f63ed1176da15186af9a74e1f7d98ca948ee2134a7826aa492349b4622649",
+      "bytes": 39786
+    },
+    "philly_a_g.json": {
+      "sha256": "91fbb70cc075dd53fbc7d8896bb5016a095cbf94a61b7dccd2e3fa26ef71ee7d",
+      "bytes": 36531
+    },
+    "philly_h_z.json": {
+      "sha256": "333d7de514dc7fd9429eb87e940c4e6a9ec55b6a1bb148754f2294093c7d833f",
+      "bytes": 15010
+    },
+    "pubmed_mining.json": {
+      "sha256": "7c7639d40209883f221a5dc27fc2bfa6134941668aa5f6f7ac16efa31c203e9b",
+      "bytes": 4780
+    },
+    "snapshot_github.py": {
+      "sha256": "d00a4ce82439d8128a00e2d3676c2333bde6a7303ed8e9b3dff4490b8c21064b",
+      "bytes": 5831
+    },
+    "south_georgia.json": {
+      "sha256": "8586302f8991d9b5ccead7cb87aadcd275743d99591ca7e8e7ada62c0fff37e2",
+      "bytes": 17802
+    },
+    "south_xml_tmp.json": {
+      "sha256": "8def1758e5afdc6bffa082f9f113a629c77d90db6c023146efc042fe2c46de05",
+      "bytes": 19293
+    },
+    "south_xml_tmp.py": {
+      "sha256": "f75ebde8463900dfe7d7140cc708a56bceaa802e3c35c73835679d41e437a9b0",
+      "bytes": 1286
+    },
+    "summarize_corpus.py": {
+      "sha256": "3d33611d9879961a5083dd174980ba3eeadb41a8c1344f963df311e9e68d37fb",
+      "bytes": 3990
+    },
+    "wistar.json": {
+      "sha256": "386740c194701bbefd018b21570e57e247fe1deb92e2bbb974d55fecae914b35",
+      "bytes": 6098
+    },
+    "write_adjudication_a.py": {
+      "sha256": "e7b23df5975936773cc209c42f5bca6756f4981b4945444788449eb39dd44ee9",
+      "bytes": 5355
+    },
+    "write_deep_south.py": {
+      "sha256": "82640c59896e581cbac4795cb6d782b044245ff68243a1e6a20a752e1a3453d7",
+      "bytes": 6871
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "cc78e3b5c9350263edd2a95d6b9f2f46fb5498f46558b3b7ec515f96bf47567d",
+      "bytes": 893015
+    }
+  },
+  "recordCount": 853,
+  "metadataPolicies": {
+    "connected_account_repositories.csv": [
+      "account",
+      "account_relationship",
+      "repository",
+      "description",
+      "language",
+      "fork",
+      "archived",
+      "pushed_at",
+      "license",
+      "pcom_research_attribution",
+      "primaryUrlDisposition"
+    ],
+    "connections.csv": [
+      "person_or_entity",
+      "relationship",
+      "year",
+      "area",
+      "primary_evidence",
+      "notes",
+      "primaryUrlDisposition"
+    ],
+    "corpus_github_candidates.csv": [
+      "pmcid",
+      "paper_title",
+      "authors",
+      "github_url",
+      "classification",
+      "notes",
+      "primaryUrlDisposition"
+    ],
+    "network_edges.csv": [
+      "source",
+      "relationship",
+      "target",
+      "qualification",
+      "primaryUrlDisposition"
+    ],
+    "people_screened.csv": [
+      "name",
+      "campuses",
+      "official_urls",
+      "search_notes",
+      "statuses",
+      "source_files",
+      "search_notes_truncated",
+      "sourceCitationUrls"
+    ],
+    "account_snapshot.json": [
+      "requested_account",
+      "relationship",
+      "login",
+      "account_type",
+      "public_repos",
+      "listed_public_repos",
+      "retrieved_at_utc",
+      "primaryUrlDisposition"
+    ]
+  },
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "publicationAuthorized": false
+}

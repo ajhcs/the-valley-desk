@@ -79,40 +79,36 @@ directory contains six reviewed works. Ordinary topic/institution/county search,
 facets, match explanations and stable pagination use one generated snapshot;
 the historical 28-object read surface remains separate.
 
-Parallel Terra discovery and the six user-supplied institution collections now feed an
-[expanded regional research map](evidence/GL05/regional-expansion-20261117/research-network.md):
-259 account URL keys, 3,274 account/native-catalog repository candidate keys and
-4,411 distinct repository-shaped URL leads excluding Drexel broad-check-only
-observations. Including the broad checks gives 5,534 URL leads. The queue contains
-9,275 observations; the Cooper graph retains 637 source-scoped nodes and 820
-reported relationships. These units do not count verified people, eligible health
-work or institutional ownership. Delaware connections remain neighboring context
-under the retained nine-county DVRPC geography.
+Parallel Terra intake and independent Sol review connect twelve supplied batches in
+an [expanded regional map](evidence/GL05/regional-extension-20261117/research-network.md):
+420 account URL keys, 4,877 catalog candidate repository keys and 7,199 distinct
+repository-shaped URL leads (6,077 excluding Drexel broad-check-only observations).
+The 17,665 observations preserve the previous 9,275 and add 3,261 source records
+plus 5,129 projected metadata URL occurrences. Multiple projections from one source
+do not provide independent corroboration. These are private review units, not
+verified people, eligible health projects or completed regional coverage.
 
-The original 41-account map, Jefferson intake and four-institution federation remain
-immutable provenance checkpoints. Drexel adds 435 catalog rows, 336 project
-associations, student/course and publication-review queues, plus 2,197 explicitly
-separate broad root checks. Villanova adds 17 account URLs, 66 repository paths
-and two separate non-GitHub code resources. Forks, external copies, historical
-roles and unavailable originals retain their reported qualifications. Metadata-only
-offline sanitizers preserve original research packages and retain source-identifier
-queries in citations; article bodies, abstracts, contacts and supplied scripts are
-not reused. See the [expansion review](execution/GL05-expansion-sol-review.md) and
-[supplemental acceptance](execution/GL05-expansion-acceptance.json).
-[Discovery follow-through](execution/GL05-discovery-follow-through.md) connects the
-queue to repeatable bounded acquisition and lean reviewed admissions.
+SJU, PCOM, Widener, Scranton, Lehigh and Rowan extend the previous six-source
+snapshot. Account-only leads, linked publications, student and personal work,
+relationships, content limits and failed/not-found states remain qualified as
+reported. Scranton, Lehigh Valley and Delaware-based neighboring connections do
+not expand the DVRPC boundary. PCOM Georgia, SJU Lancaster and historical or
+mixed Rowan Zhu/Tulane/partner contexts stay individually scoped. An institution
+name does not establish current employment, worksite, county or account control.
 
-The previous core run passed 1,550 tests; its later four-source intake passed 63
-focused checks. Both push and PR CI subsequently passed source `e5b5091` and
-qualification head `c23cc18`. These are historical results for those revisions.
-The Drexel/Villanova source `f6b33a0` passed the full current Discovery suite
-(479 tests, including three new expansion tests), four local sanitizer QA
-checks, portable snapshot freshness checks, build/typecheck and secret scan.
-Application/Watch and PDF checks were not repeated locally for this metadata-only
-expansion. New-head CI remains separately tracked on PR30.
-See [expansion acceptance](execution/GL05-expansion-acceptance.json) and
-[independent review](execution/GL05-expansion-sol-review.md). The source-identifier
-citation defect found in review is repaired and its original finding is retained.
+Prior snapshots and the Cooper graph remain unchanged, with the earlier 4,472
+detailed source records pinned by hash and pointer. [Discovery follow-through](execution/GL05-discovery-follow-through.md)
+connects the queue to bounded acquisition and lean reviewed admissions.
+
+Earlier core qualification passed 1,550 tests. The Drexel/Villanova source
+`f6b33a0` passed its complete 479-test Discovery suite and both push/PR CI.
+Those results remain historical. The current six-intake extension passed 24
+focused research-map/import/federation tests, 13 local source QA tests, all six
+byte-exact replays, seven portable snapshot freshness checks, build/typecheck
+and secret scan. Full application/Watch/Discovery, PDF, smoke and dependency
+audit checks were not repeated locally for this metadata-only extension.
+Updated-head CI remains separate on PR30. Sol's [extension review](execution/GL05-extension-sol-review.md)
+records the source-policy, clipped-citation and browser-build findings and fixes.
 GL06–GL11 still own the front door, creator journeys, upkeep, broader coverage,
 reader validation and release. GL06 and GL08 can proceed concurrently after GL05.
 No production configuration, scheduler, remote migration, source enrollment or

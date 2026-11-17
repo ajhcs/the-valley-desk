@@ -1,0 +1,228 @@
+{
+  "schemaVersion": "regional-source-intake-manifest-v1",
+  "batch": "rowan",
+  "sourceThreadId": "01a1e721-f1b1-7e03-b0e1-72c3a035d91f",
+  "inputs": {
+    "HANDOFF.md": {
+      "sha256": "01c919c4b764fa73f3ff1a417a438717c8d8f5d853c522875d719fea6e8000d4",
+      "bytes": 2309
+    },
+    "SHA256SUMS-saved-20261116.txt": {
+      "sha256": "bbe61a0711908a99006d2d6d2fcdd3ec8526aae28ad81a6512cd214c1079a8b4",
+      "bytes": 1914
+    },
+    "account-repository-snapshot.csv": {
+      "sha256": "2156acaea3d23286c60ffafbe583583b42449e23cdc70e53f132e0aa066c75aa",
+      "bytes": 14465
+    },
+    "build-inventory.py": {
+      "sha256": "88c3b1d84a8372ec0b75aa0e6c08a9e7054194d72485ac428484db478c495411",
+      "bytes": 29308
+    },
+    "epmc-remaining-1.csv": {
+      "sha256": "b9da714833bf25ce5db67cd087eb6f5e5d2ef6c7daa286e28fa0c93acda8b7ee",
+      "bytes": 4479
+    },
+    "epmc-remaining-2.csv": {
+      "sha256": "65642054542b6e90403f90d5b6843c676ba2d602a61ef510ed43300f98884e76",
+      "bytes": 5066
+    },
+    "epmc-remaining-3.csv": {
+      "sha256": "acfe9116e2170969dcdbb813c781d867bbddf13fc722899b545c95556a29dd38",
+      "bytes": 4349
+    },
+    "epmc-remaining-4.csv": {
+      "sha256": "37dce74910eea4b02c062bb03efedb6d9e1d7e5652042fcec7af0a7935befe38",
+      "bytes": 5870
+    },
+    "epmc-screening-dispositions.csv": {
+      "sha256": "0bb76957386aea7455f57c4ffabf2caaf113ae88f0ae467b1b82a749fffdec78",
+      "bytes": 24048
+    },
+    "europe-pmc-results.json": {
+      "sha256": "53175733508b0381cc68d69a78ba2017e2402a9ef382bfda5b08041a5d776096",
+      "bytes": 44781
+    },
+    "matched-accounts.csv": {
+      "sha256": "d72386cf6a903de1dbd9ad3d36c648b96bf5504571b513eddd4982b6e4b92771",
+      "bytes": 19069
+    },
+    "matched-repositories.csv": {
+      "sha256": "aba4696a1fb42fee73520bd0e300c71187baa071e21b908dc64dc08e5dc1bb2d",
+      "bytes": 37558
+    },
+    "research-report.md": {
+      "sha256": "2a1c4ecccb907ed68940aeb0bd2d6173dd5f209e4261aa7caa286b8c5b1cf904",
+      "bytes": 31889
+    },
+    "search-coverage.md": {
+      "sha256": "674e6d009d8ab2f1d217f708ab94086a4b01e30f573110b4f8b276f7280cf0d6",
+      "bytes": 11155
+    },
+    "snapshots/first-pass-20261116/SHA256SUMS.txt": {
+      "sha256": "3f37b50019b1e416eee4e3c9cae7a34513b2c52c73d7ab42f34b5943c836682b",
+      "bytes": 359
+    },
+    "snapshots/first-pass-20261116/account-repository-snapshot.csv": {
+      "sha256": "697b6dcbf05158995a3bad2b0f928adc4a18e470d2aa536eb9e5809868611a30",
+      "bytes": 9228
+    },
+    "snapshots/first-pass-20261116/build-inventory.py": {
+      "sha256": "edb77a9b87700fe9f57dd8bcf83fbafc5e641d64eb77b2d475033b9e35556174",
+      "bytes": 15612
+    },
+    "snapshots/first-pass-20261116/matched-repositories.csv": {
+      "sha256": "86375f775007d9dc09174f9b08a246fefd47590cee1c53671ba138c72bb8997f",
+      "bytes": 22422
+    },
+    "snapshots/first-pass-20261116/research-report.md": {
+      "sha256": "f655b33f5abc18b8b0f1cbd65ea49e5d89379def6305d076d3bb8010d536719c",
+      "bytes": 18762
+    },
+    "unavailable-repositories.csv": {
+      "sha256": "6c812fc22d428b20c0e9bde25bf418d74a26ae1788c896bfe81d19735acb57a1",
+      "bytes": 376
+    },
+    "write-screening.py": {
+      "sha256": "9d1727558de5ada077fb648bc7f9ef730a24b4f23eabe7aa2538243c30f4b86c",
+      "bytes": 5031
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "566eed67cdc354c8d79659fefe22af32288008c3dcb63f74e665db01ae960e40",
+      "bytes": 497104
+    }
+  },
+  "recordCount": 587,
+  "metadataPolicies": {
+    "matched-repositories.csv": [
+      "group_or_researcher",
+      "repository",
+      "ownership_relationship",
+      "is_fork",
+      "fork_parent",
+      "archived",
+      "created_at_utc",
+      "last_push_at_utc",
+      "association_evidence",
+      "qualification",
+      "checked_at_utc",
+      "api_status",
+      "urlDisposition"
+    ],
+    "matched-accounts.csv": [
+      "account",
+      "login",
+      "github_account_type",
+      "public_repository_count",
+      "matched_repository_count",
+      "associated_groups",
+      "repository_relationships",
+      "association_evidence",
+      "qualification",
+      "checked_at_utc",
+      "urlDisposition"
+    ],
+    "account-repository-snapshot.csv": [
+      "account",
+      "account_relationship",
+      "repository",
+      "is_fork",
+      "archived",
+      "created_at_utc",
+      "last_push_at_utc",
+      "checked_at_utc",
+      "urlDisposition"
+    ],
+    "unavailable-repositories.csv": [
+      "repository",
+      "paper",
+      "rowan_association",
+      "api_status",
+      "qualification",
+      "checked_at_utc",
+      "urlDisposition"
+    ],
+    "epmc-screening-dispositions.csv": [
+      "pmcid",
+      "article_url",
+      "title",
+      "year",
+      "doi",
+      "disposition",
+      "qualification",
+      "urlDisposition"
+    ],
+    "epmc-remaining-1.csv": [
+      "pmcid",
+      "title",
+      "authorString",
+      "pubYear",
+      "doi",
+      "pmid"
+    ],
+    "epmc-remaining-2.csv": [
+      "pmcid",
+      "title",
+      "authorString",
+      "pubYear",
+      "doi",
+      "pmid"
+    ],
+    "epmc-remaining-3.csv": [
+      "pmcid",
+      "title",
+      "authorString",
+      "pubYear",
+      "doi",
+      "pmid"
+    ],
+    "epmc-remaining-4.csv": [
+      "pmcid",
+      "title",
+      "authorString",
+      "pubYear",
+      "doi",
+      "pmid"
+    ],
+    "snapshots/first-pass-20261116/matched-repositories.csv": [
+      "group_or_researcher",
+      "repository",
+      "ownership_relationship",
+      "is_fork",
+      "fork_parent",
+      "archived",
+      "created_at_utc",
+      "last_push_at_utc",
+      "association_evidence",
+      "qualification",
+      "checked_at_utc",
+      "api_status",
+      "urlDisposition"
+    ],
+    "snapshots/first-pass-20261116/account-repository-snapshot.csv": [
+      "account",
+      "account_relationship",
+      "repository",
+      "is_fork",
+      "archived",
+      "created_at_utc",
+      "last_push_at_utc",
+      "checked_at_utc",
+      "urlDisposition"
+    ],
+    "europe-pmc-results.json": [
+      "pmcid",
+      "pmid",
+      "title",
+      "authorString",
+      "pubYear",
+      "doi",
+      "firstPublicationDate"
+    ]
+  },
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "publicationAuthorized": false
+}

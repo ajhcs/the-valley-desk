@@ -1,0 +1,192 @@
+{
+  "schemaVersion": "regional-source-intake-manifest-v1",
+  "batch": "lehigh",
+  "sourceThreadId": "01a1e721-5222-7952-8edf-dd4990685a8c",
+  "inputs": {
+    "initial/README.md": {
+      "sha256": "85ff0cb4f8fd3c0f8fa5d9952cc3771f26529501863173048c89e1268625a977",
+      "bytes": 1611
+    },
+    "initial/github-links.csv": {
+      "sha256": "a476b1709dfea1eeabc1781eebfe6726cd4c02d5bd100fd177fd7ec207900c95",
+      "bytes": 16269
+    },
+    "initial/no-verified-lab-account-found.csv": {
+      "sha256": "9cec504b0dd5fa1f955e15a34ca32372aa890adb05d371e429efbe7c8d8f22d1",
+      "bytes": 2316
+    },
+    "initial/unavailable-or-unconfirmed.csv": {
+      "sha256": "f7c515aa0520d5e9077f40e75229b5238b64217738a0ca5b586c00709cd68b52",
+      "bytes": 536
+    },
+    "followup/README.md": {
+      "sha256": "aca0b09341531a682193ea9111b64008d44d6e58d94e61d73c94aebbe268d7ba",
+      "bytes": 4127
+    },
+    "followup/build_inventory.py": {
+      "sha256": "ffe19505b7d6129e21c4ead364482d64be8a1321b6d5c4df82b43b202e33b6ca",
+      "bytes": 21218
+    },
+    "followup/combined-github-inventory.csv": {
+      "sha256": "ad47cb6dcb8ce030647f21ffe96ef6f858fd0fa47bc01ffde6f8f87c79fb6248",
+      "bytes": 78686
+    },
+    "followup/lab-account-repository-census.csv": {
+      "sha256": "ed8209ae4ca5e5170cced510ffe7f5608519b0d59b41269c53d83119be3a8f2d",
+      "bytes": 28403
+    },
+    "followup/member-account-repository-census.csv": {
+      "sha256": "290fc4af3bfe795b6f13a5568362f111d26370b47064c220efc76552497c0620",
+      "bytes": 287537
+    },
+    "followup/new-since-first-inventory.csv": {
+      "sha256": "efc52e2fb93a7552d23079c2f87fc13ed22d1334a9b844314b86da6659558fd9",
+      "bytes": 64226
+    },
+    "followup/non-github-code.csv": {
+      "sha256": "c2a8e7040473219b952ceac9b71d8b4ae2eaa04118e440f5a143a88a803ff7a8",
+      "bytes": 219
+    },
+    "followup/nonlive-manual-leads.csv": {
+      "sha256": "cb0114991b1b2dd2dfb20279716e4d57428b1f9f75689038daf26d293156f4b2",
+      "bytes": 84
+    },
+    "followup/publication-review-samples.csv": {
+      "sha256": "bf4e7bb58896f199db00249739e93919fdb5340d0eef15a862ea1b129966145f",
+      "bytes": 7524
+    },
+    "followup/review-coverage.csv": {
+      "sha256": "cd74567bc864ddfd2a7fa4883fdef50eb81d3864b3569081925195d296bc8b66",
+      "bytes": 9596
+    },
+    "followup/unavailable-or-unconfirmed.csv": {
+      "sha256": "93f8cb1561620d7550f6b83e7ee8c37e7d0eef6cd778a9efc80ad255835d8ed4",
+      "bytes": 1200
+    }
+  },
+  "outputs": {
+    "source-assertions.json": {
+      "sha256": "e573f614b8052b0d3fbf57e5cbe9d5cd3274cfaf75df3584e4f2ca661e383823",
+      "bytes": 1391631
+    }
+  },
+  "recordCount": 1442,
+  "metadataPolicies": {
+    "initial/github-links.csv": [
+      "lab",
+      "lead",
+      "area",
+      "link_type",
+      "github_url",
+      "evidence_url",
+      "notes",
+      "urlDisposition"
+    ],
+    "initial/no-verified-lab-account-found.csv": [
+      "lab_or_center",
+      "lead",
+      "source",
+      "status"
+    ],
+    "initial/unavailable-or-unconfirmed.csv": [
+      "project",
+      "lead",
+      "published_github_url",
+      "source",
+      "observed_status",
+      "urlDisposition"
+    ],
+    "followup/combined-github-inventory.csv": [
+      "lab_or_group",
+      "person_or_account",
+      "link_type",
+      "github_url",
+      "evidence_url",
+      "notes",
+      "urlDisposition"
+    ],
+    "followup/new-since-first-inventory.csv": [
+      "lab_or_group",
+      "person_or_account",
+      "link_type",
+      "github_url",
+      "evidence_url",
+      "notes",
+      "urlDisposition"
+    ],
+    "followup/lab-account-repository-census.csv": [
+      "lab",
+      "account",
+      "account_association",
+      "repository",
+      "github_url",
+      "fork",
+      "archived",
+      "created_at",
+      "updated_at",
+      "pushed_at",
+      "license",
+      "urlDisposition"
+    ],
+    "followup/member-account-repository-census.csv": [
+      "person",
+      "lab_or_group",
+      "account",
+      "account_attribution",
+      "account_evidence",
+      "repository",
+      "github_url",
+      "fork",
+      "archived",
+      "created_at",
+      "updated_at",
+      "pushed_at",
+      "license",
+      "research_connection",
+      "urlDisposition"
+    ],
+    "followup/publication-review-samples.csv": [
+      "lab_or_group",
+      "paper_or_catalogue",
+      "source_url",
+      "level_inspected",
+      "finding",
+      "urlDisposition"
+    ],
+    "followup/review-coverage.csv": [
+      "lab_or_center",
+      "roster_source",
+      "people_checked_or_identified",
+      "work_checked",
+      "limitations",
+      "urlDisposition"
+    ],
+    "followup/unavailable-or-unconfirmed.csv": [
+      "project",
+      "lead",
+      "published_github_url",
+      "source",
+      "observed_status",
+      "urlDisposition"
+    ],
+    "followup/non-github-code.csv": [
+      "lab_or_group",
+      "paper_url",
+      "code_or_data_url",
+      "urlDisposition"
+    ],
+    "followup/nonlive-manual-leads.csv": [
+      "lab_or_group",
+      "person_or_account",
+      "link_type",
+      "github_url",
+      "evidence_url",
+      "notes",
+      "http_status",
+      "urlDisposition"
+    ]
+  },
+  "sourceRequests": 0,
+  "suppliedScriptsExecuted": false,
+  "publicationAuthorized": false
+}
