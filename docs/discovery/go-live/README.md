@@ -185,8 +185,9 @@ cards, a compact API and separate detail. GL07 institution and source account
 links are included. The homepage cutover and public admission batch are still
 pending. The [local workflow](execution/GL06-GL08-directory-review.md) gives the
 review and preview commands. The [Terra method](execution/GL08-terra-screening.md)
-prioritizes exact-work evidence while keeping every lead in the review. Its
-speed target awaits a matched pilot.
+prioritizes exact-work evidence while keeping every lead in the review. The
+[first matched pilot](execution/GL08-terra-pilot-results.md) did not demonstrate
+a speed or accuracy gain.
 
 ## Product decisions
 

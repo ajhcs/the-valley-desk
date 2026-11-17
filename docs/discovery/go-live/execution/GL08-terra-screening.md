@@ -1,6 +1,6 @@
 # Terra screening method for GL08
 
-Status: **proposed method; offline diagnostic completed; prospective qualification not run**. Prepared 17 November 2026 for GPT-6.1 Terra agents. This method produces private review decisions and admission-ready drafts. It does not authorize publication or change the four admission criteria.
+Status: **proposed method**. The [first matched pilot](GL08-terra-pilot-results.md) did not demonstrate a gain. Prepared 17 November 2026 for GPT-6.1 Terra agents. This method produces private review decisions and admission-ready drafts. It does not authorize publication or change the four admission criteria.
 
 The proposed speed improvement comes from preparing exact-work evidence once, screening small packets before opening sources, and stopping unresolved investigations at a declared limit. It must be tested: neither faster operation nor preserved accuracy has been demonstrated for this method.
 
