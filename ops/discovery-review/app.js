@@ -280,6 +280,22 @@ function renderDetail(candidate) {
       node("ul", {}, aliases.map((url) => node("li", {}, [externalLink(url, url)]))));
   }
 
+  const assessment = candidate.assessment;
+  if (assessment) {
+    const sources = [
+      externalLink(assessment.source, "Open original follow-up"),
+      externalLink(assessment.recheckSource, "Open recheck source"),
+    ].filter(Boolean);
+    header.append(node("section", { attrs: { "aria-label": "Private assessment" } }, [
+      node("h3", { text: "Private assessment" }),
+      node("p", { text: assessment.purpose ?? "Purpose needs evidence." }),
+      node("p", { text: assessment.reason }),
+      node("p", { text: `First check: ${assessment.originalOutcome}` }),
+      ...(assessment.recheckOutcome ? [node("p", { text: `Recheck: ${assessment.recheckOutcome}` })] : []),
+      ...sources.map(source => node("p", {}, [source])),
+    ]));
+  }
+
   const form = node("form", { className: "review-form" });
   const criterionField = node("fieldset", { className: "field-group" }, [
     node("legend", { text: "Review criteria" }),
@@ -400,7 +416,7 @@ async function loadQueue() {
     const data = await response.json();
     candidates = data.candidates.map((candidate) => ({
       ...candidate,
-      searchText: [candidate.repository, candidate.description, candidate.nativeId].filter(Boolean).join(" ").toLowerCase(),
+      searchText: [candidate.repository, candidate.description, candidate.nativeId, candidate.assessment?.purpose].filter(Boolean).join(" ").toLowerCase(),
     }));
     renderTotals();
     renderQueue();

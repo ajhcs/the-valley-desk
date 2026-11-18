@@ -1,0 +1,41 @@
+{
+  "observedDate": "2026-11-18",
+  "observations": [
+    {
+      "sourceUrl": "https://www.med.upenn.edu/CAMIPM/zlux.html",
+      "access": "primary-web-rendering",
+      "bodySha256": "ea1c8fdfd83615387abf3bc1142f5b602716c247612447de3e93837ece8d3ccc",
+      "facts": {
+        "projectRepositoryUrl": "https://github.com/markymarkymark/Zlux",
+        "project": "Zlux",
+        "purpose": "A MATLAB tool for comparing medical-image file headers to check whether imaging protocol settings match.",
+        "institution": "University of Pennsylvania",
+        "regionalNote": "Penn’s Center for Advanced Metabolic Imaging in Precision Medicine describes and links the tool and lists its Philadelphia address.",
+        "regionalBasis": "county",
+        "asOf": {
+          "precision": "day",
+          "value": "2026-11-18"
+        },
+        "scope": "observed",
+        "sourceSpan": "MATLAB tool for Dicom protocol matching and adherence checking",
+        "topics": [
+          "medical-imaging"
+        ]
+      }
+    },
+    {
+      "sourceUrl": "https://www.med.upenn.edu/CAMIPM/zlux.html",
+      "access": "primary-web-rendering",
+      "bodySha256": "ea1c8fdfd83615387abf3bc1142f5b602716c247612447de3e93837ece8d3ccc",
+      "facts": {
+        "location": {
+          "county": "Philadelphia",
+          "municipality": "Philadelphia",
+          "state": "PA",
+          "campus": null
+        },
+        "sourceSpan": "422 Curie Boulevard B1, Stellar Chance Labs Philadelphia, PA 19104-6100"
+      }
+    }
+  ]
+}

@@ -1,0 +1,707 @@
+{
+  "schemaVersion": "directory-review-selection-v1",
+  "version": "GL06-first-release-v1",
+  "evidence": [
+    {
+      "id": "GL06:project:528629935:native",
+      "path": "docs/discovery/go-live/evidence/GL06/github/528629935.json",
+      "sha256": "c9b0cb1e92bb53ea12be5627ecd8a216ffab4d7421ad48e2a96feb34cfff2b59",
+      "sourceUrl": "https://api.github.com/repos/vganapati/LED_PVAE",
+      "observedDate": "2026-11-18",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL06:project:528629935:title",
+      "path": "docs/discovery/go-live/evidence/GL06/github/528629935.json",
+      "sha256": "c9b0cb1e92bb53ea12be5627ecd8a216ffab4d7421ad48e2a96feb34cfff2b59",
+      "sourceUrl": "https://api.github.com/repos/vganapati/LED_PVAE",
+      "observedDate": "2026-11-18",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL06:project:528629935:url",
+      "path": "docs/discovery/go-live/evidence/GL06/github/528629935.json",
+      "sha256": "c9b0cb1e92bb53ea12be5627ecd8a216ffab4d7421ad48e2a96feb34cfff2b59",
+      "sourceUrl": "https://api.github.com/repos/vganapati/LED_PVAE",
+      "observedDate": "2026-11-18",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL06:project:528629935:purpose",
+      "path": "docs/discovery/go-live/evidence/GL06/projects/528629935.json",
+      "sha256": "1a91e721dbe73c1c834cfacaca080084a336b39bb5f956574f1f76aa9023ff98",
+      "sourceUrl": "https://ganapati.swarthmore.edu/paperpdfs/AI4Science.pdf",
+      "observedDate": "2026-11-18",
+      "method": "primary-web-rendering",
+      "kind": "curated-observation"
+    },
+    {
+      "id": "GL06:project:528629935:place",
+      "path": "docs/discovery/go-live/evidence/GL06/projects/528629935.json",
+      "sha256": "1a91e721dbe73c1c834cfacaca080084a336b39bb5f956574f1f76aa9023ff98",
+      "sourceUrl": "https://www.delcopa.gov/towns",
+      "observedDate": "2026-11-18",
+      "method": "primary-web-rendering",
+      "kind": "curated-observation"
+    },
+    {
+      "id": "GL06:project:501436131:native",
+      "path": "docs/discovery/go-live/evidence/GL06/github/501436131.json",
+      "sha256": "f145fc5e591ed49932c421b10317fd275c4773a6f6cb5b425171f67f9552083e",
+      "sourceUrl": "https://api.github.com/repos/Beemd/Failure-Detection_MedMNIST",
+      "observedDate": "2026-11-18",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL06:project:501436131:title",
+      "path": "docs/discovery/go-live/evidence/GL06/github/501436131.json",
+      "sha256": "f145fc5e591ed49932c421b10317fd275c4773a6f6cb5b425171f67f9552083e",
+      "sourceUrl": "https://api.github.com/repos/Beemd/Failure-Detection_MedMNIST",
+      "observedDate": "2026-11-18",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL06:project:501436131:url",
+      "path": "docs/discovery/go-live/evidence/GL06/github/501436131.json",
+      "sha256": "f145fc5e591ed49932c421b10317fd275c4773a6f6cb5b425171f67f9552083e",
+      "sourceUrl": "https://api.github.com/repos/Beemd/Failure-Detection_MedMNIST",
+      "observedDate": "2026-11-18",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL06:project:501436131:purpose",
+      "path": "docs/discovery/go-live/evidence/GL06/projects/501436131.json",
+      "sha256": "9a359a54db7aff5c3effe503347c532818a03a906b6ec61b3853fec4b8a6d49b",
+      "sourceUrl": "https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2022.919046/full",
+      "observedDate": "2026-11-18",
+      "method": "primary-web-rendering",
+      "kind": "curated-observation"
+    },
+    {
+      "id": "GL06:project:501436131:place",
+      "path": "docs/discovery/go-live/evidence/GL06/projects/501436131.json",
+      "sha256": "9a359a54db7aff5c3effe503347c532818a03a906b6ec61b3853fec4b8a6d49b",
+      "sourceUrl": "https://www.gloucestercountynj.gov/831/Municipalities",
+      "observedDate": "2026-11-18",
+      "method": "primary-web-rendering",
+      "kind": "curated-observation"
+    },
+    {
+      "id": "GL06:project:718764890:native",
+      "path": "docs/discovery/go-live/evidence/GL06/github/718764890.json",
+      "sha256": "852e9c57466af7246d046b5029a9c01750438bc483e8f1198ff3435defe64522",
+      "sourceUrl": "https://api.github.com/repos/markymarkymark/Zlux",
+      "observedDate": "2026-11-18",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL06:project:718764890:title",
+      "path": "docs/discovery/go-live/evidence/GL06/github/718764890.json",
+      "sha256": "852e9c57466af7246d046b5029a9c01750438bc483e8f1198ff3435defe64522",
+      "sourceUrl": "https://api.github.com/repos/markymarkymark/Zlux",
+      "observedDate": "2026-11-18",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL06:project:718764890:url",
+      "path": "docs/discovery/go-live/evidence/GL06/github/718764890.json",
+      "sha256": "852e9c57466af7246d046b5029a9c01750438bc483e8f1198ff3435defe64522",
+      "sourceUrl": "https://api.github.com/repos/markymarkymark/Zlux",
+      "observedDate": "2026-11-18",
+      "method": "provider-metadata",
+      "kind": "native-json"
+    },
+    {
+      "id": "GL06:project:718764890:purpose",
+      "path": "docs/discovery/go-live/evidence/GL06/projects/718764890.json",
+      "sha256": "4169450e1c550e7b9d4ca7f5c43d62514cb4b59fbc7a42c7f7daf5e8bcddafcc",
+      "sourceUrl": "https://www.med.upenn.edu/CAMIPM/zlux.html",
+      "observedDate": "2026-11-18",
+      "method": "primary-web-rendering",
+      "kind": "curated-observation"
+    },
+    {
+      "id": "GL06:project:718764890:place",
+      "path": "docs/discovery/go-live/evidence/GL06/projects/718764890.json",
+      "sha256": "4169450e1c550e7b9d4ca7f5c43d62514cb4b59fbc7a42c7f7daf5e8bcddafcc",
+      "sourceUrl": "https://www.med.upenn.edu/CAMIPM/zlux.html",
+      "observedDate": "2026-11-18",
+      "method": "primary-web-rendering",
+      "kind": "curated-observation"
+    }
+  ],
+  "entries": [
+    {
+      "candidateId": "GL06:work:github:528629935",
+      "target": null,
+      "decision": "accept",
+      "reason": "Selected by Cole for the first release. Source recheck confirmed the exact public repository, stated purpose and dated regional connection.",
+      "work": {
+        "schemaVersion": "discovery-directory-work-v1",
+        "id": "GL06:work:github:528629935",
+        "revision": 1,
+        "kind": "repository",
+        "nativeIdentity": {
+          "provider": "github",
+          "namespace": null,
+          "nativeId": "528629935",
+          "evidenceId": "GL06:project:528629935:native"
+        },
+        "title": {
+          "value": "vganapati/LED_PVAE",
+          "evidenceId": "GL06:project:528629935:title"
+        },
+        "url": {
+          "value": "https://github.com/vganapati/LED_PVAE",
+          "evidenceId": "GL06:project:528629935:url"
+        },
+        "description": null,
+        "owner": null,
+        "sourceDate": null,
+        "checkedAt": "2026-11-18",
+        "evidence": [
+          {
+            "id": "GL06:project:528629935:native",
+            "sourceUrl": "https://api.github.com/repos/vganapati/LED_PVAE",
+            "observedDate": "2026-11-18",
+            "observationSha256": "c9b0cb1e92bb53ea12be5627ecd8a216ffab4d7421ad48e2a96feb34cfff2b59",
+            "pointer": "/id",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL06:project:528629935:title",
+            "sourceUrl": "https://api.github.com/repos/vganapati/LED_PVAE",
+            "observedDate": "2026-11-18",
+            "observationSha256": "c9b0cb1e92bb53ea12be5627ecd8a216ffab4d7421ad48e2a96feb34cfff2b59",
+            "pointer": "/full_name",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL06:project:528629935:url",
+            "sourceUrl": "https://api.github.com/repos/vganapati/LED_PVAE",
+            "observedDate": "2026-11-18",
+            "observationSha256": "c9b0cb1e92bb53ea12be5627ecd8a216ffab4d7421ad48e2a96feb34cfff2b59",
+            "pointer": "/html_url",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL06:project:528629935:purpose",
+            "sourceUrl": "https://ganapati.swarthmore.edu/paperpdfs/AI4Science.pdf",
+            "observedDate": "2026-11-18",
+            "observationSha256": "1a91e721dbe73c1c834cfacaca080084a336b39bb5f956574f1f76aa9023ff98",
+            "pointer": "/observations/0/facts/purpose",
+            "method": "primary-web-rendering"
+          },
+          {
+            "id": "GL06:project:528629935:place",
+            "sourceUrl": "https://www.delcopa.gov/towns",
+            "observedDate": "2026-11-18",
+            "observationSha256": "1a91e721dbe73c1c834cfacaca080084a336b39bb5f956574f1f76aa9023ff98",
+            "pointer": "/observations/1/facts/location",
+            "method": "primary-web-rendering"
+          }
+        ],
+        "relations": [],
+        "claims": [
+          {
+            "subjectId": "GL06:work:github:528629935",
+            "reviewId": "GL06:project:528629935:review",
+            "id": "GL06:project:528629935:health",
+            "kind": "health-purpose",
+            "text": "Research code for reconstructing images from LED-array microscopy, demonstrated on prepared frog blood-smear slides.",
+            "evidenceIds": [
+              "GL06:project:528629935:purpose"
+            ]
+          },
+          {
+            "subjectId": "GL06:work:github:528629935",
+            "reviewId": "GL06:project:528629935:review",
+            "id": "GL06:project:528629935:region",
+            "kind": "regional-connection",
+            "institution": "Swarthmore College",
+            "campus": null,
+            "municipality": "Swarthmore",
+            "state": "PA",
+            "regionalBasis": "county",
+            "county": "Delaware",
+            "asOf": {
+              "precision": "year",
+              "value": "2022"
+            },
+            "subjectRole": "project-association",
+            "subjectLabel": "LED_PVAE",
+            "sourceAuthorIndex": null,
+            "affiliationEvidenceIds": [
+              "GL06:project:528629935:purpose"
+            ],
+            "geographyEvidenceIds": [
+              "GL06:project:528629935:place"
+            ],
+            "scope": "historical",
+            "qualification": "The 2022 study credits Swarthmore College and identifies this repository as the released research code.",
+            "evidenceIds": [
+              "GL06:project:528629935:purpose",
+              "GL06:project:528629935:place"
+            ]
+          },
+          {
+            "subjectId": "GL06:work:github:528629935",
+            "reviewId": "GL06:project:528629935:review",
+            "id": "GL06:project:528629935:topic",
+            "kind": "topic",
+            "topic": "medical-imaging",
+            "vocabularyRevision": "directory-topics-v1",
+            "evidenceIds": [
+              "GL06:project:528629935:purpose"
+            ]
+          }
+        ],
+        "reviewRefs": [
+          {
+            "id": "GL06:project:528629935:review",
+            "receiptSha256": "bba59003ed87a1e9ab73651391c84c0f667bd05c1d2e7b70752645843d40fe75"
+          }
+        ]
+      },
+      "bindings": [
+        {
+          "field": "/nativeIdentity/nativeId",
+          "evidenceId": "GL06:project:528629935:native",
+          "pointer": "/id",
+          "transform": "number-string",
+          "nativePointer": null
+        },
+        {
+          "field": "/title/value",
+          "evidenceId": "GL06:project:528629935:title",
+          "pointer": "/full_name",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/url/value",
+          "evidenceId": "GL06:project:528629935:url",
+          "pointer": "/html_url",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/0",
+          "evidenceId": "GL06:project:528629935:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/1",
+          "evidenceId": "GL06:project:528629935:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/2",
+          "evidenceId": "GL06:project:528629935:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        }
+      ],
+      "receipt": {
+        "id": "GL06:project:528629935:review",
+        "target": null,
+        "bindingsSha256": "3302b3d46a2c02728c7393423aae911a51db46adc040d4238bf30d74b3dc06e1",
+        "workSha256": "3f851a29db29759416a99a016c70c92971f29c54c9c98bd8c7f47f875cded500",
+        "operator": "editorial:cole",
+        "reviewer": "verification:codex",
+        "decision": "accept",
+        "candidateId": "GL06:work:github:528629935",
+        "reason": "Selected by Cole for the first release. Source recheck confirmed the exact public repository, stated purpose and dated regional connection."
+      }
+    },
+    {
+      "candidateId": "GL06:work:github:501436131",
+      "target": null,
+      "decision": "accept",
+      "reason": "Selected by Cole for the first release. Source recheck confirmed the exact public repository, stated purpose and dated regional connection.",
+      "work": {
+        "schemaVersion": "discovery-directory-work-v1",
+        "id": "GL06:work:github:501436131",
+        "revision": 1,
+        "kind": "repository",
+        "nativeIdentity": {
+          "provider": "github",
+          "namespace": null,
+          "nativeId": "501436131",
+          "evidenceId": "GL06:project:501436131:native"
+        },
+        "title": {
+          "value": "Beemd/Failure-Detection_MedMNIST",
+          "evidenceId": "GL06:project:501436131:title"
+        },
+        "url": {
+          "value": "https://github.com/Beemd/Failure-Detection_MedMNIST",
+          "evidenceId": "GL06:project:501436131:url"
+        },
+        "description": null,
+        "owner": null,
+        "sourceDate": null,
+        "checkedAt": "2026-11-18",
+        "evidence": [
+          {
+            "id": "GL06:project:501436131:native",
+            "sourceUrl": "https://api.github.com/repos/Beemd/Failure-Detection_MedMNIST",
+            "observedDate": "2026-11-18",
+            "observationSha256": "f145fc5e591ed49932c421b10317fd275c4773a6f6cb5b425171f67f9552083e",
+            "pointer": "/id",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL06:project:501436131:title",
+            "sourceUrl": "https://api.github.com/repos/Beemd/Failure-Detection_MedMNIST",
+            "observedDate": "2026-11-18",
+            "observationSha256": "f145fc5e591ed49932c421b10317fd275c4773a6f6cb5b425171f67f9552083e",
+            "pointer": "/full_name",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL06:project:501436131:url",
+            "sourceUrl": "https://api.github.com/repos/Beemd/Failure-Detection_MedMNIST",
+            "observedDate": "2026-11-18",
+            "observationSha256": "f145fc5e591ed49932c421b10317fd275c4773a6f6cb5b425171f67f9552083e",
+            "pointer": "/html_url",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL06:project:501436131:purpose",
+            "sourceUrl": "https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2022.919046/full",
+            "observedDate": "2026-11-18",
+            "observationSha256": "9a359a54db7aff5c3effe503347c532818a03a906b6ec61b3853fec4b8a6d49b",
+            "pointer": "/observations/0/facts/purpose",
+            "method": "primary-web-rendering"
+          },
+          {
+            "id": "GL06:project:501436131:place",
+            "sourceUrl": "https://www.gloucestercountynj.gov/831/Municipalities",
+            "observedDate": "2026-11-18",
+            "observationSha256": "9a359a54db7aff5c3effe503347c532818a03a906b6ec61b3853fec4b8a6d49b",
+            "pointer": "/observations/1/facts/location",
+            "method": "primary-web-rendering"
+          }
+        ],
+        "relations": [],
+        "claims": [
+          {
+            "subjectId": "GL06:work:github:501436131",
+            "reviewId": "GL06:project:501436131:review",
+            "id": "GL06:project:501436131:health",
+            "kind": "health-purpose",
+            "text": "Research code from a study of how to flag unreliable predictions in medical-image classifiers.",
+            "evidenceIds": [
+              "GL06:project:501436131:purpose"
+            ]
+          },
+          {
+            "subjectId": "GL06:work:github:501436131",
+            "reviewId": "GL06:project:501436131:review",
+            "id": "GL06:project:501436131:region",
+            "kind": "regional-connection",
+            "institution": "Rowan University",
+            "campus": null,
+            "municipality": "Glassboro",
+            "state": "NJ",
+            "regionalBasis": "county",
+            "county": "Gloucester",
+            "asOf": {
+              "precision": "day",
+              "value": "2022-07-22"
+            },
+            "subjectRole": "project-association",
+            "subjectLabel": "Failure Detection for Medical Imaging",
+            "sourceAuthorIndex": null,
+            "affiliationEvidenceIds": [
+              "GL06:project:501436131:purpose"
+            ],
+            "geographyEvidenceIds": [
+              "GL06:project:501436131:place"
+            ],
+            "scope": "historical",
+            "qualification": "The 2022 study identifies this as its code and lists a Rowan University affiliation in Glassboro.",
+            "evidenceIds": [
+              "GL06:project:501436131:purpose",
+              "GL06:project:501436131:place"
+            ]
+          },
+          {
+            "subjectId": "GL06:work:github:501436131",
+            "reviewId": "GL06:project:501436131:review",
+            "id": "GL06:project:501436131:topic",
+            "kind": "topic",
+            "topic": "medical-imaging",
+            "vocabularyRevision": "directory-topics-v1",
+            "evidenceIds": [
+              "GL06:project:501436131:purpose"
+            ]
+          }
+        ],
+        "reviewRefs": [
+          {
+            "id": "GL06:project:501436131:review",
+            "receiptSha256": "d698b95ac384ea964d6bef02470018d62077c3d6b935812a5ded83c18e983a29"
+          }
+        ]
+      },
+      "bindings": [
+        {
+          "field": "/nativeIdentity/nativeId",
+          "evidenceId": "GL06:project:501436131:native",
+          "pointer": "/id",
+          "transform": "number-string",
+          "nativePointer": null
+        },
+        {
+          "field": "/title/value",
+          "evidenceId": "GL06:project:501436131:title",
+          "pointer": "/full_name",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/url/value",
+          "evidenceId": "GL06:project:501436131:url",
+          "pointer": "/html_url",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/0",
+          "evidenceId": "GL06:project:501436131:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/1",
+          "evidenceId": "GL06:project:501436131:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/2",
+          "evidenceId": "GL06:project:501436131:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        }
+      ],
+      "receipt": {
+        "id": "GL06:project:501436131:review",
+        "target": null,
+        "bindingsSha256": "c8bebea24fa72ab21a6ce60436d716bfb41f06c9778f46c0bb233d24432cbcd4",
+        "workSha256": "584a25ad69da34462245ec2bc789613385514fec6bdece8731a00f38ba7b9c50",
+        "operator": "editorial:cole",
+        "reviewer": "verification:codex",
+        "decision": "accept",
+        "candidateId": "GL06:work:github:501436131",
+        "reason": "Selected by Cole for the first release. Source recheck confirmed the exact public repository, stated purpose and dated regional connection."
+      }
+    },
+    {
+      "candidateId": "GL06:work:github:718764890",
+      "target": null,
+      "decision": "accept",
+      "reason": "Selected by Cole for the first release. Source recheck confirmed the exact public repository, stated purpose and dated regional connection.",
+      "work": {
+        "schemaVersion": "discovery-directory-work-v1",
+        "id": "GL06:work:github:718764890",
+        "revision": 1,
+        "kind": "repository",
+        "nativeIdentity": {
+          "provider": "github",
+          "namespace": null,
+          "nativeId": "718764890",
+          "evidenceId": "GL06:project:718764890:native"
+        },
+        "title": {
+          "value": "markymarkymark/Zlux",
+          "evidenceId": "GL06:project:718764890:title"
+        },
+        "url": {
+          "value": "https://github.com/markymarkymark/Zlux",
+          "evidenceId": "GL06:project:718764890:url"
+        },
+        "description": null,
+        "owner": null,
+        "sourceDate": null,
+        "checkedAt": "2026-11-18",
+        "evidence": [
+          {
+            "id": "GL06:project:718764890:native",
+            "sourceUrl": "https://api.github.com/repos/markymarkymark/Zlux",
+            "observedDate": "2026-11-18",
+            "observationSha256": "852e9c57466af7246d046b5029a9c01750438bc483e8f1198ff3435defe64522",
+            "pointer": "/id",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL06:project:718764890:title",
+            "sourceUrl": "https://api.github.com/repos/markymarkymark/Zlux",
+            "observedDate": "2026-11-18",
+            "observationSha256": "852e9c57466af7246d046b5029a9c01750438bc483e8f1198ff3435defe64522",
+            "pointer": "/full_name",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL06:project:718764890:url",
+            "sourceUrl": "https://api.github.com/repos/markymarkymark/Zlux",
+            "observedDate": "2026-11-18",
+            "observationSha256": "852e9c57466af7246d046b5029a9c01750438bc483e8f1198ff3435defe64522",
+            "pointer": "/html_url",
+            "method": "provider-metadata"
+          },
+          {
+            "id": "GL06:project:718764890:purpose",
+            "sourceUrl": "https://www.med.upenn.edu/CAMIPM/zlux.html",
+            "observedDate": "2026-11-18",
+            "observationSha256": "4169450e1c550e7b9d4ca7f5c43d62514cb4b59fbc7a42c7f7daf5e8bcddafcc",
+            "pointer": "/observations/0/facts/purpose",
+            "method": "primary-web-rendering"
+          },
+          {
+            "id": "GL06:project:718764890:place",
+            "sourceUrl": "https://www.med.upenn.edu/CAMIPM/zlux.html",
+            "observedDate": "2026-11-18",
+            "observationSha256": "4169450e1c550e7b9d4ca7f5c43d62514cb4b59fbc7a42c7f7daf5e8bcddafcc",
+            "pointer": "/observations/1/facts/location",
+            "method": "primary-web-rendering"
+          }
+        ],
+        "relations": [],
+        "claims": [
+          {
+            "subjectId": "GL06:work:github:718764890",
+            "reviewId": "GL06:project:718764890:review",
+            "id": "GL06:project:718764890:health",
+            "kind": "health-purpose",
+            "text": "A MATLAB tool for comparing medical-image file headers to check whether imaging protocol settings match.",
+            "evidenceIds": [
+              "GL06:project:718764890:purpose"
+            ]
+          },
+          {
+            "subjectId": "GL06:work:github:718764890",
+            "reviewId": "GL06:project:718764890:review",
+            "id": "GL06:project:718764890:region",
+            "kind": "regional-connection",
+            "institution": "University of Pennsylvania",
+            "campus": null,
+            "municipality": "Philadelphia",
+            "state": "PA",
+            "regionalBasis": "county",
+            "county": "Philadelphia",
+            "asOf": {
+              "precision": "day",
+              "value": "2026-11-18"
+            },
+            "subjectRole": "project-association",
+            "subjectLabel": "Zlux",
+            "sourceAuthorIndex": null,
+            "affiliationEvidenceIds": [
+              "GL06:project:718764890:purpose"
+            ],
+            "geographyEvidenceIds": [
+              "GL06:project:718764890:place"
+            ],
+            "scope": "observed",
+            "qualification": "Penn’s Center for Advanced Metabolic Imaging in Precision Medicine describes and links the tool and lists its Philadelphia address.",
+            "evidenceIds": [
+              "GL06:project:718764890:purpose",
+              "GL06:project:718764890:place"
+            ]
+          },
+          {
+            "subjectId": "GL06:work:github:718764890",
+            "reviewId": "GL06:project:718764890:review",
+            "id": "GL06:project:718764890:topic",
+            "kind": "topic",
+            "topic": "medical-imaging",
+            "vocabularyRevision": "directory-topics-v1",
+            "evidenceIds": [
+              "GL06:project:718764890:purpose"
+            ]
+          }
+        ],
+        "reviewRefs": [
+          {
+            "id": "GL06:project:718764890:review",
+            "receiptSha256": "cac99e4d9ef60f8ed5a3bb39d938eda165a24ee86a1ef6520cf3064adbd7baca"
+          }
+        ]
+      },
+      "bindings": [
+        {
+          "field": "/nativeIdentity/nativeId",
+          "evidenceId": "GL06:project:718764890:native",
+          "pointer": "/id",
+          "transform": "number-string",
+          "nativePointer": null
+        },
+        {
+          "field": "/title/value",
+          "evidenceId": "GL06:project:718764890:title",
+          "pointer": "/full_name",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/url/value",
+          "evidenceId": "GL06:project:718764890:url",
+          "pointer": "/html_url",
+          "transform": "identity",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/0",
+          "evidenceId": "GL06:project:718764890:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/1",
+          "evidenceId": "GL06:project:718764890:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        },
+        {
+          "field": "/claims/2",
+          "evidenceId": "GL06:project:718764890:purpose",
+          "pointer": "/observations/0/facts/purpose",
+          "transform": "reviewed-claim",
+          "nativePointer": null
+        }
+      ],
+      "receipt": {
+        "id": "GL06:project:718764890:review",
+        "target": null,
+        "bindingsSha256": "af11b94f63f936bbd5ab55e768aa5c32dbafc2c7960f61d7132252992e5b8d5d",
+        "workSha256": "79241c9ff2d490dee2131c710ac060c90a87272e252fab3a4dbc59aadaf878e1",
+        "operator": "editorial:cole",
+        "reviewer": "verification:codex",
+        "decision": "accept",
+        "candidateId": "GL06:work:github:718764890",
+        "reason": "Selected by Cole for the first release. Source recheck confirmed the exact public repository, stated purpose and dated regional connection."
+      }
+    }
+  ]
+}

@@ -179,9 +179,22 @@ def canonical_candidate(candidate):
         facts = prefix + (summary if len(summary) <= room else summary[:room - 1] + '…')
         criteria.extend(('usefulPurpose', 'healthRelevance'))
     metadata = evidence_row(native_id, aliases[0], facts, observed_at[:10], criteria)
-    return {'nativeId': native_id, 'repository': first['fullName'], 'originalUrl': aliases[0],
-            'observedAliases': aliases, 'description': description,
-            'fork': first['fork'], 'archived': first['archived'], 'evidence': [metadata]}
+    result = {'nativeId': native_id, 'repository': first['fullName'], 'originalUrl': aliases[0],
+              'observedAliases': aliases, 'description': description,
+              'fork': first['fork'], 'archived': first['archived'], 'evidence': [metadata]}
+    if 'assessment' in candidate:
+        assessment = candidate['assessment']
+        require(fields(assessment, ('decision', 'reason', 'originalOutcome'),
+                       ('purpose', 'source', 'recheckOutcome', 'recheckSource')), 'assessment-fields')
+        require(assessment['decision'] in ('propose', 'hold', 'decline', 'already cataloged')
+                and nonempty(assessment['reason'], 1000)
+                and nonempty(assessment['originalOutcome'], 100), 'assessment-summary')
+        for key in ('source', 'recheckSource'):
+            require(key not in assessment or https(assessment[key]), 'assessment-source')
+        for key, max_length in (('purpose', 500), ('recheckOutcome', 100)):
+            require(key not in assessment or nonempty(assessment[key], max_length), 'assessment-description')
+        result['assessment'] = assessment
+    return result
 
 
 def decide(criteria):

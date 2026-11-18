@@ -20,6 +20,15 @@ export function HomePage() {
   const sessionFirst = useSessionFirstHome();
   return (
     <div className={sessionFirst ? "HomePage is-session-first" : "HomePage"}>
+      {publicFeatures().discovery ? (
+        <form className="HomeDiscovery" role="search" action="/discover/works" method="get">
+          <label htmlFor="home-discovery">Find regional health-tech projects</label>
+          <div>
+            <input id="home-discovery" name="q" type="search" maxLength={200} placeholder="Search by project, topic, or institution" />
+            <button type="submit">Search</button>
+          </div>
+        </form>
+      ) : null}
       {lead ? <Lead item={lead} /> : null}
       <div className="rails">
         <Rail label="NEWS · LATEST" rail="news" items={news} />

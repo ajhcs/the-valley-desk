@@ -36,7 +36,7 @@ const HealthClaim = z.object({ ...Reviewed, kind: z.literal('health-purpose'), t
 const TopicClaim = z.object({ ...Reviewed, kind: z.literal('topic'), topic: z.enum(DIRECTORY_TOPICS), vocabularyRevision: z.literal(DIRECTORY_TOPIC_REVISION) }).strict();
 const RegionClaim = z.object({
   ...Reviewed, kind: z.literal('regional-connection'), institution: Text.max(400).nullable(), campus: Text.max(400).nullable(),
-  municipality: Text.max(400).nullable(), state: z.enum(['PA', 'NJ']), regionalBasis: z.enum(['county', 'municipality', 'campus']), county: z.enum(['Bucks', 'Chester', 'Delaware', 'Montgomery', 'Philadelphia', 'Burlington', 'Camden', 'Gloucester', 'Mercer']).nullable(),
+  municipality: Text.max(400).nullable(), state: z.enum(['PA', 'NJ']).nullable(), regionalBasis: z.enum(['county', 'municipality', 'campus', 'region']), county: z.enum(['Bucks', 'Chester', 'Delaware', 'Montgomery', 'Philadelphia', 'Burlington', 'Camden', 'Gloucester', 'Mercer']).nullable(),
   asOf: AsOf, subjectRole: z.enum(['work', 'author-affiliation', 'account-association', 'project-association']),
   subjectLabel: Text.max(400), sourceAuthorIndex: z.number().int().min(0).max(1000).nullable(),
   affiliationEvidenceIds: EvidenceIds, geographyEvidenceIds: EvidenceIds,
@@ -61,7 +61,7 @@ const WorkObject = z.object({
   owner: Owner.nullable(), sourceDate: z.object({ value: AsOf, evidenceId: Id }).strict().nullable(), checkedAt: Day,
   evidence: z.array(Evidence).min(1).max(100), reviewRefs: z.array(z.object({ id: Id, receiptSha256: Hash }).strict()).min(1).max(100), claims: z.array(Claim).min(2).max(100), relations: z.array(Relation).max(100),
 }).strict();
-export const DirectoryWorkSchema = WorkObject.superRefine((work, ctx) => {
+const ReadableDirectoryWork = WorkObject.superRefine((work, ctx) => {
   const evidence = new Set(work.evidence.map(e => e.id));
   if (work.evidence.some(e => e.observedDate > work.checkedAt)) ctx.addIssue({ code: 'custom', message: 'observation after checked date' });
   const unique = (ids: string[], label: string) => { if (new Set(ids).size !== ids.length) ctx.addIssue({ code: 'custom', message: `duplicate ${label}` }); };
@@ -78,6 +78,13 @@ export const DirectoryWorkSchema = WorkObject.superRefine((work, ctx) => {
     if (claim.kind === 'regional-connection') {
       const pa = ['Bucks', 'Chester', 'Delaware', 'Montgomery', 'Philadelphia'];
       const nj = ['Burlington', 'Camden', 'Gloucester', 'Mercer'];
+      if (claim.regionalBasis === 'region') {
+        if (claim.state || claim.county || claim.municipality || claim.campus) {
+          ctx.addIssue({ code: 'custom', message: 'region-only connection cannot assign a location' });
+        }
+      } else if (claim.state === null) {
+        ctx.addIssue({ code: 'custom', message: 'missing state' });
+      }
       if (claim.county !== null && !(claim.state === 'PA' ? pa : nj).includes(claim.county)) ctx.addIssue({ code: 'custom', message: 'county state mismatch' });
       if (claim.regionalBasis === 'county' && !claim.county || claim.regionalBasis === 'municipality' && !claim.municipality || claim.regionalBasis === 'campus' && (!claim.institution || !claim.campus)) ctx.addIssue({ code: 'custom', message: 'missing regional basis' });
       if ((claim.subjectRole === 'author-affiliation') !== (claim.sourceAuthorIndex !== null)) ctx.addIssue({ code: 'custom', message: 'source author index mismatch' });
@@ -91,7 +98,9 @@ export const DirectoryWorkSchema = WorkObject.superRefine((work, ctx) => {
     relation.evidenceIds.forEach(ref); review(relation.reviewId);
   }
 });
-export const DirectorySnapshotSchema = z.object({ schemaVersion: z.literal('discovery-directory-snapshot-v1'), version: Id, works: z.array(DirectoryWorkSchema).max(10000) }).strict().superRefine((snapshot, ctx) => {
+export const DirectoryWorkSchema = ReadableDirectoryWork;
+
+const ReadableDirectorySnapshot = z.object({ schemaVersion: z.literal('discovery-directory-snapshot-v1'), version: Id, works: z.array(ReadableDirectoryWork).max(10000) }).strict().superRefine((snapshot, ctx) => {
   const works = new Map(snapshot.works.map(w => [w.id, w]));
   if (works.size !== snapshot.works.length) ctx.addIssue({ code: 'custom', message: 'duplicate work identity' });
   const relationIds = new Set<string>(), triples = new Set<string>(), nativeIds = new Set<string>(), claimIds = new Set<string>(), observations = new Map<string, string>(), reviews = new Map<string, string>();
@@ -108,6 +117,15 @@ export const DirectorySnapshotSchema = z.object({ schemaVersion: z.literal('disc
     }
   }
 });
+const isPreview = (snapshot: z.infer<typeof ReadableDirectorySnapshot>) => snapshot.version.startsWith('private-preview:');
+export const DirectorySnapshotSchema = ReadableDirectorySnapshot.refine(
+  snapshot => !isPreview(snapshot), 'private preview is not a release',
+);
+const PrivateDirectorySnapshotSchema = ReadableDirectorySnapshot.refine(isPreview, 'private preview version required');
+export type DirectoryView = 'release' | 'private-preview';
+export function readDirectorySnapshot(input: unknown, view: DirectoryView) {
+  return (view === 'private-preview' ? PrivateDirectorySnapshotSchema : DirectorySnapshotSchema).parse(input);
+}
 export type DirectoryWork = z.infer<typeof DirectoryWorkSchema>;
 export type DirectorySnapshot = z.infer<typeof DirectorySnapshotSchema>;
 

@@ -258,6 +258,42 @@
   overflow-x: clip;
 }
 
+.HomeDiscovery {
+  display: grid;
+  gap: 8px;
+  max-width: 44rem;
+}
+
+.HomeDiscovery label {
+  font-weight: 700;
+}
+
+.HomeDiscovery > div {
+  display: flex;
+  gap: 8px;
+}
+
+.HomeDiscovery input,
+.HomeDiscovery button {
+  min-height: 44px;
+  padding: 8px 12px;
+  font: inherit;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink);
+}
+
+.HomeDiscovery input {
+  flex: 1;
+  min-width: 0;
+}
+
+.HomeDiscovery button {
+  cursor: pointer;
+  font-weight: 700;
+}
+
 .lead,
 .Lead,
 .ItemPage {

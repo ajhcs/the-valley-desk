@@ -75,6 +75,55 @@ async function qualifyGl05Capture(meta: z.infer<typeof evidence>, work: z.infer<
   const receipt: unknown = parseEvidenceJson(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
   if (at(receipt, '/provider') !== capture.provider || at(receipt, '/url') !== capture.url || at(receipt, '/body_sha256') !== capture.body || at(receipt, '/status') !== 200 || at(receipt, '/response_complete') !== true || at(receipt, '/started_at_utc') !== undefined && !(at(receipt, '/started_at_utc') as string).startsWith(meta.observedDate)) throw Error('gl05-receipt');
 }
+const reviewedProjectBase = 'docs/discovery/go-live/evidence/GL06/';
+const githubFields: Record<string, [string, string]> = {
+  '/nativeIdentity/nativeId': ['/id', 'number-string'],
+  '/title/value': ['/full_name', 'identity'],
+  '/url/value': ['/html_url', 'identity'],
+  '/description/value': ['/description', 'identity'],
+  '/owner/name': ['/owner/login', 'identity'],
+  '/owner/kind': ['/owner/type', 'identity'],
+  '/owner/nativeId': ['/owner/id', 'number-string'],
+};
+type ReviewedWork = z.infer<typeof DirectoryWorkSchema>;
+type RegionalClaim = Extract<ReviewedWork['claims'][number], {kind: 'regional-connection'}>;
+type EvidenceSources = ReadonlyMap<string, {meta: z.infer<typeof evidence>; body: unknown}>;
+
+function checkReviewedProject(work: ReviewedWork, claim: RegionalClaim, sources: EvidenceSources) {
+  const project = work.evidence.find(e =>
+    claim.affiliationEvidenceIds.includes(e.id) && e.pointer === '/observations/0/facts/purpose' &&
+    sources.get(e.id)?.meta.path === `${reviewedProjectBase}projects/${work.nativeIdentity?.nativeId}.json`,
+  );
+  if (!project) return false;
+
+  const origin = sources.get(project.id)!;
+  const claims = work.claims.filter(c => c.kind === 'health-purpose').filter(c => c.evidenceIds.includes(project.id));
+  const facts = at(origin.body, '/observations/0/facts') as Record<string, unknown>;
+  if (work.nativeIdentity?.provider !== 'github' || origin.meta.kind !== 'curated-observation' ||
+      facts.projectRepositoryUrl !== work.url.value || facts.project !== claim.subjectLabel ||
+      facts.institution !== claim.institution || facts.regionalNote !== claim.qualification ||
+      facts.regionalBasis !== claim.regionalBasis || facts.scope !== claim.scope ||
+      canonicalDirectoryJson(facts.asOf) !== canonicalDirectoryJson(claim.asOf) ||
+      !claims.length || claims.some(c => c.text !== facts.purpose)) throw Error('reviewed-project-binding');
+  const topics = work.claims.filter(c => c.kind === 'topic');
+  if (topics.some(c => !c.evidenceIds.includes(project.id) || !Array.isArray(facts.topics) || !facts.topics.includes(c.topic))) {
+    throw Error('reviewed-project-topic');
+  }
+
+  const geographicallySupported = work.evidence.some(e => {
+    if (!claim.geographyEvidenceIds.includes(e.id) || e.observationSha256 !== project.observationSha256) return false;
+    if (claim.regionalBasis === 'region') {
+      return e.pointer === '/observations/0/facts/region' && facts.region === 'Delaware Valley';
+    }
+    if (e.pointer !== '/observations/1/facts/location') return false;
+    const location = at(origin.body, e.pointer) as Record<string, unknown>;
+    return location.municipality === claim.municipality && location.state === claim.state &&
+      location.county === claim.county && location.campus === claim.campus;
+  });
+  if (!geographicallySupported) throw Error('reviewed-project-geography');
+  return true;
+}
+
 /** trustedContext is supplied by reviewed code, never by the selection itself. */
 export async function validateDirectorySelection(input: unknown, trustedContext: DirectoryTrustedContext, loadBytes: (path: string) => Promise<Uint8Array>) {
   if (!trustedContext || !(trustedContext.priorState === null || typeof trustedContext.priorState === 'object' && trustedContext.priorState !== null && hash.safeParse(trustedContext.priorState.sha256).success && typeof trustedContext.priorState.path === 'string') || !hash.safeParse(trustedContext.selectionSha256).success || !trustedContext.operator || !trustedContext.reviewer || trustedContext.operator === trustedContext.reviewer || await directorySha256(canonicalDirectoryJson(input)) !== trustedContext.selectionSha256) throw Error('untrusted-selection');
@@ -175,6 +224,18 @@ export async function validateDirectorySelection(input: unknown, trustedContext:
             if (!expected || b.pointer !== expected[0] || b.transform !== expected[1]) throw Error('gl05-native-field');
           }
         }
+        const reviewedGitHubPath = source.meta.path.startsWith(`${reviewedProjectBase}github/`);
+        if (reviewedGitHubPath) {
+          const n = work.nativeIdentity;
+          const expected = githubFields[b.field];
+          if (source.meta.kind !== 'native-json' || source.meta.method !== 'provider-metadata' ||
+              n?.provider !== 'github' || source.meta.path !== `${reviewedProjectBase}github/${n.nativeId}.json` ||
+              source.meta.sourceUrl !== `https://api.github.com/repos/${work.title.value}` ||
+              at(source.body, '/private') !== false || String(at(source.body, '/id')) !== n.nativeId ||
+              at(source.body, '/full_name') !== work.title.value || at(source.body, '/html_url') !== work.url.value ||
+              !expected || b.pointer !== expected[0] || b.transform !== expected[1]) throw Error('reviewed-github-binding');
+          continue;
+        }
         if (source.meta.kind === 'native-json' && ['/nativeIdentity/nativeId', '/title/value', '/url/value', '/sourceDate/value'].includes(b.field)) {
           if (work.nativeIdentity?.provider === 'github' && gl05Native) continue;
           if (work.nativeIdentity?.provider !== 'crossref') throw Error('unqualified-native-provider');
@@ -223,6 +284,7 @@ export async function validateDirectorySelection(input: unknown, trustedContext:
     // The qualified institutional-project adapter requires two independently scoped roles:
     // a project page linking the exact repository and a dated center-location observation.
     for (const claim of work.claims) if (claim.kind === 'regional-connection' && claim.subjectRole === 'project-association') {
+      if (checkReviewedProject(work, claim, sources)) continue;
       if (work.nativeIdentity?.provider === 'github' && ['617168725', '192607622'].includes(work.nativeIdentity.nativeId)) {
         const sleep = work.nativeIdentity.nativeId === '617168725', projectIndex = sleep ? 6 : 7, locationIndex = sleep ? 6 : 8, edgeIndex = sleep ? 1 : 2;
         const project = work.evidence.find(e => claim.affiliationEvidenceIds.includes(e.id) && e.pointer === `/observations/${projectIndex}/facts/purpose`);

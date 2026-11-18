@@ -219,6 +219,9 @@ export function primaryNoscript(
     return [
       `<h1>${esc(SITE)}</h1>`,
       `<p>${esc(DEFAULT_DESC)}</p>`,
+      normalizePublicFeatures(publicFeatures).discovery
+        ? '<form role="search" action="/discover/works" method="get"><label for="fallback-discovery">Find regional health-tech projects</label> <input id="fallback-discovery" name="q" type="search" maxlength="200"> <button type="submit">Search</button> <a href="/discover/works">Browse projects</a></form>'
+        : "",
       lead
         ? `<article><p>Latest news</p><h2><a href="${esc(canonicalUrl(lead, origin))}">${esc(lead.title)}</a></h2><p>${esc(lead.impactSentence || lead.dek || lead.title)}</p></article>`
         : "",

@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../worker.js';
+import {primaryNoscript} from '../src/lib/crawler-html';
+import {publicFeaturesFromEnv} from '../src/lib/public-features';
 import {readFileSync} from 'node:fs';
 const current=JSON.parse(readFileSync('src/content/discovery-directory-catalog.json','utf8'));
 
@@ -41,4 +43,14 @@ test('enabled actual Worker serves the reviewed API and script-free detail HTML'
  assert.equal((await invoke('/api/discovery/v1/works?q=a&q=b','true')).status,400);
  assert.equal((await invoke('/api/discovery/v1/creators/unknown','true')).status,404);
  assert.equal((await invoke('/api/discovery/v1/works/%ZZ','true')).status,400);
+});
+
+test('homepage search points to the directory only with the exact Worker setting', () => {
+  const copy = (flag: unknown) => primaryNoscript('/', 'https://thevalleydesk.org', [], undefined, undefined,
+    publicFeaturesFromEnv({DISCOVERY_DIRECTORY_ENABLED: flag}));
+  for (const flag of [undefined, 'false', true]) assert.doesNotMatch(copy(flag), /\/discover\/works/);
+  const html = copy('true');
+  assert.match(html, /<form role="search" action="\/discover\/works" method="get">/);
+  assert.match(html, /name="q" type="search"/);
+  assert.match(html, /feed\.json/);
 });

@@ -1,0 +1,41 @@
+{
+  "observedDate": "2026-11-18",
+  "observations": [
+    {
+      "sourceUrl": "https://ganapati.swarthmore.edu/paperpdfs/AI4Science.pdf",
+      "access": "primary-web-rendering",
+      "bodySha256": "4b3a0ed7e1dfb162449e47983cc45f4c57249792530e90402f62061990b6e6fc",
+      "facts": {
+        "projectRepositoryUrl": "https://github.com/vganapati/LED_PVAE",
+        "project": "LED_PVAE",
+        "purpose": "Research code for reconstructing images from LED-array microscopy, demonstrated on prepared frog blood-smear slides.",
+        "institution": "Swarthmore College",
+        "regionalNote": "The 2022 study credits Swarthmore College and identifies this repository as the released research code.",
+        "regionalBasis": "county",
+        "asOf": {
+          "precision": "year",
+          "value": "2022"
+        },
+        "scope": "historical",
+        "sourceSpan": "We release our code at https://github.com/vganapati/LED_PVAE",
+        "topics": [
+          "medical-imaging"
+        ]
+      }
+    },
+    {
+      "sourceUrl": "https://www.delcopa.gov/towns",
+      "access": "primary-web-rendering",
+      "bodySha256": "9aebc174f9973e86a64031685a085bc4aa6ec80df33c401fc69d916ce46e811c",
+      "facts": {
+        "location": {
+          "county": "Delaware",
+          "municipality": "Swarthmore",
+          "state": "PA",
+          "campus": null
+        },
+        "sourceSpan": "Swarthmore Borough"
+      }
+    }
+  ]
+}

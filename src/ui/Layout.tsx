@@ -26,6 +26,7 @@ export function Layout() {
             </span>
           </Link>
           <nav className="SiteNav" aria-label="Primary">
+            {publicFeatures().discovery ? <a className="NavLink" href="/discover/works">Discover</a> : null}
             <Link
               to="/news"
               className="NavLink is-news"

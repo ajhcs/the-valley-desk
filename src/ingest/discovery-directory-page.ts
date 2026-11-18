@@ -1,4 +1,4 @@
-import type {DirectorySnapshot, DirectoryWork} from '../content/discovery-directory';
+import type {DirectorySnapshot, DirectoryView, DirectoryWork} from '../content/discovery-directory';
 import {
   directoryPathId, validatedDirectoryRelease, DIRECTORY_RESPONSE_BYTE_LIMIT, type DirectoryEnvironment,
 } from './discovery-directory-http';
@@ -59,7 +59,7 @@ function regionHtml(claim: Region, detail: boolean): string {
     .flatMap(value => value ? [esc(value)] : []);
   const place = [institution, ...locality].filter(Boolean).join(' · ');
   return `<div class="region" data-claim-kind="regional-connection">
-    <p><strong>${esc(who[claim.subjectRole])}</strong> · ${place} · ${time(claim.asOf.value)}</p>
+    <p><strong>${esc(who[claim.subjectRole])}</strong>${place ? ` · ${place}` : ''} · ${time(claim.asOf.value)}</p>
     <p class="qualifier">${esc(claim.qualification)}</p>
   </div>`;
 }
@@ -208,6 +208,7 @@ const browseBack = `<div class="detail-back">${link(catalogPath, '← Browse res
 
 export async function handleDiscoveryDirectoryPage(
   request: Request, env: DirectoryEnvironment, snapshotInput: unknown, removalInput: unknown,
+  view: DirectoryView = 'release',
 ): Promise<Response> {
   const head = request.method === 'HEAD';
   const enabled = env.DISCOVERY_DIRECTORY_ENABLED === 'true';
@@ -219,7 +220,7 @@ export async function handleDiscoveryDirectoryPage(
       <header class="masthead"><div class="shell"><a class="wordmark" href="/">The Valley Desk</a>
         ${enabled ? `<nav aria-label="Directory"><a class="section-link" href="${catalogPath}">Research</a></nav>` : ''}
       </div></header>
-      <main class="shell" id="research-main" tabindex="-1">${beforeTitle}<h1>${breakableTitle(title)}</h1>${body}</main>
+      <main class="shell" id="research-main" tabindex="-1">${view === 'private-preview' ? '<p class="muted">Private draft preview</p>' : ''}${beforeTitle}<h1>${breakableTitle(title)}</h1>${body}</main>
       </body></html>`;
     if (new TextEncoder().encode(html).byteLength > DIRECTORY_RESPONSE_BYTE_LIMIT) {
       return new Response(head ? null : 'Research directory unavailable', {status: 503, headers: {...headers, 'content-type': 'text/plain; charset=utf-8'}});
@@ -230,7 +231,7 @@ export async function handleDiscoveryDirectoryPage(
   if (request.method !== 'GET' && !head) return reply(405, 'Method not allowed', '', {allow: 'GET, HEAD'});
   let release: ReturnType<typeof validatedDirectoryRelease>;
   try {
-    release = validatedDirectoryRelease(snapshotInput, removalInput);
+    release = validatedDirectoryRelease(snapshotInput, removalInput, view);
   } catch {
     return reply(503, 'Research directory unavailable', '');
   }
@@ -245,7 +246,7 @@ export async function handleDiscoveryDirectoryPage(
       return reply(400, 'Unsupported request', '');
     }
     if (release.removals.removedIds.includes(id)) return reply(410, 'Listing removed', `<p class="intro">${link(catalogPath, 'Browse research')}</p>`);
-    const work = readDirectoryDetail(release.snapshot, id);
+    const work = readDirectoryDetail(release.snapshot, id, view);
     return work
       ? reply(200, work.title.value, workDetail(work, indexWorks(release.snapshot)), {}, browseBack)
       : reply(404, 'Not found', '');
@@ -258,7 +259,7 @@ export async function handleDiscoveryDirectoryPage(
     return reply(400, 'Unsupported filters', `<p class="intro">${link(catalogPath, 'Reset filters')}</p>`);
   }
   try {
-    const result = await readDirectoryList(release.snapshot, query);
+    const result = await readDirectoryList(release.snapshot, query, view);
     return reply(200, 'Health-tech research', `
       <p class="intro">Search selected research, code and projects with documented connections to Greater Philadelphia.</p>
       ${searchForm(query, result.facets)}${resultsHtml(result, indexWorks(release.snapshot), url)}`);

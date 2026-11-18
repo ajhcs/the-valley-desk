@@ -53,6 +53,42 @@ test('changed/removal state invalidates cursors, returns 410 and fails mismatche
  assert.equal((await handleDiscoveryDirectory(request('/api/discovery/v1/works'),enabled,snapshot,meta)).status,503);
  assert.equal((await handleDiscoveryDirectoryPage(request('/discover/works'),enabled,snapshot,meta)).status,503);
 });
+
+test('a private region-only draft displays its documented connection without adding a county facet', async () => {
+  const snapshot = source();
+  snapshot.version = 'private-preview:test';
+  const work = snapshot.works[0];
+  snapshot.works = [work];
+  work.relations = [];
+  const region = work.claims.find((claim: any) => claim.kind === 'regional-connection');
+  Object.assign(region, {
+    regionalBasis: 'region', county: null, state: null, municipality: null, campus: null,
+    qualification: 'Uses the Philadelphia Neurodevelopmental Cohort in the study.',
+  });
+  const meta = removed(snapshot);
+  const detail = request(`/discover/work/${encodeURIComponent(work.id)}`);
+  const list = request('/api/discovery/v1/works?view=compact&q=Neurodevelopmental');
+  const html = await handleDiscoveryDirectoryPage(detail, enabled, snapshot, meta, 'private-preview');
+  assert.equal(html.status, 200);
+  assert.ok((await html.text()).includes(region.qualification));
+  const response = await handleDiscoveryDirectory(list, enabled, snapshot, meta, 'private-preview');
+  assert.equal(response.status, 200);
+  const result = await response.json() as any;
+  assert.equal(result.items.length, 1);
+  assert.equal(result.items[0].regionalConnection.county, null);
+  assert.deepEqual(result.facets.county, []);
+  assert.equal((await handleDiscoveryDirectoryPage(detail, enabled, snapshot, meta)).status, 503);
+  assert.equal((await handleDiscoveryDirectory(list, enabled, snapshot, meta)).status, 503);
+  snapshot.version = 'test:renamed';
+  const releaseMeta = removed(snapshot);
+  const released = await handleDiscoveryDirectory(list, enabled, snapshot, releaseMeta);
+  assert.equal(released.status, 200);
+  assert.deepEqual((await released.json() as any).facets.county, []);
+  assert.equal((await handleDiscoveryDirectoryPage(detail, enabled, snapshot, releaseMeta)).status, 200);
+  snapshot.version = 'private-preview:test';
+  region.county = 'Philadelphia';
+  assert.equal((await handleDiscoveryDirectory(list, enabled, snapshot, meta, 'private-preview')).status, 503);
+});
 test('HTML escapes source strings and preserves synthetic directed relations and year precision',async()=>{
  // Deliberately synthetic renderer challenge; it does not assert a real citation.
  const snapshot=source(),repo=snapshot.works.find((w:any)=>w.kind==='repository'),pub=snapshot.works.find((w:any)=>w.kind==='publication');
