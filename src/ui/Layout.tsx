@@ -1,5 +1,4 @@
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { navSection } from "../lib/nav";
+import { Outlet, useRouterState } from "@tanstack/react-router";
 import { publicFeatures } from "../lib/public-features";
 import { DocumentHead } from "./DocumentHead";
 import { FoldMark } from "./FoldMark";
@@ -10,7 +9,6 @@ import { ThemeControl } from "./ThemeControl";
 
 export function Layout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const current = navSection(pathname);
   const isLab = pathname === "/lab" || pathname.startsWith("/lab/");
   return (
     <div className="Shell">
@@ -25,45 +23,9 @@ export function Layout() {
               <span className="Wordmark-name">Valley Desk</span>
             </span>
           </a>
-          <nav className="SiteNav" aria-label="Primary">
-            {publicFeatures().discovery ? <a className="NavLink" href="/discover/works">Discover</a> : null}
-            <Link
-              to="/news"
-              className="NavLink is-news"
-              activeOptions={{ exact: true }}
-              activeProps={{
-                className: "NavLink is-news",
-                "aria-current": current === "news" ? "page" : undefined,
-              }}
-              inactiveProps={{
-                className: "NavLink is-news",
-                "aria-current": current === "news" ? "page" : undefined,
-              }}
-            >
-              News
-            </Link>
-            <Link
-              to="/events"
-              className="NavLink is-events"
-              activeOptions={{ exact: true }}
-              activeProps={{
-                className: "NavLink is-events",
-                "aria-current": current === "events" ? "page" : undefined,
-              }}
-              inactiveProps={{
-                className: "NavLink is-events",
-                "aria-current": current === "events" ? "page" : undefined,
-              }}
-            >
-              Events
-            </Link>
-            {publicFeatures().watch ? <>
-              <Link to="/policy-watch" search={{}} className="NavLink is-policy-watch"
-                aria-current={current === "policy-watch" ? "page" : undefined}>Policy Watch</Link>
-              <Link to="/technology-watch" search={{}} className="NavLink is-technology-watch"
-                aria-current={current === "technology-watch" ? "page" : undefined}>Technology Watch</Link>
-            </> : null}
-          </nav>
+          {publicFeatures().discovery ? <nav className="SiteNav" aria-label="Primary">
+            <a className="NavLink" href="/discover/works">Projects</a>
+          </nav> : null}
           <ThemeControl />
         </div>
       </header> : null}

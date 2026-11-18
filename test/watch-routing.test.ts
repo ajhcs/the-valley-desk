@@ -520,20 +520,22 @@ test("public feature signals are boolean allowlists and hidden policy HTML is de
   assert.match(watch, /__VALLEY_DESK_PUBLIC_FEATURES__=\{"policyBackground":true,"watch":false\}/);
 });
 
-test("Watch promotion follows the exact server opt-in and does not revive Voices promotion", async () => {
+test("Watch routes retain their exact opt-in while public navigation promotes the project directory", async () => {
   for (const flag of [undefined, false, true, "false", "TRUE", " true", "true ", "true"]) {
     const features = publicFeaturesFromEnv({ WATCH_PUBLIC_ENABLED: flag });
     assert.equal(features.watch, flag === "true");
     const html = decorateHtml({ html: template, path: "/", origin, nonce: "fixture", publicFeatures: features });
     for (const path of ["/policy-watch", "/technology-watch"]) {
-      assert.equal(body(html).includes(`${origin}${path}`), flag === "true");
-      assert.equal(llmsTxt(origin, features.watch).includes(`${origin}${path}`), flag === "true");
+      assert.ok(!body(html).includes(`${origin}${path}`));
+      assert.ok(!llmsTxt(origin).includes(`${origin}${path}`));
     }
     assert.doesNotMatch(body(html), /<h2>Voices<\/h2>/);
-    assert.doesNotMatch(llmsTxt(origin, features.watch), /\[Voices\]/);
+    assert.doesNotMatch(llmsTxt(origin), /\[Voices\]/);
     const { env } = environment({ WATCH_PUBLIC_ENABLED: flag });
     const response = await worker.fetch(new Request(`${origin}/llms.txt`), env, {});
-    assert.equal((await response.text()).includes("[Policy Watch]"), flag === "true");
+    const text = await response.text();
+    assert.ok(text.includes(`${origin}/discover/works`));
+    assert.doesNotMatch(text, /\[(?:News|Events|Policy Watch|Technology Watch)\]/);
   }
   for (const value of [{ watch: "true" }, Object.create({ watch: true }), { watch: 1 }]) {
     assert.equal(normalizePublicFeatures(value).watch, false);

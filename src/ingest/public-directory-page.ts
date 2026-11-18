@@ -16,10 +16,6 @@ const facets = [
 
 const navigation = [
   ['Projects', resultsPath],
-  ['News', '/news'],
-  ['Events', '/events'],
-  ['Policy Watch', '/policy-watch'],
-  ['Technology Watch', '/technology-watch'],
 ] as const;
 
 function escapeHtml(value: string): string {

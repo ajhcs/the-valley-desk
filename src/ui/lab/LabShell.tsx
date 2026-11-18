@@ -37,14 +37,9 @@ export function LabShell({
       </SkipLink>
       <header className="LabMast">
         <Link to="/" className="LabHome"><LabLockup /></Link>
-        <nav className="LabPublicNav" aria-label="Public sections">
-          <Link to="/news">News</Link>
-          <Link to="/events">Events</Link>
-          {publicFeatures().watch ? <>
-            <Link to="/policy-watch" search={{}}>Policy Watch</Link>
-            <Link to="/technology-watch" search={{}}>Technology Watch</Link>
-          </> : null}
-        </nav>
+        {publicFeatures().discovery ? <nav className="LabPublicNav" aria-label="Public sections">
+          <a href="/discover/works">Projects</a>
+        </nav> : null}
         <p className="LabMast-note">Design lab</p>
       </header>
       <nav className="LabSwitch" aria-label="Prototype views">

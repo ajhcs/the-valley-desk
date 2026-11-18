@@ -20,7 +20,7 @@ import { watchPageHead, type WatchPageResult } from "./watch-page";
 import { normalizePublicFeatures, type PublicFeatures } from "./public-features";
 
 const SITE = "The Valley Desk";
-const DEFAULT_DESC = "Local health-tech news for people and agents";
+const DEFAULT_DESC = "A public directory of health technology, biomedicine and life science projects connected to the Delaware Valley.";
 
 let queriesBound = false;
 
@@ -227,7 +227,6 @@ export function primaryNoscript(
         : "",
       rest.length ? `<h2>News</h2><ul>${rest.map((item) => linkItem(item, origin)).join("")}</ul>` : "",
       events.length ? `<h2>Events</h2><ul>${events.map((item) => linkItem(item, origin)).join("")}</ul>` : "",
-      normalizePublicFeatures(publicFeatures).watch ? `<nav aria-label="Watch sections"><h2><a href="${esc(publicUrl("/policy-watch", origin))}">Policy Watch</a></h2><h2><a href="${esc(publicUrl("/technology-watch", origin))}">Technology Watch</a></h2></nav>` : "",
       feeds,
     ].filter(Boolean).join("");
   }

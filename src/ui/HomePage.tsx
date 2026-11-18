@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { catalog } from "../lib/catalog";
 import { publicFeatures } from "../lib/public-features";
 import {
@@ -34,10 +33,6 @@ export function HomePage() {
         <Rail label="NEWS · LATEST" rail="news" items={news} />
         <Rail label="EVENTS · NEXT" rail="events" items={events} pinId={pinId} />
       </div>
-      {publicFeatures().watch ? <nav className="HomeWatch" aria-label="Watch sections">
-        <Link to="/policy-watch" search={{}}><span>Policy Watch</span><small>Federal / PA / NJ / DE / Delaware Valley</small></Link>
-        <Link to="/technology-watch" search={{}}><span>Technology Watch</span><small>Verified Delaware Valley connections</small></Link>
-      </nav> : null}
     </div>
   );
 }
