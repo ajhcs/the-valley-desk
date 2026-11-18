@@ -1,0 +1,84 @@
+{
+  "617168725": [
+    {
+      "field": "paper",
+      "value": "https://doi.org/10.1007/s11517-024-03096-x",
+      "source": "https://doi.org/10.1007/s11517-024-03096-x",
+      "date": "2026-11-18",
+      "author": "launch review"
+    }
+  ],
+  "192607622": [
+    {
+      "field": "paper",
+      "value": "https://doi.org/10.1016/j.xgen.2023.100340",
+      "source": "https://doi.org/10.1016/j.xgen.2023.100340",
+      "date": "2026-11-18",
+      "author": "launch review"
+    },
+    {
+      "field": "name",
+      "value": "Open Pediatric Brain Tumor Atlas",
+      "source": "https://github.com/AlexsLemonade/OpenPBTA-analysis",
+      "date": "2026-11-18",
+      "author": "launch review"
+    },
+    {
+      "field": "purpose",
+      "value": "Analysis code for the Open Pediatric Brain Tumor Atlas project.",
+      "source": "https://github.com/AlexsLemonade/OpenPBTA-analysis",
+      "date": "2026-11-18",
+      "author": "launch review"
+    }
+  ],
+  "692249664": [
+    {
+      "field": "paper",
+      "value": "https://doi.org/10.1038/s41592-024-02503-3",
+      "source": "https://doi.org/10.1038/s41592-024-02503-3",
+      "date": "2026-11-18",
+      "author": "launch review"
+    }
+  ],
+  "501436131": [
+    {
+      "field": "name",
+      "value": "Failure Detection for Medical Imaging",
+      "source": "https://github.com/Beemd/Failure-Detection_MedMNIST",
+      "date": "2026-11-18",
+      "author": "launch review"
+    },
+    {
+      "field": "purpose",
+      "value": "Research code for flagging unreliable predictions in medical-image classifiers.",
+      "source": "https://github.com/Beemd/Failure-Detection_MedMNIST",
+      "date": "2026-11-18",
+      "author": "launch review"
+    }
+  ],
+  "528629935": [
+    {
+      "field": "record",
+      "value": {
+        "id": "528629935",
+        "code": "https://github.com/vganapati/LED_PVAE",
+        "name": "LED_PVAE",
+        "purpose": "Research code for reconstructing images from LED-array microscopy.",
+        "topic": "Medical imaging",
+        "institution": "Swarthmore College",
+        "county": "Delaware",
+        "label": "Verified",
+        "connection": "Linked as the released code in the Swarthmore College microscopy study.",
+        "source": "https://ganapati.swarthmore.edu/paperpdfs/AI4Science.pdf",
+        "paper": "https://ganapati.swarthmore.edu/paperpdfs/AI4Science.pdf",
+        "language": "Python",
+        "license": "Apache-2.0",
+        "updated": "2025-07-13",
+        "added": "2026-11-18"
+      },
+      "source": "https://ganapati.swarthmore.edu/paperpdfs/AI4Science.pdf",
+      "date": "2026-11-18",
+      "author": "launch review"
+    }
+  ]
+}
