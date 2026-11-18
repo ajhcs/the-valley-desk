@@ -32,6 +32,8 @@ test('production pinned authority reproduces only approved works and rejects reh
  const result=await buildDirectorySelection(selection,DIRECTORY_REVIEW_AUTHORITY,(p:string)=>readFile(p));assert.equal(result.snapshot.works.length,9);
  const added = result.snapshot.works.filter(work => result.report.added.includes(work.id));
  assert.deepEqual(added.map(work => work.nativeIdentity?.nativeId), ['501436131', '528629935', '718764890']);
+ assert.deepEqual(result.report.revised, []);
+ assert.deepEqual(result.report.removed, []);
  assert.equal(result.report.supportObjectCount,0);assert.equal(result.report.projectGroupCount,null);assert.equal(result.report.changes.filter((c:any)=>c.decision==='hold').length,0);
  const changed=structuredClone(selection),entry=changed.entries.find((e:any)=>e.work);entry.work.claims[0].text='Unapproved treatment claim';entry.receipt.workSha256=await directoryWorkReviewHash(entry.work);entry.work.reviewRefs[0].receiptSha256=await directorySha256(canonicalDirectoryJson(entry.receipt));
  let reads=0;await assert.rejects(()=>buildDirectorySelection(changed,DIRECTORY_REVIEW_AUTHORITY,async()=>{reads++;return new Uint8Array();}),/untrusted-selection/);assert.equal(reads,0);

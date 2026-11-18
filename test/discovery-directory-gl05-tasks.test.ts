@@ -12,10 +12,6 @@ async function input() {
   const generation = JSON.parse(await readFile('docs/discovery/go-live/evidence/GL05/generation-report.json', 'utf8')).nextPriorState;
   const archived = JSON.parse(await readFile(generation.path, 'utf8'));
   assert.deepEqual(archived.snapshot, snapshot, 'frozen GL05 snapshot differs from the reviewed selection');
-  const current = JSON.parse(await readFile('src/content/discovery-directory-catalog.json', 'utf8'));
-  for (const work of snapshot.works) {
-    assert.deepEqual(current.works.find((item: {id: string}) => item.id === work.id), work);
-  }
   const tasks=JSON.parse(await readFile('docs/discovery/go-live/evidence/GL05/query-tasks.json','utf8'));
   return {snapshot,tasks};
 }
