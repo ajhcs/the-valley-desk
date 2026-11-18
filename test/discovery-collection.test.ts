@@ -1360,7 +1360,9 @@ test(
         );
         const pending = f
           .makeCollector(store, {
-            maxStepMs: 1500,
+            // Allow the real local D1 admission to reach the send gate before
+            // the intentionally stalled response exhausts this test's budget.
+            maxStepMs: 10000,
             transportOptions: {
               egress: {
                 send: async () => {
@@ -1377,7 +1379,7 @@ test(
               'worker:one',
               'uncertain',
               60000,
-              1000,
+              10000,
             ),
           );
         await enteredBeforeEnd(entered, pending);
