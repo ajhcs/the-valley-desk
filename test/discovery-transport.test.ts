@@ -1171,18 +1171,23 @@ test(
           'oversize',
           'deadline',
         ] as const) {
-          const plan = await f.collect(scenario, {
-            deadlineAt: at(current, scenario === 'deadline' ? 250 : 30000),
-          });
+          const deadlineAt = at(current, 30_000);
+          const plan = await f.collect(scenario, { deadlineAt });
+          let transportNow = Date.parse(current);
+          let bodyRead = false;
           let cancelled = false,
             aborted = false,
             calls = 0;
           const result = await registry
             .createTransport({
-              clock: () => Date.parse(current),
+              clock: () => transportNow,
               egress: {
                 send: async (_url, init) => {
                   calls++;
+                  // Spend the deadline budget only after real D1 admission. The
+                  // body stays pending so the transport's timer must cancel it.
+                  if (scenario === 'deadline')
+                    transportNow = Date.parse(deadlineAt) - 50;
                   init.signal.addEventListener('abort', () => {
                     aborted = true;
                   });
@@ -1195,6 +1200,7 @@ test(
                   const stream = new ReadableStream<Uint8Array>(
                     {
                       pull(controller) {
+                        bodyRead = true;
                         if (scenario === 'reader-throw')
                           throw new DiscoveryRuntimeError(
                             'upstream-failed',
@@ -1224,6 +1230,7 @@ test(
           assert.equal(calls, 1, JSON.stringify({ scenario, result }));
           assert.equal(JSON.stringify(result).includes(forbidden), false);
           if (scenario === 'deadline') {
+            assert.equal(bodyRead, true);
             if (!result.ok) assert.equal(result.failure.outcome, 'timed-out');
             assert.equal(aborted, true);
             assert.equal(cancelled, true);
