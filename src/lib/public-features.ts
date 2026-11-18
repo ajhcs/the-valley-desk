@@ -1,8 +1,8 @@
 export type PublicFeatures = { policyBackground: boolean; watch: boolean; discovery?: boolean };
 
-export function publicFeaturesFromEnv(env: { POLICY_BACKGROUND_PUBLIC_ENABLED?: unknown; WATCH_PUBLIC_ENABLED?: unknown; DISCOVERY_DIRECTORY_ENABLED?: unknown }): PublicFeatures {
+export function publicFeaturesFromEnv(env: { POLICY_BACKGROUND_PUBLIC_ENABLED?: unknown; WATCH_PUBLIC_ENABLED?: unknown; DISCOVERY_DIRECTORY_ENABLED?: unknown; DIRECTORY_PUBLIC_ENABLED?: unknown }): PublicFeatures {
   return { policyBackground: env.POLICY_BACKGROUND_PUBLIC_ENABLED === "true", watch: env.WATCH_PUBLIC_ENABLED === "true",
-    ...(env.DISCOVERY_DIRECTORY_ENABLED === "true" ? { discovery: true } : {}) };
+    ...(env.DISCOVERY_DIRECTORY_ENABLED === "true" || env.DIRECTORY_PUBLIC_ENABLED === "true" ? { discovery: true } : {}) };
 }
 
 export function normalizePublicFeatures(value: unknown): PublicFeatures {

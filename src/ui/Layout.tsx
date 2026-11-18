@@ -18,13 +18,13 @@ export function Layout() {
       {!isLab ? <SkipLink className="SiteSkip" href="#main-content">Skip to content</SkipLink> : null}
       {!isLab ? <header className="SiteHeader">
         <div className="SiteHeader-inner">
-          <Link to="/" className="SiteHeader-brand">
+          <a href="/" className="SiteHeader-brand">
             <FoldMark />
             <span className="Wordmark">
               <span className="Wordmark-kicker">The</span>
               <span className="Wordmark-name">Valley Desk</span>
             </span>
-          </Link>
+          </a>
           <nav className="SiteNav" aria-label="Primary">
             {publicFeatures().discovery ? <a className="NavLink" href="/discover/works">Discover</a> : null}
             <Link

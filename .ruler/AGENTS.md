@@ -1,10 +1,10 @@
 # thevalleydesk
 
-Production healthcare technology publication using Vite, React, TypeScript, and Cloudflare Workers. Read README.md and /home/plumbob/.codex/memories/plumbob-server/the-valley-desk-prod.md before runtime or deployment work.
+Public directory of regional health-tech work, with separate News, Events and Watch sections, using Vite, React, TypeScript, and Cloudflare Workers. Read README.md and /home/plumbob/.codex/memories/plumbob-server/the-valley-desk-prod.md before runtime or deployment work.
 
 - Tests: `npm test`. Build: `npm run build`. Secret scan: `npm run secret-scan`.
-- Preserve deterministic publication gates, literal evidence spans, source provenance, and typed source-health outcomes.
-- Model output cannot authorize publication; unsupported claims remain in review.
+- News, Events and Watch retain deterministic publication gates, literal evidence spans, source provenance, and typed source-health outcomes. Model output cannot authorize publication for those sections. Their unsupported claims remain in review.
+- Directory listings follow the listing rule. List real public repositories with their own work, a plausible health, biomedical or life-science purpose in their description, README or linked source, and a connection through the regional roster, a regional institution's page, or a releasing paper with a regional affiliation. The agent's judgment is sufficient to list a project. Decline empty repos, coursework, personal config, unmodified forks and general-purpose mirrors. Use source-grounded descriptions. Decline with 'no description' when there is no project description in these sources. Show **Verified** for a source tying the exact repository to the region, or **Listed** for an observed account or lab association. Include a county when supported. Dates and counties are optional. Report observed connections without inferring employment, ownership or worksite.
 - Ingestion commands may contact external sources or change data. Deployment and live editorial actions require the task's explicit operational scope.
 
 ## Instruction maintenance

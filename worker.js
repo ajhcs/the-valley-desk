@@ -668,6 +668,11 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   const path = url.pathname;
   const method = request.method.toUpperCase();
 
+  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path.startsWith("/discover"))) {
+    const { isPublicDirectoryPath, servePublicDirectory } = await import("./src/ingest/public-directory.ts");
+    if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB);
+  }
+
   if (path.startsWith("/api/discovery/v1/")) return handleDirectoryRoutes(request, env);
   if (/^\/discover\/(?:works(?:\/|$)|work\/)/.test(path)) return handleDirectoryRoutes(request, env);
   if (/^\/api\/discovery-pilot\/?$/.test(path)) return handleDiscoveryPilot(request, env);

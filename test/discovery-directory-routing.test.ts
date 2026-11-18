@@ -4,6 +4,7 @@ import worker from '../worker.js';
 import {primaryNoscript} from '../src/lib/crawler-html';
 import {publicFeaturesFromEnv} from '../src/lib/public-features';
 import {readFileSync} from 'node:fs';
+import {DatabaseSync} from 'node:sqlite';
 const current=JSON.parse(readFileSync('src/content/discovery-directory-catalog.json','utf8'));
 
 const env=(flag:unknown=undefined)=>({PUBLIC_ORIGIN:'https://thevalleydesk.org',DISCOVERY_DIRECTORY_ENABLED:flag,ASSETS:{fetch:async()=>{throw Error('Directory must not load assets');}},VALLEY_DESK_DB:new Proxy({},{get(){throw Error('Directory must not query a database');}})});
@@ -53,4 +54,42 @@ test('homepage search points to the directory only with the exact Worker setting
   assert.match(html, /<form role="search" action="\/discover\/works" method="get">/);
   assert.match(html, /name="q" type="search"/);
   assert.match(html, /feed\.json/);
+});
+
+test('the directory uses the same durable removal for listings, details, and historical aliases', async () => {
+  const database = new DatabaseSync(':memory:');
+  try {
+    const table = readFileSync('ops/directory-removals.sql', 'utf8');
+    database.exec(table);
+    const environment = {
+      PUBLIC_ORIGIN: 'https://thevalleydesk.org',
+      DIRECTORY_PUBLIC_ENABLED: 'true',
+      VALLEY_DESK_DB: {
+        prepare: (query: string) => ({ all: async () => ({ results: database.prepare(query).all() }) }),
+      },
+    };
+    const request = (path: string) =>
+      worker.fetch(new Request('https://thevalleydesk.org' + path), environment, {});
+    const home = await request('/');
+    assert.equal(home.status, 200);
+    assert.match(await home.text(), /action="\/discover\/works"/);
+    const before = await request('/discover/work/617168725');
+    assert.equal(before.status, 200);
+    assert.match(await before.text(), /10\.1007\/s11517-024-03096-x/);
+    const alias = '/discover/work/GL05%3Awork%3Acrossref%3Asleepboost';
+    assert.equal((await request(alias)).headers.get('location'), '/discover/work/617168725');
+    database.exec("INSERT INTO public_directory_removals (github_id) VALUES ('617168725')");
+    database.exec(table);
+    const search = await request('/discover/works?q=SleepBoost');
+    assert.equal(search.status, 200);
+    assert.doesNotMatch(await search.text(), /href="\/discover\/work\/617168725"/);
+    assert.equal((await request('/discover/work/617168725')).status, 410);
+    assert.equal((await request(alias)).status, 410);
+    const missing = await worker.fetch(new Request('https://thevalleydesk.org/discover/work/617168725'),
+      { ...environment, VALLEY_DESK_DB: undefined }, {});
+    assert.equal(missing.status, 503);
+    assert.doesNotMatch(await missing.text(), /github\.com\/akibzaman/);
+  } finally {
+    database.close();
+  }
 });
