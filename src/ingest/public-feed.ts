@@ -1,7 +1,7 @@
 import type { ContentItem, EventItem } from "../content/schema";
 import { mergePublishedOverlay } from "../content/merge";
 import { canonicalPath as itemCanonicalPath, publicOrigin } from "../lib/canonical";
-import { sitemapEntriesForFeed, sitemapUrlset } from "../content/sitemap";
+import { sitemapEntriesForFeed, sitemapUrlset, type SitemapEntry } from "../content/sitemap";
 import { eventWhyCopy } from "../lib/eventCopy";
 import { toFeed, type FeedDocument } from "./feed-contract";
 import type { D1DatabaseLike } from "./persistence";
@@ -64,8 +64,8 @@ export function feedXml(feed: FeedDocument, origin = publicOrigin()) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>The Valley Desk</title>\n    <link>${origin}/</link>\n    <description>Local health-tech news for people and agents</description>\n    <lastBuildDate>${new Date(feed.generatedAt).toUTCString()}</lastBuildDate>\n${items}\n  </channel>\n</rss>\n`;
 }
 
-export function sitemapXml(feed: FeedDocument, origin = publicOrigin()) {
-  return sitemapUrlset(sitemapEntriesForFeed(feed.items, feed.generatedAt, origin));
+export function sitemapXml(feed: FeedDocument, origin = publicOrigin(), extra: readonly SitemapEntry[] = []) {
+  return sitemapUrlset([...extra, ...sitemapEntriesForFeed(feed.items, feed.generatedAt, origin)]);
 }
 
 export function runtimeItemsScript(

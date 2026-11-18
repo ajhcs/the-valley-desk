@@ -62,6 +62,10 @@ function notFoundHeaders() {
 }
 
 async function notFound(env, request, path, origin, nonce) {
+  if (env.DIRECTORY_PUBLIC_ENABLED === "true") {
+    const { directoryNotFound } = await import("./src/ingest/public-directory.ts");
+    return directoryNotFound(origin, nonce, request.method === "HEAD");
+  }
   const url = new URL(request.url);
   const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
   const html = decorateHtml({
@@ -668,9 +672,9 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   const path = url.pathname;
   const method = request.method.toUpperCase();
 
-  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path.startsWith("/discover"))) {
+  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path.startsWith("/discover") || path.startsWith("/api/directory/"))) {
     const { isPublicDirectoryPath, servePublicDirectory } = await import("./src/ingest/public-directory.ts");
-    if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB);
+    if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB, origin, nonce);
   }
 
   if (path.startsWith("/api/discovery/v1/")) return handleDirectoryRoutes(request, env);
@@ -799,7 +803,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
       });
     }
     if (path === "/llms.txt") {
-      return new Response(llmsTxt(origin), {
+      return new Response(llmsTxt(origin, env.DIRECTORY_PUBLIC_ENABLED === "true"), {
         headers: { ...PUBLIC_HEADERS, "content-type": "text/plain; charset=utf-8" },
       });
     }
@@ -818,9 +822,19 @@ async function handleFetch(request, env, origin, nonce, ctx) {
       });
     }
     if (path === "/sitemap.xml") {
-      return new Response(sitemapXml(feed, origin), {
-        headers: { ...PUBLIC_HEADERS, "content-type": "application/xml; charset=utf-8" },
-      });
+      const headers = { ...PUBLIC_HEADERS, "content-type": "application/xml; charset=utf-8" };
+      if (env.DIRECTORY_PUBLIC_ENABLED === "true") {
+        headers["cache-control"] = "no-store";
+        headers["cdn-cache-control"] = "no-store";
+        try {
+          const { publicDirectorySitemap } = await import("./src/ingest/public-directory.ts");
+          const directory = await publicDirectorySitemap(env.VALLEY_DESK_DB, origin);
+          return new Response(sitemapXml(feed, origin, directory), { headers });
+        } catch {
+          return new Response(null, { status: 503, headers });
+        }
+      }
+      return new Response(sitemapXml(feed, origin), { headers });
     }
     return new Response(JSON.stringify(feed), {
       headers: { ...PUBLIC_HEADERS, "content-type": "application/json; charset=utf-8" },

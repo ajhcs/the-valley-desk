@@ -1,292 +1,265 @@
-import type { DirectoryProject, DirectoryView } from './public-directory-data';
+import {
+  activityCutoff, apiPath, browsePath, counties, githubAccount, httpsUrl, lastActivity, methodPath, paperUrl, projectPapers, projectPath,
+  type DirectoryCatalog, type DirectoryProject,
+} from "./public-directory-data";
+import { renderDirectoryHome } from "./public-directory-home";
+import { renderDirectoryResults, resultsHead } from "./public-directory-results";
+import {
+  contactLink, count, entityLink, externalLink, facetHref, html, labelDefinitions, projectCards,
+  projectPlace, regionalLabel, timestamp,
+} from "./public-directory-ui";
 
-type Query = DirectoryView['query'];
-type Facets = DirectoryView['facets'];
+export type DirectoryView =
+  | { kind: "home"; data: ReturnType<DirectoryCatalog["home"]> }
+  | { kind: "results"; data: ReturnType<DirectoryCatalog["list"]> }
+  | { kind: "project"; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
+  | { kind: "methodology" }
+  | { kind: "removed" | "not-found" | "unavailable" };
 
-const resultsPath = '/discover/works';
-const count = new Intl.NumberFormat('en-US');
-const date = new Intl.DateTimeFormat('en-US', {
-  month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
-});
-const facets = [
-  { field: 'institution', group: 'institutions', label: 'Institution', all: 'All institutions' },
-  { field: 'topic', group: 'topics', label: 'Topic', all: 'All topics' },
-  { field: 'county', group: 'counties', label: 'County', all: 'All counties' },
-] as const;
+const siteName = "The Valley Desk";
+const description = "A public directory of health technology, biomedicine and life sciences software connected to the nine-county Delaware Valley.";
 
-const navigation = [
-  ['Projects', resultsPath],
-] as const;
-
-function escapeHtml(value: string): string {
-  return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-}
-
-function httpsUrl(value: string | null): string | null {
-  if (!value) return null;
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:' && !url.username && !url.password ? url.href : null;
-  } catch {
-    return null;
-  }
-}
-
-function externalLink(value: string | null, label: string, className = ''): string {
-  const url = httpsUrl(value);
-  return url ? `<a class="${escapeHtml(className)}" href="${escapeHtml(url)}" rel="noreferrer">${escapeHtml(label)}</a>` : '';
-}
-
-function directoryHref(query: Partial<Query>): string {
-  const params = new URLSearchParams();
-  for (const field of ['q', 'institution', 'topic', 'county'] as const) {
-    if (query[field]) params.set(field, query[field]);
-  }
-  if (query.page && query.page > 1) params.set('page', String(query.page));
-  return escapeHtml(params.size ? `${resultsPath}?${params}` : resultsPath);
-}
-
-function projectHref(project: DirectoryProject): string {
-  return `/discover/work/${encodeURIComponent(project.id)}`;
-}
-
-function githubAccount(project: DirectoryProject): string {
-  const codeUrl = httpsUrl(project.code);
-  if (!codeUrl) return 'GitHub';
-  const account = new URL(codeUrl).pathname.split('/')[1];
-  return account ? `@${account}` : 'GitHub';
-}
-
-function timestamp(value: string | null): string {
-  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return 'Not available';
-  const parsed = new Date(`${value}T00:00:00Z`);
-  if (!Number.isFinite(parsed.getTime())) return 'Not available';
-  return `<time datetime="${escapeHtml(value)}">${escapeHtml(date.format(parsed))}</time>`;
-}
-
-function reportLink(project?: DirectoryProject, label = 'Report an issue'): string {
-  const subject = project ? `Directory correction for ${project.name}` : 'Valley Desk directory issue';
-  const body = project ? `Project: ${project.name}\nRepository: ${project.code}\n\n` : '';
-  const href = `mailto:leads@thevalleydesk.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  return `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`;
-}
-
-function header(view: DirectoryView): string {
+function header(view: DirectoryView) {
   return `<a class="skip-link" href="#main">Skip to content</a>
-    <header class="masthead">
-      <div class="frame masthead-inner">
-        <a class="brand" href="/"${view.kind === 'home' ? ' aria-current="page"' : ''}>
-          <img src="/mark-a-fold.svg" alt="" width="32" height="30">
-          <span>The Valley Desk</span>
+    <header class="directory-chrome desk-masthead">
+      <div class="desk-frame desk-masthead-inner">
+        <a class="desk-brand" href="/"${view.kind === "home" ? ' aria-current="page"' : ""}>
+          <img class="desk-mark" src="/mark-a-fold.svg" alt="" width="36" height="36">
+          <span class="desk-wordmark"><span>The</span><strong>Valley Desk</strong></span>
         </a>
-        <nav class="main-nav" aria-label="Primary">
-          ${navigation.map(([label, href]) => `<a href="${href}"${label === 'Projects' && view.kind === 'results' ? ' aria-current="page"' : ''}>${label}</a>`).join('')}
-        </nav>
-        <div class="theme-control" hidden>
+        <nav class="desk-primary" aria-label="Primary"><a href="${browsePath}"${view.kind === "results" && !view.data.scope ? ' aria-current="page"' : ""}>Projects</a></nav>
+        <div class="desk-theme" hidden>
           <label for="directory-theme">Theme</label>
-          <select id="directory-theme" aria-label="Theme">
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
+          <select id="directory-theme">
+            <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
           </select>
         </div>
       </div>
     </header>`;
 }
 
-function footer(): string {
-  return `<footer class="site-footer">
-    <div class="frame footer-inner">
-      <a class="footer-brand" href="/">The Valley Desk</a>
-      <nav aria-label="Footer">
-        ${reportLink(undefined, 'Directory feedback')}<a href="/feed.json">JSON feed</a><a href="/feed.xml">RSS feed</a>
+function footer() {
+  return `<footer class="directory-chrome desk-footer">
+    <div class="desk-frame desk-footer-inner">
+      <a class="desk-footer-brand" href="/">The Valley Desk</a>
+      <nav class="desk-footer-links" aria-label="Footer">
+        <a href="${browsePath}">Projects</a><a href="${methodPath}">Methodology</a><a href="mailto:leads@thevalleydesk.org">Leads</a>
+        <a href="/feed.json">feed.json</a><a href="/feed.xml">feed.xml</a>
       </nav>
+      <p class="desk-footer-copy">© thedeskgroup - <a href="https://ushso.org/">USHSO.org</a></p>
     </div>
   </footer>`;
 }
 
-function search(query: Query, options?: Facets): string {
-  return `<form class="search-form" role="search" action="${resultsPath}" method="get">
-    <label class="sr-only" for="directory-search">Search projects</label>
-    <div class="search-row">
-      <input type="search" id="directory-search" name="q" value="${escapeHtml(query.q)}"
-        placeholder="Search projects, institutions or topics" maxlength="200">
-      <button class="button primary" type="submit">Search</button>
-    </div>
-    ${options ? `<div class="filters">${facets.map(({ field, group, label, all }) => {
-      const selected = query[field];
-      const entries = options[group];
-      const currentOption = selected && !entries.some(entry => entry.name === selected)
-        ? `<option selected value="${escapeHtml(selected)}">${escapeHtml(selected)}</option>` : '';
-      return `<label for="directory-${field}">${label}
-        <select name="${field}" id="directory-${field}">
-          <option value="">${all}</option>${currentOption}
-          ${entries.map(({ name, count: matches }) => `<option value="${escapeHtml(name)}"${selected === name ? ' selected' : ''}>${escapeHtml(name)} (${count.format(matches)})</option>`).join('')}
-        </select>
-      </label>`;
-    }).join('')}</div>` : ''}
-  </form>`;
-}
-
-function regionalLabel(project: DirectoryProject): string {
-  const style = project.label === 'Verified' ? 'verified' : 'listed';
-  return `<span class="label ${style}">${escapeHtml(project.label)}</span>`;
-}
-
-function card(project: DirectoryProject, level: 2 | 3): string {
-  const name = escapeHtml(project.name);
-  const href = projectHref(project);
-  return `<article class="project-card">
-    <h${level}><a href="${href}">${name}</a></h${level}>
-    <p class="card-purpose">${escapeHtml(project.purpose)}</p>
-    <p class="card-institution">
-      <span>${escapeHtml(project.institution || githubAccount(project))}</span>
-      ${regionalLabel(project)}
-    </p>
-    <div class="card-meta">
-      <span>${escapeHtml(project.language || 'Language not reported')}</span>
-      <span>${project.updated ? `Updated ${timestamp(project.updated)}` : 'Update date not available'}</span>
-    </div>
-  </article>`;
-}
-
-function cardGrid(projects: DirectoryProject[], level: 2 | 3): string {
-  return `<div class="project-grid">${projects.map(project => card(project, level)).join('')}</div>`;
-}
-
-function browse(options: Facets): string {
-  return `<section class="frame browse-section" aria-labelledby="browse-title">
-    <div class="section-heading"><h2 id="browse-title">Browse projects</h2></div>
-    <div class="browse-grid">
-      ${facets.map(({ field, group, label, all }) => `<section class="browse-panel" aria-labelledby="browse-${field}">
-        <h3 id="browse-${field}">${label}</h3>
-        <ul>${options[group].slice(0, 4).map(({ name, count: matches }) => `<li><a href="${directoryHref({ [field]: name })}">
-          <span>${escapeHtml(name)}${field === 'county' ? ' County' : ''}</span>
-          <span class="facet-count">${count.format(matches)}</span>
-        </a></li>`).join('')}</ul>
-        <a class="browse-all" href="${resultsPath}#directory-${field}">${all}</a>
-      </section>`).join('')}
-    </div>
-  </section>`;
-}
-
-function home(view: DirectoryView): string {
-  return `<section class="hero" aria-labelledby="home-title">
-    <div class="frame hero-inner">
-      <div class="hero-main">
-        <h1 id="home-title">Find regional health-tech projects</h1>
-        <p>Software, data and research from the nine-county Delaware Valley.</p>
-        ${search(view.query)}
-      </div>
-      <dl class="directory-counts" aria-label="Directory totals">
-        <div><dt>Projects</dt><dd>${count.format(view.total)}</dd></div>
-        <div><dt>Institutions</dt><dd>${count.format(view.institutionCount)}</dd></div>
-      </dl>
-    </div>
-  </section>
-  ${browse(view.facets)}
-  ${view.projects.length ? `<section class="frame recent-section" aria-labelledby="recent-title">
-    <div class="section-heading"><h2 id="recent-title">Recently added projects</h2><a href="${resultsPath}">View all projects</a></div>
-    ${cardGrid(view.projects, 3)}
-  </section>` : ''}`;
-}
-
-function results(view: DirectoryView): string {
-  const page = view.query.page;
-  const filtered = view.query.q || view.query.institution || view.query.topic || view.query.county;
-  const matches = `${count.format(view.matchCount)} ${view.matchCount === 1 ? 'project' : 'projects'}`;
-  return `<div class="frame page">
-    <h1>Project directory</h1>
-    ${search(view.query, view.facets)}
-    <div class="results-bar">
-      <p>${matches}${filtered ? ' found' : ' listed'}</p>
-      ${filtered ? `<a href="${resultsPath}">Clear search and filters</a>` : ''}
-    </div>
-    ${view.projects.length ? cardGrid(view.projects, 2) : '<div class="empty"><p>No projects match this search. Try another term or clear the filters.</p></div>'}
-    ${view.pageCount > 1 ? `<nav class="pagination" aria-label="Results pages">
-      ${page > 1 ? `<a class="button secondary" href="${directoryHref({ ...view.query, page: page - 1 })}">Previous</a>` : ''}
-      <span>Page ${count.format(page)} of ${count.format(view.pageCount)}</span>
-      ${page < view.pageCount ? `<a class="button secondary" href="${directoryHref({ ...view.query, page: page + 1 })}">Next</a>` : ''}
-    </nav>` : ''}
-  </div>`;
-}
-
-function detail(project: DirectoryProject): string {
-  const institution = project.institution
-    ? `<a href="${directoryHref({ institution: project.institution })}">${escapeHtml(project.institution)}</a>`
-    : escapeHtml(githubAccount(project));
-  const county = project.county
-    ? `<a href="${directoryHref({ county: project.county })}">${escapeHtml(project.county)} County</a>` : '';
+function projectDetail(catalog: DirectoryCatalog, { project, related, now }: Extract<DirectoryView, { kind: "project" }>) {
+  const activity = lastActivity(project);
+  const place = projectPlace(catalog, project);
+  const papers = projectPapers(project);
+  const county = project.county && entityLink(catalog, "county", project.county, `${project.county} County`);
+  const account = githubAccount(project);
+  const tags = project.topics?.map(tag => `<a href="${facetHref("tag", tag)}">${html(tag)}</a>`).join(" · ");
+  const pushed = timestamp(project.pushed);
+  const updated = timestamp(project.updated);
+  const facts = [
+    ["Language", project.language && `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>`],
+    ["License", project.license && `<a href="${facetHref("license", project.license)}">${html(project.license)}</a>`],
+    ["Last code push", pushed],
+    ["Last repository update", updated],
+    ["Created", timestamp(project.created)],
+    ["Added to directory", timestamp(project.added)],
+    ["GitHub stars at capture", project.stars != null ? count(project.stars) : ""],
+    ["Archive status", project.archived === true ? "Archived" : project.archived === false ? "Not archived" : ""],
+    ["GitHub topics", tags],
+  ].filter(([, value]) => value);
+  const repositoryState = project.archived === true ? "Archived on GitHub"
+    : activity && activity < activityCutoff(now, 2) ? `Last recorded activity in ${activity.slice(0, 4)}` : "";
   return `<article class="frame page project-page">
-    <nav class="project-back" aria-label="Directory breadcrumb"><a href="${resultsPath}">All projects</a></nav>
-    <div class="project-heading">
-      <a class="topic-link" href="${directoryHref({ topic: project.topic })}">${escapeHtml(project.topic)}</a>
-      <h1>${escapeHtml(project.name)}</h1>
-      <p class="project-purpose">${escapeHtml(project.purpose)}</p>
-      <div class="project-actions">
-        ${externalLink(project.code, 'View code on GitHub', 'button primary')}
-        ${externalLink(project.paper, 'Read the paper', 'button secondary')}
+    <nav class="breadcrumb" aria-label="Directory breadcrumb">
+      <a href="${browsePath}">All projects</a><span aria-hidden="true">/</span>${entityLink(catalog, "topic", project.topic)}
+    </nav>
+    <header class="project-intro">
+      <div>
+        <h1>${html(project.name)}</h1>
+        ${place || county ? `<p class="project-place">${[place, county].filter(Boolean).join('<span class="separator" aria-hidden="true"> / </span>')}</p>` : ""}
       </div>
-    </div>
+      <div class="project-actions">
+        ${externalLink(project.code, "View code on GitHub ↗", "button primary")}
+        ${externalLink(project.homepage, "Project website ↗", "button secondary")}
+      </div>
+      <p class="project-purpose">${html(project.purpose)}</p>
+      ${repositoryState ? `<p class="archive-mark detail-archive">${html(repositoryState)}</p>` : ""}
+    </header>
     <div class="project-info">
-      <section class="connection-panel" aria-labelledby="connection-title">
-        <div class="connection-heading">
+      <div>
+        <section class="detail-section" aria-labelledby="connection-title">
           <h2 id="connection-title">Regional connection</h2>
-          ${regionalLabel(project)}
-        </div>
-        <p class="connection-place">${[institution, county].filter(Boolean).join(' · ')}</p>
-        <p>${escapeHtml(project.connection)}</p>
-        ${externalLink(project.source, 'View regional source', 'connection-source')}
-      </section>
-      <section class="metadata-panel" aria-labelledby="metadata-title">
-        <h2 id="metadata-title">GitHub details</h2>
-        <dl class="project-metadata">
-          <div><dt>Language</dt><dd>${escapeHtml(project.language || 'Not reported')}</dd></div>
-          <div><dt>License</dt><dd>${escapeHtml(project.license || 'Not reported')}</dd></div>
-          <div><dt>Last updated</dt><dd>${timestamp(project.updated)}</dd></div>
-        </dl>
-      </section>
+          <div class="evidence-explanation">${regionalLabel(project)}<span>${labelDefinitions[project.label]}</span></div>
+          ${project.connection ? `<p>${html(project.connection)}</p>` : ""}
+          <div class="detail-links">${externalLink(project.source, "View regional source ↗")}<a href="${methodPath}#regional-evidence">Read the methodology</a></div>
+          ${timestamp(project.checked) ? `<p class="muted">Source checked ${timestamp(project.checked)}</p>` : ""}
+        </section>
+        ${papers.length ? `<section class="detail-section" aria-labelledby="paper-title">
+          <h2 id="paper-title">${papers.length === 1 ? "Paper" : "Papers"}</h2>
+          <ul class="papers">${papers.map(paper => {
+            const url = paperUrl(paper);
+            const doi = paper.doi || (url?.startsWith("https://doi.org/") ? url.slice("https://doi.org/".length) : "");
+            const title = paper.title || (doi ? `DOI ${doi}` : "Read the linked paper");
+            const citation = [paper.venue, paper.year, paper.title && doi ? `DOI ${doi}` : ""].filter(Boolean);
+            return `<li><cite>${externalLink(url, title) || html(title)}</cite>
+              ${citation.length ? `<p>${html(citation.join(" · "))}</p>` : ""}</li>`;
+          }).join("")}</ul>
+        </section>` : ""}
+      </div>
+      ${facts.length ? `<section class="detail-section repo-facts" aria-labelledby="metadata-title">
+        <h2 id="metadata-title">Repository facts</h2>
+        <dl>${facts.map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join("")}</dl>
+      </section>` : ""}
     </div>
-    <p class="project-report">${reportLink(project)}</p>
+    ${related.sameLab.length ? `<section class="related-projects">
+      <div class="section-heading"><h2>More from this lab or account</h2>${account ? entityLink(catalog, "lab", account, "View account projects") : ""}</div>
+      ${projectCards(catalog, related.sameLab)}
+    </section>` : ""}
+    ${related.sameTopic.length ? `<section class="related-projects">
+      <div class="section-heading"><h2>Related work at the same institution</h2></div>
+      ${projectCards(catalog, related.sameTopic)}
+    </section>` : ""}
+    <p class="project-report">${contactLink("Report a correction or request removal", project)}</p>
   </article>`;
 }
 
-function empty(view: DirectoryView): string {
-  const message = view.kind === 'removed' ? 'This project is no longer listed.'
-    : view.kind === 'unavailable' ? 'The directory is temporarily unavailable.' : 'We could not find this project.';
-  return `<div class="frame page message-page">
-    <h1>${escapeHtml(view.title)}</h1>
-    <p>${message}</p>
-    <a class="button secondary" href="${resultsPath}">Browse projects</a>
-  </div>`;
+function methodology() {
+  const places = (state: "PA" | "NJ") => counties.filter(county => county.state === state)
+    .map(county => `<a href="/discover/county/${county.name.toLowerCase()}">${county.name}</a>`).join(", ");
+  return `<article class="frame page prose-page">
+    <nav class="breadcrumb" aria-label="Directory breadcrumb"><a href="${browsePath}">All projects</a></nav>
+    <h1>Directory methodology</h1>
+    <p class="prose-intro">The Valley Desk indexes public GitHub repositories building health technology, biomedical or life sciences software with a documented Delaware Valley connection.</p>
+    <section>
+      <h2>What gets listed</h2>
+      <p>A repository must contain its own work and have a plausible health, biomedical or life sciences purpose described in the repository or a linked source. A roster, an institution’s page or a releasing paper with a regional affiliation must connect the project to the region.</p>
+      <p>Empty repositories, coursework, personal configuration, unmodified forks and general-purpose mirrors are excluded.</p>
+    </section>
+    <section id="regional-evidence">
+      <h2>Regional evidence</h2>
+      <dl class="definition-list">
+        <div id="verified"><dt>Verified</dt><dd>${labelDefinitions.Verified}</dd></div>
+        <div id="listed"><dt>Listed</dt><dd>${labelDefinitions.Listed}</dd></div>
+      </dl>
+      <p>A label describes the evidence for the regional connection. Follow the project’s regional source for the specific claim. Placement in the directory does not establish ownership, employment, a worksite or clinical validation.</p>
+    </section>
+    <section>
+      <h2>Regional and repository coverage</h2>
+      <p><strong>Pennsylvania</strong> ${places("PA")}.</p>
+      <p><strong>New Jersey</strong> ${places("NJ")}.</p>
+      <p>County counts include projects with a source-supported county. Activity uses the last code push when captured, or the GitHub repository update date otherwise. Repository update dates can reflect changes besides code. Missing language, license, paper and county fields are omitted from project summaries.</p>
+    </section>
+    <section>
+      <h2>Corrections, removals and submissions</h2>
+      <p>${contactLink("Email the directory team")} with the GitHub URL and, for a correction or submission, a source for the regional connection. For a removal request, include the project URL or directory ID and the reason for the request.</p>
+    </section>
+    <section id="data">
+      <h2>Machine-readable directory</h2>
+      <p><a href="${apiPath}">Download the project catalog as JSON</a>. It returns a <code>projects</code> array. Use <code>${apiPath}/{id}</code> for a single <code>project</code> by GitHub repository ID.</p>
+      <p>Both support GET and HEAD. Removed projects are excluded from the catalog and return HTTP 410 at their own URL. The endpoints return HTTP 503 when removal records are unavailable.</p>
+      <p><a href="/sitemap.xml">Sitemap</a> · <a href="/llms.txt">llms.txt</a></p>
+    </section>
+  </article>`;
 }
 
-export function renderDirectoryPage(view: DirectoryView): string {
+const messages = {
+  "removed": ["Project removed", "This project is no longer listed in the directory."],
+  "not-found": ["Page not found", "The link may be old or mistyped. You can still search the directory."],
+  "unavailable": ["Directory temporarily unavailable", "Please try again in a few minutes."],
+} as const;
+
+function pageHead(view: DirectoryView, origin: string) {
+  const url = (path: string) => origin + path;
+  const basic = (title: string, summary: string, path?: string) => ({
+    title, description: summary, canonical: path, schema: undefined as Record<string, unknown> | undefined,
+  });
+  switch (view.kind) {
+    case "home":
+      return { ...basic("Health technology in the Delaware Valley", description, "/"),
+        schema: { "@type": "WebSite", name: siteName, url: url("/"), description } };
+    case "results": {
+      const head = resultsHead(view.data);
+      return { ...head, schema: { "@type": "CollectionPage", url: url(head.canonical), name: head.title, description: head.description } };
+    }
+    case "project": {
+      const { project } = view;
+      const path = projectPath(project);
+      const repo = httpsUrl(project.code);
+      const homepage = httpsUrl(project.homepage);
+      const license = httpsUrl(project.license);
+      const citations = projectPapers(project).flatMap(paper => paperUrl(paper) ?? []);
+      return { ...basic(project.name, project.purpose, path), schema: {
+        "@type": "SoftwareSourceCode", name: project.name, description: project.purpose, url: url(path),
+        ...(repo ? { codeRepository: repo } : {}), ...(homepage ? { sameAs: homepage } : {}),
+        programmingLanguage: project.language || undefined, license,
+        dateModified: project.updated || project.pushed || undefined, dateCreated: project.created || undefined,
+        citation: citations.length ? citations : undefined,
+      } };
+    }
+    case "methodology": {
+      const head = basic("Directory methodology", "How projects are selected, what regional evidence means and how to request a correction or removal.", methodPath);
+      return { ...head, schema: { "@type": "AboutPage", name: head.title, url: url(methodPath), description: head.description } };
+    }
+    default: return basic(messages[view.kind][0], messages[view.kind][1]);
+  }
+}
+
+function jsonLd(schema: Record<string, unknown> | undefined, nonce?: string) {
+  if (!schema) return "";
+  const safe = JSON.stringify({ "@context": "https://schema.org", ...schema }).replaceAll("<", "\\u003c")
+    .replaceAll(">", "\\u003e").replaceAll("&", "\\u0026");
+  return `<script id="directory-schema" type="application/ld+json"${nonce ? ` nonce="${html(nonce)}"` : ""}>${safe}</script>`;
+}
+
+export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatalog, origin: string, nonce?: string) {
   let content: string;
   switch (view.kind) {
-    case 'home': content = home(view); break;
-    case 'results': content = results(view); break;
-    case 'project': content = view.project ? detail(view.project) : empty(view); break;
-    default: content = empty(view);
+    case "home": content = renderDirectoryHome(catalog, view.data); break;
+    case "results": content = renderDirectoryResults(catalog, view.data); break;
+    case "project": content = projectDetail(catalog, view); break;
+    case "methodology": content = methodology(); break;
+    default: {
+      const [title, message] = messages[view.kind];
+      content = `<section class="frame page message-page"><h1>${title}</h1><p>${message}</p>
+        <a class="button primary" href="${browsePath}">Browse projects</a></section>`;
+    }
   }
-  const title = view.kind === 'home' ? 'The Valley Desk · Regional health-tech directory' : `${view.title} · The Valley Desk`;
+  const head = pageHead(view, origin);
+  const title = `${head.title} · ${siteName}`;
+  const canonical = head.canonical ? origin + head.canonical : undefined;
   return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Find health-tech projects across the nine-county Delaware Valley.">
-    <title>${escapeHtml(title)}</title>
+    <title>${html(title)}</title>
+    <meta name="description" content="${html(head.description)}">
+    ${canonical ? `<link rel="canonical" href="${html(canonical)}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="${siteName}">
+    <meta property="og:title" content="${html(title)}">
+    <meta property="og:description" content="${html(head.description)}">
+    <meta property="og:url" content="${html(canonical)}">
+    <meta property="og:image" content="${html(origin)}/directory-share.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="The Valley Desk, health technology in the Delaware Valley">` : '<meta name="robots" content="noindex">'}
+    ${jsonLd(head.schema, nonce)}
     <script src="/theme.js"></script>
     <script src="/directory-theme.js" defer></script>
+    ${view.kind === "results" || view.kind === "home" ? '<script src="/directory-search.js" defer></script>' : ""}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Serif:wght@400;500;600&amp;display=swap">
+    <link rel="stylesheet" href="/directory-chrome.css">
     <link rel="stylesheet" href="/directory.css">
   </head>
-  <body>
+  <body class="directory-site">
     ${header(view)}
     <main id="main" tabindex="-1">${content}</main>
     ${footer()}

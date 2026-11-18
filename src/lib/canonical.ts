@@ -85,13 +85,15 @@ export function robotsTxt(origin = publicOrigin()): string {
   ].join("\n");
 }
 
-export function llmsTxt(origin = publicOrigin()): string {
+export function llmsTxt(origin = publicOrigin(), directoryEnabled = true): string {
   return `# The Valley Desk
 
 > A public directory of health technology, biomedicine and life science software connected to the nine-county Delaware Valley.
 
 - [Projects](${origin}/discover/works): browse or search public GitHub repositories.
-- [Sitemap](${origin}/sitemap.xml)
+${directoryEnabled ? `- [Methodology](${origin}/discover/methodology): definitions, corrections, removal and coverage.
+- [Directory JSON](${origin}/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
+` : ""}- [Sitemap](${origin}/sitemap.xml)
 
 A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. Consult the linked sources for the scope of each connection.
 
