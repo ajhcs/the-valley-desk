@@ -15,4 +15,4 @@ Reviewed changes are keyed by decimal repository ID in `overrides.json`. Each it
 
 The build validates the candidate before replacing the public file. It compares the count with the existing output, or with the file supplied by `--baseline`. Use `--removals` to supply an available local removal snapshot as a JSON array of GitHub IDs. The build also passes its effective decline IDs. The standalone check can run in CI without inventory access and accepts `--baseline`, `--decline` and `--removals` when these inputs are available.
 
-During the launch audit, `--permit-launch-truncation` permits only the inherited purpose strings pinned by ID and SHA-256. An ordinary check rejects every truncated purpose. Remove the exception after reviewing those records. `--launch-format --output "$review/launch-reproduction.json"` emits the historical bytes for comparison in the private review directory.
+`--launch-format --output "$review/launch-reproduction.json"` emits the historical bytes for comparison in the private review directory.

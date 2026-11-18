@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { validate } from '../scripts/directory/validate.mjs';
@@ -9,11 +8,10 @@ const project = {
   purpose: 'Runs a medical image quality check.', topic: 'Medical imaging', label: 'Listed',
 };
 
-test('accepts the public projection, with exact launch-era truncations pending review', () => {
+test('accepts the public projection in one-record-per-line form', () => {
   const read = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
   const records = read('../src/content/public-directory-projects.json');
-  const inheritedPurposes = read('../scripts/directory/launch-truncation.json');
-  validate(records, { inheritedPurposes });
+  validate(records);
   const source = readFileSync(new URL('../src/content/public-directory-projects.json', import.meta.url), 'utf8');
   assert.equal(source.trimEnd().split('\n').length, records.length + 2);
 });
@@ -58,12 +56,4 @@ test('requires explicit acknowledgment for a drop greater than two percent', () 
   validate(records, { baselineCount: 100 });
   assert.throws(() => validate(records.slice(1), { baselineCount: 100 }), /acknowledge-drop/);
   validate(records.slice(1), { baselineCount: 100, acknowledgeDrop: true });
-});
-
-test('the temporary launch exception is limited to a pinned ID and exact original purpose', () => {
-  const row = { ...project, purpose: 'Inherited incomplete text…' };
-  const inheritedPurposes = { [row.id]: createHash('sha256').update(row.purpose).digest('hex') };
-  assert.throws(() => validate([row]), /truncation mark/);
-  validate([row], { inheritedPurposes });
-  assert.throws(() => validate([{ ...row, purpose: 'Different incomplete text…' }], { inheritedPurposes }), /truncation mark/);
 });

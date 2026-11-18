@@ -187,7 +187,6 @@ def main():
     parser.add_argument('--baseline', type=Path)
     parser.add_argument('--added', default='2026-11-18')
     parser.add_argument('--acknowledge-drop', action='store_true')
-    parser.add_argument('--permit-launch-truncation', action='store_true')
     parser.add_argument('--launch-format', action='store_true', help='Reproduce the historical launch in the review directory')
     args = parser.parse_args()
     if args.review_dir.resolve().is_relative_to(HERE.parent.parent.resolve()) or args.review_dir.stat().st_mode & 0o077:
@@ -215,8 +214,6 @@ def main():
             command.extend(['--removals', str(path)])
         if args.acknowledge_drop:
             command.append('--acknowledge-drop')
-        if args.permit_launch_truncation:
-            command.append('--permit-launch-truncation')
         subprocess.run(command, check=True)
     atomic_write(args.output, content)
     print(f'Wrote {len(rows)} public directory projects to {args.output}')

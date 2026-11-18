@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 import { pathToFileURL } from 'node:url';
@@ -28,7 +27,7 @@ function validDate(value) {
 }
 
 export function validate(records, {
-  blocked = new Set(), baselineCount, acknowledgeDrop = false, inheritedPurposes = {},
+  blocked = new Set(), baselineCount, acknowledgeDrop = false,
 } = {}) {
   if (!Array.isArray(records) || !records.length) throw new Error('Expected a nonempty array of public projects');
   if (baselineCount !== undefined && records.length * 100 < baselineCount * 98 && !acknowledgeDrop) {
@@ -53,10 +52,7 @@ export function validate(records, {
     codes.add(code);
     if (blocked.has(id)) report('declined or removed repository');
     if (record.label === 'Verified' && !record.source) report('Verified requires source');
-    if (truncation.test(record.purpose)) {
-      const digest = createHash('sha256').update(record.purpose).digest('hex');
-      if (inheritedPurposes[id] !== digest) report('purpose ends in a truncation mark');
-    }
+    if (truncation.test(record.purpose)) report('purpose ends in a truncation mark');
     for (const field of ['code', 'source', 'paper', 'homepage']) {
       if (record[field] != null && !httpsURL(record[field])) report(`${field} must be a credential-free HTTPS URL`);
     }
@@ -97,16 +93,12 @@ function main() {
     decline: { type: 'string', multiple: true, default: [] },
     removals: { type: 'string', multiple: true, default: [] },
     'acknowledge-drop': { type: 'boolean' },
-    'permit-launch-truncation': { type: 'boolean' },
   } });
   const rows = readJSON(values.file ?? projectURL);
   validate(rows, {
     blocked: blockedIds([...values.decline, ...values.removals]),
     baselineCount: values.baseline ? readJSON(values.baseline).length : undefined,
     acknowledgeDrop: values['acknowledge-drop'],
-    inheritedPurposes: values['permit-launch-truncation']
-      ? readJSON(new URL('launch-truncation.json', import.meta.url))
-      : {},
   });
   console.log(`Validated ${rows.length} public directory projects`);
 }

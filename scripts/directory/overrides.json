@@ -1324,7 +1324,8 @@
   ],
   "116977326": [
     {"field": "stars", "value": 0, "source": "https://github.com/PrincetonUniversity/GeneralPurposeSOS", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/GeneralPurposeSOS", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/GeneralPurposeSOS", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "purpose", "value": "LabVIEW software that controls an optical microscope for time-dependent spectroscopy of single molecules and nanoparticles.", "source": "https://github.com/PrincetonUniversity/GeneralPurposeSOS/blob/master/readme.txt", "date": "2026-11-18", "author": "adjudicate_trunc"}
   ],
   "117607742": [
     {"field": "stars", "value": 0, "source": "https://github.com/bvoight/sim_sc_ATAC-Seq", "date": "2026-11-18", "author": "refresh_b2"},
@@ -8655,7 +8656,8 @@
   ],
   "1166808974": [
     {"field": "stars", "value": 0, "source": "https://github.com/Mlamichhane1/health-outcomes-analysis", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/Mlamichhane1/health-outcomes-analysis", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/Mlamichhane1/health-outcomes-analysis", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "purpose", "value": "Python and SQL code for exploring how household income relates to life expectancy and mortality across U.S. counties using CDC and Census data.", "source": "https://github.com/Mlamichhane1/health-outcomes-analysis/blob/main/README.md", "date": "2026-11-18", "author": "adjudicate_trunc"}
   ],
   "1166933508": [
     {"field": "stars", "value": 0, "source": "https://github.com/jcalendo/chip-methylation-abm", "date": "2026-11-18", "author": "refresh_b2"},
