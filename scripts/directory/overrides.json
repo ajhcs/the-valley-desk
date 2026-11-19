@@ -1321,7 +1321,8 @@
   ],
   "67243569": [
     {"field": "stars", "value": 0, "source": "https://github.com/dmiller15/stranger-project", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/dmiller15/stranger-project", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/dmiller15/stranger-project", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "purpose", "value": "Documents how to work with Cancer Genome Atlas data in the Bionimbus Protected Data Cloud.", "source": "https://github.com/dmiller15/stranger-project/blob/master/README.md", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "67553079": [
     {"field": "stars", "value": 32, "source": "https://github.com/Xinglab/CLAM", "date": "2026-11-18", "author": "refresh_b2"},
@@ -6442,7 +6443,8 @@
   ],
   "381459306": [
     {"field": "stars", "value": 7, "source": "https://github.com/PrincetonUniversity/neuron-graph", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/neuron-graph", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/neuron-graph", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "purpose", "value": "Provides an interactive map of functional neural connectivity measured in C. elegans.", "source": "https://github.com/PrincetonUniversity/neuron-graph/blob/main/README.md", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "381707385": [
     {"field": "stars", "value": 0, "source": "https://github.com/wuv21/epiVIA", "date": "2026-11-18", "author": "refresh_b2"},
@@ -7128,7 +7130,8 @@
   ],
   "444259098": [
     {"field": "stars", "value": 0, "source": "https://github.com/bjklab/philly-holiday-covid-R_t", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/bjklab/philly-holiday-covid-R_t", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/bjklab/philly-holiday-covid-R_t", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "purpose", "value": "Analyzes how holiday reporting backfill affected estimates of Philadelphia’s COVID-19 reproduction number.", "source": "https://github.com/bjklab/philly-holiday-covid-R_t/blob/main/README.md", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "444920145": [
     {"field": "stars", "value": 2, "source": "https://github.com/penn-cnt/Extracting-Clinical-Information-From-Epilepsy-Clinic-Notes", "date": "2026-11-18", "author": "refresh_b2"},
@@ -10513,7 +10516,8 @@
   "816945471": [
     {"field": "stars", "value": 0, "source": "https://github.com/LynchLabFCCC/DuBois-et-al.-PLOS-ONE-code", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/LynchLabFCCC/DuBois-et-al.-PLOS-ONE-code", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "purpose", "value": "This repository generates and visualizes neighborhood adherence scores for cancer prevention guidelines in Philadelphia.", "source": "https://github.com/LynchLabFCCC/DuBois-et-al.-PLOS-ONE-code/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-01"}
+    {"field": "purpose", "value": "This repository generates and visualizes neighborhood adherence scores for cancer prevention guidelines in Philadelphia.", "source": "https://github.com/LynchLabFCCC/DuBois-et-al.-PLOS-ONE-code/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-01"},
+    {"field": "source", "value": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0313334", "source": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0313334", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "817076999": [
     {"field": "record", "value": {"id": "817076999", "code": "https://github.com/emlalonde/MethylSigUM", "name": "MethylSigUM", "purpose": "Computes a DNA methylation-based research signature for prognostic stratification in uveal melanoma.", "topic": "Disease research", "label": "Verified", "connection": "The University of Pennsylvania release paper links the exact repository.", "institution": "University of Pennsylvania", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11312132/", "added": "2026-11-18"}, "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11312132/", "date": "2026-11-19", "author": "f_category_01_10"}
