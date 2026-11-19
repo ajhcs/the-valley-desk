@@ -504,3 +504,17 @@ input, select { accent-color: var(--accent); }
 @media (max-width: 53rem), (pointer: coarse) {
   .card-topic a, .card-place a { min-width: 44px; min-height: 44px; }
 }
+
+.monitor-callout,.research-filters { display:flex; flex-wrap:wrap; gap:1rem; align-items:center; }
+.monitor-callout { justify-content:space-between; border-block:1px solid var(--line); padding:1.5rem 0; }
+.monitor-callout h2,.monitor-callout p { margin:.25rem 0; }
+.research-form { padding:1.25rem; background:var(--surface); border:1px solid var(--line); }
+.research-filters { margin-top:1rem; align-items:end; }
+.research-filters label { display:grid; gap:.25rem; max-width:100%; }
+.research-filters select { min-height:44px; max-width:19rem; width:100%; color:var(--text); background:var(--paper); }
+.research-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr)); gap:1rem; }
+.research-grid .project-grid { display:contents; }
+.paper-card { border-top:3px solid var(--accent); }
+.research-grid article,.project-intro { overflow-wrap:anywhere; }
+.directory-chrome .desk-primary { display:flex; flex-wrap:wrap; gap:.6rem; }
+@media(max-width:34rem){.research-filters label {width:100%;}}

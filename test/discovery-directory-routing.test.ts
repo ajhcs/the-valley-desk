@@ -1,3 +1,4 @@
+import "./public-directory-research.test";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../worker.js';
@@ -274,9 +275,10 @@ test('Worker sitemap, JSON and fragments apply the same fresh removal set and fa
     assert.equal(head.status, 200);
     assert.equal(await head.text(), '');
   }
-  const sitemap = await (await get('/sitemap.xml')).text();
+  assert.match(await (await get('/sitemap.xml')).text(), /<sitemapindex/);
+  const sitemap = await (await get('/discover/sitemap/directory.xml')).text();
   for (const url of ['/discover/works', '/discover/work/617168725', '/discover/county/bucks', '/discover/lab/wglab',
-    '/discover/topic/neuroscience', '/discover/institution/drexel-university', '/discover/methodology']) {
+    '/discover/topic/neuroscience', '/discover/institution/drexel-university', '/discover/methodology', '/discover/new']) {
     assert.ok(sitemap.includes(`<loc>${publicOrigin}${url}</loc>`), url);
   }
   assert.doesNotMatch(sitemap, /\/discover\/works\?/);

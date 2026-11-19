@@ -56,7 +56,7 @@ export function regionalLabel(project: DirectoryProject) {
 
 export function searchInput(query = "") {
   return `<div class="search-box">
-    <label class="sr-only" for="directory-search">Search projects</label>
+    <label class="sr-only" for="directory-search">Search research listings</label>
     <svg class="search-icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
     <input type="search" id="directory-search" name="q" value="${html(query)}" placeholder="Search the directory" maxlength="200">
     <button class="button primary" type="submit">Search</button>
@@ -83,7 +83,7 @@ export function projectCards(
     const dateLabel = dateField === "added" ? "Added" : lastActivity(project) === project.pushed ? "Pushed" : "Updated";
     return `<article class="project-card">
       <div class="card-lead">
-        ${variant === "cards" ? `<div class="card-topic">${topic}</div>` : ""}
+        ${variant === "cards" ? `<div class="card-topic">Project · ${topic}</div>` : ""}
         <h3><a href="${html(projectPath(project))}">${html(project.name)}</a></h3>
         ${place ? `<p class="card-place">${place}</p>` : ""}
       </div>

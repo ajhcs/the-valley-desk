@@ -1,10 +1,12 @@
 # The Valley Desk
 
-The Valley Desk is a public directory of health technology, biomedicine and life science work connected to the nine-county Delaware Valley region. Search from the homepage or browse by institution, topic or county. Projects link to their repositories and, where available, their papers.
+Find and follow healthcare research connected to the nine-county Delaware Valley. Each listing identifies the source of its regional connection. Search the directory by institution, county or topic, or follow additions by the date they entered the directory.
 
-The directory reads the public listing projection in `src/content/public-directory-projects.json` and follows the [listing rule](AGENTS.md). News, Events, Policy Watch and Technology Watch have separate pages and editorial rules.
+The public site is server-rendered by the Cloudflare Worker. Projects come from the reviewed repository projection. The publications index uses D1 and is gated by `PUBLICATIONS_PUBLIC_ENABLED`. Keep it disabled until a reviewed import has been checked. See [the listing rule](AGENTS.md), [research directory design and verification](ops/research-directory.md), and [production import instructions](ops/research-rollout.md).
 
-On the existing Worker, `DIRECTORY_PUBLIC_ENABLED=true` enables the directory homepage and listing routes. Apply [the removal table SQL](ops/directory-removals.sql) to the existing D1 database before enabling it. A trusted operator removes a project by inserting its GitHub repository ID into `public_directory_removals`. Directory reads include that table and fail closed if it cannot be read. Roll back the Worker version without restoring the database.
+## Historical editorial runtime
+
+The following sections describe the earlier editorial system and its operational tooling.
 
 Owner: Cole Lyons (co-founder). Engineering: Knox. Product: Reed. Brand: Mira. CEO: Vale.
 

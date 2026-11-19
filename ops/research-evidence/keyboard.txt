@@ -1,0 +1,3 @@
+390 [ 'Search', 'kind', 'institution', 'topic', 'county', 'Apply filters' ] http://localhost:8986/discover/new?q=&kind=publication&institution=fixture-institute&topic=&county=
+768 [ 'Search', 'kind', 'institution', 'topic', 'county', 'Apply filters' ] http://localhost:8986/discover/new?q=&kind=publication&institution=fixture-institute&topic=&county=
+1440 [ 'Search', 'kind', 'institution', 'topic', 'county', 'Apply filters' ] http://localhost:8986/discover/new?q=&kind=publication&institution=fixture-institute&topic=&county=

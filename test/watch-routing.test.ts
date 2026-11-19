@@ -129,7 +129,7 @@ test("retired editorial pages and machine reads return 410 before feature flags,
         else {
           assert.ok(html.includes(`<h1>${section} is retired</h1>`), path);
           assert.match(html, /<meta name="robots" content="noindex"/);
-          assert.match(html, /href="\/discover\/works"[^>]*>Browse projects<\/a>/);
+          assert.match(html, /href="\/discover\/works"[^>]*>Browse research<\/a>/);
           assert.doesNotMatch(html, /rel="alternate"|__VALLEY_DESK_DYNAMIC_ITEMS__/);
         }
       }

@@ -1,8 +1,11 @@
 # The Valley Desk
 
-> A public directory of health technology, biomedicine and life science software connected to the nine-county Delaware Valley.
+> Find and follow healthcare research connected to the nine-county Delaware Valley.
 
-- [Projects](https://thevalleydesk.org/discover/works): browse or search public GitHub repositories.
+- [Research directory](https://thevalleydesk.org/discover/works): search regional listings.
+- [New listings](https://thevalleydesk.org/discover/new): ordered by directory addition date.
+- [Listings JSON](https://thevalleydesk.org/api/directory/listings): paginated research additions with the same filters as the feed.
+- [RSS](https://thevalleydesk.org/discover/updates.xml): filter by institution, topic, county or kind.
 - [Methodology](https://thevalleydesk.org/discover/methodology): definitions, corrections, removal and coverage.
 - [Directory JSON](https://thevalleydesk.org/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
 - [Sitemap](https://thevalleydesk.org/sitemap.xml)
