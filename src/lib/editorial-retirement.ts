@@ -1,10 +1,10 @@
 const sections = [
-  ["/voices", "Voices"],
-  ["/lab", "Lab previews"],
   ["/news", "News"],
   ["/events", "Events"],
   ["/policy-watch", "Policy Watch"],
   ["/technology-watch", "Technology Watch"],
+  ["/voices", "Voices"],
+  ["/lab", "Lab previews"],
 ] as const;
 
 export type RetiredEditorialSection = typeof sections[number][1];

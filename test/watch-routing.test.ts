@@ -105,9 +105,11 @@ test("Watch page routes use literal canonical slugs and only their shared query 
 test("retired editorial pages and machine reads return 410 before feature flags, assets, or D1", async () => {
   const pages = [
     ["/news", "News"], ["/news/old-story?source=archive", "News"], ["/new%73%2Fold-story", "News"],
-    ["/voices", "Voices"], ["/lab/briefing", "Lab previews"], ["/events/", "Events"], ["/events/old-event", "Events"],
+    ["/events/", "Events"], ["/events/old-event", "Events"],
     ["/policy-watch", "Policy Watch"], ["/policy-watch/updates?limit=bad", "Policy Watch"],
     ["/technology-watch", "Technology Watch"], ["/technology-watch/old-profile/extra", "Technology Watch"],
+    ["/voices", "Voices"], ["/voices/old-statement?from=archive", "Voices"], ["/voic%65s/", "Voices"],
+    ["/lab", "Lab previews"], ["/lab/briefing", "Lab previews"], ["/lab/calendar/", "Lab previews"],
   ];
   const machine = ["/feed.json", "/feed.xml", "/f%65ed.json", "/api/content?kind=voice", "/events.ics",
     "/api/v2/watch", "/api/v2/watch/policy", "/api/v2/watch/technology/old-profile", "/api/v2/watch/policy/updates",
