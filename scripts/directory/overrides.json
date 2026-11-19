@@ -902,6 +902,9 @@
     {"field": "stars", "value": 3, "source": "https://github.com/chop-dbhi/grin_pipeline", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/chop-dbhi/grin_pipeline", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "81124665": [
+    {"field": "record", "value": {"id": "81124665", "code": "https://github.com/raphael-group/hierarchical-hotnet", "name": "hierarchical-hotnet", "purpose": "Finds hierarchies of altered subnetworks in biological interaction networks for applications such as cancer mutation analysis.", "topic": "Disease research", "label": "Verified", "institution": "Princeton University", "connection": "The releasing paper links the repository and lists a Princeton University affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6129270/", "paper": "https://doi.org/10.1093/bioinformatics/bty613", "added": "2026-11-18"}, "source": "https://github.com/raphael-group/hierarchical-hotnet/blob/master/README.md", "date": "2026-11-17", "author": "f_corroborated_001"}
+  ],
   "81233271": [
     {"field": "stars", "value": 3, "source": "https://github.com/DamLabResources/hiv-crispr-review", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/DamLabResources/hiv-crispr-review", "date": "2026-11-18", "author": "refresh_b2"}
@@ -3982,6 +3985,9 @@
     {"field": "topics", "value": [], "source": "https://github.com/maccalvert/Clines3_code", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "R code analyzes genomic data for a study of the evolution of diapause in Rhagoletis flies.", "source": "https://github.com/maccalvert/Clines3_code/blob/main/README.md", "date": "2026-11-18", "author": "audit_a-05"}
   ],
+  "372262152": [
+    {"field": "record", "value": {"id": "372262152", "code": "https://github.com/zhou-lab/ImprintingAnno", "name": "ImprintingAnno", "purpose": "Annotates 151 mouse array probes associated with 13 previously reported imprinting control regions.", "topic": "Biomedical and life sciences", "label": "Listed", "institution": "Children’s Hospital of Philadelphia", "connection": "The Philadelphia-based Zhou Lab links the group account.", "source": "https://zhou-lab.github.io/index.html", "added": "2026-11-18"}, "source": "https://github.com/zhou-lab/ImprintingAnno/blob/master/README.md", "date": "2026-11-17", "author": "f_corroborated_001"}
+  ],
   "372372524": [
     {"field": "stars", "value": 13, "source": "https://github.com/karanicolaslab/combichem", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": ["drug-discovery", "fbdd", "kinase-inhibitors"], "source": "https://github.com/karanicolaslab/combichem", "date": "2026-11-18", "author": "refresh_b2"}
@@ -4521,6 +4527,9 @@
   "446956458": [
     {"field": "stars", "value": 0, "source": "https://github.com/veg/superseal", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/veg/superseal", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "446970025": [
+    {"field": "record", "value": {"id": "446970025", "code": "https://github.com/tgbrooks/BEERS2_salmon_benchmark", "name": "BEERS2_salmon_benchmark", "purpose": "Uses simulated RNA sequencing data to benchmark how Salmon’s bias corrections affect transcript quantification.", "topic": "Biomedical and life sciences", "label": "Verified", "institution": "University of Pennsylvania", "connection": "The releasing paper links this benchmark and reports University of Pennsylvania affiliations.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11009461/", "paper": "https://doi.org/10.1093/bib/bbae164", "added": "2026-11-18"}, "source": "https://github.com/tgbrooks/BEERS2_salmon_benchmark/blob/main/README.md", "date": "2026-11-18", "author": "f_corroborated_001"}
   ],
   "447717781": [
     {"field": "stars", "value": 0, "source": "https://github.com/veg/omicron-selection", "date": "2026-11-18", "author": "refresh_b2"},
@@ -5136,6 +5145,9 @@
   "538899663": [
     {"field": "stars", "value": 23, "source": "https://github.com/ZxZhou4150/Redeconve", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/ZxZhou4150/Redeconve", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "538994476": [
+    {"field": "record", "value": {"id": "538994476", "code": "https://github.com/d3b-center/d3b-cds-manifest-prep", "name": "d3b-cds-manifest-prep", "purpose": "Generates and checks submission manifests from Kids First research data.", "topic": "Research data", "label": "Listed", "institution": "Children’s Hospital of Philadelphia", "connection": "The D³b Center’s public page links the account.", "source": "https://d3b.center/units/bixu/", "added": "2026-11-18"}, "source": "https://github.com/d3b-center/d3b-cds-manifest-prep/blob/main/README.md", "date": "2026-11-18", "author": "f_corroborated_001"}
   ],
   "539309254": [
     {"field": "stars", "value": 1, "source": "https://github.com/gandallab/brain_CTP_deconv", "date": "2026-11-18", "author": "refresh_b2"},
@@ -6252,6 +6264,9 @@
   "727401755": [
     {"field": "stars", "value": 14, "source": "https://github.com/Merck/AbLEF", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Merck/AbLEF", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "728284015": [
+    {"field": "record", "value": {"id": "728284015", "code": "https://github.com/d3b-center/d3b-dff-cli", "name": "d3b-dff-cli", "purpose": "Provides a command-line interface for validating genomic alignment files and research data manifests.", "topic": "Research data", "label": "Listed", "institution": "Children’s Hospital of Philadelphia", "connection": "The D³b Center’s public page links the account.", "source": "https://d3b.center/units/bixu/", "added": "2026-11-18"}, "source": "https://github.com/d3b-center/d3b-dff-cli/blob/master/README.md", "date": "2026-11-18", "author": "f_corroborated_001"}
   ],
   "728797554": [
     {"field": "stars", "value": 1, "source": "https://github.com/Andy-Ring/RNAseq-Tutorial", "date": "2026-11-18", "author": "refresh_b2"},
