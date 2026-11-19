@@ -96,7 +96,5 @@ ${directoryEnabled ? `- [Methodology](${origin}/discover/methodology): definitio
 ` : ""}- [Sitemap](${origin}/sitemap.xml)
 
 A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. Consult the linked sources for the scope of each connection.
-
-Legacy editorial feeds remain available as [JSON](${origin}/feed.json) and [XML](${origin}/feed.xml).
 `;
 }

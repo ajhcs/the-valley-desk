@@ -1,3 +1,4 @@
+import type { RetiredEditorialSection } from "../lib/editorial-retirement";
 import {
   activityCutoff, apiPath, browsePath, counties, githubAccount, httpsUrl, lastActivity, methodPath, paperUrl, projectPapers, projectPath,
   type DirectoryCatalog, type DirectoryProject,
@@ -14,6 +15,7 @@ export type DirectoryView =
   | { kind: "results"; data: ReturnType<DirectoryCatalog["list"]> }
   | { kind: "project"; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
   | { kind: "methodology" }
+  | { kind: "retired"; section: RetiredEditorialSection }
   | { kind: "removed" | "not-found" | "unavailable" };
 
 const siteName = "The Valley Desk";
@@ -43,8 +45,7 @@ function footer() {
     <div class="desk-frame desk-footer-inner">
       <a class="desk-footer-brand" href="/">The Valley Desk</a>
       <nav class="desk-footer-links" aria-label="Footer">
-        <a href="${browsePath}">Projects</a><a href="${methodPath}">Methodology</a><a href="mailto:leads@thevalleydesk.org">Leads</a>
-        <a href="/feed.json">feed.json</a><a href="/feed.xml">feed.xml</a>
+        <a href="${browsePath}">Projects</a><a href="${methodPath}">Methodology</a>
       </nav>
       <p class="desk-footer-copy">© thedeskgroup - <a href="https://ushso.org/">USHSO.org</a></p>
     </div>
@@ -172,6 +173,12 @@ const messages = {
   "unavailable": ["Directory temporarily unavailable", "Please try again in a few minutes."],
 } as const;
 
+function pageMessage(view: Extract<DirectoryView, { kind: "retired" | keyof typeof messages }>): readonly [string, string] {
+  return view.kind === "retired"
+    ? [`${view.section} is retired`, "Browse the project directory for regional health technology and research."]
+    : messages[view.kind];
+}
+
 function pageHead(view: DirectoryView, origin: string) {
   const url = (path: string) => origin + path;
   const basic = (title: string, summary: string, path?: string) => ({
@@ -204,7 +211,7 @@ function pageHead(view: DirectoryView, origin: string) {
       const head = basic("Directory methodology", "How projects are selected, what regional evidence means and how to request a correction or removal.", methodPath);
       return { ...head, schema: { "@type": "AboutPage", name: head.title, url: url(methodPath), description: head.description } };
     }
-    default: return basic(messages[view.kind][0], messages[view.kind][1]);
+    default: return basic(...pageMessage(view));
   }
 }
 
@@ -223,8 +230,8 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     case "project": content = projectDetail(catalog, view); break;
     case "methodology": content = methodology(); break;
     default: {
-      const [title, message] = messages[view.kind];
-      content = `<section class="frame page message-page"><h1>${title}</h1><p>${message}</p>
+      const [title, message] = pageMessage(view);
+      content = `<section class="frame page message-page"><h1>${html(title)}</h1><p>${html(message)}</p>
         <a class="button primary" href="${browsePath}">Browse projects</a></section>`;
     }
   }

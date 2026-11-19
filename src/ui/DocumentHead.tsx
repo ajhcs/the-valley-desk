@@ -10,7 +10,7 @@ import { watchHeadStore } from "./watch/watch-head-state";
 import { publicFeatures } from "../lib/public-features";
 
 const SITE = "The Valley Desk";
-const DEFAULT_DESC = "Local health-tech news for people and agents";
+const DEFAULT_DESC = "A public directory of health technology, biomedicine and life science software connected to the Delaware Valley.";
 
 function upsertMeta(attr: "name" | "property", key: string, content: string) {
   const sel = `meta[${attr}="${key}"]`;
@@ -23,13 +23,12 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
   el.setAttribute("content", content);
 }
 
-function upsertLink(rel: string, href: string, type?: string) {
-  const sel = type ? `link[rel="${rel}"][type="${type}"]` : `link[rel="${rel}"]:not([type])`;
+function upsertLink(rel: string, href: string) {
+  const sel = `link[rel="${rel}"]:not([type])`;
   let el = document.head.querySelector(sel);
   if (!el) {
     el = document.createElement("link");
     el.setAttribute("rel", rel);
-    if (type) el.setAttribute("type", type);
     document.head.appendChild(el);
   }
   el.setAttribute("href", href);
@@ -166,8 +165,6 @@ export function DocumentHead() {
     const prevPath = adjacent("prev"), nextPath = adjacent("next");
     upsertOrRemoveLink("prev", prevPath ? publicUrl(prevPath, origin) : undefined);
     upsertOrRemoveLink("next", nextPath ? publicUrl(nextPath, origin) : undefined);
-    upsertLink("alternate", publicUrl("/feed.xml", origin), "application/rss+xml");
-    upsertLink("alternate", publicUrl("/feed.json", origin), "application/json");
     if (policyBackgroundHidden) document.head.querySelectorAll('meta[property^="article:"],script[type="application/ld+json"]').forEach(el => el.remove());
   }, [pathname, searchStr, watchSnapshot]);
   return null;

@@ -268,7 +268,8 @@ test("generated machine documents advertise the canonical live domain", () => {
     assert.equal(/scrape|ingested from|rss adapter/i.test(document), false);
   }
   assert.ok(robots.includes(`Sitemap: ${origin}/sitemap.xml`));
-  assert.ok(llms.includes(`${origin}/feed.json`));
+  assert.ok(llms.includes(`${origin}/discover/works`));
+  assert.doesNotMatch(llms, /\/feed\.(?:json|xml)/);
 });
 
 test("www redirects permanently to the canonical apex without losing the request target", () => {

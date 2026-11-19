@@ -1,5 +1,6 @@
 import type { SitemapEntry } from "../content/sitemap";
 import { DEFAULT_PUBLIC_ORIGIN } from "../lib/canonical";
+import type { RetiredEditorialSection } from "../lib/editorial-retirement";
 import {
   apiPath, browsePath, createDirectoryCatalog, detailPrefix, directoryCatalog, entityPath, httpsUrl,
   lastActivity, methodPath, projectPath, publicProjectId, type DirectoryProject,
@@ -51,6 +52,12 @@ function decode(segment: string) {
 export function directoryNotFound(origin: string, nonce?: string, head = false) {
   return new Response(head ? null : renderDirectoryPage({ kind: "not-found" }, directoryCatalog, origin, nonce), {
     status: 404, headers: { ...htmlHeaders, "x-robots-tag": "noindex" },
+  });
+}
+
+export function retiredDirectoryPage(section: RetiredEditorialSection, origin: string, nonce: string, head: boolean) {
+  return new Response(head ? null : renderDirectoryPage({ kind: "retired", section }, directoryCatalog, origin, nonce), {
+    status: 410, headers: { ...htmlHeaders, "x-robots-tag": "noindex" },
   });
 }
 

@@ -2,6 +2,7 @@ import type { ContentItem, EventItem } from "../content/schema";
 import { mergePublishedOverlay } from "../content/merge";
 import { canonicalPath as itemCanonicalPath, publicOrigin } from "../lib/canonical";
 import { sitemapEntriesForFeed, sitemapUrlset, type SitemapEntry } from "../content/sitemap";
+import { retiredEditorialRoute } from "../lib/editorial-retirement";
 import { eventWhyCopy } from "../lib/eventCopy";
 import { toFeed, type FeedDocument } from "./feed-contract";
 import type { D1DatabaseLike } from "./persistence";
@@ -65,7 +66,9 @@ export function feedXml(feed: FeedDocument, origin = publicOrigin()) {
 }
 
 export function sitemapXml(feed: FeedDocument, origin = publicOrigin(), extra: readonly SitemapEntry[] = []) {
-  return sitemapUrlset([...extra, ...sitemapEntriesForFeed(feed.items, feed.generatedAt, origin)]);
+  const entries = sitemapEntriesForFeed(feed.items, feed.generatedAt, origin)
+    .filter(entry => !retiredEditorialRoute(new URL(entry.loc).pathname));
+  return sitemapUrlset([...extra, ...entries]);
 }
 
 export function runtimeItemsScript(

@@ -10,9 +10,6 @@ export function SiteFooter() {
         <nav className="SiteFooter-links desk-footer-links" aria-label="Footer">
           {discovery ? <><a href="/discover/works">Projects</a><a href="/discover/methodology">Methodology</a></> : null}
           {policyBackground ? <Link to="/policy">Policy background</Link> : null}
-          <a href="mailto:leads@thevalleydesk.org">Leads</a>
-          <a href="/feed.json">feed.json</a>
-          <a href="/feed.xml">feed.xml</a>
         </nav>
         <p className="SiteFooter-copy desk-footer-copy">
           © thedeskgroup - <a href="https://ushso.org/">USHSO.org</a>

@@ -1483,9 +1483,7 @@ test("homepage binds store queries and kit class names", () => {
   }
   assert.ok(footer.includes('href="/discover/works">Projects</a>'));
   assert.doesNotMatch(footer, /(?:to|href)="\/(?:news|events|policy-watch|technology-watch|voices)"/);
-  assert.ok(footer.includes("feed.json"));
-  assert.ok(footer.includes("feed.xml"));
-  assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
+  assert.doesNotMatch(footer, /feed\.(?:json|xml)|>Leads</);
   assert.ok(footer.includes("© thedeskgroup -"));
   assert.ok(footer.includes('href="https://ushso.org/"'));
   assert.ok(!footer.toLowerCase().includes("subscribe"));
@@ -1958,7 +1956,7 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(crawler.includes("og:title"));
   assert.ok(crawler.includes("twitter:card"));
   assert.ok(crawler.includes("canonical"));
-  assert.ok(crawler.includes("application/rss+xml"));
+  assert.doesNotMatch(crawler, /application\/rss\+xml|\/feed\.json/);
   assert.ok(worker.includes("resolvePublicOrigin"));
   assert.ok(canonical.includes("DEFAULT_PUBLIC_ORIGIN"));
   assert.ok(canonical.includes("DEFAULT_PUBLIC_ORIGIN = PRODUCTION_ORIGIN"));
@@ -2471,7 +2469,7 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(!layout.includes("is-voices"));
   assert.ok(layout.includes('href="/discover/works">Projects</a>'));
   assert.doesNotMatch(layout, /(?:to|href)="\/(?:news|events|policy-watch|technology-watch|voices)"/);
-  assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
+  assert.doesNotMatch(footer, /mailto:leads@thevalleydesk\.org|>Leads</);
   assert.ok(footer.includes("© thedeskgroup -"));
   assert.ok(footer.includes(">USHSO.org<"));
   assert.ok(css.includes(".NavLink:focus-visible"));
@@ -5675,7 +5673,8 @@ test("public skip link, 404 recovery, URL wrap, and twice-daily edition are wire
   assert.ok(css.includes("overflow-wrap: anywhere"));
   const llms = readFileSync(join(root, "public/llms.txt"), "utf8");
   assert.match(llms, /^# The Valley Desk/m);
-  assert.ok(llms.includes("/feed.json"));
+  assert.ok(llms.includes("/discover/works"));
+  assert.doesNotMatch(llms, /\/feed\.(?:json|xml)/);
   assert.ok(css.includes('.Rail[data-rail="news"] h2 {\n  color: var(--admiral)'));
   assert.ok(css.includes(".OrgTick.is-help {\n  position: relative;\n  width: 24px;\n  height: 24px;"));
   assert.ok(facts.includes("ItemEntityLinks"));

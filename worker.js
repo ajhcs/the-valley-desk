@@ -32,6 +32,7 @@ import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts"
 import { decorateHtml, decorateWatchHtml, watchPrimaryNoscript } from "./src/lib/crawler-html.ts";
 import { isWatchPagePath, readWatchPage } from "./src/lib/watch-page.ts";
 import { publicFeaturesFromEnv } from "./src/lib/public-features.ts";
+import { decodedPublicPath, retiredEditorialRoute } from "./src/lib/editorial-retirement.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
 import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, interruptOperationalAlertRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
 import { conditionStateForSourceState, SOURCE_FRESHNESS_SLO_MS } from "./src/lib/operational-status.ts";
@@ -796,7 +797,8 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   if (isReviewApiPath(path)) {
     return handleReviewApi(request, env);
   }
-  if ((method === "GET" || method === "HEAD") && PUBLIC_MACHINE_PATHS.has(path)) {
+  const sitemapRequest = stripSlash(decodedPublicPath(path)) === "/sitemap.xml";
+  if ((method === "GET" || method === "HEAD") && (PUBLIC_MACHINE_PATHS.has(path) || sitemapRequest)) {
     if (path === "/robots.txt") {
       return new Response(robotsTxt(origin), {
         headers: { ...PUBLIC_HEADERS, "content-type": "text/plain; charset=utf-8" },
@@ -821,7 +823,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
         headers: { ...PUBLIC_HEADERS, "content-type": "application/rss+xml; charset=utf-8" },
       });
     }
-    if (path === "/sitemap.xml") {
+    if (sitemapRequest) {
       const headers = { ...PUBLIC_HEADERS, "content-type": "application/xml; charset=utf-8" };
       if (env.DIRECTORY_PUBLIC_ENABLED === "true") {
         headers["cache-control"] = "no-store";
@@ -884,7 +886,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
       origin,
       nonce,
       item: dynamicItem,
-      items: published,
+      items: path === "/lab" || path.startsWith("/lab/") ? published : published.filter(item => item.kind === "voice"),
       withdrawnIds: overlay.withdrawnIds,
       entities: loadEntities(),
       publicFeatures: publicFeaturesFromEnv(env),
@@ -979,7 +981,20 @@ export default {
   async fetch(request, env, ctx) {
     const origin = resolvePublicOrigin(env.PUBLIC_ORIGIN);
     const nonce = crypto.randomUUID();
-    const response = canonicalHostRedirect(request, origin) ?? await handleFetch(request, env, origin, nonce, ctx);
+    const retired = retiredEditorialRoute(new URL(request.url).pathname);
+    const head = request.method.toUpperCase() === "HEAD";
+    let response;
+    if (retired?.kind === "page") {
+      const { retiredDirectoryPage } = await import("./src/ingest/public-directory.ts");
+      response = retiredDirectoryPage(retired.section, origin, nonce, head);
+    } else if (retired?.kind === "data") {
+      response = new Response(head ? null : JSON.stringify({ error: "retired" }), {
+        status: 410,
+        headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "cdn-cache-control": "no-store", "x-robots-tag": "noindex" },
+      });
+    } else {
+      response = canonicalHostRedirect(request, origin) ?? await handleFetch(request, env, origin, nonce, ctx);
+    }
     const contentType = response.headers.get("content-type") || "";
     const html = contentType.includes("text/html");
     const secured = applySecurityHeaders(response, {
@@ -988,7 +1003,7 @@ export default {
       html,
       nonce: html ? nonce : undefined,
     });
-    if (request.method.toUpperCase() === "HEAD") return asHeadResponse(secured);
+    if (head) return asHeadResponse(secured);
     return secured;
   },
 };
