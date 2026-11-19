@@ -460,6 +460,58 @@
     "contextSentence": "CMS’s Jan. 17, 2024 fact sheet gives impacted payers until Jan. 1, 2027 for the FHIR APIs; HAP’s June 10, 2025 letter asks CMS to enforce that rule."
   },
   {
+    "id": "news-penn-chop-christianacare-qgenda-quicklinks-2026-08-31",
+    "slug": "penn-chop-christianacare-qgenda-quicklinks-2026-08-31",
+    "kind": "news",
+    "title": "QGenda QuickLinks showed on-call schedules and clinician cell numbers at Penn, CHOP, and ChristianaCare",
+    "dek": "The Inquirer, Aug. 31, 2026, reported public QGenda landing pages for those three systems and nearly 50 hospitals nationally. No patient PHI. Philly systems pulled the links in late August after the paper alerted them.",
+    "body": "The Philadelphia Inquirer, Aug. 31, 2026, 1:27 p.m. ET (Abraham Gutman, Sarah Gantz), reported that QGenda QuickLinks publicly displayed months of on-call schedules and cell phone numbers for thousands of workers at Penn Medicine, Children’s Hospital of Philadelphia, ChristianaCare, and nearly 50 health systems or hospitals nationwide, including Veterans Affairs hospitals. The paper said the pages were not in Google search results but could be retrieved with AI tools, including OpenAI’s Codex. It said QGenda, an Atlanta-based Hearst-owned workforce vendor, did not respond to comment requests.\n\nQGenda’s own site advertises QuickLinks so “any staff member without a QGenda account” can bookmark a live provider schedule, and separately says landing pages can be IP-restricted so only devices on a practice’s secure network can see public-facing schedule data.\n\nThe Inquirer said Philly-area systems took the pages down in late August after it alerted them. A ChristianaCare spokesperson said the system recently became aware the pages were public, immediately worked with QGenda to eliminate the vulnerability, and was not aware of any impact to caregivers, clinicians, patient care, or operations. CHOP told staff last week it was updating access to QGenda on-call displays “out of an abundance of caution”; a CHOP spokesperson said the platform does not contain patient information. Penn said it uses QGenda for care-team communication and is adding controls. Penn and CHOP did not answer whether they knew the links were reachable without a login. Other Philadelphia-area systems did not appear to have public links.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-08-31T17:27:00.000Z",
+    "updatedAt": "2026-08-31T21:55:00.000Z",
+    "topics": [
+      "cyber",
+      "identity",
+      "workforce"
+    ],
+    "orgs": [
+      "org-penn",
+      "org-chop",
+      "org-christianacare"
+    ],
+    "region": "regional",
+    "authors": [
+      {
+        "name": "Valley Desk"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "newsroom",
+      "url": "https://www.inquirer.com/health/qgenda-schedule-privacy-links-cell-numbers-20260831.html"
+    },
+    "relatedEventIds": [],
+    "relatedVoiceIds": [],
+    "impactSentence": "Penn, CHOP, and ChristianaCare pulled public QGenda QuickLinks in late August after the Inquirer showed they displayed on-call schedules and clinician cell numbers without a login; CHOP said the platform holds no patient information.",
+    "contextSentence": "QGenda documents QuickLinks for unauthenticated staff and an optional IP restriction on public landing pages.",
+    "citations": [
+      {
+        "name": "Inquirer Aug. 31, 2026",
+        "url": "https://www.inquirer.com/health/qgenda-schedule-privacy-links-cell-numbers-20260831.html"
+      },
+      {
+        "name": "QGenda QuickLinks",
+        "url": "https://www.qgenda.com/blog/distribution-hospital-wide-call-schedules-physician-schedules/"
+      },
+      {
+        "name": "QGenda landing-page IP restrictions",
+        "url": "https://www.qgenda.com/blog/considering-data-security-in-selecting-software-for-your-practice/"
+      }
+    ],
+    "geo": "Delaware Valley"
+  },
+  {
     "id": "voice-mlh-cloud-analytics",
     "slug": "mlh-cloud-analytics-2026-08-17",
     "kind": "voice",
@@ -1938,6 +1990,190 @@
     "org": "ChristianaCare",
     "platform": "site",
     "impactSentence": "ChristianaCare’s CISO said home-based care moves more patient data into the cloud, expanding the security surface her team has to protect."
+  },
+  {
+    "id": "voice-christianacare-schwartz-ceo-2026-09-01",
+    "slug": "christianacare-schwartz-ceo-2026-09-01",
+    "kind": "voice",
+    "title": "Jenn Schwartz: ChristianaCare President and CEO as of Sept. 1",
+    "dek": "Official newsroom: Schwartz began as president and CEO Sept. 1, succeeding Janice E. Nevin, who retired. Most recently EVP and chief strategy officer. Joined 2018.",
+    "body": "ChristianaCare’s Sept. 1, 2026 newsroom says Jenn Schwartz began serving as president and CEO that day, succeeding Janice E. Nevin, M.D., MPH, who retired. The same page says the board announced Schwartz’s selection in April, that she joined in 2018, and that she most recently was executive vice president and chief strategy officer. The official people page prints President and Chief Executive Officer and says she assumed the role on September 1, 2026. Official LinkedIn the same day named her first official day.\n\nThe Sept. 1 newsroom’s figure for Nevin is nearly 25 years with the organization, including 12 years as president and CEO.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-09-01T16:00:00.000Z",
+    "updatedAt": "2026-09-01T16:00:00.000Z",
+    "topics": [
+      "leadership"
+    ],
+    "orgs": [
+      "org-christianacare"
+    ],
+    "region": "DE",
+    "authors": [
+      {
+        "name": "Jenn Schwartz",
+        "org": "org-christianacare"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "christianacare",
+      "url": "https://news.christianacare.org/2026/09/jenn-schwartz-begins-tenure-as-president-and-ceo-of-christianacare/"
+    },
+    "person": "Jenn Schwartz",
+    "role": "President and CEO",
+    "org": "ChristianaCare",
+    "platform": "site",
+    "originalUrl": "https://news.christianacare.org/2026/09/jenn-schwartz-begins-tenure-as-president-and-ceo-of-christianacare/",
+    "impactSentence": "Delaware’s largest system has a new CEO as of Sept. 1.",
+    "citations": [
+      {
+        "name": "ChristianaCare newsroom Sept. 1, 2026",
+        "url": "https://news.christianacare.org/2026/09/jenn-schwartz-begins-tenure-as-president-and-ceo-of-christianacare/"
+      },
+      {
+        "name": "ChristianaCare people page",
+        "url": "https://christianacare.org/us/en/people/jennifer-schwartz-esq"
+      },
+      {
+        "name": "Official LI wall pair",
+        "url": "https://www.linkedin.com/posts/christianacare_please-join-us-in-welcoming-jenn-schwartz-activity-7500583614657523712-xgKL"
+      }
+    ]
+  },
+  {
+    "id": "voice-chop-desai-mychart-equity-hospital-pediatrics-2026-09-03",
+    "slug": "chop-desai-mychart-equity-hospital-pediatrics-2026-09-03",
+    "kind": "voice",
+    "title": "Bimal Desai: MyChart equity among hospitalized children",
+    "dek": "Official LI share of Hospital Pediatrics work. Desai’s copy: more than 40,000 hospitalized children; 93% MyChart activation; disparities by race, insurance, language, and neighborhood opportunity.",
+    "body": "On Sept. 3, 2026, Bimal Desai, Vice President and Chief Health Informatics Officer at Children’s Hospital of Philadelphia, posted on his official LinkedIn that Hospital Pediatrics work from Michael Luke, Chris Bonafide, Philip Scribano, Kate Fuller, Aditi Vasan, and colleagues examined patient portal use among more than 40,000 hospitalized children. Desai wrote that even with 93% MyChart activation, children who were Black, publicly insured, from non-English households, or in lower-opportunity neighborhoods had lower odds of portal activation and use. Those figures are Desai’s copy on the post, not desk-audited.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-09-03T16:00:00.000Z",
+    "updatedAt": "2026-09-03T16:00:00.000Z",
+    "topics": [
+      "MyChart"
+    ],
+    "orgs": [
+      "org-chop"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Bimal Desai",
+        "org": "org-chop"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "linkedin",
+      "url": "https://www.linkedin.com/posts/bimaldesai_patient-portal-use-and-care-utilization-among-activity-7501294649068797953-_J-9"
+    },
+    "person": "Bimal Desai",
+    "role": "CHIO",
+    "org": "Children's Hospital of Philadelphia",
+    "platform": "linkedin",
+    "originalUrl": "https://www.linkedin.com/posts/bimaldesai_patient-portal-use-and-care-utilization-among-activity-7501294649068797953-_J-9",
+    "impactSentence": "CHOP’s CHIO put MyChart equity for hospitalized kids on the record.",
+    "citations": [
+      {
+        "name": "Desai LI",
+        "url": "https://www.linkedin.com/posts/bimaldesai_patient-portal-use-and-care-utilization-among-activity-7501294649068797953-_J-9"
+      }
+    ]
+  },
+  {
+    "id": "voice-chop-desai-nordic-designing-for-health-2026-09-03",
+    "slug": "chop-desai-nordic-designing-for-health-2026-09-03",
+    "kind": "voice",
+    "title": "Bimal Desai: Designing for Health on AI deskilling and never-skilling",
+    "dek": "Official LI share of Nordic Designing for Health interview with Craig Joseph on JAMA Viewpoint risks of deskilling and never-skilling.",
+    "body": "On Sept. 3, 2026, Desai posted that he spoke with Craig Joseph on Nordic’s Designing for Health podcast about how clinicians still learn to think if AI takes cognitive tasks. He pointed to the JAMA Viewpoint he authored with Ron Keren and Dan West on deskilling and never-skilling, and named commit-then-compare, AI as a clinical guardian angel, and AI-free learning environments. Destination episode: https://nordicglobal.com/resources/designing-for-health-interview-with-bimal-desai-md/",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-09-03T16:00:00.000Z",
+    "updatedAt": "2026-09-03T16:00:00.000Z",
+    "topics": [
+      "AI"
+    ],
+    "orgs": [
+      "org-chop"
+    ],
+    "region": "PA",
+    "authors": [
+      {
+        "name": "Bimal Desai",
+        "org": "org-chop"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "linkedin",
+      "url": "https://www.linkedin.com/posts/bimaldesai_designing-for-health-interview-with-bimal-activity-7501301681016459266-HJmR"
+    },
+    "person": "Bimal Desai",
+    "role": "CHIO",
+    "org": "Children's Hospital of Philadelphia",
+    "platform": "linkedin",
+    "originalUrl": "https://www.linkedin.com/posts/bimaldesai_designing-for-health-interview-with-bimal-activity-7501301681016459266-HJmR",
+    "impactSentence": "CHOP’s CHIO framed AI training risk for clinicians on an official post.",
+    "citations": [
+      {
+        "name": "Desai LI",
+        "url": "https://www.linkedin.com/posts/bimaldesai_designing-for-health-interview-with-bimal-activity-7501301681016459266-HJmR"
+      },
+      {
+        "name": "Nordic episode",
+        "url": "https://nordicglobal.com/resources/designing-for-health-interview-with-bimal-desai-md/"
+      }
+    ]
+  },
+  {
+    "id": "voice-bayhealth-murphy-dha-board-chair-2026-09-04",
+    "slug": "bayhealth-murphy-dha-board-chair-2026-09-04",
+    "kind": "voice",
+    "title": "Terry Murphy: Bayhealth CEO takes helm as DHA Board Chair",
+    "dek": "Official Delaware Healthcare Association LinkedIn: Terry Murphy, President & CEO of Bayhealth, has taken the helm as DHA Board Chair.",
+    "body": "On Sept. 4, 2026, the Delaware Healthcare Association’s official LinkedIn said Terry Murphy, President & CEO of Bayhealth, has taken the helm as DHA Board Chair. The post says he is committed to strengthening Delaware’s healthcare workforce and advancing innovative, high-quality, and affordable care for Delawareans. Paired official X the same day tags @BayhealthDE.",
+    "status": "published",
+    "featured": false,
+    "publishedAt": "2026-09-04T16:00:00.000Z",
+    "updatedAt": "2026-09-04T16:00:00.000Z",
+    "topics": [
+      "leadership"
+    ],
+    "orgs": [
+      "org-bayhealth"
+    ],
+    "region": "DE",
+    "authors": [
+      {
+        "name": "Terry Murphy",
+        "org": "org-bayhealth"
+      }
+    ],
+    "source": {
+      "kind": "editorial",
+      "origin": "linkedin",
+      "url": "https://www.linkedin.com/posts/delaware-healthcare-association_terry-murphy-president-ceo-of-bayhealth-activity-7501681847760834560-AYMX"
+    },
+    "person": "Terry Murphy",
+    "role": "President and CEO, Bayhealth; DHA Board Chair",
+    "org": "Bayhealth",
+    "platform": "linkedin",
+    "originalUrl": "https://www.linkedin.com/posts/delaware-healthcare-association_terry-murphy-president-ceo-of-bayhealth-activity-7501681847760834560-AYMX",
+    "impactSentence": "Delaware’s hospital-association board chair is a Bayhealth CEO.",
+    "citations": [
+      {
+        "name": "DHA LI",
+        "url": "https://www.linkedin.com/posts/delaware-healthcare-association_terry-murphy-president-ceo-of-bayhealth-activity-7501681847760834560-AYMX"
+      },
+      {
+        "name": "DHA X",
+        "url": "https://x.com/DelawareHealth1/status/2095916068153758102"
+      }
+    ]
   },
   {
     "dek": "All-day Greater Philadelphia healthcare leadership program at Penn’s Smilow Center, with panels on physician executives, data and analytics, ambulatory shift, and legislation.",
