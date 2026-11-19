@@ -7061,7 +7061,8 @@
   ],
   "434666173": [
     {"field": "stars", "value": 0, "source": "https://github.com/d3b-center/d3b-ot-pdx-tumor-only-processing", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/d3b-center/d3b-ot-pdx-tumor-only-processing", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/d3b-center/d3b-ot-pdx-tumor-only-processing", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "purpose", "value": "These adapted workflows process DNA and RNA sequencing data from patient-derived tumor xenograft models.", "source": "https://github.com/d3b-center/d3b-ot-pdx-tumor-only-processing", "date": "2026-11-17", "author": "launch_listing_resume"}
   ],
   "434730677": [
     {"field": "record", "value": {"id": "434730677", "code": "https://github.com/slziegler/CCFRPMicroblockAnalyses", "name": "CCFRPMicroblockAnalyses", "purpose": "Provides code and data for a study of fishing effort around marine protected areas.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The @slziegler GitHub profile identifies Villanova University.", "institution": "Villanova University", "source": "https://github.com/slziegler", "added": "2026-11-18"}, "source": "https://github.com/slziegler/CCFRPMicroblockAnalyses", "date": "2026-11-17", "author": "f_1to2_02"}
@@ -7304,7 +7305,8 @@
   ],
   "460154097": [
     {"field": "stars", "value": 14, "source": "https://github.com/raphael-group/paste_reproducibility", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/raphael-group/paste_reproducibility", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/raphael-group/paste_reproducibility", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "purpose", "value": "This repository reproduces the analyses and figures for a study on aligning and integrating spatial transcriptomics data.", "source": "https://github.com/raphael-group/paste_reproducibility/blob/main/README.md", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "460848257": [
     {"field": "record", "value": {"id": "460848257", "code": "https://github.com/Pennsieve/streaming-agent", "name": "streaming-agent", "purpose": "Prototypes streaming of EDF recordings over WebSockets and Kafka with a browser client.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/streaming-agent", "date": "2026-11-19", "author": "f_pennsieve"}
@@ -11820,7 +11822,8 @@
   ],
   "963693795": [
     {"field": "stars", "value": 0, "source": "https://github.com/veg/web-datamonkey", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/veg/web-datamonkey", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/veg/web-datamonkey", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "purpose", "value": "Provides a web interface for comparative sequence analysis.", "source": "https://github.com/veg/web-datamonkey/blob/master/README.md", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "964098546": [
     {"field": "record", "value": {"id": "964098546", "code": "https://github.com/atanugiri/GhrelinBehaviorQuantification", "name": "GhrelinBehaviorQuantification", "purpose": "Quantifies movement, trajectory and posture from DeepLabCut pose estimates in ghrelin experiments.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under @atanugiri, whose public GitHub profile gives Philadelphia as its location.", "institution": "Children’s Hospital of Philadelphia", "source": "https://github.com/atanugiri", "added": "2026-11-18"}, "source": "https://github.com/atanugiri/GhrelinBehaviorQuantification", "date": "2026-11-17", "author": "f_1to2_04"}
@@ -15133,7 +15136,8 @@
   ],
   "1459490144": [
     {"field": "stars", "value": 0, "source": "https://github.com/MingliangGe1998/physio-response-lab-shiny", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/MingliangGe1998/physio-response-lab-shiny", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/MingliangGe1998/physio-response-lab-shiny", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "purpose", "value": "Provides a reusable classroom app for collecting and summarizing pulse and stress measurements.", "source": "https://github.com/MingliangGe1998/physio-response-lab-shiny/blob/main/README.md", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "1460507472": [
     {"field": "record", "value": {"id": "1460507472", "code": "https://github.com/veg/squint", "name": "squint", "purpose": "Analyzes sequence homology and provenance across scales.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The regional roster includes @veg and the GitHub profile reports Philadelphia.", "source": "https://github.com/veg", "added": "2026-11-18"}, "source": "https://github.com/veg/squint", "date": "2026-11-17", "author": "f_3plus_07"}
