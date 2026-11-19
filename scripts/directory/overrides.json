@@ -424,7 +424,8 @@
   ],
   "22298056": [
     {"field": "stars", "value": 20, "source": "https://github.com/StoreyLab/subSeq", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/StoreyLab/subSeq", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/StoreyLab/subSeq", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4296149/fullTextXML", "source": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4296149/fullTextXML", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "22360806": [
     {"field": "stars", "value": 13, "source": "https://github.com/tsalo/misc-fmri-code", "date": "2026-11-18", "author": "refresh_b2"},
@@ -851,7 +852,10 @@
   ],
   "39807176": [
     {"field": "stars", "value": 8, "source": "https://github.com/PrincetonUniversity/flux-ratio-based-gibbs-energy", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/flux-ratio-based-gibbs-energy", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/flux-ratio-based-gibbs-energy", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://github.com/PrincetonUniversity/flux-ratio-based-gibbs-energy/blob/master/README.md", "source": "https://github.com/PrincetonUniversity/flux-ratio-based-gibbs-energy/blob/master/README.md", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "connection", "value": "The repository’s release documentation credits the study code to a Princeton University research team.", "source": "https://github.com/PrincetonUniversity/flux-ratio-based-gibbs-energy/blob/master/README.md", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "county", "value": null, "source": "https://github.com/PrincetonUniversity/flux-ratio-based-gibbs-energy/blob/master/README.md", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "39855573": [
     {"field": "record", "value": {"id": "39855573", "code": "https://github.com/komalsrathi/GecKO_Riger_Analysis", "name": "GecKO_Riger_Analysis", "purpose": "Prepares and normalizes sequencing read counts for GeCKO and RIGER screening analyses.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The @komalsrathi GitHub profile identifies Children’s Hospital of Philadelphia and Philadelphia.", "institution": "Children’s Hospital of Philadelphia", "source": "https://github.com/komalsrathi", "added": "2026-11-18"}, "source": "https://github.com/komalsrathi/GecKO_Riger_Analysis/blob/master/README.md", "date": "2026-11-19", "author": "f_3plus_21"}
@@ -1416,7 +1420,9 @@
   ],
   "75194860": [
     {"field": "stars", "value": 1, "source": "https://github.com/PrincetonUniversity/quasar", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/quasar", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/quasar", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5287421/", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5287421/", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "connection", "value": "The study cited by the QuASAR repository lists Princeton University affiliations in Princeton, New Jersey.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5287421/", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "75216355": [
     {"field": "record", "value": {"id": "75216355", "code": "https://github.com/chop-dbhi/go-bioportal", "name": "go-bioportal", "purpose": "Provides a Go client for the BioPortal biomedical ontology API.", "topic": "Research data", "label": "Listed", "connection": "The regional roster associates @chop-dbhi with the Children’s Hospital of Philadelphia’s Department of Biomedical and Health Informatics.", "institution": "Children’s Hospital of Philadelphia", "source": "https://www.chop.edu/centers-programs/department-biomedical-and-health-informatics-dbhi", "added": "2026-11-18"}, "source": "https://github.com/chop-dbhi/go-bioportal", "date": "2026-11-17", "author": "f_3plus_04"}
@@ -1978,7 +1984,8 @@
   ],
   "102769836": [
     {"field": "stars", "value": 0, "source": "https://github.com/pennmem/bptools", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/pennmem/bptools", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/pennmem/bptools", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://github.com/pennmem", "source": "https://github.com/pennmem", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "102797420": [
     {"field": "stars", "value": 1, "source": "https://github.com/DataAndDeadlifts/Medicare-Payment-Analysis-by-DRG", "date": "2026-11-18", "author": "refresh_b2"},
@@ -2488,7 +2495,8 @@
   ],
   "130910384": [
     {"field": "stars", "value": 0, "source": "https://github.com/pennmem/artdet", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/pennmem/artdet", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/pennmem/artdet", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://github.com/pennmem", "source": "https://github.com/pennmem", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "131018151": [
     {"field": "stars", "value": 0, "source": "https://github.com/bapoorva/MAGNet_browser", "date": "2026-11-18", "author": "refresh_b2"},
@@ -3277,7 +3285,9 @@
   ],
   "176963071": [
     {"field": "stars", "value": 0, "source": "https://github.com/DamLabResources/Tat-length-analysis", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/DamLabResources/Tat-length-analysis", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/DamLabResources/Tat-length-analysis", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6781634/", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6781634/", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "connection", "value": "The releasing paper links this exact repository and identifies Drexel University research affiliations in Philadelphia.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6781634/", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "177650919": [
     {"field": "stars", "value": 0, "source": "https://github.com/zwdzwd/InfiniumArrayAnnotation", "date": "2026-11-18", "author": "refresh_b2"},
@@ -4340,7 +4350,8 @@
   ],
   "237296609": [
     {"field": "stars", "value": 4, "source": "https://github.com/FunctionLab/sleipnir", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/FunctionLab/sleipnir", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/FunctionLab/sleipnir", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://api.crossref.org/works/10.1093/bioinformatics/btn237", "source": "https://api.crossref.org/works/10.1093/bioinformatics/btn237", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "237363940": [
     {"field": "stars", "value": 9, "source": "https://github.com/raphael-group/SBMClone", "date": "2026-11-18", "author": "refresh_b2"},
@@ -4376,7 +4387,8 @@
   ],
   "239532534": [
     {"field": "stars", "value": 25, "source": "https://github.com/p4rkerw/Muto_Wilson_NComm_2020", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": ["allele-specific-expression", "bioinformatics", "genomics", "kidney", "single-cell", "single-cell-atac-seq", "single-cell-rna-seq"], "source": "https://github.com/p4rkerw/Muto_Wilson_NComm_2020", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": ["allele-specific-expression", "bioinformatics", "genomics", "kidney", "single-cell", "single-cell-atac-seq", "single-cell-rna-seq"], "source": "https://github.com/p4rkerw/Muto_Wilson_NComm_2020", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://github.com/p4rkerw", "source": "https://github.com/p4rkerw", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "240122780": [
     {"field": "stars", "value": 1, "source": "https://github.com/songjunxu/Single-Cell-RNA-seq-analysis", "date": "2026-11-18", "author": "refresh_b2"},
@@ -4699,7 +4711,9 @@
   ],
   "258281253": [
     {"field": "stars", "value": 0, "source": "https://github.com/arjunrajlaboratory/dentist2", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/arjunrajlaboratory/dentist2", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/arjunrajlaboratory/dentist2", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://rajlab.engineering.upenn.edu/", "source": "https://rajlab.engineering.upenn.edu/", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "connection", "value": "The Raj Lab’s University of Pennsylvania website links the GitHub organization that publishes this repository.", "source": "https://rajlab.engineering.upenn.edu/", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "258292626": [
     {"field": "record", "value": {"id": "258292626", "code": "https://github.com/arjunrajlaboratory/rajlabformattools", "name": "rajlabformattools", "purpose": "Converts MetaMorph TIFF and Nikon Elements ND2 microscopy images for use in Raj Lab analysis pipelines.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The Raj Lab’s University of Pennsylvania site links to @arjunrajlaboratory.", "institution": "University of Pennsylvania", "source": "https://rajlab.engineering.upenn.edu/", "added": "2026-11-18"}, "source": "https://github.com/arjunrajlaboratory/rajlabformattools", "date": "2026-11-19", "author": "f_3plus_01"}
@@ -5080,7 +5094,9 @@
   ],
   "284101359": [
     {"field": "stars", "value": 0, "source": "https://github.com/PrincetonUniversity/pni-conquest-docker", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/pni-conquest-docker", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/PrincetonUniversity/pni-conquest-docker", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://github.com/PrincetonUniversity/pni-conquest-docker/blob/master/README.md", "source": "https://github.com/PrincetonUniversity/pni-conquest-docker/blob/master/README.md", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "connection", "value": "The PrincetonUniversity repository documents a Docker implementation of the DICOM server used by the Princeton Neuroscience Institute.", "source": "https://github.com/PrincetonUniversity/pni-conquest-docker/blob/master/README.md", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "284117702": [
     {"field": "record", "value": {"id": "284117702", "code": "https://github.com/BrainCOGS/HPC_manifolds", "name": "HPC_manifolds", "purpose": "Analyzes hippocampal activity during a towers decision-making task and generates research figures.", "topic": "Neuroscience", "label": "Listed", "connection": "The releasing Brain CoGS account identifies Princeton, New Jersey, and its consortium site identifies the Princeton Neuroscience Institute.", "institution": "Princeton Neuroscience Institute", "source": "https://github.com/BrainCOGS", "added": "2026-11-18"}, "source": "https://github.com/BrainCOGS/HPC_manifolds/blob/master/README", "date": "2026-11-18", "author": "f_category_01_04"}
@@ -5205,7 +5221,9 @@
   ],
   "291611243": [
     {"field": "stars", "value": 0, "source": "https://github.com/kimpenn/resistant-fit-norm-bibe-2020", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/kimpenn/resistant-fit-norm-bibe-2020", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/kimpenn/resistant-fit-norm-bibe-2020", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://github.com/kimpenn/resistant-fit-norm-bibe-2020/blob/master/pdf/bibe-2020-resistant-fit-dakuang.pdf", "source": "https://github.com/kimpenn/resistant-fit-norm-bibe-2020/blob/master/pdf/bibe-2020-resistant-fit-dakuang.pdf", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "connection", "value": "The repository’s bundled conference paper identifies the study team with the University of Pennsylvania in Philadelphia.", "source": "https://github.com/kimpenn/resistant-fit-norm-bibe-2020/blob/master/pdf/bibe-2020-resistant-fit-dakuang.pdf", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "291749033": [
     {"field": "record", "value": {"id": "291749033", "code": "https://github.com/lshen/sfn", "name": "sfn", "purpose": "Estimates functional brain networks informed by structural connectivity using simplex regression.", "topic": "Neuroscience", "label": "Listed", "connection": "The matching brain connectivity paper reports a Penn biostatistics affiliation for the team.", "institution": "University of Pennsylvania", "source": "https://api.openalex.org/works/https://doi.org/10.1016/j.media.2021.102026", "added": "2026-11-18"}, "source": "https://github.com/lshen/sfn", "date": "2026-11-17", "author": "f_1to2_03"}
@@ -5966,7 +5984,8 @@
   ],
   "347783222": [
     {"field": "stars", "value": 0, "source": "https://github.com/AlexGordienko/hip-ACh", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/AlexGordienko/hip-ACh", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/AlexGordienko/hip-ACh", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://github.com/AlexGordienko", "source": "https://github.com/AlexGordienko", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "348044128": [
     {"field": "record", "value": {"id": "348044128", "code": "https://github.com/zhu-research-group/HTSProfiling", "name": "HTSProfiling", "purpose": "Profiles PubChem high-throughput screening data for selected compound identifiers.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The Zhu Lab’s public software page links this account, and its website identifies an association with Rowan University in Glassboro.", "source": "https://www.zhuhlab.com/resources/software", "added": "2026-11-18"}, "source": "https://github.com/zhu-research-group/HTSProfiling/blob/master/README.md", "date": "2026-11-17", "author": "f_owners_05"}
@@ -6419,7 +6438,9 @@
   ],
   "378638985": [
     {"field": "stars", "value": 2, "source": "https://github.com/spond/SARS-CoV-2-variation", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/spond/SARS-CoV-2-variation", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/spond/SARS-CoV-2-variation", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8421097/", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8421097/", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "connection", "value": "The publication identified by this repository records a Temple University research affiliation in Philadelphia.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8421097/", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "378959626": [
     {"field": "record", "value": {"id": "378959626", "code": "https://github.com/bogdanlab/hichip", "name": "hichip", "purpose": "Provides intermediate HiChIP files for a study of genetic susceptibility to prostate cancer.", "topic": "Research data", "label": "Listed", "connection": "The University of Pennsylvania’s Bogdan Research Group software page links to work under @bogdanlab.", "institution": "University of Pennsylvania", "source": "https://www.med.upenn.edu/bogdan-group/software", "added": "2026-11-18"}, "source": "https://github.com/bogdanlab/hichip/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_07"}
@@ -6634,7 +6655,8 @@
   ],
   "392711444": [
     {"field": "stars", "value": 0, "source": "https://github.com/SydShafferLab/DeepCellHelper", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/SydShafferLab/DeepCellHelper", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/SydShafferLab/DeepCellHelper", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://www.sydshafferlab.com/resources", "source": "https://www.sydshafferlab.com/resources", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "393102549": [
     {"field": "stars", "value": 0, "source": "https://github.com/penn-cnt/Arnold_LF-MRI_MS", "date": "2026-11-18", "author": "refresh_b2"},
@@ -7085,7 +7107,8 @@
   ],
   "439144047": [
     {"field": "stars", "value": 1, "source": "https://github.com/Singh-Lab/Pou4_Misexpression", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/Singh-Lab/Pou4_Misexpression", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/Singh-Lab/Pou4_Misexpression", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://github.com/Singh-Lab", "source": "https://github.com/Singh-Lab", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "439408952": [
     {"field": "stars", "value": 0, "source": "https://github.com/PEDALLab-UPenn/PEDALLab-UPenn", "date": "2026-11-18", "author": "refresh_b2"},
@@ -8947,7 +8970,8 @@
   ],
   "648381975": [
     {"field": "stars", "value": 0, "source": "https://github.com/DVS-Lab/rf1-sra-trust", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/DVS-Lab/rf1-sra-trust", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/DVS-Lab/rf1-sra-trust", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://sites.temple.edu/neuroeconlab/", "source": "https://sites.temple.edu/neuroeconlab/", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "648747729": [
     {"field": "stars", "value": 4, "source": "https://github.com/pm0kjp/intro-to-r-for-clinical-data-rmed2023", "date": "2026-11-18", "author": "refresh_b2"},
@@ -9446,7 +9470,8 @@
   ],
   "695169854": [
     {"field": "stars", "value": 0, "source": "https://github.com/goldsteinepi/cdiff_predictive", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/goldsteinepi/cdiff_predictive", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/goldsteinepi/cdiff_predictive", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.1016%2Fj.jhin.2024.01.001%22&format=json&resultType=core&pageSize=4", "source": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.1016%2Fj.jhin.2024.01.001%22&format=json&resultType=core&pageSize=4", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "695190744": [
     {"field": "record", "value": {"id": "695190744", "code": "https://github.com/d3b-center/HLA-Typing-Dev", "name": "HLA-Typing-Dev", "purpose": "Tests and benchmarks tools for human leukocyte antigen typing.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The Bioinformatics Research Unit at Children’s Hospital of Philadelphia links to the d3b-center GitHub organization.", "source": "https://d3b.center/units/bixu/", "added": "2026-11-18"}, "source": "https://github.com/d3b-center/HLA-Typing-Dev", "date": "2026-11-17", "author": "f_3plus_06"}
@@ -10101,7 +10126,10 @@
   ],
   "773799774": [
     {"field": "stars", "value": 0, "source": "https://github.com/mmccoy-01/CCR4", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/mmccoy-01/CCR4", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/mmccoy-01/CCR4", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "connection", "value": "The repository describes an interactive results application for use on Children’s Hospital of Philadelphia devices.", "source": "https://github.com/mmccoy-01/CCR4", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "institution", "value": "Children’s Hospital of Philadelphia", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12405861/", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "source", "value": "https://github.com/mmccoy-01/CCR4", "source": "https://github.com/mmccoy-01/CCR4", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "774420842": [
     {"field": "stars", "value": 2, "source": "https://github.com/ahmedmagds/Microbial-Genomics-Journey-Workshop-Gabs24", "date": "2026-11-18", "author": "refresh_b2"},
@@ -12606,7 +12634,8 @@
   "1075515563": [
     {"field": "stars", "value": 0, "source": "https://github.com/goldsteinepi/mammo_reporting", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/goldsteinepi/mammo_reporting", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topic", "value": "Public health", "source": "https://github.com/goldsteinepi/mammo_reporting", "date": "2026-11-17", "author": "audit_a-04"}
+    {"field": "topic", "value": "Public health", "source": "https://github.com/goldsteinepi/mammo_reporting", "date": "2026-11-17", "author": "audit_a-04"},
+    {"field": "source", "value": "https://api.crossref.org/works/10.1200/CCI-26-00065", "source": "https://api.crossref.org/works/10.1200/CCI-26-00065", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "1075774819": [
     {"field": "stars", "value": 0, "source": "https://github.com/Mlamichhane1/US-Inflation-Trend-Analyzer", "date": "2026-11-18", "author": "refresh_b2"},
@@ -14392,7 +14421,8 @@
   ],
   "1316537737": [
     {"field": "stars", "value": 0, "source": "https://github.com/FunctionLab/protea", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/FunctionLab/protea", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/FunctionLab/protea", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "source", "value": "https://function.princeton.edu/people/", "source": "https://function.princeton.edu/people/", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "1316851125": [
     {"field": "record", "value": {"id": "1316851125", "code": "https://github.com/emguthman/Guthman-Cara-et-al-2026", "name": "Guthman-Cara-et-al-2026", "purpose": "Processes imaging signals and generates figures for a study tracking neuronal estrogen responses.", "topic": "Neuroscience", "label": "Listed", "connection": "The repository names the study whose published affiliations include the Princeton Neuroscience Institute in Princeton.", "institution": "Princeton University", "source": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=(AUTH%3A%22Guthman%20EM%22%20AND%20AUTH%3A%22Cara%22)%20OR%20(TITLE_ABS%3A%22A118G%22%20AND%20TITLE_ABS%3A%22spatial%20transcriptomics%22)&format=json&resultType=core&pageSize=14", "added": "2026-11-18"}, "source": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=(AUTH%3A%22Guthman%20EM%22%20AND%20AUTH%3A%22Cara%22)%20OR%20(TITLE_ABS%3A%22A118G%22%20AND%20TITLE_ABS%3A%22spatial%20transcriptomics%22)&format=json&resultType=core&pageSize=14", "date": "2026-11-19", "author": "f_1to2_05"}
@@ -14639,7 +14669,9 @@
   ],
   "1373749351": [
     {"field": "stars", "value": 0, "source": "https://github.com/EESI/GEM_GNN_2", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/EESI/GEM_GNN_2", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/EESI/GEM_GNN_2", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "connection", "value": "Drexel’s faculty profile links the EESI lab’s GitHub organization, which publishes this repository.", "source": "https://drexel.edu/engineering/about/faculty-staff/R/rosen-gail/", "date": "2026-11-19", "author": "launch_listing_resume"},
+    {"field": "source", "value": "https://drexel.edu/engineering/about/faculty-staff/R/rosen-gail/", "source": "https://drexel.edu/engineering/about/faculty-staff/R/rosen-gail/", "date": "2026-11-19", "author": "launch_listing_resume"}
   ],
   "1374513030": [
     {"field": "stars", "value": 0, "source": "https://github.com/chenyongrowan/Genome-Studio-Web", "date": "2026-11-18", "author": "refresh_b2"},
