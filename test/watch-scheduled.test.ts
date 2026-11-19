@@ -64,3 +64,15 @@ test("Watch phases have separate invocations and disabled phases perform no D1 w
   const config = JSON.parse(readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8"));
   assert.deepEqual(config.triggers.crons, ["*/15 * * * *", "17 3 * * *", WATCH_CRON]);
 });
+
+test("retired editorial automation returns before the ingest run when disabled", () => {
+  const worker = readFileSync(new URL("../worker.js", import.meta.url), "utf8");
+  const gate = worker.indexOf('if (env.EDITORIAL_AUTOMATION_ENABLED === "false")');
+  const run = worker.indexOf("runAutomation(env, undefined, undefined, { mode: cadence })");
+  assert.ok(gate > 0 && gate < run, "the gate precedes the scheduled ingest run");
+  const disabled = worker.slice(gate, run);
+  assert.match(disabled, /logOps\("cron", \{ outcome: "disabled", cadence \}\);\s+return;/);
+  assert.doesNotMatch(disabled, /sendAutomationAlerts|sendDailyOpsDigest/);
+  const config = JSON.parse(readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8"));
+  assert.equal(config.vars.EDITORIAL_AUTOMATION_ENABLED, "false");
+});

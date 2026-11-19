@@ -216,7 +216,8 @@ export function renderResultsRegion(catalog: DirectoryCatalog, view: Results) {
 export function renderDirectoryResults(catalog: DirectoryCatalog, view: Results) {
   return `<div class="frame page results-page">
     ${view.scope ? `<nav class="breadcrumb" aria-label="Directory breadcrumb"><a href="${browsePath}">All projects</a><span aria-hidden="true">/</span><span>${html(scopeName(view)!)}</span></nav>${entityOverview(catalog, view)}`
-      : '<div class="results-intro"><h1>Project directory</h1><p>Explore public software connected to the nine-county Delaware Valley.</p></div>'}
+      : '<div class="results-intro"><h1>Research directory</h1><p>Explore research projects connected to the nine-county Delaware Valley.</p></div>'}
+    ${view.scope && ["institution","topic"].includes(view.scope.entity.kind) ? `<p><a href="/discover/updates.xml?${view.scope.entity.kind}=${view.scope.entity.slug}">Follow additions via RSS</a></p>` : ""}
     ${view.scope?.entity.kind === "county" && view.total === 0 ? `<section class="empty-result county-empty"><h2>No projects listed yet</h2>
       <p>The directory currently has no projects with a recorded connection to ${html(scopeName(view)!)}. ${contactLink("Suggest a project", undefined, `Project submission for ${scopeName(view)}`)}.</p>
       <a class="button secondary" href="${browsePath}">Browse all projects</a></section>`

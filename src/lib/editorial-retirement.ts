@@ -1,4 +1,6 @@
 const sections = [
+  ["/voices", "Voices"],
+  ["/lab", "Lab previews"],
   ["/news", "News"],
   ["/events", "Events"],
   ["/policy-watch", "Policy Watch"],

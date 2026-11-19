@@ -673,9 +673,9 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   const path = url.pathname;
   const method = request.method.toUpperCase();
 
-  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path.startsWith("/discover") || path.startsWith("/api/directory/"))) {
+  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path === "/llms.txt" || path.startsWith("/discover") || path.startsWith("/api/directory/") || stripSlash(decodedPublicPath(path)) === "/sitemap.xml")) {
     const { isPublicDirectoryPath, servePublicDirectory } = await import("./src/ingest/public-directory.ts");
-    if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB, origin, nonce);
+    if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB, origin, nonce, undefined, env.PUBLICATIONS_PUBLIC_ENABLED === "true");
   }
 
   if (path.startsWith("/api/discovery/v1/")) return handleDirectoryRoutes(request, env);
@@ -954,6 +954,12 @@ export default {
         }, "warn");
       }),
     );
+    if (env.EDITORIAL_AUTOMATION_ENABLED === "false") {
+      // The editorial sections are retired; retention cleanup above still runs.
+      ctx.waitUntil(emailAuthentication);
+      logOps("cron", { outcome: "disabled", cadence });
+      return;
+    }
     ctx.waitUntil(
       emailAuthentication.then(() => runAutomation(env, undefined, undefined, { mode: cadence })).then((result) => {
         logOps("cron", {

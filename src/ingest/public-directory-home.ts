@@ -42,25 +42,27 @@ function map(catalog: DirectoryCatalog, home: Home) {
   </figure>`;
 }
 
-export function renderDirectoryHome(catalog: DirectoryCatalog, home: Home) {
+export function renderDirectoryHome(catalog: DirectoryCatalog, home: Home, publications = 0) {
   return `<section class="home-hero">
     <div class="frame">
-      <h1>Health technology in the Delaware Valley</h1>
-      <p>Find public software for health technology, biomedicine and life sciences across nine counties in Pennsylvania and New Jersey.</p>
+      <h1>Healthcare research in the Delaware Valley</h1>
+      <p>Find and follow research connected to nine counties in Pennsylvania and New Jersey.</p>
       <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput()}</form>
       <div class="home-actions">
         ${home.examples.length ? `<span>Try ${home.examples.map((example, i) => `${i ? '<span aria-hidden="true"> · </span>' : ""}<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join("")}</span>` : ""}
-        <a href="${browsePath}">Browse all projects <span aria-hidden="true">→</span></a>
+        <a href="${browsePath}">Browse all research <span aria-hidden="true">→</span></a>
       </div>
     </div>
   </section>
   <div class="frame home-body">
     <dl class="atlas-stats" aria-label="Directory totals">
       <div><dt>Projects</dt><dd>${count(home.total)}</dd></div>
-      <div><dt>Institutions</dt><dd>${count(home.institutions.length)}</dd></div>
+      <div><dt>Project institutions</dt><dd>${count(home.institutions.length)}</dd></div>
+      ${publications ? `<div><dt><a href="/discover/works?kind=publication">Publications</a></dt><dd>${count(publications)}</dd></div>` : ""}
       <div><dt>GitHub accounts</dt><dd>${count(home.labs.length)}</dd></div>
       <div><dt><a href="${methodPath}#verified">Verified projects</a></dt><dd>${count(home.verifiedCount)}</dd></div>
     </dl>
+    <section class="monitor-callout"><div><h2>What’s new</h2><p>Track listings by the date they entered the directory.</p></div><a class="button secondary" href="/discover/new">View additions</a></section>
     <section class="atlas" aria-labelledby="atlas-title">
       <h2 id="atlas-title">The regional landscape</h2>
       <div class="atlas-grid">
@@ -74,7 +76,7 @@ export function renderDirectoryHome(catalog: DirectoryCatalog, home: Home) {
             ${chart(home.topics, topic => html(catalog.entityHref("topic", topic.name)), "Project counts by topic")}
           </section>
           <section aria-labelledby="institution-title">
-            <div class="section-heading"><h3 id="institution-title">Projects by institution</h3><a href="${browsePath}#directory-institution">All institutions</a></div>
+            <div class="section-heading"><h3 id="institution-title">Projects by institution</h3><a href="${browsePath}?tools=project#directory-institution">All institutions</a></div>
             ${chart(home.institutions.slice(0, 7), institution => html(catalog.entityHref("institution", institution.name)), "Project counts at the seven largest institutions")}
           </section>
         </div>
@@ -87,7 +89,7 @@ export function renderDirectoryHome(catalog: DirectoryCatalog, home: Home) {
         ${chart(home.years, year => facetHref("year", year.name), "Project counts by year of last activity")}
       </section>
       <section aria-labelledby="labs-title">
-        <div class="section-heading"><h2 id="labs-title">Most active labs and accounts</h2><a href="${browsePath}#directory-owner">All accounts</a></div>
+        <div class="section-heading"><h2 id="labs-title">Most active labs and accounts</h2><a href="${browsePath}?tools=project#directory-owner">All accounts</a></div>
         <p class="muted">Ranked by projects with activity in the past 12 months.</p>
         ${chart(home.activeLabs, account => html(catalog.entityHref("lab", account.login)), "Recent project counts by GitHub account")}
       </section>

@@ -85,14 +85,18 @@ export function robotsTxt(origin = publicOrigin()): string {
   ].join("\n");
 }
 
-export function llmsTxt(origin = publicOrigin(), directoryEnabled = true): string {
+export function llmsTxt(origin = publicOrigin(), directoryEnabled = true, publications = false): string {
   return `# The Valley Desk
 
-> A public directory of health technology, biomedicine and life science software connected to the nine-county Delaware Valley.
+> Find and follow healthcare research connected to the nine-county Delaware Valley.
 
-- [Projects](${origin}/discover/works): browse or search public GitHub repositories.
+- [Research directory](${origin}/discover/works): search regional listings.
+- [New listings](${origin}/discover/new): ordered by directory addition date.
+- [Listings JSON](${origin}/api/directory/listings): paginated research additions with the same filters as the feed.
+- [RSS](${origin}/discover/updates.xml): filter by institution, topic, county or kind.
 ${directoryEnabled ? `- [Methodology](${origin}/discover/methodology): definitions, corrections, removal and coverage.
-- [Directory JSON](${origin}/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
+${publications ? `- [Publication JSON](${origin}/api/directory/publications): 24 records per page. Filters: q, institution, topic, county, kind. Use page=2 for the next page. Append a percent-encoded publication ID for one record.
+` : ""}- [Directory JSON](${origin}/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
 ` : ""}- [Sitemap](${origin}/sitemap.xml)
 
 A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. Consult the linked sources for the scope of each connection.

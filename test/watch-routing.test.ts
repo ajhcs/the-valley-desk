@@ -105,7 +105,7 @@ test("Watch page routes use literal canonical slugs and only their shared query 
 test("retired editorial pages and machine reads return 410 before feature flags, assets, or D1", async () => {
   const pages = [
     ["/news", "News"], ["/news/old-story?source=archive", "News"], ["/new%73%2Fold-story", "News"],
-    ["/events/", "Events"], ["/events/old-event", "Events"],
+    ["/voices", "Voices"], ["/lab/briefing", "Lab previews"], ["/events/", "Events"], ["/events/old-event", "Events"],
     ["/policy-watch", "Policy Watch"], ["/policy-watch/updates?limit=bad", "Policy Watch"],
     ["/technology-watch", "Technology Watch"], ["/technology-watch/old-profile/extra", "Technology Watch"],
   ];
@@ -127,7 +127,7 @@ test("retired editorial pages and machine reads return 410 before feature flags,
         else {
           assert.ok(html.includes(`<h1>${section} is retired</h1>`), path);
           assert.match(html, /<meta name="robots" content="noindex"/);
-          assert.match(html, /href="\/discover\/works"[^>]*>Browse projects<\/a>/);
+          assert.match(html, /href="\/discover\/works"[^>]*>Browse research<\/a>/);
           assert.doesNotMatch(html, /rel="alternate"|__VALLEY_DESK_DYNAMIC_ITEMS__/);
         }
       }

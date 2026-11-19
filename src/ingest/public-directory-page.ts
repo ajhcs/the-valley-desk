@@ -11,15 +11,16 @@ import {
 } from "./public-directory-ui";
 
 export type DirectoryView =
-  | { kind: "home"; data: ReturnType<DirectoryCatalog["home"]> }
+  | { kind: "research"; title: string; summary: string; path: string; content: string; schema?: Record<string,unknown> }
+  | { kind: "home"; publications?: number; data: ReturnType<DirectoryCatalog["home"]> }
   | { kind: "results"; data: ReturnType<DirectoryCatalog["list"]> }
-  | { kind: "project"; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
+  | { kind: "project"; linked?: {url:string;title:string}[]; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
   | { kind: "methodology" }
   | { kind: "retired"; section: RetiredEditorialSection }
-  | { kind: "removed" | "not-found" | "unavailable" };
+  | { kind: "listing-removed" | "removed" | "not-found" | "unavailable" };
 
 const siteName = "The Valley Desk";
-const description = "A public directory of health technology, biomedicine and life sciences software connected to the nine-county Delaware Valley.";
+const description = "Find and follow healthcare research connected to the nine-county Delaware Valley.";
 
 function header(view: DirectoryView) {
   return `<a class="skip-link" href="#main">Skip to content</a>
@@ -29,7 +30,7 @@ function header(view: DirectoryView) {
           <img class="desk-mark" src="/mark-a-fold.svg" alt="" width="36" height="36">
           <span class="desk-wordmark"><span>The</span><strong>Valley Desk</strong></span>
         </a>
-        <nav class="desk-primary" aria-label="Primary"><a href="${browsePath}"${view.kind === "results" && !view.data.scope ? ' aria-current="page"' : ""}>Projects</a></nav>
+        <nav class="desk-primary" aria-label="Primary"><a href="${browsePath}"${view.kind === "results" && !view.data.scope ? ' aria-current="page"' : ""}>Research</a><a href="/discover/new">What’s new</a></nav>
         <div class="desk-theme" hidden>
           <label for="directory-theme">Theme</label>
           <select id="directory-theme">
@@ -45,14 +46,14 @@ function footer() {
     <div class="desk-frame desk-footer-inner">
       <a class="desk-footer-brand" href="/">The Valley Desk</a>
       <nav class="desk-footer-links" aria-label="Footer">
-        <a href="${browsePath}">Projects</a><a href="${methodPath}">Methodology</a>
+        <a href="${browsePath}">Research</a><a href="${methodPath}">Methodology</a>
       </nav>
       <p class="desk-footer-copy">© thedeskgroup - <a href="https://ushso.org/">USHSO.org</a></p>
     </div>
   </footer>`;
 }
 
-function projectDetail(catalog: DirectoryCatalog, { project, related, now }: Extract<DirectoryView, { kind: "project" }>) {
+function projectDetail(catalog: DirectoryCatalog, { project, related, now, linked }: Extract<DirectoryView, { kind: "project" }>) {
   const activity = lastActivity(project);
   const place = projectPlace(catalog, project);
   const papers = projectPapers(project);
@@ -99,6 +100,7 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now }: Ext
           <div class="detail-links">${externalLink(project.source, "View regional source ↗")}<a href="${methodPath}#regional-evidence">Read the methodology</a></div>
           ${timestamp(project.checked) ? `<p class="muted">Source checked ${timestamp(project.checked)}</p>` : ""}
         </section>
+        ${linked?.length ? `<section class="detail-section"><h2>Publications in the directory</h2><ul>${linked.map(p=>`<li><a href="${html(p.url)}">${html(p.title)}</a></li>`).join("")}</ul></section>` : ""}
         ${papers.length ? `<section class="detail-section" aria-labelledby="paper-title">
           <h2 id="paper-title">${papers.length === 1 ? "Paper" : "Papers"}</h2>
           <ul class="papers">${papers.map(paper => {
@@ -134,14 +136,14 @@ function methodology() {
   return `<article class="frame page prose-page">
     <nav class="breadcrumb" aria-label="Directory breadcrumb"><a href="${browsePath}">All projects</a></nav>
     <h1>Directory methodology</h1>
-    <p class="prose-intro">The Valley Desk indexes public GitHub repositories building health technology, biomedical or life sciences software with a documented Delaware Valley connection.</p>
+    <p class="prose-intro">The directory records the evidence connecting healthcare research to the nine-county Delaware Valley. The date added records when a listing entered the directory. Published records when a paper appeared. Pushed records when code last changed.</p>
     <section>
       <h2>What gets listed</h2>
       <p>A repository must contain its own work and have a plausible health, biomedical or life sciences purpose described in the repository or a linked source. A roster, an institution’s page or a releasing paper with a regional affiliation must connect the project to the region.</p>
       <p>Empty repositories, coursework, personal configuration, unmodified forks and general-purpose mirrors are excluded.</p>
     </section>
     <section id="regional-evidence">
-      <h2>Regional evidence</h2>
+      <h2>Regional evidence</h2><p>For scholarly work, a Verified affiliation names the institution and a regional place, or a single-site regional institution. Listed indicates an indexer assignment or an institution match with an uncertain site. A county requires evidence placing the affiliation there. A byline reports names as published.</p>
       <dl class="definition-list">
         <div id="verified"><dt>Verified</dt><dd>${labelDefinitions.Verified}</dd></div>
         <div id="listed"><dt>Listed</dt><dd>${labelDefinitions.Listed}</dd></div>
@@ -159,7 +161,7 @@ function methodology() {
       <p>${contactLink("Email the directory team")} with the GitHub URL and, for a correction or submission, a source for the regional connection. For a removal request, include the project URL or directory ID and the reason for the request.</p>
     </section>
     <section id="data">
-      <h2>Machine-readable directory</h2>
+      <h2>Machine-readable directory</h2><p><a href="/discover/updates.xml">Subscribe to directory additions</a>. Institution and topic collections offer scoped feeds.</p>
       <p><a href="${apiPath}">Download the project catalog as JSON</a>. It returns a <code>projects</code> array. Use <code>${apiPath}/{id}</code> for a single <code>project</code> by GitHub repository ID.</p>
       <p>Both support GET and HEAD. Removed projects are excluded from the catalog and return HTTP 410 at their own URL. The endpoints return HTTP 503 when removal records are unavailable.</p>
       <p><a href="/sitemap.xml">Sitemap</a> · <a href="/llms.txt">llms.txt</a></p>
@@ -168,6 +170,7 @@ function methodology() {
 }
 
 const messages = {
+  "listing-removed": ["Publication removed","This publication has been removed from the directory."],
   "removed": ["Project removed", "This project is no longer listed in the directory."],
   "not-found": ["Page not found", "The link may be old or mistyped. You can still search the directory."],
   "unavailable": ["Directory temporarily unavailable", "Please try again in a few minutes."],
@@ -175,7 +178,7 @@ const messages = {
 
 function pageMessage(view: Extract<DirectoryView, { kind: "retired" | keyof typeof messages }>): readonly [string, string] {
   return view.kind === "retired"
-    ? [`${view.section} is retired`, "Browse the project directory for regional health technology and research."]
+    ? [`${view.section} is retired`, "Find regional healthcare research or follow new listings in the directory."]
     : messages[view.kind];
 }
 
@@ -185,8 +188,9 @@ function pageHead(view: DirectoryView, origin: string) {
     title, description: summary, canonical: path, schema: undefined as Record<string, unknown> | undefined,
   });
   switch (view.kind) {
+    case "research": return { ...basic(view.title,view.summary,view.path), schema:view.schema };
     case "home":
-      return { ...basic("Health technology in the Delaware Valley", description, "/"),
+      return { ...basic("Healthcare research in the Delaware Valley", description, "/"),
         schema: { "@type": "WebSite", name: siteName, url: url("/"), description } };
     case "results": {
       const head = resultsHead(view.data);
@@ -225,14 +229,15 @@ function jsonLd(schema: Record<string, unknown> | undefined, nonce?: string) {
 export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatalog, origin: string, nonce?: string) {
   let content: string;
   switch (view.kind) {
-    case "home": content = renderDirectoryHome(catalog, view.data); break;
+    case "research": content = view.content; break;
+    case "home": content = renderDirectoryHome(catalog, view.data, view.publications); break;
     case "results": content = renderDirectoryResults(catalog, view.data); break;
     case "project": content = projectDetail(catalog, view); break;
     case "methodology": content = methodology(); break;
     default: {
       const [title, message] = pageMessage(view);
       content = `<section class="frame page message-page"><h1>${html(title)}</h1><p>${html(message)}</p>
-        <a class="button primary" href="${browsePath}">Browse projects</a></section>`;
+        <a class="button primary" href="${browsePath}">Browse research</a></section>`;
     }
   }
   const head = pageHead(view, origin);
@@ -254,11 +259,12 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     <meta property="og:image" content="${html(origin)}/directory-share.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="The Valley Desk, health technology in the Delaware Valley">` : '<meta name="robots" content="noindex">'}
+    <meta property="og:image:alt" content="The Valley Desk, healthcare research in the Delaware Valley">` : '<meta name="robots" content="noindex">'}
     ${jsonLd(head.schema, nonce)}
     <script src="/theme.js"></script>
     <script src="/directory-theme.js" defer></script>
     ${view.kind === "results" || view.kind === "home" ? '<script src="/directory-search.js" defer></script>' : ""}
+    ${canonical ? '<link rel="alternate" type="application/rss+xml" title="Directory additions" href="/discover/updates.xml">' : ""}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
