@@ -81,7 +81,7 @@ export function renderDirectoryHome(catalog: DirectoryCatalog, home: Home) {
       </div>
     </section>
     <div class="home-explore">
-      <section aria-labelledby="year-title">
+      <section class="activity-chart" aria-labelledby="year-title">
         <h2 id="year-title">Last activity by year</h2>
         <p class="muted">Based on the last code push when available, otherwise the repository update date.</p>
         ${chart(home.years, year => facetHref("year", year.name), "Project counts by year of last activity")}

@@ -190,6 +190,10 @@ test('public results combine disjunctive facets, dates and evidence and round-tr
   const firstLab = [item('5', { code: 'https://github.com/research.lab/one' }), item('6', { code: 'https://github.com/research.lab/two' })];
   const secondLab = [item('7', { code: 'https://github.com/research-lab/one' }), item('8', { code: 'https://github.com/research-lab/two' })];
   const expanded = createDirectoryCatalog([...firstLab, ...secondLab]);
+  const home = catalog.home(new Set(), now);
+  assert.equal(home.verifiedCount, 2);
+  assert.deepEqual(home.verified.map(project => project.id), ['4', '2']);
+  assert.deepEqual(home.recent.map(project => project.id), ['3', '1']);
   assert.equal(expanded.entityHref('lab', 'research.lab'), createDirectoryCatalog(firstLab).entityHref('lab', 'research.lab'));
   assert.notEqual(expanded.entityHref('lab', 'research.lab'), expanded.entityHref('lab', 'research-lab'));
 });

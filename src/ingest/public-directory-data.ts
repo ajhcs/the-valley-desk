@@ -451,6 +451,9 @@ export function createDirectoryCatalog(records: readonly DirectoryProject[]) {
     const publicRows = visible(removed);
     const active = recentlyActive(publicRows, now);
     const addedVaries = new Set(publicRows.map(row => row.added).filter(Boolean)).size > 1;
+    const verifiedRows = publicRows.filter(row => row.project.label === "Verified");
+    const verified = verifiedRows.slice(0, 3).map(row => row.project);
+    const featuredIds = new Set(verified.map(project => project.id));
     return {
       ...summarize(publicRows, now),
       counties: rank(publicRows, "county"), countyKnown: publicRows.filter(row => row.facets.county.length).length,
@@ -460,9 +463,9 @@ export function createDirectoryCatalog(records: readonly DirectoryProject[]) {
         const named = lab && visible(removed, lab).find(row => row.project.lab || row.project.owner?.name)?.project;
         return { ...account, login: account.name, name: named?.lab || named?.owner?.name || `@${account.name}` };
       }),
-      verifiedCount: publicRows.filter(row => row.project.label === "Verified").length,
-      verified: publicRows.filter(row => row.project.label === "Verified").slice(0, 3).map(row => row.project),
-      recent: publicRows.filter(row => row.activity).slice(0, 6).map(row => row.project),
+      verifiedCount: verifiedRows.length,
+      verified,
+      recent: publicRows.filter(row => row.activity && !featuredIds.has(row.project.id)).slice(0, 6).map(row => row.project),
       added: addedVaries ? [...publicRows].filter(row => row.added).sort(byAdded).slice(0, 6).map(row => row.project) : [],
       examples: ["medical imaging", "python", "neuroscience"].filter(example => {
         const terms = example.split(" ");

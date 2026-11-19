@@ -90,16 +90,23 @@ function facetControls(view: Results) {
         const open = key === "topic" || key === "institution" || chosen.length > 0;
         const options = chosen.length ? view.facets[key].slice().sort((a, b) =>
           Number(chosen.includes(b.name)) - Number(chosen.includes(a.name))) : view.facets[key];
+        const previewCount = key === "institution" ? Math.max(5, chosen.length) : options.length;
+        const remaining = options.slice(previewCount);
+        const optionList = (rows: typeof options) => `<ul>${rows.map(({ name, count: matches }) => `<li><label class="facet-option">
+          <input form="${formId}" type="checkbox" name="${key}" value="${html(name)}"${chosen.includes(name) ? " checked" : ""}>
+          <span>${html(key === "owner" ? `@${name}` : name)}</span><span class="option-count">${count(matches)}</span>
+        </label></li>`).join("")}</ul>`;
         return `<details class="facet" id="directory-${key}"${open ? " open" : ""}>
           <summary>${facetLabels[key]}${selected[key]?.length ? ` <span class="selected-count">${count(selected[key].length)}</span>` : ""}</summary>
           ${key === "county" ? `<p id="county-coverage" class="muted">${count(view.countyKnown)} of ${count(view.total)} projects in this collection have a known county.</p>` : ""}
           ${key === "label" ? `<a class="label-help" href="${methodPath}#regional-evidence">What these labels mean</a>` : ""}
           <fieldset${key === "county" ? ' aria-describedby="county-coverage"' : ""}>
             <legend class="sr-only">${facetLabels[key]}</legend>
-            <ul>${options.map(({ name, count: matches }) => `<li><label class="facet-option">
-              <input form="${formId}" type="checkbox" name="${key}" value="${html(name)}"${chosen.includes(name) ? " checked" : ""}>
-              <span>${html(key === "owner" ? `@${name}` : name)}</span><span class="option-count">${count(matches)}</span>
-            </label></li>`).join("")}</ul>
+            ${optionList(options.slice(0, previewCount))}
+            ${remaining.length ? `<details class="facet-more" id="directory-institution-more">
+              <summary><span class="facet-more-expand">Show ${count(remaining.length)} more institutions</span><span class="facet-more-collapse">Show fewer institutions</span></summary>
+              ${optionList(remaining)}
+            </details>` : ""}
           </fieldset>
         </details>`;
       }).join("")}
