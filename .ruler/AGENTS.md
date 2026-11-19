@@ -1,6 +1,6 @@
 # thevalleydesk
 
-Public directory of regional health-tech work, with separate News, Events and Watch sections, using Vite, React, TypeScript, and Cloudflare Workers. Read README.md and /home/plumbob/.codex/memories/plumbob-server/the-valley-desk-prod.md before runtime or deployment work.
+The Valley Desk helps readers find and follow healthcare research connected to the nine-county Delaware Valley. Preserve source evidence, distinct listing and research dates, and immediate removals. Read README.md for runtime context.
 
 - Tests: `npm test`. Build: `npm run build`. Secret scan: `npm run secret-scan`.
 - News, Events and Watch retain deterministic publication gates, literal evidence spans, source provenance, and typed source-health outcomes. Model output cannot authorize publication for those sections. Their unsupported claims remain in review.
