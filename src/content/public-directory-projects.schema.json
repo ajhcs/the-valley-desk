@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "The Valley Desk public directory project",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "code",
+    "name",
+    "purpose",
+    "topic",
+    "label"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,19}$"
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^https://github\\.com/[A-Za-z0-9-]+/[A-Za-z0-9_.-]+$"
+    },
+    "name": {
+      "$ref": "#/$defs/text"
+    },
+    "purpose": {
+      "type": "string",
+      "pattern": "\\S",
+      "maxLength": 180
+    },
+    "topic": {
+      "$ref": "#/$defs/text"
+    },
+    "institution": {
+      "$ref": "#/$defs/nullableText"
+    },
+    "county": {
+      "enum": [
+        null,
+        "Bucks",
+        "Chester",
+        "Delaware",
+        "Montgomery",
+        "Philadelphia",
+        "Burlington",
+        "Camden",
+        "Gloucester",
+        "Mercer"
+      ]
+    },
+    "label": {
+      "enum": [
+        "Verified",
+        "Listed"
+      ]
+    },
+    "connection": {
+      "$ref": "#/$defs/nullableText"
+    },
+    "source": {
+      "$ref": "#/$defs/nullableUrl"
+    },
+    "paper": {
+      "$ref": "#/$defs/nullableUrl"
+    },
+    "language": {
+      "$ref": "#/$defs/nullableText"
+    },
+    "license": {
+      "$ref": "#/$defs/nullableText"
+    },
+    "updated": {
+      "$ref": "#/$defs/nullableDate"
+    },
+    "added": {
+      "$ref": "#/$defs/nullableDate"
+    },
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "login",
+        "name",
+        "kind"
+      ],
+      "properties": {
+        "login": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9-]+$"
+        },
+        "name": {
+          "$ref": "#/$defs/nullableText"
+        },
+        "kind": {
+          "enum": [
+            "organization",
+            "user"
+          ]
+        }
+      }
+    },
+    "lab": {
+      "$ref": "#/$defs/nullableText"
+    },
+    "stars": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "homepage": {
+      "$ref": "#/$defs/nullableUrl"
+    },
+    "created": {
+      "$ref": "#/$defs/nullableDate"
+    },
+    "pushed": {
+      "$ref": "#/$defs/nullableDate"
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "papers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "url",
+          "doi",
+          "year",
+          "venue"
+        ],
+        "properties": {
+          "title": {
+            "$ref": "#/$defs/text"
+          },
+          "url": {
+            "$ref": "#/$defs/url"
+          },
+          "doi": {
+            "$ref": "#/$defs/nullableText"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1000,
+                "maximum": 9999
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "venue": {
+            "$ref": "#/$defs/nullableText"
+          }
+        }
+      }
+    },
+    "checked": {
+      "$ref": "#/$defs/date"
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^\\s/@?#\\\\]+(?:[/?#][^\\s\\\\]*)?$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "nullableText": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableUrl": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/url"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableDate": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/date"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}
