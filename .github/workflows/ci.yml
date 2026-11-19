@@ -2,11 +2,17 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,7 +27,7 @@ jobs:
       - name: Hash-locked PDF extraction tools
         run: npm run policy:pdf:bootstrap
       - name: Private acquisition test workspace
-        run: sudo install -d -m 0700 -o "$USER" -g "$(id -gn)" /workspace/build/builderbob
+        run: test -d /workspace/build/builderbob || sudo install -d -m 0700 -o "$USER" -g "$(id -gn)" /workspace/build/builderbob
       - name: Tests
         run: npm test
       - name: Mandatory official PDF byte regressions

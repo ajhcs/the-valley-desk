@@ -1,0 +1,84 @@
+{
+  "id": "GL08-independent-review-20261117",
+  "challengedCommit": "604ac59cb097d93c8f0f8613c0de3ba3a7929f8d",
+  "reviewer": "Independent subagent /root/independent_review, fresh context; implementation by /root",
+  "status": "accepted_for_bounded_private_workflow",
+  "findings": [
+    {
+      "id": "R1",
+      "status": "closed",
+      "finding": "Retained projections required schema/privacy/identity validation and an authoritative journal witness, not their own digest."
+    },
+    {
+      "id": "R2",
+      "status": "closed",
+      "finding": "Missing or inconsistent journals could allow a resend before an exclusive receipt write failed."
+    },
+    {
+      "id": "R3",
+      "status": "closed",
+      "finding": "Contradictory last/next pagination relations could produce a false terminal state."
+    },
+    {
+      "id": "R4",
+      "status": "closed",
+      "finding": "Remaining batch time and durable start metadata did not fully bound an attempt."
+    },
+    {
+      "id": "M1",
+      "status": "closed",
+      "finding": "Truthy placeholders could stand in for evidence and prepared listings."
+    },
+    {
+      "id": "M2",
+      "status": "closed",
+      "finding": "An all-unknown case could be rejected rather than held."
+    }
+  ],
+  "verification": {
+    "focusedTs": 9,
+    "capturePython": 12,
+    "loggerPython": 6,
+    "retainedQueue": "byte-identical 549-candidate output from all 57 original receipts under read-only journal reconciliation",
+    "measurementDefinitions": "Both CSE record/unit checks passed; this is not source-truth or engineering acceptance.",
+    "ciAtAcceptedCommit": {
+      "run": "https://github.com/ajhcs/the-valley-desk/actions/runs/44135083610",
+      "passed": [
+        "Full test suite",
+        "Official PDF byte regressions",
+        "Typecheck and production build",
+        "Local D1 migrations and scheduled smoke"
+      ],
+      "failed": "npm audit --audit-level=high",
+      "secretScan": "Passed locally. CI skipped this step after the audit failure.",
+      "baselineAdvisory": "https://github.com/advisories/GHSA-fc5q-39xc-vjpf",
+      "baselineComparison": "The merged baseline and PR head have the same lockfile and returned the same advisory set when audited separately on 17 November 2026.",
+      "remediationStatus": "The advisory lists no patched release. npm lists 4.0.7 as latest and the advisory includes it."
+    }
+  },
+  "scopeLimits": [
+    "No current region-wide or complete account-inventory claim.",
+    "Original terminal statuses are observations of their archived methods; raw Link headers are unavailable for a new retrospective relation check.",
+    "No public admission, publication, deployment, clinical validation or human benchmark acceptance.",
+    "Timed sample decisions have not yet begun at this code-review checkpoint."
+  ],
+  "reports": [
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/independent-review-604ac59.md",
+      "sha256": "d23fff8fd083506f34cf5da06816a6ad697812c3d9564c5c8db2d8c3400ac831"
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/independent-rereview-working-tree.md",
+      "sha256": "d8615c9e90a50978248ba9f71f2ae7ab1ba02dad6a65b823999c7482c33654b6"
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/independent-final-acceptance-working-tree.md",
+      "sha256": "d8123ee4308dea1e7cd9a3fe37a0e3842478a2023e3b290715d093d1da45af59"
+    },
+    {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/accepted-working-tree-hashes.json",
+      "sha256": "0f798d368fc5227427e795d7a306fc3f90663da14e8dd5b6aa34d239d92cf6d7"
+    }
+  ],
+  "acceptedCommit": "1e347cccde1738a410aacbd318153d0382647bd7"
+}

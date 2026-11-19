@@ -128,8 +128,8 @@ and `execution_sequence` in [plan.json](plan.json). It supersedes the concurrent
 GL06/GL08 start in GL05-D01. Package dependencies and acceptance criteria are
 unchanged. Sol has not yet reviewed this decision.
 
-The queue is not ready to browse or review. Of about 7,277 repository keys, 1,609
-carry a description, 2,747 a last-push date and 231 a native ID. About 2,145 appear
+Before the first enrichment pass, 1,609 of about 7,277 repository keys
+carried a description, 2,747 a last-push date and 231 a native ID. About 2,145 appear
 only in the Drexel collection and 899 only in Lehigh, Scranton or Christiana. The
 six catalog records average about 4.5 KB against the 128,000-byte response bound.
 These are counts read from the queue and catalog, not a qualified yield or a tested
@@ -161,6 +161,33 @@ page size.
 Two housekeeping items are open: move retained evidence out of the product PR so
 its code can be reviewed, and ignore or relocate the six untracked Penn intake JSON
 files at the checkout root.
+
+Step 1 now has an [initial enrichment checkpoint](execution/GL08-enrichment-checkpoint.json)
+from the merged `8f0ac66` baseline. A frozen 41-account primary-collection seed
+cohort and separate continuation qualification used 57 anonymous requests,
+retaining 549 distinct native repositories privately. Twenty-eight account
+chains reached a validated terminal page; thirteen remain incomplete or
+identity-unverified. GitHub's native-user pagination path was verified for an
+Organization owner after the first parser rejected it. All failed receipts
+remain preserved. Other primary accounts are queued. The reviewer accepted the
+adapter for this bounded private workflow after six fixes. The
+[independent review receipt](execution/GL08-independent-review.json) also records
+the dependency audit failure shared with the merged baseline.
+
+Step 2 reviewed all 100 frozen leads. Seven were eligible (7%), 26 were
+rejected and 67 were held. It took 27.92 timed agent minutes across the sample,
+or 3.99 minutes per admission-ready listing. This is a result for the sampled
+cohort. No works were admitted publicly. See the [yield review](execution/GL08-yield-review.md)
+and [results receipt](execution/GL08-yield-results.json).
+
+Steps 3–5 now have a private review UI and draft builder, responsive catalog
+cards, a compact API and separate detail. GL07 institution and source account
+links are included. The homepage cutover and public admission batch are still
+pending. The [local workflow](execution/GL06-GL08-directory-review.md) gives the
+review and preview commands. The [Terra method](execution/GL08-terra-screening.md)
+prioritizes exact-work evidence while keeping every lead in the review. The
+[first matched pilot](execution/GL08-terra-pilot-results.md) did not demonstrate
+a speed or accuracy gain.
 
 ## Product decisions
 

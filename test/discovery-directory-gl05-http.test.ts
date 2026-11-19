@@ -43,3 +43,35 @@ test('pagination links preserve filters and escaped input remains text',async()=
  const next=nodes(html,'a').map(n=>attr(n,'href')).find(h=>h?.includes('after='));assert.ok(next);const url=new URL(next,'https://directory.example');assert.equal(url.searchParams.get('county'),'Camden');assert.equal(url.searchParams.get('sort'),'title-asc');assert.equal(url.searchParams.get('limit'),'1');
  const attack=new URLSearchParams({q:'<img src=x onerror=alert(1)>'});const safe=await (await handleDiscoveryDirectoryPage(req('/discover/works?'+attack),env,s,meta)).text();assert.equal(nodes(safe,'img').length,0);assert.equal(attr(nodes(safe,'input').find(n=>attr(n,'name')==='q'),'value'),attack.get('q'));
 });
+
+test('compact cards and details preserve source dates, optional fields, and issue-draft scope', async () => {
+  const s = snapshot(), meta = removed(s);
+  const repo = s.works.find((work: any) => work.kind === 'repository' && work.sourceDate === null);
+  assert.ok(repo);
+  const list = await handleDiscoveryDirectoryPage(req('/discover/works'), env, s, meta);
+  const html = await list.text();
+  const card = nodes(html, 'article').find(node => attr(node, 'data-work-id') === repo.id);
+  assert.ok(card);
+  const readText = (node: any): string => node.nodeName === '#text' ? node.value : (node.childNodes ?? []).map(readText).join('');
+  assert.match(readText(card), /Project connection/);
+  assert.match(readText(card), new RegExp(repo.checkedAt));
+  assert.doesNotMatch(readText(card), /Source date:|Review references|Source account:/);
+  assert.ok(nodes(html, 'a').some(a => attr(a, 'href') === repo.url.value && readText(a) === 'Open repository'));
+  const page = await handleDiscoveryDirectoryPage(req('/discover/work/' + encodeURIComponent(repo.id)), env, s, meta);
+  const detail = await page.text();
+  assert.equal(nodes(detail, 'h1').length, 1);
+  assert.equal(nodes(detail, 'summary').map(readText).join(''), 'Sources and review');
+  const issueLink = nodes(detail, 'a').find(a => readText(a) === 'Report an issue');
+  const draft = new URL(attr(issueLink, 'href'));
+  assert.equal(draft.protocol, 'mailto:');
+  assert.equal(draft.pathname, 'leads@thevalleydesk.org');
+  assert.deepEqual([...draft.searchParams], [['subject', 'Research listing correction'], ['body', 'Work ID: ' + repo.id]]);
+});
+
+test('an empty catalog is distinct from zero matches', async () => {
+  const s = snapshot();
+  s.works = [];
+  const page = await handleDiscoveryDirectoryPage(req('/discover/works'), env, s, removed(s));
+  assert.equal(page.status, 200);
+  assert.match(await page.text(), /No works are listed yet/);
+});

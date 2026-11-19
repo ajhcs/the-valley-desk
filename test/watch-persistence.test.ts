@@ -272,13 +272,13 @@ test("Watch API rejects duplicate/unknown filters and hides internal database er
   assert.equal(failure.status, 503); assert.equal((await failure.text()).includes("private-database-detail"), false);
 });
 
-test("Worker wires Watch reads without touching v1 feed or requiring a write credential", async t => {
+test("Worker retires Watch reads even when an accepted record exists", async t => {
   const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
   await publish(db, "worker", "Worker accepted fixture");
   const response = await worker.fetch(new Request("https://thevalleydesk.org/api/v2/watch/policy"), {
     VALLEY_DESK_DB: db, WATCH_PUBLIC_ENABLED: "true", PUBLIC_ORIGIN: "https://thevalleydesk.org",
   }, {});
-  assert.equal(response.status, 200);
-  assert.equal((await response.json()).items[0].id, "worker");
+  assert.equal(response.status, 410);
+  assert.deepEqual(await response.json(), { error: "retired" });
   assert.equal(count(sqlite, "published_content"), 0);
 });

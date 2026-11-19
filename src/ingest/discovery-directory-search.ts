@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DIRECTORY_TOPICS, DirectorySnapshotSchema, type DirectoryWork } from '../content/discovery-directory';
+import { DIRECTORY_TOPICS, readDirectorySnapshot, type DirectoryView, type DirectoryWork } from '../content/discovery-directory';
 
 export const DIRECTORY_SEARCH_ALIAS_REVISION = 'directory-search-aliases-v1' as const;
 export const DIRECTORY_SEARCH_ALIASES = Object.freeze({
@@ -61,7 +61,10 @@ function units(w:DirectoryWork):Unit[] {
   for(const c of w.claims) {
     if(c.kind==='health-purpose')u.push({type:'claim',text:c.text,claimId:c.id,evidenceIds:c.evidenceIds});
     else if(c.kind==='topic')u.push({type:'claim',text:c.topic,topic:c.topic,claimId:c.id,evidenceIds:c.evidenceIds});
-    else u.push({type:'claim',text:[c.institution,c.campus,c.municipality,c.county,c.state,c.subjectLabel].filter(Boolean).join(' '),claimId:c.id,evidenceIds:c.evidenceIds,county:c.county??undefined,institution:c.institution??undefined});
+    else {
+      const place = c.regionalBasis === 'region' ? [c.qualification] : [c.campus,c.municipality,c.county,c.state];
+      u.push({type:'claim',text:[c.institution,...place,c.subjectLabel].filter(Boolean).join(' '),claimId:c.id,evidenceIds:c.evidenceIds,county:c.county??undefined,institution:c.institution??undefined});
+    }
   }
   return u;
 }
@@ -88,8 +91,8 @@ function matchPlan(work:DirectoryWork,neighbor:DirectoryWork|null,relation:Relat
   if(neighbor && !includeUnusedNeighbor && !matched.some(u=>other.includes(u)))return null;
   return {work,neighbor,relation,matched,exact};
 }
-export async function readDirectoryList(input:unknown,queryInput:unknown):Promise<DirectorySearchResult> {
-  const snapshot=DirectorySnapshotSchema.parse(input), q=Query.parse(queryInput), digest=await sha(snapshot);
+export async function readDirectoryList(input:unknown,queryInput:unknown,view: DirectoryView = 'release'):Promise<DirectorySearchResult> {
+  const snapshot=readDirectorySnapshot(input,view), q=Query.parse(queryInput), digest=await sha(snapshot);
   const byId=new Map(snapshot.works.map(w=>[w.id,w]));
   const neighbors=new Map<string,{work:DirectoryWork;relation:Relation}[]>();
   for(const w of snapshot.works)for(const r of w.relations){const other=byId.get(r.toId)!; for(const [a,b] of [[w,other],[other,w]] as const)neighbors.set(a.id,[...(neighbors.get(a.id)??[]),{work:b,relation:r}]);}

@@ -9,8 +9,9 @@ async function input() {
   const selection=JSON.parse(await readFile('docs/discovery/go-live/evidence/GL05/selection.json','utf8'));
   const prior=JSON.parse(await readFile('docs/discovery/go-live/evidence/GL04/generation-report.json','utf8')).nextPriorState;
   const {snapshot}=await validateDirectorySelection(selection,{selectionSha256:await directorySha256(canonicalDirectoryJson(selection)),operator:'agent:root',reviewer:'agent:sol_gl04_review',priorState:prior},p=>readFile(p));
-  const actual=JSON.parse(await readFile('src/content/discovery-directory-catalog.json','utf8'));
-  assert.deepEqual(actual,snapshot,'generated public snapshot differs from the reviewed selection');
+  const generation = JSON.parse(await readFile('docs/discovery/go-live/evidence/GL05/generation-report.json', 'utf8')).nextPriorState;
+  const archived = JSON.parse(await readFile(generation.path, 'utf8'));
+  assert.deepEqual(archived.snapshot, snapshot, 'frozen GL05 snapshot differs from the reviewed selection');
   const tasks=JSON.parse(await readFile('docs/discovery/go-live/evidence/GL05/query-tasks.json','utf8'));
   return {snapshot,tasks};
 }

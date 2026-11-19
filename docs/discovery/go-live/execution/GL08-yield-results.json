@@ -1,0 +1,122 @@
+{
+  "id": "GL08-yield-review-20261117",
+  "status": "reviewed_and_adjudicated",
+  "sampleId": "GL08-yield-20261117-v1",
+  "sampleSize": 100,
+  "cohortSize": 549,
+  "counts": {
+    "eligible": 7,
+    "rejected": 26,
+    "held": 67
+  },
+  "eligibleFraction": 0.07,
+  "agentReviewNanoseconds": 1675226250737,
+  "agentReviewMinutes": 27.920437512283332,
+  "minutesPerAdmissionReady": 3.9886339303261904,
+  "publicAdmissions": 0,
+  "actualPublicMinutesPerAdmission": null,
+  "initialPass": {
+    "counts": {
+      "eligible": 7,
+      "rejected": 31,
+      "held": 62
+    },
+    "eligibleFraction": 0.07,
+    "agentReviewNanoseconds": 1638670049569,
+    "agentReviewMinutes": 27.311167492816665,
+    "minutesPerAdmissionReady": 3.9015953561166663
+  },
+  "adjudication": {
+    "changedDecisions": [
+      {
+        "sampleIndex": 5,
+        "initial": "rejected",
+        "final": "held"
+      },
+      {
+        "sampleIndex": 7,
+        "initial": "rejected",
+        "final": "held"
+      },
+      {
+        "sampleIndex": 39,
+        "initial": "rejected",
+        "final": "held"
+      },
+      {
+        "sampleIndex": 41,
+        "initial": "rejected",
+        "final": "held"
+      },
+      {
+        "sampleIndex": 56,
+        "initial": "rejected",
+        "final": "held"
+      }
+    ],
+    "amendedSampleIndices": [
+      5,
+      7,
+      39,
+      41,
+      56,
+      80,
+      97
+    ],
+    "agentReviewNanoseconds": 36556201168,
+    "independentReviewerTimeIncluded": false
+  },
+  "heldUnknownCriteria": {
+    "datedRegionalBasis": 65,
+    "healthRelevance": 50,
+    "usefulPurpose": 27
+  },
+  "sessionCount": 12,
+  "sourceBudget": {
+    "initialReviewOpens": 55,
+    "initialReviewSearchQueries": 6,
+    "independentChallengeOpens": 5,
+    "independentChallengeSearchQueries": 34,
+    "maxOpens": 60,
+    "maxSearchQueries": 40
+  },
+  "artifacts": {
+    "frozenSample": {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/yield-sample-100.json",
+      "sha256": "9debf5597b5c1edf752982b998e19f25bd719f1e4269cdadf4df887f9fbe2f66"
+    },
+    "initialDecisions": {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/review-results-v1.json",
+      "sha256": "93fb8b745af21e1954a81791cb9df76f9062f665fd613354e70231f47cb1f556"
+    },
+    "finalDecisions": {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/review-results-v2.json",
+      "sha256": "8627fb0b4001ef80fbc579edccac5ded3d61e22e479685d35aa61660f786cdc5"
+    },
+    "clockAndDecisionJournal": {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/timing/events.jsonl",
+      "sha256": "51c3f4a8c1d33caf0a1b780e94450bae6af5a6e2b08cdfc51724e5af1b896520"
+    },
+    "initialSourceAccessLog": {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/source-access-log.json",
+      "sha256": "68d33e0a993df772d9b1aefe8473605d09b5381262250507df021cda5245e895"
+    },
+    "independentChallenge": {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/independent-100-lead-decision-review.md",
+      "sha256": "2c38238d24dc9c3b09c797eb2f6d9517f0305e94bfe3601777ba3fb915f2856e"
+    },
+    "independentSourceAccessLog": {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/independent-decision-review-source-access.json",
+      "sha256": "11a82de4f21c410ad8bbe7ff1a7e0195b363ea9e86ffab7d5112d1c6c98ca74b"
+    },
+    "independentTimingAudit": {
+      "path": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/review/independent-v2-measurement-audit.json",
+      "sha256": "8e7d7507683aa189e52e24823d16b436d32e55276614891be2552affe4f2efaa"
+    }
+  },
+  "scope": [
+    "All 100 frozen native IDs count, including rejected and held leads. Each eligible lead has a private lean listing.",
+    "Agent review time includes source-read latency, screening and decision entry, and timed entry of adjudicated decisions. Setup, independent challenge, development and CI time are excluded. Individual lead durations were unmeasured.",
+    "The sample describes the retained 549-repository cohort. Account selection, clustering, incomplete inventories and source availability limit generalization."
+  ]
+}

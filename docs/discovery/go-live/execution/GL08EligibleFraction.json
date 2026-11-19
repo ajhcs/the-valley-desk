@@ -1,0 +1,79 @@
+{
+  "version": "measure-definitions-1.0",
+  "id": "GL08EligibleFraction",
+  "revision": "20261117-v1",
+  "label": "Eligible fraction",
+  "definition": {
+    "quantity": "Fraction meeting all four lean criteria",
+    "scale": "ratio",
+    "population": "Exact 100 frozen native IDs from the 549-repository retained seed cohort.",
+    "boundary": "Private Codex review. Admission-ready means useful purpose, supported health-tech relevance, source-backed dated regional connection and original link. Public catalog admission is a separate event.",
+    "exclusions": [
+      "Exclude setup, independent code review, code fixes, tests and CI waits from the time numerator.",
+      "Retain rejected, held, forked, archived and poorly described leads in the 100-lead denominator."
+    ],
+    "window": "One completed review of the frozen 100 leads on 17 November 2026; use recorded monotonic session endpoints and UTC timestamps.",
+    "sampling": "Existing GL08-yield-20261117-v1 SHA-256 selection, with no replacements or metadata filters.",
+    "conditions": [
+      "All 100 native IDs receive one final eligible/rejected/held decision.",
+      "Eligibility requires all four lean criteria. Unknown evidence remains held; a dated historical creator or institutional association may qualify without a claim of current employment or project worksite.",
+      "No paper, biography or non-fork requirement is added.",
+      "If eligible count is zero, minutes per eligible listing is undefined and reported null.",
+      "Use non-overlapping monotonic-clock batch sessions; do not invent per-lead times from averages.",
+      "A metadata-only inventory display occurred during setup before timed decisions; setup time is excluded and disclosed."
+    ],
+    "uncertainty": "Conditional descriptive cohort result. Seed-account selection, incomplete inventories, accepted-response filtering, account clustering and source availability limit generalization. Agent elapsed time does not estimate human maintenance capacity, public publication cost, regional yield/recall or clinical validity.",
+    "inputs": {
+      "eligible": {
+        "quantity": "Distinct eligible sampled native IDs",
+        "unit": {
+          "lead": 1
+        },
+        "scale": "ratio"
+      },
+      "reviewed": {
+        "quantity": "All 100 frozen IDs reviewed, including rejects/holds",
+        "unit": {
+          "lead": 1
+        },
+        "scale": "ratio"
+      }
+    },
+    "formula": {
+      "op": "div",
+      "args": [
+        {
+          "ref": "eligible"
+        },
+        {
+          "ref": "reviewed"
+        }
+      ]
+    },
+    "unit": {},
+    "aggregation": {
+      "method": "proportion",
+      "basis": "Eligible count divided by the fixed 100-lead denominator after all decisions."
+    }
+  },
+  "sources": {
+    "AcceptedPlan": {
+      "revision": "GL06-D01",
+      "locator": "docs/discovery/go-live/README.md minimum useful listing; plan.json execution_sequence step 2",
+      "basis": "Accepted lean rule and current user instruction to review this frozen sample and record eligible fraction and minutes per admission."
+    },
+    "FrozenSample": {
+      "revision": "9debf5597b5c1edf752982b998e19f25bd719f1e4269cdadf4df887f9fbe2f66",
+      "locator": "/workspace/build/builderbob/tvd-gl08-enrichment-20261117-vzzv4hhp/yield-sample-100.json",
+      "basis": "Original immutable selection before labels or timing."
+    }
+  },
+  "unknowns": [],
+  "links": [
+    {
+      "kind": "question",
+      "id": "GL08Yield",
+      "revision": "20261117-v1"
+    }
+  ]
+}

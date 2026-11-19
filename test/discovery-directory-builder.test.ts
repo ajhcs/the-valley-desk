@@ -29,11 +29,33 @@ test('content-addressed generation preserves prior bytes across a new generation
 
 test('production pinned authority reproduces only approved works and rejects rehashed proposals before evidence reads',async()=>{
  const selection=JSON.parse(await readFile(selectionPath,'utf8'));
- const result=await buildDirectorySelection(selection,DIRECTORY_REVIEW_AUTHORITY,(p:string)=>readFile(p));assert.equal(result.snapshot.works.length,6);assert.equal(result.report.supportObjectCount,0);assert.equal(result.report.projectGroupCount,null);assert.equal(result.report.changes.filter((c:any)=>c.decision==='hold').length,0);
+ const result=await buildDirectorySelection(selection,DIRECTORY_REVIEW_AUTHORITY,(p:string)=>readFile(p));assert.equal(result.snapshot.works.length,9);
+ const added = result.snapshot.works.filter(work => result.report.added.includes(work.id));
+ assert.deepEqual(added.map(work => work.nativeIdentity?.nativeId), ['501436131', '528629935', '718764890']);
+ assert.deepEqual(result.report.revised, []);
+ assert.deepEqual(result.report.removed, []);
+ assert.equal(result.report.supportObjectCount,0);assert.equal(result.report.projectGroupCount,null);assert.equal(result.report.changes.filter((c:any)=>c.decision==='hold').length,0);
  const changed=structuredClone(selection),entry=changed.entries.find((e:any)=>e.work);entry.work.claims[0].text='Unapproved treatment claim';entry.receipt.workSha256=await directoryWorkReviewHash(entry.work);entry.work.reviewRefs[0].receiptSha256=await directorySha256(canonicalDirectoryJson(entry.receipt));
  let reads=0;await assert.rejects(()=>buildDirectorySelection(changed,DIRECTORY_REVIEW_AUTHORITY,async()=>{reads++;return new Uint8Array();}),/untrusted-selection/);assert.equal(reads,0);
 });
 test('production CLI checks all generated artifacts and refuses authority override arguments',()=>{
  const check=spawnSync(process.execPath,['--import','tsx/esm','scripts/build-discovery-directory.mjs','--check'],{encoding:'utf8'});assert.equal(check.status,0,check.stderr);assert.match(check.stdout,/directory_projection_current/);
  const bad=spawnSync(process.execPath,['--import','tsx/esm','scripts/build-discovery-directory.mjs','--authority=anything'],{encoding:'utf8'});assert.equal(bad.status,1);assert.equal(bad.stderr.trim(),'invalid_directory_projection');
+});
+
+test('reviewed project claims still have to match their bound purpose and geography', async () => {
+  const original = JSON.parse(await readFile(selectionPath, 'utf8'));
+  for (const [kind, key, value, expected] of [
+    ['health-purpose', 'text', 'A patient treatment', /reviewed-project-binding/],
+    ['regional-connection', 'county', 'Camden', /reviewed-project-geography/],
+  ] as const) {
+    const changed = structuredClone(original);
+    const entry = changed.entries.find((row: any) => row.work?.nativeIdentity?.nativeId === '501436131');
+    const claim = entry.work.claims.find((row: any) => row.kind === kind);
+    claim[key] = value;
+    entry.receipt.workSha256 = await directoryWorkReviewHash(entry.work);
+    entry.work.reviewRefs[0].receiptSha256 = await directorySha256(canonicalDirectoryJson(entry.receipt));
+    const authority = {...DIRECTORY_REVIEW_AUTHORITY, selectionSha256: await directorySha256(canonicalDirectoryJson(changed))};
+    await assert.rejects(() => buildDirectorySelection(changed, authority, readFile), expected);
+  }
 });

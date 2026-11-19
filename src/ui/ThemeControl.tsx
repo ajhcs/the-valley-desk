@@ -11,7 +11,7 @@ const unavailable: ThemeStore = { getSnapshot: () => fallback, subscribe: () => 
 export function ThemeControl() {
   const store = typeof window === "undefined" ? unavailable : window.__VALLEY_DESK_THEME__ ?? unavailable;
   const snapshot = React.useSyncExternalStore(store.subscribe, store.getSnapshot, () => fallback);
-  return <div className="ThemeControl">
+  return <div className="ThemeControl desk-theme">
     <label htmlFor="site-theme">Theme</label>
     <select id="site-theme" value={snapshot.preference}
       aria-describedby={snapshot.sessionOnly ? "theme-storage-status" : undefined}

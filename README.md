@@ -1,20 +1,10 @@
 # The Valley Desk
 
-The [regional discovery engineering handoff](docs/discovery-engineering/README.md)
-defines the planned healthcare technology catalog, work packages, dependencies,
-Sol/Terra/Astra assignments, and acceptance gates. It is planning documentation;
-the application behavior described below remains the current implementation.
+The Valley Desk is a public directory of health technology, biomedicine and life science work connected to the nine-county Delaware Valley region. Search from the homepage or browse by institution, topic or county. Projects link to their repositories and, where available, their papers.
 
-Local implementation progress and reviewed package receipts are recorded in
-[discovery implementation](docs/discovery/README.md). EX33 authorizes deployment of the ready existing-site candidate after GL11
-checks; no deployment has occurred.
+The directory reads the public listing projection in `src/content/public-directory-projects.json` and follows the [listing rule](AGENTS.md). News, Events, Policy Watch and Technology Watch have separate pages and editorial rules.
 
-The current product direction is the [direct go-live plan](docs/discovery/go-live/README.md):
-an internal-first, publicly accessible regional health-tech index with broad discovery,
-lean sourced records and useful links. Its GL00–GL11 implementation begins with the reviewed GL00 baseline under EX33. Existing metadata-and-link code remains the qualified foundation;
-optional full-text reuse and independent benchmark review stay separate.
-
-Product source. Human news + agent feed. Delaware Valley / Greater Philadelphia healthcare technology.
+On the existing Worker, `DIRECTORY_PUBLIC_ENABLED=true` enables the directory homepage and listing routes. Apply [the removal table SQL](ops/directory-removals.sql) to the existing D1 database before enabling it. A trusted operator removes a project by inserting its GitHub repository ID into `public_directory_removals`. Directory reads include that table and fail closed if it cannot be read. Roll back the Worker version without restoring the database.
 
 Owner: Cole Lyons (co-founder). Engineering: Knox. Product: Reed. Brand: Mira. CEO: Vale.
 

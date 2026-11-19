@@ -1,0 +1,41 @@
+{
+  "observedDate": "2026-11-18",
+  "observations": [
+    {
+      "sourceUrl": "https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2022.919046/full",
+      "access": "primary-web-rendering",
+      "bodySha256": "07852882001833e0daa84f42e87537994deed32da35ec31bdaa3811801c8990e",
+      "facts": {
+        "projectRepositoryUrl": "https://github.com/Beemd/Failure-Detection_MedMNIST",
+        "project": "Failure Detection for Medical Imaging",
+        "purpose": "Research code from a study of how to flag unreliable predictions in medical-image classifiers.",
+        "institution": "Rowan University",
+        "regionalNote": "The 2022 study identifies this as its code and lists a Rowan University affiliation in Glassboro.",
+        "regionalBasis": "county",
+        "asOf": {
+          "precision": "day",
+          "value": "2022-07-22"
+        },
+        "scope": "historical",
+        "sourceSpan": "Rowan University, Glassboro, NJ, United States",
+        "topics": [
+          "medical-imaging"
+        ]
+      }
+    },
+    {
+      "sourceUrl": "https://www.gloucestercountynj.gov/831/Municipalities",
+      "access": "primary-web-rendering",
+      "bodySha256": "012dd74c721d4935a99982e4f4f701032a0ce9239805831229488d860580d424",
+      "facts": {
+        "location": {
+          "county": "Gloucester",
+          "municipality": "Glassboro",
+          "state": "NJ",
+          "campus": null
+        },
+        "sourceSpan": "Borough of Glassboro"
+      }
+    }
+  ]
+}

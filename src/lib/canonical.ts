@@ -85,30 +85,16 @@ export function robotsTxt(origin = publicOrigin()): string {
   ].join("\n");
 }
 
-export function llmsTxt(origin = publicOrigin(), watchEnabled = false): string {
+export function llmsTxt(origin = publicOrigin(), directoryEnabled = true): string {
   return `# The Valley Desk
 
-> A concise, cited record of how healthcare technology, AI, health policy, interoperability, EHR changes, cybersecurity, and related developments affect Delaware Valley health systems.
+> A public directory of health technology, biomedicine and life science software connected to the nine-county Delaware Valley.
 
-The site is an aggregator with context, not a magazine. Each published item links to its source material. Use the canonical pages and machine-readable feeds below.
+- [Projects](${origin}/discover/works): browse or search public GitHub repositories.
+${directoryEnabled ? `- [Methodology](${origin}/discover/methodology): definitions, corrections, removal and coverage.
+- [Directory JSON](${origin}/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
+` : ""}- [Sitemap](${origin}/sitemap.xml)
 
-## Sections
-
-- [News](${origin}/news): health-system technology, policy, finance, AI, EHR, interoperability, workforce, and cybersecurity briefs.
-- [Events](${origin}/events): confirmed Delaware Valley chapter events, webinars, and regionally relevant programs with registration links.
-${watchEnabled ? `- [Policy Watch](${origin}/policy-watch): source-backed federal, PA, NJ, DE, and Delaware Valley policy records.
-- [Technology Watch](${origin}/technology-watch): technology with verified Delaware Valley connections.\n` : ""}
-
-## Machine-readable feeds
-
-- [JSON feed](${origin}/feed.json)
-- [XML feed](${origin}/feed.xml)
-- [Sitemap](${origin}/sitemap.xml)
-
-## Editorial notes
-
-- Prefer the primary source and citations attached to each item.
-- Dates and event times use the America/New_York timezone unless the item states otherwise.
-- Unpublished and review-queue material is not part of the public record.
+A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. Consult the linked sources for the scope of each connection.
 `;
 }

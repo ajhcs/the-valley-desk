@@ -20,7 +20,7 @@ import { watchPageHead, type WatchPageResult } from "./watch-page";
 import { normalizePublicFeatures, type PublicFeatures } from "./public-features";
 
 const SITE = "The Valley Desk";
-const DEFAULT_DESC = "Local health-tech news for people and agents";
+const DEFAULT_DESC = "A public directory of health technology, biomedicine and life science projects connected to the Delaware Valley.";
 
 let queriesBound = false;
 
@@ -209,7 +209,6 @@ export function primaryNoscript(
 ) {
   ensureQueriesBound();
   const p = stripSlash(path) || "/";
-  const feeds = `<p><a href="${esc(publicUrl("/feed.json", origin))}">JSON feed</a> · <a href="${esc(publicUrl("/feed.xml", origin))}">XML feed</a></p>`;
   if (p === "/policy") return `<h1>Healthcare policy watchlist</h1><p>Observed legislative background, not new reporting. Enable JavaScript for the evidence view, or read the <a href="/api/policy-watchlist">public baseline JSON</a>.</p>`;
   if (p === "/") {
     const rankedNews = latestNews(items, 7);
@@ -219,13 +218,14 @@ export function primaryNoscript(
     return [
       `<h1>${esc(SITE)}</h1>`,
       `<p>${esc(DEFAULT_DESC)}</p>`,
+      normalizePublicFeatures(publicFeatures).discovery
+        ? '<form role="search" action="/discover/works" method="get"><label for="fallback-discovery">Find regional health-tech projects</label> <input id="fallback-discovery" name="q" type="search" maxlength="200"> <button type="submit">Search</button> <a href="/discover/works">Browse projects</a></form>'
+        : "",
       lead
         ? `<article><p>Latest news</p><h2><a href="${esc(canonicalUrl(lead, origin))}">${esc(lead.title)}</a></h2><p>${esc(lead.impactSentence || lead.dek || lead.title)}</p></article>`
         : "",
       rest.length ? `<h2>News</h2><ul>${rest.map((item) => linkItem(item, origin)).join("")}</ul>` : "",
       events.length ? `<h2>Events</h2><ul>${events.map((item) => linkItem(item, origin)).join("")}</ul>` : "",
-      normalizePublicFeatures(publicFeatures).watch ? `<nav aria-label="Watch sections"><h2><a href="${esc(publicUrl("/policy-watch", origin))}">Policy Watch</a></h2><h2><a href="${esc(publicUrl("/technology-watch", origin))}">Technology Watch</a></h2></nav>` : "",
-      feeds,
     ].filter(Boolean).join("");
   }
   if (dynamicItem) {
@@ -240,7 +240,6 @@ export function primaryNoscript(
       dynamicItem.body ? `<p>${esc(dynamicItem.body.slice(0, 800))}</p>` : "",
       citations ? `<h2>Sources</h2><ul>${citations}</ul>` : "",
       `<p><a href="${esc(publicUrl(canonicalPath(dynamicItem).replace(/\/[^/]+$/, "") || "/", origin))}">More from ${esc(SITE)}</a></p>`,
-      feeds,
     ].filter(Boolean).join("");
   }
   const list = listWindow(p, items, search);
@@ -255,10 +254,9 @@ export function primaryNoscript(
       rows.length ? `<ul>${rows.map((item) => linkItem(item, origin)).join("")}</ul>` : "",
       !rows.length && !list.errors?.length && list.window.indexable ? "<p>No published items match this view.</p>" : "",
       paginationNav(list, origin),
-      feeds,
     ].filter(Boolean).join("");
   }
-  return [`<h1>${esc(SITE)}</h1>`, `<p>${esc(DEFAULT_DESC)}</p>`, feeds].join("");
+  return [`<h1>${esc(SITE)}</h1>`, `<p>${esc(DEFAULT_DESC)}</p>`].join("");
 }
 
 function jsonLdTag(data: unknown, nonce: string) {
@@ -401,8 +399,6 @@ export function decorateHtml(options: {
     `<link rel="canonical" href="${esc(url)}" />`,
     ...(prevHref ? [`<link rel="prev" href="${esc(prevHref)}" />`] : []),
     ...(nextHref ? [`<link rel="next" href="${esc(nextHref)}" />`] : []),
-    `<link rel="alternate" type="application/rss+xml" href="${esc(publicUrl("/feed.xml", options.origin))}" />`,
-    `<link rel="alternate" type="application/json" href="${esc(publicUrl("/feed.json", options.origin))}" />`,
     `<script nonce="${esc(options.nonce)}">globalThis.__VALLEY_DESK_PUBLIC_ORIGIN__=${JSON.stringify(options.origin)};globalThis.__VALLEY_DESK_PUBLIC_FEATURES__=${JSON.stringify(features)};</script>`,
     ...jsonLd.map((doc) => jsonLdTag(doc, options.nonce)),
   ].join("\n    ");

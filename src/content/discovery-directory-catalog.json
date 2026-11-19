@@ -1,6 +1,6 @@
 {
   "schemaVersion": "discovery-directory-snapshot-v1",
-  "version": "sha256:84f91f17dee42c875953911357b453d43e3dfb8b7b2bfae15948703481abae8d",
+  "version": "sha256:833a4b1855668a15eeb5f4c67807e4b173208029829c5e98ca240bd8b71b3313",
   "works": [
     {
       "schemaVersion": "discovery-directory-work-v1",
@@ -929,6 +929,387 @@
           "reviewId": "GL05:decision:sleepboost-repo"
         }
       ]
+    },
+    {
+      "schemaVersion": "discovery-directory-work-v1",
+      "id": "GL06:work:github:501436131",
+      "revision": 1,
+      "kind": "repository",
+      "nativeIdentity": {
+        "provider": "github",
+        "namespace": null,
+        "nativeId": "501436131",
+        "evidenceId": "GL06:project:501436131:native"
+      },
+      "title": {
+        "value": "Beemd/Failure-Detection_MedMNIST",
+        "evidenceId": "GL06:project:501436131:title"
+      },
+      "url": {
+        "value": "https://github.com/Beemd/Failure-Detection_MedMNIST",
+        "evidenceId": "GL06:project:501436131:url"
+      },
+      "description": null,
+      "owner": null,
+      "sourceDate": null,
+      "checkedAt": "2026-11-18",
+      "evidence": [
+        {
+          "id": "GL06:project:501436131:native",
+          "sourceUrl": "https://api.github.com/repos/Beemd/Failure-Detection_MedMNIST",
+          "observedDate": "2026-11-18",
+          "observationSha256": "f145fc5e591ed49932c421b10317fd275c4773a6f6cb5b425171f67f9552083e",
+          "pointer": "/id",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL06:project:501436131:title",
+          "sourceUrl": "https://api.github.com/repos/Beemd/Failure-Detection_MedMNIST",
+          "observedDate": "2026-11-18",
+          "observationSha256": "f145fc5e591ed49932c421b10317fd275c4773a6f6cb5b425171f67f9552083e",
+          "pointer": "/full_name",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL06:project:501436131:url",
+          "sourceUrl": "https://api.github.com/repos/Beemd/Failure-Detection_MedMNIST",
+          "observedDate": "2026-11-18",
+          "observationSha256": "f145fc5e591ed49932c421b10317fd275c4773a6f6cb5b425171f67f9552083e",
+          "pointer": "/html_url",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL06:project:501436131:purpose",
+          "sourceUrl": "https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2022.919046/full",
+          "observedDate": "2026-11-18",
+          "observationSha256": "9a359a54db7aff5c3effe503347c532818a03a906b6ec61b3853fec4b8a6d49b",
+          "pointer": "/observations/0/facts/purpose",
+          "method": "primary-web-rendering"
+        },
+        {
+          "id": "GL06:project:501436131:place",
+          "sourceUrl": "https://www.gloucestercountynj.gov/831/Municipalities",
+          "observedDate": "2026-11-18",
+          "observationSha256": "9a359a54db7aff5c3effe503347c532818a03a906b6ec61b3853fec4b8a6d49b",
+          "pointer": "/observations/1/facts/location",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "reviewRefs": [
+        {
+          "id": "GL06:project:501436131:review",
+          "receiptSha256": "d698b95ac384ea964d6bef02470018d62077c3d6b935812a5ded83c18e983a29"
+        }
+      ],
+      "claims": [
+        {
+          "id": "GL06:project:501436131:health",
+          "subjectId": "GL06:work:github:501436131",
+          "evidenceIds": [
+            "GL06:project:501436131:purpose"
+          ],
+          "reviewId": "GL06:project:501436131:review",
+          "kind": "health-purpose",
+          "text": "Research code from a study of how to flag unreliable predictions in medical-image classifiers."
+        },
+        {
+          "id": "GL06:project:501436131:region",
+          "subjectId": "GL06:work:github:501436131",
+          "evidenceIds": [
+            "GL06:project:501436131:purpose",
+            "GL06:project:501436131:place"
+          ],
+          "reviewId": "GL06:project:501436131:review",
+          "kind": "regional-connection",
+          "institution": "Rowan University",
+          "campus": null,
+          "municipality": "Glassboro",
+          "state": "NJ",
+          "regionalBasis": "county",
+          "county": "Gloucester",
+          "asOf": {
+            "precision": "day",
+            "value": "2022-07-22"
+          },
+          "subjectRole": "project-association",
+          "subjectLabel": "Failure Detection for Medical Imaging",
+          "sourceAuthorIndex": null,
+          "affiliationEvidenceIds": [
+            "GL06:project:501436131:purpose"
+          ],
+          "geographyEvidenceIds": [
+            "GL06:project:501436131:place"
+          ],
+          "scope": "historical",
+          "qualification": "The 2022 study identifies this as its code and lists a Rowan University affiliation in Glassboro."
+        },
+        {
+          "id": "GL06:project:501436131:topic",
+          "subjectId": "GL06:work:github:501436131",
+          "evidenceIds": [
+            "GL06:project:501436131:purpose"
+          ],
+          "reviewId": "GL06:project:501436131:review",
+          "kind": "topic",
+          "topic": "medical-imaging",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "schemaVersion": "discovery-directory-work-v1",
+      "id": "GL06:work:github:528629935",
+      "revision": 1,
+      "kind": "repository",
+      "nativeIdentity": {
+        "provider": "github",
+        "namespace": null,
+        "nativeId": "528629935",
+        "evidenceId": "GL06:project:528629935:native"
+      },
+      "title": {
+        "value": "vganapati/LED_PVAE",
+        "evidenceId": "GL06:project:528629935:title"
+      },
+      "url": {
+        "value": "https://github.com/vganapati/LED_PVAE",
+        "evidenceId": "GL06:project:528629935:url"
+      },
+      "description": null,
+      "owner": null,
+      "sourceDate": null,
+      "checkedAt": "2026-11-18",
+      "evidence": [
+        {
+          "id": "GL06:project:528629935:native",
+          "sourceUrl": "https://api.github.com/repos/vganapati/LED_PVAE",
+          "observedDate": "2026-11-18",
+          "observationSha256": "c9b0cb1e92bb53ea12be5627ecd8a216ffab4d7421ad48e2a96feb34cfff2b59",
+          "pointer": "/id",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL06:project:528629935:title",
+          "sourceUrl": "https://api.github.com/repos/vganapati/LED_PVAE",
+          "observedDate": "2026-11-18",
+          "observationSha256": "c9b0cb1e92bb53ea12be5627ecd8a216ffab4d7421ad48e2a96feb34cfff2b59",
+          "pointer": "/full_name",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL06:project:528629935:url",
+          "sourceUrl": "https://api.github.com/repos/vganapati/LED_PVAE",
+          "observedDate": "2026-11-18",
+          "observationSha256": "c9b0cb1e92bb53ea12be5627ecd8a216ffab4d7421ad48e2a96feb34cfff2b59",
+          "pointer": "/html_url",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL06:project:528629935:purpose",
+          "sourceUrl": "https://ganapati.swarthmore.edu/paperpdfs/AI4Science.pdf",
+          "observedDate": "2026-11-18",
+          "observationSha256": "1a91e721dbe73c1c834cfacaca080084a336b39bb5f956574f1f76aa9023ff98",
+          "pointer": "/observations/0/facts/purpose",
+          "method": "primary-web-rendering"
+        },
+        {
+          "id": "GL06:project:528629935:place",
+          "sourceUrl": "https://www.delcopa.gov/towns",
+          "observedDate": "2026-11-18",
+          "observationSha256": "1a91e721dbe73c1c834cfacaca080084a336b39bb5f956574f1f76aa9023ff98",
+          "pointer": "/observations/1/facts/location",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "reviewRefs": [
+        {
+          "id": "GL06:project:528629935:review",
+          "receiptSha256": "bba59003ed87a1e9ab73651391c84c0f667bd05c1d2e7b70752645843d40fe75"
+        }
+      ],
+      "claims": [
+        {
+          "id": "GL06:project:528629935:health",
+          "subjectId": "GL06:work:github:528629935",
+          "evidenceIds": [
+            "GL06:project:528629935:purpose"
+          ],
+          "reviewId": "GL06:project:528629935:review",
+          "kind": "health-purpose",
+          "text": "Research code for reconstructing images from LED-array microscopy, demonstrated on prepared frog blood-smear slides."
+        },
+        {
+          "id": "GL06:project:528629935:region",
+          "subjectId": "GL06:work:github:528629935",
+          "evidenceIds": [
+            "GL06:project:528629935:purpose",
+            "GL06:project:528629935:place"
+          ],
+          "reviewId": "GL06:project:528629935:review",
+          "kind": "regional-connection",
+          "institution": "Swarthmore College",
+          "campus": null,
+          "municipality": "Swarthmore",
+          "state": "PA",
+          "regionalBasis": "county",
+          "county": "Delaware",
+          "asOf": {
+            "precision": "year",
+            "value": "2022"
+          },
+          "subjectRole": "project-association",
+          "subjectLabel": "LED_PVAE",
+          "sourceAuthorIndex": null,
+          "affiliationEvidenceIds": [
+            "GL06:project:528629935:purpose"
+          ],
+          "geographyEvidenceIds": [
+            "GL06:project:528629935:place"
+          ],
+          "scope": "historical",
+          "qualification": "The 2022 study credits Swarthmore College and identifies this repository as the released research code."
+        },
+        {
+          "id": "GL06:project:528629935:topic",
+          "subjectId": "GL06:work:github:528629935",
+          "evidenceIds": [
+            "GL06:project:528629935:purpose"
+          ],
+          "reviewId": "GL06:project:528629935:review",
+          "kind": "topic",
+          "topic": "medical-imaging",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "schemaVersion": "discovery-directory-work-v1",
+      "id": "GL06:work:github:718764890",
+      "revision": 1,
+      "kind": "repository",
+      "nativeIdentity": {
+        "provider": "github",
+        "namespace": null,
+        "nativeId": "718764890",
+        "evidenceId": "GL06:project:718764890:native"
+      },
+      "title": {
+        "value": "markymarkymark/Zlux",
+        "evidenceId": "GL06:project:718764890:title"
+      },
+      "url": {
+        "value": "https://github.com/markymarkymark/Zlux",
+        "evidenceId": "GL06:project:718764890:url"
+      },
+      "description": null,
+      "owner": null,
+      "sourceDate": null,
+      "checkedAt": "2026-11-18",
+      "evidence": [
+        {
+          "id": "GL06:project:718764890:native",
+          "sourceUrl": "https://api.github.com/repos/markymarkymark/Zlux",
+          "observedDate": "2026-11-18",
+          "observationSha256": "852e9c57466af7246d046b5029a9c01750438bc483e8f1198ff3435defe64522",
+          "pointer": "/id",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL06:project:718764890:title",
+          "sourceUrl": "https://api.github.com/repos/markymarkymark/Zlux",
+          "observedDate": "2026-11-18",
+          "observationSha256": "852e9c57466af7246d046b5029a9c01750438bc483e8f1198ff3435defe64522",
+          "pointer": "/full_name",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL06:project:718764890:url",
+          "sourceUrl": "https://api.github.com/repos/markymarkymark/Zlux",
+          "observedDate": "2026-11-18",
+          "observationSha256": "852e9c57466af7246d046b5029a9c01750438bc483e8f1198ff3435defe64522",
+          "pointer": "/html_url",
+          "method": "provider-metadata"
+        },
+        {
+          "id": "GL06:project:718764890:purpose",
+          "sourceUrl": "https://www.med.upenn.edu/CAMIPM/zlux.html",
+          "observedDate": "2026-11-18",
+          "observationSha256": "4169450e1c550e7b9d4ca7f5c43d62514cb4b59fbc7a42c7f7daf5e8bcddafcc",
+          "pointer": "/observations/0/facts/purpose",
+          "method": "primary-web-rendering"
+        },
+        {
+          "id": "GL06:project:718764890:place",
+          "sourceUrl": "https://www.med.upenn.edu/CAMIPM/zlux.html",
+          "observedDate": "2026-11-18",
+          "observationSha256": "4169450e1c550e7b9d4ca7f5c43d62514cb4b59fbc7a42c7f7daf5e8bcddafcc",
+          "pointer": "/observations/1/facts/location",
+          "method": "primary-web-rendering"
+        }
+      ],
+      "reviewRefs": [
+        {
+          "id": "GL06:project:718764890:review",
+          "receiptSha256": "cac99e4d9ef60f8ed5a3bb39d938eda165a24ee86a1ef6520cf3064adbd7baca"
+        }
+      ],
+      "claims": [
+        {
+          "id": "GL06:project:718764890:health",
+          "subjectId": "GL06:work:github:718764890",
+          "evidenceIds": [
+            "GL06:project:718764890:purpose"
+          ],
+          "reviewId": "GL06:project:718764890:review",
+          "kind": "health-purpose",
+          "text": "A MATLAB tool for comparing medical-image file headers to check whether imaging protocol settings match."
+        },
+        {
+          "id": "GL06:project:718764890:region",
+          "subjectId": "GL06:work:github:718764890",
+          "evidenceIds": [
+            "GL06:project:718764890:purpose",
+            "GL06:project:718764890:place"
+          ],
+          "reviewId": "GL06:project:718764890:review",
+          "kind": "regional-connection",
+          "institution": "University of Pennsylvania",
+          "campus": null,
+          "municipality": "Philadelphia",
+          "state": "PA",
+          "regionalBasis": "county",
+          "county": "Philadelphia",
+          "asOf": {
+            "precision": "day",
+            "value": "2026-11-18"
+          },
+          "subjectRole": "project-association",
+          "subjectLabel": "Zlux",
+          "sourceAuthorIndex": null,
+          "affiliationEvidenceIds": [
+            "GL06:project:718764890:purpose"
+          ],
+          "geographyEvidenceIds": [
+            "GL06:project:718764890:place"
+          ],
+          "scope": "observed",
+          "qualification": "Penn’s Center for Advanced Metabolic Imaging in Precision Medicine describes and links the tool and lists its Philadelphia address."
+        },
+        {
+          "id": "GL06:project:718764890:topic",
+          "subjectId": "GL06:work:github:718764890",
+          "evidenceIds": [
+            "GL06:project:718764890:purpose"
+          ],
+          "reviewId": "GL06:project:718764890:review",
+          "kind": "topic",
+          "topic": "medical-imaging",
+          "vocabularyRevision": "directory-topics-v1"
+        }
+      ],
+      "relations": []
     }
   ]
 }

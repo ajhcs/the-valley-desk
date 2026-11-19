@@ -1,0 +1,35 @@
+{
+  "previousSnapshotVersion": "sha256:84f91f17dee42c875953911357b453d43e3dfb8b7b2bfae15948703481abae8d",
+  "snapshotVersion": "sha256:833a4b1855668a15eeb5f4c67807e4b173208029829c5e98ca240bd8b71b3313",
+  "added": [
+    "GL06:work:github:501436131",
+    "GL06:work:github:528629935",
+    "GL06:work:github:718764890"
+  ],
+  "removed": [],
+  "revised": [],
+  "workCount": 9,
+  "supportObjectCount": 0,
+  "projectGroupCount": null,
+  "changes": [
+    {
+      "candidateId": "GL06:work:github:528629935",
+      "decision": "accept",
+      "workId": "GL06:work:github:528629935"
+    },
+    {
+      "candidateId": "GL06:work:github:501436131",
+      "decision": "accept",
+      "workId": "GL06:work:github:501436131"
+    },
+    {
+      "candidateId": "GL06:work:github:718764890",
+      "decision": "accept",
+      "workId": "GL06:work:github:718764890"
+    }
+  ],
+  "nextPriorState": {
+    "path": "docs/discovery/go-live/evidence/GL06/generations/2f274423b647349388662827a24b114f8c561c0e164079eeb2e7406753fa97e8.json",
+    "sha256": "2f274423b647349388662827a24b114f8c561c0e164079eeb2e7406753fa97e8"
+  }
+}

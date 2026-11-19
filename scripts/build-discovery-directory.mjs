@@ -6,12 +6,12 @@ import { randomBytes } from 'node:crypto';
 import { parsePilotJson } from './build-discovery-pilot.mjs';
 import { validateDirectorySelection, directorySha256 } from '../src/ingest/discovery/directory-review.ts';
 const root = fileURLToPath(new URL('../', import.meta.url));
-export const selectionPath = 'docs/discovery/go-live/evidence/GL05/selection.json';
+export const selectionPath = 'docs/discovery/go-live/evidence/GL06/selection.json';
 export const catalogPath = 'src/content/discovery-directory-catalog.json';
 export const removalsPath = 'src/content/discovery-directory-removals.json';
-export const statePath = 'docs/discovery/go-live/evidence/GL05/generation-state.json';
-export const reportPath = 'docs/discovery/go-live/evidence/GL05/generation-report.json';
-export const generationsPath = 'docs/discovery/go-live/evidence/GL05/generations';
+export const statePath = 'docs/discovery/go-live/evidence/GL06/generation-state.json';
+export const reportPath = 'docs/discovery/go-live/evidence/GL06/generation-report.json';
+export const generationsPath = 'docs/discovery/go-live/evidence/GL06/generations';
 /** Publish exact bytes under their digest without overwriting an existing archive. */
 export async function archiveGeneration(directory, bytes, check = false) {
   const sha256 = await directorySha256(bytes);

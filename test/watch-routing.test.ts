@@ -6,6 +6,7 @@ import { projectPolicyDossier, projectTechnologyProfile } from "../src/content/w
 import type { DeliveryDependencyKind, WatchDeliveryManifest } from "../src/content/watch-delivery";
 import { decodeWatchResponse, parseWatchResponse, WatchReadError, type WatchReadData } from "../src/content/watch-response";
 import { applyReviewedWatchProjection, readWatchDirectory, expireWatchGenerations } from "../src/ingest/watch-persistence";
+import { handleWatchRead } from "../src/ingest/watch-api";
 import { recordWatchDependencyHead } from "../src/ingest/watch-delivery";
 import type { D1DatabaseLike } from "../src/ingest/persistence";
 import { decorateHtml, decorateWatchHtml, watchPrimaryNoscript } from "../src/lib/crawler-html";
@@ -101,23 +102,49 @@ test("Watch page routes use literal canonical slugs and only their shared query 
   assert.equal(parseWatchPageRoute("/policy-watch/synthetic-policy", "?lookup=slug")?.status, 400);
 });
 
-test("disabled Watch pages return 404 for GET and HEAD without reading D1 or a feed", async () => {
-  let reads = 0;
-  const db = { prepare() { reads++; throw Error("must not read"); } };
-  for (const flag of [undefined, "false", "TRUE", " true", true]) {
-    for (const path of ["/policy-watch", "/technology-watch/synthetic-technology"]) {
-      const { env, requests } = environment({ WATCH_PUBLIC_ENABLED: flag, VALLEY_DESK_DB: db });
-      for (const method of ["GET", "HEAD"]) {
+test("retired editorial pages and machine reads return 410 before feature flags, assets, or D1", async () => {
+  const pages = [
+    ["/news", "News"], ["/news/old-story?source=archive", "News"], ["/new%73%2Fold-story", "News"],
+    ["/events/", "Events"], ["/events/old-event", "Events"],
+    ["/policy-watch", "Policy Watch"], ["/policy-watch/updates?limit=bad", "Policy Watch"],
+    ["/technology-watch", "Technology Watch"], ["/technology-watch/old-profile/extra", "Technology Watch"],
+  ];
+  const machine = ["/feed.json", "/feed.xml", "/f%65ed.json", "/api/content?kind=voice", "/events.ics",
+    "/api/v2/watch", "/api/v2/watch/policy", "/api/v2/watch/technology/old-profile", "/api/v2/watch/policy/updates",
+    "/api/v2/watch/representatives", "/api/v2/watch/unknown"];
+  for (const enabled of [undefined, "true"]) {
+    const { env, requests } = environment({
+      DIRECTORY_PUBLIC_ENABLED: "false", WATCH_PUBLIC_ENABLED: enabled, EVENT_CALENDAR_PUBLIC_ENABLED: enabled,
+      VALLEY_DESK_DB: { prepare() { assert.fail("retired routes must not consult D1"); } },
+    });
+    for (const method of ["GET", "HEAD"]) {
+      for (const [path, section] of pages) {
         const response = await worker.fetch(new Request(`${origin}${path}`, { method }), env, {});
-        assert.equal(response.status, 404); assertPrivateHeaders(response);
+        assert.equal(response.status, 410, path);
+        assertPrivateHeaders(response);
         const html = await response.text();
         if (method === "HEAD") assert.equal(html, "");
-        else { assert.match(body(html), /This page is not published/); assert.doesNotMatch(html, /__VALLEY_DESK_DYNAMIC_ITEMS__|application\/ld\+json/); }
+        else {
+          assert.ok(html.includes(`<h1>${section} is retired</h1>`), path);
+          assert.match(html, /<meta name="robots" content="noindex"/);
+          assert.match(html, /href="\/discover\/works"[^>]*>Browse projects<\/a>/);
+          assert.doesNotMatch(html, /rel="alternate"|__VALLEY_DESK_DYNAMIC_ITEMS__/);
+        }
       }
-      assert.deepEqual(requests, ["/index.html", "/index.html"]);
+      for (const path of machine) {
+        const response = await worker.fetch(new Request(`${origin}${path}`, { method }), env, {});
+        assert.equal(response.status, 410, path);
+        assert.equal(response.headers.get("x-robots-tag"), "noindex", path);
+        assert.match(response.headers.get("content-type") ?? "", /^application\/json/);
+        if (method === "HEAD") assert.equal(await response.text(), "");
+        else assert.deepEqual(await response.json(), { error: "retired" });
+      }
     }
+    const alias = await worker.fetch(new Request("https://www.thevalleydesk.org/news/old-story"), env, {});
+    assert.equal(alias.status, 410);
+    assert.equal(alias.headers.get("location"), null);
+    assert.deepEqual(requests, []);
   }
-  assert.equal(reads, 0);
 });
 
 test("private Watch-shaped paths remain outside public routing and never reach D1", async () => {
@@ -131,69 +158,35 @@ test("private Watch-shaped paths remain outside public routing and never reach D
   assert.equal(reads, 0); assert.deepEqual(requests, []);
 });
 
-test("invalid Watch page paths and query fields fail before any data lookup", async () => {
-  let reads = 0;
-  const { env } = environment({ WATCH_PUBLIC_ENABLED: "true", VALLEY_DESK_DB: { prepare() { reads++; throw Error("must not read"); } } });
-  for (const [path, expected] of [["/policy-watch/updates", 404], ["/technology-watch/Uppercase", 404], ["/policy-watch?__proto__=x", 400],
-    ["/policy-watch?constructor=&invalid_search_field=", 400], ["/technology-watch?license=mit", 400], ["/policy-watch/synthetic-policy?q=x", 400]]) {
-    for (const method of ["GET", "HEAD"]) {
-      const response = await worker.fetch(new Request(`${origin}${path}`, { method }), env, {});
-      assert.equal(response.status, expected); assertPrivateHeaders(response);
-      if (method === "HEAD") assert.equal(await response.text(), "");
-      else assert.doesNotMatch(await response.text(), /Synthetic health|watch-directory-1/);
-    }
-  }
-  assert.equal(reads, 0);
-});
-
-test("enabled Watch pages are read-only and unavailable D1 is 503, never empty 200", async () => {
-  const { env } = environment({ WATCH_PUBLIC_ENABLED: "true" });
-  for (const path of ["/policy-watch", "/technology-watch/synthetic-technology"]) {
-    const unavailable = await worker.fetch(new Request(`${origin}${path}`), env, {});
-    assert.equal(unavailable.status, 503); assertPrivateHeaders(unavailable);
-    const html = await unavailable.text(); assert.match(body(html), /temporarily unavailable/); assert.doesNotMatch(html, /No accepted records|0 records/);
-    const denied = await worker.fetch(new Request(`${origin}${path}`, { method: "POST" }), env, {});
-    assert.equal(denied.status, 405); assert.equal(denied.headers.get("allow"), "GET, HEAD"); assertPrivateHeaders(denied);
-  }
-});
-
-test("asset failures preserve hidden 404 and unavailable 503 instead of throwing or claiming success", async () => {
-  for (const fetch of [async () => new Response("missing", { status: 404 }), async () => { throw Error("private-asset-diagnostic"); }]) {
-    for (const enabled of [undefined, "true"]) {
-      const { env } = environment({ WATCH_PUBLIC_ENABLED: enabled, ASSETS: { fetch } });
-      const response = await worker.fetch(new Request(`${origin}/policy-watch`), env, {});
-      assert.equal(response.status, enabled ? 503 : 404); assertPrivateHeaders(response);
-      const html = await response.text(); assert.match(html, /<meta name="robots" content="noindex"/);
-      assert.match(html, /<main><h1>/);
-      assert.doesNotMatch(html, /private-asset-diagnostic|No accepted records/);
-    }
-  }
-});
+// Exercise the retained Watch renderer and read handler directly. The Worker
+// deliberately blocks these public URLs before reaching either implementation.
+async function legacyWatchPage(request: Request, env: Parameters<typeof handleWatchRead>[1]) {
+  const result = await readWatchPage(request, true, input => handleWatchRead(input, env));
+  const html = decorateWatchHtml({ html: template, result, origin, nonce: "fixture" });
+  return { status: result.status, result, html };
+}
 
 test("real accepted D1 directory and detail reads become Watch HTML, without v1 content", async t => {
   t.mock.timers.enable({ apis: ["Date"], now: new Date(NOW) });
   const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
   await publish(db, policy); await publish(db, technology);
-  const { env, requests } = environment({ WATCH_PUBLIC_ENABLED: "true", VALLEY_DESK_DB: db });
+  const { env } = environment({ WATCH_PUBLIC_ENABLED: "true", VALLEY_DESK_DB: db });
   for (const item of [policy, technology]) {
     const base = `/${item.kind === "policy" ? "policy" : "technology"}-watch`;
     for (const path of [base, `${base}/${item.slug}`]) {
-      const response = await worker.fetch(new Request(`${origin}${path}`), env, {});
-      assert.equal(response.status, 200); assertPrivateHeaders(response);
-      assert.equal(response.headers.get("x-watch-data-state"), "unknown");
-      const html = await response.text();
+      const response = await legacyWatchPage(new Request(`${origin}${path}`), env);
+      assert.equal(response.status, 200);
+      assert.equal(response.result.data?.stale, false);
+      const html = response.html;
       assert.match(html, /<meta name="robots" content="noindex"/);
       assert.ok(body(html).includes(item.title));
       assert.ok(html.includes(`<link rel="canonical" href="${origin}${path}"`));
       assert.match(html, /Source-check freshness is not reported/);
       assert.ok(html.includes(`Published projection as of: <time datetime="${NOW}"`));
       assert.doesNotMatch(html, /__VALLEY_DESK_DYNAMIC_ITEMS__|__VALLEY_DESK_WITHDRAWN_IDS__|application\/ld\+json|rel="alternate"|NewsArticle/);
-      const head = await worker.fetch(new Request(`${origin}${path}`, { method: "HEAD" }), env, {});
-      assert.equal(head.status, 200); assertPrivateHeaders(head); assert.equal(await head.text(), "");
     }
   }
   assert.equal(sqlite.prepare("SELECT count(*) AS n FROM published_content").get()!.n, 0);
-  assert.ok(requests.every(path => path === "/index.html"));
 });
 
 test("unknown dossiers are real 404 and no slug/ID fallback or directory scan occurs", async t => {
@@ -202,9 +195,9 @@ test("unknown dossiers are real 404 and no slug/ID fallback or directory scan oc
   await publish(db, policy);
   const { env } = environment({ WATCH_PUBLIC_ENABLED: "true", VALLEY_DESK_DB: db });
   for (const slug of [policy.id, "not-published"]) {
-    const response = await worker.fetch(new Request(`${origin}/policy-watch/${slug}`), env, {});
+    const response = await legacyWatchPage(new Request(`${origin}/policy-watch/${slug}`), env);
     assert.equal(response.status, 404);
-    assert.doesNotMatch(await response.text(), new RegExp(policy.title));
+    assert.doesNotMatch(response.html, new RegExp(policy.title));
   }
 });
 
@@ -214,49 +207,48 @@ test("directory query, genuine empty result and expired cursor keep their distin
   await publish(db, policy);
   await publish(db, { ...policy, id: "policy-2", slug: "synthetic-policy-two", title: "Zeta synthetic policy" });
   const { env } = environment({ WATCH_PUBLIC_ENABLED: "true", VALLEY_DESK_DB: db });
-  const empty = await worker.fetch(new Request(`${origin}/policy-watch?jurisdiction=NJ`), env, {});
-  assert.equal(empty.status, 200); assert.match(body(await empty.text()), /No records match these filters/);
-  const filtered = await worker.fetch(new Request(`${origin}/policy-watch?q=Zeta&jurisdiction=PA`), env, {});
+  const empty = await legacyWatchPage(new Request(`${origin}/policy-watch?jurisdiction=NJ`), env);
+  assert.equal(empty.status, 200); assert.match(body(empty.html), /No records match these filters/);
+  const filtered = await legacyWatchPage(new Request(`${origin}/policy-watch?q=Zeta&jurisdiction=PA`), env);
   assert.equal(filtered.status, 200);
-  const html = await filtered.text();
+  const html = filtered.html;
   assert.match(body(html), /Zeta synthetic policy/); assert.ok(!body(html).includes(policy.title));
   assert.ok(html.includes(`<link rel="canonical" href="${origin}/policy-watch"`));
   const page = await readWatchDirectory(db, { kind: "policy", limit: 1 }); assert.ok(page.nextCursor);
-  const first = await worker.fetch(new Request(`${origin}/policy-watch?limit=1`), env, {});
-  assert.match(body(await first.text()), /rel="next" href="https:\/\/thevalleydesk.org\/policy-watch\?limit=1&amp;cursor=/);
+  const first = await legacyWatchPage(new Request(`${origin}/policy-watch?limit=1`), env);
+  assert.match(body(first.html), /rel="next" href="https:\/\/thevalleydesk.org\/policy-watch\?limit=1&amp;cursor=/);
   await publish(db, { ...policy, id: "policy-3", slug: "synthetic-policy-three", title: "Other synthetic policy" });
   await expireWatchGenerations(db, 3);
-  const expired = await worker.fetch(new Request(`${origin}/policy-watch?limit=1&cursor=${encodeURIComponent(page.nextCursor)}`), env, {});
-  assert.equal(expired.status, 410); assertPrivateHeaders(expired);
-  assert.match(body(await expired.text()), /snapshot has expired/);
+  const expired = await legacyWatchPage(new Request(`${origin}/policy-watch?limit=1&cursor=${encodeURIComponent(page.nextCursor)}`), env);
+  assert.equal(expired.status, 410);
+  assert.match(body(expired.html), /snapshot has expired/);
 });
 
-test("current policy dependency changes redact meaning, then hold required metadata in real Worker HTML", async t => {
+test("current policy dependency changes redact meaning, then hold required metadata in retained Watch HTML", async t => {
   t.mock.timers.enable({ apis: ["Date"], now: new Date(NOW) });
   const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
   const accepted = await publish(db, policy);
   const { env } = environment({ WATCH_PUBLIC_ENABLED: "true", VALLEY_DESK_DB: db });
   const path = `/policy-watch/${accepted.record.slug}`;
-  const before = await worker.fetch(new Request(`${origin}${path}`), env, {});
-  assert.equal(before.status, 200); assert.ok((await before.text()).includes(policy.interpretation.summary!.value));
+  const before = await legacyWatchPage(new Request(`${origin}${path}`), env);
+  assert.equal(before.status, 200); assert.ok((before.html).includes(policy.interpretation.summary!.value));
   await changeDependency(db, accepted.manifest, "interpretation", "policy-definition");
-  const redacted = await worker.fetch(new Request(`${origin}${path}`), env, {});
-  assert.equal(redacted.status, 200); assert.equal(redacted.headers.get("x-watch-delivery-as-of"), NOW);
-  const html = await redacted.text();
+  const redacted = await legacyWatchPage(new Request(`${origin}${path}`), env);
+  assert.equal(redacted.status, 200); assert.equal(redacted.result.deliveryAsOf, NOW);
+  const html = redacted.html;
   assert.ok(html.includes(policy.title)); assert.ok(!html.includes(policy.interpretation.summary!.value));
   assert.match(body(html), /evidence-changed/);
   await changeDependency(db, accepted.manifest, "title", "accepted-fact");
   for (const method of ["GET", "HEAD"]) {
-    const held = await worker.fetch(new Request(`${origin}${path}`, { method }), env, {});
-    assert.equal(held.status, 409); assertPrivateHeaders(held);
-    const heldHtml = await held.text();
+    const held = await legacyWatchPage(new Request(`${origin}${path}`, { method }), env);
+    assert.equal(held.status, 409);
+    const heldHtml = held.html;
     assert.ok(!heldHtml.includes(policy.title)); assert.ok(!heldHtml.includes(policy.interpretation.summary!.value));
-    if (method === "HEAD") assert.equal(heldHtml, "");
-    else assert.match(heldHtml, /Record held for review/);
+    assert.match(heldHtml, /Record held for review/);
   }
 });
 
-test("a current local connection expires into a held dossier and disappears from Worker directory HTML", async t => {
+test("a current local connection expires into a held dossier and disappears from retained Watch directory HTML", async t => {
   t.mock.timers.enable({ apis: ["Date"], now: new Date(NOW) });
   const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
   const item = structuredClone(technology);
@@ -265,17 +257,17 @@ test("a current local connection expires into a held dossier and disappears from
   const accepted = await publish(db, item);
   const { env } = environment({ WATCH_PUBLIC_ENABLED: "true", VALLEY_DESK_DB: db });
   const path = `/technology-watch/${accepted.record.slug}`;
-  assert.equal((await worker.fetch(new Request(`${origin}${path}`), env, {})).status, 200);
+  assert.equal((await legacyWatchPage(new Request(`${origin}${path}`), env)).status, 200);
   t.mock.timers.tick(31_000);
-  const held = await worker.fetch(new Request(`${origin}${path}`), env, {});
-  assert.equal(held.status, 409); assert.ok(!(await held.text()).includes(item.title));
-  const directory = await worker.fetch(new Request(`${origin}/technology-watch`), env, {});
+  const held = await legacyWatchPage(new Request(`${origin}${path}`), env);
+  assert.equal(held.status, 409); assert.ok(!(held.html).includes(item.title));
+  const directory = await legacyWatchPage(new Request(`${origin}/technology-watch`), env);
   assert.equal(directory.status, 200);
-  const html = await directory.text(); assert.ok(!html.includes(item.title));
+  const html = directory.html; assert.ok(!html.includes(item.title));
   assert.match(body(html), /No accepted records are listed yet/);
 });
 
-test("a changed code-license dependency removes OSS membership before the Worker renders results", async t => {
+test("a changed code-license dependency removes OSS membership before Watch renders results", async t => {
   t.mock.timers.enable({ apis: ["Date"], now: new Date(NOW) });
   const { db, sqlite } = pdfDatabase(); t.after(() => sqlite.close());
   const item = structuredClone(technology);
@@ -284,15 +276,15 @@ test("a changed code-license dependency removes OSS membership before the Worker
   const accepted = await publish(db, item);
   const { env } = environment({ WATCH_PUBLIC_ENABLED: "true", VALLEY_DESK_DB: db });
   const query = `${origin}/technology-watch?license=osi-open-source`;
-  assert.ok((await (await worker.fetch(new Request(query), env, {})).text()).includes(item.title));
+  assert.ok((await legacyWatchPage(new Request(query), env)).html.includes(item.title));
   await changeDependency(db, accepted.manifest, "license", "artifact-license");
-  const filtered = await worker.fetch(new Request(query), env, {});
+  const filtered = await legacyWatchPage(new Request(query), env);
   assert.equal(filtered.status, 200);
-  const filteredHtml = await filtered.text(); assert.ok(!filteredHtml.includes(item.title));
+  const filteredHtml = filtered.html; assert.ok(!filteredHtml.includes(item.title));
   assert.match(body(filteredHtml), /No records match these filters/);
-  const detail = await worker.fetch(new Request(`${origin}/technology-watch/${item.slug}`), env, {});
+  const detail = await legacyWatchPage(new Request(`${origin}/technology-watch/${item.slug}`), env);
   assert.equal(detail.status, 200);
-  const html = await detail.text(); assert.ok(html.includes(item.title));
+  const html = detail.html; assert.ok(html.includes(item.title));
   assert.match(body(html), /License terms not yet established/); assert.doesNotMatch(body(html), /osi-open-source|MIT/);
 });
 
@@ -520,20 +512,22 @@ test("public feature signals are boolean allowlists and hidden policy HTML is de
   assert.match(watch, /__VALLEY_DESK_PUBLIC_FEATURES__=\{"policyBackground":true,"watch":false\}/);
 });
 
-test("Watch promotion follows the exact server opt-in and does not revive Voices promotion", async () => {
+test("Watch routes retain their exact opt-in while public navigation promotes the project directory", async () => {
   for (const flag of [undefined, false, true, "false", "TRUE", " true", "true ", "true"]) {
     const features = publicFeaturesFromEnv({ WATCH_PUBLIC_ENABLED: flag });
     assert.equal(features.watch, flag === "true");
     const html = decorateHtml({ html: template, path: "/", origin, nonce: "fixture", publicFeatures: features });
     for (const path of ["/policy-watch", "/technology-watch"]) {
-      assert.equal(body(html).includes(`${origin}${path}`), flag === "true");
-      assert.equal(llmsTxt(origin, features.watch).includes(`${origin}${path}`), flag === "true");
+      assert.ok(!body(html).includes(`${origin}${path}`));
+      assert.ok(!llmsTxt(origin).includes(`${origin}${path}`));
     }
     assert.doesNotMatch(body(html), /<h2>Voices<\/h2>/);
-    assert.doesNotMatch(llmsTxt(origin, features.watch), /\[Voices\]/);
+    assert.doesNotMatch(llmsTxt(origin), /\[Voices\]/);
     const { env } = environment({ WATCH_PUBLIC_ENABLED: flag });
     const response = await worker.fetch(new Request(`${origin}/llms.txt`), env, {});
-    assert.equal((await response.text()).includes("[Policy Watch]"), flag === "true");
+    const text = await response.text();
+    assert.ok(text.includes(`${origin}/discover/works`));
+    assert.doesNotMatch(text, /\[(?:News|Events|Policy Watch|Technology Watch)\]/);
   }
   for (const value of [{ watch: "true" }, Object.create({ watch: true }), { watch: 1 }]) {
     assert.equal(normalizePublicFeatures(value).watch, false);

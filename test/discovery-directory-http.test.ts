@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {parse} from 'parse5';
-import {handleDiscoveryDirectory} from '../src/ingest/discovery-directory-http';
+import {DIRECTORY_RESPONSE_BYTE_LIMIT,handleDiscoveryDirectory} from '../src/ingest/discovery-directory-http';
 import {handleDiscoveryDirectoryPage} from '../src/ingest/discovery-directory-page';
 
 // Frozen GL04 renderer fixtures preserve their historical assertions as the current catalog grows.
@@ -53,6 +53,42 @@ test('changed/removal state invalidates cursors, returns 410 and fails mismatche
  assert.equal((await handleDiscoveryDirectory(request('/api/discovery/v1/works'),enabled,snapshot,meta)).status,503);
  assert.equal((await handleDiscoveryDirectoryPage(request('/discover/works'),enabled,snapshot,meta)).status,503);
 });
+
+test('a private region-only draft displays its documented connection without adding a county facet', async () => {
+  const snapshot = source();
+  snapshot.version = 'private-preview:test';
+  const work = snapshot.works[0];
+  snapshot.works = [work];
+  work.relations = [];
+  const region = work.claims.find((claim: any) => claim.kind === 'regional-connection');
+  Object.assign(region, {
+    regionalBasis: 'region', county: null, state: null, municipality: null, campus: null,
+    qualification: 'Uses the Philadelphia Neurodevelopmental Cohort in the study.',
+  });
+  const meta = removed(snapshot);
+  const detail = request(`/discover/work/${encodeURIComponent(work.id)}`);
+  const list = request('/api/discovery/v1/works?view=compact&q=Neurodevelopmental');
+  const html = await handleDiscoveryDirectoryPage(detail, enabled, snapshot, meta, 'private-preview');
+  assert.equal(html.status, 200);
+  assert.ok((await html.text()).includes(region.qualification));
+  const response = await handleDiscoveryDirectory(list, enabled, snapshot, meta, 'private-preview');
+  assert.equal(response.status, 200);
+  const result = await response.json() as any;
+  assert.equal(result.items.length, 1);
+  assert.equal(result.items[0].regionalConnection.county, null);
+  assert.deepEqual(result.facets.county, []);
+  assert.equal((await handleDiscoveryDirectoryPage(detail, enabled, snapshot, meta)).status, 503);
+  assert.equal((await handleDiscoveryDirectory(list, enabled, snapshot, meta)).status, 503);
+  snapshot.version = 'test:renamed';
+  const releaseMeta = removed(snapshot);
+  const released = await handleDiscoveryDirectory(list, enabled, snapshot, releaseMeta);
+  assert.equal(released.status, 200);
+  assert.deepEqual((await released.json() as any).facets.county, []);
+  assert.equal((await handleDiscoveryDirectoryPage(detail, enabled, snapshot, releaseMeta)).status, 200);
+  snapshot.version = 'private-preview:test';
+  region.county = 'Philadelphia';
+  assert.equal((await handleDiscoveryDirectory(list, enabled, snapshot, meta, 'private-preview')).status, 503);
+});
 test('HTML escapes source strings and preserves synthetic directed relations and year precision',async()=>{
  // Deliberately synthetic renderer challenge; it does not assert a real citation.
  const snapshot=source(),repo=snapshot.works.find((w:any)=>w.kind==='repository'),pub=snapshot.works.find((w:any)=>w.kind==='publication');
@@ -73,4 +109,85 @@ test('oversized responses and private or support-only extra fields fail closed',
  });
  assert.equal((await handleDiscoveryDirectory(request('/api/discovery/v1/works?limit=50'),enabled,large,removed(large))).status,503);
  const html=await handleDiscoveryDirectoryPage(request('/discover/works?limit=50'),enabled,large,removed(large));assert.equal(html.status,503);assert.ok(new TextEncoder().encode(await html.text()).byteLength<=128000);
+});
+
+test('compact API fits 50 works where the original list exceeds the byte budget',async()=>{
+  const snapshot=source(), original=snapshot.works[0];
+  snapshot.works=Array.from({length:50},(_,i)=>{
+    const work=structuredClone(original);
+    work.id=`test:compact:${i}`;
+    work.nativeIdentity=null;
+    work.claims=work.claims.map((claim:any)=>({...claim,id:`${claim.id}:${i}`,subjectId:work.id}));
+    return work;
+  });
+  const path='/api/discovery/v1/works?limit=50', meta=removed(snapshot);
+  const full=await handleDiscoveryDirectory(request(path),enabled,snapshot,meta);
+  assert.equal(full.status,503);
+  const response=await handleDiscoveryDirectory(request(path+'&view=compact'),enabled,snapshot,meta);
+  assert.equal(response.status,200);
+  const wire=await response.text();
+  assert.ok(Buffer.byteLength(wire)<=DIRECTORY_RESPONSE_BYTE_LIMIT);
+  const compact=JSON.parse(wire);
+  assert.equal(compact.schemaVersion,'discovery-directory-list-compact-v1');
+  assert.equal(compact.items.length,50);
+  assert.equal(compact.nextAfter,null);
+});
+
+test('compact API links the related match to its full evidence without embedding a dossier',async()=>{
+  const snapshot=source(), repo=snapshot.works.find((w:any)=>w.kind==='repository'), pub=snapshot.works.find((w:any)=>w.kind==='publication');
+  pub.title.value='Painted map';
+  repo.relations=[{id:'test:compact-relation',fromId:repo.id,toId:pub.id,predicate:'repository-cites-work',evidenceIds:[repo.evidence[0].id],reviewId:repo.reviewRefs[0].id}];
+  const path='/api/discovery/v1/works?q=Painted+map&kind=repository', meta=removed(snapshot);
+  const full=await (await handleDiscoveryDirectory(request(path),enabled,snapshot,meta)).json() as any;
+  assert.equal(full.schemaVersion,'discovery-directory-list-v1');
+  assert.deepEqual(full.items,[repo]);
+  assert.deepEqual(full.supportItems,[pub]);
+  const response=await handleDiscoveryDirectory(request(path+'&view=compact'),enabled,snapshot,meta);
+  assert.equal(response.status,200);
+  const compact=await response.json() as any;
+  assert.equal(compact.matchingWorks,1);
+  assert.deepEqual(compact.matches,full.matches);
+  assert.deepEqual(compact.facets,full.facets);
+  const [item]=compact.items, [support]=compact.supportItems;
+  assert.equal(compact.supportCount,1);
+  assert.equal(compact.matches[0].sourceWorkId,support.id);
+  assert.equal(item.id,repo.id);
+  assert.equal(item.originalUrl,repo.url.value);
+  assert.equal(item.checkedAt,repo.checkedAt);
+  assert.equal(item.sourceDate,null);
+  const region=repo.claims.find((claim:any)=>claim.kind==='regional-connection');
+  for(const field of ['institution','municipality','county','asOf','regionalBasis','scope','qualification'])assert.deepEqual(item.regionalConnection[field],region[field]);
+  assert.equal(item.regionalConnection.claimId,region.id);
+  assert.equal(support.title,pub.title.value);
+  for(const entry of [item,support])for(const field of ['nativeIdentity','claims','reviewRefs','evidence','relations'])assert.ok(!(field in entry),field);
+  for(const [entry,work] of [[item,repo],[support,pub]]){
+    const detail=await handleDiscoveryDirectory(request(entry.detailHref),enabled,snapshot,meta);
+    assert.equal(detail.status,200);
+    assert.deepEqual((await detail.json() as any).work,work);
+  }
+});
+
+test('compact API retains the feature gate, strict queries, HEAD and snapshot-bound cursors',async()=>{
+  const snapshot=source(), meta=removed(snapshot);
+  const path='/api/discovery/v1/works?view=compact&limit=1';
+  assert.equal((await handleDiscoveryDirectory(request(path),{},snapshot,meta)).status,404);
+  assert.equal((await handleDiscoveryDirectory(request(path,'POST'),enabled,snapshot,meta)).status,405);
+  for(const query of ['view=','view=full','view=compact&view=compact','view=compact&limit=01','view=compact&q=a&q=b','view=compact&private=true']){
+    assert.equal((await handleDiscoveryDirectory(request('/api/discovery/v1/works?'+query),enabled,snapshot,meta)).status,400,query);
+  }
+  const head=await handleDiscoveryDirectory(request(path,'HEAD'),enabled,snapshot,meta);
+  assert.equal(head.status,200);
+  assert.equal(head.headers.get('cache-control'),'no-store');
+  assert.equal(head.headers.get('x-robots-tag'),'noindex');
+  assert.equal(await head.text(),'');
+  const one=await (await handleDiscoveryDirectory(request(path),enabled,snapshot,meta)).json() as any;
+  assert.ok(one.nextAfter);
+  const after=path+'&after='+encodeURIComponent(one.nextAfter);
+  const two=await handleDiscoveryDirectory(request(after),enabled,snapshot,meta);
+  assert.equal(two.status,200);
+  assert.notEqual((await two.json() as any).items[0].id,one.items[0].id);
+  const next={...snapshot,version:'test:compact-removed',works:snapshot.works.filter((w:any)=>w.id!==one.items[0].id)};
+  const nextMeta=removed(next,[one.items[0].id]);
+  assert.equal((await handleDiscoveryDirectory(request(after),enabled,next,nextMeta)).status,409);
+  assert.equal((await handleDiscoveryDirectory(request(one.items[0].detailHref),enabled,next,nextMeta)).status,410);
 });

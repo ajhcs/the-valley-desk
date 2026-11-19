@@ -1412,7 +1412,7 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(home.includes("item.id !== lead?.id"));
   assert.ok(!home.includes("<Desk"));
   assert.ok(!home.includes("latestVoices"));
-  assert.ok(home.includes("publicFeatures().watch"));
+  assert.doesNotMatch(home, /aria-label="Watch sections"/);
   assert.ok(home.includes("pinnedUpcomingEvents"));
   assert.ok(eventsPage.includes("upcomingEvents"));
   assert.ok(eventsPage.includes("CHAPTER RADAR"));
@@ -1429,8 +1429,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(home.includes("NEWS · LATEST"));
   assert.ok(home.includes("EVENTS · NEXT"));
   assert.ok(!home.includes("VOICES · LATEST"));
-  assert.ok(home.includes("Policy Watch"));
-  assert.ok(home.includes("Technology Watch"));
+  assert.ok(!home.includes("Policy Watch"));
+  assert.ok(!home.includes("Technology Watch"));
   assert.ok(lead.includes("LATEST NEWS"));
   assert.ok(!lead.includes("item.publishedAt"));
   assert.ok(!lead.includes("chipInstant"));
@@ -1481,14 +1481,9 @@ test("homepage binds store queries and kit class names", () => {
       assert.ok(contrast >= 4.5, `DateChip text contrast in ${theme} theme`);
     }
   }
-  assert.ok(footer.includes("News"));
-  assert.ok(footer.includes("Events"));
-  assert.ok(!footer.includes("Voices"));
-  assert.ok(footer.includes("Policy Watch"));
-  assert.ok(footer.includes("Technology Watch"));
-  assert.ok(footer.includes("feed.json"));
-  assert.ok(footer.includes("feed.xml"));
-  assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
+  assert.ok(footer.includes('href="/discover/works">Projects</a>'));
+  assert.doesNotMatch(footer, /(?:to|href)="\/(?:news|events|policy-watch|technology-watch|voices)"/);
+  assert.doesNotMatch(footer, /feed\.(?:json|xml)|>Leads</);
   assert.ok(footer.includes("© thedeskgroup -"));
   assert.ok(footer.includes('href="https://ushso.org/"'));
   assert.ok(!footer.toLowerCase().includes("subscribe"));
@@ -1499,14 +1494,9 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(layout.includes("FoldMark"));
   assert.ok(layout.includes("Wordmark"));
   assert.ok(layout.includes("NavLink"));
-  assert.ok(layout.includes('to="/news"'));
-  assert.ok(layout.includes('to="/events"'));
-  assert.ok(!layout.includes('to="/voices"'));
-  assert.ok(layout.includes("is-news"));
-  assert.ok(layout.includes("is-events"));
+  assert.ok(layout.includes('href="/discover/works">Projects</a>'));
+  assert.doesNotMatch(layout, /(?:to|href)="\/(?:news|events|policy-watch|technology-watch|voices)"/);
   assert.ok(!layout.includes("is-voices"));
-  assert.ok(layout.includes("is-policy-watch"));
-  assert.ok(layout.includes("is-technology-watch"));
   assert.ok(css.includes(".NavLink.is-voices"));
   assert.ok(css.includes("border-bottom-color: var(--ink)"));
   assert.ok(router.includes('"/voices"'));
@@ -1966,7 +1956,7 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(crawler.includes("og:title"));
   assert.ok(crawler.includes("twitter:card"));
   assert.ok(crawler.includes("canonical"));
-  assert.ok(crawler.includes("application/rss+xml"));
+  assert.doesNotMatch(crawler, /application\/rss\+xml|\/feed\.json/);
   assert.ok(worker.includes("resolvePublicOrigin"));
   assert.ok(canonical.includes("DEFAULT_PUBLIC_ORIGIN"));
   assert.ok(canonical.includes("DEFAULT_PUBLIC_ORIGIN = PRODUCTION_ORIGIN"));
@@ -2476,14 +2466,10 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(itemPage.includes("itemByline"));
   assert.ok(itemPage.includes("ItemPage"));
   assert.ok(!itemPage.includes("Valley Desk"));
-  assert.ok(layout.includes("is-news"));
-  assert.ok(layout.includes("is-events"));
   assert.ok(!layout.includes("is-voices"));
-  assert.ok(layout.includes("navSection"));
-  assert.ok(!layout.includes('to="/voices"'));
-  assert.ok(layout.includes('to="/policy-watch"'));
-  assert.ok(layout.includes('to="/technology-watch"'));
-  assert.ok(footer.includes("mailto:leads@thevalleydesk.org"));
+  assert.ok(layout.includes('href="/discover/works">Projects</a>'));
+  assert.doesNotMatch(layout, /(?:to|href)="\/(?:news|events|policy-watch|technology-watch|voices)"/);
+  assert.doesNotMatch(footer, /mailto:leads@thevalleydesk\.org|>Leads</);
   assert.ok(footer.includes("© thedeskgroup -"));
   assert.ok(footer.includes(">USHSO.org<"));
   assert.ok(css.includes(".NavLink:focus-visible"));
@@ -3320,11 +3306,8 @@ test("Reed walk: HTML 404 shell, list cards title-only, Register hole, PIN, rest
   assert.ok(router.includes("defaultNotFoundComponent"));
   assert.ok(layout.includes("SiteHeader"));
   assert.ok(layout.includes("SiteNav"));
-  assert.ok(layout.includes('to="/news"'));
-  assert.ok(layout.includes('to="/events"'));
-  assert.ok(!layout.includes('to="/voices"'));
-  assert.ok(layout.includes('to="/policy-watch"'));
-  assert.ok(layout.includes('to="/technology-watch"'));
+  assert.ok(layout.includes('href="/discover/works">Projects</a>'));
+  assert.doesNotMatch(layout, /(?:to|href)="\/(?:news|events|policy-watch|technology-watch|voices)"/);
   assert.ok(layout.includes("SiteFooter"));
   assert.ok(!/path:\s*["']\/org\//.test(router));
 
@@ -4368,11 +4351,8 @@ test("lab prototypes bind live catalog, the real mark asset, and unpublished-saf
   assert.ok(!router.includes('"/briefing"'));
   assert.ok(!/path:\s*["']\/org\//.test(router));
   assert.ok(!systems.includes('to="/org'));
-  assert.ok(layout.includes('to="/news"'));
-  assert.ok(layout.includes('to="/events"'));
-  assert.ok(!layout.includes('to="/voices"'));
-  assert.ok(layout.includes('to="/policy-watch"'));
-  assert.ok(layout.includes('to="/technology-watch"'));
+  assert.ok(layout.includes('href="/discover/works">Projects</a>'));
+  assert.doesNotMatch(layout, /(?:to|href)="\/(?:news|events|policy-watch|technology-watch|voices)"/);
   assert.ok(!layout.includes('to="/lab"'));
   assert.ok(layout.includes('pathname.startsWith("/lab/")'));
 
@@ -5693,7 +5673,8 @@ test("public skip link, 404 recovery, URL wrap, and twice-daily edition are wire
   assert.ok(css.includes("overflow-wrap: anywhere"));
   const llms = readFileSync(join(root, "public/llms.txt"), "utf8");
   assert.match(llms, /^# The Valley Desk/m);
-  assert.ok(llms.includes("/feed.json"));
+  assert.ok(llms.includes("/discover/works"));
+  assert.doesNotMatch(llms, /\/feed\.(?:json|xml)/);
   assert.ok(css.includes('.Rail[data-rail="news"] h2 {\n  color: var(--admiral)'));
   assert.ok(css.includes(".OrgTick.is-help {\n  position: relative;\n  width: 24px;\n  height: 24px;"));
   assert.ok(facts.includes("ItemEntityLinks"));

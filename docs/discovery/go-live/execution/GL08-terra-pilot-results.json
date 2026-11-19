@@ -1,0 +1,108 @@
+{
+  "id": "TVD-TERRA-MATCHED-20261117-v1",
+  "model": "gpt-6.1-terra",
+  "effort": "low",
+  "outcome": "inconclusive_no_gain_demonstrated",
+  "sampleSize": 100,
+  "priorSampleOverlap": 0,
+  "packetHintCount": 2,
+  "preregistration": {
+    "path": "/workspace/build/builderbob/tvd-terra-pilot-nEbuhdzY/preregistration.json",
+    "sha256": "d262318c5901fc79569d8aabbf9e88b6d83a367f29087c378d827ee78c2b3ffe"
+  },
+  "clockedPacketPreparationNs": 302519910,
+  "recordedAgentTimeDeltaPercent": 41.534249957560945,
+  "limits": [
+    "Control case review order deviated in all three shards; two batched source steps and one finished source calls before final labels.",
+    "Control shard 2 displayed inputs before successful clock start.",
+    "Packet shard 2 source reservations were recorded after dispatch; causal timing and complete orchestration cost were not qualified.",
+    "The worker access logs mixed underlying searches with cached in-page finds. Compare only the cases and logged bounded reads.",
+    "The two packet positives still lack an independently confirmed dated regional link and are not admission-ready. All 96 holds remain unresolved.",
+    "Only two exact-work hints were generated; the packet join omitted existing signed evidence for a native ID. No causal speed or accuracy gain can be claimed."
+  ],
+  "publicationAuthorized": false,
+  "arms": {
+    "control": {
+      "counts": {
+        "eligible": 0,
+        "rejected": 1,
+        "held": 99
+      },
+      "recordedAgentNs": 113486718694,
+      "recordedAgentMinutes": 1.8914453115666667,
+      "agentSecondsPerLead": 1.13486718694,
+      "startToFinishWallSeconds": 83.874317718,
+      "sourceAccess": {
+        "opens": 50,
+        "queriesAsLogged": 0
+      },
+      "blindLabelAgreement": 98,
+      "posthocLabelAgreement": 97,
+      "matchedKnownEligible": 0,
+      "admissionReadyListingsConfirmed": 0,
+      "minutesPerConfirmedAdmissionReadyListing": null
+    },
+    "packet": {
+      "counts": {
+        "eligible": 2,
+        "rejected": 1,
+        "held": 97
+      },
+      "recordedAgentNs": 160622576105,
+      "recordedAgentMinutes": 2.677042935083333,
+      "agentSecondsPerLead": 1.60622576105,
+      "startToFinishWallSeconds": 104.666674829,
+      "sourceAccess": {
+        "opens": 50,
+        "queriesAsLogged": 19
+      },
+      "blindLabelAgreement": 96,
+      "posthocLabelAgreement": 95,
+      "matchedKnownEligible": 0,
+      "admissionReadyListingsConfirmed": 0,
+      "minutesPerConfirmedAdmissionReadyListing": null
+    },
+    "reference": {
+      "counts": {
+        "eligible": 0,
+        "rejected": 3,
+        "held": 97
+      },
+      "recordedAgentNs": 131821244812,
+      "recordedAgentMinutes": 2.1970207468666665,
+      "agentSecondsPerLead": 1.31821244812,
+      "startToFinishWallSeconds": 63.194659826,
+      "sourceAccess": {
+        "opens": 50,
+        "queriesAsLogged": 4
+      }
+    }
+  },
+  "posthocReferenceCounts": {
+    "eligible": 1,
+    "rejected": 3,
+    "held": 96
+  },
+  "posthocSourceAccess": {
+    "opens": 2,
+    "queries": 2
+  },
+  "privateEvidence": {
+    "comparison.json": {
+      "path": "/workspace/build/builderbob/tvd-terra-pilot-nEbuhdzY/comparison.json",
+      "sha256": "50394b8f64d1f0cb71bfd5e8fea21336dd9e48ca8e81dc9d9742b5f079f1d3e7"
+    },
+    "freeze.py": {
+      "path": "/workspace/build/builderbob/tvd-terra-pilot-nEbuhdzY/freeze.py",
+      "sha256": "3c0807a000f8236eedbb49a8e8b2fb183ab4e87100908bab21b37eac8f3c546c"
+    },
+    "summarize.py": {
+      "path": "/workspace/build/builderbob/tvd-terra-pilot-nEbuhdzY/summarize.py",
+      "sha256": "921a15dd335537ffef097b2fee29fc7b2503c4124358d518d423d6f2b59b41bb"
+    },
+    "posthoc-adjudication-scope.json": {
+      "path": "/workspace/build/builderbob/tvd-terra-pilot-nEbuhdzY/posthoc-adjudication-scope.json",
+      "sha256": "67c3eb932e8cff335d0f897e128bd3ad03e643d75ba131f82e558a69769d35dc"
+    }
+  }
+}
