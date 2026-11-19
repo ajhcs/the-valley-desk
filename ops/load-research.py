@@ -1,9 +1,11 @@
 """Emit a replayable D1 SQL import. Each listing and its index changes are atomic."""
 import argparse
+from hashlib import sha256
 import json
 import re
 import unicodedata
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 
 def slug(value):
@@ -22,15 +24,26 @@ def compact(record):
 
 def load(args):
     aliases = {}
+    if args.removals:
+        removed = json.loads(args.removals.read_text())
+        if not isinstance(removed, list) or not all(isinstance(i, str) and re.match(r"^(doi|pmid|arxiv):", i) for i in removed):
+            raise ValueError("Expected an array of publication IDs")
+        for identifier in removed:
+            print("INSERT OR IGNORE INTO publication_removals(id) VALUES(" + quote(identifier) + ");")
     if args.institutions:
         content = args.institutions.read_text().strip()
         refs = json.loads(content) if content.startswith("[") else [json.loads(line) for line in content.splitlines()]
         for ref in refs:
             for name in [ref["id"], ref["name"], *ref["aliases"]]:
-                aliases[slug(name)] = ref["id"]
+                key = slug(name)
+                if key in aliases and aliases[key] != ref["id"]:
+                    raise ValueError("Ambiguous institution alias " + name)
+                aliases[key] = ref["id"]
             print("INSERT INTO research_institutions VALUES(" + quote(ref["id"]) + "," + quote(compact(ref)) +
                   ") ON CONFLICT(id) DO UPDATE SET record=excluded.record WHERE record<>excluded.record;")
     projects = json.loads(args.projects.read_text()) if args.projects else []
+    if args.projects and not projects:
+        raise ValueError("Expected the full nonempty project projection")
     for record in projects:
         emit(record, "project", aliases)
     if args.projects:
@@ -47,6 +60,22 @@ def load(args):
                     emit(json.loads(line), "publication", aliases)
 
 
+def citation_key(url):
+    if not url:
+        return None
+    parts = urlsplit(url)
+    path = unquote(parts.path).strip("/")
+    if parts.hostname == "doi.org":
+        return "doi:" + path.lower()
+    if parts.hostname == "pubmed.ncbi.nlm.nih.gov" and path.isdigit():
+        return "pmid:" + path
+    if parts.hostname == "pmc.ncbi.nlm.nih.gov" and re.fullmatch(r"articles/PMC[0-9]+", path):
+        return "pmcid:" + path.split("/")[-1]
+    if parts.hostname == "arxiv.org" and path.startswith("abs/"):
+        return "arxiv:" + path[4:]
+    return url.rstrip("/")
+
+
 def emit(r, kind, aliases):
     pub = kind == "publication"
     if pub:
@@ -55,7 +84,7 @@ def emit(r, kind, aliases):
             raise ValueError("Unexpected fields for " + r["id"])
         if r.get("open_access") and set(r["open_access"]) - {"status", "license", "url"}:
             raise ValueError("Unexpected open access fields")
-        if not re.match(r"^(doi:10\.\d{4,9}/.+|pmid:\d+|arxiv:.+)$", r["id"]):
+        if not re.match(r"^(doi:10\.\d{4,}/.+|pmid:\d+|arxiv:.+)$", r["id"]):
             raise ValueError("Unsupported publication identifier")
         if not r["authors"] or not r["institutions"] or r["label"] not in ("Verified", "Listed"):
             raise ValueError("Missing byline or regional evidence for " + r["id"])
@@ -65,37 +94,51 @@ def emit(r, kind, aliases):
     facets = {"institution": [aliases.get(slug(v), slug(v)) for v in institutions if v],
               "county": [slug(v) for v in counties if v], "topic": [slug(r["topic"])],
               "project": r.get("projects", []), "label": [slug(r["label"])]}
-    if not pub:
-        identifiers = set()
-        for paper in [*r.get("papers", []), {"url": r.get("paper")}]:
-            url = paper.get("url") or ""
-            doi = paper.get("doi") or (url[16:] if url.lower().startswith("https://doi.org/") else None)
-            if doi:
-                identifiers.add("doi:" + doi.lower())
-            pmid = re.fullmatch(r"https://pubmed.ncbi.nlm.nih.gov/(\d+)/?", url)
-            if pmid:
-                identifiers.add("pmid:" + pmid[1])
-        facets["paper"] = sorted(identifiers)
+    if pub:
+        facets["version"] = [v for v in [r["published_as"], r["preprint_of"]] if v]
+        alternate = {citation_key(r["url"]), citation_key(r["source"])}
+        alternate.update(key + ":" + r[key] for key in ("pmid", "pmcid", "arxiv", "doi") if r.get(key))
+        facets["alternate"] = sorted(alternate - {r["id"], None})
+    else:
+        identifiers = {citation_key(r.get("paper"))}
+        for paper in r.get("papers") or []:
+            identifiers.add(citation_key(paper.get("url")))
+            if paper.get("doi"):
+                identifiers.add("doi:" + paper["doi"].lower())
+        facets["paper"] = sorted(identifiers - {None})
     keys = [r["id"], r["topic"], *filter(None, institutions + counties),
             *r.get("terms", []), *r.get("topics", []), r.get("purpose"), r.get("language"), r.get("venue")]
     # Store facet keys with the row so a single upsert updates all index projections.
     payload = compact(r)
     fields = [r["id"], kind, title, r.get("added") or "", r.get("published") or r.get("pushed") or r.get("updated") or "",
-              r["topic"], (r.get("published_as") or r.get("preprint_of") or r["id"]) if r.get("type") == "preprint" else r["id"],
+              r["topic"], (r.get("published_as") or r.get("preprint_of") or "?" + r["id"]) if r.get("type") == "preprint" else r["id"],
               " ".join(filter(None, keys)), payload, compact(facets)]
-    sql = ("INSERT INTO research_listings(id,kind,title,added,activity,topic,work_id,keywords,record,facets) VALUES(" +
-           ",".join(map(quote, fields)) + ") ON CONFLICT(id) DO UPDATE SET " +
-           ",".join(k+"=excluded."+k for k in ("title","activity","topic","work_id","keywords","facets")) +
-           ",record=json_set(excluded.record,'$.added',research_listings.added) " +
-           "WHERE (record<>json_set(excluded.record,'$.added',research_listings.added) OR facets<>excluded.facets) AND " +
-           "(excluded.kind='project' OR json_extract(excluded.record,'$.checked') >= json_extract(research_listings.record,'$.checked'));")
-    if len(sql.encode()) > 100000:
-        raise ValueError("D1 statement too large for " + r["id"])
-    print(sql)
+    insert = "INSERT INTO research_listings(id,kind,title,added,activity,topic,work_id,keywords,record,facets) "
+    update = (" ON CONFLICT(id) DO UPDATE SET " +
+              ",".join(k+"=excluded."+k for k in ("title","activity","topic","work_id","keywords","facets")) +
+              ",record=json_set(excluded.record,'$.added',research_listings.added) " +
+              "WHERE (record<>json_set(excluded.record,'$.added',research_listings.added) OR facets<>excluded.facets) AND " +
+              "(excluded.kind='project' OR json_extract(excluded.record,'$.checked') >= json_extract(research_listings.record,'$.checked'));")
+    sql = insert + "VALUES(" + ",".join(map(quote, fields)) + ")" + update
+    if len(sql.encode()) <= 100000:
+        print(sql)
+        return
+
+    serialized = compact(fields)
+    digest = quote(sha256(serialized.encode()).hexdigest())
+    chunks = [serialized[i:i+16000] for i in range(0, len(serialized), 16000)]
+    for number, chunk in enumerate(chunks):
+        print(f"INSERT OR IGNORE INTO research_import_chunks VALUES({digest},{number},{quote(chunk)});")
+    # An incomplete assembly produces NULL required fields and fails before publication.
+    assembly = (f"SELECT CASE WHEN count(*)={len(chunks)} THEN group_concat(piece,'') ELSE '[]' END AS data "
+                f"FROM (SELECT piece FROM research_import_chunks WHERE digest={digest} ORDER BY part)")
+    select = ",".join(f"json_extract(data,'$[{i}]')" for i in range(len(fields)))
+    print(insert + f"SELECT {select} FROM ({assembly}) WHERE true" + update)
+    print(f"DELETE FROM research_import_chunks WHERE digest={digest};")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    for flag in ("projects", "publications", "institutions"):
+    for flag in ("projects", "publications", "institutions", "removals"):
         parser.add_argument("--" + flag, type=Path)
     load(parser.parse_args())

@@ -2,7 +2,7 @@
 
 Find and follow healthcare research connected to the nine-county Delaware Valley. Each listing identifies the source of its regional connection. Search the directory by institution, county or topic, or follow additions by the date they entered the directory.
 
-The public site is server-rendered by the Cloudflare Worker. Projects come from the reviewed repository projection. The publications index uses D1 and is gated by `PUBLICATIONS_PUBLIC_ENABLED`. Keep it disabled until a reviewed import has been checked. See [the listing rule](AGENTS.md) and [project removal setup](ops/directory-removals.sql).
+The public site is server-rendered by the Cloudflare Worker. Projects come from the reviewed repository projection. The publications index uses D1 and is gated by `PUBLICATIONS_PUBLIC_ENABLED`. Keep it disabled until a reviewed import has been checked. See [the listing rule](AGENTS.md), [research directory design and verification](ops/research-directory.md), and [production import instructions](ops/research-rollout.md).
 
 ## Historical editorial runtime
 

@@ -24,10 +24,18 @@ CREATE TRIGGER research_change AFTER UPDATE ON research_listings BEGIN
  INSERT OR IGNORE INTO research_facets SELECT f.key,v.value,new.id
  FROM json_each(new.facets) f,json_each(f.value) v;
 END;
-CREATE VIEW research_visible AS SELECT l.* FROM research_listings l
+CREATE VIEW research_visible AS SELECT l.*,
+ CASE WHEN substr(l.work_id,1,1)='?' THEN coalesce((
+   SELECT f.id FROM research_facets f WHERE f.field='version' AND f.value=l.id ORDER BY f.id LIMIT 1
+ ), l.id) ELSE l.work_id END AS group_id
+FROM research_listings l
 WHERE NOT EXISTS(SELECT 1 FROM publication_removals r WHERE r.id=l.id)
 AND NOT EXISTS(SELECT 1 FROM public_directory_removals r WHERE r.github_id=l.id);
 CREATE TRIGGER research_delete AFTER DELETE ON research_listings BEGIN
  INSERT INTO research_search(research_search,rowid,title,keywords) VALUES('delete',old.rowid,old.title,old.keywords);
  DELETE FROM research_facets WHERE id=old.id;
 END;
+
+-- Oversized bylines may exceed one D1 SQL statement. Only the final upsert becomes public.
+CREATE TABLE research_import_chunks(digest TEXT, part INTEGER, piece TEXT NOT NULL,
+ PRIMARY KEY(digest,part)) WITHOUT ROWID;

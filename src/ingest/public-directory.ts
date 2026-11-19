@@ -7,9 +7,12 @@ import {
   pubPath,
   rows,
   optionsFor,
+  institutionFor,
   projectQuery,
   researchQuery,
+  researchFeed,
   renderPublication,
+  publicationTitle,
   renderResearch,
   facetSlug,
   rss,
@@ -44,9 +47,7 @@ async function institutionRefs(db: ResearchDb): Promise<Institution[]> {
   );
 }
 
-type RemovalDb = {
-  prepare(query: string): { all(): Promise<{ results: { github_id: string }[]; success?: boolean }> };
-};
+type RemovalDb = ResearchDb;
 const entityRoute = /^\/discover\/(institution|lab|topic|county)\/([^/]+)\/?$/;
 const fragmentHeader = "X-Valley-Desk-Fragment";
 const noStore = { "cache-control": "no-store", "cdn-cache-control": "no-store" };
@@ -76,14 +77,10 @@ export function isPublicDirectoryPath(path: string) {
 }
 
 async function removalIds(db?: RemovalDb) {
-  const state = await db?.prepare("SELECT github_id FROM public_directory_removals").all();
-  if (
-    state?.success === false ||
-    !Array.isArray(state?.results) ||
-    !state.results.every((row) => typeof row?.github_id === "string")
-  )
-    throw new Error("removal list unavailable");
-  return new Set(state.results.map((row) => row.github_id));
+  if (!db) throw new Error("Removal database unavailable");
+  const result = await rows<{ github_id: string }>(db, "SELECT github_id FROM public_directory_removals");
+  if (!result.every((row) => typeof row?.github_id === "string")) throw new Error("Invalid removal record");
+  return new Set(result.map((row) => row.github_id));
 }
 
 function publicProject(project: DirectoryProject) {
@@ -227,7 +224,7 @@ export async function servePublicDirectory(
     return api ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
   }
 
-  const researchDb = db as unknown as ResearchDb;
+  const researchDb = db!;
   const path = pathname.replace(/\/$/, "") || "/";
   const combinedApi = path === "/api/directory/listings";
   const pubApi = path === publicationsApi || path.startsWith(publicationsApi + "/");
@@ -268,7 +265,8 @@ export async function servePublicDirectory(
       const related: Listing[] = [];
       const reverse = await rows<{ id: string }>(
         researchDb,
-        "SELECT id FROM research_visible WHERE kind='project' AND id IN (SELECT id FROM research_facets WHERE field='paper' AND value=?)",
+        "SELECT id FROM research_visible WHERE kind='project' AND id IN (SELECT id FROM research_facets WHERE field='paper' AND (value=? OR value IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?)))",
+        id,
         id,
       );
       for (const pid of new Set([...p.projects, ...reverse.map((r) => r.id)])) {
@@ -277,7 +275,7 @@ export async function servePublicDirectory(
       }
       const versions = await rows<{ record: string }>(
         researchDb,
-        "SELECT record FROM research_visible WHERE kind='publication' AND (id IN (?,?) OR (work_id=? AND id<>?))",
+        "SELECT record FROM research_visible WHERE kind='publication' AND (id IN (?,?) OR (id IN (SELECT id FROM research_facets WHERE field='version' AND value=?) AND id<>?))",
         p.preprint_of ?? "",
         p.published_as ?? "",
         id,
@@ -297,13 +295,13 @@ export async function servePublicDirectory(
       return page(
         {
           kind: "research",
-          title: p.title,
+          title: publicationTitle(p),
           summary: p.connection,
           path: pubPath(id),
           content: renderPublication(p, refs, related),
           schema: {
             "@type": "ScholarlyArticle",
-            headline: p.title,
+            headline: publicationTitle(p),
             datePublished: p.published,
             url: origin + pubPath(id),
           },
@@ -360,11 +358,32 @@ export async function servePublicDirectory(
     if (path === "/" && hasPubs) {
       const [r] = await rows<{ n: number }>(
         researchDb,
-        "SELECT count(DISTINCT work_id) n FROM research_visible WHERE kind='publication'",
+        "SELECT count(DISTINCT group_id) n FROM research_visible WHERE kind='publication'",
       );
-      return page({ kind: "home", data: catalog.home(removed, new Date()), publications: r.n }, 200);
+      const latest = (
+        await rows<{ kind: Listing["kind"]; record: string }>(
+          researchDb,
+          "SELECT kind,record FROM research_visible ORDER BY added DESC,id LIMIT 3",
+        )
+      ).map((row) => ({ kind: row.kind, record: JSON.parse(row.record) }) as Listing);
+      return page({ kind: "home", data: catalog.home(removed, new Date()), publications: r.n, latest }, 200);
     }
     const scoped = /^\/discover\/(institution|topic|county)\/([^/]+)$/.exec(path);
+    let refs: Institution[] = [];
+    const needsRefs =
+      scoped || path === newPath || path === feedPath || combinedApi || pubApi || (path === browsePath && hasPubs);
+    if (
+      needsRefs &&
+      (hasPubs ||
+        (
+          await rows(
+            researchDb,
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='research_institutions'",
+          )
+        ).length)
+    ) {
+      refs = await institutionRefs(researchDb);
+    }
     const projectFilters =
       searchParams.get("tools") === "project" ||
       ["language", "license", "owner", "tag", "archived", "year", "paper", "since"].some((key) =>
@@ -376,15 +395,15 @@ export async function servePublicDirectory(
       path === feedPath ||
       pubApi ||
       combinedApi ||
+      (scoped && refs.length > 0) ||
+      (path === browsePath && searchParams.has("kind") && !hasPubs) ||
       (hasPubs &&
         ((path === browsePath && (!projectFilters || searchParams.get("kind") === "publication")) || scoped))
     ) {
       if (pubApi && !hasPubs) return json(() => ({ error: "publication_not_found" }), 404);
-      const refs = hasPubs ? await institutionRefs(researchDb) : [];
       const options = optionsFor(catalog, removed, refs);
       const params = new URLSearchParams(searchParams);
       if (pubApi) params.set("kind", "publication");
-      if (path === feedPath) params.delete("page");
       if (path === feedPath || path === newPath) params.set("sort", "added");
       let title = path === newPath ? "What’s new" : "Research directory";
       let intro =
@@ -394,12 +413,13 @@ export async function servePublicDirectory(
       if (scoped) {
         const field = scoped[1] as keyof typeof options,
           value = decode(scoped[2]);
-        params.set(field, value);
-        title = options[field].get(value) ?? value;
+        const ref = field === "institution" ? institutionFor(refs, value) : undefined;
+        params.set(field, ref?.id ?? value);
+        title = ref?.name ?? options[field].get(value) ?? value;
         if (field === "county") title += " County";
         const sites =
           field === "institution"
-            ? refs.filter((r) => r.id === value || facetSlug(r.name) === value).flatMap((r) => r.sites)
+            ? (ref?.sites ?? [])
             : field === "county"
               ? refs.flatMap((r) => r.sites).filter((s) => facetSlug(s.county) === value)
               : [];
@@ -416,10 +436,16 @@ export async function servePublicDirectory(
               .join("") +
             "</ul>";
       }
+      if (path === feedPath && hasPubs) {
+        return xml(
+          rss(origin, params, await researchFeed(researchDb, params, refs), options),
+          "application/rss+xml",
+        );
+      }
       const result = hasPubs
         ? await researchQuery(researchDb, params, refs)
-        : projectQuery(catalog, removed, params, options);
-      if (scoped && !result.total && !options[scoped[1] as keyof typeof options].has(decode(scoped[2])))
+        : projectQuery(catalog, removed, params, options, refs);
+      if (scoped && !result.total && !options[scoped[1] as keyof typeof options].has(params.get(scoped[1])!))
         return page({ kind: "not-found" }, 404);
       if (pubApi || combinedApi) {
         const publicationIds = result.items.flatMap((i) =>
@@ -453,10 +479,16 @@ export async function servePublicDirectory(
           ...(pubApi ? { publications: listings.map((i) => i.record) } : { listings }),
           page: result.page,
           page_size: 24,
-          total: result.total,
+          total: result.counts.reduce((sum, kind) => sum + kind.works, 0),
+          record_total: result.total,
+          total_pages: Math.ceil(result.total / 24),
         }));
       }
-      if (path === feedPath) return xml(rss(origin, params, result), "application/rss+xml");
+      if (path === feedPath)
+        return xml(
+          rss(origin, params, { ...result, hasMore: result.page * 24 < result.total }, options),
+          "application/rss+xml",
+        );
       return page(
         {
           kind: "research",
@@ -475,11 +507,12 @@ export async function servePublicDirectory(
       if (project) {
         const papers = await rows<{ id: string; title: string }>(
           researchDb,
-          "SELECT id,title FROM research_visible WHERE kind='publication' AND (id IN (SELECT id FROM research_facets WHERE field='project' AND value=?) OR id IN (SELECT value FROM research_facets WHERE field='paper' AND id=?)) ORDER BY title",
+          "SELECT id,title FROM research_visible WHERE kind='publication' AND (id IN (SELECT id FROM research_facets WHERE field='project' AND value=?) OR id IN (SELECT value FROM research_facets WHERE field='paper' AND id=?) OR id IN (SELECT id FROM research_facets WHERE field='alternate' AND value IN (SELECT value FROM research_facets WHERE field='paper' AND id=?))) ORDER BY title",
+          id,
           id,
           id,
         );
-        linked = papers.map((p) => ({ title: p.title, url: pubPath(p.id) }));
+        linked = papers.map((p) => ({ title: publicationTitle(p), url: pubPath(p.id) }));
       }
     }
   } catch {
@@ -505,7 +538,8 @@ export async function servePublicDirectory(
     return page({ kind: "results", data: catalog.list(removed, searchParams, now) }, 200);
   }
   if (pathname === "/discover" || pathname === "/discover/") return redirect(browsePath + search);
-  if (pathname === methodPath || pathname === methodPath + "/") return page({ kind: "methodology" }, 200);
+  if (pathname === methodPath || pathname === methodPath + "/")
+    return page({ kind: "methodology", publications: hasPubs }, 200);
 
   const entityMatch = entityRoute.exec(pathname);
   if (entityMatch) {

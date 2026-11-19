@@ -517,4 +517,4 @@ input, select { accent-color: var(--accent); }
 .paper-card { border-top:3px solid var(--accent); }
 .research-grid article,.project-intro { overflow-wrap:anywhere; }
 .directory-chrome .desk-primary { display:flex; flex-wrap:wrap; gap:.6rem; }
-@media(max-width:34rem){.directory-chrome .desk-masthead-inner { flex-wrap:wrap; gap:.5rem; } .research-filters label {width:100%;}}
+@media(max-width:34rem){.research-filters label {width:100%;}}

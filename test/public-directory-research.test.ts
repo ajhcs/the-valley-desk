@@ -58,7 +58,8 @@ test("reviewed publication import, replay, relationships, feeds, flags and fresh
     const api = "/api/directory/publications/" + id;
     const page = await text(detail);
     assert.match(page, /12 of 400 authors/);
-    assert.match(page, /&lt;em&gt;methods&lt;\/em&gt;/);
+    assert.match(page, /Imaging methods for tissue maps/);
+    assert.doesNotMatch(page, /<em>methods<\/em>/);
     assert.match(page, /href="\/discover\/work\/617168725"/);
     assert.match(await text("/discover/work/617168725"), /Publications in the directory/);
     assert.match(await text("/discover/institution/fixture-institute"), /Estuary campus/);
@@ -86,12 +87,46 @@ test("reviewed publication import, replay, relationships, feeds, flags and fresh
       const body = await text(path);
       assert.ok(body.includes(id) || body.includes(p.id) || body.includes(p.title), path);
     }
-    sqlite.prepare("INSERT INTO publication_removals(id) VALUES(?)").run(p.id);
+    assert.equal((await get("/discover/publication/bogus/" + id)).status, 404);
+    assert.equal((await get(detail, "HEAD")).status, 200);
+    assert.equal(await (await get(detail, "HEAD")).text(), "");
+    const removals = join(dir, "removed.json");
+    writeFileSync(removals, JSON.stringify([p.id]));
+    sqlite.exec(execFileSync("python3", ["ops/load-research.py", "--removals", removals], { encoding: "utf8" }));
     for (const path of [detail, api]) assert.equal((await get(path)).status, 410);
     for (const path of paths) {
       const body = await text(path);
       assert.ok(!body.includes(id) && !body.includes(p.id) && !body.includes(p.title), path);
     }
+    writeFileSync(input, execFileSync("python3", ["ops/research-fixture.py", "--count", "51"]));
+    load();
+    const second = await (await get("/api/directory/publications?page=2")).json();
+    const third = await (await get("/api/directory/publications?page=3")).json();
+    assert.equal(second.total, 49);
+    assert.equal(second.record_total, 50);
+    assert.equal(second.total_pages, 3);
+    assert.equal(second.publications.length, 24);
+    assert.equal(third.publications.length, 2);
+    assert.ok(
+      !second.publications.some((a: { id: string }) =>
+        third.publications.some((b: { id: string }) => a.id === b.id),
+      ),
+    );
+    assert.equal((await get(api)).status, 410);
+    const longByline = records[4];
+    for (const a of longByline.authors) a.name += " Invented".repeat(40);
+    writeFileSync(input, JSON.stringify(longByline));
+    const largeSql = execFileSync("python3", ["ops/load-research.py", "--publications", input], {
+      encoding: "utf8",
+    });
+    const statements = largeSql.trim().split("\n");
+    assert.ok(statements.length > 3 && statements.every((sql) => Buffer.byteLength(sql) <= 100000));
+    sqlite.exec(statements[0]);
+    assert.throws(() => sqlite.exec(statements.at(-2)!));
+    sqlite.exec(largeSql);
+    assert.equal(sqlite.prepare("SELECT count(*) n FROM research_import_chunks").get()!.n, 0);
+    const longItem = await (await get("/api/directory/publications/" + encodeURIComponent(longByline.id))).json();
+    assert.equal(longItem.publication.authors[399].name, longByline.authors[399].name);
     sqlite.exec("DROP TABLE publication_removals");
     for (const path of [
       ...paths,

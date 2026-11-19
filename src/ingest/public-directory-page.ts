@@ -3,6 +3,7 @@ import {
   activityCutoff, apiPath, browsePath, counties, githubAccount, httpsUrl, lastActivity, methodPath, paperUrl, projectPapers, projectPath,
   type DirectoryCatalog, type DirectoryProject,
 } from "./public-directory-data";
+import type { Listing } from "./public-directory-research";
 import { renderDirectoryHome } from "./public-directory-home";
 import { renderDirectoryResults, resultsHead } from "./public-directory-results";
 import {
@@ -12,10 +13,10 @@ import {
 
 export type DirectoryView =
   | { kind: "research"; title: string; summary: string; path: string; content: string; schema?: Record<string,unknown> }
-  | { kind: "home"; publications?: number; data: ReturnType<DirectoryCatalog["home"]> }
+  | { kind: "home"; publications?: number; latest?: Listing[]; data: ReturnType<DirectoryCatalog["home"]> }
   | { kind: "results"; data: ReturnType<DirectoryCatalog["list"]> }
   | { kind: "project"; linked?: {url:string;title:string}[]; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
-  | { kind: "methodology" }
+  | { kind: "methodology"; publications?: boolean }
   | { kind: "retired"; section: RetiredEditorialSection }
   | { kind: "listing-removed" | "removed" | "not-found" | "unavailable" };
 
@@ -77,7 +78,7 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
     : activity && activity < activityCutoff(now, 2) ? `Last recorded activity in ${activity.slice(0, 4)}` : "";
   return `<article class="frame page project-page">
     <nav class="breadcrumb" aria-label="Directory breadcrumb">
-      <a href="${browsePath}">All projects</a><span aria-hidden="true">/</span>${entityLink(catalog, "topic", project.topic)}
+      <a href="${browsePath}">Research directory</a><span aria-hidden="true">/</span>${entityLink(catalog, "topic", project.topic)}
     </nav>
     <header class="project-intro">
       <div>
@@ -130,20 +131,21 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
   </article>`;
 }
 
-function methodology() {
+function methodology(publications = false) {
   const places = (state: "PA" | "NJ") => counties.filter(county => county.state === state)
     .map(county => `<a href="/discover/county/${county.name.toLowerCase()}">${county.name}</a>`).join(", ");
   return `<article class="frame page prose-page">
-    <nav class="breadcrumb" aria-label="Directory breadcrumb"><a href="${browsePath}">All projects</a></nav>
+    <nav class="breadcrumb" aria-label="Directory breadcrumb"><a href="${browsePath}">Research directory</a></nav>
     <h1>Directory methodology</h1>
     <p class="prose-intro">The directory records the evidence connecting healthcare research to the nine-county Delaware Valley. The date added records when a listing entered the directory. Published records when a paper appeared. Pushed records when code last changed.</p>
     <section>
       <h2>What gets listed</h2>
+      ${publications ? `<p>A publication needs a persistent DOI, PubMed ID or preprint identifier, a health or life-science subject, and a regional institution named in the affiliation metadata. Corrections and retraction notices are excluded. An eligible paper that has been retracted carries a retraction label. Linked preprint and journal versions have separate records and count once in publication totals.</p>` : ""}
       <p>A repository must contain its own work and have a plausible health, biomedical or life sciences purpose described in the repository or a linked source. A roster, an institution’s page or a releasing paper with a regional affiliation must connect the project to the region.</p>
       <p>Empty repositories, coursework, personal configuration, unmodified forks and general-purpose mirrors are excluded.</p>
     </section>
     <section id="regional-evidence">
-      <h2>Regional evidence</h2><p>For scholarly work, a Verified affiliation names the institution and a regional place, or a single-site regional institution. Listed indicates an indexer assignment or an institution match with an uncertain site. A county requires evidence placing the affiliation there. A byline reports names as published.</p>
+      <h2>Regional evidence</h2><p>For scholarly work, a Verified affiliation names the institution and a regional place, or a single-site regional institution. Listed indicates an indexer assignment or an institution match with an uncertain site. Company affiliations require a stated regional site. A county requires evidence placing the affiliation there. On multi-institution papers, filters match the institutions and counties recorded for the work. Follow the affiliation source to identify the site. A byline reports names as published.</p>
       <dl class="definition-list">
         <div id="verified"><dt>Verified</dt><dd>${labelDefinitions.Verified}</dd></div>
         <div id="listed"><dt>Listed</dt><dd>${labelDefinitions.Listed}</dd></div>
@@ -158,12 +160,14 @@ function methodology() {
     </section>
     <section>
       <h2>Corrections, removals and submissions</h2>
-      <p>${contactLink("Email the directory team")} with the GitHub URL and, for a correction or submission, a source for the regional connection. For a removal request, include the project URL or directory ID and the reason for the request.</p>
+      <p>${contactLink("Email the directory team")} with the listing URL or persistent identifier and, for a correction or submission, a source for the regional connection. For a removal request, include the listing URL or directory ID and the reason for the request.</p>
     </section>
     <section id="data">
       <h2>Machine-readable directory</h2><p><a href="/discover/updates.xml">Subscribe to directory additions</a>. Institution and topic collections offer scoped feeds.</p>
       <p><a href="${apiPath}">Download the project catalog as JSON</a>. It returns a <code>projects</code> array. Use <code>${apiPath}/{id}</code> for a single <code>project</code> by GitHub repository ID.</p>
-      <p>Both support GET and HEAD. Removed projects are excluded from the catalog and return HTTP 410 at their own URL. The endpoints return HTTP 503 when removal records are unavailable.</p>
+      ${publications ? `<p><a href="/api/directory/publications">Browse publication records as JSON</a>. Results include distinct work and record totals, with up to 24 records per page.</p>` : ""}
+      <p><a href="/api/directory/listings">Read directory additions as JSON</a>. Use the institution, topic, county and kind filters to narrow a feed or JSON listing.</p>
+      <p>The endpoints support GET and HEAD. Removed projects are excluded from the catalog and return HTTP 410 at their own URL. The endpoints return HTTP 503 when removal records are unavailable.</p>
       <p><a href="/sitemap.xml">Sitemap</a> · <a href="/llms.txt">llms.txt</a></p>
     </section>
   </article>`;
@@ -212,7 +216,7 @@ function pageHead(view: DirectoryView, origin: string) {
       } };
     }
     case "methodology": {
-      const head = basic("Directory methodology", "How projects are selected, what regional evidence means and how to request a correction or removal.", methodPath);
+      const head = basic("Directory methodology", "How research listings are selected, what regional evidence means and how to request a correction or removal.", methodPath);
       return { ...head, schema: { "@type": "AboutPage", name: head.title, url: url(methodPath), description: head.description } };
     }
     default: return basic(...pageMessage(view));
@@ -230,10 +234,10 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
   let content: string;
   switch (view.kind) {
     case "research": content = view.content; break;
-    case "home": content = renderDirectoryHome(catalog, view.data, view.publications); break;
+    case "home": content = renderDirectoryHome(catalog, view.data, view.publications, view.latest); break;
     case "results": content = renderDirectoryResults(catalog, view.data); break;
     case "project": content = projectDetail(catalog, view); break;
-    case "methodology": content = methodology(); break;
+    case "methodology": content = methodology(view.publications); break;
     default: {
       const [title, message] = pageMessage(view);
       content = `<section class="frame page message-page"><h1>${html(title)}</h1><p>${html(message)}</p>

@@ -39,11 +39,11 @@ export function resultsHead(view: Results) {
   const base = view.scope ? entityPath(view.scope.entity) : browsePath;
   const scope = scopeName(view);
   const filtered = hasFilters(view.query);
-  const title = [scope, filtered ? queryPurpose(view) : scope ? "" : "Project directory",
+  const title = [scope, filtered ? queryPurpose(view) : scope ? "" : "Research directory",
     view.query.page > 1 ? `Page ${count(view.query.page)}` : ""].filter(Boolean).join(" · ");
   const description = filtered
     ? `${queryPurpose(view)}. ${projectCount(view.matchCount)} found in ${scope ? `${scope} in ` : ""}The Valley Desk directory.`
-    : `Browse ${projectCount(view.total)}${scope ? ` listed under ${scope}` : ""} in the Delaware Valley health technology, biomedicine and life sciences directory.`;
+    : `Browse ${projectCount(view.total)}${scope ? ` listed under ${scope}` : ""} in the Delaware Valley healthcare research directory.`;
   const canonical = !filtered && view.query.sort === "updated" && view.query.page > 1
     ? `${base}?page=${view.query.page}` : base;
   return { title, description, canonical };

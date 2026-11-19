@@ -175,3 +175,15 @@
   }
   .directory-chrome .desk-masthead-inner { min-height: 4rem; }
 }
+
+@media (max-width: 30rem) {
+  .directory-chrome .desk-masthead-inner {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "brand theme" "navigation navigation";
+    row-gap: 0;
+  }
+  .directory-chrome .desk-brand { grid-area: brand; }
+  .directory-chrome .desk-theme { grid-area: theme; }
+  .directory-chrome .desk-primary { grid-area: navigation; }
+  .directory-chrome .desk-primary a { min-height: 32px; }
+}

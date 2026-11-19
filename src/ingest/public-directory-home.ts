@@ -1,3 +1,4 @@
+import { renderListingCards, type Listing } from "./public-directory-research";
 import { countyGeometry, countyViewBox } from "./public-directory-counties";
 import { browsePath, counties, methodPath, type DirectoryCatalog, type Facet } from "./public-directory-data";
 import { count, facetHref, href, html, projectCards, projectCount, searchInput } from "./public-directory-ui";
@@ -42,7 +43,7 @@ function map(catalog: DirectoryCatalog, home: Home) {
   </figure>`;
 }
 
-export function renderDirectoryHome(catalog: DirectoryCatalog, home: Home, publications = 0) {
+export function renderDirectoryHome(catalog: DirectoryCatalog, home: Home, publications = 0, latest: Listing[] = []) {
   return `<section class="home-hero">
     <div class="frame">
       <h1>Healthcare research in the Delaware Valley</h1>
@@ -59,12 +60,13 @@ export function renderDirectoryHome(catalog: DirectoryCatalog, home: Home, publi
       <div><dt>Projects</dt><dd>${count(home.total)}</dd></div>
       <div><dt>Project institutions</dt><dd>${count(home.institutions.length)}</dd></div>
       ${publications ? `<div><dt><a href="/discover/works?kind=publication">Publications</a></dt><dd>${count(publications)}</dd></div>` : ""}
-      <div><dt>GitHub accounts</dt><dd>${count(home.labs.length)}</dd></div>
+      ${publications ? "" : `<div><dt>GitHub accounts</dt><dd>${count(home.labs.length)}</dd></div>`}
       <div><dt><a href="${methodPath}#verified">Verified projects</a></dt><dd>${count(home.verifiedCount)}</dd></div>
     </dl>
     <section class="monitor-callout"><div><h2>What’s new</h2><p>Track listings by the date they entered the directory.</p></div><a class="button secondary" href="/discover/new">View additions</a></section>
+    ${latest.length ? renderListingCards(latest, catalog) : ""}
     <section class="atlas" aria-labelledby="atlas-title">
-      <h2 id="atlas-title">The regional landscape</h2>
+      <h2 id="atlas-title">Research software by place and topic</h2>
       <div class="atlas-grid">
         <section class="atlas-map" aria-labelledby="county-title">
           <h3 id="county-title">Projects with a known county</h3>
@@ -99,7 +101,7 @@ export function renderDirectoryHome(catalog: DirectoryCatalog, home: Home, publi
       ${projectCards(catalog, home.verified)}
     </section>` : ""}
     ${home.recent.length ? `<section class="home-projects">
-      <div class="section-heading"><h2>Recently updated projects</h2><a href="${browsePath}">All projects</a></div>
+      <div class="section-heading"><h2>Recently updated projects</h2><a href="${browsePath}?kind=project">All projects</a></div>
       ${projectCards(catalog, home.recent)}
     </section>` : ""}
     ${home.added.length ? `<section class="home-projects">

@@ -18,15 +18,15 @@ export const facetSlug = (name: string) =>
     .match(/[\p{L}\p{N}]+/gu)
     ?.join("-") ?? "";
 type Prepared = {
-  bind(...args: (string | number)[]): Prepared;
+  bind?(...args: (string | number)[]): Prepared;
   all(): Promise<{ results: unknown[]; success?: boolean }>;
 };
 export type ResearchDb = { prepare(sql: string): Prepared };
 export async function rows<T>(db: ResearchDb, sql: string, ...args: (string | number)[]): Promise<T[]> {
-  const result = await db
-    .prepare(sql)
-    .bind(...args)
-    .all();
+  const prepared = db.prepare(sql);
+  const query = args.length ? prepared.bind?.(...args) : prepared;
+  if (!query) throw Error("Directory binding unavailable");
+  const result = await query.all();
   if (result.success === false || !Array.isArray(result.results)) throw Error("Directory query unavailable");
   return result.results as T[];
 }
@@ -49,7 +49,7 @@ export type Publication = {
   connection: string;
   source: string;
   url: string;
-  open_access: { url: string } | null;
+  open_access: { url: string | null } | null;
   projects: string[];
   published_as: string | null;
   preprint_of: string | null;
@@ -61,15 +61,54 @@ export type Institution = {
   aliases: string[];
   sites: { name: string; place: string; county: string; source: string }[];
 };
-export type Listing = { kind: "project"; record: DirectoryProject } | { kind: "publication"; record: Publication };
-export const listingTitle = (item: Listing) => (item.kind === "project" ? item.record.name : item.record.title);
-export const listingPath = (item: Listing) =>
-  item.kind === "project" ? projectPath(item.record) : pubPath(item.record.id);
+type RecordsByKind = { project: DirectoryProject; publication: Publication };
+export type ListingKind = keyof RecordsByKind;
+export type Listing<K extends ListingKind = ListingKind> = {
+  [P in K]: { kind: P; record: RecordsByKind[P] };
+}[K];
+export const publicationTitle = (p: Pick<Publication, "title">) =>
+  p.title.replace(/<\/?(?:em|strong|i|b|sub|sup)>/gi, "");
+
+const templates: {
+  [K in ListingKind]: {
+    name: string;
+    plural: string;
+    path: (id: string) => string;
+    title: (record: RecordsByKind[K]) => string;
+    card: (record: RecordsByKind[K], catalog: DirectoryCatalog) => string;
+  };
+} = {
+  project: {
+    name: "Project",
+    plural: "Projects",
+    path: (id) => projectPath({ id }),
+    title: (r) => r.name,
+    card: (r, catalog) => projectCards(catalog, [r], "cards", "added"),
+  },
+  publication: {
+    name: "Publication",
+    plural: "Publications",
+    path: pubPath,
+    title: publicationTitle,
+    card: publicationCard,
+  },
+};
+export const listingTitle = <K extends ListingKind>(item: Listing<K>) => templates[item.kind].title(item.record);
+export const listingPath = (item: { kind: ListingKind; record: { id: string } }) =>
+  templates[item.kind].path(item.record.id);
+function card<K extends ListingKind>(item: Listing<K>, catalog: DirectoryCatalog) {
+  return templates[item.kind].card(item.record, catalog);
+}
 export const fields = ["institution", "topic", "county"] as const;
 export type Options = Record<(typeof fields)[number], Map<string, string>>;
+export function institutionFor(refs: Institution[], value: string) {
+  const key = facetSlug(value);
+  return refs.find((ref) => [ref.id, ref.name, ...ref.aliases].some((name) => facetSlug(name) === key));
+}
 export function optionsFor(catalog: DirectoryCatalog, removed: Set<string>, refs: Institution[]): Options {
   const options: Options = { institution: new Map(), topic: new Map(), county: new Map() };
   for (const entity of catalog.publishedEntities(removed)) {
+    if (entity.kind === "institution" && institutionFor(refs, entity.name)) continue;
     if (entity.kind !== "lab") options[entity.kind].set(entity.slug, entity.name);
   }
   for (const ref of refs) options.institution.set(ref.id, ref.name);
@@ -79,7 +118,7 @@ export function optionsFor(catalog: DirectoryCatalog, removed: Set<string>, refs
 
 export const pageNumber = (params: URLSearchParams) =>
   Math.max(1, Math.min(10000000, Number(params.get("page")) || 1) | 0);
-export async function researchQuery(db: ResearchDb, params: URLSearchParams, refs: Institution[]) {
+function searchSource(params: URLSearchParams, refs: Institution[]) {
   const where: string[] = [];
   const args: string[] = [];
   const terms = params
@@ -90,7 +129,21 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
     where.push(
       "id IN (SELECT l.id FROM research_search JOIN research_listings l ON l.rowid=research_search.rowid WHERE research_search MATCH ?)",
     );
+    const institutions = refs
+      .filter((ref) =>
+        [ref.name, ...ref.aliases].some((name) =>
+          terms.every((term) => facetSlug(name).includes(facetSlug(term))),
+        ),
+      )
+      .map((ref) => ref.id);
     args.push(terms.map((term) => '"' + term + '"*').join(" AND "));
+    if (institutions.length) {
+      where[0] =
+        "(" +
+        where[0] +
+        " OR id IN (SELECT id FROM research_facets WHERE field='institution' AND value IN (SELECT value FROM json_each(?))))";
+      args.push(JSON.stringify(institutions));
+    }
   }
   for (const key of [...fields, "label"]) {
     const selected = params
@@ -98,12 +151,7 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
       .filter(Boolean)
       .slice(0, 15)
       .map(facetSlug)
-      .map((value) =>
-        key === "institution"
-          ? (refs.find((ref) => [ref.id, ref.name, ...ref.aliases].some((name) => facetSlug(name) === value))
-              ?.id ?? value)
-          : value,
-      );
+      .map((value) => (key === "institution" ? (institutionFor(refs, value)?.id ?? value) : value));
     if (selected.length) {
       where.push(
         "id IN (SELECT id FROM research_facets WHERE field=? AND value IN (" +
@@ -118,9 +166,28 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
     args.push(params.get("kind")!);
   }
   const from = " FROM research_visible" + (where.length ? " WHERE " + where.join(" AND ") : "");
-  const counts = await rows<{ kind: string; n: number; works: number }>(
+  return { from, args };
+}
+
+function readListing(row: { kind: Listing["kind"]; record: string }): Listing {
+  return { kind: row.kind, record: JSON.parse(row.record) };
+}
+export async function researchFeed(db: ResearchDb, params: URLSearchParams, refs: Institution[]) {
+  const { from, args } = searchSource(params, refs);
+  const page = pageNumber(params);
+  const result = await rows<{ kind: Listing["kind"]; record: string }>(
     db,
-    "SELECT kind,count(*) n,count(DISTINCT work_id) works" + from + " GROUP BY kind",
+    "SELECT kind,record" + from + " ORDER BY added DESC,id LIMIT 25 OFFSET ?",
+    ...args,
+    (page - 1) * 24,
+  );
+  return { page, items: result.slice(0, 24).map(readListing), hasMore: result.length > 24 };
+}
+export async function researchQuery(db: ResearchDb, params: URLSearchParams, refs: Institution[]) {
+  const { from, args } = searchSource(params, refs);
+  const counts = await rows<{ kind: ListingKind; n: number; works: number }>(
+    db,
+    "SELECT kind,count(*) n,count(DISTINCT group_id) works" + from + " GROUP BY kind",
     ...args,
   );
   const total = counts.reduce((sum, row) => sum + row.n, 0);
@@ -138,7 +205,7 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
     (page - 1) * 24,
   );
   return {
-    items: result.map((r) => ({ kind: r.kind, record: JSON.parse(r.record) }) as Listing),
+    items: result.map(readListing),
     counts,
     page,
     total,
@@ -151,12 +218,17 @@ export function projectQuery(
   removed: Set<string>,
   params: URLSearchParams,
   options: Options,
+  refs: Institution[] = [],
 ): Results {
   const query = new URLSearchParams(params);
   for (const key of fields) {
     const values = query.getAll(key);
     query.delete(key);
-    for (const value of values) query.append(key, options[key].get(facetSlug(value)) ?? value);
+    for (const value of values) {
+      const ref = key === "institution" ? institutionFor(refs, value) : undefined;
+      for (const name of ref ? [ref.name, ...ref.aliases] : [options[key].get(facetSlug(value)) ?? value])
+        query.append(key, name);
+    }
   }
   query.set("sort", "added");
   const result = catalog.list(removed, query, new Date());
@@ -172,14 +244,16 @@ export function projectQuery(
 function evidence(p: Publication) {
   return `<a class="evidence ${p.label === "Verified" ? "evidence-verified" : ""}" href="/discover/methodology#regional-evidence">${html(p.label)}</a> ${html(p.connection)} ${externalLink(p.source, "Affiliation source")}`;
 }
-function card(item: Listing, catalog: DirectoryCatalog) {
-  if (item.kind === "project") return projectCards(catalog, [item.record], "cards", "added");
-  const p = item.record;
+function publicationCard(p: Publication) {
   return `<article class="project-card paper-card"><div class="card-topic">Publication · ${html(p.type)}</div>
-    <h3><a href="${html(pubPath(p.id))}">${html(p.title)}</a></h3>${p.retracted ? "<strong>Retracted</strong>" : ""}
+    <h3><a href="${html(pubPath(p.id))}">${html(publicationTitle(p))}</a></h3>${p.retracted ? "<strong>Retracted</strong>" : ""}
     <p>${html([p.venue, p.topic].filter(Boolean).join(" · "))}</p><p>${evidence(p)}</p>
     <div class="card-meta">Published ${html(p.published)} · Added ${html(p.added)}</div></article>`;
 }
+export function renderListingCards(items: Listing[], catalog: DirectoryCatalog) {
+  return `<div class="research-grid">${items.map((item) => card(item, catalog)).join("")}</div>`;
+}
+
 export function feedUrl(params: URLSearchParams) {
   const filters = new URLSearchParams(params);
   for (const key of ["page", "view", "sort"]) filters.delete(key);
@@ -215,10 +289,11 @@ export function renderResearch(
     <form class="research-form" action="${html(path)}" method="get" role="search">${searchInput(params.get("q") ?? "")}
     <div class="research-filters">${
       enabled
-        ? select("kind", "Listing kind", [
-            ["project", "Projects"],
-            ["publication", "Publications"],
-          ])
+        ? select(
+            "kind",
+            "Listing kind",
+            Object.entries(templates).map(([kind, t]) => [kind, t.plural]),
+          )
         : ""
     }
     ${fields
@@ -251,13 +326,12 @@ export function renderResearch(
           (r) =>
             count(r.works) +
             " " +
-            (r.kind === "project" ? "project" : "publication") +
-            (r.works === 1 ? "" : "s") +
+            (r.works === 1 ? templates[r.kind].name : templates[r.kind].plural).toLowerCase() +
             (r.n > r.works ? " (" + count(r.n) + " versions)" : ""),
         )
         .join(" · ") || "No matching listings"
     }</p>
-    <div class="research-grid">${data.items.map((i) => card(i, catalog)).join("")}</div>
+    ${renderListingCards(data.items, catalog)}
     <nav class="pagination" aria-label="Results pages">${data.page > 1 ? pageLink(data.page - 1, "Previous") : ""}
     ${data.total > 24 ? "Page " + count(data.page) + " of " + count(Math.ceil(data.total / 24)) : ""} ${data.page * 24 < data.total ? pageLink(data.page + 1, "Next") : ""}</nav></section>`;
 }
@@ -268,7 +342,7 @@ export function renderPublication(p: Publication, refs: Institution[], related: 
     entity("institution", id, refs.find((ref) => ref.id === id)?.name ?? id),
   );
   return `<article class="frame page project-page"><nav class="breadcrumb"><a href="${browsePath}">Research directory</a></nav>
-    <header class="project-intro"><p class="card-topic">Publication · ${html(p.type)}</p><h1>${html(p.title)}</h1>
+    <header class="project-intro"><p class="card-topic">Publication · ${html(p.type)}</p><h1>${html(publicationTitle(p))}</h1>
     ${p.retracted ? "<strong>Retracted publication</strong>" : ""}<p>${html([p.venue, "Published " + p.published].filter(Boolean).join(" · "))}</p>
     <p>${externalLink(p.url, "Read the publication ↗", "button primary")} ${externalLink(p.open_access?.url, "Open access copy ↗")}</p></header>
     <section class="detail-section"><h2>Byline</h2><p>${p.authors.map((a) => html(a.name)).join(", ")}</p>
@@ -277,8 +351,25 @@ export function renderPublication(p: Publication, refs: Institution[], related: 
     <section class="detail-section"><h2>Directory record</h2><p>${entity("topic", facetSlug(p.topic), p.topic)}</p><p>Added ${html(p.added)} · Source checked ${html(p.checked)}</p></section>
     ${related.length ? `<section class="detail-section"><h2>Connected research</h2><ul>${related.map((i) => `<li>${i.kind === "project" ? "Project" : "Publication version"} · <a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}</article>`;
 }
-export function rss(origin: string, params: URLSearchParams, data: Results) {
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>The Valley Desk · Research additions</title><link>${html(origin + newPath + "?" + params)}</link><description>Listings ordered by date added to the directory.</description>${data.items
+export function rss(
+  origin: string,
+  params: URLSearchParams,
+  data: { items: Listing[]; page: number; hasMore: boolean },
+  options: Options,
+) {
+  const scope = fields.flatMap((field) =>
+    params
+      .getAll(field)
+      .filter(Boolean)
+      .map((v) => options[field].get(facetSlug(v)) ?? v),
+  );
+  if (params.get("kind")) scope.push(params.get("kind")!);
+  if (params.get("q")) scope.push(params.get("q")!);
+  const self = new URL(feedUrl(params), origin);
+  if (data.page > 1) self.searchParams.set("page", String(data.page));
+  const next = new URL(self);
+  next.searchParams.set("page", String(data.page + 1));
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><atom:link rel="self" type="application/rss+xml" href="${html(self.href)}"/>${data.hasMore ? `<atom:link rel="next" type="application/rss+xml" href="${html(next.href)}"/>` : ""}<title>The Valley Desk · Research additions${scope.length ? " · " + html(scope.join(" · ")) : ""}</title><link>${html(origin + newPath + "?" + params)}</link><description>Listings ordered by date added to the directory.</description>${data.items
     .map((i) => {
       const link = html(origin + listingPath(i));
       const day = i.record.added;

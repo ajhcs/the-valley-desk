@@ -1,0 +1,296 @@
+[
+  {
+    "key": "home",
+    "width": 390,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "search",
+    "width": 390,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "publication",
+    "width": 390,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "project",
+    "width": 390,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "institution",
+    "width": 390,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "new",
+    "width": 390,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "off",
+    "width": 390,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "home",
+    "width": 390,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "search",
+    "width": 390,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "publication",
+    "width": 390,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "project",
+    "width": 390,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "institution",
+    "width": 390,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "new",
+    "width": 390,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "off",
+    "width": 390,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "home",
+    "width": 768,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "search",
+    "width": 768,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "publication",
+    "width": 768,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "project",
+    "width": 768,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "institution",
+    "width": 768,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "new",
+    "width": 768,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "off",
+    "width": 768,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "home",
+    "width": 768,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "search",
+    "width": 768,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "publication",
+    "width": 768,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "project",
+    "width": 768,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "institution",
+    "width": 768,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "new",
+    "width": 768,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "off",
+    "width": 768,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "home",
+    "width": 1440,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "search",
+    "width": 1440,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "publication",
+    "width": 1440,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "project",
+    "width": 1440,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "institution",
+    "width": 1440,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "new",
+    "width": 1440,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "off",
+    "width": 1440,
+    "theme": "light",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "home",
+    "width": 1440,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "search",
+    "width": 1440,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "publication",
+    "width": 1440,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "project",
+    "width": 1440,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "institution",
+    "width": 1440,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "new",
+    "width": 1440,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "key": "off",
+    "width": 1440,
+    "theme": "dark",
+    "overflow": false,
+    "violations": []
+  }
+]
