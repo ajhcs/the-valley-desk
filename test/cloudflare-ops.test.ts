@@ -623,6 +623,7 @@ test("SCHEMA_VERSION matches the latest D1 migration and wrangler stays a single
   assert.ok(wrangler.includes('"WATCH_COLLECTION_ENABLED": "false"'), "Retired Watch sections no longer collect sources");
   assert.ok(wrangler.includes('"WATCH_SOURCE_RULE_ENABLED": "false"'), "Retired Watch sections no longer publish native records");
   assert.ok(wrangler.includes('"EVENT_CALENDAR_COLLECTION_ENABLED": "false"'), "Retired Events section no longer syncs its calendar");
+  assert.ok(wrangler.includes('"EDITORIAL_AUTOMATION_ENABLED": "false"'), "Retired editorial sections no longer run the ingest pipeline");
   assert.ok(wrangler.includes('"POLICY_BACKGROUND_PUBLIC_ENABLED": "false"'), "Inherited policy background stays independently gated");
   assert.ok(!wrangler.includes("env.staging") && !wrangler.includes('"staging"'));
   assert.ok(!wrangler.includes("the-valley-desk-staging"));

@@ -954,6 +954,12 @@ export default {
         }, "warn");
       }),
     );
+    if (env.EDITORIAL_AUTOMATION_ENABLED === "false") {
+      // The editorial sections are retired; retention cleanup above still runs.
+      ctx.waitUntil(emailAuthentication);
+      logOps("cron", { outcome: "disabled", cadence });
+      return;
+    }
     ctx.waitUntil(
       emailAuthentication.then(() => runAutomation(env, undefined, undefined, { mode: cadence })).then((result) => {
         logOps("cron", {
