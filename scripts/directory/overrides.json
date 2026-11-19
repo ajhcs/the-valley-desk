@@ -4917,6 +4917,9 @@
   "269705008": [
     {"field": "record", "value": {"id": "269705008", "code": "https://github.com/k3yavi/signac-kit", "name": "signac-kit", "purpose": "Wraps the Signac workflow for processing single-cell ATAC-seq data.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The @k3yavi GitHub profile identifies the Wistar Institute and Philadelphia.", "institution": "The Wistar Institute", "source": "https://github.com/k3yavi", "added": "2026-11-18"}, "source": "https://github.com/k3yavi/signac-kit", "date": "2026-11-17", "author": "f_3plus_21"}
   ],
+  "269774753": [
+    {"field": "record", "value": {"id": "269774753", "name": "Deep-Learning-Emotion-Decoding-using-EEG-data-from-Autism-individuals", "code": "https://github.com/meiyor/Deep-Learning-Emotion-Decoding-using-EEG-data-from-Autism-individuals", "purpose": "Processes EEG data for research on emotion recognition in autistic and non-autistic individuals.", "topic": "Neuroscience", "label": "Listed", "connection": "The code repository links to the Lerner Lab, which identifies its association with the A.J. Drexel Autism Institute.", "source": "https://www.lernerlab.com/", "added": "2026-11-18"}, "source": "https://github.com/meiyor/Deep-Learning-Emotion-Decoding-using-EEG-data-from-Autism-individuals", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "269838725": [
     {"field": "stars", "value": 7, "source": "https://github.com/PennLINC/Brain_Organization", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/PennLINC/Brain_Organization", "date": "2026-11-18", "author": "refresh_b2"}
@@ -8496,6 +8499,9 @@
     {"field": "stars", "value": 16, "source": "https://github.com/ahmedmagds/Microbial-Genomics-Journey-Workshop-2023", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/ahmedmagds/Microbial-Genomics-Journey-Workshop-2023", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "600206539": [
+    {"field": "record", "value": {"id": "600206539", "name": "Microbial-colonization-programs", "code": "https://github.com/Shenhav-Lab/Microbial-colonization-programs", "purpose": "Analyzes infant microbial colonization in relation to breastfeeding and respiratory development.", "topic": "Biomedical and life sciences", "label": "Verified", "connection": "The infant microbiome paper links this analysis repository and lists a Children’s Hospital of Philadelphia affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11531244/", "added": "2026-11-18"}, "source": "https://github.com/Shenhav-Lab/Microbial-colonization-programs/blob/Revision/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
+  ],
   "600270128": [
     {"field": "stars", "value": 5, "source": "https://github.com/FunctionLab/SPEEDI", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": ["non-commercial-license"], "source": "https://github.com/FunctionLab/SPEEDI", "date": "2026-11-18", "author": "refresh_b2"}
@@ -9259,6 +9265,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/penn-cnt/NLP_Disparities_in_Seizure_Freedom", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/penn-cnt/NLP_Disparities_in_Seizure_Freedom", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "678185875": [
+    {"field": "record", "value": {"id": "678185875", "name": "PepCNN", "code": "https://github.com/abelavit/PepCNN", "purpose": "Predicts peptide-binding residues in proteins using sequence, structural, and language-model features.", "topic": "Biomedical and life sciences", "label": "Verified", "connection": "The PepCNN paper links this repository as the released software and lists a Rutgers University–Camden affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10684570/", "added": "2026-11-18"}, "source": "https://github.com/abelavit/PepCNN/blob/main/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
+  ],
   "678589617": [
     {"field": "record", "value": {"id": "678589617", "code": "https://github.com/rongzhou7/MCLCA", "name": "MCLCA", "purpose": "Combines brain imaging and genetic data using contrastive learning to study Alzheimer’s disease prediction.", "topic": "Medical imaging", "label": "Listed", "connection": "The repository cites the study, whose publication metadata lists a University of Pennsylvania affiliation in Philadelphia.", "institution": "University of Pennsylvania", "source": "https://api.crossref.org/works?query.bibliographic=Integrating%20Multimodal%20Contrastive%20Learning%20and%20Cross-Modal%20Attention%20for%20Alzheimer%E2%80%99s%20Disease%20Prediction%20in%20Brain%20Imaging%20Genetics%20Zhou&rows=3", "added": "2026-11-18"}, "source": "https://github.com/rongzhou7/MCLCA", "date": "2026-11-17", "author": "f_category_01_06"}
   ],
@@ -9714,6 +9723,9 @@
   "726283670": [
     {"field": "record", "value": {"id": "726283670", "code": "https://github.com/larryns/karylens", "name": "karylens", "purpose": "Computes relative chromosome lengths from karyograms.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The regional roster records the GitHub account, whose profile lists Philadelphia.", "source": "https://github.com/larryns", "added": "2026-11-18"}, "source": "https://github.com/larryns/karylens", "date": "2026-11-17", "author": "f_3plus_20"}
   ],
+  "726669972": [
+    {"field": "record", "value": {"id": "726669972", "name": "R2PPE-DATASET", "code": "https://github.com/yangwanzhao/R2PPE-DATASET", "purpose": "Provides code for preparing and evaluating an image dataset on protective equipment use in simulated healthcare encounters.", "topic": "Research data", "label": "Verified", "connection": "The dataset paper links this repository as its generation and validation code and lists a Drexel University affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11742010/", "added": "2026-11-18"}, "source": "https://github.com/yangwanzhao/R2PPE-DATASET", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "726835218": [
     {"field": "stars", "value": 1, "source": "https://github.com/raphael-group/hatchet2-simulations", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/raphael-group/hatchet2-simulations", "date": "2026-11-18", "author": "refresh_b2"}
@@ -9821,8 +9833,14 @@
     {"field": "stars", "value": 0, "source": "https://github.com/Daniel-Baugh-Institute/BiophysicalModelingOfIntrinsicCardiacNeurons", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Daniel-Baugh-Institute/BiophysicalModelingOfIntrinsicCardiacNeurons", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "740537147": [
+    {"field": "record", "value": {"id": "740537147", "name": "tumor-circadian-clock-strength-influences-metastatic-potential-and-predicts-patient-prognosis", "code": "https://github.com/ranafi/tumor-circadian-clock-strength-influences-metastatic-potential-and-predicts-patient-prognosis", "purpose": "Uses CYCLOPS to study circadian rhythms and patient outcomes in luminal A breast cancer.", "topic": "Disease research", "label": "Listed", "connection": "The repository cites the circadian clock study, whose publication metadata lists a University of Pennsylvania affiliation in Philadelphia.", "source": "https://api.crossref.org/works?rows=3&query.bibliographic=Tumor%20circadian%20clock%20strength%20influences%20metastatic%20potential%20and%20predicts%20patient%20prognosis%20Luminal%20A%20breast%20cancer", "added": "2026-11-18"}, "source": "https://github.com/ranafi/tumor-circadian-clock-strength-influences-metastatic-potential-and-predicts-patient-prognosis", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "740542214": [
     {"field": "record", "value": {"id": "740542214", "code": "https://github.com/d3b-center/d3b-supremo-dev", "name": "d3b-supremo-dev", "purpose": "Packages SuPreMo in Common Workflow Language to score how human variants may disrupt genome folding.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The Bioinformatics Research Unit at Children’s Hospital of Philadelphia links to the d3b-center GitHub organization.", "source": "https://d3b.center/units/bixu/", "added": "2026-11-18"}, "source": "https://github.com/d3b-center/d3b-supremo-dev/blob/master/tools/supremo.cwl", "date": "2026-11-19", "author": "f_3plus_06"}
+  ],
+  "740713621": [
+    {"field": "record", "value": {"id": "740713621", "name": "observer_frontend", "code": "https://github.com/kbjohnson-penn/observer_frontend", "purpose": "Displays interactive charts for the Observer ambulatory-care research platform.", "topic": "Research data", "label": "Listed", "connection": "The repository links to the Observer program documented by Penn Medicine’s ambulatory-care research lab.", "source": "https://www.med.upenn.edu/kbjohnsonlab/observer-pilot-awards.html", "added": "2026-11-18"}, "source": "https://github.com/kbjohnson-penn/observer_frontend", "date": "2026-11-19", "author": "f_category_01_09"}
   ],
   "741561656": [
     {"field": "stars", "value": 7, "source": "https://github.com/d3b-center/pLGG-immune-clinicoradiomics", "date": "2026-11-18", "author": "refresh_b2"},
@@ -10313,6 +10331,9 @@
     {"field": "topics", "value": ["bids-format", "fmri", "neuroimaging-data"], "source": "https://github.com/DVS-Lab/SRPAL-DataInBrief", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "Code manages and processes imaging data for the Social Reward Processing Across the Lifespan study.", "source": "https://github.com/DVS-Lab/SRPAL-DataInBrief/blob/main/README.md", "date": "2026-11-18", "author": "audit_a-05"}
   ],
+  "795690821": [
+    {"field": "record", "value": {"id": "795690821", "name": "MyESL", "code": "https://github.com/kumarlabgit/MyESL", "purpose": "Fits sparse evolutionary models for studying phylogenetic hypotheses and genomic traits.", "topic": "Biomedical and life sciences", "label": "Verified", "connection": "The MyESL paper links this repository as its source code and lists a Temple University affiliation in Philadelphia.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12498521/", "added": "2026-11-18"}, "source": "https://github.com/kumarlabgit/MyESL/blob/master/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
+  ],
   "796469984": [
     {"field": "record", "value": {"id": "796469984", "code": "https://github.com/jinhaoduan/ReMiND", "name": "ReMiND", "purpose": "Uses diffusion models to reconstruct missing neuroimaging data in Alzheimer’s disease research.", "topic": "Medical imaging", "label": "Verified", "connection": "The Penn and Drexel coauthored release paper links the exact repository.", "institution": "University of Pennsylvania", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12290738/", "added": "2026-11-18"}, "source": "https://github.com/jinhaoduan/ReMiND", "date": "2026-11-17", "author": "f_category_01_10"}
   ],
@@ -10376,6 +10397,9 @@
   "803228981": [
     {"field": "stars", "value": 1, "source": "https://github.com/grasool/path-data-processing", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/grasool/path-data-processing", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "804433779": [
+    {"field": "record", "value": {"id": "804433779", "name": "ActinCometTailMyo1", "code": "https://github.com/davidmrutkowski/ActinCometTailMyo1", "purpose": "Simulates how myosin-I affects the growth and force generation of branched actin networks.", "topic": "Biomedical and life sciences", "label": "Verified", "connection": "The actin-network paper links this repository as its computational model code and lists a University of Pennsylvania affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11397503/", "added": "2026-11-18"}, "source": "https://github.com/davidmrutkowski/ActinCometTailMyo1/blob/main/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
   ],
   "804620780": [
     {"field": "record", "value": {"id": "804620780", "code": "https://github.com/labouz/destigma", "name": "destigma", "purpose": "Evaluate language-model rewriting of stigmatizing language about substance use disorders.", "topic": "Public health", "label": "Listed", "connection": "The retained regional roster records the GitHub account, whose public profile identifies a Drexel University affiliation.", "institution": "Drexel University", "source": "https://github.com/labouz", "added": "2026-11-18"}, "source": "https://github.com/labouz/destigma/blob/main/README.md", "date": "2026-11-19", "author": "f_owners_06"}
@@ -10627,6 +10651,9 @@
   ],
   "836848067": [
     {"field": "record", "value": {"id": "836848067", "code": "https://github.com/d3b-center/fw-fsl-fast", "name": "fw-fsl-fast", "purpose": "Runs FSL FAST as a Flywheel image-processing gear.", "topic": "Medical imaging", "label": "Listed", "connection": "The Bioinformatics Research Unit at Children’s Hospital of Philadelphia links to the d3b-center GitHub organization.", "source": "https://d3b.center/units/bixu/", "added": "2026-11-18"}, "source": "https://github.com/d3b-center/fw-fsl-fast", "date": "2026-11-17", "author": "f_3plus_06"}
+  ],
+  "836868556": [
+    {"field": "record", "value": {"id": "836868556", "name": "YeastConvergence2025", "code": "https://github.com/KyleTDavid/YeastConvergence2025", "purpose": "Analyzes evolutionary convergence and expansions of gene families in Saccharomycotina yeasts.", "topic": "Biomedical and life sciences", "label": "Verified", "connection": "The accompanying yeast evolution paper links this repository and lists a Villanova University affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12167968/", "added": "2026-11-18"}, "source": "https://github.com/KyleTDavid/YeastConvergence2025/blob/main/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
   ],
   "836924717": [
     {"field": "stars", "value": 15, "source": "https://github.com/MLDataAnalytics/pNet", "date": "2026-11-18", "author": "refresh_b2"},
@@ -11570,6 +11597,9 @@
   "937757833": [
     {"field": "record", "value": {"id": "937757833", "code": "https://github.com/khuongquynhlong/fusionNI", "name": "fusionNI", "purpose": "Reproduces simulations and tables for a study of designs that estimate placebo-controlled effects in non-inferiority trials.", "topic": "Clinical care", "label": "Listed", "connection": "The repository owner’s public profile identifies Penn’s epidemiology program in Philadelphia.", "institution": "University of Pennsylvania", "source": "https://github.com/khuongquynhlong", "added": "2026-11-18"}, "source": "https://github.com/khuongquynhlong/fusionNI", "date": "2026-11-17", "author": "f_1to2_05"}
   ],
+  "938265501": [
+    {"field": "record", "value": {"id": "938265501", "name": "circadian_AD", "code": "https://github.com/ranafi/circadian_AD", "purpose": "Analyzes cell-type-specific circadian rhythms in human brain samples in Alzheimer’s disease research.", "topic": "Neuroscience", "label": "Verified", "connection": "The Alzheimer’s paper links this repository as its original code and lists a Perelman School of Medicine affiliation in Philadelphia.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12352436/", "added": "2026-11-18"}, "source": "https://github.com/ranafi/circadian_AD", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "938882549": [
     {"field": "record", "value": {"id": "938882549", "code": "https://github.com/Pennsieve/migrationtools", "name": "migrationtools", "purpose": "Converts iEEG.org recordings, generates BIDS sidecars, and uploads the results to Pennsieve.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/migrationtools", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
@@ -12002,6 +12032,9 @@
   "995632875": [
     {"field": "record", "value": {"id": "995632875", "code": "https://github.com/MLBC-lab/XBioPred", "name": "XBioPred", "purpose": "Predicts biogas yields with an explainable machine learning model.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The @MLBC-lab GitHub profile identifies the lab at Rutgers University in Camden.", "institution": "Rutgers University–Camden", "source": "https://github.com/MLBC-lab", "added": "2026-11-18"}, "source": "https://github.com/MLBC-lab/XBioPred", "date": "2026-11-17", "author": "f_3plus_15"}
   ],
+  "995671386": [
+    {"field": "record", "value": {"id": "995671386", "name": "mmseg", "code": "https://github.com/liyue3780/mmseg", "purpose": "Segments medial temporal lobe subregions from multimodal MRI scans.", "topic": "Medical imaging", "label": "Verified", "connection": "The MRI segmentation paper links this repository as its code and lists a University of Pennsylvania affiliation in Philadelphia.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12502466/", "added": "2026-11-18"}, "source": "https://github.com/liyue3780/mmseg", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "996259627": [
     {"field": "stars", "value": 0, "source": "https://github.com/Lindell-Lab/STAT-Hyperactivation-in-Sepsis", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Lindell-Lab/STAT-Hyperactivation-in-Sepsis", "date": "2026-11-18", "author": "refresh_b2"}
@@ -12045,6 +12078,9 @@
     {"field": "topics", "value": [], "source": "https://github.com/MLBC-lab/HSC_vs_MPP", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "This project uses transfer learning to classify functional subpopulations of hematopoietic stem cells and multipotent progenitors.", "source": "https://github.com/MLBC-lab/HSC_vs_MPP/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-06"},
     {"field": "topic", "value": "Biomedical and life sciences", "source": "https://github.com/MLBC-lab/HSC_vs_MPP/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-06"}
+  ],
+  "1000459840": [
+    {"field": "record", "value": {"id": "1000459840", "name": "ONT-adaptive-sampling", "code": "https://github.com/lin-rnalab/ONT-adaptive-sampling", "purpose": "Summarizes read-level adaptive sampling decisions and lengths from nanopore transcriptome sequencing experiments.", "topic": "Research data", "label": "Verified", "connection": "The transcriptome sequencing paper links this repository and lists a University of Pennsylvania affiliation in Philadelphia.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12509409/", "added": "2026-11-18"}, "source": "https://github.com/lin-rnalab/ONT-adaptive-sampling/blob/main/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
   ],
   "1001527860": [
     {"field": "stars", "value": 0, "source": "https://github.com/BrianMGreen2/Empathy-Savvy-RLHF-Pipeline", "date": "2026-11-18", "author": "refresh_b2"},
@@ -12102,6 +12138,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/Penncil/Hybrid_immunity", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Penncil/Hybrid_immunity", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "R code estimates vaccine effectiveness and confidence intervals, with simulated data provided for demonstration.", "source": "https://github.com/Penncil/Hybrid_immunity/blob/master/README.md", "date": "2026-11-18", "author": "audit_a-05"}
+  ],
+  "1014916686": [
+    {"field": "record", "value": {"id": "1014916686", "name": "FURM_ML_CFD_Swimmer", "code": "https://github.com/nickabattista/FURM_ML_CFD_Swimmer", "purpose": "Combines machine learning and computational fluid dynamics to study the swimming biomechanics of marine organisms.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The College of New Jersey mathematics department documents the researcher’s association with the college.", "source": "https://mathstat.tcnj.edu/2021/03/10/congratulations-to-dr-nick-battista-for-his-siam-review-cover-story/", "added": "2026-11-18"}, "source": "https://github.com/nickabattista/FURM_ML_CFD_Swimmer", "date": "2026-11-19", "author": "f_category_01_09"}
   ],
   "1014932383": [
     {"field": "stars", "value": 2, "source": "https://github.com/xtie97/HL-Outcome-Analysis", "date": "2026-11-18", "author": "refresh_b2"},
@@ -12425,6 +12464,9 @@
   "1056743598": [
     {"field": "record", "value": {"id": "1056743598", "code": "https://github.com/ykhan1999/ldsc-cpp", "name": "ldsc-cpp", "purpose": "Implements linkage disequilibrium score regression in C++.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The repository owner’s public profile identifies Penn Medicine and a Philadelphia location.", "institution": "University of Pennsylvania", "source": "https://github.com/ykhan1999", "added": "2026-11-18"}, "source": "https://github.com/ykhan1999/ldsc-cpp", "date": "2026-11-17", "author": "f_1to2_05"}
   ],
+  "1057739833": [
+    {"field": "record", "value": {"id": "1057739833", "name": "-main-module-of-DIST", "code": "https://github.com/DONGGUANLIANG/-main-module-of-DIST", "purpose": "Implements a breast MRI model for studying response to neoadjuvant chemotherapy.", "topic": "Medical imaging", "label": "Verified", "connection": "The DIST paper links this repository as the model code and lists a Saint Joseph’s University affiliation in Philadelphia.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12796758/", "added": "2026-11-18"}, "source": "https://github.com/DONGGUANLIANG/-main-module-of-DIST/blob/main/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
+  ],
   "1058224423": [
     {"field": "record", "value": {"id": "1058224423", "code": "https://github.com/n-sinha/pennsieve-ieeg-recon-voxtool", "name": "pennsieve-ieeg-recon-voxtool", "purpose": "Uses VoxTool to semiautomatically annotate intracranial EEG electrode positions on CT images.", "topic": "Medical imaging", "label": "Listed", "connection": "The regional roster records the GitHub account, whose profile lists Philadelphia.", "institution": "University of Pennsylvania", "source": "https://github.com/n-sinha", "added": "2026-11-18"}, "source": "https://github.com/n-sinha/pennsieve-ieeg-recon-voxtool", "date": "2026-11-17", "author": "f_3plus_20"}
   ],
@@ -12472,6 +12514,9 @@
   ],
   "1063436199": [
     {"field": "record", "value": {"id": "1063436199", "code": "https://github.com/pennmem/ValueCourierAnalysis", "name": "ValueCourierAnalysis", "purpose": "Analyzes experimental and simulated data for the Value Courier study.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under the University of Pennsylvania Computational Memory Lab’s GitHub organization in the regional roster.", "institution": "University of Pennsylvania", "source": "https://github.com/pennmem", "added": "2026-11-18"}, "source": "https://github.com/pennmem/ValueCourierAnalysis", "date": "2026-11-17", "author": "f_3plus_05"}
+  ],
+  "1063555528": [
+    {"field": "record", "value": {"id": "1063555528", "name": "radiology-disease-classification", "code": "https://github.com/bionlplab/radiology-disease-classification", "purpose": "Evaluates reinforcement learning for classifying diseases from radiology reports.", "topic": "Medical imaging", "label": "Verified", "connection": "The radiology paper links this repository as its analysis code and lists a Thomas Jefferson University affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13338140/", "added": "2026-11-18"}, "source": "https://github.com/bionlplab/radiology-disease-classification/blob/main/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
   ],
   "1063579181": [
     {"field": "record", "value": {"id": "1063579181", "code": "https://github.com/EESI/Firm-DTI", "name": "Firm-DTI", "purpose": "Predicts drug–target binding affinity and classifies drug–target interactions.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "Listed under the EESI Lab GitHub organization linked from Drexel University’s faculty page.", "institution": "Drexel University", "source": "https://drexel.edu/engineering/about/faculty-staff/R/rosen-gail/", "added": "2026-11-18"}, "source": "https://github.com/EESI/Firm-DTI/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_09"}
@@ -12565,6 +12610,9 @@
   ],
   "1076067662": [
     {"field": "record", "value": {"id": "1076067662", "code": "https://github.com/afeklab/LR-models-for-repair-enzyme-specificity-predictions", "name": "LR-models-for-repair-enzyme-specificity-predictions", "purpose": "Provides code and data for modeling how nearby DNA sequence affects the binding of DNA repair enzymes.", "topic": "Biomedical and life sciences", "label": "Listed", "institution": "Rowan University", "connection": "The cited paper identifies a Rowan University affiliation in Stratford, New Jersey.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13396187/", "added": "2026-11-18"}, "source": "https://github.com/afeklab/LR-models-for-repair-enzyme-specificity-predictions/blob/main/README.md", "date": "2026-11-18", "author": "f_f_01"}
+  ],
+  "1076253810": [
+    {"field": "record", "value": {"id": "1076253810", "name": "antidepressants-autism-uk", "code": "https://github.com/awssadik/antidepressants-autism-uk", "purpose": "Provides code lists and scripts for studying antidepressant prescribing trends for UK adults with and without autism.", "topic": "Disease research", "label": "Verified", "connection": "The study links this repository as its code and lists a Drexel Autism Institute affiliation in Philadelphia.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674362/", "added": "2026-11-18"}, "source": "https://github.com/awssadik/antidepressants-autism-uk/blob/main/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
   ],
   "1077829399": [
     {"field": "stars", "value": 0, "source": "https://github.com/scottdaniel/Southwood_2025", "date": "2026-11-18", "author": "refresh_b2"},
@@ -12817,6 +12865,9 @@
   "1116009140": [
     {"field": "record", "value": {"id": "1116009140", "code": "https://github.com/DVS-Lab/hcp-psychosis", "name": "hcp-psychosis", "purpose": "Contains PPI and resting-state analyses for a psychosis study.", "topic": "Neuroscience", "label": "Listed", "connection": "The @DVS-Lab GitHub organization links to the lab’s Temple University website.", "institution": "Temple University", "source": "https://github.com/DVS-Lab", "added": "2026-11-18"}, "source": "https://github.com/DVS-Lab/hcp-psychosis", "date": "2026-11-17", "author": "f_3plus_01"}
   ],
+  "1116659596": [
+    {"field": "record", "value": {"id": "1116659596", "name": "longitudinal_multiomics_melanoma_ICB_resistance", "code": "https://github.com/Liulab/longitudinal_multiomics_melanoma_ICB_resistance", "purpose": "Reproduces longitudinal multi-omics data processing for a study of immune checkpoint blockade resistance in melanoma.", "topic": "Disease research", "label": "Verified", "connection": "The melanoma paper links this repository as its data-processing scripts and lists an Abramson Cancer Center affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13130630/", "added": "2026-11-18"}, "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13130630/", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "1117642012": [
     {"field": "record", "value": {"id": "1117642012", "code": "https://github.com/d3b-center/flywheel-sdk-gear-template", "name": "flywheel-sdk-gear-template", "purpose": "Provides a starter template and naming guidance for developing Flywheel medical imaging gears.", "topic": "Medical imaging", "label": "Listed", "connection": "The Bioinformatics Research Unit at Children’s Hospital of Philadelphia links to the d3b-center GitHub organization.", "source": "https://d3b.center/units/bixu/", "added": "2026-11-18"}, "source": "https://github.com/d3b-center/flywheel-sdk-gear-template/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_06"}
   ],
@@ -12977,6 +13028,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/davidthomas411/apex-documents-dashboard", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/davidthomas411/apex-documents-dashboard", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "1130438367": [
+    {"field": "record", "value": {"id": "1130438367", "name": "insilico", "code": "https://github.com/cbchenh/insilico", "purpose": "Classifies cisplatin sensitivity states from immunometabolic profiles using interpretable machine learning.", "topic": "Disease research", "label": "Verified", "connection": "The cisplatin study links this repository and lists a Philadelphia College of Osteopathic Medicine affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12993415/", "added": "2026-11-18"}, "source": "https://github.com/cbchenh/insilico", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "1130621584": [
     {"field": "record", "value": {"id": "1130621584", "code": "https://github.com/FunctionLab/DaVinci-docs", "name": "DaVinci-docs", "purpose": "Provides installation guidance and analysis tutorials for the DaVinci spatial omics package.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "Listed under the FunctionLab GitHub organization, whose profile gives Princeton, New Jersey as its location and links the Princeton University lab website.", "institution": "Princeton University", "source": "https://github.com/FunctionLab", "added": "2026-11-18"}, "source": "https://github.com/FunctionLab/DaVinci-docs/blob/main/docs/index.md", "date": "2026-11-19", "author": "f_3plus_09"}
   ],
@@ -13084,6 +13138,9 @@
   "1145422527": [
     {"field": "record", "value": {"id": "1145422527", "code": "https://github.com/bjklab/keggcov", "name": "keggcov", "purpose": "Generates covariance matrices for sets of KEGG orthologs.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The Motion Lab profile explicitly associates @bjklab with the University of Pennsylvania.", "institution": "University of Pennsylvania", "source": "https://motionlab.site/posts/2023-12-20-welcome-to-the-motion-lab/", "added": "2026-11-18"}, "source": "https://github.com/bjklab/keggcov", "date": "2026-11-17", "author": "f_3plus_14"}
   ],
+  "1145534114": [
+    {"field": "record", "value": {"id": "1145534114", "name": "Abt_Wang_E2F3_CRISPR", "code": "https://github.com/jfreeland01/Abt_Wang_E2F3_CRISPR", "purpose": "Analyzes CRISPR screening data for a study of E2F3 inhibition in small-cell cancers.", "topic": "Disease research", "label": "Verified", "connection": "The small-cell cancer paper links this repository and lists a Children’s Hospital of Philadelphia affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13012052/", "added": "2026-11-18"}, "source": "https://github.com/jfreeland01/Abt_Wang_E2F3_CRISPR", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "1146231136": [
     {"field": "stars", "value": 0, "source": "https://github.com/chenyubi-code/TwoPhaseHighD", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": ["electronic-health-records", "missing-data", "risk-prediction"], "source": "https://github.com/chenyubi-code/TwoPhaseHighD", "date": "2026-11-18", "author": "refresh_b2"}
@@ -13097,6 +13154,9 @@
   ],
   "1148290842": [
     {"field": "record", "value": {"id": "1148290842", "code": "https://github.com/Pennsieve/immune-health-portal", "name": "immune-health-portal", "purpose": "Provides service intake and cohort tracking for Penn’s standardized immune profiling program.", "topic": "Research data", "label": "Listed", "connection": "The University of Pennsylvania offers the Pennsieve research platform and its associated tools.", "institution": "University of Pennsylvania", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/immune-health-portal/blob/main/README.md", "date": "2026-11-19", "author": "f_category_01_07"}
+  ],
+  "1148940010": [
+    {"field": "record", "value": {"id": "1148940010", "name": "BenchDrop-seq_Analysis", "code": "https://github.com/JamieBregman/BenchDrop-seq_Analysis", "purpose": "Processes and visualizes single-cell RNA sequencing data produced with BenchDrop-seq.", "topic": "Research data", "label": "Verified", "connection": "The BenchDrop-seq preprint links this repository as its replication scripts and lists a Wistar Institute affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13061021/", "added": "2026-11-18"}, "source": "https://github.com/JamieBregman/BenchDrop-seq_Analysis/blob/main/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
   ],
   "1149000262": [
     {"field": "stars", "value": 0, "source": "https://github.com/SydShafferLab/CloneSweeper_Paper", "date": "2026-11-18", "author": "refresh_b2"},
@@ -13529,6 +13589,9 @@
   "1205302228": [
     {"field": "record", "value": {"id": "1205302228", "code": "https://github.com/PennShenLab/mref-ad", "name": "mref-ad", "purpose": "Provides modeling code for Alzheimer’s research that combines imaging, amyloid and demographic measures.", "topic": "Disease research", "label": "Listed", "connection": "The Shen Lab software page at Penn links the PennShenLab GitHub account.", "institution": "University of Pennsylvania", "source": "https://www.med.upenn.edu/shenlab/software.html", "added": "2026-11-18"}, "source": "https://github.com/PennShenLab/mref-ad/blob/main/README.md", "date": "2026-11-17", "author": "f_3plus_17"}
   ],
+  "1205339990": [
+    {"field": "record", "value": {"id": "1205339990", "name": "LC-melanocortin-analysis", "code": "https://github.com/fmbetul/LC-melanocortin-analysis", "purpose": "Analyzes cell-type expression of melanocortin pathway genes in the locus coeruleus.", "topic": "Neuroscience", "label": "Verified", "connection": "The neuropathology paper identifies this repository as its analysis code and lists a Drexel University College of Medicine affiliation.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13097939/", "added": "2026-11-18"}, "source": "https://github.com/fmbetul/LC-melanocortin-analysis", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "1205648803": [
     {"field": "record", "value": {"id": "1205648803", "code": "https://github.com/atanugiri/dlc-pose-analysis-2026", "name": "dlc-pose-analysis-2026", "purpose": "Compares movement trajectories in saline and ghrelin experiments using DeepLabCut pose estimates.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under @atanugiri, whose public GitHub profile gives Philadelphia as its location.", "institution": "Children’s Hospital of Philadelphia", "source": "https://github.com/atanugiri", "added": "2026-11-18"}, "source": "https://github.com/atanugiri/dlc-pose-analysis-2026", "date": "2026-11-17", "author": "f_1to2_04"}
   ],
@@ -13822,6 +13885,9 @@
     {"field": "stars", "value": 1, "source": "https://github.com/johnsonandjohnson/appendMCP", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": ["group-sequential-designs", "multiple-testing", "report-generation-by-template"], "source": "https://github.com/johnsonandjohnson/appendMCP", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "1244437842": [
+    {"field": "record", "value": {"id": "1244437842", "name": "autism-diagnosis-changes", "code": "https://github.com/awssadik/autism-diagnosis-changes", "purpose": "Analyzes changes in the profiles of adults diagnosed with autism using UK and Swedish population data.", "topic": "Disease research", "label": "Verified", "connection": "The study links this repository as its analytical code and lists a Drexel Autism Institute affiliation in Philadelphia.", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13735358/", "added": "2026-11-18"}, "source": "https://github.com/awssadik/autism-diagnosis-changes", "date": "2026-11-19", "author": "f_category_01_09"}
+  ],
   "1245229955": [
     {"field": "record", "value": {"id": "1245229955", "code": "https://github.com/Pennsieve/pennsieve-quick-plot", "name": "pennsieve-quick-plot", "purpose": "Generates figures from data files as part of Pennsieve analysis workflows.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-quick-plot", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
@@ -13905,6 +13971,9 @@
   "1254787842": [
     {"field": "stars", "value": 0, "source": "https://github.com/ykhan1999/lavaan", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/ykhan1999/lavaan", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "1255143334": [
+    {"field": "record", "value": {"id": "1255143334", "name": "Biocoach", "code": "https://github.com/VILab-Drexel/Biocoach", "purpose": "Uses human pose and biomechanics to generate fitness coaching feedback from video.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "Drexel’s Visual Intelligence Lab identifies BioCoach as its research and links the GitHub account that publishes the code.", "source": "https://vilab-group.com/", "added": "2026-11-18"}, "source": "https://github.com/VILab-Drexel/Biocoach/blob/main/README.md", "date": "2026-11-17", "author": "f_category_01_09"}
   ],
   "1255579879": [
     {"field": "stars", "value": 0, "source": "https://github.com/khayer/bearing", "date": "2026-11-18", "author": "refresh_b2"},
