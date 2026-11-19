@@ -276,14 +276,16 @@ test('Worker sitemap, JSON and fragments apply the same fresh removal set and fa
   }
   const sitemap = await (await get('/sitemap.xml')).text();
   for (const url of ['/discover/works', '/discover/work/617168725', '/discover/county/bucks', '/discover/lab/wglab',
-    '/discover/topic/neuroscience', '/discover/institution/drexel-university', '/discover/methodology', '/voices']) {
+    '/discover/topic/neuroscience', '/discover/institution/drexel-university', '/discover/methodology']) {
     assert.ok(sitemap.includes(`<loc>${publicOrigin}${url}</loc>`), url);
   }
   assert.doesNotMatch(sitemap, /\/discover\/works\?/);
   for (const path of ['/sitemap.xml', '/s%69temap.xml', '/sitemap.xml/']) {
     const response = await get(path);
     assert.equal(response.status, 200, path);
-    assert.doesNotMatch(await response.text(), /<loc>[^<]+\/(?:news|events|policy-watch|technology-watch|feed\.(?:json|xml))(?:[</])/);
+    const xml = await response.text();
+    assert.doesNotMatch(xml, /<loc>[^<]+\/(?:news|events|policy-watch|technology-watch|voices|feed\.(?:json|xml))(?:[</])/);
+    assert.ok(!xml.includes(`<loc>${publicOrigin}/lab`), path);
   }
   const previous = await (await get('/api/directory/projects')).json() as { projects: { id: string }[] };
   assert.ok(previous.projects.some(project => project.id === '617168725'));
