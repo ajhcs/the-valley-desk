@@ -173,8 +173,9 @@ input, select { accent-color: var(--accent); }
 }
 .home-explore p { margin-top: .4rem; font-size: .93rem; }
 .activity-chart .bar-chart { column-count: 2; column-gap: clamp(.85rem, 2vw, 1.8rem); }
+.activity-chart .bar-chart strong { white-space: nowrap; }
 .activity-chart .bar-chart li { break-inside: avoid; }
-.activity-chart .bar-chart a { grid-template-columns: 2.4rem minmax(0, 1fr) 2rem; }
+.activity-chart .bar-chart a { grid-template-columns: 2.4rem minmax(0, 1fr) 5ch; }
 .home-projects, .related-projects { margin-top: clamp(2rem, 5vw, 3.6rem); }
 .section-heading {
   display: flex;
@@ -406,6 +407,7 @@ input, select { accent-color: var(--accent); }
   gap: .65rem 1.5rem;
   padding-bottom: 1.35rem;
 }
+.publication-intro { grid-template-columns: minmax(0, 1fr); }
 .project-place { color: var(--muted); margin-top: .5rem; }
 .project-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: .55rem; }
 .project-purpose { font-size: clamp(1.04rem, 2vw, 1.22rem); grid-column: 1 / -1; max-width: 70ch; }

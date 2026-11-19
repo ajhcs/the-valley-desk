@@ -90,3 +90,28 @@ Inventory the React newsroom, Voices, calendar, Lab previews and Watch screens u
 The publications branch had no committed reviewed pilot at the time of this report. The checked-in site and measurements use invented publication fixtures. Real publication fit, indexing lag and the production backfill size remain unverified.
 
 Production migrations, the production import, flag activation and deployment require a separate release decision. Email alerts need a consent and unsubscribe flow, a delivery provider and credentials, rate limits, and durable checkpoints for deduplicated delivery and removal suppression. Saved searches can begin as bookmarked filter URLs. Cross-device named searches would need a user identity or private token, storage for query state, and a way to edit and delete it.
+
+## Follow-up measurements from the PR review
+
+**Institution and county filter.** I reran the HTML route `/discover/works?institution=fixture-institute&county=camden` on identical local D1 snapshots with 200,000 publications and 3,466 projects. The institution facet contains all 200,000 publications, the county facet contains 100,009 listings, and 100,000 publications satisfy both. SQLite’s original query plan used the existing facet primary key for each lookup. It built both ID lists for the exact counts, rebuilt them for the page, and used a temporary sort to return 24 records. Standalone warm SQLite timings for these original statements were 183–186 ms for the count and 149–156 ms for the page.
+
+I tried a covering index on listing ID, kind and work ID on a disposable database copy. The original count still took 175 ms warm. The revised SQL uses the existing facet index, intersects the selected facets once, and shares the visible IDs, group keys and selected sort values between the counts and page. It fetches the large JSON records only for the returned page. This change requires no new production index.
+
+I timed the merged PR #37 Worker and the revised Worker over localhost, alternating which ran first in each pair. Each returned HTTP 200 and displayed 100,000 matches. The table excludes each server’s first request. P95 uses the nearest rank. [All paired HTTP timings, in request order](research-evidence/review/filter-timings.csv)
+
+| 60 requests per revision | Median | P95 | Slowest |
+| --- | ---: | ---: | ---: |
+| PR #37 | 495.6 ms | 549.9 ms | 604.6 ms |
+| Revised query | 232.9 ms | 256.9 ms | 262.3 ms |
+
+The query change reduced the median by 53% in this comparison. The original 2,210 ms request survives in the prior Worker access log with only an end-to-end duration. It did not recur in the paired run. A separate development run did record a 2,056 ms first request immediately after a Worker rebuild. The measurements identify the repeated SQL work and its correction. They do not establish a cause for the historical single-request stall or a production latency bound.
+
+**Layout.** I used Playwright and Chromium with the site’s IBM Plex fonts because the Browser plugin was unavailable. Before the fix, the 2026 count occupied two lines at 390, 768 and 1440 CSS pixels. The fixture’s venue and date occupied one, three and three lines respectively. Afterward the count and publication metadata each occupied one line at every width, the metadata sat below the headline, and the document had no horizontal overflow. Clicking the count opened the directory with the 2026 filter. Long venue names can wrap within the full headline width.
+
+| Width | Last activity by year | Publication header |
+| ---: | --- | --- |
+| 390 | [Home](research-evidence/review/after-home-390.png) | [Publication](research-evidence/review/after-pub-390.png) |
+| 768 | [Home](research-evidence/review/after-home-768.png) | [Publication](research-evidence/review/after-pub-768.png) |
+| 1440 | [Home](research-evidence/review/after-home-1440.png) | [Publication](research-evidence/review/after-pub-1440.png) |
+
+**Migration rehearsal.** Using the locked Wrangler version and local D1, I applied the repository migrations through 0040, created the project-removal table and followed the scoped 0046 procedure. The ledger then ended with 0040 and 0046. The normal pending list contained exactly 0041–0045, and the visibility view returned zero listings. The production ledger and 489 MiB starting size are operator-supplied. The [runbook](research-rollout.md) includes the Free-plan stop and the 30,000-paper estimate.

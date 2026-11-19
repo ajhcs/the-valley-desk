@@ -113,6 +113,23 @@ test("reviewed publication import, replay, relationships, feeds, flags and fresh
       ),
     );
     assert.equal((await get(api)).status, 410);
+    // Every fixture belongs to this institution. Adding its filter must preserve
+    // the county-only result across both query paths, including a removed ID.
+    for (const sort of ["added", "name", "activity"]) {
+      for (const page of [1, 2, 999]) {
+        const url = `/api/directory/publications?county=camden&sort=${sort}&page=${page}`;
+        const expected = await (await get(url)).json();
+        const filtered = await (await get(url + "&institution=fixture-institute")).json();
+        assert.ok(expected.record_total > 24);
+        assert.deepEqual(filtered.publications, expected.publications);
+        for (const field of ["total", "record_total", "page", "total_pages"])
+          assert.equal(filtered[field], expected[field]);
+      }
+    }
+    const empty = await (await get("/api/directory/publications?county=camden&institution=absent&page=99")).json();
+    assert.equal(empty.page, 1);
+    assert.equal(empty.record_total, 0);
+    assert.deepEqual(empty.publications, []);
     const longByline = records[4];
     for (const a of longByline.authors) a.name += " Invented".repeat(40);
     writeFileSync(input, JSON.stringify(longByline));
