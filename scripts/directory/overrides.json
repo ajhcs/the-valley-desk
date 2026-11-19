@@ -5515,6 +5515,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/Drexel-UHC/salurbal_covid_dashboard", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Drexel-UHC/salurbal_covid_dashboard", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "344175644": [
+    {"field": "record", "value": {"id": "344175644", "code": "https://github.com/Pennsieve/ometiff-processor", "name": "ometiff-processor", "purpose": "Processes OME-TIFF bioimaging files for import into Pennsieve.", "topic": "Medical imaging", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/ometiff-processor", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "344866395": [
     {"field": "stars", "value": 2, "source": "https://github.com/raphael-group/ARCH", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/raphael-group/ARCH", "date": "2026-11-18", "author": "refresh_b2"}
@@ -5574,6 +5577,9 @@
     {"field": "stars", "value": 6, "source": "https://github.com/zhou-lab/knowYourCG", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/zhou-lab/knowYourCG", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "349068793": [
+    {"field": "record", "value": {"id": "349068793", "code": "https://github.com/Pennsieve/model-service", "name": "model-service", "purpose": "Manages Pennsieve dataset metadata in a Neo4j graph database.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/model-service", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "349113453": [
     {"field": "record", "value": {"id": "349113453", "code": "https://github.com/bwubb/pdx", "name": "pdx", "purpose": "Runs unpaired somatic variant calling on patient-derived xenograft data.", "topic": "Disease research", "label": "Listed", "connection": "Listed under @bwubb, whose public GitHub profile gives Philadelphia as its location.", "institution": "University of Pennsylvania", "source": "https://github.com/bwubb", "added": "2026-11-18"}, "source": "https://github.com/bwubb/pdx", "date": "2026-11-17", "author": "f_3plus_09"}
   ],
@@ -5592,6 +5598,15 @@
     {"field": "stars", "value": 2, "source": "https://github.com/kimpenn/Theia", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/kimpenn/Theia", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "349431305": [
+    {"field": "record", "value": {"id": "349431305", "code": "https://github.com/Pennsieve/pennsieve-python-deprecated", "name": "pennsieve-python-deprecated", "purpose": "Provides a legacy Python client and command-line interface for the Pennsieve data platform.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-python-deprecated", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "349466580": [
+    {"field": "record", "value": {"id": "349466580", "code": "https://github.com/Pennsieve/doi-service", "name": "doi-service", "purpose": "Assigns and manages DataCite DOIs for datasets that Pennsieve publishes.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/doi-service", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "349536872": [
+    {"field": "record", "value": {"id": "349536872", "code": "https://github.com/Pennsieve/discover-pgdump-lambda", "name": "discover-pgdump-lambda", "purpose": "Exports a database schema for the Pennsieve Discover dataset publishing workflow.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/discover-pgdump-lambda", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "349810394": [
     {"field": "stars", "value": 2, "source": "https://github.com/Andrew-S-Rosen/VaxChecker", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Andrew-S-Rosen/VaxChecker", "date": "2026-11-18", "author": "refresh_b2"}
@@ -5599,12 +5614,51 @@
   "349997008": [
     {"field": "record", "value": {"id": "349997008", "code": "https://github.com/PennLINC/abcdfnets", "name": "abcdfnets", "purpose": "Studies individualized functional brain networks in the ABCD cohort.", "topic": "Neuroscience", "label": "Listed", "connection": "The University of Pennsylvania regional roster links this repository through @PennLINC.", "institution": "University of Pennsylvania", "source": "https://github.com/PennLINC", "added": "2026-11-18"}, "source": "https://github.com/PennLINC/abcdfnets", "date": "2026-11-17", "author": "f_3plus_02"}
   ],
+  "350065747": [
+    {"field": "record", "value": {"id": "350065747", "code": "https://github.com/Pennsieve/etl-nextflow", "name": "etl-nextflow", "purpose": "Coordinates Pennsieve data ingestion and processing jobs with Nextflow.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/etl-nextflow", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350067614": [
+    {"field": "record", "value": {"id": "350067614", "code": "https://github.com/Pennsieve/job-scheduling-service", "name": "job-scheduling-service", "purpose": "Schedules and monitors legacy Pennsieve data upload processing jobs.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/job-scheduling-service", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350071111": [
+    {"field": "record", "value": {"id": "350071111", "code": "https://github.com/Pennsieve/zipit-service", "name": "zipit-service", "purpose": "Bundles Pennsieve packages and Discover dataset files into downloadable ZIP archives.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/zipit-service", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350097753": [
+    {"field": "record", "value": {"id": "350097753", "code": "https://github.com/Pennsieve/upload-service", "name": "upload-service", "purpose": "Uploads large files to storage for the Pennsieve scientific data platform.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/upload-service", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "350158889": [
     {"field": "stars", "value": 4, "source": "https://github.com/waq1129/brainkernel", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/waq1129/brainkernel", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "350328959": [
+    {"field": "record", "value": {"id": "350328959", "name": "pennsieve-rust", "code": "https://github.com/Pennsieve/pennsieve-rust", "purpose": "Provides a legacy Rust client for listing and managing datasets in Pennsieve.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-rust/blob/main/src/ps/api/client/mod.rs", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350335440": [
+    {"field": "record", "value": {"id": "350335440", "code": "https://github.com/Pennsieve/discover-service", "name": "discover-service", "purpose": "Serves published Pennsieve Discover datasets, with search, file access, versioning and DOIs.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/discover-service", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350399070": [
+    {"field": "record", "value": {"id": "350399070", "code": "https://github.com/Pennsieve/pennsieve-api", "name": "pennsieve-api", "purpose": "Provides the core Pennsieve API and shared clients for scientific and clinical data management.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-api", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350406388": [
+    {"field": "record", "value": {"id": "350406388", "code": "https://github.com/Pennsieve/timeseries-processor", "name": "timeseries-processor", "purpose": "Processes time-series files for ingestion into Pennsieve.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/timeseries-processor", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350409505": [
+    {"field": "record", "value": {"id": "350409505", "code": "https://github.com/Pennsieve/discover-release", "name": "discover-release", "purpose": "Releases embargoed research datasets for public access through Pennsieve Discover.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/discover-release", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "350424491": [
     {"field": "record", "value": {"id": "350424491", "code": "https://github.com/PennSIVE/mass", "name": "mass", "purpose": "Packages Multi-Atlas Skull Stripping for Brain Imaging Data Structure datasets.", "topic": "Medical imaging", "label": "Listed", "connection": "Listed under the Penn Statistics in Imaging and Visualization Center’s GitHub organization in the University of Pennsylvania roster.", "institution": "University of Pennsylvania", "source": "https://www.eneuro.org/content/12/2/ENEURO.0025-24.2024", "added": "2026-11-18"}, "source": "https://github.com/PennSIVE/mass", "date": "2026-11-17", "author": "f_3plus_05"}
+  ],
+  "350455296": [
+    {"field": "record", "value": {"id": "350455296", "code": "https://github.com/Pennsieve/discover-s3clean-lambda", "name": "discover-s3clean-lambda", "purpose": "Cleans up published dataset files during the Pennsieve Discover publishing workflow.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/discover-s3clean-lambda", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350468569": [
+    {"field": "record", "value": {"id": "350468569", "code": "https://github.com/Pennsieve/audit-middleware", "name": "audit-middleware", "purpose": "Writes Pennsieve service events to the platform’s HIPAA audit log.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/audit-middleware", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350474388": [
+    {"field": "record", "value": {"id": "350474388", "code": "https://github.com/Pennsieve/timeseries-core", "name": "timeseries-core", "purpose": "Looks up channel ranges for the Pennsieve time-series API and streaming services.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/timeseries-core", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "350527830": [
+    {"field": "record", "value": {"id": "350527830", "code": "https://github.com/Pennsieve/etl-egress", "name": "etl-egress", "purpose": "Records progress updates for Pennsieve’s legacy data ingestion and processing jobs.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/etl-egress/blob/main/README.md", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "350561861": [
     {"field": "stars", "value": 1, "source": "https://github.com/Jin93/MRLE", "date": "2026-11-18", "author": "refresh_b2"},
@@ -5625,6 +5679,9 @@
   "351510582": [
     {"field": "record", "value": {"id": "351510582", "code": "https://github.com/PennLINC/ZAPR01_dMRI_TMSfMRI", "name": "ZAPR01_dMRI_TMSfMRI", "purpose": "Provides study-specific scripts for diffusion MRI and TMS-evoked functional MRI analyses.", "topic": "Medical imaging", "label": "Verified", "connection": "PennLINC’s study documentation names the lab as maintainer and links the exact repository.", "institution": "University of Pennsylvania", "source": "https://pennlinc.github.io/ZAPR01_dMRI_TMSfMRI/", "added": "2026-11-18"}, "source": "https://pennlinc.github.io/ZAPR01_dMRI_TMSfMRI/", "date": "2026-11-19", "author": "f_sample_other_02_remaining"}
   ],
+  "351536604": [
+    {"field": "record", "value": {"id": "351536604", "code": "https://github.com/Pennsieve/agent", "name": "agent", "purpose": "Provides a legacy Pennsieve client that uploads files and streams time-series data.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/agent/blob/main/README.md", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "351861416": [
     {"field": "record", "value": {"id": "351861416", "code": "https://github.com/FunctionLab/sei-framework", "name": "sei-framework", "purpose": "Runs Sei to predict regulatory activity classes and chromatin profiles from human DNA sequences or variants.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "Listed under the FunctionLab GitHub organization, whose profile gives Princeton, New Jersey as its location and links the Princeton University lab website.", "institution": "Princeton University", "source": "https://github.com/FunctionLab", "added": "2026-11-18"}, "source": "https://github.com/FunctionLab/sei-framework/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_09"}
   ],
@@ -5632,6 +5689,12 @@
     {"field": "stars", "value": 0, "source": "https://github.com/diskin-lab-chop/PanTARGET_lncRNA_Study", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/diskin-lab-chop/PanTARGET_lncRNA_Study", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "Code reproduces a study of long noncoding RNA regulatory networks in pediatric leukemias and extracranial solid tumors.", "source": "https://github.com/diskin-lab-chop/PanTARGET_lncRNA_Study/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-05"}
+  ],
+  "352176632": [
+    {"field": "record", "value": {"id": "352176632", "code": "https://github.com/Pennsieve/pennsieve-app-2", "name": "pennsieve-app-2", "purpose": "Provides an archived web interface for managing data in Pennsieve.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-app-2", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "352206469": [
+    {"field": "record", "value": {"id": "352206469", "code": "https://github.com/Pennsieve/pennsieve-discover-app", "name": "pennsieve-discover-app", "purpose": "Provides the legacy web portal for browsing public Pennsieve Discover datasets.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-discover-app", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "352425907": [
     {"field": "stars", "value": 2, "source": "https://github.com/d3b-center/tiru-preproc-mri", "date": "2026-11-18", "author": "refresh_b2"},
@@ -5672,6 +5735,9 @@
   "355646477": [
     {"field": "stars", "value": 0, "source": "https://github.com/bbitarello/XPASS", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/bbitarello/XPASS", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "356602832": [
+    {"field": "record", "value": {"id": "356602832", "name": "model-schema-service", "code": "https://github.com/Pennsieve/model-schema-service", "purpose": "Manages metadata templates that can be applied to Pennsieve datasets.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/model-schema-service/blob/main/swagger/model-schema-service.yml", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "357244517": [
     {"field": "record", "value": {"id": "357244517", "code": "https://github.com/PennLINC/footprinting", "name": "footprinting", "purpose": "Studies whether distinct mobility patterns relate to mood, sleep and functional brain connectivity.", "topic": "Neuroscience", "label": "Listed", "connection": "The University of Pennsylvania regional roster links this repository through @PennLINC.", "institution": "University of Pennsylvania", "source": "https://github.com/PennLINC", "added": "2026-11-18"}, "source": "https://github.com/PennLINC/footprinting/blob/main/README.md", "date": "2026-11-17", "author": "f_3plus_02"}
@@ -5717,6 +5783,12 @@
   "361279362": [
     {"field": "stars", "value": 2, "source": "https://github.com/Jin93/T2DAG", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Jin93/T2DAG", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "361580466": [
+    {"field": "record", "value": {"id": "361580466", "code": "https://github.com/Pennsieve/pennsieve-analysis-container", "name": "pennsieve-analysis-container", "purpose": "Loads Pennsieve Discover datasets into Jupyter and Neo4j containers for analysis.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-analysis-container", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "361582699": [
+    {"field": "record", "value": {"id": "361582699", "code": "https://github.com/Pennsieve/pennsieve-matlab", "name": "pennsieve-matlab", "purpose": "Provides an archived MATLAB toolbox for accessing the Pennsieve data platform.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-matlab", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "361832152": [
     {"field": "stars", "value": 6, "source": "https://github.com/DamLabResources/HIV-Quasipore-basecallers", "date": "2026-11-18", "author": "refresh_b2"},
@@ -6689,6 +6761,9 @@
     {"field": "stars", "value": 14, "source": "https://github.com/raphael-group/paste_reproducibility", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/raphael-group/paste_reproducibility", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "460848257": [
+    {"field": "record", "value": {"id": "460848257", "code": "https://github.com/Pennsieve/streaming-agent", "name": "streaming-agent", "purpose": "Prototypes streaming of EDF recordings over WebSockets and Kafka with a browser client.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/streaming-agent", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "461503409": [
     {"field": "record", "value": {"id": "461503409", "code": "https://github.com/MLBC-lab/iACP-RF", "name": "iACP-RF", "purpose": "Uses an ensemble of classifiers to predict anticancer peptides.", "topic": "Disease research", "label": "Listed", "connection": "The @MLBC-lab GitHub profile identifies the lab at Rutgers University in Camden.", "institution": "Rutgers University–Camden", "source": "https://github.com/MLBC-lab", "added": "2026-11-18"}, "source": "https://github.com/MLBC-lab/iACP-RF", "date": "2026-11-17", "author": "f_3plus_15"}
   ],
@@ -6777,6 +6852,9 @@
   "470802046": [
     {"field": "record", "value": {"id": "470802046", "code": "https://github.com/PennLINC/ModelArray_tests", "name": "ModelArray_tests", "purpose": "Provides benchmarks and tests for ModelArray and ConFixel neuroimaging analysis tools.", "topic": "Medical imaging", "label": "Listed", "connection": "The University of Pennsylvania regional roster links this repository through @PennLINC.", "institution": "University of Pennsylvania", "source": "https://github.com/PennLINC", "added": "2026-11-18"}, "source": "https://github.com/PennLINC/ModelArray_tests/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_02"}
   ],
+  "471016268": [
+    {"field": "record", "value": {"id": "471016268", "code": "https://github.com/Pennsieve/pennsieve-agent", "name": "pennsieve-agent", "purpose": "Provides a local Pennsieve agent and command-line interface for data transfer and analysis workflows.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-agent", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "471130824": [
     {"field": "record", "value": {"id": "471130824", "code": "https://github.com/harhay-lab/Bayesian_PSM_CRT", "name": "Bayesian_PSM_CRT", "purpose": "Simulates Bayesian estimation of survivor average causal effects in cluster-randomized trials with outcomes truncated by death.", "topic": "Research data", "label": "Listed", "connection": "The organization profile identifies the Clinical Trials Methods and Outcomes Lab at Penn Medicine’s PAIR Center.", "institution": "University of Pennsylvania", "source": "https://github.com/harhay-lab", "added": "2026-11-18"}, "source": "https://github.com/harhay-lab/Bayesian_PSM_CRT/blob/main/README", "date": "2026-11-19", "author": "f_3plus_20"}
   ],
@@ -6790,6 +6868,9 @@
   "471508729": [
     {"field": "stars", "value": 5, "source": "https://github.com/penn-cnt/DeepResection", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/penn-cnt/DeepResection", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "471697440": [
+    {"field": "record", "value": {"id": "471697440", "code": "https://github.com/Pennsieve/pennsieve-go", "name": "pennsieve-go", "purpose": "Provides a Go SDK for working with Pennsieve datasets, uploads, time series, and Discover.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-go", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "471740071": [
     {"field": "record", "value": {"id": "471740071", "code": "https://github.com/Penncil/ODACH", "name": "ODACH", "purpose": "Demonstrates distributed Cox regression for analyzing multisite lung cancer survival data.", "topic": "Disease research", "label": "Listed", "connection": "The PennCIL Lab software page links the GitHub account that hosts this repository.", "institution": "University of Pennsylvania", "source": "https://penncil.med.upenn.edu/software/", "added": "2026-11-18"}, "source": "https://github.com/Penncil/ODACH/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_11"}
@@ -6894,6 +6975,9 @@
     {"field": "stars", "value": 27, "source": "https://github.com/Merck/metalite.ae", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": ["r-package", "cdisc", "clinical-trials", "metadata"], "source": "https://github.com/Merck/metalite.ae", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "483360898": [
+    {"field": "record", "value": {"id": "483360898", "code": "https://github.com/Pennsieve/TSViewer", "name": "TSViewer", "purpose": "Displays Pennsieve time-series data packages through a reusable Vue viewer.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/TSViewer", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "484266887": [
     {"field": "stars", "value": 0, "source": "https://github.com/YushiFT/probMicrocosm", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/YushiFT/probMicrocosm", "date": "2026-11-18", "author": "refresh_b2"}
@@ -6950,6 +7034,9 @@
     {"field": "topics", "value": [], "source": "https://github.com/Penncil/Origami", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "The origami plot compares outcomes for entities such as treatments or hospitals without depending on the order of the measures.", "source": "https://github.com/Penncil/Origami/blob/main/README.md", "date": "2026-11-18", "author": "audit_a-05"}
   ],
+  "490781609": [
+    {"field": "record", "value": {"id": "490781609", "code": "https://github.com/Pennsieve/upload-service-v2", "name": "upload-service-v2", "purpose": "Validates upload manifests, creates Pennsieve data packages, and transfers uploaded files into storage.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/upload-service-v2", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "490856862": [
     {"field": "stars", "value": 1, "source": "https://github.com/PennLINC/SHORELINE_PaperDemo", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/PennLINC/SHORELINE_PaperDemo", "date": "2026-11-18", "author": "refresh_b2"},
@@ -6973,6 +7060,9 @@
   "493476998": [
     {"field": "stars", "value": 0, "source": "https://github.com/bowmanr/goldilox", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/bowmanr/goldilox", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "493792673": [
+    {"field": "record", "value": {"id": "493792673", "code": "https://github.com/Pennsieve/pennsieve-agent-python", "name": "pennsieve-agent-python", "purpose": "Provides a Python client and command-line interface for uploads and access to Pennsieve data.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-agent-python", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "493825519": [
     {"field": "stars", "value": 6, "source": "https://github.com/Xinglab/rmats-turbo-tutorial", "date": "2026-11-18", "author": "refresh_b2"},
@@ -7064,6 +7154,9 @@
   "502756019": [
     {"field": "stars", "value": 0, "source": "https://github.com/YushiFT/two-wing-mic", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/YushiFT/two-wing-mic", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "503451290": [
+    {"field": "record", "value": {"id": "503451290", "code": "https://github.com/Pennsieve/pennsieve-agent-javascript", "name": "pennsieve-agent-javascript", "purpose": "Provides a JavaScript client for Pennsieve dataset operations and uploads through the local agent.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-agent-javascript", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "503902626": [
     {"field": "stars", "value": 1, "source": "https://github.com/johnsonandjohnson/vxnaid", "date": "2026-11-18", "author": "refresh_b2"},
@@ -7350,6 +7443,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/helbig-lab/DNM1", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/helbig-lab/DNM1", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "This script analyzes and visualizes exon 10 differences in disease-causing variants associated with DNM1-related disorders.", "source": "https://github.com/helbig-lab/DNM1/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-06"}
+  ],
+  "535444733": [
+    {"field": "record", "value": {"id": "535444733", "code": "https://github.com/Pennsieve/model-service-serverless", "name": "model-service-serverless", "purpose": "Serves legacy Pennsieve dataset metadata models, queries, and relationships from a Neo4j graph.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/model-service-serverless", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "535757627": [
     {"field": "stars", "value": 0, "source": "https://github.com/DavidsonLabCHOP/Robbins_HDsnRNAseq_2025", "date": "2026-11-18", "author": "refresh_b2"},
@@ -7762,6 +7858,9 @@
     {"field": "stars", "value": 4, "source": "https://github.com/wuv21/viral-asapseq-snakemake", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/wuv21/viral-asapseq-snakemake", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "597071047": [
+    {"field": "record", "value": {"id": "597071047", "code": "https://github.com/Pennsieve/publishing-service", "name": "publishing-service", "purpose": "Manages repository selection, publishing questions, dataset proposals, and submissions on Pennsieve.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/publishing-service", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "597080492": [
     {"field": "stars", "value": 0, "source": "https://github.com/limlab-upenn/TF-binding", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/limlab-upenn/TF-binding", "date": "2026-11-18", "author": "refresh_b2"}
@@ -7806,6 +7905,9 @@
   "602184518": [
     {"field": "stars", "value": 0, "source": "https://github.com/d3b-center/fw-captk-feature-extraction", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/d3b-center/fw-captk-feature-extraction", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "602307306": [
+    {"field": "record", "value": {"id": "602307306", "code": "https://github.com/Pennsieve/datasets-service", "name": "datasets-service", "purpose": "Supports Pennsieve dataset management through shared-dataset lookup, file manifests, and trash listings.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/datasets-service", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "602711989": [
     {"field": "record", "value": {"id": "602711989", "code": "https://github.com/dannerlab/rat-sci-locomotion", "name": "rat-sci-locomotion", "purpose": "Provides code for a study of spinal control of locomotion before and after spinal cord injury.", "topic": "Neuroscience", "label": "Listed", "connection": "Drexel University identifies the Danner Lab in Philadelphia, and the @dannerlab GitHub organization links to that lab page.", "institution": "Drexel University", "source": "https://drexel.edu/medicine/about/departments/neurobiology-anatomy/research/danner-lab/", "added": "2026-11-18"}, "source": "https://github.com/dannerlab/rat-sci-locomotion", "date": "2026-11-17", "author": "f_1to2_05"}
@@ -7875,6 +7977,9 @@
   ],
   "611106233": [
     {"field": "record", "value": {"id": "611106233", "code": "https://github.com/arjunrajlaboratory/iPSC_Rewind", "name": "iPSC_Rewind", "purpose": "Reproduces figures from a study of factors that mark pluripotency potential in rare somatic cells.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The Raj Lab’s University of Pennsylvania site links to @arjunrajlaboratory.", "institution": "University of Pennsylvania", "source": "https://rajlab.engineering.upenn.edu/", "added": "2026-11-18"}, "source": "https://github.com/arjunrajlaboratory/iPSC_Rewind", "date": "2026-11-19", "author": "f_3plus_01"}
+  ],
+  "611391276": [
+    {"field": "record", "value": {"id": "611391276", "code": "https://github.com/Pennsieve/packages-service", "name": "packages-service", "purpose": "Supports download manifests, viewer assets, and recovery of data packages on Pennsieve.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/packages-service", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "611484159": [
     {"field": "record", "value": {"id": "611484159", "code": "https://github.com/gandallab/ipsych_xdx_finemap", "name": "ipsych_xdx_finemap", "purpose": "Tests whether genetic associations across psychiatric disorders colocalize with molecular trait associations in the brain.", "topic": "Disease research", "label": "Listed", "connection": "The releasing lab’s public website leads to its Penn Medicine faculty profile.", "institution": "University of Pennsylvania", "source": "https://www.med.upenn.edu/apps/faculty/index.php/g275/p8134341", "added": "2026-11-18"}, "source": "https://github.com/gandallab/ipsych_xdx_finemap/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_19"}
@@ -8005,6 +8110,9 @@
     {"field": "purpose", "value": "This study assesses the association between pericardial fat and left atrial strain measured by cardiac MRI in MESA.", "source": "https://github.com/qahathaway/MESA_MRI_LA_Strain/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-06"},
     {"field": "topic", "value": "Medical imaging", "source": "https://github.com/qahathaway/MESA_MRI_LA_Strain/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-06"}
   ],
+  "626483964": [
+    {"field": "record", "value": {"id": "626483964", "code": "https://github.com/Pennsieve/pennsieve-app", "name": "pennsieve-app", "purpose": "Provides the Pennsieve workspace interface for managing datasets, metadata, publication, and analysis workflows.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-app", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "627632982": [
     {"field": "stars", "value": 0, "source": "https://github.com/jruhym/jNotebooksForMD", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/jruhym/jNotebooksForMD", "date": "2026-11-18", "author": "refresh_b2"}
@@ -8078,6 +8186,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/laufdezlaura/Tracking_Rhythm_Adults", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/laufdezlaura/Tracking_Rhythm_Adults", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "This MATLAB code analyzes EEG from a study of how bilingual adults track speech after brief exposure to music.", "source": "https://github.com/laufdezlaura/Tracking_Rhythm_Adults/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-06"}
+  ],
+  "636300419": [
+    {"field": "record", "value": {"id": "636300419", "code": "https://github.com/Pennsieve/ingest-service", "name": "ingest-service", "purpose": "Prototypes ingesting CSV files into the Pennsieve dataset metadata graph.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/ingest-service", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "636904188": [
     {"field": "stars", "value": 0, "source": "https://github.com/villanova-transportation/Nigeria-mobility-COVID19-SAJS", "date": "2026-11-18", "author": "refresh_b2"},
@@ -8247,6 +8358,9 @@
     {"field": "topics", "value": [], "source": "https://github.com/laithomari/breast_cancer_staging", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topic", "value": "Disease research", "source": "https://github.com/laithomari/breast_cancer_staging", "date": "2026-11-17", "author": "audit_a-03"},
     {"field": "purpose", "value": "This project develops a framework for using large language models to stage breast cancer from radiology and pathology reports.", "source": "https://github.com/laithomari/breast_cancer_staging", "date": "2026-11-17", "author": "audit_a-03"}
+  ],
+  "654313640": [
+    {"field": "record", "value": {"id": "654313640", "code": "https://github.com/Pennsieve/cytof-lambda-pipeline", "name": "cytof-lambda-pipeline", "purpose": "Prototypes running an R CyTOF analysis as an integration on the Pennsieve platform.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/cytof-lambda-pipeline", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "654394877": [
     {"field": "stars", "value": 0, "source": "https://github.com/RohanAlibutud/NJLAGS_SV", "date": "2026-11-18", "author": "refresh_b2"},
@@ -8508,6 +8622,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/dannerlab/Statistics_Class", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/dannerlab/Statistics_Class", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "681200861": [
+    {"field": "record", "value": {"id": "681200861", "code": "https://github.com/Pennsieve/rehydration-service", "name": "rehydration-service", "purpose": "Rebuilds a previous version of a published Pennsieve Discover dataset for download.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/rehydration-service", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "681349120": [
     {"field": "record", "value": {"id": "681349120", "code": "https://github.com/Drexel-UHC/salurbal-city-selection-scrolly", "name": "salurbal-city-selection-scrolly", "purpose": "Presents how cities were selected for the SALURBAL urban health study in an interactive scrollytelling site.", "topic": "Research data", "label": "Listed", "connection": "The Drexel Urban Health Collaborative’s dashboard guide links the Drexel-UHC GitHub account through its source repository.", "institution": "Drexel University", "source": "https://www.covid-inequities.info/guide/", "added": "2026-11-18"}, "source": "https://github.com/Drexel-UHC/salurbal-city-selection-scrolly/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_17"}
   ],
@@ -8699,6 +8816,9 @@
   "702524060": [
     {"field": "stars", "value": 4, "source": "https://github.com/murthylab/visual-system-parts-list", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/murthylab/visual-system-parts-list", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "702690811": [
+    {"field": "record", "value": {"id": "702690811", "code": "https://github.com/Pennsieve/nextflow_example", "name": "nextflow_example", "purpose": "Demonstrates a Pennsieve Nextflow workflow that validates data against the Brain Imaging Data Structure.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/nextflow_example", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "704215036": [
     {"field": "record", "value": {"id": "704215036", "code": "https://github.com/gkaguirrelab/combiExperiments", "name": "combiExperiments", "purpose": "Provides code for experiments using the CombiAir and CombiLED research hardware.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under the Aguirre Lab GitHub organization linked from its Penn Medicine faculty page.", "institution": "University of Pennsylvania", "source": "https://www.med.upenn.edu/apps/faculty/index.php/g20000220/p36597", "added": "2026-11-18"}, "source": "https://github.com/gkaguirrelab/combiExperiments", "date": "2026-11-17", "author": "f_3plus_09"}
@@ -9345,8 +9465,14 @@
     {"field": "stars", "value": 0, "source": "https://github.com/Brody-Lab/tzl_spGLM", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Brody-Lab/tzl_spGLM", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "783332485": [
+    {"field": "record", "value": {"id": "783332485", "code": "https://github.com/Pennsieve/workflow-manager", "name": "workflow-manager", "purpose": "Runs Pennsieve analysis workflows on compute nodes using Nextflow.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/workflow-manager", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "783405065": [
     {"field": "record", "value": {"id": "783405065", "code": "https://github.com/veg/cawlign", "name": "cawlign", "purpose": "Aligns FASTA sequences to a reference using a standalone C++ port of bealign.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The regional roster includes @veg and the GitHub profile reports Philadelphia.", "source": "https://github.com/veg", "added": "2026-11-18"}, "source": "https://github.com/veg/cawlign", "date": "2026-11-17", "author": "f_3plus_07"}
+  ],
+  "783460559": [
+    {"field": "record", "value": {"id": "783460559", "code": "https://github.com/Pennsieve/processor-EDF", "name": "processor-EDF", "purpose": "Converts EDF and EDF+ recordings into channel files for Pennsieve time-series import.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-EDF", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "783803990": [
     {"field": "stars", "value": 0, "source": "https://github.com/WGLab/LIQA2", "date": "2026-11-18", "author": "refresh_b2"},
@@ -9399,6 +9525,9 @@
   "787015818": [
     {"field": "stars", "value": 0, "source": "https://github.com/goldsteinepi/validation_npi", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/goldsteinepi/validation_npi", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "787525809": [
+    {"field": "record", "value": {"id": "787525809", "code": "https://github.com/Pennsieve/discover-publish", "name": "discover-publish", "purpose": "Publishes Pennsieve datasets and their metadata to the Discover research catalog.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/discover-publish", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "787951666": [
     {"field": "stars", "value": 0, "source": "https://github.com/beigelk/microscopy", "date": "2026-11-18", "author": "refresh_b2"},
@@ -9464,6 +9593,9 @@
     {"field": "topics", "value": ["bids-format", "fmri", "neuroimaging-data"], "source": "https://github.com/DVS-Lab/SRPAL-DataInBrief", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "Code manages and processes imaging data for the Social Reward Processing Across the Lifespan study.", "source": "https://github.com/DVS-Lab/SRPAL-DataInBrief/blob/main/README.md", "date": "2026-11-18", "author": "audit_a-05"}
   ],
+  "797915611": [
+    {"field": "record", "value": {"id": "797915611", "code": "https://github.com/Pennsieve/app-deploy-service", "name": "app-deploy-service", "purpose": "Registers and deploys Pennsieve analysis applications, including publication through the platform’s App Store.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/app-deploy-service", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "797920890": [
     {"field": "stars", "value": 1, "source": "https://github.com/pritykinlab/scTir1_Analysis", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/pritykinlab/scTir1_Analysis", "date": "2026-11-18", "author": "refresh_b2"},
@@ -9527,6 +9659,12 @@
     {"field": "topics", "value": [], "source": "https://github.com/mmccoy-01/arm_randomization", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "Provides a Shiny app for assigning mice to experimental treatment groups while balancing disease burden.", "source": "https://github.com/mmccoy-01/arm_randomization", "date": "2026-11-17", "author": "audit_a-02"},
     {"field": "topic", "value": "Biomedical and life sciences", "source": "https://github.com/mmccoy-01/arm_randomization", "date": "2026-11-17", "author": "audit_a-02"}
+  ],
+  "805393927": [
+    {"field": "record", "value": {"id": "805393927", "code": "https://github.com/Pennsieve/processor-pre-packages", "name": "processor-pre-packages", "purpose": "Stages selected Pennsieve data packages as inputs to an analysis workflow.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-pre-packages", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
+  "805403919": [
+    {"field": "record", "value": {"id": "805403919", "code": "https://github.com/Pennsieve/processor-post-agent", "name": "processor-post-agent", "purpose": "Uploads analysis output files back into the source Pennsieve dataset.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-post-agent", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "805498516": [
     {"field": "stars", "value": 13, "source": "https://github.com/FunctionLab/asd-pheno-classes", "date": "2026-11-18", "author": "refresh_b2"},
@@ -9593,6 +9731,9 @@
   "813649200": [
     {"field": "record", "value": {"id": "813649200", "code": "https://github.com/GoogleXie/CellDynamicST", "name": "CellDynamicST", "purpose": "Analyzes cell dynamics, gene expression networks, and neurotransmitter classifications in brain spatial transcriptomics data.", "topic": "Neuroscience", "label": "Verified", "connection": "The releasing paper links directly to this repository and lists University of Pennsylvania affiliations in Philadelphia.", "institution": "University of Pennsylvania", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13503859/", "added": "2026-11-18"}, "source": "https://github.com/GoogleXie/CellDynamicST", "date": "2026-11-19", "author": "f_1to2_05"}
   ],
+  "813753749": [
+    {"field": "record", "value": {"id": "813753749", "code": "https://github.com/Pennsieve/processor-post-timeseries", "name": "processor-post-timeseries", "purpose": "Converts NWB ElectricalSeries data into chunked time-series files and imports them into Pennsieve.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-post-timeseries", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "814299685": [
     {"field": "stars", "value": 0, "source": "https://github.com/pritykinlab/pritykinlab_onboarding", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/pritykinlab/pritykinlab_onboarding", "date": "2026-11-18", "author": "refresh_b2"}
@@ -9636,6 +9777,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/larryns/mitolore", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/larryns/mitolore", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "822642096": [
+    {"field": "record", "value": {"id": "822642096", "code": "https://github.com/Pennsieve/processor-edf-nwb", "name": "processor-edf-nwb", "purpose": "Converts EDF and EDF+ recordings to the Neurodata Without Borders format in Pennsieve workflows.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-edf-nwb", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "823313723": [
     {"field": "stars", "value": 0, "source": "https://github.com/WGLab/InFuse", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/WGLab/InFuse", "date": "2026-11-18", "author": "refresh_b2"}
@@ -9666,6 +9810,9 @@
   ],
   "826437386": [
     {"field": "record", "value": {"id": "826437386", "code": "https://github.com/FunctionLab/DaVinci", "name": "DaVinci", "purpose": "Identifies spatially organized cellular niches from spatial omics data.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "Listed under the FunctionLab GitHub organization, whose profile gives Princeton, New Jersey as its location and links the Princeton University lab website.", "institution": "Princeton University", "source": "https://github.com/FunctionLab", "added": "2026-11-18"}, "source": "https://github.com/FunctionLab/DaVinci/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_09"}
+  ],
+  "827522447": [
+    {"field": "record", "value": {"id": "827522447", "code": "https://github.com/Pennsieve/processor-pre-metadata", "name": "processor-pre-metadata", "purpose": "Exports a Pennsieve dataset’s metadata graph as input to an analysis workflow.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-pre-metadata", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "827833894": [
     {"field": "stars", "value": 0, "source": "https://github.com/CBICA/SurrealGAN", "date": "2026-11-18", "author": "refresh_b2"},
@@ -9711,6 +9858,9 @@
   "834252472": [
     {"field": "stars", "value": 70, "source": "https://github.com/gfzhou/OpenVS", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/gfzhou/OpenVS", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "835302284": [
+    {"field": "record", "value": {"id": "835302284", "code": "https://github.com/Pennsieve/drs-service", "name": "drs-service", "purpose": "Prototypes a GA4GH Data Repository Service interface for accessing Pennsieve data.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/drs-service", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "835921212": [
     {"field": "stars", "value": 0, "source": "https://github.com/PennLINC/open-neuroendocrine-data", "date": "2026-11-18", "author": "refresh_b2"},
@@ -9786,6 +9936,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/pm0kjp/congreso_2024", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/pm0kjp/congreso_2024", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "845138696": [
+    {"field": "record", "value": {"id": "845138696", "code": "https://github.com/Pennsieve/processor-pre-ttl-sync", "name": "processor-pre-ttl-sync", "purpose": "Stages SPARC curation exports and dataset metadata for synchronization in Pennsieve workflows.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-pre-ttl-sync", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "845235212": [
     {"field": "stars", "value": 0, "source": "https://github.com/PEDSnet/nephrotic_syndrome", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/PEDSnet/nephrotic_syndrome", "date": "2026-11-18", "author": "refresh_b2"}
@@ -9836,6 +9989,9 @@
     {"field": "stars", "value": 13, "source": "https://github.com/DamLabResources/OMICS", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/DamLabResources/OMICS", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "language", "value": "Jupyter Notebook", "source": "https://github.com/DamLabResources/OMICS", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "852353204": [
+    {"field": "record", "value": {"id": "852353204", "code": "https://github.com/Pennsieve/ttl-sync-processor", "name": "ttl-sync-processor", "purpose": "Synchronizes SPARC curation exports with Pennsieve dataset metadata.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/ttl-sync-processor", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "852414195": [
     {"field": "record", "value": {"id": "852414195", "code": "https://github.com/PennLINC/smripost-linc", "name": "smripost-linc", "purpose": "Aggregates derivatives from sMRIPrep and FreeSurfer structural MRI workflows.", "topic": "Medical imaging", "label": "Listed", "connection": "The University of Pennsylvania regional roster links this repository through @PennLINC.", "institution": "University of Pennsylvania", "source": "https://github.com/PennLINC", "added": "2026-11-18"}, "source": "https://github.com/PennLINC/smripost-linc", "date": "2026-11-17", "author": "f_3plus_02"}
@@ -10050,6 +10206,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/jilei-hao/GoValve-Root-src", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/jilei-hao/GoValve-Root-src", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "870345614": [
+    {"field": "record", "value": {"id": "870345614", "code": "https://github.com/Pennsieve/SEED-codehub", "name": "SEED-codehub", "purpose": "Packages and adapts the Penn CNT code hub to convert EDF recordings into BIDS datasets for the SEED project.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/SEED-codehub/blob/main/SEED.md", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "870878627": [
     {"field": "stars", "value": 0, "source": "https://github.com/JTumulty/miQC", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/JTumulty/miQC", "date": "2026-11-18", "author": "refresh_b2"}
@@ -10083,6 +10242,9 @@
   ],
   "873193162": [
     {"field": "record", "value": {"id": "873193162", "code": "https://github.com/kimpenn/aegle", "name": "aegle", "purpose": "Segments cells and analyzes spatial biology features in two-dimensional PhenoCycler images.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The GitHub organization links its University of Pennsylvania biology lab site.", "institution": "University of Pennsylvania", "source": "https://github.com/kimpenn", "added": "2026-11-18"}, "source": "https://github.com/kimpenn/aegle/blob/main/readme.md", "date": "2026-11-19", "author": "f_3plus_11"}
+  ],
+  "874296117": [
+    {"field": "record", "value": {"id": "874296117", "code": "https://github.com/Pennsieve/processor-post-metadata", "name": "processor-post-metadata", "purpose": "Applies workflow-generated metadata changes to Pennsieve datasets.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-post-metadata", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "874852737": [
     {"field": "stars", "value": 0, "source": "https://github.com/MLBC-lab/ExShall-CNN", "date": "2026-11-18", "author": "refresh_b2"},
@@ -10380,6 +10542,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/StoreyLab/superadmixture-manuscript-analysis", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/StoreyLab/superadmixture-manuscript-analysis", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "909751822": [
+    {"field": "record", "value": {"id": "909751822", "code": "https://github.com/Pennsieve/reva-widget", "name": "reva-widget", "purpose": "Explores the links between REVA vagus nerve tracing files and micro-CT images.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/reva-widget", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "911846132": [
     {"field": "stars", "value": 0, "source": "https://github.com/ChiaPatricia/ChiaPatricia", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/ChiaPatricia/ChiaPatricia", "date": "2026-11-18", "author": "refresh_b2"}
@@ -10511,6 +10676,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/RomanoLab/ih-hackathon-pregnancy-clock", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/RomanoLab/ih-hackathon-pregnancy-clock", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "925384274": [
+    {"field": "record", "value": {"id": "925384274", "code": "https://github.com/Pennsieve/visualization-app", "name": "visualization-app", "purpose": "Browses and plots the outputs of Pennsieve analysis workflows.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/visualization-app", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "926574794": [
     {"field": "stars", "value": 0, "source": "https://github.com/leiferlab/kumar-touch-neuron-subtypes", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/leiferlab/kumar-touch-neuron-subtypes", "date": "2026-11-18", "author": "refresh_b2"},
@@ -10592,6 +10760,9 @@
   "937757833": [
     {"field": "record", "value": {"id": "937757833", "code": "https://github.com/khuongquynhlong/fusionNI", "name": "fusionNI", "purpose": "Reproduces simulations and tables for a study of designs that estimate placebo-controlled effects in non-inferiority trials.", "topic": "Clinical care", "label": "Listed", "connection": "The repository owner’s public profile identifies Penn’s epidemiology program in Philadelphia.", "institution": "University of Pennsylvania", "source": "https://github.com/khuongquynhlong", "added": "2026-11-18"}, "source": "https://github.com/khuongquynhlong/fusionNI", "date": "2026-11-17", "author": "f_1to2_05"}
   ],
+  "938882549": [
+    {"field": "record", "value": {"id": "938882549", "code": "https://github.com/Pennsieve/migrationtools", "name": "migrationtools", "purpose": "Converts iEEG.org recordings, generates BIDS sidecars, and uploads the results to Pennsieve.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/migrationtools", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "939049916": [
     {"field": "stars", "value": 9, "source": "https://github.com/WGLab/RankVar", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/WGLab/RankVar", "date": "2026-11-18", "author": "refresh_b2"}
@@ -10650,6 +10821,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/PennChopMicrobiomeProgram/marc_db", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/PennChopMicrobiomeProgram/marc_db", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "946195266": [
+    {"field": "record", "value": {"id": "946195266", "code": "https://github.com/Pennsieve/processor-metadata-clean", "name": "processor-metadata-clean", "purpose": "Clears records and models from a Pennsieve dataset’s metadata graph as a workflow step.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-metadata-clean", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "947456636": [
     {"field": "record", "value": {"id": "947456636", "code": "https://github.com/PennChopMicrobiomeProgram/marc_web", "name": "marc_web", "purpose": "Provides a web interface for querying the mARC microbial research archive.", "topic": "Research data", "label": "Listed", "connection": "Penn’s MicroBioCode site identifies the PennCHOP Microbiome Program. The GitHub organization profile links to that site.", "institution": "University of Pennsylvania", "source": "https://www.med.upenn.edu/microbiocode/", "added": "2026-11-18"}, "source": "https://github.com/PennChopMicrobiomeProgram/marc_web/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_17"}
   ],
@@ -10659,6 +10833,9 @@
   ],
   "950086749": [
     {"field": "record", "value": {"id": "950086749", "code": "https://github.com/PEDSnet/ndq", "name": "ndq", "purpose": "Packages quality checks and result processing for multicenter clinical research data.", "topic": "Research data", "label": "Verified", "connection": "The published PEDSnet data quality study links this exact repository and lists Children’s Hospital of Philadelphia affiliations.", "institution": "Children’s Hospital of Philadelphia", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12844579/", "added": "2026-11-18"}, "source": "https://github.com/PEDSnet/ndq", "date": "2026-11-17", "author": "f_3plus_13"}
+  ],
+  "950176147": [
+    {"field": "record", "value": {"id": "950176147", "code": "https://github.com/Pennsieve/collections-service", "name": "collections-service", "purpose": "Manages, publishes, and assigns DOIs to collections of Pennsieve datasets.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/collections-service", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "950770754": [
     {"field": "stars", "value": 0, "source": "https://github.com/maxeld1/DNA-Cloner-App", "date": "2026-11-18", "author": "refresh_b2"},
@@ -10766,6 +10943,9 @@
   ],
   "966313906": [
     {"field": "record", "value": {"id": "966313906", "code": "https://github.com/FunctionLab/otari", "name": "otari", "purpose": "Predicts transcript isoform abundance and sequence variant effects with the Otari model.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The GitHub organization profile lists Princeton, New Jersey.", "source": "https://github.com/FunctionLab", "added": "2026-11-18"}, "source": "https://github.com/FunctionLab/otari/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_09"}
+  ],
+  "966935328": [
+    {"field": "record", "value": {"id": "966935328", "code": "https://github.com/Pennsieve/processor-post-viewer-asset", "name": "processor-post-viewer-asset", "purpose": "Adds analysis outputs and viewer configuration as assets on Pennsieve data packages.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-post-viewer-asset", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "967736530": [
     {"field": "record", "value": {"id": "967736530", "code": "https://github.com/Verma-Lab/platlas", "name": "platlas", "purpose": "Explores genome-wide association meta-analysis results across populations and visualizes associations between variants, traits and diseases.", "topic": "Research data", "label": "Listed", "connection": "The project documentation identifies the University of Pennsylvania in its contributor information.", "institution": "University of Pennsylvania", "source": "https://github.com/Verma-Lab/platlas/blob/main/README.md", "added": "2026-11-18"}, "source": "https://github.com/Verma-Lab/platlas/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_04"}
@@ -11450,6 +11630,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/n-sinha/ieeg-atlas-data-curator", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/n-sinha/ieeg-atlas-data-curator", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "1067355486": [
+    {"field": "record", "value": {"id": "1067355486", "code": "https://github.com/Pennsieve/dbgap-prep", "name": "dbgap-prep", "purpose": "Prepares dbGaP submission files from Pennsieve dataset metadata spreadsheets.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/dbgap-prep/blob/main/README.md", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "1067715091": [
     {"field": "stars", "value": 0, "source": "https://github.com/Nadine-sudo/RNA-seq-Analysis-Pipeline", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Nadine-sudo/RNA-seq-Analysis-Pipeline", "date": "2026-11-18", "author": "refresh_b2"}
@@ -11538,6 +11721,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/dzweben/CABLAB_DelayedDiscounting_Scripts", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/dzweben/CABLAB_DelayedDiscounting_Scripts", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "The CABLab pipeline supports delay-discounting experiments and analyses in behavioral and neuroimaging studies.", "source": "https://github.com/dzweben/CABLAB_DelayedDiscounting_Scripts/blob/main/ReadME.MD", "date": "2026-11-18", "author": "audit_a-06"}
+  ],
+  "1082777022": [
+    {"field": "record", "value": {"id": "1082777022", "code": "https://github.com/Pennsieve/pennsieve-singer-target", "name": "pennsieve-singer-target", "purpose": "Loads Singer pipeline output into the Pennsieve metadata service and creates or updates dataset models and records.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-singer-target", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1082924082": [
     {"field": "record", "value": {"id": "1082924082", "code": "https://github.com/usamabilal/scrape_uhc_data_tools", "name": "scrape_uhc_data_tools", "purpose": "Collects entries from Drexel’s Urban Health Collaborative data tools catalog for a Notion database.", "topic": "Research data", "label": "Listed", "connection": "Listed under a GitHub account that reports a Drexel University affiliation in the regional roster.", "institution": "Drexel University", "source": "https://github.com/usamabilal", "added": "2026-11-18"}, "source": "https://github.com/usamabilal/scrape_uhc_data_tools", "date": "2026-11-17", "author": "f_3plus_13"}
@@ -11739,6 +11925,9 @@
   "1114710409": [
     {"field": "stars", "value": 1, "source": "https://github.com/FunctionLab/DIS", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/FunctionLab/DIS", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "1114749718": [
+    {"field": "record", "value": {"id": "1114749718", "code": "https://github.com/Pennsieve/pennsieve-dataset-mgmt-tools", "name": "pennsieve-dataset-mgmt-tools", "purpose": "Provides command-line tools for bulk Pennsieve dataset and metadata management, including BIDS sidecar generation.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-dataset-mgmt-tools", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1115420895": [
     {"field": "record", "value": {"id": "1115420895", "code": "https://github.com/andrewdmarques/LDMS-Barcode-PDF417", "name": "LDMS-Barcode-PDF417", "purpose": "Uses PDF417 barcodes to improve scanning on curved cryovials in an LDMS workflow.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The @andrewdmarques GitHub profile identifies University of Pennsylvania and Philadelphia.", "institution": "University of Pennsylvania", "source": "https://github.com/andrewdmarques", "added": "2026-11-18"}, "source": "https://github.com/andrewdmarques/LDMS-Barcode-PDF417", "date": "2026-11-17", "author": "f_3plus_15"}
@@ -12021,6 +12210,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/rjcorb/pbta-genetic-ancestry", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/rjcorb/pbta-genetic-ancestry", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "1148283467": [
+    {"field": "record", "value": {"id": "1148283467", "code": "https://github.com/Pennsieve/processor-import-ome-zarr", "name": "processor-import-ome-zarr", "purpose": "Imports zipped OME-Zarr microscopy images into Pennsieve as package viewer assets.", "topic": "Medical imaging", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-import-ome-zarr", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "1149000262": [
     {"field": "stars", "value": 0, "source": "https://github.com/SydShafferLab/CloneSweeper_Paper", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/SydShafferLab/CloneSweeper_Paper", "date": "2026-11-18", "author": "refresh_b2"}
@@ -12157,6 +12349,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/turbomam/microbial-trait-mappings", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/turbomam/microbial-trait-mappings", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "1164318856": [
+    {"field": "record", "value": {"id": "1164318856", "code": "https://github.com/Pennsieve/data-target-pennsieve", "name": "data-target-pennsieve", "purpose": "Uploads analysis processor output files into a Pennsieve dataset.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/data-target-pennsieve", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "1166313563": [
     {"field": "stars", "value": 1, "source": "https://github.com/jilei-hao/insight_vscode", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/jilei-hao/insight_vscode", "date": "2026-11-18", "author": "refresh_b2"}
@@ -12246,6 +12441,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/jbdenniso/fmri-preprocessing-project", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/jbdenniso/fmri-preprocessing-project", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "This pipeline preprocesses multi-echo fMRI data and compares denoising performance.", "source": "https://github.com/jbdenniso/fmri-preprocessing-project/blob/main/README.md", "date": "2026-11-17", "author": "audit_a-06"}
+  ],
+  "1181145292": [
+    {"field": "record", "value": {"id": "1181145292", "code": "https://github.com/Pennsieve/processor-phi-cleaner", "name": "processor-phi-cleaner", "purpose": "Checks Pennsieve recording comments for restricted terms that may contain protected health information and can remove flagged text.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-phi-cleaner/blob/main/README.md", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1181206398": [
     {"field": "stars", "value": 0, "source": "https://github.com/WGLab/FusionRank", "date": "2026-11-18", "author": "refresh_b2"},
@@ -12399,8 +12597,14 @@
     {"field": "topics", "value": ["ibl", "learning-dynamics", "mouse-behavior", "neuroscience", "reproducible-research", "princeton-thesis", "psytrack"], "source": "https://github.com/elizabethhe26/ibl-psytrack-thesis", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "purpose", "value": "Code reproduces a study of how learning rates change during training in a mouse visual decision-making task.", "source": "https://github.com/elizabethhe26/ibl-psytrack-thesis/blob/main/README.md", "date": "2026-11-18", "author": "audit_a-05"}
   ],
+  "1204284465": [
+    {"field": "record", "value": {"id": "1204284465", "code": "https://github.com/Pennsieve/data-target-assets", "name": "data-target-assets", "purpose": "Imports analysis outputs and viewer assets into Pennsieve data packages.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/data-target-assets", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "1204703635": [
     {"field": "record", "value": {"id": "1204703635", "code": "https://github.com/BrainardLab/AOEM_DataAnalysis", "name": "AOEM_DataAnalysis", "purpose": "Analyzes eye movement trajectories and sensitivity in adaptive optics experiments.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under the University of Pennsylvania Brainard Lab’s GitHub organization in the regional roster.", "institution": "University of Pennsylvania", "source": "https://github.com/BrainardLab", "added": "2026-11-18"}, "source": "https://github.com/BrainardLab/AOEM_DataAnalysis", "date": "2026-11-17", "author": "f_1to2_01"}
+  ],
+  "1204917814": [
+    {"field": "record", "value": {"id": "1204917814", "code": "https://github.com/Pennsieve/processor_tiff_zarr_converter", "name": "processor_tiff_zarr_converter", "purpose": "Converts OME-TIFF bioimaging files into multiresolution OME-Zarr pyramids for web viewers.", "topic": "Medical imaging", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor_tiff_zarr_converter", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1205088766": [
     {"field": "stars", "value": 3, "source": "https://github.com/Ian-Campbell-Lab/clinical-semantic-search", "date": "2026-11-18", "author": "refresh_b2"},
@@ -12534,6 +12738,9 @@
   ],
   "1221920120": [
     {"field": "record", "value": {"id": "1221920120", "code": "https://github.com/TaylorResearchLab/bifo-spectral-null-paper", "name": "bifo-spectral-null-paper", "purpose": "Develops a spectral null model for knowledge graph propagation with planned evaluation on congenital heart defect evidence.", "topic": "Research data", "label": "Listed", "connection": "The Taylor Research Lab’s Philadelphia site identifies CHOP and links to @TaylorResearchLab.", "institution": "Children’s Hospital of Philadelphia", "source": "https://dtaylorlab.org/", "added": "2026-11-18"}, "source": "https://github.com/TaylorResearchLab/bifo-spectral-null-paper/blob/main/README.md", "date": "2026-11-19", "author": "f_3plus_04"}
+  ],
+  "1222747080": [
+    {"field": "record", "value": {"id": "1222747080", "code": "https://github.com/Pennsieve/processor-unzip", "name": "processor-unzip", "purpose": "Unpacks workflow archives and upgrades Zarr scientific data stores from version 2 to version 3.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-unzip", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1222773064": [
     {"field": "stars", "value": 0, "source": "https://github.com/TaylorResearchLab/bifo-paper-0", "date": "2026-11-18", "author": "refresh_b2"},
@@ -12699,6 +12906,9 @@
   "1243626935": [
     {"field": "stars", "value": 1, "source": "https://github.com/johnsonandjohnson/appendMCP", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": ["group-sequential-designs", "multiple-testing", "report-generation-by-template"], "source": "https://github.com/johnsonandjohnson/appendMCP", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "1245229955": [
+    {"field": "record", "value": {"id": "1245229955", "code": "https://github.com/Pennsieve/pennsieve-quick-plot", "name": "pennsieve-quick-plot", "purpose": "Generates figures from data files as part of Pennsieve analysis workflows.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-quick-plot", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1245926838": [
     {"field": "stars", "value": 0, "source": "https://github.com/penn-cnt/Pioneer-Databricks-Release", "date": "2026-11-18", "author": "refresh_b2"},
@@ -12890,6 +13100,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/PEDALLab-UPenn/Impact-of-Cognitive-Training-on-Claims-Based-Diagnosed-Dementia-Over-20-Years", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/PEDALLab-UPenn/Impact-of-Cognitive-Training-on-Claims-Based-Diagnosed-Dementia-Over-20-Years", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "1269244529": [
+    {"field": "record", "value": {"id": "1269244529", "code": "https://github.com/Pennsieve/pennsieve-r-session", "name": "pennsieve-r-session", "purpose": "Provides an interactive R and JupyterLab session as a Pennsieve analysis workflow step.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/pennsieve-r-session", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "1269254818": [
     {"field": "stars", "value": 0, "source": "https://github.com/PEDALLab-UPenn/Perceived-Control-Cognitive-Training-and-Incident-Alzheimer-s-Disease", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/PEDALLab-UPenn/Perceived-Control-Cognitive-Training-and-Incident-Alzheimer-s-Disease", "date": "2026-11-18", "author": "refresh_b2"}
@@ -12962,6 +13175,9 @@
   "1278235535": [
     {"field": "stars", "value": 0, "source": "https://github.com/Kateridge/MoESubtyping", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/Kateridge/MoESubtyping", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "1278482491": [
+    {"field": "record", "value": {"id": "1278482491", "code": "https://github.com/Pennsieve/Zarr-Thumbnail-Processor", "name": "Zarr-Thumbnail-Processor", "purpose": "Generates a thumbnail from a low-resolution level of an OME-Zarr bioimaging store.", "topic": "Medical imaging", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/Zarr-Thumbnail-Processor", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1279189512": [
     {"field": "record", "value": {"id": "1279189512", "code": "https://github.com/DavidsonLabCHOP/mEEG", "name": "mEEG", "purpose": "Processes EEG and analyzes spectral power, spikes, events, and connectivity in MATLAB.", "topic": "Neuroscience", "label": "Listed", "connection": "The Davidson Lab GitHub account identifies Children’s Hospital of Philadelphia in Philadelphia as its affiliation.", "institution": "Children’s Hospital of Philadelphia", "source": "https://github.com/DavidsonLabCHOP", "added": "2026-11-18"}, "source": "https://github.com/DavidsonLabCHOP/mEEG", "date": "2026-11-19", "author": "f_3plus_10"}
@@ -13167,6 +13383,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/tgbrooks/DO_mice", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/tgbrooks/DO_mice", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "pushed", "value": "2026-11-18", "source": "https://github.com/tgbrooks/DO_mice", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "1317593948": [
+    {"field": "record", "value": {"id": "1317593948", "code": "https://github.com/Pennsieve/timeseries-zarr-reader", "name": "timeseries-zarr-reader", "purpose": "Reads TS-Zarr electrophysiology recordings and prepares channel segments for browser or Node visualization.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/timeseries-zarr-reader/blob/main/README.md", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1317746192": [
     {"field": "stars", "value": 1, "source": "https://github.com/aquistbe/walksafe-ai-dashboard", "date": "2026-11-18", "author": "refresh_b2"},
@@ -13445,6 +13664,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/PennLINC/mrsim-acq", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/PennLINC/mrsim-acq", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "1384047553": [
+    {"field": "record", "value": {"id": "1384047553", "code": "https://github.com/Pennsieve/processor-annotations-csv-json", "name": "processor-annotations-csv-json", "purpose": "Converts CSV annotations into event-channel files for TS-Zarr time-series bundles.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/processor-annotations-csv-json", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "1384171338": [
     {"field": "stars", "value": 0, "source": "https://github.com/BGDlab/22q11DS_clinical_imaging", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/BGDlab/22q11DS_clinical_imaging", "date": "2026-11-18", "author": "refresh_b2"}
@@ -13587,6 +13809,9 @@
   "1418873489": [
     {"field": "record", "value": {"id": "1418873489", "code": "https://github.com/guimuguo/pfas-input-comparator", "name": "pfas-input-comparator", "purpose": "Compares illustrative PFAS mass inputs to agricultural systems.", "topic": "Public health", "label": "Listed", "connection": "The project documentation identifies a Rowan University contributor to the PFAS calculator.", "institution": "Rowan University", "source": "https://github.com/guimuguo/pfas-input-comparator/blob/main/README.md", "added": "2026-11-18"}, "source": "https://github.com/guimuguo/pfas-input-comparator", "date": "2026-11-17", "author": "f_1to2_04"}
   ],
+  "1419048042": [
+    {"field": "record", "value": {"id": "1419048042", "code": "https://github.com/Pennsieve/timeseries-zarr-nwb-processor", "name": "timeseries-zarr-nwb-processor", "purpose": "Converts Neurodata Without Borders files into TS-Zarr time-series bundles in Pennsieve workflows.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/timeseries-zarr-nwb-processor", "date": "2026-11-19", "author": "f_pennsieve"}
+  ],
   "1419165029": [
     {"field": "stars", "value": 0, "source": "https://github.com/guogenglin/pmcsmrt", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/guogenglin/pmcsmrt", "date": "2026-11-18", "author": "refresh_b2"}
@@ -13638,6 +13863,9 @@
     {"field": "stars", "value": 0, "source": "https://github.com/guimuguo/assembly-reorg-demo", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/guimuguo/assembly-reorg-demo", "date": "2026-11-18", "author": "refresh_b2"}
   ],
+  "1431330091": [
+    {"field": "record", "value": {"id": "1431330091", "code": "https://github.com/Pennsieve/timeseries-zarr-edf", "name": "timeseries-zarr-edf", "purpose": "Converts EDF, EDF+C and EDF+D recordings into TS-Zarr bundles.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/timeseries-zarr-edf/blob/main/README.md", "date": "2026-11-17", "author": "f_pennsieve"}
+  ],
   "1431723938": [
     {"field": "stars", "value": 0, "source": "https://github.com/SaehwanPark/ai-ecg-value-medrxiv", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": ["ai-ecg", "clinical-prediction", "electrocardiography", "mimic-iv", "reproducibility"], "source": "https://github.com/SaehwanPark/ai-ecg-value-medrxiv", "date": "2026-11-18", "author": "refresh_b2"}
@@ -13663,6 +13891,9 @@
   "1433738050": [
     {"field": "stars", "value": 0, "source": "https://github.com/atomosky/chart-decoder-phase1", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/atomosky/chart-decoder-phase1", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "1434872709": [
+    {"field": "record", "value": {"id": "1434872709", "code": "https://github.com/Pennsieve/cde-importer", "name": "cde-importer", "purpose": "Provides shared transforms, models and client code for importing common data element catalogs into Pennsieve.", "topic": "Research data", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/cde-importer", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1434976046": [
     {"field": "stars", "value": 0, "source": "https://github.com/xavibeltranurbano/ASL-QC", "date": "2026-11-18", "author": "refresh_b2"},
@@ -13708,6 +13939,9 @@
   "1438791398": [
     {"field": "stars", "value": 0, "source": "https://github.com/edisonlovescodes/mash-trial-read-console", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/edisonlovescodes/mash-trial-read-console", "date": "2026-11-18", "author": "refresh_b2"}
+  ],
+  "1439793285": [
+    {"field": "record", "value": {"id": "1439793285", "code": "https://github.com/Pennsieve/timeseries-zarr-benchmark", "name": "timeseries-zarr-benchmark", "purpose": "Reproduces benchmarks comparing the latency of reading electrophysiology recordings in EDF, NWB and TS-Zarr.", "topic": "Neuroscience", "label": "Listed", "connection": "Listed under Pennsieve’s Philadelphia GitHub account as part of the University of Pennsylvania’s scientific and clinical data platform.", "source": "https://docs.pennsieve.io/docs/pennsieve-terms-of-service", "added": "2026-11-18"}, "source": "https://github.com/Pennsieve/timeseries-zarr-benchmark/blob/main/README.md", "date": "2026-11-19", "author": "f_pennsieve"}
   ],
   "1440257195": [
     {"field": "record", "value": {"id": "1440257195", "code": "https://github.com/choilab-jefferson/nexus.loom", "name": "nexus.loom", "purpose": "Runs a bounded single agent in the CHOI Lab’s portable radiomics workflow stack.", "topic": "Research data", "label": "Verified", "connection": "The CHOI Lab at Thomas Jefferson University links this repository in its software release.", "institution": "Thomas Jefferson University", "source": "https://qradiomics.com/posts/2026-11-01-introducing-loom/", "added": "2026-11-18"}, "source": "https://qradiomics.com/posts/2026-11-01-introducing-loom/", "date": "2026-11-19", "author": "f_3plus_17"}
