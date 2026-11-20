@@ -145,6 +145,7 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
       args.push(JSON.stringify(institutions));
     }
   }
+  const facetQueries: string[] = [];
   for (const key of [...fields, "label"]) {
     const selected = params
       .getAll(key)
@@ -153,20 +154,21 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
       .map(facetSlug)
       .map((value) => (key === "institution" ? (institutionFor(refs, value)?.id ?? value) : value));
     if (selected.length) {
-      where.push(
-        "id IN (SELECT id FROM research_facets WHERE field=? AND value IN (" +
+      facetQueries.push(
+        "SELECT id FROM research_facets WHERE field=? AND value IN (" +
           selected.map(() => "?").join(",") +
-          "))",
+          ")",
       );
       args.push(key, ...selected);
     }
   }
+  if (facetQueries.length) where.push("id IN (" + facetQueries.join(" INTERSECT ") + ")");
   if (params.get("kind")) {
     where.push("kind=?");
     args.push(params.get("kind")!);
   }
   const from = " FROM research_visible" + (where.length ? " WHERE " + where.join(" AND ") : "");
-  return { from, args };
+  return { from, args, facetCount: facetQueries.length };
 }
 
 function readListing(row: { kind: Listing["kind"]; record: string }): Listing {
@@ -184,7 +186,36 @@ export async function researchFeed(db: ResearchDb, params: URLSearchParams, refs
   return { page, items: result.slice(0, 24).map(readListing), hasMore: result.length > 24 };
 }
 export async function researchQuery(db: ResearchDb, params: URLSearchParams, refs: Institution[]) {
-  const { from, args } = searchSource(params, refs);
+  const { from, args, facetCount } = searchSource(params, refs);
+  const sort = params.get("sort");
+  const sortColumn = sort === "name" ? "title" : sort === "activity" ? "activity" : "added";
+  const order = sortColumn + (sort === "name" ? " COLLATE NOCASE,id" : " DESC,id");
+  if (facetCount > 1) {
+    // Reuse the facet intersection for exact counts and the sorted page.
+    // Keep large bylines out of the temporary table and fetch only the final page's records.
+    const requested = pageNumber(params);
+    const data = await rows<
+      | { kind: ListingKind; n: number; works: number; record: null }
+      | { kind: ListingKind; n: null; works: null; record: string }
+    >(
+      db,
+      `
+      WITH matches AS MATERIALIZED (SELECT id,kind,group_id,${sortColumn} ${from}),
+      totals AS (SELECT kind,count(*) n,count(DISTINCT group_id) works FROM matches GROUP BY kind),
+      page AS (SELECT id FROM matches ORDER BY ${order} LIMIT 24
+        OFFSET (SELECT 24 * max(0,min(? - 1,(coalesce(sum(n),0)-1)/24)) FROM totals))
+      SELECT kind,n,works,NULL AS record,NULL AS ${sortColumn},NULL AS id FROM totals
+      UNION ALL
+      SELECT l.kind,NULL,NULL,l.record,l.${sortColumn},l.id FROM page JOIN research_listings l USING(id)
+      ORDER BY n DESC,${order}`,
+      ...args,
+      requested,
+    );
+    const counts = data.flatMap((row) => row.n === null ? [] : [{ kind: row.kind, n: row.n, works: row.works }]);
+    const total = counts.reduce((sum, row) => sum + row.n, 0);
+    const items = data.flatMap((row) => row.n === null ? [readListing(row)] : []);
+    return { counts, total, page: Math.min(requested, Math.max(1, Math.ceil(total / 24))), items };
+  }
   const counts = await rows<{ kind: ListingKind; n: number; works: number }>(
     db,
     "SELECT kind,count(*) n,count(DISTINCT group_id) works" + from + " GROUP BY kind",
@@ -192,12 +223,6 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
   );
   const total = counts.reduce((sum, row) => sum + row.n, 0);
   const page = Math.min(pageNumber(params), Math.max(1, Math.ceil(total / 24)));
-  const order =
-    params.get("sort") === "name"
-      ? "title COLLATE NOCASE,id"
-      : params.get("sort") === "activity"
-        ? "activity DESC,id"
-        : "added DESC,id";
   const result = await rows<{ kind: Listing["kind"]; record: string }>(
     db,
     "SELECT kind,record" + from + " ORDER BY " + order + " LIMIT 24 OFFSET ?",
@@ -342,8 +367,8 @@ export function renderPublication(p: Publication, refs: Institution[], related: 
     entity("institution", id, refs.find((ref) => ref.id === id)?.name ?? id),
   );
   return `<article class="frame page project-page"><nav class="breadcrumb"><a href="${browsePath}">Research directory</a></nav>
-    <header class="project-intro"><p class="card-topic">Publication · ${html(p.type)}</p><h1>${html(publicationTitle(p))}</h1>
-    ${p.retracted ? "<strong>Retracted publication</strong>" : ""}<p>${html([p.venue, "Published " + p.published].filter(Boolean).join(" · "))}</p>
+    <header class="project-intro publication-intro"><p class="card-topic">Publication · ${html(p.type)}</p><h1>${html(publicationTitle(p))}</h1>
+    <p>${html([p.venue, "Published " + p.published].filter(Boolean).join(" · "))}</p>${p.retracted ? "<strong>Retracted publication</strong>" : ""}
     <p>${externalLink(p.url, "Read the publication ↗", "button primary")} ${externalLink(p.open_access?.url, "Open access copy ↗")}</p></header>
     <section class="detail-section"><h2>Byline</h2><p>${p.authors.map((a) => html(a.name)).join(", ")}</p>
     ${p.author_count > p.authors.length ? `<p>${p.authors.length} of ${count(p.author_count)} authors shown in byline order.</p>` : ""}</section>

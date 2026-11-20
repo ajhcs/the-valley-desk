@@ -90,3 +90,34 @@ Inventory the React newsroom, Voices, calendar, Lab previews and Watch screens u
 The publications branch had no committed reviewed pilot at the time of this report. The checked-in site and measurements use invented publication fixtures. Real publication fit, indexing lag and the production backfill size remain unverified.
 
 Production migrations, the production import, flag activation and deployment require a separate release decision. Email alerts need a consent and unsubscribe flow, a delivery provider and credentials, rate limits, and durable checkpoints for deduplicated delivery and removal suppression. Saved searches can begin as bookmarked filter URLs. Cross-device named searches would need a user identity or private token, storage for query state, and a way to edit and delete it.
+
+## Follow-up measurements from the PR review
+
+**Institution and county filter.** I reran the HTML route `/discover/works?institution=fixture-institute&county=camden` on identical local D1 snapshots with 200,000 publications and 3,466 projects. The institution facet contains all 200,000 publications, the county facet contains 100,009 listings, and 100,000 publications satisfy both. SQLite’s original query plan used the existing facet primary key for each lookup. It built both ID lists for the exact counts, rebuilt them for the page, and used a temporary sort to return 24 records. Standalone warm SQLite timings for these original statements were 183–186 ms for the count and 149–156 ms for the page.
+
+I tried a covering index on listing ID, kind and work ID on a disposable database copy. The original count still took 175 ms warm. The revised SQL uses the existing facet index, intersects the selected facets once, and shares the visible IDs, group keys and selected sort values between the counts and page. It fetches the large JSON records only for the returned page. The query works with the original 0046 schema.
+
+**Cold reads.** I repeated the original count and page statements after evicting just the disposable fixture file from the OS page cache and reopening the database. Across five trials, the count alone read about 439 MB from disk and took 1.14–1.15 s. With the same pages cached, it took 178–188 ms and read zero bytes from disk. The rewritten SQL alone still needed about 439 MB cold. Adding the sort date to the covering index and running `ANALYZE research_listings` let the count and page selection read their metadata from the index. The final lookup fetched 24 full records. On three trials with this index, the rewritten statement read about 36 MB cold and took 460–468 ms, versus 1,173–1,177 ms with the rewrite alone. Creating the index without statistics retained the original listing lookup in this experiment. I confirmed the covering-index plan separately in local D1.
+
+I timed the merged PR #37 Worker and the revised Worker over localhost, alternating which ran first in each pair. Each returned HTTP 200 and displayed 100,000 matches. The table excludes each server’s first request. P95 uses the nearest rank. Each trial has its own baseline because other local work and cache residency varied. [All paired HTTP timings, in request order](research-evidence/review/filter-timings.csv)
+
+| 60 requests per revision | Median | P95 | Slowest |
+| --- | ---: | ---: | ---: |
+| Query-only trial, PR #37 | 495.6 ms | 549.9 ms | 604.6 ms |
+| Revised query | 232.9 ms | 256.9 ms | 262.3 ms |
+| Index trial, PR #37 | 405.0 ms | 622.3 ms | 2,597.2 ms |
+| Revised query, covering index and statistics | 143.5 ms | 337.5 ms | 1,103.8 ms |
+
+The final combination reduced the median by 65% and the slowest request by 57% in its paired trial. The baseline reproduced a multi-second request. The earlier 2,210 ms sample has only an end-to-end access-log duration, so its precise split between SQL, disk and host scheduling is unknown. The cold-read experiment identifies a reproducible source of second-scale latency. The final HTTP sample still included one request above a second.
+
+The post-import [index and statistics SQL](research-filter-index.sql) added 16.3 MiB to the 200,000-publication fixture. The earlier weekly write measurements predate that index. SQLite maintains one more index entry for each new listing. The revised capacity estimate includes the additional space.
+
+**Layout.** I used Playwright and Chromium with the site’s IBM Plex fonts because the Browser plugin was unavailable. Before the fix, the 2026 count occupied two lines at 390, 768 and 1440 CSS pixels. The fixture’s venue and date occupied one, three and three lines respectively. Afterward the count and publication metadata each occupied one line at every width, the metadata sat below the headline, and the document had no horizontal overflow. Clicking the count opened the directory with the 2026 filter. Long venue names can wrap within the full headline width.
+
+| Width | Last activity by year | Publication header |
+| ---: | --- | --- |
+| 390 | [Home](research-evidence/review/after-home-390.png) | [Publication](research-evidence/review/after-pub-390.png) |
+| 768 | [Home](research-evidence/review/after-home-768.png) | [Publication](research-evidence/review/after-pub-768.png) |
+| 1440 | [Home](research-evidence/review/after-home-1440.png) | [Publication](research-evidence/review/after-pub-1440.png) |
+
+**Migration rehearsal.** Using the locked Wrangler version and local D1, I applied the repository migrations through 0040, created the project-removal table and followed the scoped 0046 procedure. The ledger then ended with 0040 and 0046. The normal pending list contained exactly 0041–0045, and the visibility view returned zero listings. The production ledger and 489 MiB starting size are operator-supplied. The [runbook](research-rollout.md) includes the Free-plan stop and the 30,000-paper estimate.
