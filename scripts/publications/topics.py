@@ -11,9 +11,9 @@ RULES = tuple((topic, re.compile(pattern, re.IGNORECASE)) for topic, pattern in 
     ('Rehabilitation and accessibility', r'\b(?:rehabilitation|accessibility|disability|prosthe\w*|assistive technology|speech therapy)\b'),
     ('Neuroscience', r'\b(?:neuroscien\w*|neuropsycholog\w*|brain|cogniti\w*|alzheimer\w*|dementia|neural|parkinson\w*)\b'),
     ('Public health', r'\b(?:public health|epidemiolog\w*|health disparit\w*|disease surveillance|disease prevention|environmental exposure|vaccin\w*|population health)\b'),
-    ('Clinical care', r'\b(?:clinical medicine|clinical trials?|patient care|case reports?|surg\w*|treatment|therapy|therapeutics|medical procedures?)\b'),
+    ('Clinical care', r'\b(?:clinical medicine|clinical trials?|patient care|case reports?|surg\w*|treatment outcomes?|therapeutics|medical procedures?|(?:drug|radiation|combination|gene|cellular|physical) therapy)\b'),
     ('Disease research', r'\b(?:disease\w*|cancer\w*|tumou?rs?|oncolog\w*|infection\w*|diabet\w*|syndromes?|patholog\w*|immune disorders?)\b'),
-    ('Biomedical and life sciences', r'\b(?:biomedic\w*|biology|biochem\w*|genom\w*|proteom\w*|microbiol\w*|physiolog\w*|cells?|enzym\w*|genes?|rna|dna|organisms?)\b'),
+    ('Biomedical and life sciences', r'\b(?:biomedic\w*|biology|biochem\w*|genom\w*|proteom\w*|microbiol\w*|physiolog\w*|cell (?:lines?|proliferation|differentiation)|(?:stem|epithelial|immune|t|b) cells|enzym\w*|genes?|rna|dna|organisms?)\b'),
 ))
 
 

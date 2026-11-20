@@ -8,6 +8,7 @@ class PublicationTopicTests(unittest.TestCase):
         self.assertEqual(publication_topic([]), OTHER_SCIENCE)
         self.assertEqual(publication_topic(['Humans', 'United States']), OTHER_SCIENCE)
         self.assertEqual(publication_topic(['Lithium Batteries']), OTHER_SCIENCE)
+        self.assertEqual(publication_topic(['Solar Cells', 'Wastewater Treatment']), OTHER_SCIENCE)
 
     def test_explicit_terms_place_all_eight_topics(self):
         examples = {
