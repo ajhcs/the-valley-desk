@@ -168,6 +168,7 @@ function methodology(publications = false) {
       ${publications ? `<p><a href="/api/directory/publications">Browse publication records as JSON</a>. Results include distinct work and record totals, with up to 24 records per page.</p>` : ""}
       <p><a href="/api/directory/listings">Read directory additions as JSON</a>. Use the institution, topic, county and kind filters to narrow a feed or JSON listing.</p>
       <p>The endpoints support GET and HEAD. Removed projects are excluded from the catalog and return HTTP 410 at their own URL. The endpoints return HTTP 503 when removal records are unavailable.</p>
+      <p><a href="/discover/connect">Connect an AI assistant</a> to search the directory through its read-only MCP server at <code>/mcp</code>.</p>
       <p><a href="/sitemap.xml">Sitemap</a> · <a href="/llms.txt">llms.txt</a></p>
     </section>
   </article>`;
@@ -267,6 +268,7 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     ${jsonLd(head.schema, nonce)}
     <script src="/theme.js"></script>
     <script src="/directory-theme.js" defer></script>
+    <script src="/webmcp.js" defer></script>
     ${view.kind === "results" || view.kind === "home" ? '<script src="/directory-search.js" defer></script>' : ""}
     ${canonical ? '<link rel="alternate" type="application/rss+xml" title="Directory additions" href="/discover/updates.xml">' : ""}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">

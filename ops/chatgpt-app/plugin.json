@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "the-valley-desk",
+  "version": "1.0.0",
+  "description": "Search healthcare research software and publications connected to the nine-county Delaware Valley. Read-only.",
+  "extensions": {
+    "com.openai": {
+      "auth": { "type": "none" }
+    }
+  }
+}
