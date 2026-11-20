@@ -75,7 +75,7 @@ function connectPage(origin: string) {
     </section>
     <section id="limits">
       <h2>Limits</h2>
-      <p>Results come ${limits.pageSize} to a page, up to page ${limits.maxPage.toLocaleString("en")}. A response is capped near ${Math.round(limits.resultBytes / 1000)} kB and a request at ${Math.round(maxRequestBytes / 1024)} kB. Bylines show the first ${limits.bylineNames} names. Listing counts in the two list tools can lag by up to ${limits.facetMemoMs / 60_000} minutes. Responses are not cached. The tools search research records. They do not search by author.</p>
+      <p>Results come ${limits.pageSize} to a page, up to page ${limits.maxPage.toLocaleString("en")}. A response is capped near ${Math.round(limits.resultBytes / 1000)} kB and a request at ${Math.round(maxRequestBytes / 1024)} kB. Bylines show the first ${limits.bylineNames} names. Tool calls are limited to 60 a minute per IP address. Listing counts in the two list tools can lag by up to ${limits.facetMemoMs / 60_000} minutes. Responses are not cached. The tools search research records. They do not search by author.</p>
     </section>
     <section id="in-browser">
       <h2>In-browser agents</h2>
@@ -84,7 +84,7 @@ function connectPage(origin: string) {
     <section id="privacy">
       <h2>Privacy</h2>
       <p>The server asks for a search and nothing about you. It has no accounts, cookies or sign-in, and it does not receive your conversation. Your assistant sends only the tool inputs it chooses, such as search words and filters.</p>
-      <p>The Valley Desk does not write tool inputs or results to its logs or database, and does not sell or share them. Our host, Cloudflare, processes each request to deliver it, including the IP address it came from, and keeps standard request logs (time, address requested, response status, country and client software) for a few days for reliability and abuse prevention. Search words travel in the request body, which those logs do not record.</p>
+      <p>The Valley Desk does not write tool inputs or results to its logs or database, and does not sell or share them. Our host, Cloudflare, processes each request to deliver it, including the IP address it came from, and keeps standard request logs (time, address requested, response status, country and client software) for a few days for reliability and abuse prevention. To limit abuse, tool calls are counted per IP address for one minute at a time. Search words travel in the request body, which those logs do not record.</p>
       <p>Results are public directory records. Your assistant’s provider handles your conversation under its own terms. ${contactLink("Email the directory team", undefined, "Valley Desk assistant access")} with questions or a removal request.</p>
     </section>
   </article>`;

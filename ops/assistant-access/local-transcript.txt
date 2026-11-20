@@ -625,3 +625,15 @@ site API /api/directory/listings: HTTP 503
 /.well-known/openai-apps-challenge HTTP 404 text/plain; charset=utf-8
 - [MCP server](https://thevalleydesk.org/mcp): read-only Model Context Protocol endpoint (Streamable HTTP, no sign-in) with search, fetch, whats_new, list_institutions and list_topics_and_counties tools. [Setup for Claude, ChatGPT and other assistants](https://thevalleydesk.org/discover/connect).
 <script src="/webmcp.js" defer></script>
+
+==================================================================
+5. Rate limiting, wrangler dev --local with the MCP_RATE_LIMITER binding (60 calls per 60 s)
+==================================================================
+wrangler bindings: env.MCP_RATE_LIMITER (60 requests/60s)  Rate Limit  local
+65 tools/call requests in a row from one address:
+     60 HTTP 200
+      5 HTTP 429
+tools/list after the limit: HTTP 200
+tools/call after the limit:
+{"jsonrpc":"2.0","id":1,"error":{"code":-32000,"message":"Too many requests. Wait a minute and try again."}}
+site page /discover/works while limited: HTTP 200

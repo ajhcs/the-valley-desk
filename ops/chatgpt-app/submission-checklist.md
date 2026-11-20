@@ -13,7 +13,7 @@ For the owner. Steps 1 to 4 can be done now. Steps 5 onward need the MCP server 
 ## Before deploying
 
 1. [ ] Review and merge the pull request that adds `/mcp`.
-2. [ ] Decide whether to enable rate limiting (see the pull request for the two options and what they cost).
+2. [ ] Rate limiting is on at 60 tool calls a minute per IP address. Confirm `namespace_id` `"1001"` in `wrangler.jsonc` is not used by another Worker on the account.
 3. [ ] Deploy through the normal release process.
 4. [ ] Check production:
    - `https://thevalleydesk.org/discover/connect` loads.

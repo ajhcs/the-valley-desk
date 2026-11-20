@@ -34,21 +34,17 @@ The server card is `Cache-Control: public, max-age=3600`. `tools/list` and `serv
 
 ## Rate limiting
 
-None is enabled. The MCP specification says servers must rate limit tool calls, so choose one before or soon after launch.
+`tools/call` is limited to 60 calls a minute per caller IP address through the Workers Rate Limiting binding `MCP_RATE_LIMITER` in `wrangler.jsonc`. Beyond that the server returns HTTP 429. `tools/list` and `server/discover` are not counted. Without the binding the code skips the check.
 
-1. **Workers Rate Limiting binding.** The code already honours a binding named `MCP_RATE_LIMITER` on `tools/call`, keyed on the caller's IP address, and returns HTTP 429 when the limit is hit. To enable it, add this to `wrangler.jsonc` and deploy:
+- `period` must be 10 or 60 seconds. Counting is per Cloudflare location and approximate.
+- `namespace_id` `"1001"` only has to be unique within the Cloudflare account. Change it if another Worker on the account already uses that number.
+- Cloudflare advises against IP keys because many users can share one address. Requests from ChatGPT or Claude arrive from the provider's servers, so many people can share one counter. Raise `limit` if legitimate callers see 429.
+- Cloudflare's Workers pricing page lists no charge for the binding. That it is free was not confirmed.
+- The IP address is used as a counting key inside Cloudflare. The Worker does not log or store it.
 
-   ```jsonc
-   "ratelimits": [
-     { "name": "MCP_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 60, "period": 60 } }
-   ]
-   ```
+A WAF rate limiting rule on `/mcp` is a second layer if needed. The Free plan allows one rule, counted by IP over 10 seconds.
 
-   `period` must be 10 or 60 seconds. Counting is per Cloudflare location and approximate. Cloudflare's Workers pricing page lists no charge for the binding; that it is free was not confirmed. Cloudflare advises against IP keys because many users can share one address, and requests from ChatGPT or Claude arrive from the provider's servers, so a per-IP limit must be generous. Sixty calls a minute per address is a starting point.
-
-2. **WAF rate limiting rule.** The Free plan allows one rule, counted by IP over a 10-second period with a 10-second block, matched on path. A rule on `/mcp` costs nothing and needs no deploy, but it uses the zone's only free rule.
-
-What an unlimited endpoint costs: each tool call is one Worker request and about five to seven D1 queries. Workers Free allows 100,000 requests a day across the whole site. Workers Paid is $5 a month. An unfiltered search counts every visible listing, as the site's own browse page does, so D1 rows read grow with the directory.
+Each tool call is one Worker request and about five to seven D1 queries. Workers Free allows 100,000 requests a day across the whole site. Workers Paid is $5 a month. An unfiltered search counts every visible listing, as the site's own browse page does, so D1 rows read grow with the directory.
 
 ## Open items
 

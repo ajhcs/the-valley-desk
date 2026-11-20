@@ -10,7 +10,7 @@ The Valley Desk app searches a public directory of healthcare research. It asks 
 
 **What we keep.** The Valley Desk does not write tool inputs or results to its logs or its database. Search words travel in the request body, which our request logs do not record.
 
-**Our host.** Cloudflare delivers each request and, to do so, processes the IP address it came from. Requests from ChatGPT arrive from OpenAI's servers. Cloudflare keeps standard request logs for the site (time, address requested, response status, country and client software) for a few days, for reliability and abuse prevention.
+**Our host.** Cloudflare delivers each request and, to do so, processes the IP address it came from. Requests from ChatGPT arrive from OpenAI's servers. To limit abuse, Cloudflare counts tool calls per IP address for one minute at a time; the address is used only as that counter's key. Cloudflare keeps standard request logs for the site (time, address requested, response status, country and client software) for a few days, for reliability and abuse prevention.
 
 **What we share.** Nothing is sold or shared. Results are public directory records.
 
@@ -28,6 +28,6 @@ The Valley Desk app searches a public directory of healthcare research. It asks 
 | Search words are not in request logs | Tool arguments are sent in the POST body to `/mcp`. The URL is always `/mcp` with no query string. | Verified by reading the code |
 | Cloudflare request logs exist | `wrangler.jsonc` sets `observability.enabled: true` with `head_sampling_rate: 1`, so Workers Logs records an invocation entry per request. | Verified in configuration |
 | What an invocation entry holds, and for how long | Inferred from Cloudflare's Workers Logs documentation: request URL, method, status, selected headers and location fields. Retention depends on the plan. | **Owner to confirm** in the Cloudflare dashboard (Workers, the-valley-desk, Logs) and correct "a few days" on the connect page if it differs |
-| Optional rate limiting | If the `MCP_RATE_LIMITER` binding is added, the caller's IP address is used as the counting key inside Cloudflare. It is not logged by the Worker. | Add a sentence to the statement if the binding is enabled |
+| Rate limiting counts by IP | `wrangler.jsonc` binds `MCP_RATE_LIMITER` (60 calls a minute). `src/assistant/mcp.ts` passes the caller's IP address as the key and does not log or store it. | Verified by reading the code |
 
 If logging changes (for example, adding `logOps` calls to the MCP route, or enabling Logpush), update the connect page and this file in the same change.
