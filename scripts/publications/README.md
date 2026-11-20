@@ -59,3 +59,8 @@ python3 scripts/publications/enrich.py "$ENRICHMENT_RUN" "$PUBLICATIONS_RUN/cand
 Use a mode-0700 directory for `ENRICHMENT_RUN`. Crossref publisher-deposited metadata qualifies as primary evidence when it links the exact author to the literal affiliation. Leads without primary author evidence remain private. [Crossref public pool](https://www.crossref.org/documentation/retrieve-metadata/rest-api/access-and-authentication/)
 
 After verifying supplemental observations against their receipts, attach them to the candidate's `observations` by exact DOI in a separate candidate JSON Lines file inside the private run. Keep its original `provider_key` and check any added persistent identifiers for conflicts. Pass that file to the projection command with `--candidates`.
+
+An author affiliation clause with conflicting city, state or country information
+cannot support a Verified label or county. When the byline still establishes the
+named institution, the clause can support a Listed record with no county. A
+separate, consistent clause can independently support its own site.

@@ -14,12 +14,16 @@ from institutions import REFERENCE, is_https, load_reference
 CONTENT = REFERENCE.parent
 SCHEMA = CONTENT / 'public-directory-publications.schema.json'
 DATASET = CONTENT / 'public-directory-publications.jsonl'
+BACKFILL_DATASET = CONTENT / 'public-directory-publications-2025.jsonl'
 REMOVALS = CONTENT / 'public-directory-publications-removals.json'
 REMOVALS_SCHEMA = CONTENT / 'public-directory-publications-removals.schema.json'
 PROJECTS = CONTENT / 'public-directory-projects.json'
 EMAIL = re.compile(r"(?i)[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}")
+CONNECTION_SOURCE = r'(?:PubMed|Europe PMC|Crossref|publisher|preprint) record'
 PATTERNS = (
-    re.compile(r'^(?:An author affiliation on the (?:PubMed|Europe PMC|Crossref|publisher|preprint) record names|Author affiliations on the (?:PubMed|Europe PMC|Crossref|publisher|preprint) record name) [^\n]+\.$'),
+    re.compile(rf'^An author affiliation on the {CONNECTION_SOURCE} names [^\n]+\.$'),
+    re.compile(rf'^Author affiliations on the {CONNECTION_SOURCE} name [^\n]+\.$'),
+    re.compile(r'^An author affiliation in the PubMed Central (?:article|author manuscript) names [^\n]+\.$'),
 )
 
 
@@ -27,7 +31,11 @@ def read_json(path):
     return json.loads(path.read_text(encoding='utf-8'))
 
 
-def validate_records(dataset=DATASET):
+def validate_records(dataset=None, *additional_datasets):
+    if dataset is None:
+        datasets = (DATASET, BACKFILL_DATASET) if BACKFILL_DATASET.exists() else (DATASET,)
+    else:
+        datasets = (dataset, *additional_datasets)
     institutions = {r['id']: r for r in load_reference()}
     projects = {r['id'] for r in read_json(PROJECTS)}
     schema = read_json(SCHEMA)
@@ -38,30 +46,47 @@ def validate_records(dataset=DATASET):
     removal_validator.validate(removals)
     if sorted(removals) != removals:
         raise ValueError('removal IDs must be sorted')
-    ids = []
     claimed_identifiers = {}
     pairs = {}
-    for number, line in enumerate(dataset.read_text(encoding='utf-8').splitlines(), 1):
-        try:
-            row = json.loads(line)
-            validator.validate(row)
-            validate_record(row, institutions, projects, claimed_identifiers)
-        except Exception as exc:
-            raise ValueError(f'publication line {number}: {exc}') from exc
-        pid = row['id']
-        ids.append(pid)
-        pairs[pid] = (row['type'], row['preprint_of'], row['published_as'])
-    if ids != sorted(set(ids)):
-        raise ValueError('publication IDs must be unique and sorted')
+    for path in datasets:
+        previous_id = None
+        with path.open(encoding='utf-8') as stream:
+            for number, line in enumerate(stream, 1):
+                try:
+                    row = json.loads(line)
+                    validator.validate(row)
+                    pid = row['id']
+                    if pid in pairs:
+                        raise ValueError(f'duplicate publication ID: {pid}')
+                    if previous_id is not None and pid < previous_id:
+                        raise ValueError('publication IDs must be sorted within each file')
+                    validate_record(row, institutions, projects, claimed_identifiers)
+                except Exception as exc:
+                    raise ValueError(f'{path}:{number}: {exc}') from exc
+                previous_id = pid
+                pairs[pid] = (row['type'], row['preprint_of'], row['published_as'])
+    journals_by_preprint = {}
+    preprints_by_journal = {}
     for pid, (kind, preprint_of, published_as) in pairs.items():
-        for target in (preprint_of, published_as):
-            if target is None:
-                continue
-            if target == pid or target not in pairs:
-                raise ValueError(f'{pid}: unresolved preprint/publication link')
-            if (kind == 'preprint') == (pairs[target][0] == 'preprint'):
-                raise ValueError(f'{pid}: link must connect a preprint and a journal version')
-    return len(ids)
+        if preprint_of is not None:
+            if kind == 'preprint':
+                raise ValueError(f'{pid}: preprint_of belongs on the journal version')
+            if preprint_of not in pairs or pairs[preprint_of][0] != 'preprint':
+                raise ValueError(f'{pid}: preprint_of must refer to an existing preprint')
+            if journals_by_preprint.setdefault(preprint_of, pid) != pid:
+                raise ValueError(f'{preprint_of}: conflicting journal version links')
+            if preprints_by_journal.setdefault(pid, preprint_of) != preprint_of:
+                raise ValueError(f'{pid}: conflicting preprint version links')
+        if published_as is not None:
+            if kind != 'preprint':
+                raise ValueError(f'{pid}: published_as belongs on the preprint')
+            if published_as not in pairs or pairs[published_as][0] == 'preprint':
+                raise ValueError(f'{pid}: published_as must refer to an existing journal version')
+            if journals_by_preprint.setdefault(pid, published_as) != published_as:
+                raise ValueError(f'{pid}: conflicting journal version links')
+            if preprints_by_journal.setdefault(published_as, pid) != pid:
+                raise ValueError(f'{published_as}: conflicting preprint version links')
+    return len(pairs)
 
 
 def validate_record(row, institutions, projects, claimed_identifiers):
@@ -82,8 +107,11 @@ def validate_record(row, institutions, projects, claimed_identifiers):
     legal_ids = {f'{key}:{value}' for key, value in ids.items() if value}
     if row['id'] not in legal_ids:
         raise ValueError('id must refer to an identifier on the record')
-    if row['doi'] and unquote(row['url']) != 'https://doi.org/' + row['doi']:
-        raise ValueError('DOI resolver disagrees with DOI')
+    if row['doi']:
+        if row['id'] != 'doi:' + row['doi']:
+            raise ValueError('DOI must be the record ID when available')
+        if unquote(row['url']) != 'https://doi.org/' + row['doi']:
+            raise ValueError('DOI resolver disagrees with DOI')
     published = row['published']
     if len(published) == 10:
         date.fromisoformat(published)
@@ -104,6 +132,8 @@ def validate_record(row, institutions, projects, claimed_identifiers):
         raise ValueError('county outside listed institutions')
     if row['label'] == 'Verified' and not row['counties']:
         raise ValueError('Verified requires a supported county')
+    if row['label'] == 'Listed' and row['counties']:
+        raise ValueError('Listed records must have empty counties')
     if not any(pattern.fullmatch(row['connection']) for pattern in PATTERNS):
         raise ValueError('unexpected connection wording')
 
@@ -120,6 +150,7 @@ def has_email(value):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('dataset', nargs='?', type=Path, default=DATASET)
+    parser.add_argument('datasets', nargs='*', type=Path, metavar='dataset',
+                        help='JSON Lines files to validate together (defaults to pilot and optional 2025 backfill)')
     args = parser.parse_args()
-    print(f'Validated {validate_records(args.dataset)} publication records')
+    print(f'Validated {validate_records(*args.datasets)} publication records')
