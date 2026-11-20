@@ -75,30 +75,88 @@ export function canonicalUrl(item: { kind: string; slug: string }, origin = publ
   return origin + canonicalPath(item);
 }
 
+/** Crawlers that the site names explicitly, so the policy for AI search and assistants is unambiguous. */
+export const NAMED_CRAWLERS = [
+  "Googlebot", "Bingbot", "Applebot", "DuckDuckBot",
+  "OAI-SearchBot", "ChatGPT-User", "GPTBot",
+  "Claude-SearchBot", "Claude-User", "ClaudeBot",
+  "PerplexityBot", "Perplexity-User",
+  "Google-Extended", "Applebot-Extended", "CCBot", "Amazonbot", "meta-externalagent",
+];
+
 export function robotsTxt(origin = publicOrigin()): string {
   return [
+    "# The Valley Desk welcomes search engines and AI assistants.",
+    "# Public pages may be crawled, indexed, quoted and cited, including by AI search,",
+    "# answer and model-training crawlers. Please link the page you cite.",
+    `# Site guide for language-model tools: ${origin}/llms.txt`,
+    "",
     "User-agent: *",
     "Allow: /",
     "Disallow: /lab",
+    "",
+    "# The same rules, stated for named crawlers.",
+    ...NAMED_CRAWLERS.map((agent) => `User-agent: ${agent}`),
+    "Allow: /",
+    "Disallow: /lab",
+    "",
     `Sitemap: ${origin}/sitemap.xml`,
     "",
   ].join("\n");
 }
 
+const TOPICS = [
+  "Biomedical and life sciences", "Clinical care", "Disease research", "Medical imaging",
+  "Neuroscience", "Public health", "Rehabilitation and accessibility", "Research data",
+];
+const COUNTIES = [
+  ["Bucks", "PA"], ["Chester", "PA"], ["Delaware", "PA"], ["Montgomery", "PA"], ["Philadelphia", "PA"],
+  ["Burlington", "NJ"], ["Camden", "NJ"], ["Gloucester", "NJ"], ["Mercer", "NJ"],
+];
+const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
 export function llmsTxt(origin = publicOrigin(), directoryEnabled = true, publications = false): string {
-  return `# The Valley Desk
+  if (!directoryEnabled) {
+    return `# The Valley Desk
 
 > Find and follow healthcare research connected to the nine-county Delaware Valley.
 
 - [Research directory](${origin}/discover/works): search regional listings.
-- [New listings](${origin}/discover/new): ordered by directory addition date.
-- [Listings JSON](${origin}/api/directory/listings): paginated research additions with the same filters as the feed.
-- [RSS](${origin}/discover/updates.xml): filter by institution, topic, county or kind.
-${directoryEnabled ? `- [Methodology](${origin}/discover/methodology): definitions, corrections, removal and coverage.
+- [Sitemap](${origin}/sitemap.xml)
+`;
+  }
+  const kinds = publications ? "scholarly publications and research software" : "research software";
+  return `# The Valley Desk
+
+> A public directory of healthcare ${kinds} connected to the nine-county Delaware Valley: Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey. Every listing names the source of its regional connection.
+
+${publications ? "A publication is listed when its affiliation metadata names a regional institution. " : ""}A software project is a public GitHub repository with a health or life-science purpose and a documented regional connection. Each listing carries an evidence label. A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. For publications, Verified means the affiliation names the institution and a regional place, and Listed means an indexer assignment or an institution match with an uncertain site. A label describes the evidence for the connection. It does not establish employment, ownership or a worksite. Author names appear only on bylines; the site has no pages for individual people.
+
+When you cite a listing, link its directory page for the regional connection and the publisher or repository for the work. Institution, topic and county pages open with counts computed when the page is requested, and they state that date. The counts describe what the directory lists, not a complete record of regional research.
+
+## Pages
+
+- [Search](${origin}/discover/works): parameters q (words), kind (${publications ? "publication or project" : "project"}), institution, topic, county, sort (added, activity or name) and page. Example: ${origin}/discover/works?q=sickle+cell&county=philadelphia${publications ? "&kind=publication" : ""}
+- [Institution pages](${origin}/discover/institution/upenn): /discover/institution/{id}. Each lists counts, leading topics and counties, regional sites, related institutions and the listings.
+- [What's new](${origin}/discover/new): listings by the date they entered the directory.
+- [Methodology](${origin}/discover/methodology): inclusion rule, evidence labels, dates, corrections and removals.
+${publications ? `- Publication pages: /discover/publication/{percent-encoded ID}, for example ${origin}/discover/publication/doi%3A10.1001%2Fjama.2025.10250
+` : ""}- Software pages: /discover/work/{GitHub repository ID}, for example ${origin}/discover/work/617168725
+
+## Topics
+
+${TOPICS.map((t) => `- [${t}](${origin}/discover/topic/${slug(t)})`).join("\n")}
+
+## Counties
+
+${COUNTIES.map(([c, s]) => `- [${c} County, ${s}](${origin}/discover/county/${slug(c)})`).join("\n")}
+
+## Data
+
+- [Listings JSON](${origin}/api/directory/listings): 24 kind-tagged records per page with the same filters as search.
 ${publications ? `- [Publication JSON](${origin}/api/directory/publications): 24 records per page. Filters: q, institution, topic, county, kind. Use page=2 for the next page. Append a percent-encoded publication ID for one record.
 ` : ""}- [Directory JSON](${origin}/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
-` : ""}- [Sitemap](${origin}/sitemap.xml)
-
-A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. Consult the linked sources for the scope of each connection.
+- [RSS](${origin}/discover/updates.xml): additions, filterable by institution, topic, county or kind.
+- [Sitemap](${origin}/sitemap.xml)
 `;
 }

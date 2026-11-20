@@ -5,7 +5,17 @@ import {
   type DirectoryProject,
   type DirectoryCatalog,
 } from "./public-directory-data";
-import { count, externalLink, html, projectCards, searchInput } from "./public-directory-ui";
+import {
+  contactLink,
+  count,
+  externalLink,
+  healthTopic,
+  html,
+  partialDate,
+  projectRecord,
+  searchInput,
+  timestamp,
+} from "./public-directory-ui";
 
 export const newPath = "/discover/new";
 export const feedPath = "/discover/updates.xml";
@@ -37,6 +47,10 @@ export type Publication = {
   type: string;
   venue: string | null;
   published: string;
+  doi?: string | null;
+  pmid?: string | null;
+  pmcid?: string | null;
+  arxiv?: string | null;
   added: string;
   checked: string;
   topic: string;
@@ -49,7 +63,7 @@ export type Publication = {
   connection: string;
   source: string;
   url: string;
-  open_access: { url: string | null } | null;
+  open_access: { url: string | null; status?: string | null; license?: string | null } | null;
   projects: string[];
   published_as: string | null;
   preprint_of: string | null;
@@ -59,7 +73,7 @@ export type Institution = {
   id: string;
   name: string;
   aliases: string[];
-  sites: { name: string; place: string; county: string; source: string }[];
+  sites: { name: string; place: string; county: string; source: string; state?: string }[];
 };
 type RecordsByKind = { project: DirectoryProject; publication: Publication };
 export type ListingKind = keyof RecordsByKind;
@@ -68,6 +82,22 @@ export type Listing<K extends ListingKind = ListingKind> = {
 }[K];
 export const publicationTitle = (p: Pick<Publication, "title">) =>
   p.title.replace(/<\/?(?:em|strong|i|b|sub|sup)>/gi, "");
+/** Catalogue display drops the closing period that bibliographic sources add to titles. */
+export const displayTitle = (p: Pick<Publication, "title">) => publicationTitle(p).replace(/(?<![.\s])\.$/u, "");
+const typeNames: Record<string, string> = {
+  article: "Article",
+  review: "Review",
+  "clinical-trial-report": "Clinical trial report",
+  editorial: "Editorial",
+  "case-report": "Case report",
+  letter: "Letter",
+  "conference-abstract": "Conference abstract",
+  preprint: "Preprint",
+  "dataset-paper": "Data paper",
+  other: "Publication",
+};
+export const publicationType = (type: string) =>
+  typeNames[type] ?? (type ? type[0].toUpperCase() + type.slice(1).replaceAll("-", " ") : "Publication");
 
 const templates: {
   [K in ListingKind]: {
@@ -79,18 +109,18 @@ const templates: {
   };
 } = {
   project: {
-    name: "Project",
-    plural: "Projects",
+    name: "Software project",
+    plural: "Software projects",
     path: (id) => projectPath({ id }),
     title: (r) => r.name,
-    card: (r, catalog) => projectCards(catalog, [r], "cards", "added"),
+    card: (r, catalog) => projectRecord(catalog, r, "added"),
   },
   publication: {
     name: "Publication",
     plural: "Publications",
     path: pubPath,
-    title: publicationTitle,
-    card: publicationCard,
+    title: displayTitle,
+    card: publicationRecord,
   },
 };
 export const listingTitle = <K extends ListingKind>(item: Listing<K>) => templates[item.kind].title(item.record);
@@ -266,17 +296,30 @@ export function projectQuery(
   };
 }
 
-function evidence(p: Publication) {
-  return `<a class="evidence ${p.label === "Verified" ? "evidence-verified" : ""}" href="/discover/methodology#regional-evidence">${html(p.label)}</a> ${html(p.connection)} ${externalLink(p.source, "Affiliation source")}`;
+export const topicPath = (topic: string) => "/discover/topic/" + facetSlug(topic);
+/** A health topic links to its landing page. Other topic labels are plain text. */
+export function topicLink(topic: string) {
+  return healthTopic(topic) ? `<a href="${html(topicPath(topic))}">${html(topic)}</a>` : `<span>${html(topic)}</span>`;
 }
-function publicationCard(p: Publication) {
-  return `<article class="project-card paper-card"><div class="card-topic">Publication · ${html(p.type)}</div>
-    <h3><a href="${html(pubPath(p.id))}">${html(publicationTitle(p))}</a></h3>${p.retracted ? "<strong>Retracted</strong>" : ""}
-    <p>${html([p.venue, p.topic].filter(Boolean).join(" · "))}</p><p>${evidence(p)}</p>
-    <div class="card-meta">Published ${html(p.published)} · Added ${html(p.added)}</div></article>`;
+function evidence(p: Publication) {
+  return `<a class="evidence${p.label === "Verified" ? " evidence-verified" : ""}" href="/discover/methodology#regional-evidence">${html(p.label)}</a> ${html(p.connection)} ${externalLink(p.source, "Affiliation source")}`;
+}
+function bylinePreview(p: Publication, shown = 3) {
+  const names = p.authors.slice(0, shown).map((a) => html(a.name));
+  const total = Math.max(p.author_count, p.authors.length);
+  return total > names.length ? `${names.join(", ")} <span class="muted">and others (${count(total)} authors)</span>` : names.join(", ");
+}
+function publicationRecord(p: Publication) {
+  return `<li class="record record-publication${p.retracted ? " is-retracted" : ""}">
+    <p class="record-kind"><span class="kind">${html(publicationType(p.type))}</span>${p.venue ? `<span class="record-venue">${html(p.venue)}</span>` : ""}${partialDate(p.published) ? `<span>${partialDate(p.published)}</span>` : ""}${p.retracted ? '<strong class="retracted">Retracted</strong>' : ""}</p>
+    <h3 class="record-title"><a href="${html(pubPath(p.id))}">${html(displayTitle(p))}</a></h3>
+    <p class="record-byline">${bylinePreview(p)}</p>
+    <p class="record-evidence">${evidence(p)}</p>
+    <p class="record-topic">${topicLink(p.topic)}${timestamp(p.added) ? `<span>Added ${timestamp(p.added)}</span>` : ""}</p>
+  </li>`;
 }
 export function renderListingCards(items: Listing[], catalog: DirectoryCatalog) {
-  return `<div class="research-grid">${items.map((item) => card(item, catalog)).join("")}</div>`;
+  return `<ol class="records" data-view="full">${items.map((item) => card(item, catalog)).join("")}</ol>`;
 }
 
 export function feedUrl(params: URLSearchParams) {
@@ -284,97 +327,195 @@ export function feedUrl(params: URLSearchParams) {
   for (const key of ["page", "view", "sort"]) filters.delete(key);
   return feedPath + (filters.size ? "?" + filters : "");
 }
-export function renderResearch(
-  title: string,
-  path: string,
-  params: URLSearchParams,
-  data: Results,
-  catalog: DirectoryCatalog,
-  options: Options,
-  enabled: boolean,
-  intro = "",
-  scope = "",
-) {
-  function select(name: string, label: string, choices: [string, string][]) {
+
+/** Plain counts by kind, publications first, for headings, descriptions and the results bar. */
+export function kindCounts(counts: Results["counts"], withVersions = false) {
+  return [...counts]
+    .filter((r) => r.n)
+    .sort((a, b) => (a.kind === "publication" ? -1 : b.kind === "publication" ? 1 : 0))
+    .map(
+      (r) =>
+        count(r.works) +
+        " " +
+        (r.works === 1 ? templates[r.kind].name : templates[r.kind].plural).toLowerCase() +
+        (withVersions && r.n > r.works ? ` (${count(r.n)} records including versions)` : ""),
+    )
+    .join(" and ");
+}
+
+function pageLinks(path: string, params: URLSearchParams, page: number, totalPages: number) {
+  if (totalPages < 2) return "";
+  const link = (n: number, label: string, rel?: string) => {
+    const next = new URLSearchParams(params);
+    if (n > 1) next.set("page", String(n));
+    else next.delete("page");
+    return `<a href="${html(path + (next.size ? "?" + next : ""))}"${rel ? ` rel="${rel}"` : ""}>${label}</a>`;
+  };
+  const shown = [...new Set([1, page - 1, page, page + 1, totalPages])].filter((n) => n >= 1 && n <= totalPages).sort((a, b) => a - b);
+  return `<nav class="pagination" aria-label="Results pages"><div class="page-links">
+    ${page > 1 ? link(page - 1, "Previous", "prev") : ""}
+    ${shown
+      .map(
+        (n, i) =>
+          (i && n > shown[i - 1] + 1 ? '<span aria-hidden="true">…</span>' : "") +
+          (n === page ? `<span class="current-page" aria-current="page">${count(n)}</span>` : link(n, count(n))),
+      )
+      .join("")}
+    ${page < totalPages ? link(page + 1, "Next", "next") : ""}
+  </div><p class="muted">Page ${count(page)} of ${count(totalPages)}</p></nav>`;
+}
+
+export type ResearchPage = {
+  header: string;
+  path: string;
+  params: URLSearchParams;
+  data: Results;
+  catalog: DirectoryCatalog;
+  options: Options;
+  enabled: boolean;
+  scope?: string;
+  byDate?: boolean;
+  aside?: string;
+};
+
+export function renderResearch({ header, path, params, data, catalog, options, enabled, scope = "", byDate, aside }: ResearchPage) {
+  function select(name: string, label: string, choices: [string, string][], all = "All") {
     const selected = params.get(name) ?? "";
-    return `<label>${label}<select name="${name}"><option value="">All</option>${choices
+    return `<label>${label}<select form="research-form" name="${name}"><option value="">${all}</option>${choices
       .map(
         ([v, n]) =>
           `<option value="${html(v)}"${v === selected || v === facetSlug(selected) ? " selected" : ""}>${html(n)}</option>`,
       )
       .join("")}</select></label>`;
   }
-  function pageLink(n: number, label: string) {
-    const next = new URLSearchParams(params);
-    next.set("page", String(n));
-    return `<a class="button secondary" href="${html(path + "?" + next)}">${label}</a>`;
-  }
-  return `<section class="frame page"><h1>${html(title)}</h1>${intro}
-    <p><a href="${html(feedUrl(params))}">Follow additions via RSS</a></p>
-    <form class="research-form" action="${html(path)}" method="get" role="search">${searchInput(params.get("q") ?? "")}
-    <div class="research-filters">${
-      enabled
-        ? select(
-            "kind",
-            "Listing kind",
-            Object.entries(templates).map(([kind, t]) => [kind, t.plural]),
-          )
-        : ""
-    }
-    ${fields
+  const names = { institution: ["Institution", "All institutions"], topic: ["Topic", "All topics"], county: ["County", "All counties"] };
+  const totalPages = Math.ceil(data.total / 24);
+  const first = (data.page - 1) * 24 + 1;
+  const range =
+    data.total > 24 ? `<span class="muted"> · listings ${count(first)}–${count(first + data.items.length - 1)}</span>` : "";
+  let list = "";
+  if (!data.items.length) {
+    list = `<div class="empty-result"><h2>No matching listings</h2><p>Try fewer words or <a href="${html(path)}">clear the filters</a>.</p></div>`;
+  } else if (byDate) {
+    const days = new Map<string, Listing[]>();
+    for (const item of data.items) days.set(item.record.added ?? "", [...(days.get(item.record.added ?? "") ?? []), item]);
+    list = [...days]
+      .map(
+        ([day, items]) =>
+          `<section class="day-group"><h2>${timestamp(day) ? `Added ${timestamp(day)}` : "Date added not recorded"}</h2>${renderListingCards(items, catalog)}</section>`,
+      )
+      .join("");
+  } else list = `<h2 class="sr-only">Listings</h2>${renderListingCards(data.items, catalog)}`;
+  const filters = [
+    enabled
+      ? select("kind", "Kind", Object.entries(templates).reverse().map(([kind, t]) => [kind, t.plural]), "Publications and software")
+      : "",
+    ...fields
       .filter((f) => f !== scope)
       .map((f) =>
         select(
           f,
-          f[0].toUpperCase() + f.slice(1),
-          [...options[f]].sort((a, b) => a[1].localeCompare(b[1])),
+          names[f][0],
+          [...options[f]].filter(([, n]) => f !== "topic" || healthTopic(n)).sort((a, b) => a[1].localeCompare(b[1])),
+          names[f][1],
         ),
-      )
-      .join("")}
-    ${
-      path !== newPath && enabled
-        ? `<label>Sort<select name="sort">${[
-            ["added", "Date added"],
-            ["activity", "Published or last project activity"],
-            ["name", "Title A–Z"],
-          ]
-            .map(([v, n]) => `<option value="${v}"${params.get("sort") === v ? " selected" : ""}>${n}</option>`)
-            .join("")}</select></label>`
-        : ""
-    }
-    <button class="button secondary">Apply filters</button></div></form>
-    ${path === browsePath ? '<p><a href="/discover/works?tools=project">Project filters for language, license and GitHub activity</a></p>' : ""}
-    <p>${
-      data.counts
-        .filter((r) => r.n)
-        .map(
-          (r) =>
-            count(r.works) +
-            " " +
-            (r.works === 1 ? templates[r.kind].name : templates[r.kind].plural).toLowerCase() +
-            (r.n > r.works ? " (" + count(r.n) + " versions)" : ""),
-        )
-        .join(" · ") || "No matching listings"
-    }</p>
-    ${renderListingCards(data.items, catalog)}
-    <nav class="pagination" aria-label="Results pages">${data.page > 1 ? pageLink(data.page - 1, "Previous") : ""}
-    ${data.total > 24 ? "Page " + count(data.page) + " of " + count(Math.ceil(data.total / 24)) : ""} ${data.page * 24 < data.total ? pageLink(data.page + 1, "Next") : ""}</nav></section>`;
+      ),
+    path !== newPath && enabled
+      ? `<label>Order<select form="research-form" name="sort">${[
+          ["added", "Date added"],
+          ["activity", "Publication date or last code push"],
+          ["name", "Title A–Z"],
+        ]
+          .map(([v, n]) => `<option value="${v}"${params.get("sort") === v ? " selected" : ""}>${n}</option>`)
+          .join("")}</select></label>`
+      : "",
+  ].filter(Boolean);
+  return `<div class="frame page research-page">${header}
+    <form id="research-form" class="research-search" action="${html(path)}" method="get" role="search">${searchInput(params.get("q") ?? "")}</form>
+    <div class="research-layout${aside ? " has-index" : ""}">
+      <div class="research-filters">
+        <h2 class="rail-heading">Refine</h2>
+        ${filters.join("")}
+        <button class="button secondary" type="submit" form="research-form">Apply</button>
+        ${path === browsePath ? '<p class="rail-note"><a href="/discover/works?tools=project">Software filters: language, license, GitHub activity</a></p>' : ""}
+      </div>
+      <section class="research-results" aria-label="Listings">
+        <div class="results-bar"><p class="results-count"><strong>${kindCounts(data.counts, true) || "No matching listings"}</strong>${range}</p>
+        <p class="results-links"><a href="${html(feedUrl(params))}">RSS feed of additions</a></p></div>
+        ${list}
+        ${pageLinks(path, params, data.page, totalPages)}
+      </section>
+      ${aside ? `<div class="research-index">${aside}</div>` : ""}
+    </div>
+  </div>`;
 }
-export function renderPublication(p: Publication, refs: Institution[], related: Listing[]) {
+
+const identifierLinks: [keyof Publication, string, (v: string) => string][] = [
+  ["doi", "DOI", (v) => "https://doi.org/" + v.split("/").map(encodeURIComponent).join("/")],
+  ["pmid", "PubMed ID", (v) => "https://pubmed.ncbi.nlm.nih.gov/" + encodeURIComponent(v) + "/"],
+  ["pmcid", "PubMed Central ID", (v) => "https://europepmc.org/article/PMC/" + encodeURIComponent(v)],
+  ["arxiv", "arXiv ID", (v) => "https://arxiv.org/abs/" + encodeURIComponent(v)],
+];
+
+export function renderPublication(
+  p: Publication,
+  refs: Institution[],
+  related: Listing[],
+  more: { heading: string; items: Listing[]; href: string } | undefined,
+  catalog: DirectoryCatalog,
+) {
   const entity = (kind: string, key: string, name: string) =>
     `<a href="/discover/${kind}/${encodeURIComponent(key)}">${html(name)}</a>`;
   const places = p.institutions.map((id) =>
     entity("institution", id, refs.find((ref) => ref.id === id)?.name ?? id),
   );
-  return `<article class="frame page project-page"><nav class="breadcrumb"><a href="${browsePath}">Research directory</a></nav>
-    <header class="project-intro publication-intro"><p class="card-topic">Publication · ${html(p.type)}</p><h1>${html(publicationTitle(p))}</h1>
-    <p>${html([p.venue, "Published " + p.published].filter(Boolean).join(" · "))}</p>${p.retracted ? "<strong>Retracted publication</strong>" : ""}
-    <p>${externalLink(p.url, "Read the publication ↗", "button primary")} ${externalLink(p.open_access?.url, "Open access copy ↗")}</p></header>
-    <section class="detail-section"><h2>Byline</h2><p>${p.authors.map((a) => html(a.name)).join(", ")}</p>
-    ${p.author_count > p.authors.length ? `<p>${p.authors.length} of ${count(p.author_count)} authors shown in byline order.</p>` : ""}</section>
-    <section class="detail-section"><h2>Regional connection</h2><p>${evidence(p)}</p><p>${[...places, ...p.counties.map((c) => entity("county", facetSlug(c), c + " County"))].join(" · ")}</p></section>
-    <section class="detail-section"><h2>Directory record</h2><p>${entity("topic", facetSlug(p.topic), p.topic)}</p><p>Added ${html(p.added)} · Source checked ${html(p.checked)}</p></section>
-    ${related.length ? `<section class="detail-section"><h2>Connected research</h2><ul>${related.map((i) => `<li>${i.kind === "project" ? "Project" : "Publication version"} · <a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}</article>`;
+  const counties = p.counties.map((c) => entity("county", facetSlug(c), c + " County"));
+  const total = Math.max(p.author_count, p.authors.length);
+  const facts: [string, string][] = [
+    ["Type", html(publicationType(p.type))],
+    ["Venue", p.venue ? html(p.venue) : ""],
+    ["Published", partialDate(p.published)],
+    ["Topic", topicLink(p.topic)],
+    ["Subject terms", p.terms.map((t) => html(t)).join("; ")],
+    ...identifierLinks.map(([key, label, url]): [string, string] => {
+      const value = p[key];
+      return [label, typeof value === "string" && value ? externalLink(url(value), value) || html(value) : ""];
+    }),
+    ["Open access", p.open_access?.url ? externalLink(p.open_access.url, p.open_access.status ? `Yes, ${p.open_access.status}` : "Yes") : ""],
+    ["Added to directory", timestamp(p.added)],
+    ["Source checked", timestamp(p.checked)],
+  ];
+  return `<article class="frame page record-page publication-page">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a>${healthTopic(p.topic) ? `<span aria-hidden="true">/</span>${topicLink(p.topic)}` : ""}</nav>
+    <header class="record-head">
+      <p class="record-kind"><span class="kind">${html(publicationType(p.type))}</span>${p.venue ? `<span>${html(p.venue)}</span>` : ""}${partialDate(p.published) ? `<span>Published ${partialDate(p.published)}</span>` : ""}</p>
+      <h1>${html(displayTitle(p))}</h1>
+      ${p.retracted ? '<p class="retracted-notice"><strong>Retracted publication.</strong> The source record marks this paper as retracted.</p>' : ""}
+      <p class="byline">${p.authors.map((a) => html(a.name)).join(", ")}</p>
+      ${total > p.authors.length ? `<p class="muted">${count(p.authors.length)} of ${count(total)} authors shown in byline order.</p>` : ""}
+      <p class="record-actions">${externalLink(p.url, "Read the publication ↗", "button primary")} ${externalLink(p.open_access?.url, "Open access copy ↗", "button secondary")}</p>
+    </header>
+    <div class="record-body">
+      <section class="record-section" aria-labelledby="connection-title">
+        <h2 id="connection-title">Regional connection</h2>
+        <p class="record-evidence">${evidence(p)}</p>
+        <dl class="facts">
+          ${places.length ? `<div><dt>${places.length === 1 ? "Institution" : "Institutions"}</dt><dd>${places.join(", ")}</dd></div>` : ""}
+          ${counties.length ? `<div><dt>${counties.length === 1 ? "County" : "Counties"}</dt><dd>${counties.join(", ")}</dd></div>` : ""}
+        </dl>
+      </section>
+      <section class="record-section" aria-labelledby="record-title">
+        <h2 id="record-title">Publication record</h2>
+        <dl class="facts">${facts
+          .filter(([, v]) => v)
+          .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`)
+          .join("")}</dl>
+      </section>
+    </div>
+    ${related.length ? `<section class="record-section related"><h2>Connected research</h2><ul class="plain-list">${related.map((i) => `<li><span class="muted">${i.kind === "project" ? "Software" : "Publication version"}</span> <a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
+    ${more?.items.length ? `<section class="related"><div class="section-heading"><h2>${html(more.heading)}</h2><a href="${html(more.href)}">More from this institution</a></div>${renderListingCards(more.items, catalog)}</section>` : ""}
+    <p class="record-report">${contactLink("Report a correction or request removal", undefined, `Directory correction or removal for ${p.id}`)}</p>
+  </article>`;
 }
 export function rss(
   origin: string,
