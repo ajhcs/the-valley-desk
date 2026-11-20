@@ -481,6 +481,7 @@ export async function servePublicDirectory(
           );
           entries.push(
             ...groups
+              .filter((g) => g.field !== "topic" || healthTopic(g.value))
               .map((g) => ({ loc: origin + "/discover/" + g.field + "/" + encodeURIComponent(g.value) })),
           );
         }
@@ -563,6 +564,14 @@ export async function servePublicDirectory(
       if (pubApi && !hasPubs) return json(() => ({ error: "publication_not_found" }), 404);
       const options = optionsFor(catalog, removed, refs);
       const params = new URLSearchParams(searchParams);
+      // "Other science" has no topic feed, and HTML views do not offer it as a topic filter.
+      const nonHealth = params.getAll("topic").filter((t) => !healthTopic(t));
+      if (nonHealth.length && path === feedPath) return page({ kind: "not-found" }, 404);
+      if (nonHealth.length && !api && !pubApi) {
+        const kept = params.getAll("topic").filter((t) => healthTopic(t));
+        params.delete("topic");
+        for (const t of kept) params.append("topic", t);
+      }
       if (pubApi) params.set("kind", "publication");
       if (path === feedPath || path === newPath) params.set("sort", "added");
       // A landing page is the unfiltered first page. Every other combination is a search result.
@@ -572,6 +581,7 @@ export async function servePublicDirectory(
       if (scoped) {
         const field = scoped[1] as ScopeField,
           value = decode(scoped[2]);
+        if (field === "topic" && !healthTopic(value)) return page({ kind: "not-found" }, 404);
         const ref = field === "institution" ? institutionFor(refs, value) : undefined;
         params.set(field, ref?.id ?? value);
         const name = ref?.name ?? options[field].get(value) ?? value;

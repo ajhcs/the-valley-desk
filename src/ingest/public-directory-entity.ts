@@ -8,7 +8,7 @@ import {
   type Options,
   type ResearchDb,
 } from "./public-directory-research";
-import { count, dateText, externalLink, healthTopic, html, timestamp } from "./public-directory-ui";
+import { count, dateText, externalLink, healthTopic, html, otherTopic, otherTopicSlug, timestamp } from "./public-directory-ui";
 
 export type ScopeField = "institution" | "topic" | "county";
 type Tally = { value: string; n: number };
@@ -51,7 +51,7 @@ export type Names = {
 export function namesFor(refs: Institution[], options: Options): Names {
   return {
     institution: (id) => refs.find((r) => r.id === id)?.name ?? options.institution.get(id) ?? id,
-    topic: (slug) => options.topic.get(slug) ?? slug,
+    topic: (slug) => options.topic.get(slug) ?? (slug === otherTopicSlug ? otherTopic : slug),
     county: (slug) => counties.find((c) => facetSlug(c.name) === slug)?.name ?? slug,
   };
 }

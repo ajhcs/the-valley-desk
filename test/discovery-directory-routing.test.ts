@@ -1,5 +1,6 @@
 import "./public-directory-research.test";
 import "./public-directory-seo.test";
+import "./public-directory-other-topic.test";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../worker.js';

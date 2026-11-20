@@ -87,8 +87,15 @@ export function partialDate(value?: string | null) {
 }
 export const dateText = (value?: string | null) => (timestamp(value) ? partialDateText(value) : "");
 
-/** Topics with a landing page, a feed and a place in the topic filter. */
-export const healthTopic = (topic?: string | null) => !!topic;
+/**
+ * Topics with a landing page, a feed and a place in the topic filter. "Other science" marks papers
+ * the topic rules could not place in a health topic: it is a label on the record, searchable and
+ * shown on institution and county pages, but it is not a browsable topic.
+ */
+export const otherTopic = "Other science";
+export const otherTopicSlug = "other-science";
+export const healthTopic = (topic?: string | null) =>
+  !!topic && topic !== otherTopic && topic.toLowerCase().replace(/[^a-z0-9]+/g, "-") !== otherTopicSlug;
 
 const kindDate = (project: DirectoryProject, dateField: "activity" | "added") => {
   const date = timestamp(dateField === "added" ? project.added : lastActivity(project));
