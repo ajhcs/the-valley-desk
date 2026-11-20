@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "The Valley Desk publication removals",
+  "description": "Publication IDs to suppress from every public listing and detail route.",
+  "type": "array",
+  "items": {
+    "type": "string",
+    "pattern": "^(doi:10\\.\\d{4,}/[^\\s]+|pmid:[1-9]\\d*|arxiv:(?:\\d{4}\\.\\d{4,5}|[a-z-]+(?:\\.[A-Z]{2})?/\\d{7}))$"
+  },
+  "uniqueItems": true
+}

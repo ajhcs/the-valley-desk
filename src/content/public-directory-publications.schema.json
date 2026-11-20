@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "The Valley Desk publication record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "type",
+    "published",
+    "venue",
+    "doi",
+    "pmid",
+    "pmcid",
+    "arxiv",
+    "url",
+    "authors",
+    "author_count",
+    "institutions",
+    "counties",
+    "topic",
+    "terms",
+    "label",
+    "connection",
+    "source",
+    "open_access",
+    "projects",
+    "preprint_of",
+    "published_as",
+    "retracted",
+    "added",
+    "checked"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "#/$defs/publicationId"
+    },
+    "title": {
+      "$ref": "#/$defs/text"
+    },
+    "type": {
+      "enum": [
+        "article",
+        "review",
+        "preprint",
+        "clinical-trial-report",
+        "case-report",
+        "editorial",
+        "letter",
+        "conference-abstract",
+        "dataset-paper",
+        "other"
+      ]
+    },
+    "published": {
+      "type": "string",
+      "pattern": "^\\d{4}(?:-(0[1-9]|1[0-2])(?:-(0[1-9]|[12]\\d|3[01]))?)?$",
+      "description": "Earliest source-reported publication date with its original precision."
+    },
+    "venue": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "doi": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^10\\.\\d{4,}/[^\\s]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pmid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[1-9]\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pmcid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^PMC[1-9]\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "arxiv": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?:\\d{4}\\.\\d{4,5}|[a-z-]+(?:\\.[A-Z]{2})?/\\d{7})$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "url": {
+      "$ref": "#/$defs/url"
+    },
+    "authors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "orcid",
+          "regional"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "#/$defs/text"
+          },
+          "orcid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "regional": {
+            "type": "boolean"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "author_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Total byline size, including any omitted authors."
+    },
+    "institutions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/institutionId"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "counties": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "Bucks",
+          "Chester",
+          "Delaware",
+          "Montgomery",
+          "Philadelphia",
+          "Burlington",
+          "Camden",
+          "Gloucester",
+          "Mercer"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "topic": {
+      "enum": [
+        "Biomedical and life sciences",
+        "Clinical care",
+        "Disease research",
+        "Medical imaging",
+        "Neuroscience",
+        "Public health",
+        "Rehabilitation and accessibility",
+        "Research data"
+      ]
+    },
+    "terms": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      },
+      "maxItems": 12,
+      "uniqueItems": true
+    },
+    "label": {
+      "enum": [
+        "Verified",
+        "Listed"
+      ]
+    },
+    "connection": {
+      "$ref": "#/$defs/text"
+    },
+    "source": {
+      "$ref": "#/$defs/url"
+    },
+    "open_access": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "license",
+            "url"
+          ],
+          "properties": {
+            "status": {
+              "$ref": "#/$defs/text"
+            },
+            "license": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/text"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "url": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/url"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[1-9]\\d{0,19}$"
+      },
+      "uniqueItems": true
+    },
+    "preprint_of": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/publicationId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "published_as": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/publicationId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "retracted": {
+      "type": "boolean"
+    },
+    "added": {
+      "$ref": "#/$defs/day"
+    },
+    "checked": {
+      "$ref": "#/$defs/day"
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*<[/?]?[A-Za-z!])[^\\r\\n]+$"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^\\s/@]+(?:/[^\\s]*)?$"
+    },
+    "publicationId": {
+      "type": "string",
+      "pattern": "^(doi:10\\.\\d{4,}/[^\\s]+|pmid:[1-9]\\d*|arxiv:(?:\\d{4}\\.\\d{4,5}|[a-z-]+(?:\\.[A-Z]{2})?/\\d{7}))$"
+    },
+    "day": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$"
+    },
+    "institutionId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    }
+  }
+}
