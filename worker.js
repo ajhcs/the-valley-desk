@@ -673,6 +673,11 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   const path = url.pathname;
   const method = request.method.toUpperCase();
 
+  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path.startsWith("/mcp") || path.startsWith("/discover/connect") || path.startsWith("/.well-known/openai-"))) {
+    const { isAssistantPath, serveAssistantAccess } = await import("./src/assistant/access.ts");
+    if (isAssistantPath(path)) return serveAssistantAccess(request, env, origin, nonce);
+  }
+
   if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path === "/llms.txt" || path.startsWith("/discover") || path.startsWith("/api/directory/") || stripSlash(decodedPublicPath(path)) === "/sitemap.xml")) {
     const { isPublicDirectoryPath, servePublicDirectory } = await import("./src/ingest/public-directory.ts");
     if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB, origin, nonce, undefined, env.PUBLICATIONS_PUBLIC_ENABLED === "true");
