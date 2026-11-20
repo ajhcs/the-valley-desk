@@ -15,7 +15,7 @@ def publication(suffix, **changes):
         'pmcid': None, 'arxiv': None, 'url': 'https://doi.org/' + doi,
         'authors': [{'name': 'Example Author', 'orcid': None, 'regional': True}],
         'author_count': 1, 'institutions': ['chop'], 'counties': ['Philadelphia'],
-        'topic': 'Clinical care', 'terms': [], 'label': 'Verified',
+        'topic': 'Clinical care', 'terms': ['Clinical Medicine'], 'label': 'Verified',
         'connection': 'An author affiliation on the publisher record names CHOP in Philadelphia.',
         'source': 'https://example.org/publication', 'open_access': None, 'projects': [],
         'preprint_of': None, 'published_as': None, 'retracted': False,
