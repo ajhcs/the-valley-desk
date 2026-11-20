@@ -11689,7 +11689,8 @@
   ],
   "946132365": [
     {"field": "stars", "value": 3, "source": "https://github.com/bogdanlab/met-scDRS", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "topics", "value": [], "source": "https://github.com/bogdanlab/met-scDRS", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "topics", "value": [], "source": "https://github.com/bogdanlab/met-scDRS", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "papers", "value": [{"title": "Integration of polygenic risk with single cell methylation data using met-scDRS.", "url": "https://doi.org/10.1093/bioinformatics/btag751", "doi": "10.1093/bioinformatics/btag751", "year": 2026, "venue": "Bioinformatics (Oxford, England)"}], "source": "https://europepmc.org/article/MED/42899409", "date": "2026-11-19", "author": "publications-pilot"}
   ],
   "946186535": [
     {"field": "stars", "value": 0, "source": "https://github.com/PennChopMicrobiomeProgram/marc_db", "date": "2026-11-18", "author": "refresh_b2"},
@@ -14497,7 +14498,8 @@
     {"field": "record", "value": {"id": "1332006881", "code": "https://github.com/TheGoldLab/playpen_IB_DDM", "name": "playpen_IB_DDM", "purpose": "Explores the relationship between ideal Bayesian inference in the beads task and evidence-accumulation models of decisions.", "topic": "Neuroscience", "label": "Listed", "connection": "The @TheGoldLab GitHub profile identifies the University of Pennsylvania and Philadelphia.", "institution": "University of Pennsylvania", "source": "https://github.com/TheGoldLab", "added": "2026-11-18"}, "source": "https://github.com/TheGoldLab/playpen_IB_DDM", "date": "2026-11-17", "author": "f_owners_03"}
   ],
   "1332307707": [
-    {"field": "record", "value": {"id": "1332307707", "code": "https://github.com/rachitk/ARCHER-LD", "name": "ARCHER-LD", "purpose": "Computes linkage disequilibrium across multiple GPUs for genomic analyses.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The public GitHub profile records an affiliation with the Perelman School of Medicine at the University of Pennsylvania.", "institution": "University of Pennsylvania", "source": "https://github.com/rachitk", "added": "2026-11-18"}, "source": "https://github.com/rachitk/ARCHER-LD", "date": "2026-11-17", "author": "f_3plus_13"}
+    {"field": "record", "value": {"id": "1332307707", "code": "https://github.com/rachitk/ARCHER-LD", "name": "ARCHER-LD", "purpose": "Computes linkage disequilibrium across multiple GPUs for genomic analyses.", "topic": "Biomedical and life sciences", "label": "Listed", "connection": "The public GitHub profile records an affiliation with the Perelman School of Medicine at the University of Pennsylvania.", "institution": "University of Pennsylvania", "source": "https://github.com/rachitk", "added": "2026-11-18"}, "source": "https://github.com/rachitk/ARCHER-LD", "date": "2026-11-17", "author": "f_3plus_13"},
+    {"field": "papers", "value": [{"title": "ARCHER-LD: Rapid Long-Range Linkage Disequilibrium Calculations at Biobank Scale using GPU Acceleration.", "url": "https://doi.org/10.1093/bioinformatics/btag783", "doi": "10.1093/bioinformatics/btag783", "year": 2026, "venue": "Bioinformatics (Oxford, England)"}], "source": "https://europepmc.org/article/MED/42895827", "date": "2026-11-19", "author": "publications-pilot"}
   ],
   "1332375464": [
     {"field": "stars", "value": 0, "source": "https://github.com/AkeyLab/correlated-traits-prediction", "date": "2026-11-18", "author": "refresh_b2"},
@@ -14850,7 +14852,8 @@
   "1412215669": [
     {"field": "stars", "value": 18, "source": "https://github.com/veg/hyphy-3", "date": "2026-11-18", "author": "refresh_b2"},
     {"field": "topics", "value": [], "source": "https://github.com/veg/hyphy-3", "date": "2026-11-18", "author": "refresh_b2"},
-    {"field": "pushed", "value": "2026-11-18", "source": "https://github.com/veg/hyphy-3", "date": "2026-11-18", "author": "refresh_b2"}
+    {"field": "pushed", "value": "2026-11-18", "source": "https://github.com/veg/hyphy-3", "date": "2026-11-18", "author": "refresh_b2"},
+    {"field": "papers", "value": [{"title": "A Sense of Direction: Detecting Natural Selection Across Non-Stationary Genomes", "url": "https://doi.org/10.64898/2026.10.14.759254", "doi": "10.64898/2026.10.14.759254", "year": 2026, "venue": "bioRxiv"}], "source": "https://api.crossref.org/works/10.64898/2026.10.14.759254", "date": "2026-11-19", "author": "publications-pilot"}
   ],
   "1413020187": [
     {"field": "stars", "value": 0, "source": "https://github.com/veg/SINTEZ", "date": "2026-11-18", "author": "refresh_b2"},
