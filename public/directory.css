@@ -304,6 +304,8 @@ input, select { accent-color: var(--accent); }
 .prose-page section p, .definition-list { margin-top: .6rem; }
 .definition-list div { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: .65rem; padding-block: .4rem; }
 .definition-list dt { font-weight: 600; }
+.definition-list-stacked div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
+.prose-page pre { max-width: 100%; overflow-x: auto; }
 .definition-list :target { background: var(--surface); }
 
 /* Project tools: the faceted software search and GitHub account pages. */

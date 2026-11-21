@@ -68,7 +68,7 @@ function connectPage(origin: string) {
     </section>
     <section id="tools">
       <h2>What an assistant can do</h2>
-      <dl class="definition-list">${toolDefinitions
+      <dl class="definition-list definition-list-stacked">${toolDefinitions
         .map((tool) => `<div><dt><code>${html(tool.name)}</code> · ${html(tool.title)}</dt><dd>${html(tool.description)}</dd></div>`)
         .join("")}</dl>
       <p>Each result carries its Valley Desk URL, the <a href="/discover/methodology#regional-evidence">Verified or Listed</a> label and dates marked as published, pushed or added. Removed listings are never returned. If removal records cannot be read, the tools return an error and no records, as the pages do.</p>
