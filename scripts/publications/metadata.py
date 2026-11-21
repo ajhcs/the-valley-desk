@@ -103,16 +103,23 @@ def issue_date(value):
 def epmc_dates(record):
     journal = record.get('journalInfo') or {}
     reported = journal.get('dateOfPublication') or ''
-    printed = issue_date(reported)
+    issue = issue_date(reported)
+    printed = iso_precision(journal.get('printPublicationDate') or record.get('printPublicationDate'))
+    if not printed or (issue and printed == issue + '-01' * ((len(printed) - len(issue)) // 3)):
+        printed = issue
     electronic = iso_precision(record.get('electronicPublicationDate'))
     first = iso_precision(record.get('firstPublicationDate'))
     if printed and first and len(printed) < len(first):
         padding = '-01' * ((len(first) - len(printed)) // 3)
         if first == printed + padding:
             first = printed
-    if printed is None and first and re.fullmatch(r'\d{4} [A-Za-z]+[-–][A-Za-z]+', reported.strip()):
+    if (first and printed in {None, first} and
+            re.fullmatch(r'\d{4} [A-Za-z]+[-–][A-Za-z]+', reported.strip())):
         printed = reported[:4]
         first = None
+    book_year = iso_precision(str((record.get('bookOrReportDetails') or {}).get('yearOfPublication', '')))
+    if book_year and len(book_year) == 4 and first == book_year + '-01-01':
+        first = book_year
     return [d for d in (printed, electronic, first) if d]
 
 
@@ -149,8 +156,39 @@ def crossref_dates(record, unassigned_issue_dates=()):
     return [*values.values(), *([history['published']] if 'published' in history else [])]
 
 
+def earliest_at_stated_precision(values):
+    values = set(values)
+    precise = [value for value in values if not any(other.startswith(value + '-') for other in values)]
+    return min(precise, default=None)
+
+
+def electronic_dates(observations):
+    for obs in observations:
+        record = obs['record']
+        if obs['provider'] == 'europepmc':
+            if value := iso_precision(record.get('electronicPublicationDate')):
+                yield value
+        elif obs['provider'] == 'crossref':
+            fields = ['published-online']
+            if record.get('type') == 'posted-content':
+                fields.append('posted')
+            for field in fields:
+                parts = (record.get(field) or {}).get('date-parts') or []
+                if parts and (value := normalized_date(parts[0])):
+                    yield value
+            for assertion in record.get('assertion') or []:
+                names = {(assertion.get(key) or '').strip().casefold().replace('_', ' ')
+                         for key in ('name', 'label')}
+                if names & {'published online', 'online publication', 'electronic publication'}:
+                    if value := iso_precision(assertion.get('value')):
+                        yield value
+
+
 def earliest_date(observations):
-    """Prefer a precise date when it refines a date without a known month or day."""
+    """Use explicit online publication dates before considering issue dates."""
+    observations = tuple(observations)
+    if online := earliest_at_stated_precision(electronic_dates(observations)):
+        return online
     values = set()
     confirmed = []
     unassigned_issue_dates = {
@@ -173,5 +211,4 @@ def earliest_date(observations):
                     confirmed.append(explicit)
     if confirmed:
         return min(confirmed)
-    precise = [value for value in values if not any(other.startswith(value + '-') for other in values)]
-    return min(precise, default=None)
+    return earliest_at_stated_precision(values)
