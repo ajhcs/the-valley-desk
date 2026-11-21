@@ -17,6 +17,38 @@ class PublicationMetadataTest(unittest.TestCase):
         ]
         self.assertEqual(earliest_date(observations), '2026-05')
 
+    def test_earliest_explicit_online_date_wins_across_sources(self):
+        observations = [
+            {'provider': 'europepmc', 'record': {
+                'electronicPublicationDate': '2026-04-12',
+                'firstPublicationDate': '2026-01-01',
+                'journalInfo': {'dateOfPublication': '2026 Jan'}}},
+            {'provider': 'crossref', 'record': {
+                'published-online': {'date-parts': [[2026, 3, 17]]},
+                'published-print': {'date-parts': [[2026, 2, 3]]}}},
+            {'provider': 'publication-date', 'record': {
+                'published': '2026-01-01', 'publisher_confirmed_conflict': True}},
+        ]
+        self.assertEqual(earliest_date(iter(observations)), '2026-03-17')
+
+    def test_online_precision_comes_from_online_evidence(self):
+        observations = [
+            {'provider': 'crossref', 'record': {
+                'published-online': {'date-parts': [[2026, 3]]},
+                'published-print': {'date-parts': [[2026, 3, 2]]}}},
+        ]
+        self.assertEqual(earliest_date(observations), '2026-03')
+        observations[0]['record']['assertion'] = [
+            {'name': 'published_online', 'label': 'Published online', 'value': '2026-03-07'},
+        ]
+        self.assertEqual(earliest_date(observations), '2026-03-07')
+
+    def test_issue_date_keeps_stated_day_without_online_evidence(self):
+        observations = [{'provider': 'europepmc', 'record': {
+            'journalInfo': {'dateOfPublication': '2026 Mar 7'},
+        }}]
+        self.assertEqual(earliest_date(observations), '2026-03-07')
+
     def test_issue_range_does_not_invent_october_date(self):
         observations = [
             {'provider': 'europepmc', 'record': {'firstPublicationDate': '2026-10-01',
@@ -25,6 +57,13 @@ class PublicationMetadataTest(unittest.TestCase):
         ]
         self.assertEqual(earliest_date(observations), '2026-11-06')
         self.assertIsNone(normalized_date([2026, 2, 30]))
+
+    def test_book_fallback_preserves_year_only_precision(self):
+        observations = [{'provider': 'europepmc', 'record': {
+            'firstPublicationDate': '2024-01-01',
+            'bookOrReportDetails': {'yearOfPublication': 2024},
+        }}]
+        self.assertEqual(earliest_date(observations), '2024')
 
     def test_display_title_removes_encoded_markup(self):
         self.assertEqual(plain('A &lt;i&gt;species&lt;/i&gt; effect at p < 0.1'),
