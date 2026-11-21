@@ -33,7 +33,11 @@ def read_json(path):
 
 def validate_records(dataset=None, *additional_datasets):
     if dataset is None:
-        datasets = (DATASET, BACKFILL_DATASET) if BACKFILL_DATASET.exists() else (DATASET,)
+        publications = {p for p in BACKFILL_DATASET.parent.glob('public-directory-publications-*.jsonl')
+                        if re.fullmatch(r'public-directory-publications-[0-9]{4}\.jsonl', p.name)}
+        if BACKFILL_DATASET.exists():
+            publications.add(BACKFILL_DATASET)
+        datasets = (DATASET, *sorted(publications))
     else:
         datasets = (dataset, *additional_datasets)
     institutions = {r['id']: r for r in load_reference()}
