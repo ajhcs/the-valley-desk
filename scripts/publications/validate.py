@@ -10,7 +10,6 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 from collect import arxiv, doi, pmid
 from institutions import REFERENCE, is_https, load_reference
-from topics import OTHER_SCIENCE
 
 CONTENT = REFERENCE.parent
 SCHEMA = CONTENT / 'public-directory-publications.schema.json'
@@ -34,11 +33,7 @@ def read_json(path):
 
 def validate_records(dataset=None, *additional_datasets):
     if dataset is None:
-        publications = {p for p in BACKFILL_DATASET.parent.glob('public-directory-publications-*.jsonl')
-                        if re.fullmatch(r'public-directory-publications-[0-9]{4}\.jsonl', p.name)}
-        if BACKFILL_DATASET.exists():
-            publications.add(BACKFILL_DATASET)
-        datasets = (DATASET, *sorted(publications))
+        datasets = (DATASET, BACKFILL_DATASET) if BACKFILL_DATASET.exists() else (DATASET,)
     else:
         datasets = (dataset, *additional_datasets)
     institutions = {r['id']: r for r in load_reference()}
@@ -95,8 +90,6 @@ def validate_records(dataset=None, *additional_datasets):
 
 
 def validate_record(row, institutions, projects, claimed_identifiers):
-    if not row['terms'] and row['topic'] != OTHER_SCIENCE:
-        raise ValueError('a publication without subject terms must use Other science')
     if has_email(row):
         raise ValueError('email address in public record')
     for url in [row['url'], row['source'], (row.get('open_access') or {}).get('url')]:
