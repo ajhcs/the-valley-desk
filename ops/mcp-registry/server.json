@@ -1,0 +1,10 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "org.thevalleydesk/directory",
+  "title": "The Valley Desk",
+  "description": "Search healthcare research connected to the nine-county Delaware Valley. Read-only.",
+  "version": "1.0.0",
+  "websiteUrl": "https://thevalleydesk.org/discover/connect",
+  "repository": { "url": "https://github.com/ajhcs/the-valley-desk", "source": "github" },
+  "remotes": [{ "type": "streamable-http", "url": "https://thevalleydesk.org/mcp" }]
+}

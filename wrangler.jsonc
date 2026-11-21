@@ -53,6 +53,9 @@
     "EDITOR_MODEL_TIMEOUT_MS": "45000",
     "EDITOR_MODEL_DEADLINE_MS": "110000"
   },
+  "ratelimits": [
+    { "name": "MCP_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 60, "period": 60 } }
+  ],
   "d1_databases": [
     {
       "binding": "VALLEY_DESK_DB",

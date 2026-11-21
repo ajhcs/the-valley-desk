@@ -148,6 +148,8 @@ export function optionsFor(catalog: DirectoryCatalog, removed: Set<string>, refs
 
 export const pageNumber = (params: URLSearchParams) =>
   Math.max(1, Math.min(10000000, Number(params.get("page")) || 1) | 0);
+export const dateBound = (value?: string | null) =>
+  value && /^\d{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?)?$/.test(value) ? value : "";
 function searchSource(params: URLSearchParams, refs: Institution[]) {
   const where: string[] = [];
   const args: string[] = [];
@@ -196,6 +198,13 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
   if (params.get("kind")) {
     where.push("kind=?");
     args.push(params.get("kind")!);
+  }
+  // Optional date bounds: added_from/added_to on the listing date, date_from/date_to on the
+  // published or last-push date. A bound is YYYY, YYYY-MM or YYYY-MM-DD and is inclusive.
+  for (const [key, column] of [["added", "added"], ["date", "activity"]]) {
+    const [after, before] = ["_from", "_to"].map((end) => dateBound(params.get(key + end)));
+    if (after) where.push(column + ">=?"), args.push(after);
+    if (before) where.push(column + "<>'' AND " + column + "<=?"), args.push(before + "~");
   }
   const from = " FROM research_visible" + (where.length ? " WHERE " + where.join(" AND ") : "");
   return { from, args, facetCount: facetQueries.length };

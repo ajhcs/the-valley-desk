@@ -157,6 +157,7 @@ ${COUNTIES.map(([c, s]) => `- [${c} County, ${s}](${origin}/discover/county/${sl
 ${publications ? `- [Publication JSON](${origin}/api/directory/publications): 24 records per page. Filters: q, institution, topic, county, kind. Use page=2 for the next page. Append a percent-encoded publication ID for one record.
 ` : ""}- [Directory JSON](${origin}/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
 - [RSS](${origin}/discover/updates.xml): additions, filterable by institution, topic, county or kind.
+- [MCP server](${origin}/mcp): read-only Model Context Protocol endpoint (Streamable HTTP, no sign-in) with search, fetch, whats_new, list_institutions and list_topics_and_counties tools. [Setup for Claude, ChatGPT and other assistants](${origin}/discover/connect).
 - [Sitemap](${origin}/sitemap.xml)
 `;
 }

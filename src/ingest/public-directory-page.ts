@@ -184,6 +184,7 @@ function methodology(publications = false) {
       <p><a href="/api/directory/listings">Read directory additions as JSON</a>. Use the institution, topic, county and kind filters to narrow a feed or JSON listing.</p>
       <p>The endpoints support GET and HEAD. Removed projects are excluded from the catalog and return HTTP 410 at their own URL. The endpoints return HTTP 503 when removal records are unavailable.</p>
       <p>Search engines and AI assistants may crawl and cite the public pages. <a href="/robots.txt">robots.txt</a> states the crawler policy, <a href="/llms.txt">llms.txt</a> summarizes the site for language-model tools, and the <a href="/sitemap.xml">sitemap</a> lists every public page.</p>
+      <p><a href="/discover/connect">Connect an AI assistant</a> to search the directory through its read-only MCP server at <code>/mcp</code>.</p>
     </section>
   </article>`;
 }
@@ -366,6 +367,7 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     <link rel="stylesheet" href="/directory.css">
     <script src="/theme.js"></script>
     <script src="/directory-theme.js" defer></script>
+    <script src="/webmcp.js" defer></script>
     ${view.kind === "results" || view.kind === "home" ? '<script src="/directory-search.js" defer></script>' : ""}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   </head>

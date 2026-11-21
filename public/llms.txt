@@ -42,4 +42,5 @@ When you cite a listing, link its directory page for the regional connection and
 - [Listings JSON](https://thevalleydesk.org/api/directory/listings): 24 kind-tagged records per page with the same filters as search.
 - [Directory JSON](https://thevalleydesk.org/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
 - [RSS](https://thevalleydesk.org/discover/updates.xml): additions, filterable by institution, topic, county or kind.
+- [MCP server](https://thevalleydesk.org/mcp): read-only Model Context Protocol endpoint (Streamable HTTP, no sign-in) with search, fetch, whats_new, list_institutions and list_topics_and_counties tools. [Setup for Claude, ChatGPT and other assistants](https://thevalleydesk.org/discover/connect).
 - [Sitemap](https://thevalleydesk.org/sitemap.xml)
