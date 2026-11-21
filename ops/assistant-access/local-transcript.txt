@@ -1,0 +1,639 @@
+Local run, 20 November 2026. wrangler dev --local (wrangler , Node 24.22.0) on 127.0.0.1:8799,
+against a local D1 loaded per ops/research-rollout.md steps 2 to 4 from this checkout's content files:
+3,466 projects and 12,447 publication records (12,446 works). PUBLIC_ORIGIN was left at production,
+so record URLs read https://thevalleydesk.org. No remote database or deployment was touched.
+
+==================================================================
+1. Official MCP TypeScript SDK client, @modelcontextprotocol/sdk 1.32.2 (StreamableHTTPClientTransport)
+   The SDK validates each structuredContent against the tool's outputSchema.
+==================================================================
+
+## connect
+{
+ "negotiatedProtocol": "2025-11-25",
+ "sessionId": null,
+ "server": {
+  "name": "the-valley-desk",
+  "title": "The Valley Desk",
+  "version": "1.0.0"
+ },
+ "capabilities": {
+  "tools": {
+   "listChanged": false
+  }
+ }
+}
+
+## tools/list
+[
+ {
+  "name": "search",
+  "title": "Search the research directory",
+  "annotations": {
+   "title": "Search the research directory",
+   "readOnlyHint": true,
+   "destructiveHint": false,
+   "idempotentHint": true,
+   "openWorldHint": false
+  },
+  "inputs": [
+   "query",
+   "kind",
+   "institution",
+   "topic",
+   "county",
+   "page",
+   "label",
+   "date_from",
+   "date_to",
+   "added_from",
+   "added_to",
+   "sort"
+  ],
+  "hasOutputSchema": true
+ },
+ {
+  "name": "fetch",
+  "title": "Get one directory record",
+  "annotations": {
+   "title": "Get one directory record",
+   "readOnlyHint": true,
+   "destructiveHint": false,
+   "idempotentHint": true,
+   "openWorldHint": false
+  },
+  "inputs": [
+   "id"
+  ],
+  "hasOutputSchema": true
+ },
+ {
+  "name": "whats_new",
+  "title": "New listings since a date",
+  "annotations": {
+   "title": "New listings since a date",
+   "readOnlyHint": true,
+   "destructiveHint": false,
+   "idempotentHint": true,
+   "openWorldHint": false
+  },
+  "inputs": [
+   "since",
+   "kind",
+   "institution",
+   "topic",
+   "county",
+   "page"
+  ],
+  "hasOutputSchema": true
+ },
+ {
+  "name": "list_institutions",
+  "title": "List institutions",
+  "annotations": {
+   "title": "List institutions",
+   "readOnlyHint": true,
+   "destructiveHint": false,
+   "idempotentHint": true,
+   "openWorldHint": false
+  },
+  "inputs": [],
+  "hasOutputSchema": true
+ },
+ {
+  "name": "list_topics_and_counties",
+  "title": "List topics and counties",
+  "annotations": {
+   "title": "List topics and counties",
+   "readOnlyHint": true,
+   "destructiveHint": false,
+   "idempotentHint": true,
+   "openWorldHint": false
+  },
+  "inputs": [],
+  "hasOutputSchema": true
+ }
+]
+
+## tools/call search {"query":"sepsis","kind":"publication","county":"Philadelphia","date_from":"2025","date_to":"2025","sort":"date"}
+{
+ "ms": 154,
+ "isError": false,
+ "bytes": 16632,
+ "page": 1,
+ "page_size": 24,
+ "total_pages": 2,
+ "total_records": 29,
+ "returned": 24,
+ "first": [
+  {
+   "id": "doi:10.1136/bmjopen-2025-106757",
+   "kind": "publication",
+   "title": "Evaluating AI-based comprehensive clinical decision support for sepsis and ARDS: protocol for a Clinician Turing Test.",
+   "url": "https://thevalleydesk.org/discover/publication/doi%3A10.1136%2Fbmjopen-2025-106757",
+   "label": "Verified",
+   "connection": "Author affiliations on the Europe PMC record name Perelman School of Medicine, University of Pennsylvania, Virtua Health.",
+   "topic": "Clinical care",
+   "institutions": [
+    "Perelman School of Medicine",
+    "University of Pennsylvania",
+    "Virtua Health"
+   ],
+   "counties": [
+    "Burlington",
+    "Philadelphia"
+   ],
+   "dates": {
+    "published": "2025-12-24",
+    "added": "2026-11-20"
+   },
+   "type": "clinical-trial-report",
+   "venue": "BMJ open"
+  },
+  {
+   "id": "doi:10.3389/fmed.2025.1632083",
+   "kind": "publication",
+   "title": "Context and determinants for implementing a sepsis survivor care transition intervention reported from five health systems and home health agencies.",
+   "url": "https://thevalleydesk.org/discover/publication/doi%3A10.3389%2Ffmed.2025.1632083",
+   "label": "Verified",
+   "connection": "An author affiliation on the Europe PMC record names University of Pennsylvania.",
+   "topic": "Clinical care",
+   "institutions": [
+    "University of Pennsylvania"
+   ],
+   "counties": [
+    "Philadelphia"
+   ],
+   "dates": {
+    "published": "2025-12-01",
+    "added": "2026-11-20"
+   },
+   "type": "article",
+   "venue": "Frontiers in medicine"
+  }
+ ]
+}
+
+## tools/call search {"kind":"project","topic":"Medical imaging","institution":"University of Pennsylvania","label":"Verified"}
+{
+ "ms": 58,
+ "isError": false,
+ "bytes": 10515,
+ "page": 1,
+ "page_size": 24,
+ "total_pages": 1,
+ "total_records": 22,
+ "returned": 22,
+ "first": [
+  {
+   "id": "101093686",
+   "kind": "project",
+   "title": "mimosa",
+   "url": "https://thevalleydesk.org/discover/work/101093686",
+   "label": "Verified",
+   "connection": "The package links to the MIMoSA paper, which identifies its releasing team at the University of Pennsylvania in Philadelphia.",
+   "summary": "Implements the MIMoSA method for segmenting multiple sclerosis brain lesions in multimodal MRI.",
+   "topic": "Medical imaging",
+   "institutions": [
+    "University of Pennsylvania"
+   ],
+   "dates": {
+    "pushed": "2020-08-06",
+    "added": "2026-11-18"
+   }
+  },
+  {
+   "id": "1233193474",
+   "kind": "project",
+   "title": "Dense-TRF",
+   "url": "https://thevalleydesk.org/discover/work/1233193474",
+   "label": "Verified",
+   "connection": "The releasing paper links this repository and gives a University of Pennsylvania GRASP Laboratory affiliation.",
+   "summary": "Adapts image representations for dense prediction and segmentation in surgical scenes.",
+   "topic": "Medical imaging",
+   "institutions": [
+    "University of Pennsylvania"
+   ],
+   "dates": {
+    "pushed": "2026-09-29",
+    "added": "2026-11-18"
+   }
+  }
+ ]
+}
+
+## tools/call fetch {"id":"doi:10.1136/bmjopen-2025-106757"}
+{
+ "ms": 70,
+ "isError": false,
+ "bytes": 2776,
+ "id": "doi:10.1136/bmjopen-2025-106757",
+ "title": "Evaluating AI-based comprehensive clinical decision support for sepsis and ARDS: protocol for a Clinician Turing Test.",
+ "text": "Evaluating AI-based comprehensive clinical decision support for sepsis and ARDS: protocol for a Clinician Turing Test.\nhttps://thevalleydesk.org/discover/publication/doi%3A10.1136%2Fbmjopen-2025-106757\nkind: publication\nlabel: Verified\nconnection: Author affiliations on the Europe PMC record name Perelman School of Medicine, University of Pennsylvania, Virtua Health.\nconnection source: https://europepmc.org/article/MED/41448698\ntype: clinical-trial-report\nvenue: BMJ open\ntopic: Clinical care\nterms: Humans; Sepsis; Respiration, Artificial; Artificial Intelligence; Decision Support Systems, Clinical; Intensive Care Units; Randomized Controlled Trials as Topic; Respiratory Distress Syndrome; Artificial intelligence; Respiratory distress syndrome; Ventilators, mechanical; Clinical Decision-making\ninstitutions: Perelman School of Medicine; University of Pennsylvania; Virtua Health\ncounties: Burlington; Philadelphia\ndates: published 2025-12-24, added 2026-11-20\nsource checked: 2026-11-20\npublication url: https://doi.org/10.1136/bmjopen-2025-106757\nopen access url: https://europepmc.org/articles/PMC12742158\nbyline: Angeli Gazola A; Bishop NS; Schmid BE; Pirracchio R; Valley TS; Bhavani SV; Krutsinger DC; Giannini HM; Lu Y; Ungar LH; Meyer NJ; Kerlin MP; Weissman GE\nauthor count: 13",
+ "url": "https://thevalleydesk.org/discover/publication/doi%3A10.1136%2Fbmjopen-2025-106757",
+ "metadata": {
+  "kind": "publication",
+  "label": "Verified",
+  "connection": "Author affiliations on the Europe PMC record name Perelman School of Medicine, University of Pennsylvania, Virtua Health.",
+  "connection_source": "https://europepmc.org/article/MED/41448698",
+  "type": "clinical-trial-report",
+  "venue": "BMJ open",
+  "topic": "Clinical care",
+  "terms": [
+   "Humans",
+   "Sepsis",
+   "Respiration, Artificial",
+   "Artificial Intelligence",
+   "Decision Support Systems, Clinical",
+   "Intensive Care Units",
+   "Randomized Controlled Trials as Topic",
+   "Respiratory Distress Syndrome",
+   "Artificial intelligence",
+   "Respiratory distress syndrome",
+   "Ventilators, mechanical",
+   "Clinical Decision-making"
+  ],
+  "institutions": [
+   "Perelman School of Medicine",
+   "University of Pennsylvania",
+   "Virtua Health"
+  ],
+  "counties": [
+   "Burlington",
+   "Philadelphia"
+  ],
+  "dates": {
+   "published": "2025-12-24",
+   "added": "2026-11-20"
+  },
+  "source_checked": "2026-11-20",
+  "publication_url": "https://doi.org/10.1136/bmjopen-2025-106757",
+  "open_access_url": "https://europepmc.org/articles/PMC12742158",
+  "byline": [
+   "Angeli Gazola A",
+   "Bishop NS",
+   "Schmid BE",
+   "Pirracchio R",
+   "Valley TS",
+   "Bhavani SV",
+   "Krutsinger DC",
+   "Giannini HM",
+   "Lu Y",
+   "Ungar LH",
+   "Meyer NJ",
+   "Kerlin MP",
+   "Weissman GE"
+  ],
+  "author_count": 13
+ }
+}
+
+## tools/call fetch {"id":"474026"}
+{
+ "ms": 27,
+ "isError": false,
+ "bytes": 1291,
+ "id": "474026",
+ "title": "GOATOOLS",
+ "url": "https://thevalleydesk.org/discover/work/474026",
+ "metadata": {
+  "kind": "project",
+  "label": "Verified",
+  "connection": "The GOATOOLS methods paper links this repository and lists Drexel University author affiliations in Philadelphia.",
+  "connection_source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6052049/",
+  "summary": "Analyzes Gene Ontology annotations and tests gene sets for enrichment of ontology terms.",
+  "topic": "Biomedical and life sciences",
+  "institutions": [
+   "Drexel University"
+  ],
+  "dates": {
+   "pushed": "2026-11-02",
+   "added": "2026-11-18"
+  },
+  "code": "https://github.com/tanghaibao/goatools",
+  "language": "Python",
+  "license": "BSD-2-Clause",
+  "archived": false
+ }
+}
+
+## tools/call whats_new {"since":"2026-11-19","kind":"publication"}
+{
+ "ms": 75,
+ "isError": false,
+ "bytes": 14828,
+ "page": 1,
+ "page_size": 24,
+ "total_pages": 519,
+ "total_records": 12447,
+ "returned": 24,
+ "first": [
+  {
+   "id": "doi:10.1001/amajethics.2025.634",
+   "kind": "publication",
+   "title": "How Should Clinical Teams Integrate Findings From Social Needs Screenings Into Children's Care Plans?",
+   "url": "https://thevalleydesk.org/discover/publication/doi%3A10.1001%2Famajethics.2025.634",
+   "label": "Listed",
+   "connection": "Author affiliations on the Europe PMC record name Children’s Hospital of Philadelphia, Perelman School of Medicine, University of Pennsylvania.",
+   "topic": "Clinical care",
+   "institutions": [
+    "Children’s Hospital of Philadelphia",
+    "Perelman School of Medicine",
+    "University of Pennsylvania"
+   ],
+   "dates": {
+    "published": "2025-09-01",
+    "added": "2026-11-20"
+   },
+   "type": "article",
+   "venue": "AMA journal of ethics"
+  },
+  {
+   "id": "doi:10.1001/amajethics.2025.695",
+   "kind": "publication",
+   "title": "What Would Be Required of Structural Determinants of Health Screening and Follow-Up to Improve Children's Health Equity?",
+   "url": "https://thevalleydesk.org/discover/publication/doi%3A10.1001%2Famajethics.2025.695",
+   "label": "Listed",
+   "connection": "An author affiliation on the Europe PMC record names Children’s Hospital of Philadelphia.",
+   "topic": "Public health",
+   "institutions": [
+    "Children’s Hospital of Philadelphia"
+   ],
+   "dates": {
+    "published": "2025-09-01",
+    "added": "2026-11-20"
+   },
+   "type": "article",
+   "venue": "AMA journal of ethics"
+  }
+ ]
+}
+
+## tools/call list_institutions {}
+{
+ "ms": 61,
+ "isError": false,
+ "bytes": 16544,
+ "count": 73,
+ "top": [
+  {
+   "id": "upenn",
+   "name": "University of Pennsylvania",
+   "also_known_as": [
+    "Univ of Pennsylvania",
+    "Univ. of Pennsylvania"
+   ],
+   "counties": [
+    "Philadelphia",
+    "Chester"
+   ],
+   "url": "https://thevalleydesk.org/discover/institution/upenn",
+   "listings": 7741
+  },
+  {
+   "id": "perelman-school-of-medicine",
+   "name": "Perelman School of Medicine",
+   "also_known_as": [
+    "University of Pennsylvania School of Medicine"
+   ],
+   "counties": [
+    "Philadelphia"
+   ],
+   "url": "https://thevalleydesk.org/discover/institution/perelman-school-of-medicine",
+   "listings": 3672
+  },
+  {
+   "id": "chop",
+   "name": "Children’s Hospital of Philadelphia",
+   "also_known_as": [
+    "Children's Hospital of Philadelphia",
+    "CHOP",
+    "The Children’s Hospital of Philadelphia"
+   ],
+   "counties": [
+    "Philadelphia",
+    "Montgomery",
+    "Chester",
+    "Bucks",
+    "Delaware",
+    "Camden"
+   ],
+   "url": "https://thevalleydesk.org/discover/institution/chop",
+   "listings": 2502
+  }
+ ]
+}
+
+## tools/call list_topics_and_counties {}
+{
+ "ms": 39,
+ "isError": false,
+ "bytes": 1898,
+ "topics": [
+  {
+   "name": "Clinical care",
+   "url": "https://thevalleydesk.org/discover/topic/clinical-care",
+   "listings": 4781
+  },
+  {
+   "name": "Biomedical and life sciences",
+   "url": "https://thevalleydesk.org/discover/topic/biomedical-and-life-sciences",
+   "listings": 2673
+  },
+  {
+   "name": "Disease research",
+   "url": "https://thevalleydesk.org/discover/topic/disease-research",
+   "listings": 2397
+  },
+  {
+   "name": "Public health",
+   "url": "https://thevalleydesk.org/discover/topic/public-health",
+   "listings": 1935
+  }
+ ],
+ "counties": [
+  {
+   "name": "Bucks",
+   "state": "PA",
+   "url": "https://thevalleydesk.org/discover/county/bucks",
+   "listings": 19
+  },
+  {
+   "name": "Chester",
+   "state": "PA",
+   "url": "https://thevalleydesk.org/discover/county/chester",
+   "listings": 107
+  },
+  {
+   "name": "Delaware",
+   "state": "PA",
+   "url": "https://thevalleydesk.org/discover/county/delaware",
+   "listings": 152
+  },
+  {
+   "name": "Montgomery",
+   "state": "PA",
+   "url": "https://thevalleydesk.org/discover/county/montgomery",
+   "listings": 379
+  },
+  {
+   "name": "Philadelphia",
+   "state": "PA",
+   "url": "https://thevalleydesk.org/discover/county/philadelphia",
+   "listings": 10499
+  },
+  {
+   "name": "Burlington",
+   "state": "NJ",
+   "url": "https://thevalleydesk.org/discover/county/burlington",
+   "listings": 36
+  },
+  {
+   "name": "Camden",
+   "state": "NJ",
+   "url": "https://thevalleydesk.org/discover/county/camden",
+   "listings": 526
+  },
+  {
+   "name": "Gloucester",
+   "state": "NJ",
+   "url": "https://thevalleydesk.org/discover/county/gloucester",
+   "listings": 88
+  },
+  {
+   "name": "Mercer",
+   "state": "NJ",
+   "url": "https://thevalleydesk.org/discover/county/mercer",
+   "listings": 915
+  }
+ ]
+}
+
+## tools/call search {"author":"Someone"}
+{
+ "ms": 12,
+ "isError": true,
+ "bytes": 137,
+ "text": "Unknown argument \"author\". Allowed: query, kind, institution, topic, county, page, label, date_from, date_to, added_from, added_to, sort."
+}
+
+## tools/call search {"page":1001}
+{
+ "ms": 10,
+ "isError": true,
+ "bytes": 98,
+ "text": "page must be a whole number from 1 to 1000. Narrow the search with filters to reach later records."
+}
+
+## tools/call fetch {"id":"doi:10.0000/not-in-the-directory"}
+{
+ "ms": 44,
+ "isError": true,
+ "bytes": 74,
+ "text": "No directory record has this id. Use search to find records and their ids."
+}
+
+==================================================================
+2. MCP Inspector CLI, @modelcontextprotocol/inspector 2.16.0 (output shortened)
+==================================================================
+$ inspector --cli http://127.0.0.1:8799/mcp --transport http --method tools/call --tool-name search --tool-arg query=asthma --tool-arg kind=publication --tool-arg county=Camden
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"results\":[{\"id\":\"doi:10.1016/j.anai.2025.12.012\",\"kind\":\"publication\",\"title\":\"The Nuremberg Code and its lasting relevance to allergy and immunology.\",\"url\":\"https://thevalleydesk.org/discover/publication/doi%3A10.1016%2Fj.anai.2025.12.012\",\"label\":\"Verified\",\"connection\":\"Author affiliations on the Europe PMC record name Children’s Hospital of Philadelphia, Perelman School of Medicine, Rowan University, Rowan-Virtua School of Osteopathic Medicine, University of Pennsylvania.\",\"topic\":\"Research data\",\"institutions\":[\"Children’s Hospital of
+    }
+  ],
+  "structuredContent": {
+    "results": [
+      {
+        "id": "doi:10.1016/j.anai.2025.12.012",
+  ...
+  "isError": false
+}
+exit 0
+
+==================================================================
+3. Protocol revision 2026-07-28 over curl (no published SDK client speaks it yet; see README)
+==================================================================
+## 2026-07-28 server/discover
+HTTP/1.1 200 OK
+Content-Length: 869
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+Cache-Control: no-store
+access-control-allow-headers: content-type, accept, authorization, mcp-protocol-version, mcp-method, mcp-name, mcp-session-id, last-event-id
+access-control-allow-methods: POST, OPTIONS
+access-control-max-age: 86400
+cdn-cache-control: no-store
+cross-origin-opener-policy: same-origin
+permissions-policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-robots-tag: noindex
+
+{"jsonrpc":"2.0","id":"d1","result":{"resultType":"complete","supportedVersions":["2026-07-28"],"capabilities":{"tools":{"listChanged":false}},"instructions":"The Valley Desk lists healthcare research software projects and publications connected to the nine-county Delaware Valley. Use search to find records, fetch for one record, whats_new for recent additions, and the two list tools for filter values. Cite each record's url. A Verified label means a source ties the work to the region; Listed means an observed association. A listing does not establish employment, ownership or clinical validation. Dates are labelled: published (paper appeared), pushed (code last changed), added (entered the directory).","ttlMs":3600000,"cacheScope":"public","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"the-valley-desk","title":"The Valley Desk","version":"1.0.0"}}}}
+
+## 2026-07-28 tools/call whats_new
+{"jsonrpc":"2.0","id":2,"result":{"resultType":"complete","content":[{"type":"text","text":"{\"results\":[{\"id\":\"doi:10.1001/jamahealthforum.2025.3622\",\"kind\":\"publication\",\"title\":\"The T-MSIS Analytic Files (TAF) Analysis Reporting Checklist: A Guide for Research Using Medicaid Claims Data.\",\"url\":\"https://thevalleydesk.org/discover/publication/doi%3A10.1001%2Fjamahealthforum.2025.3622\",\"label\":\"Verified\",\"connection\":\"Author affiliations on the Europe PMC record name Drexel University, Dornsife School of Public Health.\",\"topic\":\"Research data\",\"institutions\":[\"Drexel University\",\"Dornsife School of Public Health\"],\"counties\":[\"Philadelphia\"],\"dates\":
+HTTP 200
+## header mismatch
+{"jsonrpc":"2.0","id":3,"error":{"code":-32020,"message":"HeaderMismatch: MCP-Protocol-Version, Mcp-Method and Mcp-Name must be present and match the request body."}}
+HTTP 400
+## GET
+{"jsonrpc":"2.0","id":null,"error":{"code":-32600,"message":"This MCP endpoint accepts POST only. It keeps no sessions and opens no event stream."}}
+HTTP 405
+
+==================================================================
+4. Removal and fail-closed, legacy JSON-RPC over curl (bodies cut at 260 characters)
+==================================================================
+## before removal
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"{\"id\":\"474026\",\"title\":\"GOATOOLS\",\"text\":\"GOATOOLS\\nhttps://thevalleydesk.org/discover/work/474026\\nkind: project\\nlabel: Verified\\nconnection: The GOATOOLS methods paper links 
+
+## after adding 474026 to public_directory_removals
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"This record has been removed from the directory."}],"isError":true}}
+
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"{\"results\":[],\"page\":1,\"page_size\":24,\"total_pages\":0,\"total_records\":0,\"browse_url\":\"https://thevalleydesk.org/discover/works?q=GOATOOLS\"}"}],"structuredContent":{"results":[],"
+
+## restored
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"{\"id\":\"474026\",\"title\":\"GOATOOLS\",\"text\":\"GOATOOLS\\nhttps://thevalleydesk.org/discover/work/474026\\nkind: project\\nlabel: Verified\\nconnection: The GOATOOLS methods paper links 
+
+## publication_removals dropped (removal state unreadable)
+1
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"The directory is temporarily unavailable. No records were returned. Try again in a few minutes."}],"isError":true}}
+
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"The directory is temporarily unavailable. No records were returned. Try again in a few minutes."}],"isError":true}}
+
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"The directory is temporarily unavailable. No records were returned. Try again in a few minutes."}],"isError":true}}
+
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"The directory is temporarily unavailable. No records were returned. Try again in a few minutes."}],"isError":true}}
+
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"The directory is temporarily unavailable. No records were returned. Try again in a few minutes."}],"isError":true}}
+
+site page /discover/works: HTTP 503
+site API /api/directory/listings: HTTP 503
+## table restored
+{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"{\"results\":[{\"id\":\"474026\",\"kind\":\"project\",\"title\":\"GOATOOLS\",\"url\":\"https://thevalleydesk.org/discover/work/474026\",\"label\":\"Verified\",\"connection\":\"The GOATOOLS met
+
+
+## pages
+/discover/connect HTTP 200 text/html; charset=utf-8
+/webmcp.js HTTP 200 text/javascript; charset=utf-8
+/mcp/server-card HTTP 200 application/mcp-server-card+json
+/llms.txt HTTP 200 text/plain; charset=utf-8
+/.well-known/openai-apps-challenge HTTP 404 text/plain; charset=utf-8
+- [MCP server](https://thevalleydesk.org/mcp): read-only Model Context Protocol endpoint (Streamable HTTP, no sign-in) with search, fetch, whats_new, list_institutions and list_topics_and_counties tools. [Setup for Claude, ChatGPT and other assistants](https://thevalleydesk.org/discover/connect).
+<script src="/webmcp.js" defer></script>
+
+==================================================================
+5. Rate limiting, wrangler dev --local with the MCP_RATE_LIMITER binding (60 calls per 60 s)
+==================================================================
+wrangler bindings: env.MCP_RATE_LIMITER (60 requests/60s)  Rate Limit  local
+65 tools/call requests in a row from one address:
+     60 HTTP 200
+      5 HTTP 429
+tools/list after the limit: HTTP 200
+tools/call after the limit:
+{"jsonrpc":"2.0","id":1,"error":{"code":-32000,"message":"Too many requests. Wait a minute and try again."}}
+site page /discover/works while limited: HTTP 200

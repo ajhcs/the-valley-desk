@@ -41,7 +41,7 @@ import {
 import { renderDirectoryPage, type DirectoryView } from "./public-directory-page";
 import { renderResultsRegion } from "./public-directory-results";
 
-async function institutionRefs(db: ResearchDb): Promise<Institution[]> {
+export async function institutionRefs(db: ResearchDb): Promise<Institution[]> {
   return (await rows<{ record: string }>(db, "SELECT record FROM research_institutions ORDER BY id")).map((r) =>
     JSON.parse(r.record),
   );
@@ -76,7 +76,7 @@ export function isPublicDirectoryPath(path: string) {
   );
 }
 
-async function removalIds(db?: RemovalDb) {
+export async function removalIds(db?: RemovalDb) {
   if (!db) throw new Error("Removal database unavailable");
   const result = await rows<{ github_id: string }>(db, "SELECT github_id FROM public_directory_removals");
   if (!result.every((row) => typeof row?.github_id === "string")) throw new Error("Invalid removal record");
@@ -173,7 +173,7 @@ export function retiredDirectoryPage(
 export async function publicDirectorySitemap(db: RemovalDb | undefined, origin: string): Promise<SitemapEntry[]> {
   const removed = await removalIds(db);
   return [
-    ...["/", browsePath, methodPath, newPath].map((path) => ({ loc: origin + path })),
+    ...["/", browsePath, methodPath, newPath, "/discover/connect"].map((path) => ({ loc: origin + path })),
     ...directoryCatalog.publishedEntities(removed).map((entity) => ({ loc: origin + entityPath(entity) })),
     ...directoryCatalog.projects(removed).map((project) => ({
       loc: origin + projectPath(project),

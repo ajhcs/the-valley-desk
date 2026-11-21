@@ -4,6 +4,8 @@ Find and follow healthcare research connected to the nine-county Delaware Valley
 
 The public site is server-rendered by the Cloudflare Worker. Projects come from the reviewed repository projection. The publications index uses D1 and is gated by `PUBLICATIONS_PUBLIC_ENABLED`, enabled since the reviewed October 2026 pilot was imported. Set it to `"false"` to withdraw publications without touching the database. See [the listing rule](AGENTS.md), [research directory design and verification](ops/research-directory.md), and [production import instructions](ops/research-rollout.md).
 
+AI assistants can search the directory through a public, read-only MCP server at `/mcp`, with setup steps at `/discover/connect`. It reuses the directory's own read path, so removals and the fail-closed check apply unchanged. See [the operating notes](ops/assistant-access/README.md) and [the ChatGPT app package](ops/chatgpt-app/README.md).
+
 ## Historical editorial runtime
 
 The following sections describe the earlier editorial system and its operational tooling.

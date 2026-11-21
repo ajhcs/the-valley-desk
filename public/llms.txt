@@ -8,6 +8,7 @@
 - [RSS](https://thevalleydesk.org/discover/updates.xml): filter by institution, topic, county or kind.
 - [Methodology](https://thevalleydesk.org/discover/methodology): definitions, corrections, removal and coverage.
 - [Directory JSON](https://thevalleydesk.org/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
+- [MCP server](https://thevalleydesk.org/mcp): read-only Model Context Protocol endpoint (Streamable HTTP, no sign-in) with search, fetch, whats_new, list_institutions and list_topics_and_counties tools. [Setup for Claude, ChatGPT and other assistants](https://thevalleydesk.org/discover/connect).
 - [Sitemap](https://thevalleydesk.org/sitemap.xml)
 
 A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. Consult the linked sources for the scope of each connection.
