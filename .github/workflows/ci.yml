@@ -28,8 +28,8 @@ jobs:
         run: npm run policy:pdf:bootstrap
       - name: Private acquisition test workspace
         run: test -d /workspace/build/builderbob || sudo install -d -m 0700 -o "$USER" -g "$(id -gn)" /workspace/build/builderbob
-      - name: Tests
-        run: npm test
+      - name: Core and assistant tests
+        run: npm run test:core && npm run test:assistant
       - name: Mandatory official PDF byte regressions
         run: npm run test:policy-pdf
       - name: Typecheck and production build
@@ -40,3 +40,21 @@ jobs:
         run: npm audit --audit-level=high
       - name: Secret scan
         run: npm run secret-scan
+  discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Locked install
+        run: npm ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Private acquisition test workspace
+        run: test -d /workspace/build/builderbob || sudo install -d -m 0700 -o "$USER" -g "$(id -gn)" /workspace/build/builderbob
+      - name: Directory and discovery tests
+        run: npm run test:discovery

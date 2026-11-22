@@ -734,7 +734,7 @@ test("scheduled automation passes D1 to the social consumer and persists its rev
   assert.equal((await ingestSocialEvidence(db, new Date())).items.length, 0);
 });
 
-test("Worker scheduled entrypoint consumes a social packet through the default automation wiring", async () => {
+test("Worker retention leaves a fresh social packet in the protected queue", async () => {
   const { sqlite, db } = database();
   const response = await handleSocialEvidence(new Request(`https://thevalleydesk.org${SOCIAL_EVIDENCE_PATH}`, {
     method: "POST",
@@ -742,6 +742,7 @@ test("Worker scheduled entrypoint consumes a social packet through the default a
     body: JSON.stringify(packet("A current Penn Medicine workflow update entered review.")),
   }), { VALLEY_DESK_DB: db, SOCIAL_INGEST_TOKEN: "social-secret" });
   assert.equal(response.status, 202);
+  const original = sqlite.prepare("SELECT status, candidate_id FROM social_evidence_packets").get();
 
   const waits: Promise<unknown>[] = [];
   const context = {
@@ -750,7 +751,7 @@ test("Worker scheduled entrypoint consumes a social packet through the default a
   const previousFetch = globalThis.fetch;
   globalThis.fetch = async () => new Response("not found", { status: 404 });
   try {
-    await worker.scheduled({ cron: "0 * * * *" }, { VALLEY_DESK_DB: db }, context);
+    await worker.scheduled({ cron: "*/15 * * * *" }, { VALLEY_DESK_DB: db }, context);
     await Promise.all(waits);
   } finally {
     globalThis.fetch = previousFetch;
@@ -760,15 +761,9 @@ test("Worker scheduled entrypoint consumes a social packet through the default a
     SELECT id, queue_status, source_origin FROM content_candidates
     WHERE source_origin = 'grok-social-linkedin'
   `).get() as { id: string; queue_status: string; source_origin: string } | undefined;
-  assert.ok(candidate);
-  assert.equal(candidate?.queue_status, "review");
-  const stored = sqlite.prepare("SELECT status, candidate_id FROM social_evidence_packets").get() as {
-    status: string;
-    candidate_id: string | null;
-  };
-  assert.equal(stored.status, "processed");
-  assert.equal(stored.candidate_id, candidate?.id);
-  assert.ok(waits.length >= 4, "scheduled handler must register cleanup and automation work with waitUntil");
+  assert.equal(candidate, undefined);
+  assert.deepEqual(sqlite.prepare("SELECT status, candidate_id FROM social_evidence_packets").get(), original);
+  assert.equal(waits.length, 4, "scheduled handler registers retention work with waitUntil");
   sqlite.close();
 });
 

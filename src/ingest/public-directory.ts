@@ -22,6 +22,7 @@ import {
   displayTitle,
   publicationType,
   renderResearch,
+  renderListingCards,
   facetSlug,
   kindCounts,
   listingPath,
@@ -728,9 +729,21 @@ export async function servePublicDirectory(
         title = landing ? "What’s new" : `What’s new: ${described}`;
         description = `Healthcare research listings in the order they entered The Valley Desk directory, newest first. ${kindCounts(result.counts)}.`;
         crumbs.push(["What’s new", newPath]);
+        const localDay = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit",
+        }).format(now);
+        const month = localDay.slice(0, 7);
+        const recent = landing && hasPubs
+          ? await rows<{ record: string }>(
+              researchDb,
+              "SELECT record FROM research_visible WHERE +kind='publication' AND activity>=? AND activity<=? ORDER BY activity DESC,id LIMIT 3",
+              month,
+              localDay + "~",
+            )
+          : [];
         header = `<header class="entity-head"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a></nav>
           <h1>What’s new</h1>
-          <p class="lede">Listings in the order they entered the directory, newest first. A paper can enter long after its publication date, and a new code push does not move a project here. The original project collection entered on November 18, 2026.</p></header>`;
+          <p class="lede">Additions are ordered by the date they entered the directory.</p></header>${recent.length ? `<section class="entity-head" aria-labelledby="published-this-month"><div class="section-heading"><h2 id="published-this-month">Published this month</h2><a href="${browsePath}?kind=publication&amp;date_from=${month}&amp;date_to=${localDay}&amp;sort=activity">All publications this month</a></div>${renderListingCards(recent.map(({ record }) => ({ kind: "publication", record: JSON.parse(record) })), catalog)}</section>` : ""}`;
       } else {
         title = landing ? (hasStudies ? "Search healthcare research" : "Search healthcare publications and research software") : described;
         description = landing

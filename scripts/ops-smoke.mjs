@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
 
-import { runAutomation } from "../src/ingest/automation.ts";
+import worker from "../worker.js";
 import { handlePublicHealth } from "../src/lib/ops.ts";
 import { resolvePublicOrigin, DEFAULT_PUBLIC_ORIGIN } from "../src/lib/canonical.ts";
 
@@ -68,19 +68,22 @@ const db = {
   },
 };
 
-let scheduledCadence;
-const scheduled = await runAutomation({ VALLEY_DESK_DB: db }, async () => new Response("", { status: 404 }), async (_env, _fetch, options) => {
-  scheduledCadence = options?.mode;
-  return {
-    fetchedAt: new Date().toISOString(),
-    rss: [],
-    events: [],
-    social: [],
-    notes: { rss: 0, events: 0, linkedin: { count: 0 }, x: { count: 0 }, sources: [] },
-  };
-}, { mode: "daily" });
-if ("skipped" in scheduled && scheduled.skipped) throw new Error("Scheduled smoke skipped unexpectedly");
-if (scheduledCadence !== "daily") throw new Error("Daily scheduled cadence was not propagated");
+const retention = [];
+const reads = [];
+const cleanupDb = {
+  ...db,
+  prepare(query) {
+    reads.push(query);
+    return db.prepare(query);
+  },
+};
+await worker.scheduled({ cron: "*/15 * * * *" }, { VALLEY_DESK_DB: cleanupDb }, {
+  waitUntil(promise) { retention.push(promise); },
+});
+await Promise.all(retention);
+if (retention.length !== 4 || reads.some((sql) => /INSERT INTO ingest_runs|automation_locks/.test(sql))) {
+  throw new Error("Expected a retention-only scheduled run");
+}
 
 const health = await handlePublicHealth(new Request("https://the-valley-desk.clyons.workers.dev/api/health"), {
   BUILD_SHA: "smoke",
