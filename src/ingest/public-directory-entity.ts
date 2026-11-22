@@ -22,6 +22,44 @@ export type DirectorySummary = {
  * excluded through research_visible, and a preprint with its journal version counts once.
  */
 export async function summarize(db: ResearchDb, scope?: { field: ScopeField; value: string }): Promise<DirectorySummary> {
+  return (await storedSummary(db, scope)) ?? countSummary(db, scope);
+}
+
+type KindRow = { kind: ListingKind; works: number; first: string | null; last: string | null; added: string | null };
+type TallyRow = { field: ScopeField; value: string; n: number };
+
+function summaryOf(kinds: KindRow[], tallies: TallyRow[], scope?: { field: ScopeField; value: string }): DirectorySummary {
+  const facets: DirectorySummary["facets"] = { institution: [], topic: [], county: [] };
+  for (const row of tallies) if (!(scope && row.field === scope.field && row.value === scope.value)) facets[row.field].push(row);
+  return { kinds: Object.fromEntries(kinds.map(({ kind, ...rest }) => [kind, rest])), facets };
+}
+
+/**
+ * Counts written by ops/research-summary.sql after an import. Returns nothing while those tables
+ * are missing or mid-refresh, so the caller counts directly. The whole-directory row is written
+ * last and marks a finished refresh.
+ */
+async function storedSummary(db: ResearchDb, scope?: { field: ScopeField; value: string }) {
+  const key = [scope?.field ?? "", scope?.value ?? ""];
+  try {
+    const kinds = await rows<KindRow & { ready: number }>(
+      db,
+      "SELECT kind,works,first,last,added,EXISTS(SELECT 1 FROM research_summary_kinds WHERE scope_field='' AND scope_value='') ready FROM research_summary_kinds WHERE scope_field=? AND scope_value=?",
+      ...key,
+    );
+    if (!kinds.length || !kinds[0].ready) return undefined;
+    const tallies = await rows<TallyRow>(
+      db,
+      "SELECT field,value,n FROM research_summary_facets WHERE scope_field=? AND scope_value=? ORDER BY n DESC,value",
+      ...key,
+    );
+    return summaryOf(kinds.map(({ ready: _ready, ...row }) => row), tallies, scope);
+  } catch {
+    return undefined;
+  }
+}
+
+async function countSummary(db: ResearchDb, scope?: { field: ScopeField; value: string }): Promise<DirectorySummary> {
   const within = scope ? " AND v.id IN (SELECT id FROM research_facets WHERE field=? AND value=?)" : "";
   const args = scope ? [scope.field, scope.value] : [];
   const kinds = await rows<{ kind: ListingKind; works: number; first: string | null; last: string | null; added: string | null }>(
@@ -38,9 +76,7 @@ export async function summarize(db: ResearchDb, scope?: { field: ScopeField; val
       " GROUP BY f.field,f.value ORDER BY n DESC,f.value",
     ...args,
   );
-  const facets: DirectorySummary["facets"] = { institution: [], topic: [], county: [] };
-  for (const row of tallies) if (!(scope && row.field === scope.field && row.value === scope.value)) facets[row.field].push(row);
-  return { kinds: Object.fromEntries(kinds.map(({ kind, ...rest }) => [kind, rest])), facets };
+  return summaryOf(kinds, tallies, scope);
 }
 
 export type Names = {
