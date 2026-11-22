@@ -50,9 +50,8 @@ export function renderDirectoryHome(
   now = new Date(),
 ) {
   const research = summary && names && publications;
-  const pubs = summary?.kinds.publication;
   const lede = research
-    ? `The directory lists ${kindPhrase(summary)} connected to Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey.${pubs?.first && pubs.last ? ` Publication dates run from ${pubs.first.slice(0, 4)} to ${pubs.last.slice(0, 4)}.` : ""} Each listing names the source of its regional connection.`
+    ? `The directory lists ${kindPhrase(summary)} connected to Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey. Each listing names the source of its regional connection.`
     : `The directory lists ${count(home.total)} research software projects connected to Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey. Each listing names the source of its regional connection.`;
   const topicRows: Row[] = research
     ? summary.facets.topic
@@ -79,11 +78,12 @@ export function renderDirectoryHome(
       <h1>Healthcare research in the Delaware Valley</h1>
       <p class="lede">${lede}</p>
       <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput()}</form>
+      ${research ? `<p class="home-researchers">Looking for collaborators or related work? Search a subject to see which institutions and counties in the region work on it. Every publication, study and software page lists similar research from the region, and institution pages name the institutions they most often work with.</p>` : ""}
       ${home.examples.length ? `<p class="home-examples">For example: ${home.examples.map((example) => `<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join(", ")}</p>` : ""}
     </section>
     <div class="home-grid">
       <section class="home-latest" aria-labelledby="latest-title">
-        <div class="section-heading"><h2 id="latest-title">${research ? "Latest additions" : "Recently added projects"}</h2><a href="/discover/new">All additions${added ? `, latest ${timestamp(added)}` : ""}</a></div>
+        <div class="section-heading"><h2 id="latest-title">${research ? "Recently published" : "Recently added projects"}</h2>${research ? `<a href="${browsePath}?kind=publication&amp;sort=activity">All publications by date</a> <a href="/discover/new">All additions${added ? `, latest ${timestamp(added)}` : ""}</a>` : `<a href="/discover/new">All additions${added ? `, latest ${timestamp(added)}` : ""}</a>`}</div>
         ${research ? renderListingCards(latest, catalog) : home.added.length ? projectCards(catalog, home.added, "cards", "added") : projectCards(catalog, home.recent)}
       </section>
       <section class="home-place" aria-labelledby="place-title">

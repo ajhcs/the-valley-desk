@@ -3,7 +3,7 @@ import {
   activityCutoff, apiPath, browsePath, counties, githubAccount, httpsUrl, lastActivity, methodPath, paperUrl, projectPapers, projectPath,
   type DirectoryCatalog, type DirectoryProject,
 } from "./public-directory-data";
-import type { Listing } from "./public-directory-research";
+import { similarSection, type Listing } from "./public-directory-research";
 import { renderDirectoryHome } from "./public-directory-home";
 import type { DirectorySummary, Names } from "./public-directory-entity";
 import { renderDirectoryResults, resultsHead } from "./public-directory-results";
@@ -21,7 +21,7 @@ export type DirectoryView =
     }
   | { kind: "home"; publications?: number; latest?: Listing[]; data: ReturnType<DirectoryCatalog["home"]>; summary?: DirectorySummary; names?: Names; now?: Date }
   | { kind: "results"; data: ReturnType<DirectoryCatalog["list"]>; noindex?: boolean }
-  | { kind: "project"; linked?: {url:string;title:string}[]; mentions?: {url:string;title:string}[]; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
+  | { kind: "project"; linked?: {url:string;title:string}[]; mentions?: {url:string;title:string}[]; research?: Listing[]; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
   | { kind: "methodology"; publications?: boolean; studies?: boolean }
   | { kind: "retired"; section: RetiredEditorialSection }
   | { kind: "listing-removed" | "study-removed" | "removed" | "not-found" | "unavailable" };
@@ -68,7 +68,7 @@ function footer() {
   </footer>`;
 }
 
-function projectDetail(catalog: DirectoryCatalog, { project, related, now, linked, mentions }: Extract<DirectoryView, { kind: "project" }>) {
+function projectDetail(catalog: DirectoryCatalog, { project, related, now, linked, mentions, research }: Extract<DirectoryView, { kind: "project" }>) {
   const activity = lastActivity(project);
   const place = projectPlace(catalog, project);
   const papers = projectPapers(project);
@@ -130,6 +130,7 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
         <dl class="facts">${facts.map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join("")}</dl>
       </section>` : ""}
     </div>
+    ${similarSection(research ?? [], catalog, "Related publications and clinical studies in the region")}
     ${related.sameLab.length ? `<section class="related">
       <div class="section-heading"><h2>More from this lab or account</h2>${account ? entityLink(catalog, "lab", account, "All projects from this account") : ""}</div>
       ${projectCards(catalog, related.sameLab)}
@@ -157,6 +158,14 @@ function methodology(publications = false, studies = false) {
       ${publications ? `<p>Projects and publications use eight health topics. A publication that the topic rules cannot place in a health topic carries the label Other science. It remains searchable and appears on institution and county pages, but it has no topic page or topic feed.</p>` : ""}
       ${studies ? `<p>The clinical studies index includes interventional trials, observational studies and expanded access records from ClinicalTrials.gov. A study needs at least one registry-listed facility in a supported county. We use the reported city and state, a corroborated institution site or a Census ZIP Code Tabulation Area contained in one county. Ambiguous locations are held until their county can be supported. Overall and site statuses come from the registry. Study listings can be searched by registry condition.</p>` : ""}
     </section>
+    ${publications ? `<section id="related-research">
+      <h2>Finding related research and collaborators</h2>
+      <p>The directory points to groups, never to individual people. Bylines show author names as the source records them, and there are no pages or searches that gather one person’s work.</p>
+      <p><strong>Similar research</strong> on a publication, clinical study or software page lists other regional listings that share the record’s distinctive subject words: its subject terms or conditions and the less common words of its title. Common words and indexing tags such as “Humans” or “Adult” are ignored. Similarity is a text match, not a judgment about quality or a claim that the work is connected.</p>
+      <p><strong>Who works on this in the region</strong> appears beside a search. It counts the institutions and counties named on the 400 listings that best match the search, or on all matches when there are fewer.</p>
+      <p><strong>Shares the most research with</strong> on an institution page counts the publications and clinical studies that also name another regional institution outside the first institution’s own system. A school and its university, or a university and its own health system, count as one system. These counts are refreshed with each data load.</p>
+      <p>Searches are ordered by relevance by default, using the full-text ranking of titles and subject terms.</p>
+    </section>` : ""}
     <section id="regional-evidence">
       <h2>Regional evidence</h2><p>For scholarly work, a Verified affiliation names the institution and a regional place, or a single-site regional institution. Listed indicates an indexer assignment or an institution match with an uncertain site. Company affiliations require a stated regional site. A county requires evidence placing the affiliation there. On multi-institution papers, filters match the institutions and counties recorded for the work. Follow the affiliation source to identify the site. A byline reports names as published.</p>
       <dl class="definition-list">
