@@ -168,6 +168,16 @@ function publicProject(project: DirectoryProject) {
   };
 }
 
+/** Reads an optional table added after the core schema; a database without it reads as empty. */
+async function optionalRows<T>(db: ResearchDb, sql: string, ...args: string[]): Promise<T[]> {
+  try {
+    return await rows<T>(db, sql, ...args);
+  } catch (error) {
+    if (/no such table/i.test(String(error))) return [];
+    throw error;
+  }
+}
+
 function decode(segment: string) {
   try {
     return decodeURIComponent(segment);
@@ -354,6 +364,7 @@ export async function servePublicDirectory(
     api || pubApi ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
   let hasPubs = false, hasStudies = false;
   let linked: { title: string; url: string }[] = [];
+  let mentions: { title: string; url: string }[] = [];
   try {
     if (publicationsEnabled) {
       hasPubs =
@@ -414,6 +425,17 @@ export async function servePublicDirectory(
         const project = catalog.project(pid, removed);
         if (project) related.push({ kind: "project", record: project });
       }
+      // Repositories the paper's text links to. Shown apart from software the paper releases.
+      const linkedCode = (
+        await optionalRows<{ project_id: string }>(
+          researchDb,
+          "SELECT project_id FROM paper_repository_links WHERE paper_id=? ORDER BY project_id",
+          id,
+        )
+      )
+        .map((r) => catalog.project(r.project_id, removed))
+        .filter((project): project is DirectoryProject => !!project && !related.some((i) => i.kind === "project" && i.record.id === project.id))
+        .map((record) => ({ kind: "project", record }) as Listing);
       const versions = await rows<{ record: string }>(
         researchDb,
         "SELECT record FROM research_visible WHERE kind='publication' AND (id IN (?,?) OR (id IN (SELECT id FROM research_facets WHERE field='version' AND value=?) AND id<>?))",
@@ -428,6 +450,7 @@ export async function servePublicDirectory(
           publication: {
             ...p,
             projects: related.filter((i) => i.kind === "project").map((i) => i.record.id),
+            linked_projects: linkedCode.map((i) => i.record.id),
             preprint_of: versions.some((v) => JSON.parse(v.record).id === p.preprint_of) ? p.preprint_of : null,
             published_as: versions.some((v) => JSON.parse(v.record).id === p.published_as) ? p.published_as : null,
           },
@@ -471,7 +494,7 @@ export async function servePublicDirectory(
           title: displayTitle(p),
           summary: publicationDescription(p, refs),
           path: pubPath(id),
-          content: renderPublication(p, refs, related, more, catalog),
+          content: renderPublication(p, refs, related, more, catalog, linkedCode),
           ogType: "article",
           meta: citationMeta(p),
           schema: publicationSchema(p, origin),
@@ -813,6 +836,16 @@ export async function servePublicDirectory(
           id,
         );
         linked = papers.map((p) => ({ title: publicationTitle(p), url: pubPath(p.id) }));
+        const known = new Set(papers.map((p) => p.id));
+        mentions = (
+          await optionalRows<{ id: string; title: string }>(
+            researchDb,
+            "SELECT id,title FROM research_visible WHERE kind='publication' AND id IN (SELECT paper_id FROM paper_repository_links WHERE project_id=?) ORDER BY title",
+            id,
+          )
+        )
+          .filter((p) => !known.has(p.id))
+          .map((p) => ({ title: publicationTitle(p), url: pubPath(p.id) }));
       }
     }
   } catch (error) {
@@ -857,5 +890,5 @@ export async function servePublicDirectory(
   const project = catalog.project(id, removed);
   if (!project) return page({ kind: "not-found" }, 404);
   if (raw !== id) return redirect(projectPath(project));
-  return page({ kind: "project", project, related: catalog.related(project, removed), linked, now }, 200);
+  return page({ kind: "project", project, related: catalog.related(project, removed), linked, mentions, now }, 200);
 }
