@@ -5,7 +5,7 @@ For the owner. Steps 1 to 4 can be done now. Steps 5 onward need the MCP server 
 ## Decide first
 
 - [ ] **Developer name.** The listing shows a verified individual or business name. Choose which.
-- [ ] **Terms of service.** The form requires a terms URL and the site has none. Write a short terms page, or confirm in the portal whether the field can be left empty.
+- [ ] **Terms of service.** Verify that `https://thevalleydesk.org/discover/terms` is public and enter it in the form.
 - [ ] **Support contact.** The listing draft points to the methodology page, which carries the directory team's email address. Change it if a different contact is wanted.
 - [ ] **Logo.** Export `public/mark-a-fold.svg` as a square PNG if the portal does not take SVG.
 - [ ] **Countries and languages.** The draft assumes English and no country restriction.

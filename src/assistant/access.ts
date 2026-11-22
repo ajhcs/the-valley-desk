@@ -10,10 +10,11 @@ export const connectPath = "/discover/connect";
 export const mcpPath = "/mcp";
 const cardPath = mcpPath + "/server-card";
 const challengePath = "/.well-known/openai-apps-challenge";
+const termsPath = "/discover/terms";
 const summary = "Search healthcare research connected to the Delaware Valley from Claude, ChatGPT and other AI assistants.";
 
 export const isAssistantPath = (path: string) =>
-  [mcpPath, cardPath, connectPath, challengePath].includes(path.replace(/(.)\/$/, "$1"));
+  [mcpPath, cardPath, connectPath, challengePath, termsPath].includes(path.replace(/(.)\/$/, "$1"));
 
 type Env = {
   VALLEY_DESK_DB?: ConstructorParameters<typeof Object>[0];
@@ -86,7 +87,22 @@ function connectPage(origin: string) {
       <p>The server asks for a search and nothing about you. It has no accounts, cookies or sign-in, and it does not receive your conversation. Your assistant sends only the tool inputs it chooses, such as search words and filters.</p>
       <p>The Valley Desk does not write tool inputs or results to its logs or database, and does not sell or share them. Our host, Cloudflare, processes each request to deliver it, including the IP address it came from, and keeps standard request logs (time, address requested, response status, country and client software) for a few days for reliability and abuse prevention. To limit abuse, tool calls are counted per IP address for one minute at a time. Search words travel in the request body, which those logs do not record.</p>
       <p>Results are public directory records. Your assistant’s provider handles your conversation under its own terms. ${contactLink("Email the directory team", undefined, "Valley Desk assistant access")} with questions or a removal request.</p>
+      <p><a href="${termsPath}">Terms of use</a></p>
     </section>
+  </article>`;
+}
+
+function termsPage() {
+  return `<article class="frame page prose-page">
+    <nav class="breadcrumb" aria-label="Directory breadcrumb"><a href="/discover/works">Research directory</a></nav>
+    <h1>Terms of use</h1>
+    <p class="prose-intro">The Valley Desk is a public directory for discovering healthcare research connected to the Delaware Valley. These terms apply to the directory and its read-only assistant server.</p>
+    <h2>Research records</h2>
+    <p>Use the source linked on each listing to confirm the details. Listings can change as source records are corrected or updated. The directory is for research discovery. It does not provide medical advice.</p>
+    <h2>Reuse</h2>
+    <p>You may link to directory records and cite them. Papers, software and other material linked from the directory are subject to their own licenses and terms. Automated clients must respect the site’s crawl rules and request limits.</p>
+    <h2>Contact</h2>
+    <p>${contactLink("Email the directory team", undefined, "Valley Desk terms of use")} with questions, corrections or removal requests. The <a href="${connectPath}#privacy">privacy statement</a> describes how the assistant server handles requests.</p>
   </article>`;
 }
 
@@ -119,14 +135,18 @@ export async function serveAssistantAccess(request: Request, env: Env, origin: s
       ? send(token, { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" })
       : send("Not found", { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" }, 404);
   }
+  const terms = path === termsPath;
+  const title = terms ? "Terms of use" : "Connect an AI assistant";
+  const description = terms ? "Terms for using The Valley Desk research directory and assistant server." : summary;
+  const pagePath = terms ? termsPath : connectPath;
   const page = renderDirectoryPage(
     {
       kind: "research",
-      title: "Connect an AI assistant",
-      summary,
-      path: connectPath,
-      content: connectPage(origin),
-      schema: { "@type": "WebPage", name: "Connect an AI assistant", url: origin + connectPath, description: summary },
+      title,
+      summary: description,
+      path: pagePath,
+      content: terms ? termsPage() : connectPage(origin),
+      schema: { "@type": "WebPage", name: title, url: origin + pagePath, description },
     },
     directoryCatalog,
     origin,
