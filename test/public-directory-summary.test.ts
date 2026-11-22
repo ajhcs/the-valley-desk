@@ -5,7 +5,7 @@ import { readFileSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { summarize, type ScopeField } from "../src/ingest/public-directory-entity";
-import { researchFeed, researchQuery } from "../src/ingest/public-directory-research";
+import { researchFeed, researchQuery, resultCount } from "../src/ingest/public-directory-research";
 
 test("stored summaries equal direct counts and are what the pages read", async () => {
   const dir = mkdtempSync(join(process.cwd(), "node_modules", ".research-summary-"));
@@ -119,6 +119,40 @@ test("stored totals and ordered reads return the same search results as direct q
     assert.ok(queries.some((sql) => sql.includes("f.id=+v.id")), "a large scope is read in listing order");
     assert.ok(queries.some((sql) => sql.includes("research_facets WHERE field=? AND value IN")), "a small scope is still collected");
     assert.ok(queries.some((sql) => sql.includes("count(DISTINCT group_id)")), "other searches still count directly");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("search counts stop at the cap and still page through the most relevant listings", async () => {
+  const dir = mkdtempSync(join(process.cwd(), "node_modules", ".research-cap-"));
+  const sqlite = new DatabaseSync(":memory:");
+  const db = {
+    prepare(sql: string) {
+      const all = (...args: (number | string)[]) => ({ results: sqlite.prepare(sql).all(...args) });
+      return { all: () => all(), bind: (...args: (number | string)[]) => ({ all: () => all(...args) }) };
+    },
+  } as never;
+  try {
+    sqlite.exec(readFileSync("ops/directory-removals.sql", "utf8"));
+    sqlite.exec(readFileSync("migrations/0046_research_directory.sql", "utf8"));
+    const input = join(dir, "papers.jsonl"), refs = join(dir, "refs.json");
+    writeFileSync(input, execFileSync("python3", ["ops/research-fixture.py", "--count", "60"], { maxBuffer: 1 << 26 }));
+    writeFileSync(refs, execFileSync("python3", ["ops/research-fixture.py", "--institutions"]));
+    sqlite.exec(execFileSync("python3", ["ops/load-research.py", "--publications", input, "--institutions", refs], { encoding: "utf8", maxBuffer: 1 << 26 }));
+    const institutions = (sqlite.prepare("SELECT record FROM research_institutions").all() as { record: string }[]).map((r) => JSON.parse(r.record));
+    const full = await researchQuery(db, new URLSearchParams("q=tissue"), institutions);
+    assert.ok(full.total > 30 && !full.more, "uncapped count is exact");
+    const capped = await researchQuery(db, new URLSearchParams("q=tissue"), institutions, 30);
+    assert.equal(capped.more, true);
+    assert.equal(capped.total, 30);
+    assert.equal(resultCount(capped), "More than 30 listings");
+    assert.deepEqual(capped.items.map((i) => i.record.id), full.items.map((i) => i.record.id), "same most-relevant first page");
+    const second = await researchQuery(db, new URLSearchParams("q=tissue&page=2"), institutions, 30);
+    assert.equal(second.page, 2);
+    assert.equal(second.items.length, 24);
+    const narrow = await researchQuery(db, new URLSearchParams("q=tissue&county=camden"), institutions, 30);
+    assert.ok(!narrow.more || narrow.total === 30);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

@@ -179,7 +179,9 @@ export const pageNumber = (params: URLSearchParams) =>
   Math.max(1, Math.min(10000000, Number(params.get("page")) || 1) | 0);
 export const dateBound = (value?: string | null) =>
   value && /^\d{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?)?$/.test(value) ? value : "";
-function searchSource(params: URLSearchParams, refs: Institution[]) {
+export const searchCountCap = 2000;
+
+function searchSource(params: URLSearchParams, refs: Institution[], cap = searchCountCap) {
   const where: string[] = [];
   const args: string[] = [];
   // The same filters written against the listing row `l`, for the relevance-ordered page.
@@ -269,6 +271,12 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
             "SELECT v.kind,v.record FROM research_search s JOIN research_listings l ON l.rowid=s.rowid JOIN research_visible v ON v.id=l.id WHERE research_search MATCH ?" +
             ranked.map((c) => " AND " + c).join("") +
             " ORDER BY s.rank,l.id LIMIT 24 OFFSET ?",
+          // Counts stop after cap + 1 matches, so a broad search costs the same as a
+          // narrower one. Past the cap the page says "more than" instead of exact counts.
+          count:
+            "WITH m AS MATERIALIZED (SELECT v.kind,v.group_id FROM research_search s JOIN research_listings l ON l.rowid=s.rowid JOIN research_visible v ON v.id=l.id WHERE research_search MATCH ?" +
+            ranked.map((c) => " AND " + c).join("") +
+            ` LIMIT ${cap + 1}) SELECT kind,count(*) n,count(DISTINCT group_id) works FROM m GROUP BY kind`,
           args: [args[0], ...rankedArgs],
         }
       : undefined;
@@ -367,16 +375,17 @@ export async function researchFeed(db: ResearchDb, params: URLSearchParams, refs
   );
   return { page, items: result.slice(0, 24).map(readListing), hasMore: result.length > 24 };
 }
-export async function researchQuery(db: ResearchDb, params: URLSearchParams, refs: Institution[]) {
-  const { from, args, facetCount, stored, relevance } = searchSource(params, refs);
+export async function researchQuery(db: ResearchDb, params: URLSearchParams, refs: Institution[], cap = searchCountCap) {
+  const { from, args, facetCount, stored, relevance } = searchSource(params, refs, cap);
   const sort = params.get("sort");
   if (relevance && (!sort || sort === "relevance")) {
     // A search is ordered by full-text relevance unless another order is chosen.
-    const counts = await rows<KindCount>(db, "SELECT kind,count(*) n,count(DISTINCT group_id) works" + from + " GROUP BY kind", ...args);
-    const total = counts.reduce((sum, row) => sum + row.n, 0);
+    const counts = await rows<KindCount>(db, relevance.count, ...relevance.args);
+    const more = counts.reduce((sum, row) => sum + row.n, 0) > cap;
+    const total = more ? cap : counts.reduce((sum, row) => sum + row.n, 0);
     const page = Math.min(pageNumber(params), Math.max(1, Math.ceil(total / 24)));
     const result = await rows<{ kind: Listing["kind"]; record: string }>(db, relevance.sql, ...relevance.args, (page - 1) * 24);
-    return { items: result.map(readListing), counts, page, total };
+    return { items: result.map(readListing), counts, page, total, more };
   }
   const sortColumn = sort === "name" ? "title" : sort === "activity" ? "activity" : "added";
   const order = sortColumn + (sort === "name" ? " COLLATE NOCASE,id" : " DESC,id");
@@ -426,7 +435,12 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
     total,
   };
 }
-export type Results = Awaited<ReturnType<typeof researchQuery>>;
+export type Results = Awaited<ReturnType<typeof researchQuery>> & { more?: boolean };
+
+/** How many listings a result holds, in words; "More than 2,000 listings" past the count cap. */
+export function resultCount(data: Pick<Results, "counts" | "more" | "total">, withVersions = false) {
+  return data.more ? `More than ${count(data.total)} listings` : kindCounts(data.counts, withVersions);
+}
 
 export function projectQuery(
   catalog: DirectoryCatalog,
@@ -666,7 +680,7 @@ export function renderResearch({ header, path, params, data, catalog, options, e
         ${path === browsePath ? '<p class="rail-note"><a href="/discover/works?tools=project">Software filters: language, license, GitHub activity</a></p>' : ""}
       </div>
       <section class="research-results" aria-label="Listings">
-        <div class="results-bar"><p class="results-count"><strong>${kindCounts(data.counts, true) || "No matching listings"}</strong>${range}</p>
+        <div class="results-bar"><p class="results-count"><strong>${resultCount(data, true) || "No matching listings"}</strong>${data.more ? `<span class="muted"> · most relevant first</span>` : range}</p>
         <p class="results-links"><a href="${html(feedUrl(params))}">RSS feed of additions</a></p></div>
         ${list}
         ${pageLinks(path, params, data.page, totalPages)}
