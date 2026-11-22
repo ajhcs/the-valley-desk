@@ -178,6 +178,8 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
     }
   }
   const facetQueries: string[] = [];
+  let scope: Scope | undefined;
+  let simple = !where.length;
   for (const key of [...fields, "label"]) {
     const selected = params
       .getAll(key)
@@ -192,13 +194,18 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
           ")",
       );
       args.push(key, ...selected);
+      if (key !== "label" && selected.length === 1) scope = { field: key as Scope["field"], value: selected[0] };
+      else simple = false;
     }
   }
   if (facetQueries.length) where.push("id IN (" + facetQueries.join(" INTERSECT ") + ")");
-  if (params.get("kind")) {
+  if (facetQueries.length > 1) simple = false;
+  const kind = params.get("kind") ?? "";
+  if (kind) {
     where.push("kind=?");
-    args.push(params.get("kind")!);
+    args.push(kind);
   }
+  const conditions = where.length;
   // Optional date bounds: added_from/added_to on the listing date, date_from/date_to on the
   // published or last-push date. A bound is YYYY, YYYY-MM or YYYY-MM-DD and is inclusive.
   for (const [key, column] of [["added", "added"], ["date", "activity"]]) {
@@ -207,25 +214,106 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
     if (before) where.push(column + "<>'' AND " + column + "<=?"), args.push(before + "~");
   }
   const from = " FROM research_visible" + (where.length ? " WHERE " + where.join(" AND ") : "");
-  return { from, args, facetCount: facetQueries.length };
+  // Only one facet value and/or a kind: stored counts answer the totals, and a large scope can
+  // be read in listing order instead of being collected and sorted.
+  const stored = simple && where.length === conditions ? { scope, kind } : undefined;
+  return { from, args, facetCount: facetQueries.length, stored };
+}
+
+type Scope = { field: (typeof fields)[number]; value: string };
+type KindCount = { kind: ListingKind; n: number; works: number };
+
+/**
+ * Totals written by ops/research-summary.sql for the whole directory or one facet value.
+ * Returns nothing while those tables are missing, mid-refresh or have no row for the scope,
+ * and the caller then counts directly.
+ */
+async function storedCounts(db: ResearchDb, scope: Scope | undefined, kind: string) {
+  try {
+    const found = await rows<KindCount & { everything: number | null; of_kind: number | null }>(
+      db,
+      "SELECT kind,n,works,(SELECT sum(n) FROM research_summary_kinds WHERE scope_field='' AND scope_value='') everything,(SELECT n FROM research_summary_kinds WHERE scope_field='' AND scope_value='' AND kind=?) of_kind FROM research_summary_kinds WHERE scope_field=? AND scope_value=? ORDER BY kind",
+      kind,
+      scope?.field ?? "",
+      scope?.value ?? "",
+    );
+    const everything = found[0]?.everything;
+    if (!everything) return undefined;
+    return {
+      everything,
+      // A kind that is most of the directory is spread through every listing order.
+      commonKind: !!kind && (found[0].of_kind ?? 0) * 2 > everything,
+      counts: found.filter((row) => !kind || row.kind === kind).map(({ kind, n, works }) => ({ kind, n, works })),
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Whether an institution's publications (within a topic when given) are numerous enough that the
+ * few most recent are cheaper to find by reading in date order. False without stored counts.
+ */
+export async function manyPublications(db: ResearchDb, institution: string, topic: string) {
+  const everything = "(SELECT sum(n) FROM research_summary_kinds WHERE scope_field='' AND scope_value='') everything";
+  try {
+    const [row] = await rows<{ n: number; everything: number | null }>(
+      db,
+      topic
+        ? `SELECT n,${everything} FROM research_summary_facets WHERE scope_field='institution' AND scope_value=? AND field='topic' AND value=?`
+        : `SELECT n,${everything} FROM research_summary_kinds WHERE scope_field='institution' AND scope_value=? AND kind='publication'`,
+      institution,
+      ...(topic ? [topic] : []),
+    );
+    return !!row?.everything && row.n * row.n > 30 * row.everything;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Lists one facet value, or one common kind, in listing order. Reading in order stops after the
+ * rows shown, so it wins when the matches are a large share of the directory; a small scope is
+ * cheaper to collect and sort. The unary plus keeps SQLite from collecting by kind or by id first.
+ */
+function orderedScan(
+  stored: { scope?: Scope; kind: string },
+  known: { everything: number; commonKind: boolean },
+  total: number,
+  order: string,
+  wanted: number,
+) {
+  const { scope, kind } = stored;
+  if (scope ? total * total <= wanted * known.everything : !known.commonKind) return undefined;
+  const where = [
+    ...(scope ? ["EXISTS(SELECT 1 FROM research_facets f WHERE f.field=? AND f.value=? AND f.id=+v.id)"] : []),
+    ...(kind ? [(known.commonKind ? "+" : "") + "kind=?"] : []),
+  ];
+  return {
+    sql: "SELECT kind,record FROM research_visible v WHERE " + where.join(" AND ") + " ORDER BY " + order,
+    args: [...(scope ? [scope.field, scope.value] : []), ...(kind ? [kind] : [])],
+  };
 }
 
 function readListing(row: { kind: Listing["kind"]; record: string }): Listing {
   return { kind: row.kind, record: JSON.parse(row.record) };
 }
 export async function researchFeed(db: ResearchDb, params: URLSearchParams, refs: Institution[]) {
-  const { from, args } = searchSource(params, refs);
+  const { from, args, stored } = searchSource(params, refs);
   const page = pageNumber(params);
+  const known = stored && (stored.scope || stored.kind) ? await storedCounts(db, stored.scope, stored.kind) : undefined;
+  const scan =
+    known && orderedScan(stored!, known, known.counts.reduce((sum, row) => sum + row.n, 0), "added DESC,id", page * 24 + 1);
   const result = await rows<{ kind: Listing["kind"]; record: string }>(
     db,
-    "SELECT kind,record" + from + " ORDER BY added DESC,id LIMIT 25 OFFSET ?",
-    ...args,
+    (scan ? scan.sql : "SELECT kind,record" + from + " ORDER BY added DESC,id") + " LIMIT 25 OFFSET ?",
+    ...(scan ? scan.args : args),
     (page - 1) * 24,
   );
   return { page, items: result.slice(0, 24).map(readListing), hasMore: result.length > 24 };
 }
 export async function researchQuery(db: ResearchDb, params: URLSearchParams, refs: Institution[]) {
-  const { from, args, facetCount } = searchSource(params, refs);
+  const { from, args, facetCount, stored } = searchSource(params, refs);
   const sort = params.get("sort");
   const sortColumn = sort === "name" ? "title" : sort === "activity" ? "activity" : "added";
   const order = sortColumn + (sort === "name" ? " COLLATE NOCASE,id" : " DESC,id");
@@ -255,17 +343,17 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
     const items = data.flatMap((row) => row.n === null ? [readListing(row)] : []);
     return { counts, total, page: Math.min(requested, Math.max(1, Math.ceil(total / 24))), items };
   }
-  const counts = await rows<{ kind: ListingKind; n: number; works: number }>(
-    db,
-    "SELECT kind,count(*) n,count(DISTINCT group_id) works" + from + " GROUP BY kind",
-    ...args,
-  );
+  const known = stored ? await storedCounts(db, stored.scope, stored.kind) : undefined;
+  const counts =
+    known?.counts ??
+    (await rows<KindCount>(db, "SELECT kind,count(*) n,count(DISTINCT group_id) works" + from + " GROUP BY kind", ...args));
   const total = counts.reduce((sum, row) => sum + row.n, 0);
   const page = Math.min(pageNumber(params), Math.max(1, Math.ceil(total / 24)));
+  const scan = known && orderedScan(stored!, known, total, order, page * 24);
   const result = await rows<{ kind: Listing["kind"]; record: string }>(
     db,
-    "SELECT kind,record" + from + " ORDER BY " + order + " LIMIT 24 OFFSET ?",
-    ...args,
+    (scan ? scan.sql : "SELECT kind,record" + from + " ORDER BY " + order) + " LIMIT 24 OFFSET ?",
+    ...(scan ? scan.args : args),
     (page - 1) * 24,
   );
   return {

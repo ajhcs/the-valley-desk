@@ -5,6 +5,7 @@ import { readFileSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { summarize, type ScopeField } from "../src/ingest/public-directory-entity";
+import { researchFeed, researchQuery } from "../src/ingest/public-directory-research";
 
 test("stored summaries equal direct counts and are what the pages read", async () => {
   const dir = mkdtempSync(join(process.cwd(), "node_modules", ".research-summary-"));
@@ -63,6 +64,61 @@ test("stored summaries equal direct counts and are what the pages read", async (
     queries.length = 0;
     assert.deepEqual(await summarize(db, scopes[1]), await summarize(db, scopes[1]));
     assert.ok(queries.some((sql) => sql.includes("FROM research_visible")));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("stored totals and ordered reads return the same search results as direct queries", async () => {
+  const dir = mkdtempSync(join(process.cwd(), "node_modules", ".research-ordered-"));
+  const sqlite = new DatabaseSync(":memory:");
+  const queries: string[] = [];
+  const db = {
+    prepare(sql: string) {
+      const all = (...args: (number | string)[]) => {
+        queries.push(sql);
+        return { results: sqlite.prepare(sql).all(...args) };
+      };
+      return { all: () => all(), bind: (...args: (number | string)[]) => ({ all: () => all(...args) }) };
+    },
+  } as never;
+  try {
+    sqlite.exec(readFileSync("ops/directory-removals.sql", "utf8"));
+    sqlite.exec(readFileSync("migrations/0046_research_directory.sql", "utf8"));
+    const input = join(dir, "papers.jsonl"), refs = join(dir, "refs.json");
+    writeFileSync(input, execFileSync("python3", ["ops/research-fixture.py", "--count", "700"], { maxBuffer: 1 << 28 }));
+    writeFileSync(refs, execFileSync("python3", ["ops/research-fixture.py", "--institutions"]));
+    sqlite.exec(execFileSync("python3", ["ops/load-research.py", "--publications", input, "--institutions", refs], { encoding: "utf8", maxBuffer: 1 << 28 }));
+    const institutions = (sqlite.prepare("SELECT record FROM research_institutions").all() as { record: string }[]).map((row) => JSON.parse(row.record));
+
+    const facets = sqlite
+      .prepare("SELECT field,value,count(*) n FROM research_facets WHERE field IN ('institution','topic','county') GROUP BY field,value ORDER BY n DESC")
+      .all() as { field: string; value: string; n: number }[];
+    const cases: string[] = ["", "kind=publication", "kind=project", "sort=name", "page=3"];
+    for (const facet of [...facets.slice(0, 4), ...facets.slice(-2)]) {
+      const scope = `${facet.field}=${encodeURIComponent(facet.value)}`;
+      cases.push(scope, scope + "&sort=activity", scope + "&sort=name&page=2", scope + "&kind=publication&page=4", scope + "&page=9999");
+    }
+    // These keep the direct path: text, two facets, several values, a label and a date bound.
+    cases.push("q=fixture", `${facets[0].field}=${facets[0].value}&label=verified`, `${facets[0].field}=${facets[0].value}&added_from=2020`);
+    const run = async () => {
+      const out = [];
+      for (const query of cases) {
+        const params = new URLSearchParams(query);
+        out.push({ query, result: await researchQuery(db, params, institutions), feed: await researchFeed(db, params, institutions) });
+      }
+      return JSON.parse(JSON.stringify(out));
+    };
+    const direct = await run();
+    assert.ok(direct[0].result.total > 600);
+    assert.ok(queries.every((sql) => !sql.includes("f.id=+v.id")));
+
+    sqlite.exec(readFileSync("ops/research-summary.sql", "utf8"));
+    queries.length = 0;
+    assert.deepEqual(await run(), direct);
+    assert.ok(queries.some((sql) => sql.includes("f.id=+v.id")), "a large scope is read in listing order");
+    assert.ok(queries.some((sql) => sql.includes("research_facets WHERE field=? AND value IN")), "a small scope is still collected");
+    assert.ok(queries.some((sql) => sql.includes("count(DISTINCT group_id)")), "other searches still count directly");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
