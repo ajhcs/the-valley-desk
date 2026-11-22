@@ -21,7 +21,7 @@ export type DirectoryView =
     }
   | { kind: "home"; publications?: number; latest?: Listing[]; data: ReturnType<DirectoryCatalog["home"]>; summary?: DirectorySummary; names?: Names; now?: Date }
   | { kind: "results"; data: ReturnType<DirectoryCatalog["list"]>; noindex?: boolean }
-  | { kind: "project"; linked?: {url:string;title:string}[]; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
+  | { kind: "project"; linked?: {url:string;title:string}[]; mentions?: {url:string;title:string}[]; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
   | { kind: "methodology"; publications?: boolean; studies?: boolean }
   | { kind: "retired"; section: RetiredEditorialSection }
   | { kind: "listing-removed" | "study-removed" | "removed" | "not-found" | "unavailable" };
@@ -68,7 +68,7 @@ function footer() {
   </footer>`;
 }
 
-function projectDetail(catalog: DirectoryCatalog, { project, related, now, linked }: Extract<DirectoryView, { kind: "project" }>) {
+function projectDetail(catalog: DirectoryCatalog, { project, related, now, linked, mentions }: Extract<DirectoryView, { kind: "project" }>) {
   const activity = lastActivity(project);
   const place = projectPlace(catalog, project);
   const papers = projectPapers(project);
@@ -112,6 +112,7 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
           ${timestamp(project.checked) ? `<p class="muted">Source checked ${timestamp(project.checked)}</p>` : ""}
         </section>
         ${linked?.length ? `<section class="record-section"><h2>Publications in the directory</h2><ul class="plain-list">${linked.map(p => `<li><a href="${html(p.url)}">${html(p.title)}</a></li>`).join("")}</ul></section>` : ""}
+        ${mentions?.length ? `<section class="record-section" aria-labelledby="mentions-title"><h2 id="mentions-title">Papers that link to this repository</h2><p class="muted">The full text of each paper links to this repository. A link can be a citation or use, not only a release.</p><ul class="plain-list">${mentions.map(p => `<li><a href="${html(p.url)}">${html(p.title)}</a></li>`).join("")}</ul></section>` : ""}
         ${papers.length ? `<section class="record-section" aria-labelledby="paper-title">
           <h2 id="paper-title">${papers.length === 1 ? "Paper" : "Papers"}</h2>
           <ul class="papers">${papers.map(paper => {

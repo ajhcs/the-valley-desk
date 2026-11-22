@@ -622,6 +622,7 @@ export function renderPublication(
   related: Listing[],
   more: { heading: string; items: Listing[]; href: string } | undefined,
   catalog: DirectoryCatalog,
+  linkedCode: Listing[] = [],
 ) {
   const entity = (kind: string, key: string, name: string) =>
     `<a href="/discover/${kind}/${encodeURIComponent(key)}">${html(name)}</a>`;
@@ -672,6 +673,7 @@ export function renderPublication(
       </section>
     </div>
     ${related.length ? `<section class="record-section related"><h2>Connected research</h2><ul class="plain-list">${related.map((i) => `<li><span class="muted">${i.kind === "project" ? "Software" : "Publication version"}</span> <a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
+    ${linkedCode.length ? `<section class="record-section related" aria-labelledby="linked-code-title"><h2 id="linked-code-title">Code linked from this paper</h2><p class="muted">Directory projects whose repository this paper’s full text links to, as a citation, use or release.</p><ul class="plain-list">${linkedCode.map((i) => `<li><a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
     ${more?.items.length ? `<section class="related"><div class="section-heading"><h2>${html(more.heading)}</h2><a href="${html(more.href)}">More from this institution</a></div>${renderListingCards(more.items, catalog)}</section>` : ""}
     <p class="record-report">${contactLink("Report a correction or request removal", undefined, `Directory correction or removal for ${p.id}`)}</p>
   </article>`;
