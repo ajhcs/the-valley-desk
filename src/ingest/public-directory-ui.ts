@@ -73,27 +73,51 @@ export function projectPlace(catalog: DirectoryCatalog, project: DirectoryProjec
   ].filter(Boolean).join('<span class="separator" aria-hidden="true"> / </span>');
 }
 
+/** Publication dates keep their source precision: a year, a month or a day. */
+const monthYear = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+export function partialDateText(value?: string | null) {
+  if (!value) return "";
+  if (/^\d{4}$/.test(value)) return value;
+  if (/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return monthYear.format(new Date(`${value}-01T00:00:00Z`));
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) && timestamp(value) ? dateFormat.format(new Date(`${value}T00:00:00Z`)) : "";
+}
+export function partialDate(value?: string | null) {
+  const text = partialDateText(value);
+  return text ? `<time datetime="${html(value!)}">${html(text)}</time>` : "";
+}
+export const dateText = (value?: string | null) => (timestamp(value) ? partialDateText(value) : "");
+
+/**
+ * Topics with a landing page, a feed and a place in the topic filter. "Other science" marks papers
+ * the topic rules could not place in a health topic: it is a label on the record, searchable and
+ * shown on institution and county pages, but it is not a browsable topic.
+ */
+export const otherTopic = "Other science";
+export const otherTopicSlug = "other-science";
+export const healthTopic = (topic?: string | null) =>
+  !!topic && topic !== otherTopic && topic.toLowerCase().replace(/[^a-z0-9]+/g, "-") !== otherTopicSlug;
+
+const kindDate = (project: DirectoryProject, dateField: "activity" | "added") => {
+  const date = timestamp(dateField === "added" ? project.added : lastActivity(project));
+  const label = dateField === "added" ? "Added" : lastActivity(project) === project.pushed ? "Code pushed" : "Updated";
+  return date ? `<span>${label} ${date}</span>` : "";
+};
+
+/** One catalogue entry for a software project. Publications share the same structure. */
+export function projectRecord(catalog: DirectoryCatalog, project: DirectoryProject, dateField: "activity" | "added" = "activity") {
+  const place = projectPlace(catalog, project);
+  return `<li class="record record-software">
+    <p class="record-kind"><span class="kind">Software</span>${project.language ? `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>` : ""}${kindDate(project, dateField)}${project.archived === true ? '<span class="archive-mark">Archived</span>' : ""}</p>
+    <h3 class="record-title"><a href="${html(projectPath(project))}">${html(project.name)}</a></h3>
+    <p class="record-summary">${html(project.purpose)}</p>
+    ${place ? `<p class="record-place">${place}</p>` : ""}
+    <p class="record-evidence">${regionalLabel(project)}${project.connection ? ` ${html(project.connection)}` : ""}</p>
+    <p class="record-topic">${entityLink(catalog, "topic", project.topic)}</p>
+  </li>`;
+}
+
 export function projectCards(
   catalog: DirectoryCatalog, projects: readonly DirectoryProject[], variant: "cards" | "compact" = "cards", dateField: "activity" | "added" = "activity",
 ) {
-  return `<div class="project-grid" data-view="${variant}">${projects.map(project => {
-    const place = projectPlace(catalog, project);
-    const topic = entityLink(catalog, "topic", project.topic);
-    const date = timestamp(dateField === "added" ? project.added : lastActivity(project));
-    const dateLabel = dateField === "added" ? "Added" : lastActivity(project) === project.pushed ? "Pushed" : "Updated";
-    return `<article class="project-card">
-      <div class="card-lead">
-        ${variant === "cards" ? `<div class="card-topic">Project · ${topic}</div>` : ""}
-        <h3><a href="${html(projectPath(project))}">${html(project.name)}</a></h3>
-        ${place ? `<p class="card-place">${place}</p>` : ""}
-      </div>
-      <p class="card-purpose">${html(project.purpose)}</p>
-      <div class="card-meta">${regionalLabel(project)}
-        ${variant === "compact" ? topic : ""}
-        ${project.archived === true ? '<span class="archive-mark">Archived</span>' : ""}
-        ${project.language ? `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>` : ""}
-        ${date ? `<span class="card-date">${dateLabel} ${date}</span>` : ""}
-      </div>
-    </article>`;
-  }).join("")}</div>`;
+  return `<ol class="records" data-view="${variant === "compact" ? "compact" : "full"}">${projects.map(project => projectRecord(catalog, project, dateField)).join("")}</ol>`;
 }

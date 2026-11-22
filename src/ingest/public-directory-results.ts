@@ -39,7 +39,7 @@ export function resultsHead(view: Results) {
   const base = view.scope ? entityPath(view.scope.entity) : browsePath;
   const scope = scopeName(view);
   const filtered = hasFilters(view.query);
-  const title = [scope, filtered ? queryPurpose(view) : scope ? "" : "Research directory",
+  const title = [scope, filtered ? queryPurpose(view) : scope ? "" : "Research software",
     view.query.page > 1 ? `Page ${count(view.query.page)}` : ""].filter(Boolean).join(" · ");
   const description = filtered
     ? `${queryPurpose(view)}. ${projectCount(view.matchCount)} found in ${scope ? `${scope} in ` : ""}The Valley Desk directory.`
@@ -215,8 +215,8 @@ export function renderResultsRegion(catalog: DirectoryCatalog, view: Results) {
 
 export function renderDirectoryResults(catalog: DirectoryCatalog, view: Results) {
   return `<div class="frame page results-page">
-    ${view.scope ? `<nav class="breadcrumb" aria-label="Directory breadcrumb"><a href="${browsePath}">All projects</a><span aria-hidden="true">/</span><span>${html(scopeName(view)!)}</span></nav>${entityOverview(catalog, view)}`
-      : '<div class="results-intro"><h1>Research directory</h1><p>Explore research projects connected to the nine-county Delaware Valley.</p></div>'}
+    ${view.scope ? `<nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a><span aria-hidden="true">/</span><span>${html(scopeName(view)!)}</span></nav>${entityOverview(catalog, view)}`
+      : `<div class="results-intro"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a></nav><h1>Research software</h1><p>Filter ${projectCount(view.total)} by topic, institution, county, language, license, GitHub account and activity.</p></div>`}
     ${view.scope && ["institution","topic"].includes(view.scope.entity.kind) ? `<p><a href="/discover/updates.xml?${view.scope.entity.kind}=${view.scope.entity.slug}">Follow additions via RSS</a></p>` : ""}
     ${view.scope?.entity.kind === "county" && view.total === 0 ? `<section class="empty-result county-empty"><h2>No projects listed yet</h2>
       <p>The directory currently has no projects with a recorded connection to ${html(scopeName(view)!)}. ${contactLink("Suggest a project", undefined, `Project submission for ${scopeName(view)}`)}.</p>

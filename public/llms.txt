@@ -1,14 +1,46 @@
 # The Valley Desk
 
-> Find and follow healthcare research connected to the nine-county Delaware Valley.
+> A public directory of healthcare research software connected to the nine-county Delaware Valley: Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey. Every listing names the source of its regional connection.
 
-- [Research directory](https://thevalleydesk.org/discover/works): search regional listings.
-- [New listings](https://thevalleydesk.org/discover/new): ordered by directory addition date.
-- [Listings JSON](https://thevalleydesk.org/api/directory/listings): paginated research additions with the same filters as the feed.
-- [RSS](https://thevalleydesk.org/discover/updates.xml): filter by institution, topic, county or kind.
-- [Methodology](https://thevalleydesk.org/discover/methodology): definitions, corrections, removal and coverage.
+A software project is a public GitHub repository with a health or life-science purpose and a documented regional connection. Each listing carries an evidence label. A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. For publications, Verified means the affiliation names the institution and a regional place, and Listed means an indexer assignment or an institution match with an uncertain site. A label describes the evidence for the connection. It does not establish employment, ownership or a worksite. Author names appear only on bylines; the site has no pages for individual people.
+
+When you cite a listing, link its directory page for the regional connection and the publisher or repository for the work. Institution, topic and county pages open with counts computed when the page is requested, and they state that date. The counts describe what the directory lists, not a complete record of regional research.
+
+## Pages
+
+- [Search](https://thevalleydesk.org/discover/works): parameters q (words), kind (project), institution, topic, county, sort (added, activity or name) and page. Example: https://thevalleydesk.org/discover/works?q=sickle+cell&county=philadelphia
+- [Institution pages](https://thevalleydesk.org/discover/institution/upenn): /discover/institution/{id}. Each lists counts, leading topics and counties, regional sites, related institutions and the listings.
+- [What's new](https://thevalleydesk.org/discover/new): listings by the date they entered the directory.
+- [Methodology](https://thevalleydesk.org/discover/methodology): inclusion rule, evidence labels, dates, corrections and removals.
+- Software pages: /discover/work/{GitHub repository ID}, for example https://thevalleydesk.org/discover/work/617168725
+
+## Topics
+
+- [Biomedical and life sciences](https://thevalleydesk.org/discover/topic/biomedical-and-life-sciences)
+- [Clinical care](https://thevalleydesk.org/discover/topic/clinical-care)
+- [Disease research](https://thevalleydesk.org/discover/topic/disease-research)
+- [Medical imaging](https://thevalleydesk.org/discover/topic/medical-imaging)
+- [Neuroscience](https://thevalleydesk.org/discover/topic/neuroscience)
+- [Public health](https://thevalleydesk.org/discover/topic/public-health)
+- [Rehabilitation and accessibility](https://thevalleydesk.org/discover/topic/rehabilitation-and-accessibility)
+- [Research data](https://thevalleydesk.org/discover/topic/research-data)
+
+## Counties
+
+- [Bucks County, PA](https://thevalleydesk.org/discover/county/bucks)
+- [Chester County, PA](https://thevalleydesk.org/discover/county/chester)
+- [Delaware County, PA](https://thevalleydesk.org/discover/county/delaware)
+- [Montgomery County, PA](https://thevalleydesk.org/discover/county/montgomery)
+- [Philadelphia County, PA](https://thevalleydesk.org/discover/county/philadelphia)
+- [Burlington County, NJ](https://thevalleydesk.org/discover/county/burlington)
+- [Camden County, NJ](https://thevalleydesk.org/discover/county/camden)
+- [Gloucester County, NJ](https://thevalleydesk.org/discover/county/gloucester)
+- [Mercer County, NJ](https://thevalleydesk.org/discover/county/mercer)
+
+## Data
+
+- [Listings JSON](https://thevalleydesk.org/api/directory/listings): 24 kind-tagged records per page with the same filters as search.
 - [Directory JSON](https://thevalleydesk.org/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
+- [RSS](https://thevalleydesk.org/discover/updates.xml): additions, filterable by institution, topic, county or kind.
 - [MCP server](https://thevalleydesk.org/mcp): read-only Model Context Protocol endpoint (Streamable HTTP, no sign-in) with search, fetch, whats_new, list_institutions and list_topics_and_counties tools. [Setup for Claude, ChatGPT and other assistants](https://thevalleydesk.org/discover/connect).
 - [Sitemap](https://thevalleydesk.org/sitemap.xml)
-
-A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. Consult the linked sources for the scope of each connection.
