@@ -73,7 +73,7 @@ export function renderDirectoryHome(
     ? summary.facets.institution.map((r) => ({ name: names.institution(r.value), href: entityHref("institution", r.value), n: r.n }))
     : home.institutions.map((r) => ({ name: r.name, href: catalog.entityHref("institution", r.name), n: r.count }));
   const unit = research ? "listings" : "projects";
-  const added = research ? [summary.kinds.publication?.added, summary.kinds.project?.added].filter(Boolean).sort().at(-1) : undefined;
+  const added = research ? Object.values(summary.kinds).map((kind) => kind.added).filter(Boolean).sort().at(-1) : undefined;
   return `<div class="frame home">
     <section class="home-intro">
       <h1>Healthcare research in the Delaware Valley</h1>
