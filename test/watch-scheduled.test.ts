@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { pdfDatabase } from "./helpers/policy-pdf";
 import { NOW, syntheticFixture } from "./fixtures/watch-contracts/synthetic";
 import { stageEditorialProposal } from "../src/ingest/watch-editorial";
-import { WATCH_CRON, watchSchedulePhase, runScheduledWatchCollection, runScheduledWatchPublication } from "../src/ingest/watch-scheduled";
+import { watchSchedulePhase, runScheduledWatchCollection, runScheduledWatchPublication } from "../src/ingest/watch-scheduled";
 import { watchOperationBudget, WatchOperationBudgetError } from "../src/ingest/watch-operation-budget";
 
 test("Watch operation budget counts bound statements and refuses an entire oversized atomic batch", async t => {
@@ -56,23 +56,14 @@ test("Watch phases have separate invocations and disabled phases perform no D1 w
   assert.equal(watchSchedulePhase(Date.parse("2026-09-15T15:07:00.000Z")), "publication");
   assert.throws(() => watchSchedulePhase(NaN), /invalid-scheduled-time/);
   assert.throws(() => watchSchedulePhase(Date.parse("2026-09-15T15:00:00.000Z")), /invalid-scheduled-time/);
-  const worker = readFileSync(new URL("../worker.js", import.meta.url), "utf8");
-  const watch = worker.slice(worker.indexOf("if (event?.cron === WATCH_CRON)"), worker.indexOf("const cadence = event?.cron"));
-  assert.match(watch, /return;/);
-  assert.doesNotMatch(watch, /runEditor|cleanupEmail|emailAuthentication/);
-  assert.match(watch, /publishRepresentatives: env\.WATCH_SOURCE_RULE_ENABLED === "true"/);
-  const config = JSON.parse(readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8"));
-  assert.deepEqual(config.triggers.crons, ["*/15 * * * *", "17 3 * * *", WATCH_CRON]);
 });
 
-test("retired editorial automation returns before the ingest run when disabled", () => {
+test("the production schedule runs retention cleanup without starting editorial ingest", () => {
   const worker = readFileSync(new URL("../worker.js", import.meta.url), "utf8");
-  const gate = worker.indexOf('if (env.EDITORIAL_AUTOMATION_ENABLED === "false")');
-  const run = worker.indexOf("runAutomation(env, undefined, undefined, { mode: cadence })");
-  assert.ok(gate > 0 && gate < run, "the gate precedes the scheduled ingest run");
-  const disabled = worker.slice(gate, run);
-  assert.match(disabled, /logOps\("cron", \{ outcome: "disabled", cadence \}\);\s+return;/);
-  assert.doesNotMatch(disabled, /sendAutomationAlerts|sendDailyOpsDigest/);
+  const scheduled = worker.slice(worker.indexOf("  async scheduled("), worker.indexOf("  async fetch("));
+  assert.match(scheduled, /cleanupEmailDiscoveries/);
+  assert.match(scheduled, /resolvePendingEmailAuthentication/);
+  assert.doesNotMatch(scheduled, /runAutomation|sendAutomationAlerts|runScheduledWatch/);
   const config = JSON.parse(readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8"));
-  assert.equal(config.vars.EDITORIAL_AUTOMATION_ENABLED, "false");
+  assert.deepEqual(config.triggers.crons, ["*/15 * * * *"]);
 });

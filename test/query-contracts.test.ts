@@ -1951,7 +1951,7 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(worker.includes("noindex"));
   assert.ok(worker.includes("/index.html"));
   assert.ok(worker.includes('path.startsWith("/org/")'));
-  assert.ok(worker.includes("publishedItemPath"));
+  assert.ok(!worker.includes("publishedItemPath"));
   assert.ok(worker.includes("decorateHtml"));
   assert.ok(crawler.includes("og:title"));
   assert.ok(crawler.includes("twitter:card"));
@@ -1976,9 +1976,9 @@ test("SEO hold: robots.txt is text, worker 404s unknown and /org/*, no org route
   assert.ok(!publishedRoutes.includes("week-of-2026-08-18"));
   assert.ok(!publishedRoutes.includes("dvhimss-september-networking"));
   assert.ok(!publishedRoutes.includes("cio-note-workforce-ai"));
-  assert.ok(worker.includes("publishedVoiceSlugs"));
+  assert.ok(!worker.includes("publishedVoiceSlugs"));
   assert.ok(worker.includes('path.startsWith("/briefing/")'));
-  assert.ok(worker.includes("news|events|voices"));
+  assert.ok(!worker.includes("news|events|voices"));
   assert.ok(!worker.includes("voices|briefing"));
   assert.ok(wrangler.includes('"not_found_handling": "none"'));
   assert.ok(!wrangler.includes("single-page-application"));
@@ -2277,7 +2277,7 @@ test("Voices v1: published kind=voice only, Honor Roll is not news, Jane Doe sta
   const worker = readFileSync(join(root, "worker.js"), "utf8");
   const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
   assert.ok(itemPage.includes('section: "news" | "event" | "voice"'));
-  assert.ok(worker.includes("publishedVoiceSlugs"));
+  assert.ok(!worker.includes("publishedVoiceSlugs"));
   assert.ok(worker.includes('path.startsWith("/briefing/")'));
 });
 
@@ -2383,11 +2383,11 @@ test("firehose: stable RSS ids, seed org map, HOLD denylist, social no-op, queue
   assert.ok(!store.includes("review-queue"));
   assert.ok(store.includes("published-catalog.json"));
   assert.ok(worker.includes("async scheduled"));
-  assert.ok(worker.includes("runAutomation"));
-  assert.ok(worker.includes("event?.cron === DAILY_DEEP_SCAN_CRON"));
+  assert.ok(!worker.includes("runAutomation"));
+  assert.ok(!worker.includes("event?.cron === DAILY_DEEP_SCAN_CRON"));
   assert.ok(wrangler.includes("VALLEY_DESK_DB"));
   assert.ok(wrangler.includes("*/15 * * * *"));
-  assert.ok(wrangler.includes("17 3 * * *"));
+  assert.ok(!wrangler.includes("17 3 * * *"));
   assert.ok(wrangler.includes('"custom_domain": true'));
   assert.ok(!rssSrc.includes("linkedin.com"));
   assert.ok(!rssSrc.includes("api.twitter.com"));
@@ -3408,9 +3408,9 @@ test("automation persistence contract is durable and review-first", async () => 
   assert.ok(migration.includes("CREATE TABLE ingest_runs"));
   assert.ok(migration.includes("CREATE TABLE content_candidates"));
   assert.ok(migration.includes("queue_status IN ('review', 'approved', 'rejected')"));
-  assert.ok(worker.includes("runAutomation"));
+  assert.ok(!worker.includes("runAutomation"));
   assert.ok(worker.includes("handleReviewApi"));
-  assert.ok(worker.includes("ingest-scheduled-failed"));
+  assert.ok(!worker.includes("ingest-scheduled-failed"));
   assert.ok(auditMigration.includes("CREATE TABLE candidate_decisions"));
   assert.ok(reviewApi.includes("candidate_decisions"));
   assert.ok(reviewApi.includes("SELECT c.id, ?, ?, ?, ?, ?, ?, ?, ?"));
@@ -5053,7 +5053,7 @@ test("editor model config contracts cover migration 0006, knobs, and Muse privac
   assert.ok(model.includes("muse-spark-1.2-contributor"));
   assert.ok(model.includes('"relevanceScore":0'));
   assert.ok(model.includes("Every affectedOrgId and productId must come verbatim"));
-  assert.deepEqual(JSON.parse(wrangler).triggers.crons, ["*/15 * * * *", "17 3 * * *", "2-57/5 * * * *"]);
+  assert.deepEqual(JSON.parse(wrangler).triggers.crons, ["*/15 * * * *"]);
   assert.ok(example.includes("EDITOR_MODEL_BUDGET=32"));
   assert.ok(example.includes("EDITOR_MODEL=meta/muse-spark-1.3-contributor"));
   assert.ok(example.includes("SOCIAL_INGEST_TOKEN=replace-with-a-different-long-random-token"));
@@ -5256,13 +5256,13 @@ test("idempotent event refresh keeps canonical id/slug and aliases the old publi
   assert.equal(kept.id, canonical.id);
   assert.equal(kept.slug, canonical.slug);
   const worker = readFileSync(join(root, "worker.js"), "utf8");
-  assert.ok(worker.includes("publishedSlugRedirects"));
-  assert.ok(worker.includes("findPublishedSlugAlias"));
-  assert.ok(worker.includes("lookupPublishedSlugAlias"));
+  assert.ok(!worker.includes("publishedSlugRedirects"));
+  assert.ok(!worker.includes("findPublishedSlugAlias"));
+  assert.ok(!worker.includes("lookupPublishedSlugAlias"));
   assert.ok(!worker.includes("limit = 100"));
-  assert.ok(worker.includes("Response.redirect"));
-  assert.ok(worker.includes("Response.redirect(`${url.origin}${redirected}`, 301)"));
-  assert.ok(worker.includes(", 301)"));
+  assert.ok(!worker.includes("Response.redirect"));
+  assert.ok(!worker.includes("Response.redirect(`${url.origin}${redirected}`, 301)"));
+  assert.ok(!worker.includes(", 301)"));
   const itemPage = readFileSync(join(root, "src/ui/ItemPage.tsx"), "utf8");
   assert.ok(itemPage.includes("byPreviousSlug"));
   assert.ok(itemPage.includes("Navigate"));

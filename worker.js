@@ -1,40 +1,23 @@
-import {
-  publishedEventSlugs,
-  publishedHead,
-  publishedNewsSlugs,
-  publishedSlugRedirects,
-  publishedVoiceSlugs,
-} from "./worker-published.js";
-import { runAutomation } from "./src/ingest/automation.ts";
 import { cleanupEmailDiscoveries } from "./src/ingest/email.ts";
 import { handleCloudflareInboundEmail, resolvePendingEmailAuthentication } from "./src/ingest/email-auth.ts";
 import { handleReviewApi, isReviewApiPath } from "./src/ingest/review-api.ts";
 import { policyBaselineView } from "./src/ingest/policy-pdf.ts";
-import { handleWatchRead, isWatchReadPath } from "./src/ingest/watch-api.ts";
-import { handleRepresentativeRead } from "./src/ingest/representative-api.ts";
-import { resolveRepresentativeSourcePolicy } from "./src/ingest/representative-runtime.ts";
-import { handleEventCalendar } from "./src/ingest/event-calendar.ts";
-import { WATCH_CRON, watchSchedulePhase, runScheduledWatchCollection, runScheduledWatchPublication } from "./src/ingest/watch-scheduled.ts";
-import { handleWatchUpdatesRead } from "./src/ingest/watch-updates-api.ts";
 import { cleanupSocialEvidencePackets, handleSocialCollectorRuns, handleSocialEvidence, handleSocialManifest, isSocialCollectorRunsPath, isSocialEvidencePath, isSocialManifestPath } from "./src/ingest/social-evidence.ts";
 import { handleOpsRequest, isOpsPath } from "./src/ingest/ops-access.ts";
 import { FeedDocument } from "./src/ingest/feed-contract.ts";
 import { feedXml, mergePublishedContent, mergedFeed, sitemapXml } from "./src/ingest/public-feed.ts";
 import {
   cleanupNewsArticleExtractions,
-  findPublishedContent,
-  findPublishedSlugAlias,
   readPublicationTombstones,
   readPublishedContent,
 } from "./src/ingest/persistence.ts";
 import { loadEntities } from "./src/content/store.ts";
 import { llmsTxt, resolvePublicOrigin, robotsTxt } from "./src/lib/canonical.ts";
-import { decorateHtml, decorateWatchHtml, watchPrimaryNoscript } from "./src/lib/crawler-html.ts";
-import { isWatchPagePath, readWatchPage } from "./src/lib/watch-page.ts";
+import { decorateHtml } from "./src/lib/crawler-html.ts";
 import { publicFeaturesFromEnv } from "./src/lib/public-features.ts";
 import { decodedPublicPath, retiredEditorialRoute } from "./src/lib/editorial-retirement.ts";
 import { applySecurityHeaders, asHeadResponse, canonicalHostRedirect, handlePublicHealth, logOps } from "./src/lib/ops.ts";
-import { dispatchOperationalAlert, dispatchOperationalDigest, dispatchOperationalRecovery, interruptOperationalAlertRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
+import { dispatchOperationalAlert, dispatchOperationalRecovery, interruptOperationalAlertRecovery, recordOperationalAlert, resolveOperationalAlertWithTransition } from "./src/lib/alerts.ts";
 import { conditionStateForSourceState, SOURCE_FRESHNESS_SLO_MS } from "./src/lib/operational-status.ts";
 import { handleDiscoveryPilot } from "./src/ingest/discovery-pilot.ts";
 import { handleDiscoveryPilotPage } from "./src/ingest/discovery-pilot-page.ts";
@@ -48,11 +31,6 @@ const PUBLIC_MACHINE_PATHS = new Set([
   "/robots.txt",
   "/llms.txt",
 ]);
-
-// One Worker handles both lanes. The daily trigger is intentionally a
-// separate cron expression so the catch-up pass has its own scheduled
-// invocation and never depends on an in-memory timer.
-const DAILY_DEEP_SCAN_CRON = "17 3 * * *";
 
 function notFoundHeaders() {
   return {
@@ -83,66 +61,10 @@ async function notFound(env, request, path, origin, nonce) {
   });
 }
 
-const newsSlugs = new Set(publishedNewsSlugs);
-const eventSlugs = new Set(publishedEventSlugs);
-const voiceSlugs = new Set(publishedVoiceSlugs);
-const SPA_PATH = /^\/(?:(?:news|events|voices)(?:\/[^/]+)?|policy|lab(?:\/(?:briefing|systems|horizon|calendar))?)?\/?$/;
+const SPA_PATH = /^\/(?:policy\/?)?$/;
 
 function stripSlash(path) {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
-}
-
-function permalinkRedirect(path) {
-  const p = stripSlash(path);
-  const match = /^\/(news|events|voices)\/([^/]+)$/.exec(p);
-  if (!match) return null;
-  const dest = publishedSlugRedirects?.[match[2]];
-  if (!dest?.slug) return null;
-  const section = dest.kind === "event" ? "events" : dest.kind === "voice" ? "voices" : "news";
-  if (dest.slug === match[2]) return null;
-  return `/${section}/${dest.slug}`;
-}
-
-/** Ops: migration 0007 content_slug_aliases. Static redirects stay first; D1 aliases 301 after. */
-async function lookupPublishedSlugAlias(env, path) {
-  const match = /^\/(news|events|voices)\/([^/]+)$/.exec(stripSlash(path));
-  if (!match) return null;
-  try {
-    const dest = await findPublishedSlugAlias(env.VALLEY_DESK_DB, match[1] === "events" ? "event" : match[1] === "voices" ? "voice" : "news", match[2]);
-    if (!dest?.slug || dest.slug === match[2]) return null;
-    const section = dest.kind === "event" ? "events" : dest.kind === "voice" ? "voices" : "news";
-    return `/${section}/${dest.slug}`;
-  } catch (error) {
-    console.error("published-slug-alias-fallback", JSON.stringify({
-      message: error instanceof Error ? error.message : "D1 slug alias unavailable",
-    }));
-    return null;
-  }
-}
-
-/** false = unpublished or unknown item permalink. null = not an item permalink. */
-function publishedItemPath(path) {
-  const p = stripSlash(path);
-  const news = /^\/news\/([^/]+)$/.exec(p);
-  if (news) return newsSlugs.has(news[1]);
-  const events = /^\/events\/([^/]+)$/.exec(p);
-  if (events) return eventSlugs.has(events[1]);
-  const voices = /^\/voices\/([^/]+)$/.exec(p);
-  if (voices) return voiceSlugs.has(voices[1]);
-  return null;
-}
-
-function sectionKind(path) {
-  if (path.startsWith("/events/")) return "event";
-  if (path.startsWith("/voices/")) return "voice";
-  if (path.startsWith("/news/")) return "news";
-  return undefined;
-}
-
-function itemMatchesSection(item, section) {
-  if (section === "event") return item.kind === "event";
-  if (section === "voice") return item.kind === "voice";
-  return section === "news" && new Set(["news", "policy", "ai", "interview"]).has(item.kind);
 }
 
 async function dynamicOverlay(env) {
@@ -171,20 +93,6 @@ const PUBLIC_HEADERS = {
   "cdn-cache-control": "public, max-age=300",
   "access-control-allow-origin": "*",
 };
-
-function compactAutomation(result) {
-  if (!result || typeof result !== "object") return {};
-  const {
-    notes,
-    ...rest
-  } = result;
-  return {
-    ...rest,
-    sourceCount: Array.isArray(notes?.sources) ? notes.sources.length : undefined,
-    rssCount: notes?.rss,
-    eventCount: notes?.events,
-  };
-}
 
 function safeAlertError(error) {
   const raw = typeof error === "string"
@@ -657,17 +565,6 @@ export async function sendAutomationAlerts(env, result, now = new Date()) {
   await recover("valley-desk:automation-run-failed", 2);
 }
 
-async function sendDailyOpsDigest(env, now = new Date()) {
-  // Run once at a predictable UTC hour; D1 claim state makes retries and
-  // duplicate cron deliveries safe.
-  if (now.getUTCHours() !== 8) return;
-  try {
-    await dispatchOperationalDigest(env.VALLEY_DESK_DB, env.NOTIFY_OPS, now);
-  } catch (error) {
-    logOps("ops-digest", { outcome: "record-failed", message: safeAlertError(error) }, "warn");
-  }
-}
-
 async function handleFetch(request, env, origin, nonce, ctx) {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -690,38 +587,6 @@ async function handleFetch(request, env, origin, nonce, ctx) {
 
   if (path === "/api/health") {
     return handlePublicHealth(request, env);
-  }
-  if (path === "/events.ics") return handleEventCalendar(request, env);
-  if (/^\/api\/v2\/watch\/(policy|technology)\/updates\/?$/.test(path)) return handleWatchUpdatesRead(request, env);
-  if (path === "/api/v2/watch/representatives") {
-    try {
-      const policy = env.WATCH_PUBLIC_ENABLED === "true" && env.VALLEY_DESK_DB
-        ? await resolveRepresentativeSourcePolicy(env.VALLEY_DESK_DB)
-        : { officialSources: new Map(), sourceUrlAllowed: () => false, officialPublicUrlAllowed: () => false, maxRosterAgeHours: 168 };
-      return handleRepresentativeRead(request, env, policy);
-    } catch {
-      return new Response(request.method === "HEAD" ? null : JSON.stringify({ error: { code: "representative-unavailable" } }),
-        { status: 503, headers: { "content-type": "application/json", "cache-control": "no-store" } });
-    }
-  }
-  if (isWatchReadPath(path)) return handleWatchRead(request, env);
-  if (isWatchPagePath(path)) {
-    let result = await readWatchPage(request, env.WATCH_PUBLIC_ENABLED === "true", input => handleWatchRead(input, env));
-    let html;
-    try {
-      const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
-      if (asset.ok) html = await asset.text();
-    } catch { /* A shell failure must not turn hidden pages into successful responses. */ }
-    if (!html) {
-      if (result.status === 200) result = { route: result.route, status: 503, error: "unavailable" };
-      html = `<!doctype html><html lang="en"><head><title>The Valley Desk</title></head><body><main>${watchPrimaryNoscript(result, origin)}</main></body></html>`;
-    }
-    const headers = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store",
-      "cdn-cache-control": "no-store", "x-robots-tag": "noindex" };
-    if (result.status === 405) headers.allow = "GET, HEAD";
-    if (result.data) headers["x-watch-data-state"] = result.data.stale ? "stale" : "unknown";
-    if (result.deliveryAsOf) headers["x-watch-delivery-as-of"] = result.deliveryAsOf;
-    return new Response(decorateWatchHtml({ html, result, origin, nonce, publicFeatures: publicFeaturesFromEnv(env) }), { status: result.status, headers });
   }
   if (stripSlash(path) === "/policy" && !publicFeaturesFromEnv(env).policyBackground) {
     const response = await notFound(env, request, path, origin, nonce);
@@ -853,36 +718,9 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   if (path === "/briefing" || path.startsWith("/briefing/")) {
     return notFound(env, request, path, origin, nonce);
   }
-  const redirected = permalinkRedirect(path) || await lookupPublishedSlugAlias(env, path);
-  if (redirected) {
-    return Response.redirect(`${url.origin}${redirected}`, 301);
-  }
   if (SPA_PATH.test(path)) {
     const overlay = await dynamicOverlay(env);
     const seed = await staticFeed(env, request);
-    let published = mergePublishedContent(seed.items, overlay.items, overlay.withdrawnIds);
-    const withdrawnIds = new Set(overlay.withdrawnIds);
-    const section = sectionKind(path);
-    const slug = stripSlash(path).split("/").at(-1);
-    const staticPathState = publishedItemPath(path);
-    const staticHead = slug ? publishedHead[slug] : undefined;
-    const staticWithdrawn = Boolean(staticHead?.id && withdrawnIds.has(staticHead.id));
-    // Resolve signed seed items as well as D1-only items so crawler HTML for
-    // every permalink receives article metadata, JSON-LD, and noscript copy.
-    let dynamicItem = section && slug
-      ? published.find((item) => item.slug === slug && itemMatchesSection(item, section))
-      : undefined;
-    if (!dynamicItem && staticPathState === false && section && slug) {
-      const requested = await findPublishedContent(env.VALLEY_DESK_DB, section, slug).catch(() => undefined);
-      if (requested && itemMatchesSection(requested, section)) {
-        const safeSupplement = mergePublishedContent(seed.items, [requested], overlay.withdrawnIds);
-        dynamicItem = safeSupplement.find((item) => item.id === requested.id);
-        if (dynamicItem && !published.some((item) => item.id === dynamicItem.id)) published = [...published, dynamicItem];
-      }
-    }
-    if ((staticPathState === false && !dynamicItem) || (staticPathState === true && staticWithdrawn && !dynamicItem)) {
-      return notFound(env, request, path, origin, nonce);
-    }
     const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
     const html = decorateHtml({
       html: await asset.text(),
@@ -890,8 +728,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
       search: url.search,
       origin,
       nonce,
-      item: dynamicItem,
-      items: path === "/lab" || path.startsWith("/lab/") ? published : published.filter(item => item.kind === "voice"),
+      items: mergePublishedContent(seed.items, overlay.items, overlay.withdrawnIds).filter(item => item.kind === "voice"),
       withdrawnIds: overlay.withdrawnIds,
       entities: loadEntities(),
       publicFeatures: publicFeaturesFromEnv(env),
@@ -917,18 +754,7 @@ export default {
       throw new Error(`Inbound email discovery failed: ${result.reason || "unknown error"}`);
     }
   },
-  async scheduled(event, env, ctx) {
-    if (event?.cron === WATCH_CRON) {
-      if (!env.VALLEY_DESK_DB) return;
-      const phase = watchSchedulePhase(event.scheduledTime);
-      const work = phase === "collection"
-        ? runScheduledWatchCollection(env.VALLEY_DESK_DB, { enabled: env.WATCH_COLLECTION_ENABLED === "true", publishRepresentatives: env.WATCH_SOURCE_RULE_ENABLED === "true" })
-        : runScheduledWatchPublication(env.VALLEY_DESK_DB, { enabled: env.WATCH_SOURCE_RULE_ENABLED === "true" });
-      ctx.waitUntil(work.then(result => logOps("watch-" + phase, result))
-        .catch(error => logOps("watch-" + phase, { outcome: "failed", message: error instanceof Error ? error.message : "Watch dispatch failed" }, "error")));
-      return;
-    }
-    const cadence = event?.cron === DAILY_DEEP_SCAN_CRON ? "daily" : "hourly";
+  async scheduled(_event, env, ctx) {
     ctx.waitUntil(
       cleanupEmailDiscoveries(env.VALLEY_DESK_DB).catch((error) => {
         logOps("email-cleanup", {
@@ -959,35 +785,7 @@ export default {
         }, "warn");
       }),
     );
-    if (env.EDITORIAL_AUTOMATION_ENABLED === "false") {
-      // The editorial sections are retired; retention cleanup above still runs.
-      ctx.waitUntil(emailAuthentication);
-      logOps("cron", { outcome: "disabled", cadence });
-      return;
-    }
-    ctx.waitUntil(
-      emailAuthentication.then(() => runAutomation(env, undefined, undefined, { mode: cadence })).then((result) => {
-        logOps("cron", {
-          outcome: result.skipped ? "skipped" : "succeeded",
-          cadence,
-          ...compactAutomation(result),
-        });
-        return sendAutomationAlerts(env, result).then(() => sendDailyOpsDigest(env));
-      }).catch((error) => {
-        logOps("ingest-scheduled-failed", {
-          message: safeAlertError(error),
-        }, "error");
-        return dispatchOperationalAlert(env.VALLEY_DESK_DB, env.NOTIFY_OPS, {
-          fingerprint: "valley-desk:automation-run-failed",
-          event: "automation-run-failed",
-          severity: "critical",
-          threshold: 2,
-          details: safeAlertDetails(error, { stage: "scheduled" }),
-        }).catch((alertError) => {
-          logOps("ops-alert", { outcome: "dispatch-failed", message: safeAlertError(alertError) }, "warn");
-        });
-      }),
-    );
+    ctx.waitUntil(emailAuthentication);
   },
   async fetch(request, env, ctx) {
     const origin = resolvePublicOrigin(env.PUBLIC_ORIGIN);

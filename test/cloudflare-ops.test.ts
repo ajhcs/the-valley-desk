@@ -635,11 +635,13 @@ test("SCHEMA_VERSION matches the latest D1 migration and wrangler stays a single
   assert.ok(worker.includes("isSocialCollectorRunsPath"));
   assert.ok(worker.includes("HEAD"));
   assert.ok(worker.includes("robots.txt"));
-  assert.ok(worker.includes("let dynamicItem = section && slug"));
+  assert.ok(worker.includes("retiredEditorialRoute"));
+  assert.ok(!worker.includes("findPublishedContent"));
   assert.ok(!worker.includes("let dynamicItem = staticPathState !== true"));
   const workflow = readFileSync(join(root, ".github/workflows/ci.yml"), "utf8");
   assert.ok(workflow.includes("npm ci"));
-  assert.ok(workflow.includes("npm test"));
+  assert.ok(workflow.includes("npm run test:core"));
+  assert.ok(workflow.includes("npm run test:discovery"));
   assert.ok(workflow.includes("npm run build"));
   assert.ok(workflow.includes("secret-scan"));
   assert.ok(workflow.includes("npm audit"));
@@ -2770,7 +2772,7 @@ test("news article extraction cleanup expires stale rows and preserves recent su
   const worker = readFileSync(join(root, "worker.js"), "utf8");
   assert.ok(worker.includes("cleanupNewsArticleExtractions"));
   assert.ok(worker.includes("news-extraction-cleanup"));
-  assert.ok(worker.indexOf("cleanupNewsArticleExtractions") < worker.indexOf("runAutomation(env"));
+  assert.ok(!worker.includes("runAutomation(env"));
   database.close();
 });
 
