@@ -3,12 +3,14 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from project import plain
 
-MODEL = "openai/gpt-4.1-mini"
-API = "https://openrouter.ai/api/v1/chat/completions"
+MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+API = "https://api.cloudflare.com/client/v4/accounts"
 TOPICS = {
     "Research data": "datasets, repositories, curation or validation as the main contribution",
     "Medical imaging": "clinical or biomedical image acquisition, processing or evaluation",
@@ -32,7 +34,9 @@ BATCH = 20
 MAX_MODEL_ROWS = 800
 MAX_PAYLOAD_BYTES = 6200
 MAX_OUTPUT_TOKENS = 700
-KEY_SOURCE = "TVD_OPENROUTER_KEY_FILE"
+MODEL_CONTEXT_TOKENS = 24000
+INPUT_PRICE_PER_MILLION = 0.293
+OUTPUT_PRICE_PER_MILLION = 2.253
 
 
 def source_topic(row):
@@ -69,9 +73,7 @@ def packets(rows):
 def request_body(packet):
     definitions = "\n".join(name + " covers " + purpose for name, purpose in TOPICS.items())
     return {
-        "model": MODEL, "temperature": 0, "max_tokens": MAX_OUTPUT_TOKENS,
-        "provider": {"only": ["OpenAI"], "require_parameters": True, "allow_fallbacks": False,
-                     "max_price": {"prompt": 0.50, "completion": 2}},
+        "temperature": 0, "max_tokens": MAX_OUTPUT_TOKENS,
         "messages": [
             {"role": "system", "content":
              "Assign one topic per research record from title, venue and indexed terms. Follow the main research question. "
@@ -81,66 +83,97 @@ def request_body(packet):
              "Return one decision for each numeric key, in input order.\n" + definitions},
             {"role": "user", "content": json.dumps(public_inputs(packet), ensure_ascii=False)},
         ],
-        "response_format": {"type": "json_schema", "json_schema": {"name": "topics", "strict": True, "schema": {
+        "response_format": {"type": "json_schema", "json_schema": {
             "type": "object", "additionalProperties": False, "required": ["decisions"], "properties": {
-                "decisions": {"type": "array", "items": {
+                "decisions": {"type": "array", "minItems": len(packet), "maxItems": len(packet), "items": {
                     "type": "object", "additionalProperties": False, "required": ["key", "topic"], "properties": {
                         "key": {"type": "integer"},
-                        "topic": {"anyOf": [{"type": "string", "enum": list(TOPICS)}, {"type": "null"}]},
+                        "topic": {"enum": [*TOPICS, None]},
                     },
                 }},
             },
-        }}},
+        }},
     }
 
 
-def key():
-    path = Path(os.environ[KEY_SOURCE])
+def workers_ai_config():
+    account_id = os.environ["TVD_WORKERS_AI_ACCOUNT_ID"]
+    if not re.fullmatch(r"[0-9a-f]{32}", account_id):
+        raise ValueError("Invalid Workers AI account ID.")
+    path = Path(os.environ["TVD_WORKERS_AI_TOKEN_FILE"])
     if not path.is_file() or path.stat().st_mode & 0o077:
-        raise ValueError("The OpenRouter key file must be private.")
-    return path.read_text().strip()
+        raise ValueError("The Workers AI token file must be private.")
+    token = path.read_text().strip()
+    if not token:
+        raise ValueError("The Workers AI token file is empty.")
+    return f"{API}/{account_id}/ai/run/{MODEL}", token
+
+
+def run_workers_ai(body, endpoint, token):
+    request = Request(endpoint, data=body, headers={"Content-Type": "application/json"})
+    request.add_unredirected_header("Authorization", "Bearer " + token)
+    try:
+        with urlopen(request, timeout=90) as reply:
+            return json.load(reply)
+    except HTTPError as error:
+        raise RuntimeError(f"Workers AI request failed (HTTP {error.code}).") from None
+
+
+def read_decisions(response, count):
+    if response.get("success") is not True:
+        raise ValueError("Workers AI did not report a successful inference.")
+    content = response["result"]["response"]
+    if isinstance(content, str):
+        content = json.loads(content)
+    if not isinstance(content, dict) or set(content) != {"decisions"}:
+        raise ValueError("Workers AI did not return the requested decisions object.")
+    decisions = content["decisions"]
+    if not isinstance(decisions, list) or len(decisions) != count:
+        raise ValueError("Workers AI returned the wrong number of decisions.")
+    for key, decision in enumerate(decisions):
+        if (not isinstance(decision, dict) or set(decision) != {"key", "topic"}
+                or type(decision["key"]) is not int or decision["key"] != key):
+            raise ValueError("Workers AI returned an invalid decision key or fields.")
+        topic = decision["topic"]
+        if topic is not None and (not isinstance(topic, str) or topic not in TOPICS):
+            raise ValueError("Workers AI returned an unknown topic label.")
+    return decisions
 
 
 def model_topics(rows, private, *, transport=None):
     if len(rows) > MAX_MODEL_ROWS:
         raise ValueError(f"Model cap exceeded: {len(rows)} ambiguous records; limit {MAX_MODEL_ROWS}.")
     batches = list(packets(rows))
-    # At configured provider price ceilings, even one token per payload byte and maximum
-    # completion tokens per call stay below $1 per weekly window, including system prompts.
-    bodies = [json.dumps(request_body(batch), ensure_ascii=False).encode() for batch in batches]
-    worst_case = sum(len(body) * 0.50 + MAX_OUTPUT_TOKENS * 2 for body in bodies) / 1_000_000
+    # Charge the model's entire documented context and the output cap for every
+    # planned call when checking the budget. Actual input is limited by packets().
+    worst_case = len(batches) * (
+        MODEL_CONTEXT_TOKENS * INPUT_PRICE_PER_MILLION
+        + MAX_OUTPUT_TOKENS * OUTPUT_PRICE_PER_MILLION
+    ) / 1_000_000
     if worst_case > 0.85:
         raise ValueError("Topic requests exceed the weekly budget ceiling.")
-    credential = None
-    for batch, body in zip(batches, bodies, strict=True):
-        digest = hashlib.sha256(body).hexdigest()
+    config = None
+    for batch in batches:
+        body = json.dumps(request_body(batch), ensure_ascii=False).encode()
+        digest = hashlib.sha256(MODEL.encode() + b"\n" + body).hexdigest()
         result = private / (digest + ".response.json")
         sent = private / (digest + ".submitted")
         if not result.exists():
             if sent.exists():
                 raise RuntimeError("A topic request has no receipt. Reconcile its provider result before rerunning.")
-            if transport is None and credential is None:
-                credential = key()
+            if transport is None and config is None:
+                config = workers_ai_config()
             with sent.open("x") as marker:
                 marker.write(digest + "\n")
-            if transport:
+            if transport is not None:
                 response = transport(body)
             else:
-                request = Request(API, data=body, headers={"Content-Type": "application/json", "Authorization": "Bearer " + credential})
-                with urlopen(request, timeout=90) as reply:
-                    response = json.load(reply)
+                response = run_workers_ai(body, *config)
             pending = result.with_suffix(".tmp")
             pending.write_text(json.dumps(response, ensure_ascii=False) + "\n")
             pending.replace(result)
         else:
             response = json.loads(result.read_text())
-        choice, = response["choices"]
-        if choice["finish_reason"] != "stop":
-            raise ValueError("Topic response was incomplete.")
-        values = json.loads(choice["message"]["content"])["decisions"]
-        if [v["key"] for v in values] != list(range(len(batch))) or any(
-            v["topic"] is not None and v["topic"] not in TOPICS for v in values
-        ):
-            raise ValueError("Topic response has unknown labels or missing, duplicate or out-of-order keys.")
+        values = read_decisions(response, len(batch))
         for row, value in zip(batch, values, strict=True):
             yield row["id"], value["topic"]

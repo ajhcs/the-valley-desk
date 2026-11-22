@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 import unittest
 
 from weekly import add_to_year, link_versions
-from weekly_topics import model_topics, source_topic
+from weekly_topics import model_topics, read_decisions, source_topic
 
 
 class WeeklyPublicationTests(unittest.TestCase):
@@ -26,13 +26,22 @@ class WeeklyPublicationTests(unittest.TestCase):
             self.assertIsNone(source_topic(row))
             def respond(body):
                 self.assertNotIn("pmid:1", body.decode())
-                payload = json.dumps({"decisions": [{"key": 0, "topic": "Clinical care"}]})
-                return {"choices": [{"finish_reason": "stop", "message": {"content": payload}}]}
+                payload = {"decisions": [{"key": 0, "topic": "Clinical care"}]}
+                self.assertEqual(json.loads(body)["response_format"]["json_schema"]["required"], ["decisions"])
+                return {"success": True, "result": {"response": payload}}
             self.assertEqual(list(model_topics([row], root, transport=respond)), [("pmid:1", "Clinical care")])
             self.assertEqual(list(model_topics([row], root, transport=lambda _: self.fail("must replay"))), [("pmid:1", "Clinical care")])
-            incomplete = lambda _: {"choices": [{"finish_reason": "stop", "message": {"content": '{"decisions":[]}'}}]}
+            incomplete = lambda _: {"success": True, "result": {"response": '{"decisions":[]}'}}
             with self.assertRaises(ValueError):
                 list(model_topics([{**row, "title": "New title"}], root, transport=incomplete))
+
+    def test_workers_ai_accepts_json_text_and_rejects_invalid_decisions(self):
+        response = {"success": True, "result": {"response": '{"decisions":[{"key":0,"topic":null}]}'}}
+        self.assertEqual(read_decisions(response, 1), [{"key": 0, "topic": None}])
+        for decision in [{"key": False, "topic": None}, {"key": 2, "topic": None},
+                         {"key": 0, "topic": "Unrecognized"}, {"key": 0, "topic": None, "extra": True}]:
+            with self.subTest(decision=decision), self.assertRaises(ValueError):
+                read_decisions({"success": True, "result": {"response": {"decisions": [decision]}}}, 1)
 
     def test_only_exact_typed_unambiguous_version_edges(self):
         a, b = "10.1000/preprint", "10.1000/journal"
