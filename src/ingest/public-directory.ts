@@ -25,6 +25,7 @@ import {
   renderListingCards,
   facetSlug,
   kindCounts,
+  resultCount,
   listingPath,
   listingTitle,
   topicPath,
@@ -714,8 +715,9 @@ export async function servePublicDirectory(
           ...(pubApi ? { publications: listings.map((i) => i.record) } : studyApi ? { studies: listings.map((i) => i.record) } : { listings }),
           page: result.page,
           page_size: 24,
-          total: result.counts.reduce((sum, kind) => sum + kind.works, 0),
+          total: "more" in result && result.more ? result.total : result.counts.reduce((sum, kind) => sum + kind.works, 0),
           record_total: result.total,
+          ...("more" in result && result.more ? { total_is_lower_bound: true } : {}),
           total_pages: Math.ceil(result.total / 24),
         }));
       }
@@ -756,7 +758,7 @@ export async function servePublicDirectory(
         } else {
           header = filteredHeader(crumbs, described, path);
           title = described;
-          description = `${described}. ${kindCounts(result.counts) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
+          description = `${described}. ${resultCount(result) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
         }
       } else if (path === newPath) {
         title = landing ? "What’s new" : `What’s new: ${described}`;
@@ -781,7 +783,7 @@ export async function servePublicDirectory(
         title = landing ? (hasStudies ? "Search healthcare research" : "Search healthcare publications and research software") : described;
         description = landing
           ? `Search ${kindCounts(result.counts)} connected to the nine-county Delaware Valley by title, term, institution, topic or county.`
-          : `${described}. ${kindCounts(result.counts) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
+          : `${described}. ${resultCount(result) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
         header = landing
           ? `<header class="entity-head"><h1>${hasStudies ? "Healthcare research" : "Publications and research software"}</h1><p class="lede">The directory lists ${kindCounts(result.counts)} connected to the nine-county Delaware Valley. Search titles, terms and institutions, or narrow the list by kind, institution, topic and county.</p></header>`
           : filteredHeader(crumbs, described, path);
@@ -825,7 +827,7 @@ export async function servePublicDirectory(
             ...(about ? { about } : {}),
             mainEntity: {
               "@type": "ItemList",
-              numberOfItems: result.counts.reduce((sum, row) => sum + row.works, 0),
+              numberOfItems: "more" in result && result.more ? result.total : result.counts.reduce((sum, row) => sum + row.works, 0),
               itemListElement: result.items.map((item, i) => ({
                 "@type": "ListItem",
                 position: offset + i + 1,
