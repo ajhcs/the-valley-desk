@@ -78,6 +78,7 @@ These commands are for the release operator. Local verification used an isolated
 
    ```sh
    npx --no-install wrangler d1 execute the-valley-desk --remote --file ops/research-filter-index.sql
+   npx --no-install wrangler d1 execute the-valley-desk --remote --file ops/research-summary.sql
    npx --no-install wrangler d1 execute the-valley-desk --remote --command "EXPLAIN QUERY PLAN SELECT id,kind,group_id,added FROM research_visible WHERE id IN (SELECT id FROM research_facets WHERE field='institution' AND value='drexel-university' INTERSECT SELECT id FROM research_facets WHERE field='county' AND value='philadelphia')"
    npx --no-install wrangler d1 info the-valley-desk
    ```

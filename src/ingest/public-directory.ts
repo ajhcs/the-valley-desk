@@ -475,14 +475,15 @@ export async function servePublicDirectory(
               .map((e) => origin + entityPath(e)),
           );
           entries = entries.filter((e) => !legacy.has(e.loc));
-          const groups = await rows<{ field: string; value: string }>(
-            researchDb,
-            "SELECT DISTINCT field,value FROM research_facets JOIN research_visible USING(id) WHERE field IN ('institution','topic','county') ORDER BY field,value",
-          );
+          const groups = (await summarize(researchDb)).facets;
           entries.push(
-            ...groups
-              .filter((g) => g.field !== "topic" || healthTopic(g.value))
-              .map((g) => ({ loc: origin + "/discover/" + g.field + "/" + encodeURIComponent(g.value) })),
+            ...(["county", "institution", "topic"] as const).flatMap((field) =>
+              groups[field]
+                .map((g) => g.value)
+                .filter((value) => field !== "topic" || healthTopic(value))
+                .sort()
+                .map((value) => ({ loc: origin + "/discover/" + field + "/" + encodeURIComponent(value) })),
+            ),
           );
         }
       } else {
