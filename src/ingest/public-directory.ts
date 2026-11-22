@@ -10,6 +10,7 @@ import {
   institutionFor,
   projectQuery,
   researchQuery,
+  manyPublications,
   researchFeed,
   renderPublication,
   publicationTitle,
@@ -327,7 +328,8 @@ export async function servePublicDirectory(
   let removed: Set<string>;
   try {
     removed = await removalIds(db);
-  } catch {
+  } catch (error) {
+    console.error("directory_unavailable", "removals", String(error));
     return api ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
   }
 
@@ -401,13 +403,20 @@ export async function servePublicDirectory(
       const refs = await institutionRefs(researchDb);
       const institution = p.institutions[0];
       const topic = healthTopic(p.topic) ? facetSlug(p.topic) : "";
+      const inFacet = (field: string) =>
+        ` AND EXISTS(SELECT 1 FROM research_facets f WHERE f.field='${field}' AND f.value=? AND f.id=+v.id)`;
       const nearby = institution
         ? (
             await rows<{ kind: Listing["kind"]; record: string }>(
               researchDb,
-              "SELECT kind,record FROM research_visible WHERE kind='publication' AND id NOT IN (?,?,?) AND id IN (SELECT id FROM research_facets WHERE field='institution' AND value=?" +
-                (topic ? " INTERSECT SELECT id FROM research_facets WHERE field='topic' AND value=?" : "") +
-                ") ORDER BY activity DESC,id LIMIT 5",
+              (await manyPublications(researchDb, institution, topic))
+                ? "SELECT kind,record FROM research_visible v WHERE +kind='publication' AND +id NOT IN (?,?,?)" +
+                    inFacet("institution") +
+                    (topic ? inFacet("topic") : "") +
+                    " ORDER BY activity DESC,id LIMIT 5"
+                : "SELECT kind,record FROM research_visible WHERE kind='publication' AND id NOT IN (?,?,?) AND id IN (SELECT id FROM research_facets WHERE field='institution' AND value=?" +
+                    (topic ? " INTERSECT SELECT id FROM research_facets WHERE field='topic' AND value=?" : "") +
+                    ") ORDER BY activity DESC,id LIMIT 5",
               id,
               p.preprint_of ?? "",
               p.published_as ?? "",
@@ -752,7 +761,8 @@ export async function servePublicDirectory(
         linked = papers.map((p) => ({ title: publicationTitle(p), url: pubPath(p.id) }));
       }
     }
-  } catch {
+  } catch (error) {
+    console.error("directory_unavailable", path, String(error));
     return unavailable();
   }
 
