@@ -101,10 +101,12 @@ const plural = (n: number, one: string, many: string) => `${count(n)} ${n === 1 
 export function kindPhrase(summary: DirectorySummary) {
   const pubs = summary.kinds.publication?.works ?? 0;
   const projects = summary.kinds.project?.works ?? 0;
+  const studies = summary.kinds.study?.works ?? 0;
   return list(
     [
       pubs ? plural(pubs, "publication", "publications") : "",
       projects ? plural(projects, "research software project", "research software projects") : "",
+      studies ? plural(studies, "clinical study", "clinical studies") : "",
     ].filter(Boolean),
   );
 }
@@ -133,7 +135,7 @@ export function entitySentences(
 ) {
   const what = kindPhrase(summary) || "no listings";
   const pubs = summary.kinds.publication;
-  const added = [summary.kinds.publication?.added, summary.kinds.project?.added].filter(Boolean).sort().at(-1);
+  const added = Object.values(summary.kinds).map((kind) => kind.added).filter(Boolean).sort().at(-1);
   const opening =
     field === "institution"
       ? `${name} has ${what} listed in the directory.`

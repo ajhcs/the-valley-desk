@@ -9,9 +9,14 @@ import {
   optionsFor,
   pubPath,
   publicationTitle,
+  studyPath,
+  studiesApi,
+  studyId,
+  registryLabel,
   rows,
   type Institution,
   type Publication,
+  type ClinicalStudy,
   type ResearchDb,
 } from "../ingest/public-directory-research";
 
@@ -56,7 +61,7 @@ const text = (description: string, maxLength = limits.filterLength): Property =>
   maxLength,
 });
 const filters = {
-  kind: { type: "string", description: "Limit to software projects or to publications.", enum: ["project", "publication"] },
+  kind: { type: "string", description: "Limit to software projects, publications or clinical studies.", enum: ["project", "publication", "study"] },
   institution: text("Institution name or id, for example \"Drexel University\". list_institutions returns the names."),
   topic: text("Topic name, for example \"Medical imaging\". list_topics_and_counties returns the names."),
   county: { type: "string", description: "One of the nine Delaware Valley counties.", enum: countyNames },
@@ -67,7 +72,7 @@ const listing = {
   type: "object",
   properties: {
     id: { type: "string", description: "Directory id. Pass it to fetch." },
-    kind: { type: "string", enum: ["project", "publication"] },
+    kind: { type: "string", enum: ["project", "publication", "study"] },
     title: { type: "string" },
     url: { type: "string", description: "The Valley Desk page for this record. Cite this URL." },
     label: { type: "string", enum: ["Verified", "Listed"], description: "Strength of the regional evidence." },
@@ -78,12 +83,13 @@ const listing = {
     counties: { type: "array", items: { type: "string" } },
     dates: {
       type: "object",
-      description: "published: when a paper appeared. pushed: when project code last changed. added: when the record entered the directory.",
-      properties: { published: { type: "string" }, pushed: { type: "string" }, added: { type: "string" } },
+      description: "published: when a paper appeared. pushed: when project code last changed. last_updated: when the registry last updated a study. added: when the record entered the directory.",
+      properties: { published: { type: "string" }, pushed: { type: "string" }, last_updated: { type: "string" }, added: { type: "string" } },
     },
     type: { type: "string" },
     venue: { type: "string" },
     retracted: { type: "boolean" },
+    status: { type: "string" },
   },
   required: ["id", "kind", "title", "url", "label", "dates"],
 };
@@ -133,14 +139,14 @@ const tools: Tool[] = [
     name: "search",
     title: "Search the research directory",
     description:
-      "Search The Valley Desk directory of healthcare research software projects and publications connected to the nine-county Delaware Valley (Philadelphia region). Matches titles, topics, institutions and keywords. Every filter is optional. Returns up to 24 records per page with the site URL, the Verified or Listed evidence label and labelled dates.",
+      "Search The Valley Desk directory of research software, publications and clinical studies connected to the nine-county Delaware Valley (Philadelphia region). Matches titles, topics, institutions and keywords. Every filter is optional. Returns up to 24 records per page with the site URL, the Verified or Listed evidence label and labelled dates.",
     inputSchema: {
       type: "object",
       properties: {
         query: text("Words to match, for example \"sepsis prediction\".", limits.queryLength),
         ...filters,
         label: { type: "string", description: "Limit to one regional evidence label.", enum: ["Verified", "Listed"] },
-        date_from: { type: "string", description: "Earliest published date (publications) or last code push (projects). YYYY, YYYY-MM or YYYY-MM-DD.", pattern: datePattern },
+        date_from: { type: "string", description: "Earliest publication, last code push or study registry update date. YYYY, YYYY-MM or YYYY-MM-DD.", pattern: datePattern },
         date_to: { type: "string", description: "Latest published date or last code push. YYYY, YYYY-MM or YYYY-MM-DD.", pattern: datePattern },
         added_from: { type: "string", description: "Earliest date added to the directory. YYYY, YYYY-MM or YYYY-MM-DD.", pattern: datePattern },
         added_to: { type: "string", description: "Latest date added to the directory. YYYY, YYYY-MM or YYYY-MM-DD.", pattern: datePattern },
@@ -157,7 +163,7 @@ const tools: Tool[] = [
     name: "fetch",
     title: "Get one directory record",
     description:
-      "Get one publication or software project from The Valley Desk directory by its directory id (from search or whats_new) or its thevalleydesk.org URL. Returns the full public record, including the regional connection, its source, and linked projects or publication versions.",
+      "Get one publication, software project or clinical study by its directory id (from search or whats_new) or its thevalleydesk.org URL. Returns the regional connection and its source alongside kind-specific details.",
     inputSchema: {
       type: "object",
       properties: { id: text("Directory id such as \"doi:10.1000/example\" or \"474026\", or the record's thevalleydesk.org URL.", 600) },
@@ -311,8 +317,27 @@ const present = <T extends Record<string, unknown>>(record: T) =>
   ) as Partial<T>;
 const institutionName = (refs: Institution[], id: string) => refs.find((ref) => ref.id === id)?.name ?? id;
 
-type ApiListing = { kind: "project"; record: Record<string, any> } | { kind: "publication"; record: Publication };
+type ApiListing =
+  | { kind: "project"; record: Record<string, any> }
+  | { kind: "publication"; record: Publication }
+  | { kind: "study"; record: ClinicalStudy };
 function summarize(item: ApiListing, context: ToolContext, refs: Institution[]) {
+  if (item.kind === "study") {
+    const s = item.record;
+    return present({
+      id: s.id,
+      kind: item.kind,
+      title: s.title,
+      url: context.origin + studyPath(s.id),
+      label: s.label,
+      connection: s.connection,
+      institutions: s.institutions.map((id) => institutionName(refs, id)),
+      counties: s.counties,
+      dates: present({ last_updated: s.last_updated ?? undefined, added: s.added }),
+      type: registryLabel(s.type),
+      status: registryLabel(s.status),
+    });
+  }
   if (item.kind === "publication") {
     const p = item.record;
     return present({
@@ -382,8 +407,8 @@ async function search(args: Args, context: ToolContext, browse = "/discover/work
   const within = (value: string | undefined, key: string) =>
     (!args[key + "_from"] || (!!value && value >= String(args[key + "_from"]))) &&
     (!args[key + "_to"] || (!!value && value <= args[key + "_to"] + "~"));
-  const dated = (r: { dates?: object }) => (r.dates ?? {}) as { published?: string; pushed?: string; added?: string };
-  if (!results.every((r) => within(dated(r).added, "added") && within(dated(r).published ?? dated(r).pushed, "date"))) {
+  const dated = (r: { dates?: object }) => (r.dates ?? {}) as { published?: string; pushed?: string; last_updated?: string; added?: string };
+  if (!results.every((r) => within(dated(r).added, "added") && within(dated(r).published ?? dated(r).pushed ?? dated(r).last_updated, "date"))) {
     throw new ToolError("Date filters are unavailable right now. Search again without date_from, date_to, added_from, added_to or since.");
   }
   const view = new URLSearchParams(params);
@@ -410,9 +435,9 @@ function recordId(value: string, origin: string) {
     } catch {
       throw new ToolError("id is not a valid URL.");
     }
-    const match = /^\/discover\/(work|publication)\/([^/]+)\/?$/.exec(url.pathname);
+    const match = /^\/discover\/(work|publication|study)\/([^/]+)\/?$/.exec(url.pathname);
     if (!["thevalleydesk.org", "www.thevalleydesk.org", new URL(origin).hostname].includes(url.hostname) || !match) {
-      throw new ToolError("fetch reads thevalleydesk.org record URLs (/discover/work/… or /discover/publication/…) and directory ids only.");
+      throw new ToolError("fetch reads thevalleydesk.org record URLs and directory ids only.");
     }
     try {
       id = decodeURIComponent(match[2]);
@@ -426,12 +451,27 @@ function recordId(value: string, origin: string) {
 async function fetchRecord(value: string, context: ToolContext) {
   const id = recordId(value, context.origin);
   const project = /^[1-9][0-9]{0,19}$/.test(id);
+  const study = studyId.test(id);
   const { status, body } = await api(
     context,
-    (project ? "/api/directory/projects/" : "/api/directory/publications/") + encodeURIComponent(id),
+    (project ? "/api/directory/projects" : study ? studiesApi : "/api/directory/publications") + "/" + encodeURIComponent(id),
   );
   if (status === 410) throw new ToolError("This record has been removed from the directory.");
   if (status !== 200) throw new ToolError("No directory record has this id. Use search to find records and their ids.");
+  if (study) {
+    const s = body.study as ClinicalStudy;
+    const summary = summarize({ kind: "study", record: s }, context, await refsFor(context));
+    const url = context.origin + studyPath(s.id);
+    const metadata = present({
+      ...summary,
+      connection_source: s.source,
+      first_posted: s.first_posted,
+      source_checked: s.checked,
+      conditions: s.conditions.slice(0, 20),
+      sites: s.sites.slice(0, 20),
+    });
+    return { id: s.id, title: s.title, text: plain(s.title, url, metadata), url, metadata };
+  }
   if (project) {
     const p = body.project as Record<string, any>;
     const url = context.origin + projectPath({ id: p.id });

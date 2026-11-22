@@ -30,6 +30,12 @@ def load(args):
             raise ValueError("Expected an array of publication IDs")
         for identifier in removed:
             print("INSERT OR IGNORE INTO publication_removals(id) VALUES(" + quote(identifier) + ");")
+    if args.study_removals:
+        removed = json.loads(args.study_removals.read_text())
+        if not isinstance(removed, list) or not all(isinstance(i, str) and re.fullmatch(r"NCT[0-9]{8}", i) for i in removed):
+            raise ValueError("Expected an array of study IDs")
+        for identifier in removed:
+            print("INSERT OR IGNORE INTO study_removals(id) VALUES(" + quote(identifier) + ");")
     if args.institutions:
         content = args.institutions.read_text().strip()
         refs = json.loads(content) if content.startswith("[") else [json.loads(line) for line in content.splitlines()]
@@ -58,6 +64,11 @@ def load(args):
             for line in source:
                 if line.strip():
                     emit(json.loads(line), "publication", aliases)
+    if args.studies:
+        with args.studies.open() as source:
+            for line in source:
+                if line.strip():
+                    emit(json.loads(line), "study", aliases)
 
 
 def citation_key(url):
@@ -78,6 +89,7 @@ def citation_key(url):
 
 def emit(r, kind, aliases):
     pub = kind == "publication"
+    study = kind == "study"
     if pub:
         allowed = set("id title type published venue doi pmid pmcid arxiv url authors author_count institutions counties topic terms label connection source open_access projects preprint_of published_as retracted added checked".split())
         if set(r) - allowed or any(set(a) - {"name", "orcid", "regional"} for a in r["authors"]):
@@ -88,30 +100,41 @@ def emit(r, kind, aliases):
             raise ValueError("Unsupported publication identifier")
         if not r["authors"] or not r["institutions"] or r["label"] not in ("Verified", "Listed"):
             raise ValueError("Missing byline or regional evidence for " + r["id"])
-    title = r["title" if pub else "name"]
-    institutions = r["institutions"] if pub else [r.get("institution")]
-    counties = r["counties"] if pub else [r.get("county")]
+    if study:
+        allowed = set("id title type status phases first_posted last_updated conditions sites institutions counties source url label connection added checked".split())
+        sites = set("facility city state zip county status".split())
+        if set(r) != allowed or not re.fullmatch(r"NCT[0-9]{8}", r["id"]) or not r["sites"]:
+            raise ValueError("Unexpected study fields or identity")
+        if any(set(site) != sites for site in r["sites"]) or r["source"] != "https://clinicaltrials.gov/study/" + r["id"] or r["url"] != r["source"]:
+            raise ValueError("Invalid registry evidence for " + r["id"])
+    title = r["title" if pub or study else "name"]
+    institutions = r["institutions"] if pub or study else [r.get("institution")]
+    counties = r["counties"] if pub or study else [r.get("county")]
+    topic = r.get("topic", "")
     facets = {"institution": [aliases.get(slug(v), slug(v)) for v in institutions if v],
-              "county": [slug(v) for v in counties if v], "topic": [slug(r["topic"])],
+              "county": [slug(v) for v in counties if v], "topic": [slug(topic)] if topic else [],
               "project": r.get("projects", []), "label": [slug(r["label"])]}
     if pub:
         facets["version"] = [v for v in [r["published_as"], r["preprint_of"]] if v]
         alternate = {citation_key(r["url"]), citation_key(r["source"])}
         alternate.update(key + ":" + r[key] for key in ("pmid", "pmcid", "arxiv", "doi") if r.get(key))
         facets["alternate"] = sorted(alternate - {r["id"], None})
-    else:
+    elif not study:
         identifiers = {citation_key(r.get("paper"))}
         for paper in r.get("papers") or []:
             identifiers.add(citation_key(paper.get("url")))
             if paper.get("doi"):
                 identifiers.add("doi:" + paper["doi"].lower())
         facets["paper"] = sorted(identifiers - {None})
-    keys = [r["id"], r["topic"], *filter(None, institutions + counties),
+    keys = [r["id"], topic, *filter(None, institutions + counties),
             *r.get("terms", []), *r.get("topics", []), r.get("purpose"), r.get("language"), r.get("venue")]
+    if study:
+        keys.extend([*r["conditions"], *(site["facility"] for site in r["sites"])])
     # Store facet keys with the row so a single upsert updates all index projections.
     payload = compact(r)
-    fields = [r["id"], kind, title, r.get("added") or "", r.get("published") or r.get("pushed") or r.get("updated") or "",
-              r["topic"], (r.get("published_as") or r.get("preprint_of") or "?" + r["id"]) if r.get("type") == "preprint" else r["id"],
+    activity = r.get("published") or r.get("pushed") or r.get("last_updated") or r.get("updated") or ""
+    fields = [r["id"], kind, title, r.get("added") or "", activity,
+              topic, (r.get("published_as") or r.get("preprint_of") or "?" + r["id"]) if r.get("type") == "preprint" else r["id"],
               " ".join(filter(None, keys)), payload, compact(facets)]
     insert = "INSERT INTO research_listings(id,kind,title,added,activity,topic,work_id,keywords,record,facets) "
     update = (" ON CONFLICT(id) DO UPDATE SET " +
@@ -139,6 +162,6 @@ def emit(r, kind, aliases):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    for flag in ("projects", "publications", "institutions", "removals"):
+    for flag in ("projects", "publications", "institutions", "removals", "studies", "study-removals"):
         parser.add_argument("--" + flag, type=Path)
     load(parser.parse_args())

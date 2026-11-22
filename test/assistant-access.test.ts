@@ -15,7 +15,7 @@ const meta = { "io.modelcontextprotocol/protocolVersion": modern, "io.modelconte
 const removedProject = "474026";
 const keptProject = "565526";
 
-function directory() {
+function directory(study?: object) {
   const sqlite = new DatabaseSync(":memory:");
   const db = {
     prepare(sql: string) {
@@ -39,6 +39,12 @@ function directory() {
   writeFileSync(papers, fixture);
   writeFileSync(refs, execFileSync("python3", ["ops/research-fixture.py", "--institutions"]));
   load("--publications", papers, "--institutions", refs, "--projects", "src/content/public-directory-projects.json");
+  if (study) {
+    sqlite.exec(readFileSync("migrations/0047_clinical_studies.sql", "utf8"));
+    const studies = join(dir, "studies.jsonl");
+    writeFileSync(studies, JSON.stringify(study) + "\n");
+    load("--studies", studies);
+  }
   const removePublication = (id: string) => {
     const file = join(dir, "removed.json");
     writeFileSync(file, JSON.stringify([id]));
@@ -47,6 +53,48 @@ function directory() {
   const records = fixture.trim().split("\n").map((line) => JSON.parse(line));
   return { sqlite, env, records, removePublication, close: () => rmSync(dir, { recursive: true, force: true }) };
 }
+
+test("clinical studies honor staged visibility, show registry evidence and disappear on removal", async () => {
+  const id = "NCT00000001";
+  const source = "https://clinicaltrials.gov/study/" + id;
+  const study = {
+    id, title: "Example cardiac care study", type: "OBSERVATIONAL", status: "COMPLETED", phases: [],
+    first_posted: "2026-01-05", last_updated: "2026-11-18", conditions: ["Cardiac disease"],
+    sites: [{ facility: "Example clinic", city: "Philadelphia", state: "PA", zip: "19104",
+              county: "Philadelphia", status: "ACTIVE_NOT_RECRUITING" }],
+    institutions: [], counties: ["Philadelphia"], source, url: source, label: "Verified",
+    connection: "ClinicalTrials.gov lists a study site in the Delaware Valley.",
+    added: "2026-11-21", checked: "2026-11-21",
+  };
+  const { env, sqlite, close } = directory(study);
+  try {
+    const detail = "/discover/study/" + id;
+    assert.equal((await get(env, detail)).status, 404);
+    assert.match(await (await get(env, "/discover/works?kind=study")).text(), /No matching listings/);
+    sqlite.exec("UPDATE study_visibility SET enabled=1");
+    sqlite.exec(readFileSync("ops/research-summary.sql", "utf8"));
+    const html = await (await get(env, detail)).text();
+    assert.match(html, /Example clinic.*Philadelphia County.*Active not recruiting/);
+    assert.match(html, /Overall registry status <strong>Completed/);
+    assert.match(html, /clinicaltrials\.gov\/study\/NCT00000001/);
+    assert.equal((await (await get(env, "/api/directory/studies/" + id)).json()).study.id, id);
+    assert.equal((await (await get(env, "/api/directory/studies?q=cardiac")).json()).total, 1);
+    assert.match(await (await get(env, "/discover/new?kind=study")).text(), /Example cardiac care study/);
+    assert.match(await (await get(env, "/discover/updates.xml?kind=study")).text(), new RegExp(detail));
+    assert.match(await (await get(env, "/sitemap.xml")).text(), /studies-1.xml/);
+    assert.match(await (await get(env, "/discover/sitemap/studies-1.xml")).text(), new RegExp(detail));
+    assert.equal((await call(env, "search", { kind: "study" })).structuredContent.results[0].id, id);
+    assert.equal((await call(env, "fetch", { id: origin + detail })).structuredContent.metadata.connection_source, source);
+    sqlite.prepare("INSERT INTO study_removals(id) VALUES(?)").run(id);
+    sqlite.exec(readFileSync("ops/research-summary.sql", "utf8"));
+    assert.equal((await get(env, detail)).status, 410);
+    assert.equal((await get(env, "/api/directory/studies/" + id)).status, 410);
+    assert.doesNotMatch(await (await get(env, "/sitemap.xml")).text(), /studies-1.xml/);
+    assert.equal((await call(env, "search", { kind: "study" })).structuredContent.results.length, 0);
+  } finally {
+    close();
+  }
+});
 
 type Rpc = { status: number; body: any; headers: Headers };
 async function post(env: unknown, body: unknown, headers: Record<string, string> = {}): Promise<Rpc> {

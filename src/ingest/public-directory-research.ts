@@ -21,6 +21,9 @@ export const newPath = "/discover/new";
 export const feedPath = "/discover/updates.xml";
 export const publicationsApi = "/api/directory/publications";
 export const pubPath = (id: string) => "/discover/publication/" + encodeURIComponent(id);
+export const studiesApi = "/api/directory/studies";
+export const studyPath = (id: string) => "/discover/study/" + encodeURIComponent(id);
+export const studyId = /^NCT[0-9]{8}$/;
 export const facetSlug = (name: string) =>
   name
     .normalize("NFKC")
@@ -75,7 +78,26 @@ export type Institution = {
   aliases: string[];
   sites: { name: string; place: string; county: string; source: string; state?: string }[];
 };
-type RecordsByKind = { project: DirectoryProject; publication: Publication };
+export type ClinicalStudy = {
+  id: string;
+  title: string;
+  type: string;
+  status: string;
+  phases: string[];
+  first_posted: string | null;
+  last_updated: string | null;
+  conditions: string[];
+  sites: { facility: string; city: string; state: string; zip: string; county: string; status: string | null }[];
+  institutions: string[];
+  counties: string[];
+  label: "Verified";
+  connection: string;
+  source: string;
+  url: string;
+  added: string;
+  checked: string;
+};
+type RecordsByKind = { project: DirectoryProject; publication: Publication; study: ClinicalStudy };
 export type ListingKind = keyof RecordsByKind;
 export type Listing<K extends ListingKind = ListingKind> = {
   [P in K]: { kind: P; record: RecordsByKind[P] };
@@ -121,6 +143,13 @@ const templates: {
     path: pubPath,
     title: displayTitle,
     card: publicationRecord,
+  },
+  study: {
+    name: "Clinical study",
+    plural: "Clinical studies",
+    path: studyPath,
+    title: (r) => r.title,
+    card: studyRecord,
   },
 };
 export const listingTitle = <K extends ListingKind>(item: Listing<K>) => templates[item.kind].title(item.record);
@@ -415,6 +444,38 @@ function publicationRecord(p: Publication) {
     <p class="record-topic">${topicLink(p.topic)}${timestamp(p.added) ? `<span>Added ${timestamp(p.added)}</span>` : ""}</p>
   </li>`;
 }
+const studyNames: Record<string, string> = {
+  INTERVENTIONAL: "Interventional trial",
+  OBSERVATIONAL: "Observational study",
+  EXPANDED_ACCESS: "Expanded access",
+};
+export function registryLabel(value: string) {
+  return studyNames[value] ?? value.toLowerCase().replaceAll("_", " ").replace(/^./, (s) => s.toUpperCase());
+}
+function studyRecord(study: ClinicalStudy) {
+  return `<li class="record record-study">
+    <p class="record-kind"><span class="kind">${html(registryLabel(study.type))}</span><span>${html(study.id)}</span><span>${html(registryLabel(study.status))}</span></p>
+    <h3 class="record-title"><a href="${studyPath(study.id)}">${html(study.title)}</a></h3>
+    <p class="record-evidence">${html(study.counties.map((county) => county + " County").join(", "))} · ClinicalTrials.gov</p>
+    <p class="record-topic"><span>Added ${timestamp(study.added)}</span></p>
+  </li>`;
+}
+export function renderStudy(study: ClinicalStudy) {
+  return `<article class="frame page prose-page">
+    <nav class="breadcrumb" aria-label="Directory breadcrumb"><a href="${browsePath}?kind=study">Clinical studies</a></nav>
+    <p class="record-kind">${html(study.id)} · ${html(registryLabel(study.type))}</p>
+    <h1>${html(study.title)}</h1>
+    <p>Overall registry status <strong>${html(registryLabel(study.status))}</strong></p>
+    ${study.phases.length && study.phases.some((phase) => phase !== "NA") ? `<p>${html(study.phases.filter((phase) => phase !== "NA").map((phase) => registryLabel(phase).replace(/phase(?=[0-9])/i, "Phase ")).join(" · "))}</p>` : ""}
+    ${study.conditions.length ? `<p>Conditions ${html(study.conditions.join(", "))}</p>` : ""}
+    <h2>Delaware Valley sites</h2>
+    <ul>${study.sites.map((site) => `<li>${html(site.facility)} · ${html(site.city)}, ${html(site.state)} · ${html(site.county)} County${site.status ? " · " + html(registryLabel(site.status)) : ""}</li>`).join("")}</ul>
+    ${study.first_posted ? `<p>First posted ${partialDate(study.first_posted)}</p>` : ""}
+    ${study.last_updated ? `<p>Registry updated ${partialDate(study.last_updated)}</p>` : ""}
+    <p>Added to the directory ${timestamp(study.added)}</p>
+    <p>${externalLink(study.source, "View this study on ClinicalTrials.gov")}</p>
+  </article>`;
+}
 export function renderListingCards(items: Listing[], catalog: DirectoryCatalog) {
   return `<ol class="records" data-view="full">${items.map((item) => card(item, catalog)).join("")}</ol>`;
 }
@@ -470,12 +531,13 @@ export type ResearchPage = {
   catalog: DirectoryCatalog;
   options: Options;
   enabled: boolean;
+  studiesAvailable?: boolean;
   scope?: string;
   byDate?: boolean;
   aside?: string;
 };
 
-export function renderResearch({ header, path, params, data, catalog, options, enabled, scope = "", byDate, aside }: ResearchPage) {
+export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, scope = "", byDate, aside }: ResearchPage) {
   function select(name: string, label: string, choices: [string, string][], all = "All") {
     const selected = params.get(name) ?? "";
     return `<label>${label}<select form="research-form" name="${name}"><option value="">${all}</option>${choices
@@ -505,7 +567,7 @@ export function renderResearch({ header, path, params, data, catalog, options, e
   } else list = `<h2 class="sr-only">Listings</h2>${renderListingCards(data.items, catalog)}`;
   const filters = [
     enabled
-      ? select("kind", "Kind", Object.entries(templates).reverse().map(([kind, t]) => [kind, t.plural]), "Publications and software")
+      ? select("kind", "Kind", (["publication", "project", ...(studiesAvailable ? ["study" as const] : [])] as const).map((kind) => [kind, templates[kind].plural]), studiesAvailable ? "All kinds" : "Publications and software")
       : "",
     ...fields
       .filter((f) => f !== scope)
@@ -520,7 +582,7 @@ export function renderResearch({ header, path, params, data, catalog, options, e
     path !== newPath && enabled
       ? `<label>Order<select form="research-form" name="sort">${[
           ["added", "Date added"],
-          ["activity", "Publication date or last code push"],
+          ["activity", studiesAvailable ? "Publication, code push or registry update date" : "Publication date or last code push"],
           ["name", "Title A–Z"],
         ]
           .map(([v, n]) => `<option value="${v}"${params.get("sort") === v ? " selected" : ""}>${n}</option>`)

@@ -5,6 +5,10 @@ import {
   feedPath,
   publicationsApi,
   pubPath,
+  studiesApi,
+  studyPath,
+  studyId,
+  registryLabel,
   rows,
   optionsFor,
   institutionFor,
@@ -13,6 +17,7 @@ import {
   manyPublications,
   researchFeed,
   renderPublication,
+  renderStudy,
   publicationTitle,
   displayTitle,
   publicationType,
@@ -25,6 +30,7 @@ import {
   rss,
   feedUrl,
   type Publication,
+  type ClinicalStudy,
   type ResearchDb,
   type Institution,
   type Listing,
@@ -75,11 +81,13 @@ const jsonHeaders = { ...noStore, "content-type": "application/json; charset=utf
 
 export function isPublicDirectoryPath(path: string) {
   return (
-    ["/api/directory/listings", "/llms.txt", newPath, feedPath, publicationsApi].includes(
+    ["/api/directory/listings", "/llms.txt", newPath, feedPath, publicationsApi, studiesApi].includes(
       path.replace(/\/$/, ""),
     ) ||
     path.startsWith(publicationsApi + "/") ||
     path.startsWith("/discover/publication/") ||
+    path.startsWith(studiesApi + "/") ||
+    path.startsWith("/discover/study/") ||
     path.startsWith("/discover/sitemap/") ||
     decodedPublicPath(path).replace(/\/$/, "") === "/sitemap.xml" ||
     path === "/" ||
@@ -213,7 +221,7 @@ function canonicalQuery(params: URLSearchParams) {
 /** A readable name for a filtered view, built from the parameters in the URL. */
 function describeQuery(params: URLSearchParams, names: Names, added = false) {
   const kind = params.get("kind");
-  const parts = [kind === "publication" ? "Publications" : kind === "project" ? "Research software" : "Publications and research software"];
+  const parts = [kind === "publication" ? "Publications" : kind === "project" ? "Research software" : kind === "study" ? "Clinical studies" : "Healthcare research"];
   const q = params.get("q")?.trim();
   if (q) parts.push(`matching “${q.slice(0, 80)}”`);
   const topic = params.getAll("topic").filter(Boolean).map((t) => names.topic(facetSlug(t)));
@@ -337,17 +345,40 @@ export async function servePublicDirectory(
   const path = pathname.replace(/\/$/, "") || "/";
   const combinedApi = path === "/api/directory/listings";
   const pubApi = path === publicationsApi || path.startsWith(publicationsApi + "/");
+  const studyApi = path === studiesApi || path.startsWith(studiesApi + "/");
   const detail = path.startsWith("/discover/publication/") || path.startsWith(publicationsApi + "/");
   const xml = (value: string, type = "application/xml") =>
     new Response(head ? null : value, { headers: { ...noStore, "content-type": type + "; charset=utf-8" } });
   const unavailable = () =>
     api || pubApi ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
-  let hasPubs = false;
+  let hasPubs = false, hasStudies = false;
   let linked: { title: string; url: string }[] = [];
   try {
     if (publicationsEnabled) {
       hasPubs =
         (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='publication' LIMIT 1")).length > 0;
+    }
+    hasStudies = hasPubs && (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='study' LIMIT 1")).length > 0;
+    if (path.startsWith("/discover/study/") || path.startsWith(studiesApi + "/")) {
+      const id = decode(path.slice((studyApi ? studiesApi : "/discover/study").length + 1));
+      const missing = () => studyApi ? json(() => ({ error: "study_not_found" }), 404) : page({ kind: "not-found" }, 404);
+      if (!studyId.test(id) || !hasPubs) return missing();
+      const [removals] = await rows(researchDb, "SELECT name FROM sqlite_master WHERE type='table' AND name='study_removals'");
+      if (!removals) return missing();
+      if ((await rows(researchDb, "SELECT id FROM study_removals WHERE id=?", id)).length) {
+        return studyApi ? json(() => ({ error: "study_removed" }), 410) : page({ kind: "study-removed" }, 410);
+      }
+      const [entry] = await rows<{ record: string }>(researchDb, "SELECT record FROM research_visible WHERE kind='study' AND id=?", id);
+      if (!entry) return missing();
+      const study: ClinicalStudy = JSON.parse(entry.record);
+      if (studyApi) return json(() => ({ study }));
+      return page({
+        kind: "research",
+        title: study.title,
+        summary: `${registryLabel(study.type)} ${study.id}. Study sites in ${study.counties.map((county) => county + " County").join(", ")}. Source ClinicalTrials.gov.`,
+        path: studyPath(id),
+        content: renderStudy(study),
+      }, 200);
     }
     if (path === "/llms.txt")
       return new Response(head ? null : llmsTxt(origin, true, hasPubs), {
@@ -467,6 +498,10 @@ export async function servePublicDirectory(
           "directory",
           ...Array.from({ length: Math.ceil(row.n / partSize) }, (_, i) => String(i + 1)),
         ];
+        if (hasStudies) {
+          const [{ n }] = await rows<{ n: number }>(researchDb, "SELECT count(*) n FROM research_visible WHERE kind='study'");
+          parts.push(...Array.from({ length: Math.ceil(n / partSize) }, (_, i) => "studies-" + (i + 1)));
+        }
         return xml(
           `<sitemapindex${namespace}>${parts.map((p) => `<sitemap><loc>${html(origin + prefix + p + ".xml")}</loc></sitemap>`).join("")}</sitemapindex>`,
         );
@@ -496,16 +531,18 @@ export async function servePublicDirectory(
           );
         }
       } else {
-        const match = /^\/discover\/sitemap\/([1-9]\d{0,5})\.xml$/.exec(path);
-        if (!hasPubs || !match) return page({ kind: "not-found" }, 404);
+        const match = /^\/discover\/sitemap\/(studies-)?([1-9]\d{0,5})\.xml$/.exec(path);
+        const studyPart = !!match?.[1];
+        if (!match || (studyPart ? !hasStudies : !hasPubs)) return page({ kind: "not-found" }, 404);
         entries = (
           await rows<{ id: string; checked: string | null }>(
             researchDb,
-            "SELECT id,json_extract(record,'$.checked') checked FROM research_visible WHERE kind='publication' ORDER BY id LIMIT ? OFFSET ?",
+            "SELECT id,json_extract(record,'$.checked') checked FROM research_visible WHERE kind=? ORDER BY id LIMIT ? OFFSET ?",
+            studyPart ? "study" : "publication",
             partSize,
-            (Number(match[1]) - 1) * partSize,
+            (Number(match[2]) - 1) * partSize,
           )
-        ).map((r) => ({ loc: origin + pubPath(r.id), lastmod: r.checked ?? undefined }));
+        ).map((r) => ({ loc: origin + (studyPart ? studyPath : pubPath)(r.id), lastmod: r.checked ?? undefined }));
         if (!entries.length) return page({ kind: "not-found" }, 404);
       }
       const seen = new Set<string>();
@@ -542,7 +579,7 @@ export async function servePublicDirectory(
     const scoped = /^\/discover\/(institution|topic|county)\/([^/]+)$/.exec(path);
     let refs: Institution[] = [];
     const needsRefs =
-      scoped || path === newPath || path === feedPath || combinedApi || pubApi || (path === browsePath && hasPubs);
+      scoped || path === newPath || path === feedPath || combinedApi || pubApi || studyApi || (path === browsePath && hasPubs);
     if (
       needsRefs &&
       (hasPubs ||
@@ -565,6 +602,7 @@ export async function servePublicDirectory(
       path === newPath ||
       path === feedPath ||
       pubApi ||
+      studyApi ||
       combinedApi ||
       (scoped && refs.length > 0) ||
       (path === browsePath && searchParams.has("kind") && !hasPubs) ||
@@ -572,6 +610,7 @@ export async function servePublicDirectory(
         ((path === browsePath && (!projectFilters || searchParams.get("kind") === "publication")) || scoped))
     ) {
       if (pubApi && !hasPubs) return json(() => ({ error: "publication_not_found" }), 404);
+      if (studyApi && !hasStudies) return json(() => ({ error: "study_not_found" }), 404);
       const options = optionsFor(catalog, removed, refs);
       const params = new URLSearchParams(searchParams);
       // "Other science" has no topic feed, and HTML views do not offer it as a topic filter.
@@ -583,6 +622,7 @@ export async function servePublicDirectory(
         for (const t of kept) params.append("topic", t);
       }
       if (pubApi) params.set("kind", "publication");
+      if (studyApi) params.set("kind", "study");
       if (path === feedPath || path === newPath) params.set("sort", "added");
       // A landing page is the unfiltered first page. Every other combination is a search result.
       const filtered = [...searchParams.keys()].some((key) => key !== "page");
@@ -608,7 +648,7 @@ export async function servePublicDirectory(
         : projectQuery(catalog, removed, params, options, refs);
       if (scoped && !result.total && !options[scoped[1] as keyof typeof options].has(params.get(scoped[1])!))
         return page({ kind: "not-found" }, 404);
-      if (pubApi || combinedApi) {
+      if (pubApi || combinedApi || studyApi) {
         const publicationIds = result.items.flatMap((i) =>
           i.kind === "publication" ? [i.record.published_as, i.record.preprint_of].filter(Boolean) : [],
         );
@@ -626,7 +666,7 @@ export async function servePublicDirectory(
         const listings = result.items.map((i) =>
           i.kind === "project"
             ? { kind: i.kind, record: publicProject(i.record) }
-            : {
+            : i.kind === "publication" ? {
                 kind: i.kind,
                 record: {
                   ...i.record,
@@ -634,10 +674,10 @@ export async function servePublicDirectory(
                   preprint_of: visibleVersions.has(i.record.preprint_of ?? "") ? i.record.preprint_of : null,
                   published_as: visibleVersions.has(i.record.published_as ?? "") ? i.record.published_as : null,
                 },
-              },
+              } : i,
         );
         return json(() => ({
-          ...(pubApi ? { publications: listings.map((i) => i.record) } : { listings }),
+          ...(pubApi ? { publications: listings.map((i) => i.record) } : studyApi ? { studies: listings.map((i) => i.record) } : { listings }),
           page: result.page,
           page_size: 24,
           total: result.counts.reduce((sum, kind) => sum + kind.works, 0),
@@ -669,7 +709,7 @@ export async function servePublicDirectory(
               : { "@type": "Thing", name: scope.name };
         title =
           scope.field === "institution"
-            ? `${scope.name}: healthcare publications and research software`
+            ? `${scope.name}: ${hasStudies ? "healthcare research" : "healthcare publications and research software"}`
             : scope.field === "topic"
               ? `${scope.name} research in the Delaware Valley`
               : `Healthcare research in ${place}`;
@@ -692,12 +732,12 @@ export async function servePublicDirectory(
           <h1>What’s new</h1>
           <p class="lede">Listings in the order they entered the directory, newest first. A paper can enter long after its publication date, and a new code push does not move a project here. The original project collection entered on November 18, 2026.</p></header>`;
       } else {
-        title = landing ? "Search healthcare publications and research software" : described;
+        title = landing ? (hasStudies ? "Search healthcare research" : "Search healthcare publications and research software") : described;
         description = landing
           ? `Search ${kindCounts(result.counts)} connected to the nine-county Delaware Valley by title, term, institution, topic or county.`
           : `${described}. ${kindCounts(result.counts) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
         header = landing
-          ? `<header class="entity-head"><h1>Publications and research software</h1><p class="lede">The directory lists ${kindCounts(result.counts)} connected to the nine-county Delaware Valley. Search titles, terms and institutions, or narrow the list by kind, institution, topic and county.</p></header>`
+          ? `<header class="entity-head"><h1>${hasStudies ? "Healthcare research" : "Publications and research software"}</h1><p class="lede">The directory lists ${kindCounts(result.counts)} connected to the nine-county Delaware Valley. Search titles, terms and institutions, or narrow the list by kind, institution, topic and county.</p></header>`
           : filteredHeader(crumbs, described, path);
       }
       const offset = (result.page - 1) * 24;
@@ -719,6 +759,7 @@ export async function servePublicDirectory(
             catalog,
             options,
             enabled: hasPubs,
+            studiesAvailable: hasStudies,
             scope: scoped?.[1],
             byDate: path === newPath,
             aside,
@@ -786,7 +827,7 @@ export async function servePublicDirectory(
   }
   if (pathname === "/discover" || pathname === "/discover/") return redirect(browsePath + search);
   if (pathname === methodPath || pathname === methodPath + "/")
-    return page({ kind: "methodology", publications: hasPubs }, 200);
+    return page({ kind: "methodology", publications: hasPubs, studies: hasStudies }, 200);
 
   const entityMatch = entityRoute.exec(pathname);
   if (entityMatch) {
