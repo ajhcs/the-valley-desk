@@ -673,7 +673,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   const path = url.pathname;
   const method = request.method.toUpperCase();
 
-  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path.startsWith("/mcp") || path.startsWith("/discover/connect") || path.startsWith("/.well-known/openai-"))) {
+  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path.startsWith("/mcp") || path.startsWith("/discover/connect") || path === "/discover/terms" || path === "/discover/terms/" || path.startsWith("/.well-known/openai-"))) {
     const { isAssistantPath, serveAssistantAccess } = await import("./src/assistant/access.ts");
     if (isAssistantPath(path)) return serveAssistantAccess(request, env, origin, nonce);
   }

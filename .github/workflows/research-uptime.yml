@@ -1,0 +1,33 @@
+name: Research directory uptime
+
+on:
+  schedule:
+    - cron: "7,17,27,37,47,57 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check the production directory and its failure page
+        shell: bash
+        run: |
+          response="$RUNNER_TEMP/research-uptime.html"
+          for attempt in 1 2 3; do
+            if status=$(curl --silent --show-error --max-time 15 \
+                -H "Cache-Control: no-cache" \
+                --output "$response" --write-out '%{http_code}' \
+                https://thevalleydesk.org/discover/new) &&
+              [[ "$status" == 200 ]] &&
+              grep -Fq 'What’s new' "$response" &&
+              ! grep -Fqi 'Directory temporarily unavailable' "$response"; then
+              exit 0
+            fi
+            echo "Directory check $attempt failed (HTTP ${status:-unavailable})."
+            if [[ "$attempt" != 3 ]]; then sleep 10; fi
+          done
+          echo "::error title=The Valley Desk directory unavailable::The public What's new page failed three consecutive checks."
+          exit 1

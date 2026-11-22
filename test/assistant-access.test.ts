@@ -461,6 +461,9 @@ test("discovery: connect page, server card, llms.txt, sitemap, methodology and d
     assert.match(await (await get(env, "/discover/methodology")).text(), /href="\/discover\/connect"/);
     assert.match(await (await get(env, "/discover/works")).text(), /<script src="\/webmcp\.js" defer><\/script>/);
 
+    const terms = await get(env, "/discover/terms");
+    assert.equal(terms.status, 200);
+    assert.match(await terms.text(), /<h1>Terms of use<\/h1>/);
     assert.equal((await get(env, "/.well-known/openai-apps-challenge")).status, 404);
     const verified = await get({ ...env, OPENAI_APPS_CHALLENGE: " token-From_portal.123 " }, "/.well-known/openai-apps-challenge");
     assert.equal(verified.headers.get("content-type"), "text/plain; charset=utf-8");
