@@ -1,14 +1,12 @@
 [Unit]
 Description=Prepare and release reviewed Valley Desk weekly publications
 ConditionPathExists=/workspace/build/builderbob/tvd-weekly-publications/cursor.json
-ConditionPathExists=/workspace/build/builderbob/tvd-weekly-publications/openrouter.key
 
 [Service]
 Type=oneshot
 UMask=0077
 TimeoutStartSec=45min
 Environment=PYTHONDONTWRITEBYTECODE=1
-Environment=PATH=/workspace/build/builderbob/runtimes/node-v24.21.0-linux-x64/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PATH=/home/builderbob/.local/bin:/workspace/build/builderbob/runtimes/node-v24.21.0-linux-x64/bin:/usr/local/bin:/usr/bin:/bin
 Environment=npm_config_cache=/workspace/cache/builderbob/npm
-Environment=TVD_OPENROUTER_KEY_FILE=/workspace/build/builderbob/tvd-weekly-publications/openrouter.key
 ExecStart=/usr/bin/python3 /workspace/build/builderbob/tvd-weekly-publications/checkout/ops/weekly-publications.py /workspace/build/builderbob/tvd-weekly-publications --postal /workspace/build/builderbob/tvd-weekly-publications/US.zip --hold-ids /workspace/build/builderbob/tvd-weekly-publications/hold-ids.txt --countries /usr/share/iso-codes/json/iso_3166-1.json

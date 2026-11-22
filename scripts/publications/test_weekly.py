@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -24,13 +23,13 @@ class WeeklyPublicationTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 list(model_topics([row] * 801, root, transport=lambda _: self.fail("budget must block")))
             self.assertIsNone(source_topic(row))
-            def respond(body):
-                self.assertNotIn("pmid:1", body.decode())
-                payload = json.dumps({"decisions": [{"key": 0, "topic": "Clinical care"}]})
-                return {"choices": [{"finish_reason": "stop", "message": {"content": payload}}]}
+            def respond(prompt):
+                self.assertNotIn("pmid:1", prompt)
+                self.assertIn("Unclear topic", prompt)
+                return {"decisions": [{"key": 0, "topic": "Clinical care"}]}
             self.assertEqual(list(model_topics([row], root, transport=respond)), [("pmid:1", "Clinical care")])
             self.assertEqual(list(model_topics([row], root, transport=lambda _: self.fail("must replay"))), [("pmid:1", "Clinical care")])
-            incomplete = lambda _: {"choices": [{"finish_reason": "stop", "message": {"content": '{"decisions":[]}'}}]}
+            incomplete = lambda _: {"decisions": [{"key": 1, "topic": None}]}
             with self.assertRaises(ValueError):
                 list(model_topics([{**row, "title": "New title"}], root, transport=incomplete))
 
