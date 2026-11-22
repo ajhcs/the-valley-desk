@@ -10,6 +10,8 @@ import re
 import shutil
 import subprocess
 import sys
+from urllib.parse import quote
+from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -111,8 +113,13 @@ def collect(root, private, branch, start, stop, today, args):
 
 
 def d1(root, *args):
-    return run("npx", "--no-install", "wrangler", "d1", "execute", TARGET, "--remote", "--json", *args,
-               cwd=root, output=True)
+    raw = run("npx", "--no-install", "wrangler", "d1", "execute", TARGET, "--remote", "--json", *args,
+              cwd=root, output=True)
+    # Remote file imports emit upload progress before the JSON result.
+    result = re.search(r"^\[", raw, re.MULTILINE)
+    if not result:
+        raise RuntimeError("Wrangler did not return a D1 result.")
+    return json.loads(raw[result.start():])
 
 
 def load_approved(root, private, pr):
@@ -135,7 +142,7 @@ def load_approved(root, private, pr):
     binding = json.loads((root / "wrangler.jsonc").read_text())["d1_databases"]
     if len(binding) != 1 or binding[0]["database_name"] != TARGET or binding[0]["binding"] != "VALLEY_DESK_DB":
         raise RuntimeError("Production binding does not match the configured directory database.")
-    ledger = json.loads(d1(root, "--command", "SELECT name FROM d1_migrations WHERE name='0046_research_directory.sql'"))
+    ledger = d1(root, "--command", "SELECT name FROM d1_migrations WHERE name='0046_research_directory.sql'")
     if not ledger or not ledger[0]["results"]:
         raise RuntimeError("The production research schema is missing.")
     # Retain a bookmark once before the first attempted write. Retries replay the same reviewed rows.
@@ -148,20 +155,33 @@ def load_approved(root, private, pr):
     for start in range(0, len(lines), 250):
         part = private / f"load-{start // 250:04d}.sql"
         part.write_text("".join(lines[start:start + 250]))
-        result = json.loads(d1(root, "--file", str(part)))
+        result = d1(root, "--file", str(part))
         if not result or not all(item.get("success") for item in result):
             raise RuntimeError(f"D1 rejected part {part.name}")
         save(part.with_suffix(".receipt.json"), result)
-    summary = json.loads(d1(root, "--file", "ops/research-summary.sql"))
+    summary = d1(root, "--file", "ops/research-summary.sql")
     if not summary or not all(item.get("success") for item in summary):
         raise RuntimeError("D1 did not finish refreshing counts.")
     sample = manifest["spot_check"]
     selected = ",".join("'" + value.replace("'", "''") + "'" for value in sample)
-    check = json.loads(d1(root, "--command", f"SELECT id FROM research_visible WHERE kind='publication' AND id IN ({selected})"))
+    check = d1(root, "--command", f"SELECT id FROM research_visible WHERE kind='publication' AND id IN ({selected})")
     if {row["id"] for row in check[0]["results"]} != set(sample):
         raise RuntimeError("Production spot-check records differ from the approved batch. Check the current removals.")
-    save(private / "loaded.json", {"merge": merged, "head": head, "pr": pr["url"],
-                                   "sample": len(sample), "loaded": datetime.now(NY).isoformat()})
+    readback = {}
+    sampled = set(sample[:3])
+    for line in delta.open(encoding="utf-8"):
+        entry = json.loads(line)
+        if entry["id"] not in sampled:
+            continue
+        url = "https://thevalleydesk.org/api/directory/publications/" + quote(entry["id"], safe="")
+        request = Request(url, headers={"User-Agent": "ValleyDesk-WeeklyPublicationCheck/1.0"})
+        with urlopen(request, timeout=20) as response:
+            public = json.load(response)["publication"]
+        if public["id"] != entry["id"] or public["topic"] != entry["topic"]:
+            raise RuntimeError("A live API result differs from the approved batch.")
+        readback[entry["id"]] = url
+    save(private / "loaded.json", {"merge": merged, "head": head, "pr": pr["url"], "public_readback": readback,
+                                  "sample": len(sample), "loaded": datetime.now(NY).isoformat()})
     print(f"Loaded and refreshed counts for PR #{pr['number']}.")
     return True
 
