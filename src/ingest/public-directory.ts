@@ -54,6 +54,7 @@ import {
   type DirectoryProject,
 } from "./public-directory-data";
 import { renderDirectoryPage, type DirectoryView } from "./public-directory-page";
+import { activeGroups, groupList, partnerList, partners, similarListings } from "./public-directory-discover";
 import { renderResultsRegion } from "./public-directory-results";
 import { counties } from "./public-directory-data";
 import { healthTopic, partialDateText } from "./public-directory-ui";
@@ -365,6 +366,7 @@ export async function servePublicDirectory(
   let hasPubs = false, hasStudies = false;
   let linked: { title: string; url: string }[] = [];
   let mentions: { title: string; url: string }[] = [];
+  let research: Listing[] = [];
   try {
     if (publicationsEnabled) {
       hasPubs =
@@ -384,12 +386,13 @@ export async function servePublicDirectory(
       if (!entry) return missing();
       const study: ClinicalStudy = JSON.parse(entry.record);
       if (studyApi) return json(() => ({ study }));
+      const similar = await similarListings(researchDb, { kind: "study", record: study }, []);
       return page({
         kind: "research",
         title: study.title,
         summary: `${registryLabel(study.type)} ${study.id}. Study sites in ${study.counties.map((county) => county + " County").join(", ")}. Source ClinicalTrials.gov.`,
         path: studyPath(id),
-        content: renderStudy(study),
+        content: renderStudy(study, await institutionRefs(researchDb), similar, catalog),
       }, 200);
     }
     if (path === "/llms.txt")
@@ -480,6 +483,11 @@ export async function servePublicDirectory(
             )
           ).map((row) => ({ kind: row.kind, record: JSON.parse(row.record) }) as Listing)
         : [];
+      const similar = await similarListings(
+        researchDb,
+        { kind: "publication", record: p },
+        [p.preprint_of ?? "", p.published_as ?? "", ...related.map((i) => i.record.id), ...linkedCode.map((i) => i.record.id), ...nearby.map((i) => i.record.id)].filter(Boolean),
+      );
       const institutionName = refs.find((r) => r.id === institution)?.name ?? institution;
       const more = institution
         ? {
@@ -494,7 +502,7 @@ export async function servePublicDirectory(
           title: displayTitle(p),
           summary: publicationDescription(p, refs),
           path: pubPath(id),
-          content: renderPublication(p, refs, related, more, catalog, linkedCode),
+          content: renderPublication(p, refs, related, more, catalog, linkedCode, similar),
           ogType: "article",
           meta: citationMeta(p),
           schema: publicationSchema(p, origin),
@@ -582,7 +590,9 @@ export async function servePublicDirectory(
       const latest = (
         await rows<{ kind: Listing["kind"]; record: string }>(
           researchDb,
-          "SELECT kind,record FROM research_visible ORDER BY added DESC,id LIMIT 6",
+          // Newest publications by publication date, not by when the backfill added them.
+          "SELECT kind,record FROM research_visible WHERE +kind='publication' AND activity<=? ORDER BY activity DESC,id LIMIT 6",
+          new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()),
         )
       ).map((row) => ({ kind: row.kind, record: JSON.parse(row.record) }) as Listing);
       const refs = await institutionRefs(researchDb);
@@ -741,7 +751,7 @@ export async function servePublicDirectory(
           const summary = await summarize(researchDb, { field: scope.field, value: scope.slug });
           const built = entityHeader({ ...scope, refs, summary, names, now, feed, name: scope.field === "county" ? place : scope.name });
           header = built.header;
-          aside = built.index;
+          aside = (scope.field === "institution" ? partnerList(await partners(researchDb, scope.slug), names) : "") + built.index;
           description = built.description;
         } else {
           header = filteredHeader(crumbs, described, path);
@@ -775,6 +785,10 @@ export async function servePublicDirectory(
         header = landing
           ? `<header class="entity-head"><h1>${hasStudies ? "Healthcare research" : "Publications and research software"}</h1><p class="lede">The directory lists ${kindCounts(result.counts)} connected to the nine-county Delaware Valley. Search titles, terms and institutions, or narrow the list by kind, institution, topic and county.</p></header>`
           : filteredHeader(crumbs, described, path);
+      }
+      const q = params.get("q")?.slice(0, 200).match(/[\p{L}\p{N}]+/gu);
+      if (q?.length && !scope && path === browsePath && hasPubs && result.total > 1) {
+        aside = groupList(await activeGroups(researchDb, q.map((term) => '"' + term + '"*').join(" AND ")), names, params.get("q") ?? "");
       }
       const offset = (result.page - 1) * 24;
       // An institution reached by name or alias names its reference ID as the canonical URL.
@@ -846,6 +860,10 @@ export async function servePublicDirectory(
         )
           .filter((p) => !known.has(p.id))
           .map((p) => ({ title: publicationTitle(p), url: pubPath(p.id) }));
+        const shown = new Set([...known, ...mentions.map((m) => decodeURIComponent(m.url.slice("/discover/publication/".length)))]);
+        research = (await similarListings(researchDb, { kind: "project", record: project }, [...shown], 12))
+          .filter((item) => item.kind !== "project")
+          .slice(0, 5);
       }
     }
   } catch (error) {
@@ -890,5 +908,5 @@ export async function servePublicDirectory(
   const project = catalog.project(id, removed);
   if (!project) return page({ kind: "not-found" }, 404);
   if (raw !== id) return redirect(projectPath(project));
-  return page({ kind: "project", project, related: catalog.related(project, removed), linked, mentions, now }, 200);
+  return page({ kind: "project", project, related: catalog.related(project, removed), linked, mentions, research, now }, 200);
 }

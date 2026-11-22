@@ -182,6 +182,10 @@ export const dateBound = (value?: string | null) =>
 function searchSource(params: URLSearchParams, refs: Institution[]) {
   const where: string[] = [];
   const args: string[] = [];
+  // The same filters written against the listing row `l`, for the relevance-ordered page.
+  const ranked: string[] = [];
+  const rankedArgs: string[] = [];
+  let rankable = true;
   const terms = params
     .get("q")
     ?.slice(0, 200)
@@ -199,6 +203,7 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
       .map((ref) => ref.id);
     args.push(terms.map((term) => '"' + term + '"*').join(" AND "));
     if (institutions.length) {
+      rankable = false;
       where[0] =
         "(" +
         where[0] +
@@ -223,6 +228,10 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
           ")",
       );
       args.push(key, ...selected);
+      ranked.push(
+        "EXISTS(SELECT 1 FROM research_facets f WHERE f.field=? AND f.value IN (" + selected.map(() => "?").join(",") + ") AND f.id=l.id)",
+      );
+      rankedArgs.push(key, ...selected);
       if (key !== "label" && selected.length === 1) scope = { field: key as Scope["field"], value: selected[0] };
       else simple = false;
     }
@@ -233,20 +242,37 @@ function searchSource(params: URLSearchParams, refs: Institution[]) {
   if (kind) {
     where.push("kind=?");
     args.push(kind);
+    ranked.push("l.kind=?");
+    rankedArgs.push(kind);
   }
   const conditions = where.length;
   // Optional date bounds: added_from/added_to on the listing date, date_from/date_to on the
   // published or last-push date. A bound is YYYY, YYYY-MM or YYYY-MM-DD and is inclusive.
   for (const [key, column] of [["added", "added"], ["date", "activity"]]) {
     const [after, before] = ["_from", "_to"].map((end) => dateBound(params.get(key + end)));
-    if (after) where.push(column + ">=?"), args.push(after);
-    if (before) where.push(column + "<>'' AND " + column + "<=?"), args.push(before + "~");
+    if (after) where.push(column + ">=?"), args.push(after), ranked.push("l." + column + ">=?"), rankedArgs.push(after);
+    if (before) {
+      where.push(column + "<>'' AND " + column + "<=?"), args.push(before + "~");
+      ranked.push("l." + column + "<>'' AND l." + column + "<=?"), rankedArgs.push(before + "~");
+    }
   }
   const from = " FROM research_visible" + (where.length ? " WHERE " + where.join(" AND ") : "");
   // Only one facet value and/or a kind: stored counts answer the totals, and a large scope can
   // be read in listing order instead of being collected and sorted.
   const stored = simple && where.length === conditions ? { scope, kind } : undefined;
-  return { from, args, facetCount: facetQueries.length, stored };
+  const relevance =
+    terms?.length && rankable
+      ? {
+          // Rank in the full-text index and check filters on each candidate in rank order, so the
+          // cost follows the page shown rather than the number of matches.
+          sql:
+            "SELECT v.kind,v.record FROM research_search s JOIN research_listings l ON l.rowid=s.rowid JOIN research_visible v ON v.id=l.id WHERE research_search MATCH ?" +
+            ranked.map((c) => " AND " + c).join("") +
+            " ORDER BY s.rank,l.id LIMIT 24 OFFSET ?",
+          args: [args[0], ...rankedArgs],
+        }
+      : undefined;
+  return { from, args, facetCount: facetQueries.length, stored, relevance };
 }
 
 type Scope = { field: (typeof fields)[number]; value: string };
@@ -342,8 +368,16 @@ export async function researchFeed(db: ResearchDb, params: URLSearchParams, refs
   return { page, items: result.slice(0, 24).map(readListing), hasMore: result.length > 24 };
 }
 export async function researchQuery(db: ResearchDb, params: URLSearchParams, refs: Institution[]) {
-  const { from, args, facetCount, stored } = searchSource(params, refs);
+  const { from, args, facetCount, stored, relevance } = searchSource(params, refs);
   const sort = params.get("sort");
+  if (relevance && (!sort || sort === "relevance")) {
+    // A search is ordered by full-text relevance unless another order is chosen.
+    const counts = await rows<KindCount>(db, "SELECT kind,count(*) n,count(DISTINCT group_id) works" + from + " GROUP BY kind", ...args);
+    const total = counts.reduce((sum, row) => sum + row.n, 0);
+    const page = Math.min(pageNumber(params), Math.max(1, Math.ceil(total / 24)));
+    const result = await rows<{ kind: Listing["kind"]; record: string }>(db, relevance.sql, ...relevance.args, (page - 1) * 24);
+    return { items: result.map(readListing), counts, page, total };
+  }
   const sortColumn = sort === "name" ? "title" : sort === "activity" ? "activity" : "added";
   const order = sortColumn + (sort === "name" ? " COLLATE NOCASE,id" : " DESC,id");
   if (facetCount > 1) {
@@ -460,20 +494,52 @@ function studyRecord(study: ClinicalStudy) {
     <p class="record-topic"><span>Added ${timestamp(study.added)}</span></p>
   </li>`;
 }
-export function renderStudy(study: ClinicalStudy) {
-  return `<article class="frame page prose-page">
-    <nav class="breadcrumb" aria-label="Directory breadcrumb"><a href="${browsePath}?kind=study">Clinical studies</a></nav>
-    <p class="record-kind">${html(study.id)} · ${html(registryLabel(study.type))}</p>
-    <h1>${html(study.title)}</h1>
-    <p>Overall registry status <strong>${html(registryLabel(study.status))}</strong></p>
-    ${study.phases.length && study.phases.some((phase) => phase !== "NA") ? `<p>${html(study.phases.filter((phase) => phase !== "NA").map((phase) => registryLabel(phase).replace(/phase(?=[0-9])/i, "Phase ")).join(" · "))}</p>` : ""}
-    ${study.conditions.length ? `<p>Conditions ${html(study.conditions.join(", "))}</p>` : ""}
-    <h2>Delaware Valley sites</h2>
-    <ul>${study.sites.map((site) => `<li>${html(site.facility)} · ${html(site.city)}, ${html(site.state)} · ${html(site.county)} County${site.status ? " · " + html(registryLabel(site.status)) : ""}</li>`).join("")}</ul>
-    ${study.first_posted ? `<p>First posted ${partialDate(study.first_posted)}</p>` : ""}
-    ${study.last_updated ? `<p>Registry updated ${partialDate(study.last_updated)}</p>` : ""}
-    <p>Added to the directory ${timestamp(study.added)}</p>
-    <p>${externalLink(study.source, "View this study on ClinicalTrials.gov")}</p>
+export function similarSection(items: Listing[], catalog: DirectoryCatalog, heading = "Similar research in the Delaware Valley") {
+  if (!items.length) return "";
+  return `<section class="related similar" aria-labelledby="similar-title"><div class="section-heading"><h2 id="similar-title">${html(heading)}</h2></div><p class="section-note">Publications, clinical studies and software from the region that share this record’s distinctive subject words. Use them to see who else in the region works on the subject.</p>${renderListingCards(items, catalog)}</section>`;
+}
+
+export function renderStudy(study: ClinicalStudy, refs: Institution[] = [], similar: Listing[] = [], catalog?: DirectoryCatalog) {
+  const entity = (kind: string, key: string, name: string) =>
+    `<a href="/discover/${kind}/${encodeURIComponent(key)}">${html(name)}</a>`;
+  const places = study.institutions.map((id) => entity("institution", id, refs.find((ref) => ref.id === id)?.name ?? id));
+  const counties = study.counties.map((c) => entity("county", facetSlug(c), c + " County"));
+  const phases = study.phases.filter((phase) => phase !== "NA").map((phase) => registryLabel(phase).replace(/phase(?=[0-9])/i, "Phase "));
+  const facts: [string, string][] = [
+    ["Registry ID", externalLink(study.source, study.id) || html(study.id)],
+    ["Study type", html(registryLabel(study.type))],
+    ["Overall status", html(registryLabel(study.status))],
+    ["Phase", html(phases.join(" · "))],
+    ["Conditions", html(study.conditions.join("; "))],
+    ["First posted", study.first_posted ? partialDate(study.first_posted) : ""],
+    ["Registry updated", study.last_updated ? partialDate(study.last_updated) : ""],
+    ["Added to directory", timestamp(study.added)],
+  ];
+  return `<article class="frame page record-page study-page">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a><span aria-hidden="true">/</span><a href="${browsePath}?kind=study">Clinical studies</a></nav>
+    <header class="record-head">
+      <p class="record-kind"><span class="kind">${html(registryLabel(study.type))}</span><span>${html(study.id)}</span><span>${html(registryLabel(study.status))}</span></p>
+      <h1>${html(study.title)}</h1>
+      <p class="record-actions">${externalLink(study.source, "View on ClinicalTrials.gov ↗", "button primary")}</p>
+    </header>
+    <div class="record-body">
+      <section class="record-section" aria-labelledby="connection-title">
+        <h2 id="connection-title">Regional connection</h2>
+        <p class="record-evidence"><a class="evidence evidence-verified" href="/discover/methodology#regional-evidence">${html(study.label)}</a> ${html(study.connection)}</p>
+        <dl class="facts">
+          ${places.length ? `<div><dt>${places.length === 1 ? "Institution" : "Institutions"}</dt><dd>${places.join(", ")}</dd></div>` : ""}
+          ${counties.length ? `<div><dt>${counties.length === 1 ? "County" : "Counties"}</dt><dd>${counties.join(", ")}</dd></div>` : ""}
+        </dl>
+        <h3 class="sites-heading">Delaware Valley sites</h3>
+        <ul class="plain-list study-sites">${study.sites.map((site) => `<li>${html(site.facility)}<span class="muted"> · ${html(site.city)}, ${html(site.state)} · ${html(site.county)} County${site.status ? " · " + html(registryLabel(site.status)) : ""}</span></li>`).join("")}</ul>
+      </section>
+      <section class="record-section" aria-labelledby="record-title">
+        <h2 id="record-title">Registry record</h2>
+        <dl class="facts">${facts.filter(([, v]) => v).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
+      </section>
+    </div>
+    ${catalog ? similarSection(similar, catalog) : ""}
+    <p class="record-report">${contactLink("Report a correction or request removal", undefined, `Directory correction or removal for ${study.id}`)}</p>
   </article>`;
 }
 export function renderListingCards(items: Listing[], catalog: DirectoryCatalog) {
@@ -581,6 +647,7 @@ export function renderResearch({ header, path, params, data, catalog, options, e
       ),
     path !== newPath && enabled
       ? `<label>Order<select form="research-form" name="sort">${[
+          ...(params.get("q") ? [["relevance", "Relevance"]] : []),
           ["added", "Date added"],
           ["activity", studiesAvailable ? "Publication, code push or registry update date" : "Publication date or last code push"],
           ["name", "Title A–Z"],
@@ -623,6 +690,7 @@ export function renderPublication(
   more: { heading: string; items: Listing[]; href: string } | undefined,
   catalog: DirectoryCatalog,
   linkedCode: Listing[] = [],
+  similar: Listing[] = [],
 ) {
   const entity = (kind: string, key: string, name: string) =>
     `<a href="/discover/${kind}/${encodeURIComponent(key)}">${html(name)}</a>`;
@@ -674,6 +742,7 @@ export function renderPublication(
     </div>
     ${related.length ? `<section class="record-section related"><h2>Connected research</h2><ul class="plain-list">${related.map((i) => `<li><span class="muted">${i.kind === "project" ? "Software" : "Publication version"}</span> <a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
     ${linkedCode.length ? `<section class="record-section related" aria-labelledby="linked-code-title"><h2 id="linked-code-title">Code linked from this paper</h2><p class="muted">Directory projects whose repository this paper’s full text links to, as a citation, use or release.</p><ul class="plain-list">${linkedCode.map((i) => `<li><a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
+    ${similarSection(similar, catalog)}
     ${more?.items.length ? `<section class="related"><div class="section-heading"><h2>${html(more.heading)}</h2><a href="${html(more.href)}">More from this institution</a></div>${renderListingCards(more.items, catalog)}</section>` : ""}
     <p class="record-report">${contactLink("Report a correction or request removal", undefined, `Directory correction or removal for ${p.id}`)}</p>
   </article>`;

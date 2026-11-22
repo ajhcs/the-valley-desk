@@ -16,5 +16,27 @@ CREATE TABLE research_summary_facets(
 INSERT INTO research_summary_facets SELECT '','',f.field,f.value,count(DISTINCT v.group_id) FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE f.field IN ('institution','topic','county') GROUP BY f.field,f.value;
 INSERT INTO research_summary_facets SELECT s.field,s.value,f.field,f.value,count(DISTINCT v.group_id) FROM research_facets s JOIN research_visible v ON v.id=s.id JOIN research_facets f ON f.id=s.id WHERE s.field IN ('institution','topic','county') AND f.field IN ('institution','topic','county') GROUP BY s.field,s.value,f.field,f.value;
 INSERT INTO research_summary_kinds SELECT s.field,s.value,v.kind,count(DISTINCT v.group_id),min(nullif(v.activity,'')),max(nullif(v.activity,'')),max(nullif(v.added,'')),count(*) FROM research_facets s JOIN research_visible v ON v.id=s.id WHERE s.field IN ('institution','topic','county') GROUP BY s.field,s.value,v.kind;
+-- Institutions that share listings, for "Shares the most research with" on institution pages.
+-- A unit and its parent, and a university and its own health system, are one system and never
+-- count as partners of each other. A partner is named at its top level, so a medical school's
+-- listings count toward its university.
+DROP TABLE IF EXISTS research_summary_partners;
+CREATE TABLE research_summary_partners(
+ institution TEXT NOT NULL, partner TEXT NOT NULL, n INTEGER NOT NULL,
+ PRIMARY KEY(institution,partner)) WITHOUT ROWID;
+INSERT INTO research_summary_partners
+WITH roots AS (
+  SELECT id, CASE coalesce(json_extract(record,'$.parent'), id)
+    WHEN 'penn-medicine' THEN 'upenn' WHEN 'jefferson-health' THEN 'thomas-jefferson-university'
+    WHEN 'temple-health' THEN 'temple-university' ELSE coalesce(json_extract(record,'$.parent'), id) END AS root
+  FROM research_institutions),
+listings AS (SELECT id,group_id FROM research_visible WHERE kind IN ('publication','study'))
+SELECT a.value,rb.root,count(DISTINCT v.group_id)
+FROM research_facets a
+JOIN listings v ON v.id=a.id
+JOIN research_facets b ON b.id=a.id AND b.field='institution' AND b.value<>a.value
+JOIN roots ra ON ra.id=a.value JOIN roots rb ON rb.id=b.value
+WHERE a.field='institution' AND ra.root<>rb.root
+GROUP BY a.value,rb.root;
 -- Written last: its presence tells the pages that the refresh finished.
 INSERT INTO research_summary_kinds SELECT '','',kind,count(DISTINCT group_id),min(nullif(activity,'')),max(nullif(activity,'')),max(nullif(added,'')),count(*) FROM research_visible GROUP BY kind;
