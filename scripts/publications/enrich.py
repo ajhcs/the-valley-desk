@@ -45,7 +45,7 @@ def crossref_lookup(receipts, keys):
         endpoint = '/works/' + quote(value, safe='/')
         record = receipts.replay('crossref', endpoint, {})
         if record is None:
-            while True:
+            for attempt in range(4):
                 time.sleep(0.24)  # Public pool, one request in flight.
                 try:
                     record = receipts.get('crossref', endpoint, {})
@@ -53,7 +53,7 @@ def crossref_lookup(receipts, keys):
                 except MetadataError as exc:
                     if exc.status == 404:
                         break
-                    if exc.status != 429:
+                    if exc.status != 429 or attempt == 3:
                         raise
                     delay = int(exc.retry_after) if str(exc.retry_after).isdigit() else 15
                     time.sleep(max(15, delay))
