@@ -187,7 +187,6 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
   // The same filters written against the listing row `l`, for the relevance-ordered page.
   const ranked: string[] = [];
   const rankedArgs: string[] = [];
-  let rankable = true;
   const terms = params
     .get("q")
     ?.slice(0, 200)
@@ -205,7 +204,6 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
       .map((ref) => ref.id);
     args.push(terms.map((term) => '"' + term + '"*').join(" AND "));
     if (institutions.length) {
-      rankable = false;
       where[0] =
         "(" +
         where[0] +
@@ -263,7 +261,9 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
   // be read in listing order instead of being collected and sorted.
   const stored = simple && where.length === conditions ? { scope, kind } : undefined;
   const relevance =
-    terms?.length && rankable
+    // Institution names need no separate match here: each listing's institution IDs are in its
+    // indexed keywords, so a search for "health" already finds listings at Jefferson Health.
+    terms?.length
       ? {
           // Rank in the full-text index and check filters on each candidate in rank order, so the
           // cost follows the page shown rather than the number of matches.
