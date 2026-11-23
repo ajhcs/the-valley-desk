@@ -349,11 +349,12 @@ type KindCount = { kind: ListingKind; n: number; works: number };
  */
 async function storedCounts(db: ResearchDb, scope: Scope | undefined, kind: string) {
   try {
-    const state = await rows<{ valid: number }>(db, "SELECT EXISTS(SELECT 1 FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset' AND first=CAST((SELECT enabled FROM dataset_visibility WHERE id=1) AS TEXT)) valid").catch(() => [{ valid: 1 }]);
-    if (!state[0]?.valid) return undefined;
+    const [state] = await rows<{ visible: number; refreshed: number }>(db, "SELECT EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') visible,coalesce((SELECT CAST(first AS INTEGER) FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'),0) refreshed");
+    if (state.visible && !state.refreshed) return undefined;
+    const withoutDatasets = !state.visible && !!state.refreshed;
     const found = await rows<KindCount & { everything: number | null; of_kind: number | null }>(
       db,
-      "SELECT kind,n,works,(SELECT sum(n) FROM research_summary_kinds WHERE scope_field='' AND scope_value='') everything,(SELECT n FROM research_summary_kinds WHERE scope_field='' AND scope_value='' AND kind=?) of_kind FROM research_summary_kinds WHERE scope_field=? AND scope_value=? ORDER BY kind",
+      `SELECT kind,n,works,(SELECT sum(n) FROM research_summary_kinds WHERE scope_field='' AND scope_value='' ${withoutDatasets ? "AND kind<>'dataset'" : ""}) everything,(SELECT n FROM research_summary_kinds WHERE scope_field='' AND scope_value='' AND kind=? ${withoutDatasets ? "AND kind<>'dataset'" : ""}) of_kind FROM research_summary_kinds WHERE scope_field=? AND scope_value=? ${withoutDatasets ? "AND kind<>'dataset'" : ""} ORDER BY kind`,
       kind,
       scope?.field ?? "",
       scope?.value ?? "",

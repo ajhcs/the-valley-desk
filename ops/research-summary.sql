@@ -16,6 +16,13 @@ CREATE TABLE research_summary_facets(
 INSERT INTO research_summary_facets SELECT '','',f.field,f.value,count(DISTINCT v.group_id) FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE f.field IN ('institution','topic','county') GROUP BY f.field,f.value;
 INSERT INTO research_summary_facets SELECT s.field,s.value,f.field,f.value,count(DISTINCT v.group_id) FROM research_facets s JOIN research_visible v ON v.id=s.id JOIN research_facets f ON f.id=s.id WHERE s.field IN ('institution','topic','county') AND f.field IN ('institution','topic','county') GROUP BY s.field,s.value,f.field,f.value;
 INSERT INTO research_summary_kinds SELECT s.field,s.value,v.kind,count(DISTINCT v.group_id),min(nullif(v.activity,'')),max(nullif(v.activity,'')),max(nullif(v.added,'')),count(*) FROM research_facets s JOIN research_visible v ON v.id=s.id WHERE s.field IN ('institution','topic','county') GROUP BY s.field,s.value,v.kind;
+-- Non-dataset facet counts keep the off switch cheap even before the next refresh.
+DROP TABLE IF EXISTS research_summary_facets_without_datasets;
+CREATE TABLE research_summary_facets_without_datasets(
+ scope_field TEXT NOT NULL, scope_value TEXT NOT NULL, field TEXT NOT NULL, value TEXT NOT NULL, n INTEGER NOT NULL,
+ PRIMARY KEY(scope_field,scope_value,field,value)) WITHOUT ROWID;
+INSERT INTO research_summary_facets_without_datasets SELECT '','',f.field,f.value,count(DISTINCT v.group_id) FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE v.kind<>'dataset' AND f.field IN ('institution','topic','county') GROUP BY f.field,f.value;
+INSERT INTO research_summary_facets_without_datasets SELECT s.field,s.value,f.field,f.value,count(DISTINCT v.group_id) FROM research_facets s JOIN research_visible v ON v.id=s.id JOIN research_facets f ON f.id=s.id WHERE v.kind<>'dataset' AND s.field IN ('institution','topic','county') AND f.field IN ('institution','topic','county') GROUP BY s.field,s.value,f.field,f.value;
 -- Institutions that share listings, for "Shares the most research with" on institution pages.
 -- A unit and its parent, and a university and its own health system, are one system and never
 -- count as partners of each other. A partner is named at its top level, so a medical school's

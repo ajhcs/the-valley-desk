@@ -15,11 +15,13 @@ const pubPage = (id: string) => "/discover/publication/" + encodeURIComponent(id
 /** An in-memory directory with the fixture publications, the institution and the six invented datasets. */
 function directory() {
   const sqlite = new DatabaseSync(":memory:");
+  const queries: string[] = [];
   const env = {
     DIRECTORY_PUBLIC_ENABLED: "true",
     PUBLICATIONS_PUBLIC_ENABLED: "true",
     VALLEY_DESK_DB: {
       prepare(sql: string) {
+        queries.push(sql);
         const all = (...args: (number | string)[]) => ({ results: sqlite.prepare(sql).all(...args) });
         return { all: () => all(), bind: (...args: (number | string)[]) => ({ all: () => all(...args) }) };
       },
@@ -40,7 +42,7 @@ function directory() {
   const get = (path: string) => worker.fetch(new Request(origin + path), env, {});
   const text = async (path: string) => (await get(path)).text();
   const json = async (path: string) => (await get(path)).json() as Promise<any>;
-  return { sqlite, env, load, refresh, get, text, json, dir, close: () => rmSync(dir, { recursive: true, force: true }) };
+  return { sqlite, queries, env, load, refresh, get, text, json, dir, close: () => rmSync(dir, { recursive: true, force: true }) };
 }
 
 function schemaOf(html: string) {
@@ -230,9 +232,11 @@ test("publication pages list the datasets their paper produced", async () => {
     const pub = await d.json("/api/directory/publications/" + encodeURIComponent("doi:10.9999/fixture/4"));
     assert.deepEqual(pub.publication.datasets, ["pdb-set:doi:10.9999/fixture/4", geo]);
     d.sqlite.exec("UPDATE dataset_visibility SET enabled=0");
+    d.queries.length = 0;
     assert.equal((await d.json("/api/directory/publications/" + encodeURIComponent("doi:10.9999/fixture/4"))).publication.datasets, undefined);
     assert.doesNotMatch(await d.text("/"), /datasets/);
     assert.doesNotMatch(await d.text("/discover/institution/fixture-institute"), /dataset/i);
+    assert.ok(!d.queries.some((sql) => sql.includes("count(DISTINCT v.group_id)") && sql.includes("research_visible")), "switching off uses refreshed non-dataset facet counts");
   } finally {
     d.close();
   }
@@ -369,4 +373,15 @@ test("assistant tools search and fetch datasets", async () => {
   } finally {
     d.close();
   }
+});
+
+
+test("empty enabled dataset collection records the visible-dataset marker", () => {
+  const d = directory();
+  try {
+    d.sqlite.exec("DELETE FROM research_listings WHERE kind='dataset'; UPDATE dataset_visibility SET enabled=1");
+    d.refresh();
+    const row = d.sqlite.prepare("SELECT first FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'").get() as { first: string };
+    assert.equal(row.first, "0");
+  } finally { d.close(); }
 });

@@ -134,14 +134,20 @@ export async function partners(db: ResearchDb, institution: string, limit = 8) {
   try {
     return await rows<{ partner: string; n: number }>(
       db,
-      "SELECT partner,sum(n) n FROM (SELECT partner,n FROM research_summary_partners WHERE institution=? UNION ALL SELECT partner,n FROM research_summary_dataset_partners WHERE institution=? AND EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset')) GROUP BY partner ORDER BY n DESC,partner LIMIT ?",
+      "SELECT partner,sum(n) n FROM (SELECT partner,n FROM research_summary_partners WHERE institution=? UNION ALL SELECT partner,n FROM research_summary_dataset_partners WHERE institution=? AND (SELECT enabled FROM dataset_visibility WHERE id=1)=1) GROUP BY partner ORDER BY n DESC,partner LIMIT ?",
       institution,
       institution,
       limit,
     );
   } catch (error) {
-    if (/no such table/i.test(String(error))) return [];
-    throw error;
+    if (!/no such table/i.test(String(error))) throw error;
+    try {
+      return await rows<{ partner: string; n: number }>(db,
+        "SELECT partner,n FROM research_summary_partners WHERE institution=? ORDER BY n DESC,partner LIMIT ?", institution, limit);
+    } catch (legacyError) {
+      if (/no such table/i.test(String(legacyError))) return [];
+      throw legacyError;
+    }
   }
 }
 
