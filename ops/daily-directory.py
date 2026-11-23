@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import sys
 from urllib.parse import unquote, urlsplit
 from uuid import uuid4
@@ -321,6 +322,21 @@ def retire_weekly(state, receipt):
     save(marker, {"day": receipt["day"], "loaded_through": receipt["loaded_through"]})
 
 
+def apply_load(d1, sql, revision):
+    label = "directory load and summary"
+    try:
+        d1.execute("--file", sql, label)
+    except (RuntimeError, subprocess.TimeoutExpired, json.JSONDecodeError):
+        # Wrangler can lose the final import status after D1 commits the whole file.
+        if d1.revision() != revision:
+            raise
+        d1.unmeasured.add(label)
+        return True
+    if d1.revision() != revision:
+        raise RuntimeError("Directory summary revision did not commit")
+    return False
+
+
 def run(state, d1, *, plan, scheduled):
     today = datetime.now(NY).date()
     day = today.isoformat()
@@ -370,9 +386,8 @@ def run(state, d1, *, plan, scheduled):
             receipt["rows_read"] = dict(prior_reads + Counter(d1.reads))
             save(pending, receipt)
             save(run_dir / "receipt.json", receipt)
-            d1.execute("--file", sql, "directory load and summary")
-            if d1.revision() != receipt["revision"]:
-                raise RuntimeError("Directory summary revision did not commit")
+            if apply_load(d1, sql, receipt["revision"]):
+                receipt.setdefault("attempt_errors", []).append("Wrangler import response unavailable. D1 commit verified.")
         receipt["stage"] = "live checks"
         receipt["http"] = live_checks(ROOT, d1.probe())
         receipt["stage"] = "snapshot"

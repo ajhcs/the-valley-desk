@@ -13,6 +13,18 @@ spec.loader.exec_module(daily)
 
 
 class DailyDirectoryTests(unittest.TestCase):
+    def test_missing_import_result_is_recovered_only_by_the_exact_d1_revision(self):
+        def execute(*_):
+            raise RuntimeError("Import polling returned no final result")
+
+        d1 = SimpleNamespace(execute=execute, revision=lambda: "committed", unmeasured=set())
+        self.assertTrue(daily.apply_load(d1, Path("load.sql"), "committed"))
+        self.assertEqual(d1.unmeasured, {"directory load and summary"})
+
+        d1.revision = lambda: "previous"
+        with self.assertRaisesRegex(RuntimeError, "no final result"):
+            daily.apply_load(d1, Path("load.sql"), "committed")
+
     def test_five_percent_is_inclusive_and_removals_count(self):
         before = {str(i): {} for i in range(20)}
         daily.gate("project", before, {"added": 0, "semantic_changed": 1, "removed": 0})
