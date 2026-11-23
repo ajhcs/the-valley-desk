@@ -8,7 +8,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 DATASET_ID = re.compile(
-    r"^(geo:GSE[0-9]+|bioproject:PRJ[A-Z]{2}[0-9]+|sra:[SED]RP[0-9]+|dbgap:phs[0-9]{6}|ega:EGAS[0-9]{11}"
+    r"^(geo:GSE[0-9]+|bioproject:PRJ[A-Z]{2}[0-9]+|sra:[SED]RP[0-9]+|dbgap:phs[0-9]{6}|ega:EGA[SD][0-9]{11}"
     r"|pride:PXD[0-9]{6}|arrayexpress:E-[A-Z]{4}-[0-9]+|pdb-set:(doi:10\.[0-9]{4,}/\S+|pmid:[0-9]+|arxiv:\S+)"
     r"|doi:10\.[0-9]{4,}/[^A-Z\s]+)$")
 DATA_TYPES = {"gene expression", "sequencing", "single-cell", "structure", "proteomics", "metabolomics",

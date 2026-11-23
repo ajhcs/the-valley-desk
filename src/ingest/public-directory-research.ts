@@ -43,7 +43,7 @@ export const datasetsPath = "/discover/datasets";
 export const datasetPath = (id: string) => "/discover/dataset/" + encodeURIComponent(id);
 /** The identifier forms of the dataset contract; ops/load-research.py checks the same set. */
 export const datasetId =
-  /^(geo:GSE[0-9]+|bioproject:PRJ[A-Z]{2}[0-9]+|sra:[SED]RP[0-9]+|dbgap:phs[0-9]{6}|ega:EGAS[0-9]{11}|pride:PXD[0-9]{6}|arrayexpress:E-[A-Z]{4}-[0-9]+|pdb-set:(doi:10\.[0-9]{4,}\/\S+|pmid:[0-9]+|arxiv:\S+)|doi:10\.[0-9]{4,}\/[^A-Z\s]+)$/;
+  /^(geo:GSE[0-9]+|bioproject:PRJ[A-Z]{2}[0-9]+|sra:[SED]RP[0-9]+|dbgap:phs[0-9]{6}|ega:EGA[SD][0-9]{11}|pride:PXD[0-9]{6}|arrayexpress:E-[A-Z]{4}-[0-9]+|pdb-set:(doi:10\.[0-9]{4,}\/\S+|pmid:[0-9]+|arxiv:\S+)|doi:10\.[0-9]{4,}\/[^A-Z\s]+)$/;
 export const facetSlug = (name: string) =>
   name
     .normalize("NFKC")
