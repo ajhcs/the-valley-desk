@@ -115,7 +115,7 @@ const COUNTIES = [
 ];
 const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
-export function llmsTxt(origin = publicOrigin(), directoryEnabled = true, publications = false): string {
+export function llmsTxt(origin = publicOrigin(), directoryEnabled = true, publications = false, datasets = false): string {
   if (!directoryEnabled) {
     return `# The Valley Desk
 
@@ -141,6 +141,7 @@ When you cite a listing, link its directory page for the regional connection and
 - [What's new](${origin}/discover/new): listings by the date they entered the directory.
 - [Methodology](${origin}/discover/methodology): inclusion rule, evidence labels, dates, corrections and removals.
 ${publications ? `- Publication pages: /discover/publication/{percent-encoded ID}, for example ${origin}/discover/publication/doi%3A10.1001%2Fjama.2025.10250
+` : ""}${datasets ? `- [Datasets](${origin}/discover/datasets): research data from regional work, with filters access (open, registration or controlled), datatype, repository, institution, county and topic. Dataset pages: /discover/dataset/{percent-encoded ID}, with how to get the data and how to cite it.
 ` : ""}- Software pages: /discover/work/{GitHub repository ID}, for example ${origin}/discover/work/617168725
 
 ## Topics
@@ -155,6 +156,7 @@ ${COUNTIES.map(([c, s]) => `- [${c} County, ${s}](${origin}/discover/county/${sl
 
 - [Listings JSON](${origin}/api/directory/listings): 24 kind-tagged records per page with the same filters as search.
 ${publications ? `- [Publication JSON](${origin}/api/directory/publications): 24 records per page. Filters: q, institution, topic, county, kind. Use page=2 for the next page. Append a percent-encoded publication ID for one record.
+` : ""}${datasets ? `- [Dataset JSON](${origin}/api/directory/datasets): 24 records per page with the datasets page filters. Append a percent-encoded dataset ID for one record.
 ` : ""}- [Directory JSON](${origin}/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
 - [RSS](${origin}/discover/updates.xml): additions, filterable by institution, topic, county or kind.
 - [MCP server](${origin}/mcp): read-only Model Context Protocol endpoint (Streamable HTTP, no sign-in) with search, fetch, whats_new, list_institutions and list_topics_and_counties tools. [Setup for Claude, ChatGPT and other assistants](${origin}/discover/connect).

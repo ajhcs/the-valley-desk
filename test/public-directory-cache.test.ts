@@ -49,6 +49,7 @@ test("directory responses are cached per data version and stay correct after rem
     sqlite.exec(readFileSync("ops/directory-removals.sql", "utf8"));
     sqlite.exec(readFileSync("migrations/0046_research_directory.sql", "utf8"));
     sqlite.exec(readFileSync("migrations/0047_clinical_studies.sql", "utf8"));
+    sqlite.exec(readFileSync("migrations/0050_datasets.sql", "utf8"));
     const input = join(dir, "papers.jsonl"), refs = join(dir, "refs.json");
     writeFileSync(input, execFileSync("python3", ["ops/research-fixture.py", "--count", "30"], { maxBuffer: 1 << 26 }));
     writeFileSync(refs, execFileSync("python3", ["ops/research-fixture.py", "--institutions"]));

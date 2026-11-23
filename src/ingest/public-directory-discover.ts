@@ -60,6 +60,7 @@ export function similarMatch(title: string, terms: string[] = []): string | unde
 export function similarText(item: Listing): { title: string; terms: string[] } {
   if (item.kind === "publication") return { title: item.record.title, terms: item.record.terms };
   if (item.kind === "study") return { title: item.record.title, terms: item.record.conditions };
+  if (item.kind === "dataset") return { title: item.record.title + " " + item.record.summary, terms: [] };
   const p = item.record;
   return { title: [p.name, p.purpose].filter(Boolean).join(" "), terms: p.topics ?? [] };
 }

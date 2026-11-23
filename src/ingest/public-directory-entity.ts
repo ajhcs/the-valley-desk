@@ -102,11 +102,13 @@ export function kindPhrase(summary: DirectorySummary) {
   const pubs = summary.kinds.publication?.works ?? 0;
   const projects = summary.kinds.project?.works ?? 0;
   const studies = summary.kinds.study?.works ?? 0;
+  const datasets = summary.kinds.dataset?.works ?? 0;
   return list(
     [
       pubs ? plural(pubs, "publication", "publications") : "",
       projects ? plural(projects, "research software project", "research software projects") : "",
       studies ? plural(studies, "clinical study", "clinical studies") : "",
+      datasets ? plural(datasets, "dataset", "datasets") : "",
     ].filter(Boolean),
   );
 }

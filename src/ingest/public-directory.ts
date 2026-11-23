@@ -8,6 +8,13 @@ import {
   studiesApi,
   studyPath,
   studyId,
+  datasetsApi,
+  datasetsPath,
+  datasetPath,
+  datasetId,
+  accessLevels,
+  dataTypeLabel,
+  renderDataset,
   registryLabel,
   rows,
   optionsFor,
@@ -33,6 +40,8 @@ import {
   feedUrl,
   type Publication,
   type ClinicalStudy,
+  type Dataset,
+  type DatasetPaper,
   type ResearchDb,
   type Institution,
   type Listing,
@@ -86,13 +95,15 @@ const jsonHeaders = { ...noStore, "content-type": "application/json; charset=utf
 
 export function isPublicDirectoryPath(path: string) {
   return (
-    ["/api/directory/listings", "/llms.txt", newPath, feedPath, publicationsApi, studiesApi].includes(
+    ["/api/directory/listings", "/llms.txt", newPath, feedPath, publicationsApi, studiesApi, datasetsApi, datasetsPath].includes(
       path.replace(/\/$/, ""),
     ) ||
     path.startsWith(publicationsApi + "/") ||
     path.startsWith("/discover/publication/") ||
     path.startsWith(studiesApi + "/") ||
     path.startsWith("/discover/study/") ||
+    path.startsWith(datasetsApi + "/") ||
+    path.startsWith("/discover/dataset/") ||
     path.startsWith("/discover/sitemap/") ||
     decodedPublicPath(path).replace(/\/$/, "") === "/sitemap.xml" ||
     path === "/" ||
@@ -241,11 +252,17 @@ function canonicalQuery(params: URLSearchParams) {
 }
 
 /** A readable name for a filtered view, built from the parameters in the URL. */
-function describeQuery(params: URLSearchParams, names: Names, added = false) {
+function describeQuery(params: URLSearchParams, names: Names, added = false, repositories = new Map<string, string>()) {
   const kind = params.get("kind");
-  const parts = [kind === "publication" ? "Publications" : kind === "project" ? "Research software" : kind === "study" ? "Clinical studies" : "Healthcare research"];
+  const parts = [kind === "publication" ? "Publications" : kind === "project" ? "Research software" : kind === "study" ? "Clinical studies" : kind === "dataset" ? "Datasets" : "Healthcare research"];
   const q = params.get("q")?.trim();
   if (q) parts.push(`matching “${q.slice(0, 80)}”`);
+  const datatype = params.getAll("datatype").filter(Boolean).map((t) => dataTypeLabel(facetSlug(t).replaceAll("-", " ")).toLowerCase());
+  if (datatype.length) parts.push("of " + datatype.join(" or ") + " data");
+  const access = params.getAll("access").filter(Boolean).map((a) => accessLevels[facetSlug(a) as Dataset["access"]]?.name.toLowerCase() ?? a);
+  if (access.length) parts.push(`with ${access.join(" or ")} access`);
+  const repository = params.getAll("repository").filter(Boolean).map((r) => repositories.get(facetSlug(r)) ?? r);
+  if (repository.length) parts.push("in " + repository.join(" or "));
   const topic = params.getAll("topic").filter(Boolean).map((t) => names.topic(facetSlug(t)));
   if (topic.length) parts.push("on " + topic.join(" or "));
   const institution = params.getAll("institution").filter(Boolean).map((i) => names.institution(i));
@@ -255,7 +272,7 @@ function describeQuery(params: URLSearchParams, names: Names, added = false) {
   const label = params.getAll("label").filter(Boolean);
   if (label.length) parts.push(`with ${label.join(" or ")} evidence`);
   if (!added && params.get("sort") === "name") parts.push("by title");
-  if (!added && params.get("sort") === "activity") parts.push("by publication or push date");
+  if (!added && params.get("sort") === "activity") parts.push(kind === "dataset" ? "by release date" : "by publication or push date");
   const page = Number(params.get("page"));
   return parts.join(" ") + (page > 1 ? `, page ${page}` : "");
 }
@@ -317,6 +334,72 @@ function publicationSchema(p: Publication, origin: string) {
       about: p.topic,
       ...(p.terms.length ? { keywords: p.terms } : {}),
     },
+  };
+}
+
+/** schema.org Dataset for a dataset page. Values come from the record; papers are cited by their pages. */
+function datasetSchema(d: Dataset, papers: DatasetPaper[], refs: Institution[], origin: string) {
+  return {
+    "@type": "Dataset",
+    "@id": origin + datasetPath(d.id) + "#dataset",
+    name: d.title,
+    description: d.summary,
+    url: origin + datasetPath(d.id),
+    sameAs: d.url,
+    identifier: [d.id, ...d.accessions.filter((a) => a !== d.id)],
+    ...(d.license ? { license: d.license } : {}),
+    ...(d.access === "open" ? { isAccessibleForFree: true } : { conditionsOfAccess: accessLevels[d.access]?.explain }),
+    ...(d.released ? { datePublished: d.released } : {}),
+    keywords: [dataTypeLabel(d.data_type), d.topic],
+    creator: d.institutions.map((id) => ({ "@type": "Organization", name: refs.find((r) => r.id === id)?.name ?? id })),
+    ...(papers.length
+      ? { citation: papers.map((p) => (p.title ? origin + pubPath(p.id) : /^doi:/.test(p.id) ? "https://doi.org/" + p.id.slice(4) : p.id)) }
+      : {}),
+    publisher: { "@type": "Organization", name: d.repository },
+    distribution: {
+      "@type": "DataDownload",
+      contentUrl: d.url,
+      ...(d.format ? { encodingFormat: d.format } : {}),
+      ...(d.size ? { contentSize: d.size } : {}),
+    },
+    includedInDataCatalog: { "@id": origin + "/#catalog" },
+  };
+}
+
+/** Papers a dataset names, with the title of each one the directory lists (by ID or alternate ID). */
+async function datasetPapers(db: ResearchDb, d: Dataset): Promise<DatasetPaper[]> {
+  if (!d.papers.length) return [];
+  const found = await rows<{ paper: string; id: string; title: string }>(
+    db,
+    "SELECT p.value paper,v.id,v.title FROM json_each(?) p JOIN research_visible v ON v.kind='publication' AND (v.id=p.value OR v.id IN (SELECT id FROM research_facets WHERE field='alternate' AND value=p.value))",
+    JSON.stringify(d.papers),
+  );
+  const seen = new Set<string>();
+  return d.papers
+    .map((paper) => found.find((row) => row.paper === paper) ?? { id: paper, title: undefined })
+    .filter((paper) => !seen.has(paper.id) && !!seen.add(paper.id))
+    .map(({ id, title }) => ({ id, title }));
+}
+
+/** Choices for the datasets page filters, from the visible datasets only, so no filter offers an empty value. */
+async function datasetFacetChoices(db: ResearchDb, names: Names) {
+  const found = await rows<{ field: string; value: string; name: string | null }>(
+    db,
+    "SELECT f.field,f.value,max(CASE f.field WHEN 'repository' THEN json_extract(v.record,'$.repository') WHEN 'datatype' THEN json_extract(v.record,'$.data_type') WHEN 'topic' THEN json_extract(v.record,'$.topic') END) name FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE v.kind='dataset' AND f.field IN ('access','datatype','repository','institution','county','topic') GROUP BY f.field,f.value",
+  );
+  const pick = (field: string) => found.filter((row) => row.field === field);
+  const sorted = (choices: [string, string][]) => choices.sort((a, b) => a[1].localeCompare(b[1]));
+  const repositories = new Map(pick("repository").map((r) => [r.value, r.name ?? r.value]));
+  return {
+    repositories,
+    facets: [
+      { name: "access", label: "Access", all: "Any access", choices: (Object.keys(accessLevels) as Dataset["access"][]).filter((a) => pick("access").some((r) => r.value === a)).map((a): [string, string] => [a, accessLevels[a].name]) },
+      { name: "datatype", label: "Data type", all: "All data types", choices: sorted(pick("datatype").map((r): [string, string] => [r.value, dataTypeLabel(r.name ?? r.value)])) },
+      { name: "repository", label: "Repository", all: "All repositories", choices: sorted([...repositories]) },
+      { name: "institution", label: "Institution", all: "All institutions", choices: sorted(pick("institution").map((r): [string, string] => [r.value, names.institution(r.value)])) },
+      { name: "county", label: "County", all: "All counties", choices: sorted(pick("county").map((r): [string, string] => [r.value, names.county(r.value)])) },
+      { name: "topic", label: "Topic", all: "All topics", choices: sorted(pick("topic").map((r): [string, string] => [r.value, r.name ?? names.topic(r.value)]).filter(([, n]) => healthTopic(n))) },
+    ],
   };
 }
 
@@ -403,12 +486,14 @@ async function renderPublicDirectory(
   const combinedApi = path === "/api/directory/listings";
   const pubApi = path === publicationsApi || path.startsWith(publicationsApi + "/");
   const studyApi = path === studiesApi || path.startsWith(studiesApi + "/");
+  const datasetList = path === datasetsApi;
+  const datasetsLanding = path === datasetsPath;
   const detail = path.startsWith("/discover/publication/") || path.startsWith(publicationsApi + "/");
   const xml = (value: string, type = "application/xml") =>
     new Response(head ? null : value, { headers: { ...noStore, ...projectSource(), "content-type": type + "; charset=utf-8" } });
   const unavailable = () =>
     api || pubApi ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
-  let hasPubs = false, hasStudies = false;
+  let hasPubs = false, hasStudies = false, hasDatasets = false;
   let linked: { title: string; url: string }[] = [];
   let mentions: { title: string; url: string }[] = [];
   let research: Listing[] = [];
@@ -417,7 +502,18 @@ async function renderPublicDirectory(
       hasPubs =
         (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='publication' LIMIT 1")).length > 0;
     }
-    hasStudies = hasPubs && (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='study' LIMIT 1")).length > 0;
+    if (hasPubs) {
+      // The dataset switch is read first, so a hidden collection costs no listing reads. A database
+      // without migration 0050 has no switch and no datasets.
+      const [visible] = await optionalRows<{ studies: number; datasets: number }>(
+        researchDb,
+        "SELECT EXISTS(SELECT 1 FROM research_visible WHERE kind='study') studies,CASE WHEN (SELECT enabled FROM dataset_visibility WHERE id=1)=1 THEN EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') ELSE 0 END datasets",
+      );
+      hasStudies = visible
+        ? visible.studies === 1
+        : (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='study' LIMIT 1")).length > 0;
+      hasDatasets = visible?.datasets === 1;
+    }
     if (!suppliedCatalog && path.startsWith(apiPath + "/")) {
       const id = decode(pathname.slice(apiPath.length + 1));
       if (!/^[1-9][0-9]{0,19}$/.test(id)) return json(() => ({ error: "project_not_found" }), 404);
@@ -455,8 +551,40 @@ async function renderPublicDirectory(
         content: renderStudy(study, await institutionRefs(researchDb), similar, catalog),
       }, 200);
     }
+    if (path.startsWith("/discover/dataset/") || path.startsWith(datasetsApi + "/")) {
+      const datasetApi = path.startsWith(datasetsApi + "/");
+      const segment = path.slice((datasetApi ? datasetsApi : "/discover/dataset").length + 1);
+      const id = segment.includes("/") ? "" : decode(segment);
+      const missing = () => datasetApi ? json(() => ({ error: "dataset_not_found" }), 404) : page({ kind: "not-found" }, 404);
+      if (!datasetId.test(id) || !hasPubs) return missing();
+      // While the collection is switched off, every dataset URL is simply absent.
+      const [state] = await optionalRows<{ enabled: number | null; removed: number }>(
+        researchDb,
+        "SELECT (SELECT enabled FROM dataset_visibility WHERE id=1) enabled,EXISTS(SELECT 1 FROM dataset_removals WHERE id=?) removed",
+        id,
+      );
+      if (state?.enabled !== 1) return missing();
+      if (state.removed) return datasetApi ? json(() => ({ error: "dataset_removed" }), 410) : page({ kind: "dataset-removed" }, 410);
+      const [entry] = await rows<{ record: string }>(researchDb, "SELECT record FROM research_visible WHERE kind='dataset' AND id=?", id);
+      if (!entry) return missing();
+      const dataset: Dataset = JSON.parse(entry.record);
+      if (datasetApi) return json(() => ({ dataset }));
+      const [refs, papers] = [await institutionRefs(researchDb), await datasetPapers(researchDb, dataset)];
+      const similar = await similarListings(researchDb, { kind: "dataset", record: dataset }, papers.map((p) => p.id));
+      const where = dataset.institutions.map((i) => refs.find((r) => r.id === i)?.name ?? i).join(", ");
+      return page({
+        kind: "research",
+        title: dataset.title,
+        summary: `${dataset.summary} ${dataTypeLabel(dataset.data_type, true)} in ${dataset.repository} (${dataset.accessions[0] ?? dataset.id}), ${accessLevels[dataset.access]?.name.toLowerCase() ?? dataset.access} access. ${dataset.label} regional connection: ${where}.`,
+        path: datasetPath(id),
+        content: renderDataset(dataset, refs, papers, similar, catalog),
+        ogType: "article",
+        schema: datasetSchema(dataset, papers, refs, origin),
+        breadcrumbs: [["Directory", browsePath], ["Datasets", datasetsPath], [dataset.title, datasetPath(id)]],
+      }, 200);
+    }
     if (path === "/llms.txt")
-      return new Response(head ? null : llmsTxt(origin, true, hasPubs), {
+      return new Response(head ? null : llmsTxt(origin, true, hasPubs, hasDatasets), {
         headers: { ...noStore, "content-type": "text/plain; charset=utf-8" },
       });
     if (detail) {
@@ -508,6 +636,16 @@ async function renderPublicDirectory(
         id,
       );
       for (const version of versions) related.push({ kind: "publication", record: JSON.parse(version.record) });
+      const datasets = hasDatasets
+        ? (
+            await rows<{ record: string }>(
+              researchDb,
+              "SELECT record FROM research_visible WHERE kind='dataset' AND id IN (SELECT id FROM research_facets WHERE field='paper' AND (value=? OR value IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?))) ORDER BY activity DESC,id LIMIT 50",
+              id,
+              id,
+            )
+          ).map((r) => JSON.parse(r.record) as Dataset)
+        : [];
       if (pubApi)
         return json(() => ({
           publication: {
@@ -546,7 +684,7 @@ async function renderPublicDirectory(
       const similar = await similarListings(
         researchDb,
         { kind: "publication", record: p },
-        [p.preprint_of ?? "", p.published_as ?? "", ...related.map((i) => i.record.id), ...linkedCode.map((i) => i.record.id), ...nearby.map((i) => i.record.id)].filter(Boolean),
+        [p.preprint_of ?? "", p.published_as ?? "", ...related.map((i) => i.record.id), ...linkedCode.map((i) => i.record.id), ...nearby.map((i) => i.record.id), ...datasets.map((d) => d.id)].filter(Boolean),
       );
       const institutionName = refs.find((r) => r.id === institution)?.name ?? institution;
       const more = institution
@@ -562,7 +700,7 @@ async function renderPublicDirectory(
           title: displayTitle(p),
           summary: publicationDescription(p, refs),
           path: pubPath(id),
-          content: renderPublication(p, refs, related, more, catalog, linkedCode, similar),
+          content: renderPublication(p, refs, related, more, catalog, linkedCode, similar, datasets),
           ogType: "article",
           meta: citationMeta(p),
           schema: publicationSchema(p, origin),
@@ -594,6 +732,10 @@ async function renderPublicDirectory(
           const [{ n }] = await rows<{ n: number }>(researchDb, "SELECT count(*) n FROM research_visible WHERE kind='study'");
           parts.push(...Array.from({ length: Math.ceil(n / partSize) }, (_, i) => "studies-" + (i + 1)));
         }
+        if (hasDatasets) {
+          const [{ n }] = await rows<{ n: number }>(researchDb, "SELECT count(*) n FROM research_visible WHERE kind='dataset'");
+          parts.push(...Array.from({ length: Math.ceil(n / partSize) }, (_, i) => "datasets-" + (i + 1)));
+        }
         return xml(
           `<sitemapindex${namespace}>${parts.map((p) => `<sitemap><loc>${html(origin + prefix + p + ".xml")}</loc></sitemap>`).join("")}</sitemapindex>`,
         );
@@ -623,18 +765,18 @@ async function renderPublicDirectory(
           );
         }
       } else {
-        const match = /^\/discover\/sitemap\/(studies-)?([1-9]\d{0,5})\.xml$/.exec(path);
-        const studyPart = !!match?.[1];
-        if (!match || (studyPart ? !hasStudies : !hasPubs)) return page({ kind: "not-found" }, 404);
+        const match = /^\/discover\/sitemap\/(studies-|datasets-)?([1-9]\d{0,5})\.xml$/.exec(path);
+        const part = match?.[1] === "studies-" ? "study" : match?.[1] === "datasets-" ? "dataset" : "publication";
+        if (!match || !{ study: hasStudies, dataset: hasDatasets, publication: hasPubs }[part]) return page({ kind: "not-found" }, 404);
         entries = (
           await rows<{ id: string; checked: string | null }>(
             researchDb,
             "SELECT id,json_extract(record,'$.checked') checked FROM research_visible WHERE kind=? ORDER BY id LIMIT ? OFFSET ?",
-            studyPart ? "study" : "publication",
+            part,
             partSize,
             (Number(match[2]) - 1) * partSize,
           )
-        ).map((r) => ({ loc: origin + (studyPart ? studyPath : pubPath)(r.id), lastmod: r.checked ?? undefined }));
+        ).map((r) => ({ loc: origin + { study: studyPath, dataset: datasetPath, publication: pubPath }[part](r.id), lastmod: r.checked ?? undefined }));
         if (!entries.length) return page({ kind: "not-found" }, 404);
       }
       const seen = new Set<string>();
@@ -673,7 +815,7 @@ async function renderPublicDirectory(
     const scoped = /^\/discover\/(institution|topic|county)\/([^/]+)$/.exec(path);
     let refs: Institution[] = [];
     const needsRefs =
-      scoped || path === newPath || path === feedPath || combinedApi || pubApi || studyApi || (path === browsePath && hasPubs);
+      scoped || path === newPath || path === feedPath || combinedApi || pubApi || studyApi || datasetList || datasetsLanding || (path === browsePath && hasPubs);
     if (
       needsRefs &&
       (hasPubs ||
@@ -697,6 +839,8 @@ async function renderPublicDirectory(
       path === feedPath ||
       pubApi ||
       studyApi ||
+      datasetList ||
+      (datasetsLanding && hasDatasets) ||
       combinedApi ||
       (scoped && refs.length > 0) ||
       (path === browsePath && searchParams.has("kind") && !hasPubs) ||
@@ -705,6 +849,7 @@ async function renderPublicDirectory(
     ) {
       if (pubApi && !hasPubs) return json(() => ({ error: "publication_not_found" }), 404);
       if (studyApi && !hasStudies) return json(() => ({ error: "study_not_found" }), 404);
+      if (datasetList && !hasDatasets) return json(() => ({ error: "dataset_not_found" }), 404);
       const options = optionsFor(catalog, removed, refs);
       const params = new URLSearchParams(searchParams);
       // "Other science" has no topic feed, and HTML views do not offer it as a topic filter.
@@ -717,6 +862,7 @@ async function renderPublicDirectory(
       }
       if (pubApi) params.set("kind", "publication");
       if (studyApi) params.set("kind", "study");
+      if (datasetList) params.set("kind", "dataset");
       if (path === feedPath || path === newPath) params.set("sort", "added");
       // A landing page is the unfiltered first page. Every other combination is a search result.
       const filtered = [...searchParams.keys()].some((key) => key !== "page");
@@ -737,12 +883,18 @@ async function renderPublicDirectory(
           "application/rss+xml",
         );
       }
+      // The datasets page reads like a search for kind=dataset, newest release first.
+      const query = new URLSearchParams(params);
+      if (datasetsLanding) {
+        query.set("kind", "dataset");
+        if (!query.get("sort") && !query.get("q")) query.set("sort", "activity");
+      }
       const result = hasPubs
-        ? await researchQuery(researchDb, params, refs)
+        ? await researchQuery(researchDb, query, refs)
         : projectQuery(catalog, removed, params, options, refs);
       if (scoped && !result.total && !options[scoped[1] as keyof typeof options].has(params.get(scoped[1])!))
         return page({ kind: "not-found" }, 404);
-      if (pubApi || combinedApi || studyApi) {
+      if (pubApi || combinedApi || studyApi || datasetList) {
         const publicationIds = result.items.flatMap((i) =>
           i.kind === "publication" ? [i.record.published_as, i.record.preprint_of].filter(Boolean) : [],
         );
@@ -771,7 +923,9 @@ async function renderPublicDirectory(
               } : i,
         );
         return json(() => ({
-          ...(pubApi ? { publications: listings.map((i) => i.record) } : studyApi ? { studies: listings.map((i) => i.record) } : { listings }),
+          ...(pubApi
+            ? { publications: listings.map((i) => i.record) }
+            : studyApi ? { studies: listings.map((i) => i.record) } : datasetList ? { datasets: listings.map((i) => i.record) } : { listings }),
           page: result.page,
           page_size: 24,
           total: "more" in result && result.more ? result.total : result.counts.reduce((sum, kind) => sum + kind.works, 0),
@@ -787,12 +941,22 @@ async function renderPublicDirectory(
         );
       const names = namesFor(refs, options);
       const now = new Date();
-      const feed = feedUrl(params);
+      const feed = feedUrl(datasetsLanding ? query : params);
       const landing = !filtered && !pageNo;
-      const described = describeQuery(params, names, path === newPath);
+      const choices = datasetsLanding ? await datasetFacetChoices(researchDb, names) : undefined;
+      const described = describeQuery(datasetsLanding ? new URLSearchParams([...params, ["kind", "dataset"]]) : params, names, path === newPath, choices?.repositories);
       let header: string, title: string, description: string, about: Record<string, unknown> | undefined, aside = "";
       const crumbs: [string, string][] = [["Directory", browsePath]];
-      if (scope) {
+      if (datasetsLanding) {
+        crumbs.push(["Datasets", datasetsPath]);
+        title = landing ? "Datasets from Delaware Valley research" : described;
+        description = landing
+          ? `${kindCounts(result.counts)} connected to the nine-county Delaware Valley, with the repository that holds each one and how to get access.`
+          : `${described}. ${resultCount(result) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
+        header = landing
+          ? `<header class="entity-head"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a></nav><h1>Datasets</h1><p class="lede">${html(kindCounts(result.counts))} from regional research, each with the repository that holds it and how to get access. Newest releases first.</p></header>`
+          : filteredHeader(crumbs, described, path);
+      } else if (scope) {
         const county = counties.find((c) => facetSlug(c.name) === scope.slug);
         const place = county ? `${scope.name}, ${county.state === "NJ" ? "New Jersey" : "Pennsylvania"}` : scope.name;
         crumbs.push([scope.name, path]);
@@ -804,7 +968,7 @@ async function renderPublicDirectory(
               : { "@type": "Thing", name: scope.name };
         title =
           scope.field === "institution"
-            ? `${scope.name}: ${hasStudies ? "healthcare research" : "healthcare publications and research software"}`
+            ? `${scope.name}: ${hasStudies || hasDatasets ? "healthcare research" : "healthcare publications and research software"}`
             : scope.field === "topic"
               ? `${scope.name} research in the Delaware Valley`
               : `Healthcare research in ${place}`;
@@ -839,12 +1003,12 @@ async function renderPublicDirectory(
           <h1>What’s new</h1>
           <p class="lede">Additions are ordered by the date they entered the directory.</p></header>${recent.length ? `<section class="entity-head" aria-labelledby="published-this-month"><div class="section-heading"><h2 id="published-this-month">Published this month</h2><a href="${browsePath}?kind=publication&amp;date_from=${month}&amp;date_to=${localDay}&amp;sort=activity">All publications this month</a></div>${renderListingCards(recent.map(({ record }) => ({ kind: "publication", record: JSON.parse(record) })), catalog)}</section>` : ""}`;
       } else {
-        title = landing ? (hasStudies ? "Search healthcare research" : "Search healthcare publications and research software") : described;
+        title = landing ? (hasStudies || hasDatasets ? "Search healthcare research" : "Search healthcare publications and research software") : described;
         description = landing
           ? `Search ${kindCounts(result.counts)} connected to the nine-county Delaware Valley by title, term, institution, topic or county.`
           : `${described}. ${resultCount(result) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
         header = landing
-          ? `<header class="entity-head"><h1>${hasStudies ? "Healthcare research" : "Publications and research software"}</h1><p class="lede">The directory lists ${kindCounts(result.counts)} connected to the nine-county Delaware Valley. Search titles, terms and institutions, or narrow the list by kind, institution, topic and county.</p></header>`
+          ? `<header class="entity-head"><h1>${hasStudies || hasDatasets ? "Healthcare research" : "Publications and research software"}</h1><p class="lede">The directory lists ${kindCounts(result.counts)} connected to the nine-county Delaware Valley. Search titles, terms and institutions, or narrow the list by kind, institution, topic and county.</p></header>`
           : filteredHeader(crumbs, described, path);
       }
       const q = params.get("q")?.slice(0, 200).match(/[\p{L}\p{N}]+/gu);
@@ -872,11 +1036,19 @@ async function renderPublicDirectory(
             options,
             enabled: hasPubs,
             studiesAvailable: hasStudies,
+            datasetsAvailable: hasDatasets,
             scope: scoped?.[1],
             byDate: path === newPath,
             aside,
+            ...(choices
+              ? {
+                  facets: choices.facets,
+                  orders: [["activity", "Release date"], ["added", "Date added"], ["name", "Title A–Z"]] as [string, string][],
+                  feed,
+                }
+              : {}),
           }),
-          feed: { title: scope ? `Additions: ${scope.name}` : "Directory additions", href: feed },
+          feed: { title: scope ? `Additions: ${scope.name}` : datasetsLanding ? "Dataset additions" : "Directory additions", href: feed },
           breadcrumbs: crumbs.length > 1 ? crumbs : undefined,
           schema: {
             "@type": "CollectionPage",
@@ -953,7 +1125,7 @@ async function renderPublicDirectory(
   }
   if (pathname === "/discover" || pathname === "/discover/") return redirect(browsePath + search);
   if (pathname === methodPath || pathname === methodPath + "/")
-    return page({ kind: "methodology", publications: hasPubs, studies: hasStudies }, 200);
+    return page({ kind: "methodology", publications: hasPubs, studies: hasStudies, datasets: hasDatasets }, 200);
 
   const entityMatch = entityRoute.exec(pathname);
   if (entityMatch) {

@@ -160,6 +160,7 @@ input, select { accent-color: var(--accent); }
 .record-kind .kind { display: inline-flex; align-items: center; gap: .4rem; align-self: center; }
 .record-kind .kind .glyph { width: 1.3rem; height: 1.3rem; stroke-width: 1.4; }
 .record-study .kind, .study-page .record-kind .kind { color: var(--study); }
+.record-dataset .kind, .dataset-page .record-kind .kind, .publication-page .dataset-list .record-kind .kind { color: var(--dataset); }
 .evidence { display: inline-flex; align-items: center; gap: .25rem; }
 .evidence .glyph { width: 1.05em; height: 1.05em; }
 .evidence-verified .glyph-fill { fill: currentColor; fill-opacity: .14; }
@@ -492,6 +493,33 @@ input, select { accent-color: var(--accent); }
 .research-index .groups, .research-index .partners { margin-bottom: 1.5rem; }
 .study-page .sites-heading { margin-top: 1rem; font-size: .95rem; }
 .study-sites li { padding: .25rem 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+
+/* Datasets: an access tag on the kind line and a "How to get it" panel. */
+.access-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  align-self: center;
+  padding: 0 .35rem;
+  border: 1px solid var(--field);
+  border-radius: 2px;
+  color: var(--text);
+  font: 600 .74rem/1.55 var(--sans);
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.access-tag .glyph { width: 1.05em; height: 1.05em; }
+.access-open { border-color: var(--verified-text); background: var(--verified); color: var(--verified-text); }
+.record-repository { overflow-wrap: anywhere; }
+.get-data { padding: 1rem 1.1rem 1.1rem; background: var(--surface); border-top: 3px solid var(--dataset); }
+.get-data > h2 { border-bottom-color: var(--line); }
+.get-data .facts > div:last-child { border-bottom: 0; }
+.get-data dd { overflow-wrap: anywhere; }
+.access-explain { display: block; margin-top: .3rem; color: var(--muted); font-size: .88rem; }
+.cite-list { padding-left: 1.1rem; }
+.cite-list li + li { margin-top: .25rem; }
+.dataset-list .record-kind { margin-bottom: .15rem; }
+.dataset-list a { overflow-wrap: anywhere; }
 .home-researchers { max-width: 46rem; margin-top: .9rem; color: var(--muted); font-size: .95rem; }
 .home-latest .section-heading a + a { margin-left: 1rem; }
 
