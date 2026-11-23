@@ -1,14 +1,47 @@
 """Source-grounded matching for a repository's actual submitter.
 
 Callers must supply only a field that the repository identifies as a submitter
-or contact. A paper affiliation, PI, creator, or unqualified organization is
-not evidence of who deposited a dataset. Each call represents one person's or
+or contact. An explicitly named principal investigator is separate repository
+evidence for a controlled-access study. Each call represents one person's or
 organization's field, so location cannot leak between unrelated contributors.
 """
 import re
 import unicodedata
 
 from common import COUNTIES, SKIP_OUTSIDE, registry
+
+
+REPOSITORY_ALIASES = {
+    'upenn': ('UPenn', 'U Penn', 'U. Penn', 'Univ Pennsylvania'),
+    'penn-medicine': ('Penn Medicine', 'UPHS'),
+    'perelman-school-of-medicine': ('PSOM', 'UPenn Perelman School of Medicine'),
+    'chop': ('CHOP',),
+    'thomas-jefferson-university': ('TJU', 'Jefferson', 'Thomas Jefferson'),
+    'fox-chase': ('Fox Chase', 'FCCC'),
+    'wistar': ('Wistar',),
+    'princeton-university': ('Princeton Univ', 'Princeton Univeristy'),
+}
+AMBIGUOUS_ALIAS = {'jefferson', 'thomas jefferson', 'princeton univeristy'}
+
+
+def repository_names(inst):
+    return [inst.get('name', '')] + (inst.get('aliases') or [])
+
+
+def short_name(inst, text, city=''):
+    # Short names are meaningful as institution fields, including a department
+    # or city in a separate comma-delimited segment.
+    parts = {_orthographic(part) for part in re.split(r'[,;|()]', text)}
+    for alias in REPOSITORY_ALIASES.get(inst['id'], ()):
+        normalized = _orthographic(alias)
+        if normalized not in parts:
+            continue
+        if normalized in AMBIGUOUS_ALIAS and not any(
+                _normalize(site.get('place', '')) in ({_normalize(city)} | parts)
+                for site in inst.get('sites', []) if site.get('place')):
+            continue
+        return alias
+    return None
 
 
 def _normalize(value):
@@ -49,8 +82,8 @@ def match_submitter(text, city='', state='', institutions=None):
     state_text = {'pennsylvania': 'pa', 'new jersey': 'nj'}.get(state_text, state_text)
     matches = []
     for inst in institutions if institutions is not None else registry():
-        names = [inst.get('name', '')] + (inst.get('aliases') or [])
-        name = next((n for n in names if _contains(normalized, n)), None)
+        names = repository_names(inst)
+        name = next((n for n in names if _contains(normalized, n)), None) or short_name(inst, raw, city)
         # This observed GEO misspelling is accepted only with the independently
         # supplied Philadelphia, Pennsylvania contact location. Do not generalize
         # this into fuzzy alias matching.
@@ -95,8 +128,9 @@ def match_geo_institution(institution, city='', state='', institutions=None):
     value = _normalize(institution)
     matches = []
     for inst in records:
-        name = next((n for n in [inst.get('name', '')] + (inst.get('aliases') or [])
-                     if n and _normalize(n) == value), None)
+        name = next((n for n in repository_names(inst) if n and _normalize(n) == value), None)
+        if not name and re.fullmatch(r'[^,;|()]+', institution or ''):
+            name = short_name(inst, institution, city)
         if not name:
             continue
         if inst.get('kind') == 'company':
@@ -153,3 +187,11 @@ def match_paper_affiliation(affiliation, institutions=None):
             'counties': sorted({by_id[i].get('homeCounty') for i in ids
                                 if by_id[i].get('homeCounty') in COUNTIES}),
             'matches': matches}
+
+def investigator_ids(record, institutions=None):
+    """Resolve affiliations explicitly supplied for a repository's investigators."""
+    records = list(institutions if institutions is not None else registry())
+    fields = record.get('pi_affiliations') or [record.get('pi_block') or '']
+    return sorted({identifier for field in fields for identifier in (
+        set(match_paper_affiliation(field, records)['institutions'])
+        | set(match_submitter(field, institutions=records)['institutions']))})

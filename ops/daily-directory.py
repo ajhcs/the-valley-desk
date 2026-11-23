@@ -323,6 +323,13 @@ def collect(d1, state, run_dir, day, first, last, receipt):
                         raise daily_datasets.StopRun("Dataset update would discard existing evidence")
                 selected[identifier] = candidate
             dataset_counts = daily_datasets.guard(list(baseline_dataset.values()), list(selected.values()))
+            # Keep queued records ready for the next run when normal changes use
+            # this run's dataset allowance. The same guarded load publishes them.
+            budget = len(baseline_dataset) // 20 - dataset_counts["added"] - dataset_counts["changed"]
+            backlog = daily_datasets.dryad_backlog(ROOT, state, day, {**baseline_dataset, **selected}, dataset_removed)
+            for row in backlog[:budget]:
+                selected[row["id"]] = row
+            dataset_counts = daily_datasets.guard(list(baseline_dataset.values()), list(selected.values()))
         except daily_datasets.StopRun as error:
             raise StopRun(str(error)) from None
         deltas["dataset"] = selected

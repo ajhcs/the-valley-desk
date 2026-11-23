@@ -17,8 +17,10 @@ from pathlib import Path
 
 UA = 'valley-desk-research/1.0'
 RATE_LIMIT_RETRY_AFTER = None
+DRYAD_INTERVAL = 0
+_dryad_last = 0
 DATA_EXT = re.compile(r'\.(?:csv|tsv|xls|xlsx|ods|parquet|feather|jsonl?|xml|rdf|nt|ttl|h5|hdf5|h5ad|loom|rds|rda|rdata|sav|dta|sas7bdat|mat|npy|npz|pkl|pickle|sqlite|db|sql|vcf|bcf|bam|sam|cram|fastq|fq|fasta|fa|bed|bim|fam|bgen|gff|gtf|wig|bw|bigwig|nii|dcm|dicom|nrrd|mha|mhd|tif|tiff|png|jpg|jpeg|bmp|ome|svs|nd2|czi|avi|mp4|wav|edf|bdf|set|fif|zip|tar|tgz|gz|bz2|xz|7z|rar|zarr|tar\.gz)$', re.I)
-DOCUMENT = re.compile(r'\.(?:pdf|docx?|pptx?|txt|md|rtf|html?)$', re.I)
+DOCUMENT = re.compile(r'\.(?:pdf|docx?|pptx?|txt|md|rtf|html?)(?:\.(?:gz|zip|bz2|xz))?$|(?:^|[ _./-])(?:article[ _-]*proof|page[ _-]*proof|galley[ _-]*proof)(?:[ _./-]|$)', re.I)
 
 def cache_path(cache_dir, doi):
     return Path(cache_dir) / (hashlib.sha256(doi.lower().removeprefix('doi:').encode()).hexdigest() + '.json')
@@ -68,10 +70,13 @@ def api_url(doi):
     return None
 
 def get(url):
-    global RATE_LIMIT_RETRY_AFTER
+    global RATE_LIMIT_RETRY_AFTER, _dryad_last
     RATE_LIMIT_RETRY_AFTER = None
     for attempt in range(3):
         try:
+            if DRYAD_INTERVAL and urllib.parse.urlsplit(url).hostname == 'datadryad.org':
+                time.sleep(max(0, _dryad_last + DRYAD_INTERVAL - time.monotonic()))
+                _dryad_last = time.monotonic()
             req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': 'application/vnd.mendeley-public-dataset.1+json' if 'api.mendeley.com' in url else 'application/json'})
             with urllib.request.urlopen(req, timeout=25) as r:
                 return r.status, json.load(r)
@@ -107,27 +112,113 @@ def fetch(doi):
         link = ((obj.get('_links') or {}).get('stash:version') or {}).get('href')
         if not link: return {'doi': doi, 'url': url, 'state': 'incomplete', 'files': []}
         url = urllib.parse.urljoin('https://datadryad.org', link.rstrip('/') + '/files')
-        status, obj = get(url)
-        retry_after = RATE_LIMIT_RETRY_AFTER
-        if status != 200: return {'doi': doi, 'url': url, 'http': status, 'retry_after': retry_after, 'state': 'denied' if status == 401 else 'forbidden' if status == 403 else 'missing' if status in (404,410) else 'error', 'files': []}
-        files = (obj.get('_embedded') or {}).get('stash:files')
-        # A paginated list is not a complete manifest.
-        if (obj.get('_links') or {}).get('next') or (isinstance(files, list) and obj.get('total', len(files)) != len(files)): return {'doi': doi, 'url': url, 'state': 'incomplete', 'files': []}
+        return dryad_files(doi, url)
     elif isinstance(obj, list): files = obj
     else: files = obj.get('files') if isinstance(obj, dict) else None
     if not isinstance(files, list): return {'doi': doi, 'url': url, 'state': 'incomplete', 'files': []}
     names = [f.get('key') or f.get('name') or f.get('path') for f in files if isinstance(f, dict)]
     return {'doi': doi, 'url': url, 'state': 'complete', 'files': [n for n in names if n]}
 
+def dryad_files(doi, url):
+    seen, files = set(), []
+    total = None
+    while url:
+        target = urllib.parse.urlsplit(url)
+        if target.scheme != 'https' or target.netloc != 'datadryad.org' or url in seen:
+            return {'doi': doi, 'state': 'incomplete', 'files': []}
+        seen.add(url)
+        status, obj = get(url)
+        if status != 200:
+            return {'doi': doi, 'url': url, 'http': status, 'retry_after': RATE_LIMIT_RETRY_AFTER,
+                    'state': 'missing' if status in (404, 410) else 'error', 'files': []}
+        page = (obj.get('_embedded') or {}).get('stash:files') if isinstance(obj, dict) else None
+        if not isinstance(page, list) or len(seen) > 100:
+            return {'doi': doi, 'url': url, 'state': 'incomplete', 'files': []}
+        files.extend(page)
+        total = obj.get('total', total)
+        next_page = (obj.get('_links') or {}).get('next') or {}
+        href = next_page.get('href') if isinstance(next_page, dict) else None
+        if next_page and not href:
+            return {'doi': doi, 'url': url, 'state': 'incomplete', 'files': []}
+        url = urllib.parse.urljoin(url, href) if href else None
+    if total is not None and total != len(files):
+        return {'doi': doi, 'state': 'incomplete', 'files': []}
+    names = [f.get('path') or f.get('name') or f.get('key') for f in files if isinstance(f, dict)]
+    return {'doi': doi, 'state': 'complete', 'files': [n for n in names if n]}
+
+
+def retry_dryad(dois, cache_dir, *, limit=12):
+    """Process a bounded queue serially, persisting repository cooldowns."""
+    from datetime import datetime, timezone
+    from email.utils import parsedate_to_datetime
+    import fcntl
+
+    global DRYAD_INTERVAL
+    root = Path(cache_dir)
+    root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    cooldown = root / 'dryad-cooldown.json'
+    with (root / 'dryad.lock').open('a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        state = json.loads(cooldown.read_text()) if cooldown.exists() else {}
+        if state.get('until', 0) > time.time():
+            return
+        previous_interval = DRYAD_INTERVAL
+        DRYAD_INTERVAL = 5
+        try:
+            attempts = 0
+            for doi in dict.fromkeys(dois):
+                if not re.fullmatch(r'10\.5061/dryad\.[a-z0-9._-]+', doi):
+                    continue
+                path = cache_path(root, doi)
+                previous = json.loads(path.read_text()) if path.exists() else {}
+                if previous.get('state') in ('complete', 'missing') or previous.get('retry_at', 0) > time.time():
+                    continue
+                if attempts >= limit:
+                    break
+                attempts += 1
+                result = fetch(doi)
+                if result['state'] not in ('complete', 'missing'):
+                    result['failures'] = previous.get('failures', 0) + 1
+                    result['retry_at'] = time.time() + min(86400, 600 * 2 ** min(7, result['failures'] - 1))
+                save_manifest(path, result)
+                if result.get('http') == 429:
+                    strikes = state.get('strikes', 0) + 1
+                    retry = result.get('retry_after') or ''
+                    delay = int(retry) if retry.isdigit() else 0
+                    if retry and not delay:
+                        try:
+                            delay = (parsedate_to_datetime(retry) - datetime.now(timezone.utc)).total_seconds()
+                        except (ValueError, TypeError, OverflowError):
+                            pass
+                    save_manifest(cooldown, {'until': time.time() + max(delay, min(3600, 300 * 2 ** min(4, strikes - 1))),
+                                             'strikes': strikes})
+                    break
+                if result['state'] in ('complete', 'missing') and state:
+                    save_manifest(cooldown, {})
+                    state = {}
+        finally:
+            DRYAD_INTERVAL = previous_interval
+
+
+def save_manifest(path, result):
+    tmp = path.with_name(path.name + '.' + str(os.getpid()) + '.tmp')
+    tmp.write_text(json.dumps(result, sort_keys=True) + '\n')
+    tmp.chmod(0o600)
+    tmp.replace(path)
+
+
 def main():
-    p = argparse.ArgumentParser(); p.add_argument('--input', required=True, help='newline-separated DOI list'); p.add_argument('--cache', required=True); p.add_argument('--retry-errors', action='store_true'); args = p.parse_args()
+    p = argparse.ArgumentParser(); p.add_argument('--input', required=True, help='newline-separated DOI list'); p.add_argument('--cache', required=True); p.add_argument('--retry-errors', action='store_true'); p.add_argument('--dryad-limit', type=int); args = p.parse_args()
     root = Path(args.cache); root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if args.dryad_limit is not None:
+        retry_dryad(Path(args.input).read_text().splitlines(), root, limit=args.dryad_limit)
+        return
     for doi in dict.fromkeys(x.strip().lower().removeprefix('doi:') for x in Path(args.input).read_text().splitlines() if x.strip()):
         if not api_url(doi): continue
         dest = cache_path(root, doi)
         if dest.exists() and not (args.retry_errors and json.loads(dest.read_text()).get('state') in ('error', 'incomplete')): continue
         result = fetch(doi)
-        tmp = dest.with_name(dest.name + '.' + str(os.getpid()) + '.tmp'); tmp.write_text(json.dumps(result, sort_keys=True) + '\n'); tmp.chmod(0o600); tmp.replace(dest)
+        save_manifest(dest, result)
         print(doi, result['state'], len(result['files']), flush=True)
         if result.get('http') == 429:
             print('Rate limited; stop this queue and retry later. Retry-After:', result.get('retry_after'), flush=True)

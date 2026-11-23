@@ -33,6 +33,56 @@ def pick_summary(*texts):
     return candidates[0] if candidates else ""
 
 
+COUNTS = re.compile(
+    r"^(?:there (?:were|are)|(?:we|the (?:study|dataset|series)) "
+    r"(?:used|included|contains?|performed|collected|generated)|(?:a )?total of|"
+    r"the repository entr(?:y|ies) describes?)?\s*"
+    r"(?:[\d,]+|one|two|three|four|five|six|seven|eight|nine|ten)\s+"
+    r"(?:(?:[a-z0-9+/-]*seq|biological|technical|experimentally|determined|molecular|"
+    r"independent|separate|different|individual|human|total)\s+)*"
+    r"(?:samples?|subjects?|participants?|experiments?|replicates?|structures?)"
+    r"(?:\s+(?:(?:was|were|are)\s+)?(?:measured|tested|collected|sequenced|performed|included|analyzed|used))?[. !?]*$", re.I)
+
+
+def thin_summary(text):
+    return len(re.findall(r"\b[\w-]+\b", text or "")) < 8 or bool(COUNTS.fullmatch(text.strip()))
+
+
+def rebuild_summary(summary, title, *details, paper_title=None):
+    if not thin_summary(summary):
+        return summary
+    title = strip_markup(title).rstrip(".")
+    title_key = re.sub(r"\W+", " ", title.casefold()).strip()
+    name = one_sentence(title, limit=115).rstrip(".") if title else ""
+    budget = 240 - len(name) - (3 if name else 0)
+    backup = None
+    for text in details:
+        cleaned = re.sub(r"https?://\S+|doi:\s?\S+", "", strip_markup(text))
+        candidates = []
+        for sentence in re.split(r"(?<=[a-z0-9\)\]%])[.!?]\s+(?=[A-Z])", cleaned):
+            sentence = re.sub(r"^(?:overall design|experiment \d+|design|methods)\s*:\s*", "", sentence, flags=re.I).strip()
+            if (thin_summary(sentence) or SKIP.search(sentence)
+                    or re.match(r"(?i)(?:this (?:sub)?series|this superseries|refer to individual)", sentence)
+                    or re.sub(r"\W+", " ", sentence.casefold()).strip() == title_key):
+                continue
+            detail = one_sentence(sentence, limit=budget)
+            if not detail:
+                continue
+            combined = f"{name} — {detail}" if name else detail
+            material = DATA.search(sentence) or re.search(r"\b(?:RNA|DNA|cells?|tissue)\b", sentence, re.I)
+            method = material and (ACTION.search(sentence) or re.search(
+                r"\b(?:harvest\w*|extract\w*|treat\w*|differentiated|time course)\b", sentence, re.I))
+            if method:
+                candidates.append((len(sentence) <= budget - 1, combined))
+            elif backup is None:
+                backup = combined
+        if candidates:
+            return max(candidates, key=lambda candidate: candidate[0])[1]
+    if paper_title:
+        return "Data from: " + one_sentence(paper_title, limit=229)
+    return backup or summary
+
+
 def data_type_for_record(text, prefix="", formats=()):
     """Classify from text first, then unambiguous file-format evidence.
 

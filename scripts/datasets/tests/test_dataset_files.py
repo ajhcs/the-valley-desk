@@ -44,3 +44,14 @@ class FileEvidenceTests(unittest.TestCase):
             self.assertEqual(fetch('10.5281/zenodo.123')['state'], 'error')
         with patch('dataset_files.get', side_effect=[(200, {'_links': {'stash:version': {'href': '/api/v2/versions/1'}}}), (200, {'total': 2, '_embedded': {'stash:files': [{'path': 'x.csv'}]}})]):
             self.assertEqual(fetch('10.5061/dryad.test')['state'], 'incomplete')
+
+    def test_dryad_follows_manifest_pages_and_excludes_proofs(self):
+        with patch('dataset_files.get', side_effect=[
+            (200, {'_links': {'stash:version': {'href': '/api/v2/versions/1'}}}),
+            (200, {'total': 2, '_embedded': {'stash:files': [{'path': 'article-proof.zip'}]},
+                   '_links': {'next': {'href': '?page=2'}}}),
+            (200, {'total': 2, '_embedded': {'stash:files': [{'path': 'data.csv'}]}}),
+        ]):
+            result = fetch('10.5061/dryad.test')
+        self.assertEqual(result['state'], 'complete')
+        self.assertEqual(concrete(result['files']), ['data.csv'])
