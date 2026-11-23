@@ -18,10 +18,14 @@ python3 -I -B scripts/datasets/validate.py
 | classify | `s4_classify.py` | `mentions-classified.jsonl` (rules v3) |
 | repos | `s5_repos.py` | `repo-cache/` (GEO, BioProject, SRA, assembly, dbGaP, EGA, PRIDE, RCSB, EMDB, BioStudies, DataCite) |
 | datacite | `s6_datacite.py` | `datacite-inst/` |
-| build | `build.py`, `datacite_rules.py` | `datasets.jsonl`, `code-candidates.jsonl`, `spot-check-50.jsonl`, `build-stats.json` |
+| build | `build.py`, `datacite_rules.py` | `datasets.jsonl`, `dataset-sources.json`, `reuse-decisions.jsonl`, `code-candidates.jsonl`, `spot-check-50.jsonl`, `build-stats.json` |
 | validate | `validate.py` | exit status |
 | report | `report.py` | `report.md` |
 
 Requests use the generic User-Agent `valley-desk-research/1.0`, at most 3 concurrent requests per host, about 3 per second to NCBI, and backoff on errors and 429s. Caches keep only the fields the listings need; contact names, emails and phone numbers are not stored.
 
-Classification (v3) starts from the phase 0 v2 rules and stays strict: any reuse cue for an accession in a paper wins over a deposit cue. Changes from v2 are listed in `report.md`. Labels: **Verified** when the repository record names a regional submitter or creator (GEO contact institute or city, BioProject or SRA submitter, PRIDE affiliation, dbGaP principal investigator, BioStudies organization, DataCite creator ROR in the registry); otherwise **Listed** through the producing paper.
+Classification starts from the phase 0 rules. An explicit reuse cue takes precedence over a deposit cue. The build also checks repository dates and conflicting publication claims against the repository's own citations. The private reuse evidence records citation coverage separately from the decision.
+
+DataCite records need a health or biomedical signal in their title, description or subjects. The build reports exclusions by source and rule. Generic supplements are excluded from both sources.
+
+**Verified** requires a repository submitter or DataCite creator with a regional registry match. Company names need a matching regional location. County attribution uses registry home counties. **Listed** identifies datasets whose producing paper supplies the regional connection.

@@ -11,10 +11,12 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import (COUNTIES, MULTISITE, REGION_CITIES, TODAY, inst_counties, one_sentence, read_gz_json, read_jsonl,
-                    regional_ids, registry, ror_index, strip_markup, work_dir, write_jsonl)
-from datacite_rules import data_type_for_text, datacite_access, datacite_license, datacite_released, \
-    health_decision, is_supplement, topic_for_text
+from common import COUNTIES, TODAY, read_gz_json, read_jsonl, registry, ror_index, strip_markup, work_dir, write_jsonl
+from reuse import adjudicate
+from datacite_rules import datacite_access, datacite_license, datacite_released, \
+    generic_supplement_decision, health_decision, is_supplement, topic_for_text
+from dataset_description import data_type_for_record, pick_summary
+from dataset_labels import match_submitter
 
 WORK = work_dir()
 REG = {i["id"]: i for i in registry()}
@@ -25,24 +27,6 @@ NODESC = collections.Counter()
 CODE_DESC = re.compile(r"\b(the code|this code|source code|code (?:for|to|used|that|simulates)|scripts? (?:for|to|used)|"
                        r"software|matlab code|python code|r code|r package|python package|jupyter|github)\b", re.I)
 DATA_DESC = re.compile(r"\b(data|dataset|datasets|images|recordings|measurements|sequenc\w*|reads|files)\b", re.I)
-CITY_COUNTY = {"philadelphia": "Philadelphia", "camden": "Camden", "trenton": "Mercer", "princeton": "Mercer",
-               "lawrenceville": "Mercer", "ewing": "Mercer", "pennington": "Mercer", "plainsboro": "Mercer",
-               "cherry hill": "Camden", "stratford": "Camden", "voorhees": "Camden", "glassboro": "Gloucester",
-               "sewell": "Gloucester", "doylestown": "Bucks", "langhorne": "Bucks", "newtown": "Bucks",
-               "wynnewood": "Montgomery", "bala cynwyd": "Montgomery", "glenside": "Montgomery", "blue bell": "Montgomery",
-               "king of prussia": "Montgomery", "norristown": "Montgomery", "plymouth meeting": "Montgomery",
-               "horsham": "Montgomery", "ambler": "Montgomery", "conshohocken": "Montgomery", "fort washington": "Montgomery",
-               "lansdale": "Montgomery", "spring house": "Montgomery", "abington": "Montgomery", "elkins park": "Montgomery",
-               "villanova": "Delaware", "radnor": "Delaware", "swarthmore": "Delaware", "haverford": "Delaware",
-               "media": "Delaware", "upper darby": "Delaware", "bryn mawr": "Montgomery", "west chester": "Chester",
-               "exton": "Chester", "malvern": "Chester", "chesterbrook": "Chester", "mount laurel": "Burlington",
-               "moorestown": "Burlington", "marlton": "Burlington", "willingboro": "Burlington", "browns mills": "Burlington"}
-NOT_REGIONAL = re.compile(r"(indiana|california|slippery rock|edinboro|clarion|kutztown|bloomsburg|east stroudsburg|"
-                          r"millersville|shippensburg|lock haven|mansfield|cheyney|west chester) university of pennsylvania", re.I)
-
-
-def reg_ids(text):
-    return regional_ids(NOT_REGIONAL.sub(" ", text or ""))
 
 
 def inst_names(ids, limit=3):
@@ -56,43 +40,39 @@ def inst_names(ids, limit=3):
 
 
 def counties_for(ids):
-    out = set()
-    for i in ids:
-        inst = REG.get(i)
-        if inst and not inst.get("outside") and i not in MULTISITE and inst.get("homeCounty") in COUNTIES:
-            out.add(inst["homeCounty"])
-    return out
+    return {REG[i]["homeCounty"] for i in ids if i in REG and REG[i].get("homeCounty") in COUNTIES}
 
 
-def pick_summary(*texts):
-    """Prefer the first sentence that describes data; otherwise the first meaningful sentence."""
-    DATAY = re.compile(r"\b(we (?:performed|profiled|sequenced|generated|measured|collected|analy[sz]ed|used)|"
-                       r"(?:rna|chip|atac|cut&run|scrna|snrna|whole[- ]genome|exome|single[- ]cell)[- ]?seq|"
-                       r"sequencing|profil\w+|this dataset|these data|the data|data (?:set|were)|dataset contains|"
-                       r"contains|includes|recordings|images|measurements|samples)\b", re.I)
-    sentences = []
-    for t in texts:
-        t = strip_markup(t)
-        if not t:
-            continue
-        t = re.sub(r"https?://\S+|doi:\s?\S+", "", t)
-        for s in re.split(r"(?<=[a-z0-9\)\]%])[.!?]\s+(?=[A-Z])", t):
-            s = LABEL.sub("", s.strip()).strip()
-            if len(s) >= 25 and not re.match(r"(?i)(this (?:sub)?series|this superseries|refer to individual|keywords?:)", s) \
-                    and not SKIP_SENT.search(s):
-                sentences.append(s)
-    if not sentences:
-        return ""
-    sentences = [s.rstrip(":;, ") for s in sentences
-                 if not re.search(r"(?i)^(?:all )?samples were|in (?:duplicate|triplicate)|\bhere\W*$", s)] or sentences
-    chosen = next((s for s in sentences[:6] if DATAY.search(s) and len(s) >= 50), sentences[0])
-    return one_sentence(chosen)
+def submitter_ids(affiliations, city="", state=""):
+    return sorted({i for affiliation in affiliations
+                   for i in match_submitter(affiliation, city, state, REG.values())["institutions"]})
 
 
-LABEL = re.compile(r"^(?:abstract|summary|description|overview|background|aims?|objectives?|introduction|purpose|"
-                   r"context|motivation|rationale|methods?)\s*[:.\-]\s*", re.I)
-SKIP_SENT = re.compile(r"@|\b(please|contact|correspond\w*|requests? for|cite|citation|copyright|licen[cs]e|readme|"
-                       r"funded by|grant|e-?mail)\b", re.I)
+def datacite_creator_ids(d):
+    ids = set()
+    for aff in d.get("affiliations", []):
+        ror = (aff.get("id") or "").rstrip("/").rsplit("/", 1)[-1].lower()
+        if ror in RORS:
+            inst = RORS[ror]
+            if inst.get("kind") != "company" or match_submitter(
+                    aff.get("name"), institutions=[inst])["institutions"]:
+                ids.add(inst["id"])
+        elif not ror:
+            ids.update(submitter_ids([aff.get("name")]))
+    return sorted(ids)
+
+
+def datacite_scope(d, source):
+    title = clean_title(d.get("title", ""))
+    drop, rule = generic_supplement_decision(title, d.get("descriptions"))
+    if drop or is_supplement(title, d):
+        DROPS[f"{source}: {rule or 'journal supplement file'}"] += 1
+        return None
+    keep, rule = health_decision(d)
+    if not keep:
+        DROPS[f"{source}: {rule}"] += 1
+        return None
+    return rule
 
 
 def geo_data_type(rec):
@@ -127,6 +107,13 @@ def europepmc(pmcid):
 # ------------------------------------------------------------------ paper-derived units
 def paper_units(papers):
     rows = read_jsonl(WORK / "mentions-classified.jsonl")
+    decisions = adjudicate(rows, papers, read_cache)
+    write_jsonl(WORK / "reuse-decisions.jsonl", decisions)
+    overrides = {(d["paper"], d["unit_type"], d["unit"]): d for d in decisions if d["decision"] == "reused"}
+    rows = [dict(r, decision=overrides[(r["paper"], r["unit_type"], r["unit"])]["decision"],
+                 reason=overrides[(r["paper"], r["unit_type"], r["unit"])]["reason"])
+            if r["decision"] == "produced" and (r["paper"], r.get("unit_type"), r.get("unit")) in overrides
+            else r for r in rows]
     for r in rows:
         if r["decision"] in ("drop", "unclear", "reused"):
             key = r["reason"] if r["decision"] == "drop" else ("reused (not listed)" if r["decision"] == "reused" else "no deposit cue / unclear")
@@ -211,6 +198,8 @@ def paper_units(papers):
             if rtg in ("Text", "JournalArticle", "Preprint", "ConferencePaper", "Report", "Book", "BookChapter",
                        "Dissertation", "Event", "Service", "Workflow", "OutputManagementPlan", "Standard", "Award"):
                 DROPS[f"unit: DOI is not a dataset ({rtg})"] += 1; continue
+            if not datacite_scope(rec, "paper-derived DataCite"):
+                continue
             desc = " ".join([rec.get("title", "")] + rec.get("descriptions", [])[:1])
             if CODE_DESC.search(desc) and not DATA_DESC.search(rec.get("title", "")):
                 code.append(dict(r, reason="repository text describes code")); continue
@@ -247,7 +236,7 @@ def read_cache(kind, key):
 def listed_fields(paper_rows, repo_note):
     first = paper_rows[0]
     insts = sorted({i for p in paper_rows for i in p["institutions"]})
-    counties = sorted({c for p in paper_rows for c in p["counties"]})
+    counties = sorted(counties_for(insts))
     conn = f"Produced by a paper with {inst_names(first['institutions'])} authors; {repo_note}"
     return insts, counties, conn, europepmc(first["pmcid"])
 
@@ -258,7 +247,7 @@ def build_paper_listing(lid, u, papers):
     rec = {"id": lid, "papers": [p["id"] for p in prow], "topic": topic, "added": TODAY, "checked": TODAY,
            "size": None, "format": None, "license": None}
     kind, accs = u["kind"], u["accs"]
-    verified_ids, verified_note, verified_source, verified_counties = None, None, None, set()
+    verified_ids, verified_note, verified_source = [], None, None
     other_submitter = False
     if kind == "geo":
         main = read_cache("geo", accs[0])
@@ -272,51 +261,48 @@ def build_paper_listing(lid, u, papers):
                 g = read_cache("geo", sub)
                 if g and g.get("ok") and pick_summary(g["summary"], g["design"]):
                     rec["summary"] = pick_summary(g["summary"], g["design"]); break
-        # Any series in the listing with a regional contact verifies it.
         for acc in accs:
             g = read_cache("geo", acc) if acc.startswith("GSE") else None
-            if not g or not g.get("ok"):
+            if not g or not g.get("ok") or not g.get("institute"):
                 continue
-            ids = reg_ids(g.get("institute", "") + " ; " + g.get("department", ""))
-            state_ok = (g.get("state") or "").strip().upper() in ("PA", "NJ", "PENNSYLVANIA", "NEW JERSEY")
-            city = (g.get("city") or "").strip()
-            city_ok = state_ok and REGION_CITIES.fullmatch(city.lower()) is not None if city else False
-            city_ok = city_ok or (state_ok and city.lower() in CITY_COUNTY)
-            if ids or city_ok:
-                where = f" in {city}" if city else ""
-                inst = g.get("institute") or "an institution"
+            inst = g["institute"]
+            city, state = g.get("city") or "", g.get("state") or ""
+            evidence = {"institute": inst, "city": city, "state": state}
+            ids = submitter_ids([inst], city, state)
+            if ids:
                 verified_ids = ids
-                verified_counties = {CITY_COUNTY[city.lower()]} if city_ok and city.lower() in CITY_COUNTY else set()
-                verified_note = f"The GEO record for {acc} lists {inst}{where} as submitter."
+                where = f" in {city}" if city else ""
+                verified_note = f"The GEO record for {acc} lists {inst}{where} as the submitting institution."
                 verified_source = f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={acc}"
-                EVIDENCE[lid] = {"repository": {"institute": inst, "city": city, "state": g.get("state")}}
+                EVIDENCE[lid] = {"repository": evidence}
                 break
-            elif g.get("institute"):
-                other_submitter = True
-                EVIDENCE.setdefault(lid, {"repository": {"institute": g.get("institute"), "city": city, "state": g.get("state")}})
+            other_submitter = True
+            EVIDENCE.setdefault(lid, {"repository": evidence})
     elif kind in ("bioproject", "sra"):
         if kind == "bioproject":
             b = read_cache("bioproject", accs[0])
             title, desc = b["title"], b.get("description", "")
-            sub = b.get("submitter", "") or "; ".join(b.get("submitters", []))
+            submitters = [b["submitter"]] if b.get("submitter") else b.get("submitters", [])
             released = b.get("registered")
             url = f"https://www.ncbi.nlm.nih.gov/bioproject/{accs[0]}"
             repo = "SRA" if u.get("via_sra") and not any(a.startswith("PRJ") and a == accs[0] for a in [r["unit"] for r in u["mentions"]]) else "BioProject"
             dt = seq_data_type(title + " " + desc) if re.search(r"sequenc|reads|seq\b|genom|transcriptom|amplicon|metagenom", b.get("data_type", "") + title + desc, re.I) or u.get("via_sra") else "other"
         else:
             s = read_cache("sra", accs[1] if len(accs) > 1 else accs[0]) or {}
-            title, desc, sub = s.get("study_title", ""), s.get("study_title", ""), s.get("center", "")
+            title = s.get("study_title", "")
+            desc = s.get("description") or title
+            submitters = [s["center"]] if s.get("center") else []
             released, url, repo = s.get("created"), f"https://www.ncbi.nlm.nih.gov/sra/?term={accs[0]}", "SRA"
             dt = seq_data_type(title)
         rec.update(title=clean_title(title), summary=pick_summary(desc) or "", data_type=dt, access="open",
                    repository=repo, accessions=accs, url=url, released=released)
-        ids = reg_ids(sub)
-        EVIDENCE[lid] = {"repository": {"submitter": sub}}
+        ids = submitter_ids(submitters)
+        EVIDENCE[lid] = {"repository": {"submitters": submitters}}
         if ids:
             verified_ids = ids
-            verified_note = f"The {'BioProject' if kind == 'bioproject' else 'SRA'} record lists {sub} as submitter."
+            verified_note = f"The {'BioProject' if kind == 'bioproject' else 'SRA'} record identifies a submitting organization at {inst_names(ids)}."
             verified_source = url
-        elif sub:
+        elif submitters:
             other_submitter = True
     elif kind == "dbgap":
         d = read_cache("dbgap", accs[0])
@@ -326,14 +312,7 @@ def build_paper_listing(lid, u, papers):
                    url=f"https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id={accs[0]}",
                    released=d.get("released"))
         block = d.get("pi_block", "")
-        ids = reg_ids(block)
         EVIDENCE[lid] = {"repository": {"principal_investigator_block": block[:400]}}
-        if ids:
-            verified_ids = ids
-            verified_note = f"The dbGaP study page lists a principal investigator at {inst_names(ids)}."
-            verified_source = rec["url"]
-        elif block:
-            other_submitter = True
     elif kind == "ega":
         e = read_cache("ega", accs[0])
         rec.update(title=clean_title(e["title"]), summary=pick_summary(e.get("description") or ""),
@@ -347,14 +326,14 @@ def build_paper_listing(lid, u, papers):
                    access="open", repository="PRIDE", accessions=accs,
                    url=f"https://www.ebi.ac.uk/pride/archive/projects/{accs[0]}", released=p.get("released"),
                    license=p.get("license"))
-        affs = " ; ".join(p.get("affiliations", []))
-        ids = reg_ids(affs)
-        EVIDENCE[lid] = {"repository": {"affiliations": p.get("affiliations", [])}}
+        affiliations = p.get("submitter_affiliations", [])
+        ids = submitter_ids(affiliations)
+        EVIDENCE[lid] = {"repository": {"submitter_affiliations": affiliations}}
         if ids:
             verified_ids = ids
-            verified_note = f"The PRIDE record lists a submitter or lab head at {inst_names(ids)}."
+            verified_note = f"The PRIDE record lists a submitter at {inst_names(ids)}."
             verified_source = f"https://www.ebi.ac.uk/pride/ws/archive/v3/projects/{accs[0]}"
-        elif affs:
+        elif any(affiliations):
             other_submitter = True
     elif kind == "arrayexpress":
         a = read_cache("arrayexpress", accs[0])
@@ -363,15 +342,8 @@ def build_paper_listing(lid, u, papers):
                    data_type="single-cell" if "single" in st else "gene expression" if "transcription" in st or "expression" in st else "sequencing" if "seq" in st else "other",
                    access="open", repository="ArrayExpress", accessions=accs,
                    url=f"https://www.ebi.ac.uk/biostudies/arrayexpress/studies/{accs[0]}", released=a.get("released"))
-        orgs = " ; ".join(a.get("organizations", []))
-        ids = reg_ids(orgs)
+        # The cached BioStudies organization field does not identify a submission role.
         EVIDENCE[lid] = {"repository": {"organizations": a.get("organizations", [])}}
-        if ids:
-            verified_ids = ids
-            verified_note = f"The ArrayExpress record lists {inst_names(ids)} as a submitting organization."
-            verified_source = f"https://www.ebi.ac.uk/biostudies/api/v1/studies/{accs[0]}"
-        elif orgs:
-            other_submitter = True
     elif kind == "pdb-set":
         recs = []
         for acc in accs:
@@ -381,8 +353,8 @@ def build_paper_listing(lid, u, papers):
         first = titles[0] if titles else accs[0]
         n = len(accs)
         title = first if n == 1 else f"{first} and {n - 1} related structure{'s' if n > 2 else ''}"
-        uniq = list(dict.fromkeys(titles))
-        summary = one_sentence(("Structure entry: " if n == 1 else f"{n} structure entries, including: ") + "; ".join(uniq[:4]))
+        summary = ("The repository entry describes one experimentally determined molecular structure."
+                   if n == 1 else f"The repository entries describe {n} experimentally determined molecular structures.")
         dates = sorted(r["released"] for _, r in recs if r.get("released"))
         a0 = accs[0]
         rec.update(title=title, summary=summary, data_type="structure", access="open",
@@ -393,12 +365,11 @@ def build_paper_listing(lid, u, papers):
         d = read_cache("doi", accs[0])
         rec.update(**doi_fields(d))
         rec["accessions"] = accs
-        ids = sorted({RORS[x["id"].rstrip("/").rsplit("/", 1)[-1].lower()]["id"] for x in d.get("affiliations", [])
-                      if x.get("id") and x["id"].rstrip("/").rsplit("/", 1)[-1].lower() in RORS})
+        ids = datacite_creator_ids(d)
         EVIDENCE[lid] = {"repository": {"creator_affiliations": sorted({x["name"] for x in d.get("affiliations", [])})[:8]}}
         if ids:
             verified_ids = ids
-            verified_note = f"The DataCite record lists creators affiliated with {inst_names(ids)} (ROR)."
+            verified_note = f"The DataCite record lists creators affiliated with {inst_names(ids)}."
             verified_source = "https://api.datacite.org/dois/" + accs[0]
         elif d.get("affiliations"):
             other_submitter = True
@@ -409,11 +380,11 @@ def build_paper_listing(lid, u, papers):
     if kind in ("dbgap", "ega") and not verified_note and not any(
             re.search(r"\b(deposit\w*|submitted|uploaded)\b", m.get("clause") or m.get("sentence") or "", re.I) for m in u["mentions"]):
         # Controlled-access studies are often large consortia reused by many papers; list only with a deposition verb.
-        DROPS[f"listing: {kind} study without deposition verb or regional investigator"] += 1
+        DROPS[f"listing: {kind} study without explicit deposition evidence"] += 1
         return None
     if verified_note:
-        insts = sorted(set(verified_ids)) or sorted({i for p in prow for i in p["institutions"]})
-        counties = sorted(verified_counties | counties_for(verified_ids))
+        insts = verified_ids
+        counties = sorted(counties_for(insts))
         rec.update(institutions=insts, counties=counties, label="Verified", connection=verified_note, source=verified_source)
     else:
         if kind == "pdb-set":
@@ -442,8 +413,8 @@ def doi_fields(d):
              "10.26300": "NIMH Data Archive", "10.48324": "DANDI", "10.3886": "ICPSR"}
     sizes = [s for s in d.get("sizes", []) if s and len(s) < 60]
     formats = [f for f in d.get("formats", []) if f and len(f) < 60]
-    return {"title": title, "summary": pick_summary(*descs[:1]),
-            "data_type": data_type_for_text(text, prefix), "access": datacite_access(d, prefix),
+    return {"title": title, "summary": pick_summary(*descs),
+            "data_type": data_type_for_record(text, prefix, formats), "access": datacite_access(d, prefix),
             "repository": hosts.get(prefix) or (host[:60] if host else "DataCite"),
             "url": "https://doi.org/" + d["doi"], "released": datacite_released(d),
             "size": "; ".join(sizes[:3]) or None, "format": "; ".join(dict.fromkeys(formats[:5])) or None,
@@ -464,21 +435,18 @@ def datacite_institution():
         title = clean_title(d["title"])
         if re.search(r"fairsharing", d.get("publisher") or "", re.I):
             DROPS["datacite: registry record describing a resource (FAIRsharing)"] += 1; continue
-        if is_supplement(title, d):
-            DROPS["datacite: journal supplement file"] += 1; continue
+        rule = datacite_scope(d, "datacite")
+        if not rule:
+            continue
         if any(r["type"] == "IsVersionOf" for r in d["related"]):
             DROPS["datacite: version copy (IsVersionOf)"] += 1; continue
         key = re.sub(r"\W+", " ", title.lower()).strip()
         if key in seen_titles:
             DROPS["datacite: duplicate title"] += 1; continue
         seen_titles[key] = doi
-        keep, rule = health_decision(d)
-        if not keep:
-            DROPS["datacite: not health or life science (" + rule + ")"] += 1; continue
-        ids = sorted({RORS[a["id"].rstrip("/").rsplit("/", 1)[-1].lower()]["id"] for a in d["affiliations"]
-                      if a.get("id") and a["id"].rstrip("/").rsplit("/", 1)[-1].lower() in RORS})
+        ids = datacite_creator_ids(d)
         if not ids:
-            DROPS["datacite: no registry ROR on creators"] += 1; continue
+            DROPS["datacite: no regional affiliation on creators"] += 1; continue
         if (d.get("types") or {}).get("resourceTypeGeneral") not in (None, "Dataset"):
             DROPS["datacite: not typed Dataset"] += 1; continue
         f = doi_fields(d)
@@ -488,7 +456,7 @@ def datacite_institution():
         rec = {"id": "doi:" + doi, **{k: f[k] for k in ("title", "summary", "data_type", "access", "repository")},
                "accessions": [doi], "url": f["url"], "institutions": ids, "counties": sorted(counties_for(ids)),
                "label": "Verified",
-               "connection": f"The DataCite record lists creators affiliated with {inst_names(ids)} (ROR).",
+               "connection": f"The DataCite record lists creators affiliated with {inst_names(ids)}.",
                "source": "https://api.datacite.org/dois/" + doi, "papers": [], "topic": topic_for_text(text, title),
                "released": f["released"], "added": TODAY, "checked": TODAY,
                "size": f["size"], "format": f["format"], "license": f["license"]}
@@ -525,12 +493,14 @@ def main():
             rec["_source"] = "datacite"
             listings[lid] = rec
     DROPS["merge: paper DOI also found by institution search"] += merged
-    out, sources = [], collections.Counter()
+    out, sources, source_by_id = [], collections.Counter(), {}
     for lid in sorted(listings):
         r = listings[lid]
-        sources[r.pop("_source")] += 1
+        source_by_id[lid] = r.pop("_source")
+        sources[source_by_id[lid]] += 1
         out.append({k: r.get(k) for k in ORDER})
     write_jsonl(WORK / "datasets.jsonl", out)
+    (WORK / "dataset-sources.json").write_text(json.dumps(source_by_id, sort_keys=True))
     # code candidates
     crow = []
     for r in code:

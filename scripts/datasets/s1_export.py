@@ -8,6 +8,7 @@ sys.path.insert(0, __import__("os").path.dirname(__import__("os").path.abspath(_
 from common import CHECKOUT, work_dir, write_json
 
 SQL = """SELECT id, json_extract(record,'$.pmcid') AS pmcid, json_extract(record,'$.doi') AS doi, title,
+ json_extract(record,'$.pmid') AS pmid,
  json_extract(record,'$.published') AS published, topic, json_extract(record,'$.institutions') AS institutions,
  json_extract(record,'$.counties') AS counties, json_extract(record,'$.label') AS label
  FROM research_visible WHERE kind='publication' AND json_extract(record,'$.pmcid') IS NOT NULL"""

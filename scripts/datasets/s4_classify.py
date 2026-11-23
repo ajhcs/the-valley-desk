@@ -19,7 +19,7 @@ CAT = re.compile(r"cat(?:alog(?:ue)?)?\s?(?:#|no\b|number)|\bthermo ?fisher|invi
                  r"r&d systems|promega|bio-?rad|new england biolabs|takara|vector lab|atcc|dharmacon|ipa\b", re.I)
 GRANT = re.compile(r"\b(grant|award|funded|funding|supported by|contract (?:no|number)|fellowship)\b", re.I)
 REU = re.compile(r"\b(download\w*|obtained from|retrieved|previously|reanaly\w*|re-analy\w*|reused|re-used|"
-                 r"is from|were from|was from|data from|used in this study|were used|was used|we used|using (?:the )?(?:publicly|public|published)|"
+                 r"is from|were from|was from|data from|used in this study|were used|was used|we used|we utilized|utili[sz]ed|using (?:the )?(?:publicly|public|published)|"
                  r"from the (?:study|dataset)|as (?:a )?template|homology model|reference (?:genome|sequence|structure)|"
                  r"et al\b|leucegene|encode\b|"
                  # v3 additions

@@ -8,6 +8,7 @@ import os
 import re
 import sys
 import urllib.parse
+import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
@@ -35,6 +36,116 @@ def store(kind, key, rec):
     return rec
 
 
+def bioproject_publications(body):
+    """Extract only project accessions and their explicit PubMed citations."""
+    root = ET.fromstring(body)
+    if root.tag != 'RecordSet':
+        raise ValueError('unexpected BioProject XML root')
+    found = {}
+    for project in root.findall('.//DocumentSummary/Project'):
+        node = project.find('./ProjectID/ArchiveID')
+        accession = (node.get('accession') or '').upper() if node is not None else ''
+        if not accession:
+            continue
+        citations = []
+        for pub in project.findall('./ProjectDescr/Publication'):
+            pmid = (pub.get('id') or '').strip()
+            if (pub.findtext('DbType') or '').lower() == 'epubmed' and pmid.isdigit():
+                citations.append({'pmid': pmid})
+        found[accession] = citations
+    return found
+
+
+def sra_publications(body, requested):
+    """Map requested accessions to citations attached to their SRA study."""
+    root = ET.fromstring(body)
+    if root.tag != 'EXPERIMENT_PACKAGE_SET':
+        raise ValueError('unexpected SRA XML root')
+    requested = {a.upper() for a in requested}
+    found = {}
+    for package in root.findall('./EXPERIMENT_PACKAGE'):
+        studies = package.findall('./STUDY')
+        if len(studies) != 1:
+            continue
+        citations = []
+        for link in studies[0].findall('./STUDY_LINKS/STUDY_LINK/XREF_LINK'):
+            db = (link.findtext('DB') or '').strip().lower()
+            value = (link.findtext('ID') or '').strip()
+            if db in ('pubmed', 'pmid') and value.isdigit():
+                citations.append({'pmid': value})
+            elif db == 'doi' and re.fullmatch(r'10\.\d{4,9}/\S+', value, re.I):
+                citations.append({'doi': value})
+        # Only accession attributes identify the package; ignore unrelated links.
+        accessions = {e.get('accession', '').upper() for tag in ('STUDY', 'EXPERIMENT', 'SAMPLE', 'SUBMISSION', 'RUN')
+                      for e in package.findall('.//' + tag)}
+        accessions.update((e.text or '').strip().upper() for e in package.findall('./SAMPLE/IDENTIFIERS/EXTERNAL_ID')
+                          if (e.get('namespace') or '').lower() == 'biosample')
+        for accession in requested & accessions:
+            existing = found.setdefault(accession, [])
+            for citation in citations:
+                if citation not in existing:
+                    existing.append(citation)
+    return found
+
+
+def enrich_publication_metadata():
+    """Enrich existing cache records in batches, without persisting raw XML."""
+    for kind, db, parser in (('bioproject', 'bioproject', bioproject_publications),
+                             ('sra', 'sra', sra_publications)):
+        directory = CACHE / kind
+        accessions = sorted(p.name[:-8] for p in directory.glob('*.json.gz')
+                            if (read_gz_json(p) or {}).get('ok') and 'citations' not in read_gz_json(p))
+        completed = failed = 0
+        for i in range(0, len(accessions), 20):
+            batch = accessions[i:i + 20]
+            status, body = http(EUTILS + 'efetch.fcgi', data={'db': db, 'id': ','.join(batch),
+                                'retmode': 'xml', 'tool': TOOL['tool']})
+            try:
+                found = parser(body, batch) if kind == 'sra' else parser(body)
+                if status != 200:
+                    found = {}
+            except (ET.ParseError, ValueError):
+                found = {}
+            missing = [a for a in batch if a not in found]
+            # Some external accessions resolve through Entrez search but not efetch directly.
+            if missing and kind == 'bioproject':
+                status2, data = http(EUTILS + 'esearch.fcgi', data={'db': db, 'term': ' OR '.join(a + '[PRJA]' for a in missing),
+                                     'retmax': 20, **TOOL})
+                try:
+                    ids = json.loads(data)['esearchresult']['idlist'] if status2 == 200 else []
+                    if ids:
+                        status2, data = http(EUTILS + 'efetch.fcgi', data={'db': db, 'id': ','.join(ids),
+                                             'retmode': 'xml', 'tool': TOOL['tool']})
+                        if status2 == 200:
+                            found.update(bioproject_publications(data))
+                except (KeyError, ValueError, ET.ParseError):
+                    pass
+            elif missing and kind == 'sra':
+                for acc in missing:
+                    status2, data = http(EUTILS + 'esearch.fcgi', data={'db': db, 'term': acc + '[ACCN]',
+                                         'retmax': 1, **TOOL})
+                    try:
+                        ids = json.loads(data)['esearchresult']['idlist'] if status2 == 200 else []
+                        if ids:
+                            status2, data = http(EUTILS + 'efetch.fcgi', data={'db': db, 'id': ids[0],
+                                                 'retmode': 'xml', 'tool': TOOL['tool']})
+                            if status2 == 200:
+                                found.update(sra_publications(data, [acc]))
+                    except (KeyError, ValueError, ET.ParseError):
+                        pass
+            for acc in batch:
+                if acc not in found:
+                    failed += 1
+                    continue  # Keep prior record and distinguish missing metadata from an empty citation list.
+                rec = cached(kind, acc)
+                rec['citations'] = found[acc]
+                rec['citation_source'] = {'database': db, 'method': 'efetch', 'status': status}
+                store(kind, acc, rec)
+                completed += 1
+        print(kind, 'citation metadata', completed, 'unresolved', failed, flush=True)
+    save_counts('publication-metadata')
+
+
 def gdate(s):
     for fmt in ("%b %d %Y", "%Y/%m/%d %H:%M", "%Y/%m/%d", "%Y-%m-%d"):
         try:
@@ -53,10 +164,12 @@ def geo_text(acc):
 
 def geo_series(acc):
     rec = cached("geo", acc)
-    if rec is not None:
+    if rec is not None and 'citations' in rec:
         return rec
     status, text = geo_text(acc)
     if status != 200 or "!Series_title" not in text:
+        if rec is not None:
+            return rec
         return store("geo", acc, {"ok": False, "status": status, "note": "no public series record"})
     f = {}
     for line in text.splitlines():
@@ -77,7 +190,8 @@ def geo_series(acc):
            "subseries_of": [r.split(":", 1)[1].strip() for r in rel if r.startswith("SubSeries of")],
            "bioproject": [r.rsplit("/", 1)[-1] for r in rel if r.startswith("BioProject")],
            "sra": [r.rsplit("=", 1)[-1] for r in rel if r.startswith("SRA")],
-           "organisms": sorted(set(f.get("sample_organism", []) or f.get("platform_organism", [])))}
+           "organisms": sorted(set(f.get("sample_organism", []) or f.get("platform_organism", []))),
+           "citations": [{"pmid": x} for x in f.get("pubmed_id", []) if x.isdigit()]}
     return store("geo", acc, rec)
 
 
@@ -249,10 +363,10 @@ def pride(acc):
 
 # ---------------- PDB / EMDB ----------------
 def pdb_entries(ids):
-    todo = [i for i in ids if cached("pdb", i) is None]
+    todo = [i for i in ids if cached("pdb", i) is None or 'citations' not in cached("pdb", i)]
     for k in range(0, len(todo), 50):
         batch = todo[k:k + 50]
-        q = '{entries(entry_ids:%s){rcsb_id struct{title} rcsb_accession_info{initial_release_date} exptl{method}}}' % json.dumps(batch)
+        q = '{entries(entry_ids:%s){rcsb_id struct{title} rcsb_accession_info{initial_release_date} exptl{method} rcsb_primary_citation{pdbx_database_id_PubMed pdbx_database_id_DOI}}}' % json.dumps(batch)
         status, body = http("https://data.rcsb.org/graphql", data=json.dumps({"query": q}).encode(), accept="application/json",
                             content_type="application/json")
         got = {}
@@ -261,9 +375,11 @@ def pdb_entries(ids):
                 if e:
                     got[e["rcsb_id"].upper()] = {"ok": True, "title": (e.get("struct") or {}).get("title", ""),
                                                  "released": ((e.get("rcsb_accession_info") or {}).get("initial_release_date") or "")[:10] or None,
-                                                 "method": [x.get("method") for x in e.get("exptl") or []]}
+                                                 "method": [x.get("method") for x in e.get("exptl") or []],
+                                                 "citations": [{"pmid": (e.get("rcsb_primary_citation") or {}).get("pdbx_database_id_PubMed"),
+                                                                "doi": (e.get("rcsb_primary_citation") or {}).get("pdbx_database_id_DOI")} ] if e.get("rcsb_primary_citation") else []}
         for i in batch:
-            store("pdb", i, got.get(i, {"ok": False, "note": "not released in PDB"}))
+            store("pdb", i, got.get(i) or cached("pdb", i) or {"ok": False, "note": "not released in PDB"})
 
 
 def emdb(acc):
@@ -377,4 +493,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1:] == ['--publication-metadata']:
+        enrich_publication_metadata()
+    elif sys.argv[1:]:
+        raise SystemExit('usage: s5_repos.py [--publication-metadata]')
+    else:
+        main()

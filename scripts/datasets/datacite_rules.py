@@ -53,36 +53,63 @@ NON_HEALTH = re.compile(
 PHYSICS_CTX = re.compile(r"\b(tokamak|fusion|magnet\w*|ionospher\w*|laser|electron density|ion temperature)\b", re.I)
 
 
+GENERIC_SUPPLEMENT = re.compile(
+    r"^(?:supplementa(?:ry|l)(?: (?:data|material|materials|information|files?))?|"
+    r"supporting (?:data|information|material|materials)|additional (?:data|files?))(?:\s*\.[a-z0-9]+)?$", re.I)
+GENERIC_CODE_AND_DATA = re.compile(r"^(?:code and data|data and code)(?:\s*\.[a-z0-9]+)?$", re.I)
+NUMBERED_SUPPLEMENT = re.compile(
+    r"^(?:table|fig(?:ure)?\.?)\s*s\s*\d+[a-z]?(?:\s*\.[a-z0-9]+)?$", re.I)
+
+
+def generic_supplement_decision(title, descriptions=None):
+    """Return (drop, reason) for generic supplemental titles shared by both sources."""
+    title = " ".join((title or "").split()).strip()
+    if NUMBERED_SUPPLEMENT.fullmatch(title):
+        return True, "numbered supplement title"
+    if GENERIC_SUPPLEMENT.fullmatch(title):
+        return True, "generic supplement title"
+    if isinstance(descriptions, str):
+        descriptions = [descriptions]
+    has_description = any(str(x or "").strip() for x in (descriptions or []))
+    if GENERIC_CODE_AND_DATA.fullmatch(title) and not has_description:
+        return True, "generic supplement title without description"
+    return False, None
+
+
 def is_supplement(title, d):
+    if generic_supplement_decision(title, d.get("descriptions"))[0]:
+        return True
     return bool(SUPP.search(title.strip()) or SUPP_ANY.search(title))
 
 
 NEURAL_NET = re.compile(r"\b(?:deep |artificial |graph |convolutional )?neural[- ]networks?\b|\bmolecular dynamics\b|\bplasmas?\b", re.I)
 
+# Generic biology and molecular methods alone do not establish biomedical purpose.
+BIOMEDICAL = re.compile(
+    r"\b(?:patients?|clinical|clinic|hospital\w*|disease\w*|disorders?|cancer\w*|tumou?r\w*|"
+    r"oncolog\w*|carcinoma\w*|diabet\w*|cardiovascular|stroke|dementia|psychiatr\w*|"
+    r"health\w*|medical|medicine|"
+    r"biomedic\w*|surg\w*|therap\w*|treatment\w*|diagnos\w*|pharmac\w*|"
+    r"vaccin\w*|epidemiolog\w*|nurs\w*|rehabilit\w*|radiolog\w*|"
+    r"human health|human disease|drug discovery|drug development|drug resistance|"
+    r"patient care|clinical trial\w*|electronic health records?|medical imaging)\b", re.I)
+FOS_BIOMEDICAL = re.compile(
+    r"\bFOS:\s*(?:health sciences|clinical medicine|basic medicine|medical and health sciences|"
+    r"medical biotechnology|health biotechnology|other medical science)\b", re.I)
+
 
 def health_decision(d):
-    """(keep, rule) for a DataCite record."""
-    title = NEURAL_NET.sub(" ", d.get("title", ""))
-    desc = NEURAL_NET.sub(" ", (d.get("descriptions") or [""])[0][:3000])
-    subjects = " ; ".join(d.get("subjects") or [])
-    publisher = d.get("publisher") or ""
-    if NON_HEALTH_PUBLISHERS.search(publisher) and not HEALTH.search(title):
-        return False, "non-health repository"
-    if NON_HEALTH.search(title) and not re.search(r"\b(patients?|clinical|disease\w*|health|cells?|genes?|brain|neur\w*)\b", title, re.I):
-        return False, "non-health title keyword"
-    if PHYSICS_CTX.search(title + " " + desc[:500]):
-        return False, "physics context"
-    if FOS_HEALTH.search(subjects):
-        return True, "DataCite field of science"
-    title_hits = HEALTH.findall(title)
-    desc_hits = {h.lower() for h in HEALTH.findall(desc)}
-    if FOS_OTHER.search(subjects) and not title_hits:
-        return False, "non-health field of science"
-    if title_hits:
-        return True, "health keyword in title"
-    if len(desc_hits) >= 3 and not NON_HEALTH.search(desc[:600]):
-        return True, "health keywords in description"
-    return False, "no health keyword"
+    """Return evidence-based (keep, rule) for health or biomedical scope."""
+    title = NEURAL_NET.sub(" ", d.get("title") or "")
+    descriptions = d.get("descriptions") or []
+    if isinstance(descriptions, str):
+        descriptions = [descriptions]
+    desc = NEURAL_NET.sub(" ", " ".join(str(x or "") for x in descriptions)[:12000])
+    subjects = " ; ".join(str(x or "") for x in (d.get("subjects") or []))
+    for label, text in (("title", title), ("description", desc), ("subjects", subjects)):
+        if BIOMEDICAL.search(text) or (label == "subjects" and FOS_BIOMEDICAL.search(text)):
+            return True, "health or biomedical evidence in " + label
+    return False, "no health or biomedical evidence"
 
 
 TOPIC_RULES = [
