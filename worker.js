@@ -577,7 +577,10 @@ async function handleFetch(request, env, origin, nonce, ctx) {
 
   if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path === "/llms.txt" || path.startsWith("/discover") || path.startsWith("/api/directory/") || stripSlash(decodedPublicPath(path)) === "/sitemap.xml")) {
     const { isPublicDirectoryPath, servePublicDirectory } = await import("./src/ingest/public-directory.ts");
-    if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB, origin, nonce, undefined, env.PUBLICATIONS_PUBLIC_ENABLED === "true");
+    if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB, origin, nonce, undefined, env.PUBLICATIONS_PUBLIC_ENABLED === "true", {
+      build: env.CF_VERSION_METADATA?.id ?? env.BUILD_SHA ?? "",
+      waitUntil: ctx && typeof ctx.waitUntil === "function" ? (work) => ctx.waitUntil(work) : undefined,
+    });
   }
 
   if (path.startsWith("/api/discovery/v1/")) return handleDirectoryRoutes(request, env);

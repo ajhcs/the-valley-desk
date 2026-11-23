@@ -56,6 +56,7 @@ import {
 } from "./public-directory-data";
 import { renderDirectoryPage, type DirectoryView } from "./public-directory-page";
 import { activeGroups, groupList, partnerList, partners, similarListings } from "./public-directory-discover";
+import { cacheKey, dataVersion, defaultCache, forCache, fromCache, type CacheStore } from "./public-directory-cache";
 import { renderResultsRegion } from "./public-directory-results";
 import { counties } from "./public-directory-data";
 import { healthTopic, partialDateText } from "./public-directory-ui";
@@ -311,7 +312,38 @@ function publicationSchema(p: Publication, origin: string) {
   };
 }
 
+/**
+ * Serves a directory request, reusing a response from the edge cache while the data version it
+ * was built from is unchanged. Only successful GET responses are cached.
+ */
 export async function servePublicDirectory(
+  request: Request,
+  db?: RemovalDb,
+  origin = DEFAULT_PUBLIC_ORIGIN,
+  nonce?: string,
+  catalog: ReturnType<typeof createDirectoryCatalog> = directoryCatalog,
+  publicationsEnabled = false,
+  cache: { store?: CacheStore; build?: string; waitUntil?: (work: Promise<unknown>) => void } = {},
+): Promise<Response> {
+  const store = cache.store ?? defaultCache();
+  if (request.method !== "GET" || !store) return renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled);
+  const version = await dataVersion(db, `${cache.build ?? ""}:${publicationsEnabled}:${origin}`);
+  if (!version) return renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled);
+  const key = cacheKey(request, version, request.headers.get(fragmentHeader) === "results" ? "fragment" : "page");
+  const cached = await store.match(key).catch(() => undefined);
+  if (cached) return fromCache(cached, nonce);
+  const response = await renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled);
+  if (response.status === 200) {
+    const saving = forCache(response, nonce).then((copy) => store.put(key, copy)).catch(() => undefined);
+    if (cache.waitUntil) cache.waitUntil(saving);
+    else await saving;
+  }
+  const headers = new Headers(response.headers);
+  headers.set("x-directory-cache", "miss");
+  return new Response(response.body, { status: response.status, headers });
+}
+
+async function renderPublicDirectory(
   request: Request,
   db?: RemovalDb,
   origin = DEFAULT_PUBLIC_ORIGIN,
@@ -789,7 +821,8 @@ export async function servePublicDirectory(
           : filteredHeader(crumbs, described, path);
       }
       const q = params.get("q")?.slice(0, 200).match(/[\p{L}\p{N}]+/gu);
-      if (q?.length && !scope && path === browsePath && hasPubs && result.total > 1) {
+      // Only the first page of a search shows who works on the subject.
+      if (q?.length && !scope && path === browsePath && hasPubs && result.total > 1 && result.page === 1) {
         aside = groupList(await activeGroups(researchDb, q.map((term) => '"' + term + '"*').join(" AND ")), names, params.get("q") ?? "");
       }
       const offset = (result.page - 1) * 24;
