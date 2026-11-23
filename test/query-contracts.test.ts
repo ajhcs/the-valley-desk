@@ -1484,8 +1484,8 @@ test("homepage binds store queries and kit class names", () => {
   assert.ok(footer.includes('href="/discover/works">Projects</a>'));
   assert.doesNotMatch(footer, /(?:to|href)="\/(?:news|events|policy-watch|technology-watch|voices)"/);
   assert.doesNotMatch(footer, /feed\.(?:json|xml)|>Leads</);
-  assert.ok(footer.includes("© thedeskgroup -"));
-  assert.ok(footer.includes('href="https://ushso.org/"'));
+  assert.ok(footer.includes('Built by <a href="https://colelyons.com/">Cole Lyons</a>'));
+  assert.ok(!footer.includes("thedeskgroup"));
   assert.ok(!footer.toLowerCase().includes("subscribe"));
   assert.ok(!home.includes("SiteFooter"));
   assert.ok(layout.includes("SiteFooter"));
@@ -2470,8 +2470,8 @@ test("Verity/Mira/Vale packet: featured Lead only, byline, dates, nav, chips, SE
   assert.ok(layout.includes('href="/discover/works">Projects</a>'));
   assert.doesNotMatch(layout, /(?:to|href)="\/(?:news|events|policy-watch|technology-watch|voices)"/);
   assert.doesNotMatch(footer, /mailto:leads@thevalleydesk\.org|>Leads</);
-  assert.ok(footer.includes("© thedeskgroup -"));
-  assert.ok(footer.includes(">USHSO.org<"));
+  assert.ok(footer.includes(">Cole Lyons<"));
+  assert.ok(!footer.includes("USHSO"));
   assert.ok(css.includes(".NavLink:focus-visible"));
   assert.ok(css.includes("outline-width: 2px"));
   assert.ok(css.includes("outline-style: solid"));
