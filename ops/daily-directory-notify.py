@@ -10,7 +10,9 @@ from urllib.parse import urlsplit
 def main(state):
     path = state / "notification.txt"
     if not path.exists():
-        return
+        if os.environ.get("SERVICE_RESULT") in (None, "success"):
+            return
+        path.write_text("The Valley Desk daily service failed. See the BuilderBob user journal.\n")
     endpoint_file = state / "notification-url"
     if endpoint_file.is_file():
         url = endpoint_file.read_text().strip()

@@ -73,7 +73,7 @@ def studies(run_dir, previous, day):
     with (source / "clinical-studies.jsonl").open(encoding="utf-8") as stream:
         rows = [json.loads(line) for line in stream]
     # An absent projection alone does not establish which prior site was removed.
-    return rows, result["candidates"] - len(rows) + result["previous_missing"]
+    return rows, result["candidates"] - len(rows), result["previous_missing"]
 
 
 def inbox(d1, state, run_dir, day, records, removed):
@@ -199,8 +199,9 @@ def collect(d1, state, run_dir, day, first, last, receipt):
     baseline = {"project": d1.listings("project")}
     deltas = {}
     receipt["stage"] = "GitHub"
-    projection, skipped = refresh_projects(ROOT, run_dir, baseline["project"], removed["project"], day)
-    skipped += sum(identifier not in projection for identifier in baseline["project"])
+    projection, unavailable = refresh_projects(ROOT, run_dir, baseline["project"], removed["project"], day)
+    receipt["github_unavailable"] = unavailable
+    skipped = sum(identifier not in projection for identifier in baseline["project"])
     deltas["project"], receipt["counts"]["project"] = changes(
         baseline["project"], projection.values(), removed["project"], skipped)
     gate("project", baseline["project"], receipt["counts"]["project"])
@@ -222,7 +223,8 @@ def collect(d1, state, run_dir, day, first, last, receipt):
 
     receipt["stage"] = "ClinicalTrials.gov"
     baseline["study"] = d1.listings("study")
-    registry, skipped = studies(run_dir, baseline["study"], day)
+    registry, skipped, missing = studies(run_dir, baseline["study"], day)
+    receipt["registry_unresolved"] = missing
     deltas["study"], receipt["counts"]["study"] = changes(baseline["study"], registry, removed["study"], skipped)
     gate("study", baseline["study"], receipt["counts"]["study"])
 
@@ -251,7 +253,7 @@ def daily_line(receipt):
     if receipt["unmeasured"]:
         details.append("rows read unavailable for " + ", ".join(receipt["unmeasured"]))
     suffix = f" [{'; '.join(details)}]" if details else ""
-    return f"{receipt['day']} {receipt['outcome']} {counts} rows_read={reads}{suffix}".strip()
+    return " ".join(filter(None, (receipt["day"], receipt["outcome"], counts, f"rows_read={reads}{suffix}")))
 
 
 def report(state, receipt):
@@ -263,14 +265,14 @@ def report(state, receipt):
     staged.write_text("\n".join(lines) + "\n")
     staged.replace(log)
     print(text, flush=True)
-    if receipt["outcome"] != "complete":
+    if receipt["outcome"] in ("failed", "stopped"):
         (state / "notification.txt").write_text(text + "\n")
         return
     day = date.fromisoformat(receipt["day"])
     dates = {(day - timedelta(days=offset)).isoformat() for offset in range(3)}
     first_three = [line for line in lines if line[:10] in dates and line[11:].startswith("complete ")]
     report_path = state / "first-three-nights.txt"
-    if len(first_three) == 3 and not report_path.exists():
+    if receipt["outcome"] == "complete" and len(first_three) == 3 and not report_path.exists():
         report_path.write_text("\n".join(first_three) + "\n")
         (state / "notification.txt").write_text("The Valley Desk completed three consecutive nights.\n" +
                                                 "\n".join(first_three) + "\n")
@@ -332,7 +334,7 @@ def run(state, d1, *, plan):
         receipt["stage"] = "snapshot"
         receipt["snapshot"] = snapshot(ROOT, run_dir, receipt["day"], {kind: d1.listings(kind) for kind in KINDS})
         save(cursor, {"loaded_through": receipt["loaded_through"]})
-        receipt["outcome"] = "complete"
+        receipt["outcome"] = "complete" if datetime.now(NY).date().isoformat() == receipt["day"] else "recovered"
         return 0
     except StopRun as error:
         receipt.update(outcome="stopped", error=str(error))
@@ -342,7 +344,7 @@ def run(state, d1, *, plan):
         receipt.update(outcome="failed", error=f"{receipt['stage']} ({type(error).__name__})")
         return 1
     finally:
-        if receipt["outcome"] == "complete":
+        if receipt["outcome"] in ("complete", "recovered"):
             receipt.pop("error", None)
         elif receipt.get("error"):
             errors = receipt.setdefault("attempt_errors", [])
@@ -355,7 +357,7 @@ def run(state, d1, *, plan):
             print(daily_line(receipt))
         else:
             report(state, receipt)
-            if receipt["outcome"] == "complete":
+            if receipt["outcome"] in ("complete", "recovered"):
                 pending.unlink(missing_ok=True)
             elif pending.exists():
                 save(pending, receipt)
