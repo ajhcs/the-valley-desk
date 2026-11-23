@@ -251,6 +251,8 @@ input, select { accent-color: var(--accent); }
 .tally.sites li { display: block; }
 .tally.sites li > span { display: block; }
 .tally-columns ul { columns: 15rem 3; column-gap: 2rem; }
+.tally-more summary { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); cursor: pointer; font-size: .92rem; text-decoration: underline; text-underline-offset: .18em; }
+.tally-more[open] summary { margin-bottom: .25rem; }
 .tally h2 .muted { font-weight: 400; }
 
 /* Entity, browse and what's new pages */

@@ -54,7 +54,7 @@ function header(view: DirectoryView) {
 function footer() {
   return `<footer class="directory-chrome desk-footer">
     <div class="desk-frame desk-footer-inner">
-      <p class="desk-footer-about"><a class="desk-footer-brand" href="/">The Valley Desk</a> lists healthcare research with a documented connection to Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey.</p>
+      <p class="desk-footer-about"><a class="desk-footer-brand" href="/">The Valley Desk</a> lists healthcare research connected to nine counties in Pennsylvania and New Jersey.</p>
       <nav class="desk-footer-links" aria-label="Footer">
         <a href="${browsePath}">Search</a><a href="/discover/new">What’s new</a><a href="${methodPath}">Methodology</a><a href="/discover/updates.xml">RSS</a><a href="${methodPath}#data">Data and API</a><a href="/llms.txt">llms.txt</a>
       </nav>
@@ -64,7 +64,7 @@ function footer() {
           <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
         </select>
       </div>
-      <p class="desk-footer-copy">Built by <a href="https://colelyons.com/">Cole Lyons</a><span aria-hidden="true"> · </span>© thedeskgroup<span aria-hidden="true"> · </span><a href="https://ushso.org/">USHSO.org</a></p>
+      <p class="desk-footer-copy">Built by <a href="https://colelyons.com/">Cole Lyons</a></p>
     </div>
   </footer>`;
 }
