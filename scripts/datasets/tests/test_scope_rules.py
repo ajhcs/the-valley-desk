@@ -44,21 +44,30 @@ class ScopeRulesTest(unittest.TestCase):
         for record in records:
             self.assertTrue(health_decision(record)[0], record)
 
-    def test_medical_creator_requires_affirmative_measurement(self):
-        for record in (
-            {'title': 'mEEG recordings'},
-            {'title': 'KnowYourCG HM450 data'},
-            {'title': 'Measurements', 'descriptions': ['DNA methylation profiles']},
+    def test_laboratory_life_science_without_medical_objective(self):
+        for title in (
+            'Chromatin architecture and gene expression',
+            'Structure of the Hir histone chaperone complex',
+            'Drosophila embryo development', 'Zebrafish neuron imaging',
+            'Mouse gene expression', 'Yeast protein structure',
+            'Bacterial cell cultures', 'Single-cell RNA-seq',
+            'mEEG recordings', 'DNA methylation profiles',
         ):
-            self.assertFalse(health_decision(record)[0], record)
-            self.assertEqual(health_decision(record, medical_creator=True),
-                             (True, 'biomedical measurement with corroborated medical institution creator'))
-        for record in (
-            {'title': 'Unnamed dataset'},
-            {'title': 'Plant ecology', 'descriptions': ['DNA methylation data']},
-            {'title': 'Neural network measurements'},
+            self.assertTrue(health_decision({'title': title})[0], title)
+            self.assertFalse(nonmedical_recovery_decision(title)[0], title)
+
+    def test_excluded_context_precedes_laboratory_terms(self):
+        for title in (
+            'Soil microbial gene expression', 'Wild population genetics of mice',
+            'Field study of zebrafish behavior', 'Plant cell cultures',
+            'Agricultural crop transcriptomics', 'Drosophila ecology and genome',
         ):
-            self.assertFalse(health_decision(record, medical_creator=True)[0], record)
+            self.assertFalse(health_decision({'title': title})[0], title)
+            self.assertTrue(nonmedical_recovery_decision(title)[0], title)
+        record = {'title': 'Soil exposure and clinical trial outcomes',
+                  'descriptions': ['Clinical trial outcomes in patients.']}
+        self.assertTrue(health_decision(record)[0])
+        self.assertFalse(nonmedical_recovery_decision(record['title'], record['descriptions'])[0])
 
     def test_generic_junk_requires_no_description(self):
         for title in ('KP RC Reports b12', 'VWM2'):
@@ -67,26 +76,6 @@ class ScopeRulesTest(unittest.TestCase):
         for title in ('Annual Report 2022', 'Volume 12', 'Issue 3', 'Dataset'):
             self.assertTrue(generic_junk_decision(title, [])[0], title)
             self.assertFalse(generic_junk_decision(title, ['Clinical study data'])[0], title)
-        for title in ('Annual report of cancer outcomes', 'Dataset of mEEG recordings', 'Issue 3 clinical data'):
-            self.assertFalse(generic_junk_decision(title, [])[0], title)
-
-    def test_nonmedical_recovery_guard(self):
-        for title in (
-            'Soil microbial dynamics in Pennsylvania grasslands',
-            'Quantitative Multi-Omics Atlas of the Model Chordate Ciona',
-            'Comparative animal behavior across species',
-            'Structure of the Hir histone chaperone complex',
-            'Chromatin architecture and gene expression',
-        ):
-            self.assertTrue(nonmedical_recovery_decision(title, ['This may have implications for human health research.'])[0], title)
-        for title, description in (
-            ('Chromatin profiles in human patient samples', ''),
-            ('Histone changes in cancer research', ''),
-            ('Chromatin accessibility', 'We investigated cancer treatment response in patients.'),
-            ('Dataset for KnowYourCG HM450', ''),
-            ('mEEG recordings', ''),
-        ):
-            self.assertFalse(nonmedical_recovery_decision(title, [description])[0], title)
 
     def test_generic_figure_and_additional_file_rejected_with_paper_abstract(self):
         for title in ('Additional file', 'Additional file of Exploring breast cancer',

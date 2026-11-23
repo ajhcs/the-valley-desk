@@ -500,10 +500,9 @@ def main():
     list(pool.map(geo_series, sorted(series)))
     parents = {p for s in series for p in (cached("geo", s) or {}).get("subseries_of", [])}
     list(pool.map(geo_series, sorted(parents - series)))
-    # SuperSeries carry no summary of their own: fetch their first SubSeries for the description.
+    # Component citations can establish the link between a paper and a SuperSeries.
     supers = [cached("geo", s) for s in series | parents]
-    kids = {r["superseries_of"][0] for r in supers if r and r.get("ok") and r.get("superseries_of")
-            and re.match(r"(?i)this superseries", r.get("summary", ""))}
+    kids = {child for r in supers if r and r.get("ok") for child in r.get("superseries_of", [])}
     list(pool.map(geo_series, sorted(kids)))
     print("geo done", len(series), "parents", len(parents), flush=True)
     sra_resolve(sorted(by.get("sra-run", set()) | by.get("sra-study", set())))

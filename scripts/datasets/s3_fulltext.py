@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import read_gz_json, http, read_jsonl, save_counts, work_dir, write_gz_json
 
-VERSION = 2
+VERSION = 3
 EFETCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 
 
@@ -95,11 +95,15 @@ def parse_article(xml):
             root = ET.fromstring(xml2)
         except ET.ParseError:
             plain = re.sub(r"<ref-list.*?</ref-list>", " ", xml, flags=re.S)
-            return [["body", "", re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", plain))]]
+            return {"blocks": [["body", "", re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", plain))]],
+                    "affiliations": []}
     for el in root.iter():  # strip namespaces
         if isinstance(el.tag, str) and "}" in el.tag:
             el.tag = el.tag.split("}", 1)[1]
-    return blocks_of(root)
+    affiliations = [" ".join(" ".join(aff.itertext()).split())
+                    for aff in root.findall("./front/article-meta//aff")]
+    return {"blocks": blocks_of(root),
+            "affiliations": list(dict.fromkeys(aff for aff in affiliations if aff))}
 
 
 def pmcid_of(art):
@@ -119,7 +123,7 @@ def main():
             continue
         f0 = phase0 / f"{p}.xml" if phase0 else None
         if f0 and f0.exists() and f0.stat().st_size:
-            write_gz_json(out / f"{p}.json.gz", {"blocks": parse_article(f0.read_text(errors="replace")), "via": "phase0", "version": VERSION})
+            write_gz_json(out / f"{p}.json.gz", {**parse_article(f0.read_text(errors="replace")), "via": "phase0", "version": VERSION})
             continue
         todo.append(p)
     print("papers", len(want), "to fetch", len(todo), flush=True)
@@ -133,7 +137,7 @@ def main():
         for art in re.findall(r"<article[ >].*?</article>", xml, re.S):
             p = pmcid_of(art)
             if p in batch:
-                write_gz_json(out / f"{p}.json.gz", {"blocks": parse_article(art), "via": "efetch", "version": VERSION})
+                write_gz_json(out / f"{p}.json.gz", {**parse_article(art), "via": "efetch", "version": VERSION})
                 got.add(p)
         missing += [p for p in batch if p not in got]
         if (i // 20) % 25 == 0:

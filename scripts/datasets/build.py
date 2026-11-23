@@ -3,22 +3,25 @@
 Combines paper-derived units (mentions-classified.jsonl + repo-cache) with DataCite-by-institution records.
 """
 import collections
+import functools
 import glob
 import json
 import os
 import random
 import re
 import sys
+from urllib.parse import urlsplit
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import COUNTIES, TODAY, read_gz_json, read_jsonl, registry, ror_index, strip_markup, work_dir, write_jsonl
+from common import COUNTIES, TODAY, read_gz_json, read_jsonl, registry, ror_index, strip_markup, work_dir, write_json, write_jsonl
 from reuse import adjudicate, identifiers, more_than_year_before, replay_date_decisions
 from paper_provenance import paper_provenance
 from datacite_rules import datacite_access, datacite_license, datacite_released, \
     generic_junk_decision, generic_supplement_decision, health_decision, is_supplement, \
-    nonmedical_recovery_decision, NONMEDICAL_TITLE, topic_for_text
+    topic_for_text
 from dataset_description import data_type_for_record, pick_summary
-from dataset_labels import match_submitter
+from dataset_labels import match_geo_institution, match_paper_affiliation, match_submitter
+from dataset_files import api_url, cache_path, fetch, file_decision
 
 WORK = work_dir()
 REG = {i["id"]: i for i in registry()}
@@ -28,16 +31,23 @@ RULES = collections.Counter()
 JUNK_IDS = set()
 EVIDENCE = {}
 NODESC = collections.Counter()
+FILE_POOL = set()
+SCOPE = {}
+AFFILIATIONS = {}
+FILE_CACHE = os.environ.get("TVD_DATASET_FILE_CACHE") or WORK / "doi-files"
+RATE_LIMITED = set()
 CODE_DESC = re.compile(r"\b(the code|this code|source code|code (?:for|to|used|that|simulates)|scripts? (?:for|to|used)|"
                        r"replication (?:package|code)|software|matlab code|python code|r code|r package|"
                        r"python package|jupyter|github)\b", re.I)
 DATA_DESC = re.compile(r"\b(data|dataset|datasets|images|recordings|measurements|sequenc\w*|reads|files)\b", re.I)
+PATHOGEN = re.compile(r"\b(?:virus|viruses|viral|pathogen|bacteriophage)\b", re.I)
+SENSITIVE_STUDY = re.compile(
+    r"\b(?:engineering|infectivity|virulence|host range|escape mutant|reverse genetics|infectious clone)\b", re.I)
 NO_INCLUDED_DATA = re.compile(
     r"\b(?:does not|do not) (?:contain|include|provide) (?:any |the )?(?:underlying |source |raw )?data\b|"
     r"\b(?:data|datasets?) (?:are|is) not included\b",
     re.I,
 )
-NONMEDICAL_PAPER = re.compile(r"\b(?:phylogen\w*|rumen|livestock|calves|ant colonies|ant evolution)\b", re.I)
 
 
 def inst_names(ids, limit=3):
@@ -121,15 +131,39 @@ def datacite_scope(d, source, ids):
     if CODE_DESC.search(f"{title} {description}") and NO_INCLUDED_DATA.search(description):
         DROPS[f"{source}: code package without included data"] += 1
         return None
-    nonmedical, reason = nonmedical_recovery_decision(title, d.get("descriptions"))
-    if nonmedical:
-        DROPS[f"{source}: {reason}"] += 1
-        return None
-    keep, rule = health_decision(d, medical_creator=bool(MEDICAL_CREATORS.intersection(ids)))
+    return scope_decision("doi:" + d["doi"].lower(), d, source, ids)
+
+
+def scope_decision(lid, metadata, source, ids=()):
+    keep, rule = health_decision(metadata, medical_creator=bool(MEDICAL_CREATORS.intersection(ids)))
+    SCOPE.setdefault(lid, {})[source] = {"keep": keep, "rule": rule}
     if not keep:
         DROPS[f"{source}: {rule}"] += 1
         return None
     return rule
+
+
+def doi_has_files(d):
+    doi = d["doi"].lower()
+    FILE_POOL.add(doi)
+    if os.environ.get("TVD_DATASET_FILE_POOL_ONLY"):
+        return True
+    if os.environ.get("TVD_DATASET_FETCH_FILES") and (url := api_url(doi)):
+        host = urlsplit(url).hostname
+        manifest = cache_path(FILE_CACHE, doi)
+        if host not in RATE_LIMITED and not manifest.exists():
+            manifest.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            evidence = fetch(doi)
+            write_json(manifest, evidence)
+            if evidence.get("http") == 429:
+                RATE_LIMITED.add(host)
+    result = file_decision(doi, d, FILE_CACHE)
+    EVIDENCE.setdefault("doi:" + doi, {})["file_check"] = result
+    if result["status"] != "keep":
+        DROPS["file check: " + result["reason"]] += 1
+        return False
+    RULES["file check: " + result["reason"]] += 1
+    return True
 
 
 def geo_data_type(rec):
@@ -217,6 +251,8 @@ def paper_units(papers):
             u["papers"].append(r["paper"])
         u["mentions"].append(r)
 
+    named_geo = {(r["paper"], r["unit"]) for r in produced
+                 if r["unit_type"] == "geo" and r.get("exact", "").upper() == r["unit"]}
     for r in produced:
         t, k = r["unit_type"], r["unit"]
         if t in ("geo", "geo-sample", "geo-gds"):
@@ -230,15 +266,21 @@ def paper_units(papers):
             srec = read_cache("geo", series)
             if not srec or not srec.get("ok") or not srec.get("public"):
                 DROPS["unit: GEO series not public or not found"] += 1; continue
-            parent = (srec.get("subseries_of") or [None])[0]
-            prec = read_cache("geo", parent) if parent else None
-            if prec and prec.get("ok") and prec.get("public"):
-                add("geo:" + parent, "geo", parent, r)
-                add("geo:" + parent, "geo", series, r)
-            else:
-                add("geo:" + series, "geo", series, r)
+            paper = r["paper"]
+            if not geo_series_supported(series, srec, papers[paper], named_geo):
+                DROPS["unit: GEO SuperSeries without paper or component support"] += 1
+                continue
+            target = series
+            for parent in srec.get("subseries_of") or []:
+                prec = read_cache("geo", parent) or {}
+                if prec.get("ok") and prec.get("public") and geo_series_supported(
+                        parent, prec, papers[paper], named_geo, known_aggregate=True):
+                    target = parent
+                    break
+            add("geo:" + target, "geo", target, r)
+            add("geo:" + target, "geo", series, r)
             if t != "geo":
-                add("geo:" + (parent if prec and prec.get("ok") and prec.get("public") else series), "geo", k, r)
+                add("geo:" + target, "geo", k, r)
         elif t in ("sra-run", "sra-study"):
             rec = read_cache("sra", k) or {}
             if not rec.get("ok"):
@@ -288,6 +330,8 @@ def paper_units(papers):
             desc = " ".join([rec.get("title", "")] + rec.get("descriptions", [])[:1])
             if CODE_DESC.search(desc) and not DATA_DESC.search(rec.get("title", "")):
                 code.append(dict(r, reason="repository text describes code")); continue
+            if not doi_has_files(rec):
+                continue
             add("doi:" + k, "doi", k, r)
             EVIDENCE.setdefault("doi:" + k, {})["health_rule"] = health_rule
     # A GEO series and the BioProject it links to are one dataset.
@@ -319,13 +363,41 @@ def read_cache(kind, key):
     return _cache[k]
 
 
+def geo_series_supported(series, rec, paper, named_geo, known_aggregate=False):
+    components = rec.get("superseries_of") or []
+    if not known_aggregate and not components and not re.search(r"\bsuperseries\b", rec.get("title") or "", re.I):
+        return True
+    if (paper["id"], series) in named_geo:
+        return True
+    paper_ids = identifiers(paper)
+    return bool(components) and all(
+        any(paper_ids & identifiers(citation)
+            for citation in (read_cache("geo", component) or {}).get("citations", []))
+        for component in components
+    )
+
+
+@functools.lru_cache(maxsize=None)
+def literal_institutions(paper_id, pmcid):
+    affiliations = AFFILIATIONS.get(paper_id)
+    if affiliations is None:
+        path = WORK / "fulltext" / (f"{pmcid}.json.gz")
+        affiliations = read_gz_json(path).get("affiliations", []) if pmcid and path.is_file() else []
+    return {i for aff in affiliations
+            for i in match_paper_affiliation(aff, REG.values())["institutions"]}
+
+
 def listed_fields(paper_rows, repo_note, provenance):
     producing = {edge["paper"] for edge in provenance if edge["relation"] == "produced"}
-    first = next((p for p in paper_rows if p["id"] in producing), paper_rows[0])
-    insts = sorted({i for p in paper_rows for i in p["institutions"]})
+    regional = [(p, literal_institutions(p["id"], p.get("pmcid")))
+                for p in paper_rows if p["id"] in producing]
+    regional = [(p, ids) for p, ids in regional if ids]
+    if not regional:
+        return [], [], "", ""
+    first = regional[0][0]
+    insts = sorted({i for _, ids in regional for i in ids})
     counties = sorted(counties_for(insts))
-    relation = "A producing paper lists a regional affiliation" if first["id"] in producing else "A linked paper lists a regional affiliation"
-    conn = f"{relation}. {repo_note[0].upper()}{repo_note[1:]}"
+    conn = f"A producing paper lists a regional affiliation. {repo_note[0].upper()}{repo_note[1:]}"
     return insts, counties, conn, europepmc(first["pmcid"])
 
 
@@ -342,6 +414,7 @@ def build_paper_listing(lid, u, papers, decisions):
     kind, accs = u["kind"], u["accs"]
     verified_ids, verified_note, verified_source = [], None, None
     other_submitter = False
+    regional_cohort = set()
     if kind == "geo":
         main = read_cache("geo", accs[0])
         rec.update(title=clean_title(main["title"]), summary=pick_summary(main["summary"], main["design"]),
@@ -361,11 +434,12 @@ def build_paper_listing(lid, u, papers, decisions):
             inst = g["institute"]
             city, state = g.get("city") or "", g.get("state") or ""
             evidence = {"institute": inst, "city": city, "state": state}
-            ids = submitter_ids([inst], city, state)
+            ids = match_geo_institution(inst, city, state, REG.values())["institutions"]
+            if not ids:
+                ids = submitter_ids([inst], city, state)
             if ids:
                 verified_ids = ids
-                where = f" in {city}" if city else ""
-                verified_note = f"The GEO record for {acc} lists {inst}{where} as the submitting institution."
+                verified_note = f"The GEO record for {acc} lists {inst} as the submitting institution."
                 verified_source = f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={acc}"
                 EVIDENCE[lid] = {"repository": evidence}
                 break
@@ -406,6 +480,7 @@ def build_paper_listing(lid, u, papers, decisions):
                    released=d.get("released"))
         block = d.get("pi_block", "")
         EVIDENCE[lid] = {"repository": {"principal_investigator_block": block[:400]}}
+        regional_cohort = set(match_paper_affiliation(block, REG.values())["institutions"])
     elif kind == "ega":
         e = read_cache("ega", accs[0])
         rec.update(title=clean_title(e["title"]), summary=pick_summary(e.get("description") or ""),
@@ -476,17 +551,17 @@ def build_paper_listing(lid, u, papers, decisions):
             return None
         NODESC[kind] += 1
         EVIDENCE.setdefault(lid, {})["summary_fallback"] = True
-    titles = " ".join([rec["title"], *(p.get("title") or "" for p in prow)])
-    nonmedical, reason = nonmedical_recovery_decision(titles, [rec["summary"]])
-    if kind != "doi" and nonmedical:
-        DROPS[f"paper-derived: {reason}"] += 1
-        return None
-    if kind != "doi" and (topic == "Other science" or NONMEDICAL_TITLE.search(titles)
-                          or NONMEDICAL_PAPER.search(titles)):
-        if not health_decision({"title": titles, "descriptions": [rec["summary"]]})[0]:
-            DROPS["paper-derived: nonmedical research title"] += 1
+    if kind != "doi":
+        source = read_cache(kind, accs[0]) or {}
+        metadata = {
+            "title": rec["title"],
+            "descriptions": [source.get(field) or "" for field in ("summary", "design", "description")]
+                            + [p.get("title") or "" for p in prow],
+            "subjects": ["Structural biology"] if kind == "pdb-set" else [],
+        }
+        if not scope_decision(lid, metadata, "paper-derived"):
             return None
-    if kind in ("dbgap", "ega") and not verified_note and not any(
+    if kind in ("dbgap", "ega") and not (verified_note or regional_cohort) and not any(
             re.search(r"\b(deposit\w*|submitted|uploaded)\b", m.get("clause") or m.get("sentence") or "", re.I) for m in u["mentions"]):
         # Controlled-access studies are often large consortia reused by many papers; list only with a deposition verb.
         DROPS[f"listing: {kind} study without explicit deposition evidence"] += 1
@@ -495,6 +570,11 @@ def build_paper_listing(lid, u, papers, decisions):
         insts = verified_ids
         counties = sorted(counties_for(insts))
         rec.update(institutions=insts, counties=counties, label="Verified", connection=verified_note, source=verified_source)
+    elif regional_cohort and not any(edge["relation"] == "produced" for edge in provenance):
+        ids = sorted(regional_cohort)
+        rec.update(institutions=ids, counties=sorted(counties_for(ids)), label="Listed",
+                   connection=f"The dbGaP study names a principal investigator affiliated with {inst_names(ids)}. "
+                              "The linked paper describes related research.", source=rec["url"])
     else:
         if kind == "pdb-set":
             note = "the structure records do not name an institution."
@@ -503,6 +583,9 @@ def build_paper_listing(lid, u, papers, decisions):
         else:
             note = "the repository record does not name a submitter."
         insts, counties, conn, src = listed_fields(prow, note, provenance)
+        if not insts:
+            DROPS["listing: no producing paper with a literal regional affiliation"] += 1
+            return None
         rec.update(institutions=insts, counties=counties, label="Listed", connection=conn, source=src)
     evidence = EVIDENCE.setdefault(lid, {})
     if date_recovered:
@@ -556,11 +639,13 @@ def datacite_institution():
         key = re.sub(r"\W+", " ", title.lower()).strip()
         if key in seen_titles:
             DROPS["datacite: duplicate title"] += 1; continue
-        seen_titles[key] = doi
         if not ids:
             DROPS["datacite: no regional affiliation on creators"] += 1; continue
         if (d.get("types") or {}).get("resourceTypeGeneral") not in (None, "Dataset"):
             DROPS["datacite: not typed Dataset"] += 1; continue
+        if not doi_has_files(d):
+            continue
+        seen_titles[key] = doi
         f = doi_fields(d)
         fallback = not f["summary"]
         if fallback:
@@ -590,6 +675,10 @@ ORDER = ["id", "title", "summary", "data_type", "access", "repository", "accessi
 
 
 def main():
+    affiliation_path = os.environ.get("TVD_DATASET_AFFILIATIONS")
+    if affiliation_path:
+        with open(affiliation_path) as f:
+            AFFILIATIONS.update(json.load(f))
     papers = {p["id"]: p for p in json.loads((WORK / "papers.json").read_text())}
     units, code, decisions = paper_units(papers)
     listings = {}
@@ -599,6 +688,8 @@ def main():
             rec["_source"] = "papers"
             listings[lid] = rec
     dc = datacite_institution()
+    if RATE_LIMITED:
+        raise SystemExit("Dataset file manifest rate limit")
     merged = 0
     for lid, rec in dc.items():
         if lid in listings:
@@ -615,14 +706,21 @@ def main():
     out, sources, source_by_id = [], collections.Counter(), {}
     for lid in sorted(listings):
         r = listings[lid]
+        text = " ".join((r["title"], r["summary"]))
+        if PATHOGEN.search(text) and SENSITIVE_STUDY.search(text):
+            DROPS["listing: publication safety hold"] += 1
+            continue
         source_by_id[lid] = r.pop("_source")
         sources[source_by_id[lid]] += 1
         out.append({k: r[k] for k in ORDER if k in r})
+    if os.environ.get("TVD_DATASET_FILE_POOL_ONLY"):
+        (WORK / "doi-file-pool.txt").write_text("\n".join(sorted(FILE_POOL)) + "\n")
     write_jsonl(WORK / "datasets.jsonl", out)
     (WORK / "dataset-sources.json").write_text(json.dumps(source_by_id, sort_keys=True))
     if os.environ.get("TVD_DATASETS_REPLAY"):
         (WORK / "recall-evidence.json").write_text(json.dumps(EVIDENCE, ensure_ascii=False))
         (WORK / "junk-ids.json").write_text(json.dumps(sorted(JUNK_IDS)))
+        (WORK / "scope-decisions.json").write_text(json.dumps(SCOPE, sort_keys=True))
     # code candidates
     crow = []
     for r in code:

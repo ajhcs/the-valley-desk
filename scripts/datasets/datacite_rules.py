@@ -147,71 +147,81 @@ def generic_junk_decision(title, descriptions=None):
     return False, None
 
 
-# Reject standalone research areas whose biomedical relevance cannot be
-# inferred from a medical affiliation or incidental disease discussion.
-ENVIRONMENTAL_COMPARATIVE = re.compile(
-    r"\b(?:soil|grasslands?|ecosystems?|ecolog\w*|biodivers\w*|wildlife|"
-    r"plant microbiom\w*|forest\w*|ocean\w*|sediment\w*)\b|"
-    r"\b(?:comparative|animal|avian|rodent|primate)\s+(?:social\s+)?behavio\w*\b|"
-    r"\b(?:atlas\b.{0,80}\b(?:ciona|drosophila|zebrafish|chordate|organism)\w*|"
-    r"(?:ciona|drosophila|zebrafish|chordate|organism)\w*\b.{0,80}\batlas)\b|"
-    r"\b(?:drosophila|fly|fruit flies)\b.{0,45}\bembryo\w*\b|"
-    r"\b(?:comparative|mammalian)\b.{0,70}\bvocal development\b|"
-    r"\b(?:rodent|rodents)\b.{0,65}\bstripe patterns?\b|"
-    r"\b(?:predator risk|predation risk|ecological divergence)\b|"
-    r"\b(?:drosophila|fruit flies)\b.{0,75}\bgenome folding\b|"
-    r"\b(?:chromatin|histone)\b", re.I)
-HUMAN_DATA = re.compile(r"\b(?:human|patients?|clinical)\b.{0,70}\b(?:data(?:set)?s?|samples?|cohort|tissue|cells?)\b|"
-                        r"\b(?:data(?:set)?s?|samples?|cohort|tissue|cells?)\b.{0,70}\b(?:human|patients?|clinical)\b", re.I)
-MEDICAL_OBJECTIVE = re.compile(
-    r"\b(?:investigat\w*|evaluat\w*|examin\w*|stud\w*|assess\w*|"
-    r"develop\w*|improv\w*|diagnos\w*|treat\w*|prevent\w*|model\w*)\b"
-    r"[^.!?]{0,100}\b(?:patients?|human disease|cancer|tumou?rs?|clinical|"
-    r"therap\w*|medical|healthcare|disease treatment)\b", re.I)
+# Negative study context wins over incidental model-organism vocabulary.
+EXCLUDED_CONTEXT = re.compile(
+    r"\b(?:ecolog\w*|ecosystem\w*|biodivers\w*|wild(?:life|[- ]population|[- ]caught)|"
+    r"field (?:stud\w*|survey\w*|observations?|sampling)|natural populations?|"
+    r"population genetics?|phylogeograph\w*|environmental microbi\w*|soil|sediment\w*|"
+    r"agricultur\w*|crops?|plants?|arabidopsis|nicotiana|oryza sativa|zea mays|"
+    r"forest\w*|animal movement|predation|predator|foraging)\b", re.I)
+PRIMARY_HEALTH = re.compile(
+    r"\b(?:clinical (?:trial\w*|stud\w*|research|care|outcomes?|data|patients?|cohort\w*)|"
+    r"patient(?:s|'s)? (?:with|care|samples?|outcomes?|cohort|treatment)|"
+    r"(?:human|public) health (?:research|study|studies|outcomes?|data|survey\w*|policy)|"
+    r"(?:cancer|oncology|cardiovascular|diabetes|dementia) (?:research|study|patients?|treatment|data|cohort)|"
+    r"(?:medical|biomedical) (?:research|study|studies|data|care)|human disease|clinical medicine|patient care|"
+    r"clinical (?:isolates?|specimens?|diagnos\w*)|infectious disease|vaccine(?: development| efficacy)?|"
+    r"(?:preclinical|subclinical) \w+ disease)\b", re.I)
+LAB_EVIDENCE = re.compile(
+    r"\b(?:cell lines?|cell cultures?|cultured cells?|stem cells?|organoids?|single[- ]cell|"
+    r"gene expression|rna[- ]seq|transcriptom\w*|proteom\w*|chromatin|histone\w*|"
+    r"protein structure|(?:protein|enzyme|ribosome) crystal structure|molecular biology|cell biology|"
+    r"developmental biology|structural biology|crystal structure|cryogenic electron microscopy|"
+    r"embryo\w*|neurons?|neuroscience|immun\w*|genome[- ]wide|genomic sequencing|"
+    r"rna sequencing|dna sequencing|transcription factor|gene silencing|"
+    r"gene regulation|ribosom\w*|methylom\w*|epigen\w*|"
+    r"molecular structure|cell differentiation|b cell|t cell|hepatocyte\w*|"
+    r"neural circuits?|brain imaging|eeg|meeg|electroencephalograph\w*|dna methylation|"
+    r"humanmethylation450|hm450|laboratory (?:experiments?|stud\w*|samples?|data)|in vitro|"
+    r"(?:mouse|mice|murine|rats?|zebrafish|drosophila|c\. elegans|yeast|bacteri\w*|virus\w*|viral)"
+    r"\b[^.!?]{0,80}\b(?:cells?|embryo\w*|genes?|genom\w*|proteins?|neurons?|"
+    r"laboratory|experiments?|expression|development|imaging|microscop\w*)|"
+    r"(?:genes?|genom\w*|proteins?|cells?|neurons?)\b[^.!?]{0,80}\b"
+    r"(?:mouse|mice|murine|rats?|zebrafish|drosophila|c\. elegans|yeast|bacteri\w*|virus\w*|viral))\b", re.I)
+
+
+def _scope_text(title, descriptions):
+    if isinstance(descriptions, str):
+        descriptions = [descriptions]
+    return NEURAL_NET.sub(" ", " ".join([title or ""] + [str(x or "") for x in (descriptions or [])])[:12000])
 
 
 def nonmedical_recovery_decision(title, descriptions=None):
-    """Return (drop, reason) for clear standalone nonmedical research topics.
-
-    Descriptions must state an actual medical objective; an incidental mention
-    or a broad subject classification alone cannot override the title.
-    """
-    title = " ".join((title or "").split()).strip()
-    if not ENVIRONMENTAL_COMPARATIVE.search(title):
-        return False, None
-    if MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title) or HUMAN_DATA.search(title):
-        return False, None
-    if isinstance(descriptions, str):
-        descriptions = [descriptions]
-    if any(MEDICAL_OBJECTIVE.search(str(x or "")) for x in (descriptions or [])):
-        return False, None
-    return True, "standalone nonmedical research title without medical objective"
+    """Reject explicit excluded contexts unless primary health evidence is present."""
+    text = _scope_text(title, descriptions)
+    if EXCLUDED_CONTEXT.search(text) and not PRIMARY_HEALTH.search(re.sub(r"\b(?:implications?|relevance|potential|may be relevant)\b[^.!?]*", " ", text, flags=re.I)):
+        return True, "excluded field, environmental, agriculture or plant context"
+    return False, None
 
 
 def health_decision(d, medical_creator=False):
-    """Return (keep, evidence location) for health or biomedical scope."""
+    """Return (keep, evidence location) for health and laboratory life sciences."""
     title = NEURAL_NET.sub(" ", d.get("title") or "")
-    descriptions = d.get("descriptions") or []
-    if isinstance(descriptions, str):
-        descriptions = [descriptions]
-    desc = NEURAL_NET.sub(" ", " ".join(str(x or "") for x in descriptions)[:12000])
+    text = _scope_text(title, d.get("descriptions") or [])
     subjects = d.get("subjects") or []
     if isinstance(subjects, str):
         subjects = [subjects]
     subjects = " ; ".join(str(x or "") for x in subjects)
+    primary = PRIMARY_HEALTH.search(re.sub(
+        r"\b(?:implications?|relevance|potential|may be relevant)\b[^.!?]*", " ", text, flags=re.I))
+    strong_title = bool(MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title) or LAB_EVIDENCE.search(title))
+    if (EXCLUDED_CONTEXT.search(title) or (EXCLUDED_CONTEXT.search(text) and not strong_title)) and not primary:
+        return False, "excluded field, environmental, agriculture or plant context"
+    if NON_HEALTH.search(title) and not (primary or strong_title):
+        return False, "non-biological research title"
     if MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title):
         return True, "health or biomedical evidence in title"
+    if MEDICAL_CONTEXT.search(text):
+        return True, "health or biomedical evidence in description"
+    if LAB_EVIDENCE.search(title):
+        return True, "laboratory life-science evidence in title"
+    if LAB_EVIDENCE.search(text):
+        return True, "laboratory life-science evidence in description"
+    if LAB_EVIDENCE.search(subjects):
+        return True, "laboratory life-science evidence in subjects"
     if FOS_BIOMEDICAL.search(subjects) or MEDICAL_CONTEXT.search(subjects) or MEDICAL_LABEL.search(subjects):
         return True, "health or biomedical evidence in subjects"
-    # An incidental mention in an abstract does not override a clearly
-    # unrelated research title. Explicit medical titles/subjects still win.
-    if NONMEDICAL_TITLE.search(title):
-        return False, "nonmedical research title"
-    if MEDICAL_CONTEXT.search(desc):
-        return True, "health or biomedical evidence in description"
-    if medical_creator and MEDICAL_MEASUREMENT.search(" ".join((title, desc))):
-        return True, "biomedical measurement with corroborated medical institution creator"
-    return False, "no health or biomedical evidence"
+    return False, "no health, biomedical or laboratory life-science evidence"
 
 
 TOPIC_RULES = [
