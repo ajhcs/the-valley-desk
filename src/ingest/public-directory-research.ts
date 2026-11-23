@@ -10,6 +10,7 @@ import {
   count,
   evidenceMark,
   externalLink,
+  feedbackBlock,
   healthTopic,
   html,
   kindIcon,
@@ -117,7 +118,9 @@ export type Listing<K extends ListingKind = ListingKind> = {
 export const publicationTitle = (p: Pick<Publication, "title">) =>
   p.title.replace(/<\/?(?:em|strong|i|b|sub|sup)>/gi, "");
 /** Catalogue display drops the closing period that bibliographic sources add to titles. */
-export const displayTitle = (p: Pick<Publication, "title">) => publicationTitle(p).replace(/(?<![.\s])\.$/u, "");
+/** PubMed wraps translated titles in square brackets; the catalogue shows the title without them. */
+export const displayTitle = (p: Pick<Publication, "title">) =>
+  publicationTitle(p).replace(/^\[([^[\]]+)\]\.?$/u, "$1").replace(/(?<![.\s])\.$/u, "");
 const typeNames: Record<string, string> = {
   article: "Article",
   review: "Review",
@@ -571,7 +574,7 @@ export function renderStudy(study: ClinicalStudy, refs: Institution[] = [], simi
       </section>
     </div>
     ${catalog ? similarSection(similar, catalog) : ""}
-    <p class="record-report">${contactLink("Report a correction or request removal", undefined, `Directory correction or removal for ${study.id}`)}</p>
+    ${feedbackBlock(studyPath(study.id), contactLink("Request removal by email", undefined, `Directory removal request for ${study.id}`))}
   </article>`;
 }
 export function renderListingCards(items: Listing[], catalog: DirectoryCatalog) {
@@ -596,7 +599,7 @@ export function kindCounts(counts: Results["counts"], withVersions = false) {
         (r.works === 1 ? templates[r.kind].name : templates[r.kind].plural).toLowerCase() +
         (withVersions && r.n > r.works ? ` (${count(r.n)} records including versions)` : ""),
     )
-    .join(" and ");
+    .reduce((text, part, i, parts) => text + (i === 0 ? "" : i === parts.length - 1 ? " and " : ", ") + part, "");
 }
 
 function pageLinks(path: string, params: URLSearchParams, page: number, totalPages: number) {
@@ -776,7 +779,7 @@ export function renderPublication(
     ${linkedCode.length ? `<section class="record-section related" aria-labelledby="linked-code-title"><h2 id="linked-code-title">Code linked from this paper</h2><p class="muted">Directory projects whose repository this paper’s full text links to, as a citation, use or release.</p><ul class="plain-list">${linkedCode.map((i) => `<li><a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
     ${similarSection(similar, catalog)}
     ${more?.items.length ? `<section class="related"><div class="section-heading"><h2>${html(more.heading)}</h2><a href="${html(more.href)}">More from this institution</a></div>${renderListingCards(more.items, catalog)}</section>` : ""}
-    <p class="record-report">${contactLink("Report a correction or request removal", undefined, `Directory correction or removal for ${p.id}`)}</p>
+    ${feedbackBlock(pubPath(p.id), contactLink("Request removal by email", undefined, `Directory removal request for ${p.id}`))}
   </article>`;
 }
 export function rss(

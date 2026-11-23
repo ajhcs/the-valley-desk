@@ -12,7 +12,7 @@ export function SiteFooter() {
           {policyBackground ? <Link to="/policy">Policy background</Link> : null}
         </nav>
         <p className="SiteFooter-copy desk-footer-copy">
-          © thedeskgroup - <a href="https://ushso.org/">USHSO.org</a>
+          Built by <a href="https://colelyons.com/">Cole Lyons</a>
         </p>
       </div>
     </footer>

@@ -93,7 +93,7 @@ test("landing pages answer in computed sentences and carry matching metadata", a
     const [site, catalog] = schemaOf(home);
     assert.equal(site.potentialAction.target.urlTemplate, origin + "/discover/works?q={search_term_string}");
     assert.equal(catalog["@type"], "DataCatalog");
-    assert.match(home, new RegExp(`The directory lists ${works} publications`));
+    assert.match(home, new RegExp(`<p class="lede">${works} publications`));
     assert.match(home, /href="\/discover\/institution\/fixture-institute"/);
 
     const directory = await text("/discover/sitemap/directory.xml");

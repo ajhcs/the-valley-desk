@@ -8,7 +8,7 @@ import {
   type Options,
   type ResearchDb,
 } from "./public-directory-research";
-import { count, dateText, externalLink, healthTopic, html, otherTopic, otherTopicSlug, timestamp } from "./public-directory-ui";
+import { count, externalLink, healthTopic, html, otherTopic, otherTopicSlug, timestamp } from "./public-directory-ui";
 
 export type ScopeField = "institution" | "topic" | "county";
 type Tally = { value: string; n: number };
@@ -134,8 +134,6 @@ export function entitySentences(
   names: Names,
 ) {
   const what = kindPhrase(summary) || "no listings";
-  const pubs = summary.kinds.publication;
-  const added = Object.values(summary.kinds).map((kind) => kind.added).filter(Boolean).sort().at(-1);
   const opening =
     field === "institution"
       ? `${name} has ${what} listed in the directory.`
@@ -146,25 +144,12 @@ export function entitySentences(
           : `The directory lists ${what} connected to the nine-county Delaware Valley.`;
   const sentences = (links: boolean) => {
     const parts = [opening];
-    if (pubs?.works && pubs.first && pubs.last) {
-      // Years only: a single early or late outlier should not read as a precise span.
-      const from = pubs.first.slice(0, 4),
-        to = pubs.last.slice(0, 4);
-      if (from && to)
-        parts.push(
-          from === to
-            ? `The publications are dated ${from}.`
-            : `Publication dates run from ${from} to ${to}.`,
-        );
-    }
     if (field !== "topic" && summary.facets.topic.length)
       parts.push(`The largest topics are ${tallyText(summary.facets.topic, "topic", names, links)}.`);
     if (field !== "institution" && summary.facets.institution.length)
       parts.push(`The most listings come from ${tallyText(summary.facets.institution, "institution", names, links)}.`);
     if (field === "institution" && summary.facets.county.length)
       parts.push(`The most listings record ${tallyText(summary.facets.county, "county", names, links)}.`);
-    if (added && dateText(added))
-      parts.push(`The most recent listing was added on ${links ? timestamp(added) : dateText(added)}.`);
     return parts;
   };
   return { html: sentences(true).join(" "), text: sentences(false).join(" "), opening };

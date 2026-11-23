@@ -98,6 +98,11 @@
 
 @media (max-width: 34rem) {
   .directory-chrome .desk-masthead-inner { padding-block: .25rem; }
-  .directory-chrome .desk-primary { column-gap: 1rem; width: 100%; }
+  .directory-chrome .desk-primary { justify-content: space-between; column-gap: .6rem; width: 100%; }
+  .directory-chrome .desk-primary a { font-size: .88rem; }
   .directory-chrome .desk-footer-inner { grid-template-columns: 1fr; }
+}
+/* Under 384px the header keeps three links; Suggest stays in the footer and on the home page. */
+@media (max-width: 24rem) {
+  .directory-chrome .desk-primary a[href="/discover/suggest"] { display: none; }
 }

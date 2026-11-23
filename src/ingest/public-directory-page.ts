@@ -8,7 +8,7 @@ import { renderDirectoryHome } from "./public-directory-home";
 import type { DirectorySummary, Names } from "./public-directory-entity";
 import { renderDirectoryResults, resultsHead } from "./public-directory-results";
 import {
-  contactLink, count, entityLink, externalLink, facetHref, html, kindIcon, labelDefinitions, projectCards,
+  contactLink, count, entityLink, externalLink, facetHref, feedbackBlock, html, kindIcon, labelDefinitions, projectCards,
   projectPlace, regionalLabel, timestamp,
 } from "./public-directory-ui";
 import { icon } from "./public-directory-icons";
@@ -46,7 +46,7 @@ function header(view: DirectoryView) {
           <img class="desk-mark" src="/mark-a-fold.svg" alt="" width="32" height="32">
           <span class="desk-wordmark">The Valley Desk</span>
         </a>
-        <nav class="desk-primary" aria-label="Primary">${link(browsePath, "Search")}${link("/discover/new", "What’s new")}${link(methodPath, "Methodology")}</nav>
+        <nav class="desk-primary" aria-label="Primary">${link(browsePath, "Search")}${link("/discover/new", "What’s new")}${link(methodPath, "Methodology")}${link("/discover/suggest", "Suggest")}</nav>
       </div>
     </header>`;
 }
@@ -54,9 +54,9 @@ function header(view: DirectoryView) {
 function footer() {
   return `<footer class="directory-chrome desk-footer">
     <div class="desk-frame desk-footer-inner">
-      <p class="desk-footer-about"><a class="desk-footer-brand" href="/">The Valley Desk</a> lists healthcare research with a documented connection to Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey.</p>
+      <p class="desk-footer-about"><a class="desk-footer-brand" href="/">The Valley Desk</a> lists healthcare research connected to nine counties in Pennsylvania and New Jersey.</p>
       <nav class="desk-footer-links" aria-label="Footer">
-        <a href="${browsePath}">Search</a><a href="/discover/new">What’s new</a><a href="${methodPath}">Methodology</a><a href="/discover/updates.xml">RSS</a><a href="${methodPath}#data">Data and API</a><a href="/llms.txt">llms.txt</a>
+        <a href="${browsePath}">Search</a><a href="/discover/new">What’s new</a><a href="${methodPath}">Methodology</a><a href="/discover/updates.xml">RSS</a><a href="${methodPath}#data">Data and API</a><a href="/discover/suggest">Suggest research</a><a href="/discover/suggest#feedback">Feedback</a>
       </nav>
       <div class="desk-theme">
         <label for="directory-theme">Theme</label>
@@ -64,7 +64,7 @@ function footer() {
           <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
         </select>
       </div>
-      <p class="desk-footer-copy">Built by <a href="https://colelyons.com/">Cole Lyons</a><span aria-hidden="true"> · </span>© thedeskgroup<span aria-hidden="true"> · </span><a href="https://ushso.org/">USHSO.org</a></p>
+      <p class="desk-footer-copy">Built by <a href="https://colelyons.com/">Cole Lyons</a></p>
     </div>
   </footer>`;
 }
@@ -142,7 +142,7 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
       <div class="section-heading"><h2>Related work at the same institution</h2></div>
       ${projectCards(catalog, related.sameTopic)}
     </section>` : ""}
-    <p class="record-report">${contactLink("Report a correction or request removal", project)}</p>
+    ${feedbackBlock(projectPath(project), contactLink("Request removal by email", project))}
   </article>`;
 }
 
@@ -192,7 +192,7 @@ function methodology(publications = false, studies = false) {
     </section>
     <section>
       <h2>Corrections, removals and submissions</h2>
-      <p>${contactLink("Email the directory team")} with the listing URL or persistent identifier and, for a correction or submission, a source for the regional connection. For a removal request, include the listing URL or directory ID and the reason for the request.</p>
+      <p><a href="/discover/suggest">Suggest a paper, codebase, dataset or open tool</a>. Every listing page also has a short correction form. For a removal request, ${contactLink("email the directory team")} with the listing URL or directory ID and the reason for the request.</p>
     </section>
     <section id="citing">
       <h2>Citing a listing</h2>
@@ -395,8 +395,10 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     <script src="/theme.js"></script>
     <script src="/directory-theme.js" defer></script>
     <script src="/webmcp.js" defer></script>
+    ${view.kind === "project" || view.kind === "research" ? '<script src="/directory-feedback.js" defer></script>' : ""}
     ${view.kind === "results" || view.kind === "home" ? '<script src="/directory-search.js" defer></script>' : ""}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   </head>
   <body class="directory-site">
     ${header(view)}
