@@ -575,6 +575,11 @@ async function handleFetch(request, env, origin, nonce, ctx) {
     if (isAssistantPath(path)) return serveAssistantAccess(request, env, origin, nonce);
   }
 
+  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/discover/suggest" || path === "/discover/suggest/" || path === "/discover/feedback" || path === "/discover/feedback/")) {
+    const { handleReaderInbox } = await import("./src/ingest/public-directory-inbox.ts");
+    return handleReaderInbox(request, env, origin, nonce);
+  }
+
   if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path === "/llms.txt" || path.startsWith("/discover") || path.startsWith("/api/directory/") || stripSlash(decodedPublicPath(path)) === "/sitemap.xml")) {
     const { isPublicDirectoryPath, servePublicDirectory } = await import("./src/ingest/public-directory.ts");
     if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB, origin, nonce, undefined, env.PUBLICATIONS_PUBLIC_ENABLED === "true", {
