@@ -9,6 +9,12 @@ npm run directory:build -- --inputs "$snapshot" --review-dir "$review"
 npm run directory:check
 ```
 
+For a metadata refresh with no listing decisions, use
+`npm run directory:build -- --refresh-listings "$updates" --baseline "$published"`.
+The update file uses the override format and limits changes to repository metadata
+and sourced locations. The refresh retains the baseline's approved membership.
+Keep the changes in `overrides.json` for later frozen-input builds.
+
 The input directory contains `inventory.sqlite`, `research-network.json`, `qualification-queue.json`, `catalog.json` (the frozen signed catalog), and the retained roster exports under `rosters/`. The `native/` directory contains the optional native metadata, README and fork comparisons from the same snapshot. The `prior/` directory holds retained rechecks, source notes and `release-sources/led.json` for the manually added launch repository. SQLite inputs are opened read-only. Capture dates and source files must be retained with the snapshot. Builds make no network requests.
 
 Reviewed changes are keyed by decimal repository ID in `overrides.json`. Each item has `field`, `value`, `source`, `date` and `author`. Use `record` as the field for a reviewed addition, with all required fields and its actual addition date in the value. Additional files can be supplied in precedence order with `--private-overrides`. Keep evidence quotes, delist reasons and decisions inside the review directory. The private files use the same shape and may also carry a `quote` of up to 300 characters. A `delist` entry requires a reason and belongs in a private file.

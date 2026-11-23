@@ -51,6 +51,7 @@ export function validate(records, {
     ids.add(id);
     codes.add(code);
     if (blocked.has(id)) report('declined or removed repository');
+    if (record.countyBasis && !record.county) report('county basis requires county');
     if (record.label === 'Verified' && !record.source) report('Verified requires source');
     if (truncation.test(record.purpose)) report('purpose ends in a truncation mark');
     for (const field of ['code', 'source', 'paper', 'homepage']) {

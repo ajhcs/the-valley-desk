@@ -72,7 +72,9 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
   const activity = lastActivity(project);
   const place = projectPlace(catalog, project);
   const papers = projectPapers(project);
-  const county = project.county && entityLink(catalog, "county", project.county, `${project.county} County`);
+  const countyBasis = project.countyBasis === "institution" ? " (institution location)"
+    : project.countyBasis === "profile" ? " (GitHub profile location)" : "";
+  const county = project.county && entityLink(catalog, "county", project.county, `${project.county} County${countyBasis}`);
   const account = githubAccount(project);
   const tags = project.topics?.map(tag => `<a href="${facetHref("tag", tag)}">${html(tag)}</a>`).join(" · ");
   const pushed = timestamp(project.pushed);

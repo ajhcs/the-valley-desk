@@ -68,7 +68,7 @@ export function projectPlace(catalog: DirectoryCatalog, project: DirectoryProjec
   const lab = project.lab || project.owner?.name;
   return [
     project.institution && entityLink(catalog, "institution", project.institution),
-    account && entityLink(catalog, "lab", account, lab || `GitHub: @${account}`),
+    account && entityLink(catalog, "lab", account, lab || project.profileLocation || `GitHub: @${account}`),
     !account && lab && html(lab),
   ].filter(Boolean).join('<span class="separator" aria-hidden="true"> / </span>');
 }
@@ -107,7 +107,7 @@ const kindDate = (project: DirectoryProject, dateField: "activity" | "added") =>
 export function projectRecord(catalog: DirectoryCatalog, project: DirectoryProject, dateField: "activity" | "added" = "activity") {
   const place = projectPlace(catalog, project);
   return `<li class="record record-software">
-    <p class="record-kind"><span class="kind">Software</span>${project.language ? `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>` : ""}${kindDate(project, dateField)}${project.archived === true ? '<span class="archive-mark">Archived</span>' : ""}</p>
+    <p class="record-kind"><span class="kind">Software</span>${project.language ? `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>` : ""}${project.license ? `<a href="${facetHref("license", project.license)}">${html(project.license)}</a>` : ""}${kindDate(project, dateField)}${project.archived === true ? '<span class="archive-mark">Archived</span>' : ""}</p>
     <h3 class="record-title"><a href="${html(projectPath(project))}">${html(project.name)}</a></h3>
     <p class="record-summary">${html(project.purpose)}</p>
     ${place ? `<p class="record-place">${place}</p>` : ""}

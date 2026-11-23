@@ -134,9 +134,11 @@ test('public directory pages, aliases, fragments and metadata preserve their HTT
   assert.equal(fragment.status, 200);
   assert.equal(fragment.headers.get('vary'), 'X-Valley-Desk-Fragment');
   assert.match(await fragment.text(), /^<div id="directory-results"/);
-  const county = await (await get('/discover/county/bucks')).text();
-  assert.match(county, /No projects listed yet/);
-  assert.match(county, /Suggest a project/);
+  const bucks = await (await get('/discover/county/bucks')).text();
+  assert.match(bucks, /Doylestown, PA/);
+  const emptyCounty = await (await get('/discover/county/burlington')).text();
+  assert.match(emptyCounty, /No projects listed yet/);
+  assert.match(emptyCounty, /Suggest a project/);
 
   const redirect = await get('/discover/?topic=Neuroscience');
   assert.equal(redirect.status, 308);

@@ -48,6 +48,12 @@
         "Mercer"
       ]
     },
+    "countyBasis": {
+      "enum": ["institution", "profile"]
+    },
+    "profileLocation": {
+      "$ref": "#/$defs/text"
+    },
     "label": {
       "enum": [
         "Verified",
