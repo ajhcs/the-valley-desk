@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 
 from project import plain
 
-MODEL = "gpt-6.2-sol"
+MODEL = "gpt-6.1-terra"
 TOPICS = {
     "Research data": "only datasets, databases, repositories, registries and data standards as the main contribution",
     "Medical imaging": "clinical or biomedical image acquisition, processing or evaluation",
