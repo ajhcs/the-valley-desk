@@ -224,7 +224,7 @@ test('six-field and enriched records render safely and the JSON projection exclu
   const get = (path: string, method?: string) => servePublicDirectory(publicRequest(path, method), noRemovals, publicOrigin, 'nonce', catalog);
   const minimal = await (await get('/discover/work/101')).text();
   assert.match(minimal, /Required fields only/);
-  assert.match(minimal, /GitHub: @Solo/);
+  assert.match(minimal, /glyph-account[\s\S]*?>@Solo<\/a>/);
   assert.match(minimal, /\/discover\/works\?owner=Solo/);
   assert.doesNotMatch(minimal, /Not reported|Repository facts|Last recorded activity|section.*paper-title/);
   const detail = await (await get('/discover/work/102')).text();

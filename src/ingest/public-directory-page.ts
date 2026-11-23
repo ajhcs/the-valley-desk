@@ -8,9 +8,10 @@ import { renderDirectoryHome } from "./public-directory-home";
 import type { DirectorySummary, Names } from "./public-directory-entity";
 import { renderDirectoryResults, resultsHead } from "./public-directory-results";
 import {
-  contactLink, count, entityLink, externalLink, facetHref, html, labelDefinitions, projectCards,
+  contactLink, count, entityLink, externalLink, facetHref, html, kindIcon, labelDefinitions, projectCards,
   projectPlace, regionalLabel, timestamp,
 } from "./public-directory-ui";
+import { icon } from "./public-directory-icons";
 
 export type DirectoryView =
   | {
@@ -63,7 +64,7 @@ function footer() {
           <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
         </select>
       </div>
-      <p class="desk-footer-copy">© thedeskgroup - <a href="https://ushso.org/">USHSO.org</a></p>
+      <p class="desk-footer-copy">Built by <a href="https://colelyons.com/">Cole Lyons</a><span aria-hidden="true"> · </span>© thedeskgroup<span aria-hidden="true"> · </span><a href="https://ushso.org/">USHSO.org</a></p>
     </div>
   </footer>`;
 }
@@ -74,7 +75,7 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
   const papers = projectPapers(project);
   const countyBasis = project.countyBasis === "institution" ? " (institution location)"
     : project.countyBasis === "profile" ? " (GitHub profile location)" : "";
-  const county = project.county && entityLink(catalog, "county", project.county, `${project.county} County${countyBasis}`);
+  const county = project.county && `<span class="meta-item">${icon("place")}${entityLink(catalog, "county", project.county, `${project.county} County`)}${countyBasis ? `<span class="muted">${countyBasis}</span>` : ""}</span>`;
   const account = githubAccount(project);
   const tags = project.topics?.map(tag => `<a href="${facetHref("tag", tag)}">${html(tag)}</a>`).join(" · ");
   const pushed = timestamp(project.pushed);
@@ -97,10 +98,10 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
       <a href="${browsePath}">Directory</a><span aria-hidden="true">/</span>${entityLink(catalog, "topic", project.topic)}
     </nav>
     <header class="record-head">
-      <p class="record-kind"><span class="kind">Software</span>${project.language ? `<span>${html(project.language)}</span>` : ""}${pushed ? `<span>Code pushed ${pushed}</span>` : ""}</p>
+      <p class="record-kind">${kindIcon("software", "Software")}${project.language ? `<span>${html(project.language)}</span>` : ""}${pushed ? `<span>Code pushed ${pushed}</span>` : ""}</p>
       <h1>${html(project.name)}</h1>
       <p class="lede">${html(project.purpose)}</p>
-      ${place || county ? `<p class="record-place">${[place, county].filter(Boolean).join('<span class="separator" aria-hidden="true"> · </span>')}</p>` : ""}
+      ${place || county ? `<p class="record-place">${place}${county || ""}</p>` : ""}
       ${repositoryState ? `<p class="archive-mark detail-archive">${html(repositoryState)}</p>` : ""}
       <p class="record-actions">${externalLink(project.code, "View code on GitHub ↗", "button primary")} ${externalLink(project.homepage, "Project website ↗", "button secondary")}</p>
     </header>
@@ -171,9 +172,16 @@ function methodology(publications = false, studies = false) {
     <section id="regional-evidence">
       <h2>Regional evidence</h2><p>For scholarly work, a Verified affiliation names the institution and a regional place, or a single-site regional institution. Listed indicates an indexer assignment or an institution match with an uncertain site. Company affiliations require a stated regional site. A county requires evidence placing the affiliation there. On multi-institution papers, filters match the institutions and counties recorded for the work. Follow the affiliation source to identify the site. A byline reports names as published.</p>
       <dl class="definition-list">
-        <div id="verified"><dt>Verified</dt><dd>${labelDefinitions.Verified}</dd></div>
-        <div id="listed"><dt>Listed</dt><dd>${labelDefinitions.Listed}</dd></div>
+        <div id="verified"><dt>${regionalLabel({ label: "Verified" })}</dt><dd>${labelDefinitions.Verified}</dd></div>
+        <div id="listed"><dt>${regionalLabel({ label: "Listed" })}</dt><dd>${labelDefinitions.Listed}</dd></div>
       </dl>
+      <p>Listing cards show the label as an icon, followed by the institution, account or place it names. Hover over the icon or open the listing for the full connection.</p>
+      <ul class="evidence-key" aria-label="Icon key">
+        <li><span class="evidence-mark is-verified">${icon("verified")}</span>Verified</li>
+        <li><span class="evidence-mark">${icon("listed")}</span>Listed</li>
+        <li>${icon("institution")} Institution</li><li>${icon("account")} Lab or GitHub account</li>
+        <li>${icon("place")} Place or county</li><li>${icon("source")} Source record</li>
+      </ul>
       <p>A label describes the evidence for the regional connection. Follow the project’s regional source for the specific claim. Placement in the directory does not establish ownership, employment, a worksite or clinical validation.</p>
     </section>
     <section>
