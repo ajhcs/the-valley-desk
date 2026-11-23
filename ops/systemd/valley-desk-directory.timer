@@ -1,0 +1,9 @@
+[Unit]
+Description=Refresh The Valley Desk directory each night
+
+[Timer]
+OnCalendar=*-*-* 03:10:00 America/New_York
+Persistent=true
+
+[Install]
+WantedBy=timers.target
