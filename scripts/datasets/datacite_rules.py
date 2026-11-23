@@ -58,7 +58,8 @@ GENERIC_SUPPLEMENT = re.compile(
     r"supporting (?:data|information|material|materials)|additional (?:data|files?))(?:\s*\.[a-z0-9]+)?$", re.I)
 GENERIC_CODE_AND_DATA = re.compile(r"^(?:code and data|data and code)(?:\s*\.[a-z0-9]+)?$", re.I)
 NUMBERED_SUPPLEMENT = re.compile(
-    r"^(?:table|fig(?:ure)?\.?)\s*s\s*\d+[a-z]?(?:\s*\.[a-z0-9]+)?$", re.I)
+    r"^(?:table|fig(?:ure)?\.?)\s*s?\s*\d+[a-z]?(?:(?:\s*\.[a-z0-9]+)|(?:\s+of\b.*))?$", re.I)
+GENERIC_FILE_OF = re.compile(r"^additional file(?:\s+\d+)?(?:\s+of\b.*)?$", re.I)
 
 
 def generic_supplement_decision(title, descriptions=None):
@@ -66,7 +67,7 @@ def generic_supplement_decision(title, descriptions=None):
     title = " ".join((title or "").split()).strip()
     if NUMBERED_SUPPLEMENT.fullmatch(title):
         return True, "numbered supplement title"
-    if GENERIC_SUPPLEMENT.fullmatch(title):
+    if GENERIC_SUPPLEMENT.fullmatch(title) or GENERIC_FILE_OF.fullmatch(title):
         return True, "generic supplement title"
     if isinstance(descriptions, str):
         descriptions = [descriptions]
@@ -144,6 +145,45 @@ def generic_junk_decision(title, descriptions=None):
         if GENERIC_JUNK.fullmatch(title) or len(re.findall(r"\b\w+(?:[-’']\w+)*\b", title)) < 4:
             return True, "short or generic title without description"
     return False, None
+
+
+# Reject standalone research areas whose biomedical relevance cannot be
+# inferred from a medical affiliation or incidental disease discussion.
+ENVIRONMENTAL_COMPARATIVE = re.compile(
+    r"\b(?:soil|grasslands?|ecosystems?|ecolog\w*|biodivers\w*|wildlife|"
+    r"plant microbiom\w*|forest\w*|ocean\w*|sediment\w*)\b|"
+    r"\b(?:comparative|animal|avian|rodent|primate)\s+(?:social\s+)?behavio\w*\b|"
+    r"\b(?:atlas\b.{0,80}\b(?:ciona|drosophila|zebrafish|chordate|organism)\w*|"
+    r"(?:ciona|drosophila|zebrafish|chordate|organism)\w*\b.{0,80}\batlas)\b|"
+    r"\b(?:drosophila|fly|fruit flies)\b.{0,45}\bembryo\w*\b|"
+    r"\b(?:comparative|mammalian)\b.{0,70}\bvocal development\b|"
+    r"\b(?:rodent|rodents)\b.{0,65}\bstripe patterns?\b|"
+    r"\b(?:chromatin|histone)\b", re.I)
+HUMAN_DATA = re.compile(r"\b(?:human|patients?|clinical)\b.{0,70}\b(?:data(?:set)?s?|samples?|cohort|tissue|cells?)\b|"
+                        r"\b(?:data(?:set)?s?|samples?|cohort|tissue|cells?)\b.{0,70}\b(?:human|patients?|clinical)\b", re.I)
+MEDICAL_OBJECTIVE = re.compile(
+    r"\b(?:investigat\w*|evaluat\w*|examin\w*|stud\w*|assess\w*|"
+    r"develop\w*|improv\w*|diagnos\w*|treat\w*|prevent\w*|model\w*)\b"
+    r"[^.!?]{0,100}\b(?:patients?|human disease|cancer|tumou?rs?|clinical|"
+    r"therap\w*|medical|healthcare|disease treatment)\b", re.I)
+
+
+def nonmedical_recovery_decision(title, descriptions=None):
+    """Return (drop, reason) for clear standalone nonmedical research topics.
+
+    Descriptions must state an actual medical objective; an incidental mention
+    or a broad subject classification alone cannot override the title.
+    """
+    title = " ".join((title or "").split()).strip()
+    if not ENVIRONMENTAL_COMPARATIVE.search(title):
+        return False, None
+    if MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title) or HUMAN_DATA.search(title):
+        return False, None
+    if isinstance(descriptions, str):
+        descriptions = [descriptions]
+    if any(MEDICAL_OBJECTIVE.search(str(x or "")) for x in (descriptions or [])):
+        return False, None
+    return True, "standalone nonmedical research title without medical objective"
 
 
 def health_decision(d, medical_creator=False):

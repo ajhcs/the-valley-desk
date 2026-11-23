@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from datacite_rules import generic_junk_decision, generic_supplement_decision, health_decision, is_supplement
+from datacite_rules import generic_junk_decision, generic_supplement_decision, health_decision, is_supplement, nonmedical_recovery_decision
 
 
 class ScopeRulesTest(unittest.TestCase):
@@ -69,6 +69,30 @@ class ScopeRulesTest(unittest.TestCase):
             self.assertFalse(generic_junk_decision(title, ['Clinical study data'])[0], title)
         for title in ('Annual report of cancer outcomes', 'Dataset of mEEG recordings', 'Issue 3 clinical data'):
             self.assertFalse(generic_junk_decision(title, [])[0], title)
+
+    def test_nonmedical_recovery_guard(self):
+        for title in (
+            'Soil microbial dynamics in Pennsylvania grasslands',
+            'Quantitative Multi-Omics Atlas of the Model Chordate Ciona',
+            'Comparative animal behavior across species',
+            'Structure of the Hir histone chaperone complex',
+            'Chromatin architecture and gene expression',
+        ):
+            self.assertTrue(nonmedical_recovery_decision(title, ['This may have implications for human health research.'])[0], title)
+        for title, description in (
+            ('Chromatin profiles in human patient samples', ''),
+            ('Histone changes in cancer research', ''),
+            ('Chromatin accessibility', 'We investigated cancer treatment response in patients.'),
+            ('Dataset for KnowYourCG HM450', ''),
+            ('mEEG recordings', ''),
+        ):
+            self.assertFalse(nonmedical_recovery_decision(title, [description])[0], title)
+
+    def test_generic_figure_and_additional_file_rejected_with_paper_abstract(self):
+        for title in ('Additional file', 'Additional file of Exploring breast cancer',
+                      'Figure 2', 'Figure 2 of a clinical paper', 'Fig. 3', 'Table S2.xlsx'):
+            self.assertTrue(generic_supplement_decision(title, ['A clinical study of cancer patients.'])[0], title)
+        self.assertFalse(generic_supplement_decision('Figure drawing dataset for clinical imaging', ['Study data'])[0])
 
     def test_supplement_labels(self):
         for title in ('Table S2.xlsx', 'Figure S3', 'Fig. S3', 'Supplementary data', 'Code and data'):

@@ -15,7 +15,8 @@ from common import COUNTIES, TODAY, read_gz_json, read_jsonl, registry, ror_inde
 from reuse import adjudicate, identifiers, more_than_year_before, replay_date_decisions
 from paper_provenance import paper_provenance
 from datacite_rules import datacite_access, datacite_license, datacite_released, \
-    generic_junk_decision, generic_supplement_decision, health_decision, is_supplement, NONMEDICAL_TITLE, topic_for_text
+    generic_junk_decision, generic_supplement_decision, health_decision, is_supplement, \
+    nonmedical_recovery_decision, NONMEDICAL_TITLE, topic_for_text
 from dataset_description import data_type_for_record, pick_summary
 from dataset_labels import match_submitter
 
@@ -109,6 +110,7 @@ def datacite_scope(d, source, ids):
     drop, rule = generic_supplement_decision(title, d.get("descriptions"))
     if drop or is_supplement(title, d):
         DROPS[f"{source}: {rule or 'journal supplement file'}"] += 1
+        JUNK_IDS.add("doi:" + d["doi"].lower())
         return None
     junk, junk_rule = generic_junk_decision(title, d.get("descriptions"))
     if junk:
@@ -118,6 +120,10 @@ def datacite_scope(d, source, ids):
     description = strip_markup(" ".join(d.get("descriptions") or []))
     if CODE_DESC.search(f"{title} {description}") and NO_INCLUDED_DATA.search(description):
         DROPS[f"{source}: code package without included data"] += 1
+        return None
+    nonmedical, reason = nonmedical_recovery_decision(title, d.get("descriptions"))
+    if nonmedical:
+        DROPS[f"{source}: {reason}"] += 1
         return None
     keep, rule = health_decision(d, medical_creator=bool(MEDICAL_CREATORS.intersection(ids)))
     if not keep:
@@ -471,6 +477,10 @@ def build_paper_listing(lid, u, papers, decisions):
         NODESC[kind] += 1
         EVIDENCE.setdefault(lid, {})["summary_fallback"] = True
     titles = " ".join([rec["title"], *(p.get("title") or "" for p in prow)])
+    nonmedical, reason = nonmedical_recovery_decision(titles, [rec["summary"]])
+    if kind != "doi" and nonmedical:
+        DROPS[f"paper-derived: {reason}"] += 1
+        return None
     if kind != "doi" and (topic == "Other science" or NONMEDICAL_TITLE.search(titles)
                           or NONMEDICAL_PAPER.search(titles)):
         if not health_decision({"title": titles, "descriptions": [rec["summary"]]})[0]:
