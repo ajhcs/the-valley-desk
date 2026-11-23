@@ -42,6 +42,9 @@ function summaryOf(kinds: KindRow[], tallies: TallyRow[], scope?: { field: Scope
 async function storedSummary(db: ResearchDb, scope?: { field: ScopeField; value: string }) {
   const key = [scope?.field ?? "", scope?.value ?? ""];
   try {
+    const [state] = await rows<{ visible: number; refreshed: number }>(db, "SELECT EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') visible,coalesce((SELECT CAST(first AS INTEGER) FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'),0) refreshed");
+    if (state.visible && !state.refreshed) return undefined;
+    const withoutDatasets = !state.visible && !!state.refreshed;
     const kinds = await rows<KindRow & { ready: number }>(
       db,
       "SELECT kind,works,first,last,added,EXISTS(SELECT 1 FROM research_summary_kinds WHERE scope_field='' AND scope_value='') ready FROM research_summary_kinds WHERE scope_field=? AND scope_value=?",
@@ -50,10 +53,10 @@ async function storedSummary(db: ResearchDb, scope?: { field: ScopeField; value:
     if (!kinds.length || !kinds[0].ready) return undefined;
     const tallies = await rows<TallyRow>(
       db,
-      "SELECT field,value,n FROM research_summary_facets WHERE scope_field=? AND scope_value=? ORDER BY n DESC,value",
+      `SELECT field,value,n FROM ${withoutDatasets ? "research_summary_facets_without_datasets" : "research_summary_facets"} WHERE scope_field=? AND scope_value=? ORDER BY n DESC,value`,
       ...key,
     );
-    return summaryOf(kinds.map(({ ready: _ready, ...row }) => row), tallies, scope);
+    return summaryOf(kinds.filter((row) => !withoutDatasets || row.kind !== "dataset").map(({ ready: _ready, ...row }) => row), tallies, scope);
   } catch {
     return undefined;
   }
@@ -102,11 +105,13 @@ export function kindPhrase(summary: DirectorySummary) {
   const pubs = summary.kinds.publication?.works ?? 0;
   const projects = summary.kinds.project?.works ?? 0;
   const studies = summary.kinds.study?.works ?? 0;
+  const datasets = summary.kinds.dataset?.works ?? 0;
   return list(
     [
       pubs ? plural(pubs, "publication", "publications") : "",
       projects ? plural(projects, "research software project", "research software projects") : "",
       studies ? plural(studies, "clinical study", "clinical studies") : "",
+      datasets ? plural(datasets, "dataset", "datasets") : "",
     ].filter(Boolean),
   );
 }

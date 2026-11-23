@@ -7,6 +7,15 @@ import unicodedata
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+DATASET_ID = re.compile(
+    r"^(geo:GSE[0-9]+|bioproject:PRJ[A-Z]{2}[0-9]+|sra:[SED]RP[0-9]+|dbgap:phs[0-9]{6}|ega:EGA[SD][0-9]{11}"
+    r"|pride:PXD[0-9]{6}|arrayexpress:E-[A-Z]{4}-[0-9]+|pdb-set:(doi:10\.[0-9]{4,}/\S+|pmid:[0-9]+|arxiv:\S+)"
+    r"|doi:10\.[0-9]{4,}/[^A-Z\s]+)$")
+DATA_TYPES = {"gene expression", "sequencing", "single-cell", "structure", "proteomics", "metabolomics",
+              "imaging", "clinical and survey", "other"}
+DATASET_FIELDS = set("id title summary data_type access repository accessions url institutions counties label "
+                     "connection source papers topic released added checked size format license".split())
+
 
 def slug(value):
     return "-".join(re.findall(r"[^\W_]+", unicodedata.normalize("NFKC", value).lower()))
@@ -36,6 +45,12 @@ def load(args):
             raise ValueError("Expected an array of study IDs")
         for identifier in removed:
             print("INSERT OR IGNORE INTO study_removals(id) VALUES(" + quote(identifier) + ");")
+    if args.dataset_removals:
+        removed = json.loads(args.dataset_removals.read_text())
+        if not isinstance(removed, list) or not all(isinstance(i, str) and DATASET_ID.match(i) for i in removed):
+            raise ValueError("Expected an array of dataset IDs")
+        for identifier in removed:
+            print("INSERT OR IGNORE INTO dataset_removals(id) VALUES(" + quote(identifier) + ");")
     institution_file = args.institutions or args.alias_reference
     if institution_file:
         content = institution_file.read_text().strip()
@@ -72,6 +87,11 @@ def load(args):
             for line in source:
                 if line.strip():
                     emit(json.loads(line), "study", aliases, args.respect_removals)
+    if args.datasets:
+        with args.datasets.open() as source:
+            for line in source:
+                if line.strip():
+                    emit(json.loads(line), "dataset", aliases, args.respect_removals)
 
 
 def citation_key(url):
@@ -90,9 +110,33 @@ def citation_key(url):
     return url.rstrip("/")
 
 
+def check_dataset(r):
+    """The dataset record contract. Every field is present; optional values are null."""
+    https = lambda v: isinstance(v, str) and urlsplit(v).scheme == "https" and bool(urlsplit(v).hostname)
+    day = lambda v: isinstance(v, str) and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", v)
+    strings = lambda v: isinstance(v, list) and all(isinstance(i, str) and i for i in v)
+    if set(r) != DATASET_FIELDS or not isinstance(r["id"], str) or not DATASET_ID.match(r["id"]):
+        raise ValueError("Unexpected dataset fields or identity")
+    problems = [
+        not all(isinstance(r[k], str) and r[k].strip() for k in ("title", "summary", "repository", "connection", "topic")),
+        r["data_type"] not in DATA_TYPES, r["access"] not in ("open", "registration", "controlled"),
+        r["label"] not in ("Verified", "Listed"), not https(r["url"]), not https(r["source"]),
+        not strings(r["accessions"]) or not r["accessions"], not strings(r["institutions"]) or not r["institutions"],
+        not strings(r["counties"]), not strings(r["papers"]),
+        r["released"] is not None and not re.fullmatch(r"[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?", str(r["released"])),
+        not day(r["added"]), not day(r["checked"]),
+        any(r[k] is not None and not (isinstance(r[k], str) and r[k].strip()) for k in ("size", "format", "license")),
+    ]
+    if any(problems):
+        raise ValueError("Invalid dataset record " + r["id"])
+
+
 def emit(r, kind, aliases, respect_removals=False):
     pub = kind == "publication"
     study = kind == "study"
+    dataset = kind == "dataset"
+    if dataset:
+        check_dataset(r)
     if pub:
         allowed = set("id title type published venue doi pmid pmcid arxiv url authors author_count institutions counties topic terms label connection source open_access projects preprint_of published_as retracted added checked".split())
         if set(r) - allowed or any(set(a) - {"name", "orcid", "regional"} for a in r["authors"]):
@@ -110,9 +154,10 @@ def emit(r, kind, aliases, respect_removals=False):
             raise ValueError("Unexpected study fields or identity")
         if any(set(site) != sites for site in r["sites"]) or r["source"] != "https://clinicaltrials.gov/study/" + r["id"] or r["url"] != r["source"]:
             raise ValueError("Invalid registry evidence for " + r["id"])
-    title = r["title" if pub or study else "name"]
-    institutions = r["institutions"] if pub or study else [r.get("institution")]
-    counties = r["counties"] if pub or study else [r.get("county")]
+    listed = pub or study or dataset
+    title = r["title" if listed else "name"]
+    institutions = r["institutions"] if listed else [r.get("institution")]
+    counties = r["counties"] if listed else [r.get("county")]
     topic = r.get("topic", "")
     facets = {"institution": [aliases.get(slug(v), slug(v)) for v in institutions if v],
               "county": [slug(v) for v in counties if v], "topic": [slug(topic)] if topic else [],
@@ -122,6 +167,10 @@ def emit(r, kind, aliases, respect_removals=False):
         alternate = {citation_key(r["url"]), citation_key(r["source"])}
         alternate.update(key + ":" + r[key] for key in ("pmid", "pmcid", "arxiv", "doi") if r.get(key))
         facets["alternate"] = sorted(alternate - {r["id"], None})
+    elif dataset:
+        # Publication pages find the datasets they produced through the paper facet.
+        facets.update(access=[r["access"]], datatype=[slug(r["data_type"])],
+                      repository=[slug(r["repository"])], paper=sorted(set(r["papers"])))
     elif not study:
         identifiers = {citation_key(r.get("paper"))}
         for paper in r.get("papers") or []:
@@ -133,9 +182,11 @@ def emit(r, kind, aliases, respect_removals=False):
             *r.get("terms", []), *r.get("topics", []), r.get("purpose"), r.get("language"), r.get("venue")]
     if study:
         keys.extend([*r["conditions"], *(site["facility"] for site in r["sites"])])
+    if dataset:
+        keys.extend([r["summary"], *r["accessions"], r["repository"], r["data_type"]])
     # Store facet keys with the row so a single upsert updates all index projections.
     payload = compact(r)
-    activity = r.get("published") or r.get("pushed") or r.get("last_updated") or r.get("updated") or ""
+    activity = r.get("published") or r.get("pushed") or r.get("last_updated") or r.get("updated") or r.get("released") or ""
     fields = [r["id"], kind, title, r.get("added") or "", activity,
               topic, (r.get("published_as") or r.get("preprint_of") or "?" + r["id"]) if r.get("type") == "preprint" else r["id"],
               " ".join(filter(None, keys)), payload, compact(facets)]
@@ -148,7 +199,8 @@ def emit(r, kind, aliases, respect_removals=False):
     guard = "true"
     if respect_removals:
         tables = {"project": ("public_directory_removals", "github_id"),
-                  "publication": ("publication_removals", "id"), "study": ("study_removals", "id")}
+                  "publication": ("publication_removals", "id"), "study": ("study_removals", "id"),
+                  "dataset": ("dataset_removals", "id")}
         table, key = tables[kind]
         identities = [r["id"], *(facets["alternate"] if pub else [])]
         guard = f"NOT EXISTS(SELECT 1 FROM {table} WHERE {key} IN ({','.join(map(quote, identities))}))"
@@ -173,7 +225,7 @@ def emit(r, kind, aliases, respect_removals=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    for flag in ("projects", "publications", "institutions", "removals", "studies", "study-removals"):
+    for flag in ("projects", "publications", "institutions", "removals", "studies", "study-removals", "datasets", "dataset-removals"):
         parser.add_argument("--" + flag, type=Path)
     parser.add_argument("--project-upserts", type=Path, help="Apply project additions and edits without pruning the catalog")
     parser.add_argument("--alias-reference", type=Path, help="Canonicalize institution facets without loading the reference")

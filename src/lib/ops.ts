@@ -1,7 +1,7 @@
 import { DEFAULT_PUBLIC_ORIGIN, resolvePublicOrigin } from "./canonical";
 
 /** D1 schema stamp. Must match the latest file prefix in /migrations. */
-export const SCHEMA_VERSION = "0049";
+export const SCHEMA_VERSION = "0050";
 
 export type BuildEnv = {
   BUILD_SHA?: string;

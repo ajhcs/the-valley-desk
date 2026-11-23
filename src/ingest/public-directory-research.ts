@@ -23,6 +23,7 @@ import {
   timestamp,
   topicTag,
 } from "./public-directory-ui";
+import { icon, type IconName } from "./public-directory-icons";
 import institutionRegistry from "../content/public-directory-institutions.json";
 
 /** Institution display names by reference ID, for listing cards that carry only IDs. */
@@ -37,6 +38,12 @@ export const pubPath = (id: string) => "/discover/publication/" + encodeURICompo
 export const studiesApi = "/api/directory/studies";
 export const studyPath = (id: string) => "/discover/study/" + encodeURIComponent(id);
 export const studyId = /^NCT[0-9]{8}$/;
+export const datasetsApi = "/api/directory/datasets";
+export const datasetsPath = "/discover/datasets";
+export const datasetPath = (id: string) => "/discover/dataset/" + encodeURIComponent(id);
+/** The identifier forms of the dataset contract; ops/load-research.py checks the same set. */
+export const datasetId =
+  /^(geo:GSE[0-9]+|bioproject:PRJ[A-Z]{2}[0-9]+|sra:[SED]RP[0-9]+|dbgap:phs[0-9]{6}|ega:EGA[SD][0-9]{11}|pride:PXD[0-9]{6}|arrayexpress:E-[A-Z]{4}-[0-9]+|pdb-set:(doi:10\.[0-9]{4,}\/\S+|pmid:[0-9]+|arxiv:\S+)|doi:10\.[0-9]{4,}\/[^A-Z\s]+)$/;
 export const facetSlug = (name: string) =>
   name
     .normalize("NFKC")
@@ -110,7 +117,31 @@ export type ClinicalStudy = {
   added: string;
   checked: string;
 };
-type RecordsByKind = { project: DirectoryProject; publication: Publication; study: ClinicalStudy };
+export type Access = "open" | "registration" | "controlled";
+export type Dataset = {
+  id: string;
+  title: string;
+  summary: string;
+  data_type: string;
+  access: Access;
+  repository: string;
+  accessions: string[];
+  url: string;
+  institutions: string[];
+  counties: string[];
+  label: string;
+  connection: string;
+  source: string;
+  papers: string[];
+  topic: string;
+  released: string | null;
+  added: string;
+  checked: string;
+  size: string | null;
+  format: string | null;
+  license: string | null;
+};
+type RecordsByKind = { project: DirectoryProject; publication: Publication; study: ClinicalStudy; dataset: Dataset };
 export type ListingKind = keyof RecordsByKind;
 export type Listing<K extends ListingKind = ListingKind> = {
   [P in K]: { kind: P; record: RecordsByKind[P] };
@@ -166,6 +197,13 @@ const templates: {
     title: (r) => r.title,
     card: studyRecord,
   },
+  dataset: {
+    name: "Dataset",
+    plural: "Datasets",
+    path: datasetPath,
+    title: (r) => r.title,
+    card: datasetRecord,
+  },
 };
 export const listingTitle = <K extends ListingKind>(item: Listing<K>) => templates[item.kind].title(item.record);
 export const listingPath = (item: { kind: ListingKind; record: { id: string } }) =>
@@ -174,6 +212,8 @@ function card<K extends ListingKind>(item: Listing<K>, catalog: DirectoryCatalog
   return templates[item.kind].card(item.record, catalog);
 }
 export const fields = ["institution", "topic", "county"] as const;
+/** Facets only datasets carry. Their filters appear on the datasets page. */
+export const datasetFields = ["access", "datatype", "repository"] as const;
 export type Options = Record<(typeof fields)[number], Map<string, string>>;
 export function institutionFor(refs: Institution[], value: string) {
   const key = facetSlug(value);
@@ -229,7 +269,7 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
   const facetQueries: string[] = [];
   let scope: Scope | undefined;
   let simple = !where.length;
-  for (const key of [...fields, "label"]) {
+  for (const key of [...fields, "label", ...datasetFields]) {
     const selected = params
       .getAll(key)
       .filter(Boolean)
@@ -247,7 +287,8 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
         "EXISTS(SELECT 1 FROM research_facets f WHERE f.field=? AND f.value IN (" + selected.map(() => "?").join(",") + ") AND f.id=l.id)",
       );
       rankedArgs.push(key, ...selected);
-      if (key !== "label" && selected.length === 1) scope = { field: key as Scope["field"], value: selected[0] };
+      // Stored counts cover institution, topic and county scopes only.
+      if ((fields as readonly string[]).includes(key) && selected.length === 1) scope = { field: key as Scope["field"], value: selected[0] };
       else simple = false;
     }
   }
@@ -308,9 +349,12 @@ type KindCount = { kind: ListingKind; n: number; works: number };
  */
 async function storedCounts(db: ResearchDb, scope: Scope | undefined, kind: string) {
   try {
+    const [state] = await rows<{ visible: number; refreshed: number }>(db, "SELECT EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') visible,coalesce((SELECT CAST(first AS INTEGER) FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'),0) refreshed");
+    if (state.visible && !state.refreshed) return undefined;
+    const withoutDatasets = !state.visible && !!state.refreshed;
     const found = await rows<KindCount & { everything: number | null; of_kind: number | null }>(
       db,
-      "SELECT kind,n,works,(SELECT sum(n) FROM research_summary_kinds WHERE scope_field='' AND scope_value='') everything,(SELECT n FROM research_summary_kinds WHERE scope_field='' AND scope_value='' AND kind=?) of_kind FROM research_summary_kinds WHERE scope_field=? AND scope_value=? ORDER BY kind",
+      `SELECT kind,n,works,(SELECT sum(n) FROM research_summary_kinds WHERE scope_field='' AND scope_value='' ${withoutDatasets ? "AND kind<>'dataset'" : ""}) everything,(SELECT n FROM research_summary_kinds WHERE scope_field='' AND scope_value='' AND kind=? ${withoutDatasets ? "AND kind<>'dataset'" : ""}) of_kind FROM research_summary_kinds WHERE scope_field=? AND scope_value=? ${withoutDatasets ? "AND kind<>'dataset'" : ""} ORDER BY kind`,
       kind,
       scope?.field ?? "",
       scope?.value ?? "",
@@ -529,6 +573,134 @@ function studyRecord(study: ClinicalStudy) {
     <p class="record-topic"><span>Added ${timestamp(study.added)}</span></p>
   </li>`;
 }
+const dataTypes: Record<string, [string, string]> = {
+  "gene expression": ["Gene expression", "Gene expression data"],
+  sequencing: ["Sequencing", "Sequencing data"],
+  "single-cell": ["Single-cell", "Single-cell data"],
+  structure: ["Structure", "Structural data"],
+  proteomics: ["Proteomics", "Proteomics data"],
+  metabolomics: ["Metabolomics", "Metabolomics data"],
+  imaging: ["Imaging", "Imaging data"],
+  "clinical and survey": ["Clinical and survey", "Clinical and survey data"],
+  other: ["Other", "Dataset"],
+};
+/** The data type as a filter choice (short) or as the kind line of a card (long). */
+export const dataTypeLabel = (type: string, long = false) =>
+  dataTypes[type]?.[long ? 1 : 0] ?? (type ? type[0].toUpperCase() + type.slice(1) : "Dataset");
+export const accessLevels: Record<Access, { name: string; explain: string }> = {
+  open: { name: "Open", explain: "Anyone can download the files, with no account or application." },
+  registration: { name: "Registration", explain: "Free to download after you create an account or accept the repository’s terms of use." },
+  controlled: {
+    name: "Controlled",
+    explain: "You apply for access, and a data access committee reviews the request. Approval can take weeks and usually requires an institutional agreement.",
+  },
+};
+/** The access level as a small tag with its padlock or key icon. */
+export function accessTag(access: string) {
+  const level = accessLevels[access as Access];
+  if (!level) return "";
+  return `<span class="access-tag access-${access}" title="${html(level.explain)}">${icon(("access-" + access) as IconName)}${html(level.name)}</span>`;
+}
+const accessionLinks: [RegExp, (v: string) => string][] = [
+  [/^GSE[0-9]+$/, (v) => "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + v],
+  [/^PRJ[A-Z]{2}[0-9]+$/, (v) => "https://www.ncbi.nlm.nih.gov/bioproject/" + v],
+  [/^[SED]R[PRSX][0-9]+$/, (v) => "https://www.ncbi.nlm.nih.gov/sra/?term=" + v],
+  [/^phs[0-9]{6}(\.v[0-9]+\.p[0-9]+)?$/, (v) => "https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=" + v],
+  [/^EGA[SD][0-9]{11}$/, (v) => (v.startsWith("EGAS") ? "https://ega-archive.org/studies/" : "https://ega-archive.org/datasets/") + v],
+  [/^PXD[0-9]{6}$/, (v) => "https://www.ebi.ac.uk/pride/archive/projects/" + v],
+  [/^E-[A-Z]{4}-[0-9]+$/, (v) => "https://www.ebi.ac.uk/biostudies/arrayexpress/studies/" + v],
+  [/^[0-9][A-Za-z0-9]{3}$/, (v) => "https://www.rcsb.org/structure/" + v],
+  [/^10\.[0-9]{4,}\/\S+$/, (v) => "https://doi.org/" + v.split("/").map(encodeURIComponent).join("/")],
+];
+/** An accession linked to its repository record when its form is known, otherwise plain text. */
+export function accessionLink(value: string) {
+  const known = accessionLinks.find(([pattern]) => pattern.test(value));
+  return (known && externalLink(known[1](value), value)) || html(value);
+}
+const mainId = (d: Dataset) => d.accessions[0] ?? d.id.slice(d.id.indexOf(":") + 1);
+const releaseYear = (d: Dataset) => (d.released && /^\d{4}/.test(d.released) ? d.released.slice(0, 4) : "");
+const countyLinks = (names: string[]) => names.map((c) => `<a href="/discover/county/${facetSlug(c)}">${html(c)}</a>`);
+function datasetKind(d: Dataset, release: string) {
+  const more = d.accessions.length > 1 ? ` <span class="muted">+${count(d.accessions.length - 1)}</span>` : "";
+  return `<p class="record-kind">${kindIcon("dataset", dataTypeLabel(d.data_type, true))}<span class="record-repository">${html(d.repository)} ${html(mainId(d))}${more}</span>${release}${accessTag(d.access)}</p>`;
+}
+function datasetRecord(d: Dataset) {
+  const year = releaseYear(d);
+  return `<li class="record record-dataset">
+    ${datasetKind(d, year ? `<span><time datetime="${html(year)}">${html(year)}</time></span>` : "")}
+    <h3 class="record-title"><a href="${html(datasetPath(d.id))}">${html(d.title)}</a></h3>
+    <p class="record-summary">${html(d.summary)}</p>
+    ${cardEvidence(d.label, d.connection, d.institutions, d.source, "Regional source", namedLinks("place", countyLinks(d.counties), 4))}
+    <p class="record-topic">${topicTag(topicLink(d.topic), d.topic)}${timestamp(d.added) ? `<span>Added ${timestamp(d.added)}</span>` : ""}</p>
+  </li>`;
+}
+/** A paper a dataset names, linked to its directory page when the paper is listed. */
+export type DatasetPaper = { id: string; title?: string };
+function paperLink(paper: DatasetPaper) {
+  if (paper.title) return `<a href="${html(pubPath(paper.id))}">${html(displayTitle({ title: paper.title }))}</a>`;
+  const doi = /^doi:(10\..+)$/.exec(paper.id)?.[1];
+  return doi ? accessionLink(doi) : html(paper.id);
+}
+export function renderDataset(d: Dataset, refs: Institution[], papers: DatasetPaper[], similar: Listing[] = [], catalog?: DirectoryCatalog) {
+  const entity = (kind: string, key: string, name: string) =>
+    `<a href="/discover/${kind}/${encodeURIComponent(key)}">${html(name)}</a>`;
+  const places = d.institutions.map((id) => entity("institution", id, refs.find((ref) => ref.id === id)?.name ?? id));
+  const counties = d.counties.map((c) => entity("county", facetSlug(c), c + " County"));
+  const level = accessLevels[d.access];
+  const contents = [d.size, d.format].filter(Boolean).map((v) => html(v!)).join(" · ");
+  const ids = d.accessions.map(accessionLink).join(", ");
+  const cite = [...papers.map(paperLink), html(d.repository + " " + d.accessions.join(", "))];
+  const get: [string, string][] = [
+    ["Access", `${accessTag(d.access)}<span class="access-explain">${html(level?.explain ?? "")}</span>`],
+    [d.accessions.length === 1 ? "ID" : "IDs", ids],
+    ["Repository", externalLink(d.url, d.repository) || html(d.repository)],
+    ["Contents", contents],
+    ["License", d.license ? html(d.license) : '<span class="muted">Not stated in the record</span>'],
+    ["Released", partialDate(d.released)],
+    ["How to cite", `<ol class="cite-list">${cite.map((c) => `<li>${c}</li>`).join("")}</ol>`],
+  ];
+  const release = partialDate(d.released) ? `<span>Released ${partialDate(d.released)}</span>` : "";
+  return `<article class="frame page record-page dataset-page">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a><span aria-hidden="true">/</span><a href="${datasetsPath}">Datasets</a></nav>
+    <header class="record-head">
+      ${datasetKind(d, release)}
+      <h1>${html(d.title)}</h1>
+      <p class="lede">${html(d.summary)}</p>
+      <p class="record-actions">${externalLink(d.url, `View on ${d.repository} ↗`, "button primary")}</p>
+    </header>
+    <div class="record-body">
+      <section class="record-section get-data" aria-labelledby="get-title">
+        <h2 id="get-title">How to get it</h2>
+        <dl class="facts">${get.filter(([, v]) => v).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
+      </section>
+      <div>
+        <section class="record-section" aria-labelledby="connection-title">
+          <h2 id="connection-title">Regional connection</h2>
+          <p class="record-evidence">${regionalLabel(d)} ${html(d.connection)} ${externalLink(d.source, "Regional source")}</p>
+          <dl class="facts">
+            ${places.length ? `<div><dt>${places.length === 1 ? "Institution" : "Institutions"}</dt><dd>${places.join(", ")}</dd></div>` : ""}
+            ${counties.length ? `<div><dt>${counties.length === 1 ? "County" : "Counties"}</dt><dd>${counties.join(", ")}</dd></div>` : ""}
+            <div><dt>Topic</dt><dd>${topicLink(d.topic)}</dd></div>
+            ${timestamp(d.added) ? `<div><dt>Added to directory</dt><dd>${timestamp(d.added)}</dd></div>` : ""}
+          </dl>
+        </section>
+        ${papers.length ? `<section class="record-section" aria-labelledby="papers-title"><h2 id="papers-title">${papers.length === 1 ? "Paper that produced it" : "Papers that produced it"}</h2><ul class="plain-list">${papers.map((paper) => `<li>${paperLink(paper)}</li>`).join("")}</ul></section>` : ""}
+      </div>
+    </div>
+    ${catalog ? similarSection(similar, catalog) : ""}
+    ${feedbackBlock(datasetPath(d.id), contactLink("Request removal by email", undefined, `Directory removal request for ${d.id}`))}
+  </article>`;
+}
+/** "Data from this paper": the listed datasets whose papers include a publication. */
+export function paperDatasets(items: Dataset[]) {
+  if (!items.length) return "";
+  return `<section class="record-section related" aria-labelledby="paper-data-title"><h2 id="paper-data-title">Data from this paper</h2><ul class="plain-list dataset-list">${items
+    .map(
+      (d) =>
+        `<li><p class="record-kind">${kindIcon("dataset", dataTypeLabel(d.data_type, true))}<span>${html(d.repository)} ${html(mainId(d))}</span>${accessTag(d.access)}</p><a href="${html(datasetPath(d.id))}">${html(d.title)}</a></li>`,
+    )
+    .join("")}</ul></section>`;
+}
 export function similarSection(items: Listing[], catalog: DirectoryCatalog, heading = "Similar research in the Delaware Valley") {
   if (!items.length) return "";
   return `<section class="related similar" aria-labelledby="similar-title"><div class="section-heading"><h2 id="similar-title">${html(heading)}</h2></div><p class="section-note">Publications, clinical studies and software from the region that share this record’s distinctive subject words. Use them to see who else in the region works on the subject.</p>${renderListingCards(items, catalog)}</section>`;
@@ -633,12 +805,18 @@ export type ResearchPage = {
   options: Options;
   enabled: boolean;
   studiesAvailable?: boolean;
+  datasetsAvailable?: boolean;
   scope?: string;
   byDate?: boolean;
   aside?: string;
+  /** Replaces the kind, institution, topic and county filters (the datasets page). */
+  facets?: { name: string; label: string; all: string; choices: [string, string][] }[];
+  /** The order choices when the default set does not fit. The first is the default. */
+  orders?: [string, string][];
+  feed?: string;
 };
 
-export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, scope = "", byDate, aside }: ResearchPage) {
+export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, datasetsAvailable, scope = "", byDate, aside, facets, orders, feed }: ResearchPage) {
   function select(name: string, label: string, choices: [string, string][], all = "All") {
     const selected = params.get(name) ?? "";
     return `<label>${label}<select form="research-form" name="${name}"><option value="">${all}</option>${choices
@@ -666,26 +844,36 @@ export function renderResearch({ header, path, params, data, catalog, options, e
       )
       .join("");
   } else list = `<h2 class="sr-only">Listings</h2>${renderListingCards(data.items, catalog)}`;
+  const kinds: ListingKind[] = ["publication", "project", ...(studiesAvailable ? ["study" as const] : []), ...(datasetsAvailable ? ["dataset" as const] : [])];
+  const activity = datasetsAvailable
+    ? studiesAvailable ? "Publication, code push, registry update or release date" : "Publication, code push or release date"
+    : studiesAvailable ? "Publication, code push or registry update date" : "Publication date or last code push";
   const filters = [
-    enabled
-      ? select("kind", "Kind", (["publication", "project", ...(studiesAvailable ? ["study" as const] : [])] as const).map((kind) => [kind, templates[kind].plural]), studiesAvailable ? "All kinds" : "Publications and software")
-      : "",
-    ...fields
-      .filter((f) => f !== scope)
-      .map((f) =>
-        select(
-          f,
-          names[f][0],
-          [...options[f]].filter(([, n]) => f !== "topic" || healthTopic(n)).sort((a, b) => a[1].localeCompare(b[1])),
-          names[f][1],
-        ),
-      ),
+    ...(facets
+      ? facets.filter((f) => f.choices.length).map((f) => select(f.name, f.label, f.choices, f.all))
+      : [
+          enabled
+            ? select("kind", "Kind", kinds.map((kind) => [kind, templates[kind].plural]), kinds.length > 2 ? "All kinds" : "Publications and software")
+            : "",
+          ...fields
+            .filter((f) => f !== scope)
+            .map((f) =>
+              select(
+                f,
+                names[f][0],
+                [...options[f]].filter(([, n]) => f !== "topic" || healthTopic(n)).sort((a, b) => a[1].localeCompare(b[1])),
+                names[f][1],
+              ),
+            ),
+        ]),
     path !== newPath && enabled
       ? `<label>Order<select form="research-form" name="sort">${[
           ...(params.get("q") ? [["relevance", "Relevance"]] : []),
-          ["added", "Date added"],
-          ["activity", studiesAvailable ? "Publication, code push or registry update date" : "Publication date or last code push"],
-          ["name", "Title A–Z"],
+          ...(orders ?? [
+            ["added", "Date added"],
+            ["activity", activity],
+            ["name", "Title A–Z"],
+          ]),
         ]
           .map(([v, n]) => `<option value="${v}"${params.get("sort") === v ? " selected" : ""}>${n}</option>`)
           .join("")}</select></label>`
@@ -702,7 +890,7 @@ export function renderResearch({ header, path, params, data, catalog, options, e
       </div>
       <section class="research-results" aria-label="Listings">
         <div class="results-bar"><p class="results-count"><strong>${resultCount(data, true) || "No matching listings"}</strong>${data.more ? `<span class="muted"> · most relevant first</span>` : range}</p>
-        <p class="results-links"><a href="${html(feedUrl(params))}">RSS feed of additions</a></p></div>
+        <p class="results-links"><a href="${html(feed ?? feedUrl(params))}">RSS feed of additions</a></p></div>
         ${list}
         ${pageLinks(path, params, data.page, totalPages)}
       </section>
@@ -726,6 +914,7 @@ export function renderPublication(
   catalog: DirectoryCatalog,
   linkedCode: Listing[] = [],
   similar: Listing[] = [],
+  datasets: Dataset[] = [],
 ) {
   const entity = (kind: string, key: string, name: string) =>
     `<a href="/discover/${kind}/${encodeURIComponent(key)}">${html(name)}</a>`;
@@ -777,6 +966,7 @@ export function renderPublication(
     </div>
     ${related.length ? `<section class="record-section related"><h2>Connected research</h2><ul class="plain-list">${related.map((i) => `<li><span class="muted">${i.kind === "project" ? "Software" : "Publication version"}</span> <a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
     ${linkedCode.length ? `<section class="record-section related" aria-labelledby="linked-code-title"><h2 id="linked-code-title">Code linked from this paper</h2><p class="muted">Directory projects whose repository this paper’s full text links to, as a citation, use or release.</p><ul class="plain-list">${linkedCode.map((i) => `<li><a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
+    ${paperDatasets(datasets)}
     ${similarSection(similar, catalog)}
     ${more?.items.length ? `<section class="related"><div class="section-heading"><h2>${html(more.heading)}</h2><a href="${html(more.href)}">More from this institution</a></div>${renderListingCards(more.items, catalog)}</section>` : ""}
     ${feedbackBlock(pubPath(p.id), contactLink("Request removal by email", undefined, `Directory removal request for ${p.id}`))}

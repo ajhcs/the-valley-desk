@@ -14,11 +14,17 @@ import {
   studyPath,
   studiesApi,
   studyId,
+  datasetPath,
+  datasetsApi,
+  datasetId,
+  dataTypeLabel,
+  accessLevels,
   registryLabel,
   rows,
   type Institution,
   type Publication,
   type ClinicalStudy,
+  type Dataset,
   type ResearchDb,
 } from "../ingest/public-directory-research";
 
@@ -63,7 +69,7 @@ const text = (description: string, maxLength = limits.filterLength): Property =>
   maxLength,
 });
 const filters = {
-  kind: { type: "string", description: "Limit to software projects, publications or clinical studies.", enum: ["project", "publication", "study"] },
+  kind: { type: "string", description: "Limit to software projects, publications, clinical studies or datasets.", enum: ["project", "publication", "study", "dataset"] },
   institution: text("Institution name or id, for example \"Drexel University\". list_institutions returns the names."),
   topic: text("Topic name, for example \"Medical imaging\". list_topics_and_counties returns the names."),
   county: { type: "string", description: "One of the nine Delaware Valley counties.", enum: countyNames },
@@ -74,7 +80,7 @@ const listing = {
   type: "object",
   properties: {
     id: { type: "string", description: "Directory id. Pass it to fetch." },
-    kind: { type: "string", enum: ["project", "publication", "study"] },
+    kind: { type: "string", enum: ["project", "publication", "study", "dataset"] },
     title: { type: "string" },
     url: { type: "string", description: "The Valley Desk page for this record. Cite this URL." },
     label: { type: "string", enum: ["Verified", "Listed"], description: "Strength of the regional evidence." },
@@ -85,13 +91,15 @@ const listing = {
     counties: { type: "array", items: { type: "string" } },
     dates: {
       type: "object",
-      description: "published: when a paper appeared. pushed: when project code last changed. last_updated: when the registry last updated a study. added: when the record entered the directory.",
-      properties: { published: { type: "string" }, pushed: { type: "string" }, last_updated: { type: "string" }, added: { type: "string" } },
+      description: "published: when a paper appeared. pushed: when project code last changed. last_updated: when the registry last updated a study. released: when a repository released a dataset. added: when the record entered the directory.",
+      properties: { published: { type: "string" }, pushed: { type: "string" }, last_updated: { type: "string" }, released: { type: "string" }, added: { type: "string" } },
     },
     type: { type: "string" },
     venue: { type: "string" },
     retracted: { type: "boolean" },
     status: { type: "string" },
+    repository: { type: "string", description: "For a dataset, the repository that holds it." },
+    access: { type: "string", description: "For a dataset: Open, Registration or Controlled." },
   },
   required: ["id", "kind", "title", "url", "label", "dates"],
 };
@@ -322,8 +330,28 @@ const institutionName = (refs: Institution[], id: string) => refs.find((ref) => 
 type ApiListing =
   | { kind: "project"; record: Record<string, any> }
   | { kind: "publication"; record: Publication }
-  | { kind: "study"; record: ClinicalStudy };
+  | { kind: "study"; record: ClinicalStudy }
+  | { kind: "dataset"; record: Dataset };
 function summarize(item: ApiListing, context: ToolContext, refs: Institution[]) {
+  if (item.kind === "dataset") {
+    const d = item.record;
+    return present({
+      id: d.id,
+      kind: item.kind,
+      title: d.title,
+      url: context.origin + datasetPath(d.id),
+      label: d.label,
+      connection: clip(d.connection, 300),
+      summary: clip(d.summary, 300),
+      topic: d.topic,
+      institutions: d.institutions.map((id) => institutionName(refs, id)),
+      counties: d.counties,
+      dates: present({ released: d.released ?? undefined, added: d.added }),
+      type: dataTypeLabel(d.data_type, true),
+      repository: d.repository,
+      access: accessLevels[d.access]?.name,
+    });
+  }
   if (item.kind === "study") {
     const s = item.record;
     return present({
@@ -409,8 +437,8 @@ async function search(args: Args, context: ToolContext, browse = "/discover/work
   const within = (value: string | undefined, key: string) =>
     (!args[key + "_from"] || (!!value && value >= String(args[key + "_from"]))) &&
     (!args[key + "_to"] || (!!value && value <= args[key + "_to"] + "~"));
-  const dated = (r: { dates?: object }) => (r.dates ?? {}) as { published?: string; pushed?: string; last_updated?: string; added?: string };
-  if (!results.every((r) => within(dated(r).added, "added") && within(dated(r).published ?? dated(r).pushed ?? dated(r).last_updated, "date"))) {
+  const dated = (r: { dates?: object }) => (r.dates ?? {}) as { published?: string; pushed?: string; last_updated?: string; released?: string; added?: string };
+  if (!results.every((r) => within(dated(r).added, "added") && within(dated(r).published ?? dated(r).pushed ?? dated(r).last_updated ?? dated(r).released, "date"))) {
     throw new ToolError("Date filters are unavailable right now. Search again without date_from, date_to, added_from, added_to or since.");
   }
   const view = new URLSearchParams(params);
@@ -437,7 +465,7 @@ function recordId(value: string, origin: string) {
     } catch {
       throw new ToolError("id is not a valid URL.");
     }
-    const match = /^\/discover\/(work|publication|study)\/([^/]+)\/?$/.exec(url.pathname);
+    const match = /^\/discover\/(work|publication|study|dataset)\/([^/]+)\/?$/.exec(url.pathname);
     if (!["thevalleydesk.org", "www.thevalleydesk.org", new URL(origin).hostname].includes(url.hostname) || !match) {
       throw new ToolError("fetch reads thevalleydesk.org record URLs and directory ids only.");
     }
@@ -446,20 +474,45 @@ function recordId(value: string, origin: string) {
     } catch {
       throw new ToolError("id is not a valid URL.");
     }
+    return { id, dataset: match[1] === "dataset" };
   }
-  return id;
+  return { id, dataset: false };
 }
 
 async function fetchRecord(value: string, context: ToolContext) {
-  const id = recordId(value, context.origin);
+  const named = recordId(value, context.origin);
+  const id = named.id;
   const project = /^[1-9][0-9]{0,19}$/.test(id);
   const study = studyId.test(id);
-  const { status, body } = await api(
+  // A bare DOI can name a publication or a deposited dataset: the publication is tried first.
+  let dataset = named.dataset || (datasetId.test(id) && !id.startsWith("doi:"));
+  let { status, body } = await api(
     context,
-    (project ? "/api/directory/projects" : study ? studiesApi : "/api/directory/publications") + "/" + encodeURIComponent(id),
+    (project ? "/api/directory/projects" : study ? studiesApi : dataset ? datasetsApi : "/api/directory/publications") + "/" + encodeURIComponent(id),
   );
+  if (status === 404 && !dataset && !named.dataset && datasetId.test(id)) {
+    const retry = await api(context, datasetsApi + "/" + encodeURIComponent(id));
+    if (retry.status !== 404) ({ status, body } = retry), (dataset = true);
+  }
   if (status === 410) throw new ToolError("This record has been removed from the directory.");
   if (status !== 200) throw new ToolError("No directory record has this id. Use search to find records and their ids.");
+  if (dataset) {
+    const d = body.dataset as Dataset;
+    const summary = summarize({ kind: "dataset", record: d }, context, await refsFor(context));
+    const url = context.origin + datasetPath(d.id);
+    const metadata = present({
+      ...summary,
+      connection_source: d.source,
+      source_checked: d.checked,
+      repository_url: d.url,
+      accessions: d.accessions.slice(0, 20),
+      size: d.size ?? undefined,
+      format: d.format ?? undefined,
+      license: d.license ?? undefined,
+      papers: d.papers.slice(0, 10),
+    });
+    return { id: d.id, title: d.title, text: plain(d.title, url, metadata), url, metadata };
+  }
   if (study) {
     const s = body.study as ClinicalStudy;
     const summary = summarize({ kind: "study", record: s }, context, await refsFor(context));

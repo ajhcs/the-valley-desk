@@ -8,6 +8,11 @@ const paths = {
   software: '<path d="M6.75 6 2.75 10l4 4M13.25 6l4 4-4 4M11.25 4.25l-2.5 11.5"/>',
   publication: '<path d="M5 2.75h6.5l3.5 3.5v11H5z"/><path d="M11.5 2.75v3.5H15M7.5 10h5M7.5 13h5"/>',
   study: '<path d="M7 4H5v13.25h10V4h-2"/><path d="M7.5 2.75h5v2.5h-5zM7 11.75h1.75l1-2.25 1.5 4.25 1-2h1.75"/>',
+  dataset: '<rect x="3" y="3.5" width="14" height="13" rx="1"/><path d="M3 7.75h14M3 12h14M7.75 3.5v13"/>',
+  // Dataset access: an open padlock, a key, a closed padlock
+  "access-open": '<rect x="4" y="9" width="12" height="8.25" rx="1"/><path d="M7 9V6.25a3 3 0 0 1 5.85-.95M10 12.25v1.75"/>',
+  "access-registration": '<circle cx="6.75" cy="10" r="3.25"/><path d="M10 10h7.25M14.75 10v2.5M17.25 10v2"/>',
+  "access-controlled": '<rect x="4" y="9" width="12" height="8.25" rx="1"/><path d="M7 9V6.25a3 3 0 0 1 6 0V9M10 12.25v1.75"/>',
   // Regional evidence
   verified: '<path class="glyph-fill" d="M10 2.5 16 4.75V9.5c0 3.75-2.6 6.6-6 8-3.4-1.4-6-4.25-6-8V4.75z"/><path d="m7.25 9.75 2 2 3.6-3.75"/>',
   listed: '<path d="M10 2.5 16 4.75V9.5c0 3.75-2.6 6.6-6 8-3.4-1.4-6-4.25-6-8V4.75z"/><path d="M7.5 10h5"/>',

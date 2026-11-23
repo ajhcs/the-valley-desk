@@ -60,6 +60,7 @@ export function similarMatch(title: string, terms: string[] = []): string | unde
 export function similarText(item: Listing): { title: string; terms: string[] } {
   if (item.kind === "publication") return { title: item.record.title, terms: item.record.terms };
   if (item.kind === "study") return { title: item.record.title, terms: item.record.conditions };
+  if (item.kind === "dataset") return { title: item.record.title + " " + item.record.summary, terms: [] };
   const p = item.record;
   return { title: [p.name, p.purpose].filter(Boolean).join(" "), terms: p.topics ?? [] };
 }
@@ -133,20 +134,27 @@ export async function partners(db: ResearchDb, institution: string, limit = 8) {
   try {
     return await rows<{ partner: string; n: number }>(
       db,
-      "SELECT partner,n FROM research_summary_partners WHERE institution=? ORDER BY n DESC,partner LIMIT ?",
+      "SELECT partner,sum(n) n FROM (SELECT partner,n FROM research_summary_partners WHERE institution=? UNION ALL SELECT partner,n FROM research_summary_dataset_partners WHERE institution=? AND (SELECT enabled FROM dataset_visibility WHERE id=1)=1) GROUP BY partner ORDER BY n DESC,partner LIMIT ?",
+      institution,
       institution,
       limit,
     );
   } catch (error) {
-    if (/no such table/i.test(String(error))) return [];
-    throw error;
+    if (!/no such table/i.test(String(error))) throw error;
+    try {
+      return await rows<{ partner: string; n: number }>(db,
+        "SELECT partner,n FROM research_summary_partners WHERE institution=? ORDER BY n DESC,partner LIMIT ?", institution, limit);
+    } catch (legacyError) {
+      if (/no such table/i.test(String(legacyError))) return [];
+      throw legacyError;
+    }
   }
 }
 
 /** Aside on an institution page: partner institutions outside its own system. */
 export function partnerList(rows: { partner: string; n: number }[], names: Names) {
   if (!rows.length) return "";
-  return `<section class="tally partners"><h2>Shares the most research with</h2><p class="tally-note">Other institutions named on the same publications and clinical studies, outside this institution’s own system. Counts update with each data load.</p><ul>${rows
+  return `<section class="tally partners"><h2>Shares the most research with</h2><p class="tally-note">Other institutions named on the same research, outside this institution’s own system. Counts update with each data load.</p><ul>${rows
     .map((r) => `<li><a href="${html(entityHref("institution", r.partner))}">${html(names.institution(r.partner))}</a><span>${count(r.n)}</span></li>`)
     .join("")}</ul></section>`;
 }

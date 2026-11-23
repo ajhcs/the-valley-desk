@@ -2,7 +2,8 @@
  * A short-lived edge cache for directory responses. A cached response is reused only while the
  * data version it was built from is unchanged, so a removal or a data load takes effect on the
  * next request. The version reads every removal table in full (they hold hundreds of rows), the
- * study visibility switch and the stored whole-directory totals written after each load.
+ * study and dataset visibility switches and the stored whole-directory totals written after each load.
+ * Before migration 0050 the dataset tables are missing and the version is read without them.
  */
 export type CacheStore = {
   match(request: Request): Promise<Response | undefined>;
@@ -23,9 +24,13 @@ const versionSql = `SELECT
   (SELECT group_concat(id) FROM (SELECT id FROM publication_removals ORDER BY id)) publications,
   (SELECT group_concat(id) FROM (SELECT id FROM study_removals ORDER BY id)) studies,
   (SELECT group_concat(enabled) FROM study_visibility) visibility,
+  (SELECT group_concat(id) FROM (SELECT id FROM dataset_removals ORDER BY id)) datasets,
+  (SELECT group_concat(enabled) FROM dataset_visibility) dataset_visibility,
   (SELECT first FROM research_summary_kinds WHERE scope_field='data' AND scope_value='' AND kind='directory') revision,
   (SELECT group_concat(kind||':'||n||':'||works||':'||coalesce(added,'')||':'||coalesce(last,''),'|')
      FROM (SELECT * FROM research_summary_kinds WHERE scope_field='' AND scope_value='' ORDER BY kind)) totals`;
+
+const withoutDatasets = versionSql.replace(/\n {2}\(SELECT group_concat\([^\n]*dataset_[^\n]*/g, "");
 
 async function digest(text: string) {
   const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
@@ -36,7 +41,13 @@ async function digest(text: string) {
 export async function dataVersion(db: Db | undefined, build: string) {
   if (!db) return undefined;
   try {
-    const result = await db.prepare(versionSql).all();
+    let result: Awaited<ReturnType<ReturnType<Db["prepare"]>["all"]>>;
+    try {
+      result = await db.prepare(versionSql).all();
+    } catch (error) {
+      if (!/no such table: dataset_/i.test(String(error))) throw error;
+      result = await db.prepare(withoutDatasets).all();
+    }
     const [row] = result.results ?? [];
     if (result.success === false || !row) return undefined;
     return digest(build + "\n" + JSON.stringify(row));

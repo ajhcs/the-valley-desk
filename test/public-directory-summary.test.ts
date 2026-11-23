@@ -46,7 +46,7 @@ test("stored summaries equal direct counts and are what the pages read", async (
     sqlite.exec(refresh);
     queries.length = 0;
     for (const [i, scope] of scopes.entries()) assert.deepEqual(await summarize(db, scope), direct[i], JSON.stringify(scope ?? "all"));
-    assert.ok(queries.every((sql) => !sql.includes("research_visible") && !sql.includes("research_facets ")), "reads only the summary tables");
+    assert.ok(queries.every((sql) => (!sql.includes("research_visible") || sql.includes("EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset')")) && !sql.includes("research_facets ")), "reads only the summary tables");
 
     // The refresh is replayable and picks up removals.
     const [removed] = sqlite.prepare("SELECT id FROM research_listings WHERE kind='publication' ORDER BY id LIMIT 1").all() as { id: string }[];

@@ -86,6 +86,7 @@ test("pages offer similar research, who works on a search, partners and recent p
 
     // Partner institutions come from the stored refresh and link to the partner's page.
     sqlite.prepare("INSERT INTO research_summary_partners VALUES('fixture-institute','upenn',12)").run();
+    sqlite.exec("DROP TABLE research_summary_dataset_partners");
     const institution = await text("/discover/institution/fixture-institute");
     assert.match(institution, /Shares the most research with/);
     assert.match(institution, /href="\/discover\/institution\/upenn"/);
