@@ -10,6 +10,7 @@ COUNTIES = {
 }
 KINDS = {'university', 'hospital or health system', 'research institute', 'company', 'government', 'nonprofit'}
 FIELDS = {'id', 'name', 'aliases', 'parent', 'kind', 'ror', 'homepage', 'sites', 'outside'}
+HOME_FIELDS = {'homeCounty', 'homeCountySource'}
 SITE_FIELDS = {'name', 'place', 'county', 'state', 'source'}
 REFERENCE = Path(__file__).resolve().parents[2] / 'src/content/public-directory-institutions.json'
 
@@ -37,7 +38,7 @@ def validate(rows):
     by_id = {}
     ror_ids = set()
     for row in rows:
-        if not isinstance(row, dict) or row.keys() != FIELDS:
+        if not isinstance(row, dict) or row.keys() not in (FIELDS, FIELDS | HOME_FIELDS):
             raise ValueError('unexpected institution fields')
         slug = row['id']
         if not is_text(slug) or not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', slug) or slug in by_id:
@@ -67,6 +68,11 @@ def validate(rows):
             if site['name'] in names:
                 raise ValueError(f'{slug}: duplicate site name')
             names.add(site['name'])
+        if 'homeCounty' in row and (
+            row['homeCounty'] not in {site['county'] for site in row['sites']}
+            or not is_https(row['homeCountySource'])
+        ):
+            raise ValueError(f'{slug}: invalid home county or source')
         by_id[slug] = row
 
     if list(by_id) != sorted(by_id):

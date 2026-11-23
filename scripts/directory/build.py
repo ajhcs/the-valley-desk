@@ -15,6 +15,7 @@ from urllib.parse import urlsplit
 sys.dont_write_bytecode = True
 
 from decide import decide, json_load, license_name, native_rows, timestamp, write_json, write_review
+from listings import REFRESH_FIELDS, update_display
 from qualification import SECRET
 from regional import build_regional
 
@@ -161,7 +162,27 @@ def projection(public, dispositions, inputs, public_changes, private_changes, le
             row['connection'] = row['connection'].replace('in the The ', 'in the ')
 
     result = [row for id_, row in rows.items() if id_ not in declined]
+    if not legacy_format:
+        update_display(result)
     return sorted(result, key=lambda row: int(row['id'])), sorted(declined, key=int)
+
+
+def refresh_listings(baseline, changes):
+    rows = json_load(baseline)
+    by_id = {row['id']: row for row in rows}
+    if len(by_id) != len(rows):
+        raise ValueError('Duplicate ID in the published baseline')
+    source_counties = {identity for identity, row in by_id.items() if row.get('county')}
+    for identity, field, value in changes_at(changes, False):
+        if identity not in by_id or field not in REFRESH_FIELDS:
+            raise ValueError(f'{identity}.{field}: not a listing metadata refresh')
+        if field in {'county', 'countyBasis'} and identity in source_counties:
+            continue
+        row = by_id[identity]
+        if not row.get(field):
+            row[field] = value
+    update_display(rows)
+    return rows
 
 
 def atomic_write(target, content):
@@ -178,8 +199,11 @@ def atomic_write(target, content):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--inputs', type=Path, required=True, help='Frozen private input bundle')
-    parser.add_argument('--review-dir', type=Path, required=True, help='Existing mode-0700 review directory')
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument('--inputs', type=Path, help='Frozen private input bundle')
+    source.add_argument('--refresh-listings', type=Path,
+                        help='Apply listing metadata overrides to the published baseline')
+    parser.add_argument('--review-dir', type=Path, help='Existing mode-0700 review directory for a frozen input build')
     parser.add_argument('--output', type=Path, default=PUBLIC)
     parser.add_argument('--overrides', type=Path, default=HERE / 'overrides.json')
     parser.add_argument('--private-overrides', action='append', type=Path, default=[])
@@ -189,6 +213,16 @@ def main():
     parser.add_argument('--acknowledge-drop', action='store_true')
     parser.add_argument('--launch-format', action='store_true', help='Reproduce the historical launch in the review directory')
     args = parser.parse_args()
+    if args.refresh_listings:
+        if args.launch_format or args.private_overrides:
+            parser.error('--refresh-listings only updates existing public listings')
+        baseline = args.baseline or PUBLIC
+        rows = refresh_listings(baseline, args.refresh_listings)
+        validate_and_write(rows, args.output, baseline, args.removals)
+        return
+
+    if not args.review_dir:
+        parser.error('--inputs requires --review-dir')
     if args.review_dir.resolve().is_relative_to(HERE.parent.parent.resolve()) or args.review_dir.stat().st_mode & 0o077:
         parser.error('--review-dir must be private and outside the checkout')
     if args.launch_format and not args.output.resolve().is_relative_to(args.review_dir.resolve()):
@@ -202,21 +236,34 @@ def main():
     write_review(args.review_dir, *parts)
     blocked = args.review_dir / 'effective-decline-ids.json'
     write_json(blocked, declined)
+    baseline = args.baseline or (args.output if args.output.is_file() else PUBLIC)
+    validate_and_write(rows, args.output, baseline, args.removals,
+                       decline=blocked, acknowledge_drop=args.acknowledge_drop,
+                       validate=not args.launch_format, candidate=args.review_dir / 'public-candidate.json')
+
+
+def validate_and_write(rows, output, baseline, removals, *, decline=None,
+                       acknowledge_drop=False, validate=True, candidate=None):
     text = '[\n' + ',\n'.join('  ' + json.dumps(row, ensure_ascii=False) for row in rows) + '\n]\n'
     content = text.encode('utf-8')
-    if not args.launch_format:
-        candidate = args.review_dir / 'public-candidate.json'
-        write_json(candidate, rows)
-        command = ['node', str(HERE / 'validate.mjs'), '--file', str(candidate), '--decline', str(blocked)]
-        baseline = args.baseline or (args.output if args.output.is_file() else PUBLIC)
-        command.extend(['--baseline', str(baseline)])
-        for path in args.removals:
+    if validate:
+        command = ['node', str(HERE / 'validate.mjs'), '--baseline', str(baseline)]
+        if decline:
+            command.extend(['--decline', str(decline)])
+        for path in removals:
             command.extend(['--removals', str(path)])
-        if args.acknowledge_drop:
+        if acknowledge_drop:
             command.append('--acknowledge-drop')
-        subprocess.run(command, check=True)
-    atomic_write(args.output, content)
-    print(f'Wrote {len(rows)} public directory projects to {args.output}')
+        if candidate is not None:
+            write_json(candidate, rows)
+            subprocess.run([*command, '--file', str(candidate)], check=True)
+        else:
+            with tempfile.NamedTemporaryFile(mode='wb', dir=output.parent) as stream:
+                stream.write(content)
+                stream.flush()
+                subprocess.run([*command, '--file', stream.name], check=True)
+    atomic_write(output, content)
+    print(f'Wrote {len(rows)} public directory projects to {output}')
 
 
 if __name__ == '__main__':

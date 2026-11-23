@@ -17,6 +17,8 @@ export type DirectoryProject = {
   label: "Verified" | "Listed";
   institution?: string | null;
   county?: string | null;
+  countyBasis?: "institution" | "profile";
+  profileLocation?: string;
   connection?: string | null;
   source?: string | null;
   paper?: string | null;
@@ -220,7 +222,7 @@ function indexProject(project: DirectoryProject): IndexRow {
     project, activity, added: isoDate(project.added), facets,
     name: normalizeSearch(project.name), purpose: normalizeSearch(project.purpose),
     keywords: normalizeSearch([
-      project.code, project.topic, project.institution, project.county, project.label, project.language,
+      project.code, project.topic, project.institution, project.county, project.profileLocation, project.label, project.language,
       project.license, project.connection, project.id, owner, project.owner?.name, project.lab, ...(project.topics ?? []),
       ...papers.map(paper => [paper.title, paper.url, paper.doi, paper.venue].filter(Boolean).join(" ")),
     ].filter(Boolean).join(" ")),
