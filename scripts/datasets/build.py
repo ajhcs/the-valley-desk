@@ -44,6 +44,8 @@ DATA_DESC = re.compile(r"\b(data|dataset|datasets|images|recordings|measurements
 PATHOGEN = re.compile(r"\b(?:virus|viruses|viral|pathogen|bacteriophage)\b", re.I)
 SENSITIVE_STUDY = re.compile(
     r"\b(?:engineering|infectivity|virulence|host range|escape mutant|reverse genetics|infectious clone)\b", re.I)
+GEO_LAB_ASSAYS = re.compile(r"\b(?:expression profiling|genome binding|genome occupancy|methylation profiling|"
+                          r"transcription profiling|single cell|protein profiling)\b", re.I)
 NO_INCLUDED_DATA = re.compile(
     r"\b(?:does not|do not) (?:contain|include|provide) (?:any |the )?(?:underlying |source |raw )?data\b|"
     r"\b(?:data|datasets?) (?:are|is) not included\b",
@@ -484,7 +486,8 @@ def build_paper_listing(lid, u, papers, decisions):
                    released=d.get("released"))
         block = d.get("pi_block", "")
         EVIDENCE[lid] = {"repository": {"principal_investigator_block": block[:400]}}
-        regional_cohort = set(match_paper_affiliation(block, REG.values())["institutions"])
+        if lid in EXISTING:
+            regional_cohort = set(match_paper_affiliation(block, REG.values())["institutions"])
     elif kind == "ega":
         e = read_cache("ega", accs[0])
         rec.update(title=clean_title(e["title"]), summary=pick_summary(e.get("description") or ""),
@@ -557,11 +560,19 @@ def build_paper_listing(lid, u, papers, decisions):
         EVIDENCE.setdefault(lid, {})["summary_fallback"] = True
     if kind != "doi":
         source = read_cache(kind, accs[0]) or {}
+        laboratory_method = {
+            "pdb-set": "Structural biology",
+            "pride": "Laboratory proteomics",
+            "arrayexpress": "Gene expression",
+            "dbgap": "Clinical study",
+        }.get(kind)
+        if kind == "geo" and any(GEO_LAB_ASSAYS.search(t) for t in source.get("types", [])):
+            laboratory_method = "Gene expression or genomic profiling"
         metadata = {
             "title": rec["title"],
             "descriptions": [source.get(field) or "" for field in ("summary", "design", "description")]
                             + [p.get("title") or "" for p in prow],
-            "subjects": ["Structural biology"] if kind == "pdb-set" else [],
+            "repository_method": laboratory_method,
         }
         if not scope_decision(lid, metadata, "paper-derived"):
             return None

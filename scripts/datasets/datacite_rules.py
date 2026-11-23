@@ -152,7 +152,9 @@ EXCLUDED_CONTEXT = re.compile(
     r"\b(?:ecolog\w*|ecosystem\w*|biodivers\w*|wild(?:life|[- ]population|[- ]caught)|"
     r"field (?:stud\w*|survey\w*|observations?|sampling)|natural populations?|"
     r"population genetics?|phylogeograph\w*|environmental microbi\w*|soil|sediment\w*|"
-    r"agricultur\w*|crops?|plants?|arabidopsis|nicotiana|oryza sativa|zea mays|"
+    r"agricultur\w*|crops?|plants?|maize|wheat|rice (?:plant|crop|cultivar)|soybeans?|"
+    r"arabidopsis|nicotiana|oryza sativa|zea mays|glycine max|triticum|solanum|"
+    r"wild[- ]?(?:caught|type population)|host preference|fruit[- ]fly field|catfish phylogen\w*|"
     r"forest\w*|animal movement|predation|predator|foraging)\b", re.I)
 PRIMARY_HEALTH = re.compile(
     r"\b(?:clinical (?:trial\w*|stud\w*|research|care|outcomes?|data|patients?|cohort\w*)|"
@@ -163,10 +165,15 @@ PRIMARY_HEALTH = re.compile(
     r"clinical (?:isolates?|specimens?|diagnos\w*)|infectious disease|vaccin\w*|"
     r"(?:human|infant|patient) (?:nasal |oral |blood |stool )?(?:swabs?|samples?|specimens?)|"
     r"(?:treatments?|therap\w*) (?:for|of) (?:patients?|cancer|disease|fibrosis)|"
-    r"(?:preclinical|subclinical) \w+ disease)\b", re.I)
+    r"(?:preclinical|subclinical) \w+ disease|patients?|tumou?rs?|adenocarcinoma\w*|"
+    r"cardiac (?:tissue|cells?|function|disease)|neurodegenerat\w*|"
+    r"(?:cancer|oncolog\w*) (?:therapy|physiology|treatment|cells?))\b", re.I)
 LAB_EVIDENCE = re.compile(
     r"\b(?:cell lines?|cell cultures?|cultured cells?|stem cells?|organoids?|single[- ]cell|"
-    r"gene expression|rna[- ]seq|transcriptom\w*|proteom\w*|chromatin|histone\w*|"
+    r"gene expression|gene binding|(?:protein|dna|rna|transcription factor) binding|"
+    r"(?:rna|dna)[- ]seq(?:uencing)?|whole[- ](?:genome|exome) sequencing|"
+    r"(?:single[- ]cell|genome|amplicon|16s|exome) sequencing|"
+    r"transcriptom\w*|proteom\w*|chromatin|histone\w*|"
     r"protein structure|(?:protein|enzyme|ribosome) crystal structure|molecular biology|cell biology|"
     r"developmental biology|structural biology|crystal structure|cryogenic electron microscopy|"
     r"embryo\w*|neurons?|neuroscience|immun\w*|genome[- ]wide|genomic sequencing|"
@@ -182,6 +189,17 @@ LAB_EVIDENCE = re.compile(
     r"laboratory|experiments?|expression|development|imaging|microscop\w*)|"
     r"(?:genes?|genom\w*|proteins?|cells?|neurons?)\b[^.!?]{0,80}\b"
     r"(?:mouse|mice|murine|rats?|zebrafish|drosophila|c\. elegans|yeast|bacteri\w*|virus\w*|viral))\b", re.I)
+
+
+# Internal, curated repository descriptors, supplied by the builder only.
+TRUSTED_REPOSITORY_METHODS = frozenset({
+    "Structural biology", "Laboratory proteomics", "Gene expression",
+    "Clinical study", "Gene expression or genomic profiling",
+})
+NONBIOLOGICAL_STUDY = re.compile(
+    r"\b(?:monte carlo sampling|mathematical sampling|sampling algorithms?|"
+    r"simulated images?|image simulations?|image usage|image compression|"
+    r"synthetic images?|image denoising simulations?)\b", re.I)
 
 
 def _scope_text(title, descriptions):
@@ -209,10 +227,12 @@ def health_decision(d, medical_creator=False):
     primary = PRIMARY_HEALTH.search(re.sub(
         r"\b(?:implications?|relevance|potential|may be relevant)\b[^.!?]*", " ", text, flags=re.I))
     strong_title = bool(MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title) or LAB_EVIDENCE.search(title))
-    structural = bool(re.search(r"\bstructural biology\b", subjects, re.I))
+    trusted_experiment = d.get("repository_method") in TRUSTED_REPOSITORY_METHODS
     if (EXCLUDED_CONTEXT.search(title) or (EXCLUDED_CONTEXT.search(text) and not strong_title)) and not primary:
         return False, "excluded field, environmental, agriculture or plant context"
-    if NON_HEALTH.search(title) and not (primary or strong_title or structural):
+    if NONBIOLOGICAL_STUDY.search(title) and not (primary or strong_title or trusted_experiment):
+        return False, "non-biological simulation or mathematical study"
+    if NON_HEALTH.search(title) and not (primary or strong_title or trusted_experiment):
         return False, "non-biological research title"
     if MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title) or PRIMARY_HEALTH.search(title):
         return True, "health or biomedical evidence in title"
@@ -224,7 +244,7 @@ def health_decision(d, medical_creator=False):
         return True, "laboratory life-science evidence in title"
     if LAB_EVIDENCE.search(text):
         return True, "laboratory life-science evidence in description"
-    if LAB_EVIDENCE.search(subjects):
+    if trusted_experiment or LAB_EVIDENCE.search(subjects):
         return True, "laboratory life-science evidence in subjects"
     if FOS_BIOMEDICAL.search(subjects) or MEDICAL_CONTEXT.search(subjects) or MEDICAL_LABEL.search(subjects):
         return True, "health or biomedical evidence in subjects"

@@ -72,8 +72,8 @@ class ScopeRulesTest(unittest.TestCase):
     def test_previously_excluded_real_scope_patterns(self):
         records = (
             {'title': 'Drosophila factor localizes to satellite DNA foci'},
-            {'title': 'Human DNA polymerase theta in complex with inhibitor', 'subjects': ['Structural biology']},
-            {'title': 'Respiratory virus polymerase with inhibitor', 'subjects': ['Structural biology']},
+            {'title': 'Human DNA polymerase theta in complex with inhibitor', 'repository_method': 'Structural biology'},
+            {'title': 'Respiratory virus polymerase with inhibitor', 'repository_method': 'Structural biology'},
             {'title': 'Infant nasal swab raw sequence reads'},
             {'title': 'Breath volatilome shaped by gut microbiota'},
             {'title': 'An mRNA vaccine protects against infection'},
@@ -86,6 +86,29 @@ class ScopeRulesTest(unittest.TestCase):
         for title in ('Soil microbial gene expression', 'Plant cell cultures',
                       'Field study of zebrafish behavior', 'Agricultural crop transcriptomics'):
             self.assertFalse(health_decision({'title': title})[0], title)
+
+    def test_repository_experiment_descriptors_and_study_context(self):
+        for record in (
+            {'title': 'Transcription factor binding in mammalian cells'},
+            {'title': 'Patient tumors and adenocarcinoma'},
+            {'title': 'Cardiac tissue measurements'},
+            {'title': 'Neurodegeneration in a mouse model'},
+            {'title': 'Whole-genome sequencing of mouse cells'},
+            {'title': 'Satellite measurements', 'repository_method': 'Structural biology'},
+            {'title': 'Molecular experiments', 'repository_method': 'Gene expression or genomic profiling'},
+        ):
+            self.assertTrue(health_decision(record)[0], record)
+        for record in (
+            {'title': 'Monte Carlo sampling algorithms'},
+            {'title': 'Image simulations and usage'},
+            {'title': 'Maize transcriptome sequencing'},
+            {'title': 'Zea mays gene expression'},
+            {'title': 'Catfish phylogenomics', 'repository_method': 'Structural biology'},
+            {'title': 'Wild fruit-fly host preference', 'repository_method': 'Gene expression'},
+            {'title': 'Field study of mouse gene expression', 'repository_method': 'Structural biology'},
+            {'title': 'Untitled', 'repository_method': 'Other'},
+        ):
+            self.assertFalse(health_decision(record)[0], record)
 
     def test_generic_junk_requires_no_description(self):
         for title in ('KP RC Reports b12', 'VWM2'):
