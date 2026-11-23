@@ -75,6 +75,41 @@ def guard(previous, candidates, removed=()):
     return {"added": added, "changed": changed, "removed": deleted}
 
 
+def dryad_backlog(root, state, day, baseline, removed):
+    """Resume file checks for the release-qualified Dryad backlog."""
+    import importlib.util
+
+    doi_list = state / "dryad-dois.txt"
+    projection = state / "dryad-candidates.jsonl"
+    if not doi_list.is_file() or not projection.is_file():
+        return []
+    spec = importlib.util.spec_from_file_location(
+        "dataset_file_checks", root / "scripts/datasets/dataset_files.py")
+    checks = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checks)
+    cache = state / "dryad-manifests"
+    checks.retry_dryad(doi_list.read_text().splitlines(), cache)
+    titles = {dataset_title_key(row["title"]) for row in baseline.values()}
+    accepted = []
+    with projection.open() as stream:
+        for line in stream:
+            row = json.loads(line)
+            identifier = row["id"]
+            title = dataset_title_key(row["title"])
+            if (identifier in baseline or identifier in removed or title in titles
+                    or not identifier.startswith("doi:10.5061/dryad.")):
+                continue
+            if checks.file_decision(identifier, cache_dir=cache)["status"] != "keep":
+                continue
+            accepted.append({**row, "checked": day, "added": day})
+            titles.add(title)
+    return accepted
+
+
+def dataset_title_key(title):
+    return re.sub(r"\W+", " ", title.casefold()).strip()
+
+
 def parse_time(value):
     try:
         result = datetime.fromisoformat(value.replace("Z", "+00:00"))

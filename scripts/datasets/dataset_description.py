@@ -33,6 +33,53 @@ def pick_summary(*texts):
     return candidates[0] if candidates else ""
 
 
+COUNTS = re.compile(
+    r"^(?:there (?:were|are)|(?:we|the (?:study|dataset|series)) "
+    r"(?:used|included|contains?|performed|collected|generated)|(?:a )?total of|"
+    r"the repository entr(?:y|ies) describes?)?\s*"
+    r"(?:[\d,]+|one|two|three|four|five|six|seven|eight|nine|ten)\s+"
+    r"(?:(?:[a-z0-9+/-]*seq|biological|technical|experimentally|determined|molecular|"
+    r"independent|separate|different|individual|human|total)\s+)*"
+    r"(?:samples?|subjects?|participants?|experiments?|replicates?|structures?)"
+    r"(?:\s+(?:(?:was|were|are)\s+)?(?:measured|tested|collected|sequenced|performed|included|analyzed|used))?[. !?]*$", re.I)
+
+
+def thin_summary(text):
+    return len(re.findall(r"\b[\w-]+\b", text or "")) < 8 or bool(COUNTS.fullmatch(text.strip()))
+
+
+def rebuild_summary(summary, title, *details, paper_title=None):
+    if not thin_summary(summary):
+        return summary
+    title = strip_markup(title).rstrip(".")
+    title_key = re.sub(r"\W+", " ", title.casefold()).strip()
+    name = one_sentence(title, limit=115).rstrip(".") if title else ""
+    budget = 240 - len(name) - (3 if name else 0)
+    shortened = None
+    for text in details:
+        cleaned = re.sub(r"https?://\S+|doi:\s?\S+", "", strip_markup(text))
+        for sentence in re.split(r"(?<=[a-z0-9\)\]%])[.!?]\s+(?=[A-Z])", cleaned):
+            sentence = re.sub(r"^(?:overall design|experiment \d+|design|methods)\s*:\s*", "", sentence, flags=re.I).strip()
+            if (thin_summary(sentence) or SKIP.search(sentence)
+                    or re.match(r"(?i)(?:this (?:sub)?series|this superseries|refer to individual)", sentence)
+                    or re.sub(r"\W+", " ", sentence.casefold()).strip() == title_key):
+                continue
+            detail = one_sentence(sentence, limit=budget)
+            if not detail:
+                continue
+            combined = f"{name} — {detail}" if name else detail
+            if len(sentence) <= budget - 1:
+                return combined
+            if shortened is None:
+                shortened = combined
+        if shortened is not None:
+            # Prefer the repository design to background text from other fields.
+            return shortened
+    if paper_title:
+        return "Data from: " + one_sentence(paper_title, limit=229)
+    return summary
+
+
 def data_type_for_record(text, prefix="", formats=()):
     """Classify from text first, then unambiguous file-format evidence.
 

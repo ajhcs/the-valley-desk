@@ -362,6 +362,25 @@ def dbgap(phs):
 
 
 # ---------------- EGA ----------------
+
+def ega_pi_affiliations(metadata):
+    result = []
+    for key in ('principal_investigator', 'principal_investigators'):
+        value = metadata.get(key)
+        for investigator in value if isinstance(value, list) else [value]:
+            if isinstance(investigator, str):
+                result.append(investigator)
+            elif isinstance(investigator, dict):
+                affiliation = investigator.get('affiliation') or investigator.get('institution')
+                if isinstance(affiliation, str):
+                    result.append(affiliation)
+    for field in ('description', 'abstract'):
+        text = metadata.get(field) or ''
+        # Free text qualifies only where EGA explicitly labels an investigator.
+        result.extend(re.findall(r'(?im)^\s*principal investigators?\s*:\s*([^\n]{1,350})', text))
+    return list(dict.fromkeys(result))
+
+
 def ega(acc):
     rec = cached("ega", acc)
     if rec is not None:
@@ -373,7 +392,7 @@ def ega(acc):
     d = json.loads(body)
     return store("ega", acc, {"ok": True, "title": d.get("title", ""), "description": d.get("description") or d.get("abstract") or "",
                               "released": (d.get("released_date") or "")[:10] or None, "study_type": d.get("study_type") or d.get("dataset_types"),
-                              "kind": kind})
+                              "kind": kind, "pi_affiliations": ega_pi_affiliations(d)})
 
 
 # ---------------- PRIDE ----------------

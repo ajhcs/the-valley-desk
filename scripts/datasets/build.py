@@ -19,8 +19,8 @@ from paper_provenance import paper_provenance
 from datacite_rules import datacite_access, datacite_license, datacite_released, \
     generic_junk_decision, generic_supplement_decision, health_decision, is_supplement, \
     topic_for_text
-from dataset_description import data_type_for_record, pick_summary
-from dataset_labels import match_geo_institution, match_paper_affiliation, match_submitter
+from dataset_description import data_type_for_record, pick_summary, rebuild_summary
+from dataset_labels import investigator_ids, match_geo_institution, match_paper_affiliation, match_submitter
 from dataset_files import api_url, cache_path, fetch, file_decision
 
 WORK = work_dir()
@@ -184,6 +184,8 @@ def geo_data_type(rec):
 
 
 def seq_data_type(text):
+    # Reproductive bottlenecks describe the organism rather than the assay.
+    text = re.sub(r"\bsingle[- ]cell bottlenecks?\b", "", text or "", flags=re.I)
     if re.search(r"single[- ]cell|scrna|snrna|single[- ]nucle|10x genomics", text or "", re.I):
         return "single-cell"
     return "sequencing"
@@ -420,9 +422,10 @@ def build_paper_listing(lid, u, papers, decisions):
     kind, accs = u["kind"], u["accs"]
     verified_ids, verified_note, verified_source = [], None, None
     other_submitter = False
-    regional_cohort = set()
+    repository_details = ()
     if kind == "geo":
         main = read_cache("geo", accs[0])
+        repository_details = (main.get("design"), main.get("summary"))
         rec.update(title=clean_title(main["title"]), summary=pick_summary(main["summary"], main["design"]),
                    data_type=geo_data_type(main), access="open", repository="GEO", accessions=accs,
                    url=f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={accs[0]}",
@@ -467,6 +470,7 @@ def build_paper_listing(lid, u, papers, decisions):
             submitters = [s["center"]] if s.get("center") else []
             released, url, repo = s.get("released"), f"https://www.ncbi.nlm.nih.gov/sra/?term={accs[0]}", "SRA"
             dt = seq_data_type(title)
+        repository_details = (desc,)
         rec.update(title=clean_title(title), summary=pick_summary(desc) or "", data_type=dt, access="open",
                    repository=repo, accessions=accs, url=url, released=released)
         ids = submitter_ids(submitters)
@@ -484,10 +488,9 @@ def build_paper_listing(lid, u, papers, decisions):
                    access="controlled", repository="dbGaP", accessions=accs,
                    url=f"https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id={accs[0]}",
                    released=d.get("released"))
-        block = d.get("pi_block", "")
-        EVIDENCE[lid] = {"repository": {"principal_investigator_block": block[:400]}}
-        if lid in EXISTING:
-            regional_cohort = set(match_paper_affiliation(block, REG.values())["institutions"])
+        repository_details = (d.get("description"),)
+        verified_ids = investigator_ids(d, REG.values())
+        EVIDENCE[lid] = {"repository": {"principal_investigator_block": d.get("pi_block", "")[:400]}}
     elif kind == "ega":
         e = read_cache("ega", accs[0])
         rec.update(title=clean_title(e["title"]), summary=pick_summary(e.get("description") or ""),
@@ -495,12 +498,15 @@ def build_paper_listing(lid, u, papers, decisions):
                    access="controlled", repository="EGA", accessions=accs,
                    url=f"https://ega-archive.org/{'studies' if accs[0].startswith('EGAS') else 'datasets'}/{accs[0]}",
                    released=e.get("released"))
+        repository_details = (e.get("description"),)
+        verified_ids = investigator_ids(e, REG.values())
     elif kind == "pride":
         p = read_cache("pride", accs[0])
         rec.update(title=clean_title(p["title"]), summary=pick_summary(p.get("description", "")), data_type="proteomics",
                    access="open", repository="PRIDE", accessions=accs,
                    url=f"https://www.ebi.ac.uk/pride/archive/projects/{accs[0]}", released=p.get("released"),
                    license=p.get("license"))
+        repository_details = (p.get("description"),)
         affiliations = p.get("submitter_affiliations", [])
         ids = submitter_ids(affiliations)
         EVIDENCE[lid] = {"repository": {"submitter_affiliations": affiliations}}
@@ -512,6 +518,7 @@ def build_paper_listing(lid, u, papers, decisions):
             other_submitter = True
     elif kind == "arrayexpress":
         a = read_cache("arrayexpress", accs[0])
+        repository_details = (a.get("description"),)
         st = (a.get("study_type") or "").lower()
         rec.update(title=clean_title(a["title"]), summary=pick_summary(a.get("description", "")),
                    data_type="single-cell" if "single" in st else "gene expression" if "transcription" in st or "expression" in st else "sequencing" if "seq" in st else "other",
@@ -538,6 +545,7 @@ def build_paper_listing(lid, u, papers, decisions):
                    released=dates[0] if dates else None)
     elif kind == "doi":
         d = read_cache("doi", accs[0])
+        repository_details = tuple(d.get("descriptions", []))
         rec.update(**doi_fields(d))
         rec["accessions"] = accs
         ids = datacite_creator_ids(d)
@@ -548,6 +556,13 @@ def build_paper_listing(lid, u, papers, decisions):
             verified_source = "https://api.datacite.org/dois/" + accs[0]
         elif d.get("affiliations"):
             other_submitter = True
+    if kind in ("dbgap", "ega") and verified_ids:
+        verified_note = (f"The {rec['repository']} record names a principal investigator affiliated with "
+                         f"{inst_names(verified_ids)}.")
+        verified_source = rec["url"]
+    producing = {edge["paper"] for edge in provenance if edge["relation"] == "produced"}
+    paper_title = next((p.get("title") for p in prow if p["id"] in producing), None)
+    rec["summary"] = rebuild_summary(rec["summary"], rec["title"], *repository_details, paper_title=paper_title)
     if generic_supplement_decision(rec["title"], [rec.get("summary")])[0]:
         DROPS["listing: generic supplement title"] += 1
         return None
@@ -576,7 +591,7 @@ def build_paper_listing(lid, u, papers, decisions):
         }
         if not scope_decision(lid, metadata, "paper-derived"):
             return None
-    if kind in ("dbgap", "ega") and not (verified_note or regional_cohort) and not any(
+    if kind in ("dbgap", "ega") and not (lid in EXISTING and verified_ids) and not any(
             re.search(r"\b(deposit\w*|submitted|uploaded)\b", m.get("clause") or m.get("sentence") or "", re.I) for m in u["mentions"]):
         # Controlled-access studies are often large consortia reused by many papers; list only with a deposition verb.
         DROPS[f"listing: {kind} study without explicit deposition evidence"] += 1
@@ -585,11 +600,6 @@ def build_paper_listing(lid, u, papers, decisions):
         insts = verified_ids
         counties = sorted(counties_for(insts))
         rec.update(institutions=insts, counties=counties, label="Verified", connection=verified_note, source=verified_source)
-    elif regional_cohort and not any(edge["relation"] == "produced" for edge in provenance):
-        ids = sorted(regional_cohort)
-        rec.update(institutions=ids, counties=sorted(counties_for(ids)), label="Listed",
-                   connection=f"The dbGaP study names a principal investigator affiliated with {inst_names(ids)}. "
-                              "The linked paper describes related research.", source=rec["url"])
     else:
         if kind == "pdb-set":
             note = "the structure records do not name an institution."
@@ -662,6 +672,7 @@ def datacite_institution():
             continue
         seen_titles[key] = doi
         f = doi_fields(d)
+        f["summary"] = rebuild_summary(f["summary"], title, *d["descriptions"])
         fallback = not f["summary"]
         if fallback:
             if not title or (d.get("types") or {}).get("resourceTypeGeneral") != "Dataset":
