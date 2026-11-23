@@ -7,11 +7,17 @@ import { count, healthTopic, href, html, projectCards, searchInput, timestamp } 
 type Home = ReturnType<DirectoryCatalog["home"]>;
 type Row = { name: string; href: string; n: number; note?: string };
 
-function tally(heading: string, rows: Row[], extra = "", columns = false) {
+const tallyItems = (rows: Row[]) =>
+  rows.map((r) => `<li><a href="${html(r.href)}">${html(r.name)}</a><span>${count(r.n)}</span></li>`).join("");
+
+/** A counted list. With a limit, the rows past it sit behind a disclosure so long lists stay short. */
+function tally(heading: string, rows: Row[], extra = "", columns = false, limit = Infinity) {
   if (!rows.length) return "";
-  return `<section class="tally${columns ? " tally-columns" : ""}"><h2>${heading}</h2><ul>${rows
-    .map((r) => `<li><a href="${html(r.href)}">${html(r.name)}</a><span>${count(r.n)}</span></li>`)
-    .join("")}</ul>${extra}</section>`;
+  const rest = rows.slice(limit);
+  const more = rest.length
+    ? `<details class="tally-more"><summary>Show all ${count(rows.length)}</summary><ul>${tallyItems(rest)}</ul></details>`
+    : "";
+  return `<section class="tally${columns ? " tally-columns" : ""}"><h2>${heading}</h2><ul>${tallyItems(rows.slice(0, limit))}</ul>${more}${extra}</section>`;
 }
 
 function map(rows: Map<string, number>, hrefFor: (name: string) => string, unit: string) {
@@ -51,8 +57,8 @@ export function renderDirectoryHome(
 ) {
   const research = summary && names && publications;
   const lede = research
-    ? `The directory lists ${kindPhrase(summary)} connected to Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey. Each listing names the source of its regional connection.`
-    : `The directory lists ${count(home.total)} research software projects connected to Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey. Each listing names the source of its regional connection.`;
+    ? `${kindPhrase(summary)} connected to nine counties in Pennsylvania and New Jersey.`
+    : `${count(home.total)} research software projects connected to nine counties in Pennsylvania and New Jersey.`;
   const topicRows: Row[] = research
     ? summary.facets.topic
         .filter((r) => healthTopic(names.topic(r.value)))
@@ -78,7 +84,7 @@ export function renderDirectoryHome(
       <h1>Healthcare research in the Delaware Valley</h1>
       <p class="lede">${lede}</p>
       <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput()}</form>
-      ${research ? `<p class="home-researchers">Looking for collaborators or related work? Search a subject to see which institutions and counties in the region work on it. Every publication, study and software page lists similar research from the region, and institution pages name the institutions they most often work with.</p>` : ""}
+      ${research ? `<p class="home-researchers">Looking for collaborators? Search a subject to see who in the region works on it.</p>` : ""}
       ${home.examples.length ? `<p class="home-examples">For example: ${home.examples.map((example) => `<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join(", ")}</p>` : ""}
     </section>
     <div class="home-grid">
@@ -94,7 +100,7 @@ export function renderDirectoryHome(
     </div>
     <div class="home-index">
       ${tally(research ? "Topics" : "Project topics", topicRows)}
-      ${tally(`Institutions <span class="muted">(${count(institutionRows.length)})</span>`, institutionRows, "", true)}
+      ${tally(`Institutions <span class="muted">(${count(institutionRows.length)})</span>`, institutionRows, "", true, 18)}
     </div>
     ${home.recent.length ? `<section class="home-software" aria-labelledby="software-title">
       <div class="section-heading"><h2 id="software-title">Recently updated software</h2><a href="${browsePath}?tools=project">Filter software by language, license and activity</a></div>

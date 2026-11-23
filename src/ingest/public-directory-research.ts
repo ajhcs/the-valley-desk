@@ -117,7 +117,9 @@ export type Listing<K extends ListingKind = ListingKind> = {
 export const publicationTitle = (p: Pick<Publication, "title">) =>
   p.title.replace(/<\/?(?:em|strong|i|b|sub|sup)>/gi, "");
 /** Catalogue display drops the closing period that bibliographic sources add to titles. */
-export const displayTitle = (p: Pick<Publication, "title">) => publicationTitle(p).replace(/(?<![.\s])\.$/u, "");
+/** PubMed wraps translated titles in square brackets; the catalogue shows the title without them. */
+export const displayTitle = (p: Pick<Publication, "title">) =>
+  publicationTitle(p).replace(/^\[([^[\]]+)\]\.?$/u, "$1").replace(/(?<![.\s])\.$/u, "");
 const typeNames: Record<string, string> = {
   article: "Article",
   review: "Review",
@@ -596,7 +598,7 @@ export function kindCounts(counts: Results["counts"], withVersions = false) {
         (r.works === 1 ? templates[r.kind].name : templates[r.kind].plural).toLowerCase() +
         (withVersions && r.n > r.works ? ` (${count(r.n)} records including versions)` : ""),
     )
-    .join(" and ");
+    .reduce((text, part, i, parts) => text + (i === 0 ? "" : i === parts.length - 1 ? " and " : ", ") + part, "");
 }
 
 function pageLinks(path: string, params: URLSearchParams, page: number, totalPages: number) {
