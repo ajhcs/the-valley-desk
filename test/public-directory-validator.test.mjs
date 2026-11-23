@@ -16,6 +16,10 @@ test('accepts the public projection in one-record-per-line form', () => {
   assert.equal(source.trimEnd().split('\n').length, records.length + 2);
 });
 
+test('preserves descriptions longer than the GitHub editor limit in the source projection', () => {
+  validate([{ ...project, description: 'A source description. '.repeat(45) }]);
+});
+
 for (const [title, edit, expected] of [
   ['missing field', (row) => delete row.name, /name:/],
   ['blank field', (row) => row.name = ' ', /name:/],

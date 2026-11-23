@@ -270,6 +270,7 @@ def collect(d1, state, run_dir, day, first, last, receipt):
     for kind in KINDS:
         gate(kind, baseline[kind], receipt["counts"][kind])
     receipt["inbox"] = dict(Counter(status for _, status, _, _ in decisions))
+    receipt["stage"] = "software listing validation"
     project_validation = run_dir / "project-validation.json"
     save(project_validation, list({**public["project"], **additions}.values()))
     command(ROOT, "node", "scripts/directory/validate.mjs", "--file", str(project_validation),
