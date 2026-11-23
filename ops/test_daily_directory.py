@@ -152,3 +152,100 @@ class DailyDirectoryTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class DatasetDailyIntegrationTests(unittest.TestCase):
+    def test_dataset_suggestion_never_enters_publication_handler(self):
+        entry = {"id": 8, "kind": "suggestion", "item_type": "dataset", "url": "https://doi.org/10.1234/example?email=private"}
+        d1 = SimpleNamespace(inbox=lambda: iter([entry]))
+        records = {"project": {}, "publication": {}, "study": {}}
+        suggestions = []
+        with tempfile.TemporaryDirectory() as directory, patch.object(daily, "roster_from_public", return_value={}), patch.object(daily, "collect_publications") as collect:
+            _, _, decisions = daily.inbox(d1, Path(directory), Path(directory), "2026-11-23", records, {k: set() for k in records}, suggestions)
+        collect.assert_not_called()
+        self.assertEqual(suggestions, [(8, None)])
+        self.assertEqual(decisions, [])
+
+    def test_dataset_collection_stages_in_same_loader_and_revision(self):
+        from datetime import date
+        dataset = {"id": "doi:10.1234/new", "title": "A dataset", "summary": "A public dataset.", "data_type": "other", "access": "open", "repository": "Example", "accessions": ["10.1234/new"], "url": "https://doi.org/10.1234/new", "institutions": ["upenn"], "counties": [], "label": "Verified", "connection": "A source lists a regional creator.", "source": "https://api.datacite.org/dois/10.1234/new", "papers": [], "topic": "Research data", "released": "2026", "added": "2026-11-23", "checked": "2026-11-23", "size": None, "format": None, "license": None}
+        baseline = {f"doi:10.1234/{i}": {**dataset, "id": f"doi:10.1234/{i}", "accessions": [f"10.1234/{i}"]} for i in range(20)}
+        conflicting = {**dataset, "id": "doi:10.1234/conflict", "accessions": ["10.1234/0"]}
+        publication = {"id": "pmid:123", "pmcid": "PMC123"}
+        class FakeD1:
+            def rows(self, sql, label):
+                return [{"enabled": 1}] if label == "dataset visibility" else []
+            def listings(self, kind):
+                return baseline if kind == "dataset" else {}
+            def inbox(self):
+                return iter([{"id": 9, "kind": "suggestion", "item_type": "dataset", "url": "https://doi.org/10.1234/new"}])
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory)
+            (state / "datasets-config.json").write_text(json.dumps({"enabled": True, "first_public_load_confirmed": True}))
+            (state / "datasets-cursor.json").write_text(json.dumps({"datacite_through": "2026-11-20T00:00:00Z"}))
+            receipt = {"counts": {}}
+            with patch.object(daily, "refresh_projects", return_value=({}, [])), patch.object(daily, "discover_projects", return_value=({}, 0)), patch.object(daily, "collect_publications", return_value=([publication], 0)), patch.object(daily, "studies", return_value=([], 0, set(), 0)), patch.object(daily, "roster_from_public", return_value={}), patch.object(daily, "command", return_value="SELECT 1;"), patch.object(daily.daily_datasets, "collect_phase_one", return_value=[dataset, conflicting]) as source:
+                # Give the ordinary publication gate enough baseline for one new paper.
+                fake = FakeD1()
+                fake.listings = lambda kind: baseline if kind == "dataset" else ({f"pmid:{i}": {"id": f"pmid:{i}"} for i in range(20)} if kind == "publication" else {})
+                deltas, decisions, outside = daily.collect(fake, state, state, "2026-11-23", date(2026, 11, 22), date(2026, 11, 23), receipt)
+                daily.prepare_load(state, deltas, decisions, "new-revision", outside)
+            self.assertEqual([p["id"] for p in source.call_args.args[2]], [publication["id"]])
+            self.assertEqual(receipt["counts"]["dataset"]["added"], 1)
+            self.assertEqual(receipt["counts"]["dataset"]["skipped"], 1)
+            self.assertNotIn(conflicting["id"], deltas["dataset"])
+            self.assertIn(("dataset", "doi:10.1234/new"), [d[3] for d in decisions])
+            self.assertIn("new-revision", (state / "load.sql").read_text())
+            self.assertIn("doi:10.1234/new", (state / "datasets.jsonl").read_text())
+            self.assertEqual(json.loads((state / "datasets-cursor.json").read_text())["datacite_through"], "2026-11-20T00:00:00Z")
+
+    def test_real_loader_dataset_sql_replays_and_respects_removal(self):
+        dataset = {"id": "doi:10.1234/new", "title": "A dataset", "summary": "A public dataset.", "data_type": "other", "access": "open", "repository": "Example", "accessions": ["10.1234/new"], "url": "https://doi.org/10.1234/new", "institutions": ["upenn"], "counties": [], "label": "Verified", "connection": "A source lists a regional creator.", "source": "https://api.datacite.org/dois/10.1234/new", "papers": [], "topic": "Research data", "released": "2026", "added": "2026-11-23", "checked": "2026-11-23", "size": None, "format": None, "license": None}
+        with tempfile.TemporaryDirectory() as directory, sqlite3.connect(":memory:") as db:
+            for name in ("ops/directory-removals.sql", "migrations/0046_research_directory.sql", "migrations/0047_clinical_studies.sql", "migrations/0049_reader_inbox.sql", "migrations/0050_datasets.sql"):
+                db.executescript((daily.ROOT / name).read_text())
+            db.execute("UPDATE dataset_visibility SET enabled=1 WHERE id=1")
+            stage = Path(directory)
+            daily.prepare_load(stage, {"project": {}, "publication": {}, "study": {}, "dataset": {dataset["id"]: dataset}}, [], "dataset-revision")
+            sql = (stage / "load.sql").read_text()
+            db.executescript(sql)
+            db.executescript(sql)
+            self.assertEqual(db.execute("SELECT count(*) FROM research_visible WHERE kind='dataset'").fetchone()[0], 1)
+            self.assertEqual(db.execute("SELECT first FROM research_summary_kinds WHERE scope_field='data' AND kind='directory'").fetchone()[0], "dataset-revision")
+            db.execute("INSERT INTO dataset_removals(id) VALUES (?)", (dataset["id"],))
+            db.executescript(sql)
+            self.assertEqual(db.execute("SELECT count(*) FROM research_visible WHERE kind='dataset'").fetchone()[0], 0)
+
+    def test_checkpoint_waits_for_confirmed_revision_and_recovers_lost_response(self):
+        import re
+        from collections import defaultdict
+        from datetime import datetime, timedelta
+        class FakeD1:
+            def __init__(self, commit):
+                self.current = "old-revision"
+                self.commit = commit
+                self.reads = defaultdict(int)
+                self.unmeasured = set()
+            def probe(self): return "123"
+            def revision(self): return self.current
+            def bookmark(self): return "bookmark"
+            def rows(self, sql, label): return [{"enabled": 1}] if label == "study visibility" else [{"name": "reader_inbox"}]
+            def listings(self, kind): return {}
+            def execute(self, flag, path, label):
+                if self.commit:
+                    self.current = re.findall(r"UPDATE research_summary_kinds SET first='([^']+)'", Path(path).read_text())[-1]
+                raise RuntimeError("Lost response")
+        def fake_collect(d1, state, run_dir, day, first, last, receipt):
+            receipt["dataset_through"] = "2026-11-23T00:00:00Z"
+            return {"project": {}, "publication": {}, "study": {}, "dataset": {}}, [], set()
+        for committed in (False, True):
+            with self.subTest(committed=committed), tempfile.TemporaryDirectory() as directory:
+                state = Path(directory)
+                yesterday = (datetime.now(daily.NY).date() - timedelta(days=1)).isoformat()
+                (state / "cursor.json").write_text(json.dumps({"loaded_through": yesterday}))
+                (state / "datasets-cursor.json").write_text(json.dumps({"datacite_through": "2026-11-20T00:00:00Z"}))
+                (state / "production-rows-read.json").write_text('{"inbox_available": true}')
+                with patch.object(daily, "collect", side_effect=fake_collect), patch.object(daily, "live_checks", return_value={}), patch.object(daily, "snapshot", return_value={}), patch.object(daily, "report"):
+                    code = daily.run(state, FakeD1(committed), plan=False, scheduled=False)
+                self.assertEqual(code, 0 if committed else 1)
+                cursor = json.loads((state / "datasets-cursor.json").read_text())["datacite_through"]
+                self.assertEqual(cursor, "2026-11-23T00:00:00Z" if committed else "2026-11-20T00:00:00Z")

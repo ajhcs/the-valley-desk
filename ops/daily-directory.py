@@ -20,6 +20,7 @@ from daily_d1 import (
 )
 from daily_public_sources import collect_publications, discover_projects, qualify_repository, refresh_projects, roster_from_public
 from daily_notify import queue
+import daily_datasets
 
 NY = ZoneInfo("America/New_York")
 ROOT = Path(__file__).resolve().parents[1]
@@ -106,7 +107,7 @@ def studies(run_dir, previous, day):
     return rows, result["candidates"] - len(rows), outside, result["previous_missing"] - len(outside)
 
 
-def inbox(d1, state, run_dir, day, records, removed):
+def inbox(d1, state, run_dir, day, records, removed, dataset_suggestions=None):
     """Reader text stays in D1. Visit only canonical registry identities and GitHub repos."""
     projects = records["project"]
     by_code = {row["code"].casefold().rstrip("/"): row for row in projects.values()}
@@ -122,6 +123,13 @@ def inbox(d1, state, run_dir, day, records, removed):
         row_id = int(entry["id"])
         if entry["kind"] == "feedback":
             decisions.append((row_id, "reviewed", "Page feedback reviewed.", None))
+            continue
+        if entry["item_type"] == "dataset":
+            if dataset_suggestions is not None:
+                identifier = daily_datasets.suggestion_identifier(entry)
+                dataset_suggestions.append((row_id, identifier))
+            else:
+                decisions.append((row_id, "declined", "Outside the current directory listing kinds.", None))
             continue
         try:
             raw = entry.get("url") or ""
@@ -189,7 +197,12 @@ def prepare_load(run_dir, deltas, decisions, revision, study_removals=()):
     write_rows(pubs, deltas["publication"].values())
     write_rows(trials, deltas["study"].values())
     save(study_tombstones, sorted(study_removals))
-    sql = command(ROOT, sys.executable, "ops/load-research.py", "--project-upserts", str(projects),
+    dataset_args = []
+    if "dataset" in deltas:
+        datasets = run_dir / "datasets.jsonl"
+        write_rows(datasets, deltas["dataset"].values())
+        dataset_args = ["--datasets", str(datasets)]
+    sql = command(ROOT, sys.executable, "ops/load-research.py", *dataset_args, "--project-upserts", str(projects),
                   "--publications", str(pubs), "--studies", str(trials), "--respect-removals",
                   "--study-removals", str(study_tombstones),
                   "--alias-reference", "src/content/public-directory-institutions.json", label="Research loader")
@@ -263,11 +276,63 @@ def collect(d1, state, run_dir, day, first, last, receipt):
     public = {kind: {**baseline[kind], **deltas[kind]} for kind in KINDS}
     for identifier in outside:
         public["study"].pop(identifier, None)
-    additions, papers, decisions = inbox(d1, state, run_dir, day, public, removed)
+    dataset_config = state / "datasets-config.json"
+    dataset_enabled = dataset_config.exists() and json.loads(dataset_config.read_text()).get("enabled") is True
+    dataset_suggestions = [] if dataset_enabled else None
+    additions, papers, decisions = inbox(d1, state, run_dir, day, public, removed, dataset_suggestions)
     deltas["project"].update(additions)
     receipt["counts"]["project"]["added"] += len(additions)
     deltas["publication"].update((row["id"], row) for row in papers)
     receipt["counts"]["publication"]["added"] += len(papers)
+    if dataset_enabled:
+        receipt["stage"] = "datasets"
+        config = json.loads(dataset_config.read_text())
+        cursor = state / "datasets-cursor.json"
+        if config.get("first_public_load_confirmed") is not True or not cursor.is_file():
+            raise StopRun("Dataset first-load receipt or source checkpoint unavailable")
+        if d1.rows("SELECT enabled FROM dataset_visibility WHERE id=1", "dataset visibility") != [{"enabled": 1}]:
+            raise StopRun("Dataset first public load is not visible")
+        checkpoint = json.loads(cursor.read_text())["datacite_through"]
+        upper = datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%M:%SZ")
+        baseline_dataset = d1.listings("dataset")
+        if not baseline_dataset:
+            raise StopRun("Dataset public baseline unavailable")
+        accession_owners = {}
+        for identifier, dataset in baseline_dataset.items():
+            for accession in dataset["accessions"]:
+                accession_owners.setdefault(accession.casefold(), set()).add(identifier)
+        dataset_removed = {row["id"] for row in d1.rows("SELECT id FROM dataset_removals", "dataset removals")}
+        try:
+            candidates = daily_datasets.collect_phase_one(ROOT, run_dir / "datasets-phase1", deltas["publication"].values(), checkpoint, upper, day, [identifier for _, identifier in dataset_suggestions if identifier])
+            selected = {}
+            disputes = 0
+            for candidate in candidates:
+                identifier = candidate["id"]
+                if identifier in selected:
+                    raise daily_datasets.StopRun("Duplicate dataset candidate")
+                if identifier in dataset_removed:
+                    continue
+                if any(accession_owners.get(a.casefold(), set()) - {identifier} for a in candidate["accessions"]):
+                    # The nightly delta cannot adjudicate a different existing listing's origin.
+                    disputes += 1
+                    continue
+                old = baseline_dataset.get(identifier)
+                if old:
+                    candidate["added"] = old["added"]
+                    if not set(old.get("papers") or []).issubset(candidate.get("papers") or []) or (old.get("label") == "Verified" and candidate.get("label") != "Verified"):
+                        raise daily_datasets.StopRun("Dataset update would discard existing evidence")
+                selected[identifier] = candidate
+            dataset_counts = daily_datasets.guard(list(baseline_dataset.values()), list(selected.values()))
+        except daily_datasets.StopRun as error:
+            raise StopRun(str(error)) from None
+        deltas["dataset"] = selected
+        receipt["dataset_through"] = upper
+        receipt["counts"]["dataset"] = {**dataset_counts, "skipped": disputes}
+        ids = (set(baseline_dataset) | set(selected)) - dataset_removed
+        for row_id, identifier in dataset_suggestions:
+            match = identifier if identifier in ids else None
+            if match:
+                decisions.append((row_id, "added", "", ("dataset", match)))
     for kind in KINDS:
         gate(kind, baseline[kind], receipt["counts"][kind])
     receipt["inbox"] = dict(Counter(status for _, status, _, _ in decisions))
@@ -397,6 +462,8 @@ def run(state, d1, *, plan, scheduled):
         if nightly:
             receipt["stage"] = "weekly timer retirement"
             retire_weekly(state, receipt)
+        if receipt.get("dataset_through"):
+            save(state / "datasets-cursor.json", {"datacite_through": receipt["dataset_through"]})
         save(cursor, {"loaded_through": receipt["loaded_through"]})
         receipt["outcome"] = ("complete" if nightly else "manual-complete") if completed_today else "recovered"
         return 0
