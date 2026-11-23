@@ -12,6 +12,8 @@ import {
   projectPlace, regionalLabel, timestamp,
 } from "./public-directory-ui";
 import { icon } from "./public-directory-icons";
+import { supportOpen, supportPath } from "./public-support-data";
+import { supportersBand } from "./public-support-band";
 
 export type DirectoryView =
   | {
@@ -51,12 +53,17 @@ function header(view: DirectoryView) {
     </header>`;
 }
 
-function footer() {
+function footer(view: DirectoryView) {
   return `<footer class="directory-chrome desk-footer">
+    <div class="desk-footer-sky">
+      ${view.kind === "home" ? supportersBand() : ""}
+      <div class="desk-footer-art" aria-hidden="true"></div>
+    </div>
+    <div class="desk-footer-river">
     <div class="desk-frame desk-footer-inner">
       <p class="desk-footer-about"><a class="desk-footer-brand" href="/">The Valley Desk</a> lists healthcare research connected to nine counties in Pennsylvania and New Jersey.</p>
       <nav class="desk-footer-links" aria-label="Footer">
-        <a href="${browsePath}">Search</a><a href="/discover/new">What’s new</a><a href="${methodPath}">Methodology</a><a href="/discover/updates.xml">RSS</a><a href="${methodPath}#data">Data and API</a><a href="/discover/suggest">Suggest research</a><a href="/discover/suggest#feedback">Feedback</a>
+        <a href="${browsePath}">Search</a><a href="/discover/new">What’s new</a><a href="${methodPath}">Methodology</a><a href="/discover/updates.xml">RSS</a><a href="${methodPath}#data">Data and API</a><a href="/discover/suggest">Suggest research</a><a href="/discover/suggest#feedback">Feedback</a>${supportOpen() ? `<a href="${supportPath}">Support</a>` : ""}
       </nav>
       <div class="desk-theme">
         <label for="directory-theme">Theme</label>
@@ -65,6 +72,7 @@ function footer() {
         </select>
       </div>
       <p class="desk-footer-copy">Built by <a href="https://colelyons.com/">Cole Lyons</a></p>
+    </div>
     </div>
   </footer>`;
 }
@@ -407,7 +415,7 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
   <body class="directory-site">
     ${header(view)}
     <main id="main" tabindex="-1">${content}</main>
-    ${footer()}
+    ${footer(view)}
   </body>
 </html>`;
 }

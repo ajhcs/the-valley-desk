@@ -583,6 +583,11 @@ async function handleFetch(request, env, origin, nonce, ctx) {
     return handleReaderInbox(request, env, origin, nonce);
   }
 
+  if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/support" || path === "/support/")) {
+    const { handleSupport, supportOpen } = await import("./src/ingest/public-support.ts");
+    if (supportOpen()) return handleSupport(request, origin, nonce);
+  }
+
   if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path === "/llms.txt" || path.startsWith("/discover") || path.startsWith("/api/directory/") || stripSlash(decodedPublicPath(path)) === "/sitemap.xml")) {
     const { isPublicDirectoryPath, servePublicDirectory } = await import("./src/ingest/public-directory.ts");
     if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB, origin, nonce, undefined, env.PUBLICATIONS_PUBLIC_ENABLED === "true", {

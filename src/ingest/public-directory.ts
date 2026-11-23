@@ -1,5 +1,6 @@
 import { decodedPublicPath } from "../lib/editorial-retirement";
 import { html } from "./public-directory-ui";
+import { supportOpen, supportPath } from "./public-support-data";
 import {
   newPath,
   feedPath,
@@ -233,7 +234,7 @@ export async function publicDirectorySitemap(db: RemovalDb | undefined, origin: 
 
 function projectSitemap(catalog: ReturnType<typeof createDirectoryCatalog>, removed: Set<string>, origin: string): SitemapEntry[] {
   return [
-    ...["/", browsePath, methodPath, newPath, "/discover/connect"].map((path) => ({ loc: origin + path })),
+    ...["/", browsePath, methodPath, newPath, "/discover/connect", ...(supportOpen() ? [supportPath] : [])].map((path) => ({ loc: origin + path })),
     ...catalog.publishedEntities(removed).map((entity) => ({ loc: origin + entityPath(entity) })),
     ...catalog.projects(removed).map((project) => ({
       loc: origin + projectPath(project),
