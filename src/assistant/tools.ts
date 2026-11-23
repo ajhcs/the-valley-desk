@@ -1,7 +1,9 @@
 // Read-only directory tools shared by the MCP server and, through it, the WebMCP page tools.
 // Record reads go through servePublicDirectory, the handler behind the public JSON API, so
 // removals, the fail-closed check and version filtering behave exactly as they do on the site.
-import { counties, directoryCatalog, projectPath } from "../ingest/public-directory-data";
+import { counties, projectPath } from "../ingest/public-directory-data";
+import { readProjectCatalog } from "../ingest/public-directory-store";
+import { dataVersion } from "../ingest/public-directory-cache";
 import { institutionRefs, removalIds, servePublicDirectory } from "../ingest/public-directory";
 import {
   dateBound,
@@ -568,11 +570,11 @@ async function facets(context: ToolContext) {
   const byCount = <T extends { name: string; listings: number }>(list: T[]) =>
     list.sort((a, b) => b.listings - a.listings || a.name.localeCompare(b.name, "en"));
   const page = (field: string, slug: string) => origin + "/discover/" + field + "/" + encodeURIComponent(slug);
+  const { catalog } = await readProjectCatalog(db!, await dataVersion(db, origin));
   if (!counts) {
-    // Projects only: the bundled catalog, less current removals.
-    const home = directoryCatalog.home(removed, now);
+    const home = catalog.home(removed, now);
     const list = (kind: "institution" | "topic" | "county", values: { name: string; count: number }[]) =>
-      byCount(values.map(({ name, count }) => ({ name, url: origin + directoryCatalog.entityHref(kind, name), listings: count })));
+      byCount(values.map(({ name, count }) => ({ name, url: origin + catalog.entityHref(kind, name), listings: count })));
     const known = new Map(home.counties.map((county) => [county.name, county.count]));
     return {
       institutions: list("institution", home.institutions).slice(0, limits.listEntries),
@@ -582,7 +584,7 @@ async function facets(context: ToolContext) {
     };
   }
   const count = (field: string, slug: string) => counts!.find((row) => row.field === field && row.value === slug)?.n ?? 0;
-  const options = optionsFor(directoryCatalog, removed, refs);
+  const options = optionsFor(catalog, removed, refs);
   const named = new Set(refs.map((ref) => ref.id));
   const institutions = byCount([
     ...refs.map((ref) => ({

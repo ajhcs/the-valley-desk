@@ -38,6 +38,8 @@ test("reviewed publication import, replay, relationships, feeds, flags and fresh
     assert.equal((await get("/api/directory/publications")).status, 404);
     assert.match(await text("/discover/updates.xml?topic=medical-imaging"), /<item>/);
     sqlite.exec(readFileSync("migrations/0046_research_directory.sql", "utf8"));
+    sqlite.exec(execFileSync("python3", ["ops/load-research.py", "--projects", "src/content/public-directory-projects.json"],
+      { encoding: "utf8", maxBuffer: 1 << 26 }));
     env.PUBLICATIONS_PUBLIC_ENABLED = "true";
     assert.doesNotMatch(await text("/"), />Publications</);
     const fixture = execFileSync("python3", ["ops/research-fixture.py"], { encoding: "utf8" });

@@ -57,6 +57,7 @@ import {
 import { renderDirectoryPage, type DirectoryView } from "./public-directory-page";
 import { activeGroups, groupList, partnerList, partners, similarListings } from "./public-directory-discover";
 import { cacheKey, dataVersion, defaultCache, forCache, fromCache, type CacheStore } from "./public-directory-cache";
+import { readProject, readProjectCatalog } from "./public-directory-store";
 import { renderResultsRegion } from "./public-directory-results";
 import { counties } from "./public-directory-data";
 import { healthTopic, partialDateText } from "./public-directory-ui";
@@ -120,6 +121,7 @@ function publicProject(project: DirectoryProject) {
     code,
     name,
     purpose,
+    description,
     topic,
     label,
     institution,
@@ -147,6 +149,7 @@ function publicProject(project: DirectoryProject) {
     code: httpsUrl(code),
     name,
     purpose,
+    description,
     topic,
     label,
     institution,
@@ -213,10 +216,15 @@ export function retiredDirectoryPage(
 
 export async function publicDirectorySitemap(db: RemovalDb | undefined, origin: string): Promise<SitemapEntry[]> {
   const removed = await removalIds(db);
+  const { catalog } = await readProjectCatalog(db!);
+  return projectSitemap(catalog, removed, origin);
+}
+
+function projectSitemap(catalog: ReturnType<typeof createDirectoryCatalog>, removed: Set<string>, origin: string): SitemapEntry[] {
   return [
     ...["/", browsePath, methodPath, newPath, "/discover/connect"].map((path) => ({ loc: origin + path })),
-    ...directoryCatalog.publishedEntities(removed).map((entity) => ({ loc: origin + entityPath(entity) })),
-    ...directoryCatalog.projects(removed).map((project) => ({
+    ...catalog.publishedEntities(removed).map((entity) => ({ loc: origin + entityPath(entity) })),
+    ...catalog.projects(removed).map((project) => ({
       loc: origin + projectPath(project),
       lastmod: lastActivity(project) || undefined,
     })),
@@ -321,7 +329,7 @@ export async function servePublicDirectory(
   db?: RemovalDb,
   origin = DEFAULT_PUBLIC_ORIGIN,
   nonce?: string,
-  catalog: ReturnType<typeof createDirectoryCatalog> = directoryCatalog,
+  catalog?: ReturnType<typeof createDirectoryCatalog>,
   publicationsEnabled = false,
   cache: { store?: CacheStore; build?: string; waitUntil?: (work: Promise<unknown>) => void } = {},
 ): Promise<Response> {
@@ -332,8 +340,8 @@ export async function servePublicDirectory(
   const key = cacheKey(request, version, request.headers.get(fragmentHeader) === "results" ? "fragment" : "page");
   const cached = await store.match(key).catch(() => undefined);
   if (cached) return fromCache(cached, nonce);
-  const response = await renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled);
-  if (response.status === 200) {
+  const response = await renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled, version);
+  if (response.status === 200 && response.headers.get("x-directory-project-source") !== "fallback") {
     const saving = forCache(response, nonce).then((copy) => store.put(key, copy)).catch(() => undefined);
     if (cache.waitUntil) cache.waitUntil(saving);
     else await saving;
@@ -348,8 +356,9 @@ async function renderPublicDirectory(
   db?: RemovalDb,
   origin = DEFAULT_PUBLIC_ORIGIN,
   nonce?: string,
-  catalog: ReturnType<typeof createDirectoryCatalog> = directoryCatalog,
+  suppliedCatalog?: ReturnType<typeof createDirectoryCatalog>,
   publicationsEnabled = false,
+  version?: string,
 ): Promise<Response> {
   const head = request.method === "HEAD";
   if (request.method !== "GET" && !head) {
@@ -358,6 +367,9 @@ async function renderPublicDirectory(
   const { pathname, search, searchParams } = new URL(request.url);
   const api = pathname.startsWith("/api/directory/");
   const fragment = request.headers.get(fragmentHeader) === "results";
+  let catalog = suppliedCatalog ?? directoryCatalog;
+  let source: "fallback" | "d1" | undefined;
+  const projectSource = (): Record<string, string> => source ? { "x-directory-project-source": source } : {};
   const page = (view: DirectoryView, status: number) => {
     const renderFragment =
       fragment && view.kind === "results" && (view.data.scope?.entity.kind !== "county" || view.data.total > 0);
@@ -370,12 +382,12 @@ async function renderPublicDirectory(
           : renderDirectoryPage(view, catalog, origin, nonce),
       {
         status,
-        headers: status >= 400 ? { ...headers, "x-robots-tag": "noindex" } : headers,
+        headers: { ...headers, ...projectSource(), ...(status >= 400 ? { "x-robots-tag": "noindex" } : {}) },
       },
     );
   };
   const json = (value: () => unknown, status = 200) =>
-    new Response(head ? null : JSON.stringify(value()), { status, headers: jsonHeaders });
+    new Response(head ? null : JSON.stringify(value()), { status, headers: { ...jsonHeaders, ...projectSource() } });
   const redirect = (path: string) => new Response(null, { status: 308, headers: { ...noStore, location: path } });
 
   let removed: Set<string>;
@@ -393,7 +405,7 @@ async function renderPublicDirectory(
   const studyApi = path === studiesApi || path.startsWith(studiesApi + "/");
   const detail = path.startsWith("/discover/publication/") || path.startsWith(publicationsApi + "/");
   const xml = (value: string, type = "application/xml") =>
-    new Response(head ? null : value, { headers: { ...noStore, "content-type": type + "; charset=utf-8" } });
+    new Response(head ? null : value, { headers: { ...noStore, ...projectSource(), "content-type": type + "; charset=utf-8" } });
   const unavailable = () =>
     api || pubApi ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
   let hasPubs = false, hasStudies = false;
@@ -406,6 +418,21 @@ async function renderPublicDirectory(
         (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='publication' LIMIT 1")).length > 0;
     }
     hasStudies = hasPubs && (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='study' LIMIT 1")).length > 0;
+    if (!suppliedCatalog && path.startsWith(apiPath + "/")) {
+      const id = decode(pathname.slice(apiPath.length + 1));
+      if (!/^[1-9][0-9]{0,19}$/.test(id)) return json(() => ({ error: "project_not_found" }), 404);
+      if (removed.has(id)) return json(() => ({ error: "project_removed" }), 410);
+      const result = await readProject(researchDb, id, removed);
+      source = result.fallback ? "fallback" : "d1";
+      const project = result.project;
+      return project ? json(() => ({ project: publicProject(project) })) : json(() => ({ error: "project_not_found" }), 404);
+    }
+    if (!suppliedCatalog && path !== methodPath && path !== "/llms.txt" &&
+        (path !== "/sitemap.xml" && !path.startsWith("/discover/sitemap/") || path === "/discover/sitemap/directory.xml")) {
+      const result = await readProjectCatalog(researchDb, version);
+      catalog = result.catalog;
+      source = result.fallback ? "fallback" : "d1";
+    }
     if (path.startsWith("/discover/study/") || path.startsWith(studiesApi + "/")) {
       const id = decode(path.slice((studyApi ? studiesApi : "/discover/study").length + 1));
       const missing = () => studyApi ? json(() => ({ error: "study_not_found" }), 404) : page({ kind: "not-found" }, 404);
@@ -573,12 +600,12 @@ async function renderPublicDirectory(
       }
       let entries: { loc: string; lastmod?: string }[];
       if (path === prefix + "directory.xml") {
-        entries = await publicDirectorySitemap(db, origin);
+        entries = projectSitemap(catalog, removed, origin);
         if (hasPubs) {
           // Registry institutions are listed once, at their reference ID.
           const refs = await institutionRefs(researchDb);
           const legacy = new Set(
-            directoryCatalog
+            catalog
               .publishedEntities(removed)
               .filter((e) => e.kind === "institution" && institutionFor(refs, e.name))
               .map((e) => origin + entityPath(e)),
