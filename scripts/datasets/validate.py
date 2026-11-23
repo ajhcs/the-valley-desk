@@ -23,8 +23,9 @@ DATE = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
 
 def check(rec, inst_ids, paper_ids):
     errs = []
-    if list(rec) != KEYS and set(rec) != set(KEYS):
-        errs.append(f"keys {sorted(set(rec) ^ set(KEYS))}")
+    unexpected = (set(rec) - {"paper_provenance"}) ^ set(KEYS)
+    if unexpected:
+        errs.append(f"keys {sorted(unexpected)}")
     s = lambda k: isinstance(rec.get(k), str) and rec[k].strip() != ""
     for k in ("id", "title", "summary", "repository", "url", "connection", "source", "label", "access", "data_type", "topic"):
         if not s(k):
@@ -55,6 +56,16 @@ def check(rec, inst_ids, paper_ids):
         bad = [p for p in rec["papers"] if p not in paper_ids]
         if bad: errs.append(f"unknown papers {bad[:2]}")
     if rec.get("label") == "Listed" and not rec.get("papers"): errs.append("Listed without a paper")
+    if "paper_provenance" in rec:
+        edges = rec["paper_provenance"]
+        paper_refs = rec["papers"] if isinstance(rec.get("papers"), list) else []
+        if not isinstance(edges, list) or any(
+            not isinstance(edge, dict) or set(edge) != {"paper", "relation"}
+            or not isinstance(edge["paper"], str) or edge["paper"] not in paper_refs
+            or edge["relation"] not in ("produced", "linked")
+            for edge in edges
+        ) or len({edge["paper"] for edge in edges}) != len(edges):
+            errs.append("paper_provenance")
     if rec.get("released") is not None and not (isinstance(rec["released"], str) and DATE.match(rec["released"])):
         errs.append("released format")
     for k in ("added", "checked"):

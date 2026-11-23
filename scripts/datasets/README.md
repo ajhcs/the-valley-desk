@@ -24,8 +24,12 @@ python3 -I -B scripts/datasets/validate.py
 
 Requests use the generic User-Agent `valley-desk-research/1.0`, at most 3 concurrent requests per host, about 3 per second to NCBI, and backoff on errors and 429s. Caches keep only the fields the listings need; contact names, emails and phone numbers are not stored.
 
-Classification starts from the phase 0 rules. An explicit reuse cue takes precedence over a deposit cue. The build also checks repository dates and conflicting publication claims against the repository's own citations. The private reuse evidence records citation coverage separately from the decision.
+Classification starts from the phase 0 rules. An explicit reuse cue takes precedence over a deposit cue. The build checks public release dates and conflicting publication claims against the repository’s own citations. The private reuse evidence records citation coverage separately from the decision.
 
 DataCite records need a health or biomedical signal in their title, description or subjects. The build reports exclusions by source and rule. Generic supplements are excluded from both sources.
 
 **Verified** requires a repository submitter or DataCite creator with a regional registry match. Company names need a matching regional location. County attribution uses registry home counties. **Listed** identifies datasets whose producing paper supplies the regional connection.
+
+For a historical recall build, set `TVD_DATASETS_REPLAY` to the prior immutable `reuse-decisions.jsonl`. The build rechecks only the prior date-based rejections. Missing public dates preserve the previous rejection. Build metadata records the replay status and any regional medical-creator rescue.
+
+`paper_provenance` records whether each paper produced the dataset or is linked to it. The producing label requires a matching repository citation or explicit evidence in the paper. A repository title or a supported paper description can supply the summary when a repository description is missing.

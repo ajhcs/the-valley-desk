@@ -113,7 +113,40 @@ NONMEDICAL_TITLE = re.compile(
     r"geolog\w*|ocean\w*|climate|atmospher\w*|agricultur\w*)\b", re.I)
 
 
-def health_decision(d):
+# These terms describe biomedical measurements but are too broad to establish
+# medical scope on their own. Only use them with a corroborated medical creator.
+MEDICAL_MEASUREMENT = re.compile(
+    r"\b(?:m?eeg|electroencephalograph\w*|magnetoencephalograph\w*|"
+    r"dna methylation|methylation (?:array|profil\w*|data)|"
+    r"(?:illumina )?(?:infinium )?(?:humanmethylation450|hm450|450k)|"
+    r"(?:human|patient|clinical) (?:biospecimens?|tissue samples?|blood samples?|imaging|records?)|"
+    r"single[- ]cell(?:ular)?|gene expression|(?:protein|cell) profil\w*|"
+    r"(?:neuro|brain|cardiac|retinal|diagnostic) imaging|magnetic resonance imaging|"
+    r"immune (?:cell|response|profil)\w*|patient (?:cohort|outcome|data)\w*)\b", re.I)
+
+# Only drop generic publication containers when no description supplies context.
+GENERIC_JUNK = re.compile(
+    r"^(?:(?:annual|quarterly|monthly) report(?:\s+\d{4})?|"
+    r"(?:volume|vol\.?|issue|no\.?)\s*\d+(?:\s*[,/:-]\s*\d+)?|"
+    r"(?:dataset|data|report|publication|journal|newsletter)(?:\s+\d+)?)$", re.I)
+SERIAL_CODE = re.compile(r"^[A-Z]{1,12}[- ]?\d{1,8}[A-Za-z]?$")
+SERIAL_REPORT = re.compile(r"^(?:[A-Z]{1,4} ){1,3}Reports? [A-Za-z]?\d{1,8}$")
+
+
+def generic_junk_decision(title, descriptions=None):
+    """Identify a narrow generic title without descriptive context."""
+    title = " ".join((title or "").split()).strip()
+    if SERIAL_CODE.fullmatch(title) or SERIAL_REPORT.fullmatch(title):
+        return True, "serial or report code title"
+    if isinstance(descriptions, str):
+        descriptions = [descriptions]
+    if not any(str(x or "").strip() for x in (descriptions or [])):
+        if GENERIC_JUNK.fullmatch(title) or len(re.findall(r"\b\w+(?:[-’']\w+)*\b", title)) < 4:
+            return True, "short or generic title without description"
+    return False, None
+
+
+def health_decision(d, medical_creator=False):
     """Return (keep, evidence location) for health or biomedical scope."""
     title = NEURAL_NET.sub(" ", d.get("title") or "")
     descriptions = d.get("descriptions") or []
@@ -134,6 +167,8 @@ def health_decision(d):
         return False, "nonmedical research title"
     if MEDICAL_CONTEXT.search(desc):
         return True, "health or biomedical evidence in description"
+    if medical_creator and MEDICAL_MEASUREMENT.search(" ".join((title, desc))):
+        return True, "biomedical measurement with corroborated medical institution creator"
     return False, "no health or biomedical evidence"
 
 

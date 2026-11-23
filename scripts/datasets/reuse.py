@@ -3,7 +3,6 @@ import calendar
 import re
 from collections import defaultdict
 from datetime import date
-from datacite_rules import datacite_released
 
 
 def identifiers(paper):
@@ -42,6 +41,19 @@ def more_than_year_before(repo_date, paper_date):
     return anniversary < p
 
 
+def public_dates(kind, source):
+    """Return public release evidence, never registration or submission dates."""
+    if kind == 'doi':
+        issued = [x.get('date') for x in source.get('dates', [])
+                  if x.get('dateType') == 'Issued' and parse_date(x.get('date'))]
+        if issued:
+            return [('issued', value) for value in issued]
+        year = source.get('year')
+        return [('publicationYear', str(year))] if parse_date(year) else []
+    value = source.get('released')
+    return [('released', value)] if parse_date(value) else []
+
+
 def adjudicate(rows, papers, read_cache):
     # Union known DOI, PMID and PMCID aliases, including transitive matches.
     parent = {}
@@ -62,8 +74,6 @@ def adjudicate(rows, papers, read_cache):
         kind, key = row['unit_type'], row['unit']
         kind = 'sra' if kind in ('sra-run', 'sra-study') else kind
         rec = read_cache(kind, key) or {}
-        if kind == 'doi' and (released := datacite_released(rec)):
-            rec = {**rec, 'released': released}
         sources = [(kind, key, rec)]
         if kind in ('geo-sample', 'geo-gds'):
             sources.extend(('geo', s, read_cache('geo', s) or {}) for s in rec.get('series', []))
@@ -103,8 +113,8 @@ def adjudicate(rows, papers, read_cache):
                 cited.update(identifiers(c if isinstance(c, dict) else {'id': c}))
                 citations.append({'kind': k, 'accession': accession, 'citation': c})
         cited_match = bool({root(a) for a in cited} & {root(a) for a in aliases(row)})
-        dated = [(k, a, field, source.get(field)) for k, a, source in sources
-                 for field in ('released', 'submitted', 'registered', 'created', 'published') if parse_date(source.get(field))]
+        dated = [(k, a, field, value) for k, a, source in sources
+                 for field, value in public_dates(k, source)]
         paper = papers.get(row['paper'], {})
         old = any(more_than_year_before(d[3], paper.get('published')) for d in dated)
         multi = len(groups[group_key(row)]) > 1
@@ -112,7 +122,36 @@ def adjudicate(rows, papers, read_cache):
                   'repository cites paper' if cited_match else ('repository date more than 12 months before paper' if old else ('multiple papers claim accession' if multi else 'no metadata reuse override')))
         out.append({'paper': row['paper'], 'pmcid': row.get('pmcid'), 'unit_type': row['unit_type'], 'unit': row['unit'],
                     'original_decision': row['decision'], 'decision': 'reused' if row['decision'] == 'reused' or (not cited_match and (old or multi)) else row['decision'],
-                    'reason': reason, 'paper_published': paper.get('published'), 'repository_dates': [dict(kind=k, accession=a, field=f, date=d) for k,a,f,d in dated],
+                    'reason': reason, 'paper_published': paper.get('published'), 'repository_dates': [dict(kind=k, accession=a, field=f, date=d,
+                                              **({'source': source['release_source']} if source.get('release_source') else {}))
+                                         for k, a, source in sources for f, d in public_dates(k, source)],
                     'repository_citations': citations, 'citation_match': cited_match, 'multiple_papers': multi,
                     'citation_metadata': [{'kind': k, 'accession': a, 'available': 'citations' in source or (k == 'doi' and 'related' in source)} for k, a, source in sources]})
     return out
+
+
+def replay_date_decisions(old_decisions, rows, papers, read_cache):
+    """Replay only legacy date-rule rejections; retain every other legacy decision.
+
+    Missing release or paper dates leave a previous rejection in place. Decisions
+    are matched by occurrence order for duplicate paper/unit keys.
+    """
+    fresh = adjudicate(rows, papers, read_cache)
+    by_key = defaultdict(list)
+    for decision in fresh:
+        by_key[(decision['paper'], decision['unit_type'], decision['unit'])].append(decision)
+    result = []
+    for old in old_decisions:
+        key = (old['paper'], old['unit_type'], old['unit'])
+        candidates = by_key.get(key, [])
+        current = candidates.pop(0) if candidates else None
+        if old.get('reason') != 'repository date more than 12 months before paper':
+            result.append(dict(old))
+        elif (current is None or not current['repository_dates'] or not parse_date(current.get('paper_published'))
+              or not {(d['kind'], d['accession']) for d in old.get('repository_dates', [])
+                      if more_than_year_before(d.get('date'), old.get('paper_published'))}
+                     <= {(d['kind'], d['accession']) for d in current['repository_dates']}):
+            result.append({**old, 'date_replay': 'unresolved: public release or paper date unavailable'})
+        else:
+            result.append({**current, 'date_replay': 'evaluated'})
+    return result

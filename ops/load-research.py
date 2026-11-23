@@ -115,7 +115,7 @@ def check_dataset(r):
     https = lambda v: isinstance(v, str) and urlsplit(v).scheme == "https" and bool(urlsplit(v).hostname)
     day = lambda v: isinstance(v, str) and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", v)
     strings = lambda v: isinstance(v, list) and all(isinstance(i, str) and i for i in v)
-    if set(r) != DATASET_FIELDS or not isinstance(r["id"], str) or not DATASET_ID.match(r["id"]):
+    if set(r) - {"paper_provenance"} != DATASET_FIELDS or not isinstance(r["id"], str) or not DATASET_ID.match(r["id"]):
         raise ValueError("Unexpected dataset fields or identity")
     problems = [
         not all(isinstance(r[k], str) and r[k].strip() for k in ("title", "summary", "repository", "connection", "topic")),
@@ -129,6 +129,14 @@ def check_dataset(r):
     ]
     if any(problems):
         raise ValueError("Invalid dataset record " + r["id"])
+    if "paper_provenance" in r:
+        edges = r["paper_provenance"]
+        if not isinstance(edges, list) or any(
+            not isinstance(edge, dict) or set(edge) != {"paper", "relation"}
+            or edge["paper"] not in r["papers"] or edge["relation"] not in ("produced", "linked")
+            for edge in edges
+        ) or len({edge["paper"] for edge in edges}) != len(edges):
+            raise ValueError("Invalid dataset paper provenance " + r["id"])
 
 
 def emit(r, kind, aliases, respect_removals=False):

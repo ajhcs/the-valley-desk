@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from datacite_rules import generic_supplement_decision, health_decision, is_supplement
+from datacite_rules import generic_junk_decision, generic_supplement_decision, health_decision, is_supplement
 
 
 class ScopeRulesTest(unittest.TestCase):
@@ -43,6 +43,32 @@ class ScopeRulesTest(unittest.TestCase):
         )
         for record in records:
             self.assertTrue(health_decision(record)[0], record)
+
+    def test_medical_creator_requires_affirmative_measurement(self):
+        for record in (
+            {'title': 'mEEG recordings'},
+            {'title': 'KnowYourCG HM450 data'},
+            {'title': 'Measurements', 'descriptions': ['DNA methylation profiles']},
+        ):
+            self.assertFalse(health_decision(record)[0], record)
+            self.assertEqual(health_decision(record, medical_creator=True),
+                             (True, 'biomedical measurement with corroborated medical institution creator'))
+        for record in (
+            {'title': 'Unnamed dataset'},
+            {'title': 'Plant ecology', 'descriptions': ['DNA methylation data']},
+            {'title': 'Neural network measurements'},
+        ):
+            self.assertFalse(health_decision(record, medical_creator=True)[0], record)
+
+    def test_generic_junk_requires_no_description(self):
+        for title in ('KP RC Reports b12', 'VWM2'):
+            self.assertTrue(generic_junk_decision(title, ['Administrative report.'])[0], title)
+        self.assertTrue(generic_junk_decision('Short clinical entry', [])[0])
+        for title in ('Annual Report 2022', 'Volume 12', 'Issue 3', 'Dataset'):
+            self.assertTrue(generic_junk_decision(title, [])[0], title)
+            self.assertFalse(generic_junk_decision(title, ['Clinical study data'])[0], title)
+        for title in ('Annual report of cancer outcomes', 'Dataset of mEEG recordings', 'Issue 3 clinical data'):
+            self.assertFalse(generic_junk_decision(title, [])[0], title)
 
     def test_supplement_labels(self):
         for title in ('Table S2.xlsx', 'Figure S3', 'Fig. S3', 'Supplementary data', 'Code and data'):

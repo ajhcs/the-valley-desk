@@ -133,6 +133,7 @@ export type Dataset = {
   connection: string;
   source: string;
   papers: string[];
+  paper_provenance?: { paper: string; relation: "produced" | "linked" }[];
   topic: string;
   released: string | null;
   added: string;
@@ -635,7 +636,7 @@ function datasetRecord(d: Dataset) {
   </li>`;
 }
 /** A paper a dataset names, linked to its directory page when the paper is listed. */
-export type DatasetPaper = { id: string; title?: string };
+export type DatasetPaper = { id: string; title?: string; relation?: "produced" | "linked" };
 function paperLink(paper: DatasetPaper) {
   if (paper.title) return `<a href="${html(pubPath(paper.id))}">${html(displayTitle({ title: paper.title }))}</a>`;
   const doi = /^doi:(10\..+)$/.exec(paper.id)?.[1];
@@ -649,7 +650,9 @@ export function renderDataset(d: Dataset, refs: Institution[], papers: DatasetPa
   const level = accessLevels[d.access];
   const contents = [d.size, d.format].filter(Boolean).map((v) => html(v!)).join(" · ");
   const ids = d.accessions.map(accessionLink).join(", ");
-  const cite = [...papers.map(paperLink), html(d.repository + " " + d.accessions.join(", "))];
+  const produced = papers.filter((p) => p.relation === "produced");
+  const linked = papers.filter((p) => !produced.includes(p));
+  const cite = [...produced.map(paperLink), html(d.repository + " " + d.accessions.join(", "))];
   const get: [string, string][] = [
     ["Access", `${accessTag(d.access)}<span class="access-explain">${html(level?.explain ?? "")}</span>`],
     [d.accessions.length === 1 ? "ID" : "IDs", ids],
@@ -676,7 +679,7 @@ export function renderDataset(d: Dataset, refs: Institution[], papers: DatasetPa
       <div>
         <section class="record-section" aria-labelledby="connection-title">
           <h2 id="connection-title">Regional connection</h2>
-          <p class="record-evidence">${regionalLabel(d)} ${html(d.connection)} ${externalLink(d.source, "Regional source")}</p>
+          <p class="record-evidence">${regionalLabel(d)} ${html(!produced.length ? d.connection.replace(/^Produced by a paper with /, "Linked to a paper with ") : d.connection)} ${externalLink(d.source, "Regional source")}</p>
           <dl class="facts">
             ${places.length ? `<div><dt>${places.length === 1 ? "Institution" : "Institutions"}</dt><dd>${places.join(", ")}</dd></div>` : ""}
             ${counties.length ? `<div><dt>${counties.length === 1 ? "County" : "Counties"}</dt><dd>${counties.join(", ")}</dd></div>` : ""}
@@ -684,7 +687,8 @@ export function renderDataset(d: Dataset, refs: Institution[], papers: DatasetPa
             ${timestamp(d.added) ? `<div><dt>Added to directory</dt><dd>${timestamp(d.added)}</dd></div>` : ""}
           </dl>
         </section>
-        ${papers.length ? `<section class="record-section" aria-labelledby="papers-title"><h2 id="papers-title">${papers.length === 1 ? "Paper that produced it" : "Papers that produced it"}</h2><ul class="plain-list">${papers.map((paper) => `<li>${paperLink(paper)}</li>`).join("")}</ul></section>` : ""}
+        ${produced.length ? `<section class="record-section" aria-labelledby="papers-title"><h2 id="papers-title">${produced.length === 1 ? "Paper that produced it" : "Papers that produced it"}</h2><ul class="plain-list">${produced.map((paper) => `<li>${paperLink(paper)}</li>`).join("")}</ul></section>` : ""}
+        ${linked.length ? `<section class="record-section" aria-labelledby="linked-papers-title"><h2 id="linked-papers-title">${linked.length === 1 ? "Linked paper" : "Linked papers"}</h2><p class="muted">These papers link to or use this data.</p><ul class="plain-list">${linked.map((paper) => `<li>${paperLink(paper)}</li>`).join("")}</ul></section>` : ""}
       </div>
     </div>
     ${catalog ? similarSection(similar, catalog) : ""}
