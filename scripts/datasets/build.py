@@ -499,7 +499,7 @@ def build_paper_listing(lid, u, papers, decisions):
         if kind == "pdb-set":
             note = "the structure records do not name an institution."
         elif other_submitter:
-            note = "the repository names another submitter."
+            note = "the repository supplies submitter details at the source."
         else:
             note = "the repository record does not name a submitter."
         insts, counties, conn, src = listed_fields(prow, note, provenance)

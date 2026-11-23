@@ -158,6 +158,8 @@ ENVIRONMENTAL_COMPARATIVE = re.compile(
     r"\b(?:drosophila|fly|fruit flies)\b.{0,45}\bembryo\w*\b|"
     r"\b(?:comparative|mammalian)\b.{0,70}\bvocal development\b|"
     r"\b(?:rodent|rodents)\b.{0,65}\bstripe patterns?\b|"
+    r"\b(?:predator risk|predation risk|ecological divergence)\b|"
+    r"\b(?:drosophila|fruit flies)\b.{0,75}\bgenome folding\b|"
     r"\b(?:chromatin|histone)\b", re.I)
 HUMAN_DATA = re.compile(r"\b(?:human|patients?|clinical)\b.{0,70}\b(?:data(?:set)?s?|samples?|cohort|tissue|cells?)\b|"
                         r"\b(?:data(?:set)?s?|samples?|cohort|tissue|cells?)\b.{0,70}\b(?:human|patients?|clinical)\b", re.I)
