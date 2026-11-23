@@ -376,9 +376,9 @@ async function datasetPapers(db: ResearchDb, d: Dataset): Promise<DatasetPaper[]
   );
   const seen = new Set<string>();
   return d.papers
-    .map((paper) => found.find((row) => row.paper === paper) ?? { id: paper, title: undefined })
+    .map((paper) => found.find((row) => row.paper === paper) ?? { paper, id: paper, title: undefined })
     .filter((paper) => !seen.has(paper.id) && !!seen.add(paper.id))
-    .map(({ id, title }) => ({ id, title }));
+    .map(({ id, title, paper }) => ({ id, title, relation: d.paper_provenance?.find((v) => v.paper === (paper ?? id))?.relation ?? "linked" }));
 }
 
 /** Choices for the datasets page filters, from the visible datasets only, so no filter offers an empty value. */
@@ -638,13 +638,12 @@ async function renderPublicDirectory(
       for (const version of versions) related.push({ kind: "publication", record: JSON.parse(version.record) });
       const datasets = hasDatasets
         ? (
-            await rows<{ record: string }>(
+            await rows<{ record: string; produced: number }>(
               researchDb,
-              "SELECT record FROM research_visible WHERE kind='dataset' AND id IN (SELECT id FROM research_facets WHERE field='paper' AND (value=? OR value IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?))) ORDER BY activity DESC,id LIMIT 50",
-              id,
-              id,
+              "SELECT record, EXISTS (SELECT 1 FROM json_each(CASE WHEN json_type(record, '$.paper_provenance')='array' THEN json_extract(record, '$.paper_provenance') ELSE '[]' END) pp WHERE json_extract(pp.value, '$.relation')='produced' AND (json_extract(pp.value, '$.paper')=? OR json_extract(pp.value, '$.paper') IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?))) produced FROM research_visible WHERE kind='dataset' AND id IN (SELECT id FROM research_facets WHERE field='paper' AND (value=? OR value IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?))) ORDER BY activity DESC,id LIMIT 50",
+              id, id, id, id,
             )
-          ).map((r) => JSON.parse(r.record) as Dataset)
+          ).map((r) => ({ record: JSON.parse(r.record) as Dataset, produced: !!r.produced }))
         : [];
       if (pubApi)
         return json(() => ({
@@ -652,7 +651,7 @@ async function renderPublicDirectory(
             ...p,
             projects: related.filter((i) => i.kind === "project").map((i) => i.record.id),
             linked_projects: linkedCode.map((i) => i.record.id),
-            ...(hasDatasets ? { datasets: datasets.map((d) => d.id) } : {}),
+            ...(hasDatasets ? { datasets: datasets.map((d) => d.record.id) } : {}),
             preprint_of: versions.some((v) => JSON.parse(v.record).id === p.preprint_of) ? p.preprint_of : null,
             published_as: versions.some((v) => JSON.parse(v.record).id === p.published_as) ? p.published_as : null,
           },
@@ -685,7 +684,7 @@ async function renderPublicDirectory(
       const similar = await similarListings(
         researchDb,
         { kind: "publication", record: p },
-        [p.preprint_of ?? "", p.published_as ?? "", ...related.map((i) => i.record.id), ...linkedCode.map((i) => i.record.id), ...nearby.map((i) => i.record.id), ...datasets.map((d) => d.id)].filter(Boolean),
+        [p.preprint_of ?? "", p.published_as ?? "", ...related.map((i) => i.record.id), ...linkedCode.map((i) => i.record.id), ...nearby.map((i) => i.record.id), ...datasets.map((d) => d.record.id)].filter(Boolean),
       );
       const institutionName = refs.find((r) => r.id === institution)?.name ?? institution;
       const more = institution
@@ -701,7 +700,7 @@ async function renderPublicDirectory(
           title: displayTitle(p),
           summary: publicationDescription(p, refs),
           path: pubPath(id),
-          content: renderPublication(p, refs, related, more, catalog, linkedCode, similar, datasets),
+          content: renderPublication(p, refs, related, more, catalog, linkedCode, similar, datasets.filter((d) => d.produced).map((d) => d.record)),
           ogType: "article",
           meta: citationMeta(p),
           schema: publicationSchema(p, origin),

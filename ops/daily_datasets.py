@@ -142,7 +142,7 @@ def collect_phase_one(root, run_dir, publications, checkpoint, upper, day, sugge
         if row.get("pmcid"):
             papers.append({key: row.get(key) for key in ("id", "pmcid", "pmid", "doi", "title", "published", "topic", "institutions", "counties", "label")})
     (run_dir / "papers.json").write_text(json.dumps(papers), encoding="utf-8")
-    env = dict(os.environ, TVD_DATASETS_WORK=str(run_dir))
+    env = dict(os.environ, TVD_DATASETS_WORK=str(run_dir), TVD_DATASET_FETCH_FILES="1")
     # The stage scripts print public metadata and exceptions; capture it privately
     # and report only a fixed stage name on failure.
     def stage(name):

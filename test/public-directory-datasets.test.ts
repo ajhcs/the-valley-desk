@@ -227,7 +227,11 @@ test("publication pages list the datasets their paper produced", async () => {
     ]);
     assert.match(section, /Structural data<\/span><span>Protein Data Bank 9ZZ1<\/span><span class="access-tag access-open"/);
     const atlas = await d.text(pubPage("pmid:990000001"));
-    assert.match(atlas, /Data from this paper[\s\S]*Invented Estuary cohort survey[\s\S]*Estuary plasma proteome reference/);
+    assert.match(atlas, /Data from this paper[\s\S]*Invented Estuary cohort survey/);
+    assert.doesNotMatch(atlas, /Estuary plasma proteome reference/);
+    const linked = await d.text(page("pride:PXD990005"));
+    assert.match(linked, /Linked paper/);
+    assert.doesNotMatch(linked, /Paper that produced it/);
     assert.doesNotMatch(await d.text(pubPage("doi:10.9999/fixture/5")), /Data from this paper/);
     const pub = await d.json("/api/directory/publications/" + encodeURIComponent("doi:10.9999/fixture/4"));
     assert.deepEqual(pub.publication.datasets, ["pdb-set:doi:10.9999/fixture/4", geo]);
@@ -252,7 +256,7 @@ test("dataset JSON, sitemap and removals", async () => {
     assert.equal(all.total, 6);
     assert.equal(all.page, 1);
     assert.equal(all.page_size, 24);
-    assert.deepEqual(Object.keys(all.datasets[0]).sort(), [
+    assert.deepEqual(Object.keys(all.datasets[0]).filter((key) => key !== "paper_provenance").sort(), [
       "access", "accessions", "added", "checked", "connection", "counties", "data_type", "format", "id", "institutions",
       "label", "license", "papers", "released", "repository", "size", "source", "summary", "title", "topic", "url",
     ]);

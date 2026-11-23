@@ -49,6 +49,7 @@ class SuggestedDatasetTests(unittest.TestCase):
         self.assertIsNone(suggestion_identifier({**base, "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE123&email=private"}))
 
     def test_suggestion_metadata_is_qualified_by_real_phase_one_rules(self):
+        import hashlib
         import os
         import subprocess
         import sys
@@ -70,6 +71,10 @@ class SuggestedDatasetTests(unittest.TestCase):
             self.assertTrue(all(url.startswith("https://api.datacite.org/dois/") for url in urls))
             (root / "papers.json").write_text("[]")
             (root / "mentions-classified.jsonl").write_text("")
+            manifests = root / "doi-files"
+            manifests.mkdir()
+            manifest = manifests / (hashlib.sha256(b"10.5281/zenodo.123").hexdigest() + ".json")
+            manifest.write_text(json.dumps({"state": "complete", "files": ["measurements.csv"]}))
             checkout = Path(__file__).resolve().parents[1]
             env = dict(os.environ, TVD_DATASETS_WORK=str(root))
             subprocess.run([sys.executable, "-I", "-B", str(checkout / "scripts/datasets/build.py")], cwd=checkout, env=env, check=True, capture_output=True)

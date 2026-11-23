@@ -219,6 +219,38 @@ def geo_gds(acc):
     return store("geo-gds", acc, {"ok": bool(series), "series": series})
 
 
+# ENA returnFields identifies first_public as "date when made public". The
+# partner's public date is evidence of public availability, not registration.
+def ena_public_dates(kind, accessions):
+    result, field = ('study', 'study_accession') if kind == 'bioproject' else ('read_run', 'run_accession')
+    pattern = r'PRJ(?:NA|EB|DB)\d+' if kind == 'bioproject' else r'[SED]RR\d+'
+    todo = [a for a in accessions if re.fullmatch(pattern, a) and
+            (cached(kind, a) or {}).get('ok') and not (cached(kind, a) or {}).get('released')]
+    for i in range(0, len(todo), 40):
+        batch = todo[i:i + 40]
+        query = ' OR '.join(f'{field}="{a}"' for a in batch)
+        url = 'https://www.ebi.ac.uk/ena/portal/api/search?' + urllib.parse.urlencode({
+            'result': result, 'query': query, 'fields': f'{field},first_public',
+            'format': 'json', 'limit': len(batch)})
+        status, body = http(url)
+        if status != 200:
+            continue
+        try:
+            records = json.loads(body)
+        except (ValueError, TypeError):
+            continue
+        for record in records if isinstance(records, list) else []:
+            if not isinstance(record, dict):
+                continue
+            acc = record.get(field, '').upper()
+            value = gdate(record.get('first_public', ''))
+            if acc in batch and value:
+                rec = cached(kind, acc)
+                if rec and rec.get('ok') and not rec.get('released'):
+                    store(kind, acc, {**rec, 'released': value,
+                                      'release_source': 'ENA Portal API first_public'})
+
+
 # ---------------- BioProject / SRA / assembly ----------------
 def bioprojects(accs):
     todo = [a for a in accs if cached("bioproject", a) is None]
@@ -468,18 +500,20 @@ def main():
     list(pool.map(geo_series, sorted(series)))
     parents = {p for s in series for p in (cached("geo", s) or {}).get("subseries_of", [])}
     list(pool.map(geo_series, sorted(parents - series)))
-    # SuperSeries carry no summary of their own: fetch their first SubSeries for the description.
+    # Component citations can establish the link between a paper and a SuperSeries.
     supers = [cached("geo", s) for s in series | parents]
-    kids = {r["superseries_of"][0] for r in supers if r and r.get("ok") and r.get("superseries_of")
-            and re.match(r"(?i)this superseries", r.get("summary", ""))}
+    kids = {child for r in supers if r and r.get("ok") for child in r.get("superseries_of", [])}
     list(pool.map(geo_series, sorted(kids)))
     print("geo done", len(series), "parents", len(parents), flush=True)
     sra_resolve(sorted(by.get("sra-run", set()) | by.get("sra-study", set())))
     assemblies(sorted(by.get("assembly", [])))
     bps = set(by.get("bioproject", set()))
+    bps |= {b for s in series | parents | kids for b in (cached("geo", s) or {}).get("bioproject", [])}
     bps |= {(cached("sra", a) or {}).get("bioproject") for a in by.get("sra-run", set()) | by.get("sra-study", set())}
     bps |= {b for a in by.get("assembly", []) for b in (cached("assembly", a) or {}).get("bioprojects", [])[:1]}
     bioprojects(sorted(b for b in bps if b))
+    ena_public_dates("bioproject", sorted(b for b in bps if b))
+    ena_public_dates("sra", sorted(by.get("sra-run", set())))
     print("ncbi sequence records done", flush=True)
     list(pool.map(dbgap, sorted(by.get("dbgap", []))))
     list(pool.map(ega, sorted(by.get("ega", []))))

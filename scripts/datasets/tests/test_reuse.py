@@ -2,7 +2,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from reuse import adjudicate, more_than_year_before
+from reuse import adjudicate, more_than_year_before, replay_date_decisions
 from s4_classify import classify_occurrence
 
 
@@ -40,6 +40,42 @@ class ReuseTest(unittest.TestCase):
         self.assertTrue(decisions[0]['citation_match'])
         self.assertFalse(decisions[2]['citation_match'])
         self.assertEqual(adjudicate(rows[:2], papers, lambda k,a: {})[0]['multiple_papers'], False)
+
+    def test_legacy_replay_public_release_only(self):
+        dates = [('GSE295687', '2025-04-25', '2026-04-24', '2026-05-19'),
+                 ('GSE285912', '2025-01-06', '2026-05-31', '2026-06-12'),
+                 ('GSE225504', '2023-02-16', '2023-12-31', '2024-11-03'),
+                 ('GSE103322', '2017-01-01', '2017-11-30', '2024-02-01')]
+        rows, papers, cache, old = [], {}, {}, []
+        for accession, submitted, released, published in dates:
+            paper = 'doi:10.1234/' + accession.lower()
+            rows.append(dict(paper=paper, unit_type='geo', unit=accession, decision='produced'))
+            papers[paper] = dict(doi=paper, published=published)
+            cache['geo', accession] = dict(ok=True, submitted=submitted, released=released)
+            old.append(dict(paper=paper, unit_type='geo', unit=accession,
+                            original_decision='produced', decision='reused',
+                            reason='repository date more than 12 months before paper'))
+        replay = replay_date_decisions(old, rows, papers, lambda k, a: cache.get((k, a)))
+        self.assertEqual([d['decision'] for d in replay], ['produced'] * 3 + ['reused'])
+        self.assertEqual([d['repository_dates'][0]['field'] for d in replay], ['released'] * 4)
+        cache['geo', 'GSE295687'].pop('released')
+        missing = replay_date_decisions(old, rows, papers, lambda k, a: cache.get((k, a)))
+        self.assertEqual(missing[0]['decision'], 'reused')
+        self.assertIn('unresolved', missing[0]['date_replay'])
+
+    def test_replay_preserves_other_decisions_and_public_datacite_dates(self):
+        rows = [dict(paper='doi:10.1234/a', unit_type='doi', unit='10.1234/data', decision='produced')]
+        papers = {'doi:10.1234/a': dict(published='2024-06-01')}
+        cache = {'dates': [{'dateType': 'Available', 'date': '2010-01-01'},
+                           {'dateType': 'Issued', 'date': '2024-01-01'}], 'year': 2023}
+        old = [dict(**rows[0], original_decision='produced', reason='multiple papers claim accession')]
+        self.assertEqual(replay_date_decisions(old, rows, papers, lambda k,a: cache), old)
+        old[0].update(decision='reused', reason='repository date more than 12 months before paper')
+        replay = replay_date_decisions(old, rows, papers, lambda k,a: cache)[0]
+        self.assertEqual(replay['decision'], 'produced')
+        self.assertEqual(replay['repository_dates'][0]['field'], 'issued')
+        cache['dates'] = []
+        self.assertEqual(adjudicate(rows, papers, lambda k,a: cache)[0]['repository_dates'][0]['field'], 'publicationYear')
 
     def test_boundary_and_no_invented_production(self):
         self.assertFalse(more_than_year_before('2020-02-29', '2021-02-28'))

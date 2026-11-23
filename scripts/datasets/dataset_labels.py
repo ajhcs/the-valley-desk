@@ -82,3 +82,74 @@ def match_submitter(text, city='', state='', institutions=None):
     by_id = {i['id']: i for i in (institutions if institutions is not None else registry())}
     counties = sorted({by_id[i].get('homeCounty') for i in ids if by_id[i].get('homeCounty') in COUNTIES})
     return {'institutions': ids, 'counties': counties, 'matches': matches}
+
+
+def match_geo_institution(institution, city='', state='', institutions=None):
+    """Match GEO's explicit institution field, preserving its supplied address.
+
+    Exact registry names and aliases establish identity, including when the
+    contact address is elsewhere. Companies still need their regional site.
+    This must not be used on free text or fields with a different source role.
+    """
+    records = list(institutions if institutions is not None else registry())
+    value = _normalize(institution)
+    matches = []
+    for inst in records:
+        name = next((n for n in [inst.get('name', '')] + (inst.get('aliases') or [])
+                     if n and _normalize(n) == value), None)
+        if not name:
+            continue
+        if inst.get('kind') == 'company':
+            result = match_submitter(institution, city, state, [inst])
+            matches.extend(result['matches'])
+        else:
+            matches.append({'institution': inst['id'], 'matched_name': name,
+                            'submitter': institution, 'city': city or None,
+                            'state': state or None, 'matched_site': None,
+                            'regional_city': None})
+    ids = sorted({m['institution'] for m in matches})
+    by_id = {i['id']: i for i in records}
+    return {'institutions': ids,
+            'counties': sorted({by_id[i].get('homeCounty') for i in ids
+                                if by_id[i].get('homeCounty') in COUNTIES}),
+            'matches': matches}
+
+
+def _orthographic(value):
+    """Normalize punctuation and spacing, without spelling or token inference."""
+    return re.sub(r'\s+', ' ', re.sub(r'[^\w]+', ' ', _normalize(value))).strip()
+
+
+def match_paper_affiliation(affiliation, institutions=None):
+    """Match names literally present in one paper author affiliation.
+
+    Only the cited affiliation text is evidence. Registry parent relationships
+    and paper-level institution tags are deliberately not expanded. Companies
+    and outside organizations require a named regional site in the same text.
+    """
+    records = list(institutions if institutions is not None else registry())
+    segments = [_orthographic(part) for part in (affiliation or '').split(';')]
+    matches = []
+    for inst in records:
+        names = [inst.get('name', '')] + (inst.get('aliases') or [])
+        eligible = [(n, segment) for segment in segments for n in names
+                    if _contains(segment, _orthographic(n))]
+        if inst.get('kind') == 'company' or inst.get('id') in SKIP_OUTSIDE:
+            eligible = [(n, segment) for n, segment in eligible if any(
+                site.get('county') in COUNTIES and site.get('place')
+                and _contains(segment, _orthographic(site['place']))
+                for site in inst.get('sites') or [])]
+        if not eligible:
+            continue
+        name, segment = eligible[0]
+        sites = [s for s in inst.get('sites') or [] if s.get('county') in COUNTIES
+                 and s.get('place') and _contains(segment, _orthographic(s['place']))]
+        matches.append({'institution': inst['id'], 'matched_name': name,
+                        'affiliation': affiliation,
+                        'matched_site': sites[0]['place'] if sites else None})
+    ids = sorted({m['institution'] for m in matches})
+    by_id = {i['id']: i for i in records}
+    return {'institutions': ids,
+            'counties': sorted({by_id[i].get('homeCounty') for i in ids
+                                if by_id[i].get('homeCounty') in COUNTIES}),
+            'matches': matches}

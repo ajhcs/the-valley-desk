@@ -60,3 +60,24 @@ class SubmitterLabels(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class LiteralAffiliationLabels(unittest.TestCase):
+    def test_geo_explicit_institution_preserves_anomalous_address(self):
+        from dataset_labels import match_geo_institution
+        for value, expected in [('University of Pennsylvania', 'upenn'),
+                                ('Fox Chase Cancer Center', 'fox-chase')]:
+            result = match_geo_institution(value, 'Boston', 'MA')
+            self.assertIn(expected, result['institutions'])
+            self.assertEqual(result['matches'][0]['city'], 'Boston')
+        self.assertEqual(match_geo_institution('Merck', 'Boston', 'MA')['institutions'], [])
+        self.assertEqual(match_geo_institution('University of Pennsylvania, Boston')['institutions'], [])
+
+    def test_paper_evidence_is_literal_and_does_not_roll_up_parent(self):
+        from dataset_labels import match_paper_affiliation
+        result = match_paper_affiliation('Nuclear Dynamics, Fox Chase Cancer Center, Philadelphia, PA')
+        self.assertIn('fox-chase', result['institutions'])
+        self.assertNotIn('temple-health', result['institutions'])
+        self.assertIn('fox-chase', match_paper_affiliation('Fox-Chase Cancer Center, Philadelphia')['institutions'])
+        self.assertEqual(match_paper_affiliation('Merck, Seattle')['institutions'], [])
+        self.assertNotIn('upenn', match_paper_affiliation('University of Pennslvania, Philadelphia')['institutions'])
