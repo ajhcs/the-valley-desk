@@ -103,7 +103,10 @@ function publicRequest(path: string, method = 'GET', headers?: HeadersInit) {
   return new Request(publicOrigin + path, { method, headers });
 }
 
-const noRemovals = { prepare: () => ({ all: async () => ({ results: [] }) }) };
+const noRemovals = { prepare: (sql: string) => ({ all: async () => {
+  if (sql.includes("FROM research_listings")) throw new Error("Project table unavailable");
+  return { results: [] };
+} }) };
 
 test('public directory pages, aliases, fragments and metadata preserve their HTTP contracts', async () => {
   const environment = { DIRECTORY_PUBLIC_ENABLED: 'true', PUBLIC_ORIGIN: publicOrigin, VALLEY_DESK_DB: noRemovals,
@@ -264,6 +267,7 @@ test('Worker sitemap, JSON and fragments apply the same fresh removal set and fa
     VALLEY_DESK_DB: {
       prepare: (query: string) => ({ all: async () => {
         if (query.includes('public_directory_removals') && failing) throw Error('D1 unavailable');
+        if (query.includes('FROM research_listings')) throw Error('Project table unavailable');
         return { results: query.includes('public_directory_removals') ? removed : [] };
       } }),
     },

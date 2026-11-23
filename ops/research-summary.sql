@@ -40,3 +40,5 @@ WHERE a.field='institution' AND ra.root<>rb.root
 GROUP BY a.value,rb.root;
 -- Written last: its presence tells the pages that the refresh finished.
 INSERT INTO research_summary_kinds SELECT '','',kind,count(DISTINCT group_id),min(nullif(activity,'')),max(nullif(activity,'')),max(nullif(added,'')),count(*) FROM research_visible GROUP BY kind;
+-- Metadata-only updates can keep every total and date unchanged.
+INSERT INTO research_summary_kinds VALUES('data','','directory',0,lower(hex(randomblob(16))),NULL,NULL,0);

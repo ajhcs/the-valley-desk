@@ -190,12 +190,38 @@ def studies(state, private, *, replay=False):
         raise RuntimeError(f"Incomplete registry inventory for {state}: {len(seen)} of {expected}")
 
 
+def confirmed_outside(study, identifier, zips):
+    protocol = study["protocolSection"]
+    if protocol["identificationModule"]["nctId"] != identifier:
+        raise ValueError("ClinicalTrials.gov returned the wrong study")
+    locations = protocol.get("contactsLocationsModule", {}).get("locations")
+    if not isinstance(locations, list):
+        return False
+    for site in locations:
+        if not site.get("country"):
+            return False
+        if site["country"] != "United States":
+            continue
+        state = site.get("state")
+        if not state:
+            return False
+        if state in STATES:
+            postal = ZIP.fullmatch(text(site.get("zip")))
+            county_set = zips.get(postal[1], set()) if postal else set()
+            state_fips = "42" if state == "Pennsylvania" else "34"
+            if (name(site.get("city")) == "philadelphia" or not county_set
+                    or any(not code.startswith(state_fips) or code in COUNTIES for code in county_set)):
+                return False
+    return True
+
+
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("private", type=Path)
     cli.add_argument("--previous", type=Path)
     cli.add_argument("--date", type=date.fromisoformat, default=datetime.now(ZoneInfo("America/New_York")).date())
     cli.add_argument("--replay", action="store_true")
+    cli.add_argument("--verify-missing", action="store_true")
     args = cli.parse_args()
     private = args.private.resolve(strict=True)
     if not private.is_dir() or private.stat().st_mode & 0o077:
@@ -217,11 +243,26 @@ def main():
             if nct in inventory and inventory[nct] != study:
                 raise RuntimeError(f"Registry projections conflict for {nct}")
             inventory[nct] = study
+    data = [row for nct, study in sorted(inventory.items())
+            if (row := project(study, census, refs, args.date.isoformat(), existing))]
+    missing = existing.keys() - {r["id"] for r in data}
+    outside = []
+    if args.verify_missing:
+        for identifier in sorted(missing):
+            if not ID.fullmatch(identifier):
+                raise ValueError("Invalid listing identity in prior clinical snapshot")
+            try:
+                exact = json.loads(fetch(API + "/studies/" + identifier + "?fields=" + FIELDS, metadata,
+                                         reuse=args.replay))
+            except HTTPError as error:
+                if error.code == 404:
+                    continue
+                raise
+            if confirmed_outside(exact, identifier, census):
+                outside.append(identifier)
     after = json.loads(fetch(version_url, metadata, reuse=args.replay))
     if before != after:
         raise RuntimeError("ClinicalTrials.gov refreshed during the census. Retry with a new run directory.")
-    data = [row for nct, study in sorted(inventory.items())
-            if (row := project(study, census, refs, args.date.isoformat(), existing))]
     if not data:
         raise RuntimeError("No regional studies passed the geographic gate")
     output = private / "clinical-studies.jsonl"
@@ -231,7 +272,7 @@ def main():
     print(json.dumps({"version": before, "candidates": len(inventory), "published_projection": len(data),
                       "types": Counter(r["type"] for r in data),
                       "counties": Counter(c for r in data for c in r["counties"]),
-                      "previous_missing": len(existing.keys() - {r["id"] for r in data}),
+                      "previous_missing": len(missing), "confirmed_outside": outside,
                       "sha256": hashlib.sha256(output.read_bytes()).hexdigest()}, sort_keys=True))
 
 

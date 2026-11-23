@@ -34,10 +34,13 @@ test("paper-to-repository links show on both pages and respect removals", async 
   try {
     sqlite.exec(readFileSync("ops/directory-removals.sql", "utf8"));
     sqlite.exec(readFileSync("migrations/0046_research_directory.sql", "utf8"));
+    const projects = join(dir, "projects.json");
+    writeFileSync(projects, JSON.stringify(JSON.parse(readFileSync("src/content/public-directory-projects.json", "utf8"))
+      .filter((row: { id: string }) => [project, released].includes(row.id))));
     const input = join(dir, "papers.jsonl"), refs = join(dir, "refs.json");
     writeFileSync(input, execFileSync("python3", ["ops/research-fixture.py", "--count", "8"]));
     writeFileSync(refs, execFileSync("python3", ["ops/research-fixture.py", "--institutions"]));
-    sqlite.exec(execFileSync("python3", ["ops/load-research.py", "--publications", input, "--institutions", refs], { encoding: "utf8", maxBuffer: 1 << 26 }));
+    sqlite.exec(execFileSync("python3", ["ops/load-research.py", "--projects", projects, "--publications", input, "--institutions", refs], { encoding: "utf8", maxBuffer: 1 << 26 }));
 
     // Before the migration the pages render without the new sections.
     assert.doesNotMatch(await text("/discover/work/" + project), /Papers that link to this repository/);

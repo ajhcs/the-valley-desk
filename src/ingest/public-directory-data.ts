@@ -13,6 +13,7 @@ export type DirectoryProject = {
   code: string;
   name: string;
   purpose: string;
+  description?: string | null;
   topic: string;
   label: "Verified" | "Listed";
   institution?: string | null;

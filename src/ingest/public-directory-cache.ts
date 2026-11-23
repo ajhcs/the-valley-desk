@@ -23,6 +23,7 @@ const versionSql = `SELECT
   (SELECT group_concat(id) FROM (SELECT id FROM publication_removals ORDER BY id)) publications,
   (SELECT group_concat(id) FROM (SELECT id FROM study_removals ORDER BY id)) studies,
   (SELECT group_concat(enabled) FROM study_visibility) visibility,
+  (SELECT first FROM research_summary_kinds WHERE scope_field='data' AND scope_value='' AND kind='directory') revision,
   (SELECT group_concat(kind||':'||n||':'||works||':'||coalesce(added,'')||':'||coalesce(last,''),'|')
      FROM (SELECT * FROM research_summary_kinds WHERE scope_field='' AND scope_value='' ORDER BY kind)) totals`;
 

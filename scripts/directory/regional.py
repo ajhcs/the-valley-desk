@@ -115,10 +115,11 @@ def records(path):
 def sorted_rows(conn, table):
     return conn.execute('SELECT * FROM ' + table)
 
-def build_regional(inputs):
+def build_regional(inputs, *, accounts_only=False):
     network = json.loads((inputs / 'research-network.json').read_text())
     queue = json.loads((inputs / 'qualification-queue.json').read_text())
-    conn = sqlite3.connect((inputs / 'inventory.sqlite').resolve().as_uri() + '?mode=ro&immutable=1', uri=True)
+    inventory = inputs / 'inventory.sqlite'
+    conn = sqlite3.connect(inventory.resolve().as_uri() + '?mode=ro&immutable=1', uri=True) if accounts_only else sqlite3.connect(inventory)
     conn.row_factory = sqlite3.Row
     accounts = {row['key']: row for row in sorted_rows(conn, 'accounts')}
     repos = {row['id']: row for row in sorted_rows(conn, 'repos')}
@@ -218,7 +219,7 @@ def build_regional(inputs):
                 named_county = 'Philadelphia' if name == CITY else None
             anchor(key, official or name, county if official else named_county, url,
                    69 if official else 43)
-        elif row_id.startswith('public-health:unreviewed-profile-leads'):
+        elif row_id.startswith('public-health:unreviewed-profile-leads') and not accounts_only:
             location = f.get('profile_location') or ''
             company = f.get('profile_company') or ''
             name, county = affiliation(company)
@@ -264,6 +265,20 @@ def build_regional(inputs):
         name, county = domain(source)
         if name:
             anchor(target.rsplit(':', 1)[1], name, county, source, 35)
+
+    if accounts_only:
+        result = {}
+        for key, (_, values) in ranked_accounts.items():
+            account = accounts.get(key)
+            if not account or not account['login']:
+                continue
+            result[key] = {'login': account['login'], 'owner': {'login': account['login'], 'name': None,
+                           'kind': 'organization' if account['kind'] == 'Organization' else 'user'},
+                           'institution': values['institution'], 'connection': values['connection'],
+                           'source': values['sourceUrl'], 'county': values['county'],
+                           'countyBasis': 'institution' if values['county'] else None}
+        conn.close()
+        return result
 
     # Account-owned census memberships and direct repository leads on the
     # same named roster account are equivalent under the Listed rule.

@@ -49,7 +49,10 @@
       ]
     },
     "countyBasis": {
-      "enum": ["institution", "profile"]
+      "enum": [
+        "institution",
+        "profile"
+      ]
     },
     "profileLocation": {
       "$ref": "#/$defs/text"
@@ -179,6 +182,16 @@
     },
     "checked": {
       "$ref": "#/$defs/date"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "$defs": {

@@ -36,8 +36,9 @@ def load(args):
             raise ValueError("Expected an array of study IDs")
         for identifier in removed:
             print("INSERT OR IGNORE INTO study_removals(id) VALUES(" + quote(identifier) + ");")
-    if args.institutions:
-        content = args.institutions.read_text().strip()
+    institution_file = args.institutions or args.alias_reference
+    if institution_file:
+        content = institution_file.read_text().strip()
         refs = json.loads(content) if content.startswith("[") else [json.loads(line) for line in content.splitlines()]
         for ref in refs:
             for name in [ref["id"], ref["name"], *ref["aliases"]]:
@@ -45,13 +46,15 @@ def load(args):
                 if key in aliases and aliases[key] != ref["id"]:
                     raise ValueError("Ambiguous institution alias " + name)
                 aliases[key] = ref["id"]
-            print("INSERT INTO research_institutions VALUES(" + quote(ref["id"]) + "," + quote(compact(ref)) +
-                  ") ON CONFLICT(id) DO UPDATE SET record=excluded.record WHERE record<>excluded.record;")
-    projects = json.loads(args.projects.read_text()) if args.projects else []
+            if args.institutions:
+                print("INSERT INTO research_institutions VALUES(" + quote(ref["id"]) + "," + quote(compact(ref)) +
+                      ") ON CONFLICT(id) DO UPDATE SET record=excluded.record WHERE record<>excluded.record;")
+    project_file = args.projects or args.project_upserts
+    projects = json.loads(project_file.read_text()) if project_file else []
     if args.projects and not projects:
         raise ValueError("Expected the full nonempty project projection")
     for record in projects:
-        emit(record, "project", aliases)
+        emit(record, "project", aliases, args.respect_removals)
     if args.projects:
         ids = compact([r["id"] for r in projects])
         prune = ("DELETE FROM research_listings WHERE kind='project' AND id NOT IN "
@@ -63,12 +66,12 @@ def load(args):
         with args.publications.open() as source:
             for line in source:
                 if line.strip():
-                    emit(json.loads(line), "publication", aliases)
+                    emit(json.loads(line), "publication", aliases, args.respect_removals)
     if args.studies:
         with args.studies.open() as source:
             for line in source:
                 if line.strip():
-                    emit(json.loads(line), "study", aliases)
+                    emit(json.loads(line), "study", aliases, args.respect_removals)
 
 
 def citation_key(url):
@@ -87,7 +90,7 @@ def citation_key(url):
     return url.rstrip("/")
 
 
-def emit(r, kind, aliases):
+def emit(r, kind, aliases, respect_removals=False):
     pub = kind == "publication"
     study = kind == "study"
     if pub:
@@ -142,7 +145,15 @@ def emit(r, kind, aliases):
               ",record=json_set(excluded.record,'$.added',research_listings.added) " +
               "WHERE (record<>json_set(excluded.record,'$.added',research_listings.added) OR facets<>excluded.facets) AND " +
               "(excluded.kind='project' OR json_extract(excluded.record,'$.checked') >= json_extract(research_listings.record,'$.checked'));")
-    sql = insert + "VALUES(" + ",".join(map(quote, fields)) + ")" + update
+    guard = "true"
+    if respect_removals:
+        tables = {"project": ("public_directory_removals", "github_id"),
+                  "publication": ("publication_removals", "id"), "study": ("study_removals", "id")}
+        table, key = tables[kind]
+        identities = [r["id"], *(facets["alternate"] if pub else [])]
+        guard = f"NOT EXISTS(SELECT 1 FROM {table} WHERE {key} IN ({','.join(map(quote, identities))}))"
+    values = ",".join(map(quote, fields))
+    sql = insert + (f"SELECT {values} WHERE {guard}" if respect_removals else f"VALUES({values})") + update
     if len(sql.encode()) <= 100000:
         print(sql)
         return
@@ -156,7 +167,7 @@ def emit(r, kind, aliases):
     assembly = (f"SELECT CASE WHEN count(*)={len(chunks)} THEN group_concat(piece,'') ELSE '[]' END AS data "
                 f"FROM (SELECT piece FROM research_import_chunks WHERE digest={digest} ORDER BY part)")
     select = ",".join(f"json_extract(data,'$[{i}]')" for i in range(len(fields)))
-    print(insert + f"SELECT {select} FROM ({assembly}) WHERE true" + update)
+    print(insert + f"SELECT {select} FROM ({assembly}) WHERE {guard}" + update)
     print(f"DELETE FROM research_import_chunks WHERE digest={digest};")
 
 
@@ -164,4 +175,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for flag in ("projects", "publications", "institutions", "removals", "studies", "study-removals"):
         parser.add_argument("--" + flag, type=Path)
-    load(parser.parse_args())
+    parser.add_argument("--project-upserts", type=Path, help="Apply project additions and edits without pruning the catalog")
+    parser.add_argument("--alias-reference", type=Path, help="Canonicalize institution facets without loading the reference")
+    parser.add_argument("--respect-removals", action="store_true",
+                        help="Exclude recorded removals, including publication alternate IDs, at write time")
+    args = parser.parse_args()
+    if args.projects and args.project_upserts:
+        parser.error("Choose a full project projection or project upserts")
+    if args.projects and args.respect_removals:
+        parser.error("Use project upserts when retaining the current catalog")
+    if args.institutions and args.alias_reference:
+        parser.error("Choose one institution reference input")
+    load(args)
