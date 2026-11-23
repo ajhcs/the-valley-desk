@@ -85,8 +85,9 @@ def http(url, data=None, timeout=90, attempts=5, accept=None, ok404=False, conte
                 if e.code in (400, 404, 410) and ok404:
                     return e.code, e.read() if hasattr(e, "read") else b""
                 if e.code in (400, 401, 403, 404, 410):
-                    with _count_lock:
-                        FAILS[host] += 1
+                    if e.code != 404:
+                        with _count_lock:
+                            FAILS[host] += 1
                     return e.code, b""
                 retry_after = e.headers.get("Retry-After") if e.headers else None
                 delay = float(retry_after) if retry_after and retry_after.isdigit() else 2 ** attempt * 2
