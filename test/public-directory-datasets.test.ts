@@ -227,6 +227,12 @@ test("publication pages list the datasets their paper produced", async () => {
     const atlas = await d.text(pubPage("pmid:990000001"));
     assert.match(atlas, /Data from this paper[\s\S]*Invented Estuary cohort survey[\s\S]*Estuary plasma proteome reference/);
     assert.doesNotMatch(await d.text(pubPage("doi:10.9999/fixture/5")), /Data from this paper/);
+    const pub = await d.json("/api/directory/publications/" + encodeURIComponent("doi:10.9999/fixture/4"));
+    assert.deepEqual(pub.publication.datasets, ["pdb-set:doi:10.9999/fixture/4", geo]);
+    d.sqlite.exec("UPDATE dataset_visibility SET enabled=0");
+    assert.equal((await d.json("/api/directory/publications/" + encodeURIComponent("doi:10.9999/fixture/4"))).publication.datasets, undefined);
+    assert.doesNotMatch(await d.text("/"), /datasets/);
+    assert.doesNotMatch(await d.text("/discover/institution/fixture-institute"), /dataset/i);
   } finally {
     d.close();
   }

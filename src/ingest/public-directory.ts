@@ -385,7 +385,7 @@ async function datasetPapers(db: ResearchDb, d: Dataset): Promise<DatasetPaper[]
 async function datasetFacetChoices(db: ResearchDb, names: Names) {
   const found = await rows<{ field: string; value: string; name: string | null }>(
     db,
-    "SELECT f.field,f.value,max(CASE f.field WHEN 'repository' THEN json_extract(v.record,'$.repository') WHEN 'datatype' THEN json_extract(v.record,'$.data_type') WHEN 'topic' THEN json_extract(v.record,'$.topic') END) name FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE v.kind='dataset' AND f.field IN ('access','datatype','repository','institution','county','topic') GROUP BY f.field,f.value",
+    "SELECT field,value,name FROM research_summary_dataset_facets",
   );
   const pick = (field: string) => found.filter((row) => row.field === field);
   const sorted = (choices: [string, string][]) => choices.sort((a, b) => a[1].localeCompare(b[1]));
@@ -652,6 +652,7 @@ async function renderPublicDirectory(
             ...p,
             projects: related.filter((i) => i.kind === "project").map((i) => i.record.id),
             linked_projects: linkedCode.map((i) => i.record.id),
+            ...(hasDatasets ? { datasets: datasets.map((d) => d.id) } : {}),
             preprint_of: versions.some((v) => JSON.parse(v.record).id === p.preprint_of) ? p.preprint_of : null,
             published_as: versions.some((v) => JSON.parse(v.record).id === p.published_as) ? p.published_as : null,
           },

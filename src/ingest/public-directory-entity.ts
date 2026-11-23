@@ -42,6 +42,8 @@ function summaryOf(kinds: KindRow[], tallies: TallyRow[], scope?: { field: Scope
 async function storedSummary(db: ResearchDb, scope?: { field: ScopeField; value: string }) {
   const key = [scope?.field ?? "", scope?.value ?? ""];
   try {
+    const state = await rows<{ valid: number }>(db, "SELECT EXISTS(SELECT 1 FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset' AND first=CAST((SELECT enabled FROM dataset_visibility WHERE id=1) AS TEXT)) valid").catch(() => [{ valid: 1 }]);
+    if (!state[0]?.valid) return undefined;
     const kinds = await rows<KindRow & { ready: number }>(
       db,
       "SELECT kind,works,first,last,added,EXISTS(SELECT 1 FROM research_summary_kinds WHERE scope_field='' AND scope_value='') ready FROM research_summary_kinds WHERE scope_field=? AND scope_value=?",
