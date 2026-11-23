@@ -160,7 +160,9 @@ PRIMARY_HEALTH = re.compile(
     r"(?:human|public) health (?:research|study|studies|outcomes?|data|survey\w*|policy)|"
     r"(?:cancer|oncology|cardiovascular|diabetes|dementia) (?:research|study|patients?|treatment|data|cohort)|"
     r"(?:medical|biomedical) (?:research|study|studies|data|care)|human disease|clinical medicine|patient care|"
-    r"clinical (?:isolates?|specimens?|diagnos\w*)|infectious disease|vaccine(?: development| efficacy)?|"
+    r"clinical (?:isolates?|specimens?|diagnos\w*)|infectious disease|vaccin\w*|"
+    r"(?:human|infant|patient) (?:nasal |oral |blood |stool )?(?:swabs?|samples?|specimens?)|"
+    r"(?:treatments?|therap\w*) (?:for|of) (?:patients?|cancer|disease|fibrosis)|"
     r"(?:preclinical|subclinical) \w+ disease)\b", re.I)
 LAB_EVIDENCE = re.compile(
     r"\b(?:cell lines?|cell cultures?|cultured cells?|stem cells?|organoids?|single[- ]cell|"
@@ -170,7 +172,9 @@ LAB_EVIDENCE = re.compile(
     r"embryo\w*|neurons?|neuroscience|immun\w*|genome[- ]wide|genomic sequencing|"
     r"rna sequencing|dna sequencing|transcription factor|gene silencing|"
     r"gene regulation|ribosom\w*|methylom\w*|epigen\w*|"
-    r"molecular structure|cell differentiation|b cell|t cell|hepatocyte\w*|"
+    r"molecular structure|(?:dna|rna) polymerase|satellite (?:dna|repeats?)|"
+    r"(?:gut|intestinal|murine|human) microbiot\w*|microbial communities|"
+    r"(?:mouse|murine|mammalian) (?:model|germline)|cell differentiation|b cell|t cell|hepatocyte\w*|"
     r"neural circuits?|brain imaging|eeg|meeg|electroencephalograph\w*|dna methylation|"
     r"humanmethylation450|hm450|laboratory (?:experiments?|stud\w*|samples?|data)|in vitro|"
     r"(?:mouse|mice|murine|rats?|zebrafish|drosophila|c\. elegans|yeast|bacteri\w*|virus\w*|viral)"
@@ -205,12 +209,15 @@ def health_decision(d, medical_creator=False):
     primary = PRIMARY_HEALTH.search(re.sub(
         r"\b(?:implications?|relevance|potential|may be relevant)\b[^.!?]*", " ", text, flags=re.I))
     strong_title = bool(MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title) or LAB_EVIDENCE.search(title))
+    structural = bool(re.search(r"\bstructural biology\b", subjects, re.I))
     if (EXCLUDED_CONTEXT.search(title) or (EXCLUDED_CONTEXT.search(text) and not strong_title)) and not primary:
         return False, "excluded field, environmental, agriculture or plant context"
-    if NON_HEALTH.search(title) and not (primary or strong_title):
+    if NON_HEALTH.search(title) and not (primary or strong_title or structural):
         return False, "non-biological research title"
-    if MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title):
+    if MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title) or PRIMARY_HEALTH.search(title):
         return True, "health or biomedical evidence in title"
+    if primary:
+        return True, "health or biomedical evidence in description"
     if MEDICAL_CONTEXT.search(text):
         return True, "health or biomedical evidence in description"
     if LAB_EVIDENCE.search(title):

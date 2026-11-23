@@ -69,6 +69,24 @@ class ScopeRulesTest(unittest.TestCase):
         self.assertTrue(health_decision(record)[0])
         self.assertFalse(nonmedical_recovery_decision(record['title'], record['descriptions'])[0])
 
+    def test_previously_excluded_real_scope_patterns(self):
+        records = (
+            {'title': 'Drosophila factor localizes to satellite DNA foci'},
+            {'title': 'Human DNA polymerase theta in complex with inhibitor', 'subjects': ['Structural biology']},
+            {'title': 'Respiratory virus polymerase with inhibitor', 'subjects': ['Structural biology']},
+            {'title': 'Infant nasal swab raw sequence reads'},
+            {'title': 'Breath volatilome shaped by gut microbiota'},
+            {'title': 'An mRNA vaccine protects against infection'},
+            {'title': 'Treatment for fibrosis with an inhibitor'},
+            {'title': 'Fetal germline in a mouse model'},
+            {'title': 'Analysis of clinical isolates', 'descriptions': ['The organism is also found in soil.']},
+        )
+        for record in records:
+            self.assertTrue(health_decision(record)[0], record)
+        for title in ('Soil microbial gene expression', 'Plant cell cultures',
+                      'Field study of zebrafish behavior', 'Agricultural crop transcriptomics'):
+            self.assertFalse(health_decision({'title': title})[0], title)
+
     def test_generic_junk_requires_no_description(self):
         for title in ('KP RC Reports b12', 'VWM2'):
             self.assertTrue(generic_junk_decision(title, ['Administrative report.'])[0], title)

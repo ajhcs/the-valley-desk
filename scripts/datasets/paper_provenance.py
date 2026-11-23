@@ -16,7 +16,7 @@ _ORIGINAL = re.compile(
     r"(?:study|paper|work|research|article)\b", re.I)
 _REUSE = re.compile(r"\b(?:previously|prior(?:ly)?|existing|publicly available|obtained from|downloaded from|retrieved from|reused|re-analys[ei]d)\b", re.I)
 _DEPOSIT = re.compile(
-    r"\b(?:data|dataset|reads|measurements|structures)\b.{0,90}\b(?:were|was|has been|have been) "
+    r"\b(?:data|datasets?|reads|measurements|structures)\b.{0,90}\b(?:are|is|were|was|has been|have been) "
     r"(?:deposited|submitted|uploaded|archived)\b", re.I)
 _RESOURCE_ROW = re.compile(r"\b(?:data|dataset|reads|structures|recordings)\b.*\|\s*this paper\s*\|", re.I)
 
@@ -40,7 +40,9 @@ def paper_provenance(mentions, decisions):
         exact = str(mention.get('exact') or mention.get('unit') or '')
         in_scope = bool(re.search(r'data.*(?:availab|access|sharing)|methods|materials', section, re.I))
         refers_to_accession = bool(exact and exact.lower() in text.lower())
-        deposit_statement = (mention.get('unit_type') in ('geo', 'pdb', 'emdb', 'pride', 'doi', 'arrayexpress')
+        deposit_statement = (mention.get('unit_type') in (
+                                 'geo', 'pdb', 'emdb', 'pride', 'doi', 'arrayexpress',
+                                 'bioproject', 'sra-run', 'sra-study', 'assembly')
                              and re.search(r'data.*(?:availab|access|sharing)', section, re.I)
                              and _DEPOSIT.search(text))
         source_row = 'key resources table' in section.lower() and _RESOURCE_ROW.search(text)

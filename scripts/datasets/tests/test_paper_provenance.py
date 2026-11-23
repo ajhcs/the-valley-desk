@@ -18,6 +18,13 @@ class ProvenanceTests(unittest.TestCase):
     def test_magnet_deposit_without_origin_is_linked(self):
         self.assertEqual(self.relation(), 'linked')
 
+    def test_bioproject_article_deposition_is_produced(self):
+        row = dict(self.row, unit_type='bioproject', unit='PRJNA123', exact='PRJNA123',
+                   clause='The datasets presented in this study are deposited under accession PRJNA123.')
+        self.assertEqual(self.relation(row), 'produced')
+        reused = dict(row, clause='Previously published data were deposited under accession PRJNA123.')
+        self.assertEqual(self.relation(reused), 'linked')
+
     def test_explicit_original_and_repository_citation(self):
         row = dict(self.row, clause='Data generated in this study are available as phs001539.')
         self.assertEqual(self.relation(row), 'produced')

@@ -34,6 +34,7 @@ NODESC = collections.Counter()
 FILE_POOL = set()
 SCOPE = {}
 AFFILIATIONS = {}
+EXISTING = set()
 FILE_CACHE = os.environ.get("TVD_DATASET_FILE_CACHE") or WORK / "doi-files"
 RATE_LIMITED = set()
 CODE_DESC = re.compile(r"\b(the code|this code|source code|code (?:for|to|used|that|simulates)|scripts? (?:for|to|used)|"
@@ -387,17 +388,20 @@ def literal_institutions(paper_id, pmcid):
             for i in match_paper_affiliation(aff, REG.values())["institutions"]}
 
 
-def listed_fields(paper_rows, repo_note, provenance):
+def listed_fields(paper_rows, repo_note, provenance, existing):
     producing = {edge["paper"] for edge in provenance if edge["relation"] == "produced"}
     regional = [(p, literal_institutions(p["id"], p.get("pmcid")))
-                for p in paper_rows if p["id"] in producing]
+                for p in paper_rows if existing or p["id"] in producing]
     regional = [(p, ids) for p, ids in regional if ids]
     if not regional:
         return [], [], "", ""
+    explicit = [(p, ids) for p, ids in regional if p["id"] in producing]
+    regional = explicit or regional
     first = regional[0][0]
     insts = sorted({i for _, ids in regional for i in ids})
     counties = sorted(counties_for(insts))
-    conn = f"A producing paper lists a regional affiliation. {repo_note[0].upper()}{repo_note[1:]}"
+    relation = "producing" if explicit else "linked"
+    conn = f"A {relation} paper lists a regional affiliation. {repo_note[0].upper()}{repo_note[1:]}"
     return insts, counties, conn, europepmc(first["pmcid"])
 
 
@@ -582,7 +586,7 @@ def build_paper_listing(lid, u, papers, decisions):
             note = "the repository supplies submitter details at the source."
         else:
             note = "the repository record does not name a submitter."
-        insts, counties, conn, src = listed_fields(prow, note, provenance)
+        insts, counties, conn, src = listed_fields(prow, note, provenance, lid in EXISTING)
         if not insts:
             DROPS["listing: no producing paper with a literal regional affiliation"] += 1
             return None
@@ -675,6 +679,9 @@ ORDER = ["id", "title", "summary", "data_type", "access", "repository", "accessi
 
 
 def main():
+    existing_path = os.environ.get("TVD_DATASET_EXISTING")
+    if existing_path:
+        EXISTING.update(record["id"] for record in read_jsonl(existing_path))
     affiliation_path = os.environ.get("TVD_DATASET_AFFILIATIONS")
     if affiliation_path:
         with open(affiliation_path) as f:
