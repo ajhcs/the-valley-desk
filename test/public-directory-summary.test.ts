@@ -151,6 +151,10 @@ test("search counts stop at the cap and still page through the most relevant lis
     const second = await researchQuery(db, new URLSearchParams("q=tissue&page=2"), institutions, 30);
     assert.equal(second.page, 2);
     assert.equal(second.items.length, 24);
+    // A search that also names an institution uses the same capped, relevance-ordered path.
+    const named = await researchQuery(db, new URLSearchParams("q=estuary"), institutions, 30);
+    assert.equal(named.more, true, "an institution-name search is capped too");
+    assert.equal(named.items.length, 24);
     const narrow = await researchQuery(db, new URLSearchParams("q=tissue&county=camden"), institutions, 30);
     assert.ok(!narrow.more || narrow.total === 30);
   } finally {
