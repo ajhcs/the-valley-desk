@@ -12,9 +12,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import COUNTIES, TODAY, read_gz_json, read_jsonl, registry, ror_index, strip_markup, work_dir, write_jsonl
-from reuse import adjudicate
+from reuse import adjudicate, identifiers, more_than_year_before
 from datacite_rules import datacite_access, datacite_license, datacite_released, \
-    generic_supplement_decision, health_decision, is_supplement, topic_for_text
+    generic_supplement_decision, health_decision, is_supplement, NONMEDICAL_TITLE, topic_for_text
 from dataset_description import data_type_for_record, pick_summary
 from dataset_labels import match_submitter
 
@@ -25,8 +25,15 @@ DROPS = collections.Counter()
 EVIDENCE = {}
 NODESC = collections.Counter()
 CODE_DESC = re.compile(r"\b(the code|this code|source code|code (?:for|to|used|that|simulates)|scripts? (?:for|to|used)|"
-                       r"software|matlab code|python code|r code|r package|python package|jupyter|github)\b", re.I)
+                       r"replication (?:package|code)|software|matlab code|python code|r code|r package|"
+                       r"python package|jupyter|github)\b", re.I)
 DATA_DESC = re.compile(r"\b(data|dataset|datasets|images|recordings|measurements|sequenc\w*|reads|files)\b", re.I)
+NO_INCLUDED_DATA = re.compile(
+    r"\b(?:does not|do not) (?:contain|include|provide) (?:any |the )?(?:underlying |source |raw )?data\b|"
+    r"\b(?:data|datasets?) (?:are|is) not included\b",
+    re.I,
+)
+NONMEDICAL_PAPER = re.compile(r"\b(?:phylogen\w*|rumen|livestock|calves|ant colonies|ant evolution)\b", re.I)
 
 
 def inst_names(ids, limit=3):
@@ -52,13 +59,11 @@ def datacite_creator_ids(d):
     ids = set()
     for aff in d.get("affiliations", []):
         ror = (aff.get("id") or "").rstrip("/").rsplit("/", 1)[-1].lower()
-        if ror in RORS:
-            inst = RORS[ror]
-            if inst.get("kind") != "company" or match_submitter(
-                    aff.get("name"), institutions=[inst])["institutions"]:
-                ids.add(inst["id"])
-        elif not ror:
-            ids.update(submitter_ids([aff.get("name")]))
+        matches = submitter_ids([aff.get("name")])
+        if ror in RORS and RORS[ror]["id"] in matches:
+            ids.add(RORS[ror]["id"])
+        else:
+            ids.update(matches)
     return sorted(ids)
 
 
@@ -67,6 +72,10 @@ def datacite_scope(d, source):
     drop, rule = generic_supplement_decision(title, d.get("descriptions"))
     if drop or is_supplement(title, d):
         DROPS[f"{source}: {rule or 'journal supplement file'}"] += 1
+        return None
+    description = strip_markup(" ".join(d.get("descriptions") or []))
+    if CODE_DESC.search(f"{title} {description}") and NO_INCLUDED_DATA.search(description):
+        DROPS[f"{source}: code package without included data"] += 1
         return None
     keep, rule = health_decision(d)
     if not keep:
@@ -110,6 +119,22 @@ def paper_units(papers):
     decisions = adjudicate(rows, papers, read_cache)
     write_jsonl(WORK / "reuse-decisions.jsonl", decisions)
     overrides = {(d["paper"], d["unit_type"], d["unit"]): d for d in decisions if d["decision"] == "reused"}
+    ambiguous = set()
+    for d in decisions:
+        if d["original_decision"] != "produced" or not d["citation_match"] or not any(
+                more_than_year_before(value["date"], d["paper_published"])
+                for value in d["repository_dates"]):
+            continue
+        own = identifiers(papers[d["paper"]])
+        # Another identifier of the same type is evidence of another paper,
+        # whereas the paper can have more than one kind of identifier.
+        same_type = {identifier.split(":", 1)[0] for identifier in own}
+        for value in d["repository_citations"]:
+            citation = value["citation"]
+            others = identifiers(citation if isinstance(citation, dict) else {"id": citation}) - own
+            if any(identifier.split(":", 1)[0] in same_type for identifier in others):
+                ambiguous.add((d["paper"], d["unit_type"], d["unit"]))
+                break
     rows = [dict(r, decision=overrides[(r["paper"], r["unit_type"], r["unit"])]["decision"],
                  reason=overrides[(r["paper"], r["unit_type"], r["unit"])]["reason"])
             if r["decision"] == "produced" and (r["paper"], r.get("unit_type"), r.get("unit")) in overrides
@@ -120,7 +145,14 @@ def paper_units(papers):
             if r["decision"] == "unclear" and r["reason"] != "no deposit cue":
                 key = r["reason"]
             DROPS["mention: " + key] += 1
-    produced = [r for r in rows if r["decision"] == "produced"]
+    produced = []
+    for r in rows:
+        if r["decision"] != "produced":
+            continue
+        if (r["paper"], r["unit_type"], r["unit"]) in ambiguous:
+            DROPS["mention: old accession with multiple repository citations and ambiguous origin"] += 1
+        else:
+            produced.append(r)
     code = [r for r in rows if r["decision"] == "code"]
     units = {}  # listing id -> dict(kind, accs, papers, mentions)
 
@@ -377,6 +409,12 @@ def build_paper_listing(lid, u, papers):
         DROPS["listing: no repository description"] += 1
         NODESC[kind] += 1
         return None
+    titles = " ".join([rec["title"], *(p.get("title") or "" for p in prow)])
+    if kind != "doi" and (topic == "Other science" or NONMEDICAL_TITLE.search(titles)
+                          or NONMEDICAL_PAPER.search(titles)):
+        if not health_decision({"title": titles, "descriptions": [rec["summary"]]})[0]:
+            DROPS["paper-derived: nonmedical research title"] += 1
+            return None
     if kind in ("dbgap", "ega") and not verified_note and not any(
             re.search(r"\b(deposit\w*|submitted|uploaded)\b", m.get("clause") or m.get("sentence") or "", re.I) for m in u["mentions"]):
         # Controlled-access studies are often large consortia reused by many papers; list only with a deposition verb.

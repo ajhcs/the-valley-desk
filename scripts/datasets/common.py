@@ -10,10 +10,13 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
+from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 USER_AGENT = "valley-desk-research/1.0"
-TODAY = "2026-11-23"
+TODAY = date.fromisoformat(os.environ.get("TVD_DATASETS_DATE") or
+                           datetime.now(ZoneInfo("America/New_York")).date().isoformat()).isoformat()
 CHECKOUT = Path(__file__).resolve().parents[2]
 REGISTRY_PATH = CHECKOUT / "src" / "content" / "public-directory-institutions.json"
 COUNTIES = {"Bucks", "Chester", "Delaware", "Montgomery", "Philadelphia",

@@ -489,6 +489,7 @@ def main():
     list(pool.map(arrayexpress, sorted(by.get("arrayexpress", []))))
     list(pool.map(doi, sorted(by.get("doi", []))))
     save_counts("repositories")
+    enrich_publication_metadata()
     print("done", flush=True)
 
 

@@ -26,6 +26,30 @@ class SubmitterLabels(unittest.TestCase):
         self.assertEqual(match_submitter('Philadelphia')['institutions'], [])
         self.assertNotIn('merck', match_submitter('Supermerck West Point')['institutions'])
 
+    def test_observed_chop_typo_requires_independent_location(self):
+        typo = "Children's Hospital of Phildelphia"
+        r = match_submitter(typo, city='Philadelphia', state='PA')
+        self.assertIn('chop', r['institutions'])
+        self.assertEqual(r['matches'][0]['matched_name'], typo)
+        self.assertEqual(r['matches'][0]['submitter'], typo)
+        self.assertNotIn('chop', match_submitter(typo)['institutions'])
+        self.assertNotIn('chop', match_submitter(typo, 'Seattle', 'WA')['institutions'])
+        self.assertNotIn('upenn', match_submitter('University of Pennslvania')['institutions'])
+
+    def test_region_cities_and_full_state_names(self):
+        cases = [
+            ("Children’s Hospital of Philadelphia", "Philadelphia", "Pennsylvania", "chop"),
+            ("University of Pennsylvania", "", "", "upenn"),
+            ("Princeton University", "Plainsboro", "New Jersey", "princeton-university"),
+            ("Thomas Jefferson University", "Philadelphia", "Pennsylvania", "thomas-jefferson-university"),
+        ]
+        for name, city, state, expected in cases:
+            with self.subTest(name=name):
+                self.assertIn(expected, match_submitter(name, city, state)['institutions'])
+        self.assertNotIn('upenn', match_submitter('University of Pennsylvania', 'Seattle', 'WA')['institutions'])
+        self.assertNotIn('upenn', match_submitter('University of Pennsylvania', state='WA')['institutions'])
+        self.assertNotIn('merck', match_submitter('Merck', 'Plainsboro', 'NJ')['institutions'])
+
     def test_county_comes_only_from_home_county(self):
         inst = [{'id': 'example', 'name': 'Example University', 'aliases': [], 'kind': 'university',
                  'homeCounty': 'Bucks', 'sites': [{'place': 'Philadelphia', 'state': 'PA', 'county': 'Philadelphia'}]}]

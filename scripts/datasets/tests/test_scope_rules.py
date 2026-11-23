@@ -22,6 +22,28 @@ class ScopeRulesTest(unittest.TestCase):
         ):
             self.assertTrue(health_decision(record)[0], record)
 
+    def test_ambiguous_scientific_language_does_not_establish_scope(self):
+        records = (
+            {'title': 'Plant disease resistance', 'descriptions': ['Plants received treatment in the experiment.']},
+            {'title': 'Ecosystem health in wetlands', 'descriptions': ['The health of the ecosystem is assessed.']},
+            {'title': 'Animal movement patterns', 'descriptions': ['Animals were assigned to treatment groups.']},
+            {'title': 'Seismic observations', 'descriptions': ['A diagnostic treatment of sensor data.']},
+            {'title': 'Species diversity and ecology', 'descriptions': ['These results have implications for human health research.']},
+            {'title': 'Experimental measurements', 'descriptions': ['Disease, health and treatment were assessed.']},
+        )
+        for record in records:
+            self.assertFalse(health_decision(record)[0], record)
+
+    def test_explicit_medical_context_survives(self):
+        records = (
+            {'title': 'Measurements', 'descriptions': ['Clinical trial outcomes were collected from participants.']},
+            {'title': 'Measurements', 'descriptions': ['The data describe patient care in a hospital.']},
+            {'title': 'Measurements', 'subjects': ['FOS: Clinical medicine']},
+            {'title': 'Ecology of cancer research', 'subjects': ['Cancer research']},
+        )
+        for record in records:
+            self.assertTrue(health_decision(record)[0], record)
+
     def test_supplement_labels(self):
         for title in ('Table S2.xlsx', 'Figure S3', 'Fig. S3', 'Supplementary data', 'Code and data'):
             self.assertTrue(generic_supplement_decision(title, [])[0], title)

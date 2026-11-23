@@ -84,31 +84,56 @@ def is_supplement(title, d):
 
 NEURAL_NET = re.compile(r"\b(?:deep |artificial |graph |convolutional )?neural[- ]networks?\b|\bmolecular dynamics\b|\bplasmas?\b", re.I)
 
-# Generic biology and molecular methods alone do not establish biomedical purpose.
-BIOMEDICAL = re.compile(
-    r"\b(?:patients?|clinical|clinic|hospital\w*|disease\w*|disorders?|cancer\w*|tumou?r\w*|"
-    r"oncolog\w*|carcinoma\w*|diabet\w*|cardiovascular|stroke|dementia|psychiatr\w*|"
-    r"health\w*|medical|medicine|"
-    r"biomedic\w*|surg\w*|therap\w*|treatment\w*|diagnos\w*|pharmac\w*|"
-    r"vaccin\w*|epidemiolog\w*|nurs\w*|rehabilit\w*|radiolog\w*|"
-    r"human health|human disease|drug discovery|drug development|drug resistance|"
-    r"patient care|clinical trial\w*|electronic health records?|medical imaging)\b", re.I)
+# Evidence must name a medical research context; words such as "disease",
+# "health", "treatment", and "diagnosis" have broad nonmedical uses.
+MEDICAL_CONTEXT = re.compile(
+    r"\b(?:clinical (?:trial\w*|stud\w*|research|care|outcomes?|data|patients?|practice|cohort\w*|"
+    r"diagnos\w*|treatment\w*|assessment\w*|sample\w*|records?)|"
+    r"patients?(?:'s|')? (?:with|diagnos\w*|receiv\w*|undergo\w*|treat\w*|care|outcomes?|samples?|records?)|"
+    r"(?:hospital|healthcare|health care) (?:patients?|admissions?|care|records?|data|services?|settings?)|"
+    r"(?:human|public|population) health (?:research|study|studies|outcomes?|data|survey\w*|care|intervention\w*|policy|policies)|"
+    r"(?:medical|biomedical) (?:research|stud\w*|data|science\w*|imaging|care|treatment\w*|diagnos\w*|device\w*|applications?)|"
+    r"(?:cancer|oncology|cardiovascular|diabetes|dementia) (?:research|stud\w*|patients?|treatment\w*|therapy|therapies|diagnos\w*|care|risk|outcomes?|data|cohort\w*)|"
+    r"(?:human|patient) (?:disease\w*|patients?|clinical samples?|health records?)|"
+    r"(?:drug discovery|drug development|pharmaceutical research|clinical pharmacology|"
+    r"electronic health records?|public health surveillance|medical imaging|patient care|"
+    r"clinical medicine|health sciences|health policy|healthcare delivery))\b", re.I)
+# In a title or controlled subject label, these disease-specific terms are
+# meaningful evidence. Avoid single ambiguous words in free-text descriptions.
+MEDICAL_LABEL = re.compile(
+    r"\b(?:cancer|oncolog\w*|carcinoma\w*|diabet\w*|cardiovascular|dementia|"
+    r"psychiatr\w*|clinical medicine|medical science\w*|biomedical science\w*|"
+    r"medical research|health sciences|public health|clinical trial\w*|patient care)\b", re.I)
 FOS_BIOMEDICAL = re.compile(
     r"\bFOS:\s*(?:health sciences|clinical medicine|basic medicine|medical and health sciences|"
     r"medical biotechnology|health biotechnology|other medical science)\b", re.I)
+NONMEDICAL_TITLE = re.compile(
+    r"\b(?:ecolog\w*|ecosystem\w*|biodivers\w*|plants?|crop\w*|forest\w*|"
+    r"wildlife|animal movement\w*|bird\w*|geophys\w*|seismic\w*|earthquake\w*|"
+    r"geolog\w*|ocean\w*|climate|atmospher\w*|agricultur\w*)\b", re.I)
 
 
 def health_decision(d):
-    """Return evidence-based (keep, rule) for health or biomedical scope."""
+    """Return (keep, evidence location) for health or biomedical scope."""
     title = NEURAL_NET.sub(" ", d.get("title") or "")
     descriptions = d.get("descriptions") or []
     if isinstance(descriptions, str):
         descriptions = [descriptions]
     desc = NEURAL_NET.sub(" ", " ".join(str(x or "") for x in descriptions)[:12000])
-    subjects = " ; ".join(str(x or "") for x in (d.get("subjects") or []))
-    for label, text in (("title", title), ("description", desc), ("subjects", subjects)):
-        if BIOMEDICAL.search(text) or (label == "subjects" and FOS_BIOMEDICAL.search(text)):
-            return True, "health or biomedical evidence in " + label
+    subjects = d.get("subjects") or []
+    if isinstance(subjects, str):
+        subjects = [subjects]
+    subjects = " ; ".join(str(x or "") for x in subjects)
+    if MEDICAL_CONTEXT.search(title) or MEDICAL_LABEL.search(title):
+        return True, "health or biomedical evidence in title"
+    if FOS_BIOMEDICAL.search(subjects) or MEDICAL_CONTEXT.search(subjects) or MEDICAL_LABEL.search(subjects):
+        return True, "health or biomedical evidence in subjects"
+    # An incidental mention in an abstract does not override a clearly
+    # unrelated research title. Explicit medical titles/subjects still win.
+    if NONMEDICAL_TITLE.search(title):
+        return False, "nonmedical research title"
+    if MEDICAL_CONTEXT.search(desc):
+        return True, "health or biomedical evidence in description"
     return False, "no health or biomedical evidence"
 
 
