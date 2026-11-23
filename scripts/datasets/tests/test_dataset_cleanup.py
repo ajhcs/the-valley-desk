@@ -35,6 +35,9 @@ class DatasetCleanup(unittest.TestCase):
         self.assertTrue(thin_summary("The repository entries describe 12 experimentally determined molecular structures."))
         self.assertEqual(rebuild_summary(brief, title, f"{brief} Experiment 1: {design}"),
                          f"{title} — {design}")
+        treatment = "On day 14, cells were treated with vehicle and RNA was harvested."
+        self.assertEqual(rebuild_summary(brief, title, f"{brief} {treatment}", paper_title=title),
+                         f"{title} — {treatment}")
         self.assertEqual(rebuild_summary(brief, title, brief, paper_title="Expression in cultured cells"),
                          "Data from: Expression in cultured cells.")
 

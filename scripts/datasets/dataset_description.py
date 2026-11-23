@@ -55,9 +55,10 @@ def rebuild_summary(summary, title, *details, paper_title=None):
     title_key = re.sub(r"\W+", " ", title.casefold()).strip()
     name = one_sentence(title, limit=115).rstrip(".") if title else ""
     budget = 240 - len(name) - (3 if name else 0)
-    shortened = None
+    backup = None
     for text in details:
         cleaned = re.sub(r"https?://\S+|doi:\s?\S+", "", strip_markup(text))
+        candidates = []
         for sentence in re.split(r"(?<=[a-z0-9\)\]%])[.!?]\s+(?=[A-Z])", cleaned):
             sentence = re.sub(r"^(?:overall design|experiment \d+|design|methods)\s*:\s*", "", sentence, flags=re.I).strip()
             if (thin_summary(sentence) or SKIP.search(sentence)
@@ -68,16 +69,18 @@ def rebuild_summary(summary, title, *details, paper_title=None):
             if not detail:
                 continue
             combined = f"{name} — {detail}" if name else detail
-            if len(sentence) <= budget - 1:
-                return combined
-            if shortened is None:
-                shortened = combined
-        if shortened is not None:
-            # Prefer the repository design to background text from other fields.
-            return shortened
+            material = DATA.search(sentence) or re.search(r"\b(?:RNA|DNA|cells?|tissue)\b", sentence, re.I)
+            method = material and (ACTION.search(sentence) or re.search(
+                r"\b(?:harvest\w*|extract\w*|treat\w*|differentiated|time course)\b", sentence, re.I))
+            if method:
+                candidates.append((len(sentence) <= budget - 1, combined))
+            elif backup is None:
+                backup = combined
+        if candidates:
+            return max(candidates, key=lambda candidate: candidate[0])[1]
     if paper_title:
         return "Data from: " + one_sentence(paper_title, limit=229)
-    return summary
+    return backup or summary
 
 
 def data_type_for_record(text, prefix="", formats=()):
