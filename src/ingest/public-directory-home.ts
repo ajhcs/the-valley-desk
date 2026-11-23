@@ -84,7 +84,7 @@ export function renderDirectoryHome(
       <h1>Healthcare research in the Delaware Valley</h1>
       <p class="lede">${lede}</p>
       <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput()}</form>
-      ${research ? `<p class="home-researchers">Looking for collaborators? Search a subject to see who in the region works on it.</p>` : ""}
+      ${research ? `<p class="home-researchers">Looking for collaborators? Search a subject to see who in the region works on it. Know of something we missed? <a href="/discover/suggest">Suggest it</a>.</p>` : ""}
       ${home.examples.length ? `<p class="home-examples">For example: ${home.examples.map((example) => `<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join(", ")}</p>` : ""}
     </section>
     <div class="home-grid">

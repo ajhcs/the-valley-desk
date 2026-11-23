@@ -10,6 +10,7 @@ import {
   count,
   evidenceMark,
   externalLink,
+  feedbackBlock,
   healthTopic,
   html,
   kindIcon,
@@ -573,7 +574,7 @@ export function renderStudy(study: ClinicalStudy, refs: Institution[] = [], simi
       </section>
     </div>
     ${catalog ? similarSection(similar, catalog) : ""}
-    <p class="record-report">${contactLink("Report a correction or request removal", undefined, `Directory correction or removal for ${study.id}`)}</p>
+    ${feedbackBlock(studyPath(study.id), contactLink("Request removal by email", undefined, `Directory removal request for ${study.id}`))}
   </article>`;
 }
 export function renderListingCards(items: Listing[], catalog: DirectoryCatalog) {
@@ -778,7 +779,7 @@ export function renderPublication(
     ${linkedCode.length ? `<section class="record-section related" aria-labelledby="linked-code-title"><h2 id="linked-code-title">Code linked from this paper</h2><p class="muted">Directory projects whose repository this paper’s full text links to, as a citation, use or release.</p><ul class="plain-list">${linkedCode.map((i) => `<li><a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
     ${similarSection(similar, catalog)}
     ${more?.items.length ? `<section class="related"><div class="section-heading"><h2>${html(more.heading)}</h2><a href="${html(more.href)}">More from this institution</a></div>${renderListingCards(more.items, catalog)}</section>` : ""}
-    <p class="record-report">${contactLink("Report a correction or request removal", undefined, `Directory correction or removal for ${p.id}`)}</p>
+    ${feedbackBlock(pubPath(p.id), contactLink("Request removal by email", undefined, `Directory removal request for ${p.id}`))}
   </article>`;
 }
 export function rss(

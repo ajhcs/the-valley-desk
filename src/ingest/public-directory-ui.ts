@@ -149,3 +149,29 @@ export function projectCards(
 ) {
   return `<ol class="records" data-view="${variant === "compact" ? "compact" : "full"}">${projects.map(project => projectRecord(catalog, project, dateField)).join("")}</ol>`;
 }
+
+/**
+ * A quiet feedback block for listing pages: a one-click usefulness rating and a folded correction
+ * form. Both post to the private reader inbox; /directory-feedback.js sends them without a reload.
+ */
+export function feedbackBlock(page: string, removal: string) {
+  const hidden = `<input type="hidden" name="page" value="${html(page)}">`;
+  const trap = '<div class="inbox-trap" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>';
+  return `<section class="page-feedback" id="feedback" aria-label="Feedback on this page">
+    <form class="feedback-rate" method="post" action="/discover/feedback" data-feedback>${hidden}
+      <span>Was this page useful?</span>
+      <button type="submit" name="rating" value="useful">Yes</button>
+      <button type="submit" name="rating" value="not-useful">No</button>
+    </form>
+    <p class="feedback-status" role="status" hidden></p>
+    <details class="feedback-more"><summary>Suggest a correction</summary>
+      <form class="inbox-form" method="post" action="/discover/feedback" data-feedback>${hidden}
+        <label><span>What should change?</span><textarea name="message" rows="3" required maxlength="2000"></textarea></label>
+        <label><span>Your email <span class="muted">(optional, for a reply)</span></span><input type="email" name="email" maxlength="200" autocomplete="email"></label>
+        ${trap}
+        <button class="button secondary" type="submit">Send</button>
+      </form>
+    </details>
+    <p class="feedback-removal muted">${removal}</p>
+  </section>`;
+}
