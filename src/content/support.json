@@ -1,0 +1,18 @@
+{
+  "$comment": "Reader support. The /support page, the home-page supporters band and the footer link stay off until a checkout link is set. Checkout links are Stripe Payment Links at the matching price, each collecting: name to show, website (optional), and given by (optional). List supporters only with their consent, after review, exactly as they asked: {\"name\", \"kind\": \"person\" | \"institution\", \"tier\": \"founder\" | \"year\" | \"in-kind\", \"since\": \"YYYY-MM-DD\", \"url\"?, \"givenBy\"?}. A \"year\" listing ends twelve months after \"since\".",
+  "checkout": {
+    "personYear": null,
+    "personFounder": null,
+    "institutionYear": null,
+    "institutionFounder": null
+  },
+  "prices": {
+    "personYear": 50,
+    "personFounder": 250,
+    "institutionYear": 500,
+    "institutionFounder": 2500
+  },
+  "inKindEmail": "clyons@ajhcs.org",
+  "supporters": [],
+  "unnamed": 0
+}

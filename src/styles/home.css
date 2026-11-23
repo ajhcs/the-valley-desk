@@ -1327,3 +1327,17 @@ ul.desk {
     to { opacity: 1; transform: none; }
   }
 }
+
+/* The footer carries the Philadelphia skyline (directory-chrome.css); the river band holds this row. */
+.SiteFooter.desk-footer { display: block; max-width: none; margin-top: 4rem; padding: 0; border-top: 0; }
+.SiteFooter.desk-footer .desk-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-block: 28px 40px;
+}
+.SiteFooter.desk-footer .desk-footer-river { color: var(--river-muted); }
+.SiteFooter.desk-footer .desk-footer-river a,
+.SiteFooter.desk-footer .desk-footer-river a:hover { color: var(--river-link); }

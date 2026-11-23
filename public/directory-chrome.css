@@ -71,29 +71,110 @@
 .directory-chrome .desk-primary a:hover { border-bottom-color: var(--line); }
 .directory-chrome .desk-primary a[aria-current] { border-bottom-color: var(--rule); }
 
-.directory-chrome.desk-footer { margin-top: 3rem; border-top: 1px solid var(--rule); background: var(--paper); }
+/* The footer is a view of the city from the Schuylkill: an evening sky (where supporters are
+   thanked on the home page), the skyline, and the river the footer links sit on.
+   Art: public/footer-skyline-{light,dark}.svg, drawn by scripts/build-footer-art.mjs. */
+.directory-chrome.desk-footer {
+  --sky-horizon: light-dark(#f1e2d0, #232a52);
+  --river: light-dark(#1b2042, #0a0c18);
+  --river-text: #e4e5f1;
+  --river-muted: #a9add0;
+  --river-link: #c9cfff;
+  margin-top: 4rem;
+  background: var(--river);
+}
+.directory-chrome .desk-footer-sky { background: linear-gradient(to bottom, var(--paper), var(--sky-horizon)); }
+.directory-chrome .desk-footer-art {
+  height: clamp(150px, 18.5vw, 340px);
+  margin-top: -1px;
+  background: url("/footer-skyline-light.svg") center bottom / cover no-repeat;
+}
+:root[data-theme="dark"] .directory-chrome .desk-footer-art { background-image: url("/footer-skyline-dark.svg"); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .directory-chrome .desk-footer-art { background-image: url("/footer-skyline-dark.svg"); }
+}
+.directory-chrome .desk-footer-river { color: var(--river-text); }
+
+/* Supporters: set like the dedication page of a book, names in the sky above the city. */
+.directory-chrome .footer-patrons { padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 3vw, 2rem); text-align: center; }
+.directory-chrome .patron-title {
+  margin: 0 auto 1.4rem;
+  color: var(--muted);
+  font: 600 .74rem/1.3 var(--sans);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.directory-chrome .patron-title::before,
+.directory-chrome .patron-title::after {
+  content: "";
+  display: inline-block;
+  width: 2.5rem;
+  height: 1px;
+  margin: 0 .9rem;
+  vertical-align: middle;
+  background: currentColor;
+  opacity: .5;
+}
+.directory-chrome .patron-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: .55rem 1.9rem;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.directory-chrome .patron { color: var(--text); font: 500 clamp(1rem, 1.5vw, 1.14rem)/1.35 var(--serif); }
+.directory-chrome .patron.is-institution { font: 600 .78rem/1.35 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+.directory-chrome .patron-group + .patron-group { margin-top: 1.6rem; }
+.directory-chrome .patron-group-title {
+  margin: 0 0 .7rem;
+  color: var(--muted);
+  font: italic 400 .95rem/1.3 var(--serif);
+}
+.directory-chrome .is-founders .patron { font-size: clamp(1.1rem, 1.8vw, 1.32rem); }
+.directory-chrome .is-founders .patron.is-institution { font-size: .86rem; }
+.directory-chrome .patron-link { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: .22em; }
+.directory-chrome .patron-link:hover { text-decoration-color: currentColor; }
+.directory-chrome .patron-gift { color: var(--muted); font: italic 400 .8rem/1.3 var(--serif); letter-spacing: 0; text-transform: none; }
+.directory-chrome .patron-first { margin: 0; color: var(--muted); font: italic 400 1.05rem/1.5 var(--serif); }
+.directory-chrome .patron-more {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .25rem 1.25rem;
+  margin: 1.3rem 0 0;
+  color: var(--muted);
+  font: italic 400 .98rem/1.5 var(--serif);
+}
+.directory-chrome .patron-more a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -.75rem; color: var(--accent); font: 600 .88rem/1.4 var(--sans); }
+.directory-chrome .patron-more a::after { content: " →"; white-space: pre; }
 .directory-chrome .desk-footer-inner {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: .75rem 2rem;
   padding-block: 1.5rem 1.25rem;
 }
-.directory-chrome .desk-footer-about { grid-column: 1 / -1; max-width: 62ch; margin: 0; color: var(--muted); }
-.directory-chrome .desk-footer-brand { color: var(--text); font: 600 1rem/1.3 var(--serif); text-decoration: none; }
+.directory-chrome .desk-footer-about { grid-column: 1 / -1; max-width: 62ch; margin: 0; color: var(--river-muted); }
+.directory-chrome .desk-footer-brand { color: var(--river-text); font: 600 1rem/1.3 var(--serif); text-decoration: none; }
 .directory-chrome .desk-footer-links { display: flex; flex-wrap: wrap; column-gap: 1.1rem; }
-.directory-chrome.desk-footer a { color: var(--accent); }
+.directory-chrome .desk-footer-river a { color: var(--river-link); }
+.directory-chrome .desk-footer-river :focus-visible { outline-color: var(--river-link); }
 .directory-chrome .desk-footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
-.directory-chrome .desk-footer-copy { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: .84rem; }
-.directory-chrome .desk-theme { display: flex; align-items: center; gap: .45rem; color: var(--muted); }
+.directory-chrome .desk-footer-copy { grid-column: 1 / -1; margin: 0; color: var(--river-muted); font-size: .84rem; }
+.directory-chrome .desk-theme { display: flex; align-items: center; gap: .45rem; color: var(--river-muted); }
 /* The control works only with scripts. It keeps its space so nothing moves when it appears. */
 :root:not([data-theme]) .directory-chrome .desk-theme { visibility: hidden; }
 .directory-chrome .desk-theme select {
   min-height: 44px;
   padding: .3rem .5rem;
-  border: 1px solid var(--field);
+  border: 1px solid var(--river-muted);
   border-radius: 2px;
-  background: var(--card);
-  color: var(--text);
+  background: var(--river);
+  color: var(--river-text);
+  color-scheme: dark;
   font: inherit;
 }
 
@@ -106,4 +187,8 @@
 /* Under 384px the header keeps three links; Suggest stays in the footer and on the home page. */
 @media (max-width: 24rem) {
   .directory-chrome .desk-primary a[href="/discover/suggest"] { display: none; }
+}
+@media (max-width: 34rem) {
+  .directory-chrome .patron-title::before,
+  .directory-chrome .patron-title::after { display: none; }
 }
