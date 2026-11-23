@@ -1,0 +1,84 @@
+"""Source-grounded matching for a repository's actual submitter.
+
+Callers must supply only a field that the repository identifies as a submitter
+or contact. A paper affiliation, PI, creator, or unqualified organization is
+not evidence of who deposited a dataset. Each call represents one person's or
+organization's field, so location cannot leak between unrelated contributors.
+"""
+import re
+import unicodedata
+
+from common import COUNTIES, SKIP_OUTSIDE, registry
+
+
+def _normalize(value):
+    value = unicodedata.normalize('NFKC', value or '').casefold()
+    value = value.replace('’', "'")
+    return re.sub(r'\s+', ' ', value).strip()
+
+
+def _contains(text, phrase):
+    """Match a whole registry name, respecting word boundaries."""
+    phrase = _normalize(phrase)
+    if not phrase:
+        return False
+    return bool(re.search(r'(?<!\w)' + re.escape(phrase) + r'(?!\w)', text))
+
+
+# Regional cities that need not appear among an institution's registered sites.
+# Keep the state paired with the city to avoid matching a namesake elsewhere.
+REGIONAL_CITIES = {
+    'nj': set('camden|trenton|princeton|lawrenceville|cherry hill|stratford|glassboro|sewell|voorhees|mount laurel|marlton|moorestown|willingboro|browns mills|ewing|hamilton|pennington|hopewell|plainsboro|cranbury'.split('|')),
+    'pa': set('philadelphia|doylestown|langhorne|wynnewood|bala cynwyd|glenside|blue bell|king of prussia|wayne|villanova|radnor|swarthmore|haverford|bryn mawr|media|west chester|exton|malvern|chester|norristown|lansdale|plymouth meeting|horsham|ambler|conshohocken|fort washington|newtown|bristol|levittown|abington|elkins park|upper darby|chesterbrook|spring house'.split('|')),
+}
+
+
+def match_submitter(text, city='', state='', institutions=None):
+    """Match one submitter's literal affiliation and return traceable evidence.
+
+    Regional organizations can match by registry name or alias. Companies and
+    organizations headquartered outside the region require a city matching a
+    regional registry site in the same submitter field or the separate city
+    field. A supplied state must agree with that site. City alone cannot match.
+    The caller is responsible for retaining the source URL and field role.
+    """
+    raw = text or ''
+    normalized = _normalize(raw)
+    city_text = _normalize(city)
+    state_text = _normalize(state)
+    state_text = {'pennsylvania': 'pa', 'new jersey': 'nj'}.get(state_text, state_text)
+    matches = []
+    for inst in institutions if institutions is not None else registry():
+        names = [inst.get('name', '')] + (inst.get('aliases') or [])
+        name = next((n for n in names if _contains(normalized, n)), None)
+        # This observed GEO misspelling is accepted only with the independently
+        # supplied Philadelphia, Pennsylvania contact location. Do not generalize
+        # this into fuzzy alias matching.
+        if (not name and inst.get('id') == 'chop'
+                and _contains(normalized, "children's hospital of phildelphia")
+                and city_text == 'philadelphia' and state_text == 'pa'):
+            name = "Children's Hospital of Phildelphia"
+        if not name:
+            continue
+        sites = [s for s in inst.get('sites') or [] if s.get('county') in COUNTIES and s.get('place')]
+        location = next((s for s in sites if
+                         (_normalize(s['place']) == city_text if city_text else _contains(normalized, s['place']))
+                         and (not state_text or state_text == _normalize(s.get('state', '')))), None)
+        if (inst.get('kind') == 'company' or inst.get('id') in SKIP_OUTSIDE) and not location:
+            continue
+        # A non-company institution can be named by an affiliation in another
+        # known regional city; the registry's site list is not exhaustive.
+        # A contradictory state or a city outside the region cannot establish it.
+        regional_city = bool(city_text and city_text in REGIONAL_CITIES.get(state_text, set()))
+        if city_text and not location and not (regional_city and state_text in ('pa', 'nj')):
+            continue
+        if state_text and state_text not in ('pa', 'nj'):
+            continue
+        matches.append({'institution': inst['id'], 'matched_name': name,
+                        'submitter': raw, 'city': city or None, 'state': state or None,
+                        'matched_site': location.get('place') if location else None,
+                        'regional_city': city if city_text and regional_city else None})
+    ids = sorted({m['institution'] for m in matches})
+    by_id = {i['id']: i for i in (institutions if institutions is not None else registry())}
+    counties = sorted({by_id[i].get('homeCounty') for i in ids if by_id[i].get('homeCounty') in COUNTIES})
+    return {'institutions': ids, 'counties': counties, 'matches': matches}
