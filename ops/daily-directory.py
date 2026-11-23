@@ -297,15 +297,24 @@ def collect(d1, state, run_dir, day, first, last, receipt):
         baseline_dataset = d1.listings("dataset")
         if not baseline_dataset:
             raise StopRun("Dataset public baseline unavailable")
+        accession_owners = {}
+        for identifier, dataset in baseline_dataset.items():
+            for accession in dataset["accessions"]:
+                accession_owners.setdefault(accession.casefold(), set()).add(identifier)
         dataset_removed = {row["id"] for row in d1.rows("SELECT id FROM dataset_removals", "dataset removals")}
         try:
             candidates = daily_datasets.collect_phase_one(ROOT, run_dir / "datasets-phase1", deltas["publication"].values(), checkpoint, upper, day, [identifier for _, identifier in dataset_suggestions if identifier])
             selected = {}
+            disputes = 0
             for candidate in candidates:
                 identifier = candidate["id"]
                 if identifier in selected:
                     raise daily_datasets.StopRun("Duplicate dataset candidate")
                 if identifier in dataset_removed:
+                    continue
+                if any(accession_owners.get(a.casefold(), set()) - {identifier} for a in candidate["accessions"]):
+                    # The nightly delta cannot adjudicate a different existing listing's origin.
+                    disputes += 1
                     continue
                 old = baseline_dataset.get(identifier)
                 if old:
@@ -318,7 +327,7 @@ def collect(d1, state, run_dir, day, first, last, receipt):
             raise StopRun(str(error)) from None
         deltas["dataset"] = selected
         receipt["dataset_through"] = upper
-        receipt["counts"]["dataset"] = {**dataset_counts, "skipped": 0}
+        receipt["counts"]["dataset"] = {**dataset_counts, "skipped": disputes}
         ids = (set(baseline_dataset) | set(selected)) - dataset_removed
         for row_id, identifier in dataset_suggestions:
             match = identifier if identifier in ids else None

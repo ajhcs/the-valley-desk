@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from urllib.parse import parse_qs, urlsplit
 
-from daily_datasets import StopRun, collect_datacite, commit_checkpoint, datacite_url, guard, paper_delta, suggestion_identifier
+from daily_datasets import StopRun, collect_datacite, datacite_url, guard, suggestion_identifier
 
 
 class NightlyDatasetsTests(unittest.TestCase):
@@ -15,13 +15,6 @@ class NightlyDatasetsTests(unittest.TestCase):
         for url in ("https://doi.org/10.5281/zenodo.12?email=private", "https://doi.org@evil.test/10.5281/zenodo.12", "https://doi.org/10.5281/zenodo.12#note", "http://doi.org/10.5281/zenodo.12"):
             self.assertIsNone(suggestion_identifier({**base, "url": url}))
         self.assertIsNone(suggestion_identifier({**base, "item_type": "publication", "url": "https://doi.org/10.5281/zenodo.12"}))
-
-    def test_paper_delta_reports_missing_without_deleting(self):
-        changed, missing = paper_delta([{"id": "a", "title": "old"}, {"id": "b"}], [{"id": "a", "title": "new"}])
-        self.assertEqual(changed, [{"id": "a", "title": "new"}])
-        self.assertEqual(missing, ["b"])
-        with self.assertRaises(StopRun):
-            paper_delta([], [{"id": "a"}, {"id": "a"}])
 
     def test_guard_independent_baseline_and_material_changes(self):
         baseline = [{"id": str(i), "name": "x", "checked": "old"} for i in range(20)]
@@ -47,46 +40,6 @@ class NightlyDatasetsTests(unittest.TestCase):
                 collect_datacite(url, lambda *a, **k: (429, b""), directory)
             with self.assertRaises(StopRun):
                 collect_datacite(url, lambda *a, **k: (200, b'{"data":[{}],"links":{"next":"https://evil.test/"}}'), directory)
-
-    def test_checkpoint_requires_matching_successful_receipt(self):
-        pending = {"artifact_sha256": "a" * 64, "datacite_through": "2026-11-23T00:00:00Z", "paper_snapshot_sha256": "b" * 64, "revision": "r"}
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "cursor.json"
-            with self.assertRaises(StopRun):
-                commit_checkpoint(path, pending, {"outcome": "failed", "revision": "r", "artifact_sha256": "a" * 64})
-            self.assertFalse(path.exists())
-            commit_checkpoint(path, pending, {"outcome": "complete", "revision": "r", "artifact_sha256": "a" * 64})
-            self.assertEqual(json.loads(path.read_text())["revision"], "r")
-
-
-if __name__ == "__main__":
-    unittest.main()
-
-class LocalPreparationTests(unittest.TestCase):
-    def test_disabled_and_evidence_preservation(self):
-        from daily_datasets import prepare_local
-        baseline = [{"id": f"doi:10.1234/{i}", "papers": ["p"], "label": "Verified", "added": "old"} for i in range(20)]
-        with tempfile.TemporaryDirectory() as directory:
-            args = dict(baseline=baseline, candidates=[], removed=[], papers=[], suggestions=[], run_dir=directory, validate=lambda *_: None, loader=lambda _: "SELECT 1;")
-            with self.assertRaises(StopRun):
-                prepare_local({}, **args)
-            args["candidates"] = [{**baseline[0], "papers": []}]
-            with self.assertRaises(StopRun):
-                prepare_local({"enabled": True, "first_public_load_confirmed": True}, **args)
-
-    def test_preparation_keeps_reader_text_out(self):
-        from daily_datasets import prepare_local
-        baseline = [{"id": f"doi:10.1234/{i}", "papers": ["p"], "label": "Verified", "added": "old"} for i in range(20)]
-        suggestion = {"id": 4, "kind": "suggestion", "item_type": "dataset", "url": "https://doi.org/10.1234/0", "message": "secret text", "email": "private@example.test"}
-        with tempfile.TemporaryDirectory() as directory:
-            def validate(rows, papers):
-                self.assertEqual(rows[0]["added"], "old")
-            def loader(path):
-                self.assertEqual(json.loads(path.read_text())["id"], baseline[0]["id"])
-                return "SELECT 1;"
-            result = prepare_local({"enabled": True, "first_public_load_confirmed": True}, baseline=baseline, candidates=[{**baseline[0], "added": "new", "checked": "today"}], removed=[], papers=["p"], suggestions=[suggestion], run_dir=directory, validate=validate, loader=loader)
-            self.assertEqual(result["matched_suggestion_ids"], [4])
-            self.assertTrue(all("secret text" not in p.read_text() and "private@example.test" not in p.read_text() for p in Path(directory).iterdir()))
 
 class SuggestedDatasetTests(unittest.TestCase):
     def test_canonical_accessions_and_private_query_rejection(self):
@@ -142,3 +95,7 @@ class SuggestedDatasetTests(unittest.TestCase):
                 status, _ = common.http("https://example.test", attempts=1)
             self.assertEqual(status, code)
             self.assertEqual(common.FAILS["example.test"], 0 if code == 404 else 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

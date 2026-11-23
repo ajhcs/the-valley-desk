@@ -1,9 +1,4 @@
-"""Disabled preparation helpers for the future datasets nightly job.
-
-This module does not schedule jobs, read the inbox, invoke D1, or publish data.
-The eventual caller must supply independently qualified phase-one records and a
-confirmed load receipt before committing a checkpoint.
-"""
+"""Collect and qualify nightly dataset updates before the guarded directory load."""
 from datetime import datetime, timedelta, timezone
 import gzip
 import json
@@ -53,19 +48,6 @@ def suggestion_identifier(entry):
     if host == "identifiers.org" and re.fullmatch(r"PRJ[END][A-Z][0-9]+", path, re.I):
         return "bioproject:" + path.upper()
     return None
-
-
-def paper_delta(previous, current):
-    """Return changed paper records and missing IDs; absence alone is not a removal."""
-    def index(rows):
-        result = {}
-        for row in rows:
-            if not isinstance(row.get("id"), str) or row["id"] in result:
-                raise StopRun("Invalid or duplicate paper identity")
-            result[row["id"]] = row
-        return result
-    before, after = index(previous), index(current)
-    return [after[k] for k in sorted(after) if before.get(k) != after[k]], sorted(before.keys() - after.keys())
 
 
 def guard(previous, candidates, removed=()):
@@ -142,73 +124,6 @@ def collect_datacite(url, http, cache, *, max_pages=10000):
         if url is not None and not isinstance(url, str):
             raise StopRun("Invalid DataCite pagination")
     return pages
-
-
-def commit_checkpoint(path, pending, receipt):
-    """Advance only for the exact staged artifact confirmed by a successful receipt."""
-    digest = pending.get("artifact_sha256")
-    if not re.fullmatch(r"[0-9a-f]{64}", str(digest)) or receipt.get("artifact_sha256") != digest or receipt.get("outcome") != "complete" or receipt.get("revision") != pending.get("revision") or not pending.get("revision"):
-        raise StopRun("Dataset load receipt does not confirm staged artifact")
-    parse_time(pending.get("datacite_through"))
-    if not re.fullmatch(r"[0-9a-f]{64}", str(pending.get("paper_snapshot_sha256"))):
-        raise StopRun("Invalid paper snapshot digest")
-    path = Path(path)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    with tmp.open("w", encoding="utf-8") as output:
-        json.dump({"datacite_through": pending["datacite_through"], "paper_snapshot_sha256": pending["paper_snapshot_sha256"], "revision": pending["revision"]}, output, sort_keys=True)
-        output.flush()
-        os.fsync(output.fileno())
-    tmp.replace(path)
-
-
-def prepare_local(config, *, baseline, candidates, removed, papers, suggestions, run_dir, validate, loader):
-    """Stage reviewed phase-one records and SQL locally; never execute SQL."""
-    if config.get("enabled") is not True or config.get("first_public_load_confirmed") is not True:
-        raise StopRun("Datasets nightly is disabled or its first public load is unconfirmed")
-    if not baseline:
-        raise StopRun("A nonempty public dataset baseline is required")
-    previous = {row["id"]: row for row in baseline}
-    if len(previous) != len(baseline):
-        raise StopRun("Duplicate baseline identity")
-    removed = set(removed)
-    selected, seen = [], set()
-    for candidate in candidates:
-        row = dict(candidate)
-        identifier = row["id"]
-        if identifier in seen:
-            raise StopRun("Duplicate dataset candidate")
-        seen.add(identifier)
-        if identifier in removed:
-            continue
-        if identifier in previous:
-            old = previous[identifier]
-            row["added"] = old["added"]
-            if not set(old.get("papers") or []).issubset(row.get("papers") or []) or (old.get("label") == "Verified" and row.get("label") != "Verified"):
-                raise StopRun("Dataset update would discard existing evidence")
-        selected.append(row)
-    counts = guard(baseline, selected)
-    validate(selected, papers)
-    identities = set(previous) | {r["id"] for r in selected}
-    matches = []
-    for entry in suggestions:
-        identifier = suggestion_identifier(entry)
-        if identifier and identifier in identities and identifier not in removed:
-            matches.append(int(entry["id"]))
-    run_dir = Path(run_dir)
-    run_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
-    if run_dir.stat().st_mode & 0o077:
-        raise StopRun("Dataset staging directory must be private")
-    rows_path = run_dir / "dataset-delta.jsonl"
-    with rows_path.open("w", encoding="utf-8") as output:
-        for row in selected:
-            output.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
-    sql = loader(rows_path)
-    if not isinstance(sql, str) or not sql:
-        raise StopRun("Dataset loader returned no SQL")
-    sql_path = run_dir / "dataset-load.sql"
-    sql_path.write_text(sql, encoding="utf-8")
-    return {"counts": counts, "matched_suggestion_ids": matches,
-            "artifact_sha256": __import__("hashlib").sha256(sql.encode()).hexdigest()}
 
 
 def collect_phase_one(root, run_dir, publications, checkpoint, upper, day, suggestions=()):

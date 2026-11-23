@@ -168,7 +168,8 @@ class DatasetDailyIntegrationTests(unittest.TestCase):
     def test_dataset_collection_stages_in_same_loader_and_revision(self):
         from datetime import date
         dataset = {"id": "doi:10.1234/new", "title": "A dataset", "summary": "A public dataset.", "data_type": "other", "access": "open", "repository": "Example", "accessions": ["10.1234/new"], "url": "https://doi.org/10.1234/new", "institutions": ["upenn"], "counties": [], "label": "Verified", "connection": "A source lists a regional creator.", "source": "https://api.datacite.org/dois/10.1234/new", "papers": [], "topic": "Research data", "released": "2026", "added": "2026-11-23", "checked": "2026-11-23", "size": None, "format": None, "license": None}
-        baseline = {f"doi:10.1234/{i}": {**dataset, "id": f"doi:10.1234/{i}"} for i in range(20)}
+        baseline = {f"doi:10.1234/{i}": {**dataset, "id": f"doi:10.1234/{i}", "accessions": [f"10.1234/{i}"]} for i in range(20)}
+        conflicting = {**dataset, "id": "doi:10.1234/conflict", "accessions": ["10.1234/0"]}
         publication = {"id": "pmid:123", "pmcid": "PMC123"}
         class FakeD1:
             def rows(self, sql, label):
@@ -182,7 +183,7 @@ class DatasetDailyIntegrationTests(unittest.TestCase):
             (state / "datasets-config.json").write_text(json.dumps({"enabled": True, "first_public_load_confirmed": True}))
             (state / "datasets-cursor.json").write_text(json.dumps({"datacite_through": "2026-11-20T00:00:00Z"}))
             receipt = {"counts": {}}
-            with patch.object(daily, "refresh_projects", return_value=({}, [])), patch.object(daily, "discover_projects", return_value=({}, 0)), patch.object(daily, "collect_publications", return_value=([publication], 0)), patch.object(daily, "studies", return_value=([], 0, set(), 0)), patch.object(daily, "roster_from_public", return_value={}), patch.object(daily, "command", return_value="SELECT 1;"), patch.object(daily.daily_datasets, "collect_phase_one", return_value=[dataset]) as source:
+            with patch.object(daily, "refresh_projects", return_value=({}, [])), patch.object(daily, "discover_projects", return_value=({}, 0)), patch.object(daily, "collect_publications", return_value=([publication], 0)), patch.object(daily, "studies", return_value=([], 0, set(), 0)), patch.object(daily, "roster_from_public", return_value={}), patch.object(daily, "command", return_value="SELECT 1;"), patch.object(daily.daily_datasets, "collect_phase_one", return_value=[dataset, conflicting]) as source:
                 # Give the ordinary publication gate enough baseline for one new paper.
                 fake = FakeD1()
                 fake.listings = lambda kind: baseline if kind == "dataset" else ({f"pmid:{i}": {"id": f"pmid:{i}"} for i in range(20)} if kind == "publication" else {})
@@ -190,6 +191,8 @@ class DatasetDailyIntegrationTests(unittest.TestCase):
                 daily.prepare_load(state, deltas, decisions, "new-revision", outside)
             self.assertEqual([p["id"] for p in source.call_args.args[2]], [publication["id"]])
             self.assertEqual(receipt["counts"]["dataset"]["added"], 1)
+            self.assertEqual(receipt["counts"]["dataset"]["skipped"], 1)
+            self.assertNotIn(conflicting["id"], deltas["dataset"])
             self.assertIn(("dataset", "doi:10.1234/new"), [d[3] for d in decisions])
             self.assertIn("new-revision", (state / "load.sql").read_text())
             self.assertIn("doi:10.1234/new", (state / "datasets.jsonl").read_text())
