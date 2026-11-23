@@ -21,14 +21,20 @@ const base: SupportData = {
 const now = new Date("2027-06-01T12:00:00Z");
 
 test("support stays unpublished until a checkout link is set", async () => {
-  assert.equal(supportOpen(supportData), false, "the shipped data has no checkout links");
   assert.equal(supportOpen({ ...base, checkout: closed }), false);
   assert.equal(supportOpen({ ...base, checkout: { ...closed, personYear: "http://insecure.example/pay", institutionYear: "javascript:alert(1)" } }), false);
   assert.equal(supportOpen({ ...base, checkout: { ...closed, institutionFounder: "https://buy.stripe.com/x" } }), true);
   assert.equal(supportersBand({ ...base, checkout: closed, supporters: [{ name: "A B", tier: "founder", since: "2026-12-01" }] }, now), "");
+});
+
+test("the shipped checkout links are live Stripe Payment Links and publish the page", async () => {
+  for (const link of Object.values(supportData.checkout)) assert.match(link ?? "", /^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+$/);
+  assert.equal(supportOpen(supportData), true);
   const env = { DIRECTORY_PUBLIC_ENABLED: "true", ASSETS: { fetch: async () => new Response("", { status: 404 }) } };
   const response = await worker.fetch(new Request(origin + "/support"), env, { waitUntil() {} });
-  assert.equal(response.status, 404);
+  assert.equal(response.status, 200);
+  const page = await response.text();
+  for (const link of Object.values(supportData.checkout)) assert.ok(page.includes(`href="${link}"`));
 });
 
 test("founders stay listed; a 12-month gift ends on its anniversary", () => {
