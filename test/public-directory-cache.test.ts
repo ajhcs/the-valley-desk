@@ -50,6 +50,7 @@ test("directory responses are cached per data version and stay correct after rem
     sqlite.exec(readFileSync("migrations/0046_research_directory.sql", "utf8"));
     sqlite.exec(readFileSync("migrations/0047_clinical_studies.sql", "utf8"));
     sqlite.exec(readFileSync("migrations/0050_datasets.sql", "utf8"));
+    sqlite.exec(readFileSync("migrations/0051_paper_data_reuse.sql", "utf8"));
     const input = join(dir, "papers.jsonl"), refs = join(dir, "refs.json");
     writeFileSync(input, execFileSync("python3", ["ops/research-fixture.py", "--count", "30"], { maxBuffer: 1 << 26 }));
     writeFileSync(refs, execFileSync("python3", ["ops/research-fixture.py", "--institutions"]));
@@ -75,6 +76,9 @@ test("directory responses are cached per data version and stay correct after rem
     assert.ok(firstHtml.includes(`nonce="${n1}"`));
     assert.ok(secondHtml.includes(`nonce="${n2}"`) && !secondHtml.includes(n1));
     assert.equal(secondHtml.replaceAll(n2, "N"), firstHtml.replaceAll(n1, "N"));
+
+    sqlite.exec("INSERT INTO paper_data_reuse VALUES('doi:10.9999/fixture/4','geo:GSE990001','GSE990001')");
+    assert.equal((await get("/discover/works?q=tissue")).headers.get("x-directory-cache"), "miss", "reuse changes invalidate the cache");
 
     // A removal changes the version, so the next request renders without the removed record.
     const id = "doi:10.9999/fixture/4";

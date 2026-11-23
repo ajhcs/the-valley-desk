@@ -31,7 +31,7 @@ function directory() {
   const load = (...args: string[]) =>
     sqlite.exec(execFileSync("python3", ["ops/load-research.py", ...args], { encoding: "utf8", maxBuffer: 1 << 26 }));
   sqlite.exec(readFileSync("ops/directory-removals.sql", "utf8"));
-  for (const m of ["0046_research_directory", "0047_clinical_studies", "0048_paper_repository_links", "0050_datasets"])
+  for (const m of ["0046_research_directory", "0047_clinical_studies", "0048_paper_repository_links", "0050_datasets", "0051_paper_data_reuse"])
     sqlite.exec(readFileSync(`migrations/${m}.sql`, "utf8"));
   const papers = join(dir, "papers.jsonl"), refs = join(dir, "refs.json");
   writeFileSync(papers, execFileSync("python3", ["ops/research-fixture.py", "--count", "8"]));
@@ -384,4 +384,37 @@ test("empty enabled dataset collection records the visible-dataset marker", () =
     const row = d.sqlite.prepare("SELECT first FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'").get() as { first: string };
     assert.equal(row.first, "0");
   } finally { d.close(); }
+});
+
+
+test("reviewed data reuse is separate, gated, removable, and links directly to the repository", async () => {
+  const d = directory();
+  try {
+    const file = join(d.dir, "reuse.jsonl");
+    const edge = {paper_id: "doi:10.9999/fixture/4", dataset_id: "geo:GSE990001", evidence_url: "https://example.org/paper", evidence_quote: "We reused GSE990001", reviewed: true, public_safe: true};
+    writeFileSync(file, JSON.stringify(edge) + "\n");
+    d.load("--reuse-edges", file);
+    assert.doesNotMatch(await d.text(pubPage(edge.paper_id)), /Data used/);
+    d.sqlite.exec("UPDATE dataset_visibility SET enabled=1");
+    const html = await d.text(pubPage(edge.paper_id));
+    assert.match(html, /Data from this paper[\s\S]*Data used/);
+    assert.match(html, /href="https:\/\/www.ncbi.nlm.nih.gov\/geo\/query\/acc.cgi\?acc=GSE990001"/);
+    d.sqlite.prepare("INSERT INTO dataset_removals(id) VALUES(?)").run(edge.dataset_id);
+    assert.doesNotMatch(await d.text(pubPage(edge.paper_id)), /Data used/);
+    d.sqlite.prepare("DELETE FROM dataset_removals WHERE id=?").run(edge.dataset_id);
+    d.sqlite.prepare("INSERT INTO publication_removals(id) VALUES(?)").run(edge.paper_id);
+    assert.doesNotMatch(await d.text(pubPage(edge.paper_id)), /Data used/);
+  } finally { d.close(); }
+});
+
+test("reuse loader rejects unreviewed and malformed projections before emitting edges", () => {
+  const dir = mkdtempSync(join(process.cwd(), "node_modules", ".reuse-test-"));
+  try {
+    const file = join(dir, "input.jsonl");
+    const edge = {paper_id: "doi:10.9999/fixture/4", dataset_id: "geo:GSE990001", evidence_url: "https://example.org/paper", evidence_quote: "We reused GSE990001", reviewed: true, public_safe: true};
+    for (const bad of [{...edge, reviewed: false}, {...edge, public_safe: false}, {...edge, dataset_id: "geo:GSE990001/evil"}, {...edge, evidence_url: "javascript:alert(1)"}, {...edge, evidence_quote: ""}, {...edge, extra: true}]) {
+      writeFileSync(file, JSON.stringify(edge) + "\n" + JSON.stringify(bad) + "\n");
+      assert.throws(() => execFileSync("python3", ["ops/load-research.py", "--reuse-edges", file], {stdio: "pipe"}));
+    }
+  } finally { rmSync(dir, {recursive: true, force: true}); }
 });

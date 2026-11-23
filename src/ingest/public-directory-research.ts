@@ -701,6 +701,10 @@ export function paperDatasets(items: Dataset[]) {
     )
     .join("")}</ul></section>`;
 }
+export function paperDataUsed(items: { accession: string }[]) {
+  if (!items.length) return "";
+  return `<section class="record-section related" aria-labelledby="paper-data-used-title"><h2 id="paper-data-used-title">Data used</h2><ul class="plain-list">${items.map((item) => `<li>${accessionLink(item.accession)}</li>`).join("")}</ul></section>`;
+}
 export function similarSection(items: Listing[], catalog: DirectoryCatalog, heading = "Similar research in the Delaware Valley") {
   if (!items.length) return "";
   return `<section class="related similar" aria-labelledby="similar-title"><div class="section-heading"><h2 id="similar-title">${html(heading)}</h2></div><p class="section-note">Publications, clinical studies and software from the region that share this record’s distinctive subject words. Use them to see who else in the region works on the subject.</p>${renderListingCards(items, catalog)}</section>`;
@@ -915,6 +919,7 @@ export function renderPublication(
   linkedCode: Listing[] = [],
   similar: Listing[] = [],
   datasets: Dataset[] = [],
+  dataUsed: { accession: string }[] = [],
 ) {
   const entity = (kind: string, key: string, name: string) =>
     `<a href="/discover/${kind}/${encodeURIComponent(key)}">${html(name)}</a>`;
@@ -967,6 +972,7 @@ export function renderPublication(
     ${related.length ? `<section class="record-section related"><h2>Connected research</h2><ul class="plain-list">${related.map((i) => `<li><span class="muted">${i.kind === "project" ? "Software" : "Publication version"}</span> <a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
     ${linkedCode.length ? `<section class="record-section related" aria-labelledby="linked-code-title"><h2 id="linked-code-title">Code linked from this paper</h2><p class="muted">Directory projects whose repository this paper’s full text links to, as a citation, use or release.</p><ul class="plain-list">${linkedCode.map((i) => `<li><a href="${html(listingPath(i))}">${html(listingTitle(i))}</a></li>`).join("")}</ul></section>` : ""}
     ${paperDatasets(datasets)}
+    ${paperDataUsed(dataUsed)}
     ${similarSection(similar, catalog)}
     ${more?.items.length ? `<section class="related"><div class="section-heading"><h2>${html(more.heading)}</h2><a href="${html(more.href)}">More from this institution</a></div>${renderListingCards(more.items, catalog)}</section>` : ""}
     ${feedbackBlock(pubPath(p.id), contactLink("Request removal by email", undefined, `Directory removal request for ${p.id}`))}

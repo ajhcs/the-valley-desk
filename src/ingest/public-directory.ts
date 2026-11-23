@@ -646,6 +646,12 @@ async function renderPublicDirectory(
             )
           ).map((r) => JSON.parse(r.record) as Dataset)
         : [];
+      // The switch and removals are checked at read time even for unlisted data.
+      const dataUsed = await optionalRows<{ accession: string }>(
+        researchDb,
+        "SELECT accession FROM paper_data_reuse WHERE paper_id=? AND (SELECT enabled FROM dataset_visibility WHERE id=1)=1 AND NOT EXISTS(SELECT 1 FROM dataset_removals WHERE id=dataset_id) ORDER BY dataset_id LIMIT 50",
+        id,
+      );
       if (pubApi)
         return json(() => ({
           publication: {
@@ -701,7 +707,7 @@ async function renderPublicDirectory(
           title: displayTitle(p),
           summary: publicationDescription(p, refs),
           path: pubPath(id),
-          content: renderPublication(p, refs, related, more, catalog, linkedCode, similar, datasets),
+          content: renderPublication(p, refs, related, more, catalog, linkedCode, similar, datasets, dataUsed),
           ogType: "article",
           meta: citationMeta(p),
           schema: publicationSchema(p, origin),
