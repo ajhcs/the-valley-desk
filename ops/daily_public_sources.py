@@ -20,6 +20,14 @@ def _github(path):
     return json.loads(response.stdout)
 
 
+def github_license(value):
+    """Normalize GitHub's unspecified-license sentinel to a null license."""
+    if not isinstance(value, dict):
+        return None
+    name = value.get('spdxId', value.get('spdx_id'))
+    return None if not name or name == 'NOASSERTION' else name
+
+
 def refresh_projects(root, run_dir, existing, removed, day):
     """Return refreshed records keyed by ID; failed observations retain prior records.
 
@@ -58,7 +66,7 @@ def refresh_projects(root, run_dir, existing, removed, day):
                 raise ValueError(f'GitHub identity or visibility mismatch for {identity}')
             row = result[identity]
             values = dict(language=(source['primaryLanguage'] or {}).get('name'),
-                          license=(source['licenseInfo'] or {}).get('spdxId'),
+                          license=github_license(source['licenseInfo']),
                           pushed=(source['pushedAt'] or '')[:10] or None, archived=source['isArchived'],
                           stars=source['stargazerCount'], description=source['description'])
             for field, value in values.items():
@@ -247,7 +255,7 @@ def qualify_repository(project_url, root, day, association=None, *, source=None)
            'label': 'Listed', 'added': day, 'owner': association['owner'],
            'institution': association['institution'], 'connection': association['connection'],
            'source': association['source'], 'language': source.get('language'),
-           'license': (source.get('license') or {}).get('spdx_id'), 'pushed': (source.get('pushed_at') or '')[:10] or None,
+           'license': github_license(source.get('license')), 'pushed': (source.get('pushed_at') or '')[:10] or None,
            'archived': source['archived'], 'stars': source['stargazers_count'], 'description': source.get('description')}
     if association.get('county'):
         row.update(county=association['county'], countyBasis=association['countyBasis'])

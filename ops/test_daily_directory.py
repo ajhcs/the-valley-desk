@@ -15,9 +15,32 @@ spec.loader.exec_module(daily)
 class DailyDirectoryTests(unittest.TestCase):
     def test_five_percent_is_inclusive_and_removals_count(self):
         before = {str(i): {} for i in range(20)}
-        daily.gate("project", before, {"changed": 1, "removed": 0})
+        daily.gate("project", before, {"added": 0, "semantic_changed": 1, "removed": 0})
         with self.assertRaisesRegex(daily.StopRun, "2 of 20"):
-            daily.gate("project", before, {"changed": 1, "removed": 1})
+            daily.gate("project", before, {"added": 0, "semantic_changed": 1, "removed": 1})
+
+    def test_metadata_is_applied_but_excluded_from_guard(self):
+        before = {str(i): {"id": str(i), "name": "A", "stars": 1, "license": "MIT"} for i in range(20)}
+        rows = [{**row, "stars": 2, "description": "new"} for row in before.values()]
+        rows[0]["license"] = "BSD-3-Clause"
+        delta, count = daily.changes(before, rows, set(), 0)
+        self.assertEqual(len(delta), 20)
+        self.assertEqual(count["semantic_changed"], 1)
+        self.assertEqual(count["metadata_only"], 19)
+        self.assertEqual(count["semantic_fields"], {"license": 1})
+        self.assertEqual(count["metadata_fields"]["stars"], 20)
+        daily.gate("project", before, count)
+        count["added"] = 1
+        with self.assertRaises(daily.StopRun):
+            daily.gate("project", before, count)
+
+    def test_title_plural_affiliations_and_removal_cap(self):
+        changed = daily.semantic_changes({"title": "A", "institutions": [], "counties": []},
+                                         {"title": "B", "institutions": ["wistar"], "counties": ["Philadelphia"]})
+        self.assertEqual(changed, {"name", "institution", "county"})
+        with self.assertRaisesRegex(daily.StopRun, "limit 25"):
+            daily.gate("study", {str(i): {} for i in range(1000)},
+                       {"added": 0, "semantic_changed": 0, "removed": 26})
 
     def test_clinical_suppression_requires_a_matching_record_and_unambiguous_sites(self):
         source = daily.ROOT / "scripts/trials/collect.py"
@@ -91,13 +114,28 @@ class DailyDirectoryTests(unittest.TestCase):
     def test_report_after_three_consecutive_completed_dates_only(self):
         with tempfile.TemporaryDirectory() as directory:
             state = Path(directory)
-            for day, outcome in ((20, "complete"), (21, "failed"), (22, "complete"),
+            for day, outcome in ((19, "complete"), (20, "manual-complete"), (21, "failed"), (22, "complete"),
                                  (23, "complete"), (24, "complete"), (25, "complete")):
                 daily.report(state, {"day": f"2026-11-{day}", "outcome": outcome, "counts": {},
                                     "rows_read": {"test": day}, "unmeasured": []})
                 self.assertEqual((state / "first-three-nights.txt").exists(), day >= 24)
             report = (state / "first-three-nights.txt").read_text().splitlines()
             self.assertEqual([line[:10] for line in report], ["2026-11-22", "2026-11-23", "2026-11-24"])
+            kinds = [json.loads(note.read_text())["kind"] for note in (state / "notices").glob("*.json")]
+            self.assertCountEqual(kinds, ["failed", "three-nights"])
+
+    def test_retirement_requires_a_fresh_publications_load_and_runs_once(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(daily, "command") as call:
+            state = Path(directory)
+            receipt = {"day": "2026-11-23", "loaded_through": "2026-11-22",
+                       "publication_window": True, "counts": {"publication": {"added": 0}}}
+            daily.retire_weekly(state, receipt)
+            call.assert_not_called()
+            receipt["counts"]["publication"]["added"] = 1
+            daily.retire_weekly(state, receipt)
+            daily.retire_weekly(state, receipt)
+            self.assertEqual(call.call_count, 1)
+            self.assertIn("valley-desk-publications.timer", call.call_args.args)
 
 
 if __name__ == "__main__":

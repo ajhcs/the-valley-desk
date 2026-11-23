@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { handleReaderInbox, isInboxPath } from "../src/ingest/public-directory-inbox";
+import { directoryNotificationPath } from "../src/ingest/directory-notifications";
+import { OPS_ALERT_RECIPIENT, OPS_ALERT_SENDER, type SendEmailBindingLike } from "../src/lib/alerts";
+import worker from "../worker.js";
 
 const origin = "https://thevalleydesk.org";
 
@@ -67,4 +70,34 @@ test("suggestions and page feedback are stored privately and answered without ec
   assert.match(body, /Thank you\. We will review your suggestion\./);
   assert.match(body, /<meta name="robots" content="noindex, follow">/);
   assert.equal(page.headers.get("cache-control"), "no-store");
+});
+
+test("directory notifications require the dedicated token and send only through the fixed ops binding", async () => {
+  const credential = "a".repeat(64);
+  const sent: Parameters<SendEmailBindingLike["send"]>[0][] = [];
+  const env = {
+    DIRECTORY_NOTIFICATION_TOKEN: credential,
+    NOTIFY_OPS: { async send(message: typeof sent[number]) { sent.push(message); return {}; } },
+  };
+  const send = (note: object, auth = credential, settings = env) => worker.fetch(new Request(origin + directoryNotificationPath, {
+    method: "POST",
+    headers: { "content-type": "application/json", authorization: "Bearer " + auth },
+    body: JSON.stringify(note),
+  }), settings, {});
+  assert.equal((await send({ kind: "test" }, "b".repeat(64))).status, 404);
+  assert.equal((await send({ kind: "test" }, credential, { ...env, DIRECTORY_NOTIFICATION_TOKEN: "" })).status, 404);
+  assert.equal((await worker.fetch(new Request(origin + directoryNotificationPath), env, {})).status, 404);
+  assert.equal((await send({ kind: "failed", text: "Daily update failed", to: "other@example.invalid" })).status, 400);
+  assert.equal((await send({ kind: "failed", text: "x".repeat(4200) })).status, 413);
+  assert.equal(sent.length, 0);
+
+  const okay = await send({ kind: "stopped", text: "Project count exceeded the limit." });
+  assert.equal(okay.status, 204);
+  assert.equal(okay.headers.get("cache-control"), "no-store");
+  assert.deepEqual(sent[0], {
+    to: OPS_ALERT_RECIPIENT, from: OPS_ALERT_SENDER,
+    subject: "[The Valley Desk] directory run stopped", text: "Project count exceeded the limit.",
+  });
+  const failingBinding = { ...env, NOTIFY_OPS: { async send() { throw new Error("synthetic provider failure"); } } };
+  assert.equal((await send({ kind: "test" }, credential, failingBinding)).status, 502);
 });

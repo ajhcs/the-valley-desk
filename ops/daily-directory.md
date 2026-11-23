@@ -12,6 +12,11 @@ that no listed site can be in the nine counties. Missing or ambiguous locations
 retain the prior listing and count as unresolved. The durable removal ledger
 prevents reimport.
 
+The per-kind 5% limit counts additions, removals and changes to listing name,
+purpose, institution, county, label, topic, license, language or archive status.
+A run can remove up to 25 records per kind. Stars, pushed dates and repository
+descriptions still update. GitHub's missing and unrecognized licenses stay empty.
+
 The inbox query reads the record ID, type and link. It does not select emails,
 messages or the reader's connection text. GitHub URLs must resolve to a public
 repository with independently supported regional account evidence. Registry and
@@ -33,10 +38,10 @@ of each inventory. Then run `python3 ops/daily-directory.py STATE --plan` to
 check the proposed data changes. The service verifies that the live home, county,
 project and API responses are using D1 before the first write.
 
-Link the two reviewed unit files to the user unit directory. Cut over the
-weekly timer to the daily timer once the production source and inbox are
-available and the 5% gate passes. Preserve the existing weekly state and its
-cursor.
+Run the reviewed runner by hand first. Link the two unit files to the user unit
+directory and enable the daily timer after the hand run completes. The daily
+service disables the weekly timer after the first scheduled run with a verified
+publications load. The existing weekly state and cursor remain available.
 
 The runner keeps the D1 Time Travel bookmark and import digest in the run
 receipt. A pending import is retried only against the same directory revision,
@@ -44,9 +49,9 @@ and a committed load resumes at its checks. The snapshot branch
 `data/directory-snapshots` contains public listing projections only. It receives
 a fast-forward commit per completed night. No data pull request is opened.
 
-`daily.log` gives one line per date. Failed or stopped runs queue
-`notification.txt`. The first three consecutive completed nights also write
-`first-three-nights.txt` and queue a one-time report. With a private
-`notification-url` file and optional `notification-token` in the state directory,
-the user service sends its queued notice to the configured HTTPS endpoint.
-Without one it tries a desktop notification and keeps the notice if delivery fails.
+`daily.log` gives one line per date. Failed or stopped runs queue an email
+through the Worker's `NOTIFY_OPS` binding. Set `DIRECTORY_NOTIFICATION_TOKEN`
+as a Worker secret and store the matching value in the state directory's
+mode-0600 `notification-token` file. Run `python3 ops/daily_notify.py STATE --test`
+once after deployment. The first three consecutive completed scheduled runs
+write `first-three-nights.txt` and queue the one-time email report.

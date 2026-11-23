@@ -195,7 +195,7 @@ function json(body: unknown, status = 200, extra: HeadersInit = {}) {
   });
 }
 
-async function tokenMatches(expected: string, actual: string) {
+export async function tokenMatches(expected: string, actual: string) {
   const encoder = new TextEncoder();
   const [left, right] = await Promise.all([
     crypto.subtle.digest("SHA-256", encoder.encode(expected)),
@@ -222,7 +222,7 @@ async function sha256Bytes(value: Uint8Array) {
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-async function readRequestTextBounded(request: Request, maxBytes: number) {
+export async function readRequestTextBounded(request: Request, maxBytes: number) {
   const declared = Number(request.headers.get("content-length") ?? "0");
   if (Number.isFinite(declared) && declared > maxBytes) return null;
   if (!request.body) return "";

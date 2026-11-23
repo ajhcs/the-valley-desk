@@ -10,5 +10,5 @@ Environment=PYTHONDONTWRITEBYTECODE=1
 Environment=PATH=/home/builderbob/.local/bin:/workspace/build/builderbob/runtimes/node-v24.21.0-linux-x64/bin:/usr/local/bin:/usr/bin:/bin
 Environment=npm_config_cache=/workspace/cache/builderbob/npm
 WorkingDirectory=/workspace/build/builderbob/tvd-daily-directory/checkout
-ExecStart=/usr/bin/python3 ops/daily-directory.py /workspace/build/builderbob/tvd-daily-directory
-ExecStopPost=-/usr/bin/python3 /workspace/build/builderbob/tvd-daily-directory/checkout/ops/daily-directory-notify.py /workspace/build/builderbob/tvd-daily-directory
+ExecStart=/usr/bin/python3 ops/daily-directory.py /workspace/build/builderbob/tvd-daily-directory --scheduled
+ExecStopPost=-/usr/bin/python3 /workspace/build/builderbob/tvd-daily-directory/checkout/ops/daily_notify.py /workspace/build/builderbob/tvd-daily-directory

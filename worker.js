@@ -22,6 +22,7 @@ import { conditionStateForSourceState, SOURCE_FRESHNESS_SLO_MS } from "./src/lib
 import { handleDiscoveryPilot } from "./src/ingest/discovery-pilot.ts";
 import { handleDiscoveryPilotPage } from "./src/ingest/discovery-pilot-page.ts";
 import { handleDirectoryRoutes } from "./src/ingest/discovery-directory-runtime.ts";
+import { directoryNotificationPath, handleDirectoryNotification } from "./src/ingest/directory-notifications.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -569,6 +570,8 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method.toUpperCase();
+
+  if (path === directoryNotificationPath) return handleDirectoryNotification(request, env);
 
   if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path.startsWith("/mcp") || path.startsWith("/discover/connect") || path === "/discover/terms" || path === "/discover/terms/" || path.startsWith("/.well-known/openai-"))) {
     const { isAssistantPath, serveAssistantAccess } = await import("./src/assistant/access.ts");

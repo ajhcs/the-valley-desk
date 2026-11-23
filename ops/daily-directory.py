@@ -18,6 +18,7 @@ from daily_d1 import (
     D1, INBOX, KINDS, LISTINGS, PROJECTS, REMOVALS, command, compact, live_checks, quote, save, snapshot,
 )
 from daily_public_sources import collect_publications, discover_projects, qualify_repository, refresh_projects, roster_from_public
+from daily_notify import queue
 
 NY = ZoneInfo("America/New_York")
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,8 +43,23 @@ def material(record):
     return {k: v for k, v in record.items() if k != "checked" and v is not None}
 
 
+SEMANTIC_FIELDS = {
+    "name": ("name", "title"), "purpose": ("purpose",),
+    "institution": ("institution", "institutions"), "county": ("county", "counties"),
+    "label": ("label",), "topic": ("topic",), "license": ("license",),
+    "language": ("language",), "archived": ("archived",),
+}
+
+
+def semantic_changes(before, after):
+    return {name for name, fields in SEMANTIC_FIELDS.items()
+            if any(before.get(field) != after.get(field) for field in fields)}
+
+
 def changes(previous, candidates, removed, skipped):
     accepted = {}
+    semantic = metadata_only = 0
+    fields, metadata_fields = Counter(), Counter()
     for row in candidates:
         identifier = row["id"]
         if identifier in removed or identifier in previous and material(previous[identifier]) == material(row):
@@ -52,14 +68,27 @@ def changes(previous, candidates, removed, skipped):
             raise StopRun("Duplicate change candidate")
         else:
             accepted[identifier] = {**row, "added": previous.get(identifier, row).get("added") or row.get("added") or ""}
+            if identifier in previous:
+                changed_fields = semantic_changes(previous[identifier], row)
+                fields.update(changed_fields)
+                guarded_fields = {field for names in SEMANTIC_FIELDS.values() for field in names}
+                metadata_fields.update(field for field in set(previous[identifier]) | set(row)
+                                       if field not in guarded_fields and field != "checked"
+                                       and previous[identifier].get(field) != row.get(field))
+                semantic += bool(changed_fields)
+                metadata_only += not changed_fields
     added = sum(identifier not in previous for identifier in accepted)
-    return accepted, {"added": added, "changed": len(accepted) - added, "removed": 0, "skipped": skipped}
+    return accepted, {"added": added, "changed": len(accepted) - added, "semantic_changed": semantic,
+                      "metadata_only": metadata_only, "semantic_fields": dict(fields), "metadata_fields": dict(metadata_fields),
+                      "removed": 0, "skipped": skipped}
 
 
 def gate(kind, previous, result):
-    affected = result["changed"] + result["removed"]
+    affected = result["added"] + result["semantic_changed"] + result["removed"]
+    if result["removed"] > 25:
+        raise StopRun(f"{kind} would remove {result['removed']:,} listings (limit 25)")
     if affected * 20 > len(previous):
-        raise StopRun(f"{kind} would change or remove {affected:,} of {len(previous):,} listings (limit 5%)")
+        raise StopRun(f"{kind} would add, materially change or remove {affected:,} of {len(previous):,} listings (limit 5%)")
 
 
 def studies(run_dir, previous, day):
@@ -207,7 +236,6 @@ def collect(d1, state, run_dir, day, first, last, receipt):
     skipped = sum(identifier not in projection for identifier in baseline["project"])
     deltas["project"], receipt["counts"]["project"] = changes(
         baseline["project"], projection.values(), removed["project"], skipped)
-    gate("project", baseline["project"], receipt["counts"]["project"])
     discovered, skipped = discover_projects(ROOT, projection, removed["project"], day, first.isoformat())
     deltas["project"].update(discovered)
     receipt["counts"]["project"]["added"] += len(discovered)
@@ -222,7 +250,6 @@ def collect(d1, state, run_dir, day, first, last, receipt):
         publications, skipped = [], 0
     deltas["publication"], receipt["counts"]["publication"] = changes(
         baseline["publication"], publications, removed["publication"], skipped)
-    gate("publication", baseline["publication"], receipt["counts"]["publication"])
 
     receipt["stage"] = "ClinicalTrials.gov"
     baseline["study"] = d1.listings("study")
@@ -230,7 +257,6 @@ def collect(d1, state, run_dir, day, first, last, receipt):
     receipt["registry_unresolved"] = missing
     deltas["study"], receipt["counts"]["study"] = changes(baseline["study"], registry, removed["study"], skipped)
     receipt["counts"]["study"]["removed"] = len(outside)
-    gate("study", baseline["study"], receipt["counts"]["study"])
 
     receipt["stage"] = "reader inbox"
     public = {kind: {**baseline[kind], **deltas[kind]} for kind in KINDS}
@@ -241,6 +267,8 @@ def collect(d1, state, run_dir, day, first, last, receipt):
     receipt["counts"]["project"]["added"] += len(additions)
     deltas["publication"].update((row["id"], row) for row in papers)
     receipt["counts"]["publication"]["added"] += len(papers)
+    for kind in KINDS:
+        gate(kind, baseline[kind], receipt["counts"][kind])
     receipt["inbox"] = dict(Counter(status for _, status, _, _ in decisions))
     project_validation = run_dir / "project-validation.json"
     save(project_validation, list({**public["project"], **additions}.values()))
@@ -272,19 +300,27 @@ def report(state, receipt):
     staged.replace(log)
     print(text, flush=True)
     if receipt["outcome"] in ("failed", "stopped"):
-        (state / "notification.txt").write_text(text + "\n")
+        queue(state, receipt["outcome"], text)
         return
     day = date.fromisoformat(receipt["day"])
     dates = {(day - timedelta(days=offset)).isoformat() for offset in range(3)}
     first_three = [line for line in lines if line[:10] in dates and line[11:].startswith("complete ")]
     report_path = state / "first-three-nights.txt"
     if receipt["outcome"] == "complete" and len(first_three) == 3 and not report_path.exists():
+        queue(state, "three-nights", "\n".join(first_three), name="first-three-nights")
         report_path.write_text("\n".join(first_three) + "\n")
-        (state / "notification.txt").write_text("The Valley Desk completed three consecutive nights.\n" +
-                                                "\n".join(first_three) + "\n")
 
 
-def run(state, d1, *, plan):
+def retire_weekly(state, receipt):
+    marker = state / "weekly-retired.json"
+    if marker.exists() or not receipt["publication_window"] or receipt["counts"]["publication"]["added"] == 0:
+        return
+    command(ROOT, "systemctl", "--user", "disable", "--now", "valley-desk-publications.timer",
+            label="weekly publication timer retirement", timeout=45)
+    save(marker, {"day": receipt["day"], "loaded_through": receipt["loaded_through"]})
+
+
+def run(state, d1, *, plan, scheduled):
     today = datetime.now(NY).date()
     day = today.isoformat()
     cursor = state / "cursor.json"
@@ -294,14 +330,15 @@ def run(state, d1, *, plan):
     resuming = not plan and pending.exists()
     receipt = json.loads(pending.read_text()) if resuming else {
         "day": day, "revision": uuid4().hex, "stage": "preflight", "counts": {}, "bookmarks": [],
-        "loaded_through": last.isoformat(), "rows_read": {},
+        "loaded_through": last.isoformat(), "rows_read": {}, "scheduled": scheduled, "publication_window": previous < last,
     }
     prior_reads = Counter(receipt["rows_read"])
     prior_unmeasured = set(receipt.get("unmeasured", []))
     run_dir = state / "runs" / (receipt["day"] + "-" + receipt["revision"])
     run_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
     if not plan and not resuming and (state / "daily.log").exists():
-        if any(line.startswith(day + " complete ") for line in (state / "daily.log").read_text().splitlines()):
+        complete_today = (f"{day} complete ", f"{day} manual-complete ")
+        if any(line.startswith(complete_today) for line in (state / "daily.log").read_text().splitlines()):
             return 0
     try:
         if not plan:
@@ -339,8 +376,13 @@ def run(state, d1, *, plan):
         receipt["http"] = live_checks(ROOT, d1.probe())
         receipt["stage"] = "snapshot"
         receipt["snapshot"] = snapshot(ROOT, run_dir, receipt["day"], {kind: d1.listings(kind) for kind in KINDS})
+        completed_today = datetime.now(NY).date().isoformat() == receipt["day"]
+        nightly = scheduled and receipt["scheduled"] and completed_today
+        if nightly:
+            receipt["stage"] = "weekly timer retirement"
+            retire_weekly(state, receipt)
         save(cursor, {"loaded_through": receipt["loaded_through"]})
-        receipt["outcome"] = "complete" if datetime.now(NY).date().isoformat() == receipt["day"] else "recovered"
+        receipt["outcome"] = ("complete" if nightly else "manual-complete") if completed_today else "recovered"
         return 0
     except StopRun as error:
         receipt.update(outcome="stopped", error=str(error))
@@ -350,7 +392,7 @@ def run(state, d1, *, plan):
         receipt.update(outcome="failed", error=f"{receipt['stage']} ({type(error).__name__})")
         return 1
     finally:
-        if receipt["outcome"] in ("complete", "recovered"):
+        if receipt["outcome"] in ("complete", "manual-complete", "recovered"):
             receipt.pop("error", None)
         elif receipt.get("error"):
             errors = receipt.setdefault("attempt_errors", [])
@@ -363,7 +405,7 @@ def run(state, d1, *, plan):
             print(daily_line(receipt))
         else:
             report(state, receipt)
-            if receipt["outcome"] in ("complete", "recovered"):
+            if receipt["outcome"] in ("complete", "manual-complete", "recovered"):
                 pending.unlink(missing_ok=True)
             elif pending.exists():
                 save(pending, receipt)
@@ -375,6 +417,7 @@ def main():
     mode = cli.add_mutually_exclusive_group()
     mode.add_argument("--measure", action="store_true")
     mode.add_argument("--plan", action="store_true")
+    mode.add_argument("--scheduled", action="store_true")
     args = cli.parse_args()
     os.umask(0o077)
     state = args.state.resolve(strict=True)
@@ -388,7 +431,7 @@ def main():
             save(state / "production-rows-read.json", measured)
             print(compact(measured))
             return 0
-        return run(state, d1, plan=args.plan)
+        return run(state, d1, plan=args.plan, scheduled=args.scheduled)
 
 
 if __name__ == "__main__":

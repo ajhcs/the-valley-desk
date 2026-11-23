@@ -26,6 +26,20 @@ class RefreshTests(unittest.TestCase):
         self.assertTrue(records['123']['archived'])
         self.assertNotIn('language', records['123'])
 
+    def test_noassertion_license_is_null_for_graphql_and_rest(self):
+        self.assertIsNone(module.github_license({'spdxId': 'NOASSERTION'}))
+        self.assertIsNone(module.github_license({'spdx_id': 'NOASSERTION'}))
+        self.assertIsNone(module.github_license(None))
+        self.assertEqual(module.github_license({'spdx_id': 'MIT'}), 'MIT')
+        previous = {'id': '123', 'code': 'https://github.com/owner/repo', 'license': 'MIT'}
+        source = {'databaseId': 123, 'isPrivate': False, 'primaryLanguage': None,
+                  'licenseInfo': {'spdxId': 'NOASSERTION'}, 'pushedAt': None,
+                  'isArchived': False, 'stargazerCount': 0, 'description': None}
+        response = types.SimpleNamespace(returncode=0, stdout=__import__('json').dumps({'data': {'r0': source}}))
+        with tempfile.TemporaryDirectory() as directory, patch.object(module.subprocess, 'run', return_value=response):
+            records, _ = module.refresh_projects('.', directory, {'123': previous}, set(), '2026-11-23')
+        self.assertIsNone(records['123']['license'])
+
     def test_identity_mismatch_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory, patch.dict(sys.modules, {'regional': types.SimpleNamespace(build_regional=lambda *a, **k: {})}), patch.object(module.subprocess, 'run', return_value=type('Result', (), {'returncode': 0, 'stdout': __import__('json').dumps({'data': {'r0': {'databaseId': 999, 'isPrivate': False}}})})()):
             with self.assertRaises(ValueError):
