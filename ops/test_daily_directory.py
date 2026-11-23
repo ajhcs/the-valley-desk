@@ -19,6 +19,21 @@ class DailyDirectoryTests(unittest.TestCase):
         with self.assertRaisesRegex(daily.StopRun, "2 of 20"):
             daily.gate("project", before, {"changed": 1, "removed": 1})
 
+    def test_clinical_suppression_requires_a_matching_record_and_unambiguous_sites(self):
+        source = daily.ROOT / "scripts/trials/collect.py"
+        registry_spec = importlib.util.spec_from_file_location("trial_collector", source)
+        registry = importlib.util.module_from_spec(registry_spec)
+        registry_spec.loader.exec_module(registry)
+        identity = "NCT99999999"
+        site = {"country": "United States", "state": "Pennsylvania", "city": "Pittsburgh", "zip": "15213"}
+        study = {"protocolSection": {"identificationModule": {"nctId": identity},
+                                     "contactsLocationsModule": {"locations": [site]}}}
+        self.assertTrue(registry.confirmed_outside(study, identity, {"15213": {"42003"}}))
+        self.assertFalse(registry.confirmed_outside(study, identity, {"15213": {"42003", "42101"}}))
+        self.assertFalse(registry.confirmed_outside(study, identity, {}))
+        with self.assertRaises(ValueError):
+            registry.confirmed_outside(study, "NCT00000001", {})
+
     def test_rechecks_removals_when_loading_without_pruning(self):
         root = daily.ROOT
         with tempfile.TemporaryDirectory() as directory, sqlite3.connect(":memory:") as db:

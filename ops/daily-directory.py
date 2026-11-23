@@ -68,12 +68,12 @@ def studies(run_dir, previous, day):
     prior = source / "previous.jsonl"
     write_rows(prior, previous.values())
     result = json.loads(command(ROOT, sys.executable, "scripts/trials/collect.py", str(source),
-                                "--previous", str(prior), "--date", day, label="ClinicalTrials.gov collector",
+                                "--previous", str(prior), "--date", day, "--verify-missing", label="ClinicalTrials.gov collector",
                                 timeout=2400))
     with (source / "clinical-studies.jsonl").open(encoding="utf-8") as stream:
         rows = [json.loads(line) for line in stream]
-    # An absent projection alone does not establish which prior site was removed.
-    return rows, result["candidates"] - len(rows), result["previous_missing"]
+    outside = set(result["confirmed_outside"])
+    return rows, result["candidates"] - len(rows), outside, result["previous_missing"] - len(outside)
 
 
 def inbox(d1, state, run_dir, day, records, removed):
@@ -150,15 +150,18 @@ def inbox(d1, state, run_dir, day, records, removed):
     return additions, papers, decisions
 
 
-def prepare_load(run_dir, deltas, decisions, revision):
+def prepare_load(run_dir, deltas, decisions, revision, study_removals=()):
     projects = run_dir / "projects.json"
     pubs = run_dir / "publications.jsonl"
     trials = run_dir / "studies.jsonl"
+    study_tombstones = run_dir / "study-removals.json"
     save(projects, list(deltas["project"].values()))
     write_rows(pubs, deltas["publication"].values())
     write_rows(trials, deltas["study"].values())
+    save(study_tombstones, sorted(study_removals))
     sql = command(ROOT, sys.executable, "ops/load-research.py", "--project-upserts", str(projects),
                   "--publications", str(pubs), "--studies", str(trials), "--respect-removals",
+                  "--study-removals", str(study_tombstones),
                   "--alias-reference", "src/content/public-directory-institutions.json", label="Research loader")
     with (run_dir / "load.sql").open("w", encoding="utf-8") as output:
         output.write(sql)
@@ -223,13 +226,16 @@ def collect(d1, state, run_dir, day, first, last, receipt):
 
     receipt["stage"] = "ClinicalTrials.gov"
     baseline["study"] = d1.listings("study")
-    registry, skipped, missing = studies(run_dir, baseline["study"], day)
+    registry, skipped, outside, missing = studies(run_dir, baseline["study"], day)
     receipt["registry_unresolved"] = missing
     deltas["study"], receipt["counts"]["study"] = changes(baseline["study"], registry, removed["study"], skipped)
+    receipt["counts"]["study"]["removed"] = len(outside)
     gate("study", baseline["study"], receipt["counts"]["study"])
 
     receipt["stage"] = "reader inbox"
     public = {kind: {**baseline[kind], **deltas[kind]} for kind in KINDS}
+    for identifier in outside:
+        public["study"].pop(identifier, None)
     additions, papers, decisions = inbox(d1, state, run_dir, day, public, removed)
     deltas["project"].update(additions)
     receipt["counts"]["project"]["added"] += len(additions)
@@ -240,7 +246,7 @@ def collect(d1, state, run_dir, day, first, last, receipt):
     save(project_validation, list({**public["project"], **additions}.values()))
     command(ROOT, "node", "scripts/directory/validate.mjs", "--file", str(project_validation),
             label="Software listing validation")
-    return deltas, decisions
+    return deltas, decisions, outside
 
 
 def daily_line(receipt):
@@ -307,8 +313,8 @@ def run(state, d1, *, plan):
                 raise StopRun("Production inbox or study visibility is unavailable")
         if not resuming:
             receipt["base_revision"] = d1.revision()
-            deltas, decisions = collect(d1, state, run_dir, day, previous + timedelta(days=1), last, receipt)
-            prepare_load(run_dir, deltas, decisions, receipt["revision"])
+            deltas, decisions, outside = collect(d1, state, run_dir, day, previous + timedelta(days=1), last, receipt)
+            prepare_load(run_dir, deltas, decisions, receipt["revision"], outside)
             receipt["sql_sha256"] = sha256((run_dir / "load.sql").read_bytes()).hexdigest()
         if plan:
             receipt["outcome"] = "staged"

@@ -7,6 +7,11 @@ ClinicalTrials.gov index and reviews the reader inbox. It sends a guarded D1
 import and rebuilds the directory summaries. A code release is needed only when
 the Worker or loader changes.
 
+An existing study is removed only after an exact registry lookup establishes
+that no listed site can be in the nine counties. Missing or ambiguous locations
+retain the prior listing and count as unresolved. The durable removal ledger
+prevents reimport.
+
 The inbox query reads the record ID, type and link. It does not select emails,
 messages or the reader's connection text. GitHub URLs must resolve to a public
 repository with independently supported regional account evidence. Registry and
