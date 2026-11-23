@@ -8,14 +8,26 @@ import {
 import {
   contactLink,
   count,
+  evidenceMark,
   externalLink,
   healthTopic,
   html,
+  kindIcon,
+  namedLinks,
   partialDate,
   projectRecord,
+  regionalLabel,
   searchInput,
+  sourceIcon,
   timestamp,
+  topicTag,
 } from "./public-directory-ui";
+import institutionRegistry from "../content/public-directory-institutions.json";
+
+/** Institution display names by reference ID, for listing cards that carry only IDs. */
+const institutionNames = new Map((institutionRegistry as { id: string; name: string }[]).map((ref) => [ref.id, ref.name]));
+const institutionLinks = (ids: string[]) =>
+  ids.map((id) => `<a href="/discover/institution/${encodeURIComponent(id)}">${html(institutionNames.get(id) ?? id)}</a>`);
 
 export const newPath = "/discover/new";
 export const feedPath = "/discover/updates.xml";
@@ -476,7 +488,12 @@ export function topicLink(topic: string) {
   return healthTopic(topic) ? `<a href="${html(topicPath(topic))}">${html(topic)}</a>` : `<span>${html(topic)}</span>`;
 }
 function evidence(p: Publication) {
-  return `<a class="evidence${p.label === "Verified" ? " evidence-verified" : ""}" href="/discover/methodology#regional-evidence">${html(p.label)}</a> ${html(p.connection)} ${externalLink(p.source, "Affiliation source")}`;
+  return `${regionalLabel(p)} ${html(p.connection)} ${externalLink(p.source, "Affiliation source")}`;
+}
+/** Card line: evidence icon, the named institutions, and the affiliation source as an icon. */
+function cardEvidence(label: string, connection: string, institutions: string[], source: string, sourceName: string, fallback = "") {
+  const names = namedLinks("institution", institutionLinks(institutions));
+  return `<p class="record-evidence">${evidenceMark(label, connection)}${names || fallback}${sourceIcon(source, sourceName)}</p>`;
 }
 function bylinePreview(p: Publication, shown = 3) {
   const names = p.authors.slice(0, shown).map((a) => html(a.name));
@@ -485,11 +502,11 @@ function bylinePreview(p: Publication, shown = 3) {
 }
 function publicationRecord(p: Publication) {
   return `<li class="record record-publication${p.retracted ? " is-retracted" : ""}">
-    <p class="record-kind"><span class="kind">${html(publicationType(p.type))}</span>${p.venue ? `<span class="record-venue">${html(p.venue)}</span>` : ""}${partialDate(p.published) ? `<span>${partialDate(p.published)}</span>` : ""}${p.retracted ? '<strong class="retracted">Retracted</strong>' : ""}</p>
+    <p class="record-kind">${kindIcon("publication", publicationType(p.type))}${p.venue ? `<span class="record-venue">${html(p.venue)}</span>` : ""}${partialDate(p.published) ? `<span>${partialDate(p.published)}</span>` : ""}${p.retracted ? '<strong class="retracted">Retracted</strong>' : ""}</p>
     <h3 class="record-title"><a href="${html(pubPath(p.id))}">${html(displayTitle(p))}</a></h3>
     <p class="record-byline">${bylinePreview(p)}</p>
-    <p class="record-evidence">${evidence(p)}</p>
-    <p class="record-topic">${topicLink(p.topic)}${timestamp(p.added) ? `<span>Added ${timestamp(p.added)}</span>` : ""}</p>
+    ${cardEvidence(p.label, p.connection, p.institutions, p.source, "Affiliation source")}
+    <p class="record-topic">${topicTag(topicLink(p.topic), p.topic)}${timestamp(p.added) ? `<span>Added ${timestamp(p.added)}</span>` : ""}</p>
   </li>`;
 }
 const studyNames: Record<string, string> = {
@@ -502,9 +519,10 @@ export function registryLabel(value: string) {
 }
 function studyRecord(study: ClinicalStudy) {
   return `<li class="record record-study">
-    <p class="record-kind"><span class="kind">${html(registryLabel(study.type))}</span><span>${html(study.id)}</span><span>${html(registryLabel(study.status))}</span></p>
+    <p class="record-kind">${kindIcon("study", registryLabel(study.type))}<span>${html(study.id)}</span><span>${html(registryLabel(study.status))}</span></p>
     <h3 class="record-title"><a href="${studyPath(study.id)}">${html(study.title)}</a></h3>
-    <p class="record-evidence">${html(study.counties.map((county) => county + " County").join(", "))} · ClinicalTrials.gov</p>
+    ${cardEvidence(study.label, study.connection, study.institutions, study.source, "ClinicalTrials.gov record",
+      namedLinks("place", study.counties.map((c) => `<a href="/discover/county/${facetSlug(c)}">${html(c)}</a>`), 4))}
     <p class="record-topic"><span>Added ${timestamp(study.added)}</span></p>
   </li>`;
 }
@@ -532,14 +550,14 @@ export function renderStudy(study: ClinicalStudy, refs: Institution[] = [], simi
   return `<article class="frame page record-page study-page">
     <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a><span aria-hidden="true">/</span><a href="${browsePath}?kind=study">Clinical studies</a></nav>
     <header class="record-head">
-      <p class="record-kind"><span class="kind">${html(registryLabel(study.type))}</span><span>${html(study.id)}</span><span>${html(registryLabel(study.status))}</span></p>
+      <p class="record-kind">${kindIcon("study", registryLabel(study.type))}<span>${html(study.id)}</span><span>${html(registryLabel(study.status))}</span></p>
       <h1>${html(study.title)}</h1>
       <p class="record-actions">${externalLink(study.source, "View on ClinicalTrials.gov ↗", "button primary")}</p>
     </header>
     <div class="record-body">
       <section class="record-section" aria-labelledby="connection-title">
         <h2 id="connection-title">Regional connection</h2>
-        <p class="record-evidence"><a class="evidence evidence-verified" href="/discover/methodology#regional-evidence">${html(study.label)}</a> ${html(study.connection)}</p>
+        <p class="record-evidence">${regionalLabel(study)} ${html(study.connection)}</p>
         <dl class="facts">
           ${places.length ? `<div><dt>${places.length === 1 ? "Institution" : "Institutions"}</dt><dd>${places.join(", ")}</dd></div>` : ""}
           ${counties.length ? `<div><dt>${counties.length === 1 ? "County" : "Counties"}</dt><dd>${counties.join(", ")}</dd></div>` : ""}
@@ -730,7 +748,7 @@ export function renderPublication(
   return `<article class="frame page record-page publication-page">
     <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a>${healthTopic(p.topic) ? `<span aria-hidden="true">/</span>${topicLink(p.topic)}` : ""}</nav>
     <header class="record-head">
-      <p class="record-kind"><span class="kind">${html(publicationType(p.type))}</span>${p.venue ? `<span>${html(p.venue)}</span>` : ""}${partialDate(p.published) ? `<span>Published ${partialDate(p.published)}</span>` : ""}</p>
+      <p class="record-kind">${kindIcon("publication", publicationType(p.type))}${p.venue ? `<span>${html(p.venue)}</span>` : ""}${partialDate(p.published) ? `<span>Published ${partialDate(p.published)}</span>` : ""}</p>
       <h1>${html(displayTitle(p))}</h1>
       ${p.retracted ? '<p class="retracted-notice"><strong>Retracted publication.</strong> The source record marks this paper as retracted.</p>' : ""}
       <p class="byline">${p.authors.map((a) => html(a.name)).join(", ")}</p>

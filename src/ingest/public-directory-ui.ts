@@ -2,6 +2,7 @@ import {
   browsePath, directoryParams, githubAccount, httpsUrl, lastActivity, methodPath, projectPath,
   type DirectoryCatalog, type DirectoryProject, type DirectoryQuery, type EntityKind, type FacetKey,
 } from "./public-directory-data";
+import { icon, topicIcon, type IconName } from "./public-directory-icons";
 
 const numberFormat = new Intl.NumberFormat("en-US");
 const dateFormat = new Intl.DateTimeFormat("en-US", {
@@ -49,9 +50,32 @@ export const labelDefinitions = {
   Listed: "A source shows a regional association through the GitHub account or lab.",
 };
 
-export function regionalLabel(project: DirectoryProject) {
+export function regionalLabel(project: { label: string }) {
   const verified = project.label === "Verified";
-  return `<a class="evidence${verified ? " evidence-verified" : ""}" href="${methodPath}#${verified ? "verified" : "listed"}">${html(project.label)}</a>`;
+  return `<a class="evidence${verified ? " evidence-verified" : ""}" href="${methodPath}#${verified ? "verified" : "listed"}">${icon(verified ? "verified" : "listed")}${html(project.label)}</a>`;
+}
+
+/**
+ * The evidence label as a single icon for listing cards. The connection sentence stays on the
+ * listing's own page and in the tooltip; the card shows only who and where.
+ */
+export function evidenceMark(label: string, detail?: string | null) {
+  const verified = label === "Verified";
+  const text = detail ? `${label}: ${detail}` : label;
+  return `<a class="evidence-mark${verified ? " is-verified" : ""}" href="${methodPath}#${verified ? "verified" : "listed"}" title="${html(text)}">${icon(verified ? "verified" : "listed")}<span class="sr-only">${html(text)}</span></a>`;
+}
+
+/** A short run of linked names after an icon, with a count for the rest. */
+export function namedLinks(glyph: IconName, links: string[], shown = 3) {
+  if (!links.length) return "";
+  const rest = links.length - shown;
+  return `<span class="meta-item">${icon(glyph)}<span>${links.slice(0, shown).join(", ")}${rest > 0 ? ` <span class="muted">+${count(rest)}</span>` : ""}</span></span>`;
+}
+
+/** A source link reduced to an icon, named for screen readers and on hover. */
+export function sourceIcon(value: string | null | undefined, label: string) {
+  const url = httpsUrl(value);
+  return url ? `<a class="source-mark" href="${html(url)}" rel="noreferrer" title="${html(label)}">${icon("source")}<span class="sr-only">${html(label)}</span></a>` : "";
 }
 
 export function searchInput(query = "") {
@@ -66,12 +90,17 @@ export function searchInput(query = "") {
 export function projectPlace(catalog: DirectoryCatalog, project: DirectoryProject) {
   const account = githubAccount(project);
   const lab = project.lab || project.owner?.name;
+  const item = (glyph: IconName, content: string) => `<span class="meta-item">${icon(glyph)}${content}</span>`;
   return [
-    project.institution && entityLink(catalog, "institution", project.institution),
-    account && entityLink(catalog, "lab", account, lab || project.profileLocation || `GitHub: @${account}`),
-    !account && lab && html(lab),
-  ].filter(Boolean).join('<span class="separator" aria-hidden="true"> / </span>');
+    project.institution && item("institution", entityLink(catalog, "institution", project.institution)),
+    account && item(lab ? "account" : project.profileLocation ? "place" : "account",
+      entityLink(catalog, "lab", account, lab || project.profileLocation || `@${account}`)),
+    !account && lab && item("account", html(lab)),
+  ].filter(Boolean).join("");
 }
+
+export const kindIcon = (glyph: IconName, name: string) => `<span class="kind">${icon(glyph)}${html(name)}</span>`;
+export const topicTag = (link: string, topic: string) => `<span class="meta-item">${topicIcon(topic)}${link}</span>`;
 
 /** Publication dates keep their source precision: a year, a month or a day. */
 const monthYear = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
@@ -107,12 +136,11 @@ const kindDate = (project: DirectoryProject, dateField: "activity" | "added") =>
 export function projectRecord(catalog: DirectoryCatalog, project: DirectoryProject, dateField: "activity" | "added" = "activity") {
   const place = projectPlace(catalog, project);
   return `<li class="record record-software">
-    <p class="record-kind"><span class="kind">Software</span>${project.language ? `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>` : ""}${project.license ? `<a href="${facetHref("license", project.license)}">${html(project.license)}</a>` : ""}${kindDate(project, dateField)}${project.archived === true ? '<span class="archive-mark">Archived</span>' : ""}</p>
+    <p class="record-kind">${kindIcon("software", "Software")}${project.language ? `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>` : ""}${project.license ? `<a href="${facetHref("license", project.license)}">${html(project.license)}</a>` : ""}${kindDate(project, dateField)}${project.archived === true ? '<span class="archive-mark">Archived</span>' : ""}</p>
     <h3 class="record-title"><a href="${html(projectPath(project))}">${html(project.name)}</a></h3>
     <p class="record-summary">${html(project.purpose)}</p>
-    ${place ? `<p class="record-place">${place}</p>` : ""}
-    <p class="record-evidence">${regionalLabel(project)}${project.connection ? ` ${html(project.connection)}` : ""}</p>
-    <p class="record-topic">${entityLink(catalog, "topic", project.topic)}</p>
+    <p class="record-evidence">${evidenceMark(project.label, project.connection)}${place}</p>
+    <p class="record-topic">${topicTag(entityLink(catalog, "topic", project.topic), project.topic)}</p>
   </li>`;
 }
 

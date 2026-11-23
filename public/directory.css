@@ -145,6 +145,53 @@ input, select { accent-color: var(--accent); }
 .evidence-verified { background: var(--verified); color: var(--verified-text); border-color: currentColor; }
 .archive-mark { color: var(--muted); }
 
+/* Icons: one 20-unit line family (src/ingest/public-directory-icons.ts). */
+.glyph {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -.2em;
+}
+.record-kind .kind { display: inline-flex; align-items: center; gap: .4rem; align-self: center; }
+.record-kind .kind .glyph { width: 1.3rem; height: 1.3rem; stroke-width: 1.4; }
+.record-study .kind, .study-page .record-kind .kind { color: var(--study); }
+.evidence { display: inline-flex; align-items: center; gap: .25rem; }
+.evidence .glyph { width: 1.05em; height: 1.05em; }
+.evidence-verified .glyph-fill { fill: currentColor; fill-opacity: .14; }
+.record-place, .record-topic { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem 1rem; }
+/* The evidence line stays one row: long institution lists wrap inside their own item. */
+.record .record-evidence { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 0 1rem; }
+.record .record-evidence > * { flex: 0 1 auto; }
+.record .record-evidence > :is(.evidence-mark, .source-mark) { height: 1.5em; }
+.meta-item { display: inline-flex; align-items: flex-start; gap: .35rem; min-width: 0; }
+.meta-item > .glyph { margin-top: .12em; }
+.record-topic .meta-item, .record-place .meta-item { align-items: center; }
+.record-topic .meta-item > .glyph, .record-place .meta-item > .glyph { margin-top: 0; }
+.meta-item > .glyph { color: var(--muted); }
+.record-topic .meta-item > .glyph { color: var(--accent); }
+.evidence-mark, .source-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 2px;
+  color: var(--muted);
+}
+.evidence-mark { margin-inline: -.3rem -.6rem; }
+.evidence-mark .glyph, .source-mark .glyph { width: 1.2rem; height: 1.2rem; }
+.evidence-mark.is-verified { color: var(--verified-text); }
+.evidence-mark.is-verified .glyph-fill { fill: var(--verified); }
+.source-mark { margin-inline: -.6rem -.3rem; color: var(--accent); }
+.evidence-mark:hover, .source-mark:hover { background: var(--surface); }
+.evidence-key { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin-top: .75rem; padding: 0; list-style: none; }
+.evidence-key li { display: inline-flex; align-items: center; gap: .4rem; }
+
 /* Home */
 .home { padding-block: clamp(1.5rem, 4vw, 3rem) 0; }
 .home-intro { max-width: 52rem; padding-bottom: clamp(1.5rem, 3vw, 2.25rem); }
