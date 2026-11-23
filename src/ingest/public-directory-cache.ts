@@ -30,6 +30,7 @@ const versionSql = `SELECT
   (SELECT group_concat(kind||':'||n||':'||works||':'||coalesce(added,'')||':'||coalesce(last,''),'|')
      FROM (SELECT * FROM research_summary_kinds WHERE scope_field='' AND scope_value='' ORDER BY kind)) totals`;
 
+const withReuse = versionSql.replace("  (SELECT first FROM research_summary_kinds", "  (SELECT revision FROM paper_data_reuse_revision WHERE id=1) reuse_revision,\n  (SELECT first FROM research_summary_kinds");
 const withoutDatasets = versionSql.replace(/\n {2}\(SELECT group_concat\([^\n]*dataset_[^\n]*/g, "");
 
 async function digest(text: string) {
@@ -43,13 +44,20 @@ export async function dataVersion(db: Db | undefined, build: string) {
   try {
     let result: Awaited<ReturnType<ReturnType<Db["prepare"]>["all"]>>;
     try {
-      result = await db.prepare(versionSql).all();
+      result = await db.prepare(withReuse).all();
     } catch (error) {
-      if (!/no such table: dataset_/i.test(String(error))) throw error;
-      result = await db.prepare(withoutDatasets).all();
+      if (/no such table: paper_data_reuse_revision/i.test(String(error))) {
+        try { result = await db.prepare(versionSql).all(); }
+        catch (fallback) {
+          if (!/no such table: dataset_/i.test(String(fallback))) throw fallback;
+          result = await db.prepare(withoutDatasets).all();
+        }
+      } else if (/no such table: dataset_/i.test(String(error))) {
+        result = await db.prepare(withoutDatasets).all();
+      } else throw error;
     }
     const [row] = result.results ?? [];
-    if (result.success === false || !row) return undefined;
+    if (result.success === false || !row || (typeof row === "object" && "reuse_revision" in row && row.reuse_revision == null)) return undefined;
     return digest(build + "\n" + JSON.stringify(row));
   } catch {
     return undefined;

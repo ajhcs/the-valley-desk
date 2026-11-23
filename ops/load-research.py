@@ -87,12 +87,57 @@ def load(args):
             for line in source:
                 if line.strip():
                     emit(json.loads(line), "study", aliases, args.respect_removals)
+    if args.reuse_edges:
+        load_reuse(args.reuse_edges)
     if args.datasets:
         with args.datasets.open() as source:
             for line in source:
                 if line.strip():
                     emit(json.loads(line), "dataset", aliases, args.respect_removals)
 
+
+def reuse_accession(dataset_id):
+    # Only identities for which the renderer has a canonical repository URL.
+    patterns = {
+        "geo": r"GSE[0-9]+", "bioproject": r"PRJ[A-Z]{2}[0-9]+",
+        "sra": r"[SED]RP[0-9]+", "dbgap": r"phs[0-9]{6}",
+        "ega": r"EGA[SD][0-9]{11}", "pride": r"PXD[0-9]{6}",
+        "arrayexpress": r"E-[A-Z]{4}-[0-9]+",
+    }
+    prefix, sep, accession = dataset_id.partition(":")
+    if not sep or prefix not in patterns or not re.fullmatch(patterns[prefix], accession):
+        raise ValueError("Unsupported reuse dataset identity")
+    return accession
+
+
+def load_reuse(path):
+    # This is a reviewed projection, never the inference pipeline's decision file.
+    required = {"paper_id", "dataset_id", "evidence_url", "evidence_quote", "reviewed", "public_safe"}
+    records, seen = [], set()
+    for line in path.read_text().splitlines():
+        if not line.strip():
+            continue
+        r = json.loads(line)
+        if not isinstance(r, dict) or set(r) != required or r["reviewed"] is not True or r["public_safe"] is not True:
+            raise ValueError("Reuse edge requires an exact reviewed public-safe projection")
+        if not isinstance(r["paper_id"], str) or not re.fullmatch(r"(?:doi:10\.[0-9]{4,}/[^\s]+|pmid:[0-9]+|arxiv:[^\s]+)", r["paper_id"]):
+            raise ValueError("Invalid reuse paper ID")
+        if not isinstance(r["dataset_id"], str):
+            raise ValueError("Invalid reuse dataset ID")
+        accession = reuse_accession(r["dataset_id"])
+        evidence = r["evidence_url"]
+        if not isinstance(evidence, str) or urlsplit(evidence).scheme != "https" or not urlsplit(evidence).hostname or urlsplit(evidence).username or urlsplit(evidence).password:
+            raise ValueError("Invalid reuse evidence URL")
+        if not isinstance(r["evidence_quote"], str) or not r["evidence_quote"].strip() or "\0" in r["evidence_quote"]:
+            raise ValueError("Missing reuse evidence quote")
+        key = (r["paper_id"], r["dataset_id"])
+        if key in seen:
+            raise ValueError("Duplicate reuse edge")
+        seen.add(key)
+        records.append((*key, accession))
+    for paper, dataset, accession in records:
+        print("INSERT INTO paper_data_reuse(paper_id,dataset_id,accession) VALUES(" +
+              ",".join(map(quote, (paper, dataset, accession))) + ") ON CONFLICT(paper_id,dataset_id) DO UPDATE SET accession=excluded.accession;")
 
 def citation_key(url):
     if not url:
@@ -225,7 +270,7 @@ def emit(r, kind, aliases, respect_removals=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    for flag in ("projects", "publications", "institutions", "removals", "studies", "study-removals", "datasets", "dataset-removals"):
+    for flag in ("projects", "publications", "institutions", "removals", "studies", "study-removals", "datasets", "dataset-removals", "reuse-edges"):
         parser.add_argument("--" + flag, type=Path)
     parser.add_argument("--project-upserts", type=Path, help="Apply project additions and edits without pruning the catalog")
     parser.add_argument("--alias-reference", type=Path, help="Canonicalize institution facets without loading the reference")
