@@ -39,11 +39,11 @@ class DailyDirectoryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory, sqlite3.connect(":memory:") as db:
             stage = Path(directory)
             files = ["ops/directory-removals.sql", "migrations/0046_research_directory.sql",
-                     "migrations/0047_clinical_studies.sql"]
+                     "migrations/0047_clinical_studies.sql", "migrations/0049_reader_inbox.sql"]
             for name in files:
                 db.executescript((root / name).read_text())
-            db.execute("CREATE TABLE reader_inbox(id INTEGER PRIMARY KEY, status TEXT, note TEXT)")
-            db.execute("INSERT INTO reader_inbox VALUES (1,'new',''),(2,'new','')")
+            db.execute("INSERT INTO reader_inbox(id,kind,received_at) VALUES (1,'suggestion','2026-11-23'),"
+                       "(2,'suggestion','2026-11-23')")
             one, two, three = json.loads((root / "src/content/public-directory-projects.json").read_text())[:3]
             baseline = {one["id"]: one, two["id"]: two}
             start = {"project": baseline, "publication": {}, "study": {}}
