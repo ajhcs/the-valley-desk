@@ -410,6 +410,27 @@ def apply_load(d1, sql, revision):
     return False
 
 
+def regional_freshness(state, d1, run_dir, today, *, plan, receipt):
+    """Run private check updates independently of directory collection and its gates."""
+    config_path = state / "regional-data-config.json"
+    if not config_path.is_file():
+        return
+    try:
+        if json.loads(config_path.read_text()).get("enabled") is not True:
+            return
+        evidence = json.loads((ROOT / "scripts/regional-data/evidence.json").read_text())
+        sql = regional_data_freshness.stage(d1, evidence, today)
+        path = run_dir / "regional-data-checks.sql"
+        path.write_text(sql, encoding="utf-8")
+        if sql and not plan:
+            d1.execute("--file", path, "regional data freshness")
+        receipt["regional_data_freshness"] = "staged" if plan else "complete"
+    except Exception:
+        # Do not retain source bodies, URLs or command stderr in the receipt.
+        receipt["regional_data_freshness"] = "failed"
+        receipt.setdefault("attempt_errors", []).append("Regional data freshness failed")
+
+
 def run(state, d1, *, plan, scheduled):
     today = datetime.now(NY).date()
     day = today.isoformat()
@@ -426,9 +447,16 @@ def run(state, d1, *, plan, scheduled):
     prior_unmeasured = set(receipt.get("unmeasured", []))
     run_dir = state / "runs" / (receipt["day"] + "-" + receipt["revision"])
     run_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+    regional_freshness(state, d1, run_dir, today, plan=plan, receipt=receipt)
     if not plan and not resuming and (state / "daily.log").exists():
         complete_today = (f"{day} complete ", f"{day} manual-complete ")
         if any(line.startswith(complete_today) for line in (state / "daily.log").read_text().splitlines()):
+            if receipt.get("regional_data_freshness") == "failed":
+                receipt.update(outcome="failed", error="Regional data freshness failed", unmeasured=sorted(d1.unmeasured))
+                receipt["rows_read"] = dict(prior_reads + Counter(d1.reads))
+                save(run_dir / "receipt.json", receipt)
+                report(state, receipt)
+                return 1
             return 0
     try:
         if not plan:
@@ -442,18 +470,6 @@ def run(state, d1, *, plan, scheduled):
             receipt["base_revision"] = d1.revision()
             deltas, decisions, outside = collect(d1, state, run_dir, day, previous + timedelta(days=1), last, receipt)
             prepare_load(run_dir, deltas, decisions, receipt["revision"], outside)
-            config_path = state / "regional-data-config.json"
-            if config_path.is_file() and json.loads(config_path.read_text()).get("enabled") is True:
-                receipt["stage"] = "regional data freshness"
-                evidence = json.loads((ROOT / "scripts/regional-data/evidence.json").read_text())
-                extra_sql = regional_data_freshness.stage(d1, evidence, today)
-                sql_path = run_dir / "load.sql"
-                sql = sql_path.read_text(encoding="utf-8")
-                marker = "UPDATE research_summary_kinds SET first="
-                offset = sql.rfind(marker)
-                if offset < 0:
-                    raise StopRun("Directory revision marker unavailable")
-                sql_path.write_text(sql[:offset] + extra_sql + sql[offset:], encoding="utf-8")
             receipt["sql_sha256"] = sha256((run_dir / "load.sql").read_bytes()).hexdigest()
         if plan:
             receipt["outcome"] = "staged"

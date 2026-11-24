@@ -87,4 +87,51 @@ class Tests(unittest.TestCase):
         for change in ({'reviewed': False}, {'paper_id': 'bad'}, {'source': 'http://example.org'}, {'evidence': ''}):
             with self.assertRaises(ValueError): f.publication_sql([{**item, **change}], {ID}, {'pmid:123'})
 
+class IndependentLaneTests(unittest.TestCase):
+    def test_lane_commits_before_failed_collection_and_plan_never_writes_d1(self):
+        import importlib.util
+        import tempfile
+        from pathlib import Path
+        from collections import defaultdict
+        from datetime import timedelta
+        spec = importlib.util.spec_from_file_location('daily_independent', Path(__file__).with_name('daily-directory.py'))
+        daily = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(daily)
+        class Fake:
+            reads = defaultdict(int)
+            unmeasured = set()
+            def __init__(self): self.writes = []
+            def execute(self, flag, path, label): self.writes.append((label, Path(path).read_text()))
+            def probe(self): return '123'
+            def rows(self, sql, label): return [{'enabled': 1}]
+            def revision(self): return 'old'
+        for plan in (False, True):
+            with self.subTest(plan=plan), tempfile.TemporaryDirectory() as tmp:
+                state = Path(tmp)
+                (state / 'regional-data-config.json').write_text('{"enabled":true}')
+                (state / 'cursor.json').write_text(json.dumps({'loaded_through': (daily.datetime.now(daily.NY).date() - timedelta(days=1)).isoformat()}))
+                (state / 'production-rows-read.json').write_text('{"inbox_available":true}')
+                d1 = Fake()
+                with patch.object(daily.regional_data_freshness, 'stage', return_value='SELECT 1;'), patch.object(daily, 'live_checks', return_value={}), patch.object(daily, 'collect', side_effect=daily.StopRun('dataset gate')), patch.object(daily, 'report'):
+                    result = daily.run(state, d1, plan=plan, scheduled=False)
+                self.assertEqual(result, 1)
+                self.assertEqual(len(d1.writes), 0 if plan else 1)
+                receipt = json.loads(next((state / 'runs').glob('*/receipt.json')).read_text())
+                self.assertEqual(receipt['regional_data_freshness'], 'staged' if plan else 'complete')
+                self.assertEqual(receipt['error'], 'dataset gate')
+    def test_write_failure_is_visible_in_receipt(self):
+        import importlib.util, tempfile
+        from pathlib import Path
+        spec = importlib.util.spec_from_file_location('daily_failure', Path(__file__).with_name('daily-directory.py'))
+        daily = importlib.util.module_from_spec(spec); spec.loader.exec_module(daily)
+        with tempfile.TemporaryDirectory() as tmp:
+            state = Path(tmp); (state / 'regional-data-config.json').write_text('{"enabled":true}')
+            class Fake:
+                def execute(self, *args): raise RuntimeError('private stderr')
+            receipt = {}
+            with patch.object(daily.regional_data_freshness, 'stage', return_value='SELECT 1;'):
+                daily.regional_freshness(state, Fake(), state, TODAY, plan=False, receipt=receipt)
+            self.assertEqual(receipt['regional_data_freshness'], 'failed')
+            self.assertEqual(receipt['attempt_errors'], ['Regional data freshness failed'])
+
 if __name__ == '__main__': unittest.main()
