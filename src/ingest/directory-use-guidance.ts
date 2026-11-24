@@ -48,12 +48,19 @@ export function datasetUseGuidance(dataset: DatasetInput): GuidanceStep[] {
     text: `Open the repository record${accession ? ` for ${accession}` : ''} and review its metadata and reuse terms.`,
     ...(link ? { links: [{ label: 'Repository record', url: link }] } : {}),
   }];
+  const accessGuides: Record<string, { label: string; url: string }> = {
+    physionet: { label: 'PhysioNet access guide', url: 'https://physionet.org/about/faqs/' },
+    synapse: { label: 'Synapse access guide', url: 'https://docs.synapse.org/synapse-docs/finding-and-downloading-data' },
+    'nimh data archive': { label: 'NDA access instructions', url: 'https://nda.nih.gov/ndarpublicweb/Documents/Data_Access_Documents_Completion_Instructions.pdf' },
+    icpsr: { label: 'ICPSR access guide', url: 'https://www.icpsr.umich.edu/sites/nacda/posts/shared/how-do-i-access-the-data-is-it-free' },
+    dandi: { label: 'DANDI download guide', url: 'https://docs.dandiarchive.org/user-guide-using/accessing-data/downloading/' },
+  };
   if (dataset.access === 'controlled') {
     const instructions: Record<string, GuidanceStep> = {
       ega: { text: 'Identify the dataset and apply to its Data Access Committee; download only after approval.', links: [{ label: 'EGA access guide', url: 'https://www.ebi.ac.uk/training/online/courses/ega-quick-tour/accessing-the-data-in-the-ega/' }] },
       dbgap: { text: 'Apply for authorized access through dbGaP; follow its download instructions after approval.', links: [{ label: 'dbGaP download guide', url: 'https://www.ncbi.nlm.nih.gov/sra/docs/sra-dbgap-download/' }] },
     };
-    steps.push(instructions[repo] ?? { text: 'Follow the repository’s instructions to request access before downloading.' });
+    steps.push(instructions[repo] ?? { text: 'Follow the repository’s instructions to request access before downloading.', ...(accessGuides[repo] ? { links: [accessGuides[repo]] } : {}) });
     return steps;
   }
   if (dataset.access === 'registration') steps.push({ text: 'Follow the repository’s registration and access instructions.' });
@@ -63,6 +70,17 @@ export function datasetUseGuidance(dataset: DatasetInput): GuidanceStep[] {
     return steps;
   }
   const templates: Record<string, GuidanceStep> = {
+    emdb: { text: 'Use the entry’s downloads tab to obtain released maps.', links: [{ label: 'EMDB map access', url: 'https://www.ebi.ac.uk/emdb/documentation/faq' }] },
+    'mendeley data': { text: 'Open the dataset page to view and download available files.', links: [{ label: 'Mendeley Data access', url: 'https://data.mendeley.com/archive-process' }] },
+    dataverse: { text: 'Select available files on the dataset page and use its download controls.', links: [{ label: 'Dataverse user guide', url: 'https://guides.dataverse.org/en/4.17/Dataverse.pdf' }] },
+    'harvard dataverse': { text: 'Select available files on the dataset page and use its download controls.', links: [{ label: 'Dataverse user guide', url: 'https://guides.dataverse.org/en/4.17/Dataverse.pdf' }] },
+    physionet: { text: 'Check the project’s Files section for access requirements and available downloads.', links: [accessGuides.physionet] },
+    openneuro: { text: 'Choose a dataset version and download available files from its page.', links: [{ label: 'OpenNeuro user guide', url: 'https://docs.openneuro.org/user_guide.html' }] },
+    synapse: { text: 'Check file access and use the project’s Files tab to find available downloads.', links: [accessGuides.synapse] },
+    tcia: { text: 'Follow the collection’s download instructions; imaging collections may use the NBIA Data Retriever.', links: [{ label: 'NBIA Data Retriever guide', url: 'https://wiki.cancerimagingarchive.net/display/NBIA/NBIA%2BData%2BRetriever%2BFAQ' }] },
+    'nimh data archive': { text: 'Follow the record’s access and download instructions.', links: [accessGuides['nimh data archive']] },
+    dandi: { text: 'Use the Dandiset page to select files or see download instructions.', links: [accessGuides.dandi] },
+    icpsr: { text: 'Use the study page to select available files and review access requirements.', links: [accessGuides.icpsr] },
     geo: { text: 'Use the GEO record to download the available data and supplementary files.', links: [{ label: 'GEO download guide', url: 'https://www.ncbi.nlm.nih.gov/geo/info/download.html' }] },
     pride: { text: 'Choose files from the PRIDE dataset page.', links: [{ label: 'PRIDE download guide', url: 'https://www.ebi.ac.uk/training/online/courses/pride-quick-tour/downloading-data-using-pride-archive/' }] },
     arrayexpress: { text: 'Download files from the BioStudies study page; sequence reads may be linked through ENA.', links: [{ label: 'ArrayExpress download guide', url: 'https://www.ebi.ac.uk/training/online/courses/arrayexpress-in-biostudies/getting-data-from-the-arrayexpress-collection/' }] },

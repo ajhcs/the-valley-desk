@@ -42,3 +42,16 @@ test('controlled dbGaP provides its guide and registration does not promise open
   assert.equal(datasetUseGuidance(input)[1].links?.[0].label, 'dbGaP download guide');
   assert.match(datasetUseGuidance({ ...input, repository: 'Zenodo', access: 'registration' })[1].text, /registration/);
 });
+
+test('all remaining mapped repositories have a specific source guide', () => {
+  for (const repository of ['EMDB', 'Mendeley Data', 'Dataverse', 'Harvard Dataverse', 'PhysioNet', 'OpenNeuro', 'Synapse', 'TCIA', 'NIMH Data Archive', 'DANDI', 'ICPSR']) {
+    const base = { repository, accessions: [], url: 'https://example.org/', access: 'open' };
+    const steps = datasetUseGuidance(base);
+    assert.ok(steps.at(-1)?.links?.length, repository);
+    assert.notEqual(steps.at(-1)?.text, 'Select the available files and follow the repository’s download instructions.');
+  }
+  const controlled = datasetUseGuidance({ repository: 'PhysioNet', accessions: [], url: 'https://example.org/', access: 'controlled' });
+  assert.equal(controlled[1].links?.[0].label, 'PhysioNet access guide');
+  assert.match(controlled[1].text, /request access/);
+  assert.equal(datasetUseGuidance({ repository: 'Other', accessions: [], url: 'https://doi.org/10.1234/example', access: 'open' }).at(-1)?.links, undefined);
+});
