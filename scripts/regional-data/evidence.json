@@ -1,0 +1,202 @@
+{
+  "regional:cdc-swc5-untb": {
+    "fields": {
+      "title": [
+        "https://data.cdc.gov/api/views/swc5-untb.json"
+      ],
+      "summary": [
+        "https://data.cdc.gov/api/views/swc5-untb.json"
+      ],
+      "publisher": [
+        "https://data.cdc.gov/api/views/swc5-untb.json"
+      ],
+      "granularity": [
+        "https://data.cdc.gov/api/views/swc5-untb.json"
+      ],
+      "license": [
+        "https://data.cdc.gov/api/views/swc5-untb.json"
+      ],
+      "counties": [
+        "https://data.cdc.gov/resource/swc5-untb.json?%24where=locationid%3D%2742101%27&%24limit=1"
+      ],
+      "formats": [
+        "https://data.cdc.gov/resource/swc5-untb.json?%24where=locationid%3D%2742101%27&%24limit=1"
+      ],
+      "api": [
+        "https://data.cdc.gov/resource/swc5-untb.json?%24where=locationid%3D%2742101%27&%24limit=1"
+      ],
+      "access": [
+        "https://data.cdc.gov/resource/swc5-untb.json?%24where=locationid%3D%2742101%27&%24limit=1"
+      ],
+      "url": [
+        "https://data.cdc.gov/api/views/swc5-untb.json"
+      ],
+      "portal": [
+        "https://data.cdc.gov/api/views/swc5-untb.json"
+      ]
+    },
+    "query": {
+      "url": "https://data.cdc.gov/resource/swc5-untb.json?%24where=locationid%3D%2742101%27&%24limit=1",
+      "fetched_at": "2026-11-24T14:13:59.050468+00:00",
+      "http_status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "result_description": "Nonempty JSON array; one Philadelphia row returned"
+    },
+    "freshness": {
+      "url": "https://data.cdc.gov/api/views/swc5-untb.json",
+      "format": "json",
+      "path": "/rowsUpdatedAt",
+      "observed": 1764844506
+    }
+  },
+  "regional:cdc-cwsq-ngmh": {
+    "fields": {
+      "title": [
+        "https://data.cdc.gov/api/views/cwsq-ngmh.json"
+      ],
+      "summary": [
+        "https://data.cdc.gov/api/views/cwsq-ngmh.json"
+      ],
+      "publisher": [
+        "https://data.cdc.gov/api/views/cwsq-ngmh.json"
+      ],
+      "granularity": [
+        "https://data.cdc.gov/api/views/cwsq-ngmh.json"
+      ],
+      "license": [
+        "https://data.cdc.gov/api/views/cwsq-ngmh.json"
+      ],
+      "counties": [
+        "https://data.cdc.gov/resource/cwsq-ngmh.json?%24where=countyfips%3D%2742101%27&%24limit=1"
+      ],
+      "formats": [
+        "https://data.cdc.gov/resource/cwsq-ngmh.json?%24where=countyfips%3D%2742101%27&%24limit=1"
+      ],
+      "api": [
+        "https://data.cdc.gov/resource/cwsq-ngmh.json?%24where=countyfips%3D%2742101%27&%24limit=1"
+      ],
+      "access": [
+        "https://data.cdc.gov/resource/cwsq-ngmh.json?%24where=countyfips%3D%2742101%27&%24limit=1"
+      ],
+      "url": [
+        "https://data.cdc.gov/api/views/cwsq-ngmh.json"
+      ],
+      "portal": [
+        "https://data.cdc.gov/api/views/cwsq-ngmh.json"
+      ]
+    },
+    "query": {
+      "url": "https://data.cdc.gov/resource/cwsq-ngmh.json?%24where=countyfips%3D%2742101%27&%24limit=1",
+      "fetched_at": "2026-11-24T14:13:59.747247+00:00",
+      "http_status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "result_description": "Nonempty JSON array; one Philadelphia row returned"
+    },
+    "freshness": {
+      "url": "https://data.cdc.gov/api/views/cwsq-ngmh.json",
+      "format": "json",
+      "path": "/rowsUpdatedAt",
+      "observed": 1765560443
+    }
+  },
+  "regional:cdc-eav7-hnsx": {
+    "fields": {
+      "title": [
+        "https://data.cdc.gov/api/views/eav7-hnsx.json"
+      ],
+      "summary": [
+        "https://data.cdc.gov/api/views/eav7-hnsx.json"
+      ],
+      "publisher": [
+        "https://data.cdc.gov/api/views/eav7-hnsx.json"
+      ],
+      "granularity": [
+        "https://data.cdc.gov/api/views/eav7-hnsx.json"
+      ],
+      "license": [
+        "https://data.cdc.gov/api/views/eav7-hnsx.json"
+      ],
+      "counties": [
+        "https://data.cdc.gov/resource/eav7-hnsx.json?%24where=stateabbr%3D%27PA%27+AND+locationname%3D%27Philadelphia%27&%24limit=1"
+      ],
+      "formats": [
+        "https://data.cdc.gov/resource/eav7-hnsx.json?%24where=stateabbr%3D%27PA%27+AND+locationname%3D%27Philadelphia%27&%24limit=1"
+      ],
+      "api": [
+        "https://data.cdc.gov/resource/eav7-hnsx.json?%24where=stateabbr%3D%27PA%27+AND+locationname%3D%27Philadelphia%27&%24limit=1"
+      ],
+      "access": [
+        "https://data.cdc.gov/resource/eav7-hnsx.json?%24where=stateabbr%3D%27PA%27+AND+locationname%3D%27Philadelphia%27&%24limit=1"
+      ],
+      "url": [
+        "https://data.cdc.gov/api/views/eav7-hnsx.json"
+      ],
+      "portal": [
+        "https://data.cdc.gov/api/views/eav7-hnsx.json"
+      ]
+    },
+    "query": {
+      "url": "https://data.cdc.gov/resource/eav7-hnsx.json?%24where=stateabbr%3D%27PA%27+AND+locationname%3D%27Philadelphia%27&%24limit=1",
+      "fetched_at": "2026-11-24T14:14:00.769911+00:00",
+      "http_status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "result_description": "Nonempty JSON array; one Philadelphia row returned"
+    },
+    "freshness": {
+      "url": "https://data.cdc.gov/api/views/eav7-hnsx.json",
+      "format": "json",
+      "path": "/rowsUpdatedAt",
+      "observed": 1765555184
+    }
+  },
+  "regional:cdc-kn79-hsxy": {
+    "fields": {
+      "title": [
+        "https://data.cdc.gov/api/views/kn79-hsxy.json"
+      ],
+      "summary": [
+        "https://data.cdc.gov/api/views/kn79-hsxy.json"
+      ],
+      "publisher": [
+        "https://data.cdc.gov/api/views/kn79-hsxy.json"
+      ],
+      "granularity": [
+        "https://data.cdc.gov/api/views/kn79-hsxy.json"
+      ],
+      "license": [
+        "https://data.cdc.gov/api/views/kn79-hsxy.json"
+      ],
+      "counties": [
+        "https://data.cdc.gov/resource/kn79-hsxy.json?%24where=county_fips_code%3D%2742101%27&%24limit=1"
+      ],
+      "formats": [
+        "https://data.cdc.gov/resource/kn79-hsxy.json?%24where=county_fips_code%3D%2742101%27&%24limit=1"
+      ],
+      "api": [
+        "https://data.cdc.gov/resource/kn79-hsxy.json?%24where=county_fips_code%3D%2742101%27&%24limit=1"
+      ],
+      "access": [
+        "https://data.cdc.gov/resource/kn79-hsxy.json?%24where=county_fips_code%3D%2742101%27&%24limit=1"
+      ],
+      "url": [
+        "https://data.cdc.gov/api/views/kn79-hsxy.json"
+      ],
+      "portal": [
+        "https://data.cdc.gov/api/views/kn79-hsxy.json"
+      ]
+    },
+    "query": {
+      "url": "https://data.cdc.gov/resource/kn79-hsxy.json?%24where=county_fips_code%3D%2742101%27&%24limit=1",
+      "fetched_at": "2026-11-24T14:14:11.371102+00:00",
+      "http_status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "result_description": "Nonempty JSON array; one Philadelphia row returned"
+    },
+    "freshness": {
+      "url": "https://data.cdc.gov/api/views/kn79-hsxy.json",
+      "format": "json",
+      "path": "/rowsUpdatedAt",
+      "observed": 1687980869
+    }
+  }
+}

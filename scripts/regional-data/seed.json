@@ -1,0 +1,138 @@
+[
+  {
+    "id": "regional:cdc-swc5-untb",
+    "title": "PLACES: Local Data for Better Health, County Data, 2025 release",
+    "summary": "This dataset contains model-based county estimates.",
+    "publisher": "Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Division of Population Health",
+    "portal": "CDC Data",
+    "url": "https://data.cdc.gov/d/swc5-untb",
+    "topic": "Public health",
+    "counties": [
+      "Philadelphia"
+    ],
+    "granularity": "county",
+    "time_span": null,
+    "update_cadence": null,
+    "access": "open",
+    "license": "Public Domain",
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://data.cdc.gov/resource/swc5-untb.json",
+      "type": "Socrata"
+    },
+    "how_to_use": {
+      "step": "Run the bounded Philadelphia query to inspect a sample record.",
+      "url": "https://data.cdc.gov/resource/swc5-untb.json?%24where=locationid%3D%2742101%27&%24limit=1",
+      "caveats": [
+        "Review the source documentation and limitations before interpreting estimates."
+      ],
+      "citation": "Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Division of Population Health. PLACES: Local Data for Better Health, County Data, 2025 release."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:cdc-cwsq-ngmh",
+    "title": "PLACES: Local Data for Better Health, Census Tract Data, 2025 release",
+    "summary": "This dataset contains model-based census tract estimates.",
+    "publisher": "Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Division of Population Health",
+    "portal": "CDC Data",
+    "url": "https://data.cdc.gov/d/cwsq-ngmh",
+    "topic": "Public health",
+    "counties": [
+      "Philadelphia"
+    ],
+    "granularity": "census tract",
+    "time_span": null,
+    "update_cadence": null,
+    "access": "open",
+    "license": "Public Domain",
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://data.cdc.gov/resource/cwsq-ngmh.json",
+      "type": "Socrata"
+    },
+    "how_to_use": {
+      "step": "Run the bounded Philadelphia query to inspect a sample record.",
+      "url": "https://data.cdc.gov/resource/cwsq-ngmh.json?%24where=countyfips%3D%2742101%27&%24limit=1",
+      "caveats": [
+        "Review the source documentation and limitations before interpreting estimates."
+      ],
+      "citation": "Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Division of Population Health. PLACES: Local Data for Better Health, Census Tract Data, 2025 release."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:cdc-eav7-hnsx",
+    "title": "PLACES: Local Data for Better Health, Place Data, 2025 release",
+    "summary": "This dataset contains model-based place (incorporated and census-designated places) estimates.",
+    "publisher": "Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Division of Population Health",
+    "portal": "CDC Data",
+    "url": "https://data.cdc.gov/d/eav7-hnsx",
+    "topic": "Public health",
+    "counties": [
+      "Philadelphia"
+    ],
+    "granularity": "place",
+    "time_span": null,
+    "update_cadence": null,
+    "access": "open",
+    "license": "Public Domain",
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://data.cdc.gov/resource/eav7-hnsx.json",
+      "type": "Socrata"
+    },
+    "how_to_use": {
+      "step": "Run the bounded Philadelphia query to inspect a sample record.",
+      "url": "https://data.cdc.gov/resource/eav7-hnsx.json?%24where=stateabbr%3D%27PA%27+AND+locationname%3D%27Philadelphia%27&%24limit=1",
+      "caveats": [
+        "Review the source documentation and limitations before interpreting estimates."
+      ],
+      "citation": "Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Division of Population Health. PLACES: Local Data for Better Health, Place Data, 2025 release."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:cdc-kn79-hsxy",
+    "title": "Provisional COVID-19 Death Counts in the United States by County",
+    "summary": "Effective June 28, 2023, this dataset will no longer be updated.",
+    "publisher": "NCHS/DVS",
+    "portal": "CDC Data",
+    "url": "https://data.cdc.gov/d/kn79-hsxy",
+    "topic": "Public health",
+    "counties": [
+      "Philadelphia"
+    ],
+    "granularity": "county",
+    "time_span": null,
+    "update_cadence": null,
+    "access": "open",
+    "license": "Public Domain U.S. Government",
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://data.cdc.gov/resource/kn79-hsxy.json",
+      "type": "Socrata"
+    },
+    "how_to_use": {
+      "step": "Run the bounded Philadelphia query to inspect a sample record.",
+      "url": "https://data.cdc.gov/resource/kn79-hsxy.json?%24where=county_fips_code%3D%2742101%27&%24limit=1",
+      "caveats": [
+        "Review the source documentation and limitations before interpreting estimates."
+      ],
+      "citation": "NCHS/DVS. Provisional COVID-19 Death Counts in the United States by County."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  }
+]
