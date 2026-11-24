@@ -44,7 +44,10 @@ def publisher_date(value, today):
 
 APPROVED_HOSTS = {'data.cdc.gov', 'data.nj.gov', 'gisdata-njdep.opendata.arcgis.com',
                   'mapsdep.nj.gov', 'www.arcgis.com', 'gis.dep.pa.gov',
-                  'opendataphilly.org', 'www2.census.gov', 'www.census.gov', 'api.census.gov'}
+                  'opendataphilly.org', 'www2.census.gov', 'www.census.gov', 'api.census.gov',
+                  'data.pa.gov', 'catalog.dvrpc.org', 'www.countyhealthrankings.org', 'www.pasda.psu.edu'}
+# A publisher's stated cadence with no schedule to hold it to.
+UNSCHEDULED = {'as needed'}
 
 
 def valid_url(url):
@@ -182,6 +185,7 @@ def stage(d1, evidence, today, fetcher=request):
         entry = evidence.get(identifier, {})
         cadence = record.get('update_cadence')
         threshold = cadence_days.get(cadence.lower().strip()) if isinstance(cadence, str) else None
+        scheduled = isinstance(cadence, str) and cadence.lower().strip() not in UNSCHEDULED
         reason, updated, checked = None, prior.get('publisher_updated'), prior.get('checked')
         try:
             if not approved_landing(identifier, record, entry):
@@ -192,12 +196,12 @@ def stage(d1, evidence, today, fetcher=request):
                 if not isinstance(locator, dict):
                     raise ValueError('invalid locator')
                 updated = publisher_date(metadata_value(locator, fetcher), today)
-            elif cadence:
+            elif cadence and scheduled:
                 reason = 'publisher update unavailable for stated cadence; review'
             else:
                 updated = None
             checked = today.isoformat()
-            if cadence and threshold is None:
+            if cadence and scheduled and threshold is None:
                 reason = 'unrecognized stated cadence; review'
             elif updated and threshold is not None and date.fromisoformat(updated) < today - timedelta(days=threshold):
                 reason = 'publisher update overdue for stated cadence; review'

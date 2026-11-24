@@ -2,7 +2,7 @@
   {
     "id": "regional:cdc-swc5-untb",
     "title": "PLACES: Local Data for Better Health, County Data, 2025 release",
-    "summary": "This dataset contains model-based county estimates.",
+    "summary": "Model-based county estimates for 40 measures of health outcomes, preventive services use, chronic disease-related health risk behaviors, disabilities, health status and health-related social needs.",
     "publisher": "Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Division of Population Health",
     "portal": "CDC Data",
     "url": "https://data.cdc.gov/d/swc5-untb",
@@ -45,7 +45,7 @@
   {
     "id": "regional:cdc-cwsq-ngmh",
     "title": "PLACES: Local Data for Better Health, Census Tract Data, 2025 release",
-    "summary": "This dataset contains model-based census tract estimates.",
+    "summary": "Model-based census tract estimates for 40 measures of health outcomes, preventive services use, chronic disease-related health risk behaviors, disabilities, health status and health-related social needs.",
     "publisher": "Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Division of Population Health",
     "portal": "CDC Data",
     "url": "https://data.cdc.gov/d/cwsq-ngmh",
@@ -88,13 +88,21 @@
   {
     "id": "regional:cdc-eav7-hnsx",
     "title": "PLACES: Local Data for Better Health, Place Data, 2025 release",
-    "summary": "This dataset contains model-based place (incorporated and census-designated places) estimates.",
+    "summary": "Model-based estimates for incorporated and census-designated places for 40 measures of health outcomes, preventive services use, chronic disease-related health risk behaviors, disabilities, health status and health-related social needs.",
     "publisher": "Centers for Disease Control and Prevention, National Center for Chronic Disease Prevention and Health Promotion, Division of Population Health",
     "portal": "CDC Data",
     "url": "https://data.cdc.gov/d/eav7-hnsx",
     "topic": "Public health",
     "counties": [
-      "Philadelphia"
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia",
+      "Burlington",
+      "Camden",
+      "Gloucester",
+      "Mercer"
     ],
     "granularity": "place",
     "time_span": "2022–2023 BRFSS survey years",
@@ -123,13 +131,21 @@
   {
     "id": "regional:cdc-p56q-jrxg",
     "title": "NCHS - Drug Poisoning Mortality by County: United States",
-    "summary": "This dataset contains model-based county estimates for drug-poisoning mortality.",
+    "summary": "Model-based county estimates of age-adjusted drug-poisoning death rates, based on National Vital Statistics System mortality files.",
     "publisher": "NCHS/DVS",
     "portal": "CDC Data",
     "url": "https://data.cdc.gov/d/p56q-jrxg",
     "topic": "Public health",
     "counties": [
-      "Philadelphia"
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia",
+      "Burlington",
+      "Camden",
+      "Gloucester",
+      "Mercer"
     ],
     "granularity": "county",
     "time_span": "1999–2016",
@@ -158,13 +174,21 @@
   {
     "id": "regional:cdc-kn79-hsxy",
     "title": "Provisional COVID-19 Death Counts in the United States by County",
-    "summary": "Effective June 28, 2023, this dataset will no longer be updated.",
+    "summary": "Provisional counts of deaths involving COVID-19 by county of occurrence, 2020–2023. The dataset has not been updated since June 28, 2023.",
     "publisher": "NCHS/DVS",
     "portal": "CDC Data",
     "url": "https://data.cdc.gov/d/kn79-hsxy",
     "topic": "Public health",
     "counties": [
-      "Philadelphia"
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia",
+      "Burlington",
+      "Camden",
+      "Gloucester",
+      "Mercer"
     ],
     "granularity": "county",
     "time_span": "2020–2023",
@@ -952,6 +976,307 @@
         "The publisher says its methodology differs substantially from the archived Philadelphia Food Access data."
       ],
       "citation": "City of Philadelphia. Neighborhood Food Retail. OpenDataPhilly."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:dvrpc-regional-health-indicators",
+    "title": "Regional Health Indicators",
+    "summary": "Census tract indicators associated with health outcomes, derived from 2024 CDC PLACES and American Community Survey 5-year estimates (2019–2023), each with its percentile rank within the county, the region and the state.",
+    "publisher": "Delaware Valley Regional Planning Commission",
+    "portal": "DVRPC Data Catalog",
+    "url": "https://catalog.dvrpc.org/dataset/regional-health-indicators",
+    "topic": "Public health",
+    "counties": [
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia",
+      "Burlington",
+      "Camden",
+      "Gloucester",
+      "Mercer"
+    ],
+    "granularity": "census tract",
+    "time_span": "2024 CDC PLACES; 2019–2023 ACS 5-year estimates",
+    "update_cadence": "As needed",
+    "access": "open",
+    "license": null,
+    "formats": [
+      "JSON",
+      "GeoJSON",
+      "GeoParquet",
+      "Shapefile"
+    ],
+    "api": {
+      "url": "https://arcgis.dvrpc.org/portal/rest/services/demographics/regional_health_indicators/FeatureServer/0",
+      "type": "ArcGIS REST"
+    },
+    "how_to_use": {
+      "step": "Run the bounded query to inspect the high blood pressure estimate and regional percentile for one Philadelphia tract.",
+      "url": "https://arcgis.dvrpc.org/portal/rest/services/demographics/regional_health_indicators/FeatureServer/0/query?where=geoid+LIKE+%2742101%25%27&outFields=geoid%2Cbphigh_prv%2Cbphigh_pct_reg&returnGeometry=false&resultRecordCount=1&f=json",
+      "caveats": [
+        "Field suffixes: _prv is the prevalence or estimate, and _pct_cty, _pct_reg and _pct_st are percentile ranks within the county, region and state.",
+        "The health estimates come from CDC PLACES and are model-based; they inherit the limits of that source.",
+        "The catalog states no license for this dataset and lists its use limitations as unrestricted."
+      ],
+      "citation": "Delaware Valley Regional Planning Commission. Regional Health Indicators."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:dvrpc-2050-population-employment-forecasts",
+    "title": "Adopted 2050 v2.1 Population & Employment Forecasts",
+    "summary": "Population, household and employment forecasts to 2050 in five-year steps for counties, municipalities and Philadelphia planning districts, built on the 2020 Census with a county-level age-cohort model.",
+    "publisher": "Delaware Valley Regional Planning Commission",
+    "portal": "DVRPC Data Catalog",
+    "url": "https://catalog.dvrpc.org/dataset/adopted-2050-v2-0-population-employment-forecasts",
+    "topic": "Public health",
+    "counties": [
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia",
+      "Burlington",
+      "Camden",
+      "Gloucester",
+      "Mercer"
+    ],
+    "granularity": "county, municipality and Philadelphia planning district",
+    "time_span": "2020–2050",
+    "update_cadence": "As needed",
+    "access": "open",
+    "license": "DVRPC Data License",
+    "formats": [
+      "CSV",
+      "JSON"
+    ],
+    "api": {
+      "url": "https://catalog.dvrpc.org/api/3/action/datastore_search",
+      "type": "CKAN DataStore"
+    },
+    "how_to_use": {
+      "step": "Run the query to read the county population and household forecast for all nine counties.",
+      "url": "https://catalog.dvrpc.org/api/3/action/datastore_search?resource_id=d5aae044-7fb5-4a40-b810-41353ab714af&limit=9",
+      "caveats": [
+        "These are forecasts adopted by the DVRPC Board on May 22, 2025, not observed counts.",
+        "Version 2.1 changed only the employment forecasts for Philadelphia planning districts and transportation analysis zones; county and regional totals match version 2.0.",
+        "The forecast is not adopted at the transportation analysis zone level.",
+        "The DVRPC Data License asks users to credit DVRPC as the source: https://catalog.dvrpc.org/dvrpc_data_license.html"
+      ],
+      "citation": "Delaware Valley Regional Planning Commission. Adopted 2050 v2.1 Population & Employment Forecasts."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:pa-estimated-drug-overdose-deaths",
+    "title": "Estimated Drug Overdose Deaths CY 2012-Current County Health",
+    "summary": "Annual counts of overdose deaths from any drug by Pennsylvania county from 2012 forward, including provisional estimates for recent years.",
+    "publisher": "Pennsylvania Department of Health",
+    "portal": "Open Data Pennsylvania",
+    "url": "https://data.pa.gov/Opioid-Related/Estimated-Drug-Overdose-Deaths-CY-2012-Current-Cou/azzc-q64m",
+    "topic": "Public health",
+    "counties": [
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia"
+    ],
+    "granularity": "county",
+    "time_span": "2012–2024",
+    "update_cadence": "Quarterly",
+    "access": "open",
+    "license": "Public Domain U.S. Government",
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://data.pa.gov/resource/azzc-q64m.json",
+      "type": "Socrata"
+    },
+    "how_to_use": {
+      "step": "Run the bounded query to read the most recent annual count for Philadelphia.",
+      "url": "https://data.pa.gov/resource/azzc-q64m.json?%24where=county%3D%27Philadelphia%27&%24order=year+DESC&%24limit=1",
+      "caveats": [
+        "Counts between 1 and 9 are suppressed and appear with no value.",
+        "Recent years are provisional; finalized death records for overdose deaths are often delayed by 3 to 6 months.",
+        "Counts exclude suicides, and homicides where someone intended to harm another person by poisoning.",
+        "The publisher lists quarterly updates, but its data update date was November 4, 2025 when checked; recent quarters may be missing."
+      ],
+      "citation": "Pennsylvania Department of Health. Estimated Drug Overdose Deaths CY 2012-Current County Health."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:pa-influenza-rsv-cases-2026-2027",
+    "title": "Cumulative Influenza and RSV Case Counts by County 2026-2027 Respiratory Virus Season",
+    "summary": "Cumulative case counts for influenza A, influenza B, all influenza types and respiratory syncytial virus (RSV) by Pennsylvania county for the season that began October 4, 2026.",
+    "publisher": "Pennsylvania Department of Health",
+    "portal": "Open Data Pennsylvania",
+    "url": "https://data.pa.gov/Health/Cumulative-Influenza-and-RSV-Case-Counts-by-County/mrpb-ugjv",
+    "topic": "Public health",
+    "counties": [
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia"
+    ],
+    "granularity": "county",
+    "time_span": "October 4, 2026 through the most recent reported Saturday",
+    "update_cadence": "Weekly",
+    "access": "open",
+    "license": "Public Domain U.S. Government",
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://data.pa.gov/resource/mrpb-ugjv.json",
+      "type": "Socrata"
+    },
+    "how_to_use": {
+      "step": "Run the query to read the current cumulative counts for the five Pennsylvania counties.",
+      "url": "https://data.pa.gov/resource/mrpb-ugjv.json?%24where=upper%28county%29+in+%28%27BUCKS%27%2C%27CHESTER%27%2C%27DELAWARE%27%2C%27MONTGOMERY%27%2C%27PHILADELPHIA%27%29",
+      "caveats": [
+        "Counts between 1 and 4 are redacted.",
+        "Counts are cumulative for the season, so weekly figures require the difference between two releases.",
+        "COVID-19 cases are not included; the publisher states COVID-19 is no longer reportable.",
+        "The dataset covers one season. A later season is published as a separate dataset."
+      ],
+      "citation": "Pennsylvania Department of Health. Cumulative Influenza and RSV Case Counts by County 2026-2027 Respiratory Virus Season."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:nj-acute-care-facilities",
+    "title": "Acute-Care Facilities",
+    "summary": "Licensed acute-care facilities in New Jersey, with facility type, licensed name, address, county and licensed bed total.",
+    "publisher": "New Jersey Department of Health",
+    "portal": "NJOIT Open Data Center",
+    "url": "https://data.nj.gov/Health/Acute-Care-Facilities/mrzk-zrvp",
+    "topic": "Clinical care",
+    "counties": [
+      "Burlington",
+      "Camden",
+      "Gloucester",
+      "Mercer"
+    ],
+    "granularity": "Facility",
+    "time_span": null,
+    "update_cadence": "Quarterly",
+    "access": "open",
+    "license": null,
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://data.nj.gov/resource/mrzk-zrvp.json",
+      "type": "Socrata"
+    },
+    "how_to_use": {
+      "step": "Run the query to count listed facilities in each of the four New Jersey counties.",
+      "url": "https://data.nj.gov/resource/mrzk-zrvp.json?%24select=county%2Ccount%28%2A%29&%24where=county+in+%28%27BURLINGTON%27%2C%27CAMDEN%27%2C%27GLOUCESTER%27%2C%27MERCER%27%29&%24group=county",
+      "caveats": [
+        "County names are stored in upper case, and some rows carry a county value of 0.",
+        "The list covers several facility types, not only hospitals; filter on facility_type.",
+        "The publisher lists quarterly posting, but its data update date was June 3, 2026 when checked; the list may be stale."
+      ],
+      "citation": "New Jersey Department of Health. Acute-Care Facilities."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:county-health-rankings-2025",
+    "title": "2025 County Health Rankings National Data",
+    "summary": "County-level measures of health outcomes and the factors that shape them for every U.S. county, published as one analytic file with a data dictionary.",
+    "publisher": "University of Wisconsin Population Health Institute",
+    "portal": "County Health Rankings & Roadmaps",
+    "url": "https://www.countyhealthrankings.org/health-data/methodology-and-sources/data-documentation",
+    "topic": "Public health",
+    "counties": [
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia",
+      "Burlington",
+      "Camden",
+      "Gloucester",
+      "Mercer"
+    ],
+    "granularity": "county",
+    "time_span": "2025 release",
+    "update_cadence": null,
+    "access": "open",
+    "license": null,
+    "formats": [
+      "CSV",
+      "SAS",
+      "XLSX"
+    ],
+    "api": null,
+    "how_to_use": {
+      "step": "Download the 2025 analytic CSV (about 13 MB) and filter the 5-digit FIPS Code column to the nine county codes.",
+      "url": "https://www.countyhealthrankings.org/sites/default/files/media/document/analytic_data2025_v3.csv",
+      "caveats": [
+        "The first row holds descriptive column names and the second row holds short variable names; skip one of them when loading.",
+        "Each measure carries a flag column that marks unreliable or suppressed values.",
+        "Measures draw on different source years, and the publisher documents limits on comparing data across states.",
+        "The terms of use restrict commercial use without written consent: https://www.countyhealthrankings.org/terms-use"
+      ],
+      "citation": "University of Wisconsin Population Health Institute. County Health Rankings & Roadmaps 2025. www.countyhealthrankings.org."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:pa-hospitals-2025",
+    "title": "Hospitals 2025",
+    "summary": "Point locations of hospitals in Pennsylvania, with name, address, county and a geocoding certainty code for each.",
+    "publisher": "Pennsylvania Department of Health",
+    "portal": "Pennsylvania Spatial Data Access (PASDA)",
+    "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=909",
+    "topic": "Clinical care",
+    "counties": [
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia"
+    ],
+    "granularity": "Hospital",
+    "time_span": "November 2025",
+    "update_cadence": null,
+    "access": "open",
+    "license": null,
+    "formats": [
+      "JSON",
+      "GeoJSON",
+      "Shapefile",
+      "KMZ"
+    ],
+    "api": {
+      "url": "https://mapservices.pasda.psu.edu/server/rest/services/pasda/DepHealth/MapServer/6",
+      "type": "ArcGIS REST"
+    },
+    "how_to_use": {
+      "step": "Run the query to count hospitals in each of the five Pennsylvania counties.",
+      "url": "https://mapservices.pasda.psu.edu/server/rest/services/pasda/DepHealth/MapServer/6/query?where=COUNTY+IN+%28%27Bucks%27%2C%27Chester%27%2C%27Delaware%27%2C%27Montgomery%27%2C%27Philadelphia%27%29&groupByFieldsForStatistics=COUNTY&outStatistics=%5B%7B%22statisticType%22%3A+%22count%22%2C+%22onStatisticField%22%3A+%22OBJECTID%22%2C+%22outStatisticFieldName%22%3A+%22n%22%7D%5D&f=json",
+      "caveats": [
+        "The CERTAINTY field records geocoding accuracy: 00 rooftop, 01 street, 04 ZIP centroid, 99 not geocoded.",
+        "The layer is a dated snapshot; PASDA keeps earlier versions in its data archive.",
+        "The metadata asks that any publication state: These data were provided by the Division of Health Informatics, Pennsylvania Department of Health."
+      ],
+      "citation": "Pennsylvania Department of Health, Division of Health Informatics. Hospitals 2025. Pennsylvania Spatial Data Access."
     },
     "added": "2026-11-24",
     "checked": "2026-11-24"

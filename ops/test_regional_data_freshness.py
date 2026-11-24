@@ -37,6 +37,12 @@ class Tests(unittest.TestCase):
         ev = {ID: {'fields': {'url': [META]}}}
         self.assertIn('unavailable for stated cadence', f.stage(D1(cadence='Daily'), ev, TODAY, source))
         self.assertNotIn('unavailable', f.stage(D1(), ev, TODAY, source))
+    def test_as_needed_cadence_is_not_held_to_a_schedule(self):
+        ev = {ID: {'fields': {'url': [META]}}}
+        for evidence in (EVIDENCE, ev):
+            sql = f.stage(D1(cadence='As needed'), evidence, TODAY, source)
+            self.assertNotIn('; review', sql)
+        self.assertIn('unrecognized stated cadence', f.stage(D1(cadence='Sometimes'), EVIDENCE, TODAY, source))
     def test_failure_preserves_success_and_retry_guard(self):
         old = [{'id': ID, 'attempted': '2026-11-23', 'checked': '2026-11-22', 'publisher_updated': '2024-01-01'}]
         def fail(url, *, metadata=False): raise ValueError()
