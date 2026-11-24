@@ -388,11 +388,15 @@ async function datasetPapers(db: ResearchDb, d: Dataset): Promise<DatasetPaper[]
     .map(({ id, title, paper }) => ({ id, title, relation: d.paper_provenance?.find((v) => v.paper === (paper ?? id))?.relation ?? "linked" }));
 }
 
-/** Choices for the datasets page filters, from the visible datasets only, so no filter offers an empty value. */
+/**
+ * Choices for the datasets page filters, from the visible datasets only, so no filter offers an empty value.
+ * With regional data the query starts from the two kinds' listings: they are a small part of the
+ * directory, and starting from the facets reads every facet row of every kind.
+ */
 async function datasetFacetChoices(db: ResearchDb, names: Names, regional = false) {
   const found = await rows<{ field: string; value: string; name: string | null }>(
     db,
-    regional ? "SELECT f.field,f.value,max(CASE f.field WHEN 'repository' THEN json_extract(v.record,'$.repository') WHEN 'datatype' THEN json_extract(v.record,'$.data_type') WHEN 'topic' THEN json_extract(v.record,'$.topic') END) name FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE v.kind IN ('dataset','regional-data') AND f.field IN ('access','datatype','repository','institution','county','topic') GROUP BY f.field,f.value" : "SELECT field,value,name FROM research_summary_dataset_facets",
+    regional ? "SELECT f.field,f.value,max(CASE f.field WHEN 'repository' THEN json_extract(v.record,'$.repository') WHEN 'datatype' THEN json_extract(v.record,'$.data_type') WHEN 'topic' THEN json_extract(v.record,'$.topic') END) name FROM (SELECT id,record FROM research_visible WHERE kind='dataset' UNION ALL SELECT id,record FROM research_visible WHERE kind='regional-data') v CROSS JOIN research_facets f ON f.id=v.id WHERE f.field IN ('access','datatype','repository','institution','county','topic') GROUP BY f.field,f.value ORDER BY f.field,f.value" : "SELECT field,value,name FROM research_summary_dataset_facets",
   );
   const pick = (field: string) => found.filter((row) => row.field === field);
   const sorted = (choices: [string, string][]) => choices.sort((a, b) => a[1].localeCompare(b[1]));
