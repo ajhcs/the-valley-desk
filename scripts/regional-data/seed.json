@@ -638,7 +638,7 @@
     "time_span": null,
     "update_cadence": "Daily",
     "access": "open",
-    "license": null,
+    "license": "New Jersey Department of Environmental Protection (NJDEP) Data Distribution Agreement",
     "formats": [
       "JSON"
     ],
@@ -651,7 +651,8 @@
       "url": "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
       "caveats": [
         "Sites without coordinates are omitted from the map.",
-        "Listing does not establish current exposure or health risk."
+        "Listing does not establish current exposure or health risk.",
+        "Review the NJDEP Data Distribution Agreement and its metadata and attribution requirements: https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
       ],
       "citation": "New Jersey Department of Environmental Protection. Known Contaminated Site List for New Jersey."
     },
@@ -928,7 +929,7 @@
     ],
     "granularity": "Neighborhood",
     "time_span": null,
-    "update_cadence": "Annual",
+    "update_cadence": null,
     "access": "open",
     "license": "City of Philadelphia License",
     "formats": [

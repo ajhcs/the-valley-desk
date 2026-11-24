@@ -1080,6 +1080,9 @@
         "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
         "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
         "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "license": [
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
       ]
     },
     "query": {
@@ -1690,9 +1693,6 @@
       ],
       "how_to_use": [
         "https://opendataphilly.org/datasets/neighborhood-food-retail/"
-      ],
-      "update_cadence": [
-        "https://opendataphilly.org/datasets/archived-philadelphia-food-access/"
       ]
     },
     "query": {
