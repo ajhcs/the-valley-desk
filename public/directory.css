@@ -871,16 +871,12 @@ input, select { accent-color: var(--accent); }
 /* ---- end cards and records ---- */
 
 /* ---- Home page ---- */
-/* Title, counts and search beside the county map, then topics and institutions: ways in, not a feed. */
+/* Search first, then the ways in: the county map and tables of types, topics and institutions. */
 .home { padding-block: clamp(1.25rem, 3vw, 2.25rem) 0; }
-.home-top {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(17rem, 27rem);
-  align-items: start;
-  gap: 1.75rem clamp(2rem, 5vw, 4.5rem);
-}
-.home-top .home-intro { display: block; max-width: 46rem; padding: 0; }
-.home-intro h1 { margin-top: .4rem; }
+.home-head { max-width: 52rem; }
+.home-head h1 { margin-top: .4rem; }
+.home-head .home-search { max-width: none; margin-top: 1.1rem; }
+.home-head .lede { margin-top: .6rem; }
 .home-examples { margin-top: .65rem; }
 .home h2,
 .home .tally h2 {
@@ -894,14 +890,33 @@ input, select { accent-color: var(--accent); }
 .home h2 .muted { margin-left: .3rem; font: 400 .9rem/1 var(--sans); }
 .home-ways {
   display: grid;
-  grid-template-columns: minmax(13rem, 1fr) minmax(0, 2.6fr);
-  gap: 1.75rem clamp(2rem, 5vw, 4.5rem);
-  margin-top: clamp(1.75rem, 4vw, 2.75rem);
+  grid-template-columns: minmax(16rem, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 2rem clamp(1.75rem, 4vw, 3.5rem);
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
 }
-.home-institutions ul { columns: 2 14rem; column-gap: 2rem; }
+.home-institutions { grid-column: 1 / -1; }
+.home-institutions ul { columns: 3 15rem; column-gap: clamp(1.75rem, 4vw, 3.5rem); }
 .home .tally li a { color: var(--text); text-decoration: none; }
 .home .tally li a:hover { color: var(--text); text-decoration: underline; }
 .home .tally-more summary { color: var(--accent); }
+/* Each row's rule is also its bar: its length is the row's share of the largest figure in the table. */
+.home .tally li { position: relative; }
+.home .tally li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: max(2px, var(--share, 0%));
+  height: 2px;
+  background: var(--bar, color-mix(in srgb, var(--accent) 55%, var(--line)));
+}
+.home .tally-publication { --bar: var(--publication); }
+.home .tally-project { --bar: var(--software); }
+.home .tally-study { --bar: var(--study); }
+.home .tally-dataset { --bar: var(--dataset); }
+.home .tally-regional-data { --bar: var(--regional); }
+.tally-foot { margin-top: .7rem; font-size: .9rem; }
 
 /* The map is the county index: each county is a link, shaded by how many listings it has. */
 .home-counties .county-map { width: 100%; max-width: 26rem; margin: .6rem auto 0; overflow: visible; }
@@ -920,7 +935,7 @@ input, select { accent-color: var(--accent); }
 .home-counties .county-map text { pointer-events: auto; cursor: pointer; }
 
 @media (max-width: 53rem) {
-  .home-top, .home-ways { grid-template-columns: 1fr; }
+  .home-ways { grid-template-columns: 1fr; }
   .home-counties { max-width: 30rem; }
 }
 

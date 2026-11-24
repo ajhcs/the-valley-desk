@@ -2,24 +2,31 @@ import type { Listing } from "./public-directory-research";
 import { countyGeometry, countyViewBox } from "./public-directory-counties";
 import { browsePath, counties, type DirectoryCatalog } from "./public-directory-data";
 import { entityHref, summaryLedger, type DirectorySummary, type Names } from "./public-directory-entity";
-import { count, healthTopic, href, html, kindLedger, searchInput } from "./public-directory-ui";
+import { count, healthTopic, href, html, ledgerKinds, searchInput } from "./public-directory-ui";
 
 type Home = ReturnType<DirectoryCatalog["home"]>;
-type Row = { name: string; href: string; n: number };
+type Row = { name: string; href: string; n: number; tone?: string };
 
 const states = { PA: "Pennsylvania", NJ: "New Jersey" } as const;
 
-const tallyItems = (rows: Row[]) =>
-  rows.map((r) => `<li><a href="${html(r.href)}">${html(r.name)}</a><span>${count(r.n)}</span></li>`).join("");
+/** A row's share of the largest figure in its table, drawn as the length of the rule beneath it. */
+const tallyItems = (rows: Row[], most: number) =>
+  rows
+    .map(
+      (r) =>
+        `<li${r.tone ? ` class="tally-${r.tone}"` : ""} style="--share:${most ? Math.round((r.n / most) * 1000) / 10 : 0}%"><a href="${html(r.href)}">${html(r.name)}</a><span>${count(r.n)}</span></li>`,
+    )
+    .join("");
 
-/** A counted list. With a limit, the rows past it sit behind a disclosure so long lists stay short. */
-function tally(id: string, heading: string, rows: Row[], limit = Infinity) {
+/** A counted table whose rules double as bars. With a limit, the rows past it sit behind a disclosure. */
+function tally(id: string, heading: string, rows: Row[], limit = Infinity, foot = "") {
   if (!rows.length) return "";
+  const most = Math.max(...rows.map((r) => r.n));
   const rest = rows.slice(limit);
   const more = rest.length
-    ? `<details class="tally-more"><summary>Show all ${count(rows.length)}</summary><ul>${tallyItems(rest)}</ul></details>`
+    ? `<details class="tally-more"><summary>Show all ${count(rows.length)}</summary><ul>${tallyItems(rest, most)}</ul></details>`
     : "";
-  return `<section class="tally home-${id}" aria-labelledby="home-${id}-title"><h2 id="home-${id}-title">${heading}</h2><ul>${tallyItems(rows.slice(0, limit))}</ul>${more}</section>`;
+  return `<section class="tally home-${id}" aria-labelledby="home-${id}-title"><h2 id="home-${id}-title">${heading}</h2><ul>${tallyItems(rows.slice(0, limit), most)}</ul>${more}${foot}</section>`;
 }
 
 /** The counties as a shaded map that is also their links. Each county is a link named in full, with
@@ -80,21 +87,26 @@ export function renderDirectoryHome(
   const unit = research ? "listings" : "projects";
   const week = research && summary.week ? Object.values(summary.week).reduce((sum, n) => sum + (n ?? 0), 0) : 0;
   const examples = home.examples.map((example) => `<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`);
+  // Listings by type: the same five kinds, in the same order and colours, as every listing's label.
+  const typeRows: Row[] = research
+    ? summaryLedger(summary).map((entry) => {
+        const many = ledgerKinds.find(([kind]) => kind === entry.kind)![3];
+        return { name: many[0].toUpperCase() + many.slice(1), href: entry.href!, n: entry.n, tone: entry.kind };
+      })
+    : [];
+  const weekLink = week ? `<p class="tally-foot"><a href="${browsePath}?sort=activity">${count(week)} new or updated this week</a></p>` : "";
   return `<div class="frame home">
-    <div class="home-top">
-      <div class="home-intro">
-        <h1>Healthcare research in the Delaware Valley</h1>
-        ${research
-          ? kindLedger(summaryLedger(summary), week ? `<span class="muted" aria-hidden="true"> · </span><a class="ledger-new" href="${browsePath}?sort=activity">${count(week)} new or updated this week</a>` : "")
-          : `<p class="lede">${count(home.total)} research software projects.</p>`}
-        <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput("", "Search a subject or institution")}</form>
-        <p class="home-examples">${examples.length ? `Try ${examples.join(", ")}, or see <a href="/discover/new">what’s new</a>.` : `See <a href="/discover/new">what’s new</a>.`}</p>
-      </div>
-      ${countyMap(countyRows, unit)}
-    </div>
+    <header class="home-head">
+      <h1>Healthcare research in the Delaware Valley</h1>
+      ${research ? "" : `<p class="lede">${count(home.total)} research software projects.</p>`}
+      <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput("", "Search a subject or institution")}</form>
+      <p class="home-examples">${examples.length ? `Try ${examples.join(", ")}, or see <a href="/discover/new">what’s new</a>.` : `See <a href="/discover/new">what’s new</a>.`}</p>
+    </header>
     <div class="home-ways">
+      ${countyMap(countyRows, unit)}
+      ${tally("types", "Types", typeRows, Infinity, weekLink)}
       ${tally("topics", "Topics", topicRows)}
-      ${tally("institutions", `Institutions <span class="muted">${count(institutionRows.length)}</span>`, institutionRows, 12)}
+      ${tally("institutions", `Institutions <span class="muted">${count(institutionRows.length)}</span>`, institutionRows, 15)}
     </div>
   </div>`;
 }

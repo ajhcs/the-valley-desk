@@ -91,7 +91,7 @@ test("landing pages answer in computed sentences and carry matching metadata", a
     const [site, catalog] = schemaOf(home);
     assert.equal(site.potentialAction.target.urlTemplate, origin + "/discover/works?q={search_term_string}");
     assert.equal(catalog["@type"], "DataCatalog");
-    assert.match(home, new RegExp(`tally-publication"><a href="/discover/works\\?kind=publication">[\\s\\S]*?<b>${works}</b></span> publications`));
+    assert.match(home, new RegExp(`<li class="tally-publication" style="--share:100%"><a href="/discover/works\\?kind=publication">Publications</a><span>${works}</span></li>`));
     assert.match(home, /href="\/discover\/institution\/fixture-institute"/);
 
     const directory = await text("/discover/sitemap/directory.xml");
