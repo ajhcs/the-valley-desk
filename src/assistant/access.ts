@@ -4,7 +4,7 @@ import { directoryCatalog } from "../ingest/public-directory-data";
 import { renderDirectoryPage } from "../ingest/public-directory-page";
 import { contactLink, html } from "../ingest/public-directory-ui";
 import { legacyVersions, maxRequestBytes, modernVersion, serveMcp, serverInfo } from "./mcp";
-import { limits, toolDefinitions } from "./tools";
+import { definitionsFor, limits, toolDefinitions } from "./tools";
 
 export const connectPath = "/discover/connect";
 export const mcpPath = "/mcp";
@@ -35,7 +35,7 @@ export const serverCard = (origin: string) => ({
   remotes: [{ type: "streamable-http", url: origin + mcpPath, supportedProtocolVersions: [modernVersion, ...legacyVersions] }],
 });
 
-function connectPage(origin: string) {
+function connectPage(origin: string, tools: Awaited<ReturnType<typeof definitionsFor>>) {
   const endpoint = origin + mcpPath;
   const code = (value: string) => `<pre><code>${html(value)}</code></pre>`;
   const json = (value: unknown) => code(JSON.stringify(value, null, 2));
@@ -69,10 +69,10 @@ function connectPage(origin: string) {
     </section>
     <section id="tools">
       <h2>What an assistant can do</h2>
-      <dl class="definition-list definition-list-stacked">${toolDefinitions
+      <dl class="definition-list definition-list-stacked">${tools
         .map((tool) => `<div><dt><code>${html(tool.name)}</code> · ${html(tool.title)}</dt><dd>${html(tool.description)}</dd></div>`)
         .join("")}</dl>
-      <p>Each result carries its Valley Desk URL, the <a href="/discover/methodology#regional-evidence">Verified or Listed</a> label and dates marked as published, pushed or added. Removed listings are never returned. If removal records cannot be read, the tools return an error and no records, as the pages do.</p>
+      <p>Results carry their Valley Desk URL and relevant dates. Research listings include a <a href="/discover/methodology#regional-evidence">Verified or Listed</a> evidence label. Removed listings are never returned. If removal records cannot be read, the tools return an error and no records, as the pages do.</p>
     </section>
     <section id="limits">
       <h2>Limits</h2>
@@ -139,13 +139,18 @@ export async function serveAssistantAccess(request: Request, env: Env, origin: s
   const title = terms ? "Terms of use" : "Connect an AI assistant";
   const description = terms ? "Terms for using The Valley Desk research directory and assistant server." : summary;
   const pagePath = terms ? termsPath : connectPath;
+  const tools = terms ? toolDefinitions : await definitionsFor({
+    db: env.VALLEY_DESK_DB as never,
+    origin,
+    publicationsEnabled: env.PUBLICATIONS_PUBLIC_ENABLED === "true",
+  });
   const page = renderDirectoryPage(
     {
       kind: "research",
       title,
       summary: description,
       path: pagePath,
-      content: terms ? termsPage() : connectPage(origin),
+      content: terms ? termsPage() : connectPage(origin, tools),
       schema: { "@type": "WebPage", name: title, url: origin + pagePath, description },
     },
     directoryCatalog,
