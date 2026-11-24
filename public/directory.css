@@ -717,3 +717,21 @@ input, select { accent-color: var(--accent); }
   .home-intro { grid-template-columns: 1fr; }
   .home-map { display: none; }
 }
+
+/* ---- Results pages: heading, filter row, who-works strip, pagination ---- */
+
+
+
+/* ---- end results ---- */
+
+/* ---- Listing cards, link colours and record pages ---- */
+
+
+
+/* ---- end cards and records ---- */
+
+/* ---- Home page ---- */
+
+
+
+/* ---- end home ---- */
