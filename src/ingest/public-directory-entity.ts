@@ -66,7 +66,7 @@ async function storedSummary(db: ResearchDb, scope?: { field: ScopeField; value:
 }
 
 /**
- * Listings added in the seven days before the last summary refresh, by kind. The refresh writes
+ * Listings published, pushed, updated or released in the seven days before the last summary refresh, by kind. The refresh writes
  * them; a database refreshed before these rows existed returns none and the home page omits them.
  */
 export async function weeklyAdditions(db: ResearchDb, summary: DirectorySummary): Promise<DirectorySummary["week"]> {
@@ -270,7 +270,7 @@ export function entityHeader(opts: {
   now: Date;
   feed: string;
 }) {
-  const { field, slug, name, ref, refs, summary, names, now } = opts;
+  const { field, slug, name, ref, refs, summary, names } = opts;
   const r = ref as FullInstitution | undefined;
   const county = field === "county" ? counties.find((c) => facetSlug(c.name) === slug) : undefined;
   const eyebrow =
@@ -278,7 +278,9 @@ export function entityHeader(opts: {
       ? (r?.kind && kindLabels[r.kind]) || "Institution"
       : field === "topic"
         ? "Research topic"
-        : `County · ${county?.state === "NJ" ? "New Jersey" : "Pennsylvania"}`;
+        : county?.state === "NJ" ? "New Jersey" : "Pennsylvania";
+  // A county's state is its eyebrow, so the heading needs only the county.
+  const heading = county ? `${county.name} County` : name;
   const sentences = entitySentences(field, name, summary, names);
   const parent = r?.parent ? refs.find((x) => x.id === r.parent) : undefined;
   const children = r ? refs.filter((x) => (x as FullInstitution).parent === r.id) : [];
@@ -310,11 +312,10 @@ export function entityHeader(opts: {
     description: sentences.text,
     opening: sentences.opening,
     header: `<header class="entity-head">
-      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/discover/works">Directory</a><span aria-hidden="true">/</span><span>${html(name)}</span></nav>
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/discover/works">Directory</a></nav>
       <p class="eyebrow">${html(eyebrow)}</p>
-      <h1>${html(name)}</h1>
+      <h1>${html(heading)}</h1>
       ${Object.keys(summary.kinds).length ? "" : `<p class="lede">${html(sentences.opening)}</p>`}
-      ${asOf(now)}
       ${r?.homepage ? `<p class="entity-links">${externalLink(r.homepage, "Institution website ↗")}</p>` : ""}
     </header>`,
     index: related.join(""),

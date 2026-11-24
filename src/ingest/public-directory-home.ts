@@ -1,7 +1,7 @@
 import { renderListingCards, type Listing } from "./public-directory-research";
 import { countyGeometry, countyViewBox } from "./public-directory-counties";
 import { browsePath, counties, type DirectoryCatalog } from "./public-directory-data";
-import { asOf, entityHref, kindPhrase, summaryLedger, type DirectorySummary, type Names } from "./public-directory-entity";
+import { entityHref, kindPhrase, summaryLedger, type DirectorySummary, type Names } from "./public-directory-entity";
 import { count, healthTopic, href, html, kindLedger, projectCards, searchInput, timestamp } from "./public-directory-ui";
 
 type Home = ReturnType<DirectoryCatalog["home"]>;
@@ -42,7 +42,6 @@ function map(rows: Map<string, number>, hrefFor: (name: string) => string, unit:
         })
         .join("")}
     </svg>
-    <figcaption>Darker counties have more ${unit}.</figcaption>
   </figure>`;
 }
 
@@ -53,7 +52,7 @@ export function renderDirectoryHome(
   latest: Listing[] = [],
   summary?: DirectorySummary,
   names?: Names,
-  now = new Date(),
+  _now = new Date(),
 ) {
   const research = summary && names && publications;
   const lede = research
@@ -85,7 +84,7 @@ export function renderDirectoryHome(
       <div class="home-lead">
         <h1>Healthcare research in the Delaware Valley</h1>
         ${research
-          ? kindLedger(summaryLedger(summary), ` connected to nine counties in Pennsylvania and New Jersey.${week ? ` <a class="ledger-new" href="/discover/new">${count(week)} added this week</a>` : ""}`)
+          ? kindLedger(summaryLedger(summary), week ? `<span class="muted" aria-hidden="true"> · </span><a class="ledger-new" href="${browsePath}?sort=activity">${count(week)} new or updated this week</a>` : "")
           : `<p class="lede">${lede}</p>`}
         <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput("", "Search a subject or institution")}</form>
         ${home.examples.length ? `<p class="home-examples">Try ${home.examples.map((example) => `<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join(", ")}</p>` : ""}
@@ -112,6 +111,5 @@ export function renderDirectoryHome(
       ${projectCards(catalog, home.recent.slice(0, 4))}
       ${home.activeLabs.length ? `<p class="home-labs">Most active GitHub accounts in the past 12 months: ${home.activeLabs.map((a) => `<a href="${html(catalog.entityHref("lab", a.login))}">${html(a.name)}</a> (${count(a.count)})`).join(", ")}.</p>` : ""}
     </section>` : ""}
-    ${research ? asOf(now) : ""}
   </div>`;
 }

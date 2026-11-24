@@ -17,6 +17,12 @@
     search.focus();
   });
 
+  document.documentElement.classList.add('directory-js');
+  document.addEventListener('change', event => {
+    const field = event.target;
+    if (field instanceof HTMLSelectElement && field.form?.id === 'research-form') field.form.requestSubmit();
+  });
+
   if (!region()) return;
   document.documentElement.classList.add('directory-enhanced');
 

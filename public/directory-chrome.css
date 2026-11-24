@@ -165,21 +165,41 @@
 .directory-chrome .desk-footer-river :focus-visible { outline-color: var(--river-link); }
 .directory-chrome .desk-footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .directory-chrome .desk-footer-copy { grid-column: 1 / -1; margin: 0; color: var(--river-muted); font-size: .84rem; }
-.directory-chrome .desk-theme { display: flex; align-items: center; gap: .45rem; color: var(--river-muted); }
+/* Theme: three labelled choices on the river, the current one lit. */
+.directory-chrome .desk-theme {
+  display: inline-flex;
+  align-self: center;
+  padding: 3px;
+  border: 1px solid color-mix(in srgb, var(--river-muted) 45%, transparent);
+  border-radius: 999px;
+}
 /* The control works only with scripts. It keeps its space so nothing moves when it appears. */
 :root:not([data-theme]) .directory-chrome .desk-theme { visibility: hidden; }
-.directory-chrome .desk-theme select {
-  min-height: 44px;
-  padding: .3rem .5rem;
-  border: 1px solid var(--river-muted);
-  border-radius: 2px;
-  background: var(--river);
-  color: var(--river-text);
-  color-scheme: dark;
-  font: inherit;
+.directory-chrome .desk-theme button {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 34px;
+  padding: .2rem .8rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--river-muted);
+  font: 500 .85rem/1 var(--sans);
+  cursor: pointer;
 }
+.directory-chrome .desk-theme button:hover { color: var(--river-text); }
+.directory-chrome .desk-theme button[aria-pressed="true"] { background: var(--river-text); color: var(--river); font-weight: 600; }
+.directory-chrome .desk-theme .glyph { width: 1rem; height: 1rem; }
+.directory-chrome .desk-theme .glyph-fill-solid { fill: currentColor; stroke: none; }
+.directory-chrome .desk-theme button:focus-visible { outline: 2px solid var(--river-link); outline-offset: 1px; }
 
 @media (max-width: 34rem) {
+  .directory-chrome .desk-footer-art { height: 120px; background-position: 58% bottom; }
+  .directory-chrome .desk-footer-inner { gap: 1rem; padding-block: 1.25rem 1.5rem; }
+  .directory-chrome .desk-footer-links { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1rem; }
+  .directory-chrome .desk-footer-links a { min-height: 40px; }
+  .directory-chrome .desk-theme { justify-self: start; }
   .directory-chrome .desk-masthead-inner { padding-block: .25rem; }
   .directory-chrome .desk-primary { justify-content: space-between; column-gap: .6rem; width: 100%; }
   .directory-chrome .desk-primary a { font-size: .88rem; }

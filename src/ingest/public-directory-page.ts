@@ -67,11 +67,8 @@ function footer(view: DirectoryView) {
       <nav class="desk-footer-links" aria-label="Footer">
         <a href="${browsePath}">Search</a><a href="/discover/new">What’s new</a><a href="${methodPath}">Methodology</a><a href="/discover/updates.xml">RSS</a><a href="${methodPath}#data">Data and API</a><a href="/discover/suggest">Suggest research</a><a href="/discover/suggest#feedback">Feedback</a>${supportOpen() ? `<a href="${supportPath}">Support</a>` : ""}
       </nav>
-      <div class="desk-theme">
-        <label for="directory-theme">Theme</label>
-        <select id="directory-theme">
-          <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
-        </select>
+      <div class="desk-theme" role="group" aria-label="Colour theme" id="directory-theme">
+        <button type="button" data-theme-choice="light" aria-pressed="false">${icon("sun")}Day</button><button type="button" data-theme-choice="dark" aria-pressed="false">${icon("moon")}Night</button><button type="button" data-theme-choice="system" aria-pressed="false" title="Follow this device’s setting">${icon("auto")}Auto</button>
       </div>
       <p class="desk-footer-copy">Built by <a href="https://colelyons.com/">Cole Lyons</a></p>
     </div>

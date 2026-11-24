@@ -1038,7 +1038,6 @@ export function renderResearch({ header, path, params, data, catalog, options, e
   // Each figure narrows the listings to its kind.
   const narrowed = params.get("kind") ?? "";
   const versions = data.counts.reduce((sum, row) => sum + row.n - row.works, 0);
-  const position = data.more ? " · most relevant first" : data.total > 24 ? ` · <span class="nowrap">${count(first)}–${count(first + data.items.length - 1)} of ${count(data.total)}</span>` : "";
   const ledger = kindLedger(
     data.counts.map((row) => {
       const next = new URLSearchParams(params);
@@ -1046,21 +1045,21 @@ export function renderResearch({ header, path, params, data, catalog, options, e
       next.set("kind", row.kind);
       return { kind: row.kind, n: row.works, current: narrowed === row.kind, href: path + "?" + next };
     }),
-    `<span class="muted">${position}${versions > 0 ? ` · ${count(data.total)} records with versions` : ""}</span>`,
   );
+  const range = data.more ? "Most relevant first" : data.total > 24 ? `${count(first)}–${count(first + data.items.length - 1)} of ${count(data.total)}` : "";
   return `<div class="frame page research-page">${header}
     <form id="research-form" class="research-search" action="${html(path)}" method="get" role="search">${searchInput(params.get("q") ?? "")}</form>
     <div class="research-layout${aside ? " has-index" : ""}">
       <div class="research-filters">
-        <h2 class="rail-heading">Refine${active.length ? ` <a class="rail-clear" href="${html(cleared)}">Clear</a>` : ""}</h2>
+        <h2 class="rail-heading">Filters${active.length ? ` <a class="rail-clear" href="${html(cleared)}">Clear</a>` : ""}</h2>
         ${filters.join("")}
-        <button class="button secondary" type="submit" form="research-form">Apply</button>
+        <button class="button secondary filter-submit" type="submit" form="research-form">Apply filters</button>
         ${path === browsePath ? '<p class="rail-note"><a href="/discover/works?tools=project">Software filters: language, license, GitHub activity</a></p>' : ""}
       </div>
       <section class="research-results" aria-label="Listings">
         <div class="results-bar">
           ${ledger || '<p class="ledger"><b>No matching listings</b></p>'}
-          <a class="feed-link" href="${html(feed ?? feedUrl(params))}" title="RSS feed of additions to this list">${icon("feed")}<span class="sr-only">RSS feed of additions</span></a>
+          <p class="results-meta">${range ? `<span>${range}</span>` : ""}${versions > 0 ? `<span title="A preprint and its journal version count once">${count(data.total)} records with versions</span>` : ""}<a class="feed-link" href="${html(feed ?? feedUrl(params))}" title="RSS feed of additions to this list">${icon("feed")}<span class="sr-only">RSS feed of additions</span></a></p>
         </div>
 
         ${list}

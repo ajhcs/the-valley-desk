@@ -84,7 +84,7 @@ export function searchInput(query = "", placeholder = "Search the directory") {
     <label class="sr-only" for="directory-search">Search research listings</label>
     ${icon("search", undefined, "search-icon")}
     <input type="search" id="directory-search" name="q" value="${html(query)}" placeholder="${html(placeholder)}" maxlength="200">
-    <button class="button primary" type="submit">Search</button>
+    <button class="search-go" type="submit" aria-label="Search">${icon("arrow")}</button>
   </div>`;
 }
 

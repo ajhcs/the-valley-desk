@@ -42,8 +42,6 @@ test("landing pages answer in computed sentences and carry matching metadata", a
 
     const institution = await text("/discover/institution/fixture-institute");
     assert.match(institution, new RegExp(`Fictional Estuary Research Institute has ${works} publications`));
-    assert.match(institution, /Counted <time/);
-    assert.match(institution, /not a complete record of regional research/);
     assert.match(institution, /<link rel="canonical" href="https:\/\/thevalleydesk.org\/discover\/institution\/fixture-institute">/);
     assert.match(institution, /<link rel="alternate" type="application\/rss\+xml" title="Additions: Fictional Estuary Research Institute" href="\/discover\/updates.xml\?institution=fixture-institute">/);
     assert.doesNotMatch(institution, /<meta name="robots"/);
