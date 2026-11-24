@@ -695,7 +695,7 @@ export function renderRegionalData(d: PublicRegionalData) {
     <section class="record-section" aria-labelledby="regional-use-title">
       <h2 id="regional-use-title">How to use it</h2>
       <p>${html(d.how_to_use.step)}</p>
-      <p>${externalLink(d.how_to_use.url, "Source guidance ↗")}</p>
+      <p>${externalLink(d.how_to_use.url, "Open the starter query or download ↗")}</p>
       ${d.how_to_use.caveats.length ? `<ul>${d.how_to_use.caveats.map(c => `<li>${html(c)}</li>`).join("")}</ul>` : ""}
       <h3>How to cite</h3><p>${html(d.how_to_use.citation)}</p>
     </section>
