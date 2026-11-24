@@ -1,5 +1,8 @@
 """Emit a replayable D1 SQL import. Each listing and its index changes are atomic."""
 import argparse
+import contextlib
+import io
+import sys
 from hashlib import sha256
 import json
 import re
@@ -51,6 +54,19 @@ def load(args):
             raise ValueError("Expected an array of dataset IDs")
         for identifier in removed:
             print("INSERT OR IGNORE INTO dataset_removals(id) VALUES(" + quote(identifier) + ");")
+    if args.regional_data_removals:
+        removed = json.loads(args.regional_data_removals.read_text())
+        if not isinstance(removed, list) or not all(isinstance(i, str) and re.fullmatch(r"regional:[a-z0-9]+(?:-[a-z0-9]+)*", i) for i in removed):
+            raise ValueError("Expected an array of regional data IDs")
+        for identifier in removed:
+            print("INSERT OR IGNORE INTO regional_data_removals(id) VALUES(" + quote(identifier) + ");")
+    if args.regional_data:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts" / "regional-data"))
+        from validate import validate_records
+        regional_records = json.loads(args.regional_data.read_text())
+        validate_records(regional_records)
+        for record in regional_records:
+            emit(record, "regional-data", {}, args.respect_removals)
     institution_file = args.institutions or args.alias_reference
     if institution_file:
         content = institution_file.read_text().strip()
@@ -162,14 +178,15 @@ def emit(r, kind, aliases, respect_removals=False):
             raise ValueError("Unexpected study fields or identity")
         if any(set(site) != sites for site in r["sites"]) or r["source"] != "https://clinicaltrials.gov/study/" + r["id"] or r["url"] != r["source"]:
             raise ValueError("Invalid registry evidence for " + r["id"])
-    listed = pub or study or dataset
+    regional = kind == "regional-data"
+    listed = pub or study or dataset or regional
     title = r["title" if listed else "name"]
-    institutions = r["institutions"] if listed else [r.get("institution")]
+    institutions = [] if regional else (r["institutions"] if listed else [r.get("institution")])
     counties = r["counties"] if listed else [r.get("county")]
     topic = r.get("topic", "")
     facets = {"institution": [aliases.get(slug(v), slug(v)) for v in institutions if v],
               "county": [slug(v) for v in counties if v], "topic": [slug(topic)] if topic else [],
-              "project": r.get("projects", []), "label": [slug(r["label"])]}
+              "project": r.get("projects", []), "label": [slug(r["label"])] if not regional else []}
     if pub:
         facets["version"] = [v for v in [r["published_as"], r["preprint_of"]] if v]
         alternate = {citation_key(r["url"]), citation_key(r["source"])}
@@ -179,7 +196,7 @@ def emit(r, kind, aliases, respect_removals=False):
         # Publication pages find the datasets they produced through the paper facet.
         facets.update(access=[r["access"]], datatype=[slug(r["data_type"])],
                       repository=[slug(r["repository"])], paper=sorted(set(r["papers"])))
-    elif not study:
+    elif not study and not regional:
         identifiers = {citation_key(r.get("paper"))}
         for paper in r.get("papers") or []:
             identifiers.add(citation_key(paper.get("url")))
@@ -190,6 +207,9 @@ def emit(r, kind, aliases, respect_removals=False):
             *r.get("terms", []), *r.get("topics", []), r.get("purpose"), r.get("language"), r.get("venue")]
     if study:
         keys.extend([*r["conditions"], *(site["facility"] for site in r["sites"])])
+    if regional:
+        keys.extend([r["summary"], r["publisher"], r["portal"]])
+        facets.update(access=[r["access"]], publisher=[slug(r["publisher"])])
     if dataset:
         keys.extend([r["summary"], *r["accessions"], r["repository"], r["data_type"]])
     # Store facet keys with the row so a single upsert updates all index projections.
@@ -208,7 +228,7 @@ def emit(r, kind, aliases, respect_removals=False):
     if respect_removals:
         tables = {"project": ("public_directory_removals", "github_id"),
                   "publication": ("publication_removals", "id"), "study": ("study_removals", "id"),
-                  "dataset": ("dataset_removals", "id")}
+                  "dataset": ("dataset_removals", "id"), "regional-data": ("regional_data_removals", "id")}
         table, key = tables[kind]
         identities = [r["id"], *(facets["alternate"] if pub else [])]
         guard = f"NOT EXISTS(SELECT 1 FROM {table} WHERE {key} IN ({','.join(map(quote, identities))}))"
@@ -233,7 +253,7 @@ def emit(r, kind, aliases, respect_removals=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    for flag in ("projects", "publications", "institutions", "removals", "studies", "study-removals", "datasets", "dataset-removals"):
+    for flag in ("projects", "publications", "institutions", "removals", "studies", "study-removals", "datasets", "dataset-removals", "regional-data", "regional-data-removals"):
         parser.add_argument("--" + flag, type=Path)
     parser.add_argument("--project-upserts", type=Path, help="Apply project additions and edits without pruning the catalog")
     parser.add_argument("--alias-reference", type=Path, help="Canonicalize institution facets without loading the reference")
@@ -246,4 +266,8 @@ if __name__ == "__main__":
         parser.error("Use project upserts when retaining the current catalog")
     if args.institutions and args.alias_reference:
         parser.error("Choose one institution reference input")
-    load(args)
+    # Buffer every statement so invalid inputs cannot emit a partial import.
+    output = io.StringIO()
+    with contextlib.redirect_stdout(output):
+        load(args)
+    sys.stdout.write(output.getvalue())
