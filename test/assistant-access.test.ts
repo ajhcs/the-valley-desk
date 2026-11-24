@@ -75,7 +75,7 @@ test("clinical studies honor staged visibility, show registry evidence and disap
     sqlite.exec(readFileSync("ops/research-summary.sql", "utf8"));
     const html = await (await get(env, detail)).text();
     assert.match(html, /Example clinic.*Philadelphia County.*Active not recruiting/);
-    assert.match(html, /<dt>Overall status<\/dt><dd>Completed<\/dd>/);
+    assert.match(html, /<p class="record-kind"><span class="kind">[\s\S]*?Observational study<\/span><span>Completed<\/span><\/p>/);
     assert.match(html, /clinicaltrials\.gov\/study\/NCT00000001/);
     assert.equal((await (await get(env, "/api/directory/studies/" + id)).json()).study.id, id);
     assert.equal((await (await get(env, "/api/directory/studies?q=cardiac")).json()).total, 1);

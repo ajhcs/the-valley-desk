@@ -804,6 +804,65 @@ input, select { accent-color: var(--accent); }
 /* ---- end results ---- */
 
 /* ---- Listing cards, link colours and record pages ---- */
+/* Cards: the title, one meta line led by the kind label, and at most a clamped summary. */
+.record { gap: .15rem; padding: .8rem 0 .9rem; }
+.directory-site .record-title a { color: var(--text); text-decoration: none; }
+.directory-site .record-title a:is(:hover, :focus-visible) { text-decoration: underline; text-decoration-thickness: 1px; }
+.record-meta { display: flex; align-items: flex-start; min-width: 0; color: var(--muted); font: 400 .84rem/1.45 var(--sans); }
+.meta-main { flex: 0 1 auto; min-width: 0; }
+.record-meta .kind { margin-right: .55rem; font-weight: 600; font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; }
+.record-meta .kind .glyph { width: 1.15rem; height: 1.15rem; margin-right: .3rem; stroke-width: 1.4; vertical-align: -.3em; }
+.dataset-list .kind { color: var(--dataset); }
+/* The topic shows only when it fits on the meta line's last row. The empty ::before item holds the
+   first flex row, so a topic that does not fit wraps to a second row, which is clipped. */
+.meta-topic { display: flex; flex: 1 1 0; flex-wrap: wrap; min-width: 0; height: 1.45em; overflow: hidden; }
+.meta-topic::before { content: ""; width: 0; height: 1.45em; }
+.meta-topic > span { padding-left: .28em; white-space: nowrap; }
+.meta-topic:focus-within { height: auto; overflow: visible; }
+.record-summary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow: hidden;
+  font-size: .92rem;
+}
+.record-dataset .record-summary, .record-regional .record-summary { -webkit-line-clamp: 2; line-clamp: 2; }
+.records[data-view="compact"] .record { grid-template-columns: minmax(0, 1fr) minmax(0, auto); align-items: first baseline; padding-block: .55rem; }
+.records[data-view="compact"] .record-meta { grid-row: 1; grid-column: 2; max-width: 40rem; }
+.dataset-list li + li { margin-top: .45rem; }
+.dataset-list .record-meta { margin-top: .1rem; }
+
+/* Link colours. Blue marks actions and links in prose. Titles are ink; links on meta lines, tallies,
+   breadcrumbs and record headers take the surrounding colour with a light underline that darkens
+   on hover and focus. Focus outlines are unchanged. */
+.directory-site :is(.record-meta, .record-place, .record-head .record-kind, .breadcrumb, .record-details) a,
+.directory-site .tally li a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-decoration-thickness: 1px;
+}
+.directory-site .tally li a { color: var(--text); }
+.directory-site :is(.record-meta, .record-place, .record-head .record-kind, .breadcrumb, .record-details) a:is(:hover, :focus-visible),
+.directory-site .tally li a:is(:hover, :focus-visible) { color: var(--text); text-decoration-color: currentColor; }
+.directory-site .record-meta .verified-word { color: var(--verified-text); }
+
+/* Record pages: bookkeeping as one quiet line, with the rest folded into "Record details". */
+.record-details { margin-top: .7rem; color: var(--muted); font-size: .86rem; }
+.record-details summary { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1rem; min-height: 32px; cursor: pointer; list-style: none; }
+.record-details summary::-webkit-details-marker { display: none; }
+.record-details-label { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: .18em; }
+.record-details summary:hover .record-details-label { text-decoration-color: currentColor; }
+.record-details-label::after { content: "+" / ""; display: inline-block; width: 1em; margin-left: .25rem; text-align: center; }
+.record-details[open] .record-details-label::after { content: "−" / ""; }
+.record-details .facts { margin-top: .25rem; border-top: 1px solid var(--line); }
+.record-details .facts > div { padding-block: .3rem; }
+.record-details .facts :is(dt, dd) { font-size: .86rem; }
+
+@media (max-width: 33rem) {
+  .records[data-view="compact"] .record-meta { grid-row: auto; grid-column: 1; }
+}
 
 
 

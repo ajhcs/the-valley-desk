@@ -236,8 +236,9 @@ test('six-field and enriched records render safely and the JSON projection exclu
   assert.match(detail, /Imaging Lab/);
   assert.match(detail, /href="\/discover\/lab\/team"/);
   assert.match(detail, /Archived on GitHub/);
-  assert.match(detail, /Last code push/);
-  assert.match(detail, /Source checked/);
+  assert.match(detail, /Code pushed <time datetime="2024-02-02">/);
+  assert.match(detail, /Source checked <time datetime="2026-11-10">/);
+  assert.match(detail, /<dt>Added to directory<\/dt><dd><time datetime="2026-11-18">/);
   assert.match(detail, /GitHub stars at capture<\/dt><dd>0/);
   assert.match(detail, /A journal · 2024 · DOI 10.1000\/research/);
   assert.match(detail, /More from this lab or account/);
