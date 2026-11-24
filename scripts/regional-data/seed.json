@@ -19,7 +19,7 @@
       "Mercer"
     ],
     "granularity": "county",
-    "time_span": null,
+    "time_span": "2022–2023 BRFSS survey years",
     "update_cadence": null,
     "access": "open",
     "license": "Public Domain",
@@ -62,7 +62,7 @@
       "Mercer"
     ],
     "granularity": "census tract",
-    "time_span": null,
+    "time_span": "2022–2023 BRFSS survey years",
     "update_cadence": null,
     "access": "open",
     "license": "Public Domain",
@@ -97,7 +97,7 @@
       "Philadelphia"
     ],
     "granularity": "place",
-    "time_span": null,
+    "time_span": "2022–2023 BRFSS survey years",
     "update_cadence": null,
     "access": "open",
     "license": "Public Domain",
@@ -166,7 +166,7 @@
       "Philadelphia"
     ],
     "granularity": "county",
-    "time_span": null,
+    "time_span": "2020–2023",
     "update_cadence": null,
     "access": "open",
     "license": "Public Domain U.S. Government",
@@ -181,7 +181,8 @@
       "step": "Run the bounded Philadelphia query to inspect a sample record.",
       "url": "https://data.cdc.gov/resource/kn79-hsxy.json?%24where=county_fips_code%3D%2742101%27&%24limit=1",
       "caveats": [
-        "Review the source documentation and limitations before interpreting estimates."
+        "This provisional dataset stopped updating on June 28, 2023.",
+        "Deaths are classified by county of occurrence; counts are provisional."
       ],
       "citation": "NCHS/DVS. Provisional COVID-19 Death Counts in the United States by County."
     },
@@ -410,7 +411,7 @@
     "summary": "American Community Survey 5-year estimates for health insurance coverage by age. Universe: Civilian noninstitutionalized population.",
     "publisher": "U.S. Census Bureau",
     "portal": "American Community Survey Summary File",
-    "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat",
+    "url": "https://api.census.gov/data/2024/acs/acs5/groups/B27010.html",
     "topic": "Public health",
     "counties": [
       "Bucks",
@@ -431,12 +432,16 @@
     "formats": [
       "Pipe-delimited text"
     ],
-    "api": null,
+    "api": {
+      "url": "https://api.census.gov/data/2024/acs/acs5",
+      "type": "Census Data API"
+    },
     "how_to_use": {
       "step": "Download the table file and match county GEO_ID values with the geography file.",
-      "url": "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat",
       "caveats": [
-        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods."
+        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods.",
+        "A Census API key is required for API requests; the summary file can be downloaded without one."
       ],
       "citation": "U.S. Census Bureau, 2020–2024 American Community Survey 5-Year Estimates, table B27010."
     },
@@ -449,7 +454,7 @@
     "summary": "American Community Survey 5-year estimates for poverty status by sex and age. Universe: Population for whom poverty status is determined.",
     "publisher": "U.S. Census Bureau",
     "portal": "American Community Survey Summary File",
-    "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat",
+    "url": "https://api.census.gov/data/2024/acs/acs5/groups/B17001.html",
     "topic": "Public health",
     "counties": [
       "Bucks",
@@ -470,12 +475,16 @@
     "formats": [
       "Pipe-delimited text"
     ],
-    "api": null,
+    "api": {
+      "url": "https://api.census.gov/data/2024/acs/acs5",
+      "type": "Census Data API"
+    },
     "how_to_use": {
       "step": "Download the table file and match county GEO_ID values with the geography file.",
-      "url": "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat",
       "caveats": [
-        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods."
+        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods.",
+        "A Census API key is required for API requests; the summary file can be downloaded without one."
       ],
       "citation": "U.S. Census Bureau, 2020–2024 American Community Survey 5-Year Estimates, table B17001."
     },
@@ -488,7 +497,7 @@
     "summary": "American Community Survey 5-year estimates for gross rent as a percentage of household income. Universe: Renter-occupied housing units.",
     "publisher": "U.S. Census Bureau",
     "portal": "American Community Survey Summary File",
-    "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat",
+    "url": "https://api.census.gov/data/2024/acs/acs5/groups/B25070.html",
     "topic": "Public health",
     "counties": [
       "Bucks",
@@ -509,12 +518,16 @@
     "formats": [
       "Pipe-delimited text"
     ],
-    "api": null,
+    "api": {
+      "url": "https://api.census.gov/data/2024/acs/acs5",
+      "type": "Census Data API"
+    },
     "how_to_use": {
       "step": "Download the table file and match county GEO_ID values with the geography file.",
-      "url": "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat",
       "caveats": [
-        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods."
+        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods.",
+        "A Census API key is required for API requests; the summary file can be downloaded without one."
       ],
       "citation": "U.S. Census Bureau, 2020–2024 American Community Survey 5-Year Estimates, table B25070."
     },
@@ -527,7 +540,7 @@
     "summary": "American Community Survey 5-year estimates for means of transportation to work. Universe: Workers 16 years and over.",
     "publisher": "U.S. Census Bureau",
     "portal": "American Community Survey Summary File",
-    "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat",
+    "url": "https://api.census.gov/data/2024/acs/acs5/groups/B08301.html",
     "topic": "Public health",
     "counties": [
       "Bucks",
@@ -548,12 +561,16 @@
     "formats": [
       "Pipe-delimited text"
     ],
-    "api": null,
+    "api": {
+      "url": "https://api.census.gov/data/2024/acs/acs5",
+      "type": "Census Data API"
+    },
     "how_to_use": {
       "step": "Download the table file and match county GEO_ID values with the geography file.",
-      "url": "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat",
       "caveats": [
-        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods."
+        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods.",
+        "A Census API key is required for API requests; the summary file can be downloaded without one."
       ],
       "citation": "U.S. Census Bureau, 2020–2024 American Community Survey 5-Year Estimates, table B08301."
     },
@@ -566,7 +583,7 @@
     "summary": "American Community Survey 5-year estimates for disability status by sex and age. Universe: Civilian noninstitutionalized population.",
     "publisher": "U.S. Census Bureau",
     "portal": "American Community Survey Summary File",
-    "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat",
+    "url": "https://api.census.gov/data/2024/acs/acs5/groups/B18101.html",
     "topic": "Public health",
     "counties": [
       "Bucks",
@@ -587,14 +604,349 @@
     "formats": [
       "Pipe-delimited text"
     ],
-    "api": null,
+    "api": {
+      "url": "https://api.census.gov/data/2024/acs/acs5",
+      "type": "Census Data API"
+    },
     "how_to_use": {
       "step": "Download the table file and match county GEO_ID values with the geography file.",
-      "url": "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat",
       "caveats": [
-        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods."
+        "Estimates are survey estimates; review margins of error and table universe before comparing places or periods.",
+        "A Census API key is required for API requests; the summary file can be downloaded without one."
       ],
       "citation": "U.S. Census Bureau, 2020–2024 American Community Survey 5-Year Estimates, table B18101."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:nj-contaminated-sites",
+    "title": "Known Contaminated Site List for New Jersey",
+    "summary": "Sites where soil or groundwater contamination has been confirmed at or above applicable standards.",
+    "publisher": "New Jersey Department of Environmental Protection",
+    "portal": "NJDEP Open Data",
+    "url": "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+    "topic": "Public health",
+    "counties": [
+      "Burlington",
+      "Camden",
+      "Gloucester",
+      "Mercer"
+    ],
+    "granularity": "Site",
+    "time_span": null,
+    "update_cadence": "Daily",
+    "access": "open",
+    "license": null,
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0",
+      "type": "ArcGIS REST"
+    },
+    "how_to_use": {
+      "step": "Query the API or explore the source dataset.",
+      "url": "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+      "caveats": [
+        "Sites without coordinates are omitted from the map.",
+        "Listing does not establish current exposure or health risk."
+      ],
+      "citation": "New Jersey Department of Environmental Protection. Known Contaminated Site List for New Jersey."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:nj-naloxone365",
+    "title": "Naloxone365: NJ Free Naloxone at Pharmacies Program",
+    "summary": "Participating New Jersey pharmacies offering free naloxone through the Naloxone365 program.",
+    "publisher": "New Jersey Department of Human Services",
+    "portal": "NJOIT Open Data Center",
+    "url": "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+    "topic": "Public health",
+    "counties": [
+      "Burlington",
+      "Camden",
+      "Gloucester",
+      "Mercer"
+    ],
+    "granularity": "Pharmacy",
+    "time_span": null,
+    "update_cadence": null,
+    "access": "open",
+    "license": null,
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://data.nj.gov/resource/nfsa-3664.json",
+      "type": "Socrata"
+    },
+    "how_to_use": {
+      "step": "Query the API or explore the source dataset.",
+      "url": "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+      "caveats": [
+        "Confirm participation and availability with the pharmacy; data may be outdated."
+      ],
+      "citation": "New Jersey Department of Human Services. Naloxone365: NJ Free Naloxone at Pharmacies Program."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:pa-water-quality-samples",
+    "title": "Pennsylvania Water Quality Data System water samples",
+    "summary": "Water sample records from the Pennsylvania Department of Environmental Protection water quality data system.",
+    "publisher": "Pennsylvania Department of Environmental Protection",
+    "portal": "PA DEP GIS Services",
+    "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+    "topic": "Public health",
+    "counties": [
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia"
+    ],
+    "granularity": "Sample",
+    "time_span": null,
+    "update_cadence": null,
+    "access": "open",
+    "license": null,
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+      "type": "ArcGIS REST"
+    },
+    "how_to_use": {
+      "step": "Query the API or explore the source dataset.",
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+      "caveats": [
+        "Environmental samples do not establish drinking-water compliance or individual exposure."
+      ],
+      "citation": "Pennsylvania Department of Environmental Protection. Pennsylvania Water Quality Data System water samples."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:pa-integrated-report-streams-2026",
+    "title": "Pennsylvania 2026 Integrated Report stream assessments",
+    "summary": "Stream assessment records by assessed use in the 2026 integrated report data layer.",
+    "publisher": "Pennsylvania Department of Environmental Protection",
+    "portal": "PA DEP GIS Services",
+    "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+    "topic": "Public health",
+    "counties": [
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia"
+    ],
+    "granularity": "Stream assessment",
+    "time_span": "2026",
+    "update_cadence": null,
+    "access": "open",
+    "license": null,
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+      "type": "ArcGIS REST"
+    },
+    "how_to_use": {
+      "step": "Query the API or explore the source dataset.",
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+      "caveats": [
+        "Multiple assessed uses can produce multiple records for a stream; do not interpret counts as unique streams."
+      ],
+      "citation": "Pennsylvania Department of Environmental Protection. Pennsylvania 2026 Integrated Report stream assessments."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:pa-integrated-report-lakes-2026",
+    "title": "Pennsylvania 2026 Integrated Report lake assessments",
+    "summary": "Lake assessment records by assessed use in the 2026 integrated report data layer.",
+    "publisher": "Pennsylvania Department of Environmental Protection",
+    "portal": "PA DEP GIS Services",
+    "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+    "topic": "Public health",
+    "counties": [
+      "Bucks",
+      "Chester",
+      "Delaware",
+      "Montgomery",
+      "Philadelphia"
+    ],
+    "granularity": "Lake assessment",
+    "time_span": "2026",
+    "update_cadence": null,
+    "access": "open",
+    "license": null,
+    "formats": [
+      "JSON"
+    ],
+    "api": {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+      "type": "ArcGIS REST"
+    },
+    "how_to_use": {
+      "step": "Query the API or explore the source dataset.",
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+      "caveats": [
+        "Multiple assessed uses can produce multiple records for a lake; do not interpret counts as unique lakes."
+      ],
+      "citation": "Pennsylvania Department of Environmental Protection. Pennsylvania 2026 Integrated Report lake assessments."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:philadelphia-heat-vulnerability",
+    "title": "Heat Vulnerability by Census Tract",
+    "summary": "Heat vulnerability by census tract incorporating exposure and sensitivity indicators.",
+    "publisher": "City of Philadelphia",
+    "portal": "OpenDataPhilly",
+    "url": "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/",
+    "topic": "Public health",
+    "counties": [
+      "Philadelphia"
+    ],
+    "granularity": "Census tract",
+    "time_span": null,
+    "update_cadence": null,
+    "access": "open",
+    "license": "City of Philadelphia License",
+    "formats": [
+      "CSV",
+      "SHP",
+      "GeoJSON"
+    ],
+    "api": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/heat_vulnerability_ct/FeatureServer/0/query",
+      "type": "ArcGIS Feature Service"
+    },
+    "how_to_use": {
+      "step": "Open the dataset page and select a resource or query the API.",
+      "url": "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/",
+      "caveats": [
+        "The index combines indicators; consult the metadata before comparing tracts."
+      ],
+      "citation": "City of Philadelphia. Heat Vulnerability by Census Tract. OpenDataPhilly."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:philadelphia-covid-vaccinations",
+    "title": "COVID-19 Vaccinations",
+    "summary": "Counts of vaccinations performed by the health department, with geographic and demographic breakdowns.",
+    "publisher": "City of Philadelphia",
+    "portal": "OpenDataPhilly",
+    "url": "https://opendataphilly.org/datasets/covid-19-vaccinations/",
+    "topic": "Public health",
+    "counties": [
+      "Philadelphia"
+    ],
+    "granularity": "City, census tract, ZIP code, date, and demographic group",
+    "time_span": "2020–December 2024",
+    "update_cadence": null,
+    "access": "open",
+    "license": "City of Philadelphia License",
+    "formats": [
+      "CSV"
+    ],
+    "api": {
+      "url": "https://phl.carto.com/api/v2/sql",
+      "type": "CARTO SQL API"
+    },
+    "how_to_use": {
+      "step": "Open the dataset page and select a resource or query the API.",
+      "url": "https://opendataphilly.org/datasets/covid-19-vaccinations/",
+      "caveats": [
+        "This is a historical snapshot; vaccination counts include residents and non-residents."
+      ],
+      "citation": "City of Philadelphia. COVID-19 Vaccinations. OpenDataPhilly."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:philadelphia-free-food-meal-sites",
+    "title": "Philadelphia Free Food and Meal Sites",
+    "summary": "Food and meal site information supplied by partner food banks to the City of Philadelphia.",
+    "publisher": "City of Philadelphia",
+    "portal": "OpenDataPhilly",
+    "url": "https://opendataphilly.org/datasets/free-food-and-meal-sites/",
+    "topic": "Public health",
+    "counties": [
+      "Philadelphia"
+    ],
+    "granularity": "Site",
+    "time_span": null,
+    "update_cadence": null,
+    "access": "open",
+    "license": "City of Philadelphia License",
+    "formats": [
+      "CSV",
+      "SHP",
+      "GeoJSON"
+    ],
+    "api": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/free_meal_sites/FeatureServer/0/query",
+      "type": "ArcGIS Feature Service"
+    },
+    "how_to_use": {
+      "step": "Open the dataset page and select a resource or query the API.",
+      "url": "https://opendataphilly.org/datasets/free-food-and-meal-sites/",
+      "caveats": [
+        "The city updates active status as needed; check site details before visiting."
+      ],
+      "citation": "City of Philadelphia. Philadelphia Free Food and Meal Sites. OpenDataPhilly."
+    },
+    "added": "2026-11-24",
+    "checked": "2026-11-24"
+  },
+  {
+    "id": "regional:philadelphia-neighborhood-food-retail",
+    "title": "Neighborhood Food Retail",
+    "summary": "Neighborhood availability of high-produce supply stores relative to low-produce supply stores.",
+    "publisher": "City of Philadelphia",
+    "portal": "OpenDataPhilly",
+    "url": "https://opendataphilly.org/datasets/neighborhood-food-retail/",
+    "topic": "Public health",
+    "counties": [
+      "Philadelphia"
+    ],
+    "granularity": "Neighborhood",
+    "time_span": null,
+    "update_cadence": "Annual",
+    "access": "open",
+    "license": "City of Philadelphia License",
+    "formats": [
+      "CSV",
+      "SHP",
+      "GeoJSON"
+    ],
+    "api": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/NeighborhoodFoodRetail/FeatureServer/0/query",
+      "type": "ArcGIS Feature Service"
+    },
+    "how_to_use": {
+      "step": "Open the dataset page and select a resource or query the API.",
+      "url": "https://opendataphilly.org/datasets/neighborhood-food-retail/",
+      "caveats": [
+        "The publisher says its methodology differs substantially from the archived Philadelphia Food Access data."
+      ],
+      "citation": "City of Philadelphia. Neighborhood Food Retail. OpenDataPhilly."
     },
     "added": "2026-11-24",
     "checked": "2026-11-24"

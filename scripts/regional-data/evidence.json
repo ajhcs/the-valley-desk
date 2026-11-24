@@ -33,6 +33,9 @@
       ],
       "portal": [
         "https://data.cdc.gov/api/views/swc5-untb.json"
+      ],
+      "time_span": [
+        "https://data.cdc.gov/api/views/swc5-untb.json"
       ]
     },
     "query": {
@@ -90,6 +93,9 @@
       ],
       "portal": [
         "https://data.cdc.gov/api/views/cwsq-ngmh.json"
+      ],
+      "time_span": [
+        "https://data.cdc.gov/api/views/cwsq-ngmh.json"
       ]
     },
     "query": {
@@ -146,6 +152,9 @@
         "https://data.cdc.gov/api/views/eav7-hnsx.json"
       ],
       "portal": [
+        "https://data.cdc.gov/api/views/eav7-hnsx.json"
+      ],
+      "time_span": [
         "https://data.cdc.gov/api/views/eav7-hnsx.json"
       ]
     },
@@ -246,6 +255,12 @@
         "https://data.cdc.gov/api/views/kn79-hsxy.json"
       ],
       "portal": [
+        "https://data.cdc.gov/api/views/kn79-hsxy.json"
+      ],
+      "time_span": [
+        "https://data.cdc.gov/api/views/kn79-hsxy.json"
+      ],
+      "how_to_use": [
         "https://data.cdc.gov/api/views/kn79-hsxy.json"
       ]
     },
@@ -607,9 +622,7 @@
         "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
       ],
       "url": [
-        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
-        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.html"
       ],
       "topic": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
@@ -644,7 +657,11 @@
       "how_to_use": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
         "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat",
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.html"
+      ],
+      "api": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.html"
       ]
     },
     "query": {
@@ -652,9 +669,18 @@
       "fetched_at": "2026-11-24T14:15:54.560425Z",
       "http_status": 206,
       "content_type": null,
-      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties.",
+      "request_headers": {
+        "Range": "bytes=0-1999999"
+      }
     },
-    "freshness": null
+    "freshness": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat",
+      "format": "http-last-modified",
+      "observed": "Thu, 29 Jan 2026 13:19:53 GMT",
+      "corroboration_url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/",
+      "corroboration_value": "2026-01-29 08:19"
+    }
   },
   "regional:acs-2024-poverty": {
     "fields": {
@@ -679,9 +705,7 @@
         "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
       ],
       "url": [
-        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
-        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.html"
       ],
       "topic": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
@@ -716,7 +740,11 @@
       "how_to_use": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
         "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat",
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.html"
+      ],
+      "api": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.html"
       ]
     },
     "query": {
@@ -724,9 +752,18 @@
       "fetched_at": "2026-11-24T14:15:55.067079Z",
       "http_status": 206,
       "content_type": null,
-      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties.",
+      "request_headers": {
+        "Range": "bytes=0-1999999"
+      }
     },
-    "freshness": null
+    "freshness": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat",
+      "format": "http-last-modified",
+      "observed": "Thu, 29 Jan 2026 12:50:38 GMT",
+      "corroboration_url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/",
+      "corroboration_value": "2026-01-29 07:50"
+    }
   },
   "regional:acs-2024-rent-burden": {
     "fields": {
@@ -751,9 +788,7 @@
         "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
       ],
       "url": [
-        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
-        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.html"
       ],
       "topic": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
@@ -788,7 +823,11 @@
       "how_to_use": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
         "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat",
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.html"
+      ],
+      "api": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.html"
       ]
     },
     "query": {
@@ -796,9 +835,18 @@
       "fetched_at": "2026-11-24T14:15:55.528463Z",
       "http_status": 206,
       "content_type": null,
-      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties.",
+      "request_headers": {
+        "Range": "bytes=0-1999999"
+      }
     },
-    "freshness": null
+    "freshness": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat",
+      "format": "http-last-modified",
+      "observed": "Thu, 29 Jan 2026 13:13:25 GMT",
+      "corroboration_url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/",
+      "corroboration_value": "2026-01-29 08:13"
+    }
   },
   "regional:acs-2024-commute": {
     "fields": {
@@ -823,9 +871,7 @@
         "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
       ],
       "url": [
-        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
-        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.html"
       ],
       "topic": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
@@ -860,7 +906,11 @@
       "how_to_use": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
         "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat",
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.html"
+      ],
+      "api": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.html"
       ]
     },
     "query": {
@@ -868,9 +918,18 @@
       "fetched_at": "2026-11-24T14:15:55.981780Z",
       "http_status": 206,
       "content_type": null,
-      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties.",
+      "request_headers": {
+        "Range": "bytes=0-1999999"
+      }
     },
-    "freshness": null
+    "freshness": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat",
+      "format": "http-last-modified",
+      "observed": "Thu, 29 Jan 2026 12:41:16 GMT",
+      "corroboration_url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/",
+      "corroboration_value": "2026-01-29 07:41"
+    }
   },
   "regional:acs-2024-disability": {
     "fields": {
@@ -895,9 +954,7 @@
         "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
       ],
       "url": [
-        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
-        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.html"
       ],
       "topic": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
@@ -932,7 +989,11 @@
       "how_to_use": [
         "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
         "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
-        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat",
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.html"
+      ],
+      "api": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.html"
       ]
     },
     "query": {
@@ -940,7 +1001,706 @@
       "fetched_at": "2026-11-24T14:15:56.491634Z",
       "http_status": 206,
       "content_type": null,
-      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties.",
+      "request_headers": {
+        "Range": "bytes=0-1999999"
+      }
+    },
+    "freshness": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat",
+      "format": "http-last-modified",
+      "observed": "Thu, 29 Jan 2026 12:55:47 GMT",
+      "corroboration_url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/",
+      "corroboration_value": "2026-01-29 07:55"
+    }
+  },
+  "regional:nj-contaminated-sites": {
+    "fields": {
+      "title": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "summary": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "publisher": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "portal": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "url": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "topic": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "counties": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "granularity": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "access": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "formats": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "api": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "how_to_use": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ],
+      "update_cadence": [
+        "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+      ]
+    },
+    "query": {
+      "url": "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0/query?where=COUNTY%3D%27GLOUCESTER%27&returnCountOnly=true&f=json",
+      "fetched_at": "2026-11-24T14:16:40.030224Z",
+      "http_status": 200,
+      "content_type": "application/json; charset=UTF-8",
+      "result_description": "{'count': 314}"
+    },
+    "freshness": null,
+    "county_coverage_queries": [
+      {
+        "url": "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0/query?where=COUNTY%3D%27BURLINGTON%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:42.077465Z",
+        "http_status": 200,
+        "content_type": "application/json; charset=UTF-8",
+        "result_description": "Burlington: 493 matching records."
+      },
+      {
+        "url": "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0/query?where=COUNTY%3D%27CAMDEN%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:42.276709Z",
+        "http_status": 200,
+        "content_type": "application/json; charset=UTF-8",
+        "result_description": "Camden: 685 matching records."
+      },
+      {
+        "url": "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0/query?where=COUNTY%3D%27GLOUCESTER%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:42.489515Z",
+        "http_status": 200,
+        "content_type": "application/json; charset=UTF-8",
+        "result_description": "Gloucester: 314 matching records."
+      },
+      {
+        "url": "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0/query?where=COUNTY%3D%27MERCER%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:42.751639Z",
+        "http_status": 200,
+        "content_type": "application/json; charset=UTF-8",
+        "result_description": "Mercer: 527 matching records."
+      }
+    ]
+  },
+  "regional:nj-naloxone365": {
+    "fields": {
+      "title": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "summary": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "publisher": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "portal": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "url": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "topic": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "counties": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "granularity": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "access": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "formats": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "api": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ],
+      "how_to_use": [
+        "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json"
+      ]
+    },
+    "query": {
+      "url": "https://data.nj.gov/resource/nfsa-3664.json?%24select=county%2Ccount%28%2A%29&%24where=county+in+%28%27Burlington%27%2C%27Camden%27%2C%27Gloucester%27%2C%27Mercer%27%29&%24group=county",
+      "fetched_at": "2026-11-24T14:16:40.030224Z",
+      "http_status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "result_description": "[{'county': 'Burlington', 'count': '37'}, {'county': 'Camden', 'count': '31'}, {'county': 'Gloucester', 'count': '16'}, {'county': 'Mercer', 'count': '27'}]"
+    },
+    "freshness": {
+      "url": "https://data.nj.gov/api/views/nfsa-3664.json",
+      "format": "json",
+      "path": "/rowsUpdatedAt",
+      "observed": 1757958104
+    },
+    "county_coverage_queries": [
+      {
+        "url": "https://data.nj.gov/resource/nfsa-3664.json?%24select=county%2Ccount%28%2A%29&%24where=county+in+%28%27Burlington%27%2C%27Camden%27%2C%27Gloucester%27%2C%27Mercer%27%29&%24group=county",
+        "fetched_at": "2026-11-24T14:16:40.030224Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=utf-8",
+        "result_description": "County counts: Burlington 37, Camden 31, Gloucester 16, Mercer 27."
+      }
+    ]
+  },
+  "regional:pa-water-quality-samples": {
+    "fields": {
+      "title": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "summary": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "publisher": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "portal": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "url": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "topic": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "counties": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "granularity": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "access": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "formats": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "api": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ],
+      "how_to_use": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+      ]
+    },
+    "query": {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1/query?where=COUNTY_NAME%3D%27Chester%27&returnCountOnly=true&f=json",
+      "fetched_at": "2026-11-24T14:16:40.030224Z",
+      "http_status": 200,
+      "content_type": "application/json;charset=UTF-8",
+      "result_description": "{'count': 7746}"
+    },
+    "freshness": null,
+    "county_coverage_queries": [
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1/query?where=COUNTY_NAME%3D%27Bucks%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:43.763993Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Bucks: 5077 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1/query?where=COUNTY_NAME%3D%27Chester%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:44.153391Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Chester: 7746 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1/query?where=COUNTY_NAME%3D%27Delaware%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:44.523625Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Delaware: 1626 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1/query?where=COUNTY_NAME%3D%27Montgomery%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:44.979141Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Montgomery: 4763 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1/query?where=COUNTY_NAME%3D%27Philadelphia%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:45.426283Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Philadelphia: 1840 matching records."
+      }
+    ]
+  },
+  "regional:pa-integrated-report-streams-2026": {
+    "fields": {
+      "title": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "summary": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "publisher": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "portal": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "url": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "topic": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "counties": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "granularity": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "access": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "formats": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "api": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "how_to_use": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ],
+      "time_span": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+      ]
+    },
+    "query": {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1/query?where=COUNTY%3D%27Chester%27&returnCountOnly=true&f=json",
+      "fetched_at": "2026-11-24T14:16:40.030224Z",
+      "http_status": 200,
+      "content_type": "application/json;charset=UTF-8",
+      "result_description": "{'count': 13265}"
+    },
+    "freshness": null,
+    "county_coverage_queries": [
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1/query?where=COUNTY%3D%27Bucks%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:45.818970Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Bucks: 10286 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1/query?where=COUNTY%3D%27Chester%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:46.205908Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Chester: 13265 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1/query?where=COUNTY%3D%27Delaware%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:46.594381Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Delaware: 5737 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1/query?where=COUNTY%3D%27Montgomery%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:46.921023Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Montgomery: 12565 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1/query?where=COUNTY%3D%27Philadelphia%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:47.278817Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Philadelphia: 1079 matching records."
+      }
+    ]
+  },
+  "regional:pa-integrated-report-lakes-2026": {
+    "fields": {
+      "title": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "summary": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "publisher": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "portal": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "url": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "topic": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "counties": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "granularity": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "access": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "formats": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "api": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "how_to_use": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ],
+      "time_span": [
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+      ]
+    },
+    "query": {
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0/query?where=COUNTY%3D%27Chester%27&returnCountOnly=true&f=json",
+      "fetched_at": "2026-11-24T14:16:40.030224Z",
+      "http_status": 200,
+      "content_type": "application/json;charset=UTF-8",
+      "result_description": "{'count': 15}"
+    },
+    "freshness": null,
+    "county_coverage_queries": [
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0/query?where=COUNTY%3D%27Bucks%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:47.492478Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Bucks: 63 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0/query?where=COUNTY%3D%27Chester%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:47.699523Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Chester: 15 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0/query?where=COUNTY%3D%27Delaware%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:47.882852Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Delaware: 1 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0/query?where=COUNTY%3D%27Montgomery%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:48.132649Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Montgomery: 15 matching records."
+      },
+      {
+        "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0/query?where=COUNTY%3D%27Philadelphia%27&returnCountOnly=true&f=json",
+        "fetched_at": "2026-11-24T14:19:48.358945Z",
+        "http_status": 200,
+        "content_type": "application/json;charset=UTF-8",
+        "result_description": "Philadelphia: 7 matching records."
+      }
+    ]
+  },
+  "regional:philadelphia-heat-vulnerability": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+      ]
+    },
+    "query": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/heat_vulnerability_ct/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
+      "fetched_at": "2026-11-24T14:20:11Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One feature returned without geometry."
+    },
+    "freshness": null
+  },
+  "regional:philadelphia-covid-vaccinations": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ],
+      "time_span": [
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+      ]
+    },
+    "query": {
+      "url": "https://phl.carto.com/api/v2/sql?q=SELECT+%2A+FROM+covid_vaccine_totals+LIMIT+1",
+      "fetched_at": "2026-11-24T14:20:11Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One row returned."
+    },
+    "freshness": null
+  },
+  "regional:philadelphia-free-food-meal-sites": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+      ]
+    },
+    "query": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/free_meal_sites/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
+      "fetched_at": "2026-11-24T14:20:11Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One feature returned without geometry."
+    },
+    "freshness": null
+  },
+  "regional:philadelphia-neighborhood-food-retail": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "update_cadence": [
+        "https://opendataphilly.org/datasets/archived-philadelphia-food-access/"
+      ]
+    },
+    "query": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/NeighborhoodFoodRetail/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
+      "fetched_at": "2026-11-24T14:20:12Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One feature returned without geometry."
     },
     "freshness": null
   }
