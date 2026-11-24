@@ -1,3 +1,4 @@
+import type { PublicRegionalData } from "./regional-data-read";
 import { datasetUseGuidance } from "./directory-use-guidance";
 import { renderUseGuidance } from "./public-directory-ui";
 import { regionalDataPath, type RegionalData, type DirectoryAccess } from "./regional-data-contract";
@@ -648,7 +649,7 @@ function regionalDataCard(d: RegionalData) {
   return `<li class="record record-dataset"><p class="record-kind">Regional data · ${html(d.publisher)}</p><h3 class="record-title"><a href="${html(regionalDataPath(d.id))}">${html(d.title)}</a></h3><p>${html(d.summary)}</p><p>${html(d.counties.join(", ") || "Not stated")}</p></li>`;
 }
 
-export function renderRegionalData(d: RegionalData & { papers?: { id: string; title: string }[] }) {
+export function renderRegionalData(d: PublicRegionalData) {
   const value = (v: string | null | undefined) => v ? html(v) : "Not stated";
   const field = (name: string, content: string) => `<div><dt>${name}</dt><dd>${content}</dd></div>`;
   const countyNames = d.counties.map(c => counties.find(item => facetSlug(item.name) === facetSlug(c))?.name ?? c);
@@ -686,7 +687,8 @@ export function renderRegionalData(d: RegionalData & { papers?: { id: string; ti
           ${field("API", api)}
           ${field("License", value(d.license))}
           ${field("Added to directory", value(d.added))}
-          ${field("Source checked", value(d.checked))}
+          ${field("Source availability checked", value(d.checked))}
+          ${field("Metadata reviewed", value(d.metadata_reviewed))}
         </dl>
       </section>
     </div>

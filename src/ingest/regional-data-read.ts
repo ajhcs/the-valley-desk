@@ -2,7 +2,7 @@ import { rows, type ResearchDb } from "./public-directory-research";
 import type { RegionalData } from "./regional-data-contract";
 
 type RegionalPaper = { id: string; title: string };
-export type PublicRegionalData = RegionalData & { papers: RegionalPaper[] };
+export type PublicRegionalData = RegionalData & { metadata_reviewed: string; papers: RegionalPaper[] };
 
 export async function regionalDataEnabled(db?: ResearchDb): Promise<boolean> {
   if (!db) return false;
@@ -37,6 +37,7 @@ export async function regionalDataRecords(db: ResearchDb, records: RegionalData[
     const checked = checkedById.get(record.id);
     return {
       ...record,
+      metadata_reviewed: record.checked,
       checked: checked && checked > record.checked ? checked : record.checked,
       papers: papersById.get(record.id) ?? [],
     };

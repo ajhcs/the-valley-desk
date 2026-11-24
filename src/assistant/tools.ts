@@ -1,6 +1,6 @@
 import { datasetUseGuidance, softwareUseGuidance } from "../ingest/directory-use-guidance";
-import { regionalDataApi, regionalDataId, regionalDataPath, type RegionalData } from "../ingest/regional-data-contract";
-import { regionalDataEnabled } from "../ingest/regional-data-read";
+import { regionalDataApi, regionalDataId, regionalDataPath } from "../ingest/regional-data-contract";
+import { regionalDataEnabled, type PublicRegionalData } from "../ingest/regional-data-read";
 // Read-only directory tools shared by the MCP server and, through it, the WebMCP page tools.
 // Record reads go through servePublicDirectory, the handler behind the public JSON API, so
 // removals, the fail-closed check and version filtering behave exactly as they do on the site.
@@ -291,10 +291,11 @@ const regionalListing = {
     license: { type: ["string", "null"] }, formats: { anyOf: [{ type: "array", items: { type: "string" } }, { type: "null" }] },
     api: { anyOf: [{ type: "object", properties: { url: { type: "string" }, type: { type: "string" } }, required: ["url", "type"] }, { type: "null" }] },
     how_to_use: { type: "object", properties: { step: { type: "string" }, url: { type: "string" }, caveats: { type: "array", items: { type: "string" } }, citation: { type: "string" } }, required: ["step", "url", "caveats", "citation"] },
-    added: { type: "string" }, checked: { type: "string" }, dates: { type: "object" },
+    added: { type: "string" }, checked: { type: "string", description: "Most recent successful source availability check." },
+    metadata_reviewed: { type: "string", description: "Date the reviewed catalog metadata was verified." }, dates: { type: "object" },
     papers: { type: "array", items: { type: "object", properties: { id: { type: "string" }, title: { type: "string" } }, required: ["id", "title"] } },
   },
-  required: ["id", "kind", "title", "url", "resource_url", "summary", "publisher", "portal", "topic", "counties", "granularity", "time_span", "update_cadence", "access", "license", "formats", "api", "how_to_use", "added", "checked"],
+  required: ["id", "kind", "title", "url", "resource_url", "summary", "publisher", "portal", "topic", "counties", "granularity", "time_span", "update_cadence", "access", "license", "formats", "api", "how_to_use", "added", "checked", "metadata_reviewed", "papers"],
 };
 const enabledPageSchema = {
   ...pageSchema,
@@ -386,7 +387,7 @@ type ApiListing =
   | { kind: "publication"; record: Publication }
   | { kind: "study"; record: ClinicalStudy }
   | { kind: "dataset"; record: Dataset }
-  | { kind: "regional-data"; record: RegionalData };
+  | { kind: "regional-data"; record: PublicRegionalData };
 function summarize(item: ApiListing, context: ToolContext, refs: Institution[]) {
   if (item.kind === "regional-data") {
     const d = item.record;
@@ -548,7 +549,7 @@ async function fetchRecord(value: string, context: ToolContext) {
     const { status, body } = await api(context, regionalDataApi + "/" + encodeURIComponent(id));
     if (status === 410) throw new ToolError("This record has been removed from the directory.");
     if (status !== 200) throw new ToolError("No directory record has this id. Use search to find records and their ids.");
-    const d = body.regional_data as RegionalData;
+    const d = body.regional_data as PublicRegionalData;
     const url = context.origin + regionalDataPath(d.id);
     const metadata = { ...d, kind: "regional-data" };
     return { id: d.id, title: d.title, text: plain(d.title, url, metadata), url, metadata };

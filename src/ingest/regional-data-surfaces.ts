@@ -7,7 +7,7 @@ export function regionalDataLlms(origin: string): string {
 }
 
 /** Structured data mirrors the public record, including its source and use guidance. */
-export function regionalDataSchema(d: RegionalData & { papers?: { id: string; title: string }[] }, origin: string) {
+export function regionalDataSchema(d: RegionalData & { metadata_reviewed?: string; papers?: { id: string; title: string }[] }, origin: string) {
   const extra = (name: string, value: unknown) => ({ "@type": "PropertyValue", name, value });
   return {
     "@type": "Dataset", "@id": origin + regionalDataPath(d.id) + "#dataset",
@@ -21,6 +21,6 @@ export function regionalDataSchema(d: RegionalData & { papers?: { id: string; ti
     ...(d.access === "open" ? { isAccessibleForFree: true } : { conditionsOfAccess: d.access }),
     ...(d.api ? { distribution: [{ "@type": "DataDownload", contentUrl: d.api.url, name: d.api.type }] } : {}),
     ...(d.papers?.length ? { citation: d.papers.map((p) => origin + "/discover/publication/" + encodeURIComponent(p.id)) } : {}),
-    additionalProperty: [extra("directory added", d.added), extra("formats", d.formats), extra("granularity", d.granularity), extra("update cadence", d.update_cadence), extra("source checked", d.checked), extra("how to use", d.how_to_use.step), extra("guidance URL", d.how_to_use.url), extra("caveats", d.how_to_use.caveats), extra("citation guidance", d.how_to_use.citation)].filter((p) => p.value !== null),
+    additionalProperty: [extra("directory added", d.added), extra("formats", d.formats), extra("granularity", d.granularity), extra("update cadence", d.update_cadence), extra("source availability checked", d.checked), extra("metadata reviewed", d.metadata_reviewed ?? d.checked), extra("how to use", d.how_to_use.step), extra("guidance URL", d.how_to_use.url), extra("caveats", d.how_to_use.caveats), extra("citation guidance", d.how_to_use.citation)].filter((p) => p.value !== null),
   };
 }

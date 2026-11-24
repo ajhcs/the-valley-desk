@@ -578,7 +578,8 @@ async function renderPublicDirectory(
       const isApi = path.startsWith(regionalDataApi + "/");
       const id = decode(path.slice((isApi ? regionalDataApi : "/discover/regional-data").length + 1));
       const missing = () => isApi ? json(() => ({ error: "regional_data_not_found" }), 404) : page({ kind: "not-found" }, 404);
-      if (!regionalEnabled || !regionalDataId.test(id)) return missing();
+      if (!regionalEnabled) return isApi ? json(() => ({ error: "not_found" }), 404) : page({ kind: "not-found" }, 404);
+      if (!regionalDataId.test(id)) return missing();
       if ((await rows(researchDb, "SELECT id FROM regional_data_removals WHERE id=?", id)).length)
         return isApi ? json(() => ({error:"regional_data_removed"}),410) : page({kind:"regional-data-removed"},410);
       const [entry] = await rows<{record:string}>(researchDb, "SELECT record FROM research_visible WHERE kind='regional-data' AND id=?", id);
@@ -891,7 +892,7 @@ async function renderPublicDirectory(
     ) {
       if (pubApi && !hasPubs) return json(() => ({ error: "publication_not_found" }), 404);
       if (studyApi && !hasStudies) return json(() => ({ error: "study_not_found" }), 404);
-      if (regionalList && !hasRegionalData) return json(() => ({ error: "regional_data_not_found" }), 404);
+      if (regionalList && !hasRegionalData) return json(() => ({ error: "not_found" }), 404);
       if (datasetList && !hasDatasets) return json(() => ({ error: "dataset_not_found" }), 404);
       const options = optionsFor(catalog, removed, refs);
       const params = new URLSearchParams(searchParams);

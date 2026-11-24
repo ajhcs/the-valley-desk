@@ -93,15 +93,16 @@ test("the reviewed seed reaches the public Worker surfaces with the same record 
     assert.equal(dataset.includedInDataCatalog.name, record.portal);
     assert.equal(dataset.sameAs, record.url);
     assert.deepEqual(dataset.spatialCoverage.map((place: { name: string }) => place.name), record.counties);
+    assert.equal(dataset.additionalProperty.find((item: { name: string }) => item.name === "metadata reviewed").value, record.checked);
     assert.equal(dataset.temporalCoverage ?? null, record.time_span);
     if (record.api) assert.ok(dataset.distribution.some((item: { contentUrl: string }) => item.contentUrl === record.api!.url));
 
     const json = await get(regionalDataApi + "/" + encodeURIComponent(record.id));
     assert.equal(json.status, 200, record.id);
-    assert.deepEqual((await json.json()).regional_data, { ...record, papers: [] });
+    assert.deepEqual((await json.json()).regional_data, { ...record, metadata_reviewed: record.checked, papers: [] });
     const tool = await call("fetch", { id: origin + path });
     assert.equal(tool.isError, false, record.id);
-    assert.deepEqual(tool.structuredContent.metadata, { ...record, papers: [], kind: "regional-data" });
+    assert.deepEqual(tool.structuredContent.metadata, { ...record, metadata_reviewed: record.checked, papers: [], kind: "regional-data" });
   }
 
   const browse = await get("/discover/datasets?kind=regional-data");
