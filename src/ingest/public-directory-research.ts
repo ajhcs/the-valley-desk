@@ -1,3 +1,4 @@
+import type { DirectoryAccess } from "./regional-data-contract";
 import {
   browsePath,
   counties,
@@ -117,7 +118,7 @@ export type ClinicalStudy = {
   added: string;
   checked: string;
 };
-export type Access = "open" | "registration" | "controlled";
+export type Access = DirectoryAccess;
 export type Dataset = {
   id: string;
   title: string;

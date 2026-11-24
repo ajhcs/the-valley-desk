@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "The Valley Desk public regional dataset",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^regional:[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "publisher": {
+      "type": "string",
+      "minLength": 1
+    },
+    "portal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "topic": {
+      "enum": [
+        "Biomedical and life sciences",
+        "Clinical care",
+        "Disease research",
+        "Medical imaging",
+        "Neuroscience",
+        "Other science",
+        "Public health",
+        "Rehabilitation and accessibility",
+        "Research data"
+      ]
+    },
+    "counties": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "Bucks",
+          "Chester",
+          "Delaware",
+          "Montgomery",
+          "Philadelphia",
+          "Burlington",
+          "Camden",
+          "Gloucester",
+          "Mercer"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "granularity": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "time_span": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "update_cadence": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "access": {
+      "enum": [
+        "open",
+        "registration",
+        "controlled"
+      ]
+    },
+    "license": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "formats": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "api": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://"
+            },
+            "type": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "url",
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "how_to_use": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "citation": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "step",
+        "url",
+        "caveats",
+        "citation"
+      ],
+      "additionalProperties": false
+    },
+    "added": {
+      "type": "string",
+      "format": "date"
+    },
+    "checked": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "summary",
+    "publisher",
+    "portal",
+    "url",
+    "topic",
+    "counties",
+    "granularity",
+    "time_span",
+    "update_cadence",
+    "access",
+    "license",
+    "formats",
+    "api",
+    "how_to_use",
+    "added",
+    "checked"
+  ],
+  "additionalProperties": false
+}
