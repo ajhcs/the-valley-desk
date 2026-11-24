@@ -140,7 +140,7 @@ test("protocol: stateless modern requests, legacy handshake and transport rules"
 
     const list = await rpc(env, "tools/list");
     assert.equal(list.body.result.cacheScope, "public");
-    assert.ok(list.body.result.ttlMs > 0);
+    assert.equal(list.body.result.ttlMs, 0);
     assert.deepEqual(
       list.body.result.tools.map((tool: { name: string }) => tool.name),
       ["search", "fetch", "whats_new", "list_institutions", "list_topics_and_counties"],
@@ -267,6 +267,7 @@ test("tools: search, fetch, whats_new and the list tools return labelled public 
     assert.equal(goatools.title, "GOATOOLS");
     assert.equal(goatools.url, origin + "/discover/work/" + removedProject);
     assert.equal(goatools.label, "Verified");
+    assert.ok(goatools.how_to_use.some((step: { command?: string }) => step.command === "git clone https://github.com/tanghaibao/goatools.git"));
     assert.deepEqual(goatools.dates, { pushed: "2026-11-02", added: "2026-11-18" });
 
     // Date ranges: published or pushed date, and date added.
@@ -308,6 +309,7 @@ test("tools: search, fetch, whats_new and the list tools return labelled public 
     const project = (await call(env, "fetch", { id: removedProject })).structuredContent;
     assert.equal(project.metadata.kind, "project");
     assert.equal(project.metadata.code, "https://github.com/tanghaibao/goatools");
+    assert.deepEqual(project.metadata.how_to_use, goatools.how_to_use);
     assert.deepEqual(project.metadata.dates, { pushed: "2026-11-02", added: "2026-11-18" });
     assert.equal(project.metadata.owner, undefined);
     assert.equal((await call(env, "fetch", { id: origin + "/discover/work/" + removedProject })).structuredContent.id, removedProject);
@@ -571,9 +573,28 @@ test("regional-data MCP discovery and input validation follow its visibility gat
     sqlite.exec("UPDATE regional_data_visibility SET enabled=1");
     const enabled = await searchDefinition();
     assert.ok(enabled.inputSchema.properties.kind.enum.includes("regional-data"));
-    assert.ok(enabled.outputSchema.properties.results.items.properties.kind.enum.includes("regional-data"));
+    assert.ok(enabled.outputSchema.properties.results.items.oneOf[1].properties.kind.const === "regional-data");
     assert.match(enabled.description, /regional data resources/);
+    assert.match(enabled.description, /geographic coverage/);
     sqlite.exec("DROP TABLE regional_data_visibility");
     assert.ok(!(await searchDefinition()).inputSchema.properties.kind.enum.includes("regional-data"));
   } finally { close(); }
+});
+
+test("regional discovery metadata distinguishes the resource page and API", async () => {
+  const { regionalDataLlms, regionalDataSchema } = await import("../src/ingest/regional-data-surfaces");
+  const record = {
+    id: "regional:example", title: "Example", summary: "Public data", publisher: "Agency", portal: "Portal",
+    url: "https://example.org/query", topic: "Health", counties: ["Philadelphia"], granularity: "County",
+    time_span: "2020/2025", update_cadence: "Annual", access: "open" as const, license: null,
+    formats: ["CSV"], api: null, how_to_use: { step: "Query", url: "https://example.org/help", caveats: [], citation: "Cite agency" },
+    added: "2026-11-01", checked: "2026-11-02",
+  };
+  const schema = regionalDataSchema(record, origin);
+  assert.equal(schema.sameAs, record.url);
+  assert.equal(schema.distribution, undefined);
+  assert.ok(schema.additionalProperty.some((p) => p.name === "formats"));
+  assert.equal(regionalDataSchema({ ...record, api: { url: "https://example.org/api", type: "JSON" } }, origin).distribution?.[0].contentUrl, "https://example.org/api");
+  assert.match(regionalDataLlms(origin), /\/discover\/datasets\?kind=regional-data/);
+  assert.match(regionalDataLlms(origin), /\/api\/directory\/regional-data/);
 });
