@@ -320,8 +320,9 @@ def collect(d1, state, run_dir, day, first, last, receipt):
                 old = baseline_dataset.get(identifier)
                 if old:
                     candidate["added"] = old["added"]
-                    if not set(old.get("papers") or []).issubset(candidate.get("papers") or []) or (old.get("label") == "Verified" and candidate.get("label") != "Verified"):
+                    if old.get("label") == "Verified" and candidate.get("label") != "Verified":
                         raise daily_datasets.StopRun("Dataset update would discard existing evidence")
+                    keep_listed_papers(old, candidate)
                 selected[identifier] = candidate
             dataset_counts = daily_datasets.guard(list(baseline_dataset.values()), list(selected.values()))
             # Keep queued records ready for the next run when normal changes use
@@ -408,6 +409,24 @@ def apply_load(d1, sql, revision):
     if d1.revision() != revision:
         raise RuntimeError("Directory summary revision did not commit")
     return False
+
+
+def keep_listed_papers(old, candidate):
+    """Carry a listing's papers into its nightly update.
+
+    The nightly build sees only that night's publications, so it cannot reproduce a paper
+    link made by an earlier full build. Listed papers and their relations stay; the update
+    may add papers but never drops or relabels one.
+    """
+    listed = list(old.get("papers") or [])
+    if not listed:
+        return
+    candidate["papers"] = listed + [p for p in candidate.get("papers") or [] if p not in listed]
+    relations = [dict(r) for r in old.get("paper_provenance") or []]
+    known = {r.get("paper") for r in relations}
+    relations += [r for r in candidate.get("paper_provenance") or [] if r.get("paper") not in known]
+    if relations:
+        candidate["paper_provenance"] = relations
 
 
 def regional_freshness(state, d1, run_dir, today, *, plan, receipt):
