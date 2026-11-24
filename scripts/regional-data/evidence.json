@@ -17,7 +17,7 @@
         "https://data.cdc.gov/api/views/swc5-untb.json"
       ],
       "counties": [
-        "https://data.cdc.gov/resource/swc5-untb.json?%24where=locationid%3D%2742101%27&%24limit=1"
+        "https://data.cdc.gov/resource/swc5-untb.json?%24select=locationid&%24where=locationid+in+%28%2742017%27%2C%2742029%27%2C%2742045%27%2C%2742091%27%2C%2742101%27%2C%2734005%27%2C%2734007%27%2C%2734015%27%2C%2734021%27%29&%24group=locationid&%24limit=9"
       ],
       "formats": [
         "https://data.cdc.gov/resource/swc5-untb.json?%24where=locationid%3D%2742101%27&%24limit=1"
@@ -37,7 +37,7 @@
     },
     "query": {
       "url": "https://data.cdc.gov/resource/swc5-untb.json?%24where=locationid%3D%2742101%27&%24limit=1",
-      "fetched_at": "2026-11-24T14:13:59.050468+00:00",
+      "fetched_at": "2026-11-24T14:15:36.602008+00:00",
       "http_status": 200,
       "content_type": "application/json;charset=utf-8",
       "result_description": "Nonempty JSON array; one Philadelphia row returned"
@@ -47,6 +47,13 @@
       "format": "json",
       "path": "/rowsUpdatedAt",
       "observed": 1764844506
+    },
+    "coverage_query": {
+      "url": "https://data.cdc.gov/resource/swc5-untb.json?%24select=locationid&%24where=locationid+in+%28%2742017%27%2C%2742029%27%2C%2742045%27%2C%2742091%27%2C%2742101%27%2C%2734005%27%2C%2734007%27%2C%2734015%27%2C%2734021%27%29&%24group=locationid&%24limit=9",
+      "fetched_at": "2026-11-24T14:16:49.923657+00:00",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "All nine regional county FIPS returned in grouped results."
     }
   },
   "regional:cdc-cwsq-ngmh": {
@@ -67,7 +74,7 @@
         "https://data.cdc.gov/api/views/cwsq-ngmh.json"
       ],
       "counties": [
-        "https://data.cdc.gov/resource/cwsq-ngmh.json?%24where=countyfips%3D%2742101%27&%24limit=1"
+        "https://data.cdc.gov/resource/cwsq-ngmh.json?%24select=countyfips&%24where=countyfips+in+%28%2742017%27%2C%2742029%27%2C%2742045%27%2C%2742091%27%2C%2742101%27%2C%2734005%27%2C%2734007%27%2C%2734015%27%2C%2734021%27%29&%24group=countyfips&%24limit=9"
       ],
       "formats": [
         "https://data.cdc.gov/resource/cwsq-ngmh.json?%24where=countyfips%3D%2742101%27&%24limit=1"
@@ -87,7 +94,7 @@
     },
     "query": {
       "url": "https://data.cdc.gov/resource/cwsq-ngmh.json?%24where=countyfips%3D%2742101%27&%24limit=1",
-      "fetched_at": "2026-11-24T14:13:59.747247+00:00",
+      "fetched_at": "2026-11-24T14:15:38.408784+00:00",
       "http_status": 200,
       "content_type": "application/json;charset=utf-8",
       "result_description": "Nonempty JSON array; one Philadelphia row returned"
@@ -97,6 +104,13 @@
       "format": "json",
       "path": "/rowsUpdatedAt",
       "observed": 1765560443
+    },
+    "coverage_query": {
+      "url": "https://data.cdc.gov/resource/cwsq-ngmh.json?%24select=countyfips&%24where=countyfips+in+%28%2742017%27%2C%2742029%27%2C%2742045%27%2C%2742091%27%2C%2742101%27%2C%2734005%27%2C%2734007%27%2C%2734015%27%2C%2734021%27%29&%24group=countyfips&%24limit=9",
+      "fetched_at": "2026-11-24T14:16:49.923679+00:00",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "All nine regional county FIPS returned in grouped results."
     }
   },
   "regional:cdc-eav7-hnsx": {
@@ -137,7 +151,7 @@
     },
     "query": {
       "url": "https://data.cdc.gov/resource/eav7-hnsx.json?%24where=stateabbr%3D%27PA%27+AND+locationname%3D%27Philadelphia%27&%24limit=1",
-      "fetched_at": "2026-11-24T14:14:00.769911+00:00",
+      "fetched_at": "2026-11-24T14:15:40.775256+00:00",
       "http_status": 200,
       "content_type": "application/json;charset=utf-8",
       "result_description": "Nonempty JSON array; one Philadelphia row returned"
@@ -147,6 +161,56 @@
       "format": "json",
       "path": "/rowsUpdatedAt",
       "observed": 1765555184
+    }
+  },
+  "regional:cdc-p56q-jrxg": {
+    "fields": {
+      "title": [
+        "https://data.cdc.gov/api/views/p56q-jrxg.json"
+      ],
+      "summary": [
+        "https://data.cdc.gov/api/views/p56q-jrxg.json"
+      ],
+      "publisher": [
+        "https://data.cdc.gov/api/views/p56q-jrxg.json"
+      ],
+      "granularity": [
+        "https://data.cdc.gov/api/views/p56q-jrxg.json"
+      ],
+      "license": [
+        "https://data.cdc.gov/api/views/p56q-jrxg.json"
+      ],
+      "counties": [
+        "https://data.cdc.gov/resource/p56q-jrxg.json?%24where=fips%3D%2742101%27&%24limit=1"
+      ],
+      "formats": [
+        "https://data.cdc.gov/resource/p56q-jrxg.json?%24where=fips%3D%2742101%27&%24limit=1"
+      ],
+      "api": [
+        "https://data.cdc.gov/resource/p56q-jrxg.json?%24where=fips%3D%2742101%27&%24limit=1"
+      ],
+      "access": [
+        "https://data.cdc.gov/resource/p56q-jrxg.json?%24where=fips%3D%2742101%27&%24limit=1"
+      ],
+      "url": [
+        "https://data.cdc.gov/api/views/p56q-jrxg.json"
+      ],
+      "portal": [
+        "https://data.cdc.gov/api/views/p56q-jrxg.json"
+      ]
+    },
+    "query": {
+      "url": "https://data.cdc.gov/resource/p56q-jrxg.json?%24where=fips%3D%2742101%27&%24limit=1",
+      "fetched_at": "2026-11-24T14:15:43.233948+00:00",
+      "http_status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "result_description": "Nonempty JSON array; one Philadelphia row returned"
+    },
+    "freshness": {
+      "url": "https://data.cdc.gov/api/views/p56q-jrxg.json",
+      "format": "json",
+      "path": "/rowsUpdatedAt",
+      "observed": 1516636611
     }
   },
   "regional:cdc-kn79-hsxy": {
@@ -187,7 +251,7 @@
     },
     "query": {
       "url": "https://data.cdc.gov/resource/kn79-hsxy.json?%24where=county_fips_code%3D%2742101%27&%24limit=1",
-      "fetched_at": "2026-11-24T14:14:11.371102+00:00",
+      "fetched_at": "2026-11-24T14:15:45.936756+00:00",
       "http_status": 200,
       "content_type": "application/json;charset=utf-8",
       "result_description": "Nonempty JSON array; one Philadelphia row returned"
@@ -198,5 +262,686 @@
       "path": "/rowsUpdatedAt",
       "observed": 1687980869
     }
+  },
+  "regional:philadelphia-child-blood-lead": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ],
+      "time_span": [
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+      ]
+    },
+    "query": {
+      "url": "https://phl.carto.com/api/v2/sql?q=SELECT+%2A+FROM+child_blood_lead_levels_by_zip+LIMIT+1",
+      "fetched_at": "2026-11-24T14:15:15Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One ZIP code row returned, including screening count and suppressed lead fields."
+    },
+    "freshness": null
+  },
+  "regional:philadelphia-vital-social-determinants": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ],
+      "time_span": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+      ]
+    },
+    "query": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vital_Social_Determinants_PD/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
+      "fetched_at": "2026-11-24T14:15:11Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One feature returned without geometry."
+    },
+    "freshness": null
+  },
+  "regional:philadelphia-vital-mortality": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ],
+      "time_span": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+      ]
+    },
+    "query": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vital_Mortality_PD/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
+      "fetched_at": "2026-11-24T14:15:11Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One feature returned without geometry."
+    },
+    "freshness": null
+  },
+  "regional:philadelphia-vital-natality": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ],
+      "time_span": [
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+      ]
+    },
+    "query": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vital_Natality_PD/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
+      "fetched_at": "2026-11-24T14:15:12Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One feature returned without geometry."
+    },
+    "freshness": null
+  },
+  "regional:philadelphia-tree-canopy-change": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ],
+      "time_span": [
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+      ]
+    },
+    "query": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/TreeCanopyChange_2008_2018/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
+      "fetched_at": "2026-11-24T14:15:12Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One feature returned without geometry."
+    },
+    "freshness": null
+  },
+  "regional:philadelphia-vacant-property-indicators": {
+    "fields": {
+      "title": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "summary": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "publisher": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "portal": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "url": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "topic": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "counties": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "granularity": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "access": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "license": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "formats": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "api": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ],
+      "how_to_use": [
+        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+      ]
+    },
+    "query": {
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vacant_Indicators_Bldg/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
+      "fetched_at": "2026-11-24T14:15:13Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "result_description": "One feature returned without geometry."
+    },
+    "freshness": null
+  },
+  "regional:acs-2024-health-insurance": {
+    "fields": {
+      "title": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "summary": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "publisher": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "portal": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "url": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "topic": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "counties": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "granularity": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "time_span": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "access": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "formats": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ],
+      "how_to_use": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B27010.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat"
+      ]
+    },
+    "query": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b27010.dat",
+      "fetched_at": "2026-11-24T14:15:54.560425Z",
+      "http_status": 206,
+      "content_type": null,
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+    },
+    "freshness": null
+  },
+  "regional:acs-2024-poverty": {
+    "fields": {
+      "title": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "summary": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "publisher": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "portal": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "url": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "topic": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "counties": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "granularity": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "time_span": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "access": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "formats": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ],
+      "how_to_use": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B17001.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat"
+      ]
+    },
+    "query": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b17001.dat",
+      "fetched_at": "2026-11-24T14:15:55.067079Z",
+      "http_status": 206,
+      "content_type": null,
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+    },
+    "freshness": null
+  },
+  "regional:acs-2024-rent-burden": {
+    "fields": {
+      "title": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "summary": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "publisher": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "portal": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "url": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "topic": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "counties": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "granularity": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "time_span": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "access": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "formats": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ],
+      "how_to_use": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B25070.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat"
+      ]
+    },
+    "query": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25070.dat",
+      "fetched_at": "2026-11-24T14:15:55.528463Z",
+      "http_status": 206,
+      "content_type": null,
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+    },
+    "freshness": null
+  },
+  "regional:acs-2024-commute": {
+    "fields": {
+      "title": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "summary": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "publisher": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "portal": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "url": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "topic": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "counties": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "granularity": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "time_span": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "access": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "formats": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ],
+      "how_to_use": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B08301.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat"
+      ]
+    },
+    "query": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b08301.dat",
+      "fetched_at": "2026-11-24T14:15:55.981780Z",
+      "http_status": 206,
+      "content_type": null,
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+    },
+    "freshness": null
+  },
+  "regional:acs-2024-disability": {
+    "fields": {
+      "title": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "summary": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "publisher": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "portal": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "url": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "topic": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "counties": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "granularity": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "time_span": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "access": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "formats": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ],
+      "how_to_use": [
+        "https://api.census.gov/data/2024/acs/acs5/groups/B18101.json",
+        "https://www.census.gov/programs-surveys/acs/data/summary-file.2024.html",
+        "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat"
+      ]
+    },
+    "query": {
+      "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b18101.dat",
+      "fetched_at": "2026-11-24T14:15:56.491634Z",
+      "http_status": 206,
+      "content_type": null,
+      "result_description": "HTTP Range bytes 0-1999999 returned pipe-delimited table estimates and margins of error, including GEO_ID rows for all nine regional counties."
+    },
+    "freshness": null
   }
 }

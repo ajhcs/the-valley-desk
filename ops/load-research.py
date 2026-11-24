@@ -1,7 +1,5 @@
 """Emit a replayable D1 SQL import. Each listing and its index changes are atomic."""
 import argparse
-import contextlib
-import io
 import sys
 from hashlib import sha256
 import json
@@ -55,17 +53,10 @@ def load(args):
         for identifier in removed:
             print("INSERT OR IGNORE INTO dataset_removals(id) VALUES(" + quote(identifier) + ");")
     if args.regional_data_removals:
-        removed = json.loads(args.regional_data_removals.read_text())
-        if not isinstance(removed, list) or not all(isinstance(i, str) and re.fullmatch(r"regional:[a-z0-9]+(?:-[a-z0-9]+)*", i) for i in removed):
-            raise ValueError("Expected an array of regional data IDs")
-        for identifier in removed:
+        for identifier in args.regional_removal_ids:
             print("INSERT OR IGNORE INTO regional_data_removals(id) VALUES(" + quote(identifier) + ");")
     if args.regional_data:
-        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts" / "regional-data"))
-        from validate import validate_records
-        regional_records = json.loads(args.regional_data.read_text())
-        validate_records(regional_records)
-        for record in regional_records:
+        for record in args.regional_records:
             emit(record, "regional-data", {}, args.respect_removals)
     institution_file = args.institutions or args.alias_reference
     if institution_file:
@@ -266,8 +257,14 @@ if __name__ == "__main__":
         parser.error("Use project upserts when retaining the current catalog")
     if args.institutions and args.alias_reference:
         parser.error("Choose one institution reference input")
-    # Buffer every statement so invalid inputs cannot emit a partial import.
-    output = io.StringIO()
-    with contextlib.redirect_stdout(output):
-        load(args)
-    sys.stdout.write(output.getvalue())
+    # Validate regional inputs before emitting any SQL; other imports remain streaming.
+    if args.regional_data_removals:
+        args.regional_removal_ids = json.loads(args.regional_data_removals.read_text())
+        if not isinstance(args.regional_removal_ids, list) or not all(isinstance(i, str) and re.fullmatch(r"regional:[a-z0-9]+(?:-[a-z0-9]+)*", i) for i in args.regional_removal_ids):
+            raise ValueError("Expected an array of regional data IDs")
+    if args.regional_data:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts" / "regional-data"))
+        from validate import validate_records
+        args.regional_records = json.loads(args.regional_data.read_text())
+        validate_records(args.regional_records)
+    load(args)
