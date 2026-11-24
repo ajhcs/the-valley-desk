@@ -21,6 +21,7 @@ from daily_d1 import (
 from daily_public_sources import collect_publications, discover_projects, qualify_repository, refresh_projects, roster_from_public
 from daily_notify import queue
 import daily_datasets
+import regional_data_freshness
 
 NY = ZoneInfo("America/New_York")
 ROOT = Path(__file__).resolve().parents[1]
@@ -441,6 +442,18 @@ def run(state, d1, *, plan, scheduled):
             receipt["base_revision"] = d1.revision()
             deltas, decisions, outside = collect(d1, state, run_dir, day, previous + timedelta(days=1), last, receipt)
             prepare_load(run_dir, deltas, decisions, receipt["revision"], outside)
+            config_path = state / "regional-data-config.json"
+            if config_path.is_file() and json.loads(config_path.read_text()).get("enabled") is True:
+                receipt["stage"] = "regional data freshness"
+                evidence = json.loads((ROOT / "scripts/regional-data/evidence.json").read_text())
+                extra_sql = regional_data_freshness.stage(d1, evidence, today)
+                sql_path = run_dir / "load.sql"
+                sql = sql_path.read_text(encoding="utf-8")
+                marker = "UPDATE research_summary_kinds SET first="
+                offset = sql.rfind(marker)
+                if offset < 0:
+                    raise StopRun("Directory revision marker unavailable")
+                sql_path.write_text(sql[:offset] + extra_sql + sql[offset:], encoding="utf-8")
             receipt["sql_sha256"] = sha256((run_dir / "load.sql").read_bytes()).hexdigest()
         if plan:
             receipt["outcome"] = "staged"
