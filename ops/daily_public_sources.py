@@ -7,6 +7,7 @@ import sys
 import subprocess
 from urllib.error import HTTPError
 from zoneinfo import ZoneInfo
+from urllib.parse import quote
 
 GITHUB_RE = re.compile(r'^https://github\.com/([A-Za-z0-9-]+)/([A-Za-z0-9_.-]+)$')
 
@@ -45,7 +46,7 @@ def refresh_projects(root, run_dir, existing, removed, day):
             if not match:
                 raise ValueError(f'Invalid repository URL for {identity}')
             owner, repo = map(json.dumps, match.groups())
-            queries.append(f'r{i}: repository(owner:{owner}, name:{repo}) {{ databaseId isPrivate primaryLanguage {{ name }} licenseInfo {{ spdxId }} pushedAt isArchived stargazerCount description }}')
+            queries.append(f'r{i}: repository(owner:{owner}, name:{repo}) {{ databaseId isPrivate primaryLanguage {{ name }} licenseInfo {{ spdxId }} pushedAt isArchived stargazerCount description defaultBranchRef {{ target {{ ... on Commit {{ oid tree {{ entries {{ name type }} }} }} }} }} }}')
         query = 'query {' + ' '.join(queries) + '}'
         response = subprocess.run(['gh', 'api', 'graphql', '-f', 'query=' + query], capture_output=True, text=True, timeout=120)
         try:
@@ -69,6 +70,19 @@ def refresh_projects(root, run_dir, existing, removed, day):
                           license=github_license(source['licenseInfo']),
                           pushed=(source['pushedAt'] or '')[:10] or None, archived=source['isArchived'],
                           stars=source['stargazerCount'], description=source['description'])
+            branch = source.get('defaultBranchRef')
+            if branch is not None:
+                commit = branch.get('target') or {}
+                oid = commit.get('oid', '')
+                entries = (commit.get('tree') or {}).get('entries')
+                if not re.fullmatch(r'[0-9a-f]{40}', oid) or not isinstance(entries, list):
+                    raise RuntimeError('GitHub returned incomplete default branch tree')
+                files = {e['name'] for e in entries if e.get('type') == 'blob' and isinstance(e.get('name'), str)}
+                # Restrict to recognized root README names; don't infer absent files or branches.
+                readmes = sorted((n for n in files if re.fullmatch(r'README(?:\.(?:md|markdown|rst|txt))?', n, re.I)), key=lambda n: (n.lower() != 'readme.md', n.lower(), n))
+                base = previous['code'] + '/blob/' + oid + '/'
+                values['readmeUrl'] = base + quote(readmes[0], safe='') if readmes else None
+                values['citationUrl'] = base + 'CITATION.cff' if 'CITATION.cff' in files else None
             for field, value in values.items():
                 if value is not None or field in row:
                     row[field] = value
@@ -257,6 +271,16 @@ def qualify_repository(project_url, root, day, association=None, *, source=None)
            'source': association['source'], 'language': source.get('language'),
            'license': github_license(source.get('license')), 'pushed': (source.get('pushed_at') or '')[:10] or None,
            'archived': source['archived'], 'stars': source['stargazers_count'], 'description': source.get('description')}
+    # The REST README endpoint returns the actual preferred file URL.
+    if content and isinstance(readme.get('html_url'), str) and readme['html_url'].startswith(row['code'] + '/blob/'):
+        row['readmeUrl'] = readme['html_url']
+    try:
+        citation = _github('/repos/' + owner + '/' + repo + '/contents/CITATION.cff')
+        if citation.get('type') == 'file' and isinstance(citation.get('html_url'), str) and citation['html_url'].startswith(row['code'] + '/blob/'):
+            row['citationUrl'] = citation['html_url']
+    except HTTPError as error:
+        if error.code != 404:
+            raise
     if association.get('county'):
         row.update(county=association['county'], countyBasis=association['countyBasis'])
     return row, None

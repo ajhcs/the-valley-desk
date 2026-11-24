@@ -192,6 +192,12 @@
           "type": "null"
         }
       ]
+    },
+    "readmeUrl": {
+      "$ref": "#/$defs/nullableUrl"
+    },
+    "citationUrl": {
+      "$ref": "#/$defs/nullableUrl"
     }
   },
   "$defs": {
