@@ -7,6 +7,8 @@ import worker from "../worker.js";
 import { modernVersion } from "../src/assistant/mcp";
 import { regionalDataApi, regionalDataPath, type RegionalData } from "../src/ingest/regional-data-contract";
 
+import { html } from "../src/ingest/public-directory-ui";
+
 const origin = "https://thevalleydesk.org";
 const seedPath = "scripts/regional-data/seed.json";
 const summaryPath = "ops/research-summary.sql";
@@ -80,7 +82,13 @@ test("the reviewed seed reaches the public Worker surfaces with the same record 
     assert.equal(response.status, 200, record.id);
     const body = await response.text();
     assert.match(body, /How to use/i);
-    assert.ok(body.includes(record.checked), record.id);
+    for (const value of [
+      record.title, record.summary, record.publisher, record.portal, record.checked, record.added,
+      record.url, record.how_to_use.step, record.how_to_use.url, record.how_to_use.citation,
+      ...record.counties, ...record.how_to_use.caveats, record.api?.url, record.api?.type,
+    ]) {
+      if (value) assert.ok(body.includes(html(value)), `${record.id}: ${value}`);
+    }
     const script = /<script id="directory-schema" type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/.exec(body);
     assert.ok(script, record.id);
     const structured = JSON.parse(script[1]);
@@ -93,7 +101,13 @@ test("the reviewed seed reaches the public Worker surfaces with the same record 
     assert.equal(dataset.includedInDataCatalog.name, record.portal);
     assert.equal(dataset.sameAs, record.url);
     assert.deepEqual(dataset.spatialCoverage.map((place: { name: string }) => place.name), record.counties);
-    assert.equal(dataset.additionalProperty.find((item: { name: string }) => item.name === "metadata reviewed").value, record.checked);
+    const extra = new Map(dataset.additionalProperty.map(({ name, value }: { name: string; value: unknown }) => [name, value]));
+    assert.equal(extra.get("metadata reviewed"), record.checked);
+    assert.equal(extra.get("source availability checked"), record.checked);
+    assert.equal(extra.get("how to use"), record.how_to_use.step);
+    assert.equal(extra.get("guidance URL"), record.how_to_use.url);
+    assert.equal(extra.get("citation guidance"), record.how_to_use.citation);
+    assert.deepEqual(extra.get("caveats"), record.how_to_use.caveats);
     assert.equal(dataset.temporalCoverage ?? null, record.time_span);
     if (record.api) assert.ok(dataset.distribution.some((item: { contentUrl: string }) => item.contentUrl === record.api!.url));
 
