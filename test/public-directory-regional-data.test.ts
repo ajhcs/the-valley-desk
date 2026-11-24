@@ -1,0 +1,45 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { DatabaseSync } from "node:sqlite";
+import { readFileSync } from "node:fs";
+import worker from "../worker.js";
+
+const record = { id:"regional:fixture", title:"Fixture regional health data", summary:"Public health coverage", publisher:"Fixture agency", portal:"Fixture portal", url:"https://example.org/data", topic:"public-health", counties:["camden"], granularity:null, time_span:null, update_cadence:null, access:"open", license:null, formats:null, api:null, how_to_use:{step:"Download data",url:"https://example.org/help",caveats:[],citation:"Cite the agency"}, added:"2026-01-01", checked:"2026-01-02" };
+
+test("regional data is public only while enabled, even after a summary refresh", async () => {
+  const db = new DatabaseSync(":memory:");
+  db.exec(readFileSync("ops/directory-removals.sql", "utf8"));
+  for (const m of ["0046_research_directory","0047_clinical_studies","0048_paper_repository_links","0050_datasets","0052_regional_data"]) db.exec(readFileSync(`migrations/${m}.sql`,"utf8"));
+  const insert = db.prepare("INSERT INTO research_listings VALUES(?,?,?,?,?,?,?,?,?,?)");
+  const pub = {id:"pmid:1",title:"Paper",type:"article",venue:null,published:"2026",added:"2026-01-01",checked:"2026-01-01",topic:"public-health",terms:[],authors:[],author_count:0,institutions:[],counties:[],label:"Verified",connection:"",source:"",url:"https://example.org",open_access:null,projects:[],published_as:null,preprint_of:null,retracted:false};
+  insert.run(pub.id,"publication",pub.title,pub.added,pub.published,pub.topic,pub.id,"paper",JSON.stringify(pub),"{}");
+  insert.run(record.id,"regional-data",record.title,record.added,"",record.topic,record.id,record.summary,JSON.stringify(record),JSON.stringify({county:["camden"],topic:["public-health"],access:["open"]}));
+  const env = {DIRECTORY_PUBLIC_ENABLED:"true",PUBLICATIONS_PUBLIC_ENABLED:"true",VALLEY_DESK_DB:{prepare(sql:string){const all=(...args:(string|number)[])=>({results:db.prepare(sql).all(...args)});return {all:()=>all(),bind:(...args:(string|number)[])=>({all:()=>all(...args)})};}}};
+  const get = (path:string) => worker.fetch(new Request("https://thevalleydesk.org"+path),env,{});
+  const text = async (path:string) => (await get(path)).text();
+  const path = "/discover/regional-data/"+encodeURIComponent(record.id);
+  db.exec("UPDATE regional_data_visibility SET enabled=1");
+  db.exec(readFileSync("ops/research-summary.sql","utf8"));
+  db.prepare("INSERT INTO regional_data_checks(id,attempted,checked,review_reason) VALUES(?,?,?,?)").run(record.id,"2026-02-02","2026-02-01","private review");
+  db.prepare("INSERT INTO regional_data_publications VALUES(?,?,?,?)").run(record.id,pub.id,"private source","private evidence");
+  const detail = await text(path);
+  assert.match(detail,/Fixture regional health data/);
+  assert.match(detail,/2026-02-01/);
+  assert.match(detail,/>Paper<\/a>/);
+  assert.doesNotMatch(detail,/private review|private evidence|private source/);
+  const api = JSON.parse(await text("/api/directory/regional-data/"+encodeURIComponent(record.id)));
+  assert.equal(api.regional_data.checked,"2026-02-01");
+  assert.equal(api.regional_data.papers[0].id,pub.id);
+  db.prepare("INSERT INTO publication_removals(id) VALUES(?)").run(pub.id);
+  assert.doesNotMatch(await text(path),/>Paper<\/a>/);
+  db.prepare("DELETE FROM publication_removals WHERE id=?").run(pub.id);
+  assert.match(await text(path),/Not stated/);
+  assert.match(await text("/discover/works?kind=regional-data"),/Fixture regional health data/);
+  assert.match(await text("/api/directory/listings?kind=regional-data"),/regional:fixture/);
+  assert.match(await text("/sitemap.xml"),/regional-data-1/);
+  assert.match(await text("/discover/methodology"),/id="regional-data"/);
+  db.exec("UPDATE regional_data_visibility SET enabled=0");
+  assert.equal((await get(path)).status,404);
+  for (const route of ["/discover/works", "/api/directory/listings", "/sitemap.xml", "/llms.txt", "/discover/methodology", "/discover/updates.xml"]) assert.doesNotMatch(await text(route),/Fixture regional health data|regional-data-1|id="regional-data"/);
+  db.close();
+});

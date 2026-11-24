@@ -56,7 +56,7 @@ test("directory responses are cached per data version and stay correct after rem
     sqlite.exec(execFileSync("python3", ["ops/load-research.py", "--publications", input, "--institutions", refs], { encoding: "utf8", maxBuffer: 1 << 26 }));
     sqlite.exec(readFileSync("ops/research-summary.sql", "utf8"));
 
-    // A miss renders and stores; a repeat is served from the cache with one small query.
+    // A legacy schema requires a compatibility retry before the cached response is served.
     const first = await get("/discover/works?q=tissue");
     assert.equal(first.headers.get("x-directory-cache"), "miss");
     const firstHtml = await first.text();
@@ -64,7 +64,7 @@ test("directory responses are cached per data version and stay correct after rem
     queries = 0;
     const second = await get("/discover/works?q=tissue");
     assert.equal(second.headers.get("x-directory-cache"), "hit");
-    assert.equal(queries, 1, "a hit reads only the data version");
+    assert.equal(queries, 2, "a legacy hit checks the current schema and reads its data version");
     const secondHtml = await second.text();
     assert.equal(second.headers.get("cache-control"), "no-store", "visitors still get the original cache policy");
 

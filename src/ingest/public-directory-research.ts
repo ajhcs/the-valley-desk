@@ -1,4 +1,6 @@
-import type { DirectoryAccess } from "./regional-data-contract";
+import { datasetUseGuidance } from "./directory-use-guidance";
+import { renderUseGuidance } from "./public-directory-ui";
+import { regionalDataPath, type RegionalData, type DirectoryAccess } from "./regional-data-contract";
 import {
   browsePath,
   counties,
@@ -143,7 +145,7 @@ export type Dataset = {
   format: string | null;
   license: string | null;
 };
-type RecordsByKind = { project: DirectoryProject; publication: Publication; study: ClinicalStudy; dataset: Dataset };
+type RecordsByKind = { project: DirectoryProject; publication: Publication; study: ClinicalStudy; dataset: Dataset; "regional-data": RegionalData };
 export type ListingKind = keyof RecordsByKind;
 export type Listing<K extends ListingKind = ListingKind> = {
   [P in K]: { kind: P; record: RecordsByKind[P] };
@@ -199,6 +201,7 @@ const templates: {
     title: (r) => r.title,
     card: studyRecord,
   },
+  "regional-data": { name: "Regional data", plural: "Regional data", path: regionalDataPath, title: (r) => r.title, card: regionalDataCard },
   dataset: {
     name: "Dataset",
     plural: "Datasets",
@@ -297,7 +300,11 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
   if (facetQueries.length) where.push("id IN (" + facetQueries.join(" INTERSECT ") + ")");
   if (facetQueries.length > 1) simple = false;
   const kind = params.get("kind") ?? "";
-  if (kind) {
+  if (kind === "__datasets") {
+    where.push("kind IN ('dataset','regional-data')");
+    ranked.push("l.kind IN ('dataset','regional-data')");
+    simple = false;
+  } else if (kind) {
     where.push("kind=?");
     args.push(kind);
     ranked.push("l.kind=?");
@@ -351,8 +358,9 @@ type KindCount = { kind: ListingKind; n: number; works: number };
  */
 async function storedCounts(db: ResearchDb, scope: Scope | undefined, kind: string) {
   try {
-    const [state] = await rows<{ visible: number; refreshed: number }>(db, "SELECT EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') visible,coalesce((SELECT CAST(first AS INTEGER) FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'),0) refreshed");
+    const [state] = await rows<{ visible: number; refreshed: number; regional_visible: number; regional_refreshed: number }>(db, "SELECT EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') visible,coalesce((SELECT CAST(first AS INTEGER) FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'),0) refreshed,EXISTS(SELECT 1 FROM research_visible WHERE kind='regional-data') regional_visible,coalesce((SELECT CAST(first AS INTEGER) FROM research_summary_kinds WHERE scope_field='visibility' AND kind='regional-data'),0) regional_refreshed");
     if (state.visible && !state.refreshed) return undefined;
+    if (state.regional_visible !== state.regional_refreshed) return undefined;
     const withoutDatasets = !state.visible && !!state.refreshed;
     const found = await rows<KindCount & { everything: number | null; of_kind: number | null }>(
       db,
@@ -636,6 +644,16 @@ function datasetRecord(d: Dataset) {
     <p class="record-topic">${topicTag(topicLink(d.topic), d.topic)}${timestamp(d.added) ? `<span>Added ${timestamp(d.added)}</span>` : ""}</p>
   </li>`;
 }
+function regionalDataCard(d: RegionalData) {
+  return `<li class="record record-dataset"><p class="record-kind">Regional data · ${html(d.publisher)}</p><h3 class="record-title"><a href="${html(regionalDataPath(d.id))}">${html(d.title)}</a></h3><p>${html(d.summary)}</p><p>${html(d.counties.join(", ") || "Not stated")}</p></li>`;
+}
+
+export function renderRegionalData(d: RegionalData & { papers?: { id: string; title: string }[] }, guidance = "") {
+  const value = (v: string | null | undefined) => html(v || "Not stated");
+  const field = (name: string, v: string | null | undefined) => `<dt>${name}</dt><dd>${value(v)}</dd>`;
+  return `<article class="frame page record-page dataset-page"><nav class="breadcrumb"><a href="${browsePath}">Directory</a> / <a href="${datasetsPath}">Datasets</a></nav><h1>${html(d.title)}</h1><p>${html(d.summary)}</p><p><a href="${html(d.url)}">View public record</a></p><dl>${field("Publisher",d.publisher)}${field("Portal",d.portal)}${field("County coverage",d.counties.join(", "))}${field("Granularity",d.granularity)}${field("Time span",d.time_span)}${field("Update cadence",d.update_cadence)}${field("Access",d.access)}${field("License",d.license)}${field("Formats",d.formats?.join(", "))}${field("API",d.api?.url)}${field("Last checked",d.checked)}</dl><section><h2>How to use</h2><p>${html(d.how_to_use.step)}</p><p><a href="${html(d.how_to_use.url)}">Source guidance</a></p>${d.how_to_use.caveats.length ? `<ul>${d.how_to_use.caveats.map(c => `<li>${html(c)}</li>`).join("")}</ul>` : ""}<p>${html(d.how_to_use.citation)}</p></section>${guidance}${d.papers?.length ? `<section><h2>Publications</h2><ul>${d.papers.map(p => `<li><a href="${html(pubPath(p.id))}">${html(p.title)}</a></li>`).join("")}</ul></section>` : ""}</article>`;
+}
+
 /** A paper a dataset names, linked to its directory page when the paper is listed. */
 export type DatasetPaper = { id: string; title?: string; relation?: "produced" | "linked" };
 function paperLink(paper: DatasetPaper) {
@@ -692,6 +710,7 @@ export function renderDataset(d: Dataset, refs: Institution[], papers: DatasetPa
         ${linked.length ? `<section class="record-section" aria-labelledby="linked-papers-title"><h2 id="linked-papers-title">${linked.length === 1 ? "Linked paper" : "Linked papers"}</h2><p class="muted">These papers link to or use this data.</p><ul class="plain-list">${linked.map((paper) => `<li>${paperLink(paper)}</li>`).join("")}</ul></section>` : ""}
       </div>
     </div>
+    ${renderUseGuidance(datasetUseGuidance(d))}
     ${catalog ? similarSection(similar, catalog) : ""}
     ${feedbackBlock(datasetPath(d.id), contactLink("Request removal by email", undefined, `Directory removal request for ${d.id}`))}
   </article>`;
@@ -811,6 +830,7 @@ export type ResearchPage = {
   enabled: boolean;
   studiesAvailable?: boolean;
   datasetsAvailable?: boolean;
+  regionalDataAvailable?: boolean;
   scope?: string;
   byDate?: boolean;
   aside?: string;
@@ -821,7 +841,7 @@ export type ResearchPage = {
   feed?: string;
 };
 
-export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, datasetsAvailable, scope = "", byDate, aside, facets, orders, feed }: ResearchPage) {
+export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, datasetsAvailable, regionalDataAvailable, scope = "", byDate, aside, facets, orders, feed }: ResearchPage) {
   function select(name: string, label: string, choices: [string, string][], all = "All") {
     const selected = params.get(name) ?? "";
     return `<label>${label}<select form="research-form" name="${name}"><option value="">${all}</option>${choices
@@ -849,7 +869,7 @@ export function renderResearch({ header, path, params, data, catalog, options, e
       )
       .join("");
   } else list = `<h2 class="sr-only">Listings</h2>${renderListingCards(data.items, catalog)}`;
-  const kinds: ListingKind[] = ["publication", "project", ...(studiesAvailable ? ["study" as const] : []), ...(datasetsAvailable ? ["dataset" as const] : [])];
+  const kinds: ListingKind[] = ["publication", "project", ...(studiesAvailable ? ["study" as const] : []), ...(datasetsAvailable ? ["dataset" as const] : []), ...(regionalDataAvailable ? ["regional-data" as const] : [])];
   const activity = datasetsAvailable
     ? studiesAvailable ? "Publication, code push, registry update or release date" : "Publication, code push or release date"
     : studiesAvailable ? "Publication, code push or registry update date" : "Publication date or last code push";
@@ -999,7 +1019,7 @@ export function rss(
     .map((i) => {
       const link = html(origin + listingPath(i));
       const day = i.record.added;
-      return `<item><title>${html(listingTitle(i))}</title><link>${link}</link><guid>${link}</guid><category>${i.kind}</category><description>${html(i.record.connection ?? "")}</description>${day ? `<pubDate>${new Date(day + "T00:00:00Z").toUTCString()}</pubDate>` : ""}</item>`;
+      return `<item><title>${html(listingTitle(i))}</title><link>${link}</link><guid>${link}</guid><category>${i.kind}</category><description>${html(i.kind === "regional-data" ? i.record.summary : i.record.connection ?? "")}</description>${day ? `<pubDate>${new Date(day + "T00:00:00Z").toUTCString()}</pubDate>` : ""}</item>`;
     })
     .join("")}</channel></rss>`;
 }

@@ -25,6 +25,8 @@ export type DirectoryProject = {
   paper?: string | null;
   language?: string | null;
   license?: string | null;
+  readmeUrl?: string | null;
+  citationUrl?: string | null;
   updated?: string | null;
   added?: string | null;
   owner?: { login: string; name?: string | null; kind?: "organization" | "user" } | null;

@@ -1,3 +1,6 @@
+import { regionalDataLlms, regionalDataSchema } from "./regional-data-surfaces";
+import { regionalDataApi, regionalDataPath, regionalDataId, type RegionalData } from "./regional-data-contract";
+import { regionalDataEnabled, regionalDataRecord, regionalDataRecords } from "./regional-data-read";
 import { decodedPublicPath } from "../lib/editorial-retirement";
 import { html } from "./public-directory-ui";
 import { supportOpen, supportPath } from "./public-support-data";
@@ -16,6 +19,7 @@ import {
   accessLevels,
   dataTypeLabel,
   renderDataset,
+  renderRegionalData,
   registryLabel,
   rows,
   optionsFor,
@@ -96,13 +100,15 @@ const jsonHeaders = { ...noStore, "content-type": "application/json; charset=utf
 
 export function isPublicDirectoryPath(path: string) {
   return (
-    ["/api/directory/listings", "/llms.txt", newPath, feedPath, publicationsApi, studiesApi, datasetsApi, datasetsPath].includes(
+    ["/api/directory/listings", "/llms.txt", newPath, feedPath, publicationsApi, studiesApi, datasetsApi, datasetsPath, regionalDataApi].includes(
       path.replace(/\/$/, ""),
     ) ||
     path.startsWith(publicationsApi + "/") ||
     path.startsWith("/discover/publication/") ||
     path.startsWith(studiesApi + "/") ||
     path.startsWith("/discover/study/") ||
+    path.startsWith(regionalDataApi + "/") ||
+    path.startsWith("/discover/regional-data/") ||
     path.startsWith(datasetsApi + "/") ||
     path.startsWith("/discover/dataset/") ||
     path.startsWith("/discover/sitemap/") ||
@@ -383,10 +389,10 @@ async function datasetPapers(db: ResearchDb, d: Dataset): Promise<DatasetPaper[]
 }
 
 /** Choices for the datasets page filters, from the visible datasets only, so no filter offers an empty value. */
-async function datasetFacetChoices(db: ResearchDb, names: Names) {
+async function datasetFacetChoices(db: ResearchDb, names: Names, regional = false) {
   const found = await rows<{ field: string; value: string; name: string | null }>(
     db,
-    "SELECT field,value,name FROM research_summary_dataset_facets",
+    regional ? "SELECT f.field,f.value,max(CASE f.field WHEN 'repository' THEN json_extract(v.record,'$.repository') WHEN 'datatype' THEN json_extract(v.record,'$.data_type') WHEN 'topic' THEN json_extract(v.record,'$.topic') END) name FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE v.kind IN ('dataset','regional-data') AND f.field IN ('access','datatype','repository','institution','county','topic') GROUP BY f.field,f.value" : "SELECT field,value,name FROM research_summary_dataset_facets",
   );
   const pick = (field: string) => found.filter((row) => row.field === field);
   const sorted = (choices: [string, string][]) => choices.sort((a, b) => a[1].localeCompare(b[1]));
@@ -487,6 +493,7 @@ async function renderPublicDirectory(
   const combinedApi = path === "/api/directory/listings";
   const pubApi = path === publicationsApi || path.startsWith(publicationsApi + "/");
   const studyApi = path === studiesApi || path.startsWith(studiesApi + "/");
+  const regionalList = path === regionalDataApi;
   const datasetList = path === datasetsApi;
   const datasetsLanding = path === datasetsPath;
   const detail = path.startsWith("/discover/publication/") || path.startsWith(publicationsApi + "/");
@@ -494,7 +501,7 @@ async function renderPublicDirectory(
     new Response(head ? null : value, { headers: { ...noStore, ...projectSource(), "content-type": type + "; charset=utf-8" } });
   const unavailable = () =>
     api || pubApi ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
-  let hasPubs = false, hasStudies = false, hasDatasets = false;
+  let hasPubs = false, hasStudies = false, hasDatasets = false, hasRegionalData = false;
   let linked: { title: string; url: string }[] = [];
   let mentions: { title: string; url: string }[] = [];
   let research: Listing[] = [];
@@ -515,6 +522,7 @@ async function renderPublicDirectory(
         : (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='study' LIMIT 1")).length > 0;
       hasDatasets = visible?.datasets === 1;
     }
+    hasRegionalData = hasPubs && await regionalDataEnabled(researchDb) && (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='regional-data' LIMIT 1")).length > 0;
     if (!suppliedCatalog && path.startsWith(apiPath + "/")) {
       const id = decode(pathname.slice(apiPath.length + 1));
       if (!/^[1-9][0-9]{0,19}$/.test(id)) return json(() => ({ error: "project_not_found" }), 404);
@@ -552,6 +560,17 @@ async function renderPublicDirectory(
         content: renderStudy(study, await institutionRefs(researchDb), similar, catalog),
       }, 200);
     }
+    if (path.startsWith("/discover/regional-data/") || path.startsWith(regionalDataApi + "/")) {
+      const isApi = path.startsWith(regionalDataApi + "/");
+      const id = decode(path.slice((isApi ? regionalDataApi : "/discover/regional-data").length + 1));
+      const missing = () => isApi ? json(() => ({ error: "regional_data_not_found" }), 404) : page({ kind: "not-found" }, 404);
+      if (!hasRegionalData || !regionalDataId.test(id)) return missing();
+      const [entry] = await rows<{record:string}>(researchDb, "SELECT record FROM research_visible WHERE kind='regional-data' AND id=?", id);
+      if (!entry) return missing();
+      const record = await regionalDataRecord(researchDb, JSON.parse(entry.record) as RegionalData);
+      if (isApi) return json(() => ({ regional_data: record }));
+      return page({kind:"research", title:record.title, summary:record.summary, path:regionalDataPath(id), content:renderRegionalData(record), schema:regionalDataSchema(record,origin), breadcrumbs:[["Directory",browsePath],["Datasets",datasetsPath],[record.title,regionalDataPath(id)]]}, 200);
+    }
     if (path.startsWith("/discover/dataset/") || path.startsWith(datasetsApi + "/")) {
       const datasetApi = path.startsWith(datasetsApi + "/");
       const segment = path.slice((datasetApi ? datasetsApi : "/discover/dataset").length + 1);
@@ -585,7 +604,7 @@ async function renderPublicDirectory(
       }, 200);
     }
     if (path === "/llms.txt")
-      return new Response(head ? null : llmsTxt(origin, true, hasPubs, hasDatasets), {
+      return new Response(head ? null : llmsTxt(origin, true, hasPubs, hasDatasets) + (hasRegionalData ? regionalDataLlms(origin) : ""), {
         headers: { ...noStore, "content-type": "text/plain; charset=utf-8" },
       });
     if (detail) {
@@ -737,6 +756,10 @@ async function renderPublicDirectory(
           const [{ n }] = await rows<{ n: number }>(researchDb, "SELECT count(*) n FROM research_visible WHERE kind='dataset'");
           parts.push(...Array.from({ length: Math.ceil(n / partSize) }, (_, i) => "datasets-" + (i + 1)));
         }
+        if (hasRegionalData) {
+          const [{ n }] = await rows<{n:number}>(researchDb, "SELECT count(*) n FROM research_visible WHERE kind='regional-data'");
+          parts.push(...Array.from({length: Math.ceil(n / partSize)}, (_, i) => "regional-data-" + (i + 1)));
+        }
         return xml(
           `<sitemapindex${namespace}>${parts.map((p) => `<sitemap><loc>${html(origin + prefix + p + ".xml")}</loc></sitemap>`).join("")}</sitemapindex>`,
         );
@@ -766,9 +789,9 @@ async function renderPublicDirectory(
           );
         }
       } else {
-        const match = /^\/discover\/sitemap\/(studies-|datasets-)?([1-9]\d{0,5})\.xml$/.exec(path);
-        const part = match?.[1] === "studies-" ? "study" : match?.[1] === "datasets-" ? "dataset" : "publication";
-        if (!match || !{ study: hasStudies, dataset: hasDatasets, publication: hasPubs }[part]) return page({ kind: "not-found" }, 404);
+        const match = /^\/discover\/sitemap\/(studies-|datasets-|regional-data-)?([1-9]\d{0,5})\.xml$/.exec(path);
+        const part = match?.[1] === "studies-" ? "study" : match?.[1] === "datasets-" ? "dataset" : match?.[1] === "regional-data-" ? "regional-data" : "publication";
+        if (!match || !{ study: hasStudies, dataset: hasDatasets, "regional-data": hasRegionalData, publication: hasPubs }[part]) return page({ kind: "not-found" }, 404);
         entries = (
           await rows<{ id: string; checked: string | null }>(
             researchDb,
@@ -777,7 +800,7 @@ async function renderPublicDirectory(
             partSize,
             (Number(match[2]) - 1) * partSize,
           )
-        ).map((r) => ({ loc: origin + { study: studyPath, dataset: datasetPath, publication: pubPath }[part](r.id), lastmod: r.checked ?? undefined }));
+        ).map((r) => ({ loc: origin + { study: studyPath, dataset: datasetPath, "regional-data": regionalDataPath, publication: pubPath }[part](r.id), lastmod: r.checked ?? undefined }));
         if (!entries.length) return page({ kind: "not-found" }, 404);
       }
       const seen = new Set<string>();
@@ -816,7 +839,7 @@ async function renderPublicDirectory(
     const scoped = /^\/discover\/(institution|topic|county)\/([^/]+)$/.exec(path);
     let refs: Institution[] = [];
     const needsRefs =
-      scoped || path === newPath || path === feedPath || combinedApi || pubApi || studyApi || datasetList || datasetsLanding || (path === browsePath && hasPubs);
+      scoped || path === newPath || path === feedPath || combinedApi || pubApi || studyApi || datasetList || regionalList || datasetsLanding || (path === browsePath && hasPubs);
     if (
       needsRefs &&
       (hasPubs ||
@@ -840,8 +863,8 @@ async function renderPublicDirectory(
       path === feedPath ||
       pubApi ||
       studyApi ||
-      datasetList ||
-      (datasetsLanding && hasDatasets) ||
+      datasetList || regionalList ||
+      (datasetsLanding && (hasDatasets || hasRegionalData)) ||
       combinedApi ||
       (scoped && refs.length > 0) ||
       (path === browsePath && searchParams.has("kind") && !hasPubs) ||
@@ -850,6 +873,7 @@ async function renderPublicDirectory(
     ) {
       if (pubApi && !hasPubs) return json(() => ({ error: "publication_not_found" }), 404);
       if (studyApi && !hasStudies) return json(() => ({ error: "study_not_found" }), 404);
+      if (regionalList && !hasRegionalData) return json(() => ({ error: "regional_data_not_found" }), 404);
       if (datasetList && !hasDatasets) return json(() => ({ error: "dataset_not_found" }), 404);
       const options = optionsFor(catalog, removed, refs);
       const params = new URLSearchParams(searchParams);
@@ -864,6 +888,7 @@ async function renderPublicDirectory(
       if (pubApi) params.set("kind", "publication");
       if (studyApi) params.set("kind", "study");
       if (datasetList) params.set("kind", "dataset");
+      if (regionalList) params.set("kind", "regional-data");
       if (path === feedPath || path === newPath) params.set("sort", "added");
       // A landing page is the unfiltered first page. Every other combination is a search result.
       const filtered = [...searchParams.keys()].some((key) => key !== "page");
@@ -887,7 +912,7 @@ async function renderPublicDirectory(
       // The datasets page reads like a search for kind=dataset, newest release first.
       const query = new URLSearchParams(params);
       if (datasetsLanding) {
-        query.set("kind", "dataset");
+        query.set("kind", hasRegionalData ? "__datasets" : "dataset");
         if (!query.get("sort") && !query.get("q")) query.set("sort", "activity");
       }
       const result = hasPubs
@@ -895,7 +920,7 @@ async function renderPublicDirectory(
         : projectQuery(catalog, removed, params, options, refs);
       if (scoped && !result.total && !options[scoped[1] as keyof typeof options].has(params.get(scoped[1])!))
         return page({ kind: "not-found" }, 404);
-      if (pubApi || combinedApi || studyApi || datasetList) {
+      if (pubApi || combinedApi || studyApi || datasetList || regionalList) {
         const publicationIds = result.items.flatMap((i) =>
           i.kind === "publication" ? [i.record.published_as, i.record.preprint_of].filter(Boolean) : [],
         );
@@ -910,8 +935,10 @@ async function renderPublicDirectory(
               ).map((r) => r.id)
             : [],
         );
+        const regionalRecords = await regionalDataRecords(researchDb, result.items.flatMap(i => i.kind === "regional-data" ? [i.record] : []));
+        const regionalById = new Map(regionalRecords.map(r => [r.id,r]));
         const listings = result.items.map((i) =>
-          i.kind === "project"
+          i.kind === "regional-data" ? {kind:i.kind,record:regionalById.get(i.record.id)!} : i.kind === "project"
             ? { kind: i.kind, record: publicProject(i.record) }
             : i.kind === "publication" ? {
                 kind: i.kind,
@@ -926,7 +953,7 @@ async function renderPublicDirectory(
         return json(() => ({
           ...(pubApi
             ? { publications: listings.map((i) => i.record) }
-            : studyApi ? { studies: listings.map((i) => i.record) } : datasetList ? { datasets: listings.map((i) => i.record) } : { listings }),
+            : studyApi ? { studies: listings.map((i) => i.record) } : regionalList ? { regional_data: listings.map((i) => i.record) } : datasetList ? { datasets: listings.map((i) => i.record) } : { listings }),
           page: result.page,
           page_size: 24,
           total: "more" in result && result.more ? result.total : result.counts.reduce((sum, kind) => sum + kind.works, 0),
@@ -944,7 +971,7 @@ async function renderPublicDirectory(
       const now = new Date();
       const feed = feedUrl(datasetsLanding ? query : params);
       const landing = !filtered && !pageNo;
-      const choices = datasetsLanding ? await datasetFacetChoices(researchDb, names) : undefined;
+      const choices = datasetsLanding ? await datasetFacetChoices(researchDb, names, hasRegionalData) : undefined;
       const described = describeQuery(datasetsLanding ? new URLSearchParams([...params, ["kind", "dataset"]]) : params, names, path === newPath, choices?.repositories);
       let header: string, title: string, description: string, about: Record<string, unknown> | undefined, aside = "";
       const crumbs: [string, string][] = [["Directory", browsePath]];
@@ -1038,6 +1065,7 @@ async function renderPublicDirectory(
             enabled: hasPubs,
             studiesAvailable: hasStudies,
             datasetsAvailable: hasDatasets,
+            regionalDataAvailable: hasRegionalData,
             scope: scoped?.[1],
             byDate: path === newPath,
             aside,
@@ -1126,7 +1154,7 @@ async function renderPublicDirectory(
   }
   if (pathname === "/discover" || pathname === "/discover/") return redirect(browsePath + search);
   if (pathname === methodPath || pathname === methodPath + "/")
-    return page({ kind: "methodology", publications: hasPubs, studies: hasStudies, datasets: hasDatasets }, 200);
+    return page({ kind: "methodology", publications: hasPubs, studies: hasStudies, datasets: hasDatasets, regionalData: hasRegionalData }, 200);
 
   const entityMatch = entityRoute.exec(pathname);
   if (entityMatch) {

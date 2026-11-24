@@ -1,3 +1,4 @@
+import type { GuidanceStep } from "./directory-use-guidance";
 import {
   browsePath, directoryParams, githubAccount, httpsUrl, lastActivity, methodPath, projectPath,
   type DirectoryCatalog, type DirectoryProject, type DirectoryQuery, type EntityKind, type FacetKey,
@@ -174,4 +175,9 @@ export function feedbackBlock(page: string, removal: string) {
     </details>
     <p class="feedback-removal muted">${removal}</p>
   </section>`;
+}
+
+export function renderUseGuidance(steps: GuidanceStep[]) {
+  if (!steps.length) return "";
+  return `<section class="record-section"><h2>How to use</h2><ol>${steps.map(step => `<li>${html(step.text)}${step.links?.map(link => ` ${externalLink(link.url, link.label)}`).join("") ?? ""}${step.command ? `<pre><code>${html(step.command)}</code></pre>` : ""}</li>`).join("")}</ol></section>`;
 }
