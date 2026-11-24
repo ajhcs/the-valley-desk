@@ -206,6 +206,13 @@
       ],
       "portal": [
         "https://data.cdc.gov/api/views/p56q-jrxg.json"
+      ],
+      "time_span": [
+        "https://data.cdc.gov/resource/p56q-jrxg.json?%24select=min%28year%29+as+first_year%2Cmax%28year%29+as+last_year&%24limit=1"
+      ],
+      "how_to_use": [
+        "https://data.cdc.gov/api/views/p56q-jrxg.json",
+        "https://data.cdc.gov/resource/p56q-jrxg.json?%24select=min%28year%29+as+first_year%2Cmax%28year%29+as+last_year&%24limit=1"
       ]
     },
     "query": {
@@ -220,6 +227,13 @@
       "format": "json",
       "path": "/rowsUpdatedAt",
       "observed": 1516636611
+    },
+    "time_span_query": {
+      "url": "https://data.cdc.gov/resource/p56q-jrxg.json?%24select=min%28year%29+as+first_year%2Cmax%28year%29+as+last_year&%24limit=1",
+      "fetched_at": "2026-11-24T14:24:51.515032+00:00",
+      "http_status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "result_description": "Aggregate returned first_year 1999 and last_year 2016."
     }
   },
   "regional:cdc-kn79-hsxy": {

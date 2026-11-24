@@ -132,7 +132,7 @@
       "Philadelphia"
     ],
     "granularity": "county",
-    "time_span": null,
+    "time_span": "1999–2016",
     "update_cadence": null,
     "access": "open",
     "license": "Public Domain U.S. Government",
@@ -147,7 +147,8 @@
       "step": "Run the bounded Philadelphia query to inspect a sample record.",
       "url": "https://data.cdc.gov/resource/p56q-jrxg.json?%24where=fips%3D%2742101%27&%24limit=1",
       "caveats": [
-        "Review the source documentation and limitations before interpreting estimates."
+        "These historical data end in 2016 and do not describe current drug-poisoning mortality.",
+        "County age-adjusted rates are model-based estimates; consult the source methods and limitations."
       ],
       "citation": "NCHS/DVS. NCHS - Drug Poisoning Mortality by County: United States."
     },
