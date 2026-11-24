@@ -331,7 +331,8 @@
         "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
+        "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/",
+        "https://phl.carto.com/api/v2/sql?q=SELECT+%2A+FROM+child_blood_lead_levels_by_zip+LIMIT+1"
       ],
       "time_span": [
         "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/"
@@ -385,7 +386,8 @@
         "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/",
+        "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vital_Social_Determinants_PD/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json"
       ],
       "time_span": [
         "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/"
@@ -439,7 +441,8 @@
         "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/",
+        "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vital_Mortality_PD/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json"
       ],
       "time_span": [
         "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/"
@@ -493,7 +496,8 @@
         "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
+        "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/",
+        "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vital_Natality_PD/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json"
       ],
       "time_span": [
         "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/"
@@ -547,7 +551,8 @@
         "https://opendataphilly.org/datasets/ppr-tree-canopy/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/ppr-tree-canopy/"
+        "https://opendataphilly.org/datasets/ppr-tree-canopy/",
+        "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/TreeCanopyChange_2008_2018/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json"
       ],
       "time_span": [
         "https://opendataphilly.org/datasets/ppr-tree-canopy/"
@@ -601,7 +606,8 @@
         "https://opendataphilly.org/datasets/vacant-property-indicators/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/vacant-property-indicators/"
+        "https://opendataphilly.org/datasets/vacant-property-indicators/",
+        "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vacant_Indicators_Bldg/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json"
       ]
     },
     "query": {
@@ -1088,7 +1094,8 @@
       "how_to_use": [
         "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
         "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0?f=json",
-        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json"
+        "https://www.arcgis.com/sharing/rest/content/items/b167bb2ae09c43f8ab9e954700be45d9?f=json",
+        "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0/query?where=COUNTY%3D%27GLOUCESTER%27&returnCountOnly=true&f=json"
       ],
       "update_cadence": [
         "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
@@ -1186,6 +1193,10 @@
       ],
       "how_to_use": [
         "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+        "https://data.nj.gov/api/views/nfsa-3664.json",
+        "https://data.nj.gov/resource/nfsa-3664.json?%24select=county%2Ccount%28%2A%29&%24where=county+in+%28%27Burlington%27%2C%27Camden%27%2C%27Gloucester%27%2C%27Mercer%27%29&%24group=county"
+      ],
+      "update_cadence": [
         "https://data.nj.gov/api/views/nfsa-3664.json"
       ]
     },
@@ -1260,7 +1271,8 @@
       ],
       "how_to_use": [
         "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
-        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json"
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1?f=json",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1/query?where=COUNTY_NAME%3D%27Chester%27&returnCountOnly=true&f=json"
       ]
     },
     "query": {
@@ -1357,11 +1369,8 @@
       ],
       "how_to_use": [
         "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
-        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
-      ],
-      "time_span": [
-        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
-        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json"
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1?f=json",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1/query?where=COUNTY%3D%27Chester%27&returnCountOnly=true&f=json"
       ]
     },
     "query": {
@@ -1458,11 +1467,8 @@
       ],
       "how_to_use": [
         "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
-        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
-      ],
-      "time_span": [
-        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
-        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json"
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0?f=json",
+        "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0/query?where=COUNTY%3D%27Chester%27&returnCountOnly=true&f=json"
       ]
     },
     "query": {
@@ -1550,7 +1556,8 @@
         "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/"
+        "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/",
+        "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/heat_vulnerability_ct/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json"
       ]
     },
     "query": {
@@ -1601,7 +1608,8 @@
         "https://opendataphilly.org/datasets/covid-19-vaccinations/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/covid-19-vaccinations/"
+        "https://opendataphilly.org/datasets/covid-19-vaccinations/",
+        "https://phl.carto.com/api/v2/sql?q=SELECT+%2A+FROM+covid_vaccine_totals+LIMIT+1"
       ],
       "time_span": [
         "https://opendataphilly.org/datasets/covid-19-vaccinations/"
@@ -1655,7 +1663,8 @@
         "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/free-food-and-meal-sites/"
+        "https://opendataphilly.org/datasets/free-food-and-meal-sites/",
+        "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/free_meal_sites/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json"
       ]
     },
     "query": {
@@ -1706,7 +1715,8 @@
         "https://opendataphilly.org/datasets/neighborhood-food-retail/"
       ],
       "how_to_use": [
-        "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+        "https://opendataphilly.org/datasets/neighborhood-food-retail/",
+        "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/NeighborhoodFoodRetail/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json"
       ],
       "update_cadence": [
         "https://opendataphilly.org/datasets/archived-philadelphia-food-access/"

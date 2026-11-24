@@ -216,8 +216,8 @@
       "type": "CARTO SQL API"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/philadelphia-child-blood-lead-levels/",
+      "step": "Run the query to inspect one sample row.",
+      "url": "https://phl.carto.com/api/v2/sql?q=SELECT+%2A+FROM+child_blood_lead_levels_by_zip+LIMIT+1",
       "caveats": [
         "Cell counts below six are suppressed; these are historical data."
       ],
@@ -252,8 +252,8 @@
       "type": "ArcGIS Feature Service"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/philadelphia-vital-statistics-social-determinants-of-health-sdoh/",
+      "step": "Run the query to inspect one feature without geometry.",
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vital_Social_Determinants_PD/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
       "caveats": [
         "Consult the publisher’s technical notes for definitions and limitations."
       ],
@@ -288,8 +288,8 @@
       "type": "ArcGIS Feature Service"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/philadelphia-vital-statistics-mortality-deaths/",
+      "step": "Run the query to inspect one feature without geometry.",
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vital_Mortality_PD/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
       "caveats": [
         "Estimates may be preliminary; consult quality flags and technical notes."
       ],
@@ -324,8 +324,8 @@
       "type": "ArcGIS Feature Service"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/philadelphia-vital-statistics-natality-births/",
+      "step": "Run the query to inspect one feature without geometry.",
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vital_Natality_PD/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
       "caveats": [
         "Estimates may be preliminary; consult quality flags and technical notes."
       ],
@@ -360,8 +360,8 @@
       "type": "ArcGIS Feature Service"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/ppr-tree-canopy/",
+      "step": "Run the query to inspect one feature without geometry.",
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/TreeCanopyChange_2008_2018/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
       "caveats": [
         "The canopy change layer is historical and does not represent current conditions."
       ],
@@ -396,8 +396,8 @@
       "type": "ArcGIS Feature Service"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/vacant-property-indicators/",
+      "step": "Run the query to inspect one feature without geometry.",
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Vacant_Indicators_Bldg/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
       "caveats": [
         "Indicators estimate likely vacancy; verify individual properties before drawing conclusions."
       ],
@@ -648,8 +648,8 @@
       "type": "ArcGIS REST"
     },
     "how_to_use": {
-      "step": "Query the API or explore the source dataset.",
-      "url": "https://gisdata-njdep.opendata.arcgis.com/datasets/b167bb2ae09c43f8ab9e954700be45d9_0/explore",
+      "step": "Run the query to count records in Gloucester County.",
+      "url": "https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_NJEMS/MapServer/0/query?where=COUNTY%3D%27GLOUCESTER%27&returnCountOnly=true&f=json",
       "caveats": [
         "Sites without coordinates are omitted from the map.",
         "Listing does not establish current exposure or health risk.",
@@ -676,7 +676,7 @@
     ],
     "granularity": "Pharmacy",
     "time_span": null,
-    "update_cadence": null,
+    "update_cadence": "Weekly",
     "access": "open",
     "license": null,
     "formats": [
@@ -687,10 +687,11 @@
       "type": "Socrata"
     },
     "how_to_use": {
-      "step": "Query the API or explore the source dataset.",
-      "url": "https://data.nj.gov/Health/Naloxone365-NJ-Free-Naloxone-at-Pharmacies-Program/nfsa-3664",
+      "step": "Run the query to count participating pharmacies in each of the four New Jersey counties.",
+      "url": "https://data.nj.gov/resource/nfsa-3664.json?%24select=county%2Ccount%28%2A%29&%24where=county+in+%28%27Burlington%27%2C%27Camden%27%2C%27Gloucester%27%2C%27Mercer%27%29&%24group=county",
       "caveats": [
-        "Confirm participation and availability with the pharmacy; data may be outdated."
+        "Confirm participation and availability with the pharmacy; data may be outdated.",
+        "The publisher lists a January 10, 2023 start and weekly posting, but its data update timestamp was September 15, 2025; information may be stale."
       ],
       "citation": "New Jersey Department of Human Services. Naloxone365: NJ Free Naloxone at Pharmacies Program."
     },
@@ -725,8 +726,8 @@
       "type": "ArcGIS REST"
     },
     "how_to_use": {
-      "step": "Query the API or explore the source dataset.",
-      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1",
+      "step": "Run the query to count records in Chester County.",
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/CleanWater/WQDS_WaterSamples/MapServer/1/query?where=COUNTY_NAME%3D%27Chester%27&returnCountOnly=true&f=json",
       "caveats": [
         "Environmental samples do not establish drinking-water compliance or individual exposure."
       ],
@@ -751,7 +752,7 @@
       "Philadelphia"
     ],
     "granularity": "Stream assessment",
-    "time_span": "2026",
+    "time_span": null,
     "update_cadence": null,
     "access": "open",
     "license": null,
@@ -763,10 +764,11 @@
       "type": "ArcGIS REST"
     },
     "how_to_use": {
-      "step": "Query the API or explore the source dataset.",
-      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1",
+      "step": "Run the query to count records in Chester County.",
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/1/query?where=COUNTY%3D%27Chester%27&returnCountOnly=true&f=json",
       "caveats": [
-        "Multiple assessed uses can produce multiple records for a stream; do not interpret counts as unique streams."
+        "Multiple assessed uses can produce multiple records for a stream; do not interpret counts as unique streams.",
+        "This is the 2026 report edition; assessment records can refer to earlier years."
       ],
       "citation": "Pennsylvania Department of Environmental Protection. Pennsylvania 2026 Integrated Report stream assessments."
     },
@@ -789,7 +791,7 @@
       "Philadelphia"
     ],
     "granularity": "Lake assessment",
-    "time_span": "2026",
+    "time_span": null,
     "update_cadence": null,
     "access": "open",
     "license": null,
@@ -801,10 +803,11 @@
       "type": "ArcGIS REST"
     },
     "how_to_use": {
-      "step": "Query the API or explore the source dataset.",
-      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0",
+      "step": "Run the query to count records in Chester County.",
+      "url": "https://gis.dep.pa.gov/depgisprd/rest/services/BureauOfCleanWater/IR_2026_DATA/MapServer/0/query?where=COUNTY%3D%27Chester%27&returnCountOnly=true&f=json",
       "caveats": [
-        "Multiple assessed uses can produce multiple records for a lake; do not interpret counts as unique lakes."
+        "Multiple assessed uses can produce multiple records for a lake; do not interpret counts as unique lakes.",
+        "This is the 2026 report edition; assessment records can refer to earlier years."
       ],
       "citation": "Pennsylvania Department of Environmental Protection. Pennsylvania 2026 Integrated Report lake assessments."
     },
@@ -837,8 +840,8 @@
       "type": "ArcGIS Feature Service"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/heat-vulnerability-by-census-tract/",
+      "step": "Run the query to inspect one feature without geometry.",
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/heat_vulnerability_ct/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
       "caveats": [
         "The index combines indicators; consult the metadata before comparing tracts."
       ],
@@ -871,8 +874,8 @@
       "type": "CARTO SQL API"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/covid-19-vaccinations/",
+      "step": "Run the query to inspect one sample row.",
+      "url": "https://phl.carto.com/api/v2/sql?q=SELECT+%2A+FROM+covid_vaccine_totals+LIMIT+1",
       "caveats": [
         "This is a historical snapshot; vaccination counts include residents and non-residents."
       ],
@@ -907,8 +910,8 @@
       "type": "ArcGIS Feature Service"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/free-food-and-meal-sites/",
+      "step": "Run the query to inspect one feature without geometry.",
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/free_meal_sites/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
       "caveats": [
         "The city updates active status as needed; check site details before visiting."
       ],
@@ -943,8 +946,8 @@
       "type": "ArcGIS Feature Service"
     },
     "how_to_use": {
-      "step": "Open the dataset page and select a resource or query the API.",
-      "url": "https://opendataphilly.org/datasets/neighborhood-food-retail/",
+      "step": "Run the query to inspect one feature without geometry.",
+      "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/NeighborhoodFoodRetail/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=false&resultRecordCount=1&f=json",
       "caveats": [
         "The publisher says its methodology differs substantially from the archived Philadelphia Food Access data."
       ],
