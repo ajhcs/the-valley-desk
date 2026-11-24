@@ -1,7 +1,7 @@
 // Stateless, unauthenticated, read-only MCP server over Streamable HTTP.
 // Serves the 2026-07-28 revision (no handshake, no sessions) and, on the same endpoint, the
 // legacy initialize handshake that 2025-era clients still send. One POST, one JSON response.
-import { callTool, hasTool, toolDefinitions, type ToolContext } from "./tools";
+import { callTool, hasTool, definitionsFor, type ToolContext } from "./tools";
 
 export const modernVersion = "2026-07-28";
 export const legacyVersions = ["2025-11-25", "2025-06-18", "2025-03-26"];
@@ -138,7 +138,7 @@ export async function serveMcp(request: Request, env: McpEnv): Promise<Response>
       return result({});
     case "tools/list":
       if (params.cursor !== undefined) return failure(modern ? 400 : 200, id, -32602, "Invalid cursor. The tool list has one page.");
-      return result({ tools: toolDefinitions, ...(modern ? { ttlMs: listTtlMs, cacheScope: "public" } : {}) });
+      return result({ tools: await definitionsFor(env), ...(modern ? { ttlMs: listTtlMs, cacheScope: "public" } : {}) });
     case "tools/call": {
       if (!hasTool(params.name)) return failure(modern ? 400 : 200, id, -32602, "Unknown tool.");
       if (env.limiter) {

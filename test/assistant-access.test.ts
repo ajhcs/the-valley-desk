@@ -560,3 +560,20 @@ test("WebMCP script registers the server's tools and is inert without the API", 
     close();
   }
 });
+
+test("regional-data MCP discovery and input validation follow its visibility gate", async () => {
+  const { env, sqlite, close } = directory();
+  try {
+    sqlite.exec("CREATE TABLE regional_data_visibility (id INTEGER PRIMARY KEY, enabled INTEGER NOT NULL); INSERT INTO regional_data_visibility VALUES (1,0)");
+    const searchDefinition = async () => (await rpc(env, "tools/list")).body.result.tools.find((t: {name: string}) => t.name === "search");
+    assert.ok(!(await searchDefinition()).inputSchema.properties.kind.enum.includes("regional-data"));
+    assert.equal((await call(env, "search", { kind: "regional-data" })).isError, true);
+    sqlite.exec("UPDATE regional_data_visibility SET enabled=1");
+    const enabled = await searchDefinition();
+    assert.ok(enabled.inputSchema.properties.kind.enum.includes("regional-data"));
+    assert.ok(enabled.outputSchema.properties.results.items.properties.kind.enum.includes("regional-data"));
+    assert.match(enabled.description, /regional data resources/);
+    sqlite.exec("DROP TABLE regional_data_visibility");
+    assert.ok(!(await searchDefinition()).inputSchema.properties.kind.enum.includes("regional-data"));
+  } finally { close(); }
+});

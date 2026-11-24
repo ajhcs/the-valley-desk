@@ -1,3 +1,5 @@
+import { regionalDataApi, regionalDataId, regionalDataPath, type RegionalData } from "../ingest/regional-data-contract";
+import { regionalDataEnabled } from "../ingest/regional-data-read";
 // Read-only directory tools shared by the MCP server and, through it, the WebMCP page tools.
 // Record reads go through servePublicDirectory, the handler behind the public JSON API, so
 // removals, the fail-closed check and version filtering behave exactly as they do on the site.
@@ -259,7 +261,7 @@ const tools: Tool[] = [
   },
 ];
 
-export const toolDefinitions = tools.map(({ name, title, description, inputSchema, outputSchema, invoking, invoked }) => ({
+const definitions = (source: Tool[]) => source.map(({ name, title, description, inputSchema, outputSchema, invoking, invoked }) => ({
   name,
   title,
   description,
@@ -268,6 +270,14 @@ export const toolDefinitions = tools.map(({ name, title, description, inputSchem
   annotations: { title, ...annotations },
   _meta: meta(invoking, invoked),
 }));
+export const toolDefinitions = definitions(tools);
+export async function definitionsFor(context: ToolContext) {
+  let enabled = false;
+  try { enabled = !!context.db && await regionalDataEnabled(context.db); } catch { /* fail closed */ }
+  if (!enabled) return toolDefinitions.map((tool) => ({ ...tool, inputSchema: { ...tool.inputSchema, properties: { ...tool.inputSchema.properties, ...(tool.inputSchema.properties.kind ? { kind: { ...tool.inputSchema.properties.kind, enum: ["project", "publication", "study", "dataset"] } } : {}) } } }));
+  const enabledListing = { ...listing, properties: { ...listing.properties, kind: { type: "string", enum: ["project", "publication", "study", "dataset", "regional-data"] } }, required: ["id", "kind", "title", "url"] };
+  return definitions(tools.map((tool) => ({ ...tool, outputSchema: tool.name === "search" || tool.name === "whats_new" ? { ...pageSchema, properties: { ...pageSchema.properties, results: { type: "array", items: enabledListing } } } : tool.outputSchema, description: tool.name === "search" || tool.name === "fetch" || tool.name === "whats_new" ? tool.description + " Includes regional data resources." : tool.description, inputSchema: { ...tool.inputSchema, properties: { ...tool.inputSchema.properties, ...(tool.inputSchema.properties.kind ? { kind: { ...tool.inputSchema.properties.kind, enum: ["project", "publication", "study", "dataset", "regional-data"] } } : {}) } } })));
+}
 export const hasTool = (name: unknown) => tools.some((tool) => tool.name === name);
 
 function validate(schema: InputSchema, input: unknown): Args {
@@ -331,8 +341,13 @@ type ApiListing =
   | { kind: "project"; record: Record<string, any> }
   | { kind: "publication"; record: Publication }
   | { kind: "study"; record: ClinicalStudy }
-  | { kind: "dataset"; record: Dataset };
+  | { kind: "dataset"; record: Dataset }
+  | { kind: "regional-data"; record: RegionalData };
 function summarize(item: ApiListing, context: ToolContext, refs: Institution[]) {
+  if (item.kind === "regional-data") {
+    const d = item.record;
+    return { ...d, kind: item.kind, url: context.origin + regionalDataPath(d.id), resource_url: d.url, dates: { added: d.added, checked: d.checked } };
+  }
   if (item.kind === "dataset") {
     const d = item.record;
     return present({
@@ -465,7 +480,7 @@ function recordId(value: string, origin: string) {
     } catch {
       throw new ToolError("id is not a valid URL.");
     }
-    const match = /^\/discover\/(work|publication|study|dataset)\/([^/]+)\/?$/.exec(url.pathname);
+    const match = /^\/discover\/(work|publication|study|dataset|regional-data)\/([^/]+)\/?$/.exec(url.pathname);
     if (!["thevalleydesk.org", "www.thevalleydesk.org", new URL(origin).hostname].includes(url.hostname) || !match) {
       throw new ToolError("fetch reads thevalleydesk.org record URLs and directory ids only.");
     }
@@ -474,14 +489,24 @@ function recordId(value: string, origin: string) {
     } catch {
       throw new ToolError("id is not a valid URL.");
     }
-    return { id, dataset: match[1] === "dataset" };
+    return { id, dataset: match[1] === "dataset", regional: match[1] === "regional-data" };
   }
-  return { id, dataset: false };
+  return { id, dataset: false, regional: false };
 }
 
 async function fetchRecord(value: string, context: ToolContext) {
   const named = recordId(value, context.origin);
   const id = named.id;
+  if (named.regional || regionalDataId.test(id)) {
+    if (!context.db || !(await regionalDataEnabled(context.db))) throw new ToolError("No directory record has this id. Use search to find records and their ids.");
+    const { status, body } = await api(context, regionalDataApi + "/" + encodeURIComponent(id));
+    if (status === 410) throw new ToolError("This record has been removed from the directory.");
+    if (status !== 200) throw new ToolError("No directory record has this id. Use search to find records and their ids.");
+    const d = body.regional_data as RegionalData;
+    const url = context.origin + regionalDataPath(d.id);
+    const metadata = { ...d, kind: "regional-data" };
+    return { id: d.id, title: d.title, text: plain(d.title, url, metadata), url, metadata };
+  }
   const project = /^[1-9][0-9]{0,19}$/.test(id);
   const study = studyId.test(id);
   // A bare DOI can name a publication or a deposited dataset: the publication is tried first.
@@ -671,7 +696,8 @@ export async function callTool(name: string, input: unknown, context: ToolContex
   const tool = tools.find((candidate) => candidate.name === name)!;
   const failure = (message: string) => ({ content: [{ type: "text", text: message }], isError: true });
   try {
-    const structuredContent = await tool.run(validate(tool.inputSchema, input), context);
+    const visible = (await definitionsFor(context)).find((definition) => definition.name === name)!;
+    const structuredContent = await tool.run(validate(visible.inputSchema, input), context);
     return { content: [{ type: "text", text: JSON.stringify(structuredContent) }], structuredContent, isError: false };
   } catch (error) {
     if (error instanceof ToolError) return failure(error.message);
