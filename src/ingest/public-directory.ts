@@ -81,6 +81,7 @@ import {
   namesFor,
   organizationSchema,
   summarize,
+  weeklyAdditions,
   type Names,
   type ScopeField,
 } from "./public-directory-entity";
@@ -284,10 +285,10 @@ function describeQuery(params: URLSearchParams, names: Names, added = false, rep
   return parts.join(" ") + (page > 1 ? `, page ${page}` : "");
 }
 
-function filteredHeader(crumbs: [string, string][], described: string, path: string) {
+function filteredHeader(crumbs: [string, string][], described: string) {
   return `<header class="entity-head"><nav class="breadcrumb" aria-label="Breadcrumb">${crumbs
     .map(([name, href]) => `<a href="${html(href)}">${html(name)}</a>`)
-    .join('<span aria-hidden="true">/</span>')}</nav><h1>${html(described)}</h1><p class="muted">A filtered view. <a href="${html(path)}">Show the full list</a>.</p></header>`;
+    .join('<span aria-hidden="true">/</span>')}</nav><h1>${html(described)}</h1></header>`;
 }
 
 const highwireDate = (value: string) => value.replaceAll("-", "/");
@@ -841,6 +842,7 @@ async function renderPublicDirectory(
     }
     if (path === "/" && (hasPubs || hasRegionalData)) {
       const summary = await summarize(researchDb);
+      summary.week = await weeklyAdditions(researchDb, summary);
       const latest = (
         await rows<{ kind: Listing["kind"]; record: string }>(
           researchDb,
@@ -1020,7 +1022,7 @@ async function renderPublicDirectory(
           : `${described}. ${resultCount(result) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
         header = landing
           ? `<header class="entity-head"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a></nav><h1>Datasets</h1><p class="lede">${html(introduction)}</p></header>`
-          : filteredHeader(crumbs, described, path);
+          : filteredHeader(crumbs, described);
       } else if (scope) {
         const county = counties.find((c) => facetSlug(c.name) === scope.slug);
         const place = county ? `${scope.name}, ${county.state === "NJ" ? "New Jersey" : "Pennsylvania"}` : scope.name;
@@ -1044,7 +1046,7 @@ async function renderPublicDirectory(
           aside = (scope.field === "institution" ? partnerList(await partners(researchDb, scope.slug), names) : "") + built.index;
           description = built.description;
         } else {
-          header = filteredHeader(crumbs, described, path);
+          header = filteredHeader(crumbs, described);
           title = described;
           description = `${described}. ${resultCount(result) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
         }
@@ -1078,8 +1080,8 @@ async function renderPublicDirectory(
           ? `Search ${kindCounts(result.counts)} connected to the nine-county Delaware Valley by title, term, institution, topic or county.`
           : `${described}. ${resultCount(result) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
         header = landing
-          ? `<header class="entity-head"><h1>${searchTitle}</h1><p class="lede">The directory lists ${kindCounts(result.counts)} connected to the nine-county Delaware Valley. Search titles, terms and institutions, or narrow the list by kind, institution, topic and county.</p></header>`
-          : filteredHeader(crumbs, described, path);
+          ? `<header class="entity-head"><h1>${searchTitle}</h1></header>`
+          : filteredHeader(crumbs, described);
       }
       const q = params.get("q")?.slice(0, 200).match(/[\p{L}\p{N}]+/gu);
       // Only the first page of a search shows who works on the subject.

@@ -413,7 +413,7 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     <script src="/directory-theme.js" defer></script>
     <script src="/webmcp.js" defer></script>
     ${view.kind === "project" || view.kind === "research" ? '<script src="/directory-feedback.js" defer></script>' : ""}
-    ${view.kind === "results" || view.kind === "home" ? '<script src="/directory-search.js" defer></script>' : ""}
+    <script src="/directory-search.js" defer></script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   </head>

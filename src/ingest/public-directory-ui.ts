@@ -79,13 +79,48 @@ export function sourceIcon(value: string | null | undefined, label: string) {
   return url ? `<a class="source-mark" href="${html(url)}" rel="noreferrer" title="${html(label)}">${icon("source")}<span class="sr-only">${html(label)}</span></a>` : "";
 }
 
-export function searchInput(query = "") {
+/**
+ * The search field. The ruled box and its key hint are the same on every page; the page chooses
+ * what the placeholder invites. "/" focuses the field (see /directory-search.js).
+ */
+export function searchInput(query = "", placeholder = "Search a subject, method, institution or author") {
   return `<div class="search-box">
     <label class="sr-only" for="directory-search">Search research listings</label>
-    <svg class="search-icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
-    <input type="search" id="directory-search" name="q" value="${html(query)}" placeholder="Search the directory" maxlength="200">
-    <button class="button primary" type="submit">Search</button>
+    ${icon("search", undefined, "search-icon")}
+    <input type="search" id="directory-search" name="q" value="${html(query)}" placeholder="${html(placeholder)}" maxlength="200" data-search-key>
+    <kbd class="search-key" aria-hidden="true">/</kbd>
+    <button class="button primary" type="submit">Search${icon("arrow")}</button>
   </div>`;
+}
+
+/** The five kinds of listing, in the order every count strip shows them. */
+export const ledgerKinds = [
+  ["publication", "publication", "Publication", "Publications"],
+  ["project", "software", "Software project", "Software projects"],
+  ["study", "study", "Clinical study", "Clinical studies"],
+  ["dataset", "dataset", "Dataset", "Datasets"],
+  ["regional-data", "regional", "Regional dataset", "Regional datasets"],
+] as const;
+export type LedgerKind = (typeof ledgerKinds)[number][0];
+export type LedgerEntry = { kind: LedgerKind; n: number; href?: string; week?: number; current?: boolean };
+
+/**
+ * Counts by kind as a ledger: one cell per kind with its mark, its figure and its name. It stands
+ * wherever the directory states how much it holds, so the same five marks carry from the home page
+ * to a search, a county or an institution. A cell with a link opens that kind's listings.
+ */
+export function kindLedger(entries: LedgerEntry[], variant: "hero" | "bar" = "bar", label = "Listings by kind") {
+  const cells = ledgerKinds
+    .map(([kind, glyph, one, many]) => {
+      const entry = entries.find((e) => e.kind === kind);
+      if (!entry || (!entry.n && !entry.current)) return "";
+      const week = entry.week ? `<span class="ledger-week" title="Added to the directory in the past seven days">+${count(entry.week)}<span class="sr-only"> added in the past seven days</span><span aria-hidden="true"> this week</span></span>` : "";
+      const body = `<span class="ledger-label"><span class="ledger-mark">${icon(glyph)}</span><span class="ledger-name">${entry.n === 1 ? one : many}</span></span><span class="ledger-n">${count(entry.n)}</span>${week}`;
+      const state = entry.current ? ' aria-current="true"' : "";
+      return `<li class="ledger-cell ledger-${kind}">${entry.href ? `<a href="${html(entry.href)}"${state}>${body}</a>` : `<span${state}>${body}</span>`}</li>`;
+    })
+    .join("");
+  return cells ? `<ul class="ledger ledger-${variant}" aria-label="${html(label)}">${cells}</ul>` : "";
 }
 
 export function projectPlace(catalog: DirectoryCatalog, project: DirectoryProject) {

@@ -93,7 +93,7 @@ test("pages offer similar research, who works on a search, partners and recent p
 
     const home = await text("/");
     assert.match(home, /Recently published/);
-    assert.match(home, /Looking for collaborators\?/);
+    assert.match(home, /see who in the region works on it/);
     assert.doesNotMatch(home, /Publication dates run from/);
   } finally {
     rmSync(dir, { recursive: true, force: true });

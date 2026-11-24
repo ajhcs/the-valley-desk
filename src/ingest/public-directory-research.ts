@@ -1,6 +1,6 @@
 import type { PublicRegionalData } from "./regional-data-read";
 import { datasetUseGuidance } from "./directory-use-guidance";
-import { renderUseGuidance } from "./public-directory-ui";
+import { kindLedger, renderUseGuidance } from "./public-directory-ui";
 import { regionalDataPath, type RegionalData, type DirectoryAccess } from "./regional-data-contract";
 import {
   browsePath,
@@ -708,8 +708,20 @@ function datasetRecord(d: Dataset) {
     <p class="record-topic">${topicTag(topicLink(d.topic), d.topic)}${timestamp(d.added) ? `<span>Added ${timestamp(d.added)}</span>` : ""}</p>
   </li>`;
 }
+/** Where a public dataset applies: every county at once, or the named ones linked to their pages. */
+function regionalPlaces(names: string[]) {
+  if (names.length === counties.length) return `<span class="meta-item">${icon("place")}<span>All nine counties</span></span>`;
+  return namedLinks("place", countyLinks(names.map((c) => counties.find((item) => facetSlug(item.name) === facetSlug(c))?.name ?? c)), 5);
+}
 function regionalDataCard(d: RegionalData) {
-  return `<li class="record record-dataset"><p class="record-kind">Regional data · ${html(d.publisher)}</p><h3 class="record-title"><a href="${html(regionalDataPath(d.id))}">${html(d.title)}</a></h3><p>${html(d.summary)}</p><p>${html(d.counties.join(", ") || "Not stated")}</p></li>`;
+  const topic = d.topic.replaceAll("-", " ").replace(/^./, (c) => c.toUpperCase());
+  return `<li class="record record-regional">
+    <p class="record-kind">${kindIcon("regional", "Regional data")}<span class="record-repository">${html(d.publisher)}</span>${d.update_cadence ? `<span>Updated ${html(d.update_cadence.toLowerCase())}</span>` : ""}${accessTag(d.access)}</p>
+    <h3 class="record-title"><a href="${html(regionalDataPath(d.id))}">${html(d.title)}</a></h3>
+    <p class="record-summary">${html(d.summary)}</p>
+    <p class="record-evidence">${regionalPlaces(d.counties)}${d.granularity ? `<span class="meta-item muted">by ${html(d.granularity.toLowerCase())}</span>` : ""}</p>
+    <p class="record-topic">${topicTag(topicLink(topic), topic)}${timestamp(d.added) ? `<span>Added ${timestamp(d.added)}</span>` : ""}</p>
+  </li>`;
 }
 
 export function renderRegionalData(d: PublicRegionalData) {
@@ -720,10 +732,10 @@ export function renderRegionalData(d: PublicRegionalData) {
   const level = accessLevels[d.access];
   const source = externalLink(d.url, "View public record ↗", "button primary");
   const api = d.api ? `${externalLink(d.api.url, d.api.type) || html(d.api.type)}` : "Not stated";
-  return `<article class="frame page record-page dataset-page">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a><span aria-hidden="true">/</span><a href="${datasetsPath}">Datasets</a></nav>
+  return `<article class="frame page record-page dataset-page regional-page">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a><span aria-hidden="true">/</span><a href="${datasetsPath}?kind=regional-data">Regional data</a></nav>
     <header class="record-head">
-      <p class="record-kind">${kindIcon("dataset", "Regional data")}<span>Regional data</span>${accessTag(d.access)}</p>
+      <p class="record-kind">${kindIcon("regional", "Regional data")}<span>${html(d.publisher)}</span>${accessTag(d.access)}</p>
       <h1>${html(d.title)}</h1>
       <p class="lede">${html(d.summary)}</p>
       <p class="record-actions">${source}</p>
@@ -840,7 +852,7 @@ export function paperDatasets(items: Dataset[]) {
 }
 export function similarSection(items: Listing[], catalog: DirectoryCatalog, heading = "Similar research in the Delaware Valley") {
   if (!items.length) return "";
-  return `<section class="related similar" aria-labelledby="similar-title"><div class="section-heading"><h2 id="similar-title">${html(heading)}</h2></div><p class="section-note">Publications, clinical studies and software from the region that share this record’s distinctive subject words. Use them to see who else in the region works on the subject.</p>${renderListingCards(items, catalog)}</section>`;
+  return `<section class="related similar" aria-labelledby="similar-title"><div class="section-heading"><h2 id="similar-title">${html(heading)}</h2></div><p class="section-note">Regional listings that share this record’s subject words.</p>${renderListingCards(items, catalog)}</section>`;
 }
 
 export function renderStudy(study: ClinicalStudy, refs: Institution[] = [], similar: Listing[] = [], catalog?: DirectoryCatalog) {
@@ -957,9 +969,18 @@ export type ResearchPage = {
 };
 
 export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, datasetsAvailable, regionalDataAvailable, publicationsAvailable = true, scope = "", byDate, aside, facets, orders, feed }: ResearchPage) {
+  // Filters in use, each removable on its own from the bar above the listings.
+  const active: [name: string, text: string][] = [];
+  const filterIcons: Record<string, IconName> = {
+    kind: "publication", institution: "institution", topic: "other-science", county: "place",
+    access: "access-open", datatype: "dataset", repository: "research-data", sort: "sort",
+  };
+  const filterLabel = (name: string, label: string) => `<span class="filter-name">${icon(filterIcons[name] ?? "filter")}${label}</span>`;
   function select(name: string, label: string, choices: [string, string][], all = "All") {
     const selected = params.get(name) ?? "";
-    return `<label>${label}<select form="research-form" name="${name}"><option value="">${all}</option>${choices
+    const chosen = choices.find(([v]) => v === selected || v === facetSlug(selected));
+    if (chosen) active.push([name, chosen[1]]);
+    return `<label${chosen ? ' class="is-set"' : ""}>${filterLabel(name, label)}<select form="research-form" name="${name}"><option value="">${all}</option>${choices
       .map(
         ([v, n]) =>
           `<option value="${html(v)}"${v === selected || v === facetSlug(selected) ? " selected" : ""}>${html(n)}</option>`,
@@ -969,8 +990,6 @@ export function renderResearch({ header, path, params, data, catalog, options, e
   const names = { institution: ["Institution", "All institutions"], topic: ["Topic", "All topics"], county: ["County", "All counties"] };
   const totalPages = Math.ceil(data.total / 24);
   const first = (data.page - 1) * 24 + 1;
-  const range =
-    data.total > 24 ? `<span class="muted"> · listings ${count(first)}–${count(first + data.items.length - 1)}</span>` : "";
   let list = "";
   if (!data.items.length) {
     list = `<div class="empty-result"><h2>No matching listings</h2><p>Try fewer words or <a href="${html(path)}">clear the filters</a>.</p></div>`;
@@ -1007,7 +1026,7 @@ export function renderResearch({ header, path, params, data, catalog, options, e
             ),
         ]),
     path !== newPath && enabled
-      ? `<label>Order<select form="research-form" name="sort">${[
+      ? `<label>${filterLabel("sort", "Order")}<select form="research-form" name="sort">${[
           ...(params.get("q") ? [["relevance", "Relevance"]] : []),
           ...(orders ?? [
             ["added", "Date added"],
@@ -1019,18 +1038,44 @@ export function renderResearch({ header, path, params, data, catalog, options, e
           .join("")}</select></label>`
       : "",
   ].filter(Boolean);
+  const without = (...names: string[]) => {
+    const next = new URLSearchParams(params);
+    for (const name of [...names, "page"]) next.delete(name);
+    return html(path + (next.size ? "?" + next : ""));
+  };
+  const query = params.get("q")?.trim();
+  const chips = [...(query ? [["q", `“${query}”`] as [string, string]] : []), ...active]
+    .map(([name, text]) => `<li><a class="filter-chip" href="${without(name)}" aria-label="Remove filter ${html(text)}">${html(text)}${icon("close")}</a></li>`)
+    .join("");
+  // The counts are the kind filter: each cell narrows the listings to its kind.
+  const narrowed = params.get("kind") ?? "";
+  const ledger = kindLedger(
+    data.counts.map((row) => {
+      const next = new URLSearchParams(params);
+      next.delete("page");
+      next.set("kind", row.kind);
+      return { kind: row.kind, n: row.works, current: narrowed === row.kind, href: narrowed === row.kind ? undefined : path + "?" + next };
+    }),
+    "bar",
+    "Matching listings by kind",
+  );
+  const versions = data.counts.reduce((sum, row) => sum + row.n - row.works, 0);
   return `<div class="frame page research-page">${header}
     <form id="research-form" class="research-search" action="${html(path)}" method="get" role="search">${searchInput(params.get("q") ?? "")}</form>
     <div class="research-layout${aside ? " has-index" : ""}">
       <div class="research-filters">
-        <h2 class="rail-heading">Refine</h2>
+        <h2 class="rail-heading">${icon("filter")}Refine</h2>
         ${filters.join("")}
-        <button class="button secondary" type="submit" form="research-form">Apply</button>
+        <button class="button primary" type="submit" form="research-form">Apply${icon("arrow")}</button>
         ${path === browsePath ? '<p class="rail-note"><a href="/discover/works?tools=project">Software filters: language, license, GitHub activity</a></p>' : ""}
       </div>
       <section class="research-results" aria-label="Listings">
-        <div class="results-bar"><p class="results-count"><strong>${resultCount(data, true) || "No matching listings"}</strong>${data.more ? `<span class="muted"> · most relevant first</span>` : range}</p>
-        <p class="results-links"><a href="${html(feed ?? feedUrl(params))}">RSS feed of additions</a></p></div>
+        <div class="results-bar">
+          ${ledger || '<p class="results-count"><strong>No matching listings</strong></p>'}
+          <p class="results-links"><a class="feed-link" href="${html(feed ?? feedUrl(params))}">${icon("feed")}RSS</a></p>
+        </div>
+        ${chips ? `<ul class="active-filters" aria-label="Filters in use">${chips}${chips.split("</li>").length > 2 ? `<li><a class="reset-link" href="${html(path)}">Clear all</a></li>` : ""}</ul>` : ""}
+        ${ledger ? `<p class="results-note muted">${data.more ? "Most relevant first" : data.total > 24 ? `Listings ${count(first)}–${count(first + data.items.length - 1)} of ${count(data.total)}` : ""}${versions > 0 ? `${data.more || data.total > 24 ? " · " : ""}${count(data.total)} records including versions` : ""}</p>` : ""}
         ${list}
         ${pageLinks(path, params, data.page, totalPages)}
       </section>

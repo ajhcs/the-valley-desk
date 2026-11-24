@@ -165,7 +165,7 @@ export function groupList(groups: ActiveGroups, names: Names, q: string) {
   const within = (field: "institution" | "county", value: string) =>
     `${entityHref(field, value)}?${new URLSearchParams({ q })}`;
   const sample = groups.sampled >= groupSample ? `the ${count(groupSample)} listings that best match` : `the ${count(groups.sampled)} listings that match`;
-  return `<section class="tally groups" aria-labelledby="groups-title"><h2 id="groups-title">Who works on this in the region</h2><p class="tally-note">Institutions and counties named most often among ${sample} “${html(q)}”. Each link opens that institution’s or county’s listings for this search.</p><ul>${groups.institution
+  return `<section class="tally groups" aria-labelledby="groups-title"><h2 id="groups-title">Who works on this in the region</h2><p class="tally-note">Named most often among ${sample} “${html(q)}”. Each link narrows this search.</p><ul>${groups.institution
     .map((r) => `<li><a href="${html(within("institution", r.value))}">${html(names.institution(r.value))}</a><span>${count(r.n)}</span></li>`)
     .join("")}</ul>${groups.county.length ? `<h3>Counties</h3><ul>${groups.county
     .map((r) => `<li><a href="${html(within("county", r.value))}">${html(names.county(r.value))} County</a><span>${count(r.n)}</span></li>`)

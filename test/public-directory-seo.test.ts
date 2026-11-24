@@ -42,7 +42,7 @@ test("landing pages answer in computed sentences and carry matching metadata", a
 
     const institution = await text("/discover/institution/fixture-institute");
     assert.match(institution, new RegExp(`Fictional Estuary Research Institute has ${works} publications`));
-    assert.match(institution, /Counts computed from the directory on <time/);
+    assert.match(institution, /Counted <time/);
     assert.match(institution, /not a complete record of regional research/);
     assert.match(institution, /<link rel="canonical" href="https:\/\/thevalleydesk.org\/discover\/institution\/fixture-institute">/);
     assert.match(institution, /<link rel="alternate" type="application\/rss\+xml" title="Additions: Fictional Estuary Research Institute" href="\/discover\/updates.xml\?institution=fixture-institute">/);
@@ -93,7 +93,7 @@ test("landing pages answer in computed sentences and carry matching metadata", a
     const [site, catalog] = schemaOf(home);
     assert.equal(site.potentialAction.target.urlTemplate, origin + "/discover/works?q={search_term_string}");
     assert.equal(catalog["@type"], "DataCatalog");
-    assert.match(home, new RegExp(`<p class="lede">${works} publications`));
+    assert.match(home, new RegExp(`ledger-publication"><a href="/discover/works\\?kind=publication">[\\s\\S]*?<span class="ledger-n">${works}</span>`));
     assert.match(home, /href="\/discover\/institution\/fixture-institute"/);
 
     const directory = await text("/discover/sitemap/directory.xml");

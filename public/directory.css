@@ -606,3 +606,228 @@ input, select { accent-color: var(--accent); }
 .offer-row .button { min-width: 5.5rem; }
 .support-in-kind .button { margin-top: .3rem; }
 .support-closing { margin-top: 2rem; padding-top: .9rem; border-top: 1px solid var(--line); }
+
+/* ==========================================================================
+   The ledger layer. One set of marks, figures and pressed controls across the
+   site: counts are ledger cells, controls sit on an ink edge like set type.
+   ========================================================================== */
+.directory-site { --edge: var(--rule); --press: 2px; }
+.record-regional .kind, .regional-page .record-kind .kind { color: var(--regional); }
+.regional-page .get-data { border-top-color: var(--regional); }
+.eyebrow { display: flex; align-items: center; gap: .35rem; }
+.eyebrow .glyph { width: 1rem; height: 1rem; }
+
+/* Buttons: a flat face on an ink edge that presses down. */
+.button {
+  gap: .45rem;
+  border: 1.5px solid var(--edge);
+  border-radius: 3px;
+  box-shadow: var(--press) var(--press) 0 var(--edge);
+  letter-spacing: .01em;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.button .glyph { width: 1.05em; height: 1.05em; stroke-width: 1.8; }
+.button:hover, .button.primary:hover { text-decoration: none; transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--edge); }
+.button:active, .button.primary:active { transform: translate(var(--press), var(--press)); box-shadow: 0 0 0 var(--edge); }
+.button.secondary { border-color: var(--edge); color: var(--text); }
+.button.secondary:hover { background: var(--card); }
+
+/* Search: the same pressed box, with the submit button set flush inside it. */
+.search-box {
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: .6rem;
+  padding: .3rem;
+  padding-inline-start: .85rem;
+  border: 1.5px solid var(--edge);
+  border-radius: 3px;
+  box-shadow: 3px 3px 0 var(--edge);
+  transition: box-shadow .12s ease, border-color .12s ease;
+}
+.search-box:focus-within { border-color: var(--accent); box-shadow: 3px 3px 0 var(--accent); outline-offset: 5px; }
+.search-box .search-icon { width: 1.25rem; height: 1.25rem; color: var(--text); }
+.search-box input { min-height: 48px; font-size: 1.05rem; }
+.search-box input::-webkit-search-cancel-button { cursor: pointer; }
+.search-box .button { min-height: 48px; padding-inline: 1.1rem; border-color: transparent; box-shadow: none; }
+.search-box .button:hover, .search-box .button:active { transform: none; box-shadow: none; }
+.search-box .button:hover .glyph { transform: translateX(2px); }
+.search-box .button .glyph { transition: transform .12s ease; }
+.search-key {
+  min-width: 1.5rem;
+  padding: .05rem .4rem;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  color: var(--muted);
+  font: 600 .78rem/1.4 var(--sans);
+  text-align: center;
+}
+.search-box:focus-within .search-key, .search-box:has(input:not(:placeholder-shown)) .search-key { visibility: hidden; }
+@media (hover: none), (max-width: 33rem) { .search-key { display: none; } .search-box { grid-template-columns: auto minmax(0, 1fr) auto; } }
+
+/* Chips: suggestions to try and filters in use. */
+.chip, .filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 36px;
+  padding: .2rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--card);
+  color: var(--text);
+  font-size: .88rem;
+  text-decoration: none;
+}
+.chip:hover, .filter-chip:hover { border-color: var(--edge); text-decoration: none; }
+.filter-chip { border-color: var(--edge); font-weight: 600; }
+.filter-chip .glyph { width: .9rem; height: .9rem; color: var(--muted); }
+.filter-chip:hover .glyph { color: var(--publication); }
+.active-filters { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; margin: 0 0 .5rem; padding: 0; list-style: none; }
+.active-filters .reset-link { min-height: 36px; padding-inline: .3rem; }
+
+/* The ledger: counts by kind. */
+.ledger { margin: 0; padding: 0; list-style: none; }
+.ledger-publication { --kind: var(--publication); }
+.ledger-project { --kind: var(--software); }
+.ledger-study { --kind: var(--study); }
+.ledger-dataset { --kind: var(--dataset); }
+.ledger-regional-data { --kind: var(--regional); }
+.ledger-mark { display: inline-flex; color: var(--kind); }
+.ledger-n { font-variant-numeric: tabular-nums lining-nums; }
+
+.ledger-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.25rem, 1fr));
+  margin-block: 1.25rem .6rem;
+  border-top: 2px solid var(--edge);
+  border-bottom: 1px solid var(--line);
+}
+.ledger-hero .ledger-cell { border-inline-start: 1px solid var(--line); margin-inline-start: -1px; }
+.ledger-hero .ledger-cell > * {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: .3rem;
+  height: 100%;
+  padding: .7rem .75rem .75rem;
+  color: var(--text);
+  text-decoration: none;
+  box-shadow: inset 0 3px 0 transparent;
+  transition: box-shadow .12s ease, background-color .12s ease;
+}
+.ledger-hero a:hover { background: var(--card); box-shadow: inset 0 3px 0 var(--kind); }
+.ledger-label { display: inline-flex; align-items: center; gap: .35rem; }
+.ledger-hero .ledger-label { align-items: flex-start; min-height: 1.85rem; }
+.ledger-hero .ledger-label { order: 2; color: var(--kind); }
+.ledger-hero .ledger-mark .glyph { width: 1.15rem; height: 1.15rem; stroke-width: 1.5; }
+.ledger-hero .ledger-n { order: 1; font: 600 clamp(1.4rem, 2.4vw, 1.75rem)/1.05 var(--serif); letter-spacing: -.01em; }
+.ledger-hero .ledger-name { color: var(--muted); font-size: .7rem; font-weight: 600; letter-spacing: .05em; line-height: 1.25; text-transform: uppercase; }
+.ledger-hero .ledger-week { order: 0; color: var(--kind); font-size: .76rem; font-weight: 600; white-space: nowrap; }
+.ledger-stamp { display: flex; flex-wrap: wrap; align-items: center; gap: .15rem .45rem; margin-bottom: 1.15rem; color: var(--muted); font-size: .84rem; }
+.ledger-live { width: .5rem; height: .5rem; border-radius: 50%; background: var(--verified-text); animation: ledger-live 2.6s ease-out infinite; }
+@keyframes ledger-live {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--verified-text) 55%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 .45rem transparent; }
+}
+
+.ledger-bar { display: flex; flex-wrap: wrap; gap: .4rem .5rem; }
+.ledger-bar .ledger-cell > * {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  min-height: 40px;
+  padding: .3rem .7rem;
+  border: 1px solid var(--line);
+  border-bottom: 2px solid var(--kind);
+  border-radius: 3px;
+  background: var(--card);
+  color: var(--text);
+  font-size: .9rem;
+  text-decoration: none;
+}
+.ledger-bar .ledger-label { display: contents; }
+.ledger-bar .ledger-mark { order: 0; }
+.ledger-bar .ledger-n { order: 1; }
+.ledger-bar .ledger-name { order: 2; }
+.ledger-bar .ledger-mark .glyph { width: 1.1rem; height: 1.1rem; }
+.ledger-bar .ledger-n { font-weight: 700; }
+.ledger-bar .ledger-name { color: var(--muted); }
+.ledger-bar a:hover { border-color: var(--kind); }
+.ledger-bar [aria-current] { border-color: var(--kind); background: color-mix(in srgb, var(--kind) 12%, var(--card)); }
+.ledger-bar [aria-current] .ledger-name { color: var(--text); }
+.entity-head .ledger-bar { margin-top: .9rem; }
+.entity-head .as-of { margin-top: .8rem; }
+
+/* Home: the title, the ledger and search beside the nine-county map. */
+.home-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(15rem, 1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  max-width: none;
+}
+.home-intro h1 { font-size: clamp(2rem, 4.4vw, 3.1rem); }
+.home-search { max-width: 46rem; }
+.home-examples { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; margin-top: .9rem; }
+.home-examples > span { font-size: .74rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
+.home-map .county-figure { margin: 0; }
+.home-map .county-map { max-width: 25rem; margin-inline: auto; }
+.home-map figcaption { margin-top: .4rem; text-align: center; }
+.county-map a path { transition: stroke-width .1s ease; }
+
+/* Filters: labelled with their mark; a filter in use carries the accent edge. */
+.rail-heading { display: flex; align-items: center; gap: .4rem; }
+.rail-heading .glyph { width: 1rem; height: 1rem; }
+.research-filters { gap: .8rem; }
+.research-filters label { gap: .3rem; color: var(--muted); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; }
+.filter-name { display: inline-flex; align-items: center; gap: .35rem; }
+.filter-name .glyph { width: 1rem; height: 1rem; }
+.research-filters select, .sort-value {
+  appearance: none;
+  padding: .45rem 2.1rem .45rem .7rem;
+  border-radius: 3px;
+  background-color: var(--card);
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 1.05rem) 50%, calc(100% - .7rem) 50%;
+  background-size: .35rem .35rem;
+  background-repeat: no-repeat;
+  font-size: .94rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.research-filters select:hover, .sort-value:hover { border-color: var(--edge); }
+.research-filters .is-set { color: var(--accent); }
+.research-filters .is-set select {
+  border-color: var(--accent);
+  box-shadow: inset 4px 0 0 var(--accent);
+  background-color: color-mix(in srgb, var(--accent) 7%, var(--card));
+  font-weight: 600;
+}
+.research-filters > .button { width: 100%; margin-top: .2rem; }
+.results-bar { align-items: center; padding-bottom: .6rem; }
+.results-note { margin: 0 0 .5rem; font-size: .84rem; }
+.results-note:empty { display: none; }
+.feed-link { gap: .3rem; font-size: .84rem; font-weight: 600; letter-spacing: .04em; text-decoration: none; }
+.feed-link .glyph { width: 1rem; height: 1rem; }
+.feed-link:hover { text-decoration: underline; }
+.page-links a, .page-links .current-page { border-radius: 3px; }
+.page-links a:hover { border-color: var(--edge); background: var(--card); }
+
+@media (max-width: 53rem) {
+  .home-intro { grid-template-columns: 1fr; }
+  .home-map .county-map { max-width: 20rem; }
+  .research-filters > .button { grid-column: 1 / -1; }
+}
+@media (max-width: 33rem) {
+  .ledger-hero { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .search-box .button { padding-inline: .8rem; }
+  .search-box .button .glyph { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .button, .search-box, .search-box .button .glyph, .ledger-hero .ledger-cell > * { transition: none; }
+  .button:hover, .button:active { transform: none; }
+  .ledger-live { animation: none; }
+}

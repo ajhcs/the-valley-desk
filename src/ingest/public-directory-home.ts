@@ -1,8 +1,9 @@
 import { renderListingCards, type Listing } from "./public-directory-research";
 import { countyGeometry, countyViewBox } from "./public-directory-counties";
 import { browsePath, counties, type DirectoryCatalog } from "./public-directory-data";
-import { asOf, entityHref, kindPhrase, type DirectorySummary, type Names } from "./public-directory-entity";
-import { count, healthTopic, href, html, projectCards, searchInput, timestamp } from "./public-directory-ui";
+import { asOf, entityHref, kindPhrase, summaryLedger, type DirectorySummary, type Names } from "./public-directory-entity";
+import { count, healthTopic, href, html, kindLedger, projectCards, searchInput, timestamp } from "./public-directory-ui";
+import { icon } from "./public-directory-icons";
 
 type Home = ReturnType<DirectoryCatalog["home"]>;
 type Row = { name: string; href: string; n: number; note?: string };
@@ -42,7 +43,7 @@ function map(rows: Map<string, number>, hrefFor: (name: string) => string, unit:
         })
         .join("")}
     </svg>
-    <figcaption>Shading shows the number of ${unit} that record each county. A listing can record more than one county or none.</figcaption>
+    <figcaption>Darker counties have more ${unit}. Select a county to open it.</figcaption>
   </figure>`;
 }
 
@@ -81,11 +82,17 @@ export function renderDirectoryHome(
   const added = research ? Object.values(summary.kinds).map((kind) => kind.added).filter(Boolean).sort().at(-1) : undefined;
   return `<div class="frame home">
     <section class="home-intro">
-      <h1>Healthcare research in the Delaware Valley</h1>
-      <p class="lede">${lede}</p>
-      <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput()}</form>
-      ${research ? `<p class="home-researchers">Looking for collaborators? Search a subject to see who in the region works on it. Know of something we missed? <a href="/discover/suggest">Suggest it</a>.</p>` : ""}
-      ${home.examples.length ? `<p class="home-examples">For example: ${home.examples.map((example) => `<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join(", ")}</p>` : ""}
+      <div class="home-lead">
+        <p class="eyebrow">${icon("place")}Nine counties in Pennsylvania and New Jersey</p>
+        <h1>Healthcare research in the Delaware Valley</h1>
+        ${research ? kindLedger(summaryLedger(summary), "hero", "The directory by kind of listing") : `<p class="lede">${lede}</p>`}
+        ${research && added ? `<p class="ledger-stamp"><span class="ledger-live" aria-hidden="true"></span>Updated ${timestamp(added)} · <a href="/discover/new">see what was added</a></p>` : ""}
+        <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput("", research ? "Search a subject to see who in the region works on it" : undefined)}</form>
+        ${home.examples.length ? `<p class="home-examples"><span>Try</span>${home.examples.map((example) => `<a class="chip" href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join("")}</p>` : ""}
+      </div>
+      <div class="home-map">
+        ${map(countyCounts, (name) => (research ? entityHref("county", name.toLowerCase()) : catalog.entityHref("county", name)), unit)}
+      </div>
     </section>
     <div class="home-grid">
       <section class="home-latest" aria-labelledby="latest-title">
@@ -93,9 +100,7 @@ export function renderDirectoryHome(
         ${research ? renderListingCards(latest, catalog) : home.added.length ? projectCards(catalog, home.added, "cards", "added") : projectCards(catalog, home.recent)}
       </section>
       <section class="home-place" aria-labelledby="place-title">
-        <h2 id="place-title">By county</h2>
-        ${map(countyCounts, (name) => (research ? entityHref("county", name.toLowerCase()) : catalog.entityHref("county", name)), unit)}
-        ${tally("Counties", countyRows).replace("<h2>Counties</h2>", '<h3 class="sr-only">Counties</h3>')}
+        ${tally("By county", countyRows).replace("<h2>By county</h2>", '<h2 id="place-title">By county</h2>')}
       </section>
     </div>
     <div class="home-index">
