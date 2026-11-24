@@ -842,7 +842,8 @@ export function kindCounts(counts: Results["counts"], withVersions = false) {
       (r) =>
         count(r.works) +
         " " +
-        (r.works === 1 ? templates[r.kind].name : templates[r.kind].plural).toLowerCase() +
+        (r.kind === "regional-data" ? (r.works === 1 ? "regional data record" : "regional data records")
+          : (r.works === 1 ? templates[r.kind].name : templates[r.kind].plural).toLowerCase()) +
         (withVersions && r.n > r.works ? ` (${count(r.n)} records including versions)` : ""),
     )
     .reduce((text, part, i, parts) => text + (i === 0 ? "" : i === parts.length - 1 ? " and " : ", ") + part, "");

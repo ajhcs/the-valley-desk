@@ -259,9 +259,9 @@ function canonicalQuery(params: URLSearchParams) {
 }
 
 /** A readable name for a filtered view, built from the parameters in the URL. */
-function describeQuery(params: URLSearchParams, names: Names, added = false, repositories = new Map<string, string>()) {
+function describeQuery(params: URLSearchParams, names: Names, added = false, repositories = new Map<string, string>(), regionalDataAvailable = false) {
   const kind = params.get("kind");
-  const parts = [kind === "publication" ? "Publications" : kind === "project" ? "Research software" : kind === "study" ? "Clinical studies" : kind === "dataset" ? "Datasets" : "Healthcare research"];
+  const parts = [kind === "publication" ? "Publications" : kind === "project" ? "Research software" : kind === "study" ? "Clinical studies" : kind === "dataset" ? "Datasets" : kind === "regional-data" && regionalDataAvailable ? "Regional data" : "Healthcare research"];
   const q = params.get("q")?.trim();
   if (q) parts.push(`matching “${q.slice(0, 80)}”`);
   const datatype = params.getAll("datatype").filter(Boolean).map((t) => dataTypeLabel(facetSlug(t).replaceAll("-", " ")).toLowerCase());
@@ -279,7 +279,7 @@ function describeQuery(params: URLSearchParams, names: Names, added = false, rep
   const label = params.getAll("label").filter(Boolean);
   if (label.length) parts.push(`with ${label.join(" or ")} evidence`);
   if (!added && params.get("sort") === "name") parts.push("by title");
-  if (!added && params.get("sort") === "activity") parts.push(kind === "dataset" ? "by release date" : "by publication or push date");
+  if (!added && kind !== "regional-data" && params.get("sort") === "activity") parts.push(kind === "dataset" ? "by release date" : "by publication or push date");
   const page = Number(params.get("page"));
   return parts.join(" ") + (page > 1 ? `, page ${page}` : "");
 }
@@ -997,17 +997,25 @@ async function renderPublicDirectory(
       const feed = feedUrl(datasetsLanding ? query : params);
       const landing = !filtered && !pageNo;
       const choices = datasetsLanding ? await datasetFacetChoices(researchDb, names, hasRegionalData) : undefined;
-      const described = describeQuery(datasetsLanding ? new URLSearchParams([...params, ["kind", "dataset"]]) : params, names, path === newPath, choices?.repositories);
+      const described = describeQuery(
+        datasetsLanding ? new URLSearchParams([...params, ["kind", "dataset"]]) : params,
+        names, path === newPath, choices?.repositories, hasRegionalData,
+      );
       let header: string, title: string, description: string, about: Record<string, unknown> | undefined, aside = "";
       const crumbs: [string, string][] = [["Directory", browsePath]];
       if (datasetsLanding) {
         crumbs.push(["Datasets", datasetsPath]);
-        title = landing ? "Datasets from Delaware Valley research" : described;
+        const introduction = hasRegionalData
+          ? hasDatasets
+            ? "Browse datasets made by Delaware Valley researchers and public datasets about the region."
+            : "Browse health-related public datasets about the Delaware Valley."
+          : `${kindCounts(result.counts)} from regional research, each with the repository that holds it and how to get access. Newest releases first.`;
+        title = landing ? hasRegionalData ? "Delaware Valley datasets" : "Datasets from Delaware Valley research" : described;
         description = landing
-          ? `${kindCounts(result.counts)} connected to the nine-county Delaware Valley, with the repository that holds each one and how to get access.`
+          ? hasRegionalData ? introduction : `${kindCounts(result.counts)} connected to the nine-county Delaware Valley, with the repository that holds each one and how to get access.`
           : `${described}. ${resultCount(result) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
         header = landing
-          ? `<header class="entity-head"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a></nav><h1>Datasets</h1><p class="lede">${html(kindCounts(result.counts))} from regional research, each with the repository that holds it and how to get access. Newest releases first.</p></header>`
+          ? `<header class="entity-head"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a></nav><h1>Datasets</h1><p class="lede">${html(introduction)}</p></header>`
           : filteredHeader(crumbs, described, path);
       } else if (scope) {
         const county = counties.find((c) => facetSlug(c.name) === scope.slug);
@@ -1056,12 +1064,17 @@ async function renderPublicDirectory(
           <h1>What’s new</h1>
           <p class="lede">Additions are ordered by the date they entered the directory.</p></header>${recent.length ? `<section class="entity-head" aria-labelledby="published-this-month"><div class="section-heading"><h2 id="published-this-month">Published this month</h2><a href="${browsePath}?kind=publication&amp;date_from=${month}&amp;date_to=${localDay}&amp;sort=activity">All publications this month</a></div>${renderListingCards(recent.map(({ record }) => ({ kind: "publication", record: JSON.parse(record) })), catalog)}</section>` : ""}`;
       } else {
-        title = landing ? (hasStudies || hasDatasets ? "Search healthcare research" : "Search healthcare publications and research software") : described;
+        const searchTitle = hasRegionalData ? "Healthcare research and regional data"
+          : hasStudies || hasDatasets ? "Healthcare research" : "Publications and research software";
+        title = landing
+          ? hasRegionalData ? "Search healthcare research and regional data"
+            : hasStudies || hasDatasets ? "Search healthcare research" : "Search healthcare publications and research software"
+          : described;
         description = landing
           ? `Search ${kindCounts(result.counts)} connected to the nine-county Delaware Valley by title, term, institution, topic or county.`
           : `${described}. ${resultCount(result) || "No listings"} in The Valley Desk directory of Delaware Valley healthcare research.`;
         header = landing
-          ? `<header class="entity-head"><h1>${hasStudies || hasDatasets ? "Healthcare research" : "Publications and research software"}</h1><p class="lede">The directory lists ${kindCounts(result.counts)} connected to the nine-county Delaware Valley. Search titles, terms and institutions, or narrow the list by kind, institution, topic and county.</p></header>`
+          ? `<header class="entity-head"><h1>${searchTitle}</h1><p class="lede">The directory lists ${kindCounts(result.counts)} connected to the nine-county Delaware Valley. Search titles, terms and institutions, or narrow the list by kind, institution, topic and county.</p></header>`
           : filteredHeader(crumbs, described, path);
       }
       const q = params.get("q")?.slice(0, 200).match(/[\p{L}\p{N}]+/gu);
