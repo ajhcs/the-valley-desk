@@ -3,7 +3,7 @@ import {
   browsePath, directoryParams, githubAccount, httpsUrl, lastActivity, methodPath, projectPath,
   type DirectoryCatalog, type DirectoryProject, type DirectoryQuery, type EntityKind, type FacetKey,
 } from "./public-directory-data";
-import { icon, topicIcon, type IconName } from "./public-directory-icons";
+import { icon, type IconName } from "./public-directory-icons";
 
 const numberFormat = new Intl.NumberFormat("en-US");
 const dateFormat = new Intl.DateTimeFormat("en-US", {
@@ -57,26 +57,18 @@ export function regionalLabel(project: { label: string }) {
 }
 
 /**
- * The evidence label as a single icon for listing cards. The connection sentence stays on the
- * listing's own page and in the tooltip; the card shows only who and where.
+ * The evidence label on a listing card: the plain word "Verified", linked to its definition, and
+ * nothing for Listed. The label, connection sentence and source link stay on the listing's page.
  */
-export function evidenceMark(label: string, detail?: string | null) {
-  const verified = label === "Verified";
-  const text = detail ? `${label}: ${detail}` : label;
-  return `<a class="evidence-mark${verified ? " is-verified" : ""}" href="${methodPath}#${verified ? "verified" : "listed"}" title="${html(text)}">${icon(verified ? "verified" : "listed")}<span class="sr-only">${html(text)}</span></a>`;
+export function evidenceMark(label: string) {
+  return label === "Verified" ? `<a class="verified-word" href="${methodPath}#verified">Verified</a>` : "";
 }
 
-/** A short run of linked names after an icon, with a count for the rest. */
-export function namedLinks(glyph: IconName, links: string[], shown = 3) {
+/** The first names of a list, then a count for the rest: "Penn, CHOP +2". */
+export function namedLinks(links: string[], shown = 2) {
   if (!links.length) return "";
   const rest = links.length - shown;
-  return `<span class="meta-item">${icon(glyph)}<span>${links.slice(0, shown).join(", ")}${rest > 0 ? ` <span class="muted">+${count(rest)}</span>` : ""}</span></span>`;
-}
-
-/** A source link reduced to an icon, named for screen readers and on hover. */
-export function sourceIcon(value: string | null | undefined, label: string) {
-  const url = httpsUrl(value);
-  return url ? `<a class="source-mark" href="${html(url)}" rel="noreferrer" title="${html(label)}">${icon("source")}<span class="sr-only">${html(label)}</span></a>` : "";
+  return links.slice(0, shown).join(", ") + (rest > 0 ? ` <span class="meta-more">+${count(rest)}</span>` : "");
 }
 
 export function searchInput(query = "", placeholder = "Search the directory") {
@@ -130,7 +122,30 @@ export function projectPlace(catalog: DirectoryCatalog, project: DirectoryProjec
 }
 
 export const kindIcon = (glyph: IconName, name: string) => `<span class="kind">${icon(glyph)}${html(name)}</span>`;
-export const topicTag = (link: string, topic: string) => `<span class="meta-item">${topicIcon(topic)}${link}</span>`;
+
+const metaSep = '<span class="meta-sep" aria-hidden="true"> · </span>';
+/** The topic as the last item of a card's meta line. CSS hides it when it would start a new line. */
+export const topicTag = (link: string) => `<span class="meta-topic"><span>${metaSep}${link}</span></span>`;
+
+/**
+ * A listing card's one meta line: the kind label, then the facts a reader scans for, separated by
+ * middots, then the topic when it fits.
+ */
+export function cardMeta(kind: string, items: (string | false | null | undefined)[], topic = "") {
+  return `<p class="record-meta"><span class="meta-main">${kind}${items.filter(Boolean).join(metaSep)}</span>${topic}</p>`;
+}
+
+/**
+ * Bookkeeping for a record page, folded into one quiet line: when the source was last checked,
+ * with the remaining internal fields (listing ID, date added and the like) inside "Record details".
+ */
+export function recordDetails(checked: string, rows: [string, string | false | null | undefined][], checkedLabel = "Source checked") {
+  const when = timestamp(checked) || (checked ? html(checked) : "");
+  const facts = rows.filter((row): row is [string, string] => !!row[1]);
+  const line = when ? `<span>${html(checkedLabel)} ${when}</span>` : "";
+  if (!facts.length) return line ? `<p class="record-details">${line}</p>` : "";
+  return `<details class="record-details"><summary>${line}<span class="record-details-label">Record details</span></summary><dl class="facts">${facts.map(([label, value]) => `<div><dt>${html(label)}</dt><dd>${value}</dd></div>`).join("")}</dl></details>`;
+}
 
 /** Publication dates keep their source precision: a year, a month or a day. */
 const monthYear = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
@@ -156,28 +171,37 @@ export const otherTopicSlug = "other-science";
 export const healthTopic = (topic?: string | null) =>
   !!topic && topic !== otherTopic && topic.toLowerCase().replace(/[^a-z0-9]+/g, "-") !== otherTopicSlug;
 
-const kindDate = (project: DirectoryProject, dateField: "activity" | "added") => {
-  const date = timestamp(dateField === "added" ? project.added : lastActivity(project));
-  const label = dateField === "added" ? "Added" : lastActivity(project) === project.pushed ? "Code pushed" : "Updated";
-  return date ? `<span>${label} ${date}</span>` : "";
-};
+/** "Pushed" or "Updated", by whichever date is the project's last recorded activity. */
+function activityDate(project: DirectoryProject) {
+  const activity = lastActivity(project);
+  const date = timestamp(activity);
+  return date ? `<span class="nowrap">${activity === project.pushed ? "Pushed" : "Updated"} ${date}</span>` : "";
+}
 
-/** One catalogue entry for a software project. Publications share the same structure. */
-export function projectRecord(catalog: DirectoryCatalog, project: DirectoryProject, dateField: "activity" | "added" = "activity") {
-  const place = projectPlace(catalog, project);
+/** One catalogue entry for a software project: title, one meta line and a one-line summary. */
+export function projectRecord(catalog: DirectoryCatalog, project: DirectoryProject) {
+  const account = githubAccount(project);
+  const lab = project.lab || project.owner?.name;
+  const who = project.institution ? entityLink(catalog, "institution", project.institution)
+    : account ? entityLink(catalog, "lab", account, lab || project.profileLocation || `@${account}`) : lab ? html(lab) : "";
   return `<li class="record record-software">
-    <p class="record-kind">${kindIcon("software", "Software")}${project.language ? `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>` : ""}${project.license ? `<a href="${facetHref("license", project.license)}">${html(project.license)}</a>` : ""}${kindDate(project, dateField)}${project.archived === true ? '<span class="archive-mark">Archived</span>' : ""}</p>
     <h3 class="record-title"><a href="${html(projectPath(project))}">${html(project.name)}</a></h3>
-    <p class="record-summary">${html(project.purpose)}</p>
-    <p class="record-evidence">${evidenceMark(project.label, project.connection)}${place}</p>
-    <p class="record-topic">${topicTag(entityLink(catalog, "topic", project.topic), project.topic)}</p>
+    ${cardMeta(kindIcon("software", "Software"), [
+      project.language && `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>`,
+      activityDate(project), who, project.archived === true && "Archived", evidenceMark(project.label),
+    ], topicTag(entityLink(catalog, "topic", project.topic)))}
+    ${project.purpose ? `<p class="record-summary">${html(project.purpose)}</p>` : ""}
   </li>`;
 }
 
+/**
+ * Cards for software projects. The compact view drops the summary and sets the meta line beside the
+ * title on wide screens. Cards no longer show the date added, so the last argument is ignored.
+ */
 export function projectCards(
-  catalog: DirectoryCatalog, projects: readonly DirectoryProject[], variant: "cards" | "compact" = "cards", dateField: "activity" | "added" = "activity",
+  catalog: DirectoryCatalog, projects: readonly DirectoryProject[], variant: "cards" | "compact" = "cards", _dateField?: "activity" | "added",
 ) {
-  return `<ol class="records" data-view="${variant === "compact" ? "compact" : "full"}">${projects.map(project => projectRecord(catalog, project, dateField)).join("")}</ol>`;
+  return `<ol class="records" data-view="${variant === "compact" ? "compact" : "full"}">${projects.map(project => projectRecord(catalog, project)).join("")}</ol>`;
 }
 
 /**

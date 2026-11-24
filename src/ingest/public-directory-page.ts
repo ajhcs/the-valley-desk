@@ -11,7 +11,7 @@ import type { DirectorySummary, Names } from "./public-directory-entity";
 import { renderDirectoryResults, resultsHead } from "./public-directory-results";
 import {
   contactLink, count, entityLink, externalLink, facetHref, feedbackBlock, html, kindIcon, labelDefinitions, projectCards,
-  projectPlace, regionalLabel, timestamp,
+  projectPlace, recordDetails, regionalLabel, timestamp,
 } from "./public-directory-ui";
 import { icon } from "./public-directory-icons";
 import { supportOpen, supportPath } from "./public-support-data";
@@ -88,14 +88,10 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
   const pushed = timestamp(project.pushed);
   const updated = timestamp(project.updated);
   const facts = [
-    ["Language", project.language && `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>`],
     ["License", project.license && `<a href="${facetHref("license", project.license)}">${html(project.license)}</a>`],
-    ["Last code push", pushed],
     ["Last repository update", updated],
     ["Created", timestamp(project.created)],
-    ["Added to directory", timestamp(project.added)],
     ["GitHub stars at capture", project.stars != null ? count(project.stars) : ""],
-    ["Archive status", project.archived === true ? "Archived" : project.archived === false ? "Not archived" : ""],
     ["GitHub topics", tags],
   ].filter(([, value]) => value);
   const repositoryState = project.archived === true ? "Archived on GitHub"
@@ -105,7 +101,7 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
       <a href="${browsePath}">Directory</a><span aria-hidden="true">/</span>${entityLink(catalog, "topic", project.topic)}
     </nav>
     <header class="record-head">
-      <p class="record-kind">${kindIcon("software", "Software")}${project.language ? `<span>${html(project.language)}</span>` : ""}${pushed ? `<span>Code pushed ${pushed}</span>` : ""}</p>
+      <p class="record-kind">${kindIcon("software", "Software")}${project.language ? `<a href="${facetHref("language", project.language)}">${html(project.language)}</a>` : ""}${pushed ? `<span>Code pushed ${pushed}</span>` : ""}</p>
       <h1>${html(project.name)}</h1>
       <p class="lede">${html(project.purpose)}</p>
       ${place || county ? `<p class="record-place">${place}${county || ""}</p>` : ""}
@@ -119,7 +115,10 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
           <p class="record-evidence">${regionalLabel(project)} <span class="muted">${labelDefinitions[project.label]}</span></p>
           ${project.connection ? `<p>${html(project.connection)}</p>` : ""}
           <p class="detail-links">${externalLink(project.source, "View regional source ↗")}<a href="${methodPath}#regional-evidence">How regional evidence is labelled</a></p>
-          ${timestamp(project.checked) ? `<p class="muted">Source checked ${timestamp(project.checked)}</p>` : ""}
+          ${recordDetails(project.checked ?? "", [
+            ["Added to directory", timestamp(project.added)],
+            ["Archive status", project.archived === false ? "Not archived" : ""],
+          ])}
         </section>
         ${linked?.length ? `<section class="record-section"><h2>Publications in the directory</h2><ul class="plain-list">${linked.map(p => `<li><a href="${html(p.url)}">${html(p.title)}</a></li>`).join("")}</ul></section>` : ""}
         ${mentions?.length ? `<section class="record-section" aria-labelledby="mentions-title"><h2 id="mentions-title">Papers that link to this repository</h2><p class="muted">The full text of each paper links to this repository. A link can be a citation or use, not only a release.</p><ul class="plain-list">${mentions.map(p => `<li><a href="${html(p.url)}">${html(p.title)}</a></li>`).join("")}</ul></section>` : ""}
