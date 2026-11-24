@@ -26,11 +26,16 @@ const versionSql = `SELECT
   (SELECT group_concat(enabled) FROM study_visibility) visibility,
   (SELECT group_concat(id) FROM (SELECT id FROM dataset_removals ORDER BY id)) datasets,
   (SELECT group_concat(enabled) FROM dataset_visibility) dataset_visibility,
+  (SELECT group_concat(id) FROM (SELECT id FROM regional_data_removals ORDER BY id)) regional_removals,
+  (SELECT group_concat(enabled) FROM regional_data_visibility) regional_visibility,
+  (SELECT group_concat(id||':'||coalesce(checked,''),'|') FROM (SELECT id,checked FROM regional_data_checks ORDER BY id)) regional_checks,
+  (SELECT group_concat(dataset_id||':'||paper_id,'|') FROM (SELECT dataset_id,paper_id FROM regional_data_publications ORDER BY dataset_id,paper_id)) regional_publications,
   (SELECT first FROM research_summary_kinds WHERE scope_field='data' AND scope_value='' AND kind='directory') revision,
   (SELECT group_concat(kind||':'||n||':'||works||':'||coalesce(added,'')||':'||coalesce(last,''),'|')
      FROM (SELECT * FROM research_summary_kinds WHERE scope_field='' AND scope_value='' ORDER BY kind)) totals`;
 
-const withoutDatasets = versionSql.replace(/\n {2}\(SELECT group_concat\([^\n]*dataset_[^\n]*/g, "");
+const withoutRegional = versionSql.replace(/\n {2}\(SELECT group_concat\([^\n]*regional_data_[^\n]*/g, "");
+const withoutDatasets = withoutRegional.replace(/\n {2}\(SELECT group_concat\([^\n]*dataset_[^\n]*/g, "");
 
 async function digest(text: string) {
   const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
@@ -45,8 +50,12 @@ export async function dataVersion(db: Db | undefined, build: string) {
     try {
       result = await db.prepare(versionSql).all();
     } catch (error) {
-      if (!/no such table: dataset_/i.test(String(error))) throw error;
-      result = await db.prepare(withoutDatasets).all();
+      if (!/no such table: (dataset_|regional_data_)/i.test(String(error))) throw error;
+      try { result = await db.prepare(withoutRegional).all(); }
+      catch (fallbackError) {
+        if (!/no such table: dataset_/i.test(String(fallbackError))) throw fallbackError;
+        result = await db.prepare(withoutDatasets).all();
+      }
     }
     const [row] = result.results ?? [];
     if (result.success === false || !row) return undefined;

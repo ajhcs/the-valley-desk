@@ -1,3 +1,6 @@
+import { datasetUseGuidance, softwareUseGuidance } from "../ingest/directory-use-guidance";
+import { regionalDataApi, regionalDataId, regionalDataPath } from "../ingest/regional-data-contract";
+import { regionalDataEnabled, type PublicRegionalData } from "../ingest/regional-data-read";
 // Read-only directory tools shared by the MCP server and, through it, the WebMCP page tools.
 // Record reads go through servePublicDirectory, the handler behind the public JSON API, so
 // removals, the fail-closed check and version filtering behave exactly as they do on the site.
@@ -100,6 +103,7 @@ const listing = {
     status: { type: "string" },
     repository: { type: "string", description: "For a dataset, the repository that holds it." },
     access: { type: "string", description: "For a dataset: Open, Registration or Controlled." },
+    how_to_use: { type: "array", description: "Source-grounded use guidance for software or deposited datasets.", items: { type: "object" } },
   },
   required: ["id", "kind", "title", "url", "label", "dates"],
 };
@@ -259,7 +263,7 @@ const tools: Tool[] = [
   },
 ];
 
-export const toolDefinitions = tools.map(({ name, title, description, inputSchema, outputSchema, invoking, invoked }) => ({
+const definitions = (source: Tool[]) => source.map(({ name, title, description, inputSchema, outputSchema, invoking, invoked }) => ({
   name,
   title,
   description,
@@ -268,6 +272,57 @@ export const toolDefinitions = tools.map(({ name, title, description, inputSchem
   annotations: { title, ...annotations },
   _meta: meta(invoking, invoked),
 }));
+export const toolDefinitions = definitions(tools);
+const regionalKind: Property = {
+  ...filters.kind,
+  description: "Limit to a listing kind, including regional public data resources.",
+  enum: [...filters.kind.enum, "regional-data"],
+};
+const regionalListing = {
+  type: "object",
+  properties: {
+    id: { type: "string" }, kind: { const: "regional-data" }, title: { type: "string" },
+    url: { type: "string", description: "The Valley Desk resource page." },
+    resource_url: { type: "string", description: "The publisher's resource URL." },
+    summary: { type: "string" }, publisher: { type: "string" }, portal: { type: "string" },
+    topic: { type: "string" }, counties: { type: "array", items: { type: "string" } },
+    granularity: { type: ["string", "null"] }, time_span: { type: ["string", "null"] },
+    update_cadence: { type: ["string", "null"] }, access: { enum: ["open", "registration", "controlled"] },
+    license: { type: ["string", "null"] }, formats: { anyOf: [{ type: "array", items: { type: "string" } }, { type: "null" }] },
+    api: { anyOf: [{ type: "object", properties: { url: { type: "string" }, type: { type: "string" } }, required: ["url", "type"] }, { type: "null" }] },
+    how_to_use: { type: "object", properties: { step: { type: "string" }, url: { type: "string" }, caveats: { type: "array", items: { type: "string" } }, citation: { type: "string" } }, required: ["step", "url", "caveats", "citation"] },
+    added: { type: "string" }, checked: { type: "string", description: "Most recent successful source availability check." },
+    metadata_reviewed: { type: "string", description: "Date the reviewed catalog metadata was verified." }, dates: { type: "object" },
+    papers: { type: "array", items: { type: "object", properties: { id: { type: "string" }, title: { type: "string" } }, required: ["id", "title"] } },
+  },
+  required: ["id", "kind", "title", "url", "resource_url", "summary", "publisher", "portal", "topic", "counties", "granularity", "time_span", "update_cadence", "access", "license", "formats", "api", "how_to_use", "added", "checked", "metadata_reviewed", "papers"],
+};
+const enabledPageSchema = {
+  ...pageSchema,
+  properties: { ...pageSchema.properties, results: { type: "array", items: { oneOf: [listing, regionalListing] } } },
+};
+const enabledFetchSchema = {
+  ...tools[1].outputSchema,
+  properties: { ...(tools[1].outputSchema.properties as Record<string, unknown>), metadata: { type: "object", description: "Kind-specific record fields. A regional data record includes the fields below; metadata.url is its publisher URL.", properties: { ...regionalListing.properties, url: { type: "string", description: "Publisher resource URL." } } } },
+};
+const enabledDescriptions: Record<string, string> = {
+  search: "Search research software, publications, clinical studies, datasets and regional data resources in the Delaware Valley. Research listings carry Verified or Listed evidence labels; regional data resources describe their geographic coverage and access. Use the Valley Desk URL to cite a listing.",
+  fetch: "Get one directory record by id or Valley Desk URL. Research listings include regional evidence; regional data resources include geographic coverage, source and access guidance.",
+  whats_new: "List directory records added on or after a date. Research listings include evidence labels; regional data resources describe geographic coverage. The added date can differ from the research or data release date.",
+};
+const enabledTools = tools.map((tool): Tool => ({
+  ...tool,
+  description: enabledDescriptions[tool.name] ?? tool.description,
+  inputSchema: tool.inputSchema.properties.kind
+    ? { ...tool.inputSchema, properties: { ...tool.inputSchema.properties, kind: regionalKind } }
+    : tool.inputSchema,
+  outputSchema: tool.name === "search" || tool.name === "whats_new" ? enabledPageSchema : tool.name === "fetch" ? enabledFetchSchema : tool.outputSchema,
+}));
+const enabledDefinitions = definitions(enabledTools);
+const enabledSchemas = new Map(enabledTools.map((tool) => [tool.name, tool.inputSchema]));
+export async function definitionsFor(context: ToolContext) {
+  return await regionalDataEnabled(context.db) ? enabledDefinitions : toolDefinitions;
+}
 export const hasTool = (name: unknown) => tools.some((tool) => tool.name === name);
 
 function validate(schema: InputSchema, input: unknown): Args {
@@ -331,8 +386,13 @@ type ApiListing =
   | { kind: "project"; record: Record<string, any> }
   | { kind: "publication"; record: Publication }
   | { kind: "study"; record: ClinicalStudy }
-  | { kind: "dataset"; record: Dataset };
+  | { kind: "dataset"; record: Dataset }
+  | { kind: "regional-data"; record: PublicRegionalData };
 function summarize(item: ApiListing, context: ToolContext, refs: Institution[]) {
+  if (item.kind === "regional-data") {
+    const d = item.record;
+    return { ...d, kind: item.kind, url: context.origin + regionalDataPath(d.id), resource_url: d.url, dates: { added: d.added, checked: d.checked } };
+  }
   if (item.kind === "dataset") {
     const d = item.record;
     return present({
@@ -350,6 +410,7 @@ function summarize(item: ApiListing, context: ToolContext, refs: Institution[]) 
       type: dataTypeLabel(d.data_type, true),
       repository: d.repository,
       access: accessLevels[d.access]?.name,
+      how_to_use: datasetUseGuidance(d),
     });
   }
   if (item.kind === "study") {
@@ -399,6 +460,7 @@ function summarize(item: ApiListing, context: ToolContext, refs: Institution[]) 
     institutions: [p.institution].filter(Boolean),
     counties: [p.county].filter(Boolean),
     dates: present({ pushed: p.pushed, added: p.added }),
+    how_to_use: softwareUseGuidance({ code: p.code ?? "", language: p.language, license: p.license, readmeUrl: p.readmeUrl, citationUrl: p.citationUrl }),
   });
 }
 
@@ -465,7 +527,7 @@ function recordId(value: string, origin: string) {
     } catch {
       throw new ToolError("id is not a valid URL.");
     }
-    const match = /^\/discover\/(work|publication|study|dataset)\/([^/]+)\/?$/.exec(url.pathname);
+    const match = /^\/discover\/(work|publication|study|dataset|regional-data)\/([^/]+)\/?$/.exec(url.pathname);
     if (!["thevalleydesk.org", "www.thevalleydesk.org", new URL(origin).hostname].includes(url.hostname) || !match) {
       throw new ToolError("fetch reads thevalleydesk.org record URLs and directory ids only.");
     }
@@ -474,14 +536,24 @@ function recordId(value: string, origin: string) {
     } catch {
       throw new ToolError("id is not a valid URL.");
     }
-    return { id, dataset: match[1] === "dataset" };
+    return { id, dataset: match[1] === "dataset", regional: match[1] === "regional-data" };
   }
-  return { id, dataset: false };
+  return { id, dataset: false, regional: false };
 }
 
 async function fetchRecord(value: string, context: ToolContext) {
   const named = recordId(value, context.origin);
   const id = named.id;
+  if (named.regional || regionalDataId.test(id)) {
+    if (!context.db || !(await regionalDataEnabled(context.db))) throw new ToolError("No directory record has this id. Use search to find records and their ids.");
+    const { status, body } = await api(context, regionalDataApi + "/" + encodeURIComponent(id));
+    if (status === 410) throw new ToolError("This record has been removed from the directory.");
+    if (status !== 200) throw new ToolError("No directory record has this id. Use search to find records and their ids.");
+    const d = body.regional_data as PublicRegionalData;
+    const url = context.origin + regionalDataPath(d.id);
+    const metadata = { ...d, kind: "regional-data" };
+    return { id: d.id, title: d.title, text: plain(d.title, url, metadata), url, metadata };
+  }
   const project = /^[1-9][0-9]{0,19}$/.test(id);
   const study = studyId.test(id);
   // A bare DOI can name a publication or a deposited dataset: the publication is tried first.
@@ -510,6 +582,7 @@ async function fetchRecord(value: string, context: ToolContext) {
       format: d.format ?? undefined,
       license: d.license ?? undefined,
       papers: d.papers.slice(0, 10),
+      how_to_use: datasetUseGuidance(d),
     });
     return { id: d.id, title: d.title, text: plain(d.title, url, metadata), url, metadata };
   }
@@ -542,6 +615,7 @@ async function fetchRecord(value: string, context: ToolContext) {
       dates: present({ pushed: p.pushed, added: p.added }),
       source_checked: p.checked,
       code: p.code,
+      how_to_use: softwareUseGuidance({ code: p.code ?? "", language: p.language, license: p.license, readmeUrl: p.readmeUrl, citationUrl: p.citationUrl }),
       homepage: p.homepage,
       lab: p.lab,
       language: p.language,
@@ -592,7 +666,7 @@ function plain(title: string, url: string, metadata: Record<string, unknown>) {
   return [title, url, ...Object.entries(metadata).map(([key, value]) => `${key.replaceAll("_", " ")}: ${line(value)}`)].join("\n");
 }
 
-type Count = { field: string; value: string; n: number };
+type Count = { field: string; value: string; n: number; name?: string | null };
 const memo = new WeakMap<object, { at: number; counts: Count[] }>();
 
 async function facets(context: ToolContext) {
@@ -601,6 +675,7 @@ async function facets(context: ToolContext) {
   let removed: Set<string>;
   let refs: Institution[] = [];
   let counts: Count[] | undefined;
+  let regionalCounts: Count[] = [];
   try {
     removed = await removalIds(db);
     // Read through the visibility view on every call so unreadable removal state fails closed
@@ -612,9 +687,22 @@ async function facets(context: ToolContext) {
       if (!counts) {
         counts = await rows<Count>(
           db!,
-          "SELECT f.field field,f.value value,count(*) n FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE f.field IN ('institution','topic','county') GROUP BY f.field,f.value",
+          "SELECT f.field field,f.value value,count(*) n FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE v.kind<>'regional-data' AND f.field IN ('institution','topic','county') GROUP BY f.field,f.value",
         );
         memo.set(db!, { at: now.getTime(), counts });
+      }
+    }
+    // Regional counts must never come from the memo: visibility and removals can change immediately.
+    if (await regionalDataEnabled(db)) {
+      regionalCounts = await rows<Count>(db!,
+        "SELECT f.field field,f.value value,count(*) n,CASE WHEN f.field='topic' THEN max(json_extract(v.record,'$.topic')) END name FROM research_listings l JOIN research_facets f ON f.id=l.id JOIN research_visible v ON v.id=l.id WHERE l.kind='regional-data' AND f.field IN ('institution','topic','county') GROUP BY f.field,f.value");
+    }
+    if (counts) {
+      counts = counts.map((row) => ({ ...row }));
+      for (const regional of regionalCounts) {
+        const existing = counts.find((row) => row.field === regional.field && row.value === regional.value);
+        if (existing) existing.n += regional.n;
+        else counts.push(regional);
       }
     }
   } catch {
@@ -629,11 +717,23 @@ async function facets(context: ToolContext) {
     const list = (kind: "institution" | "topic" | "county", values: { name: string; count: number }[]) =>
       byCount(values.map(({ name, count }) => ({ name, url: origin + catalog.entityHref(kind, name), listings: count })));
     const known = new Map(home.counties.map((county) => [county.name, county.count]));
+    const institutions = list("institution", home.institutions);
+    const topics = list("topic", home.topics);
+    const countyList = counties.map(({ name, state }) => ({ name, state, url: page("county", facetSlug(name)), listings: known.get(name) ?? 0 }));
+    const options = optionsFor(catalog, removed, refs);
+    for (const regional of regionalCounts) {
+      const kind = regional.field as "institution" | "topic" | "county";
+      const entries = kind === "institution" ? institutions : kind === "topic" ? topics : countyList;
+      const url = page(kind, regional.value);
+      const existing = entries.find((entry) => entry.url === url);
+      if (existing) existing.listings += regional.n;
+      else if (kind !== "county") entries.push({ name: options[kind].get(regional.value) ?? regional.name ?? regional.value, url, listings: regional.n });
+    }
     return {
-      institutions: list("institution", home.institutions).slice(0, limits.listEntries),
-      truncated: home.institutions.length > limits.listEntries,
-      topics: list("topic", home.topics).slice(0, limits.listEntries),
-      counties: counties.map(({ name, state }) => ({ name, state, url: page("county", name.toLowerCase()), listings: known.get(name) ?? 0 })),
+      institutions: byCount(institutions).slice(0, limits.listEntries),
+      truncated: institutions.length > limits.listEntries,
+      topics: byCount(topics).slice(0, limits.listEntries),
+      counties: countyList,
     };
   }
   const count = (field: string, slug: string) => counts!.find((row) => row.field === field && row.value === slug)?.n ?? 0;
@@ -659,7 +759,7 @@ async function facets(context: ToolContext) {
       topics: byCount(
         counts
           .filter((row) => row.field === "topic")
-          .map((row) => ({ name: options.topic.get(row.value) ?? row.value, url: page("topic", row.value), listings: row.n })),
+          .map((row) => ({ name: options.topic.get(row.value) ?? row.name ?? row.value, url: page("topic", row.value), listings: row.n })),
       ).slice(0, limits.listEntries),
       counties: counties.map(({ name, state }) => ({ name, state, url: page("county", facetSlug(name)), listings: count("county", facetSlug(name)) })),
     },
@@ -671,7 +771,10 @@ export async function callTool(name: string, input: unknown, context: ToolContex
   const tool = tools.find((candidate) => candidate.name === name)!;
   const failure = (message: string) => ({ content: [{ type: "text", text: message }], isError: true });
   try {
-    const structuredContent = await tool.run(validate(tool.inputSchema, input), context);
+    // Only kind-bearing tools need a visibility lookup for input validation.
+    const schema = tool.inputSchema.properties.kind && await regionalDataEnabled(context.db)
+      ? enabledSchemas.get(name)! : tool.inputSchema;
+    const structuredContent = await tool.run(validate(schema, input), context);
     return { content: [{ type: "text", text: JSON.stringify(structuredContent) }], structuredContent, isError: false };
   } catch (error) {
     if (error instanceof ToolError) return failure(error.message);

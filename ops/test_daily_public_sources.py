@@ -40,6 +40,18 @@ class RefreshTests(unittest.TestCase):
             records, _ = module.refresh_projects('.', directory, {'123': previous}, set(), '2026-11-23')
         self.assertIsNone(records['123']['license'])
 
+    def test_refresh_uses_observed_commit_tree_and_removes_missing_files(self):
+        previous = {'id': '123', 'code': 'https://github.com/owner/repo', 'citationUrl': 'https://github.com/owner/repo/blob/old/CITATION.cff'}
+        source = {'databaseId': 123, 'isPrivate': False, 'primaryLanguage': None, 'licenseInfo': None,
+                  'pushedAt': None, 'isArchived': False, 'stargazerCount': 0, 'description': None,
+                  'defaultBranchRef': {'target': {'oid': 'a' * 40, 'tree': {'entries': [
+                      {'name': 'README.md', 'type': 'blob'}, {'name': 'CITATION.cff', 'type': 'tree'}]}}}}
+        response = types.SimpleNamespace(returncode=0, stdout=__import__('json').dumps({'data': {'r0': source}}))
+        with tempfile.TemporaryDirectory() as directory, patch.object(module.subprocess, 'run', return_value=response):
+            records, _ = module.refresh_projects('.', directory, {'123': previous}, set(), '2026-11-23')
+        self.assertEqual(records['123']['readmeUrl'], 'https://github.com/owner/repo/blob/' + 'a' * 40 + '/README.md')
+        self.assertIsNone(records['123']['citationUrl'])
+
     def test_identity_mismatch_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory, patch.dict(sys.modules, {'regional': types.SimpleNamespace(build_regional=lambda *a, **k: {})}), patch.object(module.subprocess, 'run', return_value=type('Result', (), {'returncode': 0, 'stdout': __import__('json').dumps({'data': {'r0': {'databaseId': 999, 'isPrivate': False}}})})()):
             with self.assertRaises(ValueError):

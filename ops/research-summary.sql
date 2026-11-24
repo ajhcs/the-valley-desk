@@ -71,3 +71,5 @@ INSERT INTO research_summary_kinds SELECT '','',kind,count(DISTINCT group_id),mi
 INSERT INTO research_summary_kinds VALUES('data','','directory',0,lower(hex(randomblob(16))),NULL,NULL,0);
 -- Record the visibility state used to compute these summaries.
 INSERT INTO research_summary_kinds SELECT 'visibility','','dataset',0,CAST(EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') AS TEXT),NULL,NULL,0;
+
+INSERT INTO research_summary_kinds SELECT 'visibility','','regional-data',0,CAST(EXISTS(SELECT 1 FROM research_visible WHERE kind='regional-data') AS TEXT),NULL,NULL,0;

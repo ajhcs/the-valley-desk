@@ -1,3 +1,5 @@
+import { softwareUseGuidance } from "./directory-use-guidance";
+import { renderUseGuidance } from "./public-directory-ui";
 import type { RetiredEditorialSection } from "../lib/editorial-retirement";
 import {
   activityCutoff, apiPath, browsePath, counties, githubAccount, httpsUrl, lastActivity, methodPath, paperUrl, projectPapers, projectPath,
@@ -25,9 +27,9 @@ export type DirectoryView =
   | { kind: "home"; publications?: number; latest?: Listing[]; data: ReturnType<DirectoryCatalog["home"]>; summary?: DirectorySummary; names?: Names; now?: Date }
   | { kind: "results"; data: ReturnType<DirectoryCatalog["list"]>; noindex?: boolean }
   | { kind: "project"; linked?: {url:string;title:string}[]; mentions?: {url:string;title:string}[]; research?: Listing[]; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
-  | { kind: "methodology"; publications?: boolean; studies?: boolean; datasets?: boolean }
+  | { kind: "methodology"; publications?: boolean; studies?: boolean; datasets?: boolean; regionalData?: boolean }
   | { kind: "retired"; section: RetiredEditorialSection }
-  | { kind: "listing-removed" | "study-removed" | "dataset-removed" | "removed" | "not-found" | "unavailable" };
+  | { kind: "listing-removed" | "study-removed" | "dataset-removed" | "regional-data-removed" | "removed" | "not-found" | "unavailable" };
 
 const siteName = "The Valley Desk";
 const description = "Find and follow healthcare research connected to the nine-county Delaware Valley.";
@@ -141,6 +143,7 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
         <dl class="facts">${facts.map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join("")}</dl>
       </section>` : ""}
     </div>
+    ${renderUseGuidance(softwareUseGuidance(project))}
     ${similarSection(research ?? [], catalog, "Related publications and clinical studies in the region")}
     ${related.sameLab.length ? `<section class="related">
       <div class="section-heading"><h2>More from this lab or account</h2>${account ? entityLink(catalog, "lab", account, "All projects from this account") : ""}</div>
@@ -154,7 +157,7 @@ function projectDetail(catalog: DirectoryCatalog, { project, related, now, linke
   </article>`;
 }
 
-function methodology(publications = false, studies = false, datasets = false) {
+function methodology(publications = false, studies = false, datasets = false, regionalData = false) {
   const places = (state: "PA" | "NJ") => counties.filter(county => county.state === state)
     .map(county => `<a href="/discover/county/${county.name.toLowerCase()}">${county.name}</a>`).join(", ");
   return `<article class="frame page prose-page">
@@ -168,6 +171,7 @@ function methodology(publications = false, studies = false, datasets = false) {
       <p>Empty repositories, coursework, personal configuration, unmodified forks and general-purpose mirrors are excluded.</p>
       ${publications ? `<p>Projects and publications use eight health topics. A publication that the topic rules cannot place in a health topic carries the label Other science. It remains searchable and appears on institution and county pages, but it has no topic page or topic feed.</p>` : ""}
       ${studies ? `<p>The clinical studies index includes interventional trials, observational studies and expanded access records from ClinicalTrials.gov. A study needs at least one registry-listed facility in a supported county. We use the reported city and state, a corroborated institution site or a Census ZIP Code Tabulation Area contained in one county. Ambiguous locations are held until their county can be supported. Overall and site statuses come from the registry. Study listings can be searched by registry condition.</p>` : ""}
+      ${regionalData ? `<p id="regional-data">Regional data records describe public data about the Delaware Valley, sourced from the publisher’s public record. Coverage and access reflect what that source states. The directory does not infer missing details.</p>` : ""}
       ${datasets ? `<p id="datasets">A dataset is a public repository record, such as a GEO series, a BioProject, a dbGaP or EGA study, a PRIDE project, a set of Protein Data Bank structures or a DOI for deposited data. It needs a regional connection through a regional institution named in the record or through a listed paper that produced it. Access is <strong>Open</strong> when anyone can download the files, <strong>Registration</strong> when a free account or terms of use are required, and <strong>Controlled</strong> when a data access committee reviews each request. The release date is the repository’s date. Cite the repository ID and any paper identified as producing the data. Other paper links describe related research.</p>` : ""}
     </section>
     ${publications ? `<section id="related-research">
@@ -225,6 +229,7 @@ const messages = {
   "listing-removed": ["Publication removed","This publication has been removed from the directory."],
   "study-removed": ["Clinical study removed", "This study has been removed from the directory."],
   "dataset-removed": ["Dataset removed", "This dataset has been removed from the directory."],
+  "regional-data-removed": ["Regional data removed", "This regional data record has been removed from the directory."],
   "removed": ["Project removed", "This project is no longer listed in the directory."],
   "not-found": ["Page not found", "The link may be old or mistyped. You can still search the directory."],
   "unavailable": ["Directory temporarily unavailable", "Please try again in a few minutes."],
@@ -365,7 +370,7 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     case "home": content = renderDirectoryHome(catalog, view.data, view.publications, view.latest, view.summary, view.names, view.now); break;
     case "results": content = renderDirectoryResults(catalog, view.data); break;
     case "project": content = projectDetail(catalog, view); break;
-    case "methodology": content = methodology(view.publications, view.studies, view.datasets); break;
+    case "methodology": content = methodology(view.publications, view.studies, view.datasets, view.regionalData); break;
     default: {
       const [title, message] = pageMessage(view);
       content = `<section class="frame page message-page"><h1>${html(title)}</h1><p>${html(message)}</p>

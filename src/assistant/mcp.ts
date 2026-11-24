@@ -1,13 +1,15 @@
 // Stateless, unauthenticated, read-only MCP server over Streamable HTTP.
 // Serves the 2026-07-28 revision (no handshake, no sessions) and, on the same endpoint, the
 // legacy initialize handshake that 2025-era clients still send. One POST, one JSON response.
-import { callTool, hasTool, toolDefinitions, type ToolContext } from "./tools";
+import { regionalDataEnabled } from "../ingest/regional-data-read";
+import { callTool, hasTool, definitionsFor, type ToolContext } from "./tools";
 
 export const modernVersion = "2026-07-28";
 export const legacyVersions = ["2025-11-25", "2025-06-18", "2025-03-26"];
 export const serverInfo = { name: "the-valley-desk", title: "The Valley Desk", version: "1.0.0" };
 export const maxRequestBytes = 16_384;
-const listTtlMs = 3_600_000;
+// Visibility may change without a server restart or a list-changed notification.
+const listTtlMs = 0;
 const metaPrefix = "io.modelcontextprotocol/";
 const instructions =
   "The Valley Desk lists healthcare research software projects and publications connected to the nine-county Delaware Valley. Use search to find records, fetch for one record, whats_new for recent additions, and the two list tools for filter values. Cite each record's url. A Verified label means a source ties the work to the region; Listed means an observed association. A listing does not establish employment, ownership or clinical validation. Dates are labelled: published (paper appeared), pushed (code last changed), added (entered the directory).";
@@ -127,18 +129,22 @@ export async function serveMcp(request: Request, env: McpEnv): Promise<Response>
     reply(200, { jsonrpc: "2.0", id, result: modern ? { resultType: "complete", ...value, _meta: { ...(value._meta as object), ...info } } : value });
   const capabilities = { tools: { listChanged: false } };
 
+  const serverInstructions = async () => await regionalDataEnabled(env.db)
+    ? "The Valley Desk lists research and regional public data connected to the nine-county Delaware Valley. Use search, fetch and whats_new to find records, and the list tools for filter values. Cite each record URL. Research listings use Verified or Listed labels for regional evidence; regional data resources describe geographic coverage and access. Dates distinguish publication, code changes and directory additions."
+    : instructions;
+
   switch (method) {
     case "server/discover":
-      return result({ supportedVersions: [modernVersion], capabilities, instructions, ttlMs: listTtlMs, cacheScope: "public" });
+      return result({ supportedVersions: [modernVersion], capabilities, instructions: await serverInstructions(), ttlMs: listTtlMs, cacheScope: "public" });
     case "initialize": {
       const asked = params.protocolVersion;
-      return result({ protocolVersion: legacyVersions.includes(asked) ? asked : legacyVersions[0], capabilities, serverInfo, instructions });
+      return result({ protocolVersion: legacyVersions.includes(asked) ? asked : legacyVersions[0], capabilities, serverInfo, instructions: await serverInstructions() });
     }
     case "ping":
       return result({});
     case "tools/list":
       if (params.cursor !== undefined) return failure(modern ? 400 : 200, id, -32602, "Invalid cursor. The tool list has one page.");
-      return result({ tools: toolDefinitions, ...(modern ? { ttlMs: listTtlMs, cacheScope: "public" } : {}) });
+      return result({ tools: await definitionsFor(env), ...(modern ? { ttlMs: listTtlMs, cacheScope: "public" } : {}) });
     case "tools/call": {
       if (!hasTool(params.name)) return failure(modern ? 400 : 200, id, -32602, "Unknown tool.");
       if (env.limiter) {

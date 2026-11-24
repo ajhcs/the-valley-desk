@@ -54,8 +54,11 @@ export function validate(records, {
     if (record.countyBasis && !record.county) report('county basis requires county');
     if (record.label === 'Verified' && !record.source) report('Verified requires source');
     if (truncation.test(record.purpose)) report('purpose ends in a truncation mark');
-    for (const field of ['code', 'source', 'paper', 'homepage']) {
+    for (const field of ['code', 'source', 'paper', 'homepage', 'readmeUrl', 'citationUrl']) {
       if (record[field] != null && !httpsURL(record[field])) report(`${field} must be a credential-free HTTPS URL`);
+    }
+    for (const field of ['readmeUrl', 'citationUrl']) {
+      if (record[field] != null && !record[field].toLowerCase().startsWith(code + '/blob/')) report(`${field} must point to a file in the repository`);
     }
     for (const field of ['updated', 'added', 'created', 'pushed', 'checked']) {
       if (record[field] != null && !validDate(record[field])) report(`${field} is not a valid date`);

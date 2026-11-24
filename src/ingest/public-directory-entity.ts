@@ -42,8 +42,9 @@ function summaryOf(kinds: KindRow[], tallies: TallyRow[], scope?: { field: Scope
 async function storedSummary(db: ResearchDb, scope?: { field: ScopeField; value: string }) {
   const key = [scope?.field ?? "", scope?.value ?? ""];
   try {
-    const [state] = await rows<{ visible: number; refreshed: number }>(db, "SELECT EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') visible,coalesce((SELECT CAST(first AS INTEGER) FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'),0) refreshed");
+    const [state] = await rows<{ visible: number; refreshed: number; regional_visible: number; regional_refreshed: number }>(db, "SELECT EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') visible,coalesce((SELECT CAST(first AS INTEGER) FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'),0) refreshed,EXISTS(SELECT 1 FROM research_visible WHERE kind='regional-data') regional_visible,coalesce((SELECT CAST(first AS INTEGER) FROM research_summary_kinds WHERE scope_field='visibility' AND kind='regional-data'),0) regional_refreshed");
     if (state.visible && !state.refreshed) return undefined;
+    if (state.regional_visible !== state.regional_refreshed) return undefined;
     const withoutDatasets = !state.visible && !!state.refreshed;
     const kinds = await rows<KindRow & { ready: number }>(
       db,
@@ -112,6 +113,7 @@ export function kindPhrase(summary: DirectorySummary) {
       projects ? plural(projects, "research software project", "research software projects") : "",
       studies ? plural(studies, "clinical study", "clinical studies") : "",
       datasets ? plural(datasets, "dataset", "datasets") : "",
+      summary.kinds["regional-data"]?.works ? plural(summary.kinds["regional-data"]!.works, "regional data record", "regional data records") : "",
     ].filter(Boolean),
   );
 }
