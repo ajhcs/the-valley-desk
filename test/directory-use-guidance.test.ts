@@ -16,3 +16,29 @@ test('software links only observed files within its own repository', () => {
   const steps = softwareUseGuidance(input); assert.equal(steps[0].command, 'git clone https://github.com/example/repo.git');
   assert.equal(steps[1].links?.[0].url, input.readmeUrl); assert.equal(steps.at(-1)?.links, undefined);
 });
+
+test('recorded repository names select their own guides and validated accession', () => {
+  const cases = [
+    ['GEO', 'GSE123', 'GEO download guide'], ['PRIDE', 'PXD123456', 'PRIDE download guide'],
+    ['ArrayExpress', 'E-MTAB-1234', 'ArrayExpress download guide'], ['PDB', '1ABC', 'RCSB PDB downloads'],
+    ['Dryad', '10.5061/dryad.ab123', 'Dryad publication guide'], ['Zenodo', '10.5281/zenodo.123', 'Zenodo record features'],
+    ['figshare', '10.6084/m9.figshare.123', 'figshare API documentation'], ['OSF', '10.17605/OSF.IO/ABCDE', 'OSF download guide'],
+  ];
+  for (const [repository, accession, label] of cases) {
+    const steps = datasetUseGuidance({ repository, accessions: [accession], url: 'https://example.org/', access: 'open' });
+    assert.match(steps[0].text, new RegExp(accession.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.equal(steps.at(-1)?.links?.[0].label, label);
+  }
+});
+test('study accession uses selector, and untrusted identifiers are omitted', () => {
+  const input = { repository: 'SRA', accessions: ['SRP12345'], url: 'https://example.org/', access: 'open' };
+  const steps = datasetUseGuidance(input);
+  assert.match(steps[0].text, /SRP12345/); assert.equal(steps[1].command, undefined);
+  assert.match(steps[1].text, /Run Selector/);
+  assert.doesNotMatch(datasetUseGuidance({ ...input, accessions: ['SRP1<script>'] })[0].text, /script/);
+});
+test('controlled dbGaP provides its guide and registration does not promise open access', () => {
+  const input = { repository: 'dbGaP', accessions: ['phs000123.v1.p1'], url: 'https://example.org/', access: 'controlled' };
+  assert.equal(datasetUseGuidance(input)[1].links?.[0].label, 'dbGaP download guide');
+  assert.match(datasetUseGuidance({ ...input, repository: 'Zenodo', access: 'registration' })[1].text, /registration/);
+});

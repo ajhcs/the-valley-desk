@@ -26,21 +26,52 @@ export function softwareUseGuidance(project: SoftwareInput): GuidanceStep[] {
   return steps;
 }
 export function datasetUseGuidance(dataset: DatasetInput): GuidanceStep[] {
-  const link = safeHttps(dataset.url); const steps: GuidanceStep[] = [];
-  if (link) steps.push({ text: 'Open the repository record and review its metadata and reuse terms.', links: [{ label: 'Repository record', url: link }] });
-  else steps.push({ text: 'Find the repository record and review its metadata and reuse terms.' });
+  const repo = dataset.repository.trim().toLowerCase();
+  const patterns: Record<string, RegExp> = {
+    sra: /^(?:SR[PRSX]|ER[PRSX]|DR[PRSX]|PRJ(?:NA|EB|DB))[0-9]+$/,
+    bioproject: /^PRJ(?:NA|EB|DB)[0-9]+$/,
+    geo: /^GS[EM][0-9]+$/,
+    dbgap: /^phs[0-9]{6}(?:\.v[0-9]+\.p[0-9]+)?$/,
+    ega: /^EGA[SD][0-9]{11}$/,
+    pride: /^PXD[0-9]{6}$/,
+    arrayexpress: /^E-[A-Z]{4}-[0-9]+$/,
+    pdb: /^[0-9][A-Za-z0-9]{3}$/,
+    emdb: /^EMD-[0-9]+$/,
+    dryad: /^10\.5061\/dryad\.[A-Za-z0-9._-]+$/i,
+    zenodo: /^10\.5281\/zenodo\.[0-9]+$/i,
+    figshare: /^10\.(?:6084|25452)\/[A-Za-z0-9._/-]+$/i,
+    osf: /^10\.17605\/[A-Za-z0-9._/-]+$/i,
+  };
+  const accession = dataset.accessions.find(value => patterns[repo]?.test(value));
+  const link = safeHttps(dataset.url);
+  const steps: GuidanceStep[] = [{
+    text: `Open the repository record${accession ? ` for ${accession}` : ''} and review its metadata and reuse terms.`,
+    ...(link ? { links: [{ label: 'Repository record', url: link }] } : {}),
+  }];
   if (dataset.access === 'controlled') {
-    steps.push({ text: dataset.repository === 'EGA' ? 'Identify the dataset and apply to its Data Access Committee; download only after approval.' : dataset.repository === 'dbGaP' ? 'Apply for authorized access through dbGaP; follow its download instructions after approval.' : 'Follow the repository’s instructions to request access before downloading.' });
+    const instructions: Record<string, GuidanceStep> = {
+      ega: { text: 'Identify the dataset and apply to its Data Access Committee; download only after approval.', links: [{ label: 'EGA access guide', url: 'https://www.ebi.ac.uk/training/online/courses/ega-quick-tour/accessing-the-data-in-the-ega/' }] },
+      dbgap: { text: 'Apply for authorized access through dbGaP; follow its download instructions after approval.', links: [{ label: 'dbGaP download guide', url: 'https://www.ncbi.nlm.nih.gov/sra/docs/sra-dbgap-download/' }] },
+    };
+    steps.push(instructions[repo] ?? { text: 'Follow the repository’s instructions to request access before downloading.' });
     return steps;
   }
-  const repo = dataset.repository.toLowerCase();
+  if (dataset.access === 'registration') steps.push({ text: 'Follow the repository’s registration and access instructions.' });
   if (repo === 'sra' || repo === 'bioproject') {
     const run = dataset.accessions.find(a => /^(?:SRR|ERR|DRR)[0-9]+$/.test(a));
-    steps.push({ text: 'Select the relevant runs and use the SRA Toolkit to download sequence data.', ...(run ? { command: `prefetch ${run}` } : {}), links: [{ label: 'SRA download guide', url: 'https://trace.ncbi.nlm.nih.gov/sra/docs/sradownload/' }] });
-  } else if (repo === 'geo') steps.push({ text: 'Use the GEO record to download the available data and supplementary files.', links: [{ label: 'GEO download guide', url: 'https://www.ncbi.nlm.nih.gov/geo/info/download.html' }] });
-  else if (repo === 'pride') steps.push({ text: 'Choose files from the PRIDE dataset page.', links: [{ label: 'PRIDE download guide', url: 'https://www.ebi.ac.uk/training/online/courses/pride-quick-tour/downloading-data-using-pride-archive/' }] });
-  else if (repo === 'arrayexpress') steps.push({ text: 'Download files from the BioStudies study page; sequence reads may be linked through ENA.', links: [{ label: 'ArrayExpress download guide', url: 'https://www.ebi.ac.uk/training/online/courses/arrayexpress-in-biostudies/getting-data-from-the-arrayexpress-collection/' }] });
-  else if (repo === 'pdb') steps.push({ text: 'Download structure files from the structure summary page.', links: [{ label: 'RCSB PDB downloads', url: 'https://www.rcsb.org/downloads/' }] });
-  else steps.push({ text: 'Select the available files and follow the repository’s download instructions.' });
+    steps.push({ text: 'Use the SRA Run Selector to select runs, then use the SRA Toolkit to download them.', ...(run ? { command: `prefetch ${run}` } : {}), links: [{ label: 'Run Selector guide', url: 'https://trace.ncbi.nlm.nih.gov/Traces/study1/?go=help' }, { label: 'SRA download guide', url: 'https://trace.ncbi.nlm.nih.gov/sra/docs/sradownload/' }] });
+    return steps;
+  }
+  const templates: Record<string, GuidanceStep> = {
+    geo: { text: 'Use the GEO record to download the available data and supplementary files.', links: [{ label: 'GEO download guide', url: 'https://www.ncbi.nlm.nih.gov/geo/info/download.html' }] },
+    pride: { text: 'Choose files from the PRIDE dataset page.', links: [{ label: 'PRIDE download guide', url: 'https://www.ebi.ac.uk/training/online/courses/pride-quick-tour/downloading-data-using-pride-archive/' }] },
+    arrayexpress: { text: 'Download files from the BioStudies study page; sequence reads may be linked through ENA.', links: [{ label: 'ArrayExpress download guide', url: 'https://www.ebi.ac.uk/training/online/courses/arrayexpress-in-biostudies/getting-data-from-the-arrayexpress-collection/' }] },
+    pdb: { text: 'Download structure files from the structure summary page.', links: [{ label: 'RCSB PDB downloads', url: 'https://www.rcsb.org/downloads/' }] },
+    dryad: { text: 'Use Download dataset on the Dryad record to retrieve its available files.', links: [{ label: 'Dryad publication guide', url: 'https://datadryad.org/help/guides/publication' }] },
+    zenodo: { text: 'Choose files or download all available files from the Zenodo record.', links: [{ label: 'Zenodo record features', url: 'https://help.zenodo.org/docs/about/whats-new/' }] },
+    figshare: { text: 'Choose the available files from the figshare record.', links: [{ label: 'figshare API documentation', url: 'https://docs.figshare.com/v2/' }] },
+    osf: { text: 'Choose available files from the OSF project or component.', links: [{ label: 'OSF download guide', url: 'https://help.osf.io/article/736-download-osf-content' }] },
+  };
+  steps.push(templates[repo] ?? { text: 'Select the available files and follow the repository’s download instructions.' });
   return steps;
 }
