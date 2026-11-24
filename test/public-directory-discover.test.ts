@@ -59,9 +59,9 @@ test("pages offer similar research, who works on a search, partners and recent p
     assert.ok(!similar.split("Recent ")[0].includes(`/discover/publication/${encodeURIComponent(id)}"`), "a record is not similar to itself");
 
     const search = await text("/discover/works?q=tissue");
-    assert.match(search, /Who works on this in the region/);
+    assert.match(search, /Who works on this:/);
     assert.match(search, /href="\/discover\/institution\/fixture-institute\?q=tissue"/);
-    assert.doesNotMatch(await text("/discover/works"), /Who works on this in the region/);
+    assert.doesNotMatch(await text("/discover/works"), /Who works on this:/);
 
     // A search is ordered by relevance by default and lists exactly the listings the date order does.
     const ids = async (path: string) => {

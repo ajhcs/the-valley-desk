@@ -80,7 +80,7 @@ test("reviewed publication import, replay, relationships, feeds, flags and fresh
     assert.equal((await (await get("/api/directory/publications?q=tomography")).json()).total, 0);
     const paths = [
       "/discover/works?q=replacement",
-      "/discover/new",
+      "/discover/works?sort=added",
       "/discover/updates.xml?institution=fixture-institute",
       "/api/directory/publications?county=camden",
       "/discover/sitemap/1.xml",

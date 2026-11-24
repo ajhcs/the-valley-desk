@@ -68,7 +68,7 @@ test("landing pages answer in computed sentences and carry matching metadata", a
       schemaOf(html);
     }
     const filtered = await text("/discover/works?q=imaging&county=camden&kind=publication");
-    assert.match(filtered, /<h1>Publications matching “imaging” in Camden County<\/h1>/);
+    assert.match(filtered, /<h1 class="sr-only">Publications matching “imaging” in Camden County<\/h1>/);
     assert.match(filtered, /rel="canonical" href="https:\/\/thevalleydesk.org\/discover\/works\?county=camden&amp;kind=publication&amp;q=imaging"/);
 
     const record = JSON.parse(execFileSync("python3", ["ops/research-fixture.py", "--count", "4"], { encoding: "utf8" }).trim().split("\n")[3]);

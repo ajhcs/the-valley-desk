@@ -120,7 +120,7 @@ test("datasets page lists the newest releases first and filters by access, data 
     assert.deepEqual(await titles("q=proteome"), ["Estuary plasma proteome reference"]);
     assert.deepEqual(await titles("q=PXD990005"), ["Estuary plasma proteome reference"]);
     const filtered = await d.text("/discover/datasets?access=controlled&datatype=sequencing");
-    assert.match(filtered, /<h1>Datasets of sequencing data with controlled access<\/h1>/);
+    assert.match(filtered, /<h1 class="sr-only">Datasets of sequencing data with controlled access<\/h1>/);
     assert.match(filtered, /<meta name="robots" content="noindex, follow">/);
 
     // The mixed search offers the kind, and the other surfaces count and list datasets.
@@ -130,7 +130,10 @@ test("datasets page lists the newest releases first and filters by access, data 
     assert.match(await d.text("/llms.txt"), /discover\/datasets/);
     assert.match(await d.text("/discover/methodology"), /api\/directory\/datasets/);
     assert.match(await d.text("/discover/updates.xml?kind=dataset"), /<link>https:\/\/thevalleydesk.org\/discover\/dataset\/geo%3AGSE990001<\/link>/);
-    assert.match(await d.text("/discover/new?kind=dataset"), /Estuary plasma proteome reference/);
+    // What's new lists datasets by full release date; a month-only release is not dated to a day.
+    const whatsNew = await d.text("/discover/new?kind=dataset");
+    assert.match(whatsNew, /Fictional Estuary tissue expression atlas/);
+    assert.doesNotMatch(whatsNew, /Estuary plasma proteome reference/);
   } finally {
     d.close();
   }

@@ -26,6 +26,8 @@ import {
   institutionFor,
   projectQuery,
   researchQuery,
+  researchByActivity,
+  type Results,
   manyPublications,
   researchFeed,
   renderPublication,
@@ -34,7 +36,6 @@ import {
   displayTitle,
   publicationType,
   renderResearch,
-  renderListingCards,
   facetSlug,
   kindCounts,
   resultCount,
@@ -285,10 +286,14 @@ function describeQuery(params: URLSearchParams, names: Names, added = false, rep
   return parts.join(" ") + (page > 1 ? `, page ${page}` : "");
 }
 
+/**
+ * A search result's heading. The search box and filters already show the query, so the heading
+ * is for screen readers and outlines only. The breadcrumb stays when it names a scope or section.
+ */
 function filteredHeader(crumbs: [string, string][], described: string) {
-  return `<header class="entity-head"><nav class="breadcrumb" aria-label="Breadcrumb">${crumbs
+  return `<header class="results-head">${crumbs.length > 1 ? `<nav class="breadcrumb" aria-label="Breadcrumb">${crumbs
     .map(([name, href]) => `<a href="${html(href)}">${html(name)}</a>`)
-    .join('<span aria-hidden="true">/</span>')}</nav><h1>${html(described)}</h1></header>`;
+    .join('<span aria-hidden="true">/</span>')}</nav>` : ""}<h1 class="sr-only">${html(described)}</h1></header>`;
 }
 
 const highwireDate = (value: string) => value.replaceAll("-", "/");
@@ -919,7 +924,7 @@ async function renderPublicDirectory(
       if (studyApi) params.set("kind", "study");
       if (datasetList) params.set("kind", "dataset");
       if (regionalList) params.set("kind", "regional-data");
-      if (path === feedPath || path === newPath) params.set("sort", "added");
+      if (path === feedPath) params.set("sort", "added");
       // A landing page is the unfiltered first page. Every other combination is a search result.
       const filtered = [...searchParams.keys()].some((key) => key !== "page");
       const pageNo = Number(searchParams.get("page")) > 1;
@@ -946,9 +951,14 @@ async function renderPublicDirectory(
         query.set("kind", selectedKind === "dataset" || selectedKind === "regional-data" ? selectedKind : hasRegionalData ? "__datasets" : "dataset");
         if (!query.get("sort") && !query.get("q")) query.set("sort", "activity");
       }
-      const result = (hasPubs || hasRegionalData)
-        ? await researchQuery(researchDb, query, refs)
-        : projectQuery(catalog, removed, params, options, refs);
+      // What's new lists by activity day, the same dates as the home page's "new or updated this week".
+      const today = new Date().toISOString().slice(0, 10);
+      const daily = path === newPath && (hasPubs || hasRegionalData) ? await researchByActivity(researchDb, params, refs, today) : undefined;
+      const result: Results = daily
+        ? { items: daily.items, counts: [], page: daily.page, total: 0 }
+        : (hasPubs || hasRegionalData)
+          ? await researchQuery(researchDb, query, refs)
+          : projectQuery(catalog, removed, params, options, refs);
       if (scoped && !result.total && !options[scoped[1] as keyof typeof options].has(params.get(scoped[1])!))
         return page({ kind: "not-found" }, 404);
       if (pubApi || combinedApi || studyApi || datasetList || regionalList) {
@@ -1008,6 +1018,7 @@ async function renderPublicDirectory(
         names, path === newPath, choices?.repositories, hasRegionalData,
       );
       let header: string, title: string, description: string, about: Record<string, unknown> | undefined, aside = "";
+      let index: { label: string; body: string } | undefined;
       const crumbs: [string, string][] = [["Directory", browsePath]];
       if (datasetsLanding) {
         crumbs.push(["Datasets", datasetsPath]);
@@ -1043,7 +1054,8 @@ async function renderPublicDirectory(
           const summary = await summarize(researchDb, { field: scope.field, value: scope.slug });
           const built = entityHeader({ ...scope, refs, summary, names, now, feed, name: scope.field === "county" ? place : scope.name });
           header = built.header;
-          aside = (scope.field === "institution" ? partnerList(await partners(researchDb, scope.slug), names) : "") + built.index;
+          const body = (scope.field === "institution" ? partnerList(await partners(researchDb, scope.slug), names) : "") + built.index;
+          if (body) index = { label: `About ${scope.field === "topic" ? "this topic" : scope.field === "county" ? "this county" : "this institution"}`, body };
           description = built.description;
         } else {
           header = filteredHeader(crumbs, described);
@@ -1052,23 +1064,10 @@ async function renderPublicDirectory(
         }
       } else if (path === newPath) {
         title = landing ? "What’s new" : `What’s new: ${described}`;
-        description = `Healthcare research listings in the order they entered The Valley Desk directory, newest first. ${kindCounts(result.counts)}.`;
+        description = "Healthcare research connected to the Delaware Valley, newest publication, code push, registry update or release first.";
         crumbs.push(["What’s new", newPath]);
-        const localDay = new Intl.DateTimeFormat("en-CA", {
-          timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit",
-        }).format(now);
-        const month = localDay.slice(0, 7);
-        const recent = landing && hasPubs
-          ? await rows<{ record: string }>(
-              researchDb,
-              "SELECT record FROM research_visible WHERE +kind='publication' AND activity>=? AND activity<=? ORDER BY activity DESC,id LIMIT 3",
-              month,
-              localDay + "~",
-            )
-          : [];
-        header = `<header class="entity-head"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a></nav>
-          <h1>What’s new</h1>
-          <p class="lede">Additions are ordered by the date they entered the directory.</p></header>${recent.length ? `<section class="entity-head" aria-labelledby="published-this-month"><div class="section-heading"><h2 id="published-this-month">Published this month</h2><a href="${browsePath}?kind=publication&amp;date_from=${month}&amp;date_to=${localDay}&amp;sort=activity">All publications this month</a></div>${renderListingCards(recent.map(({ record }) => ({ kind: "publication", record: JSON.parse(record) })), catalog)}</section>` : ""}`;
+        header = `<header class="entity-head"><h1>What’s new</h1>
+          <p class="lede">Listings by their latest publication, code push, registry update or release.</p></header>`;
       } else {
         const searchTitle = hasRegionalData ? "Healthcare research and regional data"
           : hasStudies || hasDatasets ? "Healthcare research" : "Publications and research software";
@@ -1112,8 +1111,9 @@ async function renderPublicDirectory(
             datasetsAvailable: hasDatasets,
             regionalDataAvailable: hasRegionalData,
             scope: scoped?.[1],
-            byDate: path === newPath,
+            byDate: daily && { days: daily.days, next: daily.next },
             aside,
+            index,
             ...(choices
               ? {
                   facets: [

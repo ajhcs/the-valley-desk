@@ -151,23 +151,28 @@ export async function partners(db: ResearchDb, institution: string, limit = 8) {
   }
 }
 
-/** Aside on an institution page: partner institutions outside its own system. */
+/** On an institution page's About block: partner institutions outside its own system. */
 export function partnerList(rows: { partner: string; n: number }[], names: Names) {
   if (!rows.length) return "";
-  return `<section class="tally partners"><h2>Shares the most research with</h2><p class="tally-note">Other institutions named on the same research, outside this institution’s own system. Counts update with each data load.</p><ul>${rows
+  return `<section class="tally partners"><h2>Shares the most research with</h2><p class="tally-note">Other institutions on the same listings, outside this one’s own system.</p><ul>${rows
     .map((r) => `<li><a href="${html(entityHref("institution", r.partner))}">${html(names.institution(r.partner))}</a><span>${count(r.n)}</span></li>`)
     .join("")}</ul></section>`;
 }
 
-/** Aside on a search: who in the region works on the subject searched for. */
+/**
+ * A strip above a search's listings: the institutions, then counties, named most often among the
+ * best matches. The first five show; the rest open under "more". Each link narrows the search.
+ */
 export function groupList(groups: ActiveGroups, names: Names, q: string) {
   if (!groups.institution.length) return "";
   const within = (field: "institution" | "county", value: string) =>
     `${entityHref(field, value)}?${new URLSearchParams({ q })}`;
-  const sample = groups.sampled >= groupSample ? `the ${count(groupSample)} listings that best match` : `the ${count(groups.sampled)} listings that match`;
-  return `<section class="tally groups" aria-labelledby="groups-title"><h2 id="groups-title">Who works on this in the region</h2><p class="tally-note">Named most often among ${sample} “${html(q)}”. Each link narrows this search.</p><ul>${groups.institution
-    .map((r) => `<li><a href="${html(within("institution", r.value))}">${html(names.institution(r.value))}</a><span>${count(r.n)}</span></li>`)
-    .join("")}</ul>${groups.county.length ? `<h3>Counties</h3><ul>${groups.county
-    .map((r) => `<li><a href="${html(within("county", r.value))}">${html(names.county(r.value))} County</a><span>${count(r.n)}</span></li>`)
-    .join("")}</ul>` : ""}</section>`;
+  const sample = groups.sampled >= groupSample ? `the ${count(groupSample)} best matches` : `the ${count(groups.sampled)} matches`;
+  const item = (field: "institution" | "county", r: { value: string; n: number }) =>
+    `<li><a href="${html(within(field, r.value))}">${html(field === "county" ? names.county(r.value) + " County" : names.institution(r.value))}</a> <span class="n">${count(r.n)}</span></li>`;
+  const rest = [...groups.institution.slice(5).map((r) => item("institution", r)), ...groups.county.map((r) => item("county", r))];
+  return `<section class="groups-strip" aria-labelledby="groups-title"><h2 id="groups-title" title="Named most often among ${sample}">Who works on this:</h2><ul>${groups.institution
+    .slice(0, 5)
+    .map((r) => item("institution", r))
+    .join("")}</ul>${rest.length ? `<details class="groups-more"><summary>more</summary><ul>${rest.join("")}</ul></details>` : ""}</section>`;
 }

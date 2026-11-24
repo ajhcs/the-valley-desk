@@ -503,6 +503,38 @@ export async function researchFeed(db: ResearchDb, params: URLSearchParams, refs
   );
   return { page, items: result.slice(0, 24).map(readListing), hasMore: result.length > 24 };
 }
+
+/** What's new reads at most this many pages; deeper offsets would read most of the index. */
+export const activityPages = 40;
+
+/**
+ * What's new: listings with a full activity date (publication, code push, registry update or
+ * release) on or before `today`, newest first, read from the activity index so the cost follows
+ * the page shown. Nothing is counted; one extra row tells whether another page follows.
+ */
+export async function researchByActivity(db: ResearchDb, params: URLSearchParams, refs: Institution[], today: string) {
+  const filters = new URLSearchParams(params);
+  filters.delete("sort");
+  const source = searchSource(filters, refs);
+  const { stored } = source;
+  const page = Math.min(pageNumber(params), activityPages);
+  const dated = "activity<=? AND length(activity)=10";
+  // A large facet value or a common kind is read in activity order; a small one is collected and sorted.
+  const known = stored && (stored.scope || stored.kind) ? await storedCounts(db, stored.scope, stored.kind) : undefined;
+  const scan = known && orderedScan(stored!, known, known.counts.reduce((sum, row) => sum + row.n, 0), "activity DESC,id", page * 24 + 1);
+  const sql = scan
+    ? scan.sql.replace("SELECT kind,record ", "SELECT kind,record,activity ").replace(" ORDER BY ", ` AND ${dated} ORDER BY `)
+    : "SELECT kind,record,activity" + source.from + (source.from.includes(" WHERE ") ? " AND " : " WHERE ") + dated + " ORDER BY activity DESC,id";
+  const result = await rows<{ kind: Listing["kind"]; record: string; activity: string }>(
+    db,
+    sql + " LIMIT 25 OFFSET ?",
+    ...(scan ? scan.args : source.args),
+    today,
+    (page - 1) * 24,
+  );
+  const shown = result.slice(0, 24);
+  return { page, items: shown.map(readListing), days: shown.map((row) => row.activity), next: result.length > 24 && page < activityPages };
+}
 export async function researchQuery(db: ResearchDb, params: URLSearchParams, refs: Institution[], cap = searchCountCap) {
   const source = searchSource(params, refs, cap);
   const { facetCount, stored, relevance } = source;
@@ -924,15 +956,19 @@ export function kindCounts(counts: Results["counts"], withVersions = false) {
     .reduce((text, part, i, parts) => text + (i === 0 ? "" : i === parts.length - 1 ? " and " : ", ") + part, "");
 }
 
-function pageLinks(path: string, params: URLSearchParams, page: number, totalPages: number) {
-  if (totalPages < 2) return "";
+/** Page links. `totalPages` undefined means the total is not counted and `next` says whether a page follows. */
+function pageLinks(path: string, params: URLSearchParams, page: number, totalPages?: number, next = false) {
+  if (totalPages === undefined ? page < 2 && !next : totalPages < 2) return "";
   const link = (n: number, label: string, rel?: string) => {
-    const next = new URLSearchParams(params);
-    if (n > 1) next.set("page", String(n));
-    else next.delete("page");
-    return `<a href="${html(path + (next.size ? "?" + next : ""))}"${rel ? ` rel="${rel}"` : ""}>${label}</a>`;
+    const target = new URLSearchParams(params);
+    if (n > 1) target.set("page", String(n));
+    else target.delete("page");
+    return `<a href="${html(path + (target.size ? "?" + target : ""))}"${rel ? ` rel="${rel}"` : ""}>${label}</a>`;
   };
-  const shown = [...new Set([1, page - 1, page, page + 1, totalPages])].filter((n) => n >= 1 && n <= totalPages).sort((a, b) => a - b);
+  const last = totalPages ?? page + (next ? 1 : 0);
+  const shown = [...new Set([1, page - 1, page, page + 1, ...(totalPages === undefined ? [] : [totalPages])])]
+    .filter((n) => n >= 1 && n <= last)
+    .sort((a, b) => a - b);
   return `<nav class="pagination" aria-label="Results pages"><div class="page-links">
     ${page > 1 ? link(page - 1, "Previous", "prev") : ""}
     ${shown
@@ -942,8 +978,8 @@ function pageLinks(path: string, params: URLSearchParams, page: number, totalPag
           (n === page ? `<span class="current-page" aria-current="page">${count(n)}</span>` : link(n, count(n))),
       )
       .join("")}
-    ${page < totalPages ? link(page + 1, "Next", "next") : ""}
-  </div><p class="muted">Page ${count(page)} of ${count(totalPages)}</p></nav>`;
+    ${page < last ? link(page + 1, "Next", "next") : ""}
+  </div></nav>`;
 }
 
 export type ResearchPage = {
@@ -959,8 +995,12 @@ export type ResearchPage = {
   regionalDataAvailable?: boolean;
   publicationsAvailable?: boolean;
   scope?: string;
-  byDate?: boolean;
+  /** What's new: each listing's activity day, in order, and whether another page follows. Nothing is counted. */
+  byDate?: { days: string[]; next: boolean };
+  /** A strip above the listings: who works on the subject searched for. */
   aside?: string;
+  /** An entity page's tallies, collapsed under one line above the search. */
+  index?: { label: string; body: string };
   /** Replaces the kind, institution, topic and county filters (the datasets page). */
   facets?: { name: string; label: string; all: string; choices: [string, string][] }[];
   /** The order choices when the default set does not fit. The first is the default. */
@@ -968,14 +1008,14 @@ export type ResearchPage = {
   feed?: string;
 };
 
-export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, datasetsAvailable, regionalDataAvailable, publicationsAvailable = true, scope = "", byDate, aside, facets, orders, feed }: ResearchPage) {
-  // Filters in use, each removable on its own from the bar above the listings.
-  const active: [name: string, text: string][] = [];
+export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, datasetsAvailable, regionalDataAvailable, publicationsAvailable = true, scope = "", byDate, aside, index, facets, orders, feed }: ResearchPage) {
+  // Filters in use take the accent, and their number shows on the phone's Filters line.
+  let active = 0;
   function select(name: string, label: string, choices: [string, string][], all = "All") {
     const selected = params.get(name) ?? "";
     const chosen = choices.find(([v]) => v === selected || v === facetSlug(selected));
-    if (chosen) active.push([name, chosen[1]]);
-    return `<label${chosen ? ' class="is-set"' : ""}>${label}<select form="research-form" name="${name}"><option value="">${all}</option>${choices
+    if (chosen) active++;
+    return `<label${chosen ? ' class="is-set"' : ""}><span class="sr-only">${label}</span><select form="research-form" name="${name}"><option value="">${all}</option>${choices
       .map(
         ([v, n]) =>
           `<option value="${html(v)}"${v === selected || v === facetSlug(selected) ? " selected" : ""}>${html(n)}</option>`,
@@ -989,21 +1029,19 @@ export function renderResearch({ header, path, params, data, catalog, options, e
   if (!data.items.length) {
     list = `<div class="empty-result"><h2>No matching listings</h2><p>Try fewer words or <a href="${html(path)}">clear the filters</a>.</p></div>`;
   } else if (byDate) {
-    const days = new Map<string, Listing[]>();
-    for (const item of data.items) days.set(item.record.added ?? "", [...(days.get(item.record.added ?? "") ?? []), item]);
-    list = [...days]
-      .map(
-        ([day, items]) =>
-          `<section class="day-group"><h2>${timestamp(day) ? `Added ${timestamp(day)}` : "Date added not recorded"}</h2>${renderListingCards(items, catalog)}</section>`,
-      )
+    const days: [string, Listing[]][] = [];
+    data.items.forEach((item, i) => {
+      const day = byDate.days[i] ?? "";
+      if (days.at(-1)?.[0] === day) days.at(-1)![1].push(item);
+      else days.push([day, [item]]);
+    });
+    list = days
+      .map(([day, items]) => `<section class="day-group"><h2>${timestamp(day) || "Date not recorded"}</h2>${renderListingCards(items, catalog)}</section>`)
       .join("");
   } else list = `<h2 class="sr-only">Listings</h2>${renderListingCards(data.items, catalog)}`;
   const kinds: ListingKind[] = [...(publicationsAvailable ? ["publication" as const] : []), "project", ...(studiesAvailable ? ["study" as const] : []), ...(datasetsAvailable ? ["dataset" as const] : []), ...(regionalDataAvailable ? ["regional-data" as const] : [])];
-  const activity = datasetsAvailable
-    ? studiesAvailable ? "Publication, code push, registry update or release date" : "Publication, code push or release date"
-    : studiesAvailable ? "Publication, code push or registry update date" : "Publication date or last code push";
-  const filters = [
-    ...(facets
+  const filters = (
+    facets
       ? facets.filter((f) => f.choices.length).map((f) => select(f.name, f.label, f.choices, f.all))
       : [
           enabled
@@ -1019,54 +1057,62 @@ export function renderResearch({ header, path, params, data, catalog, options, e
                 names[f][1],
               ),
             ),
-        ]),
-    path !== newPath && enabled
-      ? `<label>Order<select form="research-form" name="sort">${[
+        ]
+  ).filter(Boolean);
+  // The order sits with the count it arranges. What's new has one order.
+  const order =
+    !byDate && enabled
+      ? `<label class="order-control"><span class="sr-only">Order</span><select form="research-form" name="sort">${[
           ...(params.get("q") ? [["relevance", "Relevance"]] : []),
           ...(orders ?? [
             ["added", "Date added"],
-            ["activity", activity],
+            ["activity", "Date published or updated"],
             ["name", "Title A–Z"],
           ]),
         ]
           .map(([v, n]) => `<option value="${v}"${params.get("sort") === v ? " selected" : ""}>${n}</option>`)
           .join("")}</select></label>`
-      : "",
-  ].filter(Boolean);
- // A filter in use is marked in the rail; one link clears them all and keeps the search words.
+      : "";
+  // One link clears every filter and keeps the search words.
   const cleared = params.get("q") ? `${path}?q=${encodeURIComponent(params.get("q")!)}` : path;
   // Each figure narrows the listings to its kind.
   const narrowed = params.get("kind") ?? "";
   const versions = data.counts.reduce((sum, row) => sum + row.n - row.works, 0);
-  const ledger = kindLedger(
-    data.counts.map((row) => {
-      const next = new URLSearchParams(params);
-      next.delete("page");
-      next.set("kind", row.kind);
-      return { kind: row.kind, n: row.works, current: narrowed === row.kind, href: path + "?" + next };
-    }),
-  );
-  const range = data.more ? "Most relevant first" : data.total > 24 ? `${count(first)}–${count(first + data.items.length - 1)} of ${count(data.total)}` : "";
+  const ledger = byDate
+    ? ""
+    : kindLedger(
+        data.counts.map((row) => {
+          const next = new URLSearchParams(params);
+          next.delete("page");
+          next.set("kind", row.kind);
+          return { kind: row.kind, n: row.works, current: narrowed === row.kind, href: path + "?" + next };
+        }),
+      );
+  // The page links show the extent; past the first page the range says where this one starts.
+  const range = data.more ? `More than ${count(data.total)}` : !byDate && data.page > 1 ? `${count(first)}–${count(first + data.items.length - 1)}` : "";
+  const feedLink = `<a class="feed-link" href="${html(feed ?? feedUrl(params))}" title="RSS feed of additions to this list">${icon("feed")}<span class="sr-only">RSS feed of additions</span></a>`;
   return `<div class="frame page research-page">${header}
+    ${index ? `<details class="entity-about"><summary>${html(index.label)}</summary><div class="about-body">${index.body}</div></details>` : ""}
     <form id="research-form" class="research-search" action="${html(path)}" method="get" role="search">${searchInput(params.get("q") ?? "")}</form>
-    <div class="research-layout${aside ? " has-index" : ""}">
-      <div class="research-filters">
-        <h2 class="rail-heading">Filters${active.length ? ` <a class="rail-clear" href="${html(cleared)}">Clear</a>` : ""}</h2>
+    ${filters.length ? `<details class="filter-row" id="research-filters">
+      <summary>Filters${active ? `<span class="filter-count"> · ${count(active)} in use</span>` : ""}</summary>
+      <div class="filter-controls">
         ${filters.join("")}
-        <button class="button secondary filter-submit" type="submit" form="research-form">Apply filters</button>
-        ${path === browsePath ? '<p class="rail-note"><a href="/discover/works?tools=project">Software filters: language, license, GitHub activity</a></p>' : ""}
+        ${active ? `<a class="filter-clear" href="${html(cleared)}">Clear</a>` : ""}
+        <button class="button secondary filter-submit" type="submit" form="research-form">Apply</button>
+        ${path === browsePath ? '<a class="filter-more" href="/discover/works?tools=project">Software filters</a>' : ""}
+        ${byDate ? feedLink : ""}
       </div>
-      <section class="research-results" aria-label="Listings">
-        <div class="results-bar">
-          ${ledger || '<p class="ledger"><b>No matching listings</b></p>'}
-          <p class="results-meta">${range ? `<span>${range}</span>` : ""}${versions > 0 ? `<span title="A preprint and its journal version count once">${count(data.total)} records with versions</span>` : ""}<a class="feed-link" href="${html(feed ?? feedUrl(params))}" title="RSS feed of additions to this list">${icon("feed")}<span class="sr-only">RSS feed of additions</span></a></p>
-        </div>
-
-        ${list}
-        ${pageLinks(path, params, data.page, totalPages)}
-      </section>
-      ${aside ? `<div class="research-index">${aside}</div>` : ""}
-    </div>
+    </details>` : ""}
+    ${aside ?? ""}
+    <section class="research-results" aria-label="Listings">
+      ${byDate ? "" : `<div class="results-bar">
+        ${ledger}
+        <p class="results-meta">${range ? `<span>${range}</span>` : ""}${versions > 0 ? `<span title="A preprint and its journal version count once">${count(data.total)} records with versions</span>` : ""}${order}${feedLink}</p>
+      </div>`}
+      ${list}
+      ${byDate ? pageLinks(path, params, data.page, undefined, byDate.next) : pageLinks(path, params, data.page, totalPages)}
+    </section>
   </div>`;
 }
 
