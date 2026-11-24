@@ -198,6 +198,24 @@ class DatasetDailyIntegrationTests(unittest.TestCase):
             self.assertIn("doi:10.1234/new", (state / "datasets.jsonl").read_text())
             self.assertEqual(json.loads((state / "datasets-cursor.json").read_text())["datacite_through"], "2026-11-20T00:00:00Z")
 
+    def test_nightly_dataset_update_keeps_listed_papers(self):
+        old = {"papers": ["doi:10.1/a"], "paper_provenance": [{"paper": "doi:10.1/a", "relation": "linked"}]}
+        # A DataCite-only rebuild knows no papers; the listed link and its relation stay.
+        candidate = {"papers": [], "paper_provenance": None}
+        daily.keep_listed_papers(old, candidate)
+        self.assertEqual(candidate, old)
+        # New papers are added after the listed ones, and a listed relation is not relabelled.
+        candidate = {"papers": ["doi:10.1/b", "doi:10.1/a"], "paper_provenance": [
+            {"paper": "doi:10.1/b", "relation": "produced"}, {"paper": "doi:10.1/a", "relation": "produced"}]}
+        daily.keep_listed_papers(old, candidate)
+        self.assertEqual(candidate["papers"], ["doi:10.1/a", "doi:10.1/b"])
+        self.assertEqual(candidate["paper_provenance"], [
+            {"paper": "doi:10.1/a", "relation": "linked"}, {"paper": "doi:10.1/b", "relation": "produced"}])
+        # A listing without papers leaves the candidate as built.
+        candidate = {"papers": ["doi:10.1/b"]}
+        daily.keep_listed_papers({"papers": []}, candidate)
+        self.assertEqual(candidate, {"papers": ["doi:10.1/b"]})
+
     def test_real_loader_dataset_sql_replays_and_respects_removal(self):
         dataset = {"id": "doi:10.1234/new", "title": "A dataset", "summary": "A public dataset.", "data_type": "other", "access": "open", "repository": "Example", "accessions": ["10.1234/new"], "url": "https://doi.org/10.1234/new", "institutions": ["upenn"], "counties": [], "label": "Verified", "connection": "A source lists a regional creator.", "source": "https://api.datacite.org/dois/10.1234/new", "papers": [], "topic": "Research data", "released": "2026", "added": "2026-11-23", "checked": "2026-11-23", "size": None, "format": None, "license": None}
         with tempfile.TemporaryDirectory() as directory, sqlite3.connect(":memory:") as db:
