@@ -674,7 +674,7 @@ function studyRecord(study: ClinicalStudy) {
     ${cardMeta(kindIcon("study", registryLabel(study.type)), [
       html(registryLabel(study.status)), `<span class="nowrap">${html(study.id)}</span>`,
       namedLinks(study.institutions.length ? institutionLinks(study.institutions) : countyLinks(study.counties, true)),
-      evidenceMark(study.label),
+      // Every listed study is Verified by its registry site, so the word would repeat on every card.
     ])}
   </li>`;
 }
