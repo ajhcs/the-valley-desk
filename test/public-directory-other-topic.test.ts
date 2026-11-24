@@ -61,7 +61,7 @@ test("Other science publications are searchable and listed but have no topic pag
       assert.doesNotMatch(html, /href="\/discover\/topic\/other-science"/, path);
     }
     for (const path of ["/", "/discover/institution/fixture-institute", "/discover/county/camden"]) {
-      const topics = /<section class="tally"><h2>Topics<\/h2>[\s\S]*?<\/section>/.exec(await text(path));
+      const topics = /<section class="tally[^"]*"[^>]*><h2[^>]*>Topics<\/h2>[\s\S]*?<\/section>/.exec(await text(path));
       assert.ok(topics, path);
       assert.doesNotMatch(topics[0], /Other science/, path);
     }

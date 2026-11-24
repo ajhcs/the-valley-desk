@@ -76,6 +76,7 @@ test("the reviewed seed reaches the public Worker surfaces with the same record 
   sqlite.exec("UPDATE regional_data_visibility SET enabled=1");
   sqlite.exec(readFileSync(summaryPath, "utf8"));
   assert.match(JSON.stringify(await searchTools()), /regional-data/);
+  assert.match(await (await get("/")).text(), /<a href="\/discover\/datasets">Data<\/a>/);
   for (const record of seed) {
     const path = regionalDataPath(record.id);
     const response = await get(path);
@@ -140,4 +141,6 @@ test("the reviewed seed reaches the public Worker surfaces with the same record 
   for (const path of ["/discover/datasets", "/api/directory/listings", "/llms.txt", "/sitemap.xml", "/discover/updates.xml"]) {
     assert.doesNotMatch(await (await get(path)).text(), /regional-data|regional:/, path);
   }
+  // With no other datasets public, the masthead drops Data along with the regional records.
+  assert.doesNotMatch(await (await get("/")).text(), /href="\/discover\/datasets"/);
 });

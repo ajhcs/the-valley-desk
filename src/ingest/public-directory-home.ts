@@ -1,75 +1,91 @@
-import { renderListingCards, type Listing } from "./public-directory-research";
-import { countyGeometry, countyViewBox } from "./public-directory-counties";
+import type { Listing } from "./public-directory-research";
+import { countyGeometry } from "./public-directory-counties";
 import { browsePath, counties, type DirectoryCatalog } from "./public-directory-data";
-import { entityHref, kindPhrase, summaryLedger, type DirectorySummary, type Names } from "./public-directory-entity";
-import { count, healthTopic, href, html, kindLedger, projectCards, searchInput, timestamp } from "./public-directory-ui";
+import { entityHref, summaryLedger, type DirectorySummary, type Names } from "./public-directory-entity";
+import { count, healthTopic, href, html, kindLedger, searchInput } from "./public-directory-ui";
 
 type Home = ReturnType<DirectoryCatalog["home"]>;
-type Row = { name: string; href: string; n: number; note?: string };
+type Row = { name: string; href: string; n: number };
+
+const states = { PA: "Pennsylvania", NJ: "New Jersey" } as const;
+
+/** Where each county's name and count sit on the map, in map units, placed by measuring the labels
+ *  against every border at phone and desktop sizes. Philadelphia, Camden, Delaware and Gloucester are
+ *  too narrow to hold theirs, so their labels stand clear of the borders with a short leader from the
+ *  county; the map gains a little room at the foot for two of them. */
+type Label = { x: number; y: number; start?: boolean; from?: [number, number]; off?: boolean };
+const labelAt: Record<string, Label> = {
+  "42017": { x: 146, y: 61 }, "34021": { x: 252, y: 72 }, "42091": { x: 147, y: 131 }, "42029": { x: 84, y: 178 },
+  "34005": { x: 297, y: 193 },
+  "42101": { x: 233, y: 159, start: true, from: [197, 160] },
+  "34007": { x: 292, y: 268, start: true, from: [257, 234], off: true },
+  "42045": { x: 128, y: 271, from: [147, 214], off: true },
+  "34015": { x: 190, y: 296, from: [199, 252], off: true },
+};
+const mapBox = "0 0 372 312";
 
 const tallyItems = (rows: Row[]) =>
   rows.map((r) => `<li><a href="${html(r.href)}">${html(r.name)}</a><span>${count(r.n)}</span></li>`).join("");
 
 /** A counted list. With a limit, the rows past it sit behind a disclosure so long lists stay short. */
-function tally(heading: string, rows: Row[], extra = "", columns = false, limit = Infinity) {
+function tally(id: string, heading: string, rows: Row[], limit = Infinity) {
   if (!rows.length) return "";
   const rest = rows.slice(limit);
   const more = rest.length
     ? `<details class="tally-more"><summary>Show all ${count(rows.length)}</summary><ul>${tallyItems(rest)}</ul></details>`
     : "";
-  return `<section class="tally${columns ? " tally-columns" : ""}"><h2>${heading}</h2><ul>${tallyItems(rows.slice(0, limit))}</ul>${more}${extra}</section>`;
+  return `<section class="tally home-${id}" aria-labelledby="home-${id}-title"><h2 id="home-${id}-title">${heading}</h2><ul>${tallyItems(rows.slice(0, limit))}</ul>${more}</section>`;
 }
 
-function map(rows: Map<string, number>, hrefFor: (name: string) => string, unit: string) {
-  const maximum = Math.max(...rows.values(), 1);
-  const entries = counties.map((county) => {
-    const value = rows.get(county.name) ?? 0;
-    const tone = value ? Math.max(1, Math.ceil(Math.sqrt(value / maximum) * 4)) : 0;
-    return { ...county, value, tone, url: html(hrefFor(county.name)) };
+/** The counties as a map that is also their links. Each county is a link named in full for keyboards
+ *  and screen readers. Names and counts sit in a layer above every county, so a label that overruns a
+ *  narrow county is never covered by its neighbour; that layer repeats the links for the pointer only.
+ *  The outline of a county under the pointer or in focus is drawn again above every county, so no
+ *  neighbour hides part of it. */
+function countyMap(rows: { fips: string; name: string; state: keyof typeof states; href: string; n: number }[], unit: string) {
+  const shapes = rows.map(({ fips, name, state, href: url, n }) => {
+    const label = `${name} County, ${states[state]}, ${count(n)} ${n === 1 ? unit.replace(/s$/, "") : unit}`;
+    return `<g role="listitem"><a class="c-${fips}" href="${html(url)}" aria-label="${html(label)}"><path id="county-${fips}" d="${countyGeometry[fips].path}" fill-rule="evenodd"/></a></g>`;
   });
-  return `<figure class="county-figure">
-    <svg class="county-map" viewBox="${countyViewBox}" role="img" aria-labelledby="county-map-title">
-      <title id="county-map-title">Map of the nine Delaware Valley counties shaded by ${unit} that record each county</title>
-      ${entries
-        .map(({ fips, name, url, value, tone }) => {
-          const { path, x, y } = countyGeometry[fips];
-          const short = name === "Philadelphia" ? "Phila." : name === "Montgomery" ? "Montg." : name;
-          return `<a href="${url}" tabindex="-1" aria-hidden="true" data-tone="${tone}">
-          <title>${name} County, ${count(value)} ${unit}</title>
-          <path d="${path}" fill-rule="evenodd"/>
-          <text x="${x}" y="${y}" dy=".35em">${short}</text>
-        </a>`;
-        })
-        .join("")}
+  const labels = rows.map(({ fips, name, href: url, n }) => {
+    const { x, y, start, from, off } = labelAt[fips];
+    const classes = [start && "is-callout", off && "is-off-map"].filter(Boolean).join(" ");
+    const [ex, ey] = start ? [x - 3, y - 4] : [x, y - 11];
+    const leader = from ? `<path class="county-leader" d="M${from[0]},${from[1]}L${ex},${ey}"/><circle class="county-leader-end" cx="${from[0]}" cy="${from[1]}" r="1.6"/>` : "";
+    return `<a class="c-${fips}" href="${html(url)}" tabindex="-1">${leader}<text${classes ? ` class="${classes}"` : ""} x="${x}" y="${y}"><tspan class="county-name">${name}</tspan><tspan class="county-n" x="${x}" dy="1.15em">${count(n)}</tspan></text></a>`;
+  });
+  return `<section class="home-counties" aria-labelledby="home-counties-title">
+    <h2 id="home-counties-title">Counties</h2>
+    <svg class="county-map" viewBox="${mapBox}" role="list">
+      <g class="county-shapes" role="none">${shapes.join("")}</g>
+      <g class="county-rings" aria-hidden="true">${rows.map(({ fips }) => `<use class="c-${fips}" href="#county-${fips}"/>`).join("")}</g>
+      <g class="county-labels" aria-hidden="true">${labels.join("")}</g>
     </svg>
-  </figure>`;
+  </section>`;
 }
 
 export function renderDirectoryHome(
   catalog: DirectoryCatalog,
   home: Home,
   publications = 0,
-  latest: Listing[] = [],
+  _latest: Listing[] = [],
   summary?: DirectorySummary,
   names?: Names,
   _now = new Date(),
 ) {
   const research = summary && names && publications;
-  const lede = research
-    ? `${kindPhrase(summary)} connected to nine counties in Pennsylvania and New Jersey.`
-    : `${count(home.total)} research software projects connected to nine counties in Pennsylvania and New Jersey.`;
-  const topicRows: Row[] = research
+  const topicRows: Row[] = (research
     ? summary.facets.topic
         .filter((r) => healthTopic(names.topic(r.value)))
         .map((r) => ({ name: names.topic(r.value), href: entityHref("topic", r.value), n: r.n }))
-    : home.topics.map((r) => ({ name: r.name, href: catalog.entityHref("topic", r.name), n: r.count }));
+    : home.topics.map((r) => ({ name: r.name, href: catalog.entityHref("topic", r.name), n: r.count }))).slice(0, 8);
   const countyCounts = new Map<string, number>(
     research
       ? summary.facets.county.map((r) => [names.county(r.value), r.n])
       : home.counties.map((r) => [r.name, r.count]),
   );
-  const countyRows: Row[] = counties.map((c) => ({
-    name: `${c.name} County, ${c.state}`,
+  const countyRows = counties.map((c) => ({
+    ...c,
     href: research ? entityHref("county", c.name.toLowerCase()) : catalog.entityHref("county", c.name),
     n: countyCounts.get(c.name) ?? 0,
   }));
@@ -78,38 +94,22 @@ export function renderDirectoryHome(
     : home.institutions.map((r) => ({ name: r.name, href: catalog.entityHref("institution", r.name), n: r.count }));
   const unit = research ? "listings" : "projects";
   const week = research && summary.week ? Object.values(summary.week).reduce((sum, n) => sum + (n ?? 0), 0) : 0;
-  const added = research ? Object.values(summary.kinds).map((kind) => kind.added).filter(Boolean).sort().at(-1) : undefined;
+  const examples = home.examples.map((example) => `<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`);
   return `<div class="frame home">
-    <section class="home-intro">
-      <div class="home-lead">
+    <div class="home-top">
+      <div class="home-intro">
         <h1>Healthcare research in the Delaware Valley</h1>
         ${research
           ? kindLedger(summaryLedger(summary), week ? `<span class="muted" aria-hidden="true"> · </span><a class="ledger-new" href="${browsePath}?sort=activity">${count(week)} new or updated this week</a>` : "")
-          : `<p class="lede">${lede}</p>`}
+          : `<p class="lede">${count(home.total)} research software projects.</p>`}
         <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput("", "Search a subject or institution")}</form>
-        ${home.examples.length ? `<p class="home-examples">Try ${home.examples.map((example) => `<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join(", ")}</p>` : ""}
+        <p class="home-examples">${examples.length ? `Try ${examples.join(", ")}, or see <a href="/discover/new">what’s new</a>.` : `See <a href="/discover/new">what’s new</a>.`}</p>
       </div>
-      <div class="home-map" aria-hidden="true">
-        ${map(countyCounts, (name) => (research ? entityHref("county", name.toLowerCase()) : catalog.entityHref("county", name)), unit)}
-      </div>
-    </section>
-    <div class="home-grid">
-      <section class="home-latest" aria-labelledby="latest-title">
-        <div class="section-heading"><h2 id="latest-title">${research ? "Recently published" : "Recently added projects"}</h2>${research ? `<a href="${browsePath}?kind=publication&amp;sort=activity">All publications by date</a> <a href="/discover/new">All additions${added ? `, latest ${timestamp(added)}` : ""}</a>` : `<a href="/discover/new">All additions${added ? `, latest ${timestamp(added)}` : ""}</a>`}</div>
-        ${research ? renderListingCards(latest, catalog) : home.added.length ? projectCards(catalog, home.added, "cards", "added") : projectCards(catalog, home.recent)}
-      </section>
-      <section class="home-place" aria-labelledby="place-title">
-        ${tally("By county", countyRows).replace("<h2>By county</h2>", '<h2 id="place-title">By county</h2>')}
-      </section>
+      ${countyMap(countyRows, unit)}
     </div>
-    <div class="home-index">
-      ${tally(research ? "Topics" : "Project topics", topicRows)}
-      ${tally(`Institutions <span class="muted">(${count(institutionRows.length)})</span>`, institutionRows, "", true, 18)}
+    <div class="home-ways">
+      ${tally("topics", "Topics", topicRows)}
+      ${tally("institutions", `Institutions <span class="muted">${count(institutionRows.length)}</span>`, institutionRows, 12)}
     </div>
-    ${home.recent.length ? `<section class="home-software" aria-labelledby="software-title">
-      <div class="section-heading"><h2 id="software-title">Recently updated software</h2><a href="${browsePath}?tools=project">Filter software by language, license and activity</a></div>
-      ${projectCards(catalog, home.recent.slice(0, 4))}
-      ${home.activeLabs.length ? `<p class="home-labs">Most active GitHub accounts in the past 12 months: ${home.activeLabs.map((a) => `<a href="${html(catalog.entityHref("lab", a.login))}">${html(a.name)}</a> (${count(a.count)})`).join(", ")}.</p>` : ""}
-    </section>` : ""}
   </div>`;
 }

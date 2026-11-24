@@ -2,7 +2,8 @@
 /**
  * Philadelphia from the Schuylkill, for the site footer: the Art Museum and Boathouse Row on the
  * left, City Hall and the Center City towers in the middle, Old City and the Ben Franklin Bridge on
- * the right, all reflected in the river. Writes a dusk (light) and a night (dark) version.
+ * the right, all reflected in the river. Writes a dusk (light) and a night (dark) version. The footer's
+ * link band continues the water, so its colour in public/directory-chrome.css (--river) matches `water`.
  * Deterministic: the same script always draws the same city.
  *
  *   node scripts/build-footer-art.mjs          # write public/footer-skyline-{light,dark}.svg
@@ -15,8 +16,9 @@ const r1 = (n) => Math.round(n * 10) / 10;
 
 const palettes = {
   light: {
-    far: "#e7dccd", back: "#c8bdc4", mid: "#7f7d9c", front: "#232848", water: "#1b2042",
-    reflect: "#4a5288", ripple: "#1b2042", glint: "#f2c9a0", windows: "rgba(251,250,247,.13)",
+    // Day water holds the pale evening sky, so it is lighter than the city it reflects.
+    far: "#e7dccd", back: "#c8bdc4", mid: "#7f7d9c", front: "#232848", water: "#c5cadb",
+    reflect: "#7d84a6", ripple: "#c5cadb", glint: "#f2c9a0", windows: "rgba(251,250,247,.13)",
     lit: null, boat: "rgba(246,231,200,.55)", sun: "#f2c9a0", sunOpacity: 0.75, moon: false, stars: false, gulls: "#232848",
   },
   dark: {
