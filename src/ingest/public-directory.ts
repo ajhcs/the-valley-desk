@@ -488,7 +488,19 @@ async function renderPublicDirectory(
     return api ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
   }
 
-  const researchDb = db!;
+  // When publications are disabled, every directory read must exclude their associated
+  // collections too. Stored kind and partner summaries aggregate those collections, so force direct counts.
+  // This wrapper applies only to read queries issued below; cache versioning uses the real DB.
+  let bypassSummaries = !publicationsEnabled;
+  const researchDb: ResearchDb = {
+    prepare(sql) {
+      if (!publicationsEnabled) sql = sql.replace(/\bresearch_visible\b/g, "(SELECT * FROM research_visible WHERE kind IN ('project','regional-data'))");
+      if (bypassSummaries) sql = sql.replace(/\bresearch_summary_kinds\b/g, "(SELECT * FROM research_summary_kinds WHERE 0)")
+        .replace(/\bresearch_summary_partners\b/g, "(SELECT * FROM research_summary_partners WHERE 0)")
+        .replace(/\bresearch_summary_dataset_partners\b/g, "(SELECT * FROM research_summary_dataset_partners WHERE 0)");
+      return db!.prepare(sql);
+    },
+  };
   const path = pathname.replace(/\/$/, "") || "/";
   const combinedApi = path === "/api/directory/listings";
   const pubApi = path === publicationsApi || path.startsWith(publicationsApi + "/");
@@ -510,7 +522,7 @@ async function renderPublicDirectory(
       hasPubs =
         (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='publication' LIMIT 1")).length > 0;
     }
-    if (hasPubs) {
+    if (publicationsEnabled) {
       // The dataset switch is read first, so a hidden collection costs no listing reads. A database
       // without migration 0050 has no switch and no datasets.
       const [visible] = await optionalRows<{ studies: number; datasets: number }>(
@@ -522,7 +534,9 @@ async function renderPublicDirectory(
         : (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='study' LIMIT 1")).length > 0;
       hasDatasets = visible?.datasets === 1;
     }
-    hasRegionalData = hasPubs && await regionalDataEnabled(researchDb) && (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='regional-data' LIMIT 1")).length > 0;
+    const regionalEnabled = await regionalDataEnabled(researchDb);
+    hasRegionalData = regionalEnabled && (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='regional-data' LIMIT 1")).length > 0;
+    if (hasRegionalData && !hasPubs) bypassSummaries = true;
     if (!suppliedCatalog && path.startsWith(apiPath + "/")) {
       const id = decode(pathname.slice(apiPath.length + 1));
       if (!/^[1-9][0-9]{0,19}$/.test(id)) return json(() => ({ error: "project_not_found" }), 404);
@@ -532,7 +546,7 @@ async function renderPublicDirectory(
       const project = result.project;
       return project ? json(() => ({ project: publicProject(project) })) : json(() => ({ error: "project_not_found" }), 404);
     }
-    if (!suppliedCatalog && path !== methodPath && path !== "/llms.txt" &&
+    if (!suppliedCatalog && !regionalList && !path.startsWith(regionalDataApi + "/") && !path.startsWith("/discover/regional-data/") && path !== methodPath && path !== "/llms.txt" &&
         (path !== "/sitemap.xml" && !path.startsWith("/discover/sitemap/") || path === "/discover/sitemap/directory.xml")) {
       const result = await readProjectCatalog(researchDb, version);
       catalog = result.catalog;
@@ -564,7 +578,9 @@ async function renderPublicDirectory(
       const isApi = path.startsWith(regionalDataApi + "/");
       const id = decode(path.slice((isApi ? regionalDataApi : "/discover/regional-data").length + 1));
       const missing = () => isApi ? json(() => ({ error: "regional_data_not_found" }), 404) : page({ kind: "not-found" }, 404);
-      if (!hasRegionalData || !regionalDataId.test(id)) return missing();
+      if (!regionalEnabled || !regionalDataId.test(id)) return missing();
+      if ((await rows(researchDb, "SELECT id FROM regional_data_removals WHERE id=?", id)).length)
+        return isApi ? json(() => ({error:"regional_data_removed"}),410) : page({kind:"regional-data-removed"},410);
       const [entry] = await rows<{record:string}>(researchDb, "SELECT record FROM research_visible WHERE kind='regional-data' AND id=?", id);
       if (!entry) return missing();
       const record = await regionalDataRecord(researchDb, JSON.parse(entry.record) as RegionalData);
@@ -795,7 +811,9 @@ async function renderPublicDirectory(
         entries = (
           await rows<{ id: string; checked: string | null }>(
             researchDb,
-            "SELECT id,json_extract(record,'$.checked') checked FROM research_visible WHERE kind=? ORDER BY id LIMIT ? OFFSET ?",
+            part === "regional-data"
+              ? "SELECT v.id,max(json_extract(v.record,'$.checked'),coalesce(c.checked,'')) checked FROM research_visible v LEFT JOIN regional_data_checks c ON c.id=v.id WHERE v.kind=? ORDER BY v.id LIMIT ? OFFSET ?"
+              : "SELECT id,json_extract(record,'$.checked') checked FROM research_visible WHERE kind=? ORDER BY id LIMIT ? OFFSET ?",
             part,
             partSize,
             (Number(match[2]) - 1) * partSize,
@@ -811,7 +829,7 @@ async function renderPublicDirectory(
           .join("")}</urlset>`,
       );
     }
-    if (path === "/" && hasPubs) {
+    if (path === "/" && (hasPubs || hasRegionalData)) {
       const summary = await summarize(researchDb);
       const latest = (
         await rows<{ kind: Listing["kind"]; record: string }>(
@@ -839,10 +857,10 @@ async function renderPublicDirectory(
     const scoped = /^\/discover\/(institution|topic|county)\/([^/]+)$/.exec(path);
     let refs: Institution[] = [];
     const needsRefs =
-      scoped || path === newPath || path === feedPath || combinedApi || pubApi || studyApi || datasetList || regionalList || datasetsLanding || (path === browsePath && hasPubs);
+      scoped || path === newPath || path === feedPath || combinedApi || pubApi || studyApi || datasetList || regionalList || datasetsLanding || (path === browsePath && (hasPubs || hasRegionalData));
     if (
       needsRefs &&
-      (hasPubs ||
+      (hasPubs || hasRegionalData ||
         (
           await rows(
             researchDb,
@@ -868,7 +886,7 @@ async function renderPublicDirectory(
       combinedApi ||
       (scoped && refs.length > 0) ||
       (path === browsePath && searchParams.has("kind") && !hasPubs) ||
-      (hasPubs &&
+      ((hasPubs || hasRegionalData) &&
         ((path === browsePath && (!projectFilters || searchParams.get("kind") === "publication")) || scoped))
     ) {
       if (pubApi && !hasPubs) return json(() => ({ error: "publication_not_found" }), 404);
@@ -903,7 +921,7 @@ async function renderPublicDirectory(
         const name = ref?.name ?? options[field].get(value) ?? value;
         scope = { field, slug: ref?.id ?? value, name: field === "county" ? name + " County" : name, ref };
       }
-      if (path === feedPath && hasPubs) {
+      if (path === feedPath && (hasPubs || hasRegionalData)) {
         return xml(
           rss(origin, params, await researchFeed(researchDb, params, refs), options),
           "application/rss+xml",
@@ -912,10 +930,11 @@ async function renderPublicDirectory(
       // The datasets page reads like a search for kind=dataset, newest release first.
       const query = new URLSearchParams(params);
       if (datasetsLanding) {
-        query.set("kind", hasRegionalData ? "__datasets" : "dataset");
+        const selectedKind = query.get("kind");
+        query.set("kind", selectedKind === "dataset" || selectedKind === "regional-data" ? selectedKind : hasRegionalData ? "__datasets" : "dataset");
         if (!query.get("sort") && !query.get("q")) query.set("sort", "activity");
       }
-      const result = hasPubs
+      const result = (hasPubs || hasRegionalData)
         ? await researchQuery(researchDb, query, refs)
         : projectQuery(catalog, removed, params, options, refs);
       if (scoped && !result.total && !options[scoped[1] as keyof typeof options].has(params.get(scoped[1])!))
@@ -1062,7 +1081,8 @@ async function renderPublicDirectory(
             data: result,
             catalog,
             options,
-            enabled: hasPubs,
+            enabled: hasPubs || hasRegionalData,
+            publicationsAvailable: hasPubs,
             studiesAvailable: hasStudies,
             datasetsAvailable: hasDatasets,
             regionalDataAvailable: hasRegionalData,
@@ -1071,7 +1091,10 @@ async function renderPublicDirectory(
             aside,
             ...(choices
               ? {
-                  facets: choices.facets,
+                  facets: [
+                    ...(hasRegionalData ? [{name:"kind", label:"Kind", all:"All datasets", choices: [...(hasDatasets ? [["dataset", "Research datasets"] as [string,string]] : []), ["regional-data", "Regional data"] as [string,string]]}] : []),
+                    ...choices.facets,
+                  ],
                   orders: [["activity", "Release date"], ["added", "Date added"], ["name", "Title A–Z"]] as [string, string][],
                   feed,
                 }

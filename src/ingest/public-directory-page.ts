@@ -29,7 +29,7 @@ export type DirectoryView =
   | { kind: "project"; linked?: {url:string;title:string}[]; mentions?: {url:string;title:string}[]; research?: Listing[]; project: DirectoryProject; related: ReturnType<DirectoryCatalog["related"]>; now: Date }
   | { kind: "methodology"; publications?: boolean; studies?: boolean; datasets?: boolean; regionalData?: boolean }
   | { kind: "retired"; section: RetiredEditorialSection }
-  | { kind: "listing-removed" | "study-removed" | "dataset-removed" | "removed" | "not-found" | "unavailable" };
+  | { kind: "listing-removed" | "study-removed" | "dataset-removed" | "regional-data-removed" | "removed" | "not-found" | "unavailable" };
 
 const siteName = "The Valley Desk";
 const description = "Find and follow healthcare research connected to the nine-county Delaware Valley.";
@@ -229,6 +229,7 @@ const messages = {
   "listing-removed": ["Publication removed","This publication has been removed from the directory."],
   "study-removed": ["Clinical study removed", "This study has been removed from the directory."],
   "dataset-removed": ["Dataset removed", "This dataset has been removed from the directory."],
+  "regional-data-removed": ["Regional data removed", "This regional data record has been removed from the directory."],
   "removed": ["Project removed", "This project is no longer listed in the directory."],
   "not-found": ["Page not found", "The link may be old or mistyped. You can still search the directory."],
   "unavailable": ["Directory temporarily unavailable", "Please try again in a few minutes."],

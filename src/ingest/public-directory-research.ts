@@ -648,10 +648,58 @@ function regionalDataCard(d: RegionalData) {
   return `<li class="record record-dataset"><p class="record-kind">Regional data · ${html(d.publisher)}</p><h3 class="record-title"><a href="${html(regionalDataPath(d.id))}">${html(d.title)}</a></h3><p>${html(d.summary)}</p><p>${html(d.counties.join(", ") || "Not stated")}</p></li>`;
 }
 
-export function renderRegionalData(d: RegionalData & { papers?: { id: string; title: string }[] }, guidance = "") {
-  const value = (v: string | null | undefined) => html(v || "Not stated");
-  const field = (name: string, v: string | null | undefined) => `<dt>${name}</dt><dd>${value(v)}</dd>`;
-  return `<article class="frame page record-page dataset-page"><nav class="breadcrumb"><a href="${browsePath}">Directory</a> / <a href="${datasetsPath}">Datasets</a></nav><h1>${html(d.title)}</h1><p>${html(d.summary)}</p><p><a href="${html(d.url)}">View public record</a></p><dl>${field("Publisher",d.publisher)}${field("Portal",d.portal)}${field("County coverage",d.counties.join(", "))}${field("Granularity",d.granularity)}${field("Time span",d.time_span)}${field("Update cadence",d.update_cadence)}${field("Access",d.access)}${field("License",d.license)}${field("Formats",d.formats?.join(", "))}${field("API",d.api?.url)}${field("Last checked",d.checked)}</dl><section><h2>How to use</h2><p>${html(d.how_to_use.step)}</p><p><a href="${html(d.how_to_use.url)}">Source guidance</a></p>${d.how_to_use.caveats.length ? `<ul>${d.how_to_use.caveats.map(c => `<li>${html(c)}</li>`).join("")}</ul>` : ""}<p>${html(d.how_to_use.citation)}</p></section>${guidance}${d.papers?.length ? `<section><h2>Publications</h2><ul>${d.papers.map(p => `<li><a href="${html(pubPath(p.id))}">${html(p.title)}</a></li>`).join("")}</ul></section>` : ""}</article>`;
+export function renderRegionalData(d: RegionalData & { papers?: { id: string; title: string }[] }) {
+  const value = (v: string | null | undefined) => v ? html(v) : "Not stated";
+  const field = (name: string, content: string) => `<div><dt>${name}</dt><dd>${content}</dd></div>`;
+  const countyNames = d.counties.map(c => counties.find(item => facetSlug(item.name) === facetSlug(c))?.name ?? c);
+  const topic = d.topic.replaceAll("-", " ").replace(/^./, c => c.toUpperCase());
+  const level = accessLevels[d.access];
+  const source = externalLink(d.url, "View public record ↗", "button primary");
+  const api = d.api ? `${externalLink(d.api.url, d.api.type) || html(d.api.type)}` : "Not stated";
+  return `<article class="frame page record-page dataset-page">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${browsePath}">Directory</a><span aria-hidden="true">/</span><a href="${datasetsPath}">Datasets</a></nav>
+    <header class="record-head">
+      <p class="record-kind">${kindIcon("dataset", "Regional data")}<span>Regional data</span>${accessTag(d.access)}</p>
+      <h1>${html(d.title)}</h1>
+      <p class="lede">${html(d.summary)}</p>
+      <p class="record-actions">${source}</p>
+    </header>
+    <div class="record-body">
+      <section class="record-section" aria-labelledby="regional-coverage-title">
+        <h2 id="regional-coverage-title">Coverage</h2>
+        <dl class="facts">
+          ${field("Counties", countyNames.length ? countyLinks(countyNames).join(", ") : "Not stated")}
+          ${field("Topic", topicLink(topic))}
+          ${field("Granularity", value(d.granularity))}
+          ${field("Time span", value(d.time_span))}
+          ${field("Update cadence", value(d.update_cadence))}
+        </dl>
+      </section>
+      <section class="record-section" aria-labelledby="regional-get-title">
+        <h2 id="regional-get-title">How to get it</h2>
+        <dl class="facts">
+          ${field("Access", level ? `${accessTag(d.access)} <span class="access-explain">${html(level.explain)}</span>` : "Not stated")}
+          ${field("Publisher", value(d.publisher))}
+          ${field("Portal", value(d.portal))}
+          ${field("Listing ID", value(d.id))}
+          ${field("Formats", value(d.formats?.join(", ")))}
+          ${field("API", api)}
+          ${field("License", value(d.license))}
+          ${field("Added to directory", value(d.added))}
+          ${field("Source checked", value(d.checked))}
+        </dl>
+      </section>
+    </div>
+    <section class="record-section" aria-labelledby="regional-use-title">
+      <h2 id="regional-use-title">How to use it</h2>
+      <p>${html(d.how_to_use.step)}</p>
+      <p>${externalLink(d.how_to_use.url, "Source guidance ↗")}</p>
+      ${d.how_to_use.caveats.length ? `<ul>${d.how_to_use.caveats.map(c => `<li>${html(c)}</li>`).join("")}</ul>` : ""}
+      <h3>How to cite</h3><p>${html(d.how_to_use.citation)}</p>
+    </section>
+    ${d.papers?.length ? `<section class="record-section"><h2>Publications</h2><ul class="plain-list">${d.papers.map(p => `<li><a href="${html(pubPath(p.id))}">${html(p.title)}</a></li>`).join("")}</ul></section>` : ""}
+    ${feedbackBlock(regionalDataPath(d.id), contactLink("Request removal by email", undefined, `Directory removal request for ${d.id}`))}
+  </article>`;
 }
 
 /** A paper a dataset names, linked to its directory page when the paper is listed. */
@@ -831,6 +879,7 @@ export type ResearchPage = {
   studiesAvailable?: boolean;
   datasetsAvailable?: boolean;
   regionalDataAvailable?: boolean;
+  publicationsAvailable?: boolean;
   scope?: string;
   byDate?: boolean;
   aside?: string;
@@ -841,7 +890,7 @@ export type ResearchPage = {
   feed?: string;
 };
 
-export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, datasetsAvailable, regionalDataAvailable, scope = "", byDate, aside, facets, orders, feed }: ResearchPage) {
+export function renderResearch({ header, path, params, data, catalog, options, enabled, studiesAvailable, datasetsAvailable, regionalDataAvailable, publicationsAvailable = true, scope = "", byDate, aside, facets, orders, feed }: ResearchPage) {
   function select(name: string, label: string, choices: [string, string][], all = "All") {
     const selected = params.get(name) ?? "";
     return `<label>${label}<select form="research-form" name="${name}"><option value="">${all}</option>${choices
@@ -869,7 +918,7 @@ export function renderResearch({ header, path, params, data, catalog, options, e
       )
       .join("");
   } else list = `<h2 class="sr-only">Listings</h2>${renderListingCards(data.items, catalog)}`;
-  const kinds: ListingKind[] = ["publication", "project", ...(studiesAvailable ? ["study" as const] : []), ...(datasetsAvailable ? ["dataset" as const] : []), ...(regionalDataAvailable ? ["regional-data" as const] : [])];
+  const kinds: ListingKind[] = [...(publicationsAvailable ? ["publication" as const] : []), "project", ...(studiesAvailable ? ["study" as const] : []), ...(datasetsAvailable ? ["dataset" as const] : []), ...(regionalDataAvailable ? ["regional-data" as const] : [])];
   const activity = datasetsAvailable
     ? studiesAvailable ? "Publication, code push, registry update or release date" : "Publication, code push or release date"
     : studiesAvailable ? "Publication, code push or registry update date" : "Publication date or last code push";
