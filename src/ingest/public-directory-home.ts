@@ -1,5 +1,5 @@
 import type { Listing } from "./public-directory-research";
-import { countyGeometry } from "./public-directory-counties";
+import { countyGeometry, countyViewBox } from "./public-directory-counties";
 import { browsePath, counties, type DirectoryCatalog } from "./public-directory-data";
 import { entityHref, summaryLedger, type DirectorySummary, type Names } from "./public-directory-entity";
 import { count, healthTopic, href, html, kindLedger, searchInput } from "./public-directory-ui";
@@ -8,21 +8,6 @@ type Home = ReturnType<DirectoryCatalog["home"]>;
 type Row = { name: string; href: string; n: number };
 
 const states = { PA: "Pennsylvania", NJ: "New Jersey" } as const;
-
-/** Where each county's name and count sit on the map, in map units, placed by measuring the labels
- *  against every border at phone and desktop sizes. Philadelphia, Camden, Delaware and Gloucester are
- *  too narrow to hold theirs, so their labels stand clear of the borders with a short leader from the
- *  county; the map gains a little room at the foot for two of them. */
-type Label = { x: number; y: number; start?: boolean; from?: [number, number]; off?: boolean };
-const labelAt: Record<string, Label> = {
-  "42017": { x: 146, y: 61 }, "34021": { x: 252, y: 72 }, "42091": { x: 147, y: 131 }, "42029": { x: 84, y: 178 },
-  "34005": { x: 297, y: 193 },
-  "42101": { x: 233, y: 159, start: true, from: [197, 160] },
-  "34007": { x: 292, y: 268, start: true, from: [257, 234], off: true },
-  "42045": { x: 128, y: 271, from: [147, 214], off: true },
-  "34015": { x: 190, y: 296, from: [199, 252], off: true },
-};
-const mapBox = "0 0 372 312";
 
 const tallyItems = (rows: Row[]) =>
   rows.map((r) => `<li><a href="${html(r.href)}">${html(r.name)}</a><span>${count(r.n)}</span></li>`).join("");
@@ -37,26 +22,26 @@ function tally(id: string, heading: string, rows: Row[], limit = Infinity) {
   return `<section class="tally home-${id}" aria-labelledby="home-${id}-title"><h2 id="home-${id}-title">${heading}</h2><ul>${tallyItems(rows.slice(0, limit))}</ul>${more}</section>`;
 }
 
-/** The counties as a map that is also their links. Each county is a link named in full for keyboards
- *  and screen readers. Names and counts sit in a layer above every county, so a label that overruns a
- *  narrow county is never covered by its neighbour; that layer repeats the links for the pointer only.
- *  The outline of a county under the pointer or in focus is drawn again above every county, so no
- *  neighbour hides part of it. */
+/** The counties as a shaded map that is also their links. Each county is a link named in full, with
+ *  its count, for keyboards, screen readers and the hover tooltip; the shade says how many listings it
+ *  has. Names sit in a layer above every county so a neighbour never covers one; that layer repeats the
+ *  links for the pointer only. The outline of a county under the pointer or in focus is drawn again
+ *  above every county. */
 function countyMap(rows: { fips: string; name: string; state: keyof typeof states; href: string; n: number }[], unit: string) {
+  const most = Math.max(...rows.map((row) => row.n), 1);
   const shapes = rows.map(({ fips, name, state, href: url, n }) => {
     const label = `${name} County, ${states[state]}, ${count(n)} ${n === 1 ? unit.replace(/s$/, "") : unit}`;
-    return `<g role="listitem"><a class="c-${fips}" href="${html(url)}" aria-label="${html(label)}"><path id="county-${fips}" d="${countyGeometry[fips].path}" fill-rule="evenodd"/></a></g>`;
+    const tone = n ? Math.max(1, Math.ceil(Math.sqrt(n / most) * 4)) : 0;
+    return `<g role="listitem" data-tone="${tone}"><a class="c-${fips}" href="${html(url)}" aria-label="${html(label)}"><title>${html(label)}</title><path id="county-${fips}" d="${countyGeometry[fips].path}" fill-rule="evenodd"/></a></g>`;
   });
-  const labels = rows.map(({ fips, name, href: url, n }) => {
-    const { x, y, start, from, off } = labelAt[fips];
-    const classes = [start && "is-callout", off && "is-off-map"].filter(Boolean).join(" ");
-    const [ex, ey] = start ? [x - 3, y - 4] : [x, y - 11];
-    const leader = from ? `<path class="county-leader" d="M${from[0]},${from[1]}L${ex},${ey}"/><circle class="county-leader-end" cx="${from[0]}" cy="${from[1]}" r="1.6"/>` : "";
-    return `<a class="c-${fips}" href="${html(url)}" tabindex="-1">${leader}<text${classes ? ` class="${classes}"` : ""} x="${x}" y="${y}"><tspan class="county-name">${name}</tspan><tspan class="county-n" x="${x}" dy="1.15em">${count(n)}</tspan></text></a>`;
+  const labels = rows.map(({ fips, name, href: url }) => {
+    const { x, y } = countyGeometry[fips];
+    const short = name === "Philadelphia" ? "Phila." : name === "Montgomery" ? "Montg." : name;
+    return `<a class="c-${fips}" href="${html(url)}" tabindex="-1"><text x="${x}" y="${y}" dy=".35em">${short}</text></a>`;
   });
   return `<section class="home-counties" aria-labelledby="home-counties-title">
     <h2 id="home-counties-title">Counties</h2>
-    <svg class="county-map" viewBox="${mapBox}" role="list">
+    <svg class="county-map" viewBox="${countyViewBox}" role="list">
       <g class="county-shapes" role="none">${shapes.join("")}</g>
       <g class="county-rings" aria-hidden="true">${rows.map(({ fips }) => `<use class="c-${fips}" href="#county-${fips}"/>`).join("")}</g>
       <g class="county-labels" aria-hidden="true">${labels.join("")}</g>

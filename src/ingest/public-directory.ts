@@ -822,14 +822,6 @@ async function renderPublicDirectory(
     if (path === "/" && (hasPubs || hasRegionalData)) {
       const summary = await summarize(researchDb);
       summary.week = await weeklyAdditions(researchDb, summary);
-      const latest = (
-        await rows<{ kind: Listing["kind"]; record: string }>(
-          researchDb,
-          // Newest publications by publication date, not by when the backfill added them.
-          "SELECT kind,record FROM research_visible WHERE +kind='publication' AND activity<=? ORDER BY activity DESC,id LIMIT 6",
-          new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()),
-        )
-      ).map((row) => ({ kind: row.kind, record: JSON.parse(row.record) }) as Listing);
       const refs = await institutionRefs(researchDb);
       const now = new Date();
       return page(
@@ -837,7 +829,6 @@ async function renderPublicDirectory(
           kind: "home",
           data: catalog.home(removed, now),
           publications: summary.kinds.publication?.works ?? 0,
-          latest,
           summary,
           names: namesFor(refs, optionsFor(catalog, removed, refs)),
           now,

@@ -97,7 +97,7 @@ test("pages offer similar research, who works on a search, partners and recent p
     assert.match(home, /<h2 id="home-topics-title">Topics<\/h2>/);
     assert.match(home, /<h2 id="home-institutions-title">Institutions/);
     assert.match(home, /<a class="c-34007" href="\/discover\/county\/camden" aria-label="Camden County, New Jersey, [\d,]+ listings?">/);
-    assert.equal(home.match(/<g role="listitem"><a class="c-\d+" href="\/discover\/county\/[a-z]+" aria-label="[^"]+">/g)?.length, 9);
+    assert.equal(home.match(/<g role="listitem" data-tone="\d"><a class="c-\d+" href="\/discover\/county\/[a-z]+" aria-label="[^"]+">/g)?.length, 9);
     assert.doesNotMatch(home.match(/<g class="county-shapes"[\s\S]*?<g class="county-rings"/)![0], /tabindex|aria-hidden/);
     assert.doesNotMatch(home, /Recently published|record-publication/);
     assert.match(home, /href="\/discover\/new">what’s new<\/a>/);

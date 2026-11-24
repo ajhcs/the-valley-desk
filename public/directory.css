@@ -767,6 +767,8 @@ input, select { accent-color: var(--accent); }
 .groups-strip ul { display: inline; margin: 0; padding: 0; list-style: none; }
 .groups-strip li { display: inline; white-space: nowrap; }
 .groups-strip li + li::before, .groups-more ul li:first-child::before { content: "·" / ""; margin-inline: .45rem; color: var(--muted); }
+.groups-strip li a { color: var(--text); text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); }
+.groups-strip li a:hover { text-decoration-color: currentColor; }
 .groups-strip .n { color: var(--muted); font-size: .84rem; font-variant-numeric: tabular-nums; }
 .groups-more { display: inline; }
 .groups-more > summary { display: inline; margin-left: .6rem; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: .18em; }
@@ -901,47 +903,25 @@ input, select { accent-color: var(--accent); }
 .home .tally li a:hover { color: var(--text); text-decoration: underline; }
 .home .tally-more summary { color: var(--accent); }
 
-/* The map is the county index: each county is a link carrying its name and count. No shading by
-   size, which would only ever say that Philadelphia is largest. */
-.home-counties { --county-lit: color-mix(in srgb, var(--accent) 14%, var(--card)); }
-.home-counties .county-map { width: 100%; max-width: none; margin-top: .6rem; overflow: visible; }
-.home-counties .county-map path { fill: var(--fill, var(--surface)); stroke: var(--map-line); stroke-width: .7; transition: fill .12s ease; }
+/* The map is the county index: each county is a link, shaded by how many listings it has. */
+.home-counties .county-map { width: 100%; max-width: 26rem; margin: .6rem auto 0; overflow: visible; }
 .home-counties .county-map a { outline: none; }
-.home-counties .county-rings use { fill: none; stroke: var(--ring, none); stroke-width: 1.8; pointer-events: none; }
-.home-counties .county-leader { fill: none; stroke: var(--muted); stroke-width: .7; }
-.home-counties .county-leader-end { fill: var(--muted); }
-.home-counties .county-map text.is-callout { text-anchor: start; }
-.home-counties .county-map text.is-off-map { stroke: var(--paper); }
-/* A county lights when its shape or its label is under the pointer, or its shape has focus. */
-.county-map:has(.c-42017:is(:hover, :focus-visible)) .c-42017,
-.county-map:has(.c-42029:is(:hover, :focus-visible)) .c-42029,
-.county-map:has(.c-42045:is(:hover, :focus-visible)) .c-42045,
-.county-map:has(.c-42091:is(:hover, :focus-visible)) .c-42091,
-.county-map:has(.c-42101:is(:hover, :focus-visible)) .c-42101,
-.county-map:has(.c-34005:is(:hover, :focus-visible)) .c-34005,
-.county-map:has(.c-34007:is(:hover, :focus-visible)) .c-34007,
-.county-map:has(.c-34015:is(:hover, :focus-visible)) .c-34015,
-.county-map:has(.c-34021:is(:hover, :focus-visible)) .c-34021 { --fill: var(--county-lit); --ring: var(--accent); }
-.home-counties .county-map text {
-  fill: var(--text);
-  stroke: var(--fill, var(--surface));
-  stroke-width: 3px;
-  stroke-linejoin: round;
-  paint-order: stroke;
-  text-anchor: middle;
-  font: 600 11px/1 var(--sans);
-  pointer-events: auto;
-}
-.home-counties .county-map a:hover .county-name { text-decoration: underline; }
-.home-counties .county-map .county-n { fill: var(--muted); font-weight: 400; font-size: 10px; }
+.home-counties .county-rings use { fill: none; stroke: none; stroke-width: 2; pointer-events: none; }
+/* A county is outlined when its shape or its name is under the pointer, or its shape has focus. */
+.county-map:has(.c-42017:is(:hover, :focus-visible)) .county-rings .c-42017,
+.county-map:has(.c-42029:is(:hover, :focus-visible)) .county-rings .c-42029,
+.county-map:has(.c-42045:is(:hover, :focus-visible)) .county-rings .c-42045,
+.county-map:has(.c-42091:is(:hover, :focus-visible)) .county-rings .c-42091,
+.county-map:has(.c-42101:is(:hover, :focus-visible)) .county-rings .c-42101,
+.county-map:has(.c-34005:is(:hover, :focus-visible)) .county-rings .c-34005,
+.county-map:has(.c-34007:is(:hover, :focus-visible)) .county-rings .c-34007,
+.county-map:has(.c-34015:is(:hover, :focus-visible)) .county-rings .c-34015,
+.county-map:has(.c-34021:is(:hover, :focus-visible)) .county-rings .c-34021 { stroke: var(--accent); }
+.home-counties .county-map text { pointer-events: auto; cursor: pointer; }
 
 @media (max-width: 53rem) {
   .home-top, .home-ways { grid-template-columns: 1fr; }
   .home-counties { max-width: 30rem; }
-}
-@media (max-width: 34rem) {
-  .home-counties .county-map text { font-size: 11.5px; }
-  .home-counties .county-map .county-n { font-size: 10.5px; }
 }
 
 /* ---- end home ---- */
