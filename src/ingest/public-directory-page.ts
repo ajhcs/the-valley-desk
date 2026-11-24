@@ -5,7 +5,7 @@ import {
   activityCutoff, apiPath, browsePath, counties, githubAccount, httpsUrl, lastActivity, methodPath, paperUrl, projectPapers, projectPath,
   type DirectoryCatalog, type DirectoryProject,
 } from "./public-directory-data";
-import { similarSection, type Listing } from "./public-directory-research";
+import { datasetsPath, similarSection, type Listing } from "./public-directory-research";
 import { renderDirectoryHome } from "./public-directory-home";
 import type { DirectorySummary, Names } from "./public-directory-entity";
 import { renderDirectoryResults, resultsHead } from "./public-directory-results";
@@ -34,15 +34,42 @@ export type DirectoryView =
 const siteName = "The Valley Desk";
 const description = "Find and follow healthcare research connected to the nine-county Delaware Valley.";
 
-function current(view: DirectoryView) {
-  if (view.kind === "methodology") return methodPath;
-  if (view.kind === "research") return view.path === "/discover/new" ? "/discover/new" : view.path === browsePath ? browsePath : "";
-  return view.kind === "results" && !view.data.scope ? browsePath : "";
+/** What the request may show, so the masthead offers only the kinds a reader can open. A page rendered
+ *  without it (support, suggest, error pages) offers software and the about page only. */
+export type DirectoryNav = { publications?: boolean; studies?: boolean; datasets?: boolean; at?: string };
+
+const sections = [
+  ["publication", `${browsePath}?kind=publication`, "Publications"],
+  ["project", `${browsePath}?kind=project`, "Software"],
+  ["study", `${browsePath}?kind=study`, "Studies"],
+  ["data", datasetsPath, "Data"],
+  ["about", methodPath, "About"],
+] as const;
+
+/** The section a page belongs to: a kind's listing or one of its records, the datasets, or about. */
+function section(view: DirectoryView, at?: string) {
+  if (view.kind === "methodology") return "about";
+  if (view.kind === "project") return "project";
+  const url = new URL(at ?? (view.kind === "research" ? view.path : "/"), "https://directory.invalid");
+  const path = url.pathname.replace(/\/$/, "");
+  if (path === browsePath) {
+    const kinds = url.searchParams.getAll("kind");
+    return kinds.length === 1 ? kinds[0] : "";
+  }
+  if (path === datasetsPath || /^\/discover\/(dataset|regional-data)\//.test(path)) return "data";
+  const record = /^\/discover\/(publication|work|study)\//.exec(path);
+  return record ? (record[1] === "work" ? "project" : record[1]) : "";
 }
 
-function header(view: DirectoryView) {
-  const here = current(view);
-  const link = (path: string, label: string) => `<a href="${path}"${here === path ? ' aria-current="page"' : ""}>${label}</a>`;
+function header(view: DirectoryView, nav: DirectoryNav) {
+  const here = section(view, nav.at);
+  const at = nav.at ?? "";
+  const shown = { publication: nav.publications, project: true, study: nav.studies, data: nav.datasets, about: true };
+  const links = sections.filter(([key]) => shown[key]).map(([key, path, label]) => {
+    // The section's own page is the current page; a record or a filtered view sits within the section.
+    const state = key !== here ? "" : at === path || view.kind === "methodology" ? ' aria-current="page"' : ' aria-current="true"';
+    return `<a href="${path}"${state}>${label}</a>`;
+  });
   return `<a class="skip-link" href="#main">Skip to content</a>
     <header class="directory-chrome desk-masthead">
       <div class="desk-frame desk-masthead-inner">
@@ -50,27 +77,29 @@ function header(view: DirectoryView) {
           <img class="desk-mark" src="/mark-a-fold.svg" alt="" width="32" height="32">
           <span class="desk-wordmark">The Valley Desk</span>
         </a>
-        <nav class="desk-primary" aria-label="Primary">${link(browsePath, "Search")}${link("/discover/new", "What’s new")}${link(methodPath, "Methodology")}${link("/discover/suggest", "Suggest")}</nav>
+        <nav class="desk-primary" aria-label="Primary">${links.join("")}</nav>
       </div>
     </header>`;
 }
 
+/** The full skyline and the supporters stand at the foot of the home page. Every other page keeps a
+ *  thin strip of the same city above the links. */
 function footer(view: DirectoryView) {
-  return `<footer class="directory-chrome desk-footer">
+  const home = view.kind === "home";
+  return `<footer class="directory-chrome desk-footer${home ? "" : " is-strip"}">
     <div class="desk-footer-sky">
-      ${view.kind === "home" ? supportersBand() : ""}
+      ${home ? supportersBand() : ""}
       <div class="desk-footer-art" aria-hidden="true"></div>
     </div>
     <div class="desk-footer-river">
     <div class="desk-frame desk-footer-inner">
-      <p class="desk-footer-about"><a class="desk-footer-brand" href="/">The Valley Desk</a> lists healthcare research connected to nine counties in Pennsylvania and New Jersey.</p>
       <nav class="desk-footer-links" aria-label="Footer">
-        <a href="${browsePath}">Search</a><a href="/discover/new">What’s new</a><a href="${methodPath}">Methodology</a><a href="/discover/updates.xml">RSS</a><a href="${methodPath}#data">Data and API</a><a href="/discover/suggest">Suggest research</a><a href="/discover/suggest#feedback">Feedback</a>${supportOpen() ? `<a href="${supportPath}">Support</a>` : ""}
+        <a href="/discover/new">What’s new</a><a href="${browsePath}">Search</a><a href="/discover/updates.xml">RSS</a><a href="${methodPath}#data">Data and API</a><a href="/discover/suggest">Suggest research</a><a href="/discover/suggest#feedback">Feedback</a>${supportOpen() ? `<a href="${supportPath}">Support</a>` : ""}
       </nav>
       <div class="desk-theme" role="group" aria-label="Colour theme" id="directory-theme">
         <button type="button" data-theme-choice="light" aria-pressed="false">${icon("sun")}Day</button><button type="button" data-theme-choice="dark" aria-pressed="false">${icon("moon")}Night</button><button type="button" data-theme-choice="system" aria-pressed="false" title="Follow this device’s setting">${icon("auto")}Auto</button>
       </div>
-      <p class="desk-footer-copy">Built by <a href="https://colelyons.com/">Cole Lyons</a></p>
+      <p class="desk-footer-copy"><a class="desk-footer-brand" href="/">The Valley Desk</a> · Built by <a href="https://colelyons.com/">Cole Lyons</a></p>
     </div>
     </div>
   </footer>`;
@@ -382,7 +411,7 @@ export function jsonAlternate(path: string | undefined) {
   return undefined;
 }
 
-export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatalog, origin: string, nonce?: string) {
+export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatalog, origin: string, nonce?: string, nav: DirectoryNav = {}) {
   let content: string;
   switch (view.kind) {
     case "research": content = view.content; break;
@@ -438,7 +467,7 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   </head>
   <body class="directory-site">
-    ${header(view)}
+    ${header(view, nav)}
     <main id="main" tabindex="-1">${content}</main>
     ${footer(view)}
   </body>

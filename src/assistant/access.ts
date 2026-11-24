@@ -1,6 +1,7 @@
 // Routes for AI-assistant access: the MCP endpoint, its server card, the setup page and the
 // ChatGPT domain-verification file.
 import { directoryCatalog } from "../ingest/public-directory-data";
+import { directoryNav } from "../ingest/public-directory-kinds";
 import { renderDirectoryPage } from "../ingest/public-directory-page";
 import { contactLink, html } from "../ingest/public-directory-ui";
 import { legacyVersions, maxRequestBytes, modernVersion, serveMcp, serverInfo } from "./mcp";
@@ -156,6 +157,7 @@ export async function serveAssistantAccess(request: Request, env: Env, origin: s
     directoryCatalog,
     origin,
     nonce,
+    head ? {} : await directoryNav(env.VALLEY_DESK_DB as never, env.PUBLICATIONS_PUBLIC_ENABLED === "true"),
   );
   return send(page, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "cdn-cache-control": "no-store" });
 }

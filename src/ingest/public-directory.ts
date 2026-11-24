@@ -1,6 +1,6 @@
 import { regionalDataLlms, regionalDataSchema } from "./regional-data-surfaces";
 import { regionalDataApi, regionalDataPath, regionalDataId, type RegionalData } from "./regional-data-contract";
-import { regionalDataEnabled, regionalDataRecord, regionalDataRecords } from "./regional-data-read";
+import { regionalDataRecord, regionalDataRecords } from "./regional-data-read";
 import { decodedPublicPath } from "../lib/editorial-retirement";
 import { html } from "./public-directory-ui";
 import { supportOpen, supportPath } from "./public-support-data";
@@ -68,7 +68,8 @@ import {
   publicProjectId,
   type DirectoryProject,
 } from "./public-directory-data";
-import { renderDirectoryPage, type DirectoryView } from "./public-directory-page";
+import { renderDirectoryPage, type DirectoryNav, type DirectoryView } from "./public-directory-page";
+import { navFor, optionalRows, readKinds } from "./public-directory-kinds";
 import { activeGroups, groupList, partnerList, partners, similarListings } from "./public-directory-discover";
 import { cacheKey, dataVersion, defaultCache, forCache, fromCache, type CacheStore } from "./public-directory-cache";
 import { readProject, readProjectCatalog } from "./public-directory-store";
@@ -193,16 +194,6 @@ function publicProject(project: DirectoryProject) {
   };
 }
 
-/** Reads an optional table added after the core schema; a database without it reads as empty. */
-async function optionalRows<T>(db: ResearchDb, sql: string, ...args: string[]): Promise<T[]> {
-  try {
-    return await rows<T>(db, sql, ...args);
-  } catch (error) {
-    if (/no such table/i.test(String(error))) return [];
-    throw error;
-  }
-}
-
 function decode(segment: string) {
   try {
     return decodeURIComponent(segment);
@@ -211,8 +202,8 @@ function decode(segment: string) {
   }
 }
 
-export function directoryNotFound(origin: string, nonce?: string, head = false) {
-  return new Response(head ? null : renderDirectoryPage({ kind: "not-found" }, directoryCatalog, origin, nonce), {
+export function directoryNotFound(origin: string, nonce?: string, head = false, nav: DirectoryNav = {}) {
+  return new Response(head ? null : renderDirectoryPage({ kind: "not-found" }, directoryCatalog, origin, nonce, nav), {
     status: 404,
     headers: { ...htmlHeaders, "x-robots-tag": "noindex" },
   });
@@ -223,9 +214,10 @@ export function retiredDirectoryPage(
   origin: string,
   nonce: string,
   head: boolean,
+  nav: DirectoryNav = {},
 ) {
   return new Response(
-    head ? null : renderDirectoryPage({ kind: "retired", section }, directoryCatalog, origin, nonce),
+    head ? null : renderDirectoryPage({ kind: "retired", section }, directoryCatalog, origin, nonce, nav),
     {
       status: 410,
       headers: { ...htmlHeaders, "x-robots-tag": "noindex" },
@@ -249,8 +241,6 @@ function projectSitemap(catalog: ReturnType<typeof createDirectoryCatalog>, remo
     })),
   ];
 }
-
-
 
 /** Stable query string for a filtered view's self-referencing canonical URL. */
 function canonicalQuery(params: URLSearchParams) {
@@ -465,6 +455,7 @@ async function renderPublicDirectory(
   let catalog = suppliedCatalog ?? directoryCatalog;
   let source: "fallback" | "d1" | undefined;
   const projectSource = (): Record<string, string> => source ? { "x-directory-project-source": source } : {};
+  let hasPubs = false, hasStudies = false, hasDatasets = false, hasRegionalData = false;
   const page = (view: DirectoryView, status: number) => {
     const renderFragment =
       fragment && view.kind === "results" && (view.data.scope?.entity.kind !== "county" || view.data.total > 0);
@@ -474,7 +465,7 @@ async function renderPublicDirectory(
         ? null
         : renderFragment
           ? renderResultsRegion(catalog, view.data)
-          : renderDirectoryPage(view, catalog, origin, nonce),
+          : renderDirectoryPage(view, catalog, origin, nonce, navFor({ hasPubs, hasStudies, hasDatasets, hasRegionalData }, pathname + search)),
       {
         status,
         headers: { ...headers, ...projectSource(), ...(status >= 400 ? { "x-robots-tag": "noindex" } : {}) },
@@ -518,29 +509,12 @@ async function renderPublicDirectory(
     new Response(head ? null : value, { headers: { ...noStore, ...projectSource(), "content-type": type + "; charset=utf-8" } });
   const unavailable = () =>
     api || pubApi ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
-  let hasPubs = false, hasStudies = false, hasDatasets = false, hasRegionalData = false;
   let linked: { title: string; url: string }[] = [];
   let mentions: { title: string; url: string }[] = [];
   let research: Listing[] = [];
   try {
-    if (publicationsEnabled) {
-      hasPubs =
-        (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='publication' LIMIT 1")).length > 0;
-    }
-    if (publicationsEnabled) {
-      // The dataset switch is read first, so a hidden collection costs no listing reads. A database
-      // without migration 0050 has no switch and no datasets.
-      const [visible] = await optionalRows<{ studies: number; datasets: number }>(
-        researchDb,
-        "SELECT EXISTS(SELECT 1 FROM research_visible WHERE kind='study') studies,CASE WHEN (SELECT enabled FROM dataset_visibility WHERE id=1)=1 THEN EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') ELSE 0 END datasets",
-      );
-      hasStudies = visible
-        ? visible.studies === 1
-        : (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='study' LIMIT 1")).length > 0;
-      hasDatasets = visible?.datasets === 1;
-    }
-    const regionalEnabled = await regionalDataEnabled(researchDb);
-    hasRegionalData = regionalEnabled && (await rows(researchDb, "SELECT id FROM research_visible WHERE kind='regional-data' LIMIT 1")).length > 0;
+    let regionalEnabled: boolean | undefined;
+    ({ hasPubs, hasStudies, hasDatasets, hasRegionalData, regionalEnabled } = await readKinds(researchDb, publicationsEnabled));
     if (hasRegionalData && !hasPubs) bypassSummaries = true;
     if (!suppliedCatalog && path.startsWith(apiPath + "/")) {
       const id = decode(pathname.slice(apiPath.length + 1));

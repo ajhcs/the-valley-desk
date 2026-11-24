@@ -5,6 +5,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import worker from "../worker.js";
+import { supportOpen } from "../src/ingest/public-support-data";
 
 const origin = "https://thevalleydesk.org";
 const fixture = "test/fixtures/research-datasets/datasets.jsonl";
@@ -63,6 +64,7 @@ test("datasets stay hidden while the switch is off", async () => {
     assert.match(await d.text("/discover/works?kind=dataset"), /No matching listings/);
     assert.doesNotMatch(await d.text(pubPage("doi:10.9999/fixture/4")), /Data from this paper/);
     assert.doesNotMatch(await d.text("/"), /datasets/);
+    assert.doesNotMatch(await d.text(pubPage("doi:10.9999/fixture/4")), /discover\/datasets/);
     assert.doesNotMatch(await d.text("/llms.txt"), /discover\/datasets/);
     assert.doesNotMatch(await d.text("/sitemap.xml"), /datasets-1/);
     assert.equal((await d.get("/discover/sitemap/datasets-1.xml")).status, 404);
@@ -126,6 +128,8 @@ test("datasets page lists the newest releases first and filters by access, data 
     // The mixed search offers the kind, and the other surfaces count and list datasets.
     assert.match(await d.text("/discover/works"), /<option value="dataset">Datasets<\/option>/);
     assert.match(await d.text("/"), /6 datasets/);
+    assert.match(await d.text("/"), /<nav class="desk-primary"[^>]*>[\s\S]*?<a href="\/discover\/datasets">Data<\/a>/);
+    assert.match(landing, /<a href="\/discover\/datasets" aria-current="page">Data<\/a>/);
     assert.match(await d.text("/discover/institution/fixture-institute"), /6 datasets/);
     assert.match(await d.text("/llms.txt"), /discover\/datasets/);
     assert.match(await d.text("/discover/methodology"), /api\/directory\/datasets/);
@@ -388,4 +392,35 @@ test("empty enabled dataset collection records the visible-dataset marker", () =
     const row = d.sqlite.prepare("SELECT first FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'").get() as { first: string };
     assert.equal(row.first, "0");
   } finally { d.close(); }
+});
+
+test("pages outside the directory handler offer the same masthead, and a hidden kind leaves it", async () => {
+  const d = directory();
+  // A path no route claims falls through to the static assets and then the directory's 404 page.
+  const missing = async () => (await worker.fetch(new Request(origin + "/no-such-page"), { ...d.env, ASSETS: { fetch: async () => new Response(null, { status: 404 }) } }, {})).text();
+  const nav = (html: string) => [...html.match(/<nav class="desk-primary"[^>]*>([\s\S]*?)<\/nav>/)![1].matchAll(/>([^<]+)<\/a>/g)].map((m) => m[1]);
+  try {
+    // The dataset switch is off; the fixture has publications but no clinical studies.
+    const off = ["Publications", "Software", "About"];
+    assert.deepEqual(nav(await d.text("/discover/works")), off);
+    d.queries.length = 0;
+    const suggest = await d.text("/discover/suggest");
+    assert.deepEqual(nav(suggest), off);
+    // The suggest page reads only the per-kind probes, never a listing scan.
+    assert.ok(d.queries.length <= 4 && d.queries.every((q) => /LIMIT 1|EXISTS|_visibility WHERE id=1/.test(q)), d.queries.join("\n"));
+    assert.deepEqual(nav(await d.text("/discover/connect")), off);
+    assert.deepEqual(nav(await missing()), off);
+
+    d.sqlite.exec("UPDATE dataset_visibility SET enabled=1");
+    const on = ["Publications", "Software", "Data", "About"];
+    for (const path of ["/discover/works", "/discover/suggest", "/discover/connect", ...(supportOpen() ? ["/support"] : [])])
+      assert.deepEqual(nav(await d.text(path)), on, path);
+    assert.deepEqual(nav(await missing()), on);
+    // HEAD reads nothing for the masthead.
+    d.queries.length = 0;
+    await worker.fetch(new Request(origin + "/discover/suggest", { method: "HEAD" }), d.env, {});
+    assert.equal(d.queries.length, 0);
+  } finally {
+    d.close();
+  }
 });

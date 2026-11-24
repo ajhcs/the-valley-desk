@@ -5,7 +5,7 @@
  * link, no sitemap entry) until a checkout link is set in src/content/support.json.
  */
 import { directoryCatalog } from "./public-directory-data";
-import { renderDirectoryPage } from "./public-directory-page";
+import { renderDirectoryPage, type DirectoryNav } from "./public-directory-page";
 import { html } from "./public-directory-ui";
 import { httpsUrl, supportData, supportPath, type SupportData } from "./public-support-data";
 
@@ -83,7 +83,7 @@ export function supportContent(data: SupportData = supportData) {
   </article>`;
 }
 
-export function supportPage(origin: string, nonce?: string, data: SupportData = supportData) {
+export function supportPage(origin: string, nonce?: string, data: SupportData = supportData, nav: DirectoryNav = {}) {
   return renderDirectoryPage(
     {
       kind: "research",
@@ -96,13 +96,14 @@ export function supportPage(origin: string, nonce?: string, data: SupportData = 
     directoryCatalog,
     origin,
     nonce,
+    nav,
   );
 }
 
-export function handleSupport(request: Request, origin: string, nonce?: string, data: SupportData = supportData) {
+export function handleSupport(request: Request, origin: string, nonce?: string, data: SupportData = supportData, nav: DirectoryNav = {}) {
   const method = request.method.toUpperCase();
   if (method !== "GET" && method !== "HEAD") return new Response(null, { status: 405, headers: { allow: "GET, HEAD" } });
-  const body = supportPage(origin, nonce, data);
+  const body = supportPage(origin, nonce, data, nav);
   return new Response(method === "HEAD" ? null : body, {
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" },
   });

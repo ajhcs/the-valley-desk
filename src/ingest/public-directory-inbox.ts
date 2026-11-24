@@ -4,7 +4,8 @@
  * `wrangler d1 execute` as described in ops/reader-inbox.md.
  */
 import { directoryCatalog } from "./public-directory-data";
-import { renderDirectoryPage } from "./public-directory-page";
+import { renderDirectoryPage, type DirectoryNav } from "./public-directory-page";
+import { directoryNav } from "./public-directory-kinds";
 import { icon } from "./public-directory-icons";
 
 export const suggestPath = "/discover/suggest";
@@ -13,7 +14,7 @@ export const feedbackPath = "/discover/feedback";
 type Statement = { bind(...values: unknown[]): { run(): Promise<unknown>; first<T>(): Promise<T | null> } };
 type InboxDb = { prepare(sql: string): Statement };
 type Limiter = { limit(options: { key: string }): Promise<{ success: boolean }> };
-export type InboxEnv = { VALLEY_DESK_DB?: InboxDb; READER_RATE_LIMITER?: Limiter };
+export type InboxEnv = { VALLEY_DESK_DB?: InboxDb; READER_RATE_LIMITER?: Limiter; PUBLICATIONS_PUBLIC_ENABLED?: string };
 
 const itemTypes = {
   publication: "A publication",
@@ -70,7 +71,7 @@ function reply(request: Request, ok: boolean, back: string, status = ok ? 200 : 
   return new Response(null, { status: 303, headers: { ...noStore, location: ok ? back : `${suggestPath}?sent=error#suggest` } });
 }
 
-function suggestPage(origin: string, nonce: string | undefined, state: string) {
+function suggestPage(origin: string, nonce: string | undefined, state: string, nav: DirectoryNav) {
   const sent = state === "suggestion" || state === "feedback";
   const options = (Object.entries(itemTypes) as [ItemType, string][])
     .map(([value, label], i) => `<label class="choice"><input type="radio" name="item_type" value="${value}"${i === 0 ? " checked" : ""}> ${label}</label>`)
@@ -120,6 +121,7 @@ function suggestPage(origin: string, nonce: string | undefined, state: string) {
     directoryCatalog,
     origin,
     nonce,
+    nav,
   );
 }
 
@@ -148,7 +150,8 @@ export async function handleReaderInbox(request: Request, env: InboxEnv, origin:
 
   if (method === "GET" || method === "HEAD") {
     if (path === feedbackPath) return new Response(null, { status: 308, headers: { ...noStore, location: `${suggestPath}#feedback` } });
-    const body = suggestPage(origin, nonce, url.searchParams.get("sent") ?? "");
+    const nav = method === "GET" ? await directoryNav(env.VALLEY_DESK_DB as never, env.PUBLICATIONS_PUBLIC_ENABLED === "true") : {};
+    const body = suggestPage(origin, nonce, url.searchParams.get("sent") ?? "", nav);
     return new Response(method === "HEAD" ? null : body, {
       headers: { ...noStore, "content-type": "text/html; charset=utf-8", "x-robots-tag": "noindex" },
     });

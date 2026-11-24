@@ -41,10 +41,17 @@ function notFoundHeaders() {
   };
 }
 
+/** Masthead sections for directory pages served outside the directory handler. */
+async function publicNav(env) {
+  const { directoryNav } = await import("./src/ingest/public-directory-kinds.ts");
+  return directoryNav(env.VALLEY_DESK_DB, env.PUBLICATIONS_PUBLIC_ENABLED === "true");
+}
+
 async function notFound(env, request, path, origin, nonce) {
   if (env.DIRECTORY_PUBLIC_ENABLED === "true") {
     const { directoryNotFound } = await import("./src/ingest/public-directory.ts");
-    return directoryNotFound(origin, nonce, request.method === "HEAD");
+    const head = request.method === "HEAD";
+    return directoryNotFound(origin, nonce, head, head ? {} : await publicNav(env));
   }
   const url = new URL(request.url);
   const asset = await env.ASSETS.fetch(new URL("/index.html", url.origin));
@@ -585,7 +592,7 @@ async function handleFetch(request, env, origin, nonce, ctx) {
 
   if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/support" || path === "/support/")) {
     const { handleSupport, supportOpen } = await import("./src/ingest/public-support.ts");
-    if (supportOpen()) return handleSupport(request, origin, nonce);
+    if (supportOpen()) return handleSupport(request, origin, nonce, undefined, method === "GET" ? await publicNav(env) : {});
   }
 
   if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path === "/" || path === "/llms.txt" || path.startsWith("/discover") || path.startsWith("/api/directory/") || stripSlash(decodedPublicPath(path)) === "/sitemap.xml")) {
@@ -811,7 +818,7 @@ export default {
     let response;
     if (retired?.kind === "page") {
       const { retiredDirectoryPage } = await import("./src/ingest/public-directory.ts");
-      response = retiredDirectoryPage(retired.section, origin, nonce, head);
+      response = retiredDirectoryPage(retired.section, origin, nonce, head, head ? {} : await publicNav(env));
     } else if (retired?.kind === "data") {
       response = new Response(head ? null : JSON.stringify({ error: "retired" }), {
         status: 410,

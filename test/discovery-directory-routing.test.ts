@@ -245,7 +245,11 @@ test('six-field and enriched records render safely and the JSON projection exclu
   assert.match(detail, /\\u003c\/script\\u003e/);
   assert.doesNotMatch(detail, /<img src=x|href="javascript:|credentials:secret|private .* field/);
   const home = await (await get('/')).text();
-  assert.match(home, /Recently added projects/);
+  assert.match(home, /<h2 id="home-counties-title">Counties<\/h2>/);
+  assert.match(home, /aria-label="Bucks County, Pennsylvania, \d+ projects?"/);
+  // Without public publications, the masthead offers only software and the about page.
+  const nav = home.match(/<nav class="desk-primary"[^>]*>([\s\S]*?)<\/nav>/)![1];
+  assert.deepEqual([...nav.matchAll(/>([^<]+)<\/a>/g)].map((m) => m[1]), ["Software", "About"]);
   const api = await (await get('/api/directory/projects/102')).json() as { project: Record<string, unknown> };
   assert.equal(api.project.name, hostile);
   assert.equal(api.project.stars, 0);
