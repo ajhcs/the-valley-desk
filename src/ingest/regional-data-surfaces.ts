@@ -2,8 +2,13 @@ import { counties } from "./public-directory-data";
 import { regionalDataPath, type RegionalData } from "./regional-data-contract";
 
 /** Append only after the public regional-data availability gate has passed. */
-export function regionalDataLlms(origin: string): string {
-  return `\n- [Regional data](${origin}/discover/datasets?kind=regional-data): public data resources with geographic coverage, access, formats and usage guidance. Search and new listings accept kind=regional-data. JSON: ${origin}/api/directory/regional-data and ${origin}/api/directory/regional-data/{percent-encoded ID}. Resource pages: /discover/regional-data/{percent-encoded ID}.\n`;
+export function regionalDataLlms(origin: string, records: readonly Pick<RegionalData, "id" | "title">[] = []): string {
+  const links = records.map(({ id, title }) => {
+    const label = title.replace(/\s+/g, " ").replace(/[\\[\]]/g, "\\$&");
+    return `- [${label}](${origin + regionalDataPath(id)})`;
+  });
+  const entry = `\n- [Regional data](${origin}/discover/datasets?kind=regional-data): public data resources with geographic coverage, access, formats and usage guidance. Search and new listings accept kind=regional-data. JSON: ${origin}/api/directory/regional-data and ${origin}/api/directory/regional-data/{percent-encoded ID}. Resource pages: /discover/regional-data/{percent-encoded ID}.\n`;
+  return links.length ? entry + "\n## Regional datasets\n\n" + links.join("\n") + "\n" : entry;
 }
 
 /** Structured data mirrors the public record, including its source and use guidance. */

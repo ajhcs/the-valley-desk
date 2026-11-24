@@ -122,7 +122,9 @@ test("the reviewed seed reaches the public Worker surfaces with the same record 
   const browse = await get("/discover/datasets?kind=regional-data");
   assert.equal(browse.status, 200);
   assert.match(await browse.text(), /Regional data/);
-  assert.match(await (await get("/llms.txt")).text(), /\/discover\/datasets\?kind=regional-data/);
+  const llms = await (await get("/llms.txt")).text();
+  assert.match(llms, /\/discover\/datasets\?kind=regional-data/);
+  for (const record of seed) assert.ok(llms.includes(origin + regionalDataPath(record.id)), record.id);
   assert.match(await (await get("/sitemap.xml")).text(), /regional-data-1\.xml/);
   assert.ok((await (await get("/discover/sitemap/regional-data-1.xml")).text()).includes(detail));
   assert.ok((await (await get("/discover/updates.xml?kind=regional-data")).text()).includes(detail));

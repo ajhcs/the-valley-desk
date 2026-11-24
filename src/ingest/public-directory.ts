@@ -620,10 +620,15 @@ async function renderPublicDirectory(
         breadcrumbs: [["Directory", browsePath], ["Datasets", datasetsPath], [dataset.title, datasetPath(id)]],
       }, 200);
     }
-    if (path === "/llms.txt")
-      return new Response(head ? null : llmsTxt(origin, true, hasPubs, hasDatasets) + (hasRegionalData ? regionalDataLlms(origin) : ""), {
+    if (path === "/llms.txt") {
+      const regionalLinks = hasRegionalData && !head ? await rows<Pick<RegionalData, "id" | "title">>(
+        researchDb, "SELECT id,title FROM research_visible WHERE kind='regional-data' ORDER BY title COLLATE NOCASE,id LIMIT 100",
+      ) : [];
+      return new Response(head ? null : llmsTxt(origin, true, hasPubs, hasDatasets) +
+        (hasRegionalData ? regionalDataLlms(origin, regionalLinks) : ""), {
         headers: { ...noStore, "content-type": "text/plain; charset=utf-8" },
       });
+    }
     if (detail) {
       const segment = path.slice((pubApi ? publicationsApi + "/" : "/discover/publication/").length);
       const id = segment.includes("/") ? "" : decode(segment);
