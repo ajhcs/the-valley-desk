@@ -65,6 +65,9 @@ JOIN research_visible v ON v.id=a.id AND v.kind='dataset'
 JOIN research_facets b ON b.id=a.id AND b.field='institution' AND b.value<>a.value
 JOIN roots ra ON ra.id=a.value JOIN roots rb ON rb.id=b.value
 WHERE a.field='institution' AND ra.root<>rb.root GROUP BY a.value,rb.root;
+-- Listings published, pushed, updated or released in the seven days before this refresh: the
+-- home page's "new or updated this week". Only full dates count; a year or month is too coarse.
+INSERT INTO research_summary_kinds SELECT 'week','',kind,count(DISTINCT group_id),NULL,NULL,max(activity),count(*) FROM research_visible WHERE length(activity)=10 AND activity>=date('now','-7 days') AND activity<=date('now') GROUP BY kind;
 -- Written last: its presence tells the pages that the refresh finished.
 INSERT INTO research_summary_kinds SELECT '','',kind,count(DISTINCT group_id),min(nullif(activity,'')),max(nullif(activity,'')),max(nullif(added,'')),count(*) FROM research_visible GROUP BY kind;
 -- Metadata-only updates can keep every total and date unchanged.

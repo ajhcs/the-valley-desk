@@ -115,7 +115,7 @@ const COUNTIES = [
 ];
 const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
-export function llmsTxt(origin = publicOrigin(), directoryEnabled = true, publications = false, datasets = false): string {
+export function llmsTxt(origin = publicOrigin(), directoryEnabled = true, publications = false, datasets = false, studies = false, regional = false): string {
   if (!directoryEnabled) {
     return `# The Valley Desk
 
@@ -125,23 +125,28 @@ export function llmsTxt(origin = publicOrigin(), directoryEnabled = true, public
 - [Sitemap](${origin}/sitemap.xml)
 `;
   }
-  const kinds = publications ? "scholarly publications and research software" : "research software";
+  const named = [publications && "scholarly publications", "research software", studies && "clinical studies", datasets && "research datasets", regional && "public data about the region"].filter(Boolean) as string[];
+  const kinds = named.length < 3 ? named.join(" and ") : named.slice(0, -1).join(", ") + " and " + named.at(-1);
+  const kindParam = [publications && "publication", "project", studies && "study", datasets && "dataset", regional && "regional-data"].filter(Boolean).join(", ");
   return `# The Valley Desk
 
 > A public directory of healthcare ${kinds} connected to the nine-county Delaware Valley: Bucks, Chester, Delaware, Montgomery and Philadelphia counties in Pennsylvania and Burlington, Camden, Gloucester and Mercer counties in New Jersey. Every listing names the source of its regional connection.
 
-${publications ? "A publication is listed when its affiliation metadata names a regional institution. " : ""}A software project is a public GitHub repository with a health or life-science purpose and a documented regional connection. Each listing carries an evidence label. A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. For publications, Verified means the affiliation names the institution and a regional place, and Listed means an indexer assignment or an institution match with an uncertain site. A label describes the evidence for the connection. It does not establish employment, ownership or a worksite. Author names appear only on bylines; the site has no pages for individual people.
+${publications ? "A publication is listed when its affiliation metadata names a regional institution. " : ""}${studies ? "A clinical study is listed when ClinicalTrials.gov names a site in the nine counties. " : ""}A software project is a public GitHub repository with a health or life-science purpose and a documented regional connection. Each listing carries an evidence label. A Verified project has a source that ties the exact repository to the region. A Listed project has an observed connection through its account or lab. For publications, Verified means the affiliation names the institution and a regional place, and Listed means an indexer assignment or an institution match with an uncertain site. A label describes the evidence for the connection. It does not establish employment, ownership or a worksite. Author names appear only on bylines; the site has no pages for individual people.
 
 When you cite a listing, link its directory page for the regional connection and the publisher or repository for the work. Institution, topic and county pages open with counts computed when the page is requested, and they state that date. The counts describe what the directory lists, not a complete record of regional research.
 
+Every directory page names its machine-readable equivalent in a <link rel="alternate" type="application/json"> element, and listing pages carry schema.org structured data. Prefer the JSON or the MCP server to parsing HTML.
+
 ## Pages
 
-- [Search](${origin}/discover/works): parameters q (words), kind (${publications ? "publication or project" : "project"}), institution, topic, county, sort (added, activity or name) and page. Example: ${origin}/discover/works?q=sickle+cell&county=philadelphia${publications ? "&kind=publication" : ""}
+- [Search](${origin}/discover/works): parameters q (words), kind (one of ${kindParam}), institution, topic, county, sort (added, activity or name) and page. Example: ${origin}/discover/works?q=sickle+cell&county=philadelphia${publications ? "&kind=publication" : ""}
 - [Institution pages](${origin}/discover/institution/upenn): /discover/institution/{id}. Each lists counts, leading topics and counties, regional sites, related institutions and the listings.
 - [What's new](${origin}/discover/new): listings by the date they entered the directory.
 - [Methodology](${origin}/discover/methodology): inclusion rule, evidence labels, dates, corrections and removals.
 ${publications ? `- Publication pages: /discover/publication/{percent-encoded ID}, for example ${origin}/discover/publication/doi%3A10.1001%2Fjama.2025.10250
 ` : ""}${datasets ? `- [Datasets](${origin}/discover/datasets): research data from regional work, with filters access (open, registration or controlled), datatype, repository, institution, county and topic. Dataset pages: /discover/dataset/{percent-encoded ID}, with how to get the data and how to cite it.
+` : ""}${studies ? `- Clinical study pages: /discover/study/{NCT number}, for example ${origin}/discover/study/NCT00000113
 ` : ""}- Software pages: /discover/work/{GitHub repository ID}, for example ${origin}/discover/work/617168725
 
 ## Topics
@@ -157,6 +162,7 @@ ${COUNTIES.map(([c, s]) => `- [${c} County, ${s}](${origin}/discover/county/${sl
 - [Listings JSON](${origin}/api/directory/listings): 24 kind-tagged records per page with the same filters as search.
 ${publications ? `- [Publication JSON](${origin}/api/directory/publications): 24 records per page. Filters: q, institution, topic, county, kind. Use page=2 for the next page. Append a percent-encoded publication ID for one record.
 ` : ""}${datasets ? `- [Dataset JSON](${origin}/api/directory/datasets): 24 records per page with the datasets page filters. Append a percent-encoded dataset ID for one record.
+` : ""}${studies ? `- [Clinical study JSON](${origin}/api/directory/studies): 24 records per page with the search filters. Append an NCT number for one record.
 ` : ""}- [Directory JSON](${origin}/api/directory/projects): public project catalog. Use /api/directory/projects/{id} for one repository.
 - [RSS](${origin}/discover/updates.xml): additions, filterable by institution, topic, county or kind.
 - [MCP server](${origin}/mcp): read-only Model Context Protocol endpoint (Streamable HTTP, no sign-in) with search, fetch, whats_new, list_institutions and list_topics_and_counties tools. [Setup for Claude, ChatGPT and other assistants](${origin}/discover/connect).

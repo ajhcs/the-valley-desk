@@ -40,7 +40,7 @@ test("Other science publications are searchable and listed but have no topic pag
     for (const path of ["/discover/works?q=sediment", "/discover/institution/fixture-institute", "/discover/county/camden"]) {
       const html = await text(path);
       assert.ok(html.includes(">Lattice models of estuary sediment 4</a>"), path);
-      assert.match(html, /<p class="record-topic"><span class="meta-item"><svg class="glyph glyph-other-science"[^>]*>[\s\S]*?<\/svg><span>Other science<\/span>/, path);
+      assert.match(html, /<span class="meta-topic"><span><span class="meta-sep" aria-hidden="true"> · <\/span><span>Other science<\/span><\/span><\/span>/, path);
     }
     // The detail page shows the label without a topic link or a topic breadcrumb.
     const page = await text(detail);
@@ -61,7 +61,7 @@ test("Other science publications are searchable and listed but have no topic pag
       assert.doesNotMatch(html, /href="\/discover\/topic\/other-science"/, path);
     }
     for (const path of ["/", "/discover/institution/fixture-institute", "/discover/county/camden"]) {
-      const topics = /<section class="tally"><h2>Topics<\/h2>[\s\S]*?<\/section>/.exec(await text(path));
+      const topics = /<section class="tally[^"]*"[^>]*><h2[^>]*>Topics<\/h2>[\s\S]*?<\/section>/.exec(await text(path));
       assert.ok(topics, path);
       assert.doesNotMatch(topics[0], /Other science/, path);
     }

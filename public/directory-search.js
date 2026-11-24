@@ -17,6 +17,21 @@
     search.focus();
   });
 
+  document.documentElement.classList.add('directory-js');
+  document.addEventListener('change', event => {
+    const field = event.target;
+    if (field instanceof HTMLSelectElement && field.form?.id === 'research-form') field.form.requestSubmit();
+  });
+
+  // The research filter row stays open on wide screens and folds behind "Filters" on phones.
+  const filterRow = document.getElementById('research-filters');
+  if (filterRow) {
+    const phone = matchMedia('(max-width: 33rem)');
+    const fit = () => { filterRow.open = !phone.matches; };
+    fit();
+    phone.addEventListener('change', fit);
+  }
+
   if (!region()) return;
   document.documentElement.classList.add('directory-enhanced');
 

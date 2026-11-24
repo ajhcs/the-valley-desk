@@ -8,13 +8,15 @@ import {
   type Options,
   type ResearchDb,
 } from "./public-directory-research";
-import { count, externalLink, healthTopic, html, otherTopic, otherTopicSlug, timestamp } from "./public-directory-ui";
+import { count, externalLink, healthTopic, html, ledgerKinds, otherTopic, otherTopicSlug, timestamp, type LedgerEntry } from "./public-directory-ui";
 
 export type ScopeField = "institution" | "topic" | "county";
 type Tally = { value: string; n: number };
 export type DirectorySummary = {
   kinds: Partial<Record<ListingKind, { works: number; first: string | null; last: string | null; added: string | null }>>;
   facets: Record<ScopeField, Tally[]>;
+  /** Listings added in the seven days before the last summary refresh, for the whole directory. */
+  week?: Partial<Record<ListingKind, number>>;
 };
 
 /**
@@ -58,6 +60,19 @@ async function storedSummary(db: ResearchDb, scope?: { field: ScopeField; value:
       ...key,
     );
     return summaryOf(kinds.filter((row) => !withoutDatasets || row.kind !== "dataset").map(({ ready: _ready, ...row }) => row), tallies, scope);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Listings published, pushed, updated or released in the seven days before the last summary refresh, by kind. The refresh writes
+ * them; a database refreshed before these rows existed returns none and the home page omits them.
+ */
+export async function weeklyAdditions(db: ResearchDb, summary: DirectorySummary): Promise<DirectorySummary["week"]> {
+  try {
+    const week = await rows<{ kind: ListingKind; works: number }>(db, "SELECT kind,works FROM research_summary_kinds WHERE scope_field='week' AND scope_value=''");
+    return Object.fromEntries(week.filter((row) => summary.kinds[row.kind]).map((row) => [row.kind, row.works]));
   } catch {
     return undefined;
   }
@@ -174,7 +189,20 @@ function tallyList(heading: string, rows: Tally[], field: ScopeField, names: Nam
 }
 
 export function asOf(now: Date) {
-  return `<p class="as-of">Counts computed from the directory on ${timestamp(now.toISOString().slice(0, 10))}. A preprint and its journal version count once. The counts describe listings that meet the <a href="/discover/methodology">inclusion rule</a>, not a complete record of regional research.</p>`;
+  return `<p class="as-of">Counted ${timestamp(now.toISOString().slice(0, 10))} from listings that meet the <a href="/discover/methodology">inclusion rule</a>, not a complete record of regional research.</p>`;
+}
+
+const kindParam = (kind: string) => (kind === "dataset" || kind === "regional-data" ? "/discover/datasets?kind=" + kind : "/discover/works?kind=" + kind);
+
+/** The summary's counts as ledger entries. Within a scope each cell opens that kind filtered to the scope. */
+export function summaryLedger(summary: DirectorySummary, scope?: { field: ScopeField; value: string }): LedgerEntry[] {
+  return ledgerKinds
+    .map(([kind]) => ({
+      kind,
+      n: summary.kinds[kind]?.works ?? 0,
+      href: kindParam(kind) + (scope ? `&${scope.field}=${encodeURIComponent(scope.value)}` : ""),
+    }))
+    .filter((entry) => entry.n);
 }
 
 const orgTypes: Record<string, string> = {
@@ -242,7 +270,7 @@ export function entityHeader(opts: {
   now: Date;
   feed: string;
 }) {
-  const { field, slug, name, ref, refs, summary, names, now, feed } = opts;
+  const { field, slug, name, ref, refs, summary, names } = opts;
   const r = ref as FullInstitution | undefined;
   const county = field === "county" ? counties.find((c) => facetSlug(c.name) === slug) : undefined;
   const eyebrow =
@@ -250,7 +278,9 @@ export function entityHeader(opts: {
       ? (r?.kind && kindLabels[r.kind]) || "Institution"
       : field === "topic"
         ? "Research topic"
-        : `County · ${county?.state === "NJ" ? "New Jersey" : "Pennsylvania"}`;
+        : county?.state === "NJ" ? "New Jersey" : "Pennsylvania";
+  // A county's state is its eyebrow, so the heading needs only the county.
+  const heading = county ? `${county.name} County` : name;
   const sentences = entitySentences(field, name, summary, names);
   const parent = r?.parent ? refs.find((x) => x.id === r.parent) : undefined;
   const children = r ? refs.filter((x) => (x as FullInstitution).parent === r.id) : [];
@@ -282,12 +312,11 @@ export function entityHeader(opts: {
     description: sentences.text,
     opening: sentences.opening,
     header: `<header class="entity-head">
-      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/discover/works">Directory</a><span aria-hidden="true">/</span><span>${html(name)}</span></nav>
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/discover/works">Directory</a></nav>
       <p class="eyebrow">${html(eyebrow)}</p>
-      <h1>${html(name)}</h1>
-      <p class="lede">${sentences.html}</p>
-      ${asOf(now)}
-      <p class="entity-links"><a href="${html(feed)}">RSS feed of additions for ${html(name)}</a>${r?.homepage ? ` ${externalLink(r.homepage, "Institution website ↗")}` : ""}</p>
+      <h1>${html(heading)}</h1>
+      ${Object.keys(summary.kinds).length ? "" : `<p class="lede">${html(sentences.opening)}</p>`}
+      ${r?.homepage ? `<p class="entity-links">${externalLink(r.homepage, "Institution website ↗")}</p>` : ""}
     </header>`,
     index: related.join(""),
   };

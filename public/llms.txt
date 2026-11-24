@@ -6,9 +6,11 @@ A software project is a public GitHub repository with a health or life-science p
 
 When you cite a listing, link its directory page for the regional connection and the publisher or repository for the work. Institution, topic and county pages open with counts computed when the page is requested, and they state that date. The counts describe what the directory lists, not a complete record of regional research.
 
+Every directory page names its machine-readable equivalent in a <link rel="alternate" type="application/json"> element, and listing pages carry schema.org structured data. Prefer the JSON or the MCP server to parsing HTML.
+
 ## Pages
 
-- [Search](https://thevalleydesk.org/discover/works): parameters q (words), kind (project), institution, topic, county, sort (added, activity or name) and page. Example: https://thevalleydesk.org/discover/works?q=sickle+cell&county=philadelphia
+- [Search](https://thevalleydesk.org/discover/works): parameters q (words), kind (one of project), institution, topic, county, sort (added, activity or name) and page. Example: https://thevalleydesk.org/discover/works?q=sickle+cell&county=philadelphia
 - [Institution pages](https://thevalleydesk.org/discover/institution/upenn): /discover/institution/{id}. Each lists counts, leading topics and counties, regional sites, related institutions and the listings.
 - [What's new](https://thevalleydesk.org/discover/new): listings by the date they entered the directory.
 - [Methodology](https://thevalleydesk.org/discover/methodology): inclusion rule, evidence labels, dates, corrections and removals.

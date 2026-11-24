@@ -22,7 +22,6 @@ export function softwareUseGuidance(project: SoftwareInput): GuidanceStep[] {
   if (project.language) steps.push({ text: `Primary language: ${project.language}.` });
   steps.push({ text: project.license ? `Review the ${project.license} license and repository terms before reuse.` : 'Check the repository for license and reuse terms.' });
   if (citation) steps.push({ text: 'Use the repository’s citation instructions.', links: [{ label: 'CITATION.cff', url: citation }] });
-  else steps.push({ text: 'Check the repository for citation instructions.' });
   return steps;
 }
 export function datasetUseGuidance(dataset: DatasetInput): GuidanceStep[] {

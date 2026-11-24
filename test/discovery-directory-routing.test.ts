@@ -236,8 +236,9 @@ test('six-field and enriched records render safely and the JSON projection exclu
   assert.match(detail, /Imaging Lab/);
   assert.match(detail, /href="\/discover\/lab\/team"/);
   assert.match(detail, /Archived on GitHub/);
-  assert.match(detail, /Last code push/);
-  assert.match(detail, /Source checked/);
+  assert.match(detail, /Code pushed <time datetime="2024-02-02">/);
+  assert.match(detail, /Source checked <time datetime="2026-11-10">/);
+  assert.match(detail, /<dt>Added to directory<\/dt><dd><time datetime="2026-11-18">/);
   assert.match(detail, /GitHub stars at capture<\/dt><dd>0/);
   assert.match(detail, /A journal · 2024 · DOI 10.1000\/research/);
   assert.match(detail, /More from this lab or account/);
@@ -245,7 +246,11 @@ test('six-field and enriched records render safely and the JSON projection exclu
   assert.match(detail, /\\u003c\/script\\u003e/);
   assert.doesNotMatch(detail, /<img src=x|href="javascript:|credentials:secret|private .* field/);
   const home = await (await get('/')).text();
-  assert.match(home, /Recently added projects/);
+  assert.match(home, /<h2 id="home-counties-title">Counties<\/h2>/);
+  assert.match(home, /aria-label="Bucks County, Pennsylvania, \d+ projects?"/);
+  // Without public publications, the masthead offers only software and the about page.
+  const nav = home.match(/<nav class="desk-primary"[^>]*>([\s\S]*?)<\/nav>/)![1];
+  assert.deepEqual([...nav.matchAll(/>([^<]+)<\/a>/g)].map((m) => m[1]), ["Software", "About"]);
   const api = await (await get('/api/directory/projects/102')).json() as { project: Record<string, unknown> };
   assert.equal(api.project.name, hostile);
   assert.equal(api.project.stars, 0);

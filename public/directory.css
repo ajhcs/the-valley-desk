@@ -606,3 +606,337 @@ input, select { accent-color: var(--accent); }
 .offer-row .button { min-width: 5.5rem; }
 .support-in-kind .button { margin-top: .3rem; }
 .support-closing { margin-top: 2rem; padding-top: .9rem; border-top: 1px solid var(--line); }
+
+/* Counts by kind: one sentence, each figure led by its kind's mark. The same marks label the cards. */
+.record-regional .kind, .regional-page .record-kind .kind { color: var(--regional); }
+.regional-page .get-data { border-top-color: var(--regional); }
+.nowrap { white-space: nowrap; }
+.ledger { max-width: 68ch; line-height: 1.75; }
+.directory-site .ledger .tally-item a { color: inherit; text-decoration: none; }
+.directory-site .ledger .tally-item a:hover { color: var(--accent); text-decoration: underline; }
+.ledger [aria-current] b { text-decoration: underline 2px; text-underline-offset: .2em; }
+.ledger b { font-weight: 600; }
+.ledger .glyph { width: 1.05em; height: 1.05em; margin-right: .3em; vertical-align: -.17em; }
+.tally-publication .glyph { color: var(--publication); }
+.tally-project .glyph { color: var(--software); }
+.tally-study .glyph { color: var(--study); }
+.tally-dataset .glyph { color: var(--dataset); }
+.tally-regional-data .glyph { color: var(--regional); }
+
+/* Home: title, count line and search, with the county map beside them on wide screens. */
+.home-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(12rem, 1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  max-width: none;
+}
+.home-intro .ledger { margin-block: .8rem 1.25rem; font-size: clamp(1.02rem, 1.6vw, 1.12rem); }
+.ledger-new { white-space: nowrap; }
+.home-map .county-figure { margin: 0; }
+.home-map .county-map { max-width: 20rem; margin-inline: auto; }
+.home-map figcaption { margin-top: .25rem; text-align: center; }
+
+/* Search: one rounded field with a round submit at its end. */
+.search-box {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: .6rem;
+  min-height: 52px;
+  padding: .3rem .35rem .3rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .05);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.search-box:hover { border-color: var(--field); }
+.search-box:focus-within { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.search-box .search-icon { width: 1.15rem; height: 1.15rem; color: var(--muted); }
+.search-box input { min-height: 40px; font-size: 1.02rem; }
+.search-go {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: var(--button);
+  color: var(--button-text);
+  cursor: pointer;
+}
+.search-go .glyph { width: 1.15rem; height: 1.15rem; stroke-width: 1.8; transition: transform .15s ease; }
+.search-go:hover .glyph { transform: translateX(2px); }
+.search-go:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Results: the count line, then the range and feed at the right, on one baseline. */
+.results-bar { display: flex; align-items: baseline; justify-content: space-between; gap: .4rem 1.25rem; flex-wrap: wrap; padding-bottom: .7rem; }
+.results-bar .ledger { flex: 1 1 26rem; font-size: .95rem; line-height: 1.6; }
+.ledger .glyph { width: 1em; height: 1em; margin-right: .28em; vertical-align: -.13em; }
+.results-meta { display: flex; align-items: center; gap: .9rem; color: var(--muted); font-size: .86rem; white-space: nowrap; }
+.feed-link { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin-block: -6px; border-radius: 8px; color: var(--muted); }
+.feed-link:hover { background: var(--surface); color: var(--accent); }
+.feed-link .glyph { width: 1rem; height: 1rem; }
+
+/* Filters: quiet labels over rounded selects. A filter in use takes the accent. */
+.research-filters { gap: .85rem; }
+.research-filters .rail-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font: 600 .95rem/1.3 var(--sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.rail-clear { font-size: .85rem; font-weight: 600; }
+.research-filters label { gap: .3rem; color: var(--muted); font-size: .8rem; font-weight: 500; }
+.research-filters select {
+  appearance: none;
+  min-height: 40px;
+  padding: .4rem 2rem .4rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238a857c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E") right .6rem center / 1rem no-repeat;
+  color: var(--text);
+  font-size: .92rem;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.research-filters select:hover { border-color: var(--field); }
+.research-filters select:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.research-filters .is-set { color: var(--accent); }
+.research-filters .is-set select { border-color: var(--accent); background-color: color-mix(in srgb, var(--accent) 8%, var(--card)); font-weight: 600; }
+.directory-js .filter-submit { display: none; }
+.research-filters .filter-submit { border-radius: 8px; }
+.rail-note { color: var(--muted); font-size: .82rem; }
+
+@media (max-width: 53rem) {
+  .home-intro { grid-template-columns: 1fr; }
+  .home-map { display: none; }
+}
+
+/* ---- Results pages: heading, filter row, who-works strip, pagination ---- */
+
+/* A search result opens with its search box; its heading is for screen readers only. */
+.results-head .breadcrumb { margin-bottom: .35rem; }
+.research-page .research-search { max-width: 58rem; }
+.research-page .research-results { max-width: 58rem; margin-top: 1rem; }
+
+/* Filters: one row of selects under the search box. On phones they fold behind one line. */
+.filter-row { margin-top: .6rem; }
+.filter-row > summary { display: none; }
+@media (width > 33rem) {
+  /* Shown even while closed, so the row needs no script on wide screens. */
+  .filter-row::details-content { content-visibility: visible; }
+}
+.filter-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; max-width: 58rem; }
+.filter-controls label { display: block; min-width: 0; }
+.filter-controls select, .order-control select {
+  appearance: none;
+  field-sizing: content;
+  width: auto;
+  max-width: 13rem;
+  min-height: 36px;
+  padding: .3rem 1.9rem .3rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238a857c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E") right .55rem center / .95rem no-repeat;
+  color: var(--text);
+  font: inherit;
+  font-size: .9rem;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.filter-controls select:hover, .order-control select:hover { border-color: var(--field); }
+.filter-controls select:focus-visible, .order-control select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.filter-controls .is-set select { border-color: var(--accent); background-color: color-mix(in srgb, var(--accent) 8%, var(--card)); color: var(--accent); font-weight: 600; }
+.filter-clear { color: var(--accent); font-size: .88rem; font-weight: 600; }
+.filter-more { margin-left: auto; color: var(--muted); font-size: .86rem; }
+.filter-more:hover { color: var(--accent); }
+.filter-controls .feed-link { margin: 0 0 0 auto; }
+.filter-row .filter-submit { min-height: 36px; padding-block: .3rem; border-radius: 8px; }
+.directory-js .filter-row .filter-submit { display: none; }
+.filter-count { color: var(--muted); font-weight: 400; }
+
+/* Who works on the subject: one line of names, the rest under "more". */
+.groups-strip { max-width: 58rem; margin-top: .9rem; font-size: .9rem; line-height: 1.7; }
+.groups-strip h2 { display: inline; margin-right: .4rem; white-space: nowrap; color: var(--muted); font: 400 .9rem/1.7 var(--sans); }
+.groups-strip ul { display: inline; margin: 0; padding: 0; list-style: none; }
+.groups-strip li { display: inline; white-space: nowrap; }
+.groups-strip li + li::before, .groups-more ul li:first-child::before { content: "·" / ""; margin-inline: .45rem; color: var(--muted); }
+.groups-strip li a { color: var(--text); text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); }
+.groups-strip li a:hover { text-decoration-color: currentColor; }
+.groups-strip .n { color: var(--muted); font-size: .84rem; font-variant-numeric: tabular-nums; }
+.groups-more { display: inline; }
+.groups-more > summary { display: inline; margin-left: .6rem; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: .18em; }
+.groups-more > summary::-webkit-details-marker { display: none; }
+.groups-more[open] > summary { display: none; }
+.groups-more > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* The count line: kinds at the left; order and feed at the right. */
+.results-meta .order-control select { max-width: 16rem; min-height: 32px; border-color: transparent; background-color: transparent; color: var(--text); font-size: .86rem; }
+.results-meta .order-control select:hover { border-color: var(--line); }
+
+/* An entity page's tallies, folded under one line above the search. */
+.entity-about { max-width: 58rem; margin-bottom: .75rem; border-block: 1px solid var(--line); }
+.entity-head + .entity-about { margin-top: -.5rem; }
+.entity-about > summary { display: list-item; padding-block: .55rem; color: var(--text); cursor: pointer; font-size: .95rem; font-weight: 600; }
+.entity-about > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.about-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem 2rem; align-items: start; padding-block: .25rem 1rem; }
+.entity-about .tally h2 { padding-bottom: .3rem; color: var(--text); font: 600 .9rem/1.3 var(--sans); letter-spacing: 0; text-transform: none; }
+.entity-about .tally-note { margin-top: .3rem; }
+
+/* What's new: one heading per activity day. */
+.day-group > h2 { margin-bottom: .3rem; font-size: 1.05rem; }
+.day-group:first-child > h2 { margin-top: .25rem; }
+
+@media (max-width: 33rem) {
+  .filter-row { border-bottom: 1px solid var(--line); }
+  .filter-row > summary { display: list-item; padding-block: .6rem; cursor: pointer; font-size: .95rem; font-weight: 600; }
+  .filter-row > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .filter-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding-bottom: .8rem; }
+  .filter-controls select { width: 100%; max-width: none; min-height: 44px; }
+  .filter-more { margin-left: 0; }
+  .results-bar .ledger { flex-basis: 100%; }
+}
+
+/* ---- end results ---- */
+
+/* ---- Listing cards, link colours and record pages ---- */
+/* Cards: the title, one meta line led by the kind label, and at most a clamped summary. */
+.record { gap: .15rem; padding: .8rem 0 .9rem; }
+.directory-site .record-title a { color: var(--text); text-decoration: none; }
+.directory-site .record-title a:is(:hover, :focus-visible) { text-decoration: underline; text-decoration-thickness: 1px; }
+.record-meta { display: flex; align-items: flex-start; min-width: 0; color: var(--muted); font: 400 .84rem/1.45 var(--sans); }
+.meta-main { flex: 0 1 auto; min-width: 0; }
+.record-meta .kind { margin-right: .55rem; font-weight: 600; font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; }
+.record-meta .kind .glyph { width: 1.15rem; height: 1.15rem; margin-right: .3rem; stroke-width: 1.4; vertical-align: -.3em; }
+.dataset-list .kind { color: var(--dataset); }
+/* The topic shows only when it fits on the meta line's last row. The empty ::before item holds the
+   first flex row, so a topic that does not fit wraps to a second row, which is clipped. */
+.meta-topic { display: flex; flex: 1 1 0; flex-wrap: wrap; min-width: 0; height: 1.45em; overflow: hidden; }
+.meta-topic::before { content: ""; width: 0; height: 1.45em; }
+.meta-topic > span { padding-left: .28em; white-space: nowrap; }
+.meta-topic:focus-within { height: auto; overflow: visible; }
+.record-summary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow: hidden;
+  font-size: .92rem;
+}
+.record-dataset .record-summary, .record-regional .record-summary { -webkit-line-clamp: 2; line-clamp: 2; }
+.records[data-view="compact"] .record { grid-template-columns: minmax(0, 1fr) minmax(0, auto); align-items: first baseline; padding-block: .55rem; }
+.records[data-view="compact"] .record-meta { grid-row: 1; grid-column: 2; max-width: 40rem; }
+.dataset-list li + li { margin-top: .45rem; }
+.dataset-list .record-meta { margin-top: .1rem; }
+
+/* Link colours. Blue marks actions and links in prose. Titles are ink; links on meta lines, tallies,
+   breadcrumbs and record headers take the surrounding colour with a light underline that darkens
+   on hover and focus. Focus outlines are unchanged. */
+.directory-site :is(.record-meta, .record-place, .record-head .record-kind, .breadcrumb, .record-details) a,
+.directory-site .tally li a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-decoration-thickness: 1px;
+}
+.directory-site .tally li a { color: var(--text); }
+.directory-site :is(.record-meta, .record-place, .record-head .record-kind, .breadcrumb, .record-details) a:is(:hover, :focus-visible),
+.directory-site .tally li a:is(:hover, :focus-visible) { color: var(--text); text-decoration-color: currentColor; }
+.directory-site .record-meta .verified-word { color: var(--verified-text); }
+
+/* Record pages: bookkeeping as one quiet line, with the rest folded into "Record details". */
+.record-details { margin-top: .7rem; color: var(--muted); font-size: .86rem; }
+.record-details summary { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1rem; min-height: 32px; cursor: pointer; list-style: none; }
+.record-details summary::-webkit-details-marker { display: none; }
+.record-details-label { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: .18em; }
+.record-details summary:hover .record-details-label { text-decoration-color: currentColor; }
+.record-details-label::after { content: "+" / ""; display: inline-block; width: 1em; margin-left: .25rem; text-align: center; }
+.record-details[open] .record-details-label::after { content: "−" / ""; }
+.record-details .facts { margin-top: .25rem; border-top: 1px solid var(--line); }
+.record-details .facts > div { padding-block: .3rem; }
+.record-details .facts :is(dt, dd) { font-size: .86rem; }
+
+@media (max-width: 33rem) {
+  .records[data-view="compact"] .record-meta { grid-row: auto; grid-column: 1; }
+}
+
+
+
+/* ---- end cards and records ---- */
+
+/* ---- Home page ---- */
+/* Search first, then the ways in: the county map and tables of types, topics and institutions. */
+.home { padding-block: clamp(1.25rem, 3vw, 2.25rem) 0; }
+.home-head { max-width: 52rem; }
+.home-head h1 { margin-top: .4rem; }
+.home-head .home-search { max-width: none; margin-top: 1.1rem; }
+.home-head .lede { margin-top: .6rem; }
+.home-examples { margin-top: .65rem; }
+.home h2,
+.home .tally h2 {
+  padding-bottom: .35rem;
+  border-bottom: 1px solid var(--rule);
+  color: var(--text);
+  font: 600 1.12rem/1.3 var(--serif);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.home h2 .muted { margin-left: .3rem; font: 400 .9rem/1 var(--sans); }
+.home-ways {
+  display: grid;
+  grid-template-columns: minmax(16rem, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 2rem clamp(1.75rem, 4vw, 3.5rem);
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+}
+.home-institutions { grid-column: 1 / -1; }
+.home-institutions ul { columns: 3 15rem; column-gap: clamp(1.75rem, 4vw, 3.5rem); }
+.home .tally li a { color: var(--text); text-decoration: none; }
+.home .tally li a:hover { color: var(--text); text-decoration: underline; }
+.home .tally-more summary { color: var(--accent); }
+/* Each row's rule is also its bar: its length is the row's share of the largest figure in the table. */
+.home .tally li { position: relative; }
+.home .tally li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: max(2px, var(--share, 0%));
+  height: 2px;
+  background: var(--bar, color-mix(in srgb, var(--accent) 55%, var(--line)));
+}
+.home .tally-publication { --bar: var(--publication); }
+.home .tally-project { --bar: var(--software); }
+.home .tally-study { --bar: var(--study); }
+.home .tally-dataset { --bar: var(--dataset); }
+.home .tally-regional-data { --bar: var(--regional); }
+.tally-foot { margin-top: .7rem; font-size: .9rem; }
+
+/* The map is the county index: each county is a link, shaded by how many listings it has. */
+.home-counties .county-map { width: 100%; max-width: 26rem; margin: .6rem auto 0; overflow: visible; }
+.home-counties .county-map a { outline: none; }
+.home-counties .county-rings use { fill: none; stroke: none; stroke-width: 2; pointer-events: none; }
+/* A county is outlined when its shape or its name is under the pointer, or its shape has focus. */
+.county-map:has(.c-42017:is(:hover, :focus-visible)) .county-rings .c-42017,
+.county-map:has(.c-42029:is(:hover, :focus-visible)) .county-rings .c-42029,
+.county-map:has(.c-42045:is(:hover, :focus-visible)) .county-rings .c-42045,
+.county-map:has(.c-42091:is(:hover, :focus-visible)) .county-rings .c-42091,
+.county-map:has(.c-42101:is(:hover, :focus-visible)) .county-rings .c-42101,
+.county-map:has(.c-34005:is(:hover, :focus-visible)) .county-rings .c-34005,
+.county-map:has(.c-34007:is(:hover, :focus-visible)) .county-rings .c-34007,
+.county-map:has(.c-34015:is(:hover, :focus-visible)) .county-rings .c-34015,
+.county-map:has(.c-34021:is(:hover, :focus-visible)) .county-rings .c-34021 { stroke: var(--accent); }
+.home-counties .county-map text { pointer-events: auto; cursor: pointer; }
+
+@media (max-width: 53rem) {
+  .home-ways { grid-template-columns: 1fr; }
+  .home-counties { max-width: 30rem; }
+}
+
+/* ---- end home ---- */

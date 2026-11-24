@@ -5,6 +5,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import worker from "../worker.js";
+import { supportOpen } from "../src/ingest/public-support-data";
 
 const origin = "https://thevalleydesk.org";
 const fixture = "test/fixtures/research-datasets/datasets.jsonl";
@@ -63,6 +64,7 @@ test("datasets stay hidden while the switch is off", async () => {
     assert.match(await d.text("/discover/works?kind=dataset"), /No matching listings/);
     assert.doesNotMatch(await d.text(pubPage("doi:10.9999/fixture/4")), /Data from this paper/);
     assert.doesNotMatch(await d.text("/"), /datasets/);
+    assert.doesNotMatch(await d.text(pubPage("doi:10.9999/fixture/4")), /discover\/datasets/);
     assert.doesNotMatch(await d.text("/llms.txt"), /discover\/datasets/);
     assert.doesNotMatch(await d.text("/sitemap.xml"), /datasets-1/);
     assert.equal((await d.get("/discover/sitemap/datasets-1.xml")).status, 404);
@@ -120,17 +122,22 @@ test("datasets page lists the newest releases first and filters by access, data 
     assert.deepEqual(await titles("q=proteome"), ["Estuary plasma proteome reference"]);
     assert.deepEqual(await titles("q=PXD990005"), ["Estuary plasma proteome reference"]);
     const filtered = await d.text("/discover/datasets?access=controlled&datatype=sequencing");
-    assert.match(filtered, /<h1>Datasets of sequencing data with controlled access<\/h1>/);
+    assert.match(filtered, /<h1 class="sr-only">Datasets of sequencing data with controlled access<\/h1>/);
     assert.match(filtered, /<meta name="robots" content="noindex, follow">/);
 
     // The mixed search offers the kind, and the other surfaces count and list datasets.
     assert.match(await d.text("/discover/works"), /<option value="dataset">Datasets<\/option>/);
     assert.match(await d.text("/"), /6 datasets/);
+    assert.match(await d.text("/"), /<nav class="desk-primary"[^>]*>[\s\S]*?<a href="\/discover\/datasets">Data<\/a>/);
+    assert.match(landing, /<a href="\/discover\/datasets" aria-current="page">Data<\/a>/);
     assert.match(await d.text("/discover/institution/fixture-institute"), /6 datasets/);
     assert.match(await d.text("/llms.txt"), /discover\/datasets/);
     assert.match(await d.text("/discover/methodology"), /api\/directory\/datasets/);
     assert.match(await d.text("/discover/updates.xml?kind=dataset"), /<link>https:\/\/thevalleydesk.org\/discover\/dataset\/geo%3AGSE990001<\/link>/);
-    assert.match(await d.text("/discover/new?kind=dataset"), /Estuary plasma proteome reference/);
+    // What's new lists datasets by full release date; a month-only release is not dated to a day.
+    const whatsNew = await d.text("/discover/new?kind=dataset");
+    assert.match(whatsNew, /Fictional Estuary tissue expression atlas/);
+    assert.doesNotMatch(whatsNew, /Estuary plasma proteome reference/);
   } finally {
     d.close();
   }
@@ -144,17 +151,19 @@ test("dataset cards and pages show how to get the data and describe it as a sche
     const landing = await d.text("/discover/datasets?repository=gene-expression-omnibus");
     const card = /<li class="record record-dataset">[\s\S]*?<\/li>/.exec(landing)![0];
     assert.match(card, /<span class="kind"><svg class="glyph glyph-dataset"[^>]*>[\s\S]*?<\/svg>Gene expression data<\/span>/);
-    assert.match(card, /<span class="record-repository">Gene Expression Omnibus GSE990001<\/span>/);
+    // One meta line: repository and ID, year, access in words, institution, Verified, topic.
+    assert.match(card, /<p class="record-meta">[\s\S]*?<span class="record-repository">Gene Expression Omnibus GSE990001<\/span>/);
     assert.match(card, /<time datetime="2026">2026<\/time>/);
-    assert.match(card, /<span class="access-tag access-open" title="Anyone can download[^"]*"><svg class="glyph glyph-access-open"[^>]*>[\s\S]*?<\/svg>Open<\/span>/);
+    assert.match(card, /aria-hidden="true"> · <\/span>Open access<span/);
     assert.match(card, /<a href="\/discover\/dataset\/geo%3AGSE990001">Fictional Estuary tissue expression atlas<\/a>/);
     assert.match(card, /<p class="record-summary">Bulk RNA profiles/);
-    assert.match(card, /class="evidence-mark is-verified"/);
+    assert.match(card, /<a class="verified-word" href="\/discover\/methodology#verified">Verified<\/a>/);
     // Cards name institutions from the bundled registry; the invented institute is not in it.
     assert.match(card, /<a href="\/discover\/institution\/fixture-institute">fixture-institute<\/a>/);
-    assert.match(card, /class="source-mark" href="https:\/\/example.org\/datasets\/geo-990001"/);
+    // The source link and the connection sentence move to the dataset's page (asserted below).
+    assert.doesNotMatch(card, /example.org\/datasets\/geo-990001|The GEO series names|Added /);
     assert.match(card, /<a href="\/discover\/topic\/medical-imaging">Medical imaging<\/a>/);
-    assert.match(await d.text("/discover/datasets?repository=protein-data-bank"), /Protein Data Bank 9ZZ1 <span class="muted">\+2<\/span>/);
+    assert.match(await d.text("/discover/datasets?repository=protein-data-bank"), /Protein Data Bank 9ZZ1 <span class="meta-more">\+2<\/span>/);
 
     const html = await d.text(page(geo));
     assert.match(html, /<h1>Fictional Estuary tissue expression atlas<\/h1>/);
@@ -166,7 +175,9 @@ test("dataset cards and pages show how to get the data and describe it as a sche
     assert.match(panel, /<dt>Contents<\/dt><dd>24 samples · Counts matrix \(TSV\)<\/dd>/);
     assert.match(panel, /<dt>License<\/dt><dd><span class="muted">Not stated in the record<\/span>/);
     assert.match(panel, /<dt>How to cite<\/dt><dd><ol class="cite-list"><li><a href="\/discover\/publication\/doi%3A10.9999%2Ffixture%2F4">Imaging methods for tissue maps 4<\/a><\/li><li>Gene Expression Omnibus GSE990001<\/li><\/ol>/);
-    assert.match(html, /<h2 id="connection-title">Regional connection<\/h2>\s*<p class="record-evidence"><a class="evidence evidence-verified"[\s\S]*?Verified<\/a> The GEO series names/);
+    assert.match(html, /<h2 id="connection-title">Regional connection<\/h2>\s*<p class="record-evidence"><a class="evidence evidence-verified"[\s\S]*?Verified<\/a> The GEO series names[^<]*<a href="https:\/\/example.org\/datasets\/geo-990001" rel="noreferrer">Regional source<\/a>/);
+    // Bookkeeping folds into one line with "Record details"; the date added stays on the page.
+    assert.match(html, /<details class="record-details"><summary><span>Source checked <time datetime="[0-9-]+">[^<]+<\/time><\/span><span class="record-details-label">Record details<\/span><\/summary><dl class="facts"><div><dt>Added to directory<\/dt><dd><time datetime="[0-9-]+">/);
     assert.match(html, /<dt>County<\/dt><dd><a href="\/discover\/county\/camden">Camden County<\/a>/);
     assert.match(html, /<h2 id="papers-title">Paper that produced it<\/h2><ul class="plain-list"><li><a href="\/discover\/publication\/doi%3A10.9999%2Ffixture%2F4">Imaging methods for tissue maps 4<\/a>/);
     assert.match(html, /id="feedback"/);
@@ -187,6 +198,9 @@ test("dataset cards and pages show how to get the data and describe it as a sche
     const survey = await d.text(page("dbgap:phs990002"));
     assert.match(survey, /access-controlled[\s\S]*?Controlled<\/span><span class="access-explain">You apply for access/);
     assert.match(survey, /class="evidence"[^>]*>[\s\S]*?Listed<\/a>/);
+    // A Listed card shows no evidence word; the label stays on the page above.
+    const listedCard = (await d.text("/discover/datasets?access=controlled")).split("</li>").find((li) => li.includes("Invented Estuary cohort survey"))!;
+    assert.doesNotMatch(listedCard, /verified-word|Listed/);
     const surveySchema = schemaOf(survey)[0];
     assert.equal(surveySchema.isAccessibleForFree, undefined);
     assert.match(surveySchema.conditionsOfAccess, /data access committee/);
@@ -225,7 +239,7 @@ test("publication pages list the datasets their paper produced", async () => {
       page("pdb-set:doi:10.9999/fixture/4"),
       page(geo),
     ]);
-    assert.match(section, /Structural data<\/span><span>Protein Data Bank 9ZZ1<\/span><span class="access-tag access-open"/);
+    assert.match(section, /Structural data<\/span><span class="record-repository">Protein Data Bank 9ZZ1<\/span>[\s\S]*?Open access<\/span>/);
     const atlas = await d.text(pubPage("pmid:990000001"));
     assert.match(atlas, /Data from this paper[\s\S]*Invented Estuary cohort survey/);
     assert.doesNotMatch(atlas, /Estuary plasma proteome reference/);
@@ -388,4 +402,35 @@ test("empty enabled dataset collection records the visible-dataset marker", () =
     const row = d.sqlite.prepare("SELECT first FROM research_summary_kinds WHERE scope_field='visibility' AND kind='dataset'").get() as { first: string };
     assert.equal(row.first, "0");
   } finally { d.close(); }
+});
+
+test("pages outside the directory handler offer the same masthead, and a hidden kind leaves it", async () => {
+  const d = directory();
+  // A path no route claims falls through to the static assets and then the directory's 404 page.
+  const missing = async () => (await worker.fetch(new Request(origin + "/no-such-page"), { ...d.env, ASSETS: { fetch: async () => new Response(null, { status: 404 }) } }, {})).text();
+  const nav = (html: string) => [...html.match(/<nav class="desk-primary"[^>]*>([\s\S]*?)<\/nav>/)![1].matchAll(/>([^<]+)<\/a>/g)].map((m) => m[1]);
+  try {
+    // The dataset switch is off; the fixture has publications but no clinical studies.
+    const off = ["Publications", "Software", "About"];
+    assert.deepEqual(nav(await d.text("/discover/works")), off);
+    d.queries.length = 0;
+    const suggest = await d.text("/discover/suggest");
+    assert.deepEqual(nav(suggest), off);
+    // The suggest page reads only the per-kind probes, never a listing scan.
+    assert.ok(d.queries.length <= 4 && d.queries.every((q) => /LIMIT 1|EXISTS|_visibility WHERE id=1/.test(q)), d.queries.join("\n"));
+    assert.deepEqual(nav(await d.text("/discover/connect")), off);
+    assert.deepEqual(nav(await missing()), off);
+
+    d.sqlite.exec("UPDATE dataset_visibility SET enabled=1");
+    const on = ["Publications", "Software", "Data", "About"];
+    for (const path of ["/discover/works", "/discover/suggest", "/discover/connect", ...(supportOpen() ? ["/support"] : [])])
+      assert.deepEqual(nav(await d.text(path)), on, path);
+    assert.deepEqual(nav(await missing()), on);
+    // HEAD reads nothing for the masthead.
+    d.queries.length = 0;
+    await worker.fetch(new Request(origin + "/discover/suggest", { method: "HEAD" }), d.env, {});
+    assert.equal(d.queries.length, 0);
+  } finally {
+    d.close();
+  }
 });

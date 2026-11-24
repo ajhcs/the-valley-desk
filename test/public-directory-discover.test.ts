@@ -59,9 +59,9 @@ test("pages offer similar research, who works on a search, partners and recent p
     assert.ok(!similar.split("Recent ")[0].includes(`/discover/publication/${encodeURIComponent(id)}"`), "a record is not similar to itself");
 
     const search = await text("/discover/works?q=tissue");
-    assert.match(search, /Who works on this in the region/);
+    assert.match(search, /Who works on this:/);
     assert.match(search, /href="\/discover\/institution\/fixture-institute\?q=tissue"/);
-    assert.doesNotMatch(await text("/discover/works"), /Who works on this in the region/);
+    assert.doesNotMatch(await text("/discover/works"), /Who works on this:/);
 
     // A search is ordered by relevance by default and lists exactly the listings the date order does.
     const ids = async (path: string) => {
@@ -92,8 +92,25 @@ test("pages offer similar research, who works on a search, partners and recent p
     assert.match(institution, /href="\/discover\/institution\/upenn"/);
 
     const home = await text("/");
-    assert.match(home, /Recently published/);
-    assert.match(home, /Looking for collaborators\?/);
+    assert.match(home, /Search a subject or institution/);
+    // Ways in, not a feed: topics, institutions, and a county map whose links are each named in full.
+    assert.match(home, /<h2 id="home-topics-title">Topics<\/h2>/);
+    assert.match(home, /<h2 id="home-institutions-title">Institutions/);
+    assert.match(home, /<a class="c-34007" href="\/discover\/county\/camden" aria-label="Camden County, New Jersey, [\d,]+ listings?">/);
+    assert.equal(home.match(/<g role="listitem" data-tone="\d"><a class="c-\d+" href="\/discover\/county\/[a-z]+" aria-label="[^"]+">/g)?.length, 9);
+    assert.doesNotMatch(home.match(/<g class="county-shapes"[\s\S]*?<g class="county-rings"/)![0], /tabindex|aria-hidden/);
+    assert.doesNotMatch(home, /Recently published|record-publication/);
+    assert.match(home, /href="\/discover\/new">what’s new<\/a>/);
+    // The masthead names the kinds that are public; studies and datasets are not loaded here.
+    const nav = (page: string) => page.match(/<nav class="desk-primary"[^>]*>([\s\S]*?)<\/nav>/)![1];
+    assert.deepEqual([...nav(home).matchAll(/>([^<]+)<\/a>/g)].map((m) => m[1]), ["Publications", "Software", "About"]);
+    assert.match(nav(await text("/discover/works?kind=publication")), /<a href="\/discover\/works\?kind=publication" aria-current="page">/);
+    assert.match(nav(publication), /<a href="\/discover\/works\?kind=publication" aria-current="true">/);
+    assert.match(nav(await text("/discover/methodology")), /<a href="\/discover\/methodology" aria-current="page">About<\/a>/);
+    // The full skyline and supporters stand on the home page only; other pages have the strip.
+    assert.match(home, /<footer class="directory-chrome desk-footer">/);
+    assert.match(publication, /<footer class="directory-chrome desk-footer is-strip">/);
+    assert.doesNotMatch(publication, /footer-patrons/);
     assert.doesNotMatch(home, /Publication dates run from/);
   } finally {
     rmSync(dir, { recursive: true, force: true });

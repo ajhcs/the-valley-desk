@@ -9,6 +9,15 @@ const paths = {
   publication: '<path d="M5 2.75h6.5l3.5 3.5v11H5z"/><path d="M11.5 2.75v3.5H15M7.5 10h5M7.5 13h5"/>',
   study: '<path d="M7 4H5v13.25h10V4h-2"/><path d="M7.5 2.75h5v2.5h-5zM7 11.75h1.75l1-2.25 1.5 4.25 1-2h1.75"/>',
   dataset: '<rect x="3" y="3.5" width="14" height="13" rx="1"/><path d="M3 7.75h14M3 12h14M7.75 3.5v13"/>',
+  // Public data about the region: a folded map
+  regional: '<path d="M2.75 5.25 7.5 3.5l5 1.75 4.75-1.75v11.25L12.5 16.5l-5-1.75-4.75 1.75z"/><path d="M7.5 3.5v11.25M12.5 5.25V16.5"/>',
+  // Controls
+  search: '<circle cx="8.75" cy="8.75" r="5.5"/><path d="m12.9 12.9 4.35 4.35"/>',
+  arrow: '<path d="M4 10h12M11.25 5.25 16 10l-4.75 4.75"/>',
+  sun: '<circle cx="10" cy="10" r="3.25"/><path d="M10 2.75v1.5M10 15.75v1.5M2.75 10h1.5M15.75 10h1.5M4.9 4.9l1.05 1.05M14.05 14.05l1.05 1.05M4.9 15.1l1.05-1.05M14.05 5.95l1.05-1.05"/>',
+  moon: '<path d="M15.75 12.4A6.25 6.25 0 0 1 7.6 4.25a6.25 6.25 0 1 0 8.15 8.15z"/>',
+  auto: '<circle cx="10" cy="10" r="6.5"/><path class="glyph-fill-solid" d="M10 3.5a6.5 6.5 0 0 1 0 13z"/>',
+  feed: '<path d="M4 4.25a11.75 11.75 0 0 1 11.75 11.75M4 9a7 7 0 0 1 7 7"/><circle cx="4.75" cy="15.25" r="1.25"/>',
   // Dataset access: an open padlock, a key, a closed padlock
   "access-open": '<rect x="4" y="9" width="12" height="8.25" rx="1"/><path d="M7 9V6.25a3 3 0 0 1 5.85-.95M10 12.25v1.75"/>',
   "access-registration": '<circle cx="6.75" cy="10" r="3.25"/><path d="M10 10h7.25M14.75 10v2.5M17.25 10v2"/>',

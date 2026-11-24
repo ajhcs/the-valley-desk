@@ -16,6 +16,7 @@
   --software: light-dark(#0b5f58, #7dd3c7);
   --study: light-dark(#5a3a8c, #cbb4f2);
   --dataset: light-dark(#8a5a00, #f0c26b);
+  --regional: light-dark(#4d5f14, #cbdc86);
   --verified: light-dark(#e3efe6, #1c3226);
   --verified-text: light-dark(#1d4f30, #b5e2c3);
   --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
@@ -72,16 +73,27 @@
 .directory-chrome .desk-primary a[aria-current] { border-bottom-color: var(--rule); }
 
 /* The footer is a view of the city from the Schuylkill: an evening sky (where supporters are
-   thanked on the home page), the skyline, and the river the footer links sit on.
+   thanked on the home page), the skyline, and the river the footer links sit on. By day the river
+   holds the pale sky; by night it is dark. --river matches the water drawn in the art.
    Art: public/footer-skyline-{light,dark}.svg, drawn by scripts/build-footer-art.mjs. */
 .directory-chrome.desk-footer {
   --sky-horizon: light-dark(#f1e2d0, #232a52);
-  --river: light-dark(#1b2042, #0a0c18);
-  --river-text: #e4e5f1;
-  --river-muted: #a9add0;
-  --river-link: #c9cfff;
+  --river: light-dark(#c5cadb, #0a0c18);
+  --river-text: light-dark(#1c1b19, #e4e5f1);
+  --river-muted: light-dark(#3a3f5c, #a9add0);
+  --river-link: light-dark(#1d2a8f, #c9cfff);
   margin-top: 4rem;
   background: var(--river);
+}
+/* Away from the home page: a strip of the same skyline, cut just under the waterline. The towers fade
+   into the sky at the top edge rather than ending in a cut. */
+.directory-chrome.desk-footer.is-strip { margin-top: 3rem; }
+.directory-chrome.is-strip .desk-footer-art {
+  height: clamp(76px, 8.4vw, 108px);
+  background-size: max(100%, 64rem) auto;
+  background-position: 50% 82%;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);
+  mask-image: linear-gradient(to bottom, transparent, #000 55%);
 }
 .directory-chrome .desk-footer-sky { background: linear-gradient(to bottom, var(--paper), var(--sky-horizon)); }
 .directory-chrome .desk-footer-art {
@@ -155,40 +167,61 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: .75rem 2rem;
-  padding-block: 1.5rem 1.25rem;
+  padding-block: 1.1rem 1.25rem;
 }
-.directory-chrome .desk-footer-about { grid-column: 1 / -1; max-width: 62ch; margin: 0; color: var(--river-muted); }
-.directory-chrome .desk-footer-brand { color: var(--river-text); font: 600 1rem/1.3 var(--serif); text-decoration: none; }
+.directory-chrome .desk-footer-river .desk-footer-brand { color: var(--river-text); font: 600 .95rem/1.3 var(--serif); text-decoration: none; }
+.directory-chrome .desk-footer-river .desk-footer-brand:hover { color: var(--river-text); text-decoration: underline; }
 .directory-chrome .desk-footer-links { display: flex; flex-wrap: wrap; column-gap: 1.1rem; }
 .directory-chrome .desk-footer-river a { color: var(--river-link); }
 .directory-chrome .desk-footer-river :focus-visible { outline-color: var(--river-link); }
 .directory-chrome .desk-footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .directory-chrome .desk-footer-copy { grid-column: 1 / -1; margin: 0; color: var(--river-muted); font-size: .84rem; }
-.directory-chrome .desk-theme { display: flex; align-items: center; gap: .45rem; color: var(--river-muted); }
+/* Theme: three labelled choices on the river, the current one lit. */
+.directory-chrome .desk-theme {
+  display: inline-flex;
+  align-self: center;
+  padding: 3px;
+  border: 1px solid color-mix(in srgb, var(--river-muted) 45%, transparent);
+  border-radius: 999px;
+}
 /* The control works only with scripts. It keeps its space so nothing moves when it appears. */
 :root:not([data-theme]) .directory-chrome .desk-theme { visibility: hidden; }
-.directory-chrome .desk-theme select {
-  min-height: 44px;
-  padding: .3rem .5rem;
-  border: 1px solid var(--river-muted);
-  border-radius: 2px;
-  background: var(--river);
-  color: var(--river-text);
-  color-scheme: dark;
-  font: inherit;
+.directory-chrome .desk-theme button {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 34px;
+  padding: .2rem .8rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--river-muted);
+  font: 500 .85rem/1 var(--sans);
+  cursor: pointer;
 }
+.directory-chrome .desk-theme button:hover { color: var(--river-text); }
+.directory-chrome .desk-theme button[aria-pressed="true"] { background: var(--river-text); color: var(--river); font-weight: 600; }
+.directory-chrome .desk-theme .glyph { width: 1rem; height: 1rem; }
+.directory-chrome .desk-theme .glyph-fill-solid { fill: currentColor; stroke: none; }
+.directory-chrome .desk-theme button:focus-visible { outline: 2px solid var(--river-link); outline-offset: 1px; }
 
 @media (max-width: 34rem) {
+  .directory-chrome .desk-footer-art { height: 120px; background-position: 58% bottom; }
+  .directory-chrome.is-strip .desk-footer-art { height: 72px; background-size: 600px auto; background-position: 58% 82%; }
+  .directory-chrome .desk-footer-inner { gap: 1rem; padding-block: 1rem 1.5rem; }
+  .directory-chrome .desk-footer-links { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1rem; }
+  .directory-chrome .desk-footer-links a { min-height: 40px; }
+  .directory-chrome .desk-theme { justify-self: start; }
   .directory-chrome .desk-masthead-inner { padding-block: .25rem; }
-  .directory-chrome .desk-primary { justify-content: space-between; column-gap: .6rem; width: 100%; }
+  /* Brand on one row, the five sections spread across the next. */
+  .directory-chrome .desk-primary { justify-content: space-between; column-gap: .5rem; width: 100%; }
   .directory-chrome .desk-primary a { font-size: .88rem; }
   .directory-chrome .desk-footer-inner { grid-template-columns: 1fr; }
-}
-/* Under 384px the header keeps three links; Suggest stays in the footer and on the home page. */
-@media (max-width: 24rem) {
-  .directory-chrome .desk-primary a[href="/discover/suggest"] { display: none; }
-}
-@media (max-width: 34rem) {
   .directory-chrome .patron-title::before,
   .directory-chrome .patron-title::after { display: none; }
+}
+/* Narrow phones: the sections stay on one row in smaller type. */
+@media (max-width: 23rem) {
+  .directory-chrome .desk-primary { column-gap: .35rem; }
+  .directory-chrome .desk-primary a { font-size: .8rem; }
 }

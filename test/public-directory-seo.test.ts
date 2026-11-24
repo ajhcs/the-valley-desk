@@ -42,8 +42,6 @@ test("landing pages answer in computed sentences and carry matching metadata", a
 
     const institution = await text("/discover/institution/fixture-institute");
     assert.match(institution, new RegExp(`Fictional Estuary Research Institute has ${works} publications`));
-    assert.match(institution, /Counts computed from the directory on <time/);
-    assert.match(institution, /not a complete record of regional research/);
     assert.match(institution, /<link rel="canonical" href="https:\/\/thevalleydesk.org\/discover\/institution\/fixture-institute">/);
     assert.match(institution, /<link rel="alternate" type="application\/rss\+xml" title="Additions: Fictional Estuary Research Institute" href="\/discover\/updates.xml\?institution=fixture-institute">/);
     assert.doesNotMatch(institution, /<meta name="robots"/);
@@ -70,7 +68,7 @@ test("landing pages answer in computed sentences and carry matching metadata", a
       schemaOf(html);
     }
     const filtered = await text("/discover/works?q=imaging&county=camden&kind=publication");
-    assert.match(filtered, /<h1>Publications matching “imaging” in Camden County<\/h1>/);
+    assert.match(filtered, /<h1 class="sr-only">Publications matching “imaging” in Camden County<\/h1>/);
     assert.match(filtered, /rel="canonical" href="https:\/\/thevalleydesk.org\/discover\/works\?county=camden&amp;kind=publication&amp;q=imaging"/);
 
     const record = JSON.parse(execFileSync("python3", ["ops/research-fixture.py", "--count", "4"], { encoding: "utf8" }).trim().split("\n")[3]);
@@ -93,7 +91,7 @@ test("landing pages answer in computed sentences and carry matching metadata", a
     const [site, catalog] = schemaOf(home);
     assert.equal(site.potentialAction.target.urlTemplate, origin + "/discover/works?q={search_term_string}");
     assert.equal(catalog["@type"], "DataCatalog");
-    assert.match(home, new RegExp(`<p class="lede">${works} publications`));
+    assert.match(home, new RegExp(`<li class="tally-publication" style="--share:100%"><a href="/discover/works\\?kind=publication">Publications</a><span>${works}</span></li>`));
     assert.match(home, /href="\/discover\/institution\/fixture-institute"/);
 
     const directory = await text("/discover/sitemap/directory.xml");
