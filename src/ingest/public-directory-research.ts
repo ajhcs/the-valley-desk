@@ -273,6 +273,7 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
     }
   }
   const facetQueries: string[] = [];
+  const scopes: Scope[] = [];
   let scope: Scope | undefined;
   let simple = !where.length;
   for (const key of [...fields, "label", ...datasetFields]) {
@@ -294,13 +295,17 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
       );
       rankedArgs.push(key, ...selected);
       // Stored counts cover institution, topic and county scopes only.
-      if ((fields as readonly string[]).includes(key) && selected.length === 1) scope = { field: key as Scope["field"], value: selected[0] };
+      if ((fields as readonly string[]).includes(key) && selected.length === 1) scopes.push((scope = { field: key as Scope["field"], value: selected[0] }));
       else simple = false;
     }
   }
   if (facetQueries.length) where.push("id IN (" + facetQueries.join(" INTERSECT ") + ")");
   if (facetQueries.length > 1) simple = false;
   const kind = params.get("kind") ?? "";
+  const kinds = kind === "__datasets" ? ["dataset", "regional-data"] : kind ? [kind] : [];
+  // The facet filters alone, for a listing read from its kind.
+  const faceted = [...ranked];
+  const facetedArgs = [...rankedArgs];
   if (kind === "__datasets") {
     where.push("kind IN ('dataset','regional-data')");
     ranked.push("l.kind IN ('dataset','regional-data')");
@@ -316,10 +321,14 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
   // published or last-push date. A bound is YYYY, YYYY-MM or YYYY-MM-DD and is inclusive.
   for (const [key, column] of [["added", "added"], ["date", "activity"]]) {
     const [after, before] = ["_from", "_to"].map((end) => dateBound(params.get(key + end)));
-    if (after) where.push(column + ">=?"), args.push(after), ranked.push("l." + column + ">=?"), rankedArgs.push(after);
+    if (after) {
+      where.push(column + ">=?"), args.push(after);
+      for (const [to, toArgs] of [[ranked, rankedArgs], [faceted, facetedArgs]]) to.push("l." + column + ">=?"), toArgs.push(after);
+    }
     if (before) {
       where.push(column + "<>'' AND " + column + "<=?"), args.push(before + "~");
-      ranked.push("l." + column + "<>'' AND l." + column + "<=?"), rankedArgs.push(before + "~");
+      for (const [to, toArgs] of [[ranked, rankedArgs], [faceted, facetedArgs]])
+        to.push("l." + column + "<>'' AND l." + column + "<=?"), toArgs.push(before + "~");
     }
   }
   const from = " FROM research_visible" + (where.length ? " WHERE " + where.join(" AND ") : "");
@@ -346,7 +355,54 @@ function searchSource(params: URLSearchParams, refs: Institution[], cap = search
           args: [args[0], ...rankedArgs],
         }
       : undefined;
-  return { from, args, facetCount: facetQueries.length, stored, relevance };
+  // The same filters read from the kind's listings, checking each one's facets. This is far
+  // cheaper when the kind is small and the facet large: datasets in Philadelphia County, say.
+  // The named index and the join order keep SQLite from choosing another starting point, which
+  // it otherwise does for some orders and for two kinds.
+  const byKind =
+    kinds.length && facetQueries.length && !terms?.length
+      ? {
+          from:
+            ` FROM (SELECT id kid FROM research_listings INDEXED BY research_kind WHERE kind IN (${kinds.map(() => "?").join(",")})) k` +
+            " CROSS JOIN research_visible l ON l.id=k.kid WHERE " +
+            faceted.join(" AND "),
+          args: [...kinds, ...facetedArgs],
+          kinds,
+          scopes,
+        }
+      : undefined;
+  return { from, args, facetCount: facetQueries.length, stored, relevance, byKind };
+}
+
+/**
+ * Chooses between collecting a filtered listing by facet and by kind, from the stored totals.
+ * Reading by kind wins when the selected kinds hold fewer listings than the facet value does;
+ * for a facet with no stored total, when they are at most a twentieth of the directory. Both
+ * forms return the same rows, so without stored totals the facet form stays.
+ */
+async function filterSource(db: ResearchDb, source: ReturnType<typeof searchSource>) {
+  const { from, args, byKind } = source;
+  if (!byKind) return { from, args };
+  try {
+    const sizes = await rows<{ scope_field: string; scope_value: string; kind: string; n: number }>(
+      db,
+      "SELECT scope_field,scope_value,kind,n FROM research_summary_kinds WHERE (scope_field='' AND scope_value='')" +
+        byKind.scopes.map(() => " OR (scope_field=? AND scope_value=?)").join(""),
+      ...byKind.scopes.flatMap((s) => [s.field, s.value]),
+    );
+    const size = (field: string, value: string, only?: string[]) =>
+      sizes
+        .filter((row) => row.scope_field === field && row.scope_value === value && (!only || only.includes(row.kind)))
+        .reduce((sum, row) => sum + row.n, 0);
+    const everything = size("", "");
+    const ofKind = size("", "", byKind.kinds);
+    const smaller = byKind.scopes.length
+      ? ofKind < Math.min(...byKind.scopes.map((s) => size(s.field, s.value)))
+      : ofKind * 20 <= everything;
+    return everything && smaller ? { from: byKind.from, args: byKind.args } : { from, args };
+  } catch {
+    return { from, args };
+  }
 }
 
 type Scope = { field: (typeof fields)[number]; value: string };
@@ -432,11 +488,13 @@ function readListing(row: { kind: Listing["kind"]; record: string }): Listing {
   return { kind: row.kind, record: JSON.parse(row.record) };
 }
 export async function researchFeed(db: ResearchDb, params: URLSearchParams, refs: Institution[]) {
-  const { from, args, stored } = searchSource(params, refs);
+  const source = searchSource(params, refs);
+  const { stored } = source;
   const page = pageNumber(params);
   const known = stored && (stored.scope || stored.kind) ? await storedCounts(db, stored.scope, stored.kind) : undefined;
   const scan =
     known && orderedScan(stored!, known, known.counts.reduce((sum, row) => sum + row.n, 0), "added DESC,id", page * 24 + 1);
+  const { from, args } = scan ? source : await filterSource(db, source);
   const result = await rows<{ kind: Listing["kind"]; record: string }>(
     db,
     (scan ? scan.sql : "SELECT kind,record" + from + " ORDER BY added DESC,id") + " LIMIT 25 OFFSET ?",
@@ -446,7 +504,8 @@ export async function researchFeed(db: ResearchDb, params: URLSearchParams, refs
   return { page, items: result.slice(0, 24).map(readListing), hasMore: result.length > 24 };
 }
 export async function researchQuery(db: ResearchDb, params: URLSearchParams, refs: Institution[], cap = searchCountCap) {
-  const { from, args, facetCount, stored, relevance } = searchSource(params, refs, cap);
+  const source = searchSource(params, refs, cap);
+  const { facetCount, stored, relevance } = source;
   const sort = params.get("sort");
   if (relevance && (!sort || sort === "relevance")) {
     // A search is ordered by full-text relevance unless another order is chosen.
@@ -463,6 +522,7 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
     // Reuse the facet intersection for exact counts and the sorted page.
     // Keep large bylines out of the temporary table and fetch only the final page's records.
     const requested = pageNumber(params);
+    const { from, args } = await filterSource(db, source);
     const data = await rows<
       | { kind: ListingKind; n: number; works: number; record: null }
       | { kind: ListingKind; n: null; works: null; record: string }
@@ -486,12 +546,15 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
     return { counts, total, page: Math.min(requested, Math.max(1, Math.ceil(total / 24))), items };
   }
   const known = stored ? await storedCounts(db, stored.scope, stored.kind) : undefined;
+  // With stored counts the choice waits until the listing order is known to need it.
+  let { from, args } = known ? source : await filterSource(db, source);
   const counts =
     known?.counts ??
     (await rows<KindCount>(db, "SELECT kind,count(*) n,count(DISTINCT group_id) works" + from + " GROUP BY kind", ...args));
   const total = counts.reduce((sum, row) => sum + row.n, 0);
   const page = Math.min(pageNumber(params), Math.max(1, Math.ceil(total / 24)));
   const scan = known && orderedScan(stored!, known, total, order, page * 24);
+  if (known && !scan) ({ from, args } = await filterSource(db, source));
   const result = await rows<{ kind: Listing["kind"]; record: string }>(
     db,
     (scan ? scan.sql : "SELECT kind,record" + from + " ORDER BY " + order) + " LIMIT 24 OFFSET ?",
