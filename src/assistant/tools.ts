@@ -665,7 +665,7 @@ function plain(title: string, url: string, metadata: Record<string, unknown>) {
   return [title, url, ...Object.entries(metadata).map(([key, value]) => `${key.replaceAll("_", " ")}: ${line(value)}`)].join("\n");
 }
 
-type Count = { field: string; value: string; n: number };
+type Count = { field: string; value: string; n: number; name?: string | null };
 const memo = new WeakMap<object, { at: number; counts: Count[] }>();
 
 async function facets(context: ToolContext) {
@@ -674,6 +674,7 @@ async function facets(context: ToolContext) {
   let removed: Set<string>;
   let refs: Institution[] = [];
   let counts: Count[] | undefined;
+  let regionalCounts: Count[] = [];
   try {
     removed = await removalIds(db);
     // Read through the visibility view on every call so unreadable removal state fails closed
@@ -685,9 +686,22 @@ async function facets(context: ToolContext) {
       if (!counts) {
         counts = await rows<Count>(
           db!,
-          "SELECT f.field field,f.value value,count(*) n FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE f.field IN ('institution','topic','county') GROUP BY f.field,f.value",
+          "SELECT f.field field,f.value value,count(*) n FROM research_facets f JOIN research_visible v ON v.id=f.id WHERE v.kind<>'regional-data' AND f.field IN ('institution','topic','county') GROUP BY f.field,f.value",
         );
         memo.set(db!, { at: now.getTime(), counts });
+      }
+    }
+    // Regional counts must never come from the memo: visibility and removals can change immediately.
+    if (await regionalDataEnabled(db)) {
+      regionalCounts = await rows<Count>(db!,
+        "SELECT f.field field,f.value value,count(*) n,CASE WHEN f.field='topic' THEN max(json_extract(v.record,'$.topic')) END name FROM research_listings l JOIN research_facets f ON f.id=l.id JOIN research_visible v ON v.id=l.id WHERE l.kind='regional-data' AND f.field IN ('institution','topic','county') GROUP BY f.field,f.value");
+    }
+    if (counts) {
+      counts = counts.map((row) => ({ ...row }));
+      for (const regional of regionalCounts) {
+        const existing = counts.find((row) => row.field === regional.field && row.value === regional.value);
+        if (existing) existing.n += regional.n;
+        else counts.push(regional);
       }
     }
   } catch {
@@ -702,11 +716,23 @@ async function facets(context: ToolContext) {
     const list = (kind: "institution" | "topic" | "county", values: { name: string; count: number }[]) =>
       byCount(values.map(({ name, count }) => ({ name, url: origin + catalog.entityHref(kind, name), listings: count })));
     const known = new Map(home.counties.map((county) => [county.name, county.count]));
+    const institutions = list("institution", home.institutions);
+    const topics = list("topic", home.topics);
+    const countyList = counties.map(({ name, state }) => ({ name, state, url: page("county", facetSlug(name)), listings: known.get(name) ?? 0 }));
+    const options = optionsFor(catalog, removed, refs);
+    for (const regional of regionalCounts) {
+      const kind = regional.field as "institution" | "topic" | "county";
+      const entries = kind === "institution" ? institutions : kind === "topic" ? topics : countyList;
+      const url = page(kind, regional.value);
+      const existing = entries.find((entry) => entry.url === url);
+      if (existing) existing.listings += regional.n;
+      else if (kind !== "county") entries.push({ name: options[kind].get(regional.value) ?? regional.name ?? regional.value, url, listings: regional.n });
+    }
     return {
-      institutions: list("institution", home.institutions).slice(0, limits.listEntries),
-      truncated: home.institutions.length > limits.listEntries,
-      topics: list("topic", home.topics).slice(0, limits.listEntries),
-      counties: counties.map(({ name, state }) => ({ name, state, url: page("county", name.toLowerCase()), listings: known.get(name) ?? 0 })),
+      institutions: byCount(institutions).slice(0, limits.listEntries),
+      truncated: institutions.length > limits.listEntries,
+      topics: byCount(topics).slice(0, limits.listEntries),
+      counties: countyList,
     };
   }
   const count = (field: string, slug: string) => counts!.find((row) => row.field === field && row.value === slug)?.n ?? 0;
@@ -732,7 +758,7 @@ async function facets(context: ToolContext) {
       topics: byCount(
         counts
           .filter((row) => row.field === "topic")
-          .map((row) => ({ name: options.topic.get(row.value) ?? row.value, url: page("topic", row.value), listings: row.n })),
+          .map((row) => ({ name: options.topic.get(row.value) ?? row.name ?? row.value, url: page("topic", row.value), listings: row.n })),
       ).slice(0, limits.listEntries),
       counties: counties.map(({ name, state }) => ({ name, state, url: page("county", facetSlug(name)), listings: count("county", facetSlug(name)) })),
     },

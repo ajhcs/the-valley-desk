@@ -593,8 +593,38 @@ test("regional discovery metadata distinguishes the resource page and API", asyn
   const schema = regionalDataSchema(record, origin);
   assert.equal(schema.sameAs, record.url);
   assert.equal(schema.distribution, undefined);
+  assert.equal(schema.spatialCoverage[0].address?.addressRegion, "PA");
+  assert.ok(schema.additionalProperty.some((p) => p.name === "directory added" && p.value === record.added));
   assert.ok(schema.additionalProperty.some((p) => p.name === "formats"));
   assert.equal(regionalDataSchema({ ...record, api: { url: "https://example.org/api", type: "JSON" } }, origin).distribution?.[0].contentUrl, "https://example.org/api");
   assert.match(regionalDataLlms(origin), /\/discover\/datasets\?kind=regional-data/);
   assert.match(regionalDataLlms(origin), /\/api\/directory\/regional-data/);
+});
+
+test("regional facets reflect visibility and removals without cached contributions", async () => {
+  const { env, sqlite, close } = directory();
+  try {
+    sqlite.exec(readFileSync("migrations/0047_clinical_studies.sql", "utf8"));
+    sqlite.exec(readFileSync("migrations/0050_datasets.sql", "utf8"));
+    sqlite.exec(readFileSync("migrations/0052_regional_data.sql", "utf8"));
+    sqlite.prepare("INSERT INTO research_listings VALUES(?,?,?,?,?,?,?,?,?,?)").run(
+      "regional:facet-test", "regional-data", "Facet test", "2026-11-01", "2026-11-01", "Unique topic", "regional:facet-test", "", JSON.stringify({ topic: "Unique topic" }),
+      JSON.stringify({ topic: ["unique-topic"], county: ["philadelphia"] }),
+    );
+    const topics = async () => (await call(env, "list_topics_and_counties")).structuredContent;
+    sqlite.exec("UPDATE regional_data_visibility SET enabled=1");
+    assert.equal((await topics()).topics.find((t: {name: string}) => t.name === "Unique topic").listings, 1);
+    sqlite.exec("UPDATE regional_data_visibility SET enabled=0");
+    assert.equal((await topics()).topics.some((t: {name: string}) => t.name === "Unique topic"), false);
+    env.PUBLICATIONS_PUBLIC_ENABLED = "false";
+    sqlite.exec("UPDATE regional_data_visibility SET enabled=1");
+    assert.equal((await topics()).topics.find((t: {name: string}) => t.name === "Unique topic").listings, 1);
+    env.PUBLICATIONS_PUBLIC_ENABLED = "true";
+    sqlite.exec("DELETE FROM research_listings WHERE kind='publication'");
+    assert.equal((await topics()).topics.find((t: {name: string}) => t.name === "Unique topic").listings, 1);
+    sqlite.exec("INSERT INTO regional_data_removals(id) VALUES('regional:facet-test')");
+    assert.equal((await topics()).topics.some((t: {name: string}) => t.name === "Unique topic"), false);
+    env.PUBLICATIONS_PUBLIC_ENABLED = "true";
+    assert.equal((await topics()).topics.some((t: {name: string}) => t.name === "Unique topic"), false);
+  } finally { close(); }
 });
