@@ -51,6 +51,30 @@ class Tests(unittest.TestCase):
         self.assertIn('source check failed', f.stage(D1(), {}, TODAY, source))
         self.assertFalse(f.valid_url('https://127.0.0.1/test'))
         self.assertFalse(f.valid_url('https://data.cdc.gov@localhost/test'))
+    def test_reviewed_last_modified_header_is_case_insensitive(self):
+        value = f.metadata_value({'url': META, 'format': 'http-last-modified'},
+                                 lambda *a, **k: {'last-modified': 'Thu, 29 Jan 2026 13:19:53 GMT'})
+        self.assertEqual(value, '2026-01-29')
+        with self.assertRaises(ValueError):
+            f.metadata_value({'url': META, 'format': 'last-modified'}, lambda *a, **k: {})
+
+    def test_retry_after_is_capped(self):
+        class Response:
+            status = 200
+            headers = {}
+            def __enter__(self): return self
+            def __exit__(self, *args): return False
+        class Opener:
+            calls = 0
+            def open(self, req, timeout):
+                self.calls += 1
+                if self.calls == 1:
+                    raise HTTPError(req.full_url, 429, '', {'Retry-After': '300'}, None)
+                return Response()
+        with patch.object(f, 'build_opener', return_value=Opener()), patch('socket.getaddrinfo', return_value=[(2,1,6,'',('1.1.1.1',443))]), patch.object(f.time, 'sleep') as sleep:
+            f.request(LANDING)
+            sleep.assert_called_once_with(30)
+
     def test_redirect_failure(self):
         class Opener:
             def open(self, req, timeout):

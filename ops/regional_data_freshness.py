@@ -105,10 +105,15 @@ def request(url, *, metadata=False):
                     break
                 if error.code not in (429, 500, 502, 503, 504) or attempt == 2:
                     raise ValueError('HTTP failure') from None
+                retry = error.headers.get('Retry-After', '') if error.code == 429 else ''
             except (URLError, TimeoutError, OSError):
                 if attempt == 2:
                     raise ValueError('network failure') from None
-            time.sleep(2 ** attempt)
+            delay = 2 ** attempt
+            if locals().get('retry', '').isdigit():
+                delay = min(30, max(delay, int(retry)))
+            retry = ''
+            time.sleep(delay)
         else:
             raise ValueError('network failure')
         # The only break above is a reviewed same-host redirect.
@@ -142,9 +147,9 @@ def metadata_value(locator, fetcher):
         elif locator.get('units') not in (None, 'seconds'):
             raise ValueError('invalid units')
         return value
-    if fmt == 'last-modified':
+    if fmt == 'http-last-modified':
         from email.utils import parsedate_to_datetime
-        value = fetcher(url, metadata=False).get('Last-Modified')
+        value = next((v for k, v in fetcher(url, metadata=False).items() if k.lower() == 'last-modified'), None)
         if not value:
             raise ValueError('missing Last-Modified')
         return parsedate_to_datetime(value).date().isoformat()
